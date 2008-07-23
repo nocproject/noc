@@ -5,6 +5,7 @@ import socket,struct
 from django.db import models
 from django.contrib.auth.models import User
 from noc.lib.validators import check_rd,check_cidr,is_cidr
+from noc.lib.tt import tt_url
 from noc.asn.models import AS
 ##
 ##
@@ -208,10 +209,7 @@ class IPv4Block(models.Model):
     broadcast=property(_broadcast)
     
     def _tt_url(self):
-        if self.tt:
-            return "http://rt.noc.effortel.ru/Ticket/Display.html?id=%d"%self.tt
-        else:
-            return None
+        return tt_url(self)
     tt_url=property(_tt_url)
 
 ##
@@ -249,8 +247,5 @@ class IPv4Address(models.Model):
     closest_block=property(_closest_block)
     
     def _tt_url(self):
-        if self.tt:
-            return "http://rt.noc.effortel.ru/Ticket/Display.html?id=%d"%self.tt
-        else:
-            return None
+        return tt_url(self)
     tt_url=property(_tt_url)

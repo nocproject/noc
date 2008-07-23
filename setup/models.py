@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.cache import cache
 
 class Settings(models.Model):
     class Admin:
@@ -12,11 +13,28 @@ class Settings(models.Model):
     def __unicode__(self):
         return unicode(self.key)
     @classmethod
-    def __getitem__(cls,v):
-        return Settings.objects.get(key=v).value
+    def get(cls,v):
+        key="settings.%s"%v
+        c=cache.get(key)
+        if c is None:
+            c=Settings.objects.get(key=v).value
+            cache.set(key,c)
+        return c
     @classmethod
     def register(cls,key,default):
         if Settings.objects.filter(key=key).count()==0:
             s=Settings(key=key,value=default,default=default)
             s.save()
 
+D=[
+    ("shell.ssh",   "/usr/bin/ssh"),
+    ("shell.rsync", "/usr/local/bin/rsync"),
+    # Trouble ticketing integratiion
+    ("tt.url",      "http://example.com/ticket=%(tt)s"),
+    # dns
+    ("dns.zone_cache", "/tmp/zones/"),
+]
+
+def register_defaults():
+    for k,v in D:
+        Settings.register(k,v)
