@@ -95,6 +95,12 @@ SCRIPT=[
     TableNew("ip_vrfgroup",["id","name","unique_addresses"],["1","Effortel","t"]),
     Table(old_name="an_vrf",new_name="ip_vrf",old_fields=["id","name","rd"],additional_columns=["vrf_group_id"],additional_values=["1"]),
     Table(old_name="an_ipv4block",new_name="ip_ipv4block",old_fields=["id","description","prefix","vrf_id","asn_id","modified_by_id","last_modified"]),
+    Table(old_name="an_ipv4address",new_name="ip_ipv4address",old_fields=["id","vrf_id","fqdn","ip","description","modified_by_id",
+        "last_modified"]),
+    # DNS
+    Table(old_name="an_dnszoneprofile",new_name="dns_dnszoneprofile",old_fields=["id","name","zone_transfer_acl","zone_ns_list",
+        "zone_soa","zone_contact","zone_refresh","zone_retry","zone_expire","zone_ttl"]),
+    Table(old_name="an_dnszone",new_name="dns_dnszone",old_fields=["id","name","description","is_auto_generated","serial","profile_id"]),
     ]
     
 if __name__=="__main__":

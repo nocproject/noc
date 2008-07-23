@@ -4,7 +4,7 @@ class Settings(models.Model):
     class Admin:
         list_display=["key","value","default"]
         search_fields=["key","value"]
-    key=models.CharField("Key",maxlenght=64,unique=True)
+    key=models.CharField("Key",maxlength=64,unique=True)
     value=models.CharField("Value",maxlength=256)
     default=models.CharField("Value",maxlength=256)
     def __str__(self):
@@ -19,3 +19,4 @@ class Settings(models.Model):
         if Settings.objects.filter(key=key).count()==0:
             s=Settings(key=key,value=default,default=default)
             s.save()
+

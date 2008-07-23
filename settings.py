@@ -84,4 +84,5 @@ INSTALLED_APPS = (
     "noc.setup",
     "noc.asn",
     "noc.ip",
+    "noc.dns",
 )

@@ -1,3 +1,4 @@
+import re
 from django.db import models
 
 class DNSZoneProfile(models.Model):
@@ -91,10 +92,10 @@ class DNSZone(models.Model):
         from django.db import connection
         c=connection.cursor()
         if self.type=="F":
-            c.execute("SELECT hostname(fqdn),ip FROM an_ipv4address WHERE domainname(fqdn)=%s ORDER BY ip", [self.name])
+            c.execute("SELECT hostname(fqdn),ip FROM %s WHERE domainname(fqdn)=%%s ORDER BY ip"%IPv4Address._meta.db_table, [self.name])
             records=[[r[0],"IN  A",r[1]] for r in c.fetchall()]
         elif self.type=="R":
-            c.execute("SELECT ip,fqdn FROM an_ipv4address WHERE ip::cidr << %s ORDER BY ip",[self.reverse_prefix])
+            c.execute("SELECT ip,fqdn FROM %s WHERE ip::cidr << %%s ORDER BY ip"%IPv4Address._meta.db_table,[self.reverse_prefix])
             records=[[r[0].split(".")[3],"PTR",r[1]+"."] for r in c.fetchall()]
         else:
             raise Exception,"Invalid zone type"
