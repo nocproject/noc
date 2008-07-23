@@ -1,0 +1,15 @@
+#!/bin/sh
+DJ_DIR=`dirname $0`/../
+
+die() {
+    echo $1
+    exit 1
+}
+
+[ -d $DJ_DIR ] || die "No directory found: $DJ_DIR"
+cd $DJ_DIR || die "Cannot chdir: $DJ_DIR"
+python manage.py shell --plain << _END_
+from noc.dns.models import DNSZone
+DNSZone.sync_zones()
+_END_
+

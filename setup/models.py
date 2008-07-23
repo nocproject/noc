@@ -32,7 +32,8 @@ D=[
     # Trouble ticketing integratiion
     ("tt.url",      "http://example.com/ticket=%(tt)s"),
     # dns
-    ("dns.zone_cache", "/tmp/zones/"),
+    ("dns.zone_cache",  "/tmp/zones/"),
+    ("dns.rsync_target","user@host:/path/"),
 ]
 
 def register_defaults():

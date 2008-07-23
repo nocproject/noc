@@ -1,5 +1,8 @@
-import re
+import re,os,time
 from django.db import models
+from noc.setup.models import Settings
+from noc.ip.models import IPv4Address
+from noc.lib.validators import is_ipv4
 
 class DNSZoneProfile(models.Model):
     class Admin:
@@ -78,7 +81,7 @@ class DNSZone(models.Model):
         return self.name
     file_name=property(_file_name)
     def _path(self):
-        return os.path.join(ZONES,self.file_name)
+        return os.path.join(Settings.get("dns.zone_cache"),self.file_name)
     path=property(_path)
     def _next_serial(self):
         T=time.gmtime()
@@ -102,7 +105,7 @@ class DNSZone(models.Model):
         nses=[]
         for ns in self.profile.zone_ns_list.split(","):
             ns=ns.strip()
-            if not check_ipv4(ns) and not ns.endswith("."):
+            if not is_ipv4(ns) and not ns.endswith("."):
                 ns+="."
             nses.append("\tNS\t"+ns+"\n")
         nses="".join(nses)
@@ -171,11 +174,18 @@ $ORIGIN %(domain)s.
 # End of auto-generated file
 #
 """
-        path=os.path.join(ZONES,"autozones.conf")
+        path=os.path.join(Settings.get("dns.zone_cache"),"autozones.conf")
         if DNSZone.is_differ(path,s):
             f=open(path,"w")
             f.write(s)
             f.close()
+            
+    @classmethod
+    def sync_zones(cls):
+        cls.rewrite_zones()
+        os.environ["RSYNC_RSH"]=Settings.get("shell.ssh")
+        os.chdir(Settings.get("dns.zone_cache"))
+        os.system("%s -av --delete * %s"%(Settings.get("shell.rsync"),Settings.get("dns.rsync_target")))
 
     @classmethod
     def is_differ(cls,path,s):
@@ -186,4 +196,4 @@ $ORIGIN %(domain)s.
             cs2=md5.md5(s).hexdigest()
             return cs2!=cs1
         else:
-            pass
+            return True
