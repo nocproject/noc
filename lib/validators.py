@@ -1,6 +1,7 @@
 ##
 ## This file is a part of Effortel's NOC db project
 ##
+import re
 from django.core import validators
 ##
 ## Validators returning boolean
@@ -54,6 +55,11 @@ def is_rd(v):
     if is_asn(a):
         return 0<=b<=65535
     return False
+
+rx_fqdn=re.compile(r"^([a-z0-9\-]+\.)+[a-z0-9\-]+$",re.IGNORECASE)
+def is_fqdn(v):
+    return rx_fqdn.match(v) is not None
+    
 ##
 ## Validators for forms
 ##
@@ -72,3 +78,6 @@ def check_cidr(field_data,all_data):
 
 def check_rd(field_data,all_data):
     generic_validator(field_data,is_rd,"Invalid RD")
+    
+def check_fqdn(field_data,all_data):
+    generic_validator(field_data,is_fqdn,"Invalid FQDN")
