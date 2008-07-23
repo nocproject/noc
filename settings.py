@@ -74,6 +74,8 @@ TEMPLATE_DIRS = (
     ".",
 )
 
+CACHE_BACKEND = 'locmem:///'
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
