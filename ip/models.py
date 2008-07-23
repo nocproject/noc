@@ -1,11 +1,11 @@
 ##
 ## This file is a part of Effortel's NOC db project
 ##
+import socket,struct
 from django.db import models
 from django.contrib.auth.models import User
 from noc.lib.validators import check_rd,check_cidr,is_cidr
 from noc.asn.models import AS
-
 ##
 ##
 ##
@@ -36,6 +36,7 @@ class VRF(models.Model):
     name=models.CharField("VRF name",unique=True,maxlength=64)
     vrf_group=models.ForeignKey(VRFGroup,verbose_name="VRF Group")
     rd=models.CharField("rd",unique=True,validator_list=[check_rd],maxlength=21)
+    tt=models.IntegerField("TT",blank=True,null=True)
     def __str__(self):
         if self.rd=="0:0":
             return "global"
@@ -81,10 +82,12 @@ class IPv4BlockAccess(models.Model):
     user=models.ForeignKey(User,verbose_name="User")
     vrf=models.ForeignKey(VRF,verbose_name="VRF")
     prefix=models.CharField("prefix",maxlength=18)
+    tt=models.IntegerField("TT",blank=True,null=True)
     def __str__(self):
         return "%s: %s(%s)"%(self.user,self.prefix,self.vrf)
     @classmethod
     def check_write_access(self,user,vrf,prefix):
+        assert is_cidr(prefix)
         from django.db import connection
         if user.is_superuser:
             return True
@@ -110,6 +113,8 @@ class IPv4Block(models.Model):
     asn=models.ForeignKey(AS)
     modified_by=models.ForeignKey(User,verbose_name="User")
     last_modified=models.DateTimeField("Last modified",auto_now=True,auto_now_add=True)
+    tt=models.IntegerField("TT",blank=True,null=True)
+    #allocated_till
     def __str__(self):
         return str(self.prefix)
     def __unicode__(self):
@@ -161,7 +166,7 @@ class IPv4Block(models.Model):
         else:
             vrfs="= %d"%self.vrf.id
         data=[]
-        c.execute("SELECT COUNT(*) FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix_cidr << '%s' AND v.id %s AND ip_ipv4_block_depth(v.id,b.prefix_cidr,'%s')=0 ORDER BY prefix_cidr"%\
+        c.execute("SELECT COUNT(*) FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix_cidr << '%s' AND v.id %s AND ip_ipv4_block_depth(v.id,b.prefix_cidr,'%s')=0"%\
                     (IPv4Block._meta.db_table,VRF._meta.db_table,self.prefix,vrfs,self.prefix))
         return c.fetchall()[0][0]>0
     has_children=property(_has_children)
@@ -171,7 +176,7 @@ class IPv4Block(models.Model):
             return None
         from django.db import connection
         c=connection.cursor()
-        c.execute("SELECT id FROM %s WHERE vrf_id=%d AND ip << '%s' ORDER BY ip"%(IPv4Block._meta.db_table,self.vrf.id,self.prefix))
+        c.execute("SELECT id FROM %s WHERE vrf_id=%d AND ip << '%s' ORDER BY ip"%(IPv4Address._meta.db_table,self.vrf.id,self.prefix))
         return [IPv4Address.objects.get(id=i[0]) for i in c.fetchall()]
     addresses=property(_addresses)
 
@@ -201,6 +206,13 @@ class IPv4Block(models.Model):
     def _broadcast(self):
         return self.__get_ip(self.__get_ip_bits(str(self.prefix).split("/")[0])|(0xFFFFFFFFL^self.__mask_for_bits(self.netmask_bits)))
     broadcast=property(_broadcast)
+    
+    def _tt_url(self):
+        if self.tt:
+            return "http://rt.noc.effortel.ru/Ticket/Display.html?id=%d"%self.tt
+        else:
+            return None
+    tt_url=property(_tt_url)
 
 ##
 ##
@@ -221,7 +233,8 @@ class IPv4Address(models.Model):
     description=models.CharField("Description",blank=True,null=True,maxlength=64)
     modified_by=models.ForeignKey(User,verbose_name="User")
     last_modified=models.DateTimeField("Last modified",auto_now=True,auto_now_add=True)
-
+    tt=models.IntegerField("TT",blank=True,null=True)
+    
     def __unicode__(self):
         return self.ip
 
@@ -234,3 +247,10 @@ class IPv4Address(models.Model):
         c.execute("SELECT id FROM %s WHERE vrf_id=%d AND '%s' << prefix_cidr ORDER BY masklen(prefix_cidr) DESC LIMIT 1"%(IPv4Block._meta.db_table,self.vrf.id,str(self.ip)))
         return IPv4Block.objects.get(id=c.fetchall()[0][0])
     closest_block=property(_closest_block)
+    
+    def _tt_url(self):
+        if self.tt:
+            return "http://rt.noc.effortel.ru/Ticket/Display.html?id=%d"%self.tt
+        else:
+            return None
+    tt_url=property(_tt_url)
