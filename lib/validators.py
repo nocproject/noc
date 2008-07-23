@@ -1,0 +1,74 @@
+##
+## This file is a part of Effortel's NOC db project
+##
+from django.core import validators
+##
+## Validators returning boolean
+##
+def is_int(v):
+    try:
+        v=int(v)
+    except:
+        return False
+    return True
+    
+def is_asn(v):
+    try:
+        v=int(v)
+    except:
+        return False
+    return 0<=v<=65535
+
+def is_ipv4(v):
+    X=v.split(".")
+    if len(X)!=4:
+        return False
+    try:
+        return len([x for x in X if 0<=int(x)<=255])==4
+    except:
+        return False
+    
+def is_cidr(v):
+    x=v.split("/")
+    if len(x)!=2:
+        return False
+    if not is_ipv4(x[0]):
+        return False
+    try:
+        y=int(x[1])
+    except:
+        return False
+    return 0<=y<=32
+
+def is_rd(v):
+    x=v.split(":")
+    if len(x)!=2:
+        return False
+    a,b=x
+    try:
+        b=int(b)
+    except:
+        return False
+    if is_asn(a):
+        return 0<=b<=16777215
+    if is_asn(a):
+        return 0<=b<=65535
+    return False
+##
+## Validators for forms
+##
+def generic_validator(value,check,error_msg):
+    if not check(value):
+        raise validators.ValidationError(error_msg)
+
+def check_asn(field_data,all_data):
+    generic_validator(field_data,is_asn,"Invalid ASN")
+
+def check_ipv4(field_data,all_data):
+    generic_validator(field_data,is_ipv4,"Invalid IPv4")
+
+def check_cidr(field_data,all_data):
+    generic_validator(field_data,is_cidr,"Invalid CIDR")
+
+def check_rd(field_data,all_data):
+    generic_validator(field_data,is_rd,"Invalid RD")

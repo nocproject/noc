@@ -1,0 +1,20 @@
+{% extends "template/template.html" %}
+{% block content %}
+<DIV ID="navbar">
+    <A HREF="/ip/"><B>VRF</B></A> {{vrf.name}} ({{vrf.rd}})<BR/>
+{% for p in parents %}
+<A HREF="/ip/{{vrf.id}}/{{p.prefix}}/">{{p.prefix}}</A><BR/>
+{% endfor %}
+{{prefix}}
+</DIV>
+<TABLE BORDER="1">
+    <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH></TR>
+    {%for p in prefixes %}
+    <TR>
+        <TD><A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/">{{p.prefix}}</A></TD>
+        <TD><A HREF="/ip/{{p.vrf.id}}/">{{p.vrf.name}}</A></TD>
+        <TD>{{p.description}}</TD>
+    </TR>
+    {%endfor%}
+</TABLE>
+{% endblock %}

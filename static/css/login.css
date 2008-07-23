@@ -1,0 +1,52 @@
+html {
+    margin: 0;
+    padding: 0;
+    background: #FFFFFF;
+    text-align: left;
+    height: 100%;
+    font:12px/1.4em Verdana,sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #F0F0F0;
+    margin: 0px auto;
+    padding: 0px;
+    width: 300px;
+    height: 150px;
+    margin-top: 200px;
+    font:12px/1.4em Verdana,sans-serif;
+}
+
+#footer {
+    position: relative;
+    width: 300px;
+    height: 20px;
+    padding: 4px;
+    border: 0px;
+    text-align: center;
+    background: #F0F0F0;
+    color: red;
+    clear: both;
+    height: 50px;
+}
+
+#caption {
+    color: red;
+    text-align: center;
+    font: 30px Verdana,sans-serif;
+    padding: 0px;
+    margin: 0px;
+}
+
+#error {
+    padding: 4px;
+    color: red;
+    text-align: center;
+}
+
+LABEL {
+    color: red;
+}
+

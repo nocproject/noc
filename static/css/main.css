@@ -1,0 +1,112 @@
+BODY {
+    color: #030303;
+    background: #FFFFFF;
+    font:12px/1.4em Verdana,sans-serif;
+}
+
+#header {
+    margin: 10px 0px 10px 0px;
+    padding: 5px 0px 0px 5px;
+    height: 25px;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px 0px;
+    line-height: 11px;
+    background-color: #EEE;
+    font:18px/1.8em Verdana,sans-serif;
+    font-weight: bold;
+    color: red;
+}
+
+@media screen {
+    #content {
+        margin: 0px 50px 50px 200px;
+        padding: 10px;
+    }
+
+    #menu {
+        position: absolute;
+        top: 50px;
+        left: 20px;
+        width: 172px;
+        padding: 10px;
+        background-color: #EEE;
+        border: 1px dashed #999;
+        line-height: 17px;
+    }
+}
+
+@media print {
+    #content {
+        margin: 0px;
+        padding: 10px;
+    }
+
+    #menu {
+        display: none;
+        position: absolute;
+        top: 50px;
+        left: 20px;
+        width: 172px;
+        padding: 10px;
+        background-color: #EEE;
+        border: 1px dashed #999;
+        line-height: 17px;
+    }
+}
+
+#menu a:visited, #menu a {
+    text-decoration: none;
+    color: #000000;
+}
+
+#menu a:hover {
+    color: #FF0000;
+}
+
+#menu li {
+    margin: 0px;
+    padding: 0px;
+}
+
+#menu ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+#menu li:before {
+    content: "\00BB \0020";
+}
+
+#content a:visited, #content a {
+    text-decoration: underline;
+    color: #000000;
+}
+
+#content a:hover {
+    text-decoration: underline;
+    color: #FF0000;
+}
+
+#content h1 {
+    font:18px/2.8em Verdana,sans-serif;
+    font-weight: bold;
+}
+
+#content #navbar {
+    background: #EEE;
+    clear: both;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px 0px;
+}
+
+#content TABLE {
+    border-collapse: collapse;
+}
+
+#content TABLE TR {
+    font-weight: normal;
+    font:12px/1.4em Verdana,sans-serif;
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+    <TITLE>NOC: {% block title %}Title{% endblock %}</TITLE>
+    <META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=utf8" />
+    <META NAME="Copyright" CONTENT="2007, dv.net.ru" />
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+    <LINK REL="stylesheet" TYPE="text/css" HREF="/static/css/login.css" />
+    {%block header%}{%endblock%}
+</HEAD>
+<BODY ONLOAD="document.form.id_username.focus()">
+    <p id="caption">Login</p>
+    <form method="post" action="." id="form">
+    <table>
+    <tr><td><label for="id_username">Login</label></td><td>{{ form.username }}</td></tr>
+    <tr><td><label for="id_password">Password</label></td><td>{{ form.password }}</td></tr>
+    </table>
+
+    <input type="hidden" name="next" value="{{ next }}" />
+    <center><input type="submit" value="Login" /></center>
+    </form>
+    {% if form.has_errors %} <p id="error">Invalid username or password!!!</p> {% endif %}
+
+    <DIV id="footer">&copy; 2007, dv.net.ru</DIV>
+</BODY>
+</HTML>
