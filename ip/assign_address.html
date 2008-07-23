@@ -1,0 +1,10 @@
+{% extends "template/template.html" %}
+{% block content %}
+<H1>Assign IPv4 address. VRF: {{vrf}} ({{vrf.rd}})</H1>
+<FORM METHOD="POST" ACTION="/ip/{{vrf.id}}{{p}}/assign_address/" >
+<TABLE>
+{{form.as_table}}
+</TABLE>
+<INPUT TYPE="submit"/>
+</FORM>
+{% endblock %}

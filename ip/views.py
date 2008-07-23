@@ -1,7 +1,11 @@
 from django.shortcuts import get_object_or_404
-from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess
+from django.http import HttpResponseRedirect,HttpResponseForbidden
+from django import newforms as forms
+
+from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address
+from noc.asn.models import AS
 from noc.lib.render import render
-from noc.lib.validators import is_rd
+from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
 
 def index(request):
     search_by_name=None
@@ -37,3 +41,113 @@ def vrf_index(request,vrf_id,prefix="0.0.0.0/0"):
     prefix=vrf.prefix(prefix)
     return render(request,"ip/vrf_index.html",{"vrf":vrf,"parents":parents,"prefixes":prefixes,"prefix":prefix,
                         "can_allocate":can_allocate})
+
+class AllocateBlockForm(forms.Form):
+    prefix=forms.CharField(label="prefix",required=True)
+    description=forms.CharField(label="description",required=True)
+    asn=forms.ModelChoiceField(label="ASN",queryset=AS.objects.all(),required=True)
+    tt=forms.IntegerField(label="TT #",required=False)
+
+def allocate_block(request,vrf_id,prefix=None):
+    vrf=get_object_or_404(VRF,id=int(vrf_id))
+    if prefix:
+        assert is_cidr(prefix)
+        block=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
+        initial={
+            "prefix"      : block.prefix,
+            "description" : block.description,
+            "asn"         : block.asn.id,
+            "tt"          : block.tt
+        }
+        p="/"+prefix
+    else:
+        initial={}
+        p=""
+    if request.POST:
+        form=AllocateBlockForm(request.POST)
+        if form.is_valid():
+            if not IPv4BlockAccess.check_write_access(request.user,vrf,form.clean_data["prefix"]):
+                return HttpResponseForbidden("Permission denied")
+            if prefix:
+                block.prefix=form.clean_data["prefix"]
+                block.description=form.clean_data["description"]
+                block.asn=form.clean_data["asn"]
+                block.tt=form.clean_data["tt"]
+            else:
+                block=IPv4Block(vrf=vrf,prefix=form.clean_data["prefix"],
+                    description=form.clean_data["description"],
+                    asn=form.clean_data["asn"],
+                    modified_by=request.user,
+                    tt=form.clean_data["tt"])
+            block.save()
+            return HttpResponseRedirect("/ip/%d/%s/"%(vrf.id,block.prefix))
+    else:
+        form=AllocateBlockForm(initial=initial)
+    return render(request,"ip/allocate_block.html",{"vrf":vrf,"form":form,"p":p})
+    
+def deallocate_block(request,vrf_id,prefix):
+    assert is_cidr(prefix)
+    vrf_id=int(vrf_id)
+    vrf=get_object_or_404(VRF,id=vrf_id)
+    block=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
+    if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
+        return HttpResponseForbidden("Permission denied")
+    parents=vrf.prefix(prefix).parents
+    parent=parents[-1].prefix
+    block.delete()
+    return HttpResponseRedirect("/ip/%d/%s/"%(vrf_id,parent))
+    
+class AssignAddressForm(forms.Form):
+    fqdn=forms.CharField(label="FQDN",required=True)
+    ip=forms.CharField(label="IP",required=True)
+    description=forms.CharField(label="Description",required=False)
+    tt=forms.IntegerField(label="TT #",required=False)
+    
+def assign_address(request,vrf_id,ip=None):
+    print "IP",ip
+    vrf=get_object_or_404(VRF,id=int(vrf_id))
+    if ip:
+        assert is_ipv4(ip)
+        address=get_object_or_404(IPv4Address,vrf=vrf,ip=ip)
+        initial={
+            "fqdn"        : address.fqdn,
+            "ip"          : address.ip,
+            "description" : address.description,
+            "tt"          : address.tt,
+        }
+        p="/"+ip
+    else:
+        initial={}
+        p=""
+    if request.POST:
+        form=AssignAddressForm(request.POST)
+        if form.is_valid():
+            assert is_ipv4(form.clean_data["ip"])
+            assert is_fqdn(form.clean_data["fqdn"])
+            if not IPv4BlockAccess.check_write_access(request.user,vrf,form.clean_data["ip"]+"/32"):
+                return HttpResponseForbidden("Permission denied")
+            if ip:
+                address.fqdn=form.clean_data["fqdn"]
+                address.ip=form.clean_data["ip"]
+                address.description=form.clean_data["description"]
+                address.tt=form.clean_data["tt"]
+            else:
+                address=IPv4Address(vrf=vrf,fqdn=form.clean_data["fqdn"],
+                    ip=form.clean_data["ip"],description=form.clean_data["description"],
+                    modified_by=request.user)
+            address.save()
+            return HttpResponseRedirect("/ip/%d/%s/"%(vrf.id,address.closest_block.prefix))
+    else:
+        form=AssignAddressForm(initial=initial)
+    return render(request,"ip/assign_address.html",{"vrf":vrf,"form":form,"p":p})
+    
+def revoke_address(request,vrf_id,ip):
+    assert is_ipv4(ip)
+    vrf_id=int(vrf_id)
+    vrf=get_object_or_404(VRF,id=vrf_id)
+    address=get_object_or_404(IPv4Address,vrf=vrf,ip=ip)
+    if not IPv4BlockAccess.check_write_access(request.user,vrf,ip+"/32"):
+        return HttpResponseForbidden("Permission denied")
+    prefix=address.closest_block.prefix
+    address.delete()
+    return HttpResponseRedirect("/ip/%d/%s/"%(vrf_id,prefix))
