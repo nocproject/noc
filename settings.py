@@ -84,7 +84,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     
     "noc.setup",
-    "noc.asn",
     "noc.ip",
     "noc.dns",
+    "noc.peer",
 )
