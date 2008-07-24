@@ -6,7 +6,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from noc.lib.validators import check_rd,check_cidr,is_cidr
 from noc.lib.tt import tt_url
-from noc.asn.models import AS
+from noc.peer.models import AS
 ##
 ##
 ##

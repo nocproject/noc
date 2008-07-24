@@ -89,12 +89,13 @@ SCRIPT=[
     Table(old_name="auth_group",old_fields=["id","name"]),
     Table(old_name="auth_user_groups",old_fields=["id","user_id","group_id"]),
     # ASN
-    Table(old_name="an_lir",new_name="asn_lir",old_fields=["id","name"]),
-    Table(old_name="an_as",new_name="asn_as",old_fields=["id","lir_id","asn","description"]),
+    Table(old_name="an_lir",new_name="peer_lir",old_fields=["id","name"]),
+    Table(old_name="an_as",new_name="peer_as",old_fields=["id","lir_id","asn","description"]),
     # IP
     TableNew("ip_vrfgroup",["id","name","unique_addresses"],["1","Effortel","t"]),
     Table(old_name="an_vrf",new_name="ip_vrf",old_fields=["id","name","rd"],additional_columns=["vrf_group_id"],additional_values=["1"]),
     Table(old_name="an_ipv4block",new_name="ip_ipv4block",old_fields=["id","description","prefix","vrf_id","asn_id","modified_by_id","last_modified"]),
+    Table(old_name="an_ipv4blockaccess",new_name="ip_ipv4blockaccess",old_fields=["id","user_id","vrf_id","prefix"]),
     Table(old_name="an_ipv4address",new_name="ip_ipv4address",old_fields=["id","vrf_id","fqdn","ip","description","modified_by_id",
         "last_modified"]),
     # DNS
