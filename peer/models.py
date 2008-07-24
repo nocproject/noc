@@ -1,6 +1,6 @@
 from django.db import models
 from noc.lib.validators import check_asn
-from noc.lib.tt import tt_url
+from noc.lib.tt import tt_url,admin_tt_url
 
 class LIR(models.Model):
     class Admin: pass
@@ -78,7 +78,7 @@ class PeerGroup(models.Model):
         
 class Peer(models.Model):
     class Admin:
-        list_display=["peering_point","local_asn","remote_asn","import_filter","export_filter","local_ip","remote_ip","description"]
+        list_display=["peering_point","local_asn","remote_asn","import_filter","export_filter","local_ip","remote_ip","admin_tt_url","description"]
         search_fields=["remote_asn","description"]
         list_filter=["peering_point"]
     class Meta:
@@ -98,6 +98,10 @@ class Peer(models.Model):
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
+    def admin_tt_url(self):
+        return admin_tt_url(self)
+    admin_tt_url.short_description="TT"
+    admin_tt_url.allow_tags=True
     def _rpsl(self):
         s="import:          from AS%d"%self.remote_asn
         if self.local_pref:
