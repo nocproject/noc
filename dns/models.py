@@ -1,4 +1,4 @@
-import re,os,time
+import re,os,time,md5
 from django.db import models
 from noc.setup.models import Settings
 from noc.ip.models import IPv4Address
