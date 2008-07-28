@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect,HttpResponseForbidden
 from django import newforms as forms
 
 from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address
-from noc.asn.models import AS
+from noc.peer.models import AS
 from noc.lib.render import render
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
 
