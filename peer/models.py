@@ -73,6 +73,7 @@ class PeerGroup(models.Model):
     name=models.CharField("Name",maxlength=32,unique=True)
     description=models.CharField("Description",maxlength=64,unique=True)
     communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)
+    max_prefixes=models.IntegerField("Max. Prefixes",default=100)
     def __str__(self):
         return self.name
     def __unicode__(self):
@@ -99,6 +100,11 @@ class Peer(models.Model):
     tt=models.IntegerField("TT",blank=True,null=True)
     communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)   # In addition to PeerGroup.communities
                                                                                             # and PeeringPoint.communities
+    max_prefixes=models.IntegerField("Max. Prefixes",default=100)
+    def __str__(self):
+        return "%s (%s@%s)"%(self.remote_asn,self.remote_ip,self.peering_point.hostname)
+    def __unicode__(self):
+        return unicode(str(self))
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
