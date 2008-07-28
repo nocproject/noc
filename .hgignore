@@ -2,4 +2,4 @@ syntax: glob
 *.pyc
 *.pyo
 *.swp
-
+site_settings.py
