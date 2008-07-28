@@ -11,4 +11,5 @@ urlpatterns = patterns('',
      (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name':'template/login.html'}),
      (r'^main/',  include('noc.main.urls')),
      (r"^ip/", include("noc.ip.urls")),
+     (r"^peer/", include("noc.peer.urls")),
 )

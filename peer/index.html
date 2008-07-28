@@ -1,0 +1,14 @@
+{% extends "template/template.html" %}
+{% block content %}
+<h1>ASes</h1>
+<TABLE BORDER="1">
+    <TR><TH>ASN</TH><TH>Description</TH><TH></TH></TR>
+    {% for asn in ases %}
+        <TR>
+            <TD>{{asn.asn}}</TD>
+            <TD>{{asn.description}}</TD>
+            <TD><A HREF="{{asn.asn}}/rpsl/">RPSL</A></TD>
+        </TR>
+    {% endfor %}
+</TABLE>
+{%endblock%}

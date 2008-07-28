@@ -1,6 +1,7 @@
 from django.db import models
 from noc.lib.validators import check_asn
 from noc.lib.tt import tt_url,admin_tt_url
+from noc.lib.rpsl import rpsl_format
 
 class LIR(models.Model):
     class Admin: pass
@@ -31,8 +32,24 @@ class AS(models.Model):
     def __unicode__(self):
         return u"AS%d (%s)"%(self.asn,self.description)
     def _rpsl(self):
-        s=[p.rpsl for p in self.peer_set.all()]
-        return "\n".join(s)
+        sep="remark: %s"%("-"*72)
+        s=[]
+        if self.rpsl_header:
+            s+=self.rpsl_header.split("\n")
+        groups={}
+        for peer in self.peer_set.all():
+            groups[peer.peer_group.id]=None
+        for pg in PeerGroup.objects.filter(id__in=groups.keys()):
+            if pg.description:
+                s+=[sep]
+                s+=["remark: -- %s"%x for x in pg.description.split("\n")]
+                s+=[sep]
+            for peer in self.peer_set.filter(peer_group__exact=pg):
+                s+=peer.rpsl.split("\n")
+        if self.rpsl_footer:
+            s+=[sep]
+            s+=self.rpsl_footer.split("\n")
+        return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
 
 class PeeringPointType(models.Model):
@@ -71,7 +88,7 @@ class PeerGroup(models.Model):
         verbose_name="Peer Group"
         verbose_name_plural="Peer Groups"
     name=models.CharField("Name",maxlength=32,unique=True)
-    description=models.CharField("Description",maxlength=64,unique=True)
+    description=models.CharField("Description",maxlength=64)
     communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)
     max_prefixes=models.IntegerField("Max. Prefixes",default=100)
     def __str__(self):
@@ -124,10 +141,10 @@ class Peer(models.Model):
         return " ".join(c)
     all_communities=property(_all_communities)
     def _rpsl(self):
-        s="import:          from AS%d"%self.remote_asn
+        s="import: from AS%d"%self.remote_asn
         if self.local_pref:
             s+=" action pref=%d;"%self.local_pref
         s+=" accept %s\n"%self.import_filter
-        s+="export:          to AS%s announce %s"%(self.remote_asn,self.export_filter)
+        s+="export: to AS%s announce %s"%(self.remote_asn,self.export_filter)
         return s
     rpsl=property(_rpsl)
