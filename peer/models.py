@@ -49,7 +49,7 @@ class PeeringPointType(models.Model):
 
 class PeeringPoint(models.Model):
     class Admin:
-        list_display=["hostname","management_ip","type"]
+        list_display=["hostname","management_ip","type","communities"]
         list_filter=["type"]
         search_fields=["hostname","management_ip"]
     class Meta:
@@ -58,6 +58,7 @@ class PeeringPoint(models.Model):
     hostname=models.CharField("FQDN",maxlength=64,unique=True)
     management_ip=models.IPAddressField("IP",unique=True)
     type=models.ForeignKey(PeeringPointType,verbose_name="Type")
+    communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)
     def __str__(self):
         return self.hostname
     def __unicode__(self):
@@ -65,12 +66,13 @@ class PeeringPoint(models.Model):
 
 class PeerGroup(models.Model):
     class Admin:
-        list_display=["name","description"]
+        list_display=["name","description","communities"]
     class Meta:
         verbose_name="Peer Group"
         verbose_name_plural="Peer Groups"
     name=models.CharField("Name",maxlength=32,unique=True)
     description=models.CharField("Description",maxlength=64,unique=True)
+    communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)
     def __str__(self):
         return self.name
     def __unicode__(self):
@@ -78,7 +80,7 @@ class PeerGroup(models.Model):
         
 class Peer(models.Model):
     class Admin:
-        list_display=["peering_point","local_asn","remote_asn","import_filter","export_filter","local_ip","remote_ip","admin_tt_url","description"]
+        list_display=["peering_point","local_asn","remote_asn","import_filter","export_filter","local_ip","remote_ip","admin_tt_url","description","communities"]
         search_fields=["remote_asn","description"]
         list_filter=["peering_point"]
     class Meta:
@@ -95,6 +97,8 @@ class Peer(models.Model):
     export_filter=models.CharField("Export filter",maxlength=64)
     description=models.CharField("Description",maxlength=64,null=True,blank=True)
     tt=models.IntegerField("TT",blank=True,null=True)
+    communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)   # In addition to PeerGroup.communities
+                                                                                            # and PeeringPoint.communities
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
@@ -102,6 +106,17 @@ class Peer(models.Model):
         return admin_tt_url(self)
     admin_tt_url.short_description="TT"
     admin_tt_url.allow_tags=True
+    def _all_communities(self):
+        r={}
+        for cl in [self.peering_point.communities,self.peer_group.communities,self.communities]:
+            if cl is None:
+                continue
+            for c in cl.replace(","," ").split():
+                r[c]=None
+        c=r.keys()
+        c.sort()
+        return " ".join(c)
+    all_communities=property(_all_communities)
     def _rpsl(self):
         s="import:          from AS%d"%self.remote_asn
         if self.local_pref:
