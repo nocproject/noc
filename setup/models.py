@@ -7,7 +7,7 @@ class Settings(models.Model):
         search_fields=["key","value"]
     key=models.CharField("Key",maxlength=64,unique=True)
     value=models.CharField("Value",maxlength=256)
-    default=models.CharField("Value",maxlength=256)
+    default=models.CharField("Default",maxlength=256)
     def __str__(self):
         return self.key
     def __unicode__(self):
