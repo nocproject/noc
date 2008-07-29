@@ -1,5 +1,5 @@
 from django.db import models
-from noc.lib.validators import check_asn
+from noc.lib.validators import check_asn,check_as_set
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
 
@@ -46,6 +46,42 @@ class AS(models.Model):
                 s+=[sep]
             for peer in self.peer_set.filter(peer_group__exact=pg):
                 s+=peer.rpsl.split("\n")
+        if self.rpsl_footer:
+            s+=[sep]
+            s+=self.rpsl_footer.split("\n")
+        return rpsl_format("\n".join(s))
+    rpsl=property(_rpsl)
+
+class ASSet(models.Model):
+    class Admin:
+        list_display=["name","description","members"]
+        search_fields=["name","description","members"]
+    class Meta:
+        verbose_name="ASSet"
+        verbose_name_plural="ASSets"
+    name=models.CharField("Name",maxlength=32,unique=True,validator_list=[check_as_set])
+    description=models.CharField("Description",maxlength=64)
+    members=models.TextField("Members",null=True,blank=True)
+    rpsl_header=models.TextField("RPSL Header",null=True,blank=True)
+    rpsl_footer=models.TextField("RPSL Footer",null=True,blank=True)
+    def __str__(self):
+        return self.name
+    def __unicode__(self):
+        return unique(self.name)
+    def _member_list(self):
+        if self.members is None:
+            return []
+        m=self.members.replace(","," ").replace("\n"," ").replace("\r"," ").upper().split()
+        m.sort()
+        return m
+    member_list=property(_member_list)
+    def _rpsl(self):
+        sep="remark: %s"%("-"*72)
+        s=[]
+        if self.rpsl_header:
+            s+=self.rpsl_header.split("\n")
+        for m in self.member_list:
+            s+=["members: %s"%m]
         if self.rpsl_footer:
             s+=[sep]
             s+=self.rpsl_footer.split("\n")

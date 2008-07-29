@@ -7,7 +7,19 @@
         <TR>
             <TD>{{asn.asn}}</TD>
             <TD>{{asn.description}}</TD>
-            <TD><A HREF="{{asn.asn}}/rpsl/">RPSL</A></TD>
+            <TD><A HREF="AS/{{asn.asn}}/rpsl/">RPSL</A></TD>
+        </TR>
+    {% endfor %}
+</TABLE>
+<h1>AS Sets</h1>
+<TABLE BORDER="1">
+    <TR><TH>AS-SET</TH><TH>Description</TH><TH>Members</TH><TH></TH></TR>
+    {% for as_set in as_sets %}
+        <TR>
+            <TD>{{as_set.name}}</TD>
+            <TD>{{as_set.description}}</TD>
+            <TD>{{as_set.members}}</TD>
+            <TD><A HREF="AS-SET/{{as_set.name}}/rpsl/">RPSL</A></TD>
         </TR>
     {% endfor %}
 </TABLE>
