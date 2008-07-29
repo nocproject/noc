@@ -55,6 +55,10 @@ def is_rd(v):
     if is_asn(a):
         return 0<=b<=65535
     return False
+    
+rx_asset=re.compile(r"^AS-[A-Z0-9\-]+$")
+def is_as_set(v):
+    return rx_asset.match(v) is not None
 
 rx_fqdn=re.compile(r"^([a-z0-9\-]+\.)+[a-z0-9\-]+$",re.IGNORECASE)
 def is_fqdn(v):
@@ -81,3 +85,6 @@ def check_rd(field_data,all_data):
     
 def check_fqdn(field_data,all_data):
     generic_validator(field_data,is_fqdn,"Invalid FQDN")
+    
+def check_as_set(field_data,all_data):
+    generic_validator(field_data,is_as_set,"Invalid AS-SET")
