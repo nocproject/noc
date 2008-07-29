@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <service_bundle type="manifest" name="nocd">
-    <service name="network/nocd" type="service" version="1">
+    <service name="application/nocd" type="service" version="1">
+        <create_default_instance enabled='true' />
+        <single_instance />
         <instance name="nocd" enabled="false">
             <dependency name='loopback'
                 grouping='require_all'
@@ -21,9 +23,8 @@
                 type='service'>
                     <service_fmri value='svc:/milestone/multi-user-server:default'/>
             </dependency>
-            <stability value="Evolving" />
-            <exec_method type="method" name="start"   exec="/var/www/noc/scripts/nocd start" timeout_seconds='60' />
-            <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/nocd stop" timeout_seconds='60' />
+            <exec_method type="method" name="start"   exec="/var/www/noc/scripts/nocd start"   timeout_seconds='60' />
+            <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/nocd stop"    timeout_seconds='60' />
             <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/nocd refresh" timeout_seconds='60' />
             <method_context>
                 <method_credential user="nocd" group="nocd" />
@@ -42,8 +43,6 @@
                 <propval name="maxchildren" type="integer" value="30" />
                 <propval name="pidfile"     type="astring" value="/var/run/nocd-fastcgi.pid" />
             </property_group>
-            <create_default_instance enabled='false' />
-            <single_instance />
         </instance>
         <template>
             <common_name>
