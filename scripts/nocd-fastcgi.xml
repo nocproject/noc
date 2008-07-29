@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+<service_bundle type="manifest" name="nocd">
+    <service name="network/nocd" type="service" version="1">
+        <instance name="nocd" enabled="false">
+            <dependency name='loopback'
+                grouping='require_all'
+                restart_on='error'
+                type='service'>
+                    <service_fmri value='svc:/network/loopback:default'/>
+            </dependency>
+            <dependency name='physical'
+                grouping='optional_all'
+                restart_on='error'
+                type='service'>
+                    <service_fmri value='svc:/network/physical:default'/>
+            </dependency>
+            <dependency name='multiuser-server'
+                grouping='require_all'
+                restart_on='error'
+                type='service'>
+                    <service_fmri value='svc:/milestone/multi-user-server:default'/>
+            </dependency>
+            <stability value="Evolving" />
+            <exec_method type="method" name="start"   exec="/var/www/noc/scripts/nocd start" timeout_seconds='60' />
+            <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/nocd stop" timeout_seconds='60' />
+            <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/nocd refresh" timeout_seconds='60' />
+            <method_context>
+                <method_credential user="nocd" group="nocd" />
+                <method_environment>
+                    <envvar name="PATH" value="/opt/csv/bin:/usr/bin:/bin"
+                </method_environment>
+            </method_context>
+            <property_group name="nocd" type="framework">
+                <stability value="Evolving"/>
+                <propval name="python" type="astring" value="/opt/csw/bin/python" />
+                <propval name="prefix" type="astring" value="/var/www/noc" />
+                <propval name="socket" type="astring" value="/tmp/nocd.fcgi" />
+                <propval name="minspare" type="int" value="2" />
+                <propval name="maxspare" type="int" value="5" />
+                <propval name="maxrequests" type="int" value="100" />
+                <propval name="maxchildren" type="int" value="30" />
+                <propval name="pidfile" type="astring" value="/var/run/nocd-fastcgi.pid" />
+            </property_group>
+            <create_default_instance enabled='false' />
+            <single_instance />
+        </instance>
+        <template>
+            <common_name>
+                <loctext xml:lang='C'>
+                    NOC FastCGI backend
+                </loctext>
+            </common_name>
+        </template>
+    </service>
+</service_bundle>

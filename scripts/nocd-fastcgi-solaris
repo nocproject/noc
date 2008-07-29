@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+#
+#
+
+
+getproparg() {
+    val=`svcprop -p $1 $SMF_FMRI`
+    [ -n "$val" ] && echo $val
+}
+
+NOCD_HOME=`getproparg prefix`
+PYTHON=`getproparg python`
+SOCKET=`getproparg socket`
+PIDFILE=`getproparg pidfile`
+MINSPARE=`getproparg minspare`
+MAXSPARE=`getproparg maxspare`
+MAXREQUESTS=`getproparg maxrequests`
+MAXCHILDREN=`getproparg maxchildren`
+NOCD="$NOCD_HOME/scripts/nocd-fastcgi.py"
+
+if [ -z $SMF_FMRI ]; then
+    echo "Error: SMF framework variables are not initialized"
+    exit $SMF_EXIT_ERR
+fi
+
+case "$1" in
+start)
+    exec $PYTHON $NOCD_HOME -s$SOCKET -S$MINSPARE:$MAXSPARE -R$MAXREQUESTS -C$MAXCHILDREN -p$PIDFILE 2>&1
+    ;;
+stop)
+    [ -f "$PIDFILE"] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE`
+    ;;
+refresh)
+    [ -f "$PIDFILE"] && /usr/bin/kill -HUP `/usr/bin/cat $PIDFILE`
+    ;;
+*)
+    echo "Usage: $0 {start|stop|refresh}"
+    exit 1
+    ;;
+esac
