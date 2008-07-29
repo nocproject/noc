@@ -5,6 +5,9 @@ class Settings(models.Model):
     class Admin:
         list_display=["key","value","default"]
         search_fields=["key","value"]
+    class Meta:
+        verbose_name="Settings"
+        verbose_name_plural="Settings"
     key=models.CharField("Key",maxlength=64,unique=True)
     value=models.CharField("Value",maxlength=256)
     default=models.CharField("Default",maxlength=256)
