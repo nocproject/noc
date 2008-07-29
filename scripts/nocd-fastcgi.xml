@@ -33,14 +33,14 @@
             </method_context>
             <property_group name="nocd" type="framework">
                 <stability value="Evolving"/>
-                <propval name="python" type="astring" value="/opt/csw/bin/python" />
-                <propval name="prefix" type="astring" value="/var/www/noc" />
-                <propval name="socket" type="astring" value="/tmp/nocd.fcgi" />
-                <propval name="minspare" type="int" value="2" />
-                <propval name="maxspare" type="int" value="5" />
-                <propval name="maxrequests" type="int" value="100" />
-                <propval name="maxchildren" type="int" value="30" />
-                <propval name="pidfile" type="astring" value="/var/run/nocd-fastcgi.pid" />
+                <propval name="python"      type="astring" value="/opt/csw/bin/python" />
+                <propval name="prefix"      type="astring" value="/var/www/noc" />
+                <propval name="socket"      type="astring" value="/tmp/nocd.fcgi" />
+                <propval name="minspare"    type="integer" value="2" />
+                <propval name="maxspare"    type="integer" value="5" />
+                <propval name="maxrequests" type="integer" value="100" />
+                <propval name="maxchildren" type="integer" value="30" />
+                <propval name="pidfile"     type="astring" value="/var/run/nocd-fastcgi.pid" />
             </property_group>
             <create_default_instance enabled='false' />
             <single_instance />
