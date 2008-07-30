@@ -24,14 +24,14 @@
                     <service_fmri value='svc:/milestone/multi-user-server:default'/>
             </dependency>
             <method_context>
-                <method_credential user="nocd" group="nocd" />
+                <method_credential user="noc" group="noc" />
                 <method_environment>
                     <envvar name="PATH" value="/opt/csv/bin:/usr/bin:/bin"/>
                 </method_environment>
             </method_context>
-            <exec_method type="method" name="start"   exec="/var/www/noc/scripts/nocd start"   timeout_seconds='60' />
-            <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/nocd stop"    timeout_seconds='60' />
-            <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/nocd refresh" timeout_seconds='60' />
+            <exec_method type="method" name="start"   exec="/var/www/noc/scripts/nocd-fastcgi-solaris start"   timeout_seconds='60' />
+            <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/nocd-fastcgi-solaris stop"    timeout_seconds='60' />
+            <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/nocd-fastcgi-solaris refresh" timeout_seconds='60' />
             <property_group name="nocd" type="framework">
                 <stability value="Evolving"/>
                 <propval name="python"      type="astring" value="/opt/csw/bin/python" />
