@@ -36,7 +36,7 @@ def usage():
     print "\t-r<prefix>\t - Root directory"
     
 if __name__=="__main__":
-    optlist,optarg=getopt.getopt(sys.argv[1:],"s:S:C:R:p:")
+    optlist,optarg=getopt.getopt(sys.argv[1:],"s:S:C:R:p:r:")
     for k,v in optlist:
         if k=="-s":
             SOCKET=v
