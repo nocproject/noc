@@ -9,20 +9,20 @@ getproparg() {
     [ -n "$val" ] && echo $val
 }
 
-NOCD_HOME=   `getproparg nocd/prefix`
-PYTHON=      `getproparg nocd/python`
-SOCKET=      `getproparg nocd/socket`
-PIDFILE=     `getproparg nocd/pidfile`
-MINSPARE=    `getproparg nocd/minspare`
-MAXSPARE=    `getproparg nocd/maxspare`
-MAXREQUESTS= `getproparg nocd/maxrequests`
-MAXCHILDREN= `getproparg nocd/maxchildren`
-NOCD="$NOCD_HOME/scripts/nocd-fastcgi.py"
-
 if [ -z $SMF_FMRI ]; then
     echo "Error: SMF framework variables are not initialized"
     exit $SMF_EXIT_ERR
 fi
+
+NOCD_HOME=`getproparg nocd/prefix`
+PYTHON=`getproparg nocd/python`
+SOCKET=`getproparg nocd/socket`
+PIDFILE=`getproparg nocd/pidfile`
+MINSPARE=`getproparg nocd/minspare`
+MAXSPARE=`getproparg nocd/maxspare`
+MAXREQUESTS=`getproparg nocd/maxrequests`
+MAXCHILDREN=`getproparg nocd/maxchildren`
+NOCD="$NOCD_HOME/scripts/nocd-fastcgi.py"
 
 case "$1" in
 start)
