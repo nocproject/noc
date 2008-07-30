@@ -11,7 +11,7 @@ PIDFILE="/var/run/nocd-fastcgi.pid"
 
 def run():
     runfastcgi(["method=threaded", 
-                "daemonize=false",
+                "daemonize=true",
                 "socket=%s"%SOCKET,
                 "minspare=%d"%MINSPARE,
                 "maxspare=%d"%MAXSPARE,

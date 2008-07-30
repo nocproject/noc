@@ -26,13 +26,13 @@ NOCD="$NOCD_HOME/scripts/nocd-fastcgi.py"
 
 case "$1" in
 start)
-    $PYTHON $NOCD -s$SOCKET -S$MINSPARE:$MAXSPARE -R$MAXREQUESTS -C$MAXCHILDREN -p$PIDFILE 2>&1 &
+    $PYTHON $NOCD -s$SOCKET -S$MINSPARE:$MAXSPARE -R$MAXREQUESTS -C$MAXCHILDREN -p$PIDFILE 2>&1
     ;;
 stop)
-    [ -f "$PIDFILE"] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE`
+    [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE`
     ;;
 refresh)
-    [ -f "$PIDFILE"] && /usr/bin/kill -HUP `/usr/bin/cat $PIDFILE`
+    [ -f "$PIDFILE" ] && /usr/bin/kill -HUP `/usr/bin/cat $PIDFILE`
     ;;
 *)
     echo "Usage: $0 {start|stop|refresh}"
