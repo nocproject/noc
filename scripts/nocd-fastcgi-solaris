@@ -30,9 +30,11 @@ start)
     ;;
 stop)
     [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE`
+    rm -f $SOCKET
     ;;
 refresh)
-    [ -f "$PIDFILE" ] && /usr/bin/kill -HUP `/usr/bin/cat $PIDFILE`
+    $0 stop
+    $0 start
     ;;
 *)
     echo "Usage: $0 {start|stop|refresh}"
