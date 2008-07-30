@@ -26,7 +26,7 @@ NOCD="$NOCD_HOME/scripts/nocd-fastcgi.py"
 
 case "$1" in
 start)
-    exec $PYTHON $NOCD_HOME -s$SOCKET -S$MINSPARE:$MAXSPARE -R$MAXREQUESTS -C$MAXCHILDREN -p$PIDFILE 2>&1
+    $PYTHON $NOCD -s$SOCKET -S$MINSPARE:$MAXSPARE -R$MAXREQUESTS -C$MAXCHILDREN -p$PIDFILE 2>&1 &
     ;;
 stop)
     [ -f "$PIDFILE"] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE`
@@ -36,6 +36,7 @@ refresh)
     ;;
 *)
     echo "Usage: $0 {start|stop|refresh}"
-    exit 1
+    exit $SMF_EXIT_ERR_CONFIG
     ;;
 esac
+exit $SMF_EXIT_OK
