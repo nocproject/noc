@@ -2,48 +2,46 @@
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
 <service_bundle type="manifest" name="nocd">
     <service name="application/nocd" type="service" version="1">
-        <create_default_instance enabled='true' />
+        <create_default_instance enabled='false' />
         <single_instance />
-        <instance name="default" enabled="false">
-            <dependency name='loopback'
-                grouping='require_all'
-                restart_on='error'
-                type='service'>
-                    <service_fmri value='svc:/network/loopback:default'/>
-            </dependency>
-            <dependency name='physical'
-                grouping='optional_all'
-                restart_on='error'
-                type='service'>
-                    <service_fmri value='svc:/network/physical:default'/>
-            </dependency>
-            <dependency name='multiuser-server'
-                grouping='require_all'
-                restart_on='error'
-                type='service'>
-                    <service_fmri value='svc:/milestone/multi-user-server:default'/>
-            </dependency>
-            <method_context>
-                <method_credential user="noc" group="noc" />
-                <method_environment>
-                    <envvar name="PATH" value="/opt/csw/bin:/usr/bin:/bin"/>
-                </method_environment>
-            </method_context>
-            <exec_method type="method" name="start"   exec="/var/www/noc/scripts/nocd-fastcgi-solaris start"   timeout_seconds='60' />
-            <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/nocd-fastcgi-solaris stop"    timeout_seconds='60' />
-            <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/nocd-fastcgi-solaris refresh" timeout_seconds='60' />
-            <property_group name="nocd" type="framework">
-                <stability value="Evolving"/>
-                <propval name="python"      type="astring" value="/opt/csw/bin/python" />
-                <propval name="prefix"      type="astring" value="/var/www/noc" />
-                <propval name="socket"      type="astring" value="/tmp/nocd.fcgi" />
-                <propval name="minspare"    type="integer" value="2" />
-                <propval name="maxspare"    type="integer" value="5" />
-                <propval name="maxrequests" type="integer" value="100" />
-                <propval name="maxchildren" type="integer" value="30" />
-                <propval name="pidfile"     type="astring" value="/var/run/nocd-fastcgi.pid" />
-            </property_group>
-        </instance>
+        <dependency name='loopback'
+            grouping='require_all'
+            restart_on='error'
+            type='service'>
+                <service_fmri value='svc:/network/loopback:default'/>
+        </dependency>
+        <dependency name='physical'
+            grouping='optional_all'
+            restart_on='error'
+            type='service'>
+                <service_fmri value='svc:/network/physical:default'/>
+        </dependency>
+        <dependency name='multiuser-server'
+            grouping='require_all'
+            restart_on='error'
+            type='service'>
+                <service_fmri value='svc:/milestone/multi-user-server:default'/>
+        </dependency>
+        <method_context>
+            <method_credential user="noc" group="noc" />
+            <method_environment>
+                <envvar name="PATH" value="/opt/csw/bin:/usr/bin:/bin"/>
+            </method_environment>
+        </method_context>
+        <exec_method type="method" name="start"   exec="/var/www/noc/scripts/nocd-fastcgi-solaris start"   timeout_seconds='60' />
+        <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/nocd-fastcgi-solaris stop"    timeout_seconds='60' />
+        <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/nocd-fastcgi-solaris refresh" timeout_seconds='60' />
+        <property_group name="nocd" type="framework">
+            <stability value="Evolving"/>
+            <propval name="python"      type="astring" value="/opt/csw/bin/python" />
+            <propval name="prefix"      type="astring" value="/var/www/noc" />
+            <propval name="socket"      type="astring" value="/tmp/nocd.fcgi" />
+            <propval name="minspare"    type="integer" value="2" />
+            <propval name="maxspare"    type="integer" value="5" />
+            <propval name="maxrequests" type="integer" value="100" />
+            <propval name="maxchildren" type="integer" value="30" />
+            <propval name="pidfile"     type="astring" value="/var/run/nocd-fastcgi.pid" />
+        </property_group>
         <template>
             <common_name>
                 <loctext xml:lang='C'>
