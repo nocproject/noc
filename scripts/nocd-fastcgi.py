@@ -14,7 +14,6 @@ def run():
     sys.path.insert(0,PREFIX)
     prev=os.sep+os.sep.join([x for x in PREFIX.split(os.sep) if x!=""][:-1])+os.sep
     sys.path.insert(0,prev)
-    os.chdir(PREFIX)
     os.environ['DJANGO_SETTINGS_MODULE']="noc.settings"
     runfastcgi(["method=threaded", 
                 "daemonize=true",
@@ -23,7 +22,8 @@ def run():
                 "maxspare=%d"%MAXSPARE,
                 "maxrequests=%s"%MAXREQUESTS,
                 "maxchildren=%s"%MAXCHILDREN,
-                "pidfile=%s"%PIDFILE])
+                "pidfile=%s"%PIDFILE,
+                "workdir=%s"%PREFIX])
                 
 def usage():
     print "USAGE:"
