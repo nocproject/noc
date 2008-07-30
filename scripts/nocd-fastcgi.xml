@@ -26,7 +26,7 @@
             <method_context>
                 <method_credential user="noc" group="noc" />
                 <method_environment>
-                    <envvar name="PATH" value="/opt/csv/bin:/usr/bin:/bin"/>
+                    <envvar name="PATH" value="/opt/csw/bin:/usr/bin:/bin"/>
                 </method_environment>
             </method_context>
             <exec_method type="method" name="start"   exec="/var/www/noc/scripts/nocd-fastcgi-solaris start"   timeout_seconds='60' />
