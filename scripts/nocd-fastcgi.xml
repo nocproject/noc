@@ -4,7 +4,7 @@
     <service name="application/nocd" type="service" version="1">
         <create_default_instance enabled='true' />
         <single_instance />
-        <instance name="nocd" enabled="false">
+        <instance name="default" enabled="false">
             <dependency name='loopback'
                 grouping='require_all'
                 restart_on='error'
