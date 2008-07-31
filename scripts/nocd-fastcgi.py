@@ -30,7 +30,7 @@ def usage():
     print "%s [-s <socket_path>] [-S<minspare>:<maxspare>] [-C<maxchildren>] [-R<maxrequests>] [-p<pidfile>] [-r<prefix>]"%sys.argv[0]
     print "\t-s<socket_path>\t- UNIX socket for FastCGI backend"
     print "\t-S<min_spare>:<max_spare>\t- Minimum and maximum of spare threads available"
-    print "\t-C<maxchildren>\t- Maximum ov threads available"
+    print "\t-C<maxchildren>\t- Maximum of threads available"
     print "\t-R<maxrequests>\t- Restart children after number of requests"
     print "\t-p<pidfile>\t- Create pid file"
     print "\t-r<prefix>\t - Root directory"

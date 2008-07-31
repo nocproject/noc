@@ -151,12 +151,15 @@ class IPv4Block(models.Model):
         c=connection.cursor()
         if self.vrf.vrf_group.unique_addresses:
             vrfs="IN (%s)"%",".join([str(vrf.id) for vrf in self.vrf.vrf_group.vrf_set.all()])
+            vg_id=self.vrf.vrf_group.id
+            c.execute("SELECT b.id FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix_cidr << '%s' AND v.id %s AND ip_ipv4_block_depth_in_vrf_group(%d,b.prefix_cidr,'%s')=0 ORDER BY prefix_cidr"%\
+                        (IPv4Block._meta.db_table,VRF._meta.db_table,self.prefix,vrfs,vg_id,self.prefix))
         else:
             vrfs="= %d"%self.vrf.id
-        data=[]
-        c.execute("SELECT b.id FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix_cidr << '%s' AND v.id %s AND ip_ipv4_block_depth(v.id,b.prefix_cidr,'%s')=0 ORDER BY prefix_cidr"%\
-                    (IPv4Block._meta.db_table,VRF._meta.db_table,self.prefix,vrfs,self.prefix))
+            c.execute("SELECT b.id FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix_cidr << '%s' AND v.id %s AND ip_ipv4_block_depth(v.id,b.prefix_cidr,'%s')=0 ORDER BY prefix_cidr"%\
+                        (IPv4Block._meta.db_table,VRF._meta.db_table,self.prefix,vrfs,self.prefix))
         return [IPv4Block.objects.get(id=i[0]) for i in c.fetchall()]
+
     children=property(_children)
 
     def _has_children(self):

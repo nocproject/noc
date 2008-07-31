@@ -22,6 +22,25 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE
+FUNCTION ip_ipv4_block_depth_in_vrf_group(INTEGER,CIDR,CIDR)
+RETURNS INTEGER
+AS $$
+DECLARE
+    p_vrf_group_id ALIAS FOR $1;
+    inner_block    ALIAS FOR $2;
+    outer_block    ALIAS FOR $3;
+    c   INTEGER;
+BEGIN
+    SELECT COUNT(*)
+    INTO   c
+    FROM   ip_ipv4block b JOIN ip_vrf v ON (b.vrf_id=v.id)
+    WHERE  v.vrf_group_id=p_vrf_group_id AND prefix_cidr >> inner_block AND prefix_cidr << outer_block;
+
+    RETURN c;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE
 FUNCTION hostname(TEXT)
 RETURNS TEXT
 AS $$
