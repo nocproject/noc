@@ -29,8 +29,8 @@ start)
     $PYTHON $NOCD -s$SOCKET -S$MINSPARE:$MAXSPARE -R$MAXREQUESTS -C$MAXCHILDREN -p$PIDFILE -r$NOCD_HOME 2>&1
     ;;
 stop)
-    [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE`
-    rm -f $SOCKET
+    [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE` && rm -f $PIDFILE
+    [ -f "$SOCKET" ] && rm -f $SOCKET
     ;;
 refresh)
     $0 stop
