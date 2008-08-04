@@ -10,3 +10,6 @@ def index(request,zonetype="F"):
     zones=[z for z in DNSZone.objects.order_by("name") if z.type==zonetype]
     return render(request,"dns/index.html",{"zones":zones,"zonetype":zonetype})
     
+def zone(request,zone):
+    z=get_object_or_404(DNSZone,name=zone)
+    return render(request,"dns/zone.html",{"zone":z})
