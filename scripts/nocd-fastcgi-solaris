@@ -9,7 +9,7 @@ getproparg() {
     [ -n "$val" ] && echo $val
 }
 
-if [ -z $SMF_FMRI ]; then
+if [ -z "$SMF_FMRI" ]; then
     echo "Error: SMF framework variables are not initialized"
     exit $SMF_EXIT_ERR
 fi
