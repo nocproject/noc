@@ -102,14 +102,14 @@ class PeeringPointType(models.Model):
 
 class PeeringPoint(models.Model):
     class Admin:
-        list_display=["hostname","management_ip","type","communities"]
+        list_display=["hostname","router_id","type","communities"]
         list_filter=["type"]
-        search_fields=["hostname","management_ip"]
+        search_fields=["hostname","router_id"]
     class Meta:
         verbose_name="Peering Point"
         verbose_name_plural="Peering Points"
     hostname=models.CharField("FQDN",maxlength=64,unique=True)
-    management_ip=models.IPAddressField("IP",unique=True)
+    router_id=models.IPAddressField("Router-ID",unique=True)
     type=models.ForeignKey(PeeringPointType,verbose_name="Type")
     communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)
     def __str__(self):
