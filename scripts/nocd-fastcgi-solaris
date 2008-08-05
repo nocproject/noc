@@ -30,7 +30,7 @@ start)
     ;;
 stop)
     [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE` && rm -f $PIDFILE
-    [ -S "$SOCKET" ] &&  rm -f $SOCKET
+    /usr/bin/test -S "$SOCKET" &&  rm -f $SOCKET
     ;;
 refresh)
     $0 stop
