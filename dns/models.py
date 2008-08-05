@@ -137,7 +137,14 @@ $ORIGIN %(domain)s.
         "expire":self.profile.zone_expire,"pretty_expire":DNSZoneProfile.pretty_time(self.profile.zone_expire),
         "nses":nses
         }
-        s+="\n".join(["\t".join(r) for r in records])
+        maxlen=10
+        records=[r for r in records if len(r)==3]
+        for a,b,c in records:
+            l=len(a)
+            if l>maxlen:
+                maxlen=l
+        mask="%%-%ds %%-6s %%s"%maxlen
+        s+="\n".join([mask%tuple(r) for r in records if len(r)==3])
         s+="""
 ;;
 ;; End of auto-generated zone
