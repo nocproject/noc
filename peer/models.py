@@ -2,6 +2,8 @@ from django.db import models
 from noc.lib.validators import check_asn,check_as_set
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
+from noc.lib.fileutils import safe_rewrite
+from noc.setup.models import Settings
 
 class LIR(models.Model):
     class Admin: pass
@@ -51,6 +53,34 @@ class AS(models.Model):
             s+=self.rpsl_footer.split("\n")
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
+    
+    def _dot(self):
+        s=["graph {"]
+        all_peers=Peer.objects.filter(local_asn__exact=self)
+        uplinks={}
+        peers={}
+        downlinks={}
+        for p in all_peers:
+            if p.import_filter=="ANY" and p.export_filter!="ANY":
+                uplinks[p.remote_asn]=p
+            elif p.export_filter=="ANY":
+                downlinks[p.remote_asn]=p
+            else:
+                peers[p.remote_asn]=p
+        asn="AS%d"%self.asn
+        for subgraph,peers in [("uplinks",uplinks.values()),("peers",peers.values()),("downlinks",downlinks.values())]:
+            s+=["subgraph %s {"%subgraph]
+            for p in peers:
+                attrs=["taillabel=\"%s\""%p.import_filter,"headlabel=\"%s\""%p.export_filter]
+                if p.import_filter=="ANY":
+                    attrs+=["arrowtail=open"]
+                if p.export_filter=="ANY":
+                    attrs+=["arrothead=open"]
+                s+=["    %s -- AS%d [%s];"%(asn,p.remote_asn,",".join(attrs))]
+            s+=["}"]
+        s+=["}"]
+        return "\n".join(s)
+    dot=property(_dot)
 
 class ASSet(models.Model):
     class Admin:
@@ -116,6 +146,25 @@ class PeeringPoint(models.Model):
         return self.hostname
     def __unicode__(self):
         return unicode(self.hostname)
+    def _rconfig(self):
+        objects={}
+        s=["HOST %s %s"%(self.hostname,self.type.name)]
+        for p in self.peer_set.all():
+            if p.import_filter!="ANY":
+                oid=p.import_filter.lower()
+                if oid not in objects:
+                    s+=["    PREFIX-LIST pl-%s %s OPTIMIZE"%(oid,p.import_filter)]
+                    objects[oid]=None
+        return "\n".join(s)
+    rconfig=property(_rconfig)
+    @classmethod
+    def get_rconfig(cls):
+        s=[x.rconfig for x in cls.objects.all()]
+        return "\n".join(s)
+    @classmethod
+    def write_rconfig(cls):
+        path=Settings.get("rconfig.config")
+        safe_rewrite(path,cls.get_rconfig())
 
 class PeerGroup(models.Model):
     class Admin:
@@ -184,3 +233,10 @@ class Peer(models.Model):
         s+="export: to AS%s announce %s"%(self.remote_asn,self.export_filter)
         return s
     rpsl=property(_rpsl)
+    def _effective_max_prefixes(self):
+        if self.max_prefixes:
+            return self.max_prefixes
+        if self.peer_group.max_prefixes:
+            return self.peer_group.max_prefixes
+        return 0
+    effective_max_prefixes=property(_effective_max_prefixes)
