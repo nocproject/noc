@@ -148,7 +148,7 @@ class PeeringPoint(models.Model):
         return unicode(self.hostname)
     def _rconfig(self):
         objects={}
-        s=["HOST %s %s"%(self.hostname,self.type.name)]
+        s=["HOST %s %s"%(self.hostname,self.type.name.upper())]
         for p in self.peer_set.all():
             if p.import_filter!="ANY":
                 oid=p.import_filter.lower()
