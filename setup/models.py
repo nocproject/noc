@@ -37,6 +37,8 @@ D=[
     # dns
     ("dns.zone_cache",  "/tmp/zones/"),
     ("dns.rsync_target","user@host:/path/"),
+    # RConfig integration
+    ("rconfig.config", "/tmp/rconfig.conf"),
 ]
 
 def register_defaults():
