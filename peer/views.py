@@ -14,6 +14,11 @@ def as_rpsl(request,asn):
     assert is_asn(asn)
     asn=get_object_or_404(AS,asn=int(asn))
     return render(request,"peer/as_rpsl.html",{"asn":asn})
+    
+def as_dot(request,asn):
+    assert is_asn(asn)
+    asn=get_object_or_404(AS,asn=int(asn))
+    return render(request,"peer/as_dot.html",{"asn":asn})
 
 def as_set_rpsl(request,as_set):
     assert is_as_set(as_set)

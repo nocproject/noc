@@ -7,7 +7,10 @@
         <TR>
             <TD>{{asn.asn}}</TD>
             <TD>{{asn.description}}</TD>
-            <TD><A HREF="AS/{{asn.asn}}/rpsl/">RPSL</A></TD>
+            <TD>
+                <A HREF="AS/{{asn.asn}}/rpsl/">RPSL</A>
+                <A HREF="AS/{{asn.asn}}/dot/">GraphViz</A>
+            </TD>
         </TR>
     {% endfor %}
 </TABLE>
