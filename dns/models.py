@@ -102,6 +102,8 @@ class DNSZone(models.Model):
             records=[[r[0].split(".")[3],"PTR",r[1]+"."] for r in c.fetchall()]
         else:
             raise Exception,"Invalid zone type"
+        records+=[[x.left,x.type.type,x.right] for x in self.dnszonerecord_set.all()]
+        records.sort(lambda x,y:cmp(x[0],y[0]))
         nses=[]
         for ns in self.profile.zone_ns_list.split(","):
             ns=ns.strip()
@@ -204,3 +206,28 @@ $ORIGIN %(domain)s.
             return cs2!=cs1
         else:
             return True
+            
+class DNSZoneRecordType(models.Model):
+    class Admin:
+        list_display=["type"]
+        search_fields=["type"]
+    class Meta:
+        verbose_name="DNS Zone Record Type"
+        verbose_name_plural="DNS Zone Record Types"
+    type=models.CharField("Type",maxlength=16,unique=True)
+    def __str__(self):
+        return self.type
+    def __unicode__(self):
+        return unicode(self.type)
+        
+class DNSZoneRecord(models.Model):
+    class Admin: pass
+    class Meta: pass
+    zone=models.ForeignKey(DNSZone,verbose_name="Zone",edit_inline=models.TABULAR,num_extra_on_change=5)
+    left=models.CharField("Left",maxlength=32,blank=True,null=True,core=True)
+    type=models.ForeignKey(DNSZoneRecordType,verbose_name="Type")
+    right=models.CharField("Right",maxlength=64,blank=True,null=True,core=True)
+    def __str__(self):
+        return "%s %s"%(self.zone.name," ".join([x for x in [self.left,self.type.type,self.right] if x is not None]))
+    def __unicode__(self):
+        return unicode(str(self))
