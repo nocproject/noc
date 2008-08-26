@@ -39,6 +39,9 @@ D=[
     ("dns.rsync_target","user@host:/path/"),
     # RConfig integration
     ("rconfig.config", "/tmp/rconfig.conf"),
+    ("rconfig.mail_server","mail.example.com"),
+    ("rconfig.mail_from","from@example.com"),
+    ("rconfig.mail_to","to@example.com"),
 ]
 
 def register_defaults():
