@@ -159,7 +159,10 @@ class PeeringPoint(models.Model):
     rconfig=property(_rconfig)
     @classmethod
     def get_rconfig(cls):
-        s=[x.rconfig for x in cls.objects.all()]
+        g=[("MAIL-SERVER",Settings.get("rconfig.mail_server")),("MAIL-FROM",Settings.get("rconfig.mail_from")),
+            ("MAIL-TO",Settings.get("rconfig.mail_to"))]
+        s=["%s %s"%(x[0],x[1]) for x in g if x[1]!=""]
+        s+=[x.rconfig for x in cls.objects.all()]
         return "\n".join(s)
     @classmethod
     def write_rconfig(cls):
