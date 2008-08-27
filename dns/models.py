@@ -102,14 +102,15 @@ class DNSZone(models.Model):
             records=[[r[0].split(".")[3],"PTR",r[1]+"."] for r in c.fetchall()]
         else:
             raise Exception,"Invalid zone type"
+        # Add records from DNSZoneRecord
         records+=[[x.left,x.type.type,x.right] for x in self.dnszonerecord_set.all()]
+        # Add NS records if nesessary
+        l=len(self.name)
+        for z in self.children:
+            for ns in z.ns_list:
+                records+=[[z.name[:-l-1],"IN NS",ns]]
         records.sort(lambda x,y:cmp(x[0],y[0]))
-        nses=[]
-        for ns in self.profile.zone_ns_list.split(","):
-            ns=ns.strip()
-            if not is_ipv4(ns) and not ns.endswith("."):
-                ns+="."
-            nses.append("\tNS\t"+ns+"\n")
+        nses=["\tNS\t%s\n"%n for n in self.ns_list]
         nses="".join(nses)
         contact=self.profile.zone_contact.replace("@",".")
         if not contact.endswith("."):
@@ -206,6 +207,21 @@ $ORIGIN %(domain)s.
             return cs2!=cs1
         else:
             return True
+            
+    def _children(self):
+        l=len(self.name)
+        return [z for z in DNSZone.objects.filter(name__iendswith=self.name) if "." not in z.name[:-l-1]]
+    children=property(_children)
+    
+    def _ns_list(self):
+        nses=[]
+        for ns in self.profile.zone_ns_list.split(","):
+            ns=ns.strip()
+            if not is_ipv4(ns) and not ns.endswith("."):
+                ns+="."
+            nses.append(ns)
+        return nses
+    ns_list=property(_ns_list)
             
 class DNSZoneRecordType(models.Model):
     class Admin:
