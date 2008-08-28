@@ -240,9 +240,9 @@ class DNSZoneRecord(models.Model):
     class Admin: pass
     class Meta: pass
     zone=models.ForeignKey(DNSZone,verbose_name="Zone",edit_inline=models.TABULAR,num_extra_on_change=5)
-    left=models.CharField("Left",maxlength=32,blank=True,null=True,core=True)
+    left=models.CharField("Left",maxlength=32,blank=True,null=True)
     type=models.ForeignKey(DNSZoneRecordType,verbose_name="Type")
-    right=models.CharField("Right",maxlength=64,blank=True,null=True,core=True)
+    right=models.CharField("Right",maxlength=64,core=True)
     def __str__(self):
         return "%s %s"%(self.zone.name," ".join([x for x in [self.left,self.type.type,self.right] if x is not None]))
     def __unicode__(self):
