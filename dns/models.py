@@ -210,7 +210,7 @@ $ORIGIN %(domain)s.
             
     def _children(self):
         l=len(self.name)
-        return [z for z in DNSZone.objects.filter(name__iendswith=self.name) if "." not in z.name[:-l-1]]
+        return [z for z in DNSZone.objects.filter(name__iendswith="."+self.name) if "." not in z.name[:-l-1]]
     children=property(_children)
     
     def _ns_list(self):
