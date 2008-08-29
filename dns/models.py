@@ -103,7 +103,39 @@ class DNSZone(models.Model):
         else:
             raise Exception,"Invalid zone type"
         # Add records from DNSZoneRecord
-        records+=[[x.left,x.type.type,x.right] for x in self.dnszonerecord_set.all()]
+        zonerecords=self.dnszonerecord_set.all()
+        if self.type=="R":
+            # Subnet delegation macro
+            delegations={}
+            for d in [r for r in zonerecords if "NS" in r.type.type and "/" in r.left]:
+                r=d.right
+                l=d.left
+                if l in delegations:
+                    delegations[l].append(r)
+                else:
+                    delegations[l]=[r]
+            for d,nses in delegations.items():
+                try:
+                    net,mask=[int(x) for x in l.split("/")]
+                    if net<0 or net>255 or mask<=24 or mask>32:
+                        raise Exception,"Invalid record"
+                except:
+                    records+=[[";; Invalid record: %s"%d,"IN NS","error"]]
+                    continue
+                for ns in nses:
+                    records+=[[d,"IN NS",ns]]
+                m=mask-24
+                bitmask=((1<<m)-1)<<(8-m)
+                if net&bitmask != net:
+                    records+=[[";; Invalid network: %s"%d,"CNAME",d]]
+                    continue
+                for i in range(net,net+(1<<(8-m))):
+                    records+=[["%d"%i,"CNAME","%d.%s"%(i,d)]]
+            # Other records
+            records+=[[x.left,x.type.type,x.right] for x in zonerecords\
+                if ("NS" in x.type.type and "/") or "NS" not in x.type.type]
+        else:
+            records+=[[x.left,x.type.type,x.right] for x in zonerecords]
         # Add NS records if nesessary
         l=len(self.name)
         for z in self.children:
