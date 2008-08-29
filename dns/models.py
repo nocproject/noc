@@ -133,7 +133,7 @@ class DNSZone(models.Model):
                     records+=[["%d"%i,"CNAME","%d.%s"%(i,d)]]
             # Other records
             records+=[[x.left,x.type.type,x.right] for x in zonerecords\
-                if ("NS" in x.type.type and "/") or "NS" not in x.type.type]
+                if ("NS" in x.type.type and "/" not in x.left) or "NS" not in x.type.type]
         else:
             records+=[[x.left,x.type.type,x.right] for x in zonerecords]
         # Add NS records if nesessary
