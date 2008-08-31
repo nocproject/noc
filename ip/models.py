@@ -3,6 +3,7 @@
 ##
 import socket,struct
 from django.db import models
+from django.contrib import admin
 from django.contrib.auth.models import User
 from noc.lib.validators import check_rd,check_cidr,is_cidr
 from noc.lib.tt import tt_url
@@ -17,7 +18,7 @@ class VRFGroup(models.Model):
     class Meta:
         verbose_name="VRF Group"
         verbose_name_plural="VRF Groups"
-    name=models.CharField("VRF Group",unique=True,maxlength=64)
+    name=models.CharField("VRF Group",unique=True,max_length=64)
     unique_addresses=models.BooleanField("Unique addresses in group")
     def __str__(self):
         return self.name
@@ -34,9 +35,9 @@ class VRF(models.Model):
     class Meta:
         verbose_name="VRF"
         verbose_name_plural="VRFs"
-    name=models.CharField("VRF name",unique=True,maxlength=64)
+    name=models.CharField("VRF name",unique=True,max_length=64)
     vrf_group=models.ForeignKey(VRFGroup,verbose_name="VRF Group")
-    rd=models.CharField("rd",unique=True,validator_list=[check_rd],maxlength=21)
+    rd=models.CharField("rd",unique=True,max_length=21) # validator_list=[check_rd],
     tt=models.IntegerField("TT",blank=True,null=True)
     def __str__(self):
         if self.rd=="0:0":
@@ -82,7 +83,7 @@ class IPv4BlockAccess(models.Model):
         unique_together=[("user","vrf","prefix")]
     user=models.ForeignKey(User,verbose_name="User")
     vrf=models.ForeignKey(VRF,verbose_name="VRF")
-    prefix=models.CharField("prefix",maxlength=18)
+    prefix=models.CharField("prefix",max_length=18)
     tt=models.IntegerField("TT",blank=True,null=True)
     def __str__(self):
         return "%s: %s(%s)"%(self.user,self.prefix,self.vrf)
@@ -108,8 +109,8 @@ class IPv4Block(models.Model):
         verbose_name_plural="IPv4 Blocks"
         unique_together=[("prefix","vrf")]
         ordering=["prefix"]
-    description=models.CharField("Description",maxlength=64)
-    prefix=models.CharField("prefix",maxlength=18)
+    description=models.CharField("Description",max_length=64)
+    prefix=models.CharField("prefix",max_length=18)
     vrf=models.ForeignKey(VRF)
     asn=models.ForeignKey(AS)
     modified_by=models.ForeignKey(User,verbose_name="User")
@@ -229,9 +230,9 @@ class IPv4Address(models.Model):
         verbose_name_plural="IPv4 Addresses"
         ordering=["ip"]
     vrf=models.ForeignKey(VRF,verbose_name="VRF")
-    fqdn=models.CharField("FQDN",maxlength=64)
+    fqdn=models.CharField("FQDN",max_length=64)
     ip=models.IPAddressField("IP")
-    description=models.CharField("Description",blank=True,null=True,maxlength=64)
+    description=models.CharField("Description",blank=True,null=True,max_length=64)
     modified_by=models.ForeignKey(User,verbose_name="User")
     last_modified=models.DateTimeField("Last modified",auto_now=True,auto_now_add=True)
     tt=models.IntegerField("TT",blank=True,null=True)
@@ -252,3 +253,11 @@ class IPv4Address(models.Model):
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
+#
+# Register django-admin objects
+#
+admin.site.register(VRFGroup)
+admin.site.register(VRF)
+admin.site.register(IPv4BlockAccess)
+admin.site.register(IPv4Block)
+admin.site.register(IPv4Address)

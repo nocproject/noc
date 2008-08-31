@@ -2,7 +2,7 @@
 ## This file is a part of Effortel's NOC db project
 ##
 import re
-from django.core import validators
+from django.forms import ValidationError
 ##
 ## Validators returning boolean
 ##
@@ -69,7 +69,7 @@ def is_fqdn(v):
 ##
 def generic_validator(value,check,error_msg):
     if not check(value):
-        raise validators.ValidationError(error_msg)
+        raise ValidationError(error_msg)
 
 def check_asn(field_data,all_data):
     generic_validator(field_data,is_asn,"Invalid ASN")

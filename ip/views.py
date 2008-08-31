@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseForbidden
-from django import newforms as forms
+from django import forms
 
 from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address
 from noc.peer.models import AS

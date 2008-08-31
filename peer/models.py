@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 from noc.lib.validators import check_asn,check_as_set
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
@@ -10,7 +11,7 @@ class LIR(models.Model):
     class Meta:
         verbose_name="LIR"
         verbose_name_plural="LIRs"
-    name=models.CharField("LIR name",unique=True,maxlength=64)
+    name=models.CharField("LIR name",unique=True,max_length=64)
     def __str__(self):
         return self.name
     def __unicode__(self):
@@ -25,8 +26,8 @@ class AS(models.Model):
         verbose_name="AS"
         verbose_name_plural="ASes"
     lir=models.ForeignKey(LIR,verbose_name="LIR")
-    asn=models.IntegerField("ASN",unique=True,validator_list=[check_asn])
-    description=models.CharField("Description",maxlength=64)
+    asn=models.IntegerField("ASN",unique=True) # ,validator_list=[check_asn]
+    description=models.CharField("Description",max_length=64)
     rpsl_header=models.TextField("RPSL Header",null=True,blank=True)
     rpsl_footer=models.TextField("RPSL Footer",null=True,blank=True)
     def __str__(self):
@@ -89,8 +90,8 @@ class ASSet(models.Model):
     class Meta:
         verbose_name="ASSet"
         verbose_name_plural="ASSets"
-    name=models.CharField("Name",maxlength=32,unique=True,validator_list=[check_as_set])
-    description=models.CharField("Description",maxlength=64)
+    name=models.CharField("Name",max_length=32,unique=True) # ,validator_list=[check_as_set]
+    description=models.CharField("Description",max_length=64)
     members=models.TextField("Members",null=True,blank=True)
     rpsl_header=models.TextField("RPSL Header",null=True,blank=True)
     rpsl_footer=models.TextField("RPSL Footer",null=True,blank=True)
@@ -124,7 +125,7 @@ class PeeringPointType(models.Model):
     class Meta:
         verbose_name="Peering Point Type"
         verbose_name_plural="Peering Point Types"
-    name=models.CharField("Name",maxlength=32,unique=True)
+    name=models.CharField("Name",max_length=32,unique=True)
     def __str__(self):
         return self.name
     def __unicode__(self):
@@ -138,10 +139,10 @@ class PeeringPoint(models.Model):
     class Meta:
         verbose_name="Peering Point"
         verbose_name_plural="Peering Points"
-    hostname=models.CharField("FQDN",maxlength=64,unique=True)
+    hostname=models.CharField("FQDN",max_length=64,unique=True)
     router_id=models.IPAddressField("Router-ID",unique=True)
     type=models.ForeignKey(PeeringPointType,verbose_name="Type")
-    communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)
+    communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
     def __str__(self):
         return self.hostname
     def __unicode__(self):
@@ -175,9 +176,9 @@ class PeerGroup(models.Model):
     class Meta:
         verbose_name="Peer Group"
         verbose_name_plural="Peer Groups"
-    name=models.CharField("Name",maxlength=32,unique=True)
-    description=models.CharField("Description",maxlength=64)
-    communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)
+    name=models.CharField("Name",max_length=32,unique=True)
+    description=models.CharField("Description",max_length=64)
+    communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
     max_prefixes=models.IntegerField("Max. Prefixes",default=100)
     def __str__(self):
         return self.name
@@ -198,12 +199,12 @@ class Peer(models.Model):
     local_ip=models.IPAddressField("Local IP")
     remote_asn=models.IntegerField("Remote AS")
     remote_ip=models.IPAddressField("Remote IP")
-    import_filter=models.CharField("Import filter",maxlength=64)
+    import_filter=models.CharField("Import filter",max_length=64)
     local_pref=models.IntegerField("Local Pref",null=True,blank=True)
-    export_filter=models.CharField("Export filter",maxlength=64)
-    description=models.CharField("Description",maxlength=64,null=True,blank=True)
+    export_filter=models.CharField("Export filter",max_length=64)
+    description=models.CharField("Description",max_length=64,null=True,blank=True)
     tt=models.IntegerField("TT",blank=True,null=True)
-    communities=models.CharField("Import Communities",maxlength=128,blank=True,null=True)   # In addition to PeerGroup.communities
+    communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)   # In addition to PeerGroup.communities
                                                                                             # and PeeringPoint.communities
     max_prefixes=models.IntegerField("Max. Prefixes",default=100)
     def __str__(self):
@@ -243,3 +244,13 @@ class Peer(models.Model):
             return self.peer_group.max_prefixes
         return 0
     effective_max_prefixes=property(_effective_max_prefixes)
+#
+# Register django-admin objects
+#
+admin.site.register(LIR)
+admin.site.register(AS)
+admin.site.register(ASSet)
+admin.site.register(PeeringPointType)
+admin.site.register(PeeringPoint)
+admin.site.register(PeerGroup)
+admin.site.register(Peer)

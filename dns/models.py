@@ -1,19 +1,23 @@
 import re,os,time,md5
 from django.db import models
+from django.contrib import admin
 from noc.setup.models import Settings
 from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
 
+##
+##
+##
 class DNSZoneProfile(models.Model):
     class Admin:
         pass
     class Meta:
         pass
-    name=models.CharField("Name",maxlength=32,unique=True)
-    zone_transfer_acl=models.CharField("named zone transfer ACL",maxlength=64)
-    zone_ns_list=models.CharField("NS list",maxlength=64)
-    zone_soa=models.CharField("SOA",maxlength=64)
-    zone_contact=models.CharField("Contact",maxlength=64)
+    name=models.CharField("Name",max_length=32,unique=True)
+    zone_transfer_acl=models.CharField("named zone transfer ACL",max_length=64)
+    zone_ns_list=models.CharField("NS list",max_length=64)
+    zone_soa=models.CharField("SOA",max_length=64)
+    zone_contact=models.CharField("Contact",max_length=64)
     zone_refresh=models.IntegerField("Refresh",default=3600)
     zone_retry=models.IntegerField("Retry",default=900)
     zone_expire=models.IntegerField("Expire",default=86400)
@@ -47,7 +51,9 @@ class DNSZoneProfile(models.Model):
     def _ztacl(self):
         return "allow-transfer { %s; };"%self.zone_transfer_acl.replace("}","")
     ztacl=property(_ztacl)
-
+##
+##
+##
 rx_rzone=re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
 class DNSZone(models.Model):
     class Admin:
@@ -57,10 +63,10 @@ class DNSZone(models.Model):
     class Meta:
         verbose_name="DNS Zone"
         verbose_name_plural="DNS Zones"
-    name=models.CharField("Domain",maxlength=64,unique=True)
-    description=models.CharField("Description",null=True,blank=True,maxlength=64)
+    name=models.CharField("Domain",max_length=64,unique=True)
+    description=models.CharField("Description",null=True,blank=True,max_length=64)
     is_auto_generated=models.BooleanField("Auto generated?")
-    serial=models.CharField("Serial",maxlength=10,default="0000000000")
+    serial=models.CharField("Serial",max_length=10,default="0000000000")
     profile=models.ForeignKey(DNSZoneProfile,verbose_name="Profile")
     def __str__(self):
         return self.name
@@ -254,7 +260,9 @@ $ORIGIN %(domain)s.
             nses.append(ns)
         return nses
     ns_list=property(_ns_list)
-            
+##
+##
+##
 class DNSZoneRecordType(models.Model):
     class Admin:
         list_display=["type"]
@@ -262,20 +270,42 @@ class DNSZoneRecordType(models.Model):
     class Meta:
         verbose_name="DNS Zone Record Type"
         verbose_name_plural="DNS Zone Record Types"
-    type=models.CharField("Type",maxlength=16,unique=True)
+    type=models.CharField("Type",max_length=16,unique=True)
     def __str__(self):
         return self.type
     def __unicode__(self):
         return unicode(self.type)
-        
+##
+##
+##
 class DNSZoneRecord(models.Model):
     class Admin: pass
     class Meta: pass
-    zone=models.ForeignKey(DNSZone,verbose_name="Zone",edit_inline=models.TABULAR,num_extra_on_change=5)
-    left=models.CharField("Left",maxlength=32,blank=True,null=True)
+    zone=models.ForeignKey(DNSZone,verbose_name="Zone") # ,edit_inline=models.TABULAR,num_extra_on_change=5)
+    left=models.CharField("Left",max_length=32,blank=True,null=True)
     type=models.ForeignKey(DNSZoneRecordType,verbose_name="Type")
-    right=models.CharField("Right",maxlength=64,core=True)
+    right=models.CharField("Right",max_length=64) #,core=True)
     def __str__(self):
         return "%s %s"%(self.zone.name," ".join([x for x in [self.left,self.type.type,self.right] if x is not None]))
     def __unicode__(self):
         return unicode(str(self))
+##
+##
+##
+class DNSZoneRecordInline(admin.TabularInline):
+    model=DNSZoneRecord
+    extra=3
+    
+class DNSZoneAdmin(admin.ModelAdmin):
+    inlines=[DNSZoneRecordInline]
+    list_display=["name","description","is_auto_generated"]
+    list_filter=["is_auto_generated"]
+    search_fields=["name","description"]
+
+
+#
+# Register django-admin objects
+#
+admin.site.register(DNSZoneProfile)
+admin.site.register(DNSZone,DNSZoneAdmin)
+admin.site.register(DNSZoneRecordType)
