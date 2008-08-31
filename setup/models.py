@@ -8,9 +8,9 @@ class Settings(models.Model):
     class Meta:
         verbose_name="Settings"
         verbose_name_plural="Settings"
-    key=models.CharField("Key",maxlength=64,unique=True)
-    value=models.CharField("Value",maxlength=256)
-    default=models.CharField("Default",maxlength=256)
+    key=models.CharField("Key",max_length=64,unique=True)
+    value=models.CharField("Value",max_length=256)
+    default=models.CharField("Default",max_length=256)
     def __str__(self):
         return self.key
     def __unicode__(self):
