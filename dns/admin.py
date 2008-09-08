@@ -18,8 +18,9 @@ class DNSZoneAdmin(admin.ModelAdmin):
     search_fields=["name","description"]
     
 class DNSZoneRecordTypeAdmin(admin.ModelAdmin):
-    list_display=["type"]
+    list_display=["type","is_visible"]
     search_fields=["type"]
+    list_filter=["is_visible"]
 
 admin.site.register(DNSZoneProfile,DNSZoneProfileAdmin)
 admin.site.register(DNSZone,DNSZoneAdmin)

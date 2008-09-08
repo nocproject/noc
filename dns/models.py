@@ -261,6 +261,7 @@ class DNSZoneRecordType(models.Model):
         verbose_name="DNS Zone Record Type"
         verbose_name_plural="DNS Zone Record Types"
     type=models.CharField("Type",max_length=16,unique=True)
+    is_visible=models.BooleanField("Is Visible?",default=True)
     def __str__(self):
         return self.type
     def __unicode__(self):
