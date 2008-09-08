@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib import admin
 from noc.lib.validators import check_asn,check_as_set
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
@@ -7,7 +6,6 @@ from noc.lib.fileutils import safe_rewrite
 from noc.setup.models import Settings
 
 class LIR(models.Model):
-    class Admin: pass
     class Meta:
         verbose_name="LIR"
         verbose_name_plural="LIRs"
@@ -18,10 +16,6 @@ class LIR(models.Model):
         return unicode(self.name)
 
 class AS(models.Model):
-    class Admin:
-        list_display=["asn","description","lir"]
-        list_filter=["lir"]
-        search_fields=["asn","description"]
     class Meta:
         verbose_name="AS"
         verbose_name_plural="ASes"
@@ -84,9 +78,6 @@ class AS(models.Model):
     dot=property(_dot)
 
 class ASSet(models.Model):
-    class Admin:
-        list_display=["name","description","members"]
-        search_fields=["name","description","members"]
     class Meta:
         verbose_name="ASSet"
         verbose_name_plural="ASSets"
@@ -120,8 +111,6 @@ class ASSet(models.Model):
     rpsl=property(_rpsl)
 
 class PeeringPointType(models.Model):
-    class Admin:
-        list_display=["name"]
     class Meta:
         verbose_name="Peering Point Type"
         verbose_name_plural="Peering Point Types"
@@ -132,10 +121,6 @@ class PeeringPointType(models.Model):
         return unicode(self.name)
 
 class PeeringPoint(models.Model):
-    class Admin:
-        list_display=["hostname","router_id","type","communities"]
-        list_filter=["type"]
-        search_fields=["hostname","router_id"]
     class Meta:
         verbose_name="Peering Point"
         verbose_name_plural="Peering Points"
@@ -171,8 +156,6 @@ class PeeringPoint(models.Model):
         safe_rewrite(path,cls.get_rconfig())
 
 class PeerGroup(models.Model):
-    class Admin:
-        list_display=["name","description","communities"]
     class Meta:
         verbose_name="Peer Group"
         verbose_name_plural="Peer Groups"
@@ -186,10 +169,6 @@ class PeerGroup(models.Model):
         return unicode(self.name)
         
 class Peer(models.Model):
-    class Admin:
-        list_display=["peering_point","local_asn","remote_asn","import_filter","export_filter","local_ip","remote_ip","admin_tt_url","description","communities"]
-        search_fields=["remote_asn","description"]
-        list_filter=["peering_point"]
     class Meta:
         verbose_name="Peer"
         verbose_name_plural="Peers"
@@ -244,13 +223,3 @@ class Peer(models.Model):
             return self.peer_group.max_prefixes
         return 0
     effective_max_prefixes=property(_effective_max_prefixes)
-#
-# Register django-admin objects
-#
-admin.site.register(LIR)
-admin.site.register(AS)
-admin.site.register(ASSet)
-admin.site.register(PeeringPointType)
-admin.site.register(PeeringPoint)
-admin.site.register(PeerGroup)
-admin.site.register(Peer)

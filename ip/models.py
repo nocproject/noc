@@ -3,7 +3,6 @@
 ##
 import socket,struct
 from django.db import models
-from django.contrib import admin
 from django.contrib.auth.models import User
 from noc.lib.validators import check_rd,check_cidr,is_cidr
 from noc.lib.tt import tt_url
@@ -12,9 +11,6 @@ from noc.peer.models import AS
 ##
 ##
 class VRFGroup(models.Model):
-    class Admin:
-        list_display=["name","unique_addresses"]
-        search_fields=["name"]
     class Meta:
         verbose_name="VRF Group"
         verbose_name_plural="VRF Groups"
@@ -28,10 +24,6 @@ class VRFGroup(models.Model):
 ##
 ##
 class VRF(models.Model):
-    class Admin:
-        list_display=["rd","name","vrf_group"]
-        search_fields=["name","rd"]
-        list_filter=["vrf_group"]
     class Meta:
         verbose_name="VRF"
         verbose_name_plural="VRFs"
@@ -73,10 +65,6 @@ class VRF(models.Model):
 ##
 ##
 class IPv4BlockAccess(models.Model):
-    class Admin:
-        list_display=["user","vrf","prefix"]
-        list_filter=["user","vrf"]
-        search_fields=["user","prefix"]
     class Meta:
         verbose_name="IPv4 Block Access"
         verbose_name_plural="IPv4 Block Access"
@@ -100,10 +88,6 @@ class IPv4BlockAccess(models.Model):
 ##
 ##
 class IPv4Block(models.Model):
-    class Admin:
-        list_display=["prefix","vrf","description"]
-        list_filter=["vrf","asn"]
-        search_fields=["prefix","description"]
     class Meta:
         verbose_name="IPv4 Block"
         verbose_name_plural="IPv4 Blocks"
@@ -220,10 +204,6 @@ class IPv4Block(models.Model):
 ##
 ##
 class IPv4Address(models.Model):
-    class Admin:
-        list_display=["ip","fqdn","vrf","description"]
-        list_filter=["vrf"]
-        search_fields=["ip","fqdn","description"]
     class Meta:
         unique_together=[("vrf","ip")]
         verbose_name="IPv4 Address"
@@ -253,11 +233,3 @@ class IPv4Address(models.Model):
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
-#
-# Register django-admin objects
-#
-admin.site.register(VRFGroup)
-admin.site.register(VRF)
-admin.site.register(IPv4BlockAccess)
-admin.site.register(IPv4Block)
-admin.site.register(IPv4Address)

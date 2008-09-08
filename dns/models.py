@@ -1,6 +1,5 @@
 import re,os,time,md5
 from django.db import models
-from django.contrib import admin
 from noc.setup.models import Settings
 from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
@@ -9,8 +8,6 @@ from noc.lib.validators import is_ipv4
 ##
 ##
 class DNSZoneProfile(models.Model):
-    class Admin:
-        pass
     class Meta:
         pass
     name=models.CharField("Name",max_length=32,unique=True)
@@ -56,10 +53,6 @@ class DNSZoneProfile(models.Model):
 ##
 rx_rzone=re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
 class DNSZone(models.Model):
-    class Admin:
-        list_display=["name","description","is_auto_generated"]
-        list_filter=["is_auto_generated"]
-        search_fields=["name","description"]
     class Meta:
         verbose_name="DNS Zone"
         verbose_name_plural="DNS Zones"
@@ -264,9 +257,6 @@ $ORIGIN %(domain)s.
 ##
 ##
 class DNSZoneRecordType(models.Model):
-    class Admin:
-        list_display=["type"]
-        search_fields=["type"]
     class Meta:
         verbose_name="DNS Zone Record Type"
         verbose_name_plural="DNS Zone Record Types"
@@ -279,7 +269,6 @@ class DNSZoneRecordType(models.Model):
 ##
 ##
 class DNSZoneRecord(models.Model):
-    class Admin: pass
     class Meta: pass
     zone=models.ForeignKey(DNSZone,verbose_name="Zone") # ,edit_inline=models.TABULAR,num_extra_on_change=5)
     left=models.CharField("Left",max_length=32,blank=True,null=True)
@@ -289,23 +278,3 @@ class DNSZoneRecord(models.Model):
         return "%s %s"%(self.zone.name," ".join([x for x in [self.left,self.type.type,self.right] if x is not None]))
     def __unicode__(self):
         return unicode(str(self))
-##
-##
-##
-class DNSZoneRecordInline(admin.TabularInline):
-    model=DNSZoneRecord
-    extra=3
-    
-class DNSZoneAdmin(admin.ModelAdmin):
-    inlines=[DNSZoneRecordInline]
-    list_display=["name","description","is_auto_generated"]
-    list_filter=["is_auto_generated"]
-    search_fields=["name","description"]
-
-
-#
-# Register django-admin objects
-#
-admin.site.register(DNSZoneProfile)
-admin.site.register(DNSZone,DNSZoneAdmin)
-admin.site.register(DNSZoneRecordType)
