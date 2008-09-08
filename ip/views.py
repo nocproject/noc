@@ -66,19 +66,19 @@ def allocate_block(request,vrf_id,prefix=None):
     if request.POST:
         form=AllocateBlockForm(request.POST)
         if form.is_valid():
-            if not IPv4BlockAccess.check_write_access(request.user,vrf,form.clean_data["prefix"]):
+            if not IPv4BlockAccess.check_write_access(request.user,vrf,form.cleaned_data["prefix"]):
                 return HttpResponseForbidden("Permission denied")
             if prefix:
-                block.prefix=form.clean_data["prefix"]
-                block.description=form.clean_data["description"]
-                block.asn=form.clean_data["asn"]
-                block.tt=form.clean_data["tt"]
+                block.prefix=form.cleaned_data["prefix"]
+                block.description=form.cleaned_data["description"]
+                block.asn=form.cleaned_data["asn"]
+                block.tt=form.cleaned_data["tt"]
             else:
-                block=IPv4Block(vrf=vrf,prefix=form.clean_data["prefix"],
-                    description=form.clean_data["description"],
-                    asn=form.clean_data["asn"],
+                block=IPv4Block(vrf=vrf,prefix=form.cleaned_data["prefix"],
+                    description=form.cleaned_data["description"],
+                    asn=form.cleaned_data["asn"],
                     modified_by=request.user,
-                    tt=form.clean_data["tt"])
+                    tt=form.cleaned_data["tt"])
             block.save()
             return HttpResponseRedirect("/ip/%d/%s/"%(vrf.id,block.prefix))
     else:
@@ -122,18 +122,18 @@ def assign_address(request,vrf_id,ip=None):
     if request.POST:
         form=AssignAddressForm(request.POST)
         if form.is_valid():
-            assert is_ipv4(form.clean_data["ip"])
-            assert is_fqdn(form.clean_data["fqdn"])
-            if not IPv4BlockAccess.check_write_access(request.user,vrf,form.clean_data["ip"]+"/32"):
+            assert is_ipv4(form.cleaned_data["ip"])
+            assert is_fqdn(form.cleaned_data["fqdn"])
+            if not IPv4BlockAccess.check_write_access(request.user,vrf,form.cleaned_data["ip"]+"/32"):
                 return HttpResponseForbidden("Permission denied")
             if ip:
-                address.fqdn=form.clean_data["fqdn"]
-                address.ip=form.clean_data["ip"]
-                address.description=form.clean_data["description"]
-                address.tt=form.clean_data["tt"]
+                address.fqdn=form.cleaned_data["fqdn"]
+                address.ip=form.cleaned_data["ip"]
+                address.description=form.cleaned_data["description"]
+                address.tt=form.cleaned_data["tt"]
             else:
-                address=IPv4Address(vrf=vrf,fqdn=form.clean_data["fqdn"],
-                    ip=form.clean_data["ip"],description=form.clean_data["description"],
+                address=IPv4Address(vrf=vrf,fqdn=form.cleaned_data["fqdn"],
+                    ip=form.cleaned_data["ip"],description=form.cleaned_data["description"],
                     modified_by=request.user)
             address.save()
             return HttpResponseRedirect("/ip/%d/%s/"%(vrf.id,address.closest_block.prefix))
