@@ -221,6 +221,11 @@ $ORIGIN %(domain)s.
             f.write(s)
             f.close()
             
+    def zone_link(self):
+        return "<A HREF='/dns/%s/zone/'>Zone</A>"%self.name
+    zone_link.short_description="Zone"
+    zone_link.allow_tags=True
+            
     @classmethod
     def sync_zones(cls):
         cls.rewrite_zones()

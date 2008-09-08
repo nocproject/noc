@@ -13,7 +13,7 @@ class DNSZoneRecordInline(admin.TabularInline):
     
 class DNSZoneAdmin(admin.ModelAdmin):
     inlines=[DNSZoneRecordInline]
-    list_display=["name","description","is_auto_generated"]
+    list_display=["name","description","is_auto_generated","serial","zone_link"]
     list_filter=["is_auto_generated"]
     search_fields=["name","description"]
     
