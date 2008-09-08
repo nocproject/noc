@@ -49,6 +49,15 @@ class DNSZoneProfile(models.Model):
         return "allow-transfer { %s; };"%self.zone_transfer_acl.replace("}","")
     ztacl=property(_ztacl)
 ##
+## Managers for DNSZone
+##
+class ForwardZoneManager(models.Manager):
+    def get_query_set(self):
+        return super(ReverseZoneManager,self).get_query_set().exclude(name__endswith=".in-addr.arpa")
+        
+class ReverseZoneManager(models.Manager):
+    def get_query_set(self):
+        return super(ReverseZoneManager,self).get_query_set().filter(name__endswith=".in-addr.arpa")
 ##
 ##
 rx_rzone=re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
@@ -61,6 +70,11 @@ class DNSZone(models.Model):
     is_auto_generated=models.BooleanField("Auto generated?")
     serial=models.CharField("Serial",max_length=10,default="0000000000")
     profile=models.ForeignKey(DNSZoneProfile,verbose_name="Profile")
+    
+    # Managers
+    objects=models.Manager()
+    forward_zones=ForwardZoneManager()
+    reverse_zones=ReverseZoneManager()
     def __str__(self):
         return self.name
     def __unicode__(self):
