@@ -47,8 +47,8 @@ class Migration:
             except:
                 pass
             print "Creating DNSZoneRecordType '%s'"%rtype
-        rt=DNSZoneRecordType(type=rtype,is_visible=is_visible)
-        rt.save()
+            rt=DNSZoneRecordType(type=rtype,is_visible=is_visible)
+            rt.save()
     
     def backwards(self):
         "Write your backwards migration here"
