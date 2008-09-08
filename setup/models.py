@@ -28,22 +28,18 @@ class Settings(models.Model):
         if Settings.objects.filter(key=key).count()==0:
             s=Settings(key=key,value=default,default=default)
             s.save()
+    @classmethod
+    def unregister(cls,key,default):
+        if Settings.objects.filter(key=key).count()==1:
+            s=Settings.objects.get(key=key)
+            if s.value==s.default:
+                s.delete()
+    @classmethod
+    def migration_forward(self,lst):
+        for k,v in lst:
+            Settings.register(k,v)
+    @classmethod
+    def migration_backward(self,lst):
+        for k,v in lst:
+            Settings.unregister(k,v)
 
-D=[
-    ("shell.ssh",   "/usr/bin/ssh"),
-    ("shell.rsync", "/usr/local/bin/rsync"),
-    # Trouble ticketing integratiion
-    ("tt.url",      "http://example.com/ticket=%(tt)s"),
-    # dns
-    ("dns.zone_cache",  "/tmp/zones/"),
-    ("dns.rsync_target","user@host:/path/"),
-    # RConfig integration
-    ("rconfig.config", "/tmp/rconfig.conf"),
-    ("rconfig.mail_server","mail.example.com"),
-    ("rconfig.mail_from","from@example.com"),
-    ("rconfig.mail_to","to@example.com"),
-]
-
-def register_defaults():
-    for k,v in D:
-        Settings.register(k,v)
