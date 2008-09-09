@@ -232,3 +232,30 @@ class Peer(models.Model):
             return self.peer_group.max_prefixes
         return 0
     effective_max_prefixes=property(_effective_max_prefixes)
+
+##
+## Address family identifier. Please do not modify table manually,
+## Use migrations instead.
+## Common values: ipv4, ipv6
+##
+class AFI(models.Model):
+    class Meta:
+        verbose_name="AFI"
+        verbose_name_plural="AFIs"
+    afi=models.CharField("AFI",max_length=10,unique=True)
+    def __unicode__(self):
+        return self.afi
+##
+## Looking glass queries.
+##
+class LGQuery(models.Model):
+    class Meta:
+        verbose_name="LG Query"
+        verbose_name_plural="LG Queries"
+        unique_together=["peering_point_type","afi","query"]
+    peering_point_type=models.ForeignKey(PeeringPointType,verbose_name="Peering Point Type")
+    afi=models.ForeignKey(AFI,verbose_name=AFI)
+    query=models.CharField("Query",max_length=32)
+    command=models.CharField("Command",max_length=128)
+    def __unicode__(self):
+        return u"[%s] %s"%(self.afi.afi,self.query)
