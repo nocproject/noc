@@ -93,5 +93,7 @@ INSTALLED_APPS = (
     "noc.peer",
 )
 
+FORCE_SCRIPT_NAME=""
+
 # Override defaults using site-specific settings
 from site_settings import *
