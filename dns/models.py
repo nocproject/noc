@@ -9,7 +9,8 @@ from noc.lib.validators import is_ipv4
 ##
 class DNSZoneProfile(models.Model):
     class Meta:
-        pass
+        verbose_name="DNS Zone Profile"
+        verbose_name_plural="DNS Zone Profiles"
     name=models.CharField("Name",max_length=32,unique=True)
     zone_transfer_acl=models.CharField("named zone transfer ACL",max_length=64)
     zone_ns_list=models.CharField("NS list",max_length=64)
