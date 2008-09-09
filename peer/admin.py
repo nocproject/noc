@@ -4,12 +4,12 @@ from noc.peer.models import LIR,AS,ASSet,PeeringPointType,PeeringPoint,PeerGroup
 class LIRAdmin(admin.ModelAdmin): pass
 
 class ASAdmin(admin.ModelAdmin):
-    list_display=["asn","description","lir"]
+    list_display=["asn","description","lir","rpsl_link"]
     list_filter=["lir"]
     search_fields=["asn","description"]
         
 class ASSetAdmin(admin.ModelAdmin):
-    list_display=["name","description","members"]
+    list_display=["name","description","members","rpsl_link"]
     search_fields=["name","description","members"]
 
 class PeeringPointTypeAdmin(admin.ModelAdmin):

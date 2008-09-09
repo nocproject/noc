@@ -49,6 +49,11 @@ class AS(models.Model):
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
     
+    def rpsl_link(self):
+        return "<A HREF='/peer/AS/%d/rpsl/'>RPSL</A>"%self.asn
+    rpsl_link.short_description="RPSL"
+    rpsl_link.allow_tags=True
+    
     def _dot(self):
         s=["graph {"]
         all_peers=Peer.objects.filter(local_asn__exact=self)
@@ -109,6 +114,10 @@ class ASSet(models.Model):
             s+=self.rpsl_footer.split("\n")
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
+    def rpsl_link(self):
+        return "<A HREF='/peer/AS-SET/%s/rpsl/'>RPSL</A>"%self.name
+    rpsl_link.short_description="RPSL"
+    rpsl_link.allow_tags=True
 
 class PeeringPointType(models.Model):
     class Meta:
