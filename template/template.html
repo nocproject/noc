@@ -14,10 +14,16 @@
 <DIV ID="menu">
     <B>Menu:</B>
     <UL>
+        {% if user.is_staff %}
         <LI><A HREF="/admin/">Management</A></LI>
+        {% endif %}
         <LI><A HREF="/ip/">Assigned addresses</A></LI>
-        <LI><A HREF="/peer/">Peering</A></LI>
-        <LI><A HREF="/dns/">DNS</A></LI>
+        {% if perms.peer.change_peer %}
+        <LI><A HREF="/admin/peer/">Peering</A></LI>
+        {% endif %}
+        {% if perms.dns.change_dnszone %}
+        <LI><A HREF="/admin/dns/">DNS</A></LI>
+        {% endif %}
     </UL>
 <A HREF="/main/logout/">Logout</A><BR/>
 </DIV>
