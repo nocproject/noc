@@ -94,7 +94,7 @@ class ASSet(models.Model):
     def __str__(self):
         return self.name
     def __unicode__(self):
-        return unique(self.name)
+        return unicode(self.name)
     def _member_list(self):
         if self.members is None:
             return []
