@@ -1,0 +1,48 @@
+{% extends "template/template.html" %}
+{% block content %}
+
+<FORM ACTION="" METHOD="POST">
+    {{form.peering_point}} {{form.query_type}} {{form.query}} 
+    <INPUT TYPE="submit" VALUE="Query" />
+</FORM>
+
+{% if q %}
+<CODE id="out">
+</CODE>
+
+<script type="text/javascript" src="/static/js/dojo/dojo.js" />
+    
+<script type="text/javascript">
+    var process_data = function(data) {
+        node=dojo.byId("out");
+        if(data.status=="n") {
+            node.innerHTML="Running...";
+            window.setTimeout("get_result()",3000);
+        }
+        if(data.status=="p") {
+            node.innerHTML="Processing..."+data.out;
+            window.setTimeout("get_result()",3000);
+        }
+        if(data.status=="f") {
+            node.innerHTML="Failed..."+data.out;
+        }
+        if(data.status=="c") {
+            node.innerHTML=data.out;
+        }
+    }
+    
+    var get_result = function() {
+        dojo.xhrGet({
+            url: "{{q.query_id}}/",
+            handleAs: "json",
+            load: process_data,
+            error: function(error,args) {
+                alert("error");
+            }
+        }
+        );
+    }
+    dojo.addOnLoad(get_result);
+</script>
+{% endif %}
+{%endblock%}

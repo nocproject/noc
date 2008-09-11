@@ -1,5 +1,5 @@
 from django.contrib import admin
-from noc.peer.models import LIR,AS,ASSet,PeeringPointType,PeeringPoint,PeerGroup,Peer,LGQuery
+from noc.peer.models import LIR,AS,ASSet,PeeringPointType,PeeringPoint,PeerGroup,Peer,LGQueryCommand
 
 class LIRAdmin(admin.ModelAdmin): pass
 
@@ -12,13 +12,13 @@ class ASSetAdmin(admin.ModelAdmin):
     list_display=["name","description","members","rpsl_link"]
     search_fields=["name","description","members"]
 
-class LGQueryAdmin(admin.TabularInline):
-    model=LGQuery
+class LGQueryCommandAdmin(admin.TabularInline):
+    model=LGQueryCommand
     extra=1
     
 class PeeringPointTypeAdmin(admin.ModelAdmin):
     list_display=["name"]
-    inlines=[LGQueryAdmin]
+    inlines=[LGQueryCommandAdmin]
         
 class PeeringPointAdmin(admin.ModelAdmin):
     list_display=["hostname","router_id","type","communities"]
