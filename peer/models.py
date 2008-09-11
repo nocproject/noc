@@ -1,9 +1,10 @@
 from django.db import models
-from noc.lib.validators import check_asn,check_as_set
+from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
 from noc.lib.fileutils import safe_rewrite
 from noc.setup.models import Settings
+import random
 
 class LIR(models.Model):
     class Meta:
@@ -137,6 +138,7 @@ class PeeringPoint(models.Model):
     router_id=models.IPAddressField("Router-ID",unique=True)
     type=models.ForeignKey(PeeringPointType,verbose_name="Type")
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
+    lg_rcmd=models.CharField("LG RCMD Url",max_length=128,blank=True,null=True)
     def __str__(self):
         return self.hostname
     def __unicode__(self):
@@ -163,6 +165,12 @@ class PeeringPoint(models.Model):
     def write_rconfig(cls):
         path=Settings.get("rconfig.config")
         safe_rewrite(path,cls.get_rconfig())
+    def lg_command(self,query_type,query):
+        try:
+            lgc=LGQueryCommand.objects.get(peering_point_type=self,query_type=query_type)
+        except LGQueryCommand.DoesNotExist:
+            return None
+        return lgc.command%{"query":query}
 
 class PeerGroup(models.Model):
     class Meta:
@@ -234,28 +242,52 @@ class Peer(models.Model):
     effective_max_prefixes=property(_effective_max_prefixes)
 
 ##
-## Address family identifier. Please do not modify table manually,
-## Use migrations instead.
-## Common values: ipv4, ipv6
+## Looking glass query type
+## Do not modify table manually, use migrations to populate data
 ##
-class AFI(models.Model):
+class LGQueryType(models.Model):
     class Meta:
-        verbose_name="AFI"
-        verbose_name_plural="AFIs"
-    afi=models.CharField("AFI",max_length=10,unique=True)
+        verbose_name="LG Query Type"
+        verbose_name_plural="LG Queries Types"
+    name=models.CharField("Name",max_length=32,unique=True)
     def __unicode__(self):
-        return self.afi
+        return self.name
 ##
-## Looking glass queries.
+## Looking glass commands
+##
+class LGQueryCommand(models.Model):
+    class Meta:
+        verbose_name="LG Query Command"
+        verbose_name_plural="LG Quert Commands"
+        unique_together=[("peering_point_type","query_type")]
+    peering_point_type=models.ForeignKey(PeeringPointType,verbose_name="Peering Point Type")
+    query_type=models.ForeignKey(LGQueryType,verbose_name="LG Query Type")
+    command=models.CharField("Command",max_length=128)
+    def __unicode__(self):
+        return "%s %s"%(self.peering_point_type.name,self.query_type.name)
+##
+## Looking glass query
+## Used for exchange with LGD
 ##
 class LGQuery(models.Model):
     class Meta:
         verbose_name="LG Query"
         verbose_name_plural="LG Queries"
-        unique_together=["peering_point_type","afi","query"]
-    peering_point_type=models.ForeignKey(PeeringPointType,verbose_name="Peering Point Type")
-    afi=models.ForeignKey(AFI,verbose_name=AFI)
-    query=models.CharField("Query",max_length=32)
-    command=models.CharField("Command",max_length=128)
+        unique_together=[("remote_addr","query_id")]
+    time=models.DateTimeField("Time",auto_now_add=True,auto_now=True)
+    status=models.CharField("Status",max_length=1,
+        choices=[("n","New"),("p","In Progress"),("f","Failure"),("c","Complete")],default="n")
+    remote_addr=models.IPAddressField("REMOTE_ADDR")
+    query_id=models.IntegerField("Query ID")
+    peering_point=models.ForeignKey(PeeringPoint,verbose_name="Peering Point")
+    query_type=models.ForeignKey(LGQueryType,verbose_name="Query Type")
+    query=models.CharField("Query",max_length=128)
+    out=models.TextField("Out",default="")
     def __unicode__(self):
-        return u"[%s] %s"%(self.afi.afi,self.query)
+        return u"[%s] %s %s %s"%(self.status,self.peering_point,self.query_type,self.query)
+    @classmethod
+    def submit_query(cls,remote_addr,peering_point,query_type,query):
+        q=LGQuery(status="n",peering_point=peering_point,query_type=query_type,query=query,
+            remote_addr=remote_addr,query_id=random.randint(0,0x7FFFFFFF))
+        q.save()
+        return q
