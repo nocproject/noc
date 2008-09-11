@@ -1,10 +1,9 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django import forms
-from django.utils.simplejson.encoder import JSONEncoder
 
 from noc.peer.models import AS,ASSet,LGQueryType,PeeringPoint,LGQuery
-from noc.lib.render import render,render_plain_text
+from noc.lib.render import render,render_plain_text,render_json
 from noc.lib.validators import is_asn,is_as_set
 
 def as_rpsl(request,asn):
@@ -48,4 +47,4 @@ def lg_json(request,query_id):
         "status" : q.status,
         "out"    : q.out,
     }
-    return HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),mimetype="text/json")
+    return render_json(r)
