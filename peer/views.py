@@ -5,6 +5,7 @@ from django import forms
 from noc.peer.models import AS,ASSet,LGQueryType,PeeringPoint,LGQuery
 from noc.lib.render import render,render_plain_text,render_json
 from noc.lib.validators import is_asn,is_as_set
+import re
 
 def as_rpsl(request,asn):
     assert is_asn(asn)
@@ -27,7 +28,7 @@ def as_set_rpsl(request,as_set):
 class LGForm(forms.Form):
     peering_point= forms.ModelChoiceField(queryset=PeeringPoint.objects.filter(lg_rcmd__isnull=False))
     query_type   = forms.ModelChoiceField(queryset=LGQueryType.objects.all())
-    query        = forms.CharField()
+    query        = forms.CharField(required=False)
     
 def lg(request):
     q=None
@@ -45,9 +46,32 @@ def lg_json(request,query_id):
     q=get_object_or_404(LGQuery,query_id=int(query_id))
     r={
         "status" : q.status,
-        "out"    : q.out,
+        "out"    : LG_OUTPUT_FORMATTER[q.peering_point.type.name](q.out),
     }
     # Remove complete and failed queries
     if q.status in ["c","f"]:
         q.delete()
     return render_json(r)
+##
+## Output formatters for lg
+##
+def whois_formatter(q):
+    return "<A HREF='http://www.db.ripe.net/whois?AS%s'>%s</A>"%(q,q)
+
+rx_junos_as_path=re.compile("(?<=AS path: )(\d+(?: \d+)*)",re.MULTILINE|re.DOTALL)
+rx_junos_best_path=re.compile(r"([+*]\[.*?\s> to \S+ via \S+)",re.MULTILINE|re.DOTALL)
+def JuniperOutputFormatter(s):
+    def format_as_path_list(m):
+        as_list=m.group(1).split()
+        return " ".join([whois_formatter(x) for x in as_list])
+    s=rx_junos_as_path.sub(format_as_path_list,s)
+    s=rx_junos_best_path.sub(r"<span style='color: red'>\1</span>",s)
+    return s
+
+def CiscoOutputFormatter(s):
+    return s
+    
+LG_OUTPUT_FORMATTER={
+    "Cisco"   : CiscoOutputFormatter,
+    "Juniper" : JuniperOutputFormatter,
+}
