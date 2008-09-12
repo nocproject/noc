@@ -21,7 +21,7 @@ class PeeringPointTypeAdmin(admin.ModelAdmin):
     inlines=[LGQueryCommandAdmin]
         
 class PeeringPointAdmin(admin.ModelAdmin):
-    list_display=["hostname","router_id","type","communities"]
+    list_display=["hostname","location","router_id","type","communities"]
     list_filter=["type"]
     search_fields=["hostname","router_id"]
         

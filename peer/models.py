@@ -135,12 +135,16 @@ class PeeringPoint(models.Model):
         verbose_name="Peering Point"
         verbose_name_plural="Peering Points"
     hostname=models.CharField("FQDN",max_length=64,unique=True)
+    location=models.CharField("Location",max_length=64,blank=True,null=True)
     router_id=models.IPAddressField("Router-ID",unique=True)
     type=models.ForeignKey(PeeringPointType,verbose_name="Type")
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
     lg_rcmd=models.CharField("LG RCMD Url",max_length=128,blank=True,null=True)
     def __str__(self):
-        return self.hostname
+        if self.location:
+            return "%s (%s)"%(self.hostname,self.location)
+        else:
+            return self.hostname
     def __unicode__(self):
         return unicode(self.hostname)
     def _rconfig(self):
