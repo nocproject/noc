@@ -2,7 +2,7 @@
 #
 # Looking Glass Daemon
 #
-import sys,psycopg2,asyncore,re,socket,os
+import sys,psycopg2,asyncore,re,socket,os,logging,signal
 
 #
 rx_url=re.compile("^(?P<scheme>[^:]+)://(?P<user>[^:]+):(?P<password>[^@]+)@(?P<host>[^/]+)(/|$)")
@@ -11,19 +11,27 @@ rx_url=re.compile("^(?P<scheme>[^:]+)://(?P<user>[^:]+):(?P<password>[^@]+)@(?P<
 ##
 class Supervisor(object):
     def __init__(self):
+        logging.info("Starting supervisor")
+        logging.info("Setting signal handlers")
+        signal.signal(signal.SIGCHLD,self.sig_chld)
+        logging.info("Connecting to database")
         self.connect=psycopg2.connect("user=dima dbname=noc")
         self.connect.set_isolation_level(0)
         self.query_checker=QueryChecker(self)
         self.cursor=self.get_cursor()
         self.children={}
         self.cleanup()
+        logging.info("Supervisor is ready")
         
     def get_cursor(self):
+        logging.debug("Creating cursor")
         return self.connect.cursor()
         
     def cleanup(self):
+        logging.debug("Cleaning up")
         self.cursor.execute("BEGIN");
         self.cursor.execute("DELETE FROM peer_lgquery WHERE status IN ('n','p')")
+        self.cursor.execute("DELETE FROM peer_lgquery WHERE time<('now'::timestamp-'1h'::interval)")
         self.cursor.execute("COMMIT");
         
     def run(self):
@@ -70,6 +78,11 @@ class Supervisor(object):
         self.cursor.execute("UPDATE peer_lgquery SET status='%s',out=out||'%s' WHERE id=%d"%(status.replace("'","''"),
             out.replace("'","''"),id))
         self.cursor.execute("END")
+        
+    def sig_chld(self,signum,frame):
+        logging.debug("SIGCHLD caught")
+        pid,status=os.waitpid(-1,os.WNOHANG)
+        logging.debug("Process PID=%d is terminated with code %d"%(pid,status))
 
 ##
 ## QueryChecker
@@ -215,6 +228,8 @@ ACCESS_SCHEME={
 def usage(): pass
 
 def main():
+    logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
+    logging.info("Starting LGD")
     supervisor=Supervisor()
     supervisor.run()
     
