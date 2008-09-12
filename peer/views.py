@@ -47,4 +47,7 @@ def lg_json(request,query_id):
         "status" : q.status,
         "out"    : q.out,
     }
+    # Remove complete and failed queries
+    if q.status in ["c","f"]:
+        q.delete()
     return render_json(r)

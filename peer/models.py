@@ -146,7 +146,10 @@ class PeeringPoint(models.Model):
         else:
             return self.hostname
     def __unicode__(self):
-        return unicode(self.hostname)
+        if self.location:
+            return u"%s (%s)"%(self.hostname,self.location)
+        else:
+            return self.hostname
     def _rconfig(self):
         objects={}
         s=["HOST %s %s"%(self.hostname,self.type.name.upper())]
