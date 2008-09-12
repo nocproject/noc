@@ -125,14 +125,14 @@ class StreamParser(object):
     startup_commands=[]
     logout_commands=["exit"]
     
-class CiscoParser(StreamParser): pass
+class IOSParser(StreamParser): pass
 
-class JuniperParser(StreamParser):
+class JUNOSParser(StreamParser):
     pattern_prompt="^({master}\n)?\S*>"
 
 STREAM_PARSERS={
-    "Cisco"   : CiscoParser,
-    "Juniper" : JuniperParser,
+    "IOS"   : IOSParser,
+    "JUNOS" : JUNOSParser,
 }
 
 ##

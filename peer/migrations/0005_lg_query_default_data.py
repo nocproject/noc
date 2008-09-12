@@ -1,16 +1,18 @@
 from south.db import db
 from noc.peer.models import *
 
+# Values:
+#   (QueryType,Command,ArgRequired)
 DEFAULT={
-    "Cisco": [
+    "IOS": [
         ("ipv4:bgp",          "show ip bgp %(query)s"),
         ("advertised-routes", "show ip bgp neighbors %(query)s advertised-routes"),
         ("summary",           "show ip bgp summary"),
         ("ping",              "ping %(query)s"),
         ("trace",             "traceroute %(query)s"),
     ],
-    "Juniper": [
-        ("ipv4:bgp",           "show bgp %(query)s"),
+    "JUNOS": [
+        ("ipv4:bgp",           "show route table inet.0 %(query)s"),
         ("advertised-routes" , "show route advertising-protocol bgp %(query)s %(query)s"),
         ("summary",            "show bgp summary"),
         ("ping",               "ping count 5 %(query)s"),

@@ -60,7 +60,7 @@ def whois_formatter(q):
 
 rx_junos_as_path=re.compile("(?<=AS path: )(\d+(?: \d+)*)",re.MULTILINE|re.DOTALL)
 rx_junos_best_path=re.compile(r"([+*]\[.*?\s> to \S+ via \S+)",re.MULTILINE|re.DOTALL)
-def JuniperOutputFormatter(s):
+def JUNOSOutputFormatter(s):
     def format_as_path_list(m):
         as_list=m.group(1).split()
         return " ".join([whois_formatter(x) for x in as_list])
@@ -68,10 +68,10 @@ def JuniperOutputFormatter(s):
     s=rx_junos_best_path.sub(r"<span style='color: red'>\1</span>",s)
     return s
 
-def CiscoOutputFormatter(s):
+def IOSOutputFormatter(s):
     return s
     
 LG_OUTPUT_FORMATTER={
-    "Cisco"   : CiscoOutputFormatter,
-    "Juniper" : JuniperOutputFormatter,
+    "IOS"   : IOSOutputFormatter,
+    "JUNOS" : JUNOSOutputFormatter,
 }
