@@ -4,7 +4,7 @@
 #
 import sys,psycopg2,asyncore,re,socket,os,logging,signal,getopt
 
-#
+##
 rx_url=re.compile("^(?P<scheme>[^:]+)://(?P<user>[^:]+):(?P<password>[^@]+)@(?P<host>[^/]+)(/|$)")
 ##
 ## Validators
@@ -48,13 +48,19 @@ class Supervisor(object):
         logging.info("Setting signal handlers")
         signal.signal(signal.SIGCHLD,self.sig_chld)
         logging.info("Connecting to database")
-        self.connect=psycopg2.connect("user=dima dbname=noc")
+        print self.get_dsn()
+        self.connect=psycopg2.connect(self.get_dsn())
         self.connect.set_isolation_level(0)
         self.query_checker=QueryChecker(self)
         self.cursor=self.get_cursor()
         self.children={}
         self.cleanup()
         logging.info("Supervisor is ready")
+        
+    # Simpified and crude
+    def get_dsn(self):
+        v=[("dbname",settings.DATABASE_NAME),("user",settings.DATABASE_USER),("password",settings.DATABASE_PASSWORD)]
+        return " ".join(["%s=%s"%tuple(x) for x in v if x[1]])
         
     def get_cursor(self):
         logging.debug("Creating cursor")
@@ -327,9 +333,9 @@ ACCESS_SCHEME={
 
 def usage():
     print "USAGE:"
-    print "%s [-h] [-v]"%sys.argv[0]
-    print "\t-h\t- Help screen"
-    print "\t-v\t- Verbose debug output"
+    print "%s [-h] [-v] [-c <settings>]"%sys.argv[0]
+    print "\t-h\t\t- Help screen"
+    print "\t-v\t\t- Verbose debug output"
 
 def main():
     log_level=logging.INFO
@@ -346,5 +352,12 @@ def main():
     supervisor.run()
     
 if __name__ == '__main__':
-	main()
-
+    d=os.path.dirname(sys.argv[0])
+    sys.path.insert(0,os.path.join(d,".."))
+    sys.path.insert(0,d)
+    try:
+        import settings
+    except ImportError:
+        sys.stderr.write("Error: Can't find file 'settings.py'. (If the file settings.py does indeed exist, it's causing an ImportError somehow.)\n")
+        sys.exit(1)
+    main()
