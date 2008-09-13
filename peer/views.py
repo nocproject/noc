@@ -2,9 +2,9 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django import forms
 
-from noc.peer.models import AS,ASSet,LGQueryType,PeeringPoint,LGQuery
+from noc.peer.models import AS,ASSet,LGQueryType,PeeringPoint,LGQuery,LGQueryCommand
 from noc.lib.render import render,render_plain_text,render_json
-from noc.lib.validators import is_asn,is_as_set
+from noc.lib.validators import is_asn,is_as_set,is_ipv4,is_cidr
 import re
 
 def as_rpsl(request,asn):
@@ -29,6 +29,20 @@ class LGForm(forms.Form):
     peering_point= forms.ModelChoiceField(queryset=PeeringPoint.objects.filter(lg_rcmd__isnull=False))
     query_type   = forms.ModelChoiceField(queryset=LGQueryType.objects.all())
     query        = forms.CharField(required=False)
+    def clean_query(self):
+        peering_point = self.cleaned_data.get("peering_point", None)
+        query_type = self.cleaned_data.get("query_type", None)
+        query = self.cleaned_data.get("query", "").strip()
+        if peering_point and query_type:
+            try:
+                qc=LGQueryCommand.objects.get(peering_point_type=peering_point.type,query_type=query_type)
+            except LGQueryCommand.DoesNotExist:
+                raise forms.ValidationError("Query type is not supported for this router")
+            if query=="" and qc.is_argument_required:
+                raise forms.ValidationError("Missed query argument")
+            if not is_ipv4(query) and not is_cidr(query):
+                raise forms.ValidationError("Invalid query")
+        return query
     
 def lg(request):
     q=None

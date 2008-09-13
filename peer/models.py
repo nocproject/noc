@@ -139,7 +139,8 @@ class PeeringPoint(models.Model):
     router_id=models.IPAddressField("Router-ID",unique=True)
     type=models.ForeignKey(PeeringPointType,verbose_name="Type")
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
-    lg_rcmd=models.CharField("LG RCMD Url",max_length=128,blank=True,null=True)
+    lg_rcmd=models.CharField("LG RCMD Url",max_length=128,blank=True,null=True,
+        help_text="&lt;schema&gt;://&lt;user&gt;:&lt;password&gt;@host/, where &lt;schema&gt; is one of telnet, ssh")
     def __str__(self):
         if self.location:
             return "%s (%s)"%(self.hostname,self.location)
@@ -272,6 +273,9 @@ class LGQueryCommand(models.Model):
     command=models.CharField("Command",max_length=128)
     def __unicode__(self):
         return "%s %s"%(self.peering_point_type.name,self.query_type.name)
+    def _is_argument_required(self):
+        return self.command and "%(query)s" in self.command
+    is_argument_required=property(_is_argument_required)
 ##
 ## Looking glass query
 ## Used for exchange with LGD
@@ -288,7 +292,7 @@ class LGQuery(models.Model):
     query_id=models.IntegerField("Query ID")
     peering_point=models.ForeignKey(PeeringPoint,verbose_name="Peering Point")
     query_type=models.ForeignKey(LGQueryType,verbose_name="Query Type")
-    query=models.CharField("Query",max_length=128)
+    query=models.CharField("Query",max_length=128,null=True,blank=True)
     out=models.TextField("Out",default="")
     def __unicode__(self):
         return u"[%s] %s %s %s"%(self.status,self.peering_point,self.query_type,self.query)

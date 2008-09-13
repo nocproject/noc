@@ -18,7 +18,7 @@ class Migration:
             ('status', models.CharField("Status",max_length=1, choices=[("n","New"),("p","In Progress"),("f","Failure"),("c","Complete")],default="n")),
             ('peering_point', models.ForeignKey(PeeringPoint,verbose_name="Peering Point")),
             ('query_type', models.ForeignKey(LGQueryType,verbose_name="Query Type")),
-            ('query', models.CharField("Query",max_length=128)),
+            ('query', models.CharField("Query",max_length=128,null=True,blank=True)),
             ('out', models.TextField("Out",default=""))
         ))
         db.create_index('peer_lgquery', ['remote_addr','query_id'], unique=True, db_tablespace='')

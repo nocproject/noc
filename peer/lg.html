@@ -2,8 +2,25 @@
 {% block content %}
 
 <FORM ACTION="" METHOD="POST">
-    {{form.peering_point}} {{form.query_type}} {{form.query}} 
-    <INPUT TYPE="submit" VALUE="Query" />
+    <TABLE BORDER="0">
+        <TR>
+            <TH>Peering Point</TH>
+            <TH>Query Type</TH>
+            <TH>Query</TH>
+            <TH></TH>
+        </TR>
+        <TR>
+            <TD>{{form.peering_point}}</TD>
+            <TD>{{form.query_type}}</TD>
+            <TD>{{form.query}}</TD>
+            <TD><INPUT TYPE="submit" VALUE="Query" /></TD>
+        </TR>
+        <TR>
+            <TD>{{form.peering_point.errors}}</TD>
+            <TD>{{form.query_type.errors}}</TD>
+            <TD>{{form.query.errors}}</TD>
+        </TR>
+    </TABLE>
 </FORM>
 
 {% if q %}
@@ -33,14 +50,17 @@
         }
     }
     
+    var error_report = function(error,args) {
+        node=dojo.byId("out");
+        node.innerHTML="ERROR:\n";
+    }
+    
     var get_result = function() {
         dojo.xhrGet({
             url: "{{q.query_id}}/",
             handleAs: "json",
             load: process_data,
-            error: function(error,args) {
-                alert("error");
-            }
+            error: error_report,
         }
         );
     }
