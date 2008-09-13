@@ -12,7 +12,7 @@ DEFAULT={
         ("trace",             "traceroute %(query)s"),
     ],
     "JUNOS": [
-        ("ipv4:bgp",           "show route table inet.0 %(query)s"),
+        ("ipv4:bgp",           "show route table inet.0 %(query)s detail"),
         ("advertised-routes" , "show route advertising-protocol bgp %(query)s %(query)s"),
         ("summary",            "show bgp summary"),
         ("ping",               "ping count 5 %(query)s"),
