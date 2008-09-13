@@ -2,8 +2,11 @@
 ##
 ##
 from django.contrib import admin
-from noc.dns.models import DNSZoneProfile,DNSZone,DNSZoneRecordType,DNSZoneRecord
+from noc.dns.models import DNSServer,DNSZoneProfile,DNSZone,DNSZoneRecordType,DNSZoneRecord
 
+class DNSServerAdmin(admin.ModelAdmin):
+    pass
+    
 class DNSZoneProfileAdmin(admin.ModelAdmin):
     pass
 
@@ -22,6 +25,7 @@ class DNSZoneRecordTypeAdmin(admin.ModelAdmin):
     search_fields=["type"]
     list_filter=["is_visible"]
 
+admin.site.register(DNSServer, DNSServerAdmin)
 admin.site.register(DNSZoneProfile,DNSZoneProfileAdmin)
 admin.site.register(DNSZone,DNSZoneAdmin)
 admin.site.register(DNSZoneRecordType,DNSZoneRecordTypeAdmin)

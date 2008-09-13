@@ -5,6 +5,34 @@ from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
 
 ##
+## DNSServerType.
+## Please, do not modify table contents directly, use migrations instead.
+## Values are hardcoded in provisioning
+##
+class DNSServerType(models.Model):
+    class Meta:
+        verbose_name="DNS Server Type"
+        verbose_name_plural="DNS Servers Type"
+    name=models.CharField("Name",max_length=32,unique=True)
+    def __unicode__(self):
+        return self.name
+##
+## DNS Server
+##
+class DNSServer(models.Model):
+    class Meta:
+        verbose_name="DNS Server"
+        verbose_name_plural="DNS Servers"
+    name=models.CharField("Name",max_length=64,unique=True)
+    type=models.ForeignKey(DNSServerType,verbose_name="Type")
+    description=models.CharField("Description",max_length=128,blank=True,null=True)
+    location=models.CharField("Location",max_length=128,blank=True,null=True)
+    def __unicode__(self):
+        if self.location:
+            return "%s (%s)"%(self.name,self.location)
+        else:
+            return self.name
+##
 ##
 ##
 class DNSZoneProfile(models.Model):
@@ -12,8 +40,8 @@ class DNSZoneProfile(models.Model):
         verbose_name="DNS Zone Profile"
         verbose_name_plural="DNS Zone Profiles"
     name=models.CharField("Name",max_length=32,unique=True)
+    ns_servers=models.ManyToManyField(DNSServer,verbose_name="NS Servers")
     zone_transfer_acl=models.CharField("named zone transfer ACL",max_length=64)
-    zone_ns_list=models.CharField("NS list",max_length=64)
     zone_soa=models.CharField("SOA",max_length=64)
     zone_contact=models.CharField("Contact",max_length=64)
     zone_refresh=models.IntegerField("Refresh",default=3600)
@@ -266,11 +294,11 @@ $ORIGIN %(domain)s.
     
     def _ns_list(self):
         nses=[]
-        for ns in self.profile.zone_ns_list.split(","):
-            ns=ns.strip()
-            if not is_ipv4(ns) and not ns.endswith("."):
-                ns+="."
-            nses.append(ns)
+        for ns in self.profile.ns_servers.all():
+            n=ns.name.strip()
+            if not is_ipv4(n) and not n.endswith("."):
+                n+="."
+            nses.append(n)
         return nses
     ns_list=property(_ns_list)
 ##
