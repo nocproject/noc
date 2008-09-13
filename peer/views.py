@@ -55,20 +55,24 @@ def lg_json(request,query_id):
 ##
 ## Output formatters for lg
 ##
-def whois_formatter(q):
-    return "<A HREF='http://www.db.ripe.net/whois?AS%s'>%s</A>"%(q,q)
+def as_path_list_formatter(m):
+    def whois_formatter(q):
+        return "<A HREF='http://www.db.ripe.net/whois?AS%s'>%s</A>"%(q,q)
+    as_list=m.group(1).split()
+    return " ".join([whois_formatter(x) for x in as_list])
 
 rx_junos_as_path=re.compile("(?<=AS path: )(\d+(?: \d+)*)",re.MULTILINE|re.DOTALL)
-rx_junos_best_path=re.compile(r"([+*]\[.*?\s> to \S+ via \S+)",re.MULTILINE|re.DOTALL)
+rx_junos_best_path=re.compile(r"^(\s+[+*].+?\s+Router ID: \S+)",re.MULTILINE|re.DOTALL)
 def JUNOSOutputFormatter(s):
-    def format_as_path_list(m):
-        as_list=m.group(1).split()
-        return " ".join([whois_formatter(x) for x in as_list])
-    s=rx_junos_as_path.sub(format_as_path_list,s)
+    s=rx_junos_as_path.sub(as_path_list_formatter,s)
     s=rx_junos_best_path.sub(r"<span style='color: red'>\1</span>",s)
     return s
 
+rx_ios_as_path=re.compile(r"^\s+(\d+(?: \d+)*)$",re.MULTILINE|re.DOTALL)
+rx_ios_best_path=re.compile(r"(<A HREF.+?>.+?best)",re.MULTILINE|re.DOTALL)
 def IOSOutputFormatter(s):
+    s=rx_ios_as_path.sub(as_path_list_formatter,s)
+    s=rx_ios_best_path.sub(r"<span style='color: red'>\1</span>",s)
     return s
     
 LG_OUTPUT_FORMATTER={
