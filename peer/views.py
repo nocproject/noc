@@ -82,7 +82,7 @@ def JUNOSOutputFormatter(s):
     s=rx_junos_best_path.sub(r"<span style='color: red'>\1</span>",s)
     return s
 
-rx_ios_as_path=re.compile(r"^\s+(\d+(?: \d+)*)$",re.MULTILINE|re.DOTALL)
+rx_ios_as_path=re.compile(r"^(\s+\d+(?: \d+)*),",re.MULTILINE|re.DOTALL)
 rx_ios_best_path=re.compile(r"(<A HREF.+?>.+?best)",re.MULTILINE|re.DOTALL)
 def IOSOutputFormatter(s):
     s=rx_ios_as_path.sub(as_path_list_formatter,s)
