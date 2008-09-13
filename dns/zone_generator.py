@@ -1,0 +1,65 @@
+#
+# Abstract DNS zone generator
+#
+class ZoneGenerator(object):
+    def __init__(self,zone):
+        self.zone=zone
+        
+    def get_header(self):
+        return """;;
+;; WARNING: Auto-generated zone file
+;; Do not edit manually
+;; Use python manage.py sync-zones to rebuild
+;;
+"""
+    def get_footer(self):
+        return """
+;;
+;; End of auto-generated zone
+;;
+"""
+    def get_soa(self):
+        raise Exception,"SOA Not implemented"
+    
+    def get_records(self):
+        raise Exception,"Records Not implemented"
+        
+    def get_zone(self):
+        s=""
+        s+=self.get_header()
+        s+=self.get_soa()
+        s+=self.get_records()
+        s+=self.get_footer()
+        return s
+        
+    def format_3_columns(self,records):
+        maxlen_1=10
+        maxlen_2=3
+        records=[r for r in records if len(r)==3]
+        for a,b,c in records:
+            l=len(a)
+            if l>maxlen_1:
+                maxlen_1=l
+            l=len(b)
+            if l>maxlen_2:
+                maxlen_2=l
+        mask="%%-%ds   %%-%ds   %%s"%(maxlen_1,maxlen_2)
+        return "\n".join([mask%tuple(r) for r in records if len(r)==3])
+    
+    def pretty_time(self,t):
+        if t==0:
+            return "zero"
+        T=["week","day","hour","min","sec"]
+        W=[345600,86400,3600,60,1]
+        r=[]
+        for w in W:
+            rr=int(t/w)
+            t-=rr*w
+            r.append(rr)
+        z=[]
+        for rr,t in zip(r,T):
+            if rr>1:
+                z.append("%d %ss"%(rr,t))
+            elif rr>0:
+                z.append("%d %s"%(rr,t))
+        return " ".join(z)

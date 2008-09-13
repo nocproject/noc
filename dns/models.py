@@ -3,6 +3,13 @@ from django.db import models
 from noc.setup.models import Settings
 from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
+# DNS Zone Generators
+from noc.dns.bindv9_zone_generator import BINDv9ZoneGenerator
+
+ZONE_GENERATORS={
+    "BINDv9": BINDv9ZoneGenerator,
+}
+
 
 ##
 ## DNSServerType.
@@ -54,25 +61,6 @@ class DNSZoneProfile(models.Model):
 
     def __unicode__(self):
         return self.name
-
-    @classmethod
-    def pretty_time(cls,t):
-        if t==0:
-            return "zero"
-        T=["week","day","hour","min","sec"]
-        W=[345600,86400,3600,60,1]
-        r=[]
-        for w in W:
-            rr=int(t/w)
-            t-=rr*w
-            r.append(rr)
-        z=[]
-        for rr,t in zip(r,T):
-            if rr>1:
-                z.append("%d %ss"%(rr,t))
-            elif rr>0:
-                z.append("%d %s"%(rr,t))
-        return " ".join(z)
 
     def _ztacl(self):
         return "allow-transfer { %s; };"%self.zone_transfer_acl.replace("}","")
@@ -133,7 +121,8 @@ class DNSZone(models.Model):
             return p+"%02d"%(sn+1)
         return p+"00"
     next_serial=property(_next_serial)
-    def _zonedata(self):
+    
+    def _records(self):
         from django.db import connection
         c=connection.cursor()
         if self.type=="F":
@@ -184,51 +173,14 @@ class DNSZone(models.Model):
             for ns in z.ns_list:
                 records+=[[z.name[:-l-1],"IN NS",ns]]
         records.sort(lambda x,y:cmp(x[0],y[0]))
-        nses=["\tNS\t%s\n"%n for n in self.ns_list]
-        nses="".join(nses)
-        contact=self.profile.zone_contact.replace("@",".")
-        if not contact.endswith("."):
-            contact+="."
-        s=""";;
-;; WARNING: Auto-generated zone file
-;; Do not edit manually
-;;
-$ORIGIN .
-$TTL %(ttl)d
-%(domain)s IN SOA %(soa)s %(contact)s (
-            %(serial)s ; serial
-            %(refresh)d       ; refresh (%(pretty_refresh)s)
-            %(retry)d        ; retry (%(pretty_retry)s)
-            %(expire)d    ; expire (%(pretty_expire)s)
-            %(ttl)d       ; minimum (%(pretty_ttl)s)
-            )
-%(nses)s
-$ORIGIN %(domain)s.
-"""%{"domain":self.name,
-        "soa":self.profile.zone_soa,
-        "contact":contact,
-        "serial":self.serial,
-        "ttl":self.profile.zone_ttl,"pretty_ttl":DNSZoneProfile.pretty_time(self.profile.zone_ttl),
-        "refresh":self.profile.zone_refresh,"pretty_refresh":DNSZoneProfile.pretty_time(self.profile.zone_refresh),
-        "retry":self.profile.zone_retry,"pretty_retry":DNSZoneProfile.pretty_time(self.profile.zone_retry),
-        "expire":self.profile.zone_expire,"pretty_expire":DNSZoneProfile.pretty_time(self.profile.zone_expire),
-        "nses":nses
-        }
-        maxlen=10
-        records=[r for r in records if len(r)==3]
-        for a,b,c in records:
-            l=len(a)
-            if l>maxlen:
-                maxlen=l
-        mask="%%-%ds %%-6s %%s"%maxlen
-        s+="\n".join([mask%tuple(r) for r in records if len(r)==3])
-        s+="""
-;;
-;; End of auto-generated zone
-;;
-"""
-        return s
+        return records
+    records=property(_records)
+    
+    def _zonedata(self):
+        generator=BINDv9ZoneGenerator(self)
+        return generator.get_zone()
     zonedata=property(_zonedata)
+    
     def rewrite_zone(self):
         path=self.path
         zd=self.zonedata
