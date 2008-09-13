@@ -2,10 +2,43 @@
 #
 # Looking Glass Daemon
 #
-import sys,psycopg2,asyncore,re,socket,os,logging,signal
+import sys,psycopg2,asyncore,re,socket,os,logging,signal,getopt
 
 #
 rx_url=re.compile("^(?P<scheme>[^:]+)://(?P<user>[^:]+):(?P<password>[^@]+)@(?P<host>[^/]+)(/|$)")
+##
+## Validators
+##
+def is_ipv4(v):
+    X=v.split(".")
+    if len(X)!=4:
+        return False
+    try:
+        return len([x for x in X if 0<=int(x)<=255])==4
+    except:
+        return False
+    
+def is_cidr(v):
+    x=v.split("/")
+    if len(x)!=2:
+        return False
+    if not is_ipv4(x[0]):
+        return False
+    try:
+        y=int(x[1])
+    except:
+        return False
+    return 0<=y<=32
+    
+def bits_to_netmask(bits):
+    try:
+        bits=int(bits)
+        if bits<=0 or bits>32:
+            raise Exception
+    except:
+        return "255.255.255.255"
+    m=((1L<<bits)-1L)<<(32L-bits)
+    return ".".join(["%d"%(x&0xFF) for x in [m>>24,m>>16,m>>8,m]])
 ##
 ## Supervisor:
 ##
@@ -39,6 +72,10 @@ class Supervisor(object):
             asyncore.loop(timeout=1,count=1)
             
     def start_lookup(self,id,peering_point_id,query_type_id,query):
+        query=query.strip()
+        if not is_ipv4(query) and not is_cidr(query):
+            self.query_error("Invalid query")
+            return
         self.cursor.execute("BEGIN")
         self.cursor.execute("SELECT ppt.name,pp.lg_rcmd,c.command "\
             +"FROM peer_lgquerycommand c JOIN peer_peeringpointtype ppt ON (c.peering_point_type_id=ppt.id) "\
@@ -46,11 +83,13 @@ class Supervisor(object):
             +"WHERE pp.id=%d AND c.query_type_id=%d"%(peering_point_id,query_type_id))
         r=self.cursor.fetchall()
         if len(r)==0:
+            self.cursor.execute("ROLLBACK")
             self.query_error("Query type is not supported")
+            return
         else:
             ppt,rcmd,command=r[0]
             if "%(query)s" in command:
-                command=command%{"query":query}
+                command=command%{"query":STREAM_PARSERS[ppt]().clean_query(query)}
             self.rcmd(ppt,id,rcmd,command)
         self.cursor.execute("COMMIT")
         
@@ -125,9 +164,21 @@ class StreamParser(object):
     startup_commands=[]
     logout_commands=["exit"]
     
-class IOSParser(StreamParser): pass
+    def clean_query(self,q):
+        return q
+    
+class IOSParser(StreamParser):
+    startup_commands=["terminal length 0"]
+    
+    def clean_query(self,q):
+        if "/" in q:
+            l,r=q.split("/")
+            return "%s %s"%(l,bits_to_netmask(r))
+        else:
+            return q
 
 class JUNOSParser(StreamParser):
+    startup_commands=["set cli screen-length 0"]
     pattern_prompt="^({master}\n)?\S*>"
 
 STREAM_PARSERS={
@@ -274,10 +325,22 @@ ACCESS_SCHEME={
 }
 #
 
-def usage(): pass
+def usage():
+    print "USAGE:"
+    print "%s [-h] [-v]"%sys.argv[0]
+    print "\t-h\t- Help screen"
+    print "\t-v\t- Verbose debug output"
 
 def main():
-    logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
+    log_level=logging.INFO
+    optlist,optarg=getopt.getopt(sys.argv[1:],"vh")
+    for k,v in optlist:
+        if k=="-v":
+            log_level=logging.DEBUG
+        elif k=="-h":
+            usage()
+            sys.exit(0)
+    logging.basicConfig(level=log_level,format='%(asctime)s %(levelname)s %(message)s')
     logging.info("Starting LGD")
     supervisor=Supervisor()
     supervisor.run()
