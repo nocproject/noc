@@ -2,6 +2,7 @@
 ## BINDv9 Zone Generator
 ##
 from noc.dns.zone_generator import ZoneGenerator
+import time
 
 class BINDv9ZoneGenerator(ZoneGenerator):
     def get_soa(self):
@@ -42,11 +43,13 @@ $TTL %(ttl)d
         return s
         
     def get_include(self,ns):
+        T=time.localtime()
         s="""#
 # WARNING: This is auto-generated file
 # Do not edit manually
+# Timestamp: %02d.%02d.%04d %02d:%02d:%02d
 #
-"""
+"""%(T[2],T[1],T[0],T[3],T[4],T[5])
         zones={}
         for p in ns.dnszoneprofile_set.filter():
             for z in p.dnszone_set.filter(is_auto_generated=True):
