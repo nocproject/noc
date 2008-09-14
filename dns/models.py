@@ -220,13 +220,14 @@ class DNSZone(models.Model):
                 safe_rewrite(inc_path,g.get_include(ns))
         return nses.keys()
     
-    def zone_link(self):
-        r=[]
-        for ns in self.profile.ns_servers.all():
-            r+=["<A HREF='/dns/%s/zone/%s/'>%s</A>"%(self.name,ns.id,ns.name)]
-        return ", ".join(r)
-    zone_link.short_description="Zone"
-    zone_link.allow_tags=True
+    def _distribution_list(self):
+        return self.profile.ns_servers.filter(provisioning__isnull=False)
+    distribution_list=property(_distribution_list)
+    
+    def distribution(self):
+        return ", ".join(["<A HREF='/dns/%s/zone/%s/'>%s</A>"%(self.name,n.id,n.name) for n in self.distribution_list])
+    distribution.short_description="Distribution"
+    distribution.allow_tags=True
             
     @classmethod
     def sync_zones(cls):
