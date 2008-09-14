@@ -35,11 +35,22 @@ class DNSServer(models.Model):
     type=models.ForeignKey(DNSServerType,verbose_name="Type")
     description=models.CharField("Description",max_length=128,blank=True,null=True)
     location=models.CharField("Location",max_length=128,blank=True,null=True)
+    provisioning=models.CharField("Provisioning",max_length=128,blank=True,null=True,
+        help_text="Script for zone provisioning")
     def __unicode__(self):
         if self.location:
             return "%s (%s)"%(self.name,self.location)
         else:
             return self.name
+    def provision_zones(self):
+        if self.provisioning:
+            os.environ["RSYNC_RSH"]=Settings.get("shell.ssh")
+            os.chdir(os.path.join(Settings.get("dns.zone_cache"),self.name))
+            cmd=self.provisioning%{
+                "rsync": Settings.get("shell.rsync"),
+                "ns"   : self.name
+            }
+            os.system(cmd)
 ##
 ##
 ##
@@ -181,6 +192,9 @@ class DNSZone(models.Model):
     def zonedata(self,ns):
         return self.get_zone_generator(ns).get_zone(self)
     
+    ##
+    ## Rewrites zone files and return a list of affected nameservers
+    ##
     @classmethod
     def rewrite_zones(cls):
         cache_path=Settings.get("dns.zone_cache")
@@ -204,6 +218,7 @@ class DNSZone(models.Model):
                 inc_path=os.path.join(cache_path,ns.name,"autozones.conf")
                 g=cls.get_zone_generator(ns)
                 safe_rewrite(inc_path,g.get_include(ns))
+        return nses.keys()
     
     def zone_link(self):
         return "<A HREF='/dns/%s/zone/'>Zone</A>"%self.name
@@ -212,11 +227,10 @@ class DNSZone(models.Model):
             
     @classmethod
     def sync_zones(cls):
-        cls.rewrite_zones()
-        os.environ["RSYNC_RSH"]=Settings.get("shell.ssh")
-        os.chdir(Settings.get("dns.zone_cache"))
-        os.system("%s -av --delete * %s"%(Settings.get("shell.rsync"),Settings.get("dns.rsync_target")))
-            
+        nses=cls.rewrite_zones()
+        for ns in nses:
+            ns.provision_zones()
+
     def _children(self):
         l=len(self.name)
         return [z for z in DNSZone.objects.filter(name__iendswith="."+self.name) if "." not in z.name[:-l-1]]
