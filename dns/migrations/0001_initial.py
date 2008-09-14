@@ -3,6 +3,9 @@ from south.db import db
 from noc.dns.models import *
 
 class Migration:
+    depends_on=(
+        ("setup","0001_initial"),
+    )
     
     def forwards(self):
         

@@ -1,8 +1,12 @@
-
+    
 from south.db import db
 from noc.ip.models import *
 
 class Migration:
+    depends_on=(
+        ("setup","0001_initial"),
+        ("peer" ,"0001_initial"),
+    )
     
     def forwards(self):
         
