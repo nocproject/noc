@@ -40,3 +40,27 @@ $TTL %(ttl)d
         s="$ORIGIN %s\n"%self.zone.name
         s+=self.format_3_columns(self.zone.records)
         return s
+        
+    def get_include(self,ns):
+        s="""#
+# WARNING: This is auto-generated file
+# Do not edit manually
+#
+"""
+        zones={}
+        for p in ns.dnszoneprofile_set.filter():
+            for z in p.dnszone_set.filter(is_auto_generated=True):
+                zones[z.id]=z
+        for z in zones.values():
+            s+="""zone "%(zone)s" {
+    type master;
+    file "autozones/%(ns)s/%(zone)s";
+    allow-transfer { acl-backup-ns; };
+};
+
+"""%{"zone":z.name,"ns":ns.name}
+        s+="""#
+# End of auto-generated file
+#
+"""
+        return s

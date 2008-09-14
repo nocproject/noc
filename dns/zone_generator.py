@@ -2,9 +2,6 @@
 # Abstract DNS zone generator
 #
 class ZoneGenerator(object):
-    def __init__(self,zone):
-        self.zone=zone
-        
     def get_header(self):
         return """;;
 ;; WARNING: Auto-generated zone file
@@ -24,13 +21,17 @@ class ZoneGenerator(object):
     def get_records(self):
         raise Exception,"Records Not implemented"
         
-    def get_zone(self):
+    def get_zone(self,zone):
+        self.zone=zone
         s=""
         s+=self.get_header()
         s+=self.get_soa()
         s+=self.get_records()
         s+=self.get_footer()
         return s
+        
+    def get_include(self,ns):
+        raise Exception,"Include file is not implemented"
         
     def format_3_columns(self,records):
         maxlen_1=10

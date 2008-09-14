@@ -3,6 +3,7 @@ from django.db import models
 from noc.setup.models import Settings
 from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
+from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 # DNS Zone Generators
 from noc.dns.bindv9_zone_generator import BINDv9ZoneGenerator
 
@@ -107,12 +108,6 @@ class DNSZone(models.Model):
         if match:
             return "%s.%s.%s.0/24"%(match.group(3),match.group(2),match.group(1))
     reverse_prefix=property(_reverse_prefix)
-    def _file_name(self):
-        return self.name
-    file_name=property(_file_name)
-    def _path(self):
-        return os.path.join(Settings.get("dns.zone_cache"),self.file_name)
-    path=property(_path)
     def _next_serial(self):
         T=time.gmtime()
         p="%04d%02d%02d"%(T[0],T[1],T[2])
@@ -176,46 +171,40 @@ class DNSZone(models.Model):
         return records
     records=property(_records)
     
-    def _zonedata(self):
-        generator=BINDv9ZoneGenerator(self)
-        return generator.get_zone()
-    zonedata=property(_zonedata)
+    @classmethod
+    def get_zone_generator(cls,ns):
+        t=ns.type.name
+        if t not in ZONE_GENERATORS:
+            raise Exception,"Unsupported DNS Server Type '%s'"%t
+        return ZONE_GENERATORS[t]()
+        
+    def zonedata(self,ns):
+        return self.get_zone_generator(ns).get_zone(self)
     
-    def rewrite_zone(self):
-        path=self.path
-        zd=self.zonedata
-        if DNSZone.is_differ(path,zd):
-            self.serial=self.next_serial
-            self.save()
-            f=open(path,"w")
-            f.write(self.zonedata)
-            f.close()
     @classmethod
     def rewrite_zones(cls):
-        s="""#
-# WARNING: This is auto-generated file
-# Do not edit manually
-#
-"""
+        cache_path=Settings.get("dns.zone_cache")
+        to_rewrite_inc=False
+        nses={}
         for z in DNSZone.objects.filter(is_auto_generated=True):
-            z.rewrite_zone()
-            s+="""zone "%(zone)s" {
-    type master;
-    file "autozones/%(filename)s";
-    allow-transfer { acl-backup-ns; };
-};
-
-"""%{"zone":z.name,"filename":z.file_name}
-        s+="""#
-# End of auto-generated file
-#
-"""
-        path=os.path.join(Settings.get("dns.zone_cache"),"autozones.conf")
-        if DNSZone.is_differ(path,s):
-            f=open(path,"w")
-            f.write(s)
-            f.close()
-            
+            to_rewrite=False
+            for ns in z.profile.ns_servers.all():
+                nses[ns]=None
+            for ns in z.profile.ns_servers.all():
+                cp=os.path.join(cache_path,ns.name,z.name)
+                if is_differ(cp,z.zonedata(ns)):
+                    z.serial=z.next_serial
+                    z.save()
+                    for ns in z.profile.ns_servers.all():
+                        rewrite_when_differ(cp,z.zonedata(ns))
+                    to_rewrite_inc=True
+                    break
+        if to_rewrite_inc:
+            for ns in nses:
+                inc_path=os.path.join(cache_path,ns.name,"autozones.conf")
+                g=cls.get_zone_generator(ns)
+                safe_rewrite(inc_path,g.get_include(ns))
+    
     def zone_link(self):
         return "<A HREF='/dns/%s/zone/'>Zone</A>"%self.name
     zone_link.short_description="Zone"
@@ -227,17 +216,6 @@ class DNSZone(models.Model):
         os.environ["RSYNC_RSH"]=Settings.get("shell.ssh")
         os.chdir(Settings.get("dns.zone_cache"))
         os.system("%s -av --delete * %s"%(Settings.get("shell.rsync"),Settings.get("dns.rsync_target")))
-
-    @classmethod
-    def is_differ(cls,path,s):
-        if os.path.isfile(path):
-            f=open(path)
-            cs1=md5.md5(f.read()).hexdigest()
-            f.close()
-            cs2=md5.md5(s).hexdigest()
-            return cs2!=cs1
-        else:
-            return True
             
     def _children(self):
         l=len(self.name)
