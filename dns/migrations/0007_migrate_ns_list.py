@@ -8,18 +8,13 @@ class Migration:
     
     def forwards(self):
         t=DNSServerType.objects.get(name="BINDv9")
-        nses={}
-        for p in DNSZoneProfile.objects.all():
-            for n in [x.strip() for x in p.zone_ns_list.split(",")]:
-                if n not in nses:
-                    try:
-                        ns=DNSServer.objects.get(name=n)
-                        nses[n]=ns
-                    except DNSServer.DoesNotExist:
-                        ns=DNSServer(name=n,type=t)
-                        ns.save()
-                        nses[n]=ns
-                    p.ns_servers.add(nses[n])
+        t_id=t.id
+        for p_id,zl in db.execute("SELECT id,zone_ns_list FROM dns_dnszoneprofile"):
+            for n in [x.strip() for x in zl.split(",")]:
+                if db.execute("SELECT COUNT(*) FROM dns_dnsserver WHERE name=%s",[n])[0][0]==0:
+                    db.execute("INSERT INTO dns_dnsserver(name,type_id) values (%s,%s)",[n,t_id])
+                db.execute("INSERT INTO dns_dnszoneprofile_ns_servers(dnszoneprofile_id,dnsserver_id) SELECT %s,id FROM dns_dnsserver WHERE name=%s",
+                    [p_id,n])
                     
         db.delete_column("dns_dnszoneprofile","zone_ns_list")
     
