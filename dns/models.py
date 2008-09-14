@@ -221,7 +221,10 @@ class DNSZone(models.Model):
         return nses.keys()
     
     def zone_link(self):
-        return "<A HREF='/dns/%s/zone/'>Zone</A>"%self.name
+        r=[]
+        for ns in self.profile.ns_servers.all():
+            r+=["<A HREF='/dns/%s/zone/%s/'>%s</A>"%(self.name,ns.id,ns.name)]
+        return ", ".join(r)
     zone_link.short_description="Zone"
     zone_link.allow_tags=True
             
