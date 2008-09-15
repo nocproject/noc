@@ -3,3 +3,4 @@ syntax: glob
 *.pyo
 *.swp
 site_settings.py
+share/doc/users_guide/html/*.html
