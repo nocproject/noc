@@ -3,6 +3,38 @@
                  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"> 
 <chapter id="installation">
     <title>Installation</title>
+    
+<sect1>
+    <title>Getting NOC</title>
     <para>
     </para>
+</sect1>
+    
+<sect1>
+    <title>Required Packages</title>
+    <para>
+    The following packages are required for NOC
+    Postgresql
+    Python
+    HTTP Server
+    psycopg
+    Django
+    South
+    libxslt
+    Docbooc v4.5 DTD
+    </para>
+</sect1>
+
+<sect1>
+    <title>Installation from sources</title>
+</sect1>
+
+<sect1>
+    <title>Installation on MacOS X</title>
+</sect1>
+
+<sect1>
+    <title>Installation on Solaris 10</title>
+</sect1>
+
 </chapter>

@@ -1,6 +1,7 @@
 #!/bin/sh
 # Rebuild online HTML documentation from docbook xml
 SRC=`dirname $0`/../share/doc/users_guide/xml/
+rm $SRC/../html/*.html
 
 cd $SRC
 DOCBOOK_XSLT=`xslt-config --prefix`/share/xsl/docbook-xsl/html/chunk.xsl
