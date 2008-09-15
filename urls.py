@@ -7,6 +7,7 @@ handler404="noc.main.views.handler404"
 urlpatterns = patterns('',
     # For debugging purposes only. Overriden by lighttpd/apache
      (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': 'static'}),
+     (r'^doc/(?P<path>.*)$',    'django.views.static.serve', {'document_root': 'share/doc/users_guide/html/'}),
     # 
      (r'^$',      include('noc.main.urls')),
      (r'^admin/(.*)', admin.site.root),
