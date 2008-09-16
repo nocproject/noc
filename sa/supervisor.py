@@ -1,7 +1,7 @@
 import os,asyncore,logging,signal,cPickle,sys,traceback
 from noc.sa.stream import Stream
 from noc.sa.profile import get_profile_class
-from noc.sa.action import *
+from noc.sa.action import get_action_class
 import settings
 import psycopg2
 
@@ -44,13 +44,6 @@ class Supervisor(object):
         pid,status=os.waitpid(-1,os.WNOHANG)
         logging.debug("Process PID=%d is terminated with code %d"%(pid,status))
         
-    def get_action_class(self,action):
-        x=action.split(".")
-        mn=".".join(x[:-1])
-        cl=x[-1]
-        module=__import__(mn,globals(),locals(),[cl])
-        return getattr(module,cl)
-        
     def start_task(self,task_id):
         self.cursor.execute("SELECT profile,stream_url,action,args FROM sa_task WHERE task_id=%s",[task_id])
         profile,stream_url,action,args=self.cursor.fetchall()[0]
@@ -61,7 +54,7 @@ class Supervisor(object):
         self.cursor.execute("COMMIT")
         try:
             stream=Stream.get_stream(get_profile_class(profile),stream_url)
-            action=self.get_action_class(action)(self,task_id,stream,args)
+            action=get_action_class(action)(self,task_id,stream,args)
         except:
             self.task_error(task_id,".".join(traceback.format_exception(*sys.exc_info())))
 
