@@ -1,4 +1,4 @@
-from noc.sa.profile import BaseProfile
+from noc.sa.profiles import BaseProfile
 
 class Profile(BaseProfile):
     pattern_prompt="^({master}\n)?\S*>"

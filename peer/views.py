@@ -53,9 +53,9 @@ def lg(request):
             pp=form.cleaned_data["peering_point"]
             cmd=pp.lg_command(form.cleaned_data["query_type"],form.cleaned_data["query"])
             task_id=Task.create_task(
-                {"IOS":"CISCO::IOS","JUNOS":"Juniper::JUNOS"}[pp.type.name],
+                {"IOS":"Cisco.IOS","JUNOS":"Juniper.JUNOS"}[pp.type.name],
                 pp.lg_rcmd,
-                "noc.sa.action.CLISessionAction",
+                "sa.actions.cli",
                 args={"commands":[cmd]},
                 timeout=60
             )
@@ -97,6 +97,6 @@ def IOSOutputFormatter(s):
     return s
     
 LG_OUTPUT_FORMATTER={
-    "Cisco::IOS"   : IOSOutputFormatter,
-    "Juniper::JUNOS" : JUNOSOutputFormatter,
+    "Cisco.IOS"   : IOSOutputFormatter,
+    "Juniper.JUNOS" : JUNOSOutputFormatter,
 }

@@ -11,5 +11,5 @@ class BaseProfile(object):
     rogue_chars=["\r"]
 
 def get_profile_class(name):
-    module=__import__("noc.sa.profile."+name,globals(),locals(),["Profile"])
+    module=__import__("noc.sa.profiles."+name,globals(),locals(),["Profile"])
     return getattr(module,"Profile")

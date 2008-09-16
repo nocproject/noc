@@ -1,4 +1,4 @@
-from noc.sa.action import BaseAction
+from noc.sa.actions import BaseAction
 import logging
 
 class Action(BaseAction):

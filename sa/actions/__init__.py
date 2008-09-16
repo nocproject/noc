@@ -90,6 +90,6 @@ class BaseAction(object):
     def s_failure(self,match):
         self.close(False)
         
-def get_action_class(self):
-    module=__import__("noc"+name,globals(),locals(),["Action"])
+def get_action_class(name):
+    module=__import__("noc."+name,globals(),locals(),["Action"])
     return getattr(module,"Action")
