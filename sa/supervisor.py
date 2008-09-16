@@ -1,7 +1,7 @@
 import os,asyncore,logging,signal,cPickle,sys,traceback
 from noc.sa.stream import Stream
-from noc.sa.profile import get_profile_class
-from noc.sa.action import get_action_class
+from noc.sa.profiles import get_profile_class
+from noc.sa.actions import get_action_class
 import settings
 import psycopg2
 
