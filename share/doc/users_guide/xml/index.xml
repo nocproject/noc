@@ -16,6 +16,7 @@
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="intro.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="installation.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="setup.xml" />
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="sa.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="peer.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="ip.xml" />
 <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="dns.xml" />
