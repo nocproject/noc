@@ -6,6 +6,6 @@ urlpatterns = patterns ( "",
     (r"^AS/(?P<asn>\d+)/rpsl/",                   login_required(as_rpsl)),
     (r"^AS/(?P<asn>\d+)/dot/",                    login_required(as_dot)),
     (r"^AS-SET/(?P<as_set>AS-[A-Z0-9\-]+)/rpsl/", login_required(as_set_rpsl)),
-    (r"lg/(?P<query_id>\d+)/$",                   lg_json),
+    (r"lg/(?P<task_id>\d+)/$",                    lg_json),
     (r"lg/",                                      lg),
 )

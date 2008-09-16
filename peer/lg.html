@@ -23,7 +23,7 @@
     </TABLE>
 </FORM>
 
-{% if q %}
+{% if task_id %}
 <PRE>
 <CODE id="out">
 </CODE>
@@ -57,7 +57,7 @@
     
     var get_result = function() {
         dojo.xhrGet({
-            url: "{{q.query_id}}/",
+            url: "{{task_id}}/",
             handleAs: "json",
             load: process_data,
             error: error_report,

@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django import forms
 
-from noc.peer.models import AS,ASSet,LGQueryType,PeeringPoint,LGQuery,LGQueryCommand
+from noc.peer.models import AS,ASSet,LGQueryType,PeeringPoint,LGQueryCommand
+from noc.sa.models import Task
 from noc.lib.render import render,render_plain_text,render_json
 from noc.lib.validators import is_asn,is_as_set,is_ipv4,is_cidr
 import re
@@ -45,26 +46,32 @@ class LGForm(forms.Form):
         return query
     
 def lg(request):
-    q=None
+    task_id=None
     if request.POST:
         form=LGForm(request.POST)
         if form.is_valid():
-            q=LGQuery.submit_query(request.META["REMOTE_ADDR"],form.cleaned_data["peering_point"],
-                form.cleaned_data["query_type"],form.cleaned_data["query"])
-            q.save()
+            pp=form.cleaned_data["peering_point"]
+            cmd=pp.lg_command(form.cleaned_data["query_type"],form.cleaned_data["query"])
+            task_id=Task.create_task(
+                {"IOS":"CISCO::IOS","JUNOS":"Juniper::JUNOS"}[pp.type.name],
+                pp.lg_rcmd,
+                "noc.sa.action.CLISessionAction",
+                args={"commands":[cmd]},
+                timeout=60
+            )
     else:
         form=LGForm()
-    return render(request,"peer/lg.html",{"form":form,"q":q})
+    return render(request,"peer/lg.html",{"form":form,"task_id":task_id})
     
-def lg_json(request,query_id):
-    q=get_object_or_404(LGQuery,query_id=int(query_id))
+def lg_json(request,task_id):
+    t=get_object_or_404(Task,task_id=int(task_id))
     r={
-        "status" : q.status,
-        "out"    : LG_OUTPUT_FORMATTER[q.peering_point.type.name](q.out),
+        "status" : t.status,
+        "out"    : LG_OUTPUT_FORMATTER[t.profile](t.out),
     }
     # Remove complete and failed queries
-    if q.status in ["c","f"]:
-        q.delete()
+    if t.status in ["c","f"]:
+        t.delete()
     return render_json(r)
 ##
 ## Output formatters for lg
@@ -90,6 +97,6 @@ def IOSOutputFormatter(s):
     return s
     
 LG_OUTPUT_FORMATTER={
-    "IOS"   : IOSOutputFormatter,
-    "JUNOS" : JUNOSOutputFormatter,
+    "Cisco::IOS"   : IOSOutputFormatter,
+    "Juniper::JUNOS" : JUNOSOutputFormatter,
 }

@@ -175,7 +175,7 @@ class PeeringPoint(models.Model):
         safe_rewrite(path,cls.get_rconfig())
     def lg_command(self,query_type,query):
         try:
-            lgc=LGQueryCommand.objects.get(peering_point_type=self,query_type=query_type)
+            lgc=LGQueryCommand.objects.get(peering_point_type=self.type,query_type=query_type)
         except LGQueryCommand.DoesNotExist:
             return None
         return lgc.command%{"query":query}

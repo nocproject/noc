@@ -26,8 +26,8 @@ class JuniperJUNOSProfile(Profile):
 #    pattern_more="^ --More--"
     
 PROFILES={
-    "CISCO::IOS"     : CiscoIOSProfile(),
-    "JUNIPER::JUNOS" : JuniperJUNOSProfile(),
+    "Cisco::IOS"     : CiscoIOSProfile(),
+    "Juniper::JUNOS" : JuniperJUNOSProfile(),
 }
 
 #Profiles to be done

@@ -63,7 +63,7 @@ class Supervisor(object):
             stream=Stream.get_stream(Profile.get_profile(profile),stream_url)
             action=self.get_action_class(action)(self,task_id,stream,args)
         except:
-            self.task_error(task_id,".".join(traceback.format_exception(**sys.exc_info())))
+            self.task_error(task_id,".".join(traceback.format_exception(*sys.exc_info())))
 
     def task_error(self,task_id,msg):
         logging.debug("Task error: task_id=%d %s"%(task_id,msg))
