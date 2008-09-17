@@ -4,6 +4,7 @@ from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
 from noc.lib.fileutils import safe_rewrite
 from noc.setup.models import Settings
+from noc.sa.profiles import get_profile_class
 import random
 
 class LIR(models.Model):
@@ -129,6 +130,9 @@ class PeeringPointType(models.Model):
         return self.name
     def __unicode__(self):
         return unicode(self.name)
+    def _profile(self):
+        return get_profile_class(self.name)()
+    profile=property(_profile)
 
 class PeeringPoint(models.Model):
     class Meta:
@@ -178,6 +182,7 @@ class PeeringPoint(models.Model):
             lgc=LGQueryCommand.objects.get(peering_point_type=self.type,query_type=query_type)
         except LGQueryCommand.DoesNotExist:
             return None
+        query=self.type.profile.convert_prefix(query)
         return lgc.command%{"query":query}
 
 class PeerGroup(models.Model):

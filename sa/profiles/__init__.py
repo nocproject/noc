@@ -1,3 +1,4 @@
+from noc.lib.ip import bits_to_netmask
 ##
 ## Abstract Profile
 ##
@@ -36,11 +37,24 @@ class BaseProfile(object):
     # or netmask should be converted to traditional formats
     requires_netmask_conversion=False
     
+    #
+    # AS Path hilighting
+    #
     def lg_as_path(self,m):
         def whois_formatter(q):
             return "<A HREF='http://www.db.ripe.net/whois?AS%s'>%s</A>"%(q,q)
         as_list=m.group(1).split()
         return " ".join([whois_formatter(x) for x in as_list])
+    #
+    # Converts ipv4 prefix to the format acceptable by router
+    #
+    def convert_prefix(self,prefix):
+        if "/" in prefix and self.requires_netmask_conversion:
+            net,mask=prefix.split("/")
+            mask=bits_to_netmask(mask)
+            return "%s %s"%(net,mask)
+        return prefix
+    
 
 def get_profile_class(name):
     module=__import__("noc.sa.profiles."+name,globals(),locals(),["Profile"])
