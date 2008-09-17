@@ -21,6 +21,9 @@ class BaseProfile(object):
     # Sequence to be send to list forward pager
     #
     command_more="\n"
+    # Sequence to gracefully close session
+    #
+    command_exit="exit"
     # List of chars to be stripped out of input stream
     # before checking any regular expressions
     rogue_chars=["\r"]
