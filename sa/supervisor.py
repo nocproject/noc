@@ -73,6 +73,7 @@ class Supervisor(object):
     def on_action_close(self,action,status):
         logging.debug("on_action_close(%s,%s)"%(str(action),status))
         self.feed_result(action.task_id,action.result,{True:"c",False:"f"}[status])
+        action.stream.close()
        
 
 ##
