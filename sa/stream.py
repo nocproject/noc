@@ -30,7 +30,9 @@ class Stream(asyncore.dispatcher):
         
     def handle_connect(self): pass
     
-    def handle_close(self): pass
+    def handle_close(self):
+        if self.current_action:
+            self.current_action.close(None)
     
     def handle_read(self):
         self.in_buffer+=self.recv(8192)
@@ -42,6 +44,10 @@ class Stream(asyncore.dispatcher):
     def handle_write(self):
         sent=self.send(self.out_buffer)
         self.out_buffer=self.out_buffer[sent:]
+        
+    def handle_expt(self):
+        data=self.socket.recv(8192,socket.MSG_OOB)
+        logging.debug("OOB Data: %s"%data)
         
     def write(self,msg):
         self.out_buffer+=msg
