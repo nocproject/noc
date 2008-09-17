@@ -1,5 +1,6 @@
 from django.db import models
 import datetime,random,cPickle
+from noc.sa.profiles import get_profile_class
 
 class Task(models.Model):
     class Meta:
@@ -8,7 +9,7 @@ class Task(models.Model):
     task_id=models.IntegerField("Task",unique=True)
     start_time=models.DateTimeField("Start Time",auto_now_add=True)
     end_time=models.DateTimeField("End Time")
-    profile=models.CharField("Profile",max_length=64)
+    profile_name=models.CharField("Profile",max_length=64)
     stream_url=models.CharField("Stream URL",max_length=128)
     action=models.CharField("Action",max_length=64)
     args=models.TextField("Args")
@@ -17,7 +18,10 @@ class Task(models.Model):
     def __unicode__(self):
         return u"%d"%self.task_id
     @classmethod
-    def create_task(cls,profile,stream_url,action,args={},timeout=600):
+    def create_task(cls,profile_name,stream_url,action,args={},timeout=600):
+        # Check profile exists
+        get_profile_class(profile_name)
+        #
         s_time=datetime.datetime.now()
         e_time=s_time+datetime.timedelta(seconds=timeout)
         task_id=random.randint(0,0x7FFFFFFF)
@@ -25,7 +29,7 @@ class Task(models.Model):
             task_id=task_id,
             start_time=s_time,
             end_time=e_time,
-            profile=profile,
+            profile_name=profile_name,
             stream_url=stream_url,
             action=action,
             args=cPickle.dumps(args),
@@ -33,4 +37,7 @@ class Task(models.Model):
             out="")
         t.save()
         return task_id
+    def _profile(self):
+        return get_profile_class(self.profile_name)()
+    profile=property(_profile)
         

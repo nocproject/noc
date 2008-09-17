@@ -12,7 +12,7 @@ class Migration:
             ('task_id', models.IntegerField("Task",unique=True)),
             ('start_time', models.DateTimeField("Start Time",auto_now_add=True)),
             ('end_time', models.DateTimeField("End Time")),
-            ('profile', models.CharField("Profile",max_length=64)),
+            ('profile_name', models.CharField("Profile",max_length=64)),
             ('stream_url', models.CharField("Stream URL",max_length=128)),
             ('action', models.CharField("Action",max_length=64)),
             ('args', models.TextField("Args")),
