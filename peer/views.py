@@ -53,7 +53,7 @@ def lg(request):
             pp=form.cleaned_data["peering_point"]
             cmd=pp.lg_command(form.cleaned_data["query_type"],form.cleaned_data["query"])
             task_id=Task.create_task(
-                {"IOS":"Cisco.IOS","JUNOS":"Juniper.JUNOS"}[pp.type.name],
+                pp.type.name,
                 pp.lg_rcmd,
                 "sa.actions.cli",
                 args={"commands":[cmd]},
@@ -65,38 +65,20 @@ def lg(request):
     
 def lg_json(request,task_id):
     t=get_object_or_404(Task,task_id=int(task_id))
+    # Format output
+    out=t.out
+    profile=t.profile
+    if profile.pattern_lg_as_path_list:
+        rx=re.compile(profile.pattern_lg_as_path_list,re.DOTALL|re.MULTILINE)
+        out=rx.sub(profile.lg_as_path,out)
+    if profile.pattern_lg_best_path:
+        rx=re.compile(profile.pattern_lg_best_path,re.DOTALL|re.MULTILINE)
+        out=rx.sub(r"<span style='color: red'>\1</span>",out)
     r={
         "status" : t.status,
-        "out"    : LG_OUTPUT_FORMATTER[t.profile](t.out),
+        "out"    : out,
     }
     # Remove complete and failed queries
     if t.status in ["c","f"]:
         t.delete()
     return render_json(r)
-##
-## Output formatters for lg
-##
-def as_path_list_formatter(m):
-    def whois_formatter(q):
-        return "<A HREF='http://www.db.ripe.net/whois?AS%s'>%s</A>"%(q,q)
-    as_list=m.group(1).split()
-    return " ".join([whois_formatter(x) for x in as_list])
-
-rx_junos_as_path=re.compile("(?<=AS path: )(\d+(?: \d+)*)",re.MULTILINE|re.DOTALL)
-rx_junos_best_path=re.compile(r"^(\s+[+*].+?\s+Router ID: \S+)",re.MULTILINE|re.DOTALL)
-def JUNOSOutputFormatter(s):
-    s=rx_junos_as_path.sub(as_path_list_formatter,s)
-    s=rx_junos_best_path.sub(r"<span style='color: red'>\1</span>",s)
-    return s
-
-rx_ios_as_path=re.compile(r"^(\s+\d+(?: \d+)*),",re.MULTILINE|re.DOTALL)
-rx_ios_best_path=re.compile(r"(<A HREF.+?>.+?best)",re.MULTILINE|re.DOTALL)
-def IOSOutputFormatter(s):
-    s=rx_ios_as_path.sub(as_path_list_formatter,s)
-    s=rx_ios_best_path.sub(r"<span style='color: red'>\1</span>",s)
-    return s
-    
-LG_OUTPUT_FORMATTER={
-    "Cisco.IOS"   : IOSOutputFormatter,
-    "Juniper.JUNOS" : JUNOSOutputFormatter,
-}
