@@ -45,7 +45,7 @@ class Supervisor(object):
         logging.debug("Process PID=%d is terminated with code %d"%(pid,status))
         
     def start_task(self,task_id):
-        self.cursor.execute("SELECT profile,stream_url,action,args FROM sa_task WHERE task_id=%s",[task_id])
+        self.cursor.execute("SELECT profile_name,stream_url,action,args FROM sa_task WHERE task_id=%s",[task_id])
         profile,stream_url,action,args=self.cursor.fetchall()[0]
         args=cPickle.loads(args)
         logging.debug("start_task(%s,%s)"%(str(action),str(args)))
