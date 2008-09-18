@@ -1,4 +1,4 @@
-import asyncore,logging,os,socket,re
+import asyncore,logging,os,socket,re,pty
 
 ##
 rx_url=re.compile(r"^(?P<scheme>[^:]+)://(?P<user>[^:]+):(?P<password>[^@]+)@(?P<host>[^/]+)(?:(?P<port>\d+))?(?P<path>.*)$")
@@ -89,7 +89,7 @@ class TelnetStream(Stream):
 class SSHStream(Stream):
     def prepare_stream(self):
         logging.debug("SSHStream connecting %s"%self.host)
-        pid,fd=os.forkpty()
+        pid,fd=pty.fork()
         if pid==0:
             os.execv("/usr/bin/ssh",["/usr/bin/ssh","-l",self.user,self.host])
         else:
