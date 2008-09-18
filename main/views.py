@@ -10,4 +10,4 @@ def logout(request):
     return HttpResponseRedirect("/")
 
 def handler404(request):
-    return render_to_response("main/404.html")
+    return render(request,"main/404.html")
