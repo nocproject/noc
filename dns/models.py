@@ -197,8 +197,8 @@ class DNSZone(models.Model):
                     z.save()
                     for ns in z.profile.ns_servers.all():
                         rewrite_when_differ(cp,z.zonedata(ns))
-                    to_rewrite_inc=True
-                    break
+                        to_rewrite_inc=True
+                        break
         if to_rewrite_inc:
             for ns in nses:
                 inc_path=os.path.join(cache_path,ns.name,"autozones.conf")
