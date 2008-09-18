@@ -4,14 +4,7 @@ from noc.setup.models import Settings
 from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
-# DNS Zone Generators
-from noc.dns.bindv9_zone_generator import BINDv9ZoneGenerator
-
-ZONE_GENERATORS={
-    "BINDv9": BINDv9ZoneGenerator,
-}
-
-
+from noc.dns.generators import get_generator_class
 ##
 ## DNSServerType.
 ## Please, do not modify table contents directly, use migrations instead.
@@ -182,15 +175,8 @@ class DNSZone(models.Model):
         return records
     records=property(_records)
     
-    @classmethod
-    def get_zone_generator(cls,ns):
-        t=ns.type.name
-        if t not in ZONE_GENERATORS:
-            raise Exception,"Unsupported DNS Server Type '%s'"%t
-        return ZONE_GENERATORS[t]()
-        
     def zonedata(self,ns):
-        return self.get_zone_generator(ns).get_zone(self)
+        return get_generator_class(ns.type.name)().get_zone(self)
     
     ##
     ## Rewrites zone files and return a list of affected nameservers
@@ -216,7 +202,7 @@ class DNSZone(models.Model):
         if to_rewrite_inc:
             for ns in nses:
                 inc_path=os.path.join(cache_path,ns.name,"autozones.conf")
-                g=cls.get_zone_generator(ns)
+                g=get_generator_class(ns.type.name)()
                 safe_rewrite(inc_path,g.get_include(ns))
         return nses.keys()
     

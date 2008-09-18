@@ -1,7 +1,7 @@
-#
-# Abstract DNS zone generator
-#
-class ZoneGenerator(object):
+##
+## Abstract DNS zone generator
+##
+class BaseGenerator(object):
     def get_header(self):
         return """;;
 ;; WARNING: Auto-generated zone file
@@ -66,3 +66,10 @@ class ZoneGenerator(object):
             elif rr>0:
                 z.append("%d %s"%(rr,t))
         return " ".join(z)
+        
+##
+## Returns zone generator class
+##
+def get_generator_class(name):
+    module=__import__("noc.dns.generators."+name.lower(),globals(),locals(),["Generator"])
+    return getattr(module,"Generator")
