@@ -1,3 +1,7 @@
+##
+## Supervisor process
+## Supervisor listens for a task, operates with streams and runs actions against the streams
+##
 import os,asyncore,logging,signal,cPickle,sys,traceback
 from noc.sa.stream import Stream
 from noc.sa.profiles import get_profile_class
@@ -74,8 +78,7 @@ class Supervisor(object):
         logging.debug("on_action_close(%s,%s)"%(str(action),status))
         self.feed_result(action.task_id,action.result,{True:"c",False:"f"}[status])
         action.stream.close()
-       
-
+        
 ##
 ## QueryChecker
 ##
@@ -99,6 +102,3 @@ class QueryChecker(asyncore.dispatcher):
 
     def handle_connect(self):
         pass
-
-if __name__=="__main__":
-    test()
