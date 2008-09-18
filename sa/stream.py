@@ -91,7 +91,7 @@ class SSHStream(Stream):
         logging.debug("SSHStream connecting %s"%self.host)
         pid,fd=pty.fork()
         if pid==0:
-            os.execv("/usr/bin/ssh",["/usr/bin/ssh","-l",self.user,self.host])
+            os.execv("/usr/bin/ssh",["/usr/bin/ssh","-o","StrictHostKeyChecking no","-l",self.user,self.host])
         else:
             self.set_socket(asyncore.file_wrapper(fd))
 ##
