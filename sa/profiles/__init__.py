@@ -57,6 +57,18 @@ class BaseProfile(object):
             mask=bits_to_netmask(mask)
             return "%s %s"%(net,mask)
         return prefix
+    #
+    # Configuration generators
+    #
+    
+    # Generate prefix list:
+    # name - name of prefix list
+    # pl -  is a list of prefixes
+    # Strict - should tested prefix be exactly matched
+    # or should be more specific as well
+    #
+    def generate_prefix_list(self,name,pl,strict=True):
+        raise Excepton("Not implemented")
     
 
 def get_profile_class(name):
