@@ -155,24 +155,6 @@ class PeeringPoint(models.Model):
             return u"%s (%s)"%(self.hostname,self.location)
         else:
             return self.hostname
-    def _rconfig(self):
-        objects={}
-        s=["HOST %s %s"%(self.hostname,self.type.name.upper())]
-        for p in self.peer_set.all():
-            if p.import_filter!="ANY":
-                oid=p.import_filter.lower()
-                if oid not in objects:
-                    s+=["    PREFIX-LIST pl-%s %s OPTIMIZE"%(oid,p.import_filter)]
-                    objects[oid]=None
-        return "\n".join(s)
-    rconfig=property(_rconfig)
-    @classmethod
-    def get_rconfig(cls):
-        g=[("MAIL-SERVER",Settings.get("rconfig.mail_server")),("MAIL-FROM",Settings.get("rconfig.mail_from")),
-            ("MAIL-TO",Settings.get("rconfig.mail_to"))]
-        s=["%s %s"%(x[0],x[1]) for x in g if x[1]!=""]
-        s+=[x.rconfig for x in cls.objects.all()]
-        return "\n".join(s)
     @classmethod
     def write_rconfig(cls):
         path=Settings.get("rconfig.config")
