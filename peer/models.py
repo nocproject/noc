@@ -2,7 +2,6 @@ from django.db import models
 from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
-from noc.lib.fileutils import safe_rewrite
 from noc.setup.models import Settings
 from noc.sa.profiles import get_profile_class
 import random
@@ -156,9 +155,6 @@ class PeeringPoint(models.Model):
         else:
             return self.hostname
     @classmethod
-    def write_rconfig(cls):
-        path=Settings.get("rconfig.config")
-        safe_rewrite(path,cls.get_rconfig())
     def lg_command(self,query_type,query):
         try:
             lgc=LGQueryCommand.objects.get(peering_point_type=self.type,query_type=query_type)
@@ -166,6 +162,18 @@ class PeeringPoint(models.Model):
             return None
         query=self.type.profile.convert_prefix(query)
         return lgc.command%{"query":query}
+    #
+    # Returns a list of (prefix-list-name, rpsl-filter)
+    #
+    def _generated_prefix_lists(self):
+        pls={}
+        for pr in self.peer_set.all():
+            if pr.import_filter_name:
+                pls[pr.import_filter_name]=pr.import_filter
+            if pr.export_filter_name:
+                pls[pr.export_filter_name]=pr.export_filter
+        return pls.items()
+    generated_prefix_lists=property(_generated_prefix_lists)
 
 class PeerGroup(models.Model):
     class Meta:
@@ -199,7 +207,7 @@ class Peer(models.Model):
                                                                                             # and PeeringPoint.communities
     max_prefixes=models.IntegerField("Max. Prefixes",default=100)
     import_filter_name=models.CharField("Import Filter Name",max_length=64,blank=True,null=True)
-    export_filter_name=models.CharField("Import Filter Name",max_length=64,blank=True,null=True)
+    export_filter_name=models.CharField("Export Filter Name",max_length=64,blank=True,null=True)
     def __str__(self):
         return "%s (%s@%s)"%(self.remote_asn,self.remote_ip,self.peering_point.hostname)
     def __unicode__(self):
