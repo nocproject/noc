@@ -3,6 +3,9 @@ from south.db import db
 from noc.ip.models import *
 
 class Migration:
+    depends_on=(
+        ("sa","0002_trigger")
+    )
     def forwards(self):
         if not self.has_column("ip_ipv4block","prefix_cidr"):
             db.execute("ALTER TABLE ip_ipv4block ADD prefix_cidr CIDR")

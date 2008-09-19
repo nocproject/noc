@@ -5,6 +5,8 @@ from noc.sa.models import *
 class Migration:
     
     def forwards(self):
+        if db.execute("SELECT COUNT(*) FROM pg_language WHERE lanname='plpgsql'")[0][0]==0:
+            db.execute("CREATE LANGUAGE plpgsql")
         db.execute(CREATE_F)
         db.execute(CREATE_T)
     
