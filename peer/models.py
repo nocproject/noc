@@ -216,6 +216,8 @@ class Peer(models.Model):
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)   # In addition to PeerGroup.communities
                                                                                             # and PeeringPoint.communities
     max_prefixes=models.IntegerField("Max. Prefixes",default=100)
+    import_filter_name=models.CharField("Import Filter Name",max_length=64,blank=True,null=True)
+    export_filter_name=models.CharField("Import Filter Name",max_length=64,blank=True,null=True)
     def __str__(self):
         return "%s (%s@%s)"%(self.remote_asn,self.remote_ip,self.peering_point.hostname)
     def __unicode__(self):
