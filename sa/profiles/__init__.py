@@ -3,6 +3,8 @@ from noc.lib.ip import bits_to_netmask
 ## Abstract Profile
 ##
 class BaseProfile(object):
+    # Profile name
+    name="BaseProfile"
     # Regular expression to catch user name prompt
     # (Usually during telnet sessions)
     pattern_username="[Uu]sername:"
@@ -69,6 +71,15 @@ class BaseProfile(object):
     #
     def generate_prefix_list(self,name,pl,strict=True):
         raise Excepton("Not implemented")
+    #
+    # A list of commands to pull config via CLI
+    #
+    command_pull_config=None
+    #
+    def pull_config(self,stream_url):
+        from noc.sa.models import get_task_output
+        return get_task_output(self.name,stream_url,"sa.actions.cli",
+            args={"commands":self.command_pull_config})
     
 
 def get_profile_class(name):
