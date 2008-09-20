@@ -1,5 +1,5 @@
 from django.db import models
-import datetime,random,cPickle
+import datetime,random,cPickle,time
 from noc.sa.profiles import get_profile_class
 
 class Task(models.Model):
@@ -40,4 +40,18 @@ class Task(models.Model):
     def _profile(self):
         return get_profile_class(self.profile_name)()
     profile=property(_profile)
-        
+    
+def get_task_output(profile_name,stream_url,action,args={},timeout=600):
+    task_id=Task.create_task(profile_name,stream_url,action,args,timeout)
+    while True:
+        time.sleep(1)
+        task=Task.objects.get(task_id=task_id)
+        if task.status=="c":
+            out=task.out
+            task.delete()
+            return out
+        elif task.status=="f":
+            out=task.out
+            task.delete()
+            raise Exception(out)
+            
