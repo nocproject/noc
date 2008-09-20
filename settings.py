@@ -89,6 +89,7 @@ INSTALLED_APPS = (
     
     "noc.setup",
     "noc.sa",
+    "noc.cm",
     "noc.ip",
     "noc.dns",
     "noc.peer",
