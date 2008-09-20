@@ -4,7 +4,7 @@ from noc.ip.models import *
 
 class Migration:
     depends_on=(
-        ("sa","0002_trigger")
+        ("sa","0002_trigger"),
     )
     def forwards(self):
         if not self.has_column("ip_ipv4block","prefix_cidr"):
