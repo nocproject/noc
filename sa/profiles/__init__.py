@@ -1,4 +1,5 @@
 from noc.lib.ip import bits_to_netmask
+import os
 ##
 ## Abstract Profile
 ##
@@ -80,8 +81,29 @@ class BaseProfile(object):
         from noc.sa.models import get_task_output
         return get_task_output(self.name,stream_url,"sa.actions.cli",
             args={"commands":self.command_pull_config})
-    
+#
+# Global storage for registered profile classes
+#
+profile_classes={}
+#
+# Choices for CharField(choices=...)
+#
+profile_choices=[]
 
+#
+# Returns profile class for given name
+#
 def get_profile_class(name):
-    module=__import__("noc.sa.profiles."+name,globals(),locals(),["Profile"])
-    return getattr(module,"Profile")
+    return profile_classes[name]
+#
+# Search for profiles and register them
+#
+def register_profile_classes():
+    for dirpath,dirnames,filenames in os.walk("sa/profiles/"):
+        for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
+            module=__import__("%s.%s"%(dirpath.replace("/","."),f.replace("/",".")[:-3]),globals(),locals,["Profile"])
+            pc=getattr(module,"Profile")
+            profile_classes[pc.name]=pc
+    for p in profile_classes:
+        profile_choices.append((p,p))
+    profile_choices.sort(lambda x,y: cmp(x[0],y[0]))

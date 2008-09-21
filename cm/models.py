@@ -1,5 +1,5 @@
 from django.db import models
-from noc.sa.profiles import get_profile_class
+from noc.sa.profiles import get_profile_class,profile_choices
 from noc.setup.models import Settings
 from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file
@@ -35,7 +35,7 @@ class Object(models.Model):
         verbose_name="Object"
         verbose_name_plural="Objects"
     url=models.CharField("URL",max_length=128,unique=True)
-    profile_name=models.CharField("Profile",max_length=128)
+    profile_name=models.CharField("Profile",max_length=128,choices=profile_choices)
     categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories")
     last_pushed=models.DateTimeField("Last Pushed",blank=True,null=True)
     last_pulled=models.DateTimeField("Last Pulled",blank=True,null=True)

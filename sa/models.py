@@ -1,6 +1,6 @@
 from django.db import models
 import datetime,random,cPickle,time
-from noc.sa.profiles import get_profile_class
+from noc.sa.profiles import get_profile_class,register_profile_classes,profile_choices
 
 class Task(models.Model):
     class Meta:
@@ -9,7 +9,7 @@ class Task(models.Model):
     task_id=models.IntegerField("Task",unique=True)
     start_time=models.DateTimeField("Start Time",auto_now_add=True)
     end_time=models.DateTimeField("End Time")
-    profile_name=models.CharField("Profile",max_length=64)
+    profile_name=models.CharField("Profile",max_length=64,choices=profile_choices)
     stream_url=models.CharField("Stream URL",max_length=128)
     action=models.CharField("Action",max_length=64)
     args=models.TextField("Args")
@@ -55,3 +55,5 @@ def get_task_output(profile_name,stream_url,action,args={},timeout=600):
             task.delete()
             raise Exception(out)
             
+# Register profiles
+register_profile_classes()
