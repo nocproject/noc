@@ -2,9 +2,9 @@ from django.db import models
 from noc.sa.profiles import get_profile_class
 from noc.setup.models import Settings
 from noc.lib.url import URL
-from noc.lib.fileutils import rewrite_when_differ
+from noc.lib.fileutils import rewrite_when_differ,read_file
 from noc.cm.vcs import get_vcs
-import os
+import os,datetime
 
 #
 # Global dictionary of object types
@@ -15,10 +15,20 @@ object_types={}
 #
 def register_object_type(name,handler_class):
     object_types[name]=handler_class
-
+#
+#
+#
+class ObjectCategory(models.Model):
+    class Meta:
+        verbose_name="Object Category"
+        verbose_name_plural="Object Categories"
+    name=models.CharField("Name",max_length=64,unique=True)
+    description=models.CharField("Description",max_length=128,null=True,blank=True)
+    def __unicode__(self):
+        return self.name
 #
 # URL is in a form:
-# <access-schema>://<user>:<password>@<host>/<object-type>/.....
+# <access-schema>://<user>:<password>@<host>:<port>/<object-type>/<in-repo-path>
 #
 class Object(models.Model):
     class Meta:
@@ -26,6 +36,9 @@ class Object(models.Model):
         verbose_name_plural="Objects"
     url=models.CharField("URL",max_length=128,unique=True)
     profile_name=models.CharField("Profile",max_length=128)
+    categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories")
+    last_pushed=models.DateTimeField("Last Pushed",blank=True,null=True)
+    last_pulled=models.DateTimeField("Last Pulled",blank=True,null=True)
     
     def __unicode__(self):
         return self.url
@@ -66,6 +79,13 @@ class Object(models.Model):
             if is_new:
                 vcs.add(self.repo_path)
             vcs.commit(self.repo_path)
+        self.last_pulled=datetime.datetime.now()
+        self.save()
+    # Returns object's content
+    # Or None if no content yes
+    def _data(self):
+        return read_file(self.path)
+    data=property(_data)
 
 ##
 ## Object type handler
@@ -82,7 +102,9 @@ class Handler(object):
     # Grab configuration from equipment
     def pull(self):
         pass
-
+##
+## /config/ handler
+##
 class ConfigHandler(Handler):
     def push(self):
         pass
