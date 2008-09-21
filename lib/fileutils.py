@@ -37,3 +37,17 @@ def rewrite_when_differ(path,content):
     if d:
         safe_rewrite(path,content)
     return d
+##
+## Read file and return file's content.
+## Return None when file does not exists
+##
+def read_file(path):
+    if os.path.exists(path):
+        f=open(path,"r")
+        data=f.read()
+        f.close()
+        return data
+    else:
+        return None
+            
+    
