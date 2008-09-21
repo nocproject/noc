@@ -26,6 +26,10 @@ class VCS(object):
     # Add file to repository
     def add(self,path):
         self.cmd("add %s"%path)
+    # Remove file from repository
+    def rm(self,path):
+        self.cmd("remove %s"%path)
+        self.commit(path)
     # Commit single file
     def commit(self,path):
         self.cmd("commit -m 'CM autocommit' %s"%path)
@@ -34,8 +38,10 @@ class VCS(object):
         if check:
             self.check_repository()
         os.system("cd %s && %s %s"%(self.repo,Settings.get("cm.vcs_path"),cmd))
-        
-    
+##
+## Mercurial support
+## (http://www.selenic.com/mercurial/wiki/)
+##
 class Hg(VCS):
     def check_repository(self):
         if not os.path.exists(os.path.join(self.repo,".hg")):
