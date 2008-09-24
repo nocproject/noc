@@ -4,7 +4,7 @@
 ##
 import os,asyncore,logging,signal,cPickle,sys,traceback
 from noc.sa.stream import Stream
-from noc.sa.profiles import get_profile_class
+from noc.sa.profiles import get_profile_class,register_profile_classes
 from noc.sa.actions import get_action_class
 import settings
 import psycopg2
@@ -25,6 +25,8 @@ class Supervisor(object):
         
     def run(self):
         logging.info("Supervisor started")
+        logging.info("Loading profile classes")
+        register_profile_classes()
         while 1:
             asyncore.loop(timeout=1,count=1)
         
