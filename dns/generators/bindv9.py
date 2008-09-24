@@ -57,7 +57,7 @@ $TTL %(ttl)d
         for z in zones.values():
             s+="""zone "%(zone)s" {
     type master;
-    file "autozones/%(zone)s";
+    file "autozones/%(ns)s/%(zone)s";
     allow-transfer { acl-backup-ns; };
 };
 
