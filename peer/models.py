@@ -3,7 +3,8 @@ from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
 from noc.setup.models import Settings
-from noc.sa.profiles import get_profile_class
+from noc.sa.profiles import get_profile_class, profile_choices
+from noc.cm.models import Object
 import random
 
 class LIR(models.Model):
@@ -124,7 +125,7 @@ class PeeringPointType(models.Model):
     class Meta:
         verbose_name="Peering Point Type"
         verbose_name_plural="Peering Point Types"
-    name=models.CharField("Name",max_length=32,unique=True)
+    name=models.CharField("Name",max_length=32,unique=True,choices=profile_choices)
     def __str__(self):
         return self.name
     def __unicode__(self):
@@ -144,6 +145,8 @@ class PeeringPoint(models.Model):
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
     lg_rcmd=models.CharField("LG RCMD Url",max_length=128,blank=True,null=True,
         help_text="&lt;schema&gt;://&lt;user&gt;:&lt;password&gt;@host/, where &lt;schema&gt; is one of telnet, ssh")
+    provision_rcmd=models.CharField("Provisioning URL",max_length=128,blank=True,null=True,
+        help_text="&lt;schema&gt;://&lt;user&gt;:&lt;password&gt;@host/, where &lt;schema&gt; is one of telnet, ssh")
     def __str__(self):
         if self.location:
             return "%s (%s)"%(self.hostname,self.location)
@@ -162,6 +165,26 @@ class PeeringPoint(models.Model):
             return None
         query=self.type.profile.convert_prefix(query)
         return lgc.command%{"query":query}
+    def sync_cm_prefix_list(self):
+        if self.provision_rcmd is None:
+            return
+        peers_pl={}
+        for p in self.peer_set.filter(import_filter_name__isnull=False):
+            peers_pl[p.import_filter_name]=None
+        for p in self.peer_set.filter(export_filter_name__isnull=False):
+            peers_pl[p.export_filter_name]=None
+        n=self.provision_rcmd+"prefix-list/"+self.hostname+"/"
+        ln=len(n)
+        for p in Object.objects.filter(url__startswith=n):
+            pl=p.url[ln:]
+            if pl not in peers_pl:
+                p.delete()
+            else:
+                del peers_pl[pl]
+        profile_name=self.type.name
+        for pl in peers_pl:
+            o=Object(url=n+pl,profile_name=profile_name)
+            o.save()
     #
     # Returns a list of (prefix-list-name, rpsl-filter)
     #
@@ -212,6 +235,9 @@ class Peer(models.Model):
         return "%s (%s@%s)"%(self.remote_asn,self.remote_ip,self.peering_point.hostname)
     def __unicode__(self):
         return unicode(str(self))
+    def save(self):
+        super(Peer,self).save()
+        self.peering_point.sync_cm_prefix_list()
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
