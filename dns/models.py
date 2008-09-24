@@ -184,27 +184,28 @@ class DNSZone(models.Model):
     @classmethod
     def rewrite_zones(cls):
         cache_path=Settings.get("dns.zone_cache")
-        to_rewrite_inc=False
-        nses={}
+        changed={}
+        changed_nses={}
         for z in DNSZone.objects.filter(is_auto_generated=True):
-            to_rewrite=False
             for ns in z.profile.ns_servers.all():
-                nses[ns]=None
-            for ns in z.profile.ns_servers.all():
-                cp=os.path.join(cache_path,ns.name,z.name)
+                cp=os.path.join(cache_path,ns.name,z.name) 
                 if is_differ(cp,z.zonedata(ns)):
-                    z.serial=z.next_serial
-                    z.save()
-                    for ns in z.profile.ns_servers.all():
-                        rewrite_when_differ(cp,z.zonedata(ns))
-                        to_rewrite_inc=True
-                        break
-        if to_rewrite_inc:
-            for ns in nses:
-                inc_path=os.path.join(cache_path,ns.name,"autozones.conf")
-                g=get_generator_class(ns.type.name)()
-                safe_rewrite(inc_path,g.get_include(ns))
-        return nses.keys()
+                    changed[z]=None
+                    break
+        # Rewrite changed zones for all authoritative nses
+        for z in changed:
+            z.serial=z.next_serial
+            z.save()
+            for ns in z.profile.ns_servers.all():
+                cp=os.path.join(cache_path,ns.name,z.name) 
+                safe_rewrite(cp,z.zonedata(ns))
+                changed_nses[ns]=None
+        # Rewrite include files for nameservers
+        # Generator should include timestamp to make file really different
+        for ns in changed_nses:
+            g=get_generator_class(ns.type.name)()
+            safe_rewrite(os.path.join(cache_path,ns.name,"autozones.conf"),g.get_include(ns))
+        return changed_nses.keys()
     
     def _distribution_list(self):
         return self.profile.ns_servers.filter(provisioning__isnull=False)
