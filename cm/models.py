@@ -92,6 +92,11 @@ class Object(models.Model):
     def _data(self):
         return read_file(self.path)
     data=property(_data)
+    #
+    def delete(self):
+        vcs=get_vcs(self.repo)
+        vcs.rm(self.repo_path)
+        super(Object,self).delete()
 
 
 #
