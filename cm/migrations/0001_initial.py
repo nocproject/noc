@@ -15,8 +15,10 @@ class Migration:
         # Model 'Object'
         db.create_table('cm_object', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('url', models.CharField("URL",max_length=128,unique=True)),
-            ('profile_name', models.CharField("Profile",max_length=128)),
+            ('handler_class_name', models.CharField("Object Type",max_length=64,choices=handler_choices)),
+            ('stream_url', models.CharField("URL",max_length=128)),
+            ('profile_name', models.CharField("Profile",max_length=128,choices=profile_choices)),
+            ('repo_path', models.CharField("Repo Path",max_length=128)),
             ('last_pushed', models.DateTimeField("Last Pushed",blank=True,null=True)),
             ('last_pulled', models.DateTimeField("Last Pulled",blank=True,null=True))
         ))
@@ -30,11 +32,12 @@ class Migration:
             ('object', models.ForeignKey(Object, null=False)),
             ('objectcategory', models.ForeignKey(ObjectCategory, null=False))
         )) 
+        db.create_index('cm_object', ['handler_class_name','repo_path'], unique=True, db_tablespace='')
+        
         
         db.send_create_signal('cm', ['ObjectCategory','Object'])
     
     def backwards(self):
+        db.delete_table('cm_object_categories')
         db.delete_table('cm_object')
         db.delete_table('cm_objectcategory')
-        
-        db.delete_table('cm_object_categories')
