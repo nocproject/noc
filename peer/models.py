@@ -5,7 +5,7 @@ from noc.lib.rpsl import rpsl_format
 from noc.setup.models import Settings
 from noc.sa.profiles import get_profile_class, profile_choices
 from noc.cm.models import Object
-import random
+import random,sets
 
 class LIR(models.Model):
     class Meta:
@@ -168,22 +168,20 @@ class PeeringPoint(models.Model):
     def sync_cm_prefix_list(self):
         if self.provision_rcmd is None:
             return
-        peers_pl={}
-        for p in self.peer_set.filter(import_filter_name__isnull=False):
-            peers_pl[p.import_filter_name]=None
-        for p in self.peer_set.filter(export_filter_name__isnull=False):
-            peers_pl[p.export_filter_name]=None
-        n=self.provision_rcmd+"prefix-list/"+self.hostname+"/"
-        ln=len(n)
-        for p in Object.objects.filter(url__startswith=n):
-            pl=p.url[ln:]
+        peers_pl=sets.Set([])
+        peers_pl.update([p.import_filter_name for p in self.peer_set.filter(import_filter_name__isnull=False) if p.import_filter_name.strip()])
+        peers_pl.update([p.export_filter_name for p in self.peer_set.filter(export_filter_name__isnull=False) if p.export_filter_name.strip()])
+        h=self.hostname+"/"
+        l_h=len(h)
+        for p in Object.objects.filter(handler_class_name="prefix-list").filter(repo_path__startswith=h):
+            pl=p.path[l_h:]
             if pl not in peers_pl:
                 p.delete()
             else:
                 del peers_pl[pl]
         profile_name=self.type.name
         for pl in peers_pl:
-            o=Object(url=n+pl,profile_name=profile_name)
+            o=Object(handler_class_name="prefix-list",stream_url=self.provision_rcmd,profile_name=self.type.name,repo_path=h+pl)
             o.save()
     #
     # Returns a list of (prefix-list-name, rpsl-filter)
@@ -236,6 +234,10 @@ class Peer(models.Model):
     def __unicode__(self):
         return unicode(str(self))
     def save(self):
+        if self.import_filter_name is not None and not self.import_filter_name.strip():
+            self.import_filter_name=None
+        if self.export_filter_name is not None and not self.export_filter_name.strip():
+            self.export_filter_name=None
         super(Peer,self).save()
         self.peering_point.sync_cm_prefix_list()
     def _tt_url(self):
