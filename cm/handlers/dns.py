@@ -48,3 +48,13 @@ class Handler(BaseHandler):
                     profile_name="file",repo_path=path)
                 o.save()
             o.write(g.get_include(ns))
+            
+    @classmethod
+    def global_push(self):
+        from noc.dns.models import DNSZone
+        nses={}
+        for z in DNSZone.objects.filter(is_auto_generated=True):
+            for ns in z.profile.ns_servers.all():
+                nses[ns.name]=ns
+        for ns in nses.values():
+            ns.provision_zones()

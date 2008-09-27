@@ -38,7 +38,7 @@ class DNSServer(models.Model):
     def provision_zones(self):
         if self.provisioning:
             os.environ["RSYNC_RSH"]=Settings.get("shell.ssh")
-            os.chdir(os.path.join(Settings.get("dns.zone_cache"),self.name))
+            os.chdir(os.path.join(Settings.get("cm.repo"),"dns"))
             cmd=self.provisioning%{
                 "rsync": Settings.get("shell.rsync"),
                 "ns"   : self.name
@@ -178,35 +178,6 @@ class DNSZone(models.Model):
     def zonedata(self,ns):
         return get_generator_class(ns.type.name)().get_zone(self)
     
-    ##
-    ## Rewrites zone files and return a list of affected nameservers
-    ##
-    @classmethod
-    def rewrite_zones(cls):
-        cache_path=Settings.get("dns.zone_cache")
-        changed={}
-        changed_nses={}
-        for z in DNSZone.objects.filter(is_auto_generated=True):
-            for ns in z.profile.ns_servers.all():
-                cp=os.path.join(cache_path,ns.name,z.name) 
-                if is_differ(cp,z.zonedata(ns)):
-                    changed[z]=None
-                    break
-        # Rewrite changed zones for all authoritative nses
-        for z in changed:
-            z.serial=z.next_serial
-            z.save()
-            for ns in z.profile.ns_servers.all():
-                cp=os.path.join(cache_path,ns.name,z.name) 
-                safe_rewrite(cp,z.zonedata(ns))
-                changed_nses[ns]=None
-        # Rewrite include files for nameservers
-        # Generator should include timestamp to make file really different
-        for ns in changed_nses:
-            g=get_generator_class(ns.type.name)()
-            safe_rewrite(os.path.join(cache_path,ns.name,"autozones.conf"),g.get_include(ns))
-        return changed_nses.keys()
-    
     def _distribution_list(self):
         return self.profile.ns_servers.filter(provisioning__isnull=False)
     distribution_list=property(_distribution_list)
@@ -215,12 +186,6 @@ class DNSZone(models.Model):
         return ", ".join(["<A HREF='/dns/%s/zone/%s/'>%s</A>"%(self.name,n.id,n.name) for n in self.distribution_list])
     distribution.short_description="Distribution"
     distribution.allow_tags=True
-            
-    @classmethod
-    def sync_zones(cls):
-        nses=cls.rewrite_zones()
-        for ns in nses:
-            ns.provision_zones()
 
     def _children(self):
         l=len(self.name)
