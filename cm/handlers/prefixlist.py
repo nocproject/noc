@@ -17,7 +17,7 @@ class Handler(BaseHandler):
                 o=objects[path]
                 del objects[path]
             else:
-                o=Object(handler_class_name="prefix-list",stream_url=peering_point.provision_rcmd,
+                o=Object(handler_class_name=self.name,stream_url=peering_point.provision_rcmd,
                     profile_name=peering_point.type.name,repo_path=path)
                 o.save()
             o.write(pl)
