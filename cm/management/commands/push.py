@@ -1,8 +1,10 @@
-# encoding: utf-8
+##
+##
 from django.core.management.base import BaseCommand
-from noc.dns.models import DNSZone
+from noc.cm.models import Object
+
 
 class Command(BaseCommand):
-    help="Generate DNS Zones"
+    help="Push objects"
     def handle(self, *args, **options):
-        DNSZone.sync_zones()
+        Object.global_push(args[0])
