@@ -7,9 +7,15 @@ from noc.peer.tree import optimize_prefix_list
 
 PL_THRESHOLD=10
 
+##
+## Queries whois database
+## and return a list of
+## (peering_point,prefix-list-name,prefix-list)
+##
 def build_prefix_lists():
     pl2pp={}
     f2pl={}
+    result=[]
     for pp in PeeringPoint.objects.all():
         for n,f in pp.generated_prefix_lists:
             if n not in pl2pp:
@@ -34,5 +40,7 @@ def build_prefix_lists():
         pl_name=f2pl[f]
         for pp in pl2pp[pl_name]:
             profile=pp.type.profile
-            print profile.generate_prefix_list(pl_name,prefix_list,strict)
+            pl=profile.generate_prefix_list(pl_name,prefix_list,strict)
+            result+=[(pp,pl_name,pl)]
+    return result
             
