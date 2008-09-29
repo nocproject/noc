@@ -3,7 +3,7 @@ from noc.main.report import BaseReport,Column
 class Report(BaseReport):
     title="Zones at nameservers"
     requires_cursor=True
-    columns=[Column("Nameserver"),Column("Zones")]
+    columns=[Column("Nameserver"),Column("Zones",align="RIGHT")]
     
     def get_queryset(self):
         return self.execute("""SELECT ns.name,COUNT(*)

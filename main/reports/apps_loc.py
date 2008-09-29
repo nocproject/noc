@@ -4,7 +4,7 @@ import os
 class Report(BaseReport):
     title="Lines of code"
     requires_cursor=False
-    columns=[Column("App"),Column(".py lines"),Column(".html lines")]
+    columns=[Column("App"),Column(".py lines",align="RIGHT"),Column(".html lines",align="RIGHT")]
     
     def get_queryset(self):
         def loc(f):

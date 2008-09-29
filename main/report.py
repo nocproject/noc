@@ -4,14 +4,25 @@ import os
 ## Report Columns
 ##
 class Column(object):
-    def __init__(self,name):
+    def __init__(self,name,align=None,v_align=None):
         self.name=name
+        self.align=align
+        self.v_align=v_align
         
     def render_header(self):
         return "<TH>%s</TH>"%self.name
         
     def render_cell(self,value):
-        return "<TD>%s</TD>"%value
+        flags=[]
+        if self.align:
+            flags+=["ALIGN='%s'"%self.align]
+        if self.v_align:
+            flags+=["VALIGN='%s'"%self.v_align]
+        if flags:
+            flags=" "+" ".join(flags)
+        else:
+            flags=""
+        return "<TD%s>%s</TD>"%(flags,value)
 
 ##
 ## Abstract Report
