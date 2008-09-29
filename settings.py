@@ -87,6 +87,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     "south",
     
+    "noc.main",
     "noc.setup",
     "noc.sa",
     "noc.cm",
