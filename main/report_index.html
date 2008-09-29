@@ -1,0 +1,13 @@
+{% extends "template/template.html" %}
+{% block title%}Reports{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+<TABLE BORDER="0">
+    {% for module,reports in reports.items %}
+    <TR><TH>{{module}}</TH></TR>
+        {% for name,r_class in reports.items %}
+        <TR><TD><A HREF="/main/report/{{module}}/{{name}}/">{{r_class.title}}</A></TD></TR>
+        {% endfor %}
+    {% endfor %}
+</TABLE>
+{% endblock %}

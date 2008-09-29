@@ -1,0 +1,6 @@
+{% extends "template/template.html" %}
+{% block title%}{{report.title}}{% endblock %}
+{% block content %}
+<h1>{{report.title}}</h1>
+{{data|safe}}
+{% endblock %}
