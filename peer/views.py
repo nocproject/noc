@@ -27,7 +27,7 @@ def as_set_rpsl(request,as_set):
 ## Looking glass
 ##
 class LGForm(forms.Form):
-    peering_point= forms.ModelChoiceField(queryset=PeeringPoint.objects.filter(lg_rcmd__isnull=False))
+    peering_point= forms.ModelChoiceField(queryset=PeeringPoint.objects.filter(lg_rcmd__isnull=False).exclude(lg_rcmd__exact=""))
     query_type   = forms.ModelChoiceField(queryset=LGQueryType.objects.all())
     query        = forms.CharField(required=False)
     def clean_query(self):
