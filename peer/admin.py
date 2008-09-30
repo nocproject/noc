@@ -1,5 +1,5 @@
 from django.contrib import admin
-from noc.peer.models import LIR,AS,ASSet,PeeringPointType,PeeringPoint,PeerGroup,Peer,LGQueryCommand
+from noc.peer.models import LIR,AS,ASSet,PeeringPoint,PeerGroup,Peer,LGQueryCommand
 
 class LIRAdmin(admin.ModelAdmin): pass
 
@@ -15,14 +15,10 @@ class ASSetAdmin(admin.ModelAdmin):
 class LGQueryCommandAdmin(admin.TabularInline):
     model=LGQueryCommand
     extra=1
-    
-class PeeringPointTypeAdmin(admin.ModelAdmin):
-    list_display=["name"]
-    inlines=[LGQueryCommandAdmin]
-        
+
 class PeeringPointAdmin(admin.ModelAdmin):
-    list_display=["hostname","location","router_id","type","communities"]
-    list_filter=["type"]
+    list_display=["hostname","location","router_id","profile_name","communities"]
+    list_filter=["profile_name"]
     search_fields=["hostname","router_id"]
         
 class PeerGroupAdmin(admin.ModelAdmin):
@@ -36,7 +32,6 @@ class PeerAdmin(admin.ModelAdmin):
 admin.site.register(LIR,LIRAdmin)
 admin.site.register(AS,ASAdmin)
 admin.site.register(ASSet,ASSetAdmin)
-admin.site.register(PeeringPointType,PeeringPointTypeAdmin)
 admin.site.register(PeeringPoint,PeeringPointAdmin)
 admin.site.register(PeerGroup,PeerGroupAdmin)
 admin.site.register(Peer,PeerAdmin)
