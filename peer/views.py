@@ -41,7 +41,7 @@ class LGForm(forms.Form):
                 raise forms.ValidationError("Query type is not supported for this router")
             if query=="" and qc.is_argument_required:
                 raise forms.ValidationError("Missed query argument")
-            if not is_ipv4(query) and not is_cidr(query):
+            if query!="" and (not is_ipv4(query) and not is_cidr(query)):
                 raise forms.ValidationError("Invalid query")
         return query
     
