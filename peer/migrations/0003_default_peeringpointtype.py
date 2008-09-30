@@ -11,27 +11,12 @@ LEGACY=[
 TYPES=["Cisco.IOS","Juniper.JUNOS"]
 class Migration:
     def forwards(self):
-        print "Migrating peering point type names"
         for f,t in LEGACY:
-            try:
-                p=PeeringPointType.objects.get(name=f)
-                print "%s -> %s"%(f,t)
-                p.name=t
-                p.save()
-            except PeeringPointType.DoesNotExist:
-                pass
+            db.execute("UPDATE peer_peeringpointtype SET name=%s WHERE name=%s",[t,f])
         for t in TYPES:
-            try:
-                PeeringPointType.objects.get(name=t)
-            except:
-                print "Creating: %s"%t
-                p=PeeringPointType(name=t)
-                p.save()
+            if db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s",[t])[0][0]==0:
+                db.execute("INSERT INTO peer_peeringpointtype(name) VALUES(%s)",[t])
     
     def backwards(self):
-        for t in TYPES:
-            try:
-                p=PeeringPointType.objects.get(name=t)
-                p.delete()
-            except:
-                pass
+        for f,t in LEGACY:
+            db.execute("UPDATE peer_peeringpointtype SET name=%s WHERE name=%s",[t,f])

@@ -121,19 +121,6 @@ class ASSet(models.Model):
     rpsl_link.short_description="RPSL"
     rpsl_link.allow_tags=True
 
-class PeeringPointType(models.Model):
-    class Meta:
-        verbose_name="Peering Point Type"
-        verbose_name_plural="Peering Point Types"
-    name=models.CharField("Name",max_length=32,unique=True,choices=profile_choices)
-    def __str__(self):
-        return self.name
-    def __unicode__(self):
-        return unicode(self.name)
-    def _profile(self):
-        return get_profile_class(self.name)()
-    profile=property(_profile)
-
 class PeeringPoint(models.Model):
     class Meta:
         verbose_name="Peering Point"
@@ -141,7 +128,7 @@ class PeeringPoint(models.Model):
     hostname=models.CharField("FQDN",max_length=64,unique=True)
     location=models.CharField("Location",max_length=64,blank=True,null=True)
     router_id=models.IPAddressField("Router-ID",unique=True)
-    type=models.ForeignKey(PeeringPointType,verbose_name="Type")
+    profile_name=models.CharField("Profile",max_length=128,choices=profile_choices)
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
     lg_rcmd=models.CharField("LG RCMD Url",max_length=128,blank=True,null=True,
         help_text="&lt;schema&gt;://&lt;user&gt;:&lt;password&gt;@host/, where &lt;schema&gt; is one of telnet, ssh")
@@ -157,13 +144,12 @@ class PeeringPoint(models.Model):
             return u"%s (%s)"%(self.hostname,self.location)
         else:
             return self.hostname
-    @classmethod
     def lg_command(self,query_type,query):
         try:
-            lgc=LGQueryCommand.objects.get(peering_point_type=self.type,query_type=query_type)
+            lgc=LGQueryCommand.objects.get(profile_name=self.profile_name,query_type=query_type)
         except LGQueryCommand.DoesNotExist:
             return None
-        query=self.type.profile.convert_prefix(query)
+        query=self.profile.convert_prefix(query)
         return lgc.command%{"query":query}
     def sync_cm_prefix_list(self):
         if self.provision_rcmd is None:
@@ -179,9 +165,8 @@ class PeeringPoint(models.Model):
                 p.delete()
             else:
                 del peers_pl[pl]
-        profile_name=self.type.name
         for pl in peers_pl:
-            o=Object(handler_class_name="prefix-list",stream_url=self.provision_rcmd,profile_name=self.type.name,repo_path=h+pl)
+            o=Object(handler_class_name="prefix-list",stream_url=self.provision_rcmd,profile_name=self.profile_name,repo_path=h+pl)
             o.save()
     #
     # Returns a list of (prefix-list-name, rpsl-filter)
@@ -195,6 +180,10 @@ class PeeringPoint(models.Model):
                 pls[pr.export_filter_name]=pr.export_filter
         return pls.items()
     generated_prefix_lists=property(_generated_prefix_lists)
+    #
+    def _profile(self):
+        return get_profile_class(self.profile_name)()
+    profile=property(_profile)
 
 class PeerGroup(models.Model):
     class Meta:
@@ -292,12 +281,12 @@ class LGQueryCommand(models.Model):
     class Meta:
         verbose_name="LG Query Command"
         verbose_name_plural="LG Quert Commands"
-        unique_together=[("peering_point_type","query_type")]
-    peering_point_type=models.ForeignKey(PeeringPointType,verbose_name="Peering Point Type")
+        unique_together=[("profile_name","query_type")]
+    profile_name=models.CharField("Profile",max_length=128,choices=profile_choices)
     query_type=models.ForeignKey(LGQueryType,verbose_name="LG Query Type")
     command=models.CharField("Command",max_length=128)
     def __unicode__(self):
-        return "%s %s"%(self.peering_point_type.name,self.query_type.name)
+        return "%s %s"%(self.profile_name,self.query_type.name)
     def _is_argument_required(self):
         return self.command and "%(query)s" in self.command
     is_argument_required=property(_is_argument_required)
