@@ -1,6 +1,8 @@
-from noc.main.report import BaseReport,Column
+from noc.main.report import Column
+import noc.main.report
 
-class Report(BaseReport):
+class Report(noc.main.report.Report):
+    name="dns.ns_zones"
     title="Zones at nameservers"
     requires_cursor=True
     columns=[Column("Nameserver"),Column("Zones",align="RIGHT")]

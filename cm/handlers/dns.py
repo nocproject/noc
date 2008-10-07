@@ -1,8 +1,8 @@
-from noc.cm.handlers import BaseHandler
+import noc.cm.handlers
 from noc.lib.fileutils import is_differ
 import os
 
-class Handler(BaseHandler):
+class Handler(noc.cm.handlers.Handler):
     name="dns"
     #
     @classmethod

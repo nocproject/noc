@@ -1,6 +1,8 @@
-from noc.main.report import BaseReport,Column
+from noc.main.report import Column
+import noc.main.report
 
-class Report(BaseReport):
+class Report(noc.main.report.Report):
+    name="dns.missed_p2p_addresses"
     title="/30 allocations without ip addresses"
     requires_cursor=True
     columns=[Column("Prefix")]

@@ -5,7 +5,6 @@ from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 from noc.dns.generators import get_generator_class
-from noc.main.report import register_report_classes
 ##
 ## DNSServerType.
 ## Please, do not modify table contents directly, use migrations instead.
@@ -228,7 +227,3 @@ class DNSZoneRecord(models.Model):
         return "%s %s"%(self.zone.name," ".join([x for x in [self.left,self.type.type,self.right] if x is not None]))
     def __unicode__(self):
         return unicode(str(self))
-##
-## Register Reports
-##
-register_report_classes("dns")

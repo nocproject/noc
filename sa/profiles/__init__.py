@@ -1,11 +1,30 @@
 from noc.lib.ip import bits_to_netmask
-import os
+from noc.lib.registry import Registry
+##
+##
+##
+class ProfileRegistry(Registry):
+    name="ProfileRegistry"
+    subdir="profiles"
+    classname="Profile"
+profile_registry=ProfileRegistry()
+
+##
+##
+##
+class ProfileBase(type):
+    def __new__(cls,name,bases,attrs):
+        m=type.__new__(cls,name,bases,attrs)
+        profile_registry.register(m.name,m)
+        return m
+
 ##
 ## Abstract Profile
 ##
-class BaseProfile(object):
+class Profile(object):
+    __metaclass__=ProfileBase
     # Profile name
-    name="BaseProfile"
+    name=None
     # Regular expression to catch user name prompt
     # (Usually during telnet sessions)
     pattern_username="[Uu]sername:"
@@ -81,29 +100,3 @@ class BaseProfile(object):
         from noc.sa.models import get_task_output
         return get_task_output(self.name,stream_url,"sa.actions.cli",
             args={"commands":self.command_pull_config})
-#
-# Global storage for registered profile classes
-#
-profile_classes={}
-#
-# Choices for CharField(choices=...)
-#
-profile_choices=[]
-
-#
-# Returns profile class for given name
-#
-def get_profile_class(name):
-    return profile_classes[name]
-#
-# Search for profiles and register them
-#
-def register_profile_classes():
-    for dirpath,dirnames,filenames in os.walk("sa/profiles/"):
-        for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
-            module=__import__("%s.%s"%(dirpath.replace("/","."),f.replace("/",".")[:-3]),globals(),locals,["Profile"])
-            pc=getattr(module,"Profile")
-            profile_classes[pc.name]=pc
-    for p in profile_classes:
-        profile_choices.append((p,p))
-    profile_choices.sort(lambda x,y: cmp(x[0],y[0]))

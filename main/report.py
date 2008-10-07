@@ -1,5 +1,16 @@
 from noc.lib.render import render
-import os
+from noc.lib.registry import Registry
+
+##
+##
+##
+class ReportRegistry(Registry):
+    name="ReportRegistry"
+    subdir="reports"
+    classname="Report"
+report_registry=ReportRegistry()
+
+
 ##
 ## Report Columns
 ##
@@ -25,9 +36,19 @@ class Column(object):
         return "<TD%s>%s</TD>"%(flags,value)
 
 ##
+##
+##
+class ReportBase(type):
+    def __new__(cls,name,bases,attrs):
+        m=type.__new__(cls,name,bases,attrs)
+        report_registry.register(m.name,m)
+        return m
+##
 ## Abstract Report
 ##
-class BaseReport(object):
+class Report(object):
+    __metaclass__=ReportBase
+    name=None
     form_class=None # Or forms.form descendant
     template="main/report.html"
     title="Generic Report"
@@ -65,28 +86,3 @@ class BaseReport(object):
     def execute(self,sql,args=[]):
         self.cursor.execute(sql,args)
         return self.cursor.fetchall()
-
-# A hash of "module" -> hash of name -> report_class
-report_classes={}
-
-#
-# Register all reports in modules
-#
-def register_report_classes(module):
-    r_path=os.path.join(module,"reports")
-    if not os.path.isdir(r_path):
-        return
-    if module not in report_classes:
-        report_classes[module]={}
-    for f in [f for f in os.listdir(os.path.join(module,"reports")) if f.endswith(".py") and f!="__init__.py"]:
-        try:
-            m=__import__("%s.reports.%s"%(module,f[:-3]),globals(),locals(),["Report"])
-            rc=getattr(m,"Report")
-        except (ImportError,AttributeError):
-            continue
-        report_classes[module][f[:-3]]=rc
-#
-# Returns Report Class or raises KeyError
-#
-def get_report_class(module,name):
-    return report_classes[module][name]

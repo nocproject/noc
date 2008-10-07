@@ -1,7 +1,7 @@
-from noc.cm.handlers import BaseHandler
+import noc.cm.handlers
 import os
 
-class Handler(BaseHandler):
+class Handler(noc.cm.handlers.Handler):
     name="prefix-list"
     #
     @classmethod

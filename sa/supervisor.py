@@ -4,7 +4,7 @@
 ##
 import os,asyncore,logging,signal,cPickle,sys,traceback
 from noc.sa.stream import Stream
-from noc.sa.profiles import get_profile_class,register_profile_classes
+from noc.sa.profiles import profile_registry
 from noc.sa.actions import get_action_class
 import settings
 import psycopg2
@@ -59,7 +59,7 @@ class Supervisor(object):
         self.cursor.execute("UPDATE sa_task SET status='p' WHERE task_id=%s",[task_id])
         self.cursor.execute("COMMIT")
         try:
-            stream=Stream.get_stream(get_profile_class(profile),stream_url)
+            stream=Stream.get_stream(profile_registry[profile],stream_url)
             action=get_action_class(action)(self,task_id,stream,args)
         except:
             self.task_error(task_id,".".join(traceback.format_exception(*sys.exc_info())))

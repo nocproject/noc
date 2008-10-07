@@ -1,13 +1,13 @@
 from django.db import models
-from noc.sa.profiles import get_profile_class,profile_choices
+from noc.sa.profiles import profile_registry
 from noc.setup.models import Settings
-from noc.cm.handlers import get_handler_class,register_handler_classes,handler_choices
+from noc.cm.handlers import handler_registry
 from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file
 from noc.cm.vcs import get_vcs
 import os,datetime
 
-register_handler_classes()
+handler_registry.register_all()
 
 class ObjectCategory(models.Model):
     class Meta:
@@ -25,9 +25,9 @@ class Object(models.Model):
         verbose_name="Object"
         verbose_name_plural="Objects"
         unique_together=[("handler_class_name","repo_path")]
-    handler_class_name=models.CharField("Handler Class",max_length=64,choices=handler_choices)
+    handler_class_name=models.CharField("Handler Class",max_length=64,choices=handler_registry.choices)
     stream_url=models.CharField("Stream URL",max_length=128)
-    profile_name=models.CharField("Profile",max_length=128,choices=profile_choices)
+    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     repo_path=models.CharField("Repo Path",max_length=128)
     categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories",null=True,blank=True)
     #last_pushed=models.DateTimeField("Last Pushed",blank=True,null=True)
@@ -37,11 +37,11 @@ class Object(models.Model):
         return "%s/%s/%s"%(self.handler_class_name,self.profile_name,self.repo_path)
     
     def _profile(self):
-        return get_profile_class(self.profile_name)()
+        return profile_registry[self.profile_name]()
     profile=property(_profile)
     
     def _handler_class(self):
-        return get_handler_class(self.handler_class_name)
+        return handler_registry[self.handler_class_name]
     handler_class=property(_handler_class)
     
     def _repo(self):
@@ -97,9 +97,3 @@ class Object(models.Model):
         vcs=get_vcs(self.repo)
         vcs.rm(self.repo_path)
         super(Object,self).delete()
-
-
-#
-# Load and register all config handlers
-#
-#register_handler_classes()

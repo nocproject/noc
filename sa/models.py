@@ -1,6 +1,8 @@
 from django.db import models
 import datetime,random,cPickle,time
-from noc.sa.profiles import get_profile_class,register_profile_classes,profile_choices
+from noc.sa.profiles import profile_registry
+
+profile_registry.register_all()
 
 class Task(models.Model):
     class Meta:
@@ -9,7 +11,7 @@ class Task(models.Model):
     task_id=models.IntegerField("Task",unique=True)
     start_time=models.DateTimeField("Start Time",auto_now_add=True)
     end_time=models.DateTimeField("End Time")
-    profile_name=models.CharField("Profile",max_length=64,choices=profile_choices)
+    profile_name=models.CharField("Profile",max_length=64,choices=profile_registry.choices)
     stream_url=models.CharField("Stream URL",max_length=128)
     action=models.CharField("Action",max_length=64)
     args=models.TextField("Args")
@@ -20,7 +22,7 @@ class Task(models.Model):
     @classmethod
     def create_task(cls,profile_name,stream_url,action,args={},timeout=600):
         # Check profile exists
-        get_profile_class(profile_name)
+        profile_registry[profile_name]
         #
         s_time=datetime.datetime.now()
         e_time=s_time+datetime.timedelta(seconds=timeout)
@@ -38,7 +40,7 @@ class Task(models.Model):
         t.save()
         return task_id
     def _profile(self):
-        return get_profile_class(self.profile_name)()
+        return profile_registry[self.profile_name]()
     profile=property(_profile)
     
 def get_task_output(profile_name,stream_url,action,args={},timeout=600):
@@ -54,6 +56,3 @@ def get_task_output(profile_name,stream_url,action,args={},timeout=600):
             out=task.out
             task.delete()
             raise Exception(out)
-            
-# Register profiles
-register_profile_classes()

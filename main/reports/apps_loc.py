@@ -1,7 +1,9 @@
-from noc.main.report import BaseReport,Column
+from noc.main.report import Column
+import noc.main.report
 import os
 
-class Report(BaseReport):
+class Report(noc.main.report.Report):
+    name="main.apps_loc"
     title="Lines of code"
     requires_cursor=False
     columns=[Column("App"),Column(".py lines",align="RIGHT"),Column(".html lines",align="RIGHT")]

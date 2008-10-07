@@ -3,7 +3,7 @@ from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
 from noc.setup.models import Settings
-from noc.sa.profiles import get_profile_class, profile_choices
+from noc.sa.profiles import profile_registry
 from noc.cm.models import Object
 import random,sets
 
@@ -128,7 +128,7 @@ class PeeringPoint(models.Model):
     hostname=models.CharField("FQDN",max_length=64,unique=True)
     location=models.CharField("Location",max_length=64,blank=True,null=True)
     router_id=models.IPAddressField("Router-ID",unique=True)
-    profile_name=models.CharField("Profile",max_length=128,choices=profile_choices)
+    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
     lg_rcmd=models.CharField("LG RCMD Url",max_length=128,blank=True,null=True,
         help_text="&lt;schema&gt;://&lt;user&gt;:&lt;password&gt;@host/, where &lt;schema&gt; is one of telnet, ssh")
@@ -182,7 +182,7 @@ class PeeringPoint(models.Model):
     generated_prefix_lists=property(_generated_prefix_lists)
     #
     def _profile(self):
-        return get_profile_class(self.profile_name)()
+        return profile_registry[self.profile_name]()
     profile=property(_profile)
 
 class PeerGroup(models.Model):
@@ -282,7 +282,7 @@ class LGQueryCommand(models.Model):
         verbose_name="LG Query Command"
         verbose_name_plural="LG Quert Commands"
         unique_together=[("profile_name","query_type")]
-    profile_name=models.CharField("Profile",max_length=128,choices=profile_choices)
+    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     query_type=models.ForeignKey(LGQueryType,verbose_name="LG Query Type")
     command=models.CharField("Command",max_length=128)
     def __unicode__(self):

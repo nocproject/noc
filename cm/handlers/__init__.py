@@ -1,7 +1,20 @@
-import os
+from noc.lib.registry import Registry
 
-class BaseHandler(object):
-    name="undefined"
+class HandlerRegistry(Registry):
+    name="HandlerRegistry"
+    subdir="handlers"
+    classname="Handler"
+handler_registry=HandlerRegistry()
+
+class HandlerBase(type):
+    def __new__(cls,name,bases,attrs):
+        m=type.__new__(cls,name,bases,attrs)
+        handler_registry.register(m.name,m)
+        return m
+
+class Handler(object):
+    __metaclass__=HandlerBase
+    name=None
     def __init__(self,object):
         self.object=object
     
@@ -25,29 +38,3 @@ class BaseHandler(object):
     # @classmethod
     # def global_push(self): otherwise
     global_push=None
-
-#
-# Global storage for registered profile classes
-#
-handler_classes={}
-#
-# Choices for CharField(choices=...)
-#
-handler_choices=[]
-#
-#
-#
-def get_handler_class(name):
-    return handler_classes[name]
-
-def register_handler_classes():
-    for dirpath,dirnames,filenames in os.walk("cm/handlers/"):
-        if dirpath.endswith("/"):
-            dirpath=dirpath[:-1]
-        for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
-            module=__import__("%s.%s"%(dirpath.replace("/","."),f.replace("/",".")[:-3]),globals(),locals,["Handler"])
-            pc=getattr(module,"Handler")
-            handler_classes[pc.name]=pc
-    for p in handler_classes:
-        handler_choices.append((p,p))
-    handler_choices.sort(lambda x,y: cmp(x[0],y[0]))

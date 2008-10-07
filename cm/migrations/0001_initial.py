@@ -1,6 +1,7 @@
 
 from south.db import db
 from noc.cm.models import *
+from noc.cm.handlers import handler_registry
 
 class Migration:
     
@@ -15,7 +16,7 @@ class Migration:
         # Model 'Object'
         db.create_table('cm_object', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('handler_class_name', models.CharField("Object Type",max_length=64,choices=handler_choices)),
+            ('handler_class_name', models.CharField("Object Type",max_length=64,choices=handler_registry.choices)),
             ('stream_url', models.CharField("URL",max_length=128)),
             ('profile_name', models.CharField("Profile",max_length=128,choices=profile_choices)),
             ('repo_path', models.CharField("Repo Path",max_length=128)),

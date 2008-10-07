@@ -1,6 +1,6 @@
-from noc.sa.profiles import BaseProfile
+import noc.sa.profiles
 
-class Profile(BaseProfile):
+class Profile(noc.sa.profiles.Profile):
     name="Cisco.IOS"
     pattern_more="^ --More--"
     pattern_lg_as_path_list=r"^(\s+\d+(?: \d+)*),"

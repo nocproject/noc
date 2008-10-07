@@ -20,6 +20,7 @@ class Registry(object):
             return
         if name in self.classes:
             raise Exception,"Module %s registred twice"%name
+        print "%-20s: Register %s"%(self.name,name)
         self.classes[name]=module
         self.choices.append((name,name))
     #
@@ -31,7 +32,7 @@ class Registry(object):
             if not os.path.isdir(pd):
                 continue
             for dirpath,dirnames,filenames in os.walk(pd):
-                mb=app+"."+".".join(os.path.split(dirpath)[1:])+"."
+                mb=app+"."+".".join(dirpath.split(os.sep)[1:])+"."
                 for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
                     __import__(mb+f[:-3],{},{},self.classname)
     #

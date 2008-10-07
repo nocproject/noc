@@ -2,9 +2,9 @@
 ## Vendor: Juniper
 ## OS:     JUNOS
 ##
-from noc.sa.profiles import BaseProfile
+import noc.sa.profiles
 
-class Profile(BaseProfile):
+class Profile(noc.sa.profiles.Profile):
     name="Juniper.JUNOS"
     pattern_prompt="^({master}\n)?\S*>"
     pattern_more=r"^---\(more.*?\)---"

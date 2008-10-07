@@ -2,9 +2,9 @@
 ## Vendor: Juniper
 ## OS:     ScreenOS
 ##
-from noc.sa.profiles import BaseProfile
+import noc.sa.profiles
 
-class Profile(BaseProfile):
+class Profile(noc.sa.profiles.Profile):
     name="Juniper.ScreenOS"
     pattern_prompt="^\S*-> "
     pattern_more=r"^--- more ---"
