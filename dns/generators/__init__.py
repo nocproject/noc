@@ -1,7 +1,27 @@
+from noc.lib.registry import Registry
+##
+##
+##
+class GeneratorRegistry(Registry):
+    name="GeneratorRegistry"
+    subdir="generators"
+    classname="Generator"
+generator_registry=GeneratorRegistry()
+##
+## Metaclass for Generator
+##
+class GeneratorBase(type):
+    def __new__(cls,name,bases,attrs):
+        g=type.__new__(cls,name,bases,attrs)
+        generator_registry.register(g.name,g)
+        return g
+
 ##
 ## Abstract DNS zone generator
 ##
-class BaseGenerator(object):
+class Generator(object):
+    __metaclass__=GeneratorBase
+    name=None
     def get_header(self):
         return """;;
 ;; WARNING: Auto-generated zone file
@@ -66,10 +86,3 @@ class BaseGenerator(object):
             elif rr>0:
                 z.append("%d %s"%(rr,t))
         return " ".join(z)
-        
-##
-## Returns zone generator class
-##
-def get_generator_class(name):
-    module=__import__("noc.dns.generators."+name.lower(),globals(),locals(),["Generator"])
-    return getattr(module,"Generator")

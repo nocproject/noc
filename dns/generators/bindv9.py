@@ -1,10 +1,11 @@
 ##
 ## BINDv9 Zone Generator
 ##
-from noc.dns.generators import BaseGenerator
+import noc.dns.generators
 import time
 
-class Generator(BaseGenerator):
+class Generator(noc.dns.generators.Generator):
+    name="BINDv9"
     def get_soa(self):
         nses=["\tNS\t%s\n"%n for n in self.zone.ns_list]
         nses="".join(nses)

@@ -4,7 +4,12 @@ from noc.setup.models import Settings
 from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
-from noc.dns.generators import get_generator_class
+from noc.dns.generators import generator_registry
+
+##
+## register all generator classes
+##
+generator_registry.register_all()
 ##
 ## DNSServerType.
 ## Please, do not modify table contents directly, use migrations instead.
@@ -176,7 +181,7 @@ class DNSZone(models.Model):
     records=property(_records)
     
     def zonedata(self,ns):
-        return get_generator_class(ns.type.name)().get_zone(self)
+        return generator_registry[ns.type.name]().get_zone(self)
     
     def _distribution_list(self):
         return self.profile.ns_servers.filter(provisioning__isnull=False)

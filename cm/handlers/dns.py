@@ -9,7 +9,7 @@ class Handler(noc.cm.handlers.Handler):
     def global_pull(self):
         from noc.dns.models import DNSZone
         from noc.cm.models import Object
-        from noc.dns.generators import get_generator_class
+        from noc.dns.generators import generator_registry
         
         objects={}
         changed={}
@@ -41,7 +41,7 @@ class Handler(noc.cm.handlers.Handler):
                 changed_nses[ns]=None
         for ns in changed_nses:
             logging.debug("DNSHandler.global_pull: Includes for %s rebuilded"%ns.name)
-            g=get_generator_class(ns.type.name)()
+            g=generator_registry[ns.type.name]()
             path=os.path.join(ns.name,"autozones.conf")
             try:
                 o=Object.objects.get(handler_class_name=self.name,repo_path=path)
