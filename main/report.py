@@ -1,5 +1,9 @@
 from noc.lib.render import render
 from noc.lib.registry import Registry
+from django.conf import settings
+
+#
+admin_media_prefix=settings.ADMIN_MEDIA_PREFIX
 
 ##
 ##
@@ -34,6 +38,16 @@ class Column(object):
         else:
             flags=""
         return "<TD%s>%s</TD>"%(flags,value)
+##
+## Boolean field rendered as checkmark
+##
+class BooleanColumn(Column):
+    def render_cell(self,value):
+        if value:
+            url=admin_media_prefix+"img/admin/icon-yes.gif"
+        else:
+            url=admin_media_prefix+"img/admin/icon-no.gif"
+        return "<TD><IMG SRC='%s' /></TD>"%url
 
 ##
 ##
