@@ -3,8 +3,11 @@
 {% block content %}
 <h1>Reports</h1>
 <TABLE BORDER="0">
-    {% for name,report in reports.items %}
-        <TR><TD><A HREF="/main/report/{{name}}/">{{report.title}}</A></TD></TR>
+    {% for module,reports in reports %}
+        <TR><TD><B>{{module}}</B></TD></TR>
+        {% for r in reports %}
+            <TR><TD><A HREF="/main/report/{{r.name}}/">{{r.title}}</A></TD></TR>
+        {% endfor %}
     {% endfor %}
 </TABLE>
 {% endblock %}

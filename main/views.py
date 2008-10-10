@@ -26,4 +26,18 @@ def report(request,report):
         return render(request,"main/report_form.html",{"report":report})
 
 def report_index(request):
-    return render(request,"main/report_index.html",{"reports":report_registry.classes})
+    r={}
+    for cn,c in report_registry.classes.items():
+        m,n=cn.split(".",1)
+        if m not in r:
+            r[m]=[c]
+        else:
+            r[m].append(c)
+    out=[]
+    keys=r.keys()
+    keys.sort()
+    for k in keys:
+        v=r[k]
+        v.sort(lambda x,y:cmp(x.title,y.title))
+        out.append([k,v])
+    return render(request,"main/report_index.html",{"reports":out})
