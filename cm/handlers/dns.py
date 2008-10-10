@@ -1,6 +1,6 @@
 import noc.cm.handlers
 from noc.lib.fileutils import is_differ
-import os
+import os,logging
 
 class Handler(noc.cm.handlers.Handler):
     name="dns"
@@ -31,6 +31,7 @@ class Handler(noc.cm.handlers.Handler):
         for o in objects.values():
             o.delete()
         for z in changed:
+            logging.debug("DNSHandler.global_pull: Zone %s changed"%z.name)
             z.serial=z.next_serial
             z.save()
             for ns in z.profile.ns_servers.all():
@@ -39,6 +40,7 @@ class Handler(noc.cm.handlers.Handler):
                 o.write(z.zonedata(ns))
                 changed_nses[ns]=None
         for ns in changed_nses:
+            logging.debug("DNSHandler.global_pull: Includes for %s rebuilded"%ns.name)
             g=get_generator_class(ns.type.name)()
             path=os.path.join(ns.name,"autozones.conf")
             try:
@@ -57,4 +59,5 @@ class Handler(noc.cm.handlers.Handler):
             for ns in z.profile.ns_servers.all():
                 nses[ns.name]=ns
         for ns in nses.values():
+            logging.debug("DNSHandler.global_push: provisioning %s"%ns.name)
             ns.provision_zones()

@@ -68,25 +68,25 @@ class Object(models.Model):
     # Push object's content from repository to equipment
     #
     def push(self):
-        self.handler_class(self).push()
+        self.handler_class.push()
     #
     # Pull object's content into repository
     #
     def pull(self):
-        cfg=self.handler_class(self).pull()
+        cfg=self.handler_class.pull()
         self.write(cfg)
     #
     # Push all objects of the given type
     #
     @classmethod
     def global_push(self,handler_class_name):
-        get_handler_class(handler_class_name).global_push()
+        handler_registry[handler_class_name].global_push()
     #
     # Pull all objects of the given type
     #
     @classmethod
     def global_pull(self,handler_class_name):
-        get_handler_class(handler_class_name).global_pull()
+        handler_registry[handler_class_name].global_pull()
     # Returns object's content
     # Or None if no content yet
     def _data(self):

@@ -2,7 +2,7 @@ import datetime,os
 from noc.lib.registry import Registry
 
 ##
-##
+## Registry for all periodic tasks
 ##
 class PeriodicRegistry(Registry):
     name="PeriodicRegistry"
@@ -12,17 +12,15 @@ class PeriodicRegistry(Registry):
 periodic_registry=PeriodicRegistry()
 
 ##
-##
+## Metaclass for Task
 ##
 class TaskBase(type):
     def __new__(cls,name,bases,attrs):
         m=type.__new__(cls,name,bases,attrs)
         periodic_registry.register(m.name,m)
         return m
-
 ##
-##
-##
+## Task handler
 ##
 class Task(object):
     __metaclass__ = TaskBase
@@ -30,3 +28,4 @@ class Task(object):
     description=""
     def execute(self):
         return True
+        

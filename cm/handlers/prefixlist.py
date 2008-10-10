@@ -1,5 +1,5 @@
 import noc.cm.handlers
-import os
+import os,logging
 
 class Handler(noc.cm.handlers.Handler):
     name="prefix-list"
@@ -11,7 +11,9 @@ class Handler(noc.cm.handlers.Handler):
         objects={}
         for o in Object.objects.filter(handler_class_name=self.name):
             objects[o.repo_path]=o
+        logging.debug("PrefixListHandler.global_pull(): building prefix lists")
         for peering_point,pl_name,pl in build_prefix_lists():
+            logging.debug("PrefixListHandler.global_pull(): writing %s/%s (%d lines)"%(peering_point.hostname,pl_name,len(pl.split("\n"))))
             path=os.path.join(peering_point.hostname,pl_name)
             if path in objects:
                 o=objects[path]

@@ -1,4 +1,4 @@
-import os
+import os,logging
 from django.conf import settings
 
 ##
@@ -20,7 +20,7 @@ class Registry(object):
             return
         if name in self.classes:
             raise Exception,"Module %s registred twice"%name
-        print "%-20s: Register %s"%(self.name,name)
+        logging.info("%s: Register %s"%(self.name,name))
         self.classes[name]=module
         self.choices.append((name,name))
     #
