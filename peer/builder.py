@@ -39,7 +39,7 @@ def build_prefix_lists():
             strict=True
         pl_name=f2pl[f]
         for pp in pl2pp[pl_name]:
-            profile=pp.type.profile
+            profile=pp.profile
             pl=profile.generate_prefix_list(pl_name,prefix_list,strict)
             result+=[(pp,pl_name,pl)]
     return result
