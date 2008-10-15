@@ -4,10 +4,11 @@ from noc.setup.models import Settings
 from noc.cm.handlers import handler_registry
 from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file
-from noc.cm.vcs import get_vcs
+from noc.cm.vcs import vcs_registry
 import os,datetime
 
 handler_registry.register_all()
+vcs_registry.register_all()
 
 class ObjectCategory(models.Model):
     class Meta:
@@ -60,7 +61,7 @@ class Object(models.Model):
         path=self.path
         is_new=not os.path.exists(path)
         if rewrite_when_differ(self.path,data):
-            vcs=get_vcs(self.repo)
+            vcs=vcs_registry.get(self.repo)
             if is_new:
                 vcs.add(self.repo_path)
             vcs.commit(self.repo_path)
@@ -94,6 +95,6 @@ class Object(models.Model):
     data=property(_data)
     #
     def delete(self):
-        vcs=get_vcs(self.repo)
+        vcs=vcs_registry.get(self.repo)
         vcs.rm(self.repo_path)
         super(Object,self).delete()
