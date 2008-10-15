@@ -1,13 +1,12 @@
 from south.db import db
 from noc.peer.models import *
-from noc.sa.profiles import get_profile_class, profile_choices
 
 
 class Migration:
     
     def forwards(self):
-        db.add_column("peer_peeringpoint","profile_name",models.CharField("Profile",max_length=128,choices=profile_choices,null=True))
-        db.add_column("peer_lgquerycommand","profile_name",models.CharField("Profile",max_length=128,choices=profile_choices,null=True))
+        db.add_column("peer_peeringpoint","profile_name",models.CharField("Profile",max_length=128,null=True))
+        db.add_column("peer_lgquerycommand","profile_name",models.CharField("Profile",max_length=128,null=True))
         
         for id,n in db.execute("SELECT id,name FROM peer_peeringpointtype"):
             db.execute("UPDATE peer_peeringpoint SET profile_name=%s WHERE type_id=%s",[n,id])
