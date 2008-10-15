@@ -11,18 +11,6 @@ from noc.dns.generators import generator_registry
 ##
 generator_registry.register_all()
 ##
-## DNSServerType.
-## Please, do not modify table contents directly, use migrations instead.
-## Values are hardcoded in provisioning
-##
-class DNSServerType(models.Model):
-    class Meta:
-        verbose_name="DNS Server Type"
-        verbose_name_plural="DNS Servers Type"
-    name=models.CharField("Name",max_length=32,unique=True)
-    def __unicode__(self):
-        return self.name
-##
 ## DNS Server
 ##
 class DNSServer(models.Model):
@@ -30,7 +18,7 @@ class DNSServer(models.Model):
         verbose_name="DNS Server"
         verbose_name_plural="DNS Servers"
     name=models.CharField("Name",max_length=64,unique=True)
-    type=models.ForeignKey(DNSServerType,verbose_name="Type")
+    generator_name=models.CharField("Generator",max_length=32,choices=generator_registry.choices)
     description=models.CharField("Description",max_length=128,blank=True,null=True)
     location=models.CharField("Location",max_length=128,blank=True,null=True)
     provisioning=models.CharField("Provisioning",max_length=128,blank=True,null=True,
@@ -49,6 +37,9 @@ class DNSServer(models.Model):
                 "ns"   : self.name
             }
             os.system(cmd)
+    def _generator_class(self):
+        return generator_registry[self.generator_name]
+    generator_class=property(_generator_class)
 ##
 ##
 ##
@@ -57,8 +48,8 @@ class DNSZoneProfile(models.Model):
         verbose_name="DNS Zone Profile"
         verbose_name_plural="DNS Zone Profiles"
     name=models.CharField("Name",max_length=32,unique=True)
-    ns_servers=models.ManyToManyField(DNSServer,verbose_name="NS Servers")
-    zone_transfer_acl=models.CharField("named zone transfer ACL",max_length=64)
+    masters=models.ManyToManyField(DNSServer,verbose_name="Masters",related_name="masters")
+    slaves=models.ManyToManyField(DNSServer,verbose_name="Slaves",related_name="slaves")
     zone_soa=models.CharField("SOA",max_length=64)
     zone_contact=models.CharField("Contact",max_length=64)
     zone_refresh=models.IntegerField("Refresh",default=3600)
@@ -72,9 +63,10 @@ class DNSZoneProfile(models.Model):
     def __unicode__(self):
         return self.name
 
-    def _ztacl(self):
-        return "allow-transfer { %s; };"%self.zone_transfer_acl.replace("}","")
-    ztacl=property(_ztacl)
+    def _authoritative_servers(self):
+        return list(self.masters.all())+list(self.slaves.all())
+    authoritative_servers=property(_authoritative_servers)
+
 ##
 ## Managers for DNSZone
 ##
@@ -181,10 +173,10 @@ class DNSZone(models.Model):
     records=property(_records)
     
     def zonedata(self,ns):
-        return generator_registry[ns.type.name]().get_zone(self)
+        return ns.generator_class().get_zone(self)
     
     def _distribution_list(self):
-        return self.profile.ns_servers.filter(provisioning__isnull=False)
+        return self.profile.masters.filter(provisioning__isnull=False)
     distribution_list=property(_distribution_list)
     
     def distribution(self):
@@ -199,11 +191,12 @@ class DNSZone(models.Model):
     
     def _ns_list(self):
         nses=[]
-        for ns in self.profile.ns_servers.all():
+        for ns in self.profile.authoritative_servers:
             n=ns.name.strip()
             if not is_ipv4(n) and not n.endswith("."):
                 n+="."
             nses.append(n)
+        nses.sort()
         return nses
     ns_list=property(_ns_list)
 ##
