@@ -3,6 +3,8 @@
 ## (http://www.selenic.com/mercurial/wiki/)
 ##
 import noc.cm.vcs
+import os
+
 class VCS(noc.cm.vcs.VCS):
     name="hg"
     def check_repository(self):
