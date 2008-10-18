@@ -5,9 +5,9 @@ from django.contrib import admin
 from noc.dns.models import DNSServer,DNSZoneProfile,DNSZone,DNSZoneRecordType,DNSZoneRecord
 
 class DNSServerAdmin(admin.ModelAdmin):
-    list_display=["name","type","location","description"]
+    list_display=["name","generator_name","location","description"]
     search_fields=["name","description"]
-    list_filter=["type"]
+    list_filter=["generator_name"]
     
 class DNSZoneProfileAdmin(admin.ModelAdmin):
     pass

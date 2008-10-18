@@ -1,23 +1,33 @@
 ##
-## Version Control System Driver
+## Version Control System support
 ##
+from noc.lib.registry import Registry
 from noc.setup.models import Settings
 import os
-
-# Registered VCSes
-vcses={}
-# Register vcs class
-def register_vcs(name,vcs_class):
-    vcses[name]=vcs_class
-
-#
-def get_vcs(repo):
-    return vcses[Settings.get("cm.vcs_type")](repo)
-    
 ##
-## Abstract VCS class
+## Registry for VCS
+##
+class VCSRegistry(Registry):
+    name="VCSRegistry"
+    subdir="vcs"
+    classname="VCS"
+    def get(self,repo):
+        return self[Settings.get("cm.vcs_type")](repo)
+vcs_registry=VCSRegistry()
+##
+## VCS Metaclass
+##
+class VCSBase(type):
+    def __new__(cls,name,bases,attrs):
+        m=type.__new__(cls,name,bases,attrs)
+        vcs_registry.register(m.name,m)
+        return m
+##
+## VCS Base Class
 ##
 class VCS(object):
+    __metaclass__=VCSBase
+    name=None
     def __init__(self,repo):
         self.repo=repo
     # Check wrether repository exists and create when necessary
@@ -38,15 +48,3 @@ class VCS(object):
         if check:
             self.check_repository()
         os.system("cd %s && %s %s"%(self.repo,Settings.get("cm.vcs_path"),cmd))
-##
-## Mercurial support
-## (http://www.selenic.com/mercurial/wiki/)
-##
-class Hg(VCS):
-    def check_repository(self):
-        if not os.path.exists(os.path.join(self.repo,".hg")):
-            self.cmd("init",check=False)
-#
-# Register VCSes
-#
-register_vcs("hg",Hg)

@@ -50,8 +50,6 @@ class Generator(object):
         s+=self.get_footer()
         return s
         
-    # Include file must differ when any of the zones midufier.
-    # You can add timestamp to provide uniqueness
     def get_include(self,ns):
         raise Exception,"Include file is not implemented"
         

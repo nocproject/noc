@@ -44,25 +44,44 @@ $TTL %(ttl)d
         return s
         
     def get_include(self,ns):
-        T=time.localtime()
+        def ns_list(ds):
+            s=[ns.name for ns in ds.order_by("name")]
+            if s:
+                return "; ".join(s)+";"
+            else:
+                return None
         s="""#
 # WARNING: This is auto-generated file
 # Do not edit manually
-# Timestamp: %02d.%02d.%04d %02d:%02d:%02d
 #
-"""%(T[2],T[1],T[0],T[3],T[4],T[5])
+"""
+        # id -> (zone, is_master, masters, slaves)
         zones={}
-        for p in ns.dnszoneprofile_set.filter():
+        for p in ns.masters.all():
+            masters=ns_list(p.masters)
+            slaves=ns_list(p.slaves)
             for z in p.dnszone_set.filter(is_auto_generated=True):
-                zones[z.id]=z
-        for z in zones.values():
-            s+="""zone "%(zone)s" {
-    type master;
-    file "autozones/%(ns)s/%(zone)s";
-    allow-transfer { acl-backup-ns; };
-};
-
-"""%{"zone":z.name,"ns":ns.name}
+                zones[z.id]=(z.name,True,masters,slaves)
+        for p in ns.slaves.all():
+            masters=ns_list(p.masters)
+            slaves=ns_list(p.slaves)
+            for z in p.dnszone_set.filter(is_auto_generated=True):
+                zones[z.id]=(z.name,False,masters,slaves)
+        zones=zones.values()
+        zones.sort(lambda x,y:cmp(x[0],y[0]))
+        for zone,is_master,masters,slaves in zones:
+            s+="zone %s {\n"%zone
+            if is_master:
+                s+="    type master;\n"
+                s+="    file \"autozones/%s\";\n"%zone
+                if slaves:
+                    s+="    allow-transfer {%s};\n"%slaves
+            else:
+                s+="    type slave;\n"
+                s+="    file \"slave/%s\";\n"%zone
+                if masters:
+                    s+="    masters {%s};\n"%masters
+            s+="};\n"
         s+="""#
 # End of auto-generated file
 #
