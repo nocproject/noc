@@ -1,5 +1,6 @@
 from noc.lib.ip import bits_to_netmask
 from noc.lib.registry import Registry
+import re
 ##
 ##
 ##
@@ -93,10 +94,23 @@ class Profile(object):
         raise Excepton("Not implemented")
     #
     # A list of commands to pull config via CLI
+    # Should be a list of commands or None if not supported
     #
     command_pull_config=None
     #
+    # Volatile strings:
+    # A list of strings can be changed over time, which
+    # can be sweeped out of config safely or None
+    # Strings are regexpes, compuled with re.DOTALL|re.MULTILINE
+    #
+    config_volatile=None
+    #
     def pull_config(self,stream_url):
         from noc.sa.models import get_task_output
-        return get_task_output(self.name,stream_url,"sa.actions.cli",
+        out=get_task_output(self.name,stream_url,"sa.actions.cli",
             args={"commands":self.command_pull_config})
+        if self.config_volatile:
+            for r in self.config_volatile:
+                rx=re.compile(r,re.DOTALL|re.MULTILINE)
+                out=rx.sub("",out)
+        return out
