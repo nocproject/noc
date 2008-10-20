@@ -6,6 +6,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_lg_as_path_list=r"^(\s+\d+(?: \d+)*),"
     pattern_lg_best_path=r"(<A HREF.+?>.+?best)"
     requires_netmask_conversion=True
+    config_volatile=["^ntp clock-period .*?^"]
     command_pull_config=["terminal length 0","show running-config"]
     
     def generate_prefix_list(self,name,pl,strict=True):
