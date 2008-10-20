@@ -1,7 +1,6 @@
 
 from south.db import db
 from noc.cm.models import *
-from noc.cm.handlers import handler_registry
 
 class Migration:
     
@@ -16,12 +15,16 @@ class Migration:
         # Model 'Object'
         db.create_table('cm_object', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('handler_class_name', models.CharField("Object Type",max_length=64,choices=handler_registry.choices)),
+            ('handler_class_name', models.CharField("Object Type",max_length=64)),
             ('stream_url', models.CharField("URL",max_length=128)),
-            ('profile_name', models.CharField("Profile",max_length=128,choices=profile_choices)),
+            ('profile_name', models.CharField("Profile",max_length=128)),
             ('repo_path', models.CharField("Repo Path",max_length=128)),
-            ('last_pushed', models.DateTimeField("Last Pushed",blank=True,null=True)),
-            ('last_pulled', models.DateTimeField("Last Pulled",blank=True,null=True))
+            ('push_every', models.PositiveIntegerField("Push Every (secs)",default=86400,blank=True,null=True)),
+            ('next_push', models.DateTimeField("Next Push",blank=True,null=True)),
+            ('last_push', models.DateTimeField("Last Push",blank=True,null=True)),
+            ('pull_every', models.PositiveIntegerField("Pull Every (secs)",default=86400,blank=True,null=True)),
+            ('next_pull', models.DateTimeField("Next Pull",blank=True,null=True)),
+            ('last_pull', models.DateTimeField("Last Pull",blank=True,null=True))
         ))
         # Mock Models
         Object = db.mock_model(model_name='Object', db_table='cm_object', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)

@@ -31,8 +31,15 @@ class Object(models.Model):
     profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     repo_path=models.CharField("Repo Path",max_length=128)
     categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories",null=True,blank=True)
-    #last_pushed=models.DateTimeField("Last Pushed",blank=True,null=True)
-    #last_pulled=models.DateTimeField("Last Pulled",blank=True,null=True)
+    #
+    push_every=models.PositiveIntegerField("Push Every (secs)",default=86400,blank=True,null=True)
+    next_push=models.DateTimeField("Next Push",blank=True,null=True)
+    last_push=models.DateTimeField("Last Push",blank=True,null=True)
+    #
+    pull_every=models.PositiveIntegerField("Pull Every (secs)",default=86400,blank=True,null=True)
+    next_pull=models.DateTimeField("Next Pull",blank=True,null=True)
+    last_pull=models.DateTimeField("Last Pull",blank=True,null=True)
+    
     
     def __unicode__(self):
         return "%s/%s/%s"%(self.handler_class_name,self.profile_name,self.repo_path)
