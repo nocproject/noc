@@ -70,6 +70,7 @@ def main():
     if not run_foreground:
         dirname=os.path.join(os.path.dirname(sys.argv[0]),"..")
         become_daemon(dirname,pidfile)
+    os.environ['DJANGO_SETTINGS_MODULE']="noc.settings"
     from noc.sa.supervisor import Supervisor    
     supervisor=Supervisor()
     supervisor.run()
