@@ -69,12 +69,12 @@ class Object(models.Model):
     # Push object's content from repository to equipment
     #
     def push(self):
-        self.handler_class.push()
+        self.handler_class(self).push()
     #
     # Pull object's content into repository
     #
     def pull(self):
-        cfg=self.handler_class.pull()
+        cfg=self.handler_class(self).pull()
         self.write(cfg)
     #
     # Push all objects of the given type
