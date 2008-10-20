@@ -1,3 +1,7 @@
+##
+## Vendor: Cisco
+## OS:     IOS
+##
 import noc.sa.profiles
 
 class Profile(noc.sa.profiles.Profile):
