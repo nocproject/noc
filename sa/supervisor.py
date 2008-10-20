@@ -26,7 +26,7 @@ class Supervisor(object):
     def run(self):
         logging.info("Supervisor started")
         logging.info("Loading profile classes")
-        register_profile_classes()
+        profile_registry.register_all()
         while 1:
             asyncore.loop(timeout=1,count=1)
         
