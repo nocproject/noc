@@ -45,7 +45,7 @@ $TTL %(ttl)d
         
     def get_include(self,ns):
         def ns_list(ds):
-            s=[ns.name for ns in ds.order_by("name")]
+            s=[ns.ip for ns in ds.order_by("name") if ns.ip]
             if s:
                 return "; ".join(s)+";"
             else:

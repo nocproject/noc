@@ -19,6 +19,7 @@ class DNSServer(models.Model):
         verbose_name_plural="DNS Servers"
     name=models.CharField("Name",max_length=64,unique=True)
     generator_name=models.CharField("Generator",max_length=32,choices=generator_registry.choices)
+    ip=models.IPAddressField("IP",null=True,blank=True)
     description=models.CharField("Description",max_length=128,blank=True,null=True)
     location=models.CharField("Location",max_length=128,blank=True,null=True)
     provisioning=models.CharField("Provisioning",max_length=128,blank=True,null=True,
