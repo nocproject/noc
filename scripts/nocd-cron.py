@@ -62,7 +62,7 @@ if __name__=="__main__":
         elif k=="-p":
             pidfile=v
         elif k=="-l":
-            logfile=l
+            logfile=v
     if logfile:
         logging.basicConfig(level=log_level,filename=logfile,format='%(asctime)s %(levelname)s %(message)s',filemode="a+")
     else:
