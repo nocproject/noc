@@ -9,7 +9,7 @@ class Migration:
         # Model 'TaskSchedule'
         db.create_table('main_taskschedule', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('periodic_name', models.CharField("Periodic Task",max_length=64,choices=periodic_choices)),
+            ('periodic_name', models.CharField("Periodic Task",max_length=64)),
             ('is_enabled', models.BooleanField("Enabled?",default=False)),
             ('run_every', models.PositiveIntegerField("Run Every (secs)",default=86400)),
             ('retries', models.PositiveIntegerField("Retries",default=1)),
