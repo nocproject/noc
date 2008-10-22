@@ -35,7 +35,8 @@ class DNSServer(models.Model):
             os.chdir(os.path.join(Settings.get("cm.repo"),"dns"))
             cmd=self.provisioning%{
                 "rsync": Settings.get("shell.rsync"),
-                "ns"   : self.name
+                "ns"   : self.name,
+                "ip"   : self.ip,
             }
             os.system(cmd)
     def _generator_class(self):
