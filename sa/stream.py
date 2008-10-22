@@ -81,8 +81,12 @@ class Stream(asyncore.dispatcher):
 class TelnetStream(Stream):
     def prepare_stream(self):
         logging.debug("TelnetStream connecting %s"%self.host)
-        self.create_socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.connect((self.host,23))
+        pid,fd=pty.fork()
+        if pid==0:
+            os.execv("/usr/bin/telnet",["/usr/bin/telnet",self.host])
+        else:
+            self.set_socket(asyncore.file_wrapper(fd))
+
 ##
 ## SSH Connection stream
 ##
