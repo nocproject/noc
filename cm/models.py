@@ -7,6 +7,7 @@ from noc.lib.fileutils import rewrite_when_differ,read_file
 from noc.cm.vcs import vcs_registry
 import os,datetime
 
+profile_registry.register_all()
 handler_registry.register_all()
 vcs_registry.register_all()
 
