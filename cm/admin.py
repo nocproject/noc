@@ -7,7 +7,7 @@ class ObjectCategoryAdmin(admin.ModelAdmin):
 class ObjectAdmin(admin.ModelAdmin):
     list_display=["handler_class_name","profile_name","repo_path"]
     search_fields=["repo_path"]
-    list_filter=["handler_class_name","profile_name"]
+    list_filter=["handler_class_name","profile_name","categories"]
     
 admin.site.register(ObjectCategory, ObjectCategoryAdmin)
 admin.site.register(Object, ObjectAdmin)
