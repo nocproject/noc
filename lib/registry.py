@@ -11,6 +11,7 @@ class Registry(object):
     def __init__(self):
         self.classes={}
         self.choices=[]
+        self.is_registered=False
     
     #
     # Should be called within metaclass' __new__ method
@@ -27,6 +28,8 @@ class Registry(object):
     # Should be called at the top of the models.py
     #
     def register_all(self):
+        if self.is_registered:
+            return
         for app in [a for a in settings.INSTALLED_APPS if a.startswith("noc.")]:
             pd=os.path.join(app[4:],self.subdir)
             if not os.path.isdir(pd):
@@ -35,6 +38,7 @@ class Registry(object):
                 mb=app+"."+".".join(dirpath.split(os.sep)[1:])+"."
                 for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
                     __import__(mb+f[:-3],{},{},self.classname)
+        self.is_registered=True
     #
     #
     #
