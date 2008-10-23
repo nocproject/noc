@@ -5,7 +5,7 @@ class ObjectCategoryAdmin(admin.ModelAdmin):
     list_display=["name","description"]
     
 class ObjectAdmin(admin.ModelAdmin):
-    list_display=["handler_class_name","profile_name","repo_path"]
+    list_display=["handler_class_name","profile_name","repo_path","view_link"]
     search_fields=["repo_path"]
     list_filter=["handler_class_name","profile_name","categories"]
     

@@ -1,0 +1,12 @@
+{% extends "template/template.html" %}
+<{% block content %}
+<h1>Object: {{o.handler_class_name}}::{{o.repo_path}}</h1>
+<b>ID:</b> {{o.id}}<BR/>
+<b>Categories:</b> {% for c in o.categories.all %} {{c}} {% endfor %}<br/>
+<B>Content:</B><BR/>
+<PRE STYLE="border: 1px solid grey; padding: 4px">
+{{o.data}}
+</PRE>
+<BR/>
+<A HREF="text/">Plain Text</A>
+{%endblock%}

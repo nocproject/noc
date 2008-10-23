@@ -106,3 +106,8 @@ class Object(models.Model):
         vcs=vcs_registry.get(self.repo)
         vcs.rm(self.repo_path)
         super(Object,self).delete()
+        
+    def view_link(self):
+        return "<A HREF='/cm/view/%d/'>View</A>"%self.id
+    view_link.short_description="View"
+    view_link.allow_tags=True
