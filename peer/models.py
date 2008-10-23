@@ -236,6 +236,24 @@ class Peer(models.Model):
         return admin_tt_url(self)
     admin_tt_url.short_description="TT"
     admin_tt_url.allow_tags=True
+    def admin_import_filter(self):
+        r=[]
+        if self.import_filter:
+            r.append(self.import_filter)
+        if self.import_filter_name:
+            r.append("(%s)"%self.import_filter_name)
+        return "<BR/>".join(r)
+    admin_import_filter.short_description="Import Filter"
+    admin_import_filter.allow_tags=True
+    def admin_export_filter(self):
+        r=[]
+        if self.export_filter:
+            r.append(self.export_filter)
+        if self.export_filter_name:
+            r.append("(%s)"%self.export_filter_name)
+        return "<BR/>".join(r)
+    admin_export_filter.short_description="Export Filter"
+    admin_export_filter.allow_tags=True
     def _all_communities(self):
         r={}
         for cl in [self.peering_point.communities,self.peer_group.communities,self.communities]:

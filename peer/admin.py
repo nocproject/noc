@@ -25,7 +25,7 @@ class PeerGroupAdmin(admin.ModelAdmin):
     list_display=["name","description","communities"]
         
 class PeerAdmin(admin.ModelAdmin):
-    list_display=["peering_point","local_asn","remote_asn","import_filter","export_filter","local_ip","remote_ip","admin_tt_url","description","communities"]
+    list_display=["peering_point","local_asn","remote_asn","admin_import_filter","admin_export_filter","local_ip","remote_ip","admin_tt_url","description","communities"]
     search_fields=["remote_asn","description"]
     list_filter=["peering_point"]
 
