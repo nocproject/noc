@@ -12,6 +12,7 @@ Contents:
    
    intro
    installation
+   upgrade
    setup
    cm
    sa
