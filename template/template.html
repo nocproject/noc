@@ -18,12 +18,6 @@
         <LI><A HREF="/admin/">Management</A></LI>
         {% endif %}
         <LI><A HREF="/ip/">Assigned addresses</A></LI>
-        {% if perms.peer.change_peer %}
-        <LI><A HREF="/admin/peer/">Peering</A></LI>
-        {% endif %}
-        {% if perms.dns.change_dnszone %}
-        <LI><A HREF="/admin/dns/">DNS</A></LI>
-        {% endif %}
         <LI><A HREF="/peer/lg/">Looking Glass</A></LI>
         <LI><A HREF="/main/report/">Reports</A></LI>
         <LI><A HREF="/doc/index.html">Documentation</A></LI>
