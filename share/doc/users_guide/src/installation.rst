@@ -1,10 +1,13 @@
-============
+############
 Installation
-============
+############
 
 -----------
 Getting NOC
 -----------
+
+NOC is under development stage. Best way to get NOC is to fetch
+from mercurial repository.
 
 ------------
 Supported OS
@@ -24,58 +27,51 @@ Required Packages
 The following packages are required for NOC
     
 
-##########
 Postgresql
-##########
+==========
 
 http://www.postgresql.org/
 
 PostgreSQL is the world's leading open-source database and the NOC's primary database engine.
 
-######
 Python
-######
+======
 
 http://www.python.org/
 
 Python is a universal dynamic object-oriented language. NOC mostly written in python language.
 
-########
 psycopg2
-########
+========
 
 http://initd.org/
 
 Psycopg2 is a PosgtreSQL database connector for Python
 
-######
 Django
-######
+======
 
 http://www.djangoproject.com/
 
 Django is a high-level Python Web Framework. NOC uses Django for Web interface
 and Django's ORM for database access. 
 
-#####
 South
-#####
+=====
 
 http://south.aeracode.org/
 
 South is an intelligent schema migrations tool for Django. South allows seamless
 database migrations during software updates.
 
-####
 flup
-####
+====
 http://trac.saddi.com/flup
 
 Flup is a FastCGI connector for Python
 
-###########
 HTTP Server
-###########
+===========
 
 Any FastCGI-capable server is required for NOC Web-interface.
 Possible web servers are
@@ -83,18 +79,16 @@ Possible web servers are
 ||Lighttpd||http://www.lighttpd.net/||
 We are using lighttpd for production use.
 
-#########
 Mercurial
-#########
+=========
 
 http://www.selenic.com/mercurial/
 
 Mercurial is dictributed version control system widely used in NOC's
 development process.
 
-######
 Sphinx
-######
+======
 
 http://sphinx.pocoo.org/
 
@@ -117,13 +111,12 @@ Database Setup
 HTTP Server setup
 -----------------
 
-######
 Apache
-######
+------
 
-########
 Lighttpd
-########
+--------
+
 ::
 
     server.modules              = (
@@ -164,6 +157,8 @@ Lighttpd
 ----------
 Solaris 10
 ----------
+All NOC daemons can be run via Solaris SMF
+
 ::
 
     svccfg import /var/www/noc/share/smf/sae.xml
