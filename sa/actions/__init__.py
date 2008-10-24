@@ -1,5 +1,7 @@
 import logging,re
 
+rx_ansi_escape=re.compile("\x1b\\[(\d+(;\d+)?)?[a-zA-Z]")
+
 class BaseAction(object):
     ARGS=[]
     def __init__(self,supervisor,task_id,stream,args=None):
@@ -64,7 +66,9 @@ class BaseAction(object):
         if self.profile.rogue_chars:
             for rc in self.profile.rogue_chars:
                 msg=msg.replace(rc,"")
-        logging.debug("%s feed: %s"%(str(self),msg.replace("\n","\\n")))
+        if self.profile.strip_ansi_escapes:
+            msg=rx_ansi_escape.sub("",msg)
+        logging.debug("%s feed: %s"%(str(self),repr(msg)))
         self.buffer+=msg
         if self.fsm:
             for rx,action in self.fsm:
