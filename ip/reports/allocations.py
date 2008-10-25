@@ -30,5 +30,5 @@ class Report(noc.main.report.Report):
             WHERE vrf_id=%s
                 AND prefix_cidr<<%s::cidr
                 AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix_cidr<<b.prefix_cidr)=0
-            ORDER BY 1
+            ORDER BY prefix_cidr
         """,[vrf_id,prefix,vrf_id])
