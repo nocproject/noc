@@ -37,6 +37,12 @@ def bits_to_size(bits):
 ##
 ##
 ##
+def prefix_to_size(prefix):
+    n,m=prefix.split("/")
+    return bits_to_size(int(m))
+##
+##
+##
 def network(prefix):
     n,m=prefix.split("/")
     m=int(m)
