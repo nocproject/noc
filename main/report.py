@@ -74,9 +74,9 @@ class Report(object):
         self.query=query
         if self.form_class:
             if self.query:
-                self.form=form_class(query)
+                self.form=self.form_class(query)
             else:
-                self.form=form_class()
+                self.form=self.form_class()
         else:
             self.form=None
         if self.requires_cursor:
