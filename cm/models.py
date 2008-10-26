@@ -4,6 +4,7 @@ from noc.setup.models import Settings
 from noc.cm.handlers import handler_registry
 from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file
+from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 import os,datetime,stat
 
@@ -124,6 +125,14 @@ class Object(models.Model):
         vcs=vcs_registry.get(self.repo)
         return vcs.log(self.repo_path)
     revisions=property(_revisions)
+    
+    # Finds revision of the object and returns Revision
+    def find_revision(self,rev):
+        assert is_int(rev)
+        for r in self.revisions:
+            if r.revision==rev:
+                return r
+        raise Exception("Not found")
     
     def diff(self,rev1,rev2):
         vcs=vcs_registry.get(self.repo)
