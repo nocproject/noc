@@ -23,8 +23,10 @@
 <DIV CLASS="module">
     <TABLE SUMMARY="Revisions" WIDTH="100%">
         <CAPTION>Revisions</CAPTION>
-        {% for r in o.revisions %}
-            <TR><TD><A HREF="/cm/view/{{o.id}}/{{r.revision}}/">{{r.revision}}</A></TD><TD>{{r.date}}</TD></TR>
+        {% for rev in o.revisions %}
+            <TR><TD><A HREF="/cm/view/{{o.id}}/{{rev.revision}}/">
+                {% ifequal r.revision rev.revision%}--&gt;{%endifequal%}
+                {{rev.revision}}</A></TD><TD>{{rev.date}}</TD></TR>
         {% endfor %}
     </TABLE>
 </DIV>
