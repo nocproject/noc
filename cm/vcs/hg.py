@@ -20,4 +20,5 @@ class VCS(noc.cm.vcs.VCS):
             d,r=date.split("-",1)
             revs+=[noc.cm.vcs.Revision(rev,datetime.datetime.fromtimestamp(float(d)))]
         return revs
-            
+    def diff(self,path,rev1,rev2):
+        return self.cmd_out("diff -r%s:%s %s"%(rev1.revision,rev2.revision,path))

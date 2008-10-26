@@ -119,3 +119,12 @@ class Object(models.Model):
         return "<A HREF='/cm/view/%d/'>View</A>"%self.id
     view_link.short_description="View"
     view_link.allow_tags=True
+    
+    def _revisions(self):
+        vcs=vcs_registry.get(self.repo)
+        return vcs.log(self.repo_path)
+    revisions=property(_revisions)
+    
+    def diff(self,rev1,rev2):
+        vcs=vcs_registry.get(self.repo)
+        return vcs.diff(self.repo_path,rev1,rev2)

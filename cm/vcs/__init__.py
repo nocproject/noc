@@ -69,3 +69,6 @@ class VCS(object):
     # Returns a list of Revision
     def log(self,path):
         raise Exception("Not supported")
+    # Returns unified diff
+    def diff(self,path,rev1,rev2):
+        raise Exception("Not supported")
