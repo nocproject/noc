@@ -12,7 +12,7 @@ def address_to_int(ip):
     >>> address_to_int("10.0.0.0")
     167772160
     """
-    return struct.unpack("L",socket.inet_aton(ip))[0]
+    return struct.unpack("!L",socket.inet_aton(ip))[0]
 ##
 ##
 ##
@@ -23,7 +23,7 @@ def int_to_address(i):
     >>> int_to_address(167772160)
     '10.0.0.0'
     """
-    return socket.inet_ntoa(struct.pack("L",i))
+    return socket.inet_ntoa(struct.pack("!L",i))
 ##
 ## Converts bits to an integer
 ##
@@ -176,6 +176,3 @@ def free_blocks(prefix,allocated):
         r+=cover_blocks(f,t)
     return r
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod(verbose=True)
