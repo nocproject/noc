@@ -5,7 +5,7 @@ from noc.cm.handlers import handler_registry
 from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file
 from noc.cm.vcs import vcs_registry
-import os,datetime
+import os,datetime,stat
 
 profile_registry.register_all()
 handler_registry.register_all()
@@ -60,6 +60,14 @@ class Object(models.Model):
     def _path(self):
         return os.path.join(self.repo,self.repo_path)
     path=property(_path)
+    
+    def _last_modified(self):
+        p=self.path
+        if os.path.exists(p):
+            return datetime.datetime.fromtimestamp(os.stat(p)[stat.ST_MTIME])
+        else:
+            return None
+    last_modified=property(_last_modified)
     
     #
     # If "data" differs from object's content in the repository
