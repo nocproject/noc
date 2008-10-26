@@ -6,7 +6,8 @@
         <CAPTION>Object info</CAPTION>
         <TR><TD><b>ID</b></TD><TD>{{o.id}}</TD></TR>
         <TR><TD><b>Repo Path</b></TD><TD>{{o.repo_path}}</TD></TR>
-        <TR><TD><b>Last Modified</b></TD><TD>{{o.last_modified}}</TD></TR>
+        <TR><TD><b>Revision</b></TD><TD>{{r.revision}}</TD></TR>
+        <TR><TD><b>Modified</b></TD><TD>{{r.date}}</TD></TR>
         <TR><TD><b>Categories</b></TD><TD>{% for c in o.categories.all %} {{c}} {% endfor %}</TD></TR>
     </TABLE>
 </DIV>
@@ -18,4 +19,13 @@
     </TABLE>
 </DIV>
 <A HREF="text/">Plain Text</A>
+
+<DIV CLASS="module">
+    <TABLE SUMMARY="Revisions" WIDTH="100%">
+        <CAPTION>Revisions</CAPTION>
+        {% for r in o.revisions %}
+            <TR><TD><A HREF="/cm/view/{{o.id}}/{{r.revision}}/">{{r.revision}}</A></TD><TD>{{r.date}}</TD></TR>
+        {% endfor %}
+    </TABLE>
+</DIV>
 {%endblock%}
