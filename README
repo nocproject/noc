@@ -1,1 +1,11 @@
+Quickstart
+----------
+Unpack archive into /var/www/noc directory
+and execute following commands:
 
+    cd /var/www/noc
+    ./scripts/setup
+
+Further reading
+---------------
+HTML Documentation is in the share/doc/users_quide/html/
