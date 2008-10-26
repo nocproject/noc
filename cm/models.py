@@ -128,3 +128,7 @@ class Object(models.Model):
     def diff(self,rev1,rev2):
         vcs=vcs_registry.get(self.repo)
         return vcs.diff(self.repo_path,rev1,rev2)
+        
+    def get_revision(self,rev):
+        vcs=vcs_registry.get(self.repo)
+        return vcs.get_revision(self.repo_path,rev)
