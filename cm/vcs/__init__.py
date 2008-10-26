@@ -15,6 +15,18 @@ class VCSRegistry(Registry):
         return self[Settings.get("cm.vcs_type")](repo)
 vcs_registry=VCSRegistry()
 ##
+##
+##
+class Revision(object):
+    def __init__(self,revision,date):
+        self.revision=revision
+        self.date=date
+    def __str__(self):
+        return "%s (%s)"%(self.revision,self.date)
+    def __repr__(self):
+        return "<Revision %s (%s)>"%(self.revision,self.date)
+        
+##
 ## VCS Metaclass
 ##
 class VCSBase(type):
@@ -48,3 +60,12 @@ class VCS(object):
         if check:
             self.check_repository()
         os.system("cd %s && %s %s"%(self.repo,Settings.get("cm.vcs_path"),cmd))
+    # Returns an output of cmd
+    def cmd_out(self,cmd):
+        f=os.popen("cd %s && %s %s"%(self.repo,Settings.get("cm.vcs_path"),cmd),"r")
+        d=f.read()
+        f.close()
+        return d
+    # Returns a list of Revision
+    def log(self,path):
+        raise Exception("Not supported")
