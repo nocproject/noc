@@ -20,7 +20,7 @@ class Report(noc.main.report.Report):
     title="IP Block summary"
     form_class=ReportForm
     requires_cursor=True
-    columns=[Column("Name"),Column("Value",align="LEFT")]
+    columns=[Column("Name"),Column("Value",align="RIGHT")]
     
     def get_queryset(self):
         vrf_id=self.form.cleaned_data["vrf"].id
