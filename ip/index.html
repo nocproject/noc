@@ -1,12 +1,15 @@
 {% extends "template/template.html" %}
 {% block content %}
-<FORM METHOD="POST"><B>Search:</B><INPUT TYPE="text" NAME="search" VALUE="{{query}}"/></FORM>
 <h1>VRFs</h1>
-<TABLE BORDER="0">
+<FORM METHOD="POST"><B>Search:</B><INPUT TYPE="text" NAME="search" VALUE="{{query}}"/></FORM>
 {% for g in groups %}
-<TR><TD COLSPAN="2"><B>{{g.0.name}}</B></TD></TR>
-{% for vrf in g.1 %}
-<TR><TD><A HREF="{{vrf.id}}/">{{vrf.name}}</A></TD><TD>{{vrf.rd}}</TD></TR>
-{%endfor%}
+    <DIV CLASS="module">
+        <TABLE SUMMARY="VRFs in {{g}} group" WIDTH="100%">
+            <CAPTION><A HREF="" CLASS="section">{{g.0.name}}</A></CAPTION>
+            {% for vrf in g.1 %}
+                <TR><TD><A HREF="{{vrf.id}}/">{{vrf.name}}</A></TD><TD>{{vrf.rd}}</TD></TR>
+            {%endfor%}
+        </TABLE>
+    </DIV>
 {%endfor%}
 {%endblock%}

@@ -2,12 +2,14 @@
 {% block title%}Reports{% endblock %}
 {% block content %}
 <h1>Reports</h1>
-<TABLE BORDER="0">
     {% for module,reports in reports %}
-        <TR><TD><B>{{module}}</B></TD></TR>
-        {% for r in reports %}
-            <TR><TD><A HREF="/main/report/{{r.name}}/">{{r.title}}</A></TD></TR>
-        {% endfor %}
+        <DIV CLASS="module">
+            <TABLE SUMMARY="Reports available for {{module}} application" WIDTH="100%">
+            <CAPTION><A HREF="" CLASS="section">{{module}}</A></CAPTION>
+            {% for r in reports %}
+                <TR><TH SCOPE="row"><A HREF="/main/report/{{r.name}}/">{{r.title}}</A></TH></TR>
+            {% endfor %}
+            </TABLE>
+        </DIV>
     {% endfor %}
-</TABLE>
 {% endblock %}

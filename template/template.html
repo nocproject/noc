@@ -1,29 +1,53 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<HTML LANG="ru">
-<HEAD>
-    <TITLE>NOC: {% block title %}Title{% endblock %}</TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head>
+    <title>NOC: {% block title %}Title{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/media/css/dashboard.css" />
+    <meta name="robots" content="NONE,NOARCHIVE" />
     <META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=utf8" />
     <META NAME="Copyright" CONTENT="2007, dv.net.ru" />
     <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
     <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
-    <LINK REL="stylesheet" TYPE="text/css" HREF="/static/css/main.css" />
     {%block header%}{%endblock%}
-</HEAD>
-<BODY>
-<DIV ID="header">NOC</DIV>
-<DIV ID="menu">
-    <B>Menu:</B>
-    <UL>
-        {% if user.is_staff %}
-        <LI><A HREF="/admin/">Management</A></LI>
-        {% endif %}
-        <LI><A HREF="/ip/">Assigned addresses</A></LI>
-        <LI><A HREF="/peer/lg/">Looking Glass</A></LI>
-        <LI><A HREF="/main/report/">Reports</A></LI>
-        <LI><A HREF="/doc/index.html">Documentation</A></LI>
-    </UL>
-<A HREF="/main/logout/">Logout</A><BR/>
-</DIV>
-<DIV ID="content">{% block content %}{% endblock %}</DIV>
-</BODY>
-</HTML>
+</head>
+
+<body class="dashboard">
+    <!-- Container -->
+    <div id="container">
+        <!-- Header -->
+        <div id="header">
+            <div id="branding">
+                <h1 ID="site-name">NOC</h1>
+            </div>
+                {% if user.is_authenticated and user.is_staff %}
+                <div id="user-tools">Welcome, <strong>{% if user.first_name %}{{ user.first_name|escape }}{% else %}{{ user.username }}{% endif %}</strong>.  <a href="{{ root_path }}password_change/">Change password</a> / <a href="{{root_path}}logout/">Logout</a></div>
+                {% endif %}
+        </div>
+        <!-- END Header -->
+        <!-- Content -->
+        <div id="content" class="colMS">
+            <!--<h1>{{title}}</h1>-->
+            <div id="content-main">
+                {% block content %}{% endblock %}
+            </div>
+            <div id="content-related">
+                <div class="module" id="recent-actions-module">
+                    <h2>Sidebar</h2>
+                    <h3>Links</h3>
+                        <ul class="actionlist">
+                            <li><a href="/admin/">Management</a></li>
+                            <li><a href="/main/report/">Reports</a></li>
+                            <li><a href="/ip/">Assigned addresses</a></li>
+                            <li><a href="/peer/lg/">Looking Glass</a></li>
+                            <li><a href="/doc/index.html">Documentation</a></li>
+                        </ul>
+                </div>
+            </div>
+            <br class="clear" />
+        </div>
+        <!-- END Content -->
+        <div id="footer">&copy;2007-2008, Dmitry Volodin</div>
+    </div>
+    <!-- END Container -->
+</body>
+</html>
