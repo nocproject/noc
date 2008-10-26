@@ -1,9 +1,7 @@
 #!/bin/sh
 #
+# FastCGI daemon
 #
-#
-
-
 getproparg() {
     val=`svcprop -p $1 $SMF_FMRI`
     [ -n "$val" ] && echo $val
@@ -14,19 +12,19 @@ if [ -z "$SMF_FMRI" ]; then
     exit $SMF_EXIT_ERR
 fi
 
-NOCD_HOME=`getproparg nocd/prefix`
-PYTHON=`getproparg nocd/python`
-SOCKET=`getproparg nocd/socket`
-PIDFILE=`getproparg nocd/pidfile`
-MINSPARE=`getproparg nocd/minspare`
-MAXSPARE=`getproparg nocd/maxspare`
-MAXREQUESTS=`getproparg nocd/maxrequests`
-MAXCHILDREN=`getproparg nocd/maxchildren`
-NOCD="$NOCD_HOME/scripts/nocd-fastcgi.py"
+PREFIX=`getproparg noc-fcgi/prefix`
+PYTHON=`getproparg noc-fcgi/python`
+SOCKET=`getproparg noc-fcgi/socket`
+PIDFILE=`getproparg noc-fcgi/pidfile`
+MINSPARE=`getproparg noc-fcgi/minspare`
+MAXSPARE=`getproparg noc-fcgi/maxspare`
+MAXREQUESTS=`getproparg noc-fcgi/maxrequests`
+MAXCHILDREN=`getproparg noc-fcgi/maxchildren`
+FCGI="$PREFIX/scripts/noc-fcgi.py"
 
 case "$1" in
 start)
-    $PYTHON $NOCD -s$SOCKET -S$MINSPARE:$MAXSPARE -R$MAXREQUESTS -C$MAXCHILDREN -p$PIDFILE -r$NOCD_HOME 2>&1
+    $PYTHON $FCGI -s$SOCKET -S$MINSPARE:$MAXSPARE -R$MAXREQUESTS -C$MAXCHILDREN -p$PIDFILE -r$PREFIX 2>&1
     ;;
 stop)
     [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE` && rm -f $PIDFILE

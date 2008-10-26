@@ -2,12 +2,12 @@
 from django.core.servers.fastcgi import runfastcgi
 import getopt,sys,os
 
-SOCKET="/tmp/nocd.fcgi"
+SOCKET="/tmp/noc.fcgi"
 MINSPARE=2
 MAXSPARE=3
 MAXREQUESTS=100
 MAXCHILDREN=20
-PIDFILE="/var/run/nocd-fastcgi.pid"
+PIDFILE="/var/run/noc-fcgi.pid"
 PREFIX="/var/www/noc"
 
 def run():

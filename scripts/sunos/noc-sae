@@ -13,11 +13,11 @@ if [ -z "$SMF_FMRI" ]; then
     exit $SMF_EXIT_ERR
 fi
 
-PREFIX=`getproparg sae/prefix`
-PYTHON=`getproparg sae/python`
-PIDFILE=`getproparg sae/pidfile`
-LOGFILE=`getproparg sae/logfile`
-SAE="$PREFIX/scripts/sae.py"
+PREFIX=`getproparg noc-sae/prefix`
+PYTHON=`getproparg noc-sae/python`
+PIDFILE=`getproparg noc-sae/pidfile`
+LOGFILE=`getproparg noc-sae/logfile`
+SAE="$PREFIX/scripts/noc-sae.py"
 
 case "$1" in
 start)

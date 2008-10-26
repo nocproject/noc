@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
-<service_bundle type="manifest" name="nocd">
-    <service name="application/nocd" type="service" version="1">
+<service_bundle type="manifest" name="noc-fcgi">
+    <service name="application/noc-fcgi" type="service" version="1">
         <create_default_instance enabled='false' />
         <single_instance />
         <dependency name='loopback'
@@ -28,19 +28,19 @@
                 <envvar name="PATH" value="/opt/csw/bin:/usr/bin:/bin"/>
             </method_environment>
         </method_context>
-        <exec_method type="method" name="start"   exec="/var/www/noc/scripts/nocd-fastcgi-solaris start"   timeout_seconds='60' />
-        <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/nocd-fastcgi-solaris stop"    timeout_seconds='60' />
-        <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/nocd-fastcgi-solaris refresh" timeout_seconds='60' />
-        <property_group name="nocd" type="framework">
+        <exec_method type="method" name="start"   exec="/var/www/noc/scripts/sunos/noc-fcgi start"   timeout_seconds='60' />
+        <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/sunos/noc-fcgi stop"    timeout_seconds='60' />
+        <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/sunos/noc-fcgi refresh" timeout_seconds='60' />
+        <property_group name="noc-fcgi" type="framework">
             <stability value="Evolving"/>
             <propval name="python"      type="astring" value="/opt/csw/bin/python" />
             <propval name="prefix"      type="astring" value="/var/www/noc" />
-            <propval name="socket"      type="astring" value="/tmp/nocd.fcgi" />
+            <propval name="socket"      type="astring" value="/tmp/noc.fcgi" />
             <propval name="minspare"    type="integer" value="2" />
             <propval name="maxspare"    type="integer" value="5" />
             <propval name="maxrequests" type="integer" value="100" />
             <propval name="maxchildren" type="integer" value="30" />
-            <propval name="pidfile"     type="astring" value="/var/run/nocd-fastcgi.pid" />
+            <propval name="pidfile"     type="astring" value="/var/log/noc/noc-fcgi.pid" />
         </property_group>
         <template>
             <common_name>

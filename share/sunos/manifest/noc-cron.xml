@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
-<service_bundle type="manifest" name="sae">
-    <service name="application/sae" type="service" version="1">
+<service_bundle type="manifest" name="noc-cron">
+    <service name="application/noc-cron" type="service" version="1">
         <create_default_instance enabled='false' />
         <single_instance />
         <dependency name='loopback'
@@ -28,20 +28,20 @@
                 <envvar name="PATH" value="/opt/csw/bin:/usr/bin:/bin"/>
             </method_environment>
         </method_context>
-        <exec_method type="method" name="start"   exec="/var/www/noc/scripts/sae-solaris start"   timeout_seconds='60' />
-        <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/sae-solaris stop"    timeout_seconds='60' />
-        <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/sae-solaris refresh" timeout_seconds='60' />
-        <property_group name="sae" type="framework">
+        <exec_method type="method" name="start"   exec="/var/www/noc/scripts/sunos/noc-cron start"   timeout_seconds='60' />
+        <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/sunos/noc-cron stop"    timeout_seconds='60' />
+        <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/sunos/noc-cron refresh" timeout_seconds='60' />
+        <property_group name="noc-cron" type="framework">
             <stability value="Evolving"/>
             <propval name="python"      type="astring" value="/opt/csw/bin/python" />
             <propval name="prefix"      type="astring" value="/var/www/noc" />
-            <propval name="pidfile"     type="astring" value="/var/run/sae.pid" />
-            <propval name="logfile"     type="astring" value="/var/log/noc/sae.log" />
+            <propval name="pidfile"     type="astring" value="/var/log/noc/noc-cron.pid" />
+            <propval name="logfile"     type="astring" value="/var/log/noc/noc-cron.log" />
         </property_group>
         <template>
             <common_name>
                 <loctext xml:lang='C'>
-                    NOC Service Activation Engine
+                    NOC Cron
                 </loctext>
             </common_name>
         </template>

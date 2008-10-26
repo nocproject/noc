@@ -1,8 +1,7 @@
 #!/bin/sh
 #
-# Service Activation Engine daemon
+# Cron daemon
 #
-
 getproparg() {
     val=`svcprop -p $1 $SMF_FMRI`
     [ -n "$val" ] && echo $val
@@ -13,15 +12,15 @@ if [ -z "$SMF_FMRI" ]; then
     exit $SMF_EXIT_ERR
 fi
 
-PREFIX=`getproparg nocd-cron/prefix`
-PYTHON=`getproparg nocd-cron/python`
-PIDFILE=`getproparg nocd-cron/pidfile`
-LOGFILE=`getproparg nocd-cron/logfile`
-SAE="$PREFIX/scripts/nocd-cron.py"
+PREFIX=`getproparg noc-cron/prefix`
+PYTHON=`getproparg noc-cron/python`
+PIDFILE=`getproparg noc-cron/pidfile`
+LOGFILE=`getproparg noc-cron/logfile`
+CRON="$PREFIX/scripts/noc-cron.py"
 
 case "$1" in
 start)
-    $PYTHON $SAE -l$LOGFILE -p$PIDFILE 2>&1
+    $PYTHON $CRON -l$LOGFILE -p$PIDFILE 2>&1
     ;;
 stop)
     [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE` && rm -f $PIDFILE
