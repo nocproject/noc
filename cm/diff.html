@@ -1,21 +1,21 @@
 {% extends "template/template.html" %}
 <{% block content %}
-<h1>Object: {{o.handler_class_name}}::{{o.repo_path}}</h1>
+<h1>Diff: {{o.handler_class_name}}::{{o.repo_path}}</h1>
 <DIV CLASS="module">
     <TABLE SUMMARY="Object info" WIDTH="100%">
         <CAPTION>Object info</CAPTION>
         <TR><TD><b>ID</b></TD><TD>{{o.id}}</TD></TR>
         <TR><TD><b>Repo Path</b></TD><TD>{{o.repo_path}}</TD></TR>
-        <TR><TD><b>Revision</b></TD><TD>{{r.revision}}</TD></TR>
-        <TR><TD><b>Modified</b></TD><TD>{{r.date}}</TD></TR>
+        <TR><TD><b>From Revision</b></TD><TD>{{r1.revision}}</TD></TR>
+        <TR><TD><b>To Revision</b></TD><TD>{{r2.revision}}</TD></TR>
         <TR><TD><b>Categories</b></TD><TD>{% for c in o.categories.all %} {{c}} {% endfor %}</TD></TR>
     </TABLE>
 </DIV>
 
 <DIV CLASS="module">
-    <TABLE SUMMARY="Content" WIDTH="100%">
-        <CAPTION>Content</CAPTION>
-        <TR><TD><PRE>{{content}}</PRE></TD></TR>
+    <TABLE SUMMARY="Diff" WIDTH="100%">
+        <CAPTION>Diff</CAPTION>
+        <TR><TD><PRE>{{diff}}</PRE></TD></TR>
     </TABLE>
 </DIV>
 <A HREF="text/">Plain Text</A>
