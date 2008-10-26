@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+# encoding: utf-8
+import os,sys
+
+def out(s):
+    sys.stdout.write(s)
+    sys.stdout.flush()
+
+def check_python_code(name,code,url=None):
+    out("Checking %s ..."%name)
+    try:
+        exec code
+        out("... ok\n")
+        return True
+    except:
+        out("... failed\n")
+        if url:
+            out("\t%s not found. Please install %s from %s\n"%(name,name,url))
+        return False
+
+def check_command(name,cmd):
+    out("Checking %s ..."%name)
+    if os.system(cmd):
+        out("... failed\n")
+        return False
+    else:
+        out("... ok\n")
+        return True
+
+def check_psycopg2():
+    return check_python_code("psycopg2","import psycopg2","http://initd.org/")
+    
+def check_django():
+    return check_python_code("django","import django","http://www.djangoproject.com/")
+
+def check_south():
+    return check_python_code("south","import south","http://south.aeracode.org/")
+
+def check_flup():
+    return check_python_code("flup","import flup","http://trac.saddi.com/flup")
+
+def check_sphinx():
+    return check_python_code("sphinx","import sphinx","http://sphinx.pocoo.org/")
+
+def check_mercurial():
+    return check_python_code("mercurial","import mercurial","http://www.selenic.com/mercurial/")
+
+check_chain=[
+    check_psycopg2,
+    check_django,
+    check_south,
+    check_flup,
+    check_sphinx,
+    check_mercurial,
+]
+
+def build_doc():
+    out("Building documentation...\n")
+    os.system("cd share/doc/users_guide/src/ && make html")
+    out("....done\n")
+
+def build_sync_db():
+    out("Populating database...\n")
+    os.system("python manage.py syncdb && python manage.py migrate")
+    out("....done\n")
+
+setup_chain=[
+    build_doc,
+    build_sync_db,
+]
+
+def setup():
+    out("Setiing up NOC\n\n")
+    root=os.path.join(os.path.dirname(sys.argv[0]),"..")
+    os.chdir(root)
+    root=os.getcwd()
+    out("Root: %s\n"%root)
+    for t in check_chain:
+        t()
+    for t in setup_chain:
+        t()
+
+if __name__=="__main__":
+    setup()
