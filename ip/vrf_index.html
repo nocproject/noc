@@ -12,57 +12,70 @@
     }
     // -->
 </SCRIPT>
-<DIV ID="navbar">
-    <A HREF="/ip/"><B>VRF</B></A> {{vrf.name}} ({{vrf.rd}})<BR/>
-{% for p in parents %}
-<A HREF="/ip/{{vrf.id}}/{{p.prefix}}/" STYLE="padding: 0px 0px 0px {{p.depth}}cm">{{p.prefix}}</A> ({{p.description}})<BR/>
-{% endfor %}
-<A HREF="/ip/{{vrf.id}}/{{prefix.prefix}}/" STYLE="padding: 0px 0px 0px {{prefix.depth}}cm">{{prefix.prefix}}</A> ({{prefix.description}})<BR/>
+<h1>Allocated blocks</h1>
+<DIV CLASS="module">
+    <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}">
+        <CAPTION>
+            <A HREF="/ip/"><B>VRF</B></A> {{vrf.name}} ({{vrf.rd}})<BR/>
+            {% for p in parents %}
+                <A HREF="/ip/{{vrf.id}}/{{p.prefix}}/" STYLE="padding: 0px 0px 0px {{p.depth}}cm">{{p.prefix}}</A> ({{p.description}})<BR/>
+            {% endfor %}
+        </CAPTION>
+        <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
+        {%for p in prefixes %}
+        <TR>
+            <TD><A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/">{{p.prefix}}</A></TD>
+            <TD><A HREF="/ip/{{p.vrf.id}}/">{{p.vrf.name}}</A></TD>
+            <TD>{{p.description}}</TD>
+            <TD>{%if p.tt %}<A HREF="{{p.tt_url}}">#{{p.tt}}</A>{%endif%}</TD>
+            <TD> 
+                <A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/allocate_block/" CLASS="changelink">Change</A>
+                <A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/deallocate_block/"
+                    CLASS="deletelink" ONCLICK="return confirm_delete('Deallocate block?')">Delete</A>
+            </TD>
+        </TR>
+        {%endfor%}
+    </TABLE>
 </DIV>
-<TABLE BORDER="1">
-    <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
-    {%for p in prefixes %}
-    <TR>
-        <TD><A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/">{{p.prefix}}</A></TD>
-        <TD><A HREF="/ip/{{p.vrf.id}}/">{{p.vrf.name}}</A></TD>
-        <TD>{{p.description}}</TD>
-        <TD>{%if p.tt %}<A HREF="{{p.tt_url}}">#{{p.tt}}</A>{%endif%}</TD>
-        <TD> 
-            <A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/allocate_block/">Edit</A>
-            <A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/deallocate_block/" ONCLICK="return confirm_delete('Deallocate block?')">Delete</A>
-        </TD>
-    </TR>
-    {%endfor%}
-</TABLE>
+
 
 {% if prefix.has_children %}
 {% else %}
-<TABLE BORDER="1">
-<TR><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
-{% for a in prefix.addresses %}
-<TR>
-    <TD>{{a.ip}}</TD>
-    <TD>{{a.fqdn}}</TD>
-    <TD>{{a.description}}</TD>
-    <TD>{%if a.tt %}<A HREF="{{a.tt_url}}">#{{a.tt}}</A>{%endif%}</TD>
-    <TD>
-        {% if can_allocate %}
-        <A HREF="/ip/{{vrf.id}}/{{a.ip}}/assign_address/">Edit</A>
-        <A HREF="/ip/{{vrf.id}}/{{a.ip}}/revoke_address/" ONCLICK="return confirm_delete('Delete address?')">Delete</A>
-        {% endif %}
-    </TD>
-</TR>
-{% endfor %}
-</TABLE>
+<DIV CLASS="module">
+    <TABLE SUMMARY="Allocated addresses within {{prefix.prefix}}">
+        <TR><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
+        {% for a in prefix.addresses %}
+        <TR>
+            <TD>{{a.ip}}</TD>
+            <TD>{{a.fqdn}}</TD>
+            <TD>{{a.description}}</TD>
+            <TD>{%if a.tt %}<A HREF="{{a.tt_url}}">#{{a.tt}}</A>{%endif%}</TD>
+            <TD>
+                {% if can_allocate %}
+                <A HREF="/ip/{{vrf.id}}/{{a.ip}}/assign_address/" CLASS="changelink">Change</A>
+                <A HREF="/ip/{{vrf.id}}/{{a.ip}}/revoke_address/"
+                    CLASS="deletelink"  ONCLICK="return confirm_delete('Delete address?')">Delete</A>
+                {% endif %}
+            </TD>
+        </TR>
+        {% endfor %}
+    </TABLE>
+</DIV>
 {% endif %}
-<HR/>
-net: {{prefix}}
-mask: {{prefix.netmask}}
-broadcast: {{prefix.broadcast}}
-wildcard: {{prefix.wildcard}}
+
+<DIV CLASS="module">
+    <TABLE SUMMARY="Block info" WIDTH="100%">
+        <CAPTION>{{prefix.prefix}} info</CAPTION>
+        <TR><TD>net</TD><TD>{{prefix}}</TD></TR>
+        <TR><TD>mask</TD><TD>{{prefix.netmask}}</TD></TR>
+        <TR><TD>broadcast</TD><TD>{{prefix.broadcast}}</TD></TR>
+        <TR><TD>wildcard</TD><TD>{{prefix.wildcard}}</TD></TR>
+    </TABLE>
+</DIV>
+
 {% if can_allocate %}
 <HR/>
-<A HREF="/ip/{{vrf.id}}/allocate_block/">Allocate new block</A>
-<A HREF="/ip/{{vrf.id}}/assign_address/">Assign address</A>
+<A HREF="/ip/{{vrf.id}}/allocate_block/" CLASS="addlink">Allocate new block</A>
+<A HREF="/ip/{{vrf.id}}/assign_address/" CLASS="addlink">Assign address</A>
 {% endif %}
 {% endblock %}
