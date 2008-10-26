@@ -1,12 +1,21 @@
 {% extends "template/template.html" %}
 <{% block content %}
 <h1>Object: {{o.handler_class_name}}::{{o.repo_path}}</h1>
-<b>ID:</b> {{o.id}}<BR/>
-<b>Categories:</b> {% for c in o.categories.all %} {{c}} {% endfor %}<br/>
-<B>Content:</B><BR/>
-<PRE STYLE="border: 1px solid grey; padding: 4px">
-{{o.data}}
-</PRE>
-<BR/>
+<DIV CLASS="module">
+    <TABLE SUMMARY="Object info" WIDTH="100%">
+        <CAPTION>Object info</CAPTION>
+        <TR><TD><b>ID</b></TD><TD>{{o.id}}</TD></TR>
+        <TR><TD><b>Repo Path</b></TD><TD>{{o.repo_path}}</TD></TR>
+        <TR><TD><b>Last Modified</b></TD><TD>{{o.last_modified}}</TD></TR>
+        <TR><TD><b>Categories</b></TD><TD>{% for c in o.categories.all %} {{c}} {% endfor %}</TD></TR>
+    </TABLE>
+</DIV>
+
+<DIV CLASS="module">
+    <TABLE SUMMARY="Content" WIDTH="100%">
+        <CAPTION>Content</CAPTION>
+        <TR><TD><PRE>{{o.data}}</PRE></TD></TR>
+    </TABLE>
+</DIV>
 <A HREF="text/">Plain Text</A>
 {%endblock%}
