@@ -7,40 +7,7 @@
 ## Zero bit on apropriative position in prefix means
 ## the prefix will be directed left from current node.
 ## The set bit means right direction.
-import socket,struct
-
-def prefix_to_bin(prefix):
-    """ 
-    Convert prefix to a list of bits
-    >>> prefix_to_bin("4.0.0.0/8")
-    [0, 0, 0, 0, 0, 1, 0, 0]
-    >>> prefix_to_bin("192.168.254.19/32")
-    [1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1]
-    """
-    ip,l=prefix.split("/")
-    l=int(l)
-    i=struct.unpack("L",socket.inet_aton(ip))[0]
-    r=[]
-    i=i>>(32-l)
-    for j in range(l):
-        r=[int(i&1)]+r
-        i>>=1
-    return r
-
-def bin_to_prefix(s):
-    """
-    Convert list of bits to prefix
-    >>> bin_to_prefix([0, 0, 0, 0, 0, 1, 0, 0])
-    '4.0.0.0/8'
-    >>> bin_to_prefix([1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1])
-    '192.168.254.19/32'
-    """
-    r=0L
-    for c in s:
-        r=(r<<1)|c
-    l=len(s)
-    r<<=(32-l)
-    return "%s/%d"%(socket.inet_ntoa(struct.pack("L",r)),l)
+from noc.lib.ip import prefix_to_bin,bin_to_prefix
 
 class Node(object):
     def __init__(self,parent=None,prefix=[]):

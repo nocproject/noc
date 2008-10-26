@@ -6,29 +6,53 @@ import struct,socket
 ##
 ##
 def address_to_int(ip):
+    """
+    >>> address_to_int("192.168.0.1")
+    3232235521L
+    >>> address_to_int("10.0.0.0")
+    167772160
+    """
     return struct.unpack("L",socket.inet_aton(ip))[0]
 ##
 ##
 ##
 def int_to_address(i):
+    """
+    >>> int_to_address(3232235521L)
+    '192.168.0.1'
+    >>> int_to_address(167772160)
+    '10.0.0.0'
+    """
     return socket.inet_ntoa(struct.pack("L",i))
 ##
 ## Converts bits to an integer
 ##
 def bits_to_int(bits):
+    """
+    >>> int_to_address(bits_to_int(24))
+    '255.255.255.0'
+    >>> int_to_address(bits_to_int(16))
+    '255.255.0.0'
+    """
     return ((1L<<bits)-1L)<<(32L-bits)
 ##
 ## Converts bits to netmask
 ##
 def bits_to_netmask(bits):
+    """
+    >>> bits_to_netmask(24)
+    '255.255.255.0'
+    >>> bits_to_netmask(16)
+    '255.255.0.0'
+    """
     try:
         bits=int(bits)
         if bits<=0 or bits>32:
             raise Exception
     except:
         return "255.255.255.255"
-    m=((1L<<bits)-1L)<<(32L-bits)
-    return ".".join(["%d"%(x&0xFF) for x in [m>>24,m>>16,m>>8,m]])
+    return int_to_address(bits_to_int(bits))
+
 ##
 ## Returns amount of addresses into prefix of "bits" length
 ##
@@ -54,6 +78,44 @@ def broadcast(prefix):
     n,m=prefix.split("/")
     m=int(m)
     return int_to_address(address_to_int(n)|(0xFFFFFFFFL^bits_to_int(m)))
+
+##
+##
+##
+def prefix_to_bin(prefix):
+    """ 
+    Convert prefix to a list of bits
+    >>> prefix_to_bin("4.0.0.0/8")
+    [0, 0, 0, 0, 0, 1, 0, 0]
+    >>> prefix_to_bin("192.168.254.19/32")
+    [1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1]
+    """
+    ip,l=prefix.split("/")
+    l=int(l)
+    i=address_to_int(ip)
+    r=[]
+    i=i>>(32-l)
+    for j in range(l):
+        r=[int(i&1)]+r
+        i>>=1
+    return r
+##
+##
+##
+def bin_to_prefix(s):
+    """
+    Convert list of bits to prefix
+    >>> bin_to_prefix([0, 0, 0, 0, 0, 1, 0, 0])
+    '4.0.0.0/8'
+    >>> bin_to_prefix([1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1])
+    '192.168.254.19/32'
+    """
+    r=0L
+    for c in s:
+        r=(r<<1)|c
+    l=len(s)
+    r<<=(32-l)
+    return "%s/%d"%(int_to_address(r),l)
 
 ##
 ## Returns a list of free block in "prefix"
@@ -113,3 +175,7 @@ def free_blocks(prefix,allocated):
         t=free.pop(0)
         r+=cover_blocks(f,t)
     return r
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=True)
