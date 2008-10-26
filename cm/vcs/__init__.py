@@ -72,3 +72,6 @@ class VCS(object):
     # Returns unified diff
     def diff(self,path,rev1,rev2):
         raise Exception("Not supported")
+    # Returns revision of the file
+    def get_revision(self,path,revision):
+        raise Exception("Not supported")
