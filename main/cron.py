@@ -3,7 +3,7 @@
 ##
 from noc.main.periodic import periodic_registry
 from noc.main.models import TaskSchedule
-import threading,logging,time,datetime
+import threading,logging,time,datetime,traceback
 
 class CronDaemon(object):
     def __init__(self):
@@ -12,10 +12,18 @@ class CronDaemon(object):
         
     def execute_wrapper(self,task):
         logging.info(u"Executing %s"%unicode(task))
-        status=task.periodic_class().execute()
+        tb=None
+        try:
+            status=task.periodic_class().execute()
+        except:
+            tb=traceback.format_exc()
         logging.info(u"Task %s is terminated with '%s'"%(unicode(task),status))
-        task.next_run=datetime.datetime.now()+datetime.timedelta(seconds=task.run_every)
-        task.save()
+        if status:
+            task.next_run=datetime.datetime.now()+datetime.timedelta(seconds=task.run_every)
+            task.save()
+        else:
+            if tb:
+                logging.error("uPeriodic task %s failed\n%s\n"%(unicode(task),tb))
         self.task_lock.acquire()
         try:
             del self.active_tasks[task.id]
@@ -31,6 +39,7 @@ class CronDaemon(object):
         t.start()
         
     def run(self):
+        logging.info("Running noc-cron")
         while True:
             self.task_lock.acquire()
             tasks = TaskSchedule.get_pending_tasks(exclude=self.active_tasks.keys())
