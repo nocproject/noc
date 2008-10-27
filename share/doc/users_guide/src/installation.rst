@@ -9,6 +9,12 @@ Getting NOC
 NOC is under development stage. Best way to get NOC is to fetch
 from mercurial repository.
 
+::
+
+    mkdir /var/www/noc
+    cd /var/www
+    hg clone ssh://hg@hg.effortel.ru/noc noc
+
 ------------
 Supported OS
 ------------
@@ -18,6 +24,14 @@ NOC is reported to run successfully at:
 
 * MacOS X
 * Solaris 10
+
+----------
+Quickstart
+----------
+
+::
+
+    /var/www/noc/scripts/setup
 
     
 -----------------
@@ -96,17 +110,6 @@ Sphinx is a python documentation generator. All NOC documentation
 is a sphinx sources. You need sphinx to rebuild HTML and printable
 documentation.
 
---------------
-Database Setup
---------------
-::
-
-    createuser noc
-    createdb -EUTF8 noc
-    cd <nocroot>
-    python manage.py syncdb
-    python manage.py migrate
-    
 -----------------
 HTTP Server setup
 -----------------
@@ -128,7 +131,7 @@ Lighttpd
     fastcgi.server = (
         "/noc.fcgi" => (
                 "main" => (
-                        "socket"      => "/tmp/nocd.fcgi",
+                        "socket"      => "/tmp/noc.fcgi",
                         "check-local" => "disable",
                          )
         )
@@ -153,11 +156,24 @@ Lighttpd
         ssl.pemfile ="/opt/csw/etc/lighttpd.pem"
     }
 
+--------------
+Database Setup
+--------------
+::
 
-----------
-Solaris 10
-----------
-All NOC daemons can be run via Solaris SMF
+    createuser noc
+    createdb -EUTF8 noc
+    cd /var/www/noc
+    python manage.py syncdb
+    python manage.py migrate
+    
+----------------
+Solaris 10 Notes
+----------------
+All NOC daemons can be managed via Solaris SMF.
+share/sunos/manifest directory contains SMF Manifests.
+Manifests are imported automatically during installation process.
+
 
 ::
 
