@@ -17,6 +17,7 @@ class CronDaemon(object):
             status=task.periodic_class().execute()
         except:
             tb=traceback.format_exc()
+            status=False
         logging.info(u"Task %s is terminated with '%s'"%(unicode(task),status))
         if status:
             task.next_run=datetime.datetime.now()+datetime.timedelta(seconds=task.run_every)
