@@ -87,7 +87,7 @@ class Report(object):
         return self.form is None or self.form.is_valid()
     
     def render(self):
-        out="<TABLE BORDER=\"1\">"
+        out="<TABLE SUMMARY='%s'>"%self.title
         out+="<TR>"+"".join([c.render_header() for c in self.columns])+"</TR>"
         for row in self.get_queryset():
             out+="<TR>"+"".join([c.render_cell(v) for c,v in zip(self.columns,row)])+"</TR>"
