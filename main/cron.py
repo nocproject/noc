@@ -11,9 +11,9 @@ class CronDaemon(object):
         self.task_lock=threading.Lock()
         
     def execute_wrapper(self,task):
-        logging.debug(u"Executing %s"%unicode(task))
+        logging.info(u"Executing %s"%unicode(task))
         status=task.periodic_class().execute()
-        logging.debug(u"Task %s is terminated with '%s'"%(unicode(task),status))
+        logging.info(u"Task %s is terminated with '%s'"%(unicode(task),status))
         task.next_run=datetime.datetime.now()+datetime.timedelta(seconds=task.run_every)
         task.save()
         self.task_lock.acquire()
