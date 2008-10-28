@@ -20,11 +20,13 @@ class CronDaemon(object):
             status=False
         logging.info(u"Task %s is terminated with '%s'"%(unicode(task),status))
         if status:
-            task.next_run=datetime.datetime.now()+datetime.timedelta(seconds=task.run_every)
-            task.save()
+            timeout=task.run_every
         else:
+            timeout=max(60,task.run_every/4)
             if tb:
-                logging.error("uPeriodic task %s failed\n%s\n"%(unicode(task),tb))
+                logging.error("Periodic task %s failed\n%s\n"%(unicode(task),tb))
+        task.next_run=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
+        task.save()
         self.task_lock.acquire()
         try:
             del self.active_tasks[task.id]
