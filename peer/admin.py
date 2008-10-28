@@ -1,5 +1,5 @@
 from django.contrib import admin
-from noc.peer.models import LIR,AS,ASSet,PeeringPoint,PeerGroup,Peer,LGQueryCommand
+from noc.peer.models import LIR,AS,ASSet,PeeringPoint,PeerGroup,Peer,LGQueryCommand,CommunityType,Community
 
 class LIRAdmin(admin.ModelAdmin): pass
 
@@ -7,6 +7,14 @@ class ASAdmin(admin.ModelAdmin):
     list_display=["asn","description","lir","rpsl_link"]
     list_filter=["lir"]
     search_fields=["asn","description"]
+    
+class CommunityTypeAdmin(admin.ModelAdmin):
+    list_display=["name"]
+    
+class CommunityAdmin(admin.ModelAdmin):
+    list_display=["community","type","description"]
+    list_filter=["type"]
+    search_fields=["community","description"]
         
 class ASSetAdmin(admin.ModelAdmin):
     list_display=["name","description","members","rpsl_link"]
@@ -31,6 +39,8 @@ class PeerAdmin(admin.ModelAdmin):
 
 admin.site.register(LIR,LIRAdmin)
 admin.site.register(AS,ASAdmin)
+admin.site.register(CommunityType,CommunityTypeAdmin)
+admin.site.register(Community,CommunityAdmin)
 admin.site.register(ASSet,ASSetAdmin)
 admin.site.register(PeeringPoint,PeeringPointAdmin)
 admin.site.register(PeerGroup,PeerGroupAdmin)

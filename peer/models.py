@@ -84,6 +84,24 @@ class AS(models.Model):
         return "\n".join(s)
     dot=property(_dot)
 
+class CommunityType(models.Model):
+    class Meta:
+        verbose_name="Community Type"
+        verbose_name_plural="Community Types"
+    name=models.CharField("Description",max_length=32,unique=True)
+    def __unicode__(self):
+        return self.name
+
+class Community(models.Model):
+    class Meta:
+        verbose_name="Community"
+        verbose_name_plural="Communities"
+    community=models.CharField("Community",max_length=20,unique=True)
+    type=models.ForeignKey(CommunityType,verbose_name="Type")
+    description=models.CharField("Description",max_length=64)
+    def __unicode__(self):
+        return self.community
+
 class ASSet(models.Model):
     class Meta:
         verbose_name="ASSet"
