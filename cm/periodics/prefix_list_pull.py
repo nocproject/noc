@@ -1,7 +1,7 @@
 from noc.cm.models import Object
-import noc.main.periodic
+import noc.sa.periodic
 
-class Task(noc.main.periodic.Task):
+class Task(noc.sa.periodic.Task):
     name="cm.prefix_list_pull"
     description=""
     

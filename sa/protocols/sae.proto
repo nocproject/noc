@@ -1,0 +1,45 @@
+package sae;
+
+message Error {
+    required string error   = 1;
+    required string message = 2;
+}
+
+message Message {
+    required int32   transaction_id = 1;
+    required string  method         = 2;
+    optional bytes   request        = 3;
+    optional bytes   response       = 4;
+    optional Error   error          = 5;
+}
+
+message AccessProfile {
+    enum AccessScheme {
+        TELNET = 0;
+        SSH    = 1;
+    }
+    required AccessScheme scheme         = 1;
+    required string       address        = 2;
+    optional string       port           = 3;
+    optional string       user           = 4;
+    optional string       password       = 5;
+    optional string       super_password = 6;
+    optional string       path           = 7;
+}
+
+message ReqRegister {
+    required string name = 1;
+}
+
+message ResRegister {
+    required string version = 1;
+}
+
+message ReqPullConfig {
+    required AccessProfile access_profile = 1;
+    required string        profile        = 2;
+}
+
+message ResPullConfig {
+    required string config  = 2;
+}

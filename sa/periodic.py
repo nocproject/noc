@@ -26,6 +26,8 @@ class Task(object):
     __metaclass__ = TaskBase
     name=None
     description=""
+    def __init__(self,sae):
+        self.sae=sae
     def execute(self):
         return True
         

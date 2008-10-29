@@ -19,7 +19,7 @@ class Handler(noc.cm.handlers.Handler):
                 o=objects[path]
                 del objects[path]
             else:
-                o=Object(handler_class_name=self.name,stream_url=peering_point.provision_rcmd,
+                o=Object(handler_class_name=self.name,
                     profile_name=peering_point.profile_name,repo_path=path)
                 o.save()
             o.write(pl)

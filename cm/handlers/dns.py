@@ -22,8 +22,7 @@ class Handler(noc.cm.handlers.Handler):
                     del objects[path]
                 else:
                     logging.debug("DNSHandler.global_pull: Creating object %s"%path)
-                    o=Object(handler_class_name=self.name,stream_url="ssh://u:p@localhost/",
-                        profile_name="file",repo_path=path)
+                    o=Object(handler_class_name=self.name,repo_path=path)
                     o.save()
                 if is_differ(o.path,z.zonedata(ns)):
                     changed[z]=None
@@ -45,8 +44,7 @@ class Handler(noc.cm.handlers.Handler):
             try:
                 o=Object.objects.get(handler_class_name=self.name,repo_path=path)
             except Object.DoesNotExist:
-                o=Object(handler_class_name=self.name,stream_url="ssh://u:p@localhost/",
-                    profile_name="file",repo_path=path)
+                o=Object(handler_class_name=self.name,repo_path=path)
                 o.save()
             o.write(g.get_include(ns))
             

@@ -6,11 +6,12 @@ import os,sys,getopt,logging
 
 def usage():
     print "USAGE:"
-    print "%s [-h] [-v] [-f] [-L<ip>:<port>] [-l<logfile>] [-p<pidfile>]"%sys.argv[0]
+    print "%s [-h] [-v] [-f] [-n<name>][-c<ip>:<port>] [-l<logfile>] [-p<pidfile>]"%sys.argv[0]
     print "\t-h\t\t- Help screen"
     print "\t-v\t\t- Verbose debug output"
     print "\t-f\t\t- Do not daemonize, run at the foreground"
-    print "\t-L\t\t- Listen at <ip>:<port>"
+    print "\t-n<name>\t-Set instance name"
+    print "\t-c\t\t- Connect to SAE at <ip>:<port>"
     print "\t-l<logfile>\t- Write log to <logfile>"
     print "\t-p<pidfile>\t- Write pid to <pidfile>"
     
@@ -52,7 +53,8 @@ def main():
     port=7777
     logfile=None
     pidfile=None
-    optlist,optarg=getopt.getopt(sys.argv[1:],"vhfl:p:L:")
+    name="unknown"
+    optlist,optarg=getopt.getopt(sys.argv[1:],"vhfl:p:c:n:")
     for k,v in optlist:
         if   k=="-v":
             log_level=logging.DEBUG
@@ -65,21 +67,23 @@ def main():
             logfile=v
         elif k=="-p":
             pidfile=v
-        elif k=="-L":
+        elif k=="-c":
             ip,port=v.split(":")
             port=int(port)
+        elif k=="-n":
+            name=v
     if logfile:
         logging.basicConfig(level=log_level,filename=logfile,format='%(asctime)s %(levelname)s %(message)s',filemode="a+")
     else:
         logging.basicConfig(level=log_level,format='%(asctime)s %(levelname)s %(message)s')
-    logging.info("Starting SAE")
+    logging.info("Starting Activator")
     if not run_foreground:
         dirname=os.path.join(os.path.dirname(sys.argv[0]),"..")
         become_daemon(dirname,pidfile)
     os.environ['DJANGO_SETTINGS_MODULE']="noc.settings"
-    from noc.sa.sae import SAE
-    sae=SAE(ip,port)
-    sae.run()
+    from noc.sa.activator import Activator
+    activator=Activator(name,ip,port)
+    activator.run()
     
 if __name__ == '__main__':
     d=os.path.dirname(sys.argv[0])

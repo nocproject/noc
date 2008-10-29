@@ -1,9 +1,9 @@
 from noc.cm.models import Object
-import noc.main.periodic
+import noc.sa.periodic
 from django.db.models import Q
 import datetime,logging
 
-class Task(noc.main.periodic.Task):
+class Task(noc.sa.periodic.Task):
     name="cm.config_pull"
     description=""
     

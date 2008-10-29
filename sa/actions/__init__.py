@@ -4,15 +4,16 @@ rx_ansi_escape=re.compile("\x1b\\[(\d+(;\d+)?)?[a-zA-Z]")
 
 class BaseAction(object):
     ARGS=[]
-    def __init__(self,supervisor,task_id,stream,args=None):
-        self.supervisor=supervisor
-        self.task_id=task_id
+    def __init__(self,transaction_id,stream,callback,args=None):
+        self.callback=callbacks
+        self.transaction_id=transaction_id
         self.profile=stream.profile
         self.stream=stream
         self.fsm=None
         self.args={}
         self.buffer=""
         self.result=""
+        self.status=False
         self.to_collect_result=False
         if args:
             self.set_args(args)
@@ -37,7 +38,9 @@ class BaseAction(object):
         if self.buffer:
             self.stream.retain_input(self.buffer)
         self.stream.attach_action(None)
-        self.supervisor.on_action_close(self,status)
+        self.stream.close()
+        self.status=status
+        self.callback(self)
     
     def set_fsm(self,fsm):
         logging.debug("FSM set: %s"%str(fsm))

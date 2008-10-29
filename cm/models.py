@@ -29,10 +29,17 @@ class Object(models.Model):
         verbose_name_plural="Objects"
         unique_together=[("handler_class_name","repo_path")]
     handler_class_name=models.CharField("Handler Class",max_length=64,choices=handler_registry.choices)
-    stream_url=models.CharField("Stream URL",max_length=128)
-    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     repo_path=models.CharField("Repo Path",max_length=128)
     categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories",null=True,blank=True)
+    # Access
+    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices,null=True,blank=True)
+    scheme=models.IntegerField("Scheme",blank=True,null=True,choices=[(0,"telnet"),(1,"ssh")])
+    address=models.CharField("Address",max_length=64,blank=True,null=True)
+    port=models.PositiveIntegerField("Port",blank=True,null=True)
+    user=models.CharField("User",max_length=32,blank=True,null=True)
+    password=models.CharField("Password",max_length=32,blank=True,null=True)
+    super_password=models.CharField("Super Password",max_length=32,blank=True,null=True)
+    path=models.CharField("Path",max_length=32,blank=True,null=True)
     #
     push_every=models.PositiveIntegerField("Push Every (secs)",default=86400,blank=True,null=True)
     next_push=models.DateTimeField("Next Push",blank=True,null=True)
