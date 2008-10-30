@@ -1,7 +1,6 @@
 from django.db import models
 from noc.sa.profiles import profile_registry
 from noc.setup.models import Settings
-from noc.cm.handlers import handler_registry
 from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file
 from noc.lib.validators import is_int
@@ -9,7 +8,6 @@ from noc.cm.vcs import vcs_registry
 import os,datetime,stat
 
 profile_registry.register_all()
-handler_registry.register_all()
 vcs_registry.register_all()
 
 class ObjectCategory(models.Model):
@@ -20,26 +18,13 @@ class ObjectCategory(models.Model):
     description=models.CharField("Description",max_length=128,null=True,blank=True)
     def __unicode__(self):
         return self.name
-#
-#
+
 #
 class Object(models.Model):
     class Meta:
-        verbose_name="Object"
-        verbose_name_plural="Objects"
-        unique_together=[("handler_class_name","repo_path")]
-    handler_class_name=models.CharField("Handler Class",max_length=64,choices=handler_registry.choices)
-    repo_path=models.CharField("Repo Path",max_length=128)
+        abstract=True
+    repo_path=models.CharField("Repo Path",max_length=128,unique=True)
     categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories",null=True,blank=True)
-    # Access
-    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices,null=True,blank=True)
-    scheme=models.IntegerField("Scheme",blank=True,null=True,choices=[(0,"telnet"),(1,"ssh")])
-    address=models.CharField("Address",max_length=64,blank=True,null=True)
-    port=models.PositiveIntegerField("Port",blank=True,null=True)
-    user=models.CharField("User",max_length=32,blank=True,null=True)
-    password=models.CharField("Password",max_length=32,blank=True,null=True)
-    super_password=models.CharField("Super Password",max_length=32,blank=True,null=True)
-    path=models.CharField("Path",max_length=32,blank=True,null=True)
     #
     push_every=models.PositiveIntegerField("Push Every (secs)",default=86400,blank=True,null=True)
     next_push=models.DateTimeField("Next Push",blank=True,null=True)
@@ -49,26 +34,17 @@ class Object(models.Model):
     next_pull=models.DateTimeField("Next Pull",blank=True,null=True)
     last_pull=models.DateTimeField("Last Pull",blank=True,null=True)
     
-    
     def __unicode__(self):
-        return "%s/%s/%s"%(self.handler_class_name,self.profile_name,self.repo_path)
-    
-    def _profile(self):
-        return profile_registry[self.profile_name]()
-    profile=property(_profile)
-    
-    def _handler_class(self):
-        return handler_registry[self.handler_class_name]
-    handler_class=property(_handler_class)
-    
+        return "%s/%s"%(self.repo_name,self.repo_path)
+        
     def _repo(self):
-        return os.path.join(Settings.get("cm.repo"),self.handler_class_name)
+        return os.path.join(Settings.get("cm.repo"),self.repo_name)
     repo=property(_repo)
-    
+
     def _path(self):
         return os.path.join(self.repo,self.repo_path)
     path=property(_path)
-    
+
     def _last_modified(self):
         p=self.path
         if os.path.exists(p):
@@ -89,29 +65,8 @@ class Object(models.Model):
             if is_new:
                 vcs.add(self.repo_path)
             vcs.commit(self.repo_path)
-    #
-    # Push object's content from repository to equipment
-    #
-    def push(self):
-        self.handler_class(self).push()
-    #
-    # Pull object's content into repository
-    #
-    def pull(self):
-        cfg=self.handler_class(self).pull()
-        self.write(cfg)
-    #
-    # Push all objects of the given type
-    #
-    @classmethod
-    def global_push(self,handler_class_name):
-        handler_registry[handler_class_name].global_push()
-    #
-    # Pull all objects of the given type
-    #
-    @classmethod
-    def global_pull(self,handler_class_name):
-        handler_registry[handler_class_name].global_pull()
+        self.last_pull=datetime.datetime.now()
+        self.save()
     # Returns object's content
     # Or None if no content yet
     def _data(self):
@@ -122,12 +77,12 @@ class Object(models.Model):
         vcs=vcs_registry.get(self.repo)
         vcs.rm(self.repo_path)
         super(Object,self).delete()
-        
+
     def view_link(self):
-        return "<A HREF='/cm/view/%d/'>View</A>"%self.id
+        return "<A HREF='/cm/view/%s/%d/'>View</A>"%(self.repo_name,self.id)
     view_link.short_description="View"
     view_link.allow_tags=True
-    
+
     def _revisions(self):
         vcs=vcs_registry.get(self.repo)
         return vcs.log(self.repo_path)
@@ -148,3 +103,134 @@ class Object(models.Model):
     def get_revision(self,rev):
         vcs=vcs_registry.get(self.repo)
         return vcs.get_revision(self.repo_path,rev)
+        
+    @classmethod
+    def get_object_class(self,repo):
+        if repo=="config":
+            return Config
+        elif repo=="dns":
+            return DNS
+        elif repo=="prefix-list":
+            return PrefixList
+        else:
+            raise Exception("Invalid repo '%s'"%repo)
+    
+    def push(self): pass
+    def pull(self): pass
+    #
+    # Push all objects of the given type
+    #
+    @classmethod
+    def global_push(self,handler_class_name): pass
+    #
+    # Pull all objects of the given type
+    #
+    @classmethod
+    def global_pull(self,handler_class_name): pass
+##
+## Config
+##
+class Config(Object):
+    class Meta:
+        verbose_name="Config"
+        verbose_name_plural="Configs"
+    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
+    scheme=models.IntegerField("Scheme",choices=[(0,"telnet"),(1,"ssh")])
+    address=models.CharField("Address",max_length=64)
+    port=models.PositiveIntegerField("Port",blank=True,null=True)
+    user=models.CharField("User",max_length=32,blank=True,null=True)
+    password=models.CharField("Password",max_length=32,blank=True,null=True)
+    super_password=models.CharField("Super Password",max_length=32,blank=True,null=True)
+    remote_path=models.CharField("Path",max_length=32,blank=True,null=True)
+    
+    repo_name="config"
+    def _profile(self):
+        return profile_registry[self.profile_name]()
+    profile=property(_profile)
+##
+## PrefixList
+##
+class PrefixList(Object):
+    class Meta:
+        verbose_name="Prefix List"
+        verbose_name_plural="Prefix Lists"
+    repo_name="prefix-list"
+    @classmethod
+    def global_pull(self):
+        from noc.peer.builder import build_prefix_lists
+        objects={}
+        for o in PrefixListHandler.objects.all():
+            objects[o.repo_path]=o
+        logging.debug("PrefixList.global_pull(): building prefix lists")
+        for peering_point,pl_name,pl in build_prefix_lists():
+            logging.debug("PrefixList.global_pull(): writing %s/%s (%d lines)"%(peering_point.hostname,pl_name,len(pl.split("\n"))))
+            path=os.path.join(peering_point.hostname,pl_name)
+            if path in objects:
+                o=objects[path]
+                del objects[path]
+            else:
+                o=PrefixList(repo_path=path)
+                o.save()
+            o.write(pl)
+        for o in objects.values():
+            o.delete()
+##
+## DNS
+##
+class DNS(Object):
+    class Meta:
+        verbose_name="DNS Object"
+        verbose_name_plural="DNS Objects"
+    repo_name="dns"
+    @classmethod
+    def global_pull(self):
+        from noc.dns.models import DNSZone,DNSServer
+        
+        objects={}
+        changed={}
+        for o in DNS.objects.exclude(repo_path__endswith="autozones.conf"):
+            objects[o.repo_path]=o
+        for z in DNSZone.objects.filter(is_auto_generated=True):
+            for ns in z.profile.masters.all():
+                path=os.path.join(ns.name,z.name)
+                if path in objects:
+                    o=objects[path]
+                    del objects[path]
+                else:
+                    logging.debug("DNSHandler.global_pull: Creating object %s"%path)
+                    o=DNS(repo_path=path)
+                    o.save()
+                if is_differ(o.path,z.zonedata(ns)):
+                    changed[z]=None
+        for o in objects.values():
+            logging.debug("DNS.global_pull: Deleting object: %s"%o.repo_path)
+            o.delete()
+        for z in changed:
+            logging.debug("DNS.global_pull: Zone %s changed"%z.name)
+            z.serial=z.next_serial
+            z.save()
+            for ns in z.profile.masters.all():
+                path=os.path.join(ns.name,z.name)
+                o=DNS.objects.get(repo_path=path)
+                o.write(z.zonedata(ns))
+        for ns in DNSServer.objects.all():
+            logging.debug("DNSHandler.global_pull: Includes for %s rebuilded"%ns.name)
+            g=ns.generator_class()
+            path=os.path.join(ns.name,"autozones.conf")
+            try:
+                o=DNS.objects.get(repo_path=path)
+            except Object.DoesNotExist:
+                o=DNS(repo_path=path)
+                o.save()
+            o.write(g.get_include(ns))
+            
+    @classmethod
+    def global_push(self):
+        from noc.dns.models import DNSZone
+        nses={}
+        for z in DNSZone.objects.filter(is_auto_generated=True):
+            for ns in z.profile.masters.all():
+                nses[ns.name]=ns
+        for ns in nses.values():
+            logging.debug("DNSHandler.global_push: provisioning %s"%ns.name)
+            ns.provision_zones()

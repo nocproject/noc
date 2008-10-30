@@ -1,13 +1,22 @@
 from django.contrib import admin
-from noc.cm.models import ObjectCategory,Object
+from noc.cm.models import ObjectCategory,Config,DNS,PrefixList
 
 class ObjectCategoryAdmin(admin.ModelAdmin):
     list_display=["name","description"]
     
-class ObjectAdmin(admin.ModelAdmin):
-    list_display=["handler_class_name","profile_name","repo_path","view_link"]
-    search_fields=["repo_path"]
-    list_filter=["handler_class_name","profile_name","categories"]
+class ConfigAdmin(admin.ModelAdmin):
+    list_display=["repo_path","profile_name","address","view_link"]
+    list_filter=["profile_name"]
+    search_fields=["repo_path","address"]
+
+class DNSAdmin(admin.ModelAdmin):
+    list_display=["repo_path","view_link"]
     
+class PrefixListAdmin(admin.ModelAdmin):
+    list_display=["repo_path","view_link"]
+    
+
 admin.site.register(ObjectCategory, ObjectCategoryAdmin)
-admin.site.register(Object, ObjectAdmin)
+admin.site.register(Config,         ConfigAdmin)
+admin.site.register(DNS,            DNSAdmin)
+admin.site.register(PrefixList,     PrefixListAdmin)

@@ -12,7 +12,7 @@ class Migration:
         db.add_column("cm_object","user",models.CharField("User",max_length=32,blank=True,null=True))
         db.add_column("cm_object","password",models.CharField("Password",max_length=32,blank=True,null=True))
         db.add_column("cm_object","super_password",models.CharField("Super Password",max_length=32,blank=True,null=True))
-        db.add_column("cm_object","path",models.CharField("Path",max_length=32,blank=True,null=True))
+        db.add_column("cm_object","remote_path",models.CharField("Path",max_length=32,blank=True,null=True))
         for id,url in db.execute("SELECT id,stream_url FROM cm_object WHERE stream_url!='ssh://u:p@localhost/'"):
             u=URL(url)
             scheme={"telnet":0,"ssh":1}[u.scheme]
@@ -29,4 +29,4 @@ class Migration:
         db.delete_column("cm_object","user")
         db.delete_column("cm_object","password")
         db.delete_column("cm_object","super_password")
-        db.delete_column("cm_object","path")
+        db.delete_column("cm_object","remote_path")

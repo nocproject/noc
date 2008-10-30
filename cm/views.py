@@ -4,19 +4,26 @@ from noc.lib.render import render,render_plain_text
 import os
 from django.http import HttpResponseNotFound,HttpResponseRedirect
 
-def view(request,object_id,revision=None,format="html"):
-    o=get_object_or_404(Object,id=int(object_id))
+def view(request,repo,object_id,revision=None,format="html"):
+    o=get_object_or_404(Object.get_object_class(repo),id=int(object_id))
+    revs=o.revisions
     if revision:
         r=None
-        for rev in o.revisions:
+        for rev in revs:
             if rev.revision==revision:
                 r=rev
                 break
         if not r:
             return HttpResponseNotFound("Revision not found")
     else:
-        r=o.revisions[0]
-    content=o.get_revision(r)
+        if len(revs):
+            r=o.revisions[0]
+        else:
+            r=None
+    if r:
+        content=o.get_revision(r)
+    else:
+        content=None
     if format=="html":
         return render(request,"cm/view.html",{"o":o,"r":r,"content":content})
     elif format=="text":
@@ -24,8 +31,8 @@ def view(request,object_id,revision=None,format="html"):
     else:
         return HttpResponseNotFound("Invalid format: %s"%format)
 
-def diff(request,object_id):
-    o=get_object_or_404(Object,id=int(object_id))
+def diff(request,repo,object_id):
+    o=get_object_or_404(Object.get_object_class(repo),id=int(object_id))
     if request.POST:
         r1=o.find_revision(request.POST["r1"])
         r2=o.find_revision(request.POST["r2"])
