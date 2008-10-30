@@ -17,17 +17,21 @@ report_registry=ReportRegistry()
 
 ##
 ## Report Columns
+## 'format' is a function accepting value and returning valid html code
 ##
 class Column(object):
-    def __init__(self,name,align=None,v_align=None):
+    def __init__(self,name,align=None,v_align=None,format=None):
         self.name=name
         self.align=align
         self.v_align=v_align
+        self.format=format
         
     def render_header(self):
         return "<TH>%s</TH>"%self.name
         
     def render_cell(self,value):
+        if self.format:
+            value=self.format(value)
         flags=[]
         if self.align:
             flags+=["ALIGN='%s'"%self.align]
