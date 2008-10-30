@@ -21,12 +21,12 @@
 <A HREF="text/">Plain Text</A>
 
 <DIV CLASS="module">
-    <FORM METHOD="POST" ACTION="/cm/view/{{o.id}}/diff/">
+    <FORM METHOD="POST" ACTION="/cm/view/{{o.repo_name}}/{{o.id}}/diff/">
     <TABLE SUMMARY="Revisions" WIDTH="100%">
         <CAPTION>Revisions</CAPTION>
         {% for rev in o.revisions %}
             <TR>
-                <TD><A HREF="/cm/view/{{o.id}}/{{rev.revision}}/">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
+                <TD><A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/{{rev.revision}}/">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
                 <TD>{{rev.date}}</TD>
                 <TD><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
                 <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>                

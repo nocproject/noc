@@ -11,10 +11,11 @@ class ConfigAdmin(admin.ModelAdmin):
 
 class DNSAdmin(admin.ModelAdmin):
     list_display=["repo_path","view_link"]
+    search_fields=["repo_path"]
     
 class PrefixListAdmin(admin.ModelAdmin):
     list_display=["repo_path","view_link"]
-    
+    search_fields=["repo_path"]
 
 admin.site.register(ObjectCategory, ObjectCategoryAdmin)
 admin.site.register(Config,         ConfigAdmin)
