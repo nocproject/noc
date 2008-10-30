@@ -17,12 +17,13 @@ PREFIX=`getproparg noc-activator/prefix`
 PYTHON=`getproparg noc-activator/python`
 PIDFILE=`getproparg noc-activator/pidfile`
 LOGFILE=`getproparg noc-activator/logfile`
+NAME=`getproparg noc-activator/name`
 SAE_ADDRESS=`getproparg noc-activator/sae_address`
 ACTIVATOR="$PREFIX/scripts/noc-activator.py"
 
 case "$1" in
 start)
-    $PYTHON $ACTIVATOR -l$LOGFILE -p$PIDFILE -c$SAE_ADDRESS 2>&1
+    $PYTHON $ACTIVATOR -l$LOGFILE -p$PIDFILE -n$NAME -c$SAE_ADDRESS 2>&1
     ;;
 stop)
     [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE` && rm -f $PIDFILE

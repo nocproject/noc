@@ -37,12 +37,13 @@
             <propval name="prefix"      type="astring" value="/var/www/noc" />
             <propval name="pidfile"     type="astring" value="/var/log/noc/noc-activator.pid" />
             <propval name="logfile"     type="astring" value="/var/log/noc/noc-activator.log" />
+            <propval name="name"        type="astring" value="default" />
             <propval name="sae_address" type="astring" value="127.0.0.1:19701" />
         </property_group>
         <template>
             <common_name>
                 <loctext xml:lang='C'>
-                    NOC Service Activation Engine
+                    NOC Service Activator
                 </loctext>
             </common_name>
         </template>
