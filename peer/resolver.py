@@ -132,7 +132,7 @@ class Resolver(object):
                 a=ASSet(self,x)
                 a.resolve()
         while self.whois_queue:
-            while self.whois_queue and len(asyncore.socket_map)<self.whois_concurrency:
+            while self.whois_queue and len(SOCKET_MAP)<self.whois_concurrency:
                 q,c,f=self.whois_queue.pop(0)
                 Whois(q,c,f,map=SOCKET_MAP)
             asyncore.loop(timeout=3,map=SOCKET_MAP)
