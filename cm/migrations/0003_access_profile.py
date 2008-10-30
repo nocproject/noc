@@ -18,7 +18,7 @@ class Migration:
             scheme={"telnet":0,"ssh":1}[u.scheme]
             if u.path=="/":
                 u.path=None
-            db.execute("UPDATE cm_object SET scheme=%s,address=%s,port=%s,\"user\"=%s,password=%s,path=%s WHERE id=%s",
+            db.execute("UPDATE cm_object SET scheme=%s,address=%s,port=%s,\"user\"=%s,password=%s,remote_path=%s WHERE id=%s",
                 [scheme,u.host,u.port,u.user,u.password,u.path,id])
         db.delete_column("cm_object","stream_url")
     

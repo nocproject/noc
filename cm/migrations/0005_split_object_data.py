@@ -9,7 +9,7 @@ class Migration:
     def forwards(self):
         a_id=db.execute("SELECT id FROM sa_activator LIMIT 1")[0][0]
         for handler_class_name,repo_path,profile_name,scheme,address,port,user,password,super_password,path\
-            in db.execute("SELECT handler_class_name,repo_path,profile_name,scheme,address,port,user,password,super_password,path FROM cm_object"):
+            in db.execute("SELECT handler_class_name,repo_path,profile_name,scheme,address,port,\"user\",password,super_password,remote_path FROM cm_object"):
             if handler_class_name=="config":
                 db.execute("INSERT INTO cm_config(repo_path,activator_id,profile_name,scheme,address,port,\"user\",password,super_password,remote_path) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                     [repo_path,a_id,profile_name,scheme,address,port,user,password,super_password,path])
