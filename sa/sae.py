@@ -40,7 +40,7 @@ class SAE(object):
         self.active_periodic_tasks={}
         self.periodic_task_lock=threading.Lock()
         logging.debug("Starting listener at %s:%d"%(self.address,self.port))
-        self.listener=Listener(self,"127.0.0.1",7777)
+        self.listener=Listener(self,self.address,self.port)
         
     def run(self):
         last_cleanup=time.time()
