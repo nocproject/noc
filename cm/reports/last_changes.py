@@ -12,7 +12,10 @@ class Report(noc.main.report.Report):
     name="cm.last_changes"
     title="Latest Changes"
     form_class=ReportForm
-    columns=[Column("Object"),Column("Last Changed")]
+    columns=[
+            Column("Object",format=lambda o:"<A HREF='/cm/view/%s/%s/'>%s</A>"%(o.repo_name,o.id,o.repo_path)),
+            Column("Last Changed")
+            ]
     
     def get_queryset(self):
         oc=Object.get_object_class(self.form.cleaned_data["repo"])
