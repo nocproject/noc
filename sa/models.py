@@ -12,7 +12,6 @@ class Activator(models.Model):
         verbose_name_plural="Activators"
     name=models.CharField("Name",max_length=32,unique=True)
     ip=models.IPAddressField("IP")
-    port=models.PositiveIntegerField("Port",default=17901)
     auth=models.CharField("Auth String",max_length=64)
     is_active=models.BooleanField("Is Active",default=True)
     def __unicode__(self):
