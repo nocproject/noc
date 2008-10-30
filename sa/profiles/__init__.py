@@ -108,12 +108,6 @@ class Profile(object):
     #
     config_volatile=None
     #
-    def pull_config(self,stream_url):
-        from noc.sa.models import get_task_output
-        out=get_task_output(self.name,stream_url,"sa.actions.cli",
-            args={"commands":self.command_pull_config})
-        if self.config_volatile:
-            for r in self.config_volatile:
-                rx=re.compile(r,re.DOTALL|re.MULTILINE)
-                out=rx.sub("",out)
-        return out
+    # Skip first N lines of config output. None - skip no lines
+    #
+    config_skip_head=1
