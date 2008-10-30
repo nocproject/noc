@@ -126,6 +126,7 @@ class Resolver(object):
     # name -> (members,prefixes)
     #
     def resolve(self,as_sets):
+        SOCKET_MAP={}
         for x in as_sets:
             if not x in self.ases:
                 a=ASSet(self,x)
@@ -133,8 +134,8 @@ class Resolver(object):
         while self.whois_queue:
             while self.whois_queue and len(asyncore.socket_map)<self.whois_concurrency:
                 q,c,f=self.whois_queue.pop(0)
-                Whois(q,c,f)
-            asyncore.loop(timeout=3)
+                Whois(q,c,f,map=SOCKET_MAP)
+            asyncore.loop(timeout=3,map=SOCKET_MAP)
         r={}
         for n,a in self.as_sets.items():
             r[n]=(a.members,a.prefixes)

@@ -7,8 +7,8 @@ WHOIS_SERVER="whois.ripe.net"
 WHOIS_PORT=43
 
 class Whois(asyncore.dispatcher_with_send):
-    def __init__(self,query,callback=None,fields=None):
-        asyncore.dispatcher_with_send.__init__(self)
+    def __init__(self,query,callback=None,fields=None,map=None):
+        asyncore.dispatcher_with_send.__init__(self,map=map)
         self.query=query.strip()
         self.output=[]
         self.callback=callback
