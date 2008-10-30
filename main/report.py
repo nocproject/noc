@@ -93,8 +93,10 @@ class Report(object):
     def render(self):
         out="<TABLE SUMMARY='%s'>"%self.title
         out+="<TR>"+"".join([c.render_header() for c in self.columns])+"</TR>"
+        n=0
         for row in self.get_queryset():
-            out+="<TR>"+"".join([c.render_cell(v) for c,v in zip(self.columns,row)])+"</TR>"
+            out+="<TR CLASS='row%d'>"%((n%2)+1)+"".join([c.render_cell(v) for c,v in zip(self.columns,row)])+"</TR>"
+            n+=1
         out+="</TABLE>"
         return render(self.request,self.template,{"report":self,"query":self.query,"data":out})
             
