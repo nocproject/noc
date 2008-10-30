@@ -17,7 +17,7 @@ PREFIX=`getproparg noc-activator/prefix`
 PYTHON=`getproparg noc-activator/python`
 PIDFILE=`getproparg noc-activator/pidfile`
 LOGFILE=`getproparg noc-activator/logfile`
-SAE_ADDRES=`getproparg noc-activator/sae_address`
+SAE_ADDRESS=`getproparg noc-activator/sae_address`
 ACTIVATOR="$PREFIX/scripts/noc-activator.py"
 
 case "$1" in
