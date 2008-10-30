@@ -1,7 +1,7 @@
 ##
 ## Service Activator
 ##
-import asyncore,os,logging,socket,pty,signal,time
+import asyncore,os,logging,socket,pty,signal,time,re
 from noc.sa.actions import get_action_class
 from noc.sa.profiles import profile_registry
 from noc.sa.sae_stream import SAEStream
@@ -161,7 +161,19 @@ class Activator(object):
     def on_pull_config(self,action):
         if action.status:
             c=ResPullConfig()
-            c.config=action.result
+            cfg=action.result
+            skip=action.profile.config_skip_head
+            if skip:
+                # Wipe out first N lines
+                cl=cfg.split("\n")
+                if len(cl)>skip:
+                    cfg="\n".join(cl[skip:])
+            if action.profile.config_volatile:
+                # Wipe out volatile strings before returning result
+                for r in action.profile.config_volatile:
+                    rx=re.compile(r,re.DOTALL|re.MULTILINE)
+                    cfg=rx.sub("",cfg)
+            c.config=cfg
             self.sae_stream.send_message("pull_config",transaction_id=action.transaction_id,response=c)
         else:
             e=Error()
