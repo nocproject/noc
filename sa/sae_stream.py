@@ -36,7 +36,14 @@ class SAEStream(asyncore.dispatcher):
         
     def handle_read(self):
         self.last_in=time.time()
-        d=self.recv(8192)
+        try:
+            d=self.recv(8192)
+        except socket.error:
+            self.close()
+            return
+        if d=="":
+            self.close()
+            return
         logging.debug("Recv: %s"%repr(d))
         self.in_buffer+=d
         while self.in_buffer:
@@ -49,6 +56,7 @@ class SAEStream(asyncore.dispatcher):
                 msg=Message()
                 msg.ParseFromString(self.in_buffer[:self.in_message_len])
                 self.in_buffer=self.in_buffer[self.in_message_len:]
+                self.in_message_len=None
                 self.on_new_message(msg)
             else:
                 break
@@ -66,7 +74,7 @@ class SAEStream(asyncore.dispatcher):
         logging.debug("OOB Data: %s"%data)
 
     def write(self,msg):
-        logging.debug("Sending: %s"%str(msg))
+        logging.debug("Sending: >>>>>\n%s\n<<<<<"%str(msg))
         self.out_buffer+=msg
         
     def send_message(self,method,transaction_id=None,request=None,response=None,error=None):
@@ -80,13 +88,21 @@ class SAEStream(asyncore.dispatcher):
         if response:
             msg.response=response.SerializeToString()
         if error:
-            msg.error=error.SerializeToString()
+            msg.error.error=error.error
+            msg.error.message=error.message
         s=msg.SerializeToString()
         logging.debug("Sending %d byte message (Req: %d, Res: %d Err: %d)"%(len(s)+4,len(msg.request),len(msg.response),msg.error.ByteSize()))
         self.write(struct.pack("!L",len(s))+s)
+        return transaction_id
+        
+    def send_error(self,method,transaction_id,error,message):
+        e=Error()
+        e.error=error
+        e.message=message
+        self.send_message(method,transaction_id,error=e)
         
     def on_new_message(self,message):
-        logging.debug("Recv message: %s"%str(message))
+        logging.debug("Recv message: (%s)>>>>>\n%s<<<<<"%(message.method,str(message)))
         if message.error.ByteSize():
             e=Error()
             e.ParseFromString(message.error)

@@ -5,8 +5,8 @@ class ObjectCategoryAdmin(admin.ModelAdmin):
     list_display=["name","description"]
     
 class ConfigAdmin(admin.ModelAdmin):
-    list_display=["repo_path","profile_name","address","view_link"]
-    list_filter=["profile_name"]
+    list_display=["repo_path","activator","profile_name","address","view_link"]
+    list_filter=["profile_name","activator"]
     search_fields=["repo_path","address"]
 
 class DNSAdmin(admin.ModelAdmin):

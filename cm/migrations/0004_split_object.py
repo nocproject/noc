@@ -3,8 +3,11 @@ from south.db import db
 from noc.cm.models import *
 
 class Migration:
-    
+    depends_on=(
+        ("sa","0005_activator"),
+    )
     def forwards(self):
+        Activator = db.mock_model(model_name='Activator', db_table='sa_activator', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         
         # Model 'Config'
         db.create_table('cm_config', (
@@ -16,6 +19,7 @@ class Migration:
             ('pull_every', models.PositiveIntegerField("Pull Every (secs)",default=86400,blank=True,null=True)),
             ('next_pull', models.DateTimeField("Next Pull",blank=True,null=True)),
             ('last_pull', models.DateTimeField("Last Pull",blank=True,null=True)),
+            ('activator',models.ForeignKey(Activator,verbose_name="Activator")),
             ('profile_name', models.CharField("Profile",max_length=128,choices=profile_registry.choices)),
             ('scheme', models.IntegerField("Scheme",choices=[(0,"telnet"),(1,"ssh")])),
             ('address', models.CharField("Address",max_length=64)),

@@ -49,7 +49,7 @@ def main():
     log_level=logging.INFO
     run_foreground=False
     ip="127.0.0.1"
-    port=7777
+    port=19701
     logfile=None
     pidfile=None
     optlist,optarg=getopt.getopt(sys.argv[1:],"vhfl:p:L:")

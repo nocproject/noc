@@ -98,7 +98,9 @@ class Activator(object):
         logging.info("Running activator '%s'"%name)
         self.name=name
         self.sae_ip=sae_ip
-        self.sae_port=sae_port
+        self.sae_port=int(sae_port)
+        self.sae_stream=None
+        self.sae_reset=0
         self.streams={}
         self.children={}
         logging.info("Loading profile classes")
@@ -107,19 +109,23 @@ class Activator(object):
         signal.signal(signal.SIGCHLD,self.sig_chld)
     
     def run(self):
-        self.sae_stream=SAEStream(self)
-        self.sae_stream.connect_sae(self.sae_ip,self.sae_port)
-        self.register()
         last_keepalive=time.time()
         while True:
+            if self.sae_stream is None and time.time()-self.sae_reset>10:
+                self.sae_stream=SAEStream(self)
+                self.sae_stream.connect_sae(self.sae_ip,self.sae_port)
+                self.register()
             asyncore.loop(timeout=1,count=1)
-            self.sae_stream.keepalive()
+            if self.sae_stream:
+                self.sae_stream.keepalive()
 
     def sig_chld(self,signum,frame):
         pid,statis=os.waitpid(-1,os.WNOHANG)
         
     def on_stream_close(self,sae_stream):
-        pass
+        logging.debug("SAE connection lost")
+        self.sae_stream=None
+        self.sae_reset=time.time()
         
     # Handlers
     ##
@@ -141,19 +147,24 @@ class Activator(object):
     def req_pull_config(self,sae_stream,transaction_id,msg):
         stream=STREAMS[msg.access_profile.scheme](msg.access_profile)
         profile=profile_registry[msg.profile]
-        action=get_action_class("sa.actions.cli")(transaction_id,stream,self.on_pull_config,{"commands":profile.command_pull_config})
+        action=get_action_class("sa.actions.cli")(transaction_id=transaction_id,
+            stream=stream,
+            profile=profile,
+            callback=self.on_pull_config,
+            args={
+                "user"     : msg.access_profile.user,
+                "password" : msg.access_profile.password,
+                "commands" : profile.command_pull_config,
+                })
     req_pull_config.message_class=ReqPullConfig
     
     def on_pull_config(self,action):
         if action.status:
             c=ResPullConfig()
             c.config=action.result
-            self.sae_stream.send_message("pull_config",transaction_id=transaction_id,response=c)
+            self.sae_stream.send_message("pull_config",transaction_id=action.transaction_id,response=c)
         else:
             e=Error()
             e.error="ECONF"
             e.message=action.result
-            msg.error=e
-            self.sae_stream.send_message("pull_config",transaction_id=transaction_id,error=e)
-            
-            
+            self.sae_stream.send_message("pull_config",transaction_id=action.transaction_id,error=e)

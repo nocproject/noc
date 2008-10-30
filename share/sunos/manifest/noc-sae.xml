@@ -37,6 +37,7 @@
             <propval name="prefix"      type="astring" value="/var/www/noc" />
             <propval name="pidfile"     type="astring" value="/var/log/noc/noc-sae.pid" />
             <propval name="logfile"     type="astring" value="/var/log/noc/noc-sae.log" />
+            <propval name="listen"      type="astring" value="127.0.0.1:19701" />
         </property_group>
         <template>
             <common_name>

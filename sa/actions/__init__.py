@@ -4,10 +4,10 @@ rx_ansi_escape=re.compile("\x1b\\[(\d+(;\d+)?)?[a-zA-Z]")
 
 class BaseAction(object):
     ARGS=[]
-    def __init__(self,transaction_id,stream,callback,args=None):
-        self.callback=callbacks
+    def __init__(self,transaction_id,stream,profile,callback,args=None):
+        self.callback=callback
         self.transaction_id=transaction_id
-        self.profile=stream.profile
+        self.profile=profile
         self.stream=stream
         self.fsm=None
         self.args={}

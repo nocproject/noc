@@ -1,4 +1,3 @@
-from noc.cm.models import Object
 import noc.sa.periodic
 
 class Task(noc.sa.periodic.Task):
@@ -6,5 +5,6 @@ class Task(noc.sa.periodic.Task):
     description=""
     
     def execute(self):
-        Object.global_pull("prefix-list")
+        from noc.cm.models import PrefixList
+        PrefixList.global_pull()
         return True

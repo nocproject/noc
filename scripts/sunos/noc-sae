@@ -17,11 +17,12 @@ PREFIX=`getproparg noc-sae/prefix`
 PYTHON=`getproparg noc-sae/python`
 PIDFILE=`getproparg noc-sae/pidfile`
 LOGFILE=`getproparg noc-sae/logfile`
+LISTEN=`getproparg noc-sae/listen`
 SAE="$PREFIX/scripts/noc-sae.py"
 
 case "$1" in
 start)
-    $PYTHON $SAE -l$LOGFILE -p$PIDFILE 2>&1
+    $PYTHON $SAE -l$LOGFILE -p$PIDFILE -L$LISTEN 2>&1
     ;;
 stop)
     [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE` && rm -f $PIDFILE

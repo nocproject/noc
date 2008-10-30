@@ -7,6 +7,16 @@ import asyncore,socket,logging,time,threading,datetime,traceback
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
 
+##
+## Placeholder with transaction data
+##
+class Transaction(object):
+    def __init__(self,transaction_id,object=None,stream=None):
+        self.transaction_id=transaction_id
+        self.object=object
+        self.stream=stream
+        self.started=time.time()
+
 class Listener(asyncore.dispatcher):
     def __init__(self,sae,address,port):
         asyncore.dispatcher.__init__(self)
@@ -25,6 +35,7 @@ class SAE(object):
         self.port=port
         self.streams={} # stream -> Name
         self.stream_names={} # name -> stream
+        self.transactions={}
         # Periodic tasks
         self.active_periodic_tasks={}
         self.periodic_task_lock=threading.Lock()
@@ -58,7 +69,7 @@ class SAE(object):
         logging.info(u"Executing %s"%unicode(task))
         tb=None
         try:
-            status=task.periodic_class().execute()
+            status=task.periodic_class(self).execute()
         except:
             tb=traceback.format_exc()
             status=False
@@ -80,20 +91,60 @@ class SAE(object):
     def on_new_connect(self):
         conn,addr=self.listener.accept()
         address,port=addr
+        if Activator.objects.filter(ip=address).count()==0:
+            logging.error("Refusing connection from %s"%address)
+            socket.close(conn)
+            return
         logging.info("Connect from: %s"%address)
         s=SAEStream(self)
         s.connect_activator(conn)
         self.streams[s]=None
         
     def on_stream_close(self,stream):
+        if stream not in self.streams:
+            return
         name=self.streams[stream]
         if name:
             del self.stream_names[name]
         del self.streams[stream]
+        
     ##
-    ## Handlers
+    ## Components API
+    ##
+    def pull_config(self,object):
+        try:
+            stream=self.stream_names[object.activator.name]
+        except KeyError:
+            raise Exception("Activator not available")
+        r=ReqPullConfig()
+        r.profile=object.profile_name
+        r.access_profile.scheme        = object.scheme
+        r.access_profile.address       = object.address
+        if object.port:
+            r.access_profile.port          = object.port
+        if object.user:
+            r.access_profile.user          = object.user
+        if object.password:
+            r.access_profile.password      = object.password
+        if object.super_password:
+            r.access_profile.super_password= object.super_password
+        if object.remote_path:
+            r.access_profile.path          = object.remote_path
+        t_id=stream.send_message("pull_config",request=r)
+        transaction=Transaction(transaction_id=t_id,stream=stream,object=object)
+        self.transactions[t_id]=transaction
+    
+    ##
+    ## SAE Protocol Handlers
     ##
     def req_register(self,sae_stream,transaction_id,msg):
+        try:
+            activator=Activator.objects.get(name=msg.name)
+        except Activator.DoesNotExist:
+            logging.error("Unknown activator '%s'"%msg.name)
+            sae_stream.send_error("register",transaction_id,"EREG","Unknown activator")
+            sae_stream.close()
+            return
         logging.info("Registering activator '%s'"%msg.name)
         self.streams[sae_stream]=msg.name
         self.stream_names[msg.name]=sae_stream
@@ -102,5 +153,12 @@ class SAE(object):
         sae_stream.send_message("register",transaction_id,response=r)
         
     req_register.message_class=ReqRegister
-    
+    ##
+    ##
+    ##
+    def res_pull_config(self,sae_stream,transaction_id,msg):
+        transaction=self.transactions[transaction_id]
+        del self.transactions[transaction_id]
+        transaction.object.write(msg.config)
+    res_pull_config.message_class=ResPullConfig
         

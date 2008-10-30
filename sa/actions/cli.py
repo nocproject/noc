@@ -4,10 +4,6 @@ import logging
 class Action(BaseAction):
     ARGS=["user","password","commands"]
     def prepare_action(self):
-        if self.args["user"] is None:
-            self.args["user"]=self.stream.user
-        if self.args["password"] is None:
-            self.args["password"]=self.stream.password
         self.commands=self.args["commands"][:]
         self.set_fsm([
             (self.profile.pattern_username, self.s_username),

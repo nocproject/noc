@@ -2,10 +2,11 @@ from django.db import models
 from noc.sa.profiles import profile_registry
 from noc.setup.models import Settings
 from noc.lib.url import URL
-from noc.lib.fileutils import rewrite_when_differ,read_file
+from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
-import os,datetime,stat
+import os,datetime,stat,logging
+from noc.sa.models import Activator
 
 profile_registry.register_all()
 vcs_registry.register_all()
@@ -121,12 +122,12 @@ class Object(models.Model):
     # Push all objects of the given type
     #
     @classmethod
-    def global_push(self,handler_class_name): pass
+    def global_push(self): pass
     #
     # Pull all objects of the given type
     #
     @classmethod
-    def global_pull(self,handler_class_name): pass
+    def global_pull(self): pass
 ##
 ## Config
 ##
@@ -134,6 +135,7 @@ class Config(Object):
     class Meta:
         verbose_name="Config"
         verbose_name_plural="Configs"
+    activator=models.ForeignKey(Activator,verbose_name="Activator")
     profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     scheme=models.IntegerField("Scheme",choices=[(0,"telnet"),(1,"ssh")])
     address=models.CharField("Address",max_length=64)
@@ -147,6 +149,9 @@ class Config(Object):
     def _profile(self):
         return profile_registry[self.profile_name]()
     profile=property(_profile)
+    
+    def pull(self,sae):
+        sae.pull_config(self)
 ##
 ## PrefixList
 ##
@@ -156,10 +161,10 @@ class PrefixList(Object):
         verbose_name_plural="Prefix Lists"
     repo_name="prefix-list"
     @classmethod
-    def global_pull(self):
+    def global_pull(cls):
         from noc.peer.builder import build_prefix_lists
         objects={}
-        for o in PrefixListHandler.objects.all():
+        for o in PrefixList.objects.all():
             objects[o.repo_path]=o
         logging.debug("PrefixList.global_pull(): building prefix lists")
         for peering_point,pl_name,pl in build_prefix_lists():
@@ -183,7 +188,7 @@ class DNS(Object):
         verbose_name_plural="DNS Objects"
     repo_name="dns"
     @classmethod
-    def global_pull(self):
+    def global_pull(cls):
         from noc.dns.models import DNSZone,DNSServer
         
         objects={}
