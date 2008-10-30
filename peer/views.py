@@ -3,7 +3,6 @@ from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django import forms
 
 from noc.peer.models import AS,ASSet,LGQueryType,PeeringPoint,LGQueryCommand
-from noc.sa.models import Task
 from noc.lib.render import render,render_plain_text,render_json
 from noc.lib.validators import is_asn,is_as_set,is_ipv4,is_cidr
 import re
