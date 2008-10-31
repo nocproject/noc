@@ -25,7 +25,10 @@ start)
     $PYTHON $SAE -l$LOGFILE -p$PIDFILE -L$LISTEN 2>&1
     ;;
 stop)
-    [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE` && rm -f $PIDFILE
+    if [ -f "$PIDFILE" ]; then
+        /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE`
+        rm -f $PIDFILE
+    fi
     ;;
 refresh)
     $0 stop

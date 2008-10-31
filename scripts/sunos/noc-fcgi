@@ -27,7 +27,10 @@ start)
     $PYTHON $FCGI -s$SOCKET -S$MINSPARE:$MAXSPARE -R$MAXREQUESTS -C$MAXCHILDREN -p$PIDFILE -r$PREFIX 2>&1
     ;;
 stop)
-    [ -f "$PIDFILE" ] && /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE` && rm -f $PIDFILE
+    if [ -f "$PIDFILE" ]; then
+        /usr/bin/kill -QUIT `/usr/bin/cat $PIDFILE`
+        rm -f $PIDFILE
+    fi
     /usr/bin/test -S "$SOCKET" &&  rm -f $SOCKET
     ;;
 refresh)
