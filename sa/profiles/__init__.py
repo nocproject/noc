@@ -111,3 +111,18 @@ class Profile(object):
     # Skip first N lines of config output. None - skip no lines
     #
     config_skip_head=1
+    #
+    # Clean up config
+    #
+    def cleaned_config(self,cfg):
+        if self.config_skip_head:
+            # Wipe out first N lines
+            cl=cfg.split("\n")
+            if len(cl)>self.config_skip_head:
+                cfg="\n".join(cl[self.config_skip_head:])
+        if self.config_volatile:
+            # Wipe out volatile strings before returning result
+            for r in self.config_volatile:
+                rx=re.compile(r,re.DOTALL|re.MULTILINE)
+                cfg=rx.sub("",cfg)
+        return cfg

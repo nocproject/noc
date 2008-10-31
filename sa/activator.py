@@ -64,7 +64,7 @@ class Stream(asyncore.dispatcher):
 ##
 class TelnetStream(Stream):
     def prepare_stream(self):
-        logging.debug("TelnetStream connecting %s"%self.access_profile.address)
+        logging.debug("TelnetStream connecting '%s'"%self.access_profile.address)
         pid,fd=pty.fork()
         if pid==0:
             os.execv("/usr/bin/telnet",["/usr/bin/telnet",self.access_profile.address])
@@ -76,7 +76,7 @@ class TelnetStream(Stream):
 ##
 class SSHStream(Stream):
     def prepare_stream(self):
-        logging.debug("SSHStream connecting %s"%self.access_profile.address)
+        logging.debug("SSHStream connecting '%s'"%self.access_profile.address)
         pid,fd=pty.fork()
         if pid==0:
             os.execv("/usr/bin/ssh",["/usr/bin/ssh","-o","StrictHostKeyChecking no","-l",self.access_profile.user,self.access_profile.address])
@@ -161,19 +161,7 @@ class Activator(object):
     def on_pull_config(self,action):
         if action.status:
             c=ResPullConfig()
-            cfg=action.result
-            skip=action.profile.config_skip_head
-            if skip:
-                # Wipe out first N lines
-                cl=cfg.split("\n")
-                if len(cl)>skip:
-                    cfg="\n".join(cl[skip:])
-            if action.profile.config_volatile:
-                # Wipe out volatile strings before returning result
-                for r in action.profile.config_volatile:
-                    rx=re.compile(r,re.DOTALL|re.MULTILINE)
-                    cfg=rx.sub("",cfg)
-            c.config=cfg
+            c.config=action.profile.cleaned_config(action.result)
             self.sae_stream.send_message("pull_config",transaction_id=action.transaction_id,response=c)
         else:
             e=Error()
