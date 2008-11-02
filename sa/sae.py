@@ -2,17 +2,31 @@
 ## Service Activation Engine
 ##
 from noc.sa.models import Activator
-from noc.sa.sae_stream import RPCStream
-import asyncore,socket,logging,time,threading,datetime,traceback
+from noc.cm.models import Config
+
+from noc.sa.sae_stream import RPCStream,file_hash
+import asyncore,socket,logging,time,threading,datetime,traceback,os
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
+from noc.lib.fileutils import read_file
+
+##
+## Manifest for activator
+##
+ACTIVATOR_MANIFEST=[
+    "sa/activator.py",
+    "sa/sae_stream.py",
+    "sa/protocols/sae_pb2.py",
+    "sa/actions/",
+    "sa/profiles/",
+]
 
 ##
 ##
 ##
 class Service(SAEService):
     def ping(self,controller,request,done):
-        done(controller,response=PingResponse)
+        done(controller,response=PingResponse())
         
     def register(self,controller,request,done):
         try:
@@ -28,10 +42,23 @@ class Service(SAEService):
         self.sae.register_activator(request.name,controller.stream)
         r=RegisterResponse()
         done(controller,response=r)
-
+        
+    def manifest(self,controller,request,done):
+        done(controller,response=self.sae.activator_manifest)
+        
+    def software_upgrade(self,controller,request,done):
+        r=SoftwareUpgradeResponse()
+        for n in request.names:
+            u=r.codes.add()
+            u.name=n
+            u.code=read_file(n)
+        done(controller,response=r)
+##
+##
+##
 class SAEStream(RPCStream):
-    def __init__(self,service,stub_class,sock):
-        RPCStream.__init__(self,service,stub_class)
+    def __init__(self,service,sock):
+        RPCStream.__init__(self,service)
         logging.debug("Attaching SAEStream to socket")
         self.set_socket(sock)
         
@@ -75,11 +102,11 @@ class StreamFactory(object):
         if name:
             del self.stream_by_name[name]
     
-    def get_name(self,name):
-        return self.stream_by_name[name]
+    def get_name(self,stream):
+        return self.name_by_stream[stream]
         
     def get_stream(self,name):
-        return self.name_by_stream[name]
+        return self.stream_by_name[name]
 ##
 ## SAE Supervisor
 ##
@@ -93,8 +120,27 @@ class SAE(object):
         # Periodic tasks
         self.active_periodic_tasks={}
         self.periodic_task_lock=threading.Lock()
+        #
+        self.activator_manifest=None
+    
+    def build_manifest(self):
+        logging.debug("Building manifest")
+        self.activator_manifest=ManifestResponse()
+        for f in ACTIVATOR_MANIFEST:
+            if f.endswith("/"):
+                for dirpath,dirnames,filenames in os.walk(f):
+                    for f in [f for f in filenames if f.endswith(".py")]:
+                        path=os.path.join(dirpath,f)
+                        cs=self.activator_manifest.files.add()
+                        cs.name=path
+                        cs.hash=file_hash(path)
+            else:
+                cs=self.activator_manifest.files.add()
+                cs.name=f
+                cs.hash=file_hash(f)
 
     def run(self):
+        self.build_manifest()
         logging.debug("Starting listener at %s:%d"%(self.address,self.port))
         self.listener=Listener(self,self.address,self.port)
         last_cleanup=time.time()
@@ -150,7 +196,7 @@ class SAE(object):
             socket.close(conn)
             return
         logging.info("Connect from: %s"%address)
-        s=SAEStream(self.service,ActivatorService_Stub,conn)
+        s=SAEStream(self.service,conn)
         self.streams.register(s)
         
     def on_stream_close(self,stream):
@@ -166,8 +212,14 @@ class SAE(object):
             raise Exception("Activator not available: %s"%name)
 
     def pull_config(self,object):
+        def pull_config_callback(transaction,response=None,error=None):
+            if error:
+                logging.error("pull_config failed: %s"%error.text)
+                return
+            object=Config.objects.get(id=transaction.object_id)
+            object.write(response.config)
         stream=self.get_activator_stream(object.activator.name)
-        r=ReqPullConfig()
+        r=PullConfigRequest()
         r.access_profile.profile           =object.profile_name
         r.access_profile.scheme            = object.scheme
         r.access_profile.address           = object.address
@@ -181,19 +233,6 @@ class SAE(object):
             r.access_profile.super_password= object.super_password
         if object.remote_path:
             r.access_profile.path          = object.remote_path
-        stream.proxy.pull_config()
-            
-        t_id=stream.send_message("pull_config",request=r)
-        transaction=Transaction(transaction_id=t_id,stream=stream,object=object)
-        self.transactions[t_id]=transaction
-    
-    #req_register.message_class=ReqRegister
-    ##
-    ##
-    ##
-    def res_pull_config(self,sae_stream,transaction_id,msg):
-        transaction=self.transactions[transaction_id]
-        del self.transactions[transaction_id]
-        transaction.object.write(msg.config)
-    #res_pull_config.message_class=ResPullConfig
+        t=stream.proxy.pull_config(r,pull_config_callback)
+        t.object_id=object.id
         

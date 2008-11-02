@@ -2,8 +2,10 @@
 ## SAE-activator protocol stream
 ##
 from noc.sa.protocols.sae_pb2 import Message,Error
-import struct,logging,asyncore,socket,random,time,traceback
+import struct,logging,asyncore,socket,random,time,traceback,sha
 from google.protobuf.service import RpcController
+from noc.sa.protocols.sae_pb2 import *
+
 ##
 ## RPC Controller
 ##
@@ -86,10 +88,10 @@ class TransactionFactory(object):
 ## and calls service's RPC methods
 ##
 class RPCStream(asyncore.dispatcher):
-    def __init__(self,service,stub_class):
+    def __init__(self,service):
         asyncore.dispatcher.__init__(self)
         self.service=service
-        self.proxy=Proxy(self,stub_class)
+        self.proxy=Proxy(self,SAEService_Stub)
         self.in_message_len=None
         self.in_buffer=""
         self.out_buffer=""
@@ -165,7 +167,7 @@ class RPCStream(asyncore.dispatcher):
             controller.transaction=self.transactions.begin(id=id,method=request.method)
             self.service.CallMethod(method,controller,req,self.send_response)
         else:
-            self.send_error(id,ERR_INVALID_METHOD,"invalid method '%s'"%req.method)
+            self.send_error(id,ERR_INVALID_METHOD,"invalid method '%s'"%request.method)
         
     def rpc_handle_response(self,id,response):
         logging.debug("rpc_handle_response:\nid: %s\n%s"%(id,str(response)))
@@ -179,7 +181,7 @@ class RPCStream(asyncore.dispatcher):
             res.ParseFromString(response.serialized_response)
             t.commit(response=res)
         else:
-            logging.error("Invalid method")
+            logging.error("Invalid method: %s"%t.method)
             t.rollback()
     
     def rpc_handle_error(self,id,error):
@@ -239,3 +241,12 @@ class Proxy(object):
         self.stub=stub_class(stream.service)
     def __getattr__(self,name):
         return lambda request,callback: self.stream.call(name,request,callback)
+##
+## file hash for software update services
+##
+def file_hash(path):
+    f=open(path)
+    data=f.read()
+    f.close()
+    s=sha.new(data)
+    return s.hexdigest()

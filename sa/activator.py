@@ -1,10 +1,10 @@
 ##
 ## Service Activator
 ##
-import asyncore,os,logging,socket,pty,signal,time,re
+import asyncore,os,logging,socket,pty,signal,time,re,sys
 from noc.sa.actions import get_action_class
 from noc.sa.profiles import profile_registry
-from noc.sa.sae_stream import RPCStream
+from noc.sa.sae_stream import RPCStream,file_hash
 from noc.sa.protocols.sae_pb2 import *
 
 ##
@@ -35,7 +35,10 @@ class Stream(asyncore.dispatcher):
         self.close()
     
     def handle_read(self):
-        self.in_buffer+=self.recv(8192)
+        try:
+            self.in_buffer+=self.recv(8192)
+        except:
+            return
         self.feed_action()
         
     def writable(self):
@@ -87,20 +90,43 @@ class SSHStream(Stream):
 ## Values are defined in sae.proto's AccessScheme enum
 ##
 STREAMS={
-    0 : TelnetStream,
-    1 : SSHStream,
+    TELNET : TelnetStream,
+    SSH    : SSHStream,
 }
 
 ##
 ##
 ##
 class Service(SAEService):
-    def ping(self,rpc_controller,request,done):
-        done(request.id,PingResponse)
+    def ping(self,controller,request,done):
+        done(controller,response=PingResponse())
+        
+    def pull_config(self,controller,request,done):
+        def pull_config_callback(action):
+            if action.status:
+                c=PullConfigResponse()
+                c.config=action.profile().cleaned_config(action.result)
+                done(controller,response=c)
+            else:
+                e=Error()
+                e.code=ERR_INTERNAL
+                e.text="pull_config internal error"
+                done(controller,error=e)
+        profile=profile_registry[request.access_profile.profile]
+        action=get_action_class("sa.actions.cli")(
+            transaction_id=controller.transaction.id,
+            stream=STREAMS[request.access_profile.scheme](request.access_profile),
+            profile=profile,
+            callback=pull_config_callback,
+            args={
+                "user"     : request.access_profile.user,
+                "password" : request.access_profile.password,
+                "commands" : profile.command_pull_config,
+                })
 
 class ActivatorStream(RPCStream):
-    def __init__(self,service,stub_class,address,port):
-        RPCStream.__init__(self,service,stub_class)
+    def __init__(self,service,address,port):
+        RPCStream.__init__(self,service)
         logging.debug("Connecting to %s:%d"%(address,port))
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connect((address,port))
@@ -116,6 +142,7 @@ class Activator(object):
         self.sae_stream=None
         self.sae_reset=0
         self.service=Service()
+        self.service.activator=self
         self.streams={}
         self.children={}
         self.is_registred=False
@@ -129,9 +156,13 @@ class Activator(object):
         last_keepalive=time.time()
         while True:
             if self.sae_stream is None and time.time()-self.sae_reset>10:
-                self.sae_stream=ActivatorStream(self.service,SAEService_Stub,self.sae_ip,self.sae_port)
+                self.sae_stream=ActivatorStream(self.service,self.sae_ip,self.sae_port)
                 self.register()
             asyncore.loop(timeout=1,count=10)
+            
+    def reboot(self):
+        logging.info("Rebooting")
+        os.execv(sys.executable,[sys.executable]+sys.argv)
 
     def sig_chld(self,signum,frame):
         pid,statis=os.waitpid(-1,os.WNOHANG)
@@ -146,48 +177,68 @@ class Activator(object):
     ## Register
     ##
     def register(self):
+        def register_callback(transaction,response=None,error=None):
+            if error:
+                logging.error("Registration error: %s"%error.text)
+                self.register_transaction=None
+                return
+            if transaction.id==self.register_transaction.id:
+                logging.info("Registration accepted")
+                self.is_registred=True
+                self.register_transaction=None
+                self.manifest()
+            else:
+                logging.error("Registration id mismatch")
+                self.register_transaction=None
         logging.info("Registering as '%s'"%self.name)
         r=RegisterRequest()
         r.name=self.name
-        self.register_transaction=self.sae_stream.proxy.register(r,self.register_callback)
+        self.register_transaction=self.sae_stream.proxy.register(r,register_callback)
         
-    def register_callback(self,transaction,response=None,error=None):
-        if error:
-            logging.error("Registration error: %s"%error.text)
-            self.register_transaction=None
-            return
-        if transaction.id==self.register_transaction.id:
-            logging.info("Registration accepted")
-            self.is_registred=True
-            self.register_transaction=None
-        else:
-            logging.error("Registration id mismatch")
-            self.register_transaction=None
-    
     ##
-    ## pull_config
     ##
-    def req_pull_config(self,sae_stream,transaction_id,msg):
-        stream=STREAMS[msg.access_profile.scheme](msg.access_profile)
-        profile=profile_registry[msg.profile]
-        action=get_action_class("sa.actions.cli")(transaction_id=transaction_id,
-            stream=stream,
-            profile=profile,
-            callback=self.on_pull_config,
-            args={
-                "user"     : msg.access_profile.user,
-                "password" : msg.access_profile.password,
-                "commands" : profile.command_pull_config,
-                })
-    #req_pull_config.message_class=ReqPullConfig
+    ##
+    def manifest(self):
+        def manifest_callback(transaction,response=None,error=None):
+            if error:
+                logging.error("Manifest error: %s"%error.text)
+                self.manifest_transaction=None
+                return
+            if transaction.id==self.manifest_transaction.id:
+                update_list=[]
+                for cs in response.files:
+                    if cs.hash!=file_hash(cs.name):
+                        update_list.append(cs.name)
+                self.manifest_transaction=None
+                if update_list:
+                    self.software_upgrade(update_list)
+            else:
+                logging.error("Transaction id mismatch")
+                self.manifest_transaction=None
+        logging.info("Requesting manifest")
+        r=ManifestRequest()
+        self.manifest_transaction=self.sae_stream.proxy.manifest(r,manifest_callback)
+    ##
+    ## 
+    ##
+    def software_upgrade(self,update_list):
+        def software_upgrade_callback(transaction,response=None,error=None):
+            if error:
+                logging.error("Upgrade error: %s"%error.text)
+                self.software_upgrade_transaction=None
+                return
+            if transaction.id==self.software_upgrade_transaction.id:
+                logging.info("Upgrading software")
+                for u in response.codes:
+                    logging.info("Upgrade: %s [NOT IMPLEMENTING]"%u.name)
+                    logging.debug(u.code)
+                self.software_upgrade_transaction=None
+                self.reboot()
+            else:
+                logging.error("Transaction id mismatch")
+                self.software_upgrade_transaction=None
+        r=SoftwareUpgradeRequest()
+        for f in update_list:
+            r.names.append(f)
+        self.software_upgrade_transaction=self.sae_stream.proxy.software_upgrade(r,software_upgrade_callback)
     
-    def on_pull_config(self,action):
-        if action.status:
-            c=ResPullConfig()
-            c.config=action.profile.cleaned_config(action.result)
-            self.sae_stream.send_message("pull_config",transaction_id=action.transaction_id,response=c)
-        else:
-            e=Error()
-            e.error="ECONF"
-            e.message=action.result
-            self.sae_stream.send_message("pull_config",transaction_id=action.transaction_id,error=e)
