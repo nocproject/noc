@@ -2,49 +2,115 @@
 ## SAE-activator protocol stream
 ##
 from noc.sa.protocols.sae_pb2 import Message,Error
-import struct,logging,asyncore,socket,random,time
+import struct,logging,asyncore,socket,random,time,traceback
+from google.protobuf.service import RpcController
+##
+## RPC Controller
+##
+class Controller(RpcController):
+    def __init__(self,stream):
+        RpcController.__init__(self)
+        self.stream=stream
+        self.transaction=None
+    def Reset(self):
+        pass
+    def Failed(self):
+        pass
+    def ErrorText(self):
+        pass
+    def StartCancel(self):
+        pass
+    def SetFailed(self, reason):
+        pass
+    def IsCancelled(self):
+        pass
+    def NotifyOnCancel(self,callback):
+        pass
 
-KEEPALIVE_INTERVAL=60
+##
+## Transaction structure
+##
+class Transaction(object):
+    def __init__(self,factory,id,method=None,callback=None):
+        logging.debug("Creating transaction id=%s method=%s callback=%s"%(id,method,callback))
+        self.factory=factory
+        self.id=id
+        self.method=method
+        self.callback=callback
+        
+    def __del__(self):
+        logging.debug("Deleting transaction %s"%self.id)
+        
+    def commit(self,response=None,error=None):
+        if self.callback:
+            self.callback(self,response,error)
+        self.factory.delete_transaction(self.id)
+        
+    def rollback(self):
+        self.factory.delete_transaction(self.id)
+##
+## Transaction storage
+##
+class TransactionFactory(object):
+    def __init__(self):
+        self.transactions={}
+    # Generate unique id
+    def __get_id(self):
+        while True:
+            id=random.randint(0,0x7FFFFFFF)
+            if id not in self.transactions:
+                return id
 
-class SAEStream(asyncore.dispatcher):
-    def __init__(self,parent,sock=None,address=None):
+    def has_key(self,id):
+        return id in self.transactions
+        
+    def __getitem__(self,id):
+        return self.transactions[id]
+        
+    # Begins transaction, remembers callback and returns transaction id
+    def begin(self,id=None,method=None,callback=None):
+        if id:
+            if id in self.transactions:
+                raise Exception("Transaction is already exists")
+        else:
+            id=self.__get_id()
+        t=Transaction(self,id,method,callback)
+        self.transactions[id]=t
+        return t
+        
+    def delete_transaction(self,id):
+        del self.transactions[id]
+##
+## RPCStream deals with continuous
+## stream of SAE RPC PDU
+## and calls service's RPC methods
+##
+class RPCStream(asyncore.dispatcher):
+    def __init__(self,service,stub_class):
         asyncore.dispatcher.__init__(self)
-        self.parent=parent
+        self.service=service
+        self.proxy=Proxy(self,stub_class)
         self.in_message_len=None
         self.in_buffer=""
         self.out_buffer=""
-        self.last_in=time.time()
-        self.last_out=time.time()
+        self.transactions=TransactionFactory()
         
-    def connect_sae(self,address,port):
-        logging.debug("Connecting to SAE at %s:%d"%(address,port))
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect((address,port))
-        
-    def connect_activator(self,socket):
-        logging.debug("Attaching SAEStream to socket")
-        self.set_socket(socket)
+    def __del__(self):
+        logging.debug("deallocating stream %s"%str(self))
         
     def handle_connect(self):
-        logging.debug("SAEStream connect")
-        self.last_in=time.time()
-        self.last_out=time.time()
-    
+        logging.debug("handle_connect")
+        
     def handle_close(self):
-        logging.debug("SAEStream close")
-        self.parent.on_stream_close(self)
+        logging.debug("handle_close")
+        self.close()
+        self.proxy=None # Remove circular reference
         
     def handle_read(self):
-        self.last_in=time.time()
-        try:
-            d=self.recv(8192)
-        except socket.error:
-            self.close()
-            return
+        logging.debug("handle_read")
+        d=self.recv(8192)
         if d=="":
-            self.close()
             return
-        logging.debug("Recv: %s"%repr(d))
         self.in_buffer+=d
         while self.in_buffer:
             if self.in_message_len is None and len(self.in_buffer)>=4:
@@ -57,72 +123,119 @@ class SAEStream(asyncore.dispatcher):
                 msg.ParseFromString(self.in_buffer[:self.in_message_len])
                 self.in_buffer=self.in_buffer[self.in_message_len:]
                 self.in_message_len=None
-                self.on_new_message(msg)
+                self.rpc_handle_message(msg)
             else:
                 break
-
-    def writable(self):
-        return len(self.out_buffer)>0
-
+        
     def handle_write(self):
+        logging.debug("handle_write")
         self.last_out=time.time()
         sent=self.send(self.out_buffer)
         self.out_buffer=self.out_buffer[sent:]
-
-    def handle_expt(self):
-        data=self.socket.recv(8192,socket.MSG_OOB)
-        logging.debug("OOB Data: %s"%data)
-
+        
     def write(self,msg):
-        logging.debug("Sending: >>>>>\n%s\n<<<<<"%str(msg))
         self.out_buffer+=msg
         
-    def send_message(self,method,transaction_id=None,request=None,response=None,error=None):
-        if not transaction_id:
-            transaction_id=random.randint(0,0x7FFFFFFF)
-        msg=Message()
-        msg.method=method
-        msg.transaction_id=transaction_id
-        if request:
-            msg.request=request.SerializeToString()
-        if response:
-            msg.response=response.SerializeToString()
-        if error:
-            msg.error.error=error.error
-            msg.error.message=error.message
+    def writable(self):
+        return len(self.out_buffer)>0
+        
+    def handle_error(self):
+        logging.error(traceback.format_exc())
+        
+    def rpc_handle_message(self,msg):
+        logging.debug("rpc_handle_message:\n%s"%msg)
+        if msg.error.ByteSize():
+            self.rpc_handle_error(msg.id,msg.error)
+        elif msg.request.ByteSize():
+            self.rpc_handle_request(msg.id,msg.request)
+        elif msg.response.ByteSize():
+            self.rpc_handle_response(msg.id,msg.response)
+            
+    def rpc_handle_request(self,id,request):
+        logging.debug("rpc_handle_request")
+        if self.transactions.has_key(id):
+            self.send_error(id,ERR_TRANSACTION_EXISTS,"Transaction %s is alreasy exists"%id)
+            return
+        method=self.service.GetDescriptor().FindMethodByName(request.method)
+        if method:
+            req=self.service.GetRequestClass(method)()
+            req.ParseFromString(request.serialized_request)
+            logging.debug("Request accepted:\nid: %s\n%s"%(id,str(req)))
+            controller=Controller(self)
+            controller.transaction=self.transactions.begin(id=id,method=request.method)
+            self.service.CallMethod(method,controller,req,self.send_response)
+        else:
+            self.send_error(id,ERR_INVALID_METHOD,"invalid method '%s'"%req.method)
+        
+    def rpc_handle_response(self,id,response):
+        logging.debug("rpc_handle_response:\nid: %s\n%s"%(id,str(response)))
+        if not self.transactions.has_key(id):
+            logging.error("Invalid transaction: %s"%id)
+            return
+        t=self.transactions[id]
+        method=self.service.GetDescriptor().FindMethodByName(t.method)
+        if method:
+            res=self.service.GetResponseClass(method)()
+            res.ParseFromString(response.serialized_response)
+            t.commit(response=res)
+        else:
+            logging.error("Invalid method")
+            t.rollback()
+    
+    def rpc_handle_error(self,id,error):
+        logging.debug("rpc_handle_error:\nid: %s\n%s"%(id,str(error)))
+        if not self.transactions.has_key(id):
+            logging.error("Invalid transaction: %s"%id)
+            return
+        self.transactions[id].commit(id,error=error)
+        
+    # Format and write SAE RPC PDU
+    def write_message(self,msg):
         s=msg.SerializeToString()
-        logging.debug("Sending %d byte message (Req: %d, Res: %d Err: %d)"%(len(s)+4,len(msg.request),len(msg.response),msg.error.ByteSize()))
         self.write(struct.pack("!L",len(s))+s)
-        return transaction_id
         
-    def send_error(self,method,transaction_id,error,message):
-        e=Error()
-        e.error=error
-        e.message=message
-        self.send_message(method,transaction_id,error=e)
+    def send_request(self,id,method,request):
+        logging.debug("send_request\nmethod: %s\n%s"%(method,str(request)))
+        m=Message()
+        m.id=id
+        m.request.method=method
+        m.request.serialized_request=request.SerializeToString()
+        self.write_message(m)
+        return id
         
-    def on_new_message(self,message):
-        logging.debug("Recv message: (%s)>>>>>\n%s<<<<<"%(message.method,str(message)))
-        if message.error.ByteSize():
-            e=Error()
-            e.ParseFromString(message.error)
-            self.parent.on_error(self,message.transaction_id,e)
-            return
-        if message.request:
-            h=getattr(self.parent,"req_"+message.method)
-            msg=h.message_class()
-            msg.ParseFromString(message.request)
-            h(self,message.transaction_id,msg)
-            return
-        if message.response:
-            h=getattr(self.parent,"res_"+message.method)
-            msg=h.message_class()
-            msg.ParseFromString(message.response)
-            h(self,message.transaction_id,msg)
-            return
-        # No headers, keepalive
-        logging.debug("RECV Keepalive")
+    def send_response(self,controller,response=None,error=None):
+        id=controller.transaction.id
+        logging.debug("send_response:\nid: %d\nresponse:\n%s\nerror:\n%s"%(id,str(response),str(error)))
+        if not self.transactions.has_key(id):
+            raise Exception("Invalid transaction")
+        m=Message()
+        m.id=id
+        if error:
+            m.error.code=error.code
+            m.error.text=error.text
+        if response:
+            m.response.serialized_response=response.SerializeToString()
+        self.write_message(m)
+        controller.transaction.commit()
         
-    def keepalive(self):
-        if time.time()-self.last_out>=KEEPALIVE_INTERVAL:
-            self.send_message("keepalive")
+    def send_error(self,id,code,text):
+        logging.debug("send_error:\nid: %s\ncode: %s\ntext: %s"%(id,code,text))
+        m=Message()
+        m.id=id
+        m.error.code=code
+        m.error.text=text
+        self.write_message(m)
+        
+    def call(self,method,request,callback):
+        t=self.transactions.begin(method=method,callback=callback)
+        self.send_request(t.id,method,request)
+        return t
+##
+## Proxy class for RPC interface
+##
+class Proxy(object):
+    def __init__(self,stream,stub_class):
+        self.stream=stream
+        self.stub=stub_class(stream.service)
+    def __getattr__(self,name):
+        return lambda request,callback: self.stream.call(name,request,callback)

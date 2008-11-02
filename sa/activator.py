@@ -4,7 +4,7 @@
 import asyncore,os,logging,socket,pty,signal,time,re
 from noc.sa.actions import get_action_class
 from noc.sa.profiles import profile_registry
-from noc.sa.sae_stream import SAEStream
+from noc.sa.sae_stream import RPCStream
 from noc.sa.protocols.sae_pb2 import *
 
 ##
@@ -32,6 +32,7 @@ class Stream(asyncore.dispatcher):
     def handle_close(self):
         if self.current_action:
             self.current_action.close(None)
+        self.close()
     
     def handle_read(self):
         self.in_buffer+=self.recv(8192)
@@ -91,6 +92,19 @@ STREAMS={
 }
 
 ##
+##
+##
+class Service(SAEService):
+    def ping(self,rpc_controller,request,done):
+        done(request.id,PingResponse)
+
+class ActivatorStream(RPCStream):
+    def __init__(self,service,stub_class,address,port):
+        RPCStream.__init__(self,service,stub_class)
+        logging.debug("Connecting to %s:%d"%(address,port))
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connect((address,port))
+##
 ## Activator supervisor and daemon
 ##
 class Activator(object):
@@ -101,8 +115,11 @@ class Activator(object):
         self.sae_port=int(sae_port)
         self.sae_stream=None
         self.sae_reset=0
+        self.service=Service()
         self.streams={}
         self.children={}
+        self.is_registred=False
+        self.register_transaction=None
         logging.info("Loading profile classes")
         profile_registry.register_all()
         logging.info("Setting signal handlers")
@@ -112,12 +129,9 @@ class Activator(object):
         last_keepalive=time.time()
         while True:
             if self.sae_stream is None and time.time()-self.sae_reset>10:
-                self.sae_stream=SAEStream(self)
-                self.sae_stream.connect_sae(self.sae_ip,self.sae_port)
+                self.sae_stream=ActivatorStream(self.service,SAEService_Stub,self.sae_ip,self.sae_port)
                 self.register()
-            asyncore.loop(timeout=1,count=1)
-            if self.sae_stream:
-                self.sae_stream.keepalive()
+            asyncore.loop(timeout=1,count=10)
 
     def sig_chld(self,signum,frame):
         pid,statis=os.waitpid(-1,os.WNOHANG)
@@ -133,13 +147,22 @@ class Activator(object):
     ##
     def register(self):
         logging.info("Registering as '%s'"%self.name)
-        r=ReqRegister()
+        r=RegisterRequest()
         r.name=self.name
-        self.sae_stream.send_message("register",request=r)
+        self.register_transaction=self.sae_stream.proxy.register(r,self.register_callback)
         
-    def res_register(self,sae_stream,transaction_id,msg):
-        logging.debug("Register accepted")
-    res_register.message_class=ResRegister
+    def register_callback(self,transaction,response=None,error=None):
+        if error:
+            logging.error("Registration error: %s"%error.text)
+            self.register_transaction=None
+            return
+        if transaction.id==self.register_transaction.id:
+            logging.info("Registration accepted")
+            self.is_registred=True
+            self.register_transaction=None
+        else:
+            logging.error("Registration id mismatch")
+            self.register_transaction=None
     
     ##
     ## pull_config
@@ -156,7 +179,7 @@ class Activator(object):
                 "password" : msg.access_profile.password,
                 "commands" : profile.command_pull_config,
                 })
-    req_pull_config.message_class=ReqPullConfig
+    #req_pull_config.message_class=ReqPullConfig
     
     def on_pull_config(self,action):
         if action.status:

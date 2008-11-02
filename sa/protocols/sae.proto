@@ -1,45 +1,121 @@
 package sae;
 
-message Error {
-    required string error   = 1;
-    required string message = 2;
+//
+// RPC Transport
+//
+message Message {
+    required uint32   id       = 1; // Transaction id
+    optional Request  request  = 2;
+    optional Response response = 3;
+    optional Error    error    = 4;
 }
 
-message Message {
-    required int32   transaction_id = 1;
-    required string  method         = 2;
-    optional bytes   request        = 3;
-    optional bytes   response       = 4;
-    optional Error   error          = 5;
+message Request {
+    required string method             = 1;
+    required bytes  serialized_request = 2; // encoded *Request
+}
+
+message Response {
+    optional bytes  serialized_response = 1; // encoded *Response
+}
+
+message Error {
+    required ErrorCode code = 1;
+    optional string    text = 2;
+}
+//
+//
+//
+enum ErrorCode {
+    ERR_OK                  = 0; //
+    ERR_INTERNAL            = 1; // Unhandled exception on server side during request processing
+    ERR_INVALID_METHOD      = 2; // Invalid method name
+    ERR_INVALID_TRANSACTION = 3; // Transaction does not exists
+    ERR_TRANSACTION_EXISTS  = 4;
+    ERR_UNKNOWN_ACTIVATOR   = 5;
+}
+
+//
+//
+//
+enum AccessScheme {
+    TELNET = 0;
+    SSH    = 1;
 }
 
 message AccessProfile {
-    enum AccessScheme {
-        TELNET = 0;
-        SSH    = 1;
-    }
-    required AccessScheme scheme         = 1;
-    required string       address        = 2;
-    optional string       port           = 3;
-    optional string       user           = 4;
-    optional string       password       = 5;
-    optional string       super_password = 6;
-    optional string       path           = 7;
+    required string       profile        = 1;
+    required AccessScheme scheme         = 2;
+    required string       address        = 3;
+    optional string       port           = 4;
+    optional string       user           = 5;
+    optional string       password       = 6;
+    optional string       super_password = 7;
+    optional string       path           = 8;
+}
+//
+// Ping server
+// SAE->Activator
+// Activator->SAE
+message PingRequest {
 }
 
-message ReqRegister {
+message PingResponse {
+}
+//
+// Register activator at the SAE
+// Activator->SAE
+message RegisterRequest {
     required string name = 1;
 }
 
-message ResRegister {
-    required string version = 1;
+message RegisterResponse {
+}
+//
+// Returns device configuration
+// SAE->Activator
+message PullConfigRequest {
+    required AccessProfile profile = 1;
 }
 
-message ReqPullConfig {
-    required AccessProfile access_profile = 1;
-    required string        profile        = 2;
+message PullConfigResponse {
+    required string config  = 1;
+}
+//
+// Software Upgrade
+//
+message FileChecksum {
+    required string name     = 1; // Relative file name
+    required string checksum = 2; // SHA1 hexdigest
 }
 
-message ResPullConfig {
-    required string config  = 2;
+message ManifestRequest {
+}
+
+message ManifestResponse {
+    repeated FileChecksum files = 1;
+}
+
+message SoftwareUpgradeRequest {
+    repeated string names; // Relative file names
+}
+
+message SoftwareUpgradeReply {
+    repeated string codes = 1; // Modules
+}
+
+//
+// RPC Services
+//
+service SAEService {
+    rpc ping             (PingRequest)            returns (PingResponse);
+    rpc register         (RegisterRequest)        returns (RegisterResponse);
+    rpc manifest         (ManifestRequest)        returns (ManifestResponse);
+    rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeReply);
+}
+
+service ActivatorService {
+    rpc ping        (PingRequest)       returns (PingResponse);
+    rpc register    (PingRequest)       returns (PingResponse);
+    rpc pull_config (PullConfigRequest) returns (PullConfigResponse);
 }
