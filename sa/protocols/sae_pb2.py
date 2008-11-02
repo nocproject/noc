@@ -17,19 +17,23 @@ _ERRORCODE = descriptor.EnumDescriptor(
       options=None,
       type=None),
     descriptor.EnumValueDescriptor(
-      name='ERR_INVALID_METHOD', index=1, number=1,
+      name='ERR_INTERNAL', index=1, number=1,
       options=None,
       type=None),
     descriptor.EnumValueDescriptor(
-      name='ERR_INVALID_TRANSACTION', index=2, number=2,
+      name='ERR_INVALID_METHOD', index=2, number=2,
       options=None,
       type=None),
     descriptor.EnumValueDescriptor(
-      name='ERR_TRANSACTION_EXISTS', index=3, number=3,
+      name='ERR_INVALID_TRANSACTION', index=3, number=3,
       options=None,
       type=None),
     descriptor.EnumValueDescriptor(
-      name='ERR_UNKNOWN_ACTIVATOR', index=4, number=4,
+      name='ERR_TRANSACTION_EXISTS', index=4, number=4,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_UNKNOWN_ACTIVATOR', index=5, number=5,
       options=None,
       type=None),
   ],
@@ -56,10 +60,11 @@ _ACCESSSCHEME = descriptor.EnumDescriptor(
 
 
 ERR_OK = 0
-ERR_INVALID_METHOD = 1
-ERR_INVALID_TRANSACTION = 2
-ERR_TRANSACTION_EXISTS = 3
-ERR_UNKNOWN_ACTIVATOR = 4
+ERR_INTERNAL = 1
+ERR_INVALID_METHOD = 2
+ERR_INVALID_TRANSACTION = 3
+ERR_TRANSACTION_EXISTS = 4
+ERR_UNKNOWN_ACTIVATOR = 5
 TELNET = 0
 SSH = 1
 
@@ -195,50 +200,57 @@ _ACCESSPROFILE = descriptor.Descriptor(
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='scheme', full_name='sae.AccessProfile.scheme', index=0,
-      number=1, type=14, cpp_type=8, label=2,
+      name='profile', full_name='sae.AccessProfile.profile', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='scheme', full_name='sae.AccessProfile.scheme', index=1,
+      number=2, type=14, cpp_type=8, label=2,
       default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='address', full_name='sae.AccessProfile.address', index=1,
-      number=2, type=9, cpp_type=9, label=2,
+      name='address', full_name='sae.AccessProfile.address', index=2,
+      number=3, type=9, cpp_type=9, label=2,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='port', full_name='sae.AccessProfile.port', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='user', full_name='sae.AccessProfile.user', index=3,
+      name='port', full_name='sae.AccessProfile.port', index=3,
       number=4, type=9, cpp_type=9, label=1,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='password', full_name='sae.AccessProfile.password', index=4,
+      name='user', full_name='sae.AccessProfile.user', index=4,
       number=5, type=9, cpp_type=9, label=1,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='super_password', full_name='sae.AccessProfile.super_password', index=5,
+      name='password', full_name='sae.AccessProfile.password', index=5,
       number=6, type=9, cpp_type=9, label=1,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='path', full_name='sae.AccessProfile.path', index=6,
+      name='super_password', full_name='sae.AccessProfile.super_password', index=6,
       number=7, type=9, cpp_type=9, label=1,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='path', full_name='sae.AccessProfile.path', index=7,
+      number=8, type=9, cpp_type=9, label=1,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -332,13 +344,6 @@ _PULLCONFIGREQUEST = descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    descriptor.FieldDescriptor(
-      name='profile', full_name='sae.PullConfigRequest.profile', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -356,8 +361,147 @@ _PULLCONFIGRESPONSE = descriptor.Descriptor(
   fields=[
     descriptor.FieldDescriptor(
       name='config', full_name='sae.PullConfigResponse.config', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_FILECHECKSUM = descriptor.Descriptor(
+  name='FileChecksum',
+  full_name='sae.FileChecksum',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='name', full_name='sae.FileChecksum.name', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='hash', full_name='sae.FileChecksum.hash', index=1,
       number=2, type=9, cpp_type=9, label=2,
       default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_MANIFESTREQUEST = descriptor.Descriptor(
+  name='ManifestRequest',
+  full_name='sae.ManifestRequest',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_MANIFESTRESPONSE = descriptor.Descriptor(
+  name='ManifestResponse',
+  full_name='sae.ManifestResponse',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='files', full_name='sae.ManifestResponse.files', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_SOFTWAREUPGRADEREQUEST = descriptor.Descriptor(
+  name='SoftwareUpgradeRequest',
+  full_name='sae.SoftwareUpgradeRequest',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='names', full_name='sae.SoftwareUpgradeRequest.names', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_FILECODE = descriptor.Descriptor(
+  name='FileCode',
+  full_name='sae.FileCode',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='name', full_name='sae.FileCode.name', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='code', full_name='sae.FileCode.code', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_SOFTWAREUPGRADERESPONSE = descriptor.Descriptor(
+  name='SoftwareUpgradeResponse',
+  full_name='sae.SoftwareUpgradeResponse',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='codes', full_name='sae.SoftwareUpgradeResponse.codes', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -376,6 +520,8 @@ _MESSAGE.fields_by_name['error'].message_type = _ERROR
 _ERROR.fields_by_name['code'].enum_type = _ERRORCODE
 _ACCESSPROFILE.fields_by_name['scheme'].enum_type = _ACCESSSCHEME
 _PULLCONFIGREQUEST.fields_by_name['access_profile'].message_type = _ACCESSPROFILE
+_MANIFESTRESPONSE.fields_by_name['files'].message_type = _FILECHECKSUM
+_SOFTWAREUPGRADERESPONSE.fields_by_name['codes'].message_type = _FILECODE
 
 class Message(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -421,6 +567,30 @@ class PullConfigResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _PULLCONFIGRESPONSE
 
+class FileChecksum(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _FILECHECKSUM
+
+class ManifestRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _MANIFESTREQUEST
+
+class ManifestResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _MANIFESTRESPONSE
+
+class SoftwareUpgradeRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _SOFTWAREUPGRADEREQUEST
+
+class FileCode(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _FILECODE
+
+class SoftwareUpgradeResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _SOFTWAREUPGRADERESPONSE
+
 
 _SAESERVICE = descriptor.ServiceDescriptor(
   name='SAEService',
@@ -446,6 +616,33 @@ _SAESERVICE = descriptor.ServiceDescriptor(
     output_type=_REGISTERRESPONSE,
     options=None,
   ),
+  descriptor.MethodDescriptor(
+    name='manifest',
+    full_name='sae.SAEService.manifest',
+    index=2,
+    containing_service=None,
+    input_type=_MANIFESTREQUEST,
+    output_type=_MANIFESTRESPONSE,
+    options=None,
+  ),
+  descriptor.MethodDescriptor(
+    name='software_upgrade',
+    full_name='sae.SAEService.software_upgrade',
+    index=3,
+    containing_service=None,
+    input_type=_SOFTWAREUPGRADEREQUEST,
+    output_type=_SOFTWAREUPGRADERESPONSE,
+    options=None,
+  ),
+  descriptor.MethodDescriptor(
+    name='pull_config',
+    full_name='sae.SAEService.pull_config',
+    index=4,
+    containing_service=None,
+    input_type=_PULLCONFIGREQUEST,
+    output_type=_PULLCONFIGRESPONSE,
+    options=None,
+  ),
 ])
 
 class SAEService(service.Service):
@@ -454,47 +651,4 @@ class SAEService(service.Service):
 class SAEService_Stub(SAEService):
   __metaclass__ = service_reflection.GeneratedServiceStubType
   DESCRIPTOR = _SAESERVICE
-
-
-_ACTIVATORSERVICE = descriptor.ServiceDescriptor(
-  name='ActivatorService',
-  full_name='sae.ActivatorService',
-  index=1,
-  options=None,
-  methods=[
-  descriptor.MethodDescriptor(
-    name='ping',
-    full_name='sae.ActivatorService.ping',
-    index=0,
-    containing_service=None,
-    input_type=_PINGREQUEST,
-    output_type=_PINGRESPONSE,
-    options=None,
-  ),
-  descriptor.MethodDescriptor(
-    name='register',
-    full_name='sae.ActivatorService.register',
-    index=1,
-    containing_service=None,
-    input_type=_PINGREQUEST,
-    output_type=_PINGRESPONSE,
-    options=None,
-  ),
-  descriptor.MethodDescriptor(
-    name='pull_config',
-    full_name='sae.ActivatorService.pull_config',
-    index=2,
-    containing_service=None,
-    input_type=_PULLCONFIGREQUEST,
-    output_type=_PULLCONFIGRESPONSE,
-    options=None,
-  ),
-])
-
-class ActivatorService(service.Service):
-  __metaclass__ = service_reflection.GeneratedServiceType
-  DESCRIPTOR = _ACTIVATORSERVICE
-class ActivatorService_Stub(ActivatorService):
-  __metaclass__ = service_reflection.GeneratedServiceStubType
-  DESCRIPTOR = _ACTIVATORSERVICE
 

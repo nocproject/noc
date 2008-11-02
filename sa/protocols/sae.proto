@@ -75,7 +75,7 @@ message RegisterResponse {
 // Returns device configuration
 // SAE->Activator
 message PullConfigRequest {
-    required AccessProfile profile = 1;
+    required AccessProfile access_profile = 1;
 }
 
 message PullConfigResponse {
@@ -85,8 +85,8 @@ message PullConfigResponse {
 // Software Upgrade
 //
 message FileChecksum {
-    required string name     = 1; // Relative file name
-    required string checksum = 2; // SHA1 hexdigest
+    required string name   = 1; // Relative file name
+    required string hash   = 2; // SHA1 hexdigest
 }
 
 message ManifestRequest {
@@ -97,11 +97,16 @@ message ManifestResponse {
 }
 
 message SoftwareUpgradeRequest {
-    repeated string names; // Relative file names
+    repeated string names = 1; // Relative file names
 }
 
-message SoftwareUpgradeReply {
-    repeated string codes = 1; // Modules
+message FileCode {
+    required string name = 1;
+    required string code = 2;
+}
+
+message SoftwareUpgradeResponse {
+    repeated FileCode codes = 1;
 }
 
 //
@@ -111,11 +116,6 @@ service SAEService {
     rpc ping             (PingRequest)            returns (PingResponse);
     rpc register         (RegisterRequest)        returns (RegisterResponse);
     rpc manifest         (ManifestRequest)        returns (ManifestResponse);
-    rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeReply);
-}
-
-service ActivatorService {
-    rpc ping        (PingRequest)       returns (PingResponse);
-    rpc register    (PingRequest)       returns (PingResponse);
-    rpc pull_config (PullConfigRequest) returns (PullConfigResponse);
+    rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
+    rpc pull_config      (PullConfigRequest)      returns (PullConfigResponse);
 }
