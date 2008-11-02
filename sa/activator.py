@@ -186,7 +186,11 @@ class Activator(object):
                 logging.info("Registration accepted")
                 self.is_registred=True
                 self.register_transaction=None
-                self.manifest()
+                try:
+                    import noc.sa.sae
+                    logging.debug("In-budle package. Skipping software updates")
+                except ImportError:
+                    self.manifest()
             else:
                 logging.error("Registration id mismatch")
                 self.register_transaction=None
