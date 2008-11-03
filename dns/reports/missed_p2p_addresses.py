@@ -9,4 +9,10 @@ class Report(noc.main.report.Report):
     
     def get_queryset(self):
         vrf_id=self.execute("SELECT id FROM ip_vrf WHERE rd='0:0'")[0][0]
-        return self.execute("SELECT prefix FROM ip_ipv4block WHERE masklen(prefix_cidr)=30 AND vrf_id=%s ORDER BY prefix_cidr",[vrf_id])
+        return self.execute("""
+            SELECT prefix
+            FROM ip_ipv4block b
+            WHERE masklen(prefix_cidr)=30
+                AND vrf_id=%s
+                AND (SELECT COUNT(*) FROM ip_ipv4address WHERE vrf_id=%s AND ip<<b.prefix_cidr)=0
+            ORDER BY prefix_cidr""",[vrf_id,vrf_id])
