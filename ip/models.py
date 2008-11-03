@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from noc.lib.validators import check_rd,check_cidr,is_cidr
 from noc.lib.tt import tt_url
 from noc.peer.models import AS
+from noc.lib.fields import CIDRField
 ##
 ##
 ##
@@ -52,7 +53,7 @@ class VRF(models.Model):
         assert is_cidr(top)
         from django.db import connection
         c=connection.cursor()
-        c.execute("SELECT id FROM %s WHERE vrf_id=%d and prefix_cidr<<='%s' order by prefix_cidr"%(IPv4Block._meta.db_table,self.id,top))
+        c.execute("SELECT id FROM %s WHERE vrf_id=%d and prefix<<='%s' order by prefix"%(IPv4Block._meta.db_table,self.id,top))
         return [IPv4Block.objects.get(id=x[0]) for x in c.fetchall()]
         
     def all_addresses(self,top="0.0.0.0/0"):
@@ -71,7 +72,7 @@ class IPv4BlockAccess(models.Model):
         unique_together=[("user","vrf","prefix")]
     user=models.ForeignKey(User,verbose_name="User")
     vrf=models.ForeignKey(VRF,verbose_name="VRF")
-    prefix=models.CharField("prefix",max_length=18)
+    prefix=CIDRField("prefix")
     tt=models.IntegerField("TT",blank=True,null=True)
     def __str__(self):
         return "%s: %s(%s)"%(self.user,self.prefix,self.vrf)
@@ -82,7 +83,7 @@ class IPv4BlockAccess(models.Model):
         if user.is_superuser:
             return True
         c=connection.cursor()
-        c.execute("SELECT COUNT(*) FROM %s WHERE prefix_cidr >>= '%s' AND vrf_id=%d AND user_id=%d"%(IPv4BlockAccess._meta.db_table,str(prefix),vrf.id,user.id))
+        c.execute("SELECT COUNT(*) FROM %s WHERE prefix >>= '%s' AND vrf_id=%d AND user_id=%d"%(IPv4BlockAccess._meta.db_table,str(prefix),vrf.id,user.id))
         return c.fetchall()[0][0]>0
 ##
 ##
@@ -94,7 +95,7 @@ class IPv4Block(models.Model):
         unique_together=[("prefix","vrf")]
         ordering=["prefix"]
     description=models.CharField("Description",max_length=64)
-    prefix=models.CharField("prefix",max_length=18)
+    prefix=CIDRField("prefix")
     vrf=models.ForeignKey(VRF)
     asn=models.ForeignKey(AS)
     modified_by=models.ForeignKey(User,verbose_name="User")
@@ -108,7 +109,7 @@ class IPv4Block(models.Model):
     def _parent(self):
         from django.db import connection
         c=connection.cursor()
-        c.execute("SELECT id FROM %s WHERE prefix_cidr >> '%s' AND vrf_id=%d ORDER BY masklen(prefix_cidr) DESC LIMIT 1"%(IPv4Block._meta.db_table,
+        c.execute("SELECT id FROM %s WHERE prefix >> '%s' AND vrf_id=%d ORDER BY masklen(prefix) DESC LIMIT 1"%(IPv4Block._meta.db_table,
                     self.prefix,self.vrf.id))
         r=c.fetchall()
         if len(r)==0:
@@ -119,7 +120,7 @@ class IPv4Block(models.Model):
     def _parents(self):
         from django.db import connection
         c=connection.cursor()
-        c.execute("SELECT id FROM %s WHERE prefix_cidr >> '%s' AND vrf_id=%d ORDER BY masklen(prefix_cidr)"%(IPv4Block._meta.db_table,
+        c.execute("SELECT id FROM %s WHERE prefix >> '%s' AND vrf_id=%d ORDER BY masklen(prefix)"%(IPv4Block._meta.db_table,
                     self.prefix,self.vrf.id))
         return [IPv4Block.objects.get(id=i[0]) for i in c.fetchall()]
     parents=property(_parents)
@@ -127,7 +128,7 @@ class IPv4Block(models.Model):
     def _depth(self):
         from django.db import connection
         c=connection.cursor()
-        c.execute("SELECT COUNT(*) FROM %s WHERE prefix_cidr >> '%s' AND vrf_id=%d"%(IPv4Block._meta.db_table,self.prefix,self.vrf.id))
+        c.execute("SELECT COUNT(*) FROM %s WHERE prefix >> '%s' AND vrf_id=%d"%(IPv4Block._meta.db_table,self.prefix,self.vrf.id))
         return c.fetchone()[0]
     depth=property(_depth)
 
@@ -137,11 +138,11 @@ class IPv4Block(models.Model):
         if self.vrf.vrf_group.unique_addresses:
             vrfs="IN (%s)"%",".join([str(vrf.id) for vrf in self.vrf.vrf_group.vrf_set.all()])
             vg_id=self.vrf.vrf_group.id
-            c.execute("SELECT b.id FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix_cidr << '%s' AND v.id %s AND ip_ipv4_block_depth_in_vrf_group(%d,b.prefix_cidr,'%s')=0 ORDER BY prefix_cidr"%\
+            c.execute("SELECT b.id FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix << '%s' AND v.id %s AND ip_ipv4_block_depth_in_vrf_group(%d,b.prefix,'%s')=0 ORDER BY prefix"%\
                         (IPv4Block._meta.db_table,VRF._meta.db_table,self.prefix,vrfs,vg_id,self.prefix))
         else:
             vrfs="= %d"%self.vrf.id
-            c.execute("SELECT b.id FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix_cidr << '%s' AND v.id %s AND ip_ipv4_block_depth(v.id,b.prefix_cidr,'%s')=0 ORDER BY prefix_cidr"%\
+            c.execute("SELECT b.id FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix << '%s' AND v.id %s AND ip_ipv4_block_depth(v.id,b.prefix,'%s')=0 ORDER BY prefix"%\
                         (IPv4Block._meta.db_table,VRF._meta.db_table,self.prefix,vrfs,self.prefix))
         return [IPv4Block.objects.get(id=i[0]) for i in c.fetchall()]
 
@@ -155,7 +156,7 @@ class IPv4Block(models.Model):
         else:
             vrfs="= %d"%self.vrf.id
         data=[]
-        c.execute("SELECT COUNT(*) FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix_cidr << '%s' AND v.id %s AND ip_ipv4_block_depth(v.id,b.prefix_cidr,'%s')=0"%\
+        c.execute("SELECT COUNT(*) FROM %s b JOIN %s v ON (b.vrf_id=v.id) WHERE b.prefix << '%s' AND v.id %s AND ip_ipv4_block_depth(v.id,b.prefix,'%s')=0"%\
                     (IPv4Block._meta.db_table,VRF._meta.db_table,self.prefix,vrfs,self.prefix))
         return c.fetchall()[0][0]>0
     has_children=property(_has_children)
@@ -226,7 +227,7 @@ class IPv4Address(models.Model):
     def _closest_block(self):
         from django.db import connection
         c=connection.cursor()
-        c.execute("SELECT id FROM %s WHERE vrf_id=%d AND '%s' << prefix_cidr ORDER BY masklen(prefix_cidr) DESC LIMIT 1"%(IPv4Block._meta.db_table,self.vrf.id,str(self.ip)))
+        c.execute("SELECT id FROM %s WHERE vrf_id=%d AND '%s' << prefix ORDER BY masklen(prefix) DESC LIMIT 1"%(IPv4Block._meta.db_table,self.vrf.id,str(self.ip)))
         return IPv4Block.objects.get(id=c.fetchall()[0][0])
     closest_block=property(_closest_block)
     

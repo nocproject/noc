@@ -29,19 +29,19 @@ class Report(noc.main.report.Report):
             SELECT prefix
             FROM ip_ipv4block b
             WHERE vrf_id=%s
-                AND prefix_cidr<<%s::cidr
-                AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix_cidr<<b.prefix_cidr)=0
-            ORDER BY prefix_cidr
+                AND prefix<<%s::cidr
+                AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix<<b.prefix)=0
+            ORDER BY prefix
         """,[vrf_id,prefix,vrf_id])
         allocated=[a[0] for a in allocated]
         allocated_30=self.execute("""
             SELECT prefix
             FROM ip_ipv4block b
             WHERE vrf_id=%s
-                AND prefix_cidr<<%s::cidr
-                AND masklen(prefix_cidr)=30
-                AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix_cidr<<b.prefix_cidr)=0
-            ORDER BY prefix_cidr
+                AND prefix<<%s::cidr
+                AND masklen(prefix)=30
+                AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix<<b.prefix)=0
+            ORDER BY prefix
         """,[vrf_id,prefix,vrf_id])
         allocated_30=[a[0] for a in allocated_30]
         free=free_blocks(prefix,allocated)

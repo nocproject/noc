@@ -29,9 +29,9 @@ class Report(noc.main.report.Report):
             SELECT prefix
             FROM ip_ipv4block b
             WHERE vrf_id=%s
-                AND prefix_cidr<<%s::cidr
-                AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix_cidr<<b.prefix_cidr)=0
-            ORDER BY prefix_cidr
+                AND prefix<<%s::cidr
+                AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix<<b.prefix)=0
+            ORDER BY prefix
         """,[vrf_id,prefix,vrf_id])
         allocated=[a[0] for a in allocated]
         free=free_blocks(prefix,allocated)

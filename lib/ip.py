@@ -72,6 +72,13 @@ def network(prefix):
     m=int(m)
     return int_to_address(address_to_int(n)&bits_to_int(m))
 ##
+## Convert arbitrary ip/bits pair to strict network/bits
+##
+def normalize_prefix(prefix):
+    n,m=prefix.split("/")
+    m=int(m)
+    return "%s/%d"%(int_to_address(address_to_int(n)&bits_to_int(m)),m)
+##
 ##
 ##
 def broadcast(prefix):

@@ -12,7 +12,7 @@ class Report(noc.main.report.Report):
         return self.execute("""
             SELECT prefix
             FROM ip_ipv4block b
-            WHERE masklen(prefix_cidr)=30
+            WHERE masklen(prefix)=30
                 AND vrf_id=%s
-                AND (SELECT COUNT(*) FROM ip_ipv4address WHERE vrf_id=%s AND ip<<b.prefix_cidr)=0
-            ORDER BY prefix_cidr""",[vrf_id,vrf_id])
+                AND (SELECT COUNT(*) FROM ip_ipv4address WHERE vrf_id=%s AND ip<<b.prefix)=0
+            ORDER BY prefix""",[vrf_id,vrf_id])

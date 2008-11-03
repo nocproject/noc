@@ -20,6 +20,7 @@
             {% for p in parents %}
                 <A HREF="/ip/{{vrf.id}}/{{p.prefix}}/" STYLE="padding: 0px 0px 0px {{p.depth}}cm">{{p.prefix}}</A> ({{p.description}})<BR/>
             {% endfor %}
+            <A HREF="/ip/{{vrf.id}}/{{prefix.prefix}}/" STYLE="padding: 0px 0px 0px {{prefix.depth}}cm">{{prefix.prefix}}</A> ({{prefix.description}})<BR/>
         </CAPTION>
         <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
         {%for p in prefixes %}
