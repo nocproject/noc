@@ -7,7 +7,7 @@ from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging
 from noc.sa.models import Activator
-from noc.sa.protocols.sae_pb2 import TELNET,SSH
+from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 
 profile_registry.register_all()
 vcs_registry.register_all()
@@ -138,7 +138,7 @@ class Config(Object):
         verbose_name_plural="Configs"
     activator=models.ForeignKey(Activator,verbose_name="Activator")
     profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
-    scheme=models.IntegerField("Scheme",choices=[(TELNET,"telnet"),(SSH,"ssh")])
+    scheme=models.IntegerField("Scheme",choices=[(TELNET,"telnet"),(SSH,"ssh"),(HTTP,"http")])
     address=models.CharField("Address",max_length=64)
     port=models.PositiveIntegerField("Port",blank=True,null=True)
     user=models.CharField("User",max_length=32,blank=True,null=True)

@@ -1,3 +1,7 @@
+##
+## BaseAction implementation
+## Action is a scenario executed upon stream
+##
 import logging,re
 
 rx_ansi_escape=re.compile("\x1b\\[(\d+(;\d+)?)?[a-zA-Z]")
@@ -64,7 +68,9 @@ class BaseAction(object):
                 self.fsm.append((rx,action))
         else:
             self.fsm=None
-    
+    ##
+    ## Called by activator's stream on new data ready
+    ##
     def feed(self,msg):
         if self.profile.rogue_chars:
             for rc in self.profile.rogue_chars:
@@ -73,16 +79,20 @@ class BaseAction(object):
             msg=rx_ansi_escape.sub("",msg)
         logging.debug("%s feed: %s"%(str(self),repr(msg)))
         self.buffer+=msg
-        if self.fsm:
+        while self.buffer and self.fsm:
+            matched=False
             for rx,action in self.fsm:
                 match=rx.search(self.buffer)
                 if match:
+                    matched=True
                     logging.debug("FSM MATCH: %s"%rx.pattern)
                     if self.to_collect_result:
                         self.result+=self.buffer[:match.start(0)]
                     self.buffer=self.buffer[match.end(0):]
                     self.set_fsm(action(match))
                     break
+            if not matched:
+                break
                 
     def submit(self,msg):
         logging.debug("%s submit: %s"%(str(self),msg.replace("\n","\\n")))

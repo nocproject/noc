@@ -54,6 +54,10 @@ _ACCESSSCHEME = descriptor.EnumDescriptor(
       name='SSH', index=1, number=1,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='HTTP', index=2, number=2,
+      options=None,
+      type=None),
   ],
   options=None,
 )
@@ -67,6 +71,7 @@ ERR_TRANSACTION_EXISTS = 4
 ERR_UNKNOWN_ACTIVATOR = 5
 TELNET = 0
 SSH = 1
+HTTP = 2
 
 
 

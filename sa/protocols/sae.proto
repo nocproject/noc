@@ -41,6 +41,7 @@ enum ErrorCode {
 enum AccessScheme {
     TELNET = 0;
     SSH    = 1;
+    HTTP   = 2;
 }
 
 message AccessProfile {
