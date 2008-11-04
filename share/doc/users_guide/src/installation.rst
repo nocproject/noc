@@ -2,6 +2,24 @@
 Installation
 ############
 
+------------
+Supported OS
+------------
+
+NOC was created to work at almost any UNIX-style systems.
+NOC is reported to run successfully at:
+
+* MacOS X
+* Solaris 10
+
+-----------------
+Required Software
+-----------------
+NOC Requires Python 2.5 or later and PostgreSQL 8.0 or later in order to
+run installation script. The rest of software will be downloaded and
+installed automatically. Production use also requires HTTP server with
+FastCGI support (Lighttpd, Apache+mod_fastcgi)
+
 -----------
 Getting NOC
 -----------
@@ -16,37 +34,19 @@ from mercurial repository.
     hg clone ssh://hg@hg.effortel.ru/noc noc
 
 ------------
-Supported OS
+Installation
 ------------
-
-NOC was created to work at almost any UNIX-style systems.
-NOC is reported to run successfully at:
-
-* MacOS X
-* Solaris 10
-
-----------
-Quickstart
-----------
 
 ::
 
-    /var/www/noc/scripts/setup
+    cd noc
+    python setup.py install
+
 
     
------------------
-Required Packages
------------------
-
-The following packages are required for NOC
-    
-
-Postgresql
-==========
-
-http://www.postgresql.org/
-
-PostgreSQL is the world's leading open-source database and the NOC's primary database engine.
+-----------------------------------------------
+Required Software (Left until setup.py working)
+-----------------------------------------------
 
 Python
 ======
@@ -84,14 +84,7 @@ http://trac.saddi.com/flup
 
 Flup is a FastCGI connector for Python
 
-HTTP Server
-===========
 
-Any FastCGI-capable server is required for NOC Web-interface.
-Possible web servers are
-||Apache||http://www.apache.org/||
-||Lighttpd||http://www.lighttpd.net/||
-We are using lighttpd for production use.
 
 Mercurial
 =========
@@ -177,7 +170,7 @@ Manifests are imported automatically during installation process.
 
 ::
 
-    svccfg import /var/www/noc/share/smf/sae.xml
-    svccfg -s application/sae setprop sae/pidfile=/var/log/noc/sae.pid
-    svccfg -s application/sae setprop sae/logfile=/var/log/noc/sae.log
-    svccfg -s application/sae:default refresh
+    svccfg import /var/www/noc/share/sunos/manifests/noc-sae.xml
+    svccfg -s application/noc-sae setprop sae/pidfile=/var/log/noc/noc-sae.pid
+    svccfg -s application/noc-sae setprop sae/logfile=/var/log/noc/noc-sae.log
+    svccfg -s application/noc-sae:default refresh
