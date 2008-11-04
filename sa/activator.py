@@ -87,11 +87,29 @@ class SSHStream(Stream):
         else:
             self.set_socket(asyncore.file_wrapper(fd))
 ##
+## HTTP Connection stream
+##
+class HTTPStream(Stream):
+    def prepare_stream(self):
+        logging.debug("Connecting to %s:%d"%(self.access_profile.address,80))
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connect((self.access_profile.address,80))
+
+##
 ## Values are defined in sae.proto's AccessScheme enum
 ##
 STREAMS={
     TELNET : TelnetStream,
     SSH    : SSHStream,
+    HTTP   : HTTPStream,
+}
+##
+##
+##
+PULL_CONFIG_ACTIONS={
+    TELNET : get_action_class("sa.actions.cli"),
+    SSH    : get_action_class("sa.actions.cli"),
+    HTTP   : get_action_class("sa.actions.http"),
 }
 
 ##
@@ -113,16 +131,21 @@ class Service(SAEService):
                 e.text="pull_config internal error"
                 done(controller,error=e)
         profile=profile_registry[request.access_profile.profile]
-        action=get_action_class("sa.actions.cli")(
+        args={
+            "user"     : request.access_profile.user,
+            "password" : request.access_profile.password,
+        }
+        if request.access_profile.scheme in [TELNET,SSH]:
+            args["commands"]=profile.command_pull_config
+        elif request.access_profile.scheme in [HTTP]:
+            args["address"]=request.access_profile.address
+            args["post_path"]=profile.post_path_pull_config
+        action=PULL_CONFIG_ACTIONS[request.access_profile.scheme](
             transaction_id=controller.transaction.id,
             stream=STREAMS[request.access_profile.scheme](request.access_profile),
             profile=profile,
             callback=pull_config_callback,
-            args={
-                "user"     : request.access_profile.user,
-                "password" : request.access_profile.password,
-                "commands" : profile.command_pull_config,
-                })
+            args=args)
 
 class ActivatorStream(RPCStream):
     def __init__(self,service,address,port):
