@@ -111,6 +111,14 @@ class Profile(object):
     # Skip first N lines of config output. None - skip no lines
     #
     config_skip_head=1
+    ##
+    ## HTTP Access
+    ##
+    
+    # Path for HTTP POST to get config
+    post_path_pull_config=None
+    # Config attachment filename
+    post_pull_config_file_name=None
     #
     # Clean up config
     #
