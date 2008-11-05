@@ -8,6 +8,7 @@ rx_ansi_escape=re.compile("\x1b\\[(\d+(;\d+)?)?[a-zA-Z]")
 
 class BaseAction(object):
     ARGS=[]
+    ALLOW_ROGUE_CHARS=True # Strip Profile.rogue_chars out of stream
     def __init__(self,transaction_id,stream,profile,callback,args=None):
         self.callback=callback
         self.transaction_id=transaction_id
@@ -78,7 +79,7 @@ class BaseAction(object):
     ## Called by activator's stream on new data ready
     ##
     def feed(self,msg):
-        if self.profile.rogue_chars:
+        if self.ALLOW_ROGUE_CHARS and self.profile.rogue_chars:
             for rc in self.profile.rogue_chars:
                 msg=msg.replace(rc,"")
         if self.profile.strip_ansi_escapes:

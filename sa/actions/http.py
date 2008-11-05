@@ -3,6 +3,7 @@ import logging,httplib,cStringIO,base64,hashlib,random
 
 class Action(BaseAction):
     ARGS=["user","password","address"]
+    ALLOW_ROGUE_CHARS=True # Meaningless in HTTP stream
     def prepare_action(self):
         self.set_fsm([
             ("^HTTP/1.[01] 200 .+?\r\n(.+?\r\n\r\n)",self.s_200),

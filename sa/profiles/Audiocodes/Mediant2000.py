@@ -12,5 +12,4 @@ class Profile(noc.sa.profiles.Profile):
     path_pull_config="/FS/BOARD.ini"
     file_pull_config="BOARD.ini"
     config_skip_head=0
-    rogue_chars=None
 

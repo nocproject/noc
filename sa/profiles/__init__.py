@@ -49,6 +49,7 @@ class Profile(object):
     command_exit="exit"
     # List of chars to be stripped out of input stream
     # before checking any regular expressions
+    # (For CLI action only)
     rogue_chars=["\r"]
     # Strip ANSI Escape Sequences out of input stream
     # before checking any regular expressions
