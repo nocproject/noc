@@ -217,6 +217,8 @@ class SAE(object):
                 logging.error("pull_config failed: %s"%error.text)
                 return
             object=Config.objects.get(id=transaction.object_id)
+            if object.pull_every:
+                object.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=object.pull_every)
             object.write(response.config)
         stream=self.get_activator_stream(object.activator.name)
         r=PullConfigRequest()

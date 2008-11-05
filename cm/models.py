@@ -34,7 +34,7 @@ class Object(models.Model):
     #
     pull_every=models.PositiveIntegerField("Pull Every (secs)",default=86400,blank=True,null=True)
     next_pull=models.DateTimeField("Next Pull",blank=True,null=True)
-    last_pull=models.DateTimeField("Last Pull",blank=True,null=True)
+    last_pull=models.DateTimeField("Last Pull",blank=True,null=True) # Updated by write() method
     
     def __unicode__(self):
         return "%s/%s"%(self.repo_name,self.repo_path)
