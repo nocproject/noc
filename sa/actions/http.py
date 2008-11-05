@@ -94,7 +94,7 @@ class Action(BaseAction):
         # Process HTTP Response
         m=httplib.HTTPMessage(cStringIO.StringIO(self.result))
         self.result=self.result[m.startofbody:]
-        if m["Transfer-Encoding"].lower()=="chunked":
+        if m.has_key("Transfer-Encoding") and m["Transfer-Encoding"].lower()=="chunked":
             # Unchunk
             buffer=self.result
             result=[]
