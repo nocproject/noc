@@ -19,6 +19,7 @@ class BaseAction(object):
         self.result=""
         self.status=False
         self.to_collect_result=False
+        self.to_reconnect=False
         if args:
             self.set_args(args)
         self.stream.attach_action(self)
@@ -38,6 +39,11 @@ class BaseAction(object):
             self.args[k]=v
             
     def close(self,status):
+        if self.to_reconnect:
+            logging.debug("Reconnecting")
+            self.stream.close()
+            self.stream.prepare_socket()
+            return
         logging.debug("%s close(%s)"%(str(self),status))
         if self.buffer:
             self.stream.retain_input(self.buffer)
