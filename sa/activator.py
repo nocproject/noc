@@ -33,6 +33,9 @@ class Stream(asyncore.dispatcher):
         if self.current_action:
             self.current_action.close(None)
         self.close()
+            
+    def reconnect(self):
+        self.to_reconnect=True
     
     def handle_read(self):
         try:
@@ -91,7 +94,7 @@ class SSHStream(Stream):
 ##
 class HTTPStream(Stream):
     def prepare_stream(self):
-        logging.debug("Connecting to %s:%d"%(self.access_profile.address,80))
+        logging.debug("HTTPStream connecting to %s:%d"%(self.access_profile.address,80))
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connect((self.access_profile.address,80))
 
@@ -139,7 +142,6 @@ class Service(SAEService):
             args["commands"]=profile.command_pull_config
         elif request.access_profile.scheme in [HTTP]:
             args["address"]=request.access_profile.address
-            args["post_path"]=profile.post_path_pull_config
         action=PULL_CONFIG_ACTIONS[request.access_profile.scheme](
             transaction_id=controller.transaction.id,
             stream=STREAMS[request.access_profile.scheme](request.access_profile),

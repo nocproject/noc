@@ -22,6 +22,7 @@ class Command(BaseCommand):
             print "Invalid profile. Available profiles are:"
             print "\n".join([x[0] for x in profile_registry.choices])
             return
+        self.profile=profile
         logging.root.setLevel(logging.DEBUG)
         url=URL(args[1])
         ap=AccessProfile()
@@ -42,7 +43,6 @@ class Command(BaseCommand):
             args["commands"]=command_pull_config
         elif ap.scheme in [HTTP]:
             args["address"]=ap.address
-            args["post_path"]=profile.post_path_pull_config
         action=PULL_CONFIG_ACTIONS[ap.scheme](transaction_id=1,
             stream=self.stream,
             profile=profile,
@@ -54,4 +54,4 @@ class Command(BaseCommand):
         self.stream.close()
     def on_pull_config(self,action):
         logging.debug("Config pulled")
-        logging.debug(profile.cleaned_config(action.result))
+        logging.debug(self.profile.cleaned_config(action.result))
