@@ -7,6 +7,9 @@ import noc.sa.profiles
 
 class Profile(noc.sa.profiles.Profile):
     name="ZTE.ZXDSL531"
-    post_path_pull_config="/psiBackupInfo.cgi"
-    post_pull_config_file_name="backupsettings.xml"
+    method_pull_config="POST"
+    path_pull_config="/psiBackupInfo.cgi"
+    file_pull_config="backupsettings.xml"
     config_skip_head=0
+    rogue_chars=None
+    
