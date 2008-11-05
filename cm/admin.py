@@ -5,7 +5,7 @@ class ObjectCategoryAdmin(admin.ModelAdmin):
     list_display=["name","description"]
     
 class ConfigAdmin(admin.ModelAdmin):
-    list_display=["repo_path","activator","profile_name","scheme","address","last_modified","view_link"]
+    list_display=["repo_path","activator","profile_name","scheme","address","last_modified","pull_every","last_pull","next_pull","view_link"]
     list_filter=["profile_name","activator"]
     search_fields=["repo_path","address"]
 
