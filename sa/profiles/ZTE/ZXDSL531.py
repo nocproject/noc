@@ -1,7 +1,7 @@
 ##
-## Vendor: Huawei
-## OS:     VRP
-## Compatible: 3.1
+## Vendor: ZTE
+## OS:     ZXDSL531
+## Compatible:
 ##
 import noc.sa.profiles
 
@@ -11,4 +11,5 @@ class Profile(noc.sa.profiles.Profile):
     path_pull_config="/psiBackupInfo.cgi"
     file_pull_config="backupsettings.xml"
     config_skip_head=0
+    config_volatile=["<entry1 sessionID=.+?/>"]
     
