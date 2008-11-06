@@ -6,15 +6,17 @@ class ObjectCategoryAdmin(admin.ModelAdmin):
     
 class ConfigAdmin(admin.ModelAdmin):
     list_display=["repo_path","activator","profile_name","scheme","address","last_modified","pull_every","last_pull","next_pull","view_link"]
-    list_filter=["profile_name","activator"]
+    list_filter=["categories","profile_name","activator"]
     search_fields=["repo_path","address"]
 
 class DNSAdmin(admin.ModelAdmin):
     list_display=["repo_path","last_modified","view_link"]
+    list_filter=["categories"]
     search_fields=["repo_path"]
     
 class PrefixListAdmin(admin.ModelAdmin):
     list_display=["repo_path","last_modified","view_link"]
+    list_filter=["categories"]
     search_fields=["repo_path"]
 
 admin.site.register(ObjectCategory, ObjectCategoryAdmin)
