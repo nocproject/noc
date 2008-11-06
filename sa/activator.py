@@ -175,6 +175,7 @@ class Activator(object):
         logging.info("Loading profile classes")
         profile_registry.register_all()
         logging.info("Setting signal handlers")
+        self.zombies_arise=False
         signal.signal(signal.SIGCHLD,self.sig_chld)
     
     def run(self):
@@ -184,13 +185,25 @@ class Activator(object):
                 self.sae_stream=ActivatorStream(self.service,self.sae_ip,self.sae_port)
                 self.register()
             asyncore.loop(timeout=1,count=10)
+            if self.zombies_arise:
+                logging.debug("Zombies arise")
+                while True:
+                    try:
+                        pid,status=os.waitpid(-1,os.WNOHANG)
+                    except OSError:
+                        pid=None
+                    if pid:
+                        logging.debug("Zombie #%d is doomed with status %d"%(pid,status))
+                    else:
+                        break
+                self.zombies_arise=False
             
     def reboot(self):
         logging.info("Rebooting")
         os.execv(sys.executable,[sys.executable]+sys.argv)
 
     def sig_chld(self,signum,frame):
-        pid,statis=os.waitpid(-1,os.WNOHANG)
+        self.zombies_arise=True
         
     def on_stream_close(self,sae_stream):
         logging.debug("SAE connection lost")
