@@ -114,6 +114,8 @@ class Object(models.Model):
             return DNS
         elif repo=="prefix-list":
             return PrefixList
+        elif repo=="rpsl":
+            return RPSL
         else:
             raise Exception("Invalid repo '%s'"%repo)
     
@@ -240,3 +242,35 @@ class DNS(Object):
         for ns in nses.values():
             logging.debug("DNSHandler.global_push: provisioning %s"%ns.name)
             ns.provision_zones()
+##
+## RPSL
+##
+class RPSL(Object):
+    class Meta:
+        verbose_name="RPSL Object"
+        verbose_name_plural="RPSL Objects"
+    repo_name="rpsl"
+    @classmethod
+    def global_pull(cls):
+        def global_pull_class(name,c,name_fun):
+            objects={}
+            for o in RPSL.objects.filter(repo_path__startswith=name+os.sep):
+                objects[o.repo_path]=o
+            for a in c.objects.all():
+                path=os.path.join(name,name_fun(a))
+                if path in objects:
+                    o=objects[path]
+                    del objects[path]
+                else:
+                    o=RPSL(repo_path=path)
+                    o.save()
+                o.write(a.rpsl)
+            for o in objects.values():
+                o.delete()
+        from noc.peer.models import AS,ASSet
+        logging.debug("RPSL.global_pull(): building RPSL")
+        global_pull_class("as",AS,lambda a:"AS%d"%a.asn)
+        global_pull_class("as-set",ASSet,lambda a:a.name)
+    
+    @classmethod
+    def global_push(cls): pass
