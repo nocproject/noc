@@ -1,26 +1,51 @@
 ##
 ## Service Activator
 ##
-import asyncore,os,logging,socket,pty,signal,time,re,sys
+import asyncore,os,logging,socket,pty,signal,time,re,sys,signal
 from noc.sa.actions import get_action_class
 from noc.sa.profiles import profile_registry
 from noc.sa.sae_stream import RPCStream,file_hash
 from noc.sa.protocols.sae_pb2 import *
 
 ##
+## Maximal stream time to life
+##
+STREAM_MAX_TTL=180
+
+##
 ## Abstract connection stream
 ##
 class Stream(asyncore.dispatcher):
-    def __init__(self,access_profile):
+    def __init__(self,access_profile,activator=None):
         asyncore.dispatcher.__init__(self)
         self.access_profile=access_profile
         self.in_buffer=""
         self.out_buffer=""
         self.current_action=None
+        self.start_time=time.time()
+        self.activator=activator
+        self.pid=None
         self.prepare_stream()
+        if self.activator:
+            self.activator.register_stream(self)
         
     def prepare_stream(self):
         raise Exception,"Not Implemented"
+        
+    def is_stale(self):
+        return time.time()-self.start_time>STREAM_MAX_TTL
+    
+    def close(self):
+        asyncore.dispatcher.close(self)
+        if self.pid:
+            pid,status=os.waitpid(self.pid,os.WNOHANG)
+            if pid:
+                logging.debug("Child pid=%d is already terminated. Zombie released"%pid)
+            else:
+                logging.debug("Child pid=%d is not terminated. Killing"%self.pid)
+                os.kill(self.pid,signal.SIGKILL)
+        if self.activator:
+            self.activator.release_stream(self)
         
     def attach_action(self,action):
         logging.debug("attach_action %s"%str(action))
@@ -72,8 +97,8 @@ class Stream(asyncore.dispatcher):
 class TelnetStream(Stream):
     def prepare_stream(self):
         logging.debug("TelnetStream connecting '%s'"%self.access_profile.address)
-        pid,fd=pty.fork()
-        if pid==0:
+        self.pid,fd=pty.fork()
+        if self.pid==0:
             os.execv("/usr/bin/telnet",["/usr/bin/telnet",self.access_profile.address])
         else:
             self.set_socket(asyncore.file_wrapper(fd))
@@ -84,8 +109,8 @@ class TelnetStream(Stream):
 class SSHStream(Stream):
     def prepare_stream(self):
         logging.debug("SSHStream connecting '%s'"%self.access_profile.address)
-        pid,fd=pty.fork()
-        if pid==0:
+        self.pid,fd=pty.fork()
+        if self.pid==0:
             os.execv("/usr/bin/ssh",["/usr/bin/ssh","-o","StrictHostKeyChecking no","-l",self.access_profile.user,self.access_profile.address])
         else:
             self.set_socket(asyncore.file_wrapper(fd))
@@ -143,9 +168,13 @@ class Service(SAEService):
             args["commands"]=profile.command_pull_config
         elif request.access_profile.scheme in [HTTP]:
             args["address"]=request.access_profile.address
+        try:
+            activator=getattr(self,"activator")
+        except:
+            activator=None
         action=PULL_CONFIG_ACTIONS[request.access_profile.scheme](
             transaction_id=controller.transaction.id,
-            stream=STREAMS[request.access_profile.scheme](request.access_profile),
+            stream=STREAMS[request.access_profile.scheme](request.access_profile,activator),
             profile=profile,
             callback=pull_config_callback,
             args=args)
@@ -176,8 +205,6 @@ class Activator(object):
         logging.info("Loading profile classes")
         profile_registry.register_all()
         logging.info("Setting signal handlers")
-        self.zombies_arise=False
-        signal.signal(signal.SIGCHLD,self.sig_chld)
     
     def run(self):
         last_keepalive=time.time()
@@ -185,26 +212,22 @@ class Activator(object):
             if self.sae_stream is None and time.time()-self.sae_reset>10:
                 self.sae_stream=ActivatorStream(self.service,self.sae_ip,self.sae_port)
                 self.register()
-            asyncore.loop(timeout=1,count=10)
-            if self.zombies_arise:
-                logging.debug("Zombies arise")
-                while True:
-                    try:
-                        pid,status=os.waitpid(-1,os.WNOHANG)
-                    except OSError:
-                        pid=None
-                    if pid:
-                        logging.debug("Zombie #%d is doomed with status %d"%(pid,status))
-                    else:
-                        break
-                self.zombies_arise=False
-            
+            asyncore.loop(timeout=1,count=5)
+            for s in [s for s in self.streams if s.is_stale()]:
+                logging.info("Forceful close of stale stream")
+                s.close()
+                
+    def register_stream(self,stream):
+        logging.debug("Registering stream %s"%str(stream))
+        self.streams[stream]=None
+        
+    def release_stream(self,stream):
+        logging.debug("Releasing stream %s"%str(stream))
+        del self.streams[stream]
+                
     def reboot(self):
         logging.info("Rebooting")
         os.execv(sys.executable,[sys.executable]+sys.argv)
-
-    def sig_chld(self,signum,frame):
-        self.zombies_arise=True
         
     def on_stream_close(self,sae_stream):
         logging.debug("SAE connection lost")
