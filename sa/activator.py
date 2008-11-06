@@ -213,9 +213,21 @@ class Activator(object):
                 self.sae_stream=ActivatorStream(self.service,self.sae_ip,self.sae_port)
                 self.register()
             asyncore.loop(timeout=1,count=5)
+            # Close stale streams
             for s in [s for s in self.streams if s.is_stale()]:
                 logging.info("Forceful close of stale stream")
                 s.close()
+            # Finally clean up zombies
+            if self.streams:
+                while True:
+                    try:
+                        pid,status=os.waitpid(-1,os.WNOHANG)
+                    except:
+                        break
+                    if pid:
+                        logging.debug("Zombie pid=%d is hunted and killed"%pid)
+                    else:
+                        break
                 
     def register_stream(self,stream):
         logging.debug("Registering stream %s"%str(stream))
