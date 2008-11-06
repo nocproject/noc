@@ -135,8 +135,9 @@ class Service(SAEService):
                 done(controller,error=e)
         profile=profile_registry[request.access_profile.profile]
         args={
-            "user"     : request.access_profile.user,
-            "password" : request.access_profile.password,
+            "user"           : request.access_profile.user,
+            "password"       : request.access_profile.password,
+            "super_password" : request.access_profile.super_password,
         }
         if request.access_profile.scheme in [TELNET,SSH]:
             args["commands"]=profile.command_pull_config

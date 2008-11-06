@@ -35,6 +35,9 @@ class Profile(object):
     # Regular expression to catch command prompt
     # (CLI Sessions)
     pattern_prompt=r"^\S*[>#]"
+    # Regular expression to catch unpriveleged mode command prompt
+    # (CLI Session)
+    pattern_unpriveleged_prompt=None
     # Regular expression to catch pager
     # (Used in command results)
     pattern_more="^---MORE---"
@@ -47,6 +50,9 @@ class Profile(object):
     # Sequence to gracefully close session
     #
     command_exit="exit"
+    # Sequence to enable priveleged mode
+    #
+    command_super=None
     # List of chars to be stripped out of input stream
     # before checking any regular expressions
     # (For CLI action only)

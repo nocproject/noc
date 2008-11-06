@@ -37,9 +37,14 @@ class Command(BaseCommand):
         r.access_profile.scheme         = {"telnet":TELNET,"ssh":SSH,"http":HTTP}[url.scheme]
         r.access_profile.address        = url.host
         if url.port:
-            r.access_profile.port           = url.port
+            r.access_profile.port       = url.port
         r.access_profile.user           = url.user
-        r.access_profile.password       = url.password
+        if "/" in url.password:
+            p,s=url.password.split("/",1)
+            r.access_profile.password   = p
+            r.access_profile.super_password = s
+        else:
+            r.access_profile.password   = url.password
         #r.access_profile.super_password = 
         r.access_profile.path           = url.path
         service=Service()
