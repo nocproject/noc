@@ -4,7 +4,7 @@
 ##
 import logging,re
 
-rx_ansi_escape=re.compile("\x1b\\[(\d+(;\d+)?)?[a-zA-Z]")
+rx_ansi_escape=re.compile("\x1b(\\[(\d+(;\d+)?)?[a-zA-Z]|\\[\\?\dh|=)")
 
 class BaseAction(object):
     ARGS=[]
@@ -82,10 +82,10 @@ class BaseAction(object):
         if self.ALLOW_ROGUE_CHARS and self.profile.rogue_chars:
             for rc in self.profile.rogue_chars:
                 msg=msg.replace(rc,"")
-        if self.profile.strip_ansi_escapes:
-            msg=rx_ansi_escape.sub("",msg)
         logging.debug("%s feed: %s"%(str(self),repr(msg)))
         self.buffer+=msg
+        if self.profile.strip_ansi_escapes:
+            self.buffer=rx_ansi_escape.sub("",self.buffer)
         while self.buffer and self.fsm:
             matched=False
             for rx,action in self.fsm:
