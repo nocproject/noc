@@ -7,6 +7,9 @@ import noc.sa.profiles
 class Profile(noc.sa.profiles.Profile):
     name="Cisco.IOS"
     pattern_more="^ --More--"
+    pattern_unpriveleged_prompt=r"^\S+?>"
+    command_super="enable"
+    pattern_prompt=r"^\S+?#"
     pattern_lg_as_path_list=r"^(\s+\d+(?: \d+)*),"
     pattern_lg_best_path=r"(<A HREF.+?>.+?best)"
     requires_netmask_conversion=True
