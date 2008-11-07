@@ -4,7 +4,7 @@
 ##
 import logging,re
 
-rx_ansi_escape=re.compile("\x1b(\\[(\d+(;\d+)?)?[a-zA-Z]|\\[\\?\dh|=)")
+rx_ansi_escape=re.compile("\x1b(\\[(\d+(;\d+)?)?[a-zA-Z]|\\[\\?\dh|=|.)")
 
 class BaseAction(object):
     ARGS=[]
