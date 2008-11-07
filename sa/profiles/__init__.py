@@ -28,7 +28,7 @@ class Profile(object):
     name=None
     # Regular expression to catch user name prompt
     # (Usually during telnet sessions)
-    pattern_username="[Uu]sername:"
+    pattern_username="([Uu]sername|[Ll]ogin):"
     # Regulal expression to catch password prompt
     # (Telnet/SSH sessions)
     pattern_password="[Pp]assword:"
