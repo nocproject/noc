@@ -26,6 +26,17 @@ class Profile(object):
     __metaclass__=ProfileBase
     # Profile name
     name=None
+    #
+    # Device capabilities
+    #
+    
+    #
+    # A list of supported access schemes.
+    # Access schemes constants are defined
+    # in noc.sa.protocols.sae_pb2
+    # (TELNET, SSH, HTTP, etc)
+    #
+    supported_schemes=[]
     # Regular expression to catch user name prompt
     # (Usually during telnet sessions)
     pattern_username="([Uu]sername|[Ll]ogin):"

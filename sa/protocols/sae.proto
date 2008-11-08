@@ -33,6 +33,8 @@ enum ErrorCode {
     ERR_INVALID_TRANSACTION = 3; // Transaction does not exists
     ERR_TRANSACTION_EXISTS  = 4;
     ERR_UNKNOWN_ACTIVATOR   = 5;
+    ERR_INVALID_PROFILE     = 6; // Invalid profile
+    ERR_INVALID_SCHEME      = 7; // Invalid access scheme
 }
 
 //

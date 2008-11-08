@@ -3,9 +3,11 @@
 ## OS:     JUNOS
 ##
 import noc.sa.profiles
+from noc.sa.protocols.sae_pb2 import TELNET,SSH
 
 class Profile(noc.sa.profiles.Profile):
     name="Juniper.JUNOS"
+    supported_schemes=[TELNET,SSH]
     pattern_prompt="^({master}\n)?\S*>"
     pattern_more=r"^---\(more.*?\)---"
     command_more=" "

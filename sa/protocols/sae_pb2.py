@@ -36,6 +36,14 @@ _ERRORCODE = descriptor.EnumDescriptor(
       name='ERR_UNKNOWN_ACTIVATOR', index=5, number=5,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_INVALID_PROFILE', index=6, number=6,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_INVALID_SCHEME', index=7, number=7,
+      options=None,
+      type=None),
   ],
   options=None,
 )
@@ -69,6 +77,8 @@ ERR_INVALID_METHOD = 2
 ERR_INVALID_TRANSACTION = 3
 ERR_TRANSACTION_EXISTS = 4
 ERR_UNKNOWN_ACTIVATOR = 5
+ERR_INVALID_PROFILE = 6
+ERR_INVALID_SCHEME = 7
 TELNET = 0
 SSH = 1
 HTTP = 2

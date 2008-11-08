@@ -31,10 +31,11 @@ class Command(BaseCommand):
             print "\n".join([x[0] for x in profile_registry.choices])
             return
         logging.root.setLevel(logging.DEBUG)
+        service=Service()
         url=URL(args[1])
         r=PullConfigRequest()
         r.access_profile.profile        = args[0]
-        r.access_profile.scheme         = {"telnet":TELNET,"ssh":SSH,"http":HTTP}[url.scheme]
+        r.access_profile.scheme         = service.scheme_to_code(url.scheme)
         r.access_profile.address        = url.host
         if url.port:
             r.access_profile.port       = url.port
@@ -47,7 +48,6 @@ class Command(BaseCommand):
             r.access_profile.password   = url.password
         #r.access_profile.super_password = 
         r.access_profile.path           = url.path
-        service=Service()
         controller=Controller()
         tf=TransactionFactory()
         controller.transaction=tf.begin()

@@ -126,6 +126,18 @@ class HTTPStream(Stream):
 ##
 ## Values are defined in sae.proto's AccessScheme enum
 ##
+SCHEME_TO_CODE={
+    "telnet": TELNET,
+    "ssh"   : SSH,
+    "http"  : HTTP,
+}
+
+CODE_TO_SCHEME={
+    TELNET : "telnet",
+    SSH    : "ssh",
+    HTTP   : "http",
+}
+
 STREAMS={
     TELNET : TelnetStream,
     SSH    : SSHStream,
@@ -158,7 +170,21 @@ class Service(SAEService):
                 e.code=ERR_INTERNAL
                 e.text="pull_config internal error"
                 done(controller,error=e)
-        profile=profile_registry[request.access_profile.profile]
+        try:
+            profile=profile_registry[request.access_profile.profile]
+        except:
+            e=Error()
+            e.code=ERR_INVALID_PROFILE
+            e.text="Invalid profile '%s'"%request.access_profile.profile
+            done(controller,error=e)
+            return
+        if request.access_profile.scheme not in profile.supported_schemes:
+            e=Error()
+            e.code=ERR_INVALID_SCHEME
+            e.text="Access scheme '%s' is not supported for profile '%s'"%(self.code_to_scheme(request.access_profile.scheme),
+                request.access_profile.profile)
+            done(controller,error=e)
+            return
         args={
             "user"           : request.access_profile.user,
             "password"       : request.access_profile.password,
@@ -178,6 +204,12 @@ class Service(SAEService):
             profile=profile,
             callback=pull_config_callback,
             args=args)
+    # Utility functions
+    def scheme_to_code(self,scheme):
+        return SCHEME_TO_CODE[scheme]
+        
+    def code_to_scheme(self,code):
+        return CODE_TO_SCHEME[code]
 
 class ActivatorStream(RPCStream):
     def __init__(self,service,address,port):
