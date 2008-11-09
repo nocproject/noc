@@ -1,0 +1,110 @@
+##
+## ECMA-48 control sequences processing
+##
+import re
+## Convert ECMA Notation to byte form
+def c(x,y):
+    """
+    Convert ECMA-48 character notation to 8-bit form
+    >>> c(0,0)
+    0
+    >>> c(1,11)
+    27
+    >>> c(15,15)
+    255
+    """
+    return (x<<4)+y
+
+ESC=chr(c(1,11))
+
+##
+## Definitions of Control Character Sequences from ECMA-48
+##
+C0  = "[00/00-01/15]"
+C1  = "01/11,[04/00-05/15]"
+CSI = "01/11,05/11,[03/00-03/15]*,[02/00-02/15]*,[04/00-07/14]"
+##
+## Compile single definition to regular expression
+##
+rx_char=re.compile(r"^(\d\d)/(\d\d)$")
+rx_range=re.compile(r"^\[(\d\d)/(\d\d)-(\d\d)/(\d\d)\](\*?)$")
+def compile_ecma_def(s):
+    r=[]
+    for token in s.split(","):
+        match=rx_range.match(token)
+        if match:
+            c1=c(int(match.group(1)),int(match.group(2)))
+            c2=c(int(match.group(3)),int(match.group(4)))
+            if c1==c2:
+                x=[r"\x%02x"%c1]
+            elif c1<c2:
+                rr=[r"\x%02x"%x for x in range(c1,c2+1)]
+                x=["[%s]"%"".join(rr)]
+            else:
+                rr=[r"\x%02x"%x for x in range(c2,c1+1)]
+                x=["[%s]"%"".join(rr)]
+            if match.group(5):
+                x+="*"
+            r+=x
+            continue
+        match=rx_char.match(token)
+        if match:
+            r+=[r"\x%02x"%c(int(match.group(1)),int(match.group(2)))]
+            continue
+        raise Exception("Invalid token: <%s>"%token)
+    return "".join(r)
+##
+## Compile ECMA-48 definitions to regular expression
+##
+def get_ecma_re():
+    re_csi=compile_ecma_def(CSI)
+    re_c1=compile_ecma_def(C1).replace("\\x5b","")
+    re_c0=compile_ecma_def(C0).replace("\\x0d","").replace("\\x0a","").replace("\\x1b","")
+    return "|".join(["(%s)"%r for r in (re_csi,re_c1,re_c0)])
+##
+## Remove ECMA-48 Control Sequences from a string
+##
+rx_ecma=re.compile(get_ecma_re())
+def strip_control_sequences(s):
+    """
+    Normal text leaved untouched
+    >>> strip_control_sequences("Lorem Ipsum")
+    'Lorem Ipsum'
+    
+    CR,LF and ESC survive from C0 set
+    >>> repr(strip_control_sequences("".join([chr(i) for i in range(32)])))
+    "'\\\\n\\\\r\\\\x1b'"
+    
+    C1 set stripped (ESC+[ survive)
+    >>> strip_control_sequences("".join(["\x1b"+chr(i) for i in range(64,96)]))
+    '\\x1b['
+    
+    CSI without P and I stripped
+    >>> strip_control_sequences("\x1b[@\x1b[a\x1b[~")
+    ''
+    
+    CSI with I stripped
+    >>> strip_control_sequences("\x1b[ @\x1b[/~")
+    ''
+    
+    CSI with P and I stripped
+    >>> strip_control_sequences("\x1b[0 @\x1b[0;7/~")
+    ''
+    
+    Cleaned stream
+    >>> strip_control_sequences("L\x1b[@or\x1b[/~em\x1b[0 @ Ips\x1b[0;7/~um\x07")
+    'Lorem Ipsum'
+    
+    Incomplete CSI passed
+    >>> strip_control_sequences("\x1b[")
+    '\\x1b['
+    
+    Incomplete C1 passed
+    >>> strip_control_sequences('\x1b')
+    '\\x1b'
+    """
+    return rx_ecma.sub("",s)
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
