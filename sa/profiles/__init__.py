@@ -66,12 +66,8 @@ class Profile(object):
     command_super=None
     # List of chars to be stripped out of input stream
     # before checking any regular expressions
-    # (For CLI action only)
+    # (when Action.CLEAN_INPUT==True)
     rogue_chars=["\r"]
-    # Strip ANSI Escape Sequences out of input stream
-    # before checking any regular expressions
-    strip_ansi_escapes=True
-    
     ##
     ## Looking glass hilighting support
     ##
