@@ -3,6 +3,7 @@ import logging
 
 class Action(BaseAction):
     ARGS=["user","password","super_password","commands"]
+    CLEAN_INPUT=True # Remove all terminal-control mess
     def prepare_action(self):
         self.commands=self.args["commands"][:]
         fsm=[

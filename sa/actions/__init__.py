@@ -2,13 +2,12 @@
 ## BaseAction implementation
 ## Action is a scenario executed upon stream
 ##
+from noc.lib.ecma48 import strip_control_sequences
 import logging,re
-
-rx_ansi_escape=re.compile("\x1b(\\[(\d+(;\d+)?)?[a-zA-Z]|\\[\\?\dh|=|.)")
 
 class BaseAction(object):
     ARGS=[]
-    ALLOW_ROGUE_CHARS=True # Strip Profile.rogue_chars out of stream
+    CLEAN_INPUT=False # Strip Profile.rogue_chars and ECMA-48 control sequences
     def __init__(self,transaction_id,stream,profile,callback,args=None):
         self.callback=callback
         self.transaction_id=transaction_id
@@ -79,13 +78,14 @@ class BaseAction(object):
     ## Called by activator's stream on new data ready
     ##
     def feed(self,msg):
-        if self.ALLOW_ROGUE_CHARS and self.profile.rogue_chars:
+        logging.debug("%s feed: %s"%(str(self),repr(msg)))
+        if self.CLEAN_INPUT and self.profile.rogue_chars:
             for rc in self.profile.rogue_chars:
                 msg=msg.replace(rc,"")
-        logging.debug("%s feed: %s"%(str(self),repr(msg)))
         self.buffer+=msg
-        if self.profile.strip_ansi_escapes:
-            self.buffer=rx_ansi_escape.sub("",self.buffer)
+        if self.CLEAN_INPUT:
+            self.buffer=strip_control_sequences(self.buffer)
+            logging.debug("%s buffer after cleaning: %s"%(str(self),repr(self.buffer)))
         while self.buffer and self.fsm:
             matched=False
             for rx,action in self.fsm:
