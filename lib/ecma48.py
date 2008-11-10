@@ -59,8 +59,9 @@ def compile_ecma_def(s):
 def get_ecma_re():
     re_csi=compile_ecma_def(CSI)
     re_c1=compile_ecma_def(C1).replace("\\x5b","")
-    re_c0=compile_ecma_def(C0).replace("\\x0d","").replace("\\x0a","").replace("\\x1b","")
-    return "|".join(["(%s)"%r for r in (re_csi,re_c1,re_c0)])
+    re_c0=compile_ecma_def(C0).replace("\\x0d","").replace("\\x0a","").replace("\\x1b","").replace("\\x09","") # \n,\r, ESC, \t
+    re_vt100="\x1b[c()78]" # VT100
+    return "|".join(["(%s)"%r for r in (re_csi,re_c1,re_c0,re_vt100)])
 ##
 ## Remove ECMA-48 Control Sequences from a string
 ##
