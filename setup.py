@@ -16,12 +16,16 @@ setup(name='noc',
       author='Dmitry Volodin',
       author_email='dv@noc.effortel.ru',
       url='<nothing yet>',
+      zip_safe=False,
       packages=find_packages(),
-      install_required=[
+      install_requires=[
         "psycopg2",
         "Django >= 1.0",
         #"south"
         "flup >= 1.0",
         "Sphinx >= 0.4",
+      ],
+      dependency_links = [
+        ""
       ],
      )
