@@ -155,4 +155,4 @@ class Profile(object):
             for r in self.config_volatile:
                 rx=re.compile(r,re.DOTALL|re.MULTILINE)
                 cfg=rx.sub("",cfg)
-        return cfg
+        return unicode(cfg,"utf8","ignore").encode("utf8") # Prevent serialization errors
