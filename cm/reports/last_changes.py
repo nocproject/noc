@@ -20,10 +20,5 @@ class Report(noc.main.report.Report):
     def get_queryset(self):
         oc=Object.get_object_class(self.form.cleaned_data["repo"])
         baseline=datetime.datetime.now()-datetime.timedelta(days=self.form.cleaned_data["days"])
-        r=[]
-        for o in oc.objects.all():
-            lm=o.last_modified
-            if lm and lm>baseline:
-                r+=[[o,lm]]
-        r.sort(lambda x,y:-cmp(x[1],y[1]))
+        r=[(o,o.last_modified) for o in oc.objects.filter(last_modified__gte=baseline).order_by("-last_modified")]
         return r

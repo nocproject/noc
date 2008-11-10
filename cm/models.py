@@ -20,13 +20,14 @@ class ObjectCategory(models.Model):
     description=models.CharField("Description",max_length=128,null=True,blank=True)
     def __unicode__(self):
         return self.name
-
 #
 class Object(models.Model):
     class Meta:
         abstract=True
     repo_path=models.CharField("Repo Path",max_length=128,unique=True)
     categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories",null=True,blank=True)
+    #
+    last_modified=models.DateTimeField("Last Modified",blank=True,null=True)
     #
     push_every=models.PositiveIntegerField("Push Every (secs)",default=86400,blank=True,null=True)
     next_push=models.DateTimeField("Next Push",blank=True,null=True)
@@ -46,14 +47,6 @@ class Object(models.Model):
     def _path(self):
         return os.path.join(self.repo,self.repo_path)
     path=property(_path)
-
-    def _last_modified(self):
-        p=self.path
-        if os.path.exists(p):
-            return datetime.datetime.fromtimestamp(os.stat(p)[stat.ST_MTIME])
-        else:
-            return None
-    last_modified=property(_last_modified)
     
     #
     # If "data" differs from object's content in the repository
@@ -62,12 +55,14 @@ class Object(models.Model):
     def write(self,data):
         path=self.path
         is_new=not os.path.exists(path)
+        now=datetime.datetime.now()
         if rewrite_when_differ(self.path,data):
             vcs=vcs_registry.get(self.repo)
             if is_new:
                 vcs.add(self.repo_path)
             vcs.commit(self.repo_path)
-        self.last_pull=datetime.datetime.now()
+            self.last_modified=now
+        self.last_pull=now
         self.save()
     # Returns object's content
     # Or None if no content yet
