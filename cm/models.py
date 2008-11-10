@@ -1,16 +1,21 @@
 from django.db import models
+import django.dispatch
+from django.core.mail import send_mail
 from noc.sa.profiles import profile_registry
 from noc.setup.models import Settings
 from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
-import os,datetime,stat,logging
+import os,datetime,stat,logging,sets
 from noc.sa.models import Activator
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 
 profile_registry.register_all()
 vcs_registry.register_all()
+
+# Signals
+object_changed=django.dispatch.Signal()
 
 class ObjectCategory(models.Model):
     class Meta:
@@ -18,6 +23,8 @@ class ObjectCategory(models.Model):
         verbose_name_plural="Object Categories"
     name=models.CharField("Name",max_length=64,unique=True)
     description=models.CharField("Description",max_length=128,null=True,blank=True)
+    notify_immediately=models.TextField("Notify Immediately",blank=True,null=True)
+    notify_delayed=models.TextField("Notify Delayed",blank=True,null=True)
     def __unicode__(self):
         return self.name
 #
@@ -62,6 +69,7 @@ class Object(models.Model):
                 vcs.add(self.repo_path)
             vcs.commit(self.repo_path)
             self.last_modified=now
+            object_changed.send(sender=self)
         self.last_pull=now
         self.save()
     # Returns object's content
@@ -269,3 +277,25 @@ class RPSL(Object):
     
     @classmethod
     def global_push(cls): pass
+##
+## Signal handlers
+##
+def on_object_changed(sender,**kwargs):
+    emails=sets.Set([])
+    for c in sender.categories.all():
+        if c.notify_immediately:
+            emails.update(c.notify_immediately.replace(","," ").replace(";"," ").split())
+    if not emails:
+        return
+    revs=sender.revisions
+    now=datetime.datetime.now()
+    if len(revs)==1:
+        subject="NOC: Object '%s' was created"%str(sender)
+        message="The object %s was created at %s\n"%(str(sender),now)
+        message+="Object value follows:\n---------------------------\n%s\n-----------------------\n"%sender.data
+    else:
+        subject="NOC: Object changed '%s'"%str(sender)
+        message="The object %s was changed at %s\n"%(str(sender),now)
+        message+="Object changes follows:\n---------------------------\n%s\n-----------------------\n"%sender.diff(revs[-1],revs[0])
+    send_mail(subject=subject,message=message,from_email=None,recipient_list=emails,fail_silently=True)
+object_changed.connect(on_object_changed)
