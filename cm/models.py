@@ -1,6 +1,7 @@
 from django.db import models
-import django.dispatch
+from django.db.models import Q
 from django.core.mail import send_mail
+from django.contrib.auth.models import User
 from noc.sa.profiles import profile_registry
 from noc.setup.models import Settings
 from noc.lib.url import URL
@@ -14,24 +15,60 @@ from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 profile_registry.register_all()
 vcs_registry.register_all()
 
-# Signals
-object_changed=django.dispatch.Signal()
-
 class ObjectCategory(models.Model):
     class Meta:
         verbose_name="Object Category"
         verbose_name_plural="Object Categories"
     name=models.CharField("Name",max_length=64,unique=True)
     description=models.CharField("Description",max_length=128,null=True,blank=True)
-    notify_immediately=models.TextField("Notify Immediately",blank=True,null=True)
-    notify_delayed=models.TextField("Notify Delayed",blank=True,null=True)
     def __unicode__(self):
         return self.name
+        
+class ObjectLocation(models.Model):
+    class Meta:
+        verbose_name="Object Location"
+        verbose_name_plural="Object Locations"
+    name=models.CharField("Name",max_length=64,unique=True)
+    description=models.CharField("Description",max_length=128,null=True,blank=True)
+    def __unicode__(self):
+        return self.name
+    @classmethod
+    def default_location(cls):
+        return cls.objects.order_by("id")[0]
+#
+OBJECT_TYPES=["config","dns","prefix-list","rpsl"]
+OBJECT_TYPE_CHOICES=[(x,x) for x in OBJECT_TYPES]
+
+class ObjectAccess(models.Model):
+    class Meta:
+        verbose_name="Object Access"
+        verbose_name_plural="Object Access"
+    type=models.CharField("Type",max_length=16,choices=OBJECT_TYPE_CHOICES)
+    category=models.ForeignKey(ObjectCategory,verbose_name="Category",blank=True,null=True)
+    location=models.ForeignKey(ObjectLocation,verbose_name="Location",blank=True,null=True)
+    user=models.ForeignKey(User,verbose_name="User")
+    def __unicode__(self):
+        return "(%s,%s,%s,%s)"%(self.type,self.category,self.location,self.user)
+
+class ObjectNotify(models.Model):
+    class Meta:
+        verbose_name="Object Notify"
+        verbose_name_plural="Object Notifies"
+    type=models.CharField("Type",max_length=16,choices=OBJECT_TYPE_CHOICES)
+    category=models.ForeignKey(ObjectCategory,verbose_name="Category",blank=True,null=True)
+    location=models.ForeignKey(ObjectLocation,verbose_name="Location",blank=True,null=True)
+    emails=models.CharField("Emails",max_length=128)
+    notify_immediately=models.BooleanField("Notify Immediately")
+    notify_delayed=models.BooleanField("Notify Delayed")
+    def __unicode__(self):
+        return "(%s,%s,%s,%s)"%(self.type,self.category,self.location,self.emails)
+
 #
 class Object(models.Model):
     class Meta:
         abstract=True
     repo_path=models.CharField("Repo Path",max_length=128,unique=True)
+    location=models.ForeignKey(ObjectLocation,verbose_name="Location")
     categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories",null=True,blank=True)
     #
     last_modified=models.DateTimeField("Last Modified",blank=True,null=True)
@@ -69,7 +106,7 @@ class Object(models.Model):
                 vcs.add(self.repo_path)
             vcs.commit(self.repo_path)
             self.last_modified=now
-            object_changed.send(sender=self)
+            self.on_object_changed()
         self.last_pull=now
         self.save()
     # Returns object's content
@@ -121,7 +158,54 @@ class Object(models.Model):
             return RPSL
         else:
             raise Exception("Invalid repo '%s'"%repo)
+    ##
+    ## Access control
+    ##
+    def has_access(self,user):
+        if user.is_superuser:
+            return True
+        return user.objectaccess_set.filter(
+                    Q(type=self.repo_name)\
+                    &(Q(location__isnull=True)|Q(location=self.location))\
+                    &(Q(category__isnull=True)|Q(category__in=self.categories.all))
+                    ).count()>0
+    @classmethod
+    def queryset(cls,user):
+        # Idiotic implementation
+        ids=[o.id for o in cls.objects.all() if o.has_access(user)]
+        return cls.objects.filter(id__in=ids)
     
+    def change_notify_list(self,immediately=False,delayed=False):
+        emails=sets.Set()
+        for n in ObjectNotify.objects.filter(Q(type=self.repo_name)\
+                    &(Q(location__isnull=True)|Q(location=self.location))\
+                    &(Q(category__isnull=True)|Q(category__in=self.categories.all))):
+            if immediately and not n.notify_immediately:
+                continue
+            if delayed and not n.notify_delayed:
+                continue
+            emails.update(n.emails.split())
+        return list(emails)
+        
+    def on_object_changed(self):
+        print "EMAILS:"
+        emails=self.change_notify_list(immediately=True)
+        print emails
+        if not emails:
+            return
+        revs=self.revisions
+        now=datetime.datetime.now()
+        if len(revs)==1:
+            subject="NOC: Object '%s' was created"%str(self)
+            message="The object %s was created at %s\n"%(str(self),now)
+            message+="Object value follows:\n---------------------------\n%s\n-----------------------\n"%self.data
+        else:
+            subject="NOC: Object changed '%s'"%str(self)
+            message="The object %s was changed at %s\n"%(str(self),now)
+            message+="Object changes follows:\n---------------------------\n%s\n-----------------------\n"%self.diff(revs[-1],revs[0])
+        send_mail(subject=subject,message=message,from_email=None,recipient_list=emails,fail_silently=True)
+    ##
+    ##
     def push(self): pass
     def pull(self): pass
     #
@@ -169,6 +253,7 @@ class PrefixList(Object):
     @classmethod
     def global_pull(cls):
         from noc.peer.builder import build_prefix_lists
+        location=ObjectLocation.default_location()
         objects={}
         for o in PrefixList.objects.all():
             objects[o.repo_path]=o
@@ -180,7 +265,7 @@ class PrefixList(Object):
                 o=objects[path]
                 del objects[path]
             else:
-                o=PrefixList(repo_path=path)
+                o=PrefixList(repo_path=path,location=location)
                 o.save()
             o.write(pl)
         for o in objects.values():
@@ -197,6 +282,7 @@ class DNS(Object):
     def global_pull(cls):
         from noc.dns.models import DNSZone,DNSServer
         
+        location=ObjectLocation.default_location()
         objects={}
         changed={}
         for o in DNS.objects.exclude(repo_path__endswith="autozones.conf"):
@@ -209,7 +295,7 @@ class DNS(Object):
                     del objects[path]
                 else:
                     logging.debug("DNSHandler.global_pull: Creating object %s"%path)
-                    o=DNS(repo_path=path)
+                    o=DNS(repo_path=path,location=location)
                     o.save()
                 if is_differ(o.path,z.zonedata(ns)):
                     changed[z]=None
@@ -256,6 +342,7 @@ class RPSL(Object):
     @classmethod
     def global_pull(cls):
         def global_pull_class(name,c,name_fun):
+            location=ObjectLocation.default_location()
             objects={}
             for o in RPSL.objects.filter(repo_path__startswith=name+os.sep):
                 objects[o.repo_path]=o
@@ -265,7 +352,7 @@ class RPSL(Object):
                     o=objects[path]
                     del objects[path]
                 else:
-                    o=RPSL(repo_path=path)
+                    o=RPSL(repo_path=path,location=location)
                     o.save()
                 o.write(a.rpsl)
             for o in objects.values():
@@ -277,25 +364,3 @@ class RPSL(Object):
     
     @classmethod
     def global_push(cls): pass
-##
-## Signal handlers
-##
-def on_object_changed(sender,**kwargs):
-    emails=sets.Set([])
-    for c in sender.categories.all():
-        if c.notify_immediately:
-            emails.update(c.notify_immediately.replace(","," ").replace(";"," ").split())
-    if not emails:
-        return
-    revs=sender.revisions
-    now=datetime.datetime.now()
-    if len(revs)==1:
-        subject="NOC: Object '%s' was created"%str(sender)
-        message="The object %s was created at %s\n"%(str(sender),now)
-        message+="Object value follows:\n---------------------------\n%s\n-----------------------\n"%sender.data
-    else:
-        subject="NOC: Object changed '%s'"%str(sender)
-        message="The object %s was changed at %s\n"%(str(sender),now)
-        message+="Object changes follows:\n---------------------------\n%s\n-----------------------\n"%sender.diff(revs[-1],revs[0])
-    send_mail(subject=subject,message=message,from_email=None,recipient_list=emails,fail_silently=True)
-object_changed.connect(on_object_changed)

@@ -2,10 +2,12 @@ from noc.cm.models import Object
 from django.shortcuts import get_object_or_404
 from noc.lib.render import render,render_plain_text
 import os
-from django.http import HttpResponseNotFound,HttpResponseRedirect
+from django.http import HttpResponseNotFound,HttpResponseRedirect,HttpResponseForbidden
 
 def view(request,repo,object_id,revision=None,format="html"):
     o=get_object_or_404(Object.get_object_class(repo),id=int(object_id))
+    if not o.has_access(request.user):
+        return HttpResponseForbidden("Access denied")
     revs=o.revisions
     if revision:
         r=None
@@ -33,6 +35,8 @@ def view(request,repo,object_id,revision=None,format="html"):
 
 def diff(request,repo,object_id):
     o=get_object_or_404(Object.get_object_class(repo),id=int(object_id))
+    if not o.has_access(request.user):
+        return HttpResponseForbidden("Access denied")
     if request.POST:
         r1=o.find_revision(request.POST["r1"])
         r2=o.find_revision(request.POST["r2"])

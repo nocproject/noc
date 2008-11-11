@@ -1,11 +1,44 @@
 from django.contrib import admin
 from django import forms
-from noc.cm.models import ObjectCategory,Config,DNS,PrefixList,RPSL
+from noc.cm.models import ObjectCategory,ObjectLocation,ObjectAccess,ObjectNotify,Config,DNS,PrefixList,RPSL
 from noc.sa.profiles import profile_registry
 
 class ObjectCategoryAdmin(admin.ModelAdmin):
     list_display=["name","description"]
     
+class ObjectLocationAdmin(admin.ModelAdmin):
+    list_display=["name","description"]
+    
+class ObjectAccessAdmin(admin.ModelAdmin):
+    list_display=["type","category","location","user"]
+    list_filter=["type","category","location"]
+
+class ObjectNotifyAdminForm(forms.ModelForm):
+    class Meta:
+        model=ObjectNotify
+    def clean_emails(self):
+        emails=self.cleaned_data["emails"]
+        return " ".join(emails.replace(";"," ").replace(","," ").split())
+        
+class ObjectNotifyAdmin(admin.ModelAdmin):
+    form=ObjectNotifyAdminForm
+    list_display=["type","category","location","notify_immediately","notify_delayed","emails"]
+    list_filter=["type","category","location"]
+
+class ObjectAdmin(admin.ModelAdmin):
+    object_class=None
+    def has_change_permission(self,request,obj=None):
+        if obj:
+            return obj.has_access(request.user)
+        else:
+            return admin.ModelAdmin.has_delete_permission(self,request)
+            
+    def has_delete_permission(self,request,obj=None):
+        return self.has_change_permission(request,obj)
+        
+    def queryset(self,request):
+        return self.object_class.queryset(request.user)
+
 class ConfigAdminForm(forms.ModelForm):
     class Meta:
         model=Config
@@ -17,28 +50,36 @@ class ConfigAdminForm(forms.ModelForm):
             raise forms.ValidationError("Selected scheme is not supported for profile '%s'"%self.cleaned_data["profile_name"])
         return self.cleaned_data["scheme"]
         
-class ConfigAdmin(admin.ModelAdmin):
+class ConfigAdmin(ObjectAdmin):
     form=ConfigAdminForm
-    list_display=["repo_path","activator","profile_name","scheme","address","last_modified","pull_every","last_pull","next_pull","view_link"]
-    list_filter=["categories","profile_name","activator"]
+    list_display=["repo_path","location","activator","profile_name","scheme","address","last_modified","pull_every","last_pull","next_pull","view_link"]
+    list_filter=["location","categories","profile_name","activator"]
     search_fields=["repo_path","address"]
+    object_class=Config
+    
+class DNSAdmin(ObjectAdmin):
+    list_display=["repo_path","location","last_modified","view_link"]
+    list_filter=["location","categories"]
+    search_fields=["repo_path"]
+    object_class=DNS
+    
+class PrefixListAdmin(ObjectAdmin):
+    list_display=["repo_path","location","last_modified","view_link"]
+    list_filter=["location","categories"]
+    search_fields=["repo_path"]
+    object_class=PrefixList
+    
+class RPSLAdmin(ObjectAdmin):
+    list_display=["repo_path","location","last_modified","view_link"]
+    list_filter=["location","categories"]
+    search_fields=["repo_path"]
+    object_class=RPSL
 
-class DNSAdmin(admin.ModelAdmin):
-    list_display=["repo_path","last_modified","view_link"]
-    list_filter=["categories"]
-    search_fields=["repo_path"]
-    
-class PrefixListAdmin(admin.ModelAdmin):
-    list_display=["repo_path","last_modified","view_link"]
-    list_filter=["categories"]
-    search_fields=["repo_path"]
-    
-class RPSLAdmin(admin.ModelAdmin):
-    list_display=["repo_path","last_modified","view_link"]
-    list_filter=["categories"]
-    search_fields=["repo_path"]
 
 admin.site.register(ObjectCategory, ObjectCategoryAdmin)
+admin.site.register(ObjectLocation, ObjectLocationAdmin)
+admin.site.register(ObjectAccess,   ObjectAccessAdmin)
+admin.site.register(ObjectNotify,   ObjectNotifyAdmin)
 admin.site.register(Config,         ConfigAdmin)
 admin.site.register(DNS,            DNSAdmin)
 admin.site.register(PrefixList,     PrefixListAdmin)
