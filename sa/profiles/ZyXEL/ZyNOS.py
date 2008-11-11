@@ -10,5 +10,8 @@ class Profile(noc.sa.profiles.Profile):
     name="Zyxel.ZyNOS"
     supported_schemes=[TELNET,SSH]
     pattern_username="User name:"
+    pattern_unpriveleged_prompt=r"^\S+?>"
+    command_super="enable"
+    pattern_prompt=r"^\S+?#"
     command_more=" "
     command_pull_config=["show running-config"]
