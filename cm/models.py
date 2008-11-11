@@ -170,6 +170,27 @@ class Object(models.Model):
                     &(Q(location__isnull=True)|Q(location=self.location))\
                     &(Q(category__isnull=True)|Q(category__in=self.categories.all))
                     ).count()>0
+
+    def can_change(self,user,location,categories):
+        if user.is_superuser:
+            return True
+        if user.objectaccess_set.filter(
+                Q(type=self.repo_name)\
+                &(Q(location__isnull=True)|Q(location=self.location))\
+                &Q(category__isnull=True)
+                ).count()>0:
+            return True
+        if categories:
+            for c in categories:
+                if user.objectaccess_set.filter(
+                        Q(type=self.repo_name)\
+                        &(Q(location__isnull=True)|Q(location=self.location))\
+                        &Q(category=c)
+                        ).count()==0:
+                    return False
+            return True
+        return False
+        
     @classmethod
     def queryset(cls,user):
         # Idiotic implementation

@@ -40,7 +40,7 @@ class ObjectAdmin(admin.ModelAdmin):
         return self.object_class.queryset(request.user)
         
     def save_model(self, request, obj, form, change):
-        if self.has_change_permission(request,obj):
+        if obj.can_change(request.user,form.cleaned_data["location"],form.cleaned_data["categories"]):
             admin.ModelAdmin.save_model(self,request,obj,form,change)
         else:
             raise "Permission denied"
