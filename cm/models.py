@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Q
 from django.core.mail import send_mail
 from django.contrib.auth.models import User
+from django.conf import settings
 from noc.sa.profiles import profile_registry
 from noc.setup.models import Settings
 from noc.lib.url import URL
@@ -188,9 +189,7 @@ class Object(models.Model):
         return list(emails)
         
     def on_object_changed(self):
-        print "EMAILS:"
         emails=self.change_notify_list(immediately=True)
-        print emails
         if not emails:
             return
         revs=self.revisions
@@ -203,7 +202,7 @@ class Object(models.Model):
             subject="NOC: Object changed '%s'"%str(self)
             message="The object %s was changed at %s\n"%(str(self),now)
             message+="Object changes follows:\n---------------------------\n%s\n-----------------------\n"%self.diff(revs[-1],revs[0])
-        send_mail(subject=subject,message=message,from_email=None,recipient_list=emails,fail_silently=True)
+        send_mail(subject=subject,message=message,from_email=settings.SERVER_EMAIL,recipient_list=emails,fail_silently=True)
     ##
     ##
     def push(self): pass
