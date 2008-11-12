@@ -2,6 +2,7 @@
 ## Version Control System support
 ##
 from noc.lib.registry import Registry
+from lib.fileutils import copy_file
 from noc.setup.models import Settings
 import os
 ##
@@ -51,10 +52,18 @@ class VCS(object):
     # Remove file from repository
     def rm(self,path):
         self.cmd("remove %s"%path)
-        self.commit(path)
+        self.commit(path,"rm")
+    # Move file to a new location
+    # Dumb emulation
+    def mv(self,f,t):
+        copy_file(os.path.join(self.repo,f),os.path.join(self.repo,t))
+        self.add(t)
+        self.rm(f)
+        self.commit(t,"mv emulation")
     # Commit single file
-    def commit(self,path):
-        self.cmd("commit -m 'CM autocommit' %s"%path)
+    def commit(self,path,message="CM autocommit"):
+        msg=message.replace("\\","\\\\").replace("'","\\'")
+        self.cmd("commit -m '%s' %s"%(msg,path))
     #
     def cmd(self,cmd,check=True):
         if check:
