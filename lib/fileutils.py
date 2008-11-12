@@ -49,5 +49,12 @@ def read_file(path):
         return data
     else:
         return None
-            
+##
+## Copy File
+##
+def copy_file(f,t):
+    d=read_file(f)
+    if d is None:
+        d=""
+    safe_rewrite(t,d)
     
