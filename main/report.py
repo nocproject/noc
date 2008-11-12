@@ -106,3 +106,32 @@ class Report(object):
     def execute(self,sql,args=[]):
         self.cursor.execute(sql,args)
         return self.cursor.fetchall()
+##
+## Matrix report
+##
+## get_queryset must return a triple of (column-label,row-label,value)
+class MatrixReport(Report):
+    def render(self):
+        def render_column_label(s):
+            return "<BR/>".join(s)
+        data={}
+        cl={}
+        rl={}
+        for c,r,v in self.get_queryset():
+            data[c,r]=v
+            cl[c]=None
+            rl[r]=None
+        cl=sorted(cl.keys())
+        rl=sorted(rl.keys())
+        out="<TABLE SUMMARY='%s' BORDER='1'>"%self.title
+        out+="<TR><TH></TH>%s</TR>"%"".join(["<TH>%s</TH>"%render_column_label(c) for c in cl])
+        for r in rl:
+            out+="<TR><TD>%s</TD>"%r
+            for c in cl:
+                try:
+                    out+="<TD>%s</TD>"%data[c,r]
+                except KeyError:
+                    out+="<TD>&nbsp;</TD>"
+            out+="</TR>"
+        out+="</TABLE>"
+        return render(self.request,self.template,{"report":self,"query":self.query,"data":out})
