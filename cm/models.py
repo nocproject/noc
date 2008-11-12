@@ -85,6 +85,17 @@ class Object(models.Model):
     def __unicode__(self):
         return "%s/%s"%(self.repo_name,self.repo_path)
         
+    def save(self,*args,**kwargs):
+        mv=None
+        if self._get_pk_val():
+            old=self.__class__.objects.get(pk=self._get_pk_val())
+            if old.repo_path!=self.repo_path:
+                mv=(old.repo_path,self.repo_path)
+        models.Model.save(self,*args,**kwargs)
+        if mv:
+            vcs=vcs_registry.get(self.repo)
+            vcs.mv(mv[0],mv[1])
+        
     def _repo(self):
         return os.path.join(Settings.get("cm.repo"),self.repo_name)
     repo=property(_repo)
