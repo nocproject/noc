@@ -182,4 +182,34 @@ def free_blocks(prefix,allocated):
         t=free.pop(0)
         r+=cover_blocks(f,t)
     return r
+##
+## Returns minimal prefix containing both IP addresses
+##
+def minimal_prefix(ip1,ip2):
+    """
+    >>> minimal_prefix("192.168.0.1","192.168.0.2")
+    '192.168.0.0/30'
+    >>> minimal_prefix("192.168.0.1","192.168.0.3")
+    '192.168.0.0/30'
+    >>> minimal_prefix("192.168.0.1","192.168.0.4")
+    '192.168.0.0/29'
+    >>> minimal_prefix("192.168.0.1","192.168.0.8")
+    '192.168.0.0/28'
+    >>> minimal_prefix("192.168.0.1","192.168.0.127")
+    '192.168.0.0/25'
+    >>> minimal_prefix("192.168.0.1","192.168.0.255")
+    '192.168.0.0/24'
+    >>> minimal_prefix("192.168.0.1","10.0.0.15")
+    '0.0.0.0/0'
+    >>> minimal_prefix("10.1.12.7","10.0.0.15")
+    '10.0.0.0/15'
+    """
+    for b in range(32,-1,-1):
+        suffix="/%d"%b
+        n1=network(ip1+suffix)+suffix
+        if n1==network(ip2+suffix)+suffix:
+            return n1
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
