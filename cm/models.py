@@ -388,8 +388,9 @@ class RPSL(Object):
                 o.write(a.rpsl)
             for o in objects.values():
                 o.delete()
-        from noc.peer.models import AS,ASSet
+        from noc.peer.models import AS,ASSet,PeeringPoint
         logging.debug("RPSL.global_pull(): building RPSL")
+        global_pull_class("inet-rtr",PeeringPoint,lambda a:a.hostname)
         global_pull_class("as",AS,lambda a:"AS%d"%a.asn)
         global_pull_class("as-set",ASSet,lambda a:a.name)
     

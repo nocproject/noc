@@ -4,7 +4,7 @@ from django import forms
 
 from noc.peer.models import AS,ASSet,LGQueryType,PeeringPoint,LGQueryCommand
 from noc.lib.render import render,render_plain_text,render_json
-from noc.lib.validators import is_asn,is_as_set,is_ipv4,is_cidr
+from noc.lib.validators import is_asn,is_as_set,is_ipv4,is_cidr,is_fqdn
 import re
 
 def as_rpsl(request,asn):
@@ -21,6 +21,11 @@ def as_set_rpsl(request,as_set):
     assert is_as_set(as_set)
     as_set=get_object_or_404(ASSet,name=as_set)
     return render_plain_text(as_set.rpsl)
+    
+def inet_rtr_rpsl(request,router):
+    assert is_fqdn(router)
+    peering_point=get_object_or_404(PeeringPoint,hostname=router)
+    return render_plain_text(peering_point.rpsl)
     
 ##
 ## Looking glass

@@ -35,7 +35,9 @@ class AS(models.Model):
         s=[]
         if self.rpsl_header:
             s+=self.rpsl_header.split("\n")
+        s+=["aut-num: AS%s"%self.asn]
         groups={}
+        peers={}
         for peer in self.peer_set.all():
             groups[peer.peer_group.id]=None
         for pg in PeerGroup.objects.filter(id__in=groups.keys()):
@@ -44,7 +46,11 @@ class AS(models.Model):
                 s+=["remark: -- %s"%x for x in pg.description.split("\n")]
                 s+=[sep]
             for peer in self.peer_set.filter(peer_group__exact=pg):
-                s+=peer.rpsl.split("\n")
+                rpsl=peer.rpsl
+                if rpsl in peers:
+                    continue
+                peers[rpsl]=None
+                s+=rpsl.split("\n")
         if self.rpsl_footer:
             s+=[sep]
             s+=self.rpsl_footer.split("\n")
@@ -127,6 +133,7 @@ class ASSet(models.Model):
         s=[]
         if self.rpsl_header:
             s+=self.rpsl_header.split("\n")
+        s+=["as-set: %s"%self.name]
         for m in self.member_list:
             s+=["members: %s"%m]
         if self.rpsl_footer:
@@ -145,6 +152,7 @@ class PeeringPoint(models.Model):
         verbose_name_plural="Peering Points"
     hostname=models.CharField("FQDN",max_length=64,unique=True)
     location=models.CharField("Location",max_length=64,blank=True,null=True)
+    local_as=models.ForeignKey(AS,verbose_name="Local AS")
     router_id=models.IPAddressField("Router-ID",unique=True)
     profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
@@ -202,6 +210,26 @@ class PeeringPoint(models.Model):
     def _profile(self):
         return profile_registry[self.profile_name]()
     profile=property(_profile)
+    #
+    def _rpsl(self):
+        ifaddrs={}
+        peers={}
+        for p in self.peer_set.all():
+            ifaddrs[p.local_ip,p.masklen]=None
+            peers[p.remote_ip,p.remote_asn]=None
+        s=[]
+        s+=["inet-rtr: %s"%self.hostname]
+        s+=["local-as: AS%d"%self.local_as.asn]
+        for ip,masklen in ifaddrs:
+            s+=["ifaddr: %s masklen %d"%(ip,masklen)]
+        for remote_ip,remote_as in peers:
+            s+=["peer: BGP4 %s asno(%s)"%(remote_ip,remote_as)]
+        return rpsl_format("\n".join(s))
+    rpsl=property(_rpsl)
+    def rpsl_link(self):
+        return "<A HREF='/peer/INET-RTR/%s/rpsl/'>RPSL</A>"%self.hostname
+    rpsl_link.short_description="RPSL"
+    rpsl_link.allow_tags=True
 
 class PeerGroup(models.Model):
     class Meta:
@@ -224,6 +252,7 @@ class Peer(models.Model):
     peering_point=models.ForeignKey(PeeringPoint,verbose_name="Peering Point")
     local_asn=models.ForeignKey(AS,verbose_name="Local AS")
     local_ip=models.IPAddressField("Local IP")
+    masklen=models.PositiveIntegerField("Masklen",default=30)
     remote_asn=models.IntegerField("Remote AS")
     remote_ip=models.IPAddressField("Remote IP")
     import_filter=models.CharField("Import filter",max_length=64)
@@ -285,10 +314,11 @@ class Peer(models.Model):
     all_communities=property(_all_communities)
     def _rpsl(self):
         s="import: from AS%d"%self.remote_asn
+        s+=" at %s"%self.peering_point.hostname
         if self.local_pref:
             s+=" action pref=%d;"%self.local_pref
         s+=" accept %s\n"%self.import_filter
-        s+="export: to AS%s announce %s"%(self.remote_asn,self.export_filter)
+        s+="export: to AS%s at %s announce %s"%(self.remote_asn,self.peering_point.hostname,self.export_filter)
         return s
     rpsl=property(_rpsl)
     def _effective_max_prefixes(self):

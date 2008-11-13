@@ -25,7 +25,7 @@ class LGQueryCommandAdmin(admin.TabularInline):
     extra=1
 
 class PeeringPointAdmin(admin.ModelAdmin):
-    list_display=["hostname","location","router_id","profile_name","communities"]
+    list_display=["hostname","location","local_as","router_id","profile_name","communities","rpsl_link"]
     list_filter=["profile_name"]
     search_fields=["hostname","router_id"]
         

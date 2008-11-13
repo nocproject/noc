@@ -1,6 +1,6 @@
-#
-# RPLS manipulation utilities
-#
+##
+## Routing Policy Specification Language (RFC2622) routines
+##
 
 # rpsl_format(rpsl)
 # idents RPSL by aligning left side of values
