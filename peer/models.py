@@ -220,9 +220,9 @@ class PeeringPoint(models.Model):
         s=[]
         s+=["inet-rtr: %s"%self.hostname]
         s+=["local-as: AS%d"%self.local_as.asn]
-        for ip,masklen in ifaddrs:
+        for ip,masklen in sorted(ifaddrs.keys(),lambda x,y:cmp(x[0],y[0])):
             s+=["ifaddr: %s masklen %d"%(ip,masklen)]
-        for remote_ip,remote_as in peers:
+        for remote_ip,remote_as in sorted(peers.keys(),lambda x,y:cmp(x[0],y[0])):
             s+=["peer: BGP4 %s asno(%s)"%(remote_ip,remote_as)]
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
