@@ -233,7 +233,7 @@ class Object(models.Model):
         else:
             subject="NOC: Object changed '%s'"%str(self)
             message="The object %s was changed at %s\n"%(str(self),now)
-            message+="Object changes follows:\n---------------------------\n%s\n-----------------------\n"%self.diff(revs[-1],revs[0])
+            message+="Object changes follows:\n---------------------------\n%s\n-----------------------\n"%self.diff(revs[1],revs[0])
         send_mail(subject=subject,message=message,from_email=settings.SERVER_EMAIL,recipient_list=emails,fail_silently=True)
     ##
     ##
