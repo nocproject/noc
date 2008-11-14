@@ -44,6 +44,10 @@ _ERRORCODE = descriptor.EnumDescriptor(
       name='ERR_INVALID_SCHEME', index=7, number=7,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_UNKNOWN_TRAP_SOURCE', index=8, number=8,
+      options=None,
+      type=None),
   ],
   options=None,
 )
@@ -71,6 +75,24 @@ _ACCESSSCHEME = descriptor.EnumDescriptor(
 )
 
 
+_TRAPACTION = descriptor.EnumDescriptor(
+  name='TrapAction',
+  full_name='sae.TrapAction',
+  filename='TrapAction',
+  values=[
+    descriptor.EnumValueDescriptor(
+      name='TA_IGNORE', index=0, number=0,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='TA_NOTIFY_CONFIG_CHANGE', index=1, number=1,
+      options=None,
+      type=None),
+  ],
+  options=None,
+)
+
+
 ERR_OK = 0
 ERR_INTERNAL = 1
 ERR_INVALID_METHOD = 2
@@ -79,9 +101,12 @@ ERR_TRANSACTION_EXISTS = 4
 ERR_UNKNOWN_ACTIVATOR = 5
 ERR_INVALID_PROFILE = 6
 ERR_INVALID_SCHEME = 7
+ERR_UNKNOWN_TRAP_SOURCE = 8
 TELNET = 0
 SSH = 1
 HTTP = 2
+TA_IGNORE = 0
+TA_NOTIFY_CONFIG_CHANGE = 1
 
 
 
@@ -529,6 +554,136 @@ _SOFTWAREUPGRADERESPONSE = descriptor.Descriptor(
   options=None)
 
 
+_TRAPFILTERREQUEST = descriptor.Descriptor(
+  name='TrapFilterRequest',
+  full_name='sae.TrapFilterRequest',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_TRAPFILTERRESPONSE_TRAPFILTER_TRAPFILTERACTION = descriptor.Descriptor(
+  name='TrapFilterAction',
+  full_name='sae.TrapFilterResponse.TrapFilter.TrapFilterAction',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='oid', full_name='sae.TrapFilterResponse.TrapFilter.TrapFilterAction.oid', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='actions', full_name='sae.TrapFilterResponse.TrapFilter.TrapFilterAction.actions', index=1,
+      number=2, type=14, cpp_type=8, label=3,
+      default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+_TRAPFILTERRESPONSE_TRAPFILTER = descriptor.Descriptor(
+  name='TrapFilter',
+  full_name='sae.TrapFilterResponse.TrapFilter',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='ip', full_name='sae.TrapFilterResponse.TrapFilter.ip', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='actions', full_name='sae.TrapFilterResponse.TrapFilter.actions', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+_TRAPFILTERRESPONSE = descriptor.Descriptor(
+  name='TrapFilterResponse',
+  full_name='sae.TrapFilterResponse',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='filters', full_name='sae.TrapFilterResponse.filters', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_NOTIFYRESPONSE = descriptor.Descriptor(
+  name='NotifyResponse',
+  full_name='sae.NotifyResponse',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_NOTIFYTRAPCONFIGCHANGEREQUEST = descriptor.Descriptor(
+  name='NotifyTrapConfigChangeRequest',
+  full_name='sae.NotifyTrapConfigChangeRequest',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='ip', full_name='sae.NotifyTrapConfigChangeRequest.ip', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
 _MESSAGE.fields_by_name['request'].message_type = _REQUEST
 _MESSAGE.fields_by_name['response'].message_type = _RESPONSE
 _MESSAGE.fields_by_name['error'].message_type = _ERROR
@@ -537,6 +692,9 @@ _ACCESSPROFILE.fields_by_name['scheme'].enum_type = _ACCESSSCHEME
 _PULLCONFIGREQUEST.fields_by_name['access_profile'].message_type = _ACCESSPROFILE
 _MANIFESTRESPONSE.fields_by_name['files'].message_type = _FILECHECKSUM
 _SOFTWAREUPGRADERESPONSE.fields_by_name['codes'].message_type = _FILECODE
+_TRAPFILTERRESPONSE_TRAPFILTER_TRAPFILTERACTION.fields_by_name['actions'].enum_type = _TRAPACTION
+_TRAPFILTERRESPONSE_TRAPFILTER.fields_by_name['actions'].message_type = _TRAPFILTERRESPONSE_TRAPFILTER_TRAPFILTERACTION
+_TRAPFILTERRESPONSE.fields_by_name['filters'].message_type = _TRAPFILTERRESPONSE_TRAPFILTER
 
 class Message(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -606,6 +764,30 @@ class SoftwareUpgradeResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _SOFTWAREUPGRADERESPONSE
 
+class TrapFilterRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _TRAPFILTERREQUEST
+
+class TrapFilterResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class TrapFilter(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    
+    class TrapFilterAction(message.Message):
+      __metaclass__ = reflection.GeneratedProtocolMessageType
+      DESCRIPTOR = _TRAPFILTERRESPONSE_TRAPFILTER_TRAPFILTERACTION
+    DESCRIPTOR = _TRAPFILTERRESPONSE_TRAPFILTER
+  DESCRIPTOR = _TRAPFILTERRESPONSE
+
+class NotifyResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _NOTIFYRESPONSE
+
+class NotifyTrapConfigChangeRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _NOTIFYTRAPCONFIGCHANGEREQUEST
+
 
 _SAESERVICE = descriptor.ServiceDescriptor(
   name='SAEService',
@@ -656,6 +838,24 @@ _SAESERVICE = descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_PULLCONFIGREQUEST,
     output_type=_PULLCONFIGRESPONSE,
+    options=None,
+  ),
+  descriptor.MethodDescriptor(
+    name='get_trap_filter',
+    full_name='sae.SAEService.get_trap_filter',
+    index=5,
+    containing_service=None,
+    input_type=_TRAPFILTERREQUEST,
+    output_type=_TRAPFILTERRESPONSE,
+    options=None,
+  ),
+  descriptor.MethodDescriptor(
+    name='notify_trap_config_change',
+    full_name='sae.SAEService.notify_trap_config_change',
+    index=6,
+    containing_service=None,
+    input_type=_NOTIFYTRAPCONFIGCHANGEREQUEST,
+    output_type=_NOTIFYRESPONSE,
     options=None,
   ),
 ])

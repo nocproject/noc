@@ -35,6 +35,7 @@ enum ErrorCode {
     ERR_UNKNOWN_ACTIVATOR   = 5;
     ERR_INVALID_PROFILE     = 6; // Invalid profile
     ERR_INVALID_SCHEME      = 7; // Invalid access scheme
+    ERR_UNKNOWN_TRAP_SOURCE = 8;
 }
 
 //
@@ -111,6 +112,35 @@ message FileCode {
 message SoftwareUpgradeResponse {
     repeated FileCode codes = 1;
 }
+//
+// SNMP Traps
+//
+enum TrapAction {
+    TA_IGNORE=0;               // Drop trap
+    TA_NOTIFY_CONFIG_CHANGE=1; // send ReqNotifyConfigChange
+}
+
+message TrapFilterRequest {
+}
+
+message TrapFilterResponse {
+    message TrapFilter {
+        message TrapFilterAction {
+            required string     oid     = 1;
+            repeated TrapAction actions = 2;
+        }
+        required string           ip      = 1;
+        repeated TrapFilterAction actions = 2;
+    }
+    repeated TrapFilter filters = 1;
+}
+
+message NotifyResponse {
+}
+
+message NotifyTrapConfigChangeRequest {
+    required string ip = 1;
+}
 
 //
 // RPC Services
@@ -121,4 +151,6 @@ service SAEService {
     rpc manifest         (ManifestRequest)        returns (ManifestResponse);
     rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
     rpc pull_config      (PullConfigRequest)      returns (PullConfigResponse);
+    rpc get_trap_filter  (TrapFilterRequest)      returns (TrapFilterResponse);
+    rpc notify_trap_config_change(NotifyTrapConfigChangeRequest) returns(NotifyResponse);
 }

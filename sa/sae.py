@@ -25,6 +25,11 @@ ACTIVATOR_MANIFEST=[
 ##
 ##
 class Service(SAEService):
+    def get_controller_activator(self,controller):
+        return Activator.objects.get(name=self.sae.streams.get_name(controller.stream))
+    ##
+    ## RPC interfaces
+    ##
     def ping(self,controller,request,done):
         done(controller,response=PingResponse())
         
@@ -53,6 +58,35 @@ class Service(SAEService):
             u.name=n
             u.code=read_file(n)
         done(controller,response=r)
+        
+    def get_trap_filter(self,controller,request,done):
+        activator=self.get_controller_activator(controller)
+        r=TrapFilterResponse()
+        for c in Config.objects.filter(activator=activator,trap_source_ip__isnull=False):
+            profile=c.profile
+            if profile.oid_trap_config_changed is None:
+                continue
+            f=r.filters.add()
+            f.ip=c.trap_source_ip
+            a=f.actions.add()
+            a.oid=profile.oid_trap_config_changed
+            a.actions.append(TA_NOTIFY_CONFIG_CHANGE)
+        done(controller,response=r)
+    
+    def notify_trap_config_change(self,controller,request,done):
+        activator=self.get_controller_activator(controller)
+        try:
+            c=Config.objects.get(activator=activator,trap_source_ip=request.ip)
+        except Config.DoesNotExist:
+            e=Error()
+            e.code=ERR_UNKNOWN_TRAP_SOURCE
+            e.text="Unknown trap source '%s'"%request.ip
+            done(controller,error=e)
+            return
+        logging.info("%s configuration changed (Notified by trap)"%(c.repo_path))
+        c.next_pull=min(c.next_pull,datetime.datetime.now()+datetime.timedelta(minutes=10))
+        c.save()
+        done(controller,NotifyResponse())
 ##
 ##
 ##

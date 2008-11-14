@@ -265,6 +265,8 @@ class Config(Object):
     password=models.CharField("Password",max_length=32,blank=True,null=True)
     super_password=models.CharField("Super Password",max_length=32,blank=True,null=True)
     remote_path=models.CharField("Path",max_length=32,blank=True,null=True)
+    trap_source_ip=models.IPAddressField("Trap Source IP",blank=True,null=True)
+    trap_community=models.CharField("Trap Community",blank=True,null=True,max_length=64)
     
     repo_name="config"
     def _profile(self):

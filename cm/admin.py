@@ -58,7 +58,7 @@ class ConfigAdminForm(forms.ModelForm):
         
 class ConfigAdmin(ObjectAdmin):
     form=ConfigAdminForm
-    list_display=["repo_path","location","activator","profile_name","scheme","address","last_modified","pull_every","last_pull","next_pull","view_link"]
+    list_display=["repo_path","location","activator","profile_name","scheme","address","last_modified","next_pull","view_link"]
     list_filter=["location","categories","profile_name","activator"]
     search_fields=["repo_path","address"]
     object_class=Config

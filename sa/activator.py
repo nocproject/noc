@@ -221,7 +221,7 @@ class ActivatorStream(RPCStream):
 ## Activator supervisor and daemon
 ##
 class Activator(object):
-    def __init__(self,name,sae_ip,sae_port):
+    def __init__(self,name,sae_ip,sae_port,trap_ip=None):
         logging.info("Running activator '%s'"%name)
         self.name=name
         self.sae_ip=sae_ip
@@ -232,11 +232,15 @@ class Activator(object):
         self.service.activator=self
         self.streams={}
         self.children={}
+        self.trap_ip=trap_ip
+        self.trap_collector=None
+        if trap_ip:
+            from noc.sa.trapcollector import TrapCollector
+            self.trap_collector=TrapCollector(self,self.trap_ip)
         self.is_registred=False
         self.register_transaction=None
         logging.info("Loading profile classes")
         profile_registry.register_all()
-        logging.info("Setting signal handlers")
     
     def run(self):
         last_keepalive=time.time()
@@ -278,6 +282,9 @@ class Activator(object):
         self.sae_stream=None
         self.sae_reset=time.time()
         
+    def on_trap_config_change(self,ip,oid):
+        self.notify_trap_config_change(ip)
+        
     # Handlers
     ##
     ## Register
@@ -297,6 +304,8 @@ class Activator(object):
                     logging.debug("In-budle package. Skipping software updates")
                 except ImportError:
                     self.manifest()
+                if self.trap_collector:
+                    self.get_trap_filter() # Bad place
             else:
                 logging.error("Registration id mismatch")
                 self.register_transaction=None
@@ -351,4 +360,40 @@ class Activator(object):
         for f in update_list:
             r.names.append(f)
         self.software_upgrade_transaction=self.sae_stream.proxy.software_upgrade(r,software_upgrade_callback)
-    
+    ##
+    ##
+    ##
+    def get_trap_filter(self):
+        def get_trap_filter_callback(transaction,response=None,error=None):
+            if error:
+                logging.error("get_trap_filter error: %s"%error.text)
+                return
+            if response and self.trap_collector:
+                logging.info("Updating trap filters")
+                filters={}
+                for r in response.filters:
+                    if r.ip not in filters:
+                        filters[r.ip]={}
+                    for a in r.actions:
+                        if a.oid not in filters[r.ip]:
+                            filters[r.ip][a.oid]=[]
+                        for aa in a.actions:
+                            if aa==TA_IGNORE:
+                                continue
+                            elif aa==TA_NOTIFY_CONFIG_CHANGE:
+                                action=self.on_trap_config_change
+                            filters[r.ip][a.oid].append(action)
+                self.trap_collector.set_trap_filter(filters)
+        r=TrapFilterRequest()
+        self.sae_stream.proxy.get_trap_filter(r,get_trap_filter_callback)
+    ##
+    ##
+    ##
+    def notify_trap_config_change(self,ip):
+        def notify_trap_config_change_callback(transaction,response=None,error=None):
+            if error:
+                logging.error("notify_trap_config_change failed: %s"%error)
+                return
+        r=NotifyTrapConfigChangeRequest()
+        r.ip=ip
+        self.sae_stream.proxy.notify_trap_config_change(r,notify_trap_config_change_callback)

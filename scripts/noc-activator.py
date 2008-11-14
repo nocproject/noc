@@ -6,7 +6,7 @@ import os,sys,getopt,logging
 
 def usage():
     print "USAGE:"
-    print "%s [-h] [-v] [-f] [-n<name>][-c<ip>:<port>] [-l<logfile>] [-p<pidfile>]"%sys.argv[0]
+    print "%s [-h] [-v] [-f] [-n<name>][-c<ip>:<port>] [-l<logfile>] [-p<pidfile>] [-t<ip>]"%sys.argv[0]
     print "\t-h\t\t- Help screen"
     print "\t-v\t\t- Verbose debug output"
     print "\t-f\t\t- Do not daemonize, run at the foreground"
@@ -14,6 +14,7 @@ def usage():
     print "\t-c\t\t- Connect to SAE at <ip>:<port>"
     print "\t-l<logfile>\t- Write log to <logfile>"
     print "\t-p<pidfile>\t- Write pid to <pidfile>"
+    print "\t-t<ip>\t- Listen for SNMP traps at <ip>"
     
 def become_daemon(dirname,pidfile=None,umask=022):
     logging.debug("Change directory to '%s'"%dirname)
@@ -54,7 +55,8 @@ def main():
     logfile=None
     pidfile=None
     name="unknown"
-    optlist,optarg=getopt.getopt(sys.argv[1:],"vhfl:p:c:n:")
+    trap_ip=None
+    optlist,optarg=getopt.getopt(sys.argv[1:],"vhfl:p:c:n:t:")
     for k,v in optlist:
         if   k=="-v":
             log_level=logging.DEBUG
@@ -72,6 +74,8 @@ def main():
             port=int(port)
         elif k=="-n":
             name=v
+        elif k=="-t":
+            trap_ip=v
     if logfile:
         logging.basicConfig(level=log_level,filename=logfile,format='%(asctime)s %(levelname)s %(message)s',filemode="a+")
     else:
@@ -82,7 +86,7 @@ def main():
         become_daemon(dirname,pidfile)
     os.environ['DJANGO_SETTINGS_MODULE']="noc.settings"
     from noc.sa.activator import Activator
-    activator=Activator(name,ip,port)
+    activator=Activator(name,ip,port,trap_ip)
     activator.run()
     
 if __name__ == '__main__':

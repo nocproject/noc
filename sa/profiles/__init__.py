@@ -156,3 +156,9 @@ class Profile(object):
                 rx=re.compile(r,re.DOTALL|re.MULTILINE)
                 cfg=rx.sub("",cfg)
         return unicode(cfg,"utf8","ignore").encode("utf8") # Prevent serialization errors
+    #
+    # SNMP support
+    #
+    
+    # OID of "config changed trap".
+    oid_trap_config_changed=None

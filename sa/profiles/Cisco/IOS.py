@@ -18,6 +18,7 @@ class Profile(noc.sa.profiles.Profile):
     config_volatile=["^ntp clock-period .*?^"]
     command_pull_config=["terminal length 0","show running-config"]
     config_skip_head=5
+    oid_trap_config_changed="1.3.6.1.4.1.9.9.43.2"
     
     def generate_prefix_list(self,name,pl,strict=True):
         p="ip prefix-list %s permit %%s"%name
