@@ -7,3 +7,7 @@ def zone(request,zone,ns_id):
     z=get_object_or_404(DNSZone,name=zone)
     ns=get_object_or_404(DNSServer,id=int(ns_id))
     return render_plain_text(z.zonedata(ns))
+
+def zone_rpsl(request,zone):
+    z=get_object_or_404(DNSZone,name=zone)
+    return render_plain_text(z.rpsl)

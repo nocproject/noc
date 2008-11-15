@@ -380,6 +380,8 @@ class RPSL(Object):
             for o in RPSL.objects.filter(repo_path__startswith=name+os.sep):
                 objects[o.repo_path]=o
             for a in c.objects.all():
+                if not a.rpsl:
+                    continue
                 path=os.path.join(name,name_fun(a))
                 if path in objects:
                     o=objects[path]
@@ -391,10 +393,12 @@ class RPSL(Object):
             for o in objects.values():
                 o.delete()
         from noc.peer.models import AS,ASSet,PeeringPoint
+        from noc.dns.models import DNSZone
         logging.debug("RPSL.global_pull(): building RPSL")
         global_pull_class("inet-rtr",PeeringPoint,lambda a:a.hostname)
         global_pull_class("as",AS,lambda a:"AS%d"%a.asn)
         global_pull_class("as-set",ASSet,lambda a:a.name)
+        global_pull_class("domain",DNSZone, lambda a:a.name)
     
     @classmethod
     def global_push(cls): pass

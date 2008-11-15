@@ -5,6 +5,7 @@ from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 from noc.dns.generators import generator_registry
+from noc.lib.rpsl import rpsl_format
 
 ##
 ## register all generator classes
@@ -201,6 +202,27 @@ class DNSZone(models.Model):
         nses.sort()
         return nses
     ns_list=property(_ns_list)
+    
+    def _rpsl(self):
+        if self.type!="R":
+            return ""
+        # Do not generate RPSL for private reverse zones
+        if self.name.endswith(".10.in-addr.arpa"):
+            return ""
+        n1,n2,n=self.name.split(".",2)
+        if n>="16.172.in-addr.arpa" and n<="31.172.in-addr.arpa":
+            return ""
+        n1,n=self.name.split(".",1)
+        if n=="168.192.in-addr.arpa":
+            return ""
+        s=["domain: %s"%self.name]+["nserver: %s"%ns for ns in self.ns_list]
+        return rpsl_format("\n".join(s))
+    rpsl=property(_rpsl)
+    
+    def rpsl_link(self):
+        return "<A HREF='/dns/%s/zone/rpsl/'>RPSL</A>"%self.name
+    rpsl_link.short_description="RPSL"
+    rpsl_link.allow_tags=True
 ##
 ##
 ##
