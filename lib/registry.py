@@ -1,5 +1,4 @@
 import os,logging
-from django.conf import settings
 
 ##
 ## Abstract module loader/registry
@@ -8,6 +7,7 @@ class Registry(object):
     name="Registry"
     subdir="directory"
     classname="Class"
+    apps=None
     def __init__(self):
         self.classes={}
         self.choices=[]
@@ -30,7 +30,12 @@ class Registry(object):
     def register_all(self):
         if self.is_registered:
             return
-        for app in [a for a in settings.INSTALLED_APPS if a.startswith("noc.")]:
+        if self.apps is None:
+            from django.conf import settings
+            apps=[a for a in settings.INSTALLED_APPS if a.startswith("noc.")]
+        else:
+            apps=self.apps
+        for app in apps:
             pd=os.path.join(app[4:],self.subdir)
             if not os.path.isdir(pd):
                 continue

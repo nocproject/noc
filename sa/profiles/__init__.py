@@ -8,6 +8,7 @@ class ProfileRegistry(Registry):
     name="ProfileRegistry"
     subdir="profiles"
     classname="Profile"
+    apps=["noc.sa"]
 profile_registry=ProfileRegistry()
 
 ##

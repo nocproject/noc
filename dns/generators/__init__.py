@@ -6,6 +6,7 @@ class GeneratorRegistry(Registry):
     name="GeneratorRegistry"
     subdir="generators"
     classname="Generator"
+    apps=["noc.dns"]
 generator_registry=GeneratorRegistry()
 ##
 ## Metaclass for Generator
