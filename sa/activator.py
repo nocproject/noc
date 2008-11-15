@@ -221,7 +221,7 @@ class ActivatorStream(RPCStream):
 ## Activator supervisor and daemon
 ##
 class Activator(object):
-    def __init__(self,name,sae_ip,sae_port,trap_ip=None):
+    def __init__(self,name,sae_ip,sae_port,trap_ip=None,software_upgrade=False):
         logging.info("Running activator '%s'"%name)
         self.name=name
         self.sae_ip=sae_ip
@@ -234,6 +234,7 @@ class Activator(object):
         self.children={}
         self.trap_ip=trap_ip
         self.trap_collector=None
+        self.software_upgrade=software_upgrade
         if trap_ip:
             from noc.sa.trapcollector import TrapCollector
             self.trap_collector=TrapCollector(self,self.trap_ip)
@@ -241,6 +242,10 @@ class Activator(object):
         self.register_transaction=None
         logging.info("Loading profile classes")
         profile_registry.register_all()
+        if software_upgrade:
+            logging.info("Software upgrades permited")
+        else:
+            logging.info("Software upgrades are not required")
     
     def run(self):
         last_keepalive=time.time()
@@ -299,10 +304,7 @@ class Activator(object):
                 logging.info("Registration accepted")
                 self.is_registred=True
                 self.register_transaction=None
-                try:
-                    import noc.sa.sae
-                    logging.debug("In-budle package. Skipping software updates")
-                except ImportError:
+                if self.software_upgrade:
                     self.manifest()
                 if self.trap_collector:
                     self.get_trap_filter() # Bad place

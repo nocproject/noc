@@ -15,37 +15,6 @@ def usage():
     print "\t-l<logfile>\t- Write log to <logfile>"
     print "\t-p<pidfile>\t- Write pid to <pidfile>"
     print "\t-t<ip>\t- Listen for SNMP traps at <ip>"
-    
-def become_daemon(dirname,pidfile=None,umask=022):
-    logging.debug("Change directory to '%s'"%dirname)
-    os.chdir(dirname)
-    try:
-        if os.fork():
-            sys.exit(0)
-    except OSError,e:
-        sys.stderr.write("Fork failed")
-        sys.exit(1)
-    os.setsid()
-    os.umask(umask)
-    try:
-        pid=os.fork()
-    except OSError,e:
-        sys.stderr.write("Fork failed")
-        os._exit(1)
-    if pid:
-        if pidfile:
-            f=open(pidfile,"w")
-            f.write(str(pid))
-            f.close()
-        os._exit(0)
-    i=open("/dev/null","r")
-    o=open("/dev/null","a+")
-    e=open("/dev/null","a+")
-    os.dup2(i.fileno(), sys.stdin.fileno())
-    os.dup2(o.fileno(), sys.stdout.fileno())
-    os.dup2(e.fileno(), sys.stderr.fileno())
-    sys.stdout=o
-    sys.stderr=e
 #
 def main():
     log_level=logging.INFO
@@ -82,11 +51,12 @@ def main():
         logging.basicConfig(level=log_level,format='%(asctime)s %(levelname)s %(message)s')
     logging.info("Starting Activator")
     if not run_foreground:
+        from noc.lib.sysutils import become_daemon
         dirname=os.path.join(os.path.dirname(sys.argv[0]),"..")
         become_daemon(dirname,pidfile)
-    os.environ['DJANGO_SETTINGS_MODULE']="noc.settings"
+    software_update=not os.path.exists(os.path.join("sa","sae.py"))
     from noc.sa.activator import Activator
-    activator=Activator(name,ip,port,trap_ip)
+    activator=Activator(name,ip,port,trap_ip,software_update)
     activator.run()
     
 if __name__ == '__main__':
@@ -94,9 +64,4 @@ if __name__ == '__main__':
     sys.path.insert(0,os.path.join(d,"..",".."))
     sys.path.insert(0,os.path.join(d,".."))
     sys.path.insert(0,d)
-    try:
-        import settings
-    except ImportError:
-        sys.stderr.write("Error: Can't find file 'settings.py'. (If the file settings.py does indeed exist, it's causing an ImportError somehow.)\n")
-        sys.exit(1)
     main()
