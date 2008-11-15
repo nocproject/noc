@@ -15,4 +15,4 @@ def rpsl_format(rpsl,ident=None):
     for l in [x for x in rpsl.split("\n") if ":" in x]:
         k,v=l.split(":",1)
         out.append(mask%(k.strip()+":",v.strip()))
-    return "\n".join(out)
+    return "\n".join(out)+"\n"
