@@ -6,6 +6,7 @@ from noc.sa.actions import get_action_class
 from noc.sa.profiles import profile_registry
 from noc.sa.sae_stream import RPCStream,file_hash
 from noc.sa.protocols.sae_pb2 import *
+from noc.lib.fileutils import safe_rewrite
 
 ##
 ## Maximal stream time to life
@@ -221,7 +222,7 @@ class ActivatorStream(RPCStream):
 ## Activator supervisor and daemon
 ##
 class Activator(object):
-    def __init__(self,name,sae_ip,sae_port,trap_ip=None,software_upgrade=False):
+    def __init__(self,name,sae_ip,sae_port,trap_ip=None,can_upgrade_software=False):
         logging.info("Running activator '%s'"%name)
         self.name=name
         self.sae_ip=sae_ip
@@ -234,7 +235,7 @@ class Activator(object):
         self.children={}
         self.trap_ip=trap_ip
         self.trap_collector=None
-        self.software_upgrade=software_upgrade
+        self.can_upgrade_software=can_upgrade_software
         if trap_ip:
             from noc.sa.trapcollector import TrapCollector
             self.trap_collector=TrapCollector(self,self.trap_ip)
@@ -242,7 +243,7 @@ class Activator(object):
         self.register_transaction=None
         logging.info("Loading profile classes")
         profile_registry.register_all()
-        if software_upgrade:
+        if self.can_upgrade_software:
             logging.info("Software upgrades permited")
         else:
             logging.info("Software upgrades are not required")
@@ -304,7 +305,7 @@ class Activator(object):
                 logging.info("Registration accepted")
                 self.is_registred=True
                 self.register_transaction=None
-                if self.software_upgrade:
+                if self.can_upgrade_software:
                     self.manifest()
                 if self.trap_collector:
                     self.get_trap_filter() # Bad place
@@ -328,7 +329,7 @@ class Activator(object):
             if transaction.id==self.manifest_transaction.id:
                 update_list=[]
                 for cs in response.files:
-                    if cs.hash!=file_hash(cs.name):
+                    if not os.path.exists(cs.name) or cs.hash!=file_hash(cs.name):
                         update_list.append(cs.name)
                 self.manifest_transaction=None
                 if update_list:
@@ -351,13 +352,14 @@ class Activator(object):
             if transaction.id==self.software_upgrade_transaction.id:
                 logging.info("Upgrading software")
                 for u in response.codes:
-                    logging.info("Upgrade: %s [NOT IMPLEMENTING]"%u.name)
-                    logging.debug(u.code)
+                    logging.info("Upgrade: %s"%u.name)
+                    safe_rewrite(u.name,u.code)
                 self.software_upgrade_transaction=None
                 self.reboot()
             else:
                 logging.error("Transaction id mismatch")
                 self.software_upgrade_transaction=None
+        logging.debug("Requesting software upgrade for %s"%str(update_list))
         r=SoftwareUpgradeRequest()
         for f in update_list:
             r.names.append(f)

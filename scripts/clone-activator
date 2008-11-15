@@ -1,0 +1,9 @@
+#!/bin/sh
+#----
+# Create activator clone
+#----
+PREFIX=`dirname $0`/../
+MANIFEST=$PREFIX/MANIFEST-ACTIVATOR
+DEST=$1/noc/
+[ -d $DEST ] || mkdir -p $DEST
+(tar cf - `cat $MANIFEST`)|(cd $DEST && tar xfv -)

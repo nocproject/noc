@@ -14,11 +14,22 @@ from noc.lib.fileutils import read_file
 ## Manifest for activator
 ##
 ACTIVATOR_MANIFEST=[
+    "__init__.py",
+    "sa/__init__.py",
     "sa/activator.py",
     "sa/sae_stream.py",
+    "sa/trapcollector.py",
+    "sa/protocols/__init__.py",
     "sa/protocols/sae_pb2.py",
     "sa/actions/",
     "sa/profiles/",
+    "lib/__init__.py",
+    "lib/ip.py",
+    "lib/registry.py",
+    "lib/sysutils.py",
+    "lib/fileutils.py",
+    "lib/ecma48.py",
+    "scripts/noc-activator.py",
 ]
 
 ##
