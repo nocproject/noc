@@ -6,6 +6,7 @@ from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address
 from noc.peer.models import AS
 from noc.lib.render import render
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
+from noc.lib.ip import normalize_prefix
 
 def index(request):
     search_by_name=None
@@ -47,6 +48,10 @@ class AllocateBlockForm(forms.Form):
     description=forms.CharField(label="description",required=True)
     asn=forms.ModelChoiceField(label="ASN",queryset=AS.objects.all(),required=True)
     tt=forms.IntegerField(label="TT #",required=False)
+    def clean_prefix(self):
+        if not is_cidr(self.cleaned_data["prefix"]):
+            raise forms.ValidationError("Invalid prefix")
+        return normalize_prefix(self.cleaned_data["prefix"])
 
 def allocate_block(request,vrf_id,prefix=None):
     vrf=get_object_or_404(VRF,id=int(vrf_id))
@@ -102,9 +107,16 @@ class AssignAddressForm(forms.Form):
     ip=forms.CharField(label="IP",required=True)
     description=forms.CharField(label="Description",required=False)
     tt=forms.IntegerField(label="TT #",required=False)
+    def clean_fqdn(self):
+        if not is_fqdn(self.cleaned_data["fqdn"]):
+            raise forms.ValidationError("Invalid FQDN")
+        return self.cleaned_data["fqdn"].strip()
+    def clean_ip(self):
+        if not is_ipv4(self.cleaned_data["ip"]):
+            raise forms.ValidationError("Invalid IP Address")
+        return self.cleaned_data["ip"]
     
 def assign_address(request,vrf_id,ip=None):
-    print "IP",ip
     vrf=get_object_or_404(VRF,id=int(vrf_id))
     if ip:
         assert is_ipv4(ip)
