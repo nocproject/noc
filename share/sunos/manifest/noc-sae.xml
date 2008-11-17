@@ -38,7 +38,7 @@
             <stability value="Evolving"/>
             <propval name="python"      type="astring" value="/opt/csw/bin/python" />
             <propval name="prefix"      type="astring" value="/var/www/noc" />
-            <propval name="config"      type="astring" value="/var/www/noc/etc/noc-activator.conf" />
+            <propval name="config"      type="astring" value="/var/www/noc/etc/noc-sae.conf" />
         </property_group>
         <template>
             <common_name>
