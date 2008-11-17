@@ -7,6 +7,7 @@ from noc.sa.profiles import profile_registry
 from noc.sa.sae_stream import RPCStream,file_hash
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import safe_rewrite
+from noc.lib.daemon import Daemon
 
 ##
 ## Maximal stream time to life
@@ -221,38 +222,31 @@ class ActivatorStream(RPCStream):
 ##
 ## Activator supervisor and daemon
 ##
-class Activator(object):
-    def __init__(self,name,sae_ip,sae_port,trap_ip=None,can_upgrade_software=False):
-        logging.info("Running activator '%s'"%name)
-        self.name=name
-        self.sae_ip=sae_ip
-        self.sae_port=int(sae_port)
+class Activator(Daemon):
+    daemon_name="noc-activator"
+    def __init__(self,config_path=None,daemonize=True):
+        Daemon.__init__(self,config_path,daemonize)
+        logging.info("Running activator '%s'"%self.config.get("activator","name"))
         self.sae_stream=None
         self.sae_reset=0
         self.service=Service()
         self.service.activator=self
         self.streams={}
         self.children={}
-        self.trap_ip=trap_ip
         self.trap_collector=None
-        self.can_upgrade_software=can_upgrade_software
-        if trap_ip:
+        if self.config.get("activator","listen_traps"):
             from noc.sa.trapcollector import TrapCollector
-            self.trap_collector=TrapCollector(self,self.trap_ip)
+            self.trap_collector=TrapCollector(self,self.config.get("activator","listen_traps"))
         self.is_registred=False
         self.register_transaction=None
         logging.info("Loading profile classes")
         profile_registry.register_all()
-        if self.can_upgrade_software:
-            logging.info("Software upgrades permited")
-        else:
-            logging.info("Software upgrades are not required")
     
     def run(self):
         last_keepalive=time.time()
         while True:
             if self.sae_stream is None and time.time()-self.sae_reset>10:
-                self.sae_stream=ActivatorStream(self.service,self.sae_ip,self.sae_port)
+                self.sae_stream=ActivatorStream(self.service,self.config.get("sae","host"),self.config.getint("sae","port"))
                 self.register()
             asyncore.loop(timeout=1,count=5)
             # Close stale streams
@@ -305,16 +299,19 @@ class Activator(object):
                 logging.info("Registration accepted")
                 self.is_registred=True
                 self.register_transaction=None
-                if self.can_upgrade_software:
+                if self.config.get("activator","software_update") and not os.path.exists(os.path.join("sa","sae.py")):
+                    logging.info("Requesting software update")
                     self.manifest()
+                else:
+                    logging.info("In-bundle package. Skiping software updates")
                 if self.trap_collector:
                     self.get_trap_filter() # Bad place
             else:
                 logging.error("Registration id mismatch")
                 self.register_transaction=None
-        logging.info("Registering as '%s'"%self.name)
+        logging.info("Registering as '%s'"%self.config.get("activator","name"))
         r=RegisterRequest()
-        r.name=self.name
+        r.name=self.config.get("activator","name")
         self.register_transaction=self.sae_stream.proxy.register(r,register_callback)
         
     ##

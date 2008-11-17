@@ -26,7 +26,7 @@ ACTIVATOR_MANIFEST=[
     "lib/__init__.py",
     "lib/ip.py",
     "lib/registry.py",
-    "lib/sysutils.py",
+    "lib/daemon.py",
     "lib/fileutils.py",
     "lib/ecma48.py",
     "scripts/noc-activator.py",
