@@ -90,7 +90,10 @@ class Daemon(object):
             pid=int(f.read().strip())
             f.close()
             logging.info("Stopping %s pid=%s"%(self.daemon_name,pid))
-            os.kill(pid,signal.SIGKILL)
+            try:
+                os.kill(pid,signal.SIGKILL)
+            except:
+                pass
             os.unlink(pidfile)
         
     def refresh(self):
