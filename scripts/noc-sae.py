@@ -6,7 +6,7 @@ import os,sys,getopt
 
 def usage():
     print "USAGE:"
-    print "%s [-h] [-v] [-f] [-c <config>]"%sys.argv[0]
+    print "%s [-h] [-f] [-c <config>] start|stop|refresh"%sys.argv[0]
     print "\t-h\t\t- Help screen"
     print "\t-f\t\t- Do not daemonize, run at the foreground"
     print "\t-c <config>\t\t- Read <config> file (etc/noc-sae.conf by default)"
@@ -17,6 +17,10 @@ def main():
     config_path=None
 
     optlist,optarg=getopt.getopt(sys.argv[1:],"hfc:")
+    if len(optarg)!=1 or optarg[0] not in ["start","stop","refresh"]:
+        usage()
+        sys.exit(1)
+    cmd=optarg[0]
     for k,v in optlist:
         if k=="-h":
             usage()
@@ -28,7 +32,12 @@ def main():
     os.environ['DJANGO_SETTINGS_MODULE']="noc.settings"
     from noc.sa.sae import SAE
     sae=SAE(config_path,daemonize)
-    sae.run()
+    if cmd=="start":
+        sae.start()
+    elif cmd=="stop":
+        sae.stop()
+    elif cmd=="refresh":
+        sae.refresh()
     
 if __name__ == '__main__':
     d=os.path.dirname(sys.argv[0])
