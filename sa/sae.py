@@ -9,6 +9,7 @@ import asyncore,socket,logging,time,threading,datetime,traceback,os
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
 from noc.lib.fileutils import read_file
+from noc.lib.daemon import Daemon
 
 ##
 ## Manifest for activator
@@ -30,6 +31,7 @@ ACTIVATOR_MANIFEST=[
     "lib/fileutils.py",
     "lib/ecma48.py",
     "scripts/noc-activator.py",
+    "etc/noc-activator.defaults",
 ]
 
 ##
@@ -155,10 +157,11 @@ class StreamFactory(object):
 ##
 ## SAE Supervisor
 ##
-class SAE(object):
-    def __init__(self,address,port):
-        self.address=address
-        self.port=port
+class SAE(Daemon):
+    daemon_name="noc-sae"
+    def __init__(self,config_path=None,daemonize=True):
+        Daemon.__init__(self,config_path,daemonize)
+        logging.info("Running SAE")
         self.service=Service()
         self.service.sae=self
         self.streams=StreamFactory(self)
@@ -169,7 +172,7 @@ class SAE(object):
         self.activator_manifest=None
     
     def build_manifest(self):
-        logging.debug("Building manifest")
+        logging.info("Building manifest")
         self.activator_manifest=ManifestResponse()
         for f in ACTIVATOR_MANIFEST:
             if f.endswith("/"):
@@ -186,8 +189,8 @@ class SAE(object):
 
     def run(self):
         self.build_manifest()
-        logging.debug("Starting listener at %s:%d"%(self.address,self.port))
-        self.listener=Listener(self,self.address,self.port)
+        logging.info("Starting listener at %s:%d"%(self.config.get("sae","listen"),self.config.getint("sae","port")))
+        self.listener=Listener(self,self.config.get("sae","listen"),self.config.getint("sae","port"))
         last_cleanup=time.time()
         last_task_check=time.time()
         while True:

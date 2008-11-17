@@ -16,3 +16,4 @@ lib/daemon.py
 lib/fileutils.py
 lib/ecma48.py
 scripts/noc-activator.py
+etc/noc-activator.defaults
