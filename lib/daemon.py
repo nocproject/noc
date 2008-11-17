@@ -29,8 +29,11 @@ class Daemon(object):
         if self.config.get("main","loglevel") not in self.LOG_LEVELS:
             raise Exception("Invalid loglevel '%s'"%self.config.get("main","loglevel"))
         loglevel=self.LOG_LEVELS[self.config.get("main","loglevel")]
-        if daemonize and self.config.get("main","logfile"):
-            logging.basicConfig(level=loglevel,
+        for h in logging.root.handlers:
+            logging.root.removeHandler(h) # Dirty hack for baseConfig
+        if daemonize:
+            if self.config.get("main","logfile"):
+                logging.basicConfig(level=loglevel,
                                 filename=self.config.get("main","logfile"),
                                 format='%(asctime)s %(levelname)s %(message)s',
                                 filemode="a+")
