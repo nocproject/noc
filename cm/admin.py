@@ -58,6 +58,27 @@ class ConfigAdminForm(forms.ModelForm):
         
 class ConfigAdmin(ObjectAdmin):
     form=ConfigAdminForm
+    fieldsets=(
+        (None,{
+            "fields": ("repo_path","location","profile_name","activator")
+        }),
+        ("Access",{
+            "fields": ("scheme","address","port")
+        }),
+        ("Credentials",{
+            "fields": ("user","password","super_password")
+        }),
+        ("SNMP",{
+            "fields": ("trap_source_ip","trap_community")
+        }),
+        ("Categories", {
+            "fields": ("categories",)
+        }),
+        ("Push/Poll",{
+            "classes": ("collapse",),
+            "fields":("push_every","next_push","pull_every","next_pull")
+        })
+    )
     list_display=["repo_path","location","activator","profile_name","scheme","address","last_modified","next_pull","view_link"]
     list_filter=["location","categories","profile_name","activator"]
     search_fields=["repo_path","address"]
