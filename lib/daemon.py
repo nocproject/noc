@@ -1,7 +1,7 @@
 ##
 ## Various system utils
 ##
-import ConfigParser,sys,logging,os
+import ConfigParser,sys,logging,os,signal
 
 class Daemon(object):
     daemon_name="daemon"
@@ -39,9 +39,8 @@ class Daemon(object):
                                 filemode="a+")
         else:
             logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
-        # Daemonize
-        if daemonize:
-            self.become_daemon() 
+        self.daemonize=daemonize
+
     ##
     ## Main daemon loop. Should be overriden
     ##
@@ -77,3 +76,23 @@ class Daemon(object):
         os.dup2(e.fileno(), sys.stderr.fileno())
         sys.stdout=o
         sys.stderr=e
+        
+    def start(self):
+        # Daemonize
+        if self.daemonize:
+            self.become_daemon()
+        self.run()
+        
+    def stop(self):
+        pidfile=self.config.get("main","pidfile")
+        if os.path.exists(pidfile):
+            f=open(pidfile)
+            pid=int(f.read().strip())
+            f.close()
+            logging.info("Stopping %s pid=%s"%(self.daemon_name,pid))
+            os.kill(pid,signal.SIGKILL)
+            os.unlink(pidfile)
+        
+    def refresh(self):
+        self.stop()
+        self.start()
