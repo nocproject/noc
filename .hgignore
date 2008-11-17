@@ -8,3 +8,4 @@ share/doc/users_guide/src/.build/*
 dist/
 build/
 noc.egg-info/
+etc/*.conf
