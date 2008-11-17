@@ -28,16 +28,17 @@
                 <envvar name="PATH" value="/opt/csw/bin:/usr/bin:/bin"/>
             </method_environment>
         </method_context>
-        <exec_method type="method" name="start"   exec="/var/www/noc/scripts/sunos/noc-sae start"   timeout_seconds='60' />
-        <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/sunos/noc-sae stop"    timeout_seconds='60' />
-        <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/sunos/noc-sae refresh" timeout_seconds='60' />
+        <exec_method type="method" name="start"
+            exec="%{noc-sae/python} %{noc-sae/prefix}/scripts/noc-sae.py -c %{noc-sae/config} %m" timeout_seconds='60' />
+        <exec_method type="method" name="stop"
+            exec="%{noc-sae/python} %{noc-sae/prefix}/scripts/noc-sae.py -c %{noc-sae/config} %m" timeout_seconds='60' />
+        <exec_method type="method" name="refresh"
+            exec="%{noc-sae/python} %{noc-sae/prefix}/scripts/noc-sae.py -c %{noc-sae/config} %m" timeout_seconds='60' />
         <property_group name="noc-sae" type="framework">
             <stability value="Evolving"/>
             <propval name="python"      type="astring" value="/opt/csw/bin/python" />
             <propval name="prefix"      type="astring" value="/var/www/noc" />
-            <propval name="pidfile"     type="astring" value="/var/log/noc/noc-sae.pid" />
-            <propval name="logfile"     type="astring" value="/var/log/noc/noc-sae.log" />
-            <propval name="listen"      type="astring" value="127.0.0.1:19701" />
+            <propval name="config"      type="astring" value="/var/www/noc/etc/noc-activator.conf" />
         </property_group>
         <template>
             <common_name>
