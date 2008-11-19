@@ -14,6 +14,7 @@ class Socket(object):
         self.socket=sock
         self.socket.setblocking(0)
         self.factory.register_socket(self)
+        self.name=None
     
     def __del__(self):
         logging.debug("Deallocating socket: %s"%self)
@@ -42,6 +43,10 @@ class Socket(object):
     
     def debug(self,msg):
         logging.debug("%s:: %s"%(self,msg))
+    
+    def set_name(self,name):
+        self.name=name
+        self.factory.register_socket(self,name)
 ##
 ## Abstract Protocol Parser.
 ## Accepts data via feed method, polupates internal buffer (self.in_buffer).
@@ -229,19 +234,35 @@ class ConnectedTCPSocket(TCPSocket):
 class SocketFactory(object):
     def __init__(self):
         self.sockets={}
+        self.socket_name={}
+        self.name_socket={}
     
-    def register_socket(self,socket):
-        logging.debug("register_socket(%s)"%socket)
+    def register_socket(self,socket,name=None):
+        logging.debug("register_socket(%s,%s)"%(socket,name))
         self.sockets[socket.socket.fileno()]=socket
+        if socket in self.socket_name:
+            # Socket was registred
+            old_name=self.socket_name[socket]
+            del self.socket_name[socket]
+            if old_name:
+                del self.name_socket[old_name]
+        self.socket_name[socket]=name
+        if name:
+            self.name_socket[name]=socket
         
     def unregister_socket(self,socket):
         logging.debug("unregister_socket(%s)"%socket)
         del self.sockets[socket.socket.fileno()]
+        old_name=self.socket_name[socket]
+        del self.socket_name[socket]
+        if old_name:
+            del self.name_socket[old_name]
         
     def listen_tcp(self,address,port,socket_class):
         if not issubclass(socket_class,AcceptedTCPSocket):
             raise "socket_class should be a AcceptedTCPSocket subclass"
-        ListenTCPSocket(self,address,port,socket_class)
+        l=ListenTCPSocket(self,address,port,socket_class)
+        l.set_name("listen-tcp-%s:%d"%(address,port))
     
     def connect_tcp(self,address,port,socket_class):
         if not issubclass(socket_class,ConnectedTCPSocket):
@@ -250,6 +271,12 @@ class SocketFactory(object):
         
     def check_access(self,address):
         return True
+        
+    def get_socket_by_name(self,name):
+        return self.name_socket[name]
+        
+    def get_name_by_socket(self,socket):
+        return self.socket_name[socket]
         
     def loop(self,timeout=1):
         if self.sockets:
