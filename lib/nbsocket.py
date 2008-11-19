@@ -1,7 +1,7 @@
 ##
 ## Clean and lightweight non-blocking socket I/O implementation
 ##
-import socket,select,errno,time,logging,traceback
+import socket,select,errno,time,logging,traceback,pty,os,signal
 from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
      ENOTCONN, ESHUTDOWN, EINTR, EISCONN, ECONNREFUSED, EPIPE, errorcode
 
@@ -9,12 +9,14 @@ from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
 ## Abstract non-blocking socket wrapper.
 ##
 class Socket(object):
+    TTL=None # maximum time to live in seconds
     def __init__(self,factory,sock):
         self.factory=factory
         self.socket=sock
         self.socket.setblocking(0)
         self.factory.register_socket(self)
         self.name=None
+        self.start_time=time.time()
     
     def __del__(self):
         logging.debug("Deallocating socket: %s"%self)
@@ -47,6 +49,10 @@ class Socket(object):
     def set_name(self,name):
         self.name=name
         self.factory.register_socket(self,name)
+    # Stale sockets detection.
+    # Called by SocketFactory.close_stale to determine should socket be closed forcefully
+    def is_stale(self):
+        return self.TTL and time.time()-self.start_time>=self.TTL
 ##
 ## Abstract Protocol Parser.
 ## Accepts data via feed method, polupates internal buffer (self.in_buffer).
@@ -223,6 +229,80 @@ class ConnectedTCPSocket(TCPSocket):
         TCPSocket.handle_write(self)
     
     def on_conn_refused(self): pass
+##
+## File wrapper to mimic behavior of socket
+##
+class FileWrapper(object):
+    def __init__(self,fileno):
+        self._fileno=fileno
+        
+    def fileno(self):
+        return self._fileno
+        
+    def recv(self, *args):
+        return os.read(self._fileno, *args)
+        
+    def send(self, *args):
+        return os.write(self._fileno, *args)
+        
+    read = recv
+    
+    write = send
+    
+    def close(self):
+        os.close(self._fileno)
+        
+    def setblocking(self,status):
+        pass
+##
+## PTY Socket Emulation
+## Events: on_data, on_close
+##
+class PTYSocket(Socket):
+    def __init__(self,factory,argv):
+        self.pid,fd=pty.fork()
+        if self.pid==0:
+            os.execv(argv[0],argv)
+        else:
+            Socket.__init__(self,factory,FileWrapper(fd))
+        self.out_buffer=""
+            
+    def handle_read(self):
+        data=self.socket.read(8192)
+        if data:
+            self.on_read(data)
+        else:
+            self.close()
+
+    def can_write(self):
+        return self.out_buffer
+        
+    def handle_write(self):
+        sent=self.socket.send(self.out_buffer)
+        self.out_buffer=self.out_buffer[sent:]
+
+    def handle_connect(self):
+        self.is_connected=True
+        self.on_connect()
+
+    def write(self,msg):
+        self.debug("write(%s)"%msg)
+        self.out_buffer+=msg
+    
+    def close(self):
+        Socket.close(self)
+        try:
+            pid,status=os.waitpid(self.pid,os.WNOHANG)
+        except os.error:
+            return
+        if pid:
+            logging.debug("Child pid=%d is already terminated. Zombie released"%pid)
+        else:
+            logging.debug("Child pid=%d is not terminated. Killing"%self.pid)
+            os.kill(self.pid,signal.SIGKILL)
+    
+    def on_read(self,data):
+        pass
 
 ##
 ## Socket Factory.
@@ -232,10 +312,11 @@ class ConnectedTCPSocket(TCPSocket):
 ## run         - main event loop
 ##
 class SocketFactory(object):
-    def __init__(self):
+    def __init__(self,tick_callback=None):
         self.sockets={}
         self.socket_name={}
         self.name_socket={}
+        self.tick_callback=tick_callback
     
     def register_socket(self,socket,name=None):
         logging.debug("register_socket(%s,%s)"%(socket,name))
@@ -278,6 +359,11 @@ class SocketFactory(object):
     def get_name_by_socket(self,socket):
         return self.socket_name[socket]
         
+    def close_stale(self):
+        for s in [s for s in self.sockets.values() if s.is_stale()]:
+            logging.debug("Closing stale socket %s"%s)
+            s.close()
+        
     def loop(self,timeout=1):
         if self.sockets:
             r=[f for f,s in self.sockets.items() if s.can_read()]
@@ -306,9 +392,19 @@ class SocketFactory(object):
         else:
             time.sleep(timeout)
     
-    def run(self):
-        while self.sockets:
-            self.loop()
-
-if __name__=="__main__":
-    test()
+    def run(self,run_forever=False):
+        if run_forever:
+            last_tick=time.time()
+            last_stale=time.time()
+            while True:
+                self.loop(1)
+                t=time.time()
+                if self.tick_callback and t-last_tick>=1:
+                    self.tick_callback()
+                    last_tick=t
+                if t-last_stale>10:
+                    self.close_stale()
+                    last_stale=t
+        else:
+            while self.sockets:
+                self.loop()
