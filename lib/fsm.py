@@ -70,8 +70,12 @@ class FSM(object):
     @classmethod
     def get_dot(cls):
         r=["digraph {"]
+        r+=["label=\"%s state machine\";"%cls.FSM_NAME]
         for s in cls.STATES:
-            r+=["%s;"%s]
+            if s==cls.DEFAULT_STATE:
+                r+=["%s [shape=\"doublecircle\"];"%s]
+            else:
+                r+=["%s;"%s]
             for e,ns in cls.STATES[s].items():
                 r+=["%s -> %s [label=\"%s\"];"%(s,ns,e)]
         r+=["}",""]
