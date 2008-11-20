@@ -102,6 +102,25 @@ class ListenTCPSocket(Socket):
         else:
             logging.error("Refusing connection from %s"%addr[0])
             s.close()
+##
+## UDP Listener
+## Waits for UDP packets on specified ports
+## and calls on_read for each packet
+class ListenUDPSocket(Socket):
+    def __init__(self,factory,address,port):
+        Socket.__init__(self,factory,socket.socket(socket.AF_INET,socket.SOCK_DGRAM))
+        self.socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,
+            self.socket.getsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR) | 1)
+        self.socket.bind((address,port))
+    
+    def handle_read(self):
+        msg,transport_address=self.socket.recvfrom(8192)
+        if msg=="":
+            return
+        self.on_read(msg,transport_address[0],transport_address[1])
+    
+    def on_read(self,data,address,port):
+        pass
 
 ##
 ## Base class for TCP sockets. Should not be used directly.
