@@ -1,7 +1,7 @@
 __init__.py
 sa/__init__.py
 sa/activator.py
-sa/sae_stream.py
+sa/rpc.py
 sa/trapcollector.py
 sa/protocols/__init__.py
 sa/protocols/sae_pb2.py
@@ -15,5 +15,7 @@ lib/registry.py
 lib/daemon.py
 lib/fileutils.py
 lib/ecma48.py
+lib/fsm.py
+lib/nbsocket.py
 scripts/noc-activator.py
 etc/noc-activator.defaults
