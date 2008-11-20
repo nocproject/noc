@@ -1,158 +1,17 @@
 ##
 ## Service Activator
 ##
-import asyncore,os,logging,socket,pty,signal,time,re,sys,signal
-from noc.sa.actions import get_action_class
+import os,logging,pty,signal,time,re,sys,signal
+from errno import ECONNREFUSED
+from noc.sa.actions import action_registry,scheme_registry
 from noc.sa.profiles import profile_registry
-from noc.sa.sae_stream import RPCStream,file_hash
+from noc.sa.rpc import RPCSocket,file_hash
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.daemon import Daemon
+from noc.lib.fsm import FSM
+from noc.lib.nbsocket import ConnectedTCPSocket,SocketFactory
 
-##
-## Maximal stream time to life
-##
-STREAM_MAX_TTL=180
-
-##
-## Abstract connection stream
-##
-class Stream(asyncore.dispatcher):
-    def __init__(self,access_profile,activator=None):
-        asyncore.dispatcher.__init__(self)
-        self.access_profile=access_profile
-        self.in_buffer=""
-        self.out_buffer=""
-        self.current_action=None
-        self.start_time=time.time()
-        self.activator=activator
-        self.pid=None
-        self.prepare_stream()
-        if self.activator:
-            self.activator.register_stream(self)
-        
-    def prepare_stream(self):
-        raise Exception,"Not Implemented"
-        
-    def is_stale(self):
-        return time.time()-self.start_time>STREAM_MAX_TTL
-    
-    def close(self):
-        asyncore.dispatcher.close(self)
-        if self.pid:
-            pid,status=os.waitpid(self.pid,os.WNOHANG)
-            if pid:
-                logging.debug("Child pid=%d is already terminated. Zombie released"%pid)
-            else:
-                logging.debug("Child pid=%d is not terminated. Killing"%self.pid)
-                os.kill(self.pid,signal.SIGKILL)
-        if self.activator:
-            self.activator.release_stream(self)
-        
-    def attach_action(self,action):
-        logging.debug("attach_action %s"%str(action))
-        self.current_action=action
-        self.feed_action()
-        
-    def handle_connect(self): pass
-    
-    def handle_close(self):
-        if self.current_action:
-            self.current_action.close(None)
-        self.close()
-            
-    def reconnect(self):
-        self.to_reconnect=True
-    
-    def handle_read(self):
-        try:
-            self.in_buffer+=self.recv(8192)
-        except:
-            return
-        self.feed_action()
-        
-    def writable(self):
-        return len(self.out_buffer)>0
-    
-    def handle_write(self):
-        sent=self.send(self.out_buffer)
-        self.out_buffer=self.out_buffer[sent:]
-        
-    def handle_expt(self):
-        data=self.socket.recv(8192,socket.MSG_OOB)
-        logging.debug("OOB Data: %s"%data)
-        
-    def write(self,msg):
-        self.out_buffer+=msg
-        
-    def retain_input(self,msg):
-        self.in_buffer=msg+self.in_buffer
-        
-    def feed_action(self):
-        if self.in_buffer and self.current_action:
-            self.current_action.feed(self.in_buffer)
-            self.in_buffer=""
-
-##
-## Telnet connection stream
-##
-class TelnetStream(Stream):
-    def prepare_stream(self):
-        logging.debug("TelnetStream connecting '%s'"%self.access_profile.address)
-        self.pid,fd=pty.fork()
-        if self.pid==0:
-            os.execv("/usr/bin/telnet",["/usr/bin/telnet",self.access_profile.address])
-        else:
-            self.set_socket(asyncore.file_wrapper(fd))
-
-##
-## SSH Connection stream
-##
-class SSHStream(Stream):
-    def prepare_stream(self):
-        logging.debug("SSHStream connecting '%s'"%self.access_profile.address)
-        self.pid,fd=pty.fork()
-        if self.pid==0:
-            os.execv("/usr/bin/ssh",["/usr/bin/ssh","-o","StrictHostKeyChecking no","-l",self.access_profile.user,self.access_profile.address])
-        else:
-            self.set_socket(asyncore.file_wrapper(fd))
-##
-## HTTP Connection stream
-##
-class HTTPStream(Stream):
-    def prepare_stream(self):
-        logging.debug("HTTPStream connecting to %s:%d"%(self.access_profile.address,80))
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect((self.access_profile.address,80))
-
-##
-## Values are defined in sae.proto's AccessScheme enum
-##
-SCHEME_TO_CODE={
-    "telnet": TELNET,
-    "ssh"   : SSH,
-    "http"  : HTTP,
-}
-
-CODE_TO_SCHEME={
-    TELNET : "telnet",
-    SSH    : "ssh",
-    HTTP   : "http",
-}
-
-STREAMS={
-    TELNET : TelnetStream,
-    SSH    : SSHStream,
-    HTTP   : HTTPStream,
-}
-##
-##
-##
-PULL_CONFIG_ACTIONS={
-    TELNET : get_action_class("sa.actions.cli"),
-    SSH    : get_action_class("sa.actions.cli"),
-    HTTP   : get_action_class("sa.actions.http"),
-}
 
 ##
 ##
@@ -196,13 +55,11 @@ class Service(SAEService):
             args["commands"]=profile.command_pull_config
         elif request.access_profile.scheme in [HTTP]:
             args["address"]=request.access_profile.address
-        try:
-            activator=getattr(self,"activator")
-        except:
-            activator=None
-        action=PULL_CONFIG_ACTIONS[request.access_profile.scheme](
+        scheme_class=scheme_registry.get_by_id(request.access_profile.scheme)
+        action_class=action_registry[scheme_class.default_action]
+        action=action_class(
             transaction_id=controller.transaction.id,
-            stream=STREAMS[request.access_profile.scheme](request.access_profile,activator),
+            stream=scheme_class(self.activator.factory,request.access_profile),
             profile=profile,
             callback=pull_config_callback,
             args=args)
@@ -212,58 +69,165 @@ class Service(SAEService):
         
     def code_to_scheme(self,code):
         return CODE_TO_SCHEME[code]
+##
+##
+class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
+    def __init__(self,factory,address,port):
+        ConnectedTCPSocket.__init__(self,factory,address,port)
+        RPCSocket.__init__(self,factory.activator.service)
+        
+    def activator_event(self,event):
+        self.factory.activator.event(event)
+    
+    def on_connect(self):
+        self.activator_event("connect")
+    
+    def on_close(self):
+        self.activator_event("close")
+    
+    def on_conn_refused(self):
+        self.activator_event("refused")
 
-class ActivatorStream(RPCStream):
-    def __init__(self,service,address,port):
-        RPCStream.__init__(self,service)
-        logging.debug("Connecting to %s:%d"%(address,port))
-        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connect((address,port))
+
 ##
 ## Activator supervisor and daemon
 ##
-class Activator(Daemon):
+class Activator(Daemon,FSM):
     daemon_name="noc-activator"
+    FSM_NAME="Activator"
+    DEFAULT_STATE="IDLE"
+    STATES={
+        "IDLE": {
+                "timeout" : "CONNECT",
+                "close"   : "IDLE",
+                },
+        "CONNECT" : {
+                "timeout" : "IDLE",
+                "refused" : "IDLE",
+                "close"   : "IDLE",
+                "connect" : "CONNECTED",
+                },
+        "CONNECTED" : {
+                "timeout" : "IDLE",
+                "close"   : "IDLE",
+                "register": "AUTHENTICATED",
+                "error"   : "IDLE",
+        },
+        "AUTHENTICATED" : {
+                "establish" : "ESTABLISHED",
+                "upgrade"   : "UPGRADE",
+                "close"   : "IDLE",
+        },
+        "UPGRADE" : {
+                "establish" : "ESTABLISHED",
+                "close"     : "IDLE",
+        },
+        "ESTABLISHED" : {
+                "sigchld" : "ESTABLISHED",
+                "close"   : "IDLE",
+                
+        }
+    }
     def __init__(self,config_path=None,daemonize=True):
         Daemon.__init__(self,config_path,daemonize)
         logging.info("Running activator '%s'"%self.config.get("activator","name"))
-        self.sae_stream=None
-        self.sae_reset=0
         self.service=Service()
         self.service.activator=self
-        self.streams={}
+        self.factory=SocketFactory(tick_callback=self.tick)
+        self.factory.activator=self
         self.children={}
+        self.sae_stream=None
         self.trap_collector=None
-        if self.config.get("activator","listen_traps"):
-            from noc.sa.trapcollector import TrapCollector
-            self.trap_collector=TrapCollector(self,self.config.get("activator","listen_traps"))
-        self.is_registred=False
-        self.register_transaction=None
         logging.info("Loading profile classes")
+        action_registry.register_all()
         profile_registry.register_all()
+        FSM.__init__(self)
+        
+    ##
+    ## IDLE state 
+    ##
+    def on_IDLE_enter(self):
+        if self.sae_stream:
+            self.sae_stream.close()
+            self.sae_stream=None
+        if self.trap_collector:
+            self.stop_trap_collector()
+        self.set_timeout(5)
     
+    def on_IDLE_timeout(self):
+        self.sae_stream=self.factory.connect_tcp(self.config.get("sae","host"),self.config.getint("sae","port"),ActivatorSocket)
+    ##
+    ## CONNECT state
+    ##
+    def on_CONNECT_enter(self):
+        self.set_timeout(10)
+    ##
+    ## CONNECTED state
+    ##
+    def on_CONNECTED_enter(self):
+        self.set_timeout(10)
+        self.register()
+    ##
+    ## REGISTERED
+    ##
+
+    ##
+    ## AUTHENTICATED
+    ##
+    def on_AUTHENTICATED_enter(self):
+        if self.config.get("activator","software_update") and not os.path.exists(os.path.join("sa","sae.py")):
+            self.event("upgrade")
+        else:
+            logging.info("In-bundle package. Skiping software updates")
+            self.event("establish")
+    ##
+    ## UPGRADE
+    ##
+    def on_UPGRADE_enter(self):
+        logging.info("Requesting software update")
+        self.manifest()
+    ##
+    ## ESTABLISHED
+    ##
+    def on_ESTABLISHED_enter(self):
+        if self.config.get("activator","listen_traps"):
+            self.start_trap_collector()
+    
+    def on_ESTABLISHED_sigchld(self):
+        # Close stale streams
+        for s in [s for s in self.streams if s.is_stale()]:
+            logging.info("Forceful close of stale stream")
+            s.close()
+        # Finally clean up zombies
+        if self.streams:
+            while True:
+                try:
+                    pid,status=os.waitpid(-1,os.WNOHANG)
+                except:
+                    break
+                if pid:
+                    logging.debug("Zombie pid=%d is hunted and killed"%pid)
+                else:
+                    break
+    ##
+    ##
+    ##
+    def start_trap_collector(self):
+        logging.debug("Starting trap collector")
+        from noc.sa.trapcollector import TrapCollector
+        self.trap_collector=TrapCollector(self.factory,self.config.get("activator","listen_traps"),162)
+        self.get_trap_filter()
+        
+    def stop_trap_collector(self):
+        if self.trap_collector:
+            logging.debug("Stopping trap collector")
+            self.trap_collector.close()
+            self.trap_collector=None
+    ##
+    ## Main event loop
+    ##
     def run(self):
-        last_keepalive=time.time()
-        while True:
-            if self.sae_stream is None and time.time()-self.sae_reset>10:
-                self.sae_stream=ActivatorStream(self.service,self.config.get("sae","host"),self.config.getint("sae","port"))
-                self.register()
-            asyncore.loop(timeout=1,count=5)
-            # Close stale streams
-            for s in [s for s in self.streams if s.is_stale()]:
-                logging.info("Forceful close of stale stream")
-                s.close()
-            # Finally clean up zombies
-            if self.streams:
-                while True:
-                    try:
-                        pid,status=os.waitpid(-1,os.WNOHANG)
-                    except:
-                        break
-                    if pid:
-                        logging.debug("Zombie pid=%d is hunted and killed"%pid)
-                    else:
-                        break
+        self.factory.run(run_forever=True)
                 
     def register_stream(self,stream):
         logging.debug("Registering stream %s"%str(stream))
@@ -276,12 +240,7 @@ class Activator(Daemon):
     def reboot(self):
         logging.info("Rebooting")
         os.execv(sys.executable,[sys.executable]+sys.argv)
-        
-    def on_stream_close(self,sae_stream):
-        logging.debug("SAE connection lost")
-        self.sae_stream=None
-        self.sae_reset=time.time()
-        
+
     def on_trap_config_change(self,ip,oid):
         self.notify_trap_config_change(ip)
         
@@ -291,24 +250,16 @@ class Activator(Daemon):
     ##
     def register(self):
         def register_callback(transaction,response=None,error=None):
+            if self.get_state()!="CONNECTED":
+                return
             if error:
                 logging.error("Registration error: %s"%error.text)
-                self.register_transaction=None
+                self.event("error")
                 return
-            if transaction.id==self.register_transaction.id:
-                logging.info("Registration accepted")
-                self.is_registred=True
-                self.register_transaction=None
-                if self.config.get("activator","software_update") and not os.path.exists(os.path.join("sa","sae.py")):
-                    logging.info("Requesting software update")
-                    self.manifest()
-                else:
-                    logging.info("In-bundle package. Skiping software updates")
-                if self.trap_collector:
-                    self.get_trap_filter() # Bad place
-            else:
-                logging.error("Registration id mismatch")
-                self.register_transaction=None
+            logging.info("Registration accepted")
+            self.event("register")
+        if self.get_state()!="CONNECTED":
+            raise Exception("register should be called from CONNECTED state")
         logging.info("Registering as '%s'"%self.config.get("activator","name"))
         r=RegisterRequest()
         r.name=self.config.get("activator","name")
@@ -319,6 +270,8 @@ class Activator(Daemon):
     ##
     def manifest(self):
         def manifest_callback(transaction,response=None,error=None):
+            if self.get_state()!="UPGRADE":
+                return
             if error:
                 logging.error("Manifest error: %s"%error.text)
                 self.manifest_transaction=None
@@ -331,9 +284,13 @@ class Activator(Daemon):
                 self.manifest_transaction=None
                 if update_list:
                     self.software_upgrade(update_list)
+                else:
+                    self.event("establish")
             else:
                 logging.error("Transaction id mismatch")
                 self.manifest_transaction=None
+        if self.get_state()!="UPGRADE":
+            raise Exception("manifest should be called from UPGRADE state")
         logging.info("Requesting manifest")
         r=ManifestRequest()
         self.manifest_transaction=self.sae_stream.proxy.manifest(r,manifest_callback)

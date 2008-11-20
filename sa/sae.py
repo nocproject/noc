@@ -4,12 +4,13 @@
 from noc.sa.models import Activator
 from noc.cm.models import Config
 
-from noc.sa.sae_stream import RPCStream,file_hash
-import asyncore,socket,logging,time,threading,datetime,traceback,os
+from noc.sa.rpc import RPCSocket,file_hash
+import logging,time,threading,datetime,traceback,os
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
+from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,SocketFactory
 
 ##
 ## Manifest for activator
@@ -18,7 +19,7 @@ ACTIVATOR_MANIFEST=[
     "__init__.py",
     "sa/__init__.py",
     "sa/activator.py",
-    "sa/sae_stream.py",
+    "sa/rpc.py",
     "sa/trapcollector.py",
     "sa/protocols/__init__.py",
     "sa/protocols/sae_pb2.py",
@@ -30,6 +31,8 @@ ACTIVATOR_MANIFEST=[
     "lib/daemon.py",
     "lib/fileutils.py",
     "lib/ecma48.py",
+    "lib/fsm.py",
+    "lib/nbsocket.py",
     "scripts/noc-activator.py",
     "etc/noc-activator.defaults",
 ]
@@ -39,7 +42,7 @@ ACTIVATOR_MANIFEST=[
 ##
 class Service(SAEService):
     def get_controller_activator(self,controller):
-        return Activator.objects.get(name=self.sae.streams.get_name(controller.stream))
+        return Activator.objects.get(name=self.sae.factory.get_name_by_socket(controller.stream))
     ##
     ## RPC interfaces
     ##
@@ -57,7 +60,7 @@ class Service(SAEService):
             done(controller,error=e)
             return
         logging.info("Registering activator '%s'"%request.name)
-        self.sae.register_activator(request.name,controller.stream)
+        controller.stream.set_name(request.name)
         r=RegisterResponse()
         done(controller,response=r)
         
@@ -100,60 +103,15 @@ class Service(SAEService):
         c.next_pull=min(c.next_pull,datetime.datetime.now()+datetime.timedelta(minutes=10))
         c.save()
         done(controller,NotifyResponse())
-##
-##
-##
-class SAEStream(RPCStream):
-    def __init__(self,service,sock):
-        RPCStream.__init__(self,service)
-        logging.debug("Attaching SAEStream to socket")
-        self.set_socket(sock)
-        
-    def handle_close(self):
-        RPCStream.handle_close(self)
-        self.service.sae.on_stream_close(self)
 
 ##
-## Asyncronous listener socket
+## AcceptedTCPSocket with RPC Protocol
 ##
-class Listener(asyncore.dispatcher):
-    def __init__(self,sae,address,port):
-        asyncore.dispatcher.__init__(self)
-        self.sae=sae
-        self.create_socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.set_reuse_addr()
-        self.bind((address,port))
-        self.listen(5)
-    
-    def handle_accept(self):
-        self.sae.on_new_connect()
-##
-##
-##
-class StreamFactory(object):
-    def __init__(self,sae):
-        self.sae=sae
-        self.name_by_stream={} # stream->name
-        self.stream_by_name={} # name->stream
-        
-    def register(self,stream,name=None):
-        logging.debug("register(%s,%s)"%(str(stream),name))
-        self.name_by_stream[stream]=name
-        if name:
-            self.stream_by_name[name]=stream
-    
-    def unregister(self,stream):
-        logging.debug("unregister(%s)"%str(stream))
-        name=self.name_by_stream[stream]
-        del self.name_by_stream[stream]
-        if name:
-            del self.stream_by_name[name]
-    
-    def get_name(self,stream):
-        return self.name_by_stream[stream]
-        
-    def get_stream(self,name):
-        return self.stream_by_name[name]
+class SAESocket(RPCSocket,AcceptedTCPSocket):
+    def __init__(self,factory,socket):
+        AcceptedTCPSocket.__init__(self,factory,socket)
+        RPCSocket.__init__(self,factory.sae.service)
+
 ##
 ## SAE Supervisor
 ##
@@ -162,9 +120,14 @@ class SAE(Daemon):
     def __init__(self,config_path=None,daemonize=True):
         Daemon.__init__(self,config_path,daemonize)
         logging.info("Running SAE")
+        #
         self.service=Service()
         self.service.sae=self
-        self.streams=StreamFactory(self)
+        #
+        self.factory=SocketFactory()
+        self.factory.sae=self
+        self.factory.check_access=self.check_activator_access
+        
         # Periodic tasks
         self.active_periodic_tasks={}
         self.periodic_task_lock=threading.Lock()
@@ -190,11 +153,12 @@ class SAE(Daemon):
     def run(self):
         self.build_manifest()
         logging.info("Starting listener at %s:%d"%(self.config.get("sae","listen"),self.config.getint("sae","port")))
-        self.listener=Listener(self,self.config.get("sae","listen"),self.config.getint("sae","port"))
+        self.factory.listen_tcp(self.config.get("sae","listen"),self.config.getint("sae","port"),SAESocket)
+        
         last_cleanup=time.time()
         last_task_check=time.time()
         while True:
-            asyncore.loop(timeout=1,count=1)
+            self.factory.loop(1)
             if time.time()-last_task_check>10:
                 self.periodic_task_lock.acquire()
                 tasks = TaskSchedule.get_pending_tasks(exclude=self.active_periodic_tasks.keys())
@@ -236,16 +200,8 @@ class SAE(Daemon):
         finally:
             self.periodic_task_lock.release()
     ##
-    def on_new_connect(self):
-        conn,addr=self.listener.accept()
-        address,port=addr
-        if Activator.objects.filter(ip=address).count()==0:
-            logging.error("Refusing connection from %s"%address)
-            socket.close(conn)
-            return
-        logging.info("Connect from: %s"%address)
-        s=SAEStream(self.service,conn)
-        self.streams.register(s)
+    def check_activator_access(self,address):
+        return Activator.objects.filter(ip=address).count()>0
         
     def on_stream_close(self,stream):
         self.streams.unregister(stream)
@@ -255,8 +211,8 @@ class SAE(Daemon):
         
     def get_activator_stream(self,name):
         try:
-            return self.streams.get_stream(name)
-        except:
+            return self.factory.get_socket_by_name(name)
+        except KeyError:
             raise Exception("Activator not available: %s"%name)
 
     def pull_config(self,object):

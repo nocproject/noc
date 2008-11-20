@@ -1,7 +1,7 @@
-from noc.sa.actions import BaseAction
-import logging
+import noc.sa.actions
 
-class Action(BaseAction):
+class Action(noc.sa.actions.Action):
+    name="cli"
     ARGS=["user","password","super_password","commands"]
     CLEAN_INPUT=True # Remove all terminal-control mess
     def prepare_action(self):

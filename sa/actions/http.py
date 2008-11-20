@@ -1,7 +1,8 @@
-from noc.sa.actions import BaseAction
+import noc.sa.actions
 import logging,httplib,cStringIO,base64,hashlib,random
 
-class Action(BaseAction):
+class Action(noc.sa.actions.Action):
+    name="http"
     ARGS=["user","password","super_password","address"]
     def prepare_action(self):
         self.set_fsm([

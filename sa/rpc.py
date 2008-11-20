@@ -1,10 +1,11 @@
 ##
-## SAE-activator protocol stream
+## SAE-activator RPC
 ##
 from noc.sa.protocols.sae_pb2 import Message,Error
-import struct,logging,asyncore,socket,random,time,traceback,sha
+import struct,logging,random,time,traceback,sha
 from google.protobuf.service import RpcController
 from noc.sa.protocols.sae_pb2 import *
+from noc.lib.nbsocket import Protocol
 
 ##
 ## RPC Controller
@@ -83,68 +84,34 @@ class TransactionFactory(object):
     def delete_transaction(self,id):
         del self.transactions[id]
 ##
-## RPCStream deals with continuous
-## stream of SAE RPC PDU
-## and calls service's RPC methods
+## Stream is a <len><data><len><data>..... sequence
+## Where len is an 32 bit integer in network order
 ##
-class RPCStream(asyncore.dispatcher):
+class Int32Protocol(Protocol):
+        def parse_pdu(self):
+            r=[]
+            while len(self.in_buffer)>=4:
+                l=struct.unpack("!L",self.in_buffer[:4])[0]
+                if len(self.in_buffer)>=4+l:
+                    r+=[self.in_buffer[4:4+l]]
+                    self.in_buffer=self.in_buffer[4+l:]
+                else:
+                    break
+            return r
+##
+##
+##
+class RPCSocket(object):
+    protocol_class=Int32Protocol
     def __init__(self,service):
-        asyncore.dispatcher.__init__(self)
         self.service=service
         self.proxy=Proxy(self,SAEService_Stub)
-        self.in_message_len=None
-        self.in_buffer=""
-        self.out_buffer=""
         self.transactions=TransactionFactory()
         
-    def __del__(self):
-        logging.debug("deallocating stream %s"%str(self))
-        
-    def handle_connect(self):
-        logging.debug("handle_connect")
-        
-    def handle_close(self):
-        logging.debug("handle_close")
-        self.close()
-        self.proxy=None # Remove circular reference
-        
-    def handle_read(self):
-        logging.debug("handle_read")
-        d=self.recv(8192)
-        if d=="":
-            return
-        self.in_buffer+=d
-        while self.in_buffer:
-            if self.in_message_len is None and len(self.in_buffer)>=4:
-                self.in_message_len,=struct.unpack("!L",self.in_buffer[:4])
-                self.in_buffer=self.in_buffer[4:]
-            if self.in_message_len:
-                if len(self.in_buffer)<self.in_message_len:
-                    break
-                msg=Message()
-                msg.ParseFromString(self.in_buffer[:self.in_message_len])
-                self.in_buffer=self.in_buffer[self.in_message_len:]
-                self.in_message_len=None
-                self.rpc_handle_message(msg)
-            else:
-                break
-        
-    def handle_write(self):
-        logging.debug("handle_write")
-        self.last_out=time.time()
-        sent=self.send(self.out_buffer)
-        self.out_buffer=self.out_buffer[sent:]
-        
-    def write(self,msg):
-        self.out_buffer+=msg
-        
-    def writable(self):
-        return len(self.out_buffer)>0
-        
-    def handle_error(self):
-        logging.error(traceback.format_exc())
-        
-    def rpc_handle_message(self,msg):
+    def on_read(self,data):
+        logging.debug("on_read: %s"%data)
+        msg=Message()
+        msg.ParseFromString(data)
         logging.debug("rpc_handle_message:\n%s"%msg)
         if msg.error.ByteSize():
             self.rpc_handle_error(msg.id,msg.error)

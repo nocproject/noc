@@ -3,9 +3,35 @@
 ## Action is a scenario executed upon stream
 ##
 from noc.lib.ecma48 import strip_control_sequences
+from noc.lib.nbsocket import ConnectedTCPSocket,PTYSocket
+from noc.lib.registry import Registry
+from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 import logging,re
 
-class BaseAction(object):
+##
+##
+##
+class ActionRegistry(Registry):
+    name="ActionRegistry"
+    subdir="actions"
+    classname="Action"
+    apps=["noc.sa"]
+
+action_registry=ActionRegistry()
+##
+##
+##
+class ActionBase(type):
+    def __new__(cls,name,bases,attrs):
+        m=type.__new__(cls,name,bases,attrs)
+        action_registry.register(m.name,m)
+        return m
+##
+##
+##
+class Action(object):
+    __metaclass__=ActionBase
+    name=None
     ARGS=[]
     CLEAN_INPUT=False # Strip Profile.rogue_chars and ECMA-48 control sequences
     def __init__(self,transaction_id,stream,profile,callback,args=None):
@@ -113,7 +139,95 @@ class BaseAction(object):
         
     def s_failure(self,match):
         self.close(False)
+##
+##
+##
+class SchemeRegistry(Registry):
+    name="SchemeRegistry"
+    def __init__(self):
+        Registry.__init__(self)
+        self.name_to_id={}
+        self.id_to_name={}
+
+    def register(self,name,cls):
+        Registry.register(self,name,cls)
+        self.name_to_id[name]=cls.scheme_id
+        self.id_to_name[cls.scheme_id]=name
         
-def get_action_class(name):
-    module=__import__("noc."+name,globals(),locals(),["Action"])
-    return getattr(module,"Action")
+    def get_by_id(self,scheme_id):
+        return self[self.id_to_name[scheme_id]]
+
+scheme_registry=SchemeRegistry()
+##
+##
+##
+class SchemeSocketBase(type):
+    def __new__(cls,name,bases,attrs):
+        m=type.__new__(cls,name,bases,attrs)
+        scheme_registry.register(m.name,m)
+        return m
+##
+## Socket mixin
+##
+class ActionSocket(object):
+    TTL=180
+    def __init__(self):
+        self.current_action=None
+        self.in_buffer=""
+
+    def attach_action(self,action):
+        logging.debug("attach_action %s"%str(action))
+        self.current_action=action
+        self.feed_action()
+        
+    def on_close(self):
+        if self.current_action:
+            self.current_action.close(None)
+    
+    def on_read(self,data):
+        self.in_buffer+=data
+        self.feed_action()
+
+    def retain_input(self,msg):
+        self.in_buffer=msg+self.in_buffer
+
+    def feed_action(self):
+        if self.in_buffer and self.current_action:
+            self.current_action.feed(self.in_buffer)
+            self.in_buffer=""
+##
+##
+##
+class TelnetSocket(ActionSocket,PTYSocket):
+    __metaclass__=SchemeSocketBase
+    name="telnet"
+    default_action="cli"
+    scheme_id=TELNET
+    def __init__(self,factory,access_profile):
+        logging.debug("TelnetStream connecting '%s'"%access_profile.address)
+        PTYSocket.__init__(self,factory,["/usr/bin/telnet",access_profile.address])
+        ActionSocket.__init__(self)
+##
+##
+##
+class SSHSocket(ActionSocket,PTYSocket):
+    __metaclass__=SchemeSocketBase
+    name="ssh"
+    default_action="cli"
+    scheme_id=SSH
+    def __init__(self,factory,access_profile):
+        logging.debug("TelnetStream connecting '%s'"%access_profile.address)
+        PTYSocket.__init__(self,factory,["/usr/bin/ssh","-o","StrictHostKeyChecking no","-l",access_profile.user,access_profile.address])
+        ActionSocket.__init__(self)
+##
+##
+##
+class HTTPStream(ActionSocket,ConnectedTCPSocket):
+    __metaclass__=SchemeSocketBase
+    name="http"
+    default_action="http"
+    scheme_id=HTTP
+    def __init__(self,factory,access_profile):
+        logging.debug("HTTPStream connecting to %s:%d"%(access_profile.address,80))
+        ConnectedTCPSocket.__init__(self,factory,access_profile.address,80)
+        ActionSocket.__init__(self)
