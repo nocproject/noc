@@ -3,14 +3,17 @@
 ##
 from django.core.management.base import BaseCommand
 from noc.sa.profiles import profile_registry
-from noc.sa.actions import get_action_class
+from noc.sa.actions import action_registry,scheme_registry
 from noc.sa.activator import Service
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.sae_stream import TransactionFactory
-import asyncore,logging,sys
+import logging,sys
 from noc.lib.url import URL
+from noc.lib.nbsocket import SocketFactory
 
 class Controller(object): pass
+
+class ActivatorStub(object): pass
 
 class Command(BaseCommand):
     help="Debug Profile"
@@ -31,11 +34,14 @@ class Command(BaseCommand):
             print "\n".join([x[0] for x in profile_registry.choices])
             return
         logging.root.setLevel(logging.DEBUG)
+        action_registry.register_all()
         service=Service()
+        service.activator=ActivatorStub()
+        service.activator.factory=SocketFactory()
         url=URL(args[1])
         r=PullConfigRequest()
         r.access_profile.profile        = args[0]
-        r.access_profile.scheme         = service.scheme_to_code(url.scheme)
+        r.access_profile.scheme         = scheme_registry.name_to_id[url.scheme]
         r.access_profile.address        = url.host
         if url.port:
             r.access_profile.port       = url.port
@@ -52,4 +58,4 @@ class Command(BaseCommand):
         tf=TransactionFactory()
         controller.transaction=tf.begin()
         service.pull_config(controller=controller,request=r,done=handle_callback)
-        asyncore.loop()
+        service.activator.factory.run()
