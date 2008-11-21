@@ -5,7 +5,7 @@ from noc.sa.models import Activator
 from noc.cm.models import Config
 
 from noc.sa.rpc import RPCSocket,file_hash
-import logging,time,threading,datetime,traceback,os
+import logging,time,threading,datetime,traceback,os,sets
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
 from noc.lib.fileutils import read_file
@@ -13,28 +13,11 @@ from noc.lib.daemon import Daemon
 from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,SocketFactory
 
 ##
-## Manifest for activator
+## Additions to MANIFEST-ACTIVATOR file
 ##
 ACTIVATOR_MANIFEST=[
-    "__init__.py",
-    "sa/__init__.py",
-    "sa/activator.py",
-    "sa/rpc.py",
-    "sa/trapcollector.py",
-    "sa/protocols/__init__.py",
-    "sa/protocols/sae_pb2.py",
     "sa/actions/",
     "sa/profiles/",
-    "lib/__init__.py",
-    "lib/ip.py",
-    "lib/registry.py",
-    "lib/daemon.py",
-    "lib/fileutils.py",
-    "lib/ecma48.py",
-    "lib/fsm.py",
-    "lib/nbsocket.py",
-    "scripts/noc-activator.py",
-    "etc/noc-activator.defaults",
 ]
 
 ##
@@ -136,19 +119,21 @@ class SAE(Daemon):
     
     def build_manifest(self):
         logging.info("Building manifest")
+        manifest=read_file("MANIFEST-ACTIVATOR").split("\n")+ACTIVATOR_MANIFEST
+        manifest=[x.strip() for x in manifest if x]
         self.activator_manifest=ManifestResponse()
-        for f in ACTIVATOR_MANIFEST:
+        files=sets.Set()
+        for f in manifest:
             if f.endswith("/"):
                 for dirpath,dirnames,filenames in os.walk(f):
                     for f in [f for f in filenames if f.endswith(".py")]:
-                        path=os.path.join(dirpath,f)
-                        cs=self.activator_manifest.files.add()
-                        cs.name=path
-                        cs.hash=file_hash(path)
+                        files.add(os.path.join(dirpath,f))
             else:
-                cs=self.activator_manifest.files.add()
-                cs.name=f
-                cs.hash=file_hash(f)
+                files.add(f)
+        for f in files:
+            cs=self.activator_manifest.files.add()
+            cs.name=f
+            cs.hash=file_hash(f)
 
     def run(self):
         self.build_manifest()
