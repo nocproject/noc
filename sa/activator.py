@@ -63,12 +63,6 @@ class Service(SAEService):
             profile=profile,
             callback=pull_config_callback,
             args=args)
-    # Utility functions
-    def scheme_to_code(self,scheme):
-        return SCHEME_TO_CODE[scheme]
-        
-    def code_to_scheme(self,code):
-        return CODE_TO_SCHEME[code]
 ##
 ##
 class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
