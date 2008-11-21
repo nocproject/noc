@@ -23,7 +23,10 @@
                 <service_fmri value='svc:/milestone/multi-user-server:default'/>
         </dependency>
         <method_context>
-            <method_credential user="noc" group="noc" />
+            <method_credential
+                user="noc"
+                group="noc"
+                privileges='basic,net_privaddr'/>
             <method_environment>
                 <envvar name="PATH" value="/opt/csw/bin:/usr/bin:/bin"/>
             </method_environment>
