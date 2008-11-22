@@ -125,13 +125,15 @@ class MatrixReport(Report):
         rl=sorted(rl.keys())
         out="<TABLE SUMMARY='%s' BORDER='1'>"%self.title
         out+="<TR><TH></TH>%s</TR>"%"".join(["<TH>%s</TH>"%render_column_label(c) for c in cl])
+        n=0
         for r in rl:
-            out+="<TR><TD>%s</TD>"%r
+            out+="<TR CLASS='row%d'><TD><B>%s</B></TD>"%((n%2)+1,r)
             for c in cl:
                 try:
                     out+="<TD>%s</TD>"%data[c,r]
                 except KeyError:
                     out+="<TD>&nbsp;</TD>"
             out+="</TR>"
+            n+=1
         out+="</TABLE>"
         return render(self.request,self.template,{"report":self,"query":self.query,"data":out})
