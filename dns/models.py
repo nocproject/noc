@@ -87,6 +87,7 @@ class DNSZone(models.Model):
     class Meta:
         verbose_name="DNS Zone"
         verbose_name_plural="DNS Zones"
+        ordering=["name"]
     name=models.CharField("Domain",max_length=64,unique=True)
     description=models.CharField("Description",null=True,blank=True,max_length=64)
     is_auto_generated=models.BooleanField("Auto generated?")
@@ -230,12 +231,40 @@ class DNSZoneRecordType(models.Model):
     class Meta:
         verbose_name="DNS Zone Record Type"
         verbose_name_plural="DNS Zone Record Types"
+        ordering=["type"]
     type=models.CharField("Type",max_length=16,unique=True)
     is_visible=models.BooleanField("Is Visible?",default=True)
+    validation=models.CharField("Validation",max_length=256,blank=True,null=True,
+        help_text="Regular expression to validate record. Following macros can be used: OCTET, IPv4, FQDN")
     def __str__(self):
         return self.type
     def __unicode__(self):
         return unicode(self.type)
+    @classmethod
+    def interpolate_re(self,rx):
+        for m,s in [
+            ("OCTET",r"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"),
+            ("IPv4", r"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"),
+            ("FQDN", r"([a-z0-9\-]+\.?)*"),]:
+            rx=rx.replace(m,s)
+        return "^%s$"%rx
+    def is_valid(self,value):
+        if self.validation:
+            rx=DNSZoneRecordType.interpolate_re(self.validation)
+            return re.match(rx,value) is not None
+        else:
+            return True
+    def save(self):
+        if self.validation:
+            try:
+                rx=DNSZoneRecordType.interpolate_re(self.validation)
+            except:
+                raise Exception("Invalid regular expression: %s"%rx)
+            try:
+                re.compile(rx)
+            except:
+                raise Exception("Invalid regular expression: %s"%rx)
+        super(DNSZoneRecordType,self).save()
 ##
 ##
 ##
