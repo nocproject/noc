@@ -1,7 +1,7 @@
 ##
 ## Various system utils
 ##
-import ConfigParser,sys,logging,os,signal
+import ConfigParser,sys,logging,os,signal,optparse
 
 class Daemon(object):
     daemon_name="daemon"
@@ -14,15 +14,25 @@ class Daemon(object):
                   'error'   : logging.ERROR,
                   'critical': logging.CRITICAL}
                   
-    def __init__(self,config_path=None,daemonize=True):
+    def __init__(self):
         # Chdir to the root of project
         os.chdir(os.path.join(os.path.dirname(sys.argv[0]),".."))
+        # Parse commandline
+        self.opt_parser=optparse.OptionParser()
+        self.opt_parser.add_option("-c","--config",action="store",type="string",dest="config",
+                help="Read config from CONFIG")
+        self.opt_parser.add_option("-f","--foreground",action="store_false",dest="daemonize",default=True,
+                help="Do not daemonize. Run at the foreground")
+        self.setup_opt_parser()
+        self.options,self.args=self.opt_parser.parse_args()
+        if len(self.args)<1 or self.args[0] not in ["start","stop","refresh"]:
+            self.opt_parser.error("You must supply one of start|stop|refresh commands")
         # Read config
         self.config=ConfigParser.SafeConfigParser()
         if self.defaults_config_path:
             self.config.read(self.defaults_config_path%{"daemon_name":self.daemon_name})
-        if config_path:
-            self.config.read(config_path)
+        if self.options.config:
+            self.config.read(self.options.config)
         elif self.config_path:
             self.config.read(self.config_path%{"daemon_name":self.daemon_name})
         # Set up logging
@@ -31,7 +41,7 @@ class Daemon(object):
         loglevel=self.LOG_LEVELS[self.config.get("main","loglevel")]
         for h in logging.root.handlers:
             logging.root.removeHandler(h) # Dirty hack for baseConfig
-        if daemonize:
+        if self.options.daemonize:
             if self.config.get("main","logfile"):
                 logging.basicConfig(level=loglevel,
                                 filename=self.config.get("main","logfile"),
@@ -39,7 +49,6 @@ class Daemon(object):
                                 filemode="a+")
         else:
             logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
-        self.daemonize=daemonize
 
     ##
     ## Main daemon loop. Should be overriden
@@ -76,13 +85,27 @@ class Daemon(object):
         os.dup2(e.fileno(), sys.stderr.fileno())
         sys.stdout=o
         sys.stderr=e
-        
+    ##
+    ## Add additional options to setup_opt_parser
+    ##
+    def setup_opt_parser(self):
+        pass
+    ##
+    ## Process self.args[0] command
+    ##
+    def process_command(self):
+        getattr(self,self.args[0])()
+    ##
+    ## "start" command handler
+    ##
     def start(self):
         # Daemonize
-        if self.daemonize:
+        if self.options.daemonize:
             self.become_daemon()
         self.run()
-        
+    ##
+    ## "stop" comamnd handler
+    ##
     def stop(self):
         pidfile=self.config.get("main","pidfile")
         if os.path.exists(pidfile):
@@ -95,7 +118,9 @@ class Daemon(object):
             except:
                 pass
             os.unlink(pidfile)
-        
+    ##
+    ## "refresh" command handler
+    ##
     def refresh(self):
         self.stop()
         self.start()
