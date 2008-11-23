@@ -2,7 +2,7 @@
 ## SAE-activator RPC
 ##
 from noc.sa.protocols.sae_pb2 import Message,Error
-import struct,logging,random,time,traceback,sha
+import struct,logging,random,time,traceback,sha,zlib
 from google.protobuf.service import RpcController
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.nbsocket import Protocol
@@ -88,21 +88,39 @@ class TransactionFactory(object):
 ## Where len is an 32 bit integer in network order
 ##
 class Int32Protocol(Protocol):
-        def parse_pdu(self):
-            r=[]
-            while len(self.in_buffer)>=4:
-                l=struct.unpack("!L",self.in_buffer[:4])[0]
-                if len(self.in_buffer)>=4+l:
-                    r+=[self.in_buffer[4:4+l]]
-                    self.in_buffer=self.in_buffer[4+l:]
-                else:
-                    break
-            return r
+    def parse_pdu(self):
+        r=[]
+        while len(self.in_buffer)>=4:
+            l=struct.unpack("!L",self.in_buffer[:4])[0]
+            if len(self.in_buffer)>=4+l:
+                r+=[self.in_buffer[4:4+l]]
+                self.in_buffer=self.in_buffer[4+l:]
+            else:
+                break
+        return r
+##
+##
+##
+class CompressedInt32Protocol(Protocol):
+    def parse_pdu(self):
+        r=[]
+        while len(self.in_buffer)>=4:
+            l=struct.unpack("!L",self.in_buffer[:4])[0]
+            if len(self.in_buffer)>=4+l:
+                try:
+                    pdu=zlib.decompress(self.in_buffer[4:4+l])
+                    r+=[pdu]
+                except:
+                    logging.error("Failed to decompress PDU")
+                self.in_buffer=self.in_buffer[4+l:]
+            else:
+                break
+        return r
 ##
 ##
 ##
 class RPCSocket(object):
-    protocol_class=Int32Protocol
+    protocol_class=CompressedInt32Protocol
     def __init__(self,service):
         self.service=service
         self.proxy=Proxy(self,SAEService_Stub)
@@ -160,7 +178,7 @@ class RPCSocket(object):
         
     # Format and write SAE RPC PDU
     def write_message(self,msg):
-        s=msg.SerializeToString()
+        s=zlib.compress(msg.SerializeToString())
         self.write(struct.pack("!L",len(s))+s)
         
     def send_request(self,id,method,request):
