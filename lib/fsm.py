@@ -76,8 +76,14 @@ class FSM(object):
                 r+=["%s [shape=\"doublecircle\"];"%s]
             else:
                 r+=["%s;"%s]
+            transforms={}
             for e,ns in cls.STATES[s].items():
-                r+=["%s -> %s [label=\"%s\"];"%(s,ns,e)]
+                if ns in transforms:
+                    transforms[ns].append(e)
+                else:
+                    transforms[ns]=[e]
+            for ns,events in transforms.items():
+                r+=["%s -> %s [label=\"%s\"];"%(s,ns,",\\n".join(events))]
         r+=["}",""]
         return "\n".join(r)
     @classmethod
