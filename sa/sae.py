@@ -4,7 +4,7 @@
 from noc.sa.models import Activator
 from noc.cm.models import Config
 
-from noc.sa.rpc import RPCSocket,file_hash
+from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
 import logging,time,threading,datetime,traceback,os,sets
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
@@ -42,15 +42,50 @@ class Service(SAEService):
             e.text="Unknown activator '%s'"%request.name
             done(controller,error=e)
             return
-        logging.info("Registering activator '%s'"%request.name)
-        controller.stream.set_name(request.name)
+        logging.info("Requesting digest for activator '%s'"%request.name)
         r=RegisterResponse()
+        r.nonce=get_nonce()
+        controller.stream.nonce=r.nonce
+        done(controller,response=r)
+        
+    def auth(self,controller,request,done):
+        try:
+            activator=Activator.objects.get(name=request.name)
+        except Activator.DoesNotExist:
+            logging.error("Unknown activator '%s'"%request.name)
+            e=Error()
+            e.code=ERR_UNKNOWN_ACTIVATOR
+            e.text="Unknown activator '%s'"%request.name
+            done(controller,error=e)
+            return
+        logging.info("Authenticating activator '%s'"%request.name)
+        if controller.stream.nonce is None or get_digest(request.name,activator.auth,controller.stream.nonce)!=request.digest:
+            e=Error()
+            e.code=ERR_AUTH_FAILED
+            e.text="Authencication failed for activator '%s'"%request.name
+            done(controller,error=e)
+            return
+        r=AuthResponse()
+        controller.stream.set_name(request.name)
+        controller.stream.is_authenticated=True
         done(controller,response=r)
         
     def manifest(self,controller,request,done):
+        if not controller.stream.is_authenticated:
+            e=Error()
+            e.code=ERR_AUTH_REQUIRED
+            e.text="Authentication required"
+            done(controller,error=e)
+            return
         done(controller,response=self.sae.activator_manifest)
         
     def software_upgrade(self,controller,request,done):
+        if not controller.stream.is_authenticated:
+            e=Error()
+            e.code=ERR_AUTH_REQUIRED
+            e.text="Authentication required"
+            done(controller,error=e)
+            return
         r=SoftwareUpgradeResponse()
         for n in request.names:
             u=r.codes.add()
@@ -59,6 +94,12 @@ class Service(SAEService):
         done(controller,response=r)
         
     def get_trap_filter(self,controller,request,done):
+        if not controller.stream.is_authenticated:
+            e=Error()
+            e.code=ERR_AUTH_REQUIRED
+            e.text="Authentication required"
+            done(controller,error=e)
+            return
         activator=self.get_controller_activator(controller)
         r=TrapFilterResponse()
         for c in Config.objects.filter(activator=activator,trap_source_ip__isnull=False):
@@ -73,6 +114,12 @@ class Service(SAEService):
         done(controller,response=r)
     
     def notify_trap_config_change(self,controller,request,done):
+        if not controller.stream.is_authenticated:
+            e=Error()
+            e.code=ERR_AUTH_REQUIRED
+            e.text="Authentication required"
+            done(controller,error=e)
+            return
         activator=self.get_controller_activator(controller)
         try:
             c=Config.objects.get(activator=activator,trap_source_ip=request.ip)
@@ -94,6 +141,8 @@ class SAESocket(RPCSocket,AcceptedTCPSocket):
     def __init__(self,factory,socket):
         AcceptedTCPSocket.__init__(self,factory,socket)
         RPCSocket.__init__(self,factory.sae.service)
+        self.nonce=None
+        self.is_authenticated=True
 
 ##
 ## SAE Supervisor

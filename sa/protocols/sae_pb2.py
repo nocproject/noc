@@ -48,6 +48,14 @@ _ERRORCODE = descriptor.EnumDescriptor(
       name='ERR_UNKNOWN_TRAP_SOURCE', index=8, number=8,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_AUTH_FAILED', index=9, number=9,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_AUTH_REQUIRED', index=10, number=10,
+      options=None,
+      type=None),
   ],
   options=None,
 )
@@ -102,6 +110,8 @@ ERR_UNKNOWN_ACTIVATOR = 5
 ERR_INVALID_PROFILE = 6
 ERR_INVALID_SCHEME = 7
 ERR_UNKNOWN_TRAP_SOURCE = 8
+ERR_AUTH_FAILED = 9
+ERR_AUTH_REQUIRED = 10
 TELNET = 0
 SSH = 1
 HTTP = 2
@@ -359,6 +369,57 @@ _REGISTERREQUEST = descriptor.Descriptor(
 _REGISTERRESPONSE = descriptor.Descriptor(
   name='RegisterResponse',
   full_name='sae.RegisterResponse',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='nonce', full_name='sae.RegisterResponse.nonce', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_AUTHREQUEST = descriptor.Descriptor(
+  name='AuthRequest',
+  full_name='sae.AuthRequest',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='name', full_name='sae.AuthRequest.name', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='digest', full_name='sae.AuthRequest.digest', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_AUTHRESPONSE = descriptor.Descriptor(
+  name='AuthResponse',
+  full_name='sae.AuthResponse',
   filename='sae.proto',
   containing_type=None,
   fields=[
@@ -732,6 +793,14 @@ class RegisterResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _REGISTERRESPONSE
 
+class AuthRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _AUTHREQUEST
+
+class AuthResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _AUTHRESPONSE
+
 class PullConfigRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _PULLCONFIGREQUEST
@@ -814,9 +883,18 @@ _SAESERVICE = descriptor.ServiceDescriptor(
     options=None,
   ),
   descriptor.MethodDescriptor(
+    name='auth',
+    full_name='sae.SAEService.auth',
+    index=2,
+    containing_service=None,
+    input_type=_AUTHREQUEST,
+    output_type=_AUTHRESPONSE,
+    options=None,
+  ),
+  descriptor.MethodDescriptor(
     name='manifest',
     full_name='sae.SAEService.manifest',
-    index=2,
+    index=3,
     containing_service=None,
     input_type=_MANIFESTREQUEST,
     output_type=_MANIFESTRESPONSE,
@@ -825,7 +903,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='software_upgrade',
     full_name='sae.SAEService.software_upgrade',
-    index=3,
+    index=4,
     containing_service=None,
     input_type=_SOFTWAREUPGRADEREQUEST,
     output_type=_SOFTWAREUPGRADERESPONSE,
@@ -834,7 +912,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='pull_config',
     full_name='sae.SAEService.pull_config',
-    index=4,
+    index=5,
     containing_service=None,
     input_type=_PULLCONFIGREQUEST,
     output_type=_PULLCONFIGRESPONSE,
@@ -843,7 +921,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='get_trap_filter',
     full_name='sae.SAEService.get_trap_filter',
-    index=5,
+    index=6,
     containing_service=None,
     input_type=_TRAPFILTERREQUEST,
     output_type=_TRAPFILTERRESPONSE,
@@ -852,7 +930,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='notify_trap_config_change',
     full_name='sae.SAEService.notify_trap_config_change',
-    index=6,
+    index=7,
     containing_service=None,
     input_type=_NOTIFYTRAPCONFIGCHANGEREQUEST,
     output_type=_NOTIFYRESPONSE,

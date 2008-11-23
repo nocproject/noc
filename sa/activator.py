@@ -5,7 +5,7 @@ import os,logging,pty,signal,time,re,sys,signal
 from errno import ECONNREFUSED
 from noc.sa.actions import action_registry,scheme_registry
 from noc.sa.profiles import profile_registry
-from noc.sa.rpc import RPCSocket,file_hash
+from noc.sa.rpc import RPCSocket,file_hash,get_digest
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.daemon import Daemon
@@ -104,7 +104,13 @@ class Activator(Daemon,FSM):
         "CONNECTED" : {
                 "timeout" : "IDLE",
                 "close"   : "IDLE",
-                "register": "AUTHENTICATED",
+                "register": "REGISTRED",
+                "error"   : "IDLE",
+        },
+        "REGISTRED" : {
+                "timeout" : "IDLE",
+                "auth"    : "AUTHENTICATED",
+                "close"   : "IDLE",
                 "error"   : "IDLE",
         },
         "AUTHENTICATED" : {
@@ -135,6 +141,7 @@ class Activator(Daemon,FSM):
         logging.info("Loading profile classes")
         action_registry.register_all()
         profile_registry.register_all()
+        self.nonce=None
         FSM.__init__(self)
         
     ##
@@ -162,9 +169,11 @@ class Activator(Daemon,FSM):
         self.set_timeout(10)
         self.register()
     ##
-    ## REGISTERED
+    ## REGISTRED
     ##
-
+    def on_REGISTRED_enter(self):
+        self.set_timeout(10)
+        self.auth()
     ##
     ## AUTHENTICATED
     ##
@@ -251,13 +260,34 @@ class Activator(Daemon,FSM):
                 self.event("error")
                 return
             logging.info("Registration accepted")
+            self.nonce=response.nonce
             self.event("register")
         if self.get_state()!="CONNECTED":
             raise Exception("register should be called from CONNECTED state")
         logging.info("Registering as '%s'"%self.config.get("activator","name"))
         r=RegisterRequest()
         r.name=self.config.get("activator","name")
-        self.register_transaction=self.sae_stream.proxy.register(r,register_callback)
+        self.sae_stream.proxy.register(r,register_callback)
+    ##
+    ## Auth
+    ##
+    def auth(self):
+        def auth_callback(transaction,response=None,error=None):
+            if self.get_state()!="REGISTRED":
+                return
+            if error:
+                logging.error("Authentication failed: %s"%error.text)
+                self.event("error")
+                return
+            logging.info("Authenticated")
+            self.event("auth")
+        if self.get_state()!="REGISTRED":
+            raise Exception("auth should be called from REGISTRED state")
+        logging.info("Authenticating")
+        r=AuthRequest()
+        r.name=self.config.get("activator","name")
+        r.digest=get_digest(r.name,self.config.get("activator","secret"),self.nonce)
+        self.sae_stream.proxy.auth(r,auth_callback)
         
     ##
     ##

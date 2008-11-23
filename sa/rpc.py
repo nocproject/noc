@@ -235,3 +235,22 @@ def file_hash(path):
     f.close()
     s=sha.new(data)
     return s.hexdigest()
+##
+## Generic hash for digest authetications
+##
+def H(s):
+    return sha.new(s).hexdigest()
+
+##
+## Generate random nonce for digest authetuication
+##
+def get_nonce():
+    ur=random.SystemRandom()
+    return H(H(str(ur.random())[2:])+str(ur.random())[2:])
+
+##
+## Compute digest for Activator authentications
+##
+def get_digest(name,password,nonce):
+    return H(H(name+":"+password)+":"+nonce)
+    

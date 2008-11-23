@@ -36,6 +36,8 @@ enum ErrorCode {
     ERR_INVALID_PROFILE     = 6; // Invalid profile
     ERR_INVALID_SCHEME      = 7; // Invalid access scheme
     ERR_UNKNOWN_TRAP_SOURCE = 8;
+    ERR_AUTH_FAILED         = 9; // Authentication failed
+    ERR_AUTH_REQUIRED       =10; // Authentication required
 }
 
 //
@@ -74,7 +76,19 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
+    required string nonce = 1;
 }
+//
+//
+//
+message AuthRequest {
+    required string name   = 1;
+    required string digest = 2;
+}
+
+message AuthResponse {
+}
+
 //
 // Returns device configuration
 // SAE->Activator
@@ -148,6 +162,7 @@ message NotifyTrapConfigChangeRequest {
 service SAEService {
     rpc ping             (PingRequest)            returns (PingResponse);
     rpc register         (RegisterRequest)        returns (RegisterResponse);
+    rpc auth             (AuthRequest)            returns (AuthResponse);
     rpc manifest         (ManifestRequest)        returns (ManifestResponse);
     rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
     rpc pull_config      (PullConfigRequest)      returns (PullConfigResponse);
