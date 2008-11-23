@@ -100,8 +100,8 @@ class SAESocket(RPCSocket,AcceptedTCPSocket):
 ##
 class SAE(Daemon):
     daemon_name="noc-sae"
-    def __init__(self,config_path=None,daemonize=True):
-        Daemon.__init__(self,config_path,daemonize)
+    def __init__(self):
+        Daemon.__init__(self)
         logging.info("Running SAE")
         #
         self.service=Service()

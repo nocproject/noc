@@ -122,8 +122,8 @@ class Activator(Daemon,FSM):
                 
         }
     }
-    def __init__(self,config_path=None,daemonize=True):
-        Daemon.__init__(self,config_path,daemonize)
+    def __init__(self):
+        Daemon.__init__(self)
         logging.info("Running activator '%s'"%self.config.get("activator","name"))
         self.service=Service()
         self.service.activator=self
