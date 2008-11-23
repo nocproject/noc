@@ -28,24 +28,22 @@
                 <envvar name="PATH" value="/opt/csw/bin:/usr/bin:/bin"/>
             </method_environment>
         </method_context>
-        <exec_method type="method" name="start"   exec="/var/www/noc/scripts/sunos/noc-fcgi start"   timeout_seconds='60' />
-        <exec_method type="method" name="stop"    exec="/var/www/noc/scripts/sunos/noc-fcgi stop"    timeout_seconds='60' />
-        <exec_method type="method" name="refresh" exec="/var/www/noc/scripts/sunos/noc-fcgi refresh" timeout_seconds='60' />
+        <exec_method type="method" name="start"
+            exec="%{noc-fcgi/python} %{noc-fcgi/prefix}/scripts/noc-fcgi.py -c %{noc-fcgi/config} %m" timeout_seconds='60' />
+        <exec_method type="method" name="stop"
+            exec="%{noc-fcgi/python} %{noc-fcgi/prefix}/scripts/noc-fcgi.py -c %{noc-fcgi/config} %m" timeout_seconds='60' />
+        <exec_method type="method" name="refresh"
+            exec="%{noc-fcgi/python} %{noc-fcgi/prefix}/scripts/noc-fcgi.py -c %{noc-fcgi/config} %m" timeout_seconds='60' />
         <property_group name="noc-fcgi" type="framework">
             <stability value="Evolving"/>
             <propval name="python"      type="astring" value="/opt/csw/bin/python" />
             <propval name="prefix"      type="astring" value="/var/www/noc" />
-            <propval name="socket"      type="astring" value="/tmp/noc.fcgi" />
-            <propval name="minspare"    type="integer" value="2" />
-            <propval name="maxspare"    type="integer" value="5" />
-            <propval name="maxrequests" type="integer" value="100" />
-            <propval name="maxchildren" type="integer" value="30" />
-            <propval name="pidfile"     type="astring" value="/var/log/noc/noc-fcgi.pid" />
+            <propval name="config"      type="astring" value="/var/www/noc/etc/noc-fcgi.conf" />
         </property_group>
         <template>
             <common_name>
                 <loctext xml:lang='C'>
-                    NOC FastCGI backend
+                    NOC FastCGI handler
                 </loctext>
             </common_name>
         </template>
