@@ -127,7 +127,7 @@ class RPCSocket(object):
         self.transactions=TransactionFactory()
         
     def on_read(self,data):
-        logging.debug("on_read: %s"%data)
+        logging.debug("on_read: %s"%repr(data))
         msg=Message()
         msg.ParseFromString(data)
         logging.debug("rpc_handle_message:\n%s"%msg)
