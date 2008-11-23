@@ -3,7 +3,8 @@
 ##
 from noc.peer.whois import Whois
 from noc.lib.validators import is_asn,is_cidr
-import asyncore,sets,logging
+from noc.lib.nbsocket import SocketFactory
+import sets,logging
 
 class AS(object):
     def __init__(self,parent,name):
@@ -120,29 +121,29 @@ class Resolver(object):
             return ASSet(self,name)
         
     def schedule_whois(self,query,callback,fields=None):
+        logging.debug("Scheduliung whois query: %s"%query)
         self.whois_queue.append((query,callback,fields))
     #
     # Resolves a list of as-sets and returns a hash of
     # name -> (members,prefixes)
     #
     def resolve(self,as_sets):
-        SOCKET_MAP={}
+        factory=SocketFactory()
         for x in as_sets:
             if not x in self.ases:
                 a=ASSet(self,x)
                 a.resolve()
-        while self.whois_queue:
-            while self.whois_queue and len(SOCKET_MAP)<self.whois_concurrency:
+        while self.whois_queue or len(factory):
+            while self.whois_queue and len(factory)<self.whois_concurrency:
                 q,c,f=self.whois_queue.pop(0)
-                Whois(q,c,f,map=SOCKET_MAP)
-            asyncore.loop(timeout=3,map=SOCKET_MAP)
+                Whois(factory,q,c,f)
+            factory.loop()
         r={}
         for n,a in self.as_sets.items():
             r[n]=(a.members,a.prefixes)
         return r
 
 def test(as_sets):
-    import logging
     logging.basicConfig(level=logging.DEBUG)
     r=Resolver()
     print r.resolve(as_sets)

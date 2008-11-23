@@ -377,6 +377,9 @@ class SocketFactory(object):
         
     def get_name_by_socket(self,socket):
         return self.socket_name[socket]
+    
+    def __len__(self):
+        return len(self.sockets)
         
     def close_stale(self):
         for s in [s for s in self.sockets.values() if s.is_stale()]:
