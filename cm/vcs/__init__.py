@@ -4,7 +4,7 @@
 from noc.lib.registry import Registry
 from lib.fileutils import copy_file
 from noc.setup.models import Settings
-import os
+import os,subprocess
 ##
 ## Registry for VCS
 ##
@@ -41,6 +41,7 @@ class VCSBase(type):
 class VCS(object):
     __metaclass__=VCSBase
     name=None
+    option_commit_message="-m"
     def __init__(self,repo):
         self.repo=repo
     # Check wrether repository exists and create when necessary
@@ -48,10 +49,10 @@ class VCS(object):
         pass
     # Add file to repository
     def add(self,path):
-        self.cmd("add %s"%path)
+        self.cmd(["add",path])
     # Remove file from repository
     def rm(self,path):
-        self.cmd("remove %s"%path)
+        self.cmd(["remove",path])
         self.commit(path,"rm")
     # Move file to a new location
     # Dumb emulation
@@ -62,18 +63,18 @@ class VCS(object):
         self.commit(t,"mv emulation")
     # Commit single file
     def commit(self,path,message="CM autocommit"):
-        msg=message.replace("\\","\\\\").replace("'","\\'")
-        self.cmd("commit -m '%s' %s"%(msg,path))
+        self.cmd(["commit",self.option_commit_message,message,path])
     #
+    # Execute VCS command.
+    # cmd is a list of arguments
     def cmd(self,cmd,check=True):
         if check:
             self.check_repository()
-        os.system("cd %s && %s %s"%(self.repo,Settings.get("cm.vcs_path"),cmd))
+        subprocess.check_call([Settings.get("cm.vcs_path")]+cmd,cwd=self.repo)
     # Returns an output of cmd
     def cmd_out(self,cmd):
-        f=os.popen("cd %s && %s %s"%(self.repo,Settings.get("cm.vcs_path"),cmd),"r")
-        d=f.read()
-        f.close()
+        p=subprocess.Popen([Settings.get("cm.vcs_path")]+cmd,stdout=subprocess.PIPE,cwd=self.repo)
+        d=p.stdout.read()
         return d
     # Returns a list of Revision
     def log(self,path):

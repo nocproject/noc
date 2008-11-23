@@ -9,10 +9,10 @@ class VCS(noc.cm.vcs.VCS):
     name="hg"
     def check_repository(self):
         if not os.path.exists(os.path.join(self.repo,".hg")):
-            self.cmd("init",check=False)
+            self.cmd(["init"],check=False)
     def log(self,path):
         revs=[]
-        for l in self.cmd_out("log --template '{rev} {date}\n' %s"%path).split("\n"):
+        for l in self.cmd_out(["log","--template","{rev} {date}\n",path]).split("\n"):
             l=l.strip()
             if not l:
                 continue
@@ -21,10 +21,10 @@ class VCS(noc.cm.vcs.VCS):
             revs+=[noc.cm.vcs.Revision(rev,datetime.datetime.fromtimestamp(float(d)))]
         return revs
     def diff(self,path,rev1,rev2):
-        return self.cmd_out("diff -r%s:%s %s"%(rev1.revision,rev2.revision,path))
+        return self.cmd_out(["diff","-r%s:%s"%(rev1.revision,rev2.revision),path])
     def get_revision(self,path,rev):
-        return self.cmd_out("cat -r%s %s"%(rev.revision,path))
+        return self.cmd_out(["cat","-r%s"%rev.revision,path])
     def mv(self,f,t):
-        self.cmd("mv %s %s"%(f,t))
+        self.cmd(["mv",f,t])
         self.commit(f,"mv")
         self.commit(t,"mv")
