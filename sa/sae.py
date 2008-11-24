@@ -275,4 +275,20 @@ class SAE(Daemon):
             r.access_profile.path          = object.remote_path
         t=stream.proxy.pull_config(r,pull_config_callback)
         t.object_id=object.id
-        
+    # Signal handlers
+
+    # SIGUSR1 returns process info
+    def SIGUSR1(self,signo,frame):
+        s=[
+            ["factory.sockets",len(self.factory)],
+        ]
+        logging.info("STATS:")
+        for n,v in s:
+            logging.info("%s: %s"%(n,v))
+        for sock in [s for s in self.factory.sockets.values() if issubclass(s.__class__,RPCSocket)]:
+            try:
+                logging.info("Activator: %s"%self.factory.get_name_by_socket(sock))
+            except KeyError:
+                logging.info("Unregistred activator")
+            for n,v in sock.stats:
+                logging.info("%s: %s"%(n,v))

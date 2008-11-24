@@ -377,3 +377,15 @@ class Activator(Daemon,FSM):
         r=NotifyTrapConfigChangeRequest()
         r.ip=ip
         self.sae_stream.proxy.notify_trap_config_change(r,notify_trap_config_change_callback)
+    # Signal handlers
+
+    # SIGUSR1 returns process info
+    def SIGUSR1(self,signo,frame):
+        s=[
+            ["factory.sockets",len(self.factory)],
+        ]
+        if self.sae_stream:
+            s+=self.sae_stream.stats
+        logging.info("STATS:")
+        for n,v in s:
+            logging.info("%s: %s"%(n,v))
