@@ -57,6 +57,10 @@ class Transaction(object):
 class TransactionFactory(object):
     def __init__(self):
         self.transactions={}
+        
+    def __len__(self):
+        return len(self.transactions)
+        
     # Generate unique id
     def __get_id(self):
         while True:
@@ -125,6 +129,9 @@ class RPCSocket(object):
         self.service=service
         self.proxy=Proxy(self,SAEService_Stub)
         self.transactions=TransactionFactory()
+        self.stat_rpc_requests=0
+        self.stat_rpc_responses=0
+        self.stat_rpc_errors=0
         
     def on_read(self,data):
         logging.debug("on_read: %s"%repr(data))
@@ -132,10 +139,13 @@ class RPCSocket(object):
         msg.ParseFromString(data)
         logging.debug("rpc_handle_message:\n%s"%msg)
         if msg.error.ByteSize():
+            self.stat_rpc_errors+=1
             self.rpc_handle_error(msg.id,msg.error)
         elif msg.request.ByteSize():
+            self.stat_rpc_requests+=1
             self.rpc_handle_request(msg.id,msg.request)
         elif msg.response.ByteSize():
+            self.stat_rpc_responses+=1
             self.rpc_handle_response(msg.id,msg.response)
             
     def rpc_handle_request(self,id,request):
@@ -217,6 +227,14 @@ class RPCSocket(object):
         t=self.transactions.begin(method=method,callback=callback)
         self.send_request(t.id,method,request)
         return t
+        
+    def _stats(self):
+        return [
+            ("rpc.requests",  self.stat_rpc_requests),
+            ("rpc.responses", self.stat_rpc_responses),
+            ("rpc.errors",    self.stat_rpc_errors),
+        ]
+    stats=property(_stats)
 ##
 ## Proxy class for RPC interface
 ##
