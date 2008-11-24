@@ -49,6 +49,14 @@ class Daemon(object):
                                 filemode="a+")
         else:
             logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
+        # Register signal handlers if any
+        for s in [s for s in dir(self) if s.startswith("SIG")]:
+            try:
+                sig=getattr(signal,s)
+            except AttributeError:
+                logging.error("Signal '%s' is not supported on this platform"%s)
+                continue
+            signal.signal(sig,getattr(self,s))
 
     ##
     ## Main daemon loop. Should be overriden
