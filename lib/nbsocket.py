@@ -391,7 +391,12 @@ class SocketFactory(object):
             r=[f for f,s in self.sockets.items() if s.can_read()]
             w=[f for f,s in self.sockets.items() if s.can_write()]
             if r or w:
-                r,w,x=select.select(r,w,[],timeout)
+                try:
+                    r,w,x=select.select(r,w,[],timeout)
+                except select.error,why:
+                    if why[0]==EINTR:
+                        return
+                    raise
                 if r or w:
                     # Write events processed before read events
                     # to catch connection refused causes
