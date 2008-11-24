@@ -200,7 +200,7 @@ class ConnectedTCPSocket(TCPSocket):
         TCPSocket.__init__(self,factory,socket.socket(socket.AF_INET,socket.SOCK_STREAM))
         e=self.socket.connect_ex((address,port))
         if e in (0, EISCONN):
-            self.handle_read()
+            #self.handle_read()
             return
         elif e in (EINPROGRESS, EALREADY, EWOULDBLOCK):
             return
