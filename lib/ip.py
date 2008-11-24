@@ -151,7 +151,9 @@ def free_blocks(prefix,allocated):
             elif n==32 or t-f>size-1:
                 return cover_blocks(f+size,t,b+[int_to_address(f)+"/%d"%n])
             n+=1
-            
+    if not allocated:
+        # No allocations given. Return whole block
+        return [prefix]
     used=[]
     p0,p1=boundary(prefix)
     for a in allocated:
