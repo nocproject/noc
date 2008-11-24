@@ -154,14 +154,12 @@ class Activator(Daemon,FSM):
         if self.trap_collector:
             self.stop_trap_collector()
         self.set_timeout(5)
-    
-    def on_IDLE_timeout(self):
-        self.sae_stream=self.factory.connect_tcp(self.config.get("sae","host"),self.config.getint("sae","port"),ActivatorSocket)
     ##
     ## CONNECT state
     ##
     def on_CONNECT_enter(self):
         self.set_timeout(10)
+        self.sae_stream=self.factory.connect_tcp(self.config.get("sae","host"),self.config.getint("sae","port"),ActivatorSocket)
     ##
     ## CONNECTED state
     ##
