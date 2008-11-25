@@ -19,3 +19,4 @@ lib/fsm.py
 lib/nbsocket.py
 scripts/noc-activator.py
 etc/noc-activator.defaults
+share/sunos/manifest/noc-activator.xml
