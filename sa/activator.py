@@ -123,7 +123,6 @@ class Activator(Daemon,FSM):
                 "close"     : "IDLE",
         },
         "ESTABLISHED" : {
-                "sigchld" : "ESTABLISHED",
                 "close"   : "IDLE",
                 
         }
@@ -193,23 +192,6 @@ class Activator(Daemon,FSM):
     def on_ESTABLISHED_enter(self):
         if self.config.get("activator","listen_traps"):
             self.start_trap_collector()
-    
-    def on_ESTABLISHED_sigchld(self):
-        # Close stale streams
-        for s in [s for s in self.streams if s.is_stale()]:
-            logging.info("Forceful close of stale stream")
-            s.close()
-        # Finally clean up zombies
-        if self.streams:
-            while True:
-                try:
-                    pid,status=os.waitpid(-1,os.WNOHANG)
-                except:
-                    break
-                if pid:
-                    logging.debug("Zombie pid=%d is hunted and killed"%pid)
-                else:
-                    break
     ##
     ##
     ##
@@ -388,3 +370,14 @@ class Activator(Daemon,FSM):
         logging.info("STATS:")
         for n,v in s:
             logging.info("%s: %s"%(n,v))
+    # SIGCHLD: Zombie hunting
+    def SIGCHLD(self,signo,frame):
+        while True:
+            try:
+                pid,status=os.waitpid(-1,os.WNOHANG)
+            except:
+                break
+            if pid:
+                logging.debug("Zombie pid=%d is hunted and mercilessly killed"%pid)
+            else:
+                break
