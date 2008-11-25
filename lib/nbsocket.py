@@ -196,8 +196,10 @@ class AcceptedTCPSocket(TCPSocket):
 ## close(self)        - close socket (Also implies on_close(self) event)
 ##
 class ConnectedTCPSocket(TCPSocket):
-    def __init__(self,factory,address,port):
+    def __init__(self,factory,address,port,local_address=None):
         TCPSocket.__init__(self,factory,socket.socket(socket.AF_INET,socket.SOCK_STREAM))
+        if local_address:
+            self.socket.bind((local_address,0))
         e=self.socket.connect_ex((address,port))
         if e in (0, EISCONN):
             #self.handle_read()
