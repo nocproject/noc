@@ -9,7 +9,7 @@ from noc.sa.rpc import RPCSocket,file_hash,get_digest
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.daemon import Daemon
-from noc.lib.fsm import FSM
+from noc.lib.fsm import FSM,check_state
 from noc.lib.nbsocket import ConnectedTCPSocket,SocketFactory
 
 
@@ -249,6 +249,7 @@ class Activator(Daemon,FSM):
     ##
     ## Register
     ##
+    @check_state("CONNECTED")
     def register(self):
         def register_callback(transaction,response=None,error=None):
             if self.get_state()!="CONNECTED":
@@ -260,8 +261,6 @@ class Activator(Daemon,FSM):
             logging.info("Registration accepted")
             self.nonce=response.nonce
             self.event("register")
-        if self.get_state()!="CONNECTED":
-            raise Exception("register should be called from CONNECTED state")
         logging.info("Registering as '%s'"%self.config.get("activator","name"))
         r=RegisterRequest()
         r.name=self.config.get("activator","name")
@@ -269,6 +268,7 @@ class Activator(Daemon,FSM):
     ##
     ## Auth
     ##
+    @check_state("REGISTRED")
     def auth(self):
         def auth_callback(transaction,response=None,error=None):
             if self.get_state()!="REGISTRED":
@@ -279,8 +279,6 @@ class Activator(Daemon,FSM):
                 return
             logging.info("Authenticated")
             self.event("auth")
-        if self.get_state()!="REGISTRED":
-            raise Exception("auth should be called from REGISTRED state")
         logging.info("Authenticating")
         r=AuthRequest()
         r.name=self.config.get("activator","name")
@@ -290,6 +288,7 @@ class Activator(Daemon,FSM):
     ##
     ##
     ##
+    @check_state("UPGRADE")
     def manifest(self):
         def manifest_callback(transaction,response=None,error=None):
             if self.get_state()!="UPGRADE":
@@ -311,14 +310,13 @@ class Activator(Daemon,FSM):
             else:
                 logging.error("Transaction id mismatch")
                 self.manifest_transaction=None
-        if self.get_state()!="UPGRADE":
-            raise Exception("manifest should be called from UPGRADE state")
         logging.info("Requesting manifest")
         r=ManifestRequest()
         self.manifest_transaction=self.sae_stream.proxy.manifest(r,manifest_callback)
     ##
     ## 
     ##
+    @check_state("UPGRADE")
     def software_upgrade(self,update_list):
         def software_upgrade_callback(transaction,response=None,error=None):
             if error:
@@ -343,6 +341,7 @@ class Activator(Daemon,FSM):
     ##
     ##
     ##
+    @check_state("ESTABLISHED")
     def get_trap_filter(self):
         def get_trap_filter_callback(transaction,response=None,error=None):
             if error:

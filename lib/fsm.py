@@ -3,6 +3,22 @@
 ## 
 import time,logging
 
+##
+## State checking decorator
+##
+def check_state(state):
+    def check_returns(f):
+        def new_f(self,*args, **kwds):
+            assert self._current_state==state,\
+                "Function '%s' cannot be called from state '%s' ('%s' required)"%(f.func_name,self._current_state,state)
+            return f(self,*args, **kwds)
+        new_f.func_name = f.func_name
+        return new_f
+    return check_returns
+
+##
+## Finite state machine class
+##
 class FSM(object):
     FSM_NAME="FSM"
     DEFAULT_STATE="DEFAULT" # Running state
