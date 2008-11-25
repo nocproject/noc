@@ -318,7 +318,10 @@ class PTYSocket(Socket):
             logging.debug("Child pid=%d is already terminated. Zombie released"%pid)
         else:
             logging.debug("Child pid=%d is not terminated. Killing"%self.pid)
-            os.kill(self.pid,signal.SIGKILL)
+            try:
+                os.kill(self.pid,signal.SIGKILL)
+            except:
+                logging.debug("Child pid=%d was killed from another place"%self.pid)
     
     def on_read(self,data):
         pass
@@ -406,14 +409,20 @@ class SocketFactory(object):
                                 self.sockets[f].handle_write()
                             except:
                                 logging.error(traceback.format_exc())
-                                self.sockets[f].close()
+                                try:
+                                    self.sockets[f].close()
+                                except:
+                                    pass
                     for f in r:
                         if f in self.sockets:
                             try:
                                 self.sockets[f].handle_read()
                             except:
                                 logging.error(traceback.format_exc())
-                                self.sockets[f].close()
+                                try:
+                                    self.sockets[f].close()
+                                except:
+                                    pass
             else:
                 time.sleep(timeout)
         else:
