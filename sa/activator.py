@@ -66,8 +66,8 @@ class Service(SAEService):
 ##
 ##
 class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
-    def __init__(self,factory,address,port):
-        ConnectedTCPSocket.__init__(self,factory,address,port)
+    def __init__(self,factory,address,port,local_address=None):
+        ConnectedTCPSocket.__init__(self,factory,address,port,local_address)
         RPCSocket.__init__(self,factory.activator.service)
         
     def activator_event(self,event):
@@ -158,7 +158,8 @@ class Activator(Daemon,FSM):
     ##
     def on_CONNECT_enter(self):
         self.set_timeout(10)
-        self.sae_stream=self.factory.connect_tcp(self.config.get("sae","host"),self.config.getint("sae","port"),ActivatorSocket)
+        self.sae_stream=ActivatorSocket(self.factory,self.config.get("sae","host"),self.config.getint("sae","port"),
+            self.config.get("sae","local_address"))
     ##
     ## CONNECTED state
     ##
