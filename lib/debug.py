@@ -87,11 +87,11 @@ def format_frames(frames):
             lineno+=1
         return "\n".join(r)
     r=[]
-    now=datetime.datetime.now()
-    r+=["START OF TRACEBACK %s"%str(now)]
+    r+=["START OF TRACEBACK"]
     r+=["-"*72]
     for f in frames:
-        r+=["File: %s Function: %s (Line: %d)"%(f["filename"],f["function"],f["lineno"])]
+        r+=["File: %s (Line: %d)"%(f["filename"],f["lineno"])]
+        r+=["Function: %s"%(f["function"])]
         r+=[format_source(f["pre_context_lineno"],f["pre_context"])]
         r+=["%5d ==> %s"%(f["lineno"],f["context_line"])]
         r+=[format_source(f["lineno"]+1,f["post_context"])]
@@ -104,4 +104,8 @@ def format_frames(frames):
 
 def error_report():
     t,v,tb=sys.exc_info()
-    logging.error(format_frames(get_traceback_frames(tb)))
+    now=datetime.datetime.now()
+    r=["UNHANDLED EXCEPTION (%s)"%str(now)]
+    r+=[str(t),str(v)]
+    r+=[format_frames(get_traceback_frames(tb))]
+    logging.error("\n".join(r))
