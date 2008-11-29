@@ -10,6 +10,7 @@ sa/actions/cli.py
 sa/actions/http.py
 sa/profiles/__init__.py
 lib/__init__.py
+lib/debug.py
 lib/ip.py
 lib/registry.py
 lib/daemon.py
