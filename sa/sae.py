@@ -5,11 +5,12 @@ from noc.sa.models import Activator
 from noc.cm.models import Config
 
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
-import logging,time,threading,datetime,traceback,os,sets
+import logging,time,threading,datetime,os,sets
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
+from noc.lib.debug import error_report
 from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,SocketFactory
 
 ##
@@ -217,7 +218,7 @@ class SAE(Daemon):
         try:
             status=task.periodic_class(self).execute()
         except:
-            tb=traceback.format_exc()
+            error_report()
             status=False
         logging.info(u"Task %s is terminated with '%s'"%(unicode(task),status))
         if status:

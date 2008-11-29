@@ -2,6 +2,7 @@
 ## Various system utils
 ##
 import ConfigParser,sys,logging,os,signal,optparse
+from noc.lib.debug import error_report
 
 class Daemon(object):
     daemon_name="daemon"
@@ -110,7 +111,10 @@ class Daemon(object):
         # Daemonize
         if self.options.daemonize:
             self.become_daemon()
-        self.run()
+        try:
+            self.run()
+        except:
+            error_report()
     ##
     ## "stop" comamnd handler
     ##

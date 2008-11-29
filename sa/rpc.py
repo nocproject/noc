@@ -2,7 +2,7 @@
 ## SAE-activator RPC
 ##
 from noc.sa.protocols.sae_pb2 import Message,Error
-import struct,logging,random,time,traceback,sha,zlib
+import struct,logging,random,time,sha,zlib
 from google.protobuf.service import RpcController
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.nbsocket import Protocol

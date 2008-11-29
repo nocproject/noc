@@ -1,9 +1,10 @@
 ##
 ## Clean and lightweight non-blocking socket I/O implementation
 ##
-import socket,select,errno,time,logging,traceback,pty,os,signal
+import socket,select,errno,time,logging,pty,os,signal
 from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
      ENOTCONN, ESHUTDOWN, EINTR, EISCONN, ECONNREFUSED, EPIPE, errorcode
+from noc.lib.debug import error_report
 
 ##
 ## Abstract non-blocking socket wrapper.
@@ -410,7 +411,7 @@ class SocketFactory(object):
                             try:
                                 self.sockets[f].handle_write()
                             except:
-                                logging.error(traceback.format_exc())
+                                error_report()
                                 try:
                                     self.sockets[f].close()
                                 except:
@@ -420,7 +421,7 @@ class SocketFactory(object):
                             try:
                                 self.sockets[f].handle_read()
                             except:
-                                logging.error(traceback.format_exc())
+                                error_report()
                                 try:
                                     self.sockets[f].close()
                                 except:
