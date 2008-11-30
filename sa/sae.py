@@ -89,6 +89,12 @@ class Service(SAEService):
             return
         r=SoftwareUpgradeResponse()
         for n in request.names:
+            if not n in self.sae.activator_manifest:
+                e=Error()
+                e.code=ERR_INVALID_UPGRADE
+                e.text="Invalid file requested for upgrade: %s"%n
+                done(controller,error=e)
+                return
             u=r.codes.add()
             u.name=n
             u.code=read_file(n)
