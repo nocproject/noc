@@ -89,7 +89,7 @@ class Service(SAEService):
             return
         r=SoftwareUpgradeResponse()
         for n in request.names:
-            if not n in self.sae.activator_manifest:
+            if n not in self.sae.activator_manifest_files:
                 e=Error()
                 e.code=ERR_INVALID_UPGRADE
                 e.text="Invalid file requested for upgrade: %s"%n
@@ -172,12 +172,15 @@ class SAE(Daemon):
         self.periodic_task_lock=threading.Lock()
         #
         self.activator_manifest=None
+        self.activator_manifest_files=None
     
     def build_manifest(self):
         logging.info("Building manifest")
         manifest=read_file("MANIFEST-ACTIVATOR").split("\n")+ACTIVATOR_MANIFEST
         manifest=[x.strip() for x in manifest if x]
         self.activator_manifest=ManifestResponse()
+        self.activator_manifest_files=sets.Set()
+        
         files=sets.Set()
         for f in manifest:
             if f.endswith("/"):
@@ -187,6 +190,7 @@ class SAE(Daemon):
             else:
                 files.add(f)
         for f in files:
+            self.activator_manifest_files.add(f)
             cs=self.activator_manifest.files.add()
             cs.name=f
             cs.hash=file_hash(f)
