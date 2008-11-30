@@ -220,7 +220,7 @@ class SAE(Daemon):
     
     def periodic_wrapper(self,task):
         logging.info(u"Executing %s"%unicode(task))
-        tb=None
+        cwd=os.getcwd()
         try:
             status=task.periodic_class(self).execute()
         except:
@@ -231,8 +231,6 @@ class SAE(Daemon):
             timeout=task.run_every
         else:
             timeout=max(60,task.run_every/4)
-            if tb:
-                logging.error("Periodic task %s failed\n%s\n"%(unicode(task),tb))
         task.next_run=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
         task.save()
         self.periodic_task_lock.acquire()
@@ -240,6 +238,10 @@ class SAE(Daemon):
             del self.active_periodic_tasks[task.id]
         finally:
             self.periodic_task_lock.release()
+        new_cwd=os.getcwd()
+        if cwd!=new_cwd:
+            logging.error("CWD changed by periodic '%s' ('%s' -> '%s'). Restoring old cwd"%(unicode(task),cwd,new_cwd))
+            os.chdir(cwd)
     ##
     def check_activator_access(self,address):
         return Activator.objects.filter(ip=address).count()>0
