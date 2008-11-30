@@ -1,7 +1,7 @@
 #
 # Various debugging utilities
 #
-import sys,re,logging,datetime
+import sys,re,logging,datetime,os
 
 # Borrowed from django
 def get_lines_from_file(filename,lineno,context_lines,loader=None,module_name=None):
@@ -106,6 +106,7 @@ def error_report():
     t,v,tb=sys.exc_info()
     now=datetime.datetime.now()
     r=["UNHANDLED EXCEPTION (%s)"%str(now)]
+    r+=["Working directory: %s"%os.getcwd()]
     r+=[str(t),str(v)]
     r+=[format_frames(get_traceback_frames(tb))]
     logging.error("\n".join(r))
