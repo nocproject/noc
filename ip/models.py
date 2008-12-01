@@ -8,6 +8,7 @@ from noc.lib.validators import check_rd,check_cidr,is_cidr
 from noc.lib.tt import tt_url
 from noc.peer.models import AS
 from noc.lib.fields import CIDRField
+from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast
 ##
 ##
 ##
@@ -170,19 +171,12 @@ class IPv4Block(models.Model):
         return [IPv4Address.objects.get(id=i[0]) for i in c.fetchall()]
     addresses=property(_addresses)
 
-    def __get_ip(self,ip):
-        return socket.inet_ntoa(struct.pack("!L",ip))
-    def __mask_for_bits(self,bits):
-        return ((1L<<bits)-1L)<<(32L-bits)
-    def __get_ip_bits(self,ip):
-        return struct.unpack("!L",socket.inet_aton(ip))[0]
-
     def _netmask_bits(self):
         return int(str(self.prefix).split("/")[1])
     netmask_bits=property(_netmask_bits)
 
     def _netmask(self):
-        return self.__get_ip(self.__mask_for_bits(self.netmask_bits))
+        return int_to_address(bits_to_int(self.netmask_bits))
     netmask=property(_netmask)
 
     def _network(self):
@@ -190,11 +184,11 @@ class IPv4Block(models.Model):
     network=property(_network)
 
     def _wildcard(self): 
-        return self.__get_ip(0xFFFFFFFFL^self.__mask_for_bits(self.netmask_bits))
+        return wildcard(self.prefix)
     wildcard=property(_wildcard)
 
     def _broadcast(self):
-        return self.__get_ip(self.__get_ip_bits(str(self.prefix).split("/")[0])|(0xFFFFFFFFL^self.__mask_for_bits(self.netmask_bits)))
+        return broadcast(self.prefix)
     broadcast=property(_broadcast)
     
     def _tt_url(self):
