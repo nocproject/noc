@@ -85,6 +85,13 @@ def broadcast(prefix):
     n,m=prefix.split("/")
     m=int(m)
     return int_to_address(address_to_int(n)|(0xFFFFFFFFL^bits_to_int(m)))
+##
+##
+##
+def wildcard(prefix):
+    n,m=prefix.split("/")
+    m=int(m)
+    return int_to_address(0xFFFFFFFFL^bits_to_int(m))
 
 ##
 ##
