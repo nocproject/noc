@@ -47,7 +47,7 @@ class Service(SAEService):
                 request.access_profile.profile)
             done(controller,error=e)
             return
-        if self.activator.factory.count_subclass_sockets(ActionSocket)>=self.activator.config.get("activator","max_pull_config"):
+        if self.activator.factory.count_subclass_sockets(ActionSocket)>=self.activator.config.getint("activator","max_pull_config"):
             e=Error()
             e.code=ERR_OVERLOAD
             e.text="pull_config concurrent session limit reached"
