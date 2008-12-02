@@ -1,34 +1,34 @@
 # Django settings for noc project.
 # Do not modify this file directly
-# Edit site_settings.py instead
+# Edit etc/noc.conf instead
+import ConfigParser
 
-DEBUG = True
+config=ConfigParser.SafeConfigParser()
+config.read("etc/noc.defaults")
+config.read("etc/noc.conf")
+
+DEBUG = config.get("main","debug")
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
-)
+ADMINS=[]
+for a in config.get("main","admin_emails").split(","):
+    a=a.strip()
+    if not a:
+        continue
+    n,d=a.split("@")
+    ADMINS.append((n,a))
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = ''           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'ado_mssql'.
-DATABASE_NAME = ''             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
+DATABASE_ENGINE   = config.get("database","engine")
+DATABASE_NAME     = config.get("database","name")
+DATABASE_USER     = config.get("database","user")
+DATABASE_PASSWORD = config.get("database","password")
+DATABASE_HOST     = config.get("database","host")
+DATABASE_PORT     = config.get("database","port")
 
-# Local time zone for this installation. Choices can be found here:
-# http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
-# although not all variations may be possible on all operating systems.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
-TIME_ZONE = 'Europe/Moscow'
-
-# Language code for this installation. All choices can be found here:
-# http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
-# http://blogs.law.harvard.edu/tech/stories/storyReader$15
-LANGUAGE_CODE = 'en-us'
+TIME_ZONE = config.get("main","timezone")
+LANGUAGE_CODE = config.get("main","language_code")
 
 SITE_ID = 1
 
@@ -50,7 +50,7 @@ MEDIA_URL = ''
 ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'j82icp#5zbus!4hx^#0s4)dy8sru@1ynqblq2!1lv1lu=7&(58'
+SECRET_KEY = config.get("main","secret_key")
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -97,6 +97,3 @@ INSTALLED_APPS = (
 )
 
 FORCE_SCRIPT_NAME=""
-
-# Override defaults using site-specific settings
-from site_settings import *
