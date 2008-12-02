@@ -50,9 +50,15 @@ class Report(noc.main.report.Report):
         allocated_addresses=sum([prefix_to_size(x) for x in allocated])
         allocated_30_addresses=sum([prefix_to_size(x) for x in allocated_30])
         free_addresses=sum([prefix_to_size(x) for x in free])
+        a_s=len(allocated)
+        if a_s:
+            avg_allocated_size=float(allocated_addresses)/float(a_s)
+        else:
+            avg_allocated_size=0.0
         return [
             ["Total addresses",     total_addresses],
             ["Allocated",           allocated_addresses],
             ["....in /30 networks", allocated_30_addresses],
             ["Free",                free_addresses],
+            ["Avegage allocated block size", "%8.2f"%avg_allocated_size]
         ]
