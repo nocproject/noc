@@ -1,0 +1,30 @@
+[main]
+debug = false
+# Comma-separated list of emails to send error reports
+admin_emails =
+# Local time zone for this installation. Choices can be found here:
+# http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
+# although not all variations may be possible on all operating systems.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
+timezone = Europe/Moscow
+# Language code for this installation. All choices can be found here:
+# http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
+# http://blogs.law.harvard.edu/tech/stories/storyReader$15
+language_code = en-us
+# Make this unique, and don't share it with anybody.
+secret_key = j82icp#5zBUZ!4hx^#0s4)dy8sru@1ynqblq2!1lv1lu=7&(58
+
+[database]
+# postgresql_psycopg2
+engine   = postgresql_psycopg2
+# Database name
+name     = noc
+# Database user
+user     = noc
+# User password
+password = noc
+# Set to empty string for localhost
+host     =
+# Set to empty string for default
+port     =
