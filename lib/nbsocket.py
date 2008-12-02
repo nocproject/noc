@@ -447,3 +447,9 @@ class SocketFactory(object):
         else:
             while self.sockets:
                 self.loop()
+    
+    ##
+    ## Return amount of active sockets which are descendants from sclass
+    ##
+    def count_subclass_sockets(self,sclass):
+        return len([s for s in self.sockets.values() if issubclass(s.__class__,sclass)])

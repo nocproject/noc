@@ -5,7 +5,7 @@ from noc.sa.models import Activator
 from noc.cm.models import Config
 
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
-import logging,time,threading,datetime,os,sets
+import logging,time,threading,datetime,os,sets,random
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
 from noc.lib.fileutils import read_file
@@ -264,10 +264,17 @@ class SAE(Daemon):
 
     def pull_config(self,object):
         def pull_config_callback(transaction,response=None,error=None):
+            object=Config.objects.get(id=transaction.object_id)
             if error:
                 logging.error("pull_config failed: %s"%error.text)
+                if error.code==ERR_OVERLOAD:
+                    timeout=150
+                else:
+                    timeout=300
+                timeout+=random.randint(-timeout/10,timeout/10) # Add jitter to avoid blocking by dead task
+                object.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
+                object.save()
                 return
-            object=Config.objects.get(id=transaction.object_id)
             if object.pull_every:
                 object.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=object.pull_every)
             object.write(response.config)

@@ -39,6 +39,7 @@ enum ErrorCode {
     ERR_AUTH_FAILED         = 9; // Authentication failed
     ERR_AUTH_REQUIRED       =10; // Authentication required
     ERR_INVALID_UPGRADE     =11; // Invalid file requested for upgrade
+    ERR_OVERLOAD            =12; // System limit exceeded. Retry operation after delay
 }
 
 //

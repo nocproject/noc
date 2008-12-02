@@ -60,6 +60,10 @@ _ERRORCODE = descriptor.EnumDescriptor(
       name='ERR_INVALID_UPGRADE', index=11, number=11,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_OVERLOAD', index=12, number=12,
+      options=None,
+      type=None),
   ],
   options=None,
 )
@@ -117,6 +121,7 @@ ERR_UNKNOWN_TRAP_SOURCE = 8
 ERR_AUTH_FAILED = 9
 ERR_AUTH_REQUIRED = 10
 ERR_INVALID_UPGRADE = 11
+ERR_OVERLOAD = 12
 TELNET = 0
 SSH = 1
 HTTP = 2
