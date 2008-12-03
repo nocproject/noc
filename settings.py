@@ -20,6 +20,8 @@ for a in config.get("main","admin_emails").split(","):
 
 MANAGERS = ADMINS
 
+SERVER_EMAIL      = config.get("main","server_email")
+
 DATABASE_ENGINE   = config.get("database","engine")
 DATABASE_NAME     = config.get("database","name")
 DATABASE_USER     = config.get("database","user")
