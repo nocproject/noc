@@ -14,6 +14,8 @@ timezone = Europe/Moscow
 language_code = en-us
 # Make this unique, and don't share it with anybody.
 secret_key = j82icp#5zBUZ!4hx^#0s4)dy8sru@1ynqblq2!1lv1lu=7&(58
+# From: for server-generated emails
+server_email = root@localhost
 
 [database]
 # postgresql_psycopg2
