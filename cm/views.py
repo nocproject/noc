@@ -37,10 +37,10 @@ def diff(request,repo,object_id):
     o=get_object_or_404(Object.get_object_class(repo),id=int(object_id))
     if not o.has_access(request.user):
         return HttpResponseForbidden("Access denied")
-    if request.POST:
+    if request.POST and "r1" in request.POST and "r2" in request.POST:
         r1=o.find_revision(request.POST["r1"])
         r2=o.find_revision(request.POST["r2"])
         diff=o.diff(r1,r2)
         return render(request,"cm/diff.html",{"o":o,"diff":diff,"r1":r1,"r2":r2})
     else:
-        return HttpResponseRedirect("/cm/view/%d/"%o.id)
+        return HttpResponseRedirect("/cm/view/config/%d/"%o.id)
