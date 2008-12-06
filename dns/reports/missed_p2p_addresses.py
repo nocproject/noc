@@ -5,12 +5,12 @@ class Report(noc.main.report.Report):
     name="dns.missed_p2p_addresses"
     title="/30 allocations without ip addresses"
     requires_cursor=True
-    columns=[Column("Prefix")]
+    columns=[Column("Prefix",format=lambda x:"<A HREF='/ip/%s/'>%s</A>"%(x,x.split("/",1)[1]))]
     
     def get_queryset(self):
         vrf_id=self.execute("SELECT id FROM ip_vrf WHERE rd='0:0'")[0][0]
         return self.execute("""
-            SELECT prefix
+            SELECT vrf_id||'/'||prefix
             FROM ip_ipv4block b
             WHERE masklen(prefix)=30
                 AND vrf_id=%s
