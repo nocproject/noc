@@ -85,3 +85,6 @@ class VCS(object):
     # Returns revision of the file
     def get_revision(self,path,revision):
         raise Exception("Not supported")
+    #
+    def in_repo(self,path):
+        return os.path.exists(os.path.join(self.repo,path))
