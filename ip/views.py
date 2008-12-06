@@ -148,7 +148,7 @@ def assign_address(request,vrf_id,ip=None):
                     ip=form.cleaned_data["ip"],description=form.cleaned_data["description"],
                     modified_by=request.user)
             address.save()
-            return HttpResponseRedirect("/ip/%d/%s/"%(vrf.id,address.closest_block.prefix))
+            return HttpResponseRedirect("/ip/%d/%s/"%(vrf.id,address.parent.prefix))
     else:
         form=AssignAddressForm(initial=initial)
     return render(request,"ip/assign_address.html",{"vrf":vrf,"form":form,"p":p})
@@ -160,6 +160,6 @@ def revoke_address(request,vrf_id,ip):
     address=get_object_or_404(IPv4Address,vrf=vrf,ip=ip)
     if not IPv4BlockAccess.check_write_access(request.user,vrf,ip+"/32"):
         return HttpResponseForbidden("Permission denied")
-    prefix=address.closest_block.prefix
+    prefix=address.parent.prefix
     address.delete()
     return HttpResponseRedirect("/ip/%d/%s/"%(vrf_id,prefix))

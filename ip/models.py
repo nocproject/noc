@@ -218,12 +218,12 @@ class IPv4Address(models.Model):
     def __str__(self):
         return self.ip
 
-    def _closest_block(self):
+    def _parent(self):
         from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE vrf_id=%d AND '%s' << prefix ORDER BY masklen(prefix) DESC LIMIT 1"%(IPv4Block._meta.db_table,self.vrf.id,str(self.ip)))
         return IPv4Block.objects.get(id=c.fetchall()[0][0])
-    closest_block=property(_closest_block)
+    parent=property(_parent)
     
     def _tt_url(self):
         return tt_url(self)
