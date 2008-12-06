@@ -7,13 +7,21 @@ from noc.sa.actions import action_registry,scheme_registry
 from noc.sa.activator import Service
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.sae_stream import TransactionFactory
-import logging,sys
+import logging,sys,ConfigParser
 from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory
 
 class Controller(object): pass
 
-class ActivatorStub(object): pass
+##
+## Activator emulation
+##
+class ActivatorStub(object):
+    def __init__(self):
+        # Simple config stub
+        self.config=ConfigParser.SafeConfigParser()
+        self.config.add_section("activator")
+        self.config.set("activator","max_pull_config","2")
 
 class Command(BaseCommand):
     help="Debug Profile"
