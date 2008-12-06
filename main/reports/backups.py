@@ -17,7 +17,7 @@ class Report(noc.main.report.Report):
         if not os.path.isdir(bd):
             return []
         r=[]
-        for f in [f for f in os.listdir(bd) if f.startswith("noc-") and f.endswith(".dump")]:
+        for f in [f for f in os.listdir(bd) if f.startswith("noc-") and (f.endswith(".dump") or f.endswith(".tar.gz"))]:
             s=os.stat(os.path.join(bd,f))
             r.append([f,datetime.datetime.fromtimestamp(s[stat.ST_MTIME]),s[stat.ST_SIZE]])
         return sorted(r,lambda x,y:cmp(x[1],y[1]))
