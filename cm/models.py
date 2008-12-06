@@ -84,6 +84,10 @@ class Object(models.Model):
     
     def __unicode__(self):
         return "%s/%s"%(self.repo_name,self.repo_path)
+    
+    def _vcs(self):
+        return vcs_registry.get(self.repo)
+    vcs=property(_vcs)
         
     def save(self,*args,**kwargs):
         mv=None
@@ -92,8 +96,8 @@ class Object(models.Model):
             if old.repo_path!=self.repo_path:
                 mv=(old.repo_path,self.repo_path)
         models.Model.save(self,*args,**kwargs)
-        if mv:
-            vcs=vcs_registry.get(self.repo)
+        vcs=self.vcs
+        if mv is not None and vcs.in_repo(mv[0]):
             vcs.mv(mv[0],mv[1])
         
     def _repo(self):
@@ -113,7 +117,7 @@ class Object(models.Model):
         is_new=not os.path.exists(path)
         now=datetime.datetime.now()
         if rewrite_when_differ(self.path,data):
-            vcs=vcs_registry.get(self.repo)
+            vcs=self.vcs
             if is_new:
                 vcs.add(self.repo_path)
             vcs.commit(self.repo_path)
@@ -128,8 +132,7 @@ class Object(models.Model):
     data=property(_data)
     #
     def delete(self):
-        vcs=vcs_registry.get(self.repo)
-        vcs.rm(self.repo_path)
+        self.vcs.rm(self.repo_path)
         super(Object,self).delete()
 
     def view_link(self):
@@ -138,8 +141,7 @@ class Object(models.Model):
     view_link.allow_tags=True
 
     def _revisions(self):
-        vcs=vcs_registry.get(self.repo)
-        return vcs.log(self.repo_path)
+        return self.vcs.log(self.repo_path)
     revisions=property(_revisions)
     
     # Finds revision of the object and returns Revision
@@ -151,12 +153,10 @@ class Object(models.Model):
         raise Exception("Not found")
     
     def diff(self,rev1,rev2):
-        vcs=vcs_registry.get(self.repo)
-        return vcs.diff(self.repo_path,rev1,rev2)
+        return self.vcs.diff(self.repo_path,rev1,rev2)
         
     def get_revision(self,rev):
-        vcs=vcs_registry.get(self.repo)
-        return vcs.get_revision(self.repo_path,rev)
+        return self.vcs.get_revision(self.repo_path,rev)
         
     @classmethod
     def get_object_class(self,repo):
