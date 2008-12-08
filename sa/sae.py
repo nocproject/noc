@@ -277,6 +277,7 @@ class SAE(Daemon):
                 return
             if object.pull_every:
                 object.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=object.pull_every)
+                object.save()
             object.write(response.config)
         stream=self.get_activator_stream(object.activator.name)
         r=PullConfigRequest()
