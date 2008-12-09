@@ -7,21 +7,81 @@ from noc.sa.profiles import profile_registry
 from noc.cm.models import Object
 import random,sets
 
-class LIR(models.Model):
+class RIR(models.Model):
     class Meta:
-        verbose_name="LIR"
-        verbose_name_plural="LIRs"
-    name=models.CharField("LIR name",unique=True,max_length=64)
-    def __str__(self):
-        return self.name
+        verbose_name="RIR"
+        verbose_name_plural="RIRs"
+        ordering=["name"]
+    name=models.CharField("name",max_length=64,unique=True)
+    whois=models.CharField("whois",max_length=64,blank=True,null=True)
     def __unicode__(self):
-        return unicode(self.name)
+        return self.name
+
+class Person(models.Model):
+    class Meta:
+        verbose_name="Person"
+        verbose_name_plural="Persons"
+    nic_hdl=models.CharField("nic-hdl",max_length=64,unique=True)
+    person=models.CharField("person",max_length=128)
+    address=models.TextField("address")
+    phone=models.TextField("phone")
+    fax_no=models.TextField("fax-no",blank=True,null=True)
+    email=models.TextField("email")
+    rir=models.ForeignKey(RIR,verbose_name="RIR")
+    extra=models.TextField("extra",blank=True,null=True)
+    def __unicode__(self):
+        return "%s (%s)"%(self.nic_hdl,self.person)
+    def _rpsl(self):
+        s=[]
+        s+=["person: %s"%self.person]
+        s+=["nic-hdl: %s"%self.nic_hdl]
+        s+=["address: %s"%x for x in self.address.split("\n")]
+        s+=["phone: %s"%x for x in self.phone.split("\n")]
+        if self.fax_no:
+            s+=["fax-no: %s"%x for x in self.fax_no.split("\n")]
+        s+=["email: %s"%x for x in self.email.split("\n")]
+        if self.extra:
+            s+=[self.extra]
+        return rpsl_format("\n".join(s))
+    rpsl=property(_rpsl)
+    def rpsl_link(self):
+        return "<A HREF='/peer/person/%d/rpsl/'>RPSL</A>"%self.id
+    rpsl_link.short_description="RPSL"
+    rpsl_link.allow_tags=True
+
+class Maintainer(models.Model):
+    class Meta:
+        verbose_name="Maintainer"
+        verbose_name_plural="Maintainers"
+    maintainer=models.CharField("mntner",max_length=64,unique=True)
+    description=models.CharField("description",max_length=64)
+    auth=models.TextField("auth")
+    rir=models.ForeignKey(RIR,verbose_name="RIR")
+    admins=models.ManyToManyField(Person,verbose_name="admin-c")
+    extra=models.TextField("extra",blank=True,null=True)
+    def __unicode__(self):
+        return self.maintainer
+    def _rpsl(self):
+        s=[]
+        s+=["mntner: %s"%self.maintainer]
+        s+=["descr: %s"%self.description]
+        s+=["auth: %s"%x for x in self.auth.split("\n")]
+        s+=["admins: %s"%x.nic_hdl for x in self.admins.all()]
+        s+=["mnt-by: %s"%self.maintainer]
+        if self.extra:
+            s+=[self.extra]
+        return rpsl_format("\n".join(s))
+    rpsl=property(_rpsl)
+    def rpsl_link(self):
+        return "<A HREF='/peer/maintainer/%d/rpsl/'>RPSL</A>"%self.id
+    rpsl_link.short_description="RPSL"
+    rpsl_link.allow_tags=True
 
 class AS(models.Model):
     class Meta:
         verbose_name="AS"
         verbose_name_plural="ASes"
-    lir=models.ForeignKey(LIR,verbose_name="LIR")
+    maintainer=models.ForeignKey(Maintainer,verbose_name="Maintainer")
     asn=models.IntegerField("ASN",unique=True) # ,validator_list=[check_asn]
     description=models.CharField("Description",max_length=64)
     rpsl_header=models.TextField("RPSL Header",null=True,blank=True)

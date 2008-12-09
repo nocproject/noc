@@ -1,11 +1,20 @@
 from django.contrib import admin
-from noc.peer.models import LIR,AS,ASSet,PeeringPoint,PeerGroup,Peer,LGQueryCommand,CommunityType,Community
+from noc.peer.models import RIR,Person,Maintainer,AS,ASSet,PeeringPoint,PeerGroup,Peer,LGQueryCommand,CommunityType,Community
 
-class LIRAdmin(admin.ModelAdmin): pass
+class RIRAdmin(admin.ModelAdmin): pass
+
+class PersonAdmin(admin.ModelAdmin):
+    list_display=["nic_hdl","person","rir","rpsl_link"]
+    list_filter=["rir"]
+    search_fields=["nic_hdl","person"]
+
+class MaintainerAdmin(admin.ModelAdmin):
+    list_display=["maintainer","description","rir","rpsl_link"]
+    list_filter=["rir"]
 
 class ASAdmin(admin.ModelAdmin):
-    list_display=["asn","description","lir","rpsl_link"]
-    list_filter=["lir"]
+    list_display=["asn","description","maintainer","rpsl_link"]
+    list_filter=["maintainer"]
     search_fields=["asn","description"]
     
 class CommunityTypeAdmin(admin.ModelAdmin):
@@ -37,7 +46,9 @@ class PeerAdmin(admin.ModelAdmin):
     search_fields=["remote_asn","description"]
     list_filter=["peering_point"]
 
-admin.site.register(LIR,LIRAdmin)
+admin.site.register(RIR,RIRAdmin)
+admin.site.register(Person,PersonAdmin)
+admin.site.register(Maintainer,MaintainerAdmin)
 admin.site.register(AS,ASAdmin)
 admin.site.register(CommunityType,CommunityTypeAdmin)
 admin.site.register(Community,CommunityAdmin)

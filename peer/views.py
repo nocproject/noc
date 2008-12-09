@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django import forms
 
-from noc.peer.models import AS,ASSet,LGQueryType,PeeringPoint,LGQueryCommand
+from noc.peer.models import Person,Maintainer,AS,ASSet,LGQueryType,PeeringPoint,LGQueryCommand
 from noc.lib.render import render,render_plain_text,render_json
 from noc.lib.validators import is_asn,is_as_set,is_ipv4,is_cidr,is_fqdn
 import re
@@ -26,7 +26,14 @@ def inet_rtr_rpsl(request,router):
     assert is_fqdn(router)
     peering_point=get_object_or_404(PeeringPoint,hostname=router)
     return render_plain_text(peering_point.rpsl)
-    
+
+def person_rpsl(request,person_id):
+    person=get_object_or_404(Person,id=int(person_id))
+    return render_plain_text(person.rpsl)
+
+def maintainer_rpsl(request,mnt_id):
+    maintainer=get_object_or_404(Maintainer,id=int(mnt_id))
+    return render_plain_text(maintainer.rpsl)
 ##
 ## Looking glass
 ##
