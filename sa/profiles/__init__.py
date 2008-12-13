@@ -163,3 +163,5 @@ class Profile(object):
     
     # OID of "config changed trap".
     oid_trap_config_changed=None
+    # Regular expression to parse "config changed" syslog message
+    syslog_config_changed=None

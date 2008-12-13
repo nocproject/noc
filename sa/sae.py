@@ -120,6 +120,26 @@ class Service(SAEService):
             a.actions.append(TA_NOTIFY_CONFIG_CHANGE)
         done(controller,response=r)
     
+    def get_syslog_filter(self,controller,request,done):
+        if not controller.stream.is_authenticated:
+            e=Error()
+            e.code=ERR_AUTH_REQUIRED
+            e.text="Authentication required"
+            done(controller,error=e)
+            return
+        activator=self.get_controller_activator(controller)
+        r=TrapFilterResponse()
+        for c in Config.objects.filter(activator=activator,trap_source_ip__isnull=False):
+            profile=c.profile
+            if profile.syslog_config_changed is None:
+                continue
+            f=r.filters.add()
+            f.ip=c.trap_source_ip
+            a=f.actions.add()
+            a.oid=profile.syslog_config_changed
+            a.actions.append(TA_NOTIFY_CONFIG_CHANGE)
+        done(controller,response=r)
+    
     def notify_trap_config_change(self,controller,request,done):
         if not controller.stream.is_authenticated:
             e=Error()

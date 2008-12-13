@@ -169,5 +169,6 @@ service SAEService {
     rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
     rpc pull_config      (PullConfigRequest)      returns (PullConfigResponse);
     rpc get_trap_filter  (TrapFilterRequest)      returns (TrapFilterResponse);
+    rpc get_syslog_filter(TrapFilterRequest)      returns (TrapFilterResponse);
     rpc notify_trap_config_change(NotifyTrapConfigChangeRequest) returns(NotifyResponse);
 }

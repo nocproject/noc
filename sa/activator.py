@@ -144,6 +144,7 @@ class Activator(Daemon,FSM):
         self.children={}
         self.sae_stream=None
         self.trap_collector=None
+        self.syslog_collector=None
         logging.info("Loading profile classes")
         action_registry.register_all()
         profile_registry.register_all()
@@ -159,6 +160,8 @@ class Activator(Daemon,FSM):
             self.sae_stream=None
         if self.trap_collector:
             self.stop_trap_collector()
+        if self.syslog_collector:
+            self.stop_syslog_collector()
         self.set_timeout(5)
     ##
     ## CONNECT state
@@ -200,6 +203,8 @@ class Activator(Daemon,FSM):
     def on_ESTABLISHED_enter(self):
         if self.config.get("activator","listen_traps"):
             self.start_trap_collector()
+        if self.config.get("activator","listen_syslog"):
+            self.start_syslog_collector()
     ##
     ##
     ##
@@ -214,6 +219,20 @@ class Activator(Daemon,FSM):
             logging.debug("Stopping trap collector")
             self.trap_collector.close()
             self.trap_collector=None
+    ##
+    ##
+    ##
+    def start_syslog_collector(self):
+        logging.debug("Starting syslog collector")
+        from noc.sa.syslogcollector import SyslogCollector
+        self.syslog_collector=SyslogCollector(self.factory,self.config.get("activator","listen_syslog"),514)
+        self.get_syslog_filter()
+        
+    def stop_syslog_collector(self):
+        if self.syslog_collector:
+            logging.debug("Stopping syslog collector")
+            self.syslog_collector.close()
+            self.syslog_collector=None
     ##
     ## Main event loop
     ##
@@ -355,6 +374,33 @@ class Activator(Daemon,FSM):
                 self.trap_collector.set_trap_filter(filters)
         r=TrapFilterRequest()
         self.sae_stream.proxy.get_trap_filter(r,get_trap_filter_callback)
+        ##
+        ##
+        ##
+    @check_state("ESTABLISHED")
+    def get_syslog_filter(self):
+        def get_syslog_filter_callback(transaction,response=None,error=None):
+            if error:
+                logging.error("get_syslog_filter error: %s"%error.text)
+                return
+            if response and self.syslog_collector:
+                logging.info("Updating syslog filters")
+                filters={}
+                for r in response.filters:
+                    if r.ip not in filters:
+                        filters[r.ip]={}
+                    for a in r.actions:
+                        if a.oid not in filters[r.ip]:
+                            filters[r.ip][a.oid]=[]
+                        for aa in a.actions:
+                            if aa==TA_IGNORE:
+                                continue
+                            elif aa==TA_NOTIFY_CONFIG_CHANGE:
+                                action=self.on_trap_config_change
+                            filters[r.ip][a.oid].append(action)
+                self.syslog_collector.set_log_filter(filters)
+        r=TrapFilterRequest()
+        self.sae_stream.proxy.get_syslog_filter(r,get_syslog_filter_callback)
     ##
     ##
     ##

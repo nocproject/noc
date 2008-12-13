@@ -19,6 +19,7 @@ class Profile(noc.sa.profiles.Profile):
     command_pull_config=["terminal length 0","show running-config"]
     config_skip_head=5
     oid_trap_config_changed="1.3.6.1.4.1.9.9.43.2"
+    syslog_config_changed="%SYS-5-CONFIG_I: Configured from"
     
     def generate_prefix_list(self,name,pl,strict=True):
         p="ip prefix-list %s permit %%s"%name
