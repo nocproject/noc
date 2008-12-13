@@ -11,7 +11,8 @@ pidfile  = /var/log/noc/noc-activator.pid
 
 [activator]
 name            = unknown
-listen_traps    = 
+listen_traps    =
+listen_syslog   =
 secret          = thesecretkey
 software_update = true
 max_pull_config = 10
