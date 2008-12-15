@@ -109,6 +109,7 @@ class Service(SAEService):
             return
         activator=self.get_controller_activator(controller)
         r=EventFilterResponse()
+        r.expire=self.sae.config.getint("sae","refresh_event_filter")
         sources=list(request.sources)
         for c in Config.objects.filter(activator=activator,trap_source_ip__isnull=False):
             profile=c.profile

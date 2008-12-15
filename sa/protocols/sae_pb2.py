@@ -726,8 +726,15 @@ _EVENTFILTERRESPONSE = descriptor.Descriptor(
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='filters', full_name='sae.EventFilterResponse.filters', index=0,
-      number=1, type=11, cpp_type=10, label=3,
+      name='expire', full_name='sae.EventFilterResponse.expire', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='filters', full_name='sae.EventFilterResponse.filters', index=1,
+      number=2, type=11, cpp_type=10, label=3,
       default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,

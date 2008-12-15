@@ -154,7 +154,8 @@ message EventFilterResponse {
         required string      mask   = 3;
         required EventAction action = 4;
     }
-    repeated EventFilter filters = 1;
+    required int32       expire  = 1;
+    repeated EventFilter filters = 2;
 }
 
 message EventResponse {

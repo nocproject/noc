@@ -12,3 +12,4 @@ pidfile  = /var/log/noc/noc-sae.pid
 [sae]
 listen = 127.0.0.1
 port   = 19701
+refresh_event_filter = 600

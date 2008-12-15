@@ -130,7 +130,6 @@ class Activator(Daemon,FSM):
         },
         "ESTABLISHED" : {
                 "close"   : "IDLE",
-                
         }
     }
     def __init__(self):
@@ -149,6 +148,7 @@ class Activator(Daemon,FSM):
         profile_registry.register_all()
         self.nonce=None
         FSM.__init__(self)
+        self.next_filter_update=None
         
     ##
     ## IDLE state 
@@ -201,6 +201,7 @@ class Activator(Daemon,FSM):
     ##
     def on_ESTABLISHED_enter(self):
         to_refresh_filters=False
+        self.next_filter_update=None
         if self.config.get("activator","listen_traps"):
             self.start_trap_collector()
             to_refresh_filters=True
@@ -240,6 +241,11 @@ class Activator(Daemon,FSM):
     ##
     def run(self):
         self.factory.run(run_forever=True)
+    ##
+    def tick(self):
+        if self.next_filter_update and time.time()>self.next_filter_update:
+            self.get_event_filter()
+        super(Activator,self).tick()
                 
     def register_stream(self,stream):
         logging.debug("Registering stream %s"%str(stream))
@@ -252,9 +258,6 @@ class Activator(Daemon,FSM):
     def reboot(self):
         logging.info("Rebooting")
         os.execv(sys.executable,[sys.executable]+sys.argv)
-
-    def on_trap_config_change(self,ip,oid):
-        self.notify_trap_config_change(ip)
         
     # Handlers
     ##
@@ -378,6 +381,7 @@ class Activator(Daemon,FSM):
                 self.trap_collector.set_event_filter(filters[ES_SNMP_TRAP])
             if self.syslog_collector:
                 self.syslog_collector.set_event_filter(filters[ES_SYSLOG])
+            self.next_filter_update=time.time()+response.expire
         s=[]
         if self.trap_collector:
             s.append(ES_SNMP_TRAP)
