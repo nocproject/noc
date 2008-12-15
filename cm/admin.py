@@ -83,6 +83,15 @@ class ConfigAdmin(ObjectAdmin):
     list_filter=["location","categories","profile_name","activator"]
     search_fields=["repo_path","address"]
     object_class=Config
+    ##
+    ## Dirty hack to display PasswordInput in admin form
+    ##
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        print db_field.name,kwargs
+        if db_field.name=="password":
+            kwargs["widget"]=forms.widgets.PasswordInput
+            return db_field.formfield(**kwargs)
+        return super(ConfigAdmin,self).formfield_for_dbfield(db_field,**kwargs)
     
 class DNSAdmin(ObjectAdmin):
     list_display=["repo_path","location","last_modified","view_link"]
