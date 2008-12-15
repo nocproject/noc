@@ -45,7 +45,7 @@ _ERRORCODE = descriptor.EnumDescriptor(
       options=None,
       type=None),
     descriptor.EnumValueDescriptor(
-      name='ERR_UNKNOWN_TRAP_SOURCE', index=8, number=8,
+      name='ERR_UNKNOWN_EVENT_SOURCE', index=8, number=8,
       options=None,
       type=None),
     descriptor.EnumValueDescriptor(
@@ -91,17 +91,43 @@ _ACCESSSCHEME = descriptor.EnumDescriptor(
 )
 
 
-_TRAPACTION = descriptor.EnumDescriptor(
-  name='TrapAction',
-  full_name='sae.TrapAction',
-  filename='TrapAction',
+_EVENTSOURCE = descriptor.EnumDescriptor(
+  name='EventSource',
+  full_name='sae.EventSource',
+  filename='EventSource',
   values=[
     descriptor.EnumValueDescriptor(
-      name='TA_IGNORE', index=0, number=0,
+      name='ES_UNKNOWN', index=0, number=0,
       options=None,
       type=None),
     descriptor.EnumValueDescriptor(
-      name='TA_NOTIFY_CONFIG_CHANGE', index=1, number=1,
+      name='ES_SNMP_TRAP', index=1, number=1,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='ES_SYSLOG', index=2, number=2,
+      options=None,
+      type=None),
+  ],
+  options=None,
+)
+
+
+_EVENTACTION = descriptor.EnumDescriptor(
+  name='EventAction',
+  full_name='sae.EventAction',
+  filename='EventAction',
+  values=[
+    descriptor.EnumValueDescriptor(
+      name='EA_IGNORE', index=0, number=0,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='EA_PROXY', index=1, number=1,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='EA_CONFIG_CHANGED', index=2, number=2,
       options=None,
       type=None),
   ],
@@ -117,7 +143,7 @@ ERR_TRANSACTION_EXISTS = 4
 ERR_UNKNOWN_ACTIVATOR = 5
 ERR_INVALID_PROFILE = 6
 ERR_INVALID_SCHEME = 7
-ERR_UNKNOWN_TRAP_SOURCE = 8
+ERR_UNKNOWN_EVENT_SOURCE = 8
 ERR_AUTH_FAILED = 9
 ERR_AUTH_REQUIRED = 10
 ERR_INVALID_UPGRADE = 11
@@ -125,8 +151,12 @@ ERR_OVERLOAD = 12
 TELNET = 0
 SSH = 1
 HTTP = 2
-TA_IGNORE = 0
-TA_NOTIFY_CONFIG_CHANGE = 1
+ES_UNKNOWN = 0
+ES_SNMP_TRAP = 1
+ES_SYSLOG = 2
+EA_IGNORE = 0
+EA_PROXY = 1
+EA_CONFIG_CHANGED = 2
 
 
 
@@ -625,37 +655,15 @@ _SOFTWAREUPGRADERESPONSE = descriptor.Descriptor(
   options=None)
 
 
-_TRAPFILTERREQUEST = descriptor.Descriptor(
-  name='TrapFilterRequest',
-  full_name='sae.TrapFilterRequest',
-  filename='sae.proto',
-  containing_type=None,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],  # TODO(robinson): Implement.
-  enum_types=[
-  ],
-  options=None)
-
-
-_TRAPFILTERRESPONSE_TRAPFILTER_TRAPFILTERACTION = descriptor.Descriptor(
-  name='TrapFilterAction',
-  full_name='sae.TrapFilterResponse.TrapFilter.TrapFilterAction',
+_EVENTFILTERREQUEST = descriptor.Descriptor(
+  name='EventFilterRequest',
+  full_name='sae.EventFilterRequest',
   filename='sae.proto',
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='oid', full_name='sae.TrapFilterResponse.TrapFilter.TrapFilterAction.oid', index=0,
-      number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='actions', full_name='sae.TrapFilterResponse.TrapFilter.TrapFilterAction.actions', index=1,
-      number=2, type=14, cpp_type=8, label=3,
+      name='sources', full_name='sae.EventFilterRequest.sources', index=0,
+      number=1, type=14, cpp_type=8, label=3,
       default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -668,23 +676,38 @@ _TRAPFILTERRESPONSE_TRAPFILTER_TRAPFILTERACTION = descriptor.Descriptor(
   ],
   options=None)
 
-_TRAPFILTERRESPONSE_TRAPFILTER = descriptor.Descriptor(
-  name='TrapFilter',
-  full_name='sae.TrapFilterResponse.TrapFilter',
+
+_EVENTFILTERRESPONSE_EVENTFILTER = descriptor.Descriptor(
+  name='EventFilter',
+  full_name='sae.EventFilterResponse.EventFilter',
   filename='sae.proto',
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='ip', full_name='sae.TrapFilterResponse.TrapFilter.ip', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      name='source', full_name='sae.EventFilterResponse.EventFilter.source', index=0,
+      number=1, type=14, cpp_type=8, label=2,
+      default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='ip', full_name='sae.EventFilterResponse.EventFilter.ip', index=1,
+      number=2, type=9, cpp_type=9, label=2,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='actions', full_name='sae.TrapFilterResponse.TrapFilter.actions', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      default_value=[],
+      name='mask', full_name='sae.EventFilterResponse.EventFilter.mask', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='action', full_name='sae.EventFilterResponse.EventFilter.action', index=3,
+      number=4, type=14, cpp_type=8, label=2,
+      default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -696,14 +719,14 @@ _TRAPFILTERRESPONSE_TRAPFILTER = descriptor.Descriptor(
   ],
   options=None)
 
-_TRAPFILTERRESPONSE = descriptor.Descriptor(
-  name='TrapFilterResponse',
-  full_name='sae.TrapFilterResponse',
+_EVENTFILTERRESPONSE = descriptor.Descriptor(
+  name='EventFilterResponse',
+  full_name='sae.EventFilterResponse',
   filename='sae.proto',
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='filters', full_name='sae.TrapFilterResponse.filters', index=0,
+      name='filters', full_name='sae.EventFilterResponse.filters', index=0,
       number=1, type=11, cpp_type=10, label=3,
       default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -718,9 +741,9 @@ _TRAPFILTERRESPONSE = descriptor.Descriptor(
   options=None)
 
 
-_NOTIFYRESPONSE = descriptor.Descriptor(
-  name='NotifyResponse',
-  full_name='sae.NotifyResponse',
+_EVENTRESPONSE = descriptor.Descriptor(
+  name='EventResponse',
+  full_name='sae.EventResponse',
   filename='sae.proto',
   containing_type=None,
   fields=[
@@ -733,15 +756,65 @@ _NOTIFYRESPONSE = descriptor.Descriptor(
   options=None)
 
 
-_NOTIFYTRAPCONFIGCHANGEREQUEST = descriptor.Descriptor(
-  name='NotifyTrapConfigChangeRequest',
-  full_name='sae.NotifyTrapConfigChangeRequest',
+_EVENTPROXYREQUEST = descriptor.Descriptor(
+  name='EventProxyRequest',
+  full_name='sae.EventProxyRequest',
   filename='sae.proto',
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='ip', full_name='sae.NotifyTrapConfigChangeRequest.ip', index=0,
-      number=1, type=9, cpp_type=9, label=2,
+      name='source', full_name='sae.EventProxyRequest.source', index=0,
+      number=1, type=14, cpp_type=8, label=2,
+      default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='ip', full_name='sae.EventProxyRequest.ip', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='message', full_name='sae.EventProxyRequest.message', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='body', full_name='sae.EventProxyRequest.body', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_EVENTCONFIGCHANGEDREQUEST = descriptor.Descriptor(
+  name='EventConfigChangedRequest',
+  full_name='sae.EventConfigChangedRequest',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='source', full_name='sae.EventConfigChangedRequest.source', index=0,
+      number=1, type=14, cpp_type=8, label=2,
+      default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='ip', full_name='sae.EventConfigChangedRequest.ip', index=1,
+      number=2, type=9, cpp_type=9, label=2,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -763,9 +836,12 @@ _ACCESSPROFILE.fields_by_name['scheme'].enum_type = _ACCESSSCHEME
 _PULLCONFIGREQUEST.fields_by_name['access_profile'].message_type = _ACCESSPROFILE
 _MANIFESTRESPONSE.fields_by_name['files'].message_type = _FILECHECKSUM
 _SOFTWAREUPGRADERESPONSE.fields_by_name['codes'].message_type = _FILECODE
-_TRAPFILTERRESPONSE_TRAPFILTER_TRAPFILTERACTION.fields_by_name['actions'].enum_type = _TRAPACTION
-_TRAPFILTERRESPONSE_TRAPFILTER.fields_by_name['actions'].message_type = _TRAPFILTERRESPONSE_TRAPFILTER_TRAPFILTERACTION
-_TRAPFILTERRESPONSE.fields_by_name['filters'].message_type = _TRAPFILTERRESPONSE_TRAPFILTER
+_EVENTFILTERREQUEST.fields_by_name['sources'].enum_type = _EVENTSOURCE
+_EVENTFILTERRESPONSE_EVENTFILTER.fields_by_name['source'].enum_type = _EVENTSOURCE
+_EVENTFILTERRESPONSE_EVENTFILTER.fields_by_name['action'].enum_type = _EVENTACTION
+_EVENTFILTERRESPONSE.fields_by_name['filters'].message_type = _EVENTFILTERRESPONSE_EVENTFILTER
+_EVENTPROXYREQUEST.fields_by_name['source'].enum_type = _EVENTSOURCE
+_EVENTCONFIGCHANGEDREQUEST.fields_by_name['source'].enum_type = _EVENTSOURCE
 
 class Message(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -843,29 +919,29 @@ class SoftwareUpgradeResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _SOFTWAREUPGRADERESPONSE
 
-class TrapFilterRequest(message.Message):
+class EventFilterRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _TRAPFILTERREQUEST
+  DESCRIPTOR = _EVENTFILTERREQUEST
 
-class TrapFilterResponse(message.Message):
+class EventFilterResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   
-  class TrapFilter(message.Message):
+  class EventFilter(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
-    
-    class TrapFilterAction(message.Message):
-      __metaclass__ = reflection.GeneratedProtocolMessageType
-      DESCRIPTOR = _TRAPFILTERRESPONSE_TRAPFILTER_TRAPFILTERACTION
-    DESCRIPTOR = _TRAPFILTERRESPONSE_TRAPFILTER
-  DESCRIPTOR = _TRAPFILTERRESPONSE
+    DESCRIPTOR = _EVENTFILTERRESPONSE_EVENTFILTER
+  DESCRIPTOR = _EVENTFILTERRESPONSE
 
-class NotifyResponse(message.Message):
+class EventResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _NOTIFYRESPONSE
+  DESCRIPTOR = _EVENTRESPONSE
 
-class NotifyTrapConfigChangeRequest(message.Message):
+class EventProxyRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _NOTIFYTRAPCONFIGCHANGEREQUEST
+  DESCRIPTOR = _EVENTPROXYREQUEST
+
+class EventConfigChangedRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _EVENTCONFIGCHANGEDREQUEST
 
 
 _SAESERVICE = descriptor.ServiceDescriptor(
@@ -929,30 +1005,30 @@ _SAESERVICE = descriptor.ServiceDescriptor(
     options=None,
   ),
   descriptor.MethodDescriptor(
-    name='get_trap_filter',
-    full_name='sae.SAEService.get_trap_filter',
+    name='event_filter',
+    full_name='sae.SAEService.event_filter',
     index=6,
     containing_service=None,
-    input_type=_TRAPFILTERREQUEST,
-    output_type=_TRAPFILTERRESPONSE,
+    input_type=_EVENTFILTERREQUEST,
+    output_type=_EVENTFILTERRESPONSE,
     options=None,
   ),
   descriptor.MethodDescriptor(
-    name='get_syslog_filter',
-    full_name='sae.SAEService.get_syslog_filter',
+    name='event_proxy',
+    full_name='sae.SAEService.event_proxy',
     index=7,
     containing_service=None,
-    input_type=_TRAPFILTERREQUEST,
-    output_type=_TRAPFILTERRESPONSE,
+    input_type=_EVENTPROXYREQUEST,
+    output_type=_EVENTRESPONSE,
     options=None,
   ),
   descriptor.MethodDescriptor(
-    name='notify_trap_config_change',
-    full_name='sae.SAEService.notify_trap_config_change',
+    name='event_config_changed',
+    full_name='sae.SAEService.event_config_changed',
     index=8,
     containing_service=None,
-    input_type=_NOTIFYTRAPCONFIGCHANGEREQUEST,
-    output_type=_NOTIFYRESPONSE,
+    input_type=_EVENTCONFIGCHANGEDREQUEST,
+    output_type=_EVENTRESPONSE,
     options=None,
   ),
 ])

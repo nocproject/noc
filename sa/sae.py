@@ -100,7 +100,7 @@ class Service(SAEService):
             u.code=read_file(n)
         done(controller,response=r)
         
-    def get_trap_filter(self,controller,request,done):
+    def event_filter(self,controller,request,done):
         if not controller.stream.is_authenticated:
             e=Error()
             e.code=ERR_AUTH_REQUIRED
@@ -108,39 +108,37 @@ class Service(SAEService):
             done(controller,error=e)
             return
         activator=self.get_controller_activator(controller)
-        r=TrapFilterResponse()
+        r=EventFilterResponse()
+        sources=list(request.sources)
         for c in Config.objects.filter(activator=activator,trap_source_ip__isnull=False):
             profile=c.profile
-            if profile.oid_trap_config_changed is None:
-                continue
-            f=r.filters.add()
-            f.ip=c.trap_source_ip
-            a=f.actions.add()
-            a.oid=profile.oid_trap_config_changed
-            a.actions.append(TA_NOTIFY_CONFIG_CHANGE)
+            if ES_SNMP_TRAP in sources:
+                if profile.oid_trap_config_changed:
+                    f=r.filters.add()
+                    f.source=ES_SNMP_TRAP
+                    f.ip=c.trap_source_ip
+                    f.mask=profile.oid_trap_config_changed
+                    f.action=EA_CONFIG_CHANGED
+                f=r.filters.add()
+                f.source=ES_SNMP_TRAP
+                f.ip=c.trap_source_ip
+                f.mask=".*"
+                f.action=EA_PROXY
+            if ES_SYSLOG in sources:
+                if profile.syslog_config_changed:
+                    f=r.filters.add()
+                    f.source=ES_SYSLOG
+                    f.ip=c.trap_source_ip
+                    f.mask=profile.syslog_config_changed
+                    f.action=EA_CONFIG_CHANGED
+                f=r.filters.add()
+                f.source=ES_SYSLOG
+                f.ip=c.trap_source_ip
+                f.mask=".*"
+                f.action=EA_PROXY
         done(controller,response=r)
-    
-    def get_syslog_filter(self,controller,request,done):
-        if not controller.stream.is_authenticated:
-            e=Error()
-            e.code=ERR_AUTH_REQUIRED
-            e.text="Authentication required"
-            done(controller,error=e)
-            return
-        activator=self.get_controller_activator(controller)
-        r=TrapFilterResponse()
-        for c in Config.objects.filter(activator=activator,trap_source_ip__isnull=False):
-            profile=c.profile
-            if profile.syslog_config_changed is None:
-                continue
-            f=r.filters.add()
-            f.ip=c.trap_source_ip
-            a=f.actions.add()
-            a.oid=profile.syslog_config_changed
-            a.actions.append(TA_NOTIFY_CONFIG_CHANGE)
-        done(controller,response=r)
-    
-    def notify_trap_config_change(self,controller,request,done):
+        
+    def event_proxy(self,controller,request,done):
         if not controller.stream.is_authenticated:
             e=Error()
             e.code=ERR_AUTH_REQUIRED
@@ -152,14 +150,33 @@ class Service(SAEService):
             c=Config.objects.get(activator=activator,trap_source_ip=request.ip)
         except Config.DoesNotExist:
             e=Error()
-            e.code=ERR_UNKNOWN_TRAP_SOURCE
-            e.text="Unknown trap source '%s'"%request.ip
+            e.code=ERR_UNKNOWN_EVENT_SOURCE
+            e.text="Unknown event source '%s'"%request.ip
             done(controller,error=e)
             return
-        logging.info("%s configuration changed (Notified by trap)"%(c.repo_path))
+        logging.info("event from: %s: %s"%(c.repo_path,repr(request.message)))
+        done(controller,EventResponse())
+    
+    def event_config_changed(self,controller,request,done):
+        if not controller.stream.is_authenticated:
+            e=Error()
+            e.code=ERR_AUTH_REQUIRED
+            e.text="Authentication required"
+            done(controller,error=e)
+            return
+        activator=self.get_controller_activator(controller)
+        try:
+            c=Config.objects.get(activator=activator,trap_source_ip=request.ip)
+        except Config.DoesNotExist:
+            e=Error()
+            e.code=ERR_UNKNOWN_EVENT_SOURCE
+            e.text="Unknown event source '%s'"%request.ip
+            done(controller,error=e)
+            return
+        logging.info("%s configuration changed"%(c.repo_path))
         c.next_pull=min(c.next_pull,datetime.datetime.now()+datetime.timedelta(minutes=10))
         c.save()
-        done(controller,NotifyResponse())
+        done(controller,EventResponse())
 
 ##
 ## AcceptedTCPSocket with RPC Protocol

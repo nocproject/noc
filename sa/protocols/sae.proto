@@ -35,7 +35,7 @@ enum ErrorCode {
     ERR_UNKNOWN_ACTIVATOR   = 5;
     ERR_INVALID_PROFILE     = 6; // Invalid profile
     ERR_INVALID_SCHEME      = 7; // Invalid access scheme
-    ERR_UNKNOWN_TRAP_SOURCE = 8;
+    ERR_UNKNOWN_EVENT_SOURCE = 8;
     ERR_AUTH_FAILED         = 9; // Authentication failed
     ERR_AUTH_REQUIRED       =10; // Authentication required
     ERR_INVALID_UPGRADE     =11; // Invalid file requested for upgrade
@@ -129,33 +129,47 @@ message SoftwareUpgradeResponse {
     repeated FileCode codes = 1;
 }
 //
-// SNMP Traps
+// Event processing
 //
-enum TrapAction {
-    TA_IGNORE=0;               // Drop trap
-    TA_NOTIFY_CONFIG_CHANGE=1; // send ReqNotifyConfigChange
+enum EventSource {
+    ES_UNKNOWN   = 0;
+    ES_SNMP_TRAP = 1;
+    ES_SYSLOG    = 2;
 }
 
-message TrapFilterRequest {
+enum EventAction {
+    EA_IGNORE         = 0;
+    EA_PROXY          = 1;
+    EA_CONFIG_CHANGED = 2;
 }
 
-message TrapFilterResponse {
-    message TrapFilter {
-        message TrapFilterAction {
-            required string     oid     = 1;
-            repeated TrapAction actions = 2;
-        }
-        required string           ip      = 1;
-        repeated TrapFilterAction actions = 2;
+message EventFilterRequest {
+    repeated EventSource sources = 1;
+}
+
+message EventFilterResponse {
+    message EventFilter {
+        required EventSource source = 1;
+        required string      ip     = 2;
+        required string      mask   = 3;
+        required EventAction action = 4;
     }
-    repeated TrapFilter filters = 1;
+    repeated EventFilter filters = 1;
 }
 
-message NotifyResponse {
+message EventResponse {
 }
 
-message NotifyTrapConfigChangeRequest {
-    required string ip = 1;
+message EventProxyRequest {
+    required EventSource source = 1;
+    required string      ip     = 2;
+    required string      message= 3;
+    optional string      body   = 4;
+}
+
+message EventConfigChangedRequest {
+    required EventSource source = 1;
+    required string      ip     = 2;
 }
 
 //
@@ -168,7 +182,7 @@ service SAEService {
     rpc manifest         (ManifestRequest)        returns (ManifestResponse);
     rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
     rpc pull_config      (PullConfigRequest)      returns (PullConfigResponse);
-    rpc get_trap_filter  (TrapFilterRequest)      returns (TrapFilterResponse);
-    rpc get_syslog_filter(TrapFilterRequest)      returns (TrapFilterResponse);
-    rpc notify_trap_config_change(NotifyTrapConfigChangeRequest) returns(NotifyResponse);
+    rpc event_filter     (EventFilterRequest)     returns (EventFilterResponse);
+    rpc event_proxy      (EventProxyRequest)      returns (EventResponse);
+    rpc event_config_changed (EventConfigChangedRequest) returns (EventResponse);
 }
