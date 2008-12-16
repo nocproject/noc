@@ -20,7 +20,7 @@
                 <h1 ID="site-name">NOC</h1>
             </div>
                 {% if user.is_authenticated and user.is_staff %}
-                <div id="user-tools">Welcome, <strong>{% if user.first_name %}{{ user.first_name|escape }}{% else %}{{ user.username }}{% endif %}</strong>.  <a href="{{ root_path }}password_change/">Change password</a> / <a href="{{root_path}}logout/">Logout</a></div>
+                <div id="user-tools">Welcome, <strong>{% if user.first_name %}{{ user.first_name|escape }}{% else %}{{ user.username }}{% endif %}</strong>.  <a href="{{ root_path }}admin/password_change/">Change password</a> / <a href="{{root_path}}admin/logout/">Logout</a></div>
                 {% endif %}
         </div>
         <!-- END Header -->
