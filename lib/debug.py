@@ -80,6 +80,40 @@ def get_traceback_frames(tb):
                 }]
     return frames
 
+def get_execution_frames(frame):
+    e_f=[]
+    while frame is not None:
+        e_f.append(frame)
+        frame=frame.f_back
+    e_f.reverse()
+    frames = []
+    for frame in e_f:
+        filename = frame.f_code.co_filename
+        function = frame.f_code.co_name
+        lineno = frame.f_lineno - 1
+        loader = frame.f_globals.get('__loader__')
+        module_name = frame.f_globals.get('__name__')
+        pre_context_lineno, pre_context, context_line, post_context = get_lines_from_file(filename, lineno, 7, loader, module_name)
+        if pre_context_lineno is not None:
+            frames.append({
+                'filename': filename,
+                'function': function,
+                'lineno': lineno + 1,
+                'vars': frame.f_locals.items(),
+                'pre_context': pre_context,
+                'context_line': context_line,
+                'post_context': post_context,
+                'pre_context_lineno': pre_context_lineno + 1,
+            })
+    if not frames:
+        frames = [{
+            'filename': 'unknown',
+                    'function': '?',
+                    'lineno': '?',
+                    'context_line': '???',
+                }]
+    return frames
+
 def format_frames(frames):
     def format_source(lineno,lines):
         r=[]
@@ -110,4 +144,11 @@ def error_report():
     r+=["Working directory: %s"%os.getcwd()]
     r+=[str(t),str(v)]
     r+=[format_frames(get_traceback_frames(tb))]
+    logging.error("\n".join(r))
+
+def frame_report(frame):
+    now=datetime.datetime.now()
+    r=["EXECUTION FRAME REPORT (%s)"%str(now)]
+    r+=["Working directory: %s"%os.getcwd()]
+    r+=[format_frames(get_execution_frames(frame))]
     logging.error("\n".join(r))
