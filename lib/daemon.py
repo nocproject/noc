@@ -1,8 +1,8 @@
 ##
 ## Various system utils
 ##
-import ConfigParser,sys,logging,os,signal,optparse
-from noc.lib.debug import error_report
+import ConfigParser,sys,logging,os,signal,optparse,datetime,traceback
+from noc.lib.debug import error_report,frame_report
 
 class Daemon(object):
     daemon_name="daemon"
@@ -136,3 +136,8 @@ class Daemon(object):
     def refresh(self):
         self.stop()
         self.start()
+    ##
+    ##
+    ##
+    def SIGUSR2(self,signo,frame):
+        frame_report(frame)
