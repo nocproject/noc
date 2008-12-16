@@ -2,7 +2,9 @@ __init__.py
 sa/__init__.py
 sa/activator.py
 sa/rpc.py
+sa/eventcollector.py
 sa/trapcollector.py
+sa/syslogcollector.py
 sa/protocols/__init__.py
 sa/protocols/sae_pb2.py
 sa/actions/__init__.py
