@@ -137,7 +137,7 @@ class Daemon(object):
         self.stop()
         self.start()
     ##
-    ##
+    ## Dump current execution frame trace on SIGUSR2
     ##
     def SIGUSR2(self,signo,frame):
         frame_report(frame)
