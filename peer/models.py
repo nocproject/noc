@@ -2,7 +2,6 @@ from django.db import models
 from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
-from noc.setup.models import Settings
 from noc.sa.profiles import profile_registry
 from noc.cm.models import Object
 import random,sets

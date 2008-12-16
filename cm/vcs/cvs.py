@@ -5,7 +5,6 @@
 ##
 import noc.cm.vcs
 import os
-from noc.setup.models import Settings
 
 class VCS(noc.cm.vcs.VCS):
     name="CVS"

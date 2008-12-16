@@ -1,7 +1,6 @@
 import re,os,time,md5,subprocess
 from django.db import models
-from noc.setup.models import Settings
-from noc.ip.models import IPv4Address
+from noc.settings import config
 from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 from noc.dns.generators import generator_registry
@@ -33,13 +32,13 @@ class DNSServer(models.Model):
     def provision_zones(self):
         if self.provisioning:
             env=os.environ.copy()
-            env["RSYNC_RSH"]=Settings.get("shell.ssh")
+            env["RSYNC_RSH"]=config.get("path","ssh")
             cmd=self.provisioning%{
-                "rsync": Settings.get("shell.rsync"),
+                "rsync": config.get("path","rsync"),
                 "ns"   : self.name,
                 "ip"   : self.ip,
             }
-            retcode=subprocess.call(cmd,shell=True,cwd=os.path.join(Settings.get("cm.repo"),"dns"),env=env)
+            retcode=subprocess.call(cmd,shell=True,cwd=os.path.join(config.get("cm","repo"),"dns"),env=env)
             return retcode==0
     def _generator_class(self):
         return generator_registry[self.generator_name]

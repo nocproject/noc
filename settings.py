@@ -90,7 +90,6 @@ INSTALLED_APPS = (
     "south",
     
     "noc.main",
-    "noc.setup",
     "noc.sa",
     "noc.cm",
     "noc.ip",

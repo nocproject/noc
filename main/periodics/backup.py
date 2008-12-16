@@ -6,6 +6,7 @@
 ##      * Remove old dumps
 ##
 import noc.sa.periodic
+from noc.settings import config
 import os,subprocess,datetime
 import logging
 
@@ -20,13 +21,12 @@ class Task(noc.sa.periodic.Task):
                 os.unlink(path)
             except:
                 pass
-        from noc.setup.models import Settings
         from django.conf import settings
         
         now=datetime.datetime.now()
-        cmd=[Settings.get("shell.pg_dump"),"-Fc"]
+        cmd=[config.get("path","pg_dump"),"-Fc"]
         out="noc-%04d-%02d-%02d-%02d-%02d.dump"%(now.year,now.month,now.day,now.hour,now.minute)
-        out=os.path.join(Settings.get('main.backup_dir'),out)
+        out=os.path.join(config.get("path","backup_dir"),out)
         cmd+=["-f",out]
         if settings.DATABASE_USER:
             cmd+=["-U",settings.DATABASE_USER]
@@ -44,9 +44,9 @@ class Task(noc.sa.periodic.Task):
             logging.error("main.backup: dump failed. Removing broken dump '%s'"%out)
             safe_unlink(out)
             return False
-        repo_root=Settings.get("cm.repo")
+        repo_root=config.get("cm","repo")
         repo_out="noc-%04d-%02d-%02d-%02d-%02d.tar"%(now.year,now.month,now.day,now.hour,now.minute)
-        repo_out=os.path.join(Settings.get('main.backup_dir'),repo_out)
+        repo_out=os.path.join(config.get("path","backup_dir"),repo_out)
         cmd=["/usr/bin/tar","cf",repo_out]+[f for f in os.listdir(repo_root) if not f.startswith(".")]
         # Dumping repo
         logging.info("main.backup: dumping repo into %s"%repo_out)

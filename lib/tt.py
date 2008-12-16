@@ -1,13 +1,13 @@
-from noc.setup.models import Settings
+from noc.settings import config
 
 def tt_url(self):
     if self.tt:
-        return Settings.get("tt.url")%{"tt":self.tt}
+        return config.get("tt","url",0,{"tt":self.tt})
     else:
         return None
         
 def admin_tt_url(self):
     if self.tt:
-        return "<A HREF='%s'>#%d</A>"%(Settings.get("tt.url")%{"tt":self.tt},self.tt)
+        return "<A HREF='%s'>#%d</A>"%(config.get("tt","url",0,{"tt":self.tt}),self.tt)
     else:
         return ""

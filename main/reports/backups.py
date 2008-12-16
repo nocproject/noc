@@ -1,5 +1,5 @@
 from noc.main.report import Column
-from noc.setup.models import Settings
+from noc.settings import config
 import noc.main.report
 import os,stat,datetime
 
@@ -13,7 +13,7 @@ class Report(noc.main.report.Report):
         Column("Size (bytes)",align="RIGHT")
     ]
     def get_queryset(self):
-        bd=Settings.get("main.backup_dir")
+        bd=config.get("path","backup_dir")
         if not os.path.isdir(bd):
             return []
         r=[]

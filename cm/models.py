@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.conf import settings
 from noc.sa.profiles import profile_registry
-from noc.setup.models import Settings
+from noc.settings import config
 from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ
 from noc.lib.validators import is_int
@@ -101,7 +101,7 @@ class Object(models.Model):
             vcs.mv(mv[0],mv[1])
         
     def _repo(self):
-        return os.path.join(Settings.get("cm.repo"),self.repo_name)
+        return os.path.join(config.get("cm","repo"),self.repo_name)
     repo=property(_repo)
 
     def _path(self):

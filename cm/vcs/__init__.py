@@ -3,7 +3,7 @@
 ##
 from noc.lib.registry import Registry
 from lib.fileutils import copy_file
-from noc.setup.models import Settings
+from noc.settings import config
 import os,subprocess
 ##
 ## Registry for VCS
@@ -13,7 +13,7 @@ class VCSRegistry(Registry):
     subdir="vcs"
     classname="VCS"
     def get(self,repo):
-        return self[Settings.get("cm.vcs_type")](repo)
+        return self[config.get("cm","vcs_type")](repo)
 vcs_registry=VCSRegistry()
 ##
 ##
@@ -70,10 +70,10 @@ class VCS(object):
     def cmd(self,cmd,check=True):
         if check:
             self.check_repository()
-        subprocess.check_call([Settings.get("cm.vcs_path")]+cmd,cwd=self.repo)
+        subprocess.check_call([config.get("cm","vcs_path")]+cmd,cwd=self.repo)
     # Returns an output of cmd
     def cmd_out(self,cmd):
-        p=subprocess.Popen([Settings.get("cm.vcs_path")]+cmd,stdout=subprocess.PIPE,cwd=self.repo)
+        p=subprocess.Popen([config.get("cm","vcs_path")]+cmd,stdout=subprocess.PIPE,cwd=self.repo)
         d=p.stdout.read()
         return d
     # Returns a list of Revision
