@@ -1,6 +1,7 @@
 import re,os,time,md5,subprocess
 from django.db import models
 from noc.settings import config
+from noc.ip.models import IPv4Address
 from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 from noc.dns.generators import generator_registry
