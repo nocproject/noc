@@ -5,15 +5,7 @@ from noc.dns.models import *
 NAME="BINDv9"
 class Migration:
     def forwards(self):
-        try:
-            p=DNSServerType.objects.get(name=NAME)
-        except DNSServerType.DoesNotExist:
-            p=DNSServerType(name=NAME)
-            p.save()
+        pass
     
     def backwards(self):
-        try:
-            p=DNSServerType.objects.get(name=NAME)
-            p.delete()
-        except DNSServerType.DoesNotExist:
-            pass
+        pass

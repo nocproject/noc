@@ -3,9 +3,6 @@ from south.db import db
 from noc.peer.models import *
 
 class Migration:
-    depends_on=(
-        ("setup","0001_initial"),
-    )
     
     def forwards(self):
         

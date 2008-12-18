@@ -41,14 +41,10 @@ RECORD_TYPES=[
 class Migration:
     def forwards(self):
         for rtype,is_visible in RECORD_TYPES:
-            try:
-                DNSZoneRecordType.objects.get(type=rtype)
+            if db.execute("SELECT COUNT(*) FROM dns_dnszonerecordtype WHERE type=%s",[rtype])[0][0]>0:
                 continue
-            except:
-                pass
             print "Creating DNSZoneRecordType '%s'"%rtype
-            rt=DNSZoneRecordType(type=rtype,is_visible=is_visible)
-            rt.save()
+            db.execute("INSERT INTO dns_dnszonerecordtype(type,is_visible) VALUES(%s,%s)",[rtype,is_visible])
     
     def backwards(self):
         "Write your backwards migration here"

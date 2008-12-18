@@ -1,6 +1,7 @@
 
 from south.db import db
 from noc.cm.models import *
+from noc.settings import config
 import os,stat,datetime
 
 TYPES={
@@ -10,16 +11,9 @@ TYPES={
     "rpsl":"rpsl",
     }
 
-class Migration:
-    def get_repo(self):
-        l=db.execute("SELECT value FROM setup_settings WHERE key=%s",["cm.repo"])
-        if len(l)!=1:
-            return None
-        else:
-            return l[0][0]
-        
+class Migration: 
     def forwards(self):
-        repo_root=self.get_repo()
+        repo_root=config.get("cm","repo")
         for ot in TYPES:
             db.add_column("cm_%s"%ot,"last_modified",models.DateTimeField("Last Modified",blank=True,null=True))
             if repo_root:
