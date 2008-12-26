@@ -143,7 +143,7 @@ class Resolver(object):
             r[n]=(a.members,a.prefixes)
         return r
 
-def test(as_sets):
+def resolve(as_sets):
     logging.basicConfig(level=logging.DEBUG)
     r=Resolver()
-    print r.resolve(as_sets)
+    return r.resolve(as_sets)
