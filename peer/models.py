@@ -3,7 +3,7 @@ from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
 from noc.sa.profiles import profile_registry
-from noc.cm.models import Object
+from noc.cm.models import PrefixList
 import random,sets
 
 class RIR(models.Model):
@@ -237,21 +237,19 @@ class PeeringPoint(models.Model):
         query=self.profile.convert_prefix(query)
         return lgc.command%{"query":query}
     def sync_cm_prefix_list(self):
-        if self.provision_rcmd is None:
-            return
         peers_pl=sets.Set([])
         peers_pl.update([p.import_filter_name for p in self.peer_set.filter(import_filter_name__isnull=False) if p.import_filter_name.strip()])
         peers_pl.update([p.export_filter_name for p in self.peer_set.filter(export_filter_name__isnull=False) if p.export_filter_name.strip()])
         h=self.hostname+"/"
         l_h=len(h)
-        for p in Object.objects.filter(handler_class_name="prefix-list").filter(repo_path__startswith=h):
+        for p in PrefixList.objects.filter(repo_path__startswith=h):
             pl=p.path[l_h:]
             if pl not in peers_pl:
                 p.delete()
             else:
                 del peers_pl[pl]
         for pl in peers_pl:
-            o=Object(handler_class_name="prefix-list",stream_url=self.provision_rcmd,profile_name=self.profile_name,repo_path=h+pl)
+            o=PrefixList(repo_path=h+pl)
             o.save()
     #
     # Returns a list of (prefix-list-name, rpsl-filter)
