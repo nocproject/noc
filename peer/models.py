@@ -215,10 +215,6 @@ class PeeringPoint(models.Model):
     router_id=models.IPAddressField("Router-ID",unique=True)
     profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
-    lg_rcmd=models.CharField("LG RCMD Url",max_length=128,blank=True,null=True,
-        help_text="&lt;schema&gt;://&lt;user&gt;:&lt;password&gt;@host/, where &lt;schema&gt; is one of telnet, ssh")
-    provision_rcmd=models.CharField("Provisioning URL",max_length=128,blank=True,null=True,
-        help_text="&lt;schema&gt;://&lt;user&gt;:&lt;password&gt;@host/, where &lt;schema&gt; is one of telnet, ssh")
     def __str__(self):
         if self.location:
             return "%s (%s)"%(self.hostname,self.location)
@@ -229,13 +225,6 @@ class PeeringPoint(models.Model):
             return u"%s (%s)"%(self.hostname,self.location)
         else:
             return self.hostname
-    def lg_command(self,query_type,query):
-        try:
-            lgc=LGQueryCommand.objects.get(profile_name=self.profile_name,query_type=query_type)
-        except LGQueryCommand.DoesNotExist:
-            return None
-        query=self.profile.convert_prefix(query)
-        return lgc.command%{"query":query}
     def sync_cm_prefix_list(self):
         peers_pl=sets.Set([])
         peers_pl.update([p.import_filter_name for p in self.peer_set.filter(import_filter_name__isnull=False) if p.import_filter_name.strip()])
@@ -386,57 +375,3 @@ class Peer(models.Model):
             return self.peer_group.max_prefixes
         return 0
     effective_max_prefixes=property(_effective_max_prefixes)
-
-##
-## Looking glass query type
-## Do not modify table manually, use migrations to populate data
-##
-class LGQueryType(models.Model):
-    class Meta:
-        verbose_name="LG Query Type"
-        verbose_name_plural="LG Queries Types"
-    name=models.CharField("Name",max_length=32,unique=True)
-    def __unicode__(self):
-        return self.name
-##
-## Looking glass commands
-##
-class LGQueryCommand(models.Model):
-    class Meta:
-        verbose_name="LG Query Command"
-        verbose_name_plural="LG Quert Commands"
-        unique_together=[("profile_name","query_type")]
-    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
-    query_type=models.ForeignKey(LGQueryType,verbose_name="LG Query Type")
-    command=models.CharField("Command",max_length=128)
-    def __unicode__(self):
-        return "%s %s"%(self.profile_name,self.query_type.name)
-    def _is_argument_required(self):
-        return self.command and "%(query)s" in self.command
-    is_argument_required=property(_is_argument_required)
-##
-## Looking glass query
-## Used for exchange with LGD
-##
-class LGQuery(models.Model):
-    class Meta:
-        verbose_name="LG Query"
-        verbose_name_plural="LG Queries"
-        unique_together=[("remote_addr","query_id")]
-    time=models.DateTimeField("Time",auto_now_add=True,auto_now=True)
-    status=models.CharField("Status",max_length=1,
-        choices=[("n","New"),("p","In Progress"),("f","Failure"),("c","Complete")],default="n")
-    remote_addr=models.IPAddressField("REMOTE_ADDR")
-    query_id=models.IntegerField("Query ID")
-    peering_point=models.ForeignKey(PeeringPoint,verbose_name="Peering Point")
-    query_type=models.ForeignKey(LGQueryType,verbose_name="Query Type")
-    query=models.CharField("Query",max_length=128,null=True,blank=True)
-    out=models.TextField("Out",default="")
-    def __unicode__(self):
-        return u"[%s] %s %s %s"%(self.status,self.peering_point,self.query_type,self.query)
-    @classmethod
-    def submit_query(cls,remote_addr,peering_point,query_type,query):
-        q=LGQuery(status="n",peering_point=peering_point,query_type=query_type,query=query,
-            remote_addr=remote_addr,query_id=random.randint(0,0x7FFFFFFF))
-        q.save()
-        return q
