@@ -433,20 +433,20 @@ class SocketFactory(object):
     
     def run(self,run_forever=False):
         if run_forever:
-            last_tick=time.time()
-            last_stale=time.time()
-            while True:
-                self.loop(1)
-                t=time.time()
-                if self.tick_callback and t-last_tick>=1:
-                    self.tick_callback()
-                    last_tick=t
-                if t-last_stale>10:
-                    self.close_stale()
-                    last_stale=t
+            cond=lambda:True
         else:
-            while self.sockets:
-                self.loop()
+            cond=lambda:len(self.sockets)>0
+        last_tick=time.time()
+        last_stale=time.time()
+        while cond():
+            self.loop(1)
+            t=time.time()
+            if self.tick_callback and t-last_tick>=1:
+                self.tick_callback()
+                last_tick=t
+            if t-last_stale>10:
+                self.close_stale()
+                last_stale=t
     
     ##
     ## Return amount of active sockets which are descendants from sclass
