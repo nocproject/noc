@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django import forms
 
-from noc.peer.models import Person,Maintainer,AS,ASSet,LGQueryType,PeeringPoint,LGQueryCommand
+from noc.peer.models import Person,Maintainer,AS,ASSet,PeeringPoint
 from noc.lib.render import render,render_plain_text,render_json
 from noc.lib.validators import is_asn,is_as_set,is_ipv4,is_cidr,is_fqdn
 import re
