@@ -1,16 +1,17 @@
 ##
 ## Service Activator
 ##
-import os,logging,pty,signal,time,re,sys,signal
+import os,logging,pty,signal,time,re,sys,signal,Queue
 from errno import ECONNREFUSED
-from noc.sa.actions import action_registry,scheme_registry,ActionSocket
 from noc.sa.profiles import profile_registry
+from noc.sa.script import script_registry,ScriptSocket
 from noc.sa.rpc import RPCSocket,file_hash,get_digest
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM,check_state
 from noc.lib.nbsocket import ConnectedTCPSocket,SocketFactory
+from threading import Lock
 
 ##
 ##
@@ -19,24 +20,31 @@ class Service(SAEService):
     def ping(self,controller,request,done):
         done(controller,response=PingResponse())
         
-    def pull_config(self,controller,request,done):
-        def pull_config_callback(action):
-            if action.status:
-                c=PullConfigResponse()
-                c.config=action.profile().cleaned_config(action.result)
+    def script(self,controller,request,done):
+        def script_callback(script):
+            if script.status:
+                c=ScriptResponse()
+                c.result=script.result
                 done(controller,response=c)
             else:
                 e=Error()
                 e.code=ERR_INTERNAL
-                e.text="pull_config internal error"
+                e.text="script internal error"
                 done(controller,error=e)
-                
         try:
             profile=profile_registry[request.access_profile.profile]
         except:
             e=Error()
             e.code=ERR_INVALID_PROFILE
             e.text="Invalid profile '%s'"%request.access_profile.profile
+            done(controller,error=e)
+            return
+        try:
+            script_class=script_registry[request.script]
+        except:
+            e=Error()
+            e.code=ERR_INVALID_SCRIPT
+            e.text="Invalid script '%s'"%request.script
             done(controller,error=e)
             return
         if request.access_profile.scheme not in profile.supported_schemes:
@@ -46,29 +54,15 @@ class Service(SAEService):
                 request.access_profile.profile)
             done(controller,error=e)
             return
-        if self.activator.factory.count_subclass_sockets(ActionSocket)>=self.activator.config.getint("activator","max_pull_config"):
+        if self.activator.factory.count_subclass_sockets(ScriptSocket)>=self.activator.config.getint("activator","max_pull_config"):
             e=Error()
             e.code=ERR_OVERLOAD
-            e.text="pull_config concurrent session limit reached"
+            e.text="script concurrent session limit reached"
             done(controller,error=e)
             return
-        args={
-            "user"           : request.access_profile.user,
-            "password"       : request.access_profile.password,
-            "super_password" : request.access_profile.super_password,
-        }
-        if request.access_profile.scheme in [TELNET,SSH]:
-            args["commands"]=profile.command_pull_config
-        elif request.access_profile.scheme in [HTTP]:
-            args["address"]=request.access_profile.address
-        scheme_class=scheme_registry.get_by_id(request.access_profile.scheme)
-        action_class=action_registry[scheme_class.default_action]
-        action=action_class(
-            transaction_id=controller.transaction.id,
-            stream=scheme_class(self.activator.factory,request.access_profile),
-            profile=profile,
-            callback=pull_config_callback,
-            args=args)
+        kwargs={}
+        self.activator.run_script(request.script,request.access_profile,script_callback,**kwargs)
+##
 ##
 ##
 class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
@@ -87,8 +81,6 @@ class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
     
     def on_conn_refused(self):
         self.activator_event("refused")
-
-
 ##
 ## Activator supervisor and daemon
 ##
@@ -144,11 +136,14 @@ class Activator(Daemon,FSM):
         self.trap_collector=None
         self.syslog_collector=None
         logging.info("Loading profile classes")
-        action_registry.register_all()
-        profile_registry.register_all()
+        profile_registry.register_all() # Should be performed from ESTABLISHED state
+        script_registry.register_all()
         self.nonce=None
         FSM.__init__(self)
         self.next_filter_update=None
+        self.script_threads={}
+        self.script_lock=Lock()
+        self.script_call_queue=Queue.Queue()
         
     ##
     ## IDLE state 
@@ -237,14 +232,45 @@ class Activator(Daemon,FSM):
             self.syslog_collector.close()
             self.syslog_collector=None
     ##
+    ## Script support
+    ##
+    def run_script(self,name,access_profile,callback,**kwargs):
+        script=script_registry[name](self,access_profile,**kwargs)
+        self.script_lock.acquire()
+        self.script_threads[script]=callback
+        self.script_lock.release()
+        script.start()
+        
+    def on_script_exit(self,script):
+        self.script_lock.acquire()
+        cb=self.script_threads[script]
+        del self.script_threads[script]
+        self.script_lock.release()
+        cb(script)
+        
+    def request_call(self,f,*args,**kwargs):
+        logging.debug("Requesting call: %s(*%s,**%s)"%(f,args,kwargs))
+        self.script_call_queue.put((f,args,kwargs))
+        
+    ##
     ## Main event loop
     ##
     def run(self):
         self.factory.run(run_forever=True)
     ##
     def tick(self):
+        # Request filter updates
         if self.next_filter_update and time.time()>self.next_filter_update:
             self.get_event_filter()
+        # Perform delayed calls
+        while not self.script_call_queue.empty():
+            try:
+                f,args,kwargs=self.script_call_queue.get_nowait()
+            except:
+                break
+            logging.debug("Calling delayed %s(*%s,**%s)"%(f,args,kwargs))
+            apply(f,args,kwargs)
+        # Perform default daemon/fsm machinery
         super(Activator,self).tick()
                 
     def register_stream(self,stream):

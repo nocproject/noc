@@ -17,7 +17,6 @@ from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,SocketFactory
 ## Additions to MANIFEST-ACTIVATOR file
 ##
 ACTIVATOR_MANIFEST=[
-    "sa/actions/",
     "sa/profiles/",
 ]
 
@@ -299,27 +298,19 @@ class SAE(Daemon):
             return self.factory.get_socket_by_name(name)
         except KeyError:
             raise Exception("Activator not available: %s"%name)
-
-    def pull_config(self,object):
-        def pull_config_callback(transaction,response=None,error=None):
-            object=Config.objects.get(id=transaction.object_id)
+    
+    def script(self,object,name,callback,*args,**kwargs):
+        def script_callback(transaction,response=None,error=None):
             if error:
-                logging.error("pull_config failed: %s"%error.text)
-                if error.code==ERR_OVERLOAD:
-                    timeout=150
-                else:
-                    timeout=300
-                timeout+=random.randint(-timeout/10,timeout/10) # Add jitter to avoid blocking by dead task
-                object.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
-                object.save()
+                logging.error("script(%s,*%s,**%s) failed: %s"%(name,args,kwargs,error.text))
+                callback(error=error)
                 return
-            if object.pull_every:
-                object.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=object.pull_every)
-                object.save()
-            object.write(response.config)
+            result=response.result
+            callback(result=result)
         stream=self.get_activator_stream(object.activator.name)
-        r=PullConfigRequest()
-        r.access_profile.profile           =object.profile_name
+        r=ScriptRequest()
+        r.script=name
+        r.access_profile.profile           = object.profile_name
         r.access_profile.scheme            = object.scheme
         r.access_profile.address           = object.address
         if object.port:
@@ -332,8 +323,7 @@ class SAE(Daemon):
             r.access_profile.super_password= object.super_password
         if object.remote_path:
             r.access_profile.path          = object.remote_path
-        t=stream.proxy.pull_config(r,pull_config_callback)
-        t.object_id=object.id
+        stream.proxy.script(r,script_callback)
     # Signal handlers
 
     # SIGUSR1 returns process info

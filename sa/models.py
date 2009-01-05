@@ -2,9 +2,11 @@ from django.db import models
 import datetime,random,cPickle,time
 from noc.sa.profiles import profile_registry
 from noc.sa.periodic import periodic_registry
+from noc.sa.script import script_registry
 
 profile_registry.register_all()
 periodic_registry.register_all()
+script_registry.register_all()
 
 class Activator(models.Model):
     class Meta:

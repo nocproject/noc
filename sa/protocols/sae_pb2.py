@@ -64,6 +64,10 @@ _ERRORCODE = descriptor.EnumDescriptor(
       name='ERR_OVERLOAD', index=12, number=12,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_INVALID_SCRIPT', index=13, number=13,
+      options=None,
+      type=None),
   ],
   options=None,
 )
@@ -148,6 +152,7 @@ ERR_AUTH_FAILED = 9
 ERR_AUTH_REQUIRED = 10
 ERR_INVALID_UPGRADE = 11
 ERR_OVERLOAD = 12
+ERR_INVALID_SCRIPT = 13
 TELNET = 0
 SSH = 1
 HTTP = 2
@@ -472,16 +477,23 @@ _AUTHRESPONSE = descriptor.Descriptor(
   options=None)
 
 
-_PULLCONFIGREQUEST = descriptor.Descriptor(
-  name='PullConfigRequest',
-  full_name='sae.PullConfigRequest',
+_SCRIPTREQUEST = descriptor.Descriptor(
+  name='ScriptRequest',
+  full_name='sae.ScriptRequest',
   filename='sae.proto',
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='access_profile', full_name='sae.PullConfigRequest.access_profile', index=0,
+      name='access_profile', full_name='sae.ScriptRequest.access_profile', index=0,
       number=1, type=11, cpp_type=10, label=2,
       default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='script', full_name='sae.ScriptRequest.script', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -494,14 +506,14 @@ _PULLCONFIGREQUEST = descriptor.Descriptor(
   options=None)
 
 
-_PULLCONFIGRESPONSE = descriptor.Descriptor(
-  name='PullConfigResponse',
-  full_name='sae.PullConfigResponse',
+_SCRIPTRESPONSE = descriptor.Descriptor(
+  name='ScriptResponse',
+  full_name='sae.ScriptResponse',
   filename='sae.proto',
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='config', full_name='sae.PullConfigResponse.config', index=0,
+      name='result', full_name='sae.ScriptResponse.result', index=0,
       number=1, type=9, cpp_type=9, label=2,
       default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
@@ -840,7 +852,7 @@ _MESSAGE.fields_by_name['response'].message_type = _RESPONSE
 _MESSAGE.fields_by_name['error'].message_type = _ERROR
 _ERROR.fields_by_name['code'].enum_type = _ERRORCODE
 _ACCESSPROFILE.fields_by_name['scheme'].enum_type = _ACCESSSCHEME
-_PULLCONFIGREQUEST.fields_by_name['access_profile'].message_type = _ACCESSPROFILE
+_SCRIPTREQUEST.fields_by_name['access_profile'].message_type = _ACCESSPROFILE
 _MANIFESTRESPONSE.fields_by_name['files'].message_type = _FILECHECKSUM
 _SOFTWAREUPGRADERESPONSE.fields_by_name['codes'].message_type = _FILECODE
 _EVENTFILTERREQUEST.fields_by_name['sources'].enum_type = _EVENTSOURCE
@@ -894,13 +906,13 @@ class AuthResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _AUTHRESPONSE
 
-class PullConfigRequest(message.Message):
+class ScriptRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _PULLCONFIGREQUEST
+  DESCRIPTOR = _SCRIPTREQUEST
 
-class PullConfigResponse(message.Message):
+class ScriptResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _PULLCONFIGRESPONSE
+  DESCRIPTOR = _SCRIPTRESPONSE
 
 class FileChecksum(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1003,12 +1015,12 @@ _SAESERVICE = descriptor.ServiceDescriptor(
     options=None,
   ),
   descriptor.MethodDescriptor(
-    name='pull_config',
-    full_name='sae.SAEService.pull_config',
+    name='script',
+    full_name='sae.SAEService.script',
     index=5,
     containing_service=None,
-    input_type=_PULLCONFIGREQUEST,
-    output_type=_PULLCONFIGRESPONSE,
+    input_type=_SCRIPTREQUEST,
+    output_type=_SCRIPTRESPONSE,
     options=None,
   ),
   descriptor.MethodDescriptor(

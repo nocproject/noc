@@ -40,6 +40,7 @@ enum ErrorCode {
     ERR_AUTH_REQUIRED       =10; // Authentication required
     ERR_INVALID_UPGRADE     =11; // Invalid file requested for upgrade
     ERR_OVERLOAD            =12; // System limit exceeded. Retry operation after delay
+    ERR_INVALID_SCRIPT      =13; // Invalid script
 }
 
 //
@@ -92,15 +93,17 @@ message AuthResponse {
 }
 
 //
-// Returns device configuration
-// SAE->Activator
-message PullConfigRequest {
+// Execute script
+//
+message ScriptRequest {
     required AccessProfile access_profile = 1;
+    required string        script = 2;
 }
 
-message PullConfigResponse {
-    required string config  = 1;
+message ScriptResponse {
+    required string result = 1;
 }
+
 //
 // Software Upgrade
 //
@@ -182,7 +185,7 @@ service SAEService {
     rpc auth             (AuthRequest)            returns (AuthResponse);
     rpc manifest         (ManifestRequest)        returns (ManifestResponse);
     rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
-    rpc pull_config      (PullConfigRequest)      returns (PullConfigResponse);
+    rpc script           (ScriptRequest)          returns (ScriptResponse);
     rpc event_filter     (EventFilterRequest)     returns (EventFilterResponse);
     rpc event_proxy      (EventProxyRequest)      returns (EventResponse);
     rpc event_config_changed (EventConfigChangedRequest) returns (EventResponse);
