@@ -111,11 +111,6 @@ class Profile(object):
     def generate_prefix_list(self,name,pl,strict=True):
         raise Excepton("Not implemented")
     #
-    # A list of commands to pull config via CLI
-    # Should be a list of commands or None if not supported
-    #
-    command_pull_config=None
-    #
     # Volatile strings:
     # A list of strings can be changed over time, which
     # can be sweeped out of config safely or None
