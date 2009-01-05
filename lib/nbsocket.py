@@ -20,7 +20,7 @@ class Socket(object):
         self.start_time=time.time()
     
     def __del__(self):
-        logging.debug("Deallocating socket: %s"%self)
+        self.debug("Deallocating")
         
     def can_read(self):
         return True
@@ -45,7 +45,7 @@ class Socket(object):
             self.on_close()
     
     def debug(self,msg):
-        logging.debug("%s:: %s"%(self,msg))
+        logging.debug("[%s(0x%x)] %s"%(self.__class__.__name__,id(self),msg))
     
     def set_name(self,name):
         self.name=name
@@ -278,7 +278,7 @@ class FileWrapper(object):
         pass
 ##
 ## PTY Socket Emulation
-## Events: on_data, on_close
+## Events: on_read, on_close
 ##
 class PTYSocket(Socket):
     def __init__(self,factory,argv):
@@ -308,7 +308,7 @@ class PTYSocket(Socket):
         self.on_connect()
 
     def write(self,msg):
-        self.debug("write(%s)"%msg)
+        self.debug("write(%s)"%repr(msg))
         self.out_buffer+=msg
     
     def close(self):
@@ -318,13 +318,13 @@ class PTYSocket(Socket):
         except os.error:
             return
         if pid:
-            logging.debug("Child pid=%d is already terminated. Zombie released"%pid)
+            self.debug("Child pid=%d is already terminated. Zombie released"%pid)
         else:
-            logging.debug("Child pid=%d is not terminated. Killing"%self.pid)
+            self.debug("Child pid=%d is not terminated. Killing"%self.pid)
             try:
                 os.kill(self.pid,signal.SIGKILL)
             except:
-                logging.debug("Child pid=%d was killed from another place"%self.pid)
+                self.debug("Child pid=%d was killed from another place"%self.pid)
     
     def on_read(self,data):
         pass
