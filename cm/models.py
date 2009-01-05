@@ -274,7 +274,22 @@ class Config(Object):
     profile=property(_profile)
     
     def pull(self,sae):
-        sae.pull_config(self)
+        def pull_callback(result=None,error=None):
+            if error:
+                if error.code==ERR_OVERLOAD:
+                    timeout=150
+                else:
+                    timeout=300
+                timeout+=random.randint(-timeout/10,timeout/10) # Add jitter to avoid blocking by dead task
+                self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
+                self.save()
+                return            
+            if self.pull_every:
+                self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=self.pull_every)
+                self.save()
+            self.write(result)
+        sae.script(self,"%s.get_config"%self.profile_name,pull_callback)
+
 ##
 ## PrefixList
 ##
