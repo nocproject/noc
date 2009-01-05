@@ -1,0 +1,13 @@
+##
+## Vendor: Protei
+## OS:     MAK
+##
+import noc.sa.profiles
+from noc.sa.protocols.sae_pb2 import TELNET,SSH
+
+class Profile(noc.sa.profiles.Profile):
+    name="Protei.ITG"
+    supported_schemes=[TELNET,SSH]
+    command_submit="\r"
+    pattern_prompt="(^\S+\$|ITG>)"
+    config_skip_head=10
