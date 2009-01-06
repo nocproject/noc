@@ -4,11 +4,14 @@
 ## Compatible:
 ##
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import HTTP
+from noc.sa.protocols.sae_pb2 import TELNET,HTTP
 
 class Profile(noc.sa.profiles.Profile):
     name="ZTE.ZXDSL531"
-    supported_schemes=[HTTP]
+    supported_schemes=[TELNET,HTTP]
+    pattern_username="Login name:"
+    pattern_password="Password:"
+    pattern_prompt="^>"
     method_pull_config="POST"
     path_pull_config="/psiBackupInfo.cgi"
     file_pull_config="backupsettings.xml"
