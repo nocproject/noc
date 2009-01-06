@@ -1,4 +1,4 @@
-from noc.lib.fsm import FSM
+from noc.lib.fsm import StreamFSM
 from noc.lib.ecma48 import strip_control_sequences
 from noc.lib.registry import Registry
 from noc.lib.nbsocket import PTYSocket
@@ -115,7 +115,7 @@ class Script(threading.Thread):
 ##
 ##
 ##
-class CLI(FSM):
+class CLI(StreamFSM):
     FSM_NAME="CLI"
     DEFAULT_STATE="START"
     STATES={
@@ -157,44 +157,18 @@ class CLI(FSM):
     }
     
     def __init__(self,profile,access_profile):
-        self.in_buffer=""
         self.profile=profile
         self.access_profile=access_profile
-        self.patterns=[] # (RE,Event)
         self.queue=Queue.Queue()
-        FSM.__init__(self)
-        
-    def debug(self,msg):
-        logging.debug("[%s(0x%x)]<%s> %s"%(self.__class__.__name__,id(self),self.get_state(),msg))
+        self.is_ready=False
+        StreamFSM.__init__(self)
     
     def on_read(self,data):
         self.debug("on_read: %s"%repr(data))
         if self.profile.rogue_chars:
             for rc in self.profile.rogue_chars:
                 data=data.replace(rc,"")
-        self.in_buffer+=data
-        self.in_buffer=strip_control_sequences(self.in_buffer)
-        while self.in_buffer and self.patterns:
-            matched=False
-            for rx,event in self.patterns:
-                match=rx.search(self.in_buffer)
-                if match:
-                    matched=True
-                    self.debug("match '%s'"%rx.pattern)
-                    if self.get_state()=="PROMPT":
-                        self.debug("send \"\"\"%s\"\"\""%self.in_buffer[:match.start(0)])
-                        self.queue.put(self.in_buffer[:match.start(0)])
-                    elif event=="PROMPT":
-                        self.queue.put(None) # Signal provider passing into PROMPT state
-                    self.in_buffer=self.in_buffer[match.end(0):]
-                    self.event(event)
-                    break
-            if not matched:
-                break
-    
-    def set_patterns(self,patterns):
-        self.debug("set_patterns(%s)"%repr(patterns))
-        self.patterns=[(re.compile(x,re.DOTALL|re.MULTILINE),y) for x,y in patterns]
+        self.feed(data,cleanup=strip_control_sequences)
     
     def submit(self,msg):
         self.debug("submit(%s)"%repr(msg))
@@ -249,7 +223,13 @@ class CLI(FSM):
         self.submit(self.access_profile.super_password)
         
     def on_PROMPT_enter(self):
+        if not self.is_ready:
+            self.queue.put(None) # Signal provider passing into PROMPT state
+            self.is_ready=True
         self.set_patterns([(self.profile.pattern_prompt, "PROMPT")])
+        
+    def on_PROMPT_match(self,data,match):
+        self.queue.put(data)
     
     def on_FAILURE_enter(self):
         self.set_patterns([])
