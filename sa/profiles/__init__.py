@@ -121,22 +121,6 @@ class Profile(object):
     # Skip first N lines of config output. None - skip no lines
     #
     config_skip_head=1
-    ##
-    ## HTTP Access
-    ##
-    
-    #
-    # HTTP Request Method to get config ("GET" or "POST")
-    #
-    method_pull_config=None
-    #
-    # HTTP Request path to get config (used with method_pull_config)
-    #
-    path_pull_config=None
-    #
-    # Config file name
-    #
-    file_pull_config=None
     #
     # Clean up config
     #
