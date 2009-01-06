@@ -477,6 +477,34 @@ _AUTHRESPONSE = descriptor.Descriptor(
   options=None)
 
 
+_SCRIPTREQUEST_KWARG = descriptor.Descriptor(
+  name='KWArg',
+  full_name='sae.ScriptRequest.KWArg',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='key', full_name='sae.ScriptRequest.KWArg.key', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='value', full_name='sae.ScriptRequest.KWArg.value', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
 _SCRIPTREQUEST = descriptor.Descriptor(
   name='ScriptRequest',
   full_name='sae.ScriptRequest',
@@ -494,6 +522,13 @@ _SCRIPTREQUEST = descriptor.Descriptor(
       name='script', full_name='sae.ScriptRequest.script', index=1,
       number=2, type=9, cpp_type=9, label=2,
       default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='kwargs', full_name='sae.ScriptRequest.kwargs', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -853,6 +888,7 @@ _MESSAGE.fields_by_name['error'].message_type = _ERROR
 _ERROR.fields_by_name['code'].enum_type = _ERRORCODE
 _ACCESSPROFILE.fields_by_name['scheme'].enum_type = _ACCESSSCHEME
 _SCRIPTREQUEST.fields_by_name['access_profile'].message_type = _ACCESSPROFILE
+_SCRIPTREQUEST.fields_by_name['kwargs'].message_type = _SCRIPTREQUEST_KWARG
 _MANIFESTRESPONSE.fields_by_name['files'].message_type = _FILECHECKSUM
 _SOFTWAREUPGRADERESPONSE.fields_by_name['codes'].message_type = _FILECODE
 _EVENTFILTERREQUEST.fields_by_name['sources'].enum_type = _EVENTSOURCE
@@ -908,6 +944,10 @@ class AuthResponse(message.Message):
 
 class ScriptRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class KWArg(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _SCRIPTREQUEST_KWARG
   DESCRIPTOR = _SCRIPTREQUEST
 
 class ScriptResponse(message.Message):

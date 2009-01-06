@@ -57,8 +57,8 @@ class Command(BaseCommand):
             if response:
                 logging.debug("Config pulled")
                 logging.debug(response.config)
-        if len(args)!=2:
-            print "Usage: debug-script <script> <stream url>"
+        if len(args) not in [2,3]:
+            print "Usage: debug-script <script> <stream url> [key1=value1,....,keyN=valueN]"
             return
         script_name=args[0]
         vendor,os_name,rest=script_name.split(".",2)
@@ -95,6 +95,14 @@ class Command(BaseCommand):
         else:
             r.access_profile.password   = url.password
         r.access_profile.path           = url.path
+        # Parse script args
+        if len(args)==3:
+            for p in args[2].split(","):
+                k,v=p.strip().split("=")
+                a=r.kwargs.add()
+                a.key=k
+                a.value=v
+        #
         controller=Controller()
         tf=TransactionFactory()
         controller.transaction=tf.begin()

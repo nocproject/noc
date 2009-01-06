@@ -63,13 +63,14 @@ class Script(threading.Thread):
         self.status=False
         self.result=None
         self.strip_echo=True
+        self.kwargs=kwargs
         
     def debug(self,msg):
         logging.debug("[%s] %s"%(self.debug_name,msg))
         
-    def run(self,**kwargs):
+    def run(self):
         self.debug("Running")
-        self.result=self.execute(**kwargs)
+        self.result=self.execute(**self.kwargs)
         self.status=True
         self.debug("Closing")
         if self.cli_provider:

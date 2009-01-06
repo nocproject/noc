@@ -96,8 +96,13 @@ message AuthResponse {
 // Execute script
 //
 message ScriptRequest {
+    message KWArg {
+        required string key = 1;
+        required string value = 2;
+    }
     required AccessProfile access_profile = 1;
     required string        script = 2;
+    repeated KWArg         kwargs = 3;
 }
 
 message ScriptResponse {

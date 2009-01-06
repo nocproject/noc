@@ -299,7 +299,7 @@ class SAE(Daemon):
         except KeyError:
             raise Exception("Activator not available: %s"%name)
     
-    def script(self,object,name,callback,*args,**kwargs):
+    def script(self,object,name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
             if error:
                 logging.error("script(%s,*%s,**%s) failed: %s"%(name,args,kwargs,error.text))
@@ -323,6 +323,10 @@ class SAE(Daemon):
             r.access_profile.super_password= object.super_password
         if object.remote_path:
             r.access_profile.path          = object.remote_path
+        for k,v in kwargs.items():
+            a=r.kwargs.add()
+            a.key=str(k)
+            a.value=str(value)
         stream.proxy.script(r,script_callback)
     # Signal handlers
 
