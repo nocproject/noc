@@ -4,7 +4,7 @@ from noc.lib.registry import Registry
 from noc.lib.nbsocket import PTYSocket
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.sa.profiles import profile_registry
-import logging,re,threading,Queue
+import logging,re,threading,Queue,httplib,urllib
 
 
 ##
@@ -34,7 +34,6 @@ class ScriptBase(type):
         m=type.__new__(cls,name,bases,attrs)
         script_registry.register(m.name,m)
         return m
-
 ##
 ##
 ##
@@ -42,6 +41,9 @@ class Script(threading.Thread):
     __metaclass__=ScriptBase
     name=None
     description=None
+    TELNET=scheme_id["telnet"]
+    SSH=scheme_id["ssh"]
+    HTTP=scheme_id["http"]
 
     def __init__(self,activator,access_profile,**kwargs):
         self.access_profile=access_profile
@@ -57,6 +59,7 @@ class Script(threading.Thread):
         pv,pos,sn=self.name.split(".",2)
         self.profile=profile_registry["%s.%s"%(pv,pos)]()
         self.cli_provider=None
+        self.http=HTTPProvider(self.access_profile)
         self.status=False
         self.result=None
         self.strip_echo=True
@@ -189,10 +192,10 @@ class CLI(StreamFSM):
         self.set_patterns(p)
     
     def on_USERNAME_enter(self):
-        self.set_patterns(
+        self.set_patterns([
             (self.profile.pattern_password, "PASSWORD"),
             (self.profile.pattern_prompt,   "PROMPT"),
-        )
+        ])
         self.submit(self.access_profile.user)
         
     def on_PASSWORD_enter(self):
@@ -256,3 +259,31 @@ class CLISSHSocket(ScriptSocket,CLI,PTYSocket):
         CLI.__init__(self,profile,access_profile)
         PTYSocket.__init__(self,factory,["/usr/bin/ssh","-o","StrictHostKeyChecking no","-l",access_profile.user,access_profile.address])
         ScriptSocket.__init__(self)
+##
+##
+##
+class HTTPProvider(object):
+    def __init__(self,access_profile):
+        self.access_profile=access_profile
+    def get(self,path):
+        conn=httplib.HTTPConnection(self.access_profile.address)
+        conn.request("GET",path)
+        response=conn.getresponse()
+        try:
+            if response.status==200:
+                return response.read()
+        finally:
+            conn.close()
+    def post(self,path,params=None):
+        headers={}
+        if params:
+            params=urllib.urlencode(params)
+            headers={"Content-type": "application/x-www-form-urlencoded"}
+        conn=httplib.HTTPConnection(self.access_profile.address)
+        conn.request("POST",path,params,headers)
+        response=conn.getresponse()
+        try:
+            if response.status==200:
+                return response.read()
+        finally:
+            conn.close()
