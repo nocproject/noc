@@ -289,6 +289,10 @@ class Config(Object):
                 self.save()
             self.write(result)
         sae.script(self,"%s.get_config"%self.profile_name,pull_callback)
+    def scripts_link(self):
+        return "<A HREF='/sa/%d/scripts/'>Scripts</A>"%(self.id)
+    scripts_link.short_description="Scripts"
+    scripts_link.allow_tags=True
 
 ##
 ## PrefixList

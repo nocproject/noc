@@ -1,0 +1,10 @@
+{% extends "template/template.html" %}
+<{% block content %}
+<h1>Object: {{object.handler_class_name}}::{{object.repo_path}} ({{object.profile_name}})</h1>
+<TABLE BORDER="1">
+    <TR><TH>Scripts</TH></TR>
+{% for s in scripts %}
+    <TR><TD><A HREF="{{s.0}}">{{s.1}}</A></TD></TR>
+{% endfor %}
+</TABLE>
+{%endblock%}
