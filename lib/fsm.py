@@ -1,7 +1,7 @@
 ##
 ## Finite State Machine
 ## 
-import time,logging
+import time,logging,re
 
 ##
 ## State checking decorator
@@ -28,10 +28,10 @@ class FSM(object):
         self._state_enter_time=None
         self._state_exit_time=None
         self.set_state(self.DEFAULT_STATE)
-        
-    def __debug(self,message):
-        logging.debug("%s::%s %s"%(self.FSM_NAME,self._current_state,message))
-        
+
+    def debug(self,msg):
+        logging.debug("[%s(0x%x)]<%s> %s"%(self.__class__.__name__,id(self),self.get_state(),msg))
+
     def get_state_handler(self,state,event):
         name="on_%s_%s"%(state,event)
         try:
@@ -39,16 +39,18 @@ class FSM(object):
         except:
             return None
             
-    def call_state_handler(self,state,event):
+    def call_state_handler(self,state,event,*args):
         h=self.get_state_handler(state,event)
         if h:
-            h()
+            apply(h,args)
             
     def get_state(self):
         return self._current_state
         
     def set_state(self,state):
-        self.__debug("==> %s"%state)
+        if state==self._current_state:
+            return
+        self.debug("==> %s"%state)
         if state not in self.STATES:
             raise Exception("Invalid state %s"%state)
         if self._current_state:
@@ -59,13 +61,13 @@ class FSM(object):
         self.call_state_handler(state,"enter")
     
     def set_timeout(self,timeout):
-        self.__debug("set_timeout(%s)"%timeout)
+        self.debug("set_timeout(%s)"%timeout)
         self._state_exit_time=time.time()+timeout
     ##
     ## Send event to FSM
     ##
     def event(self,event):
-        self.__debug("event(%s)"%event)
+        self.debug("event(%s)"%event)
         if event not in self.STATES[self._current_state]:
             raise Exception("Invalid event '%s' in state '%s'"%(event,self._current_state))
         self.call_state_handler(self._current_state,event)
@@ -75,7 +77,7 @@ class FSM(object):
     ##
     def tick(self):
         if self._state_exit_time and self._state_exit_time<time.time():
-            self.__debug("Timeout expired")
+            self.debug("Timeout expired")
             self.event("timeout")
         else:
             self.call_state_handler(self._current_state,"tick")
@@ -107,3 +109,37 @@ class FSM(object):
         f=open(path,"w")
         f.write(cls.get_dot())
         f.close()
+##
+## StreamFSM also changes state on input stream conditions
+##
+class StreamFSM(FSM):
+    def __init__(self):
+        self.patterns=[]
+        self.in_buffer=""
+        super(StreamFSM,self).__init__()
+        
+    def debug(self,msg):
+        logging.debug("[%s(0x%x)]<%s> %s"%(self.__class__.__name__,id(self),self.get_state(),msg))
+        
+    def set_patterns(self,patterns):
+        self.debug("set_patterns(%s)"%repr(patterns))
+        self.patterns=[(re.compile(x,re.DOTALL|re.MULTILINE),y) for x,y in patterns]
+        
+    def feed(self,data,cleanup=None):
+        self.debug("feed: %s"%repr(data))
+        self.in_buffer+=data
+        if cleanup:
+            self.in_buffer=cleanup(self.in_buffer)
+        while self.in_buffer and self.patterns:
+            matched=False
+            for rx,event in self.patterns:
+                match=rx.search(self.in_buffer)
+                if match:
+                    matched=True
+                    self.debug("match '%s'"%rx.pattern)
+                    self.call_state_handler(self._current_state,"match",self.in_buffer[:match.start(0)],match)
+                    self.in_buffer=self.in_buffer[match.end(0):]
+                    self.event(event) # Change state
+                    break
+            if not matched:
+                break
