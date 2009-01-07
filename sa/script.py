@@ -32,6 +32,7 @@ script_registry=ScriptRegistry()
 class ScriptBase(type):
     def __new__(cls,name,bases,attrs):
         m=type.__new__(cls,name,bases,attrs)
+        m.implements=[c() for c in m.implements]
         script_registry.register(m.name,m)
         return m
 ##
@@ -69,7 +70,7 @@ class Script(threading.Thread):
         self.kwargs=kwargs
         # Enforce interface type checking
         for i in self.implements:
-            self.kwargs=i.clean(self.kwargs)
+            self.kwargs=i.clean(**self.kwargs)
         
     def debug(self,msg):
         logging.debug("[%s] %s"%(self.debug_name,msg))
