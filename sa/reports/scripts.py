@@ -6,7 +6,9 @@ class Report(noc.main.report.Report):
     name="sa.scripts"
     title="Scripts"
     requires_cursor=False
-    columns=[Column("Script")]
+    columns=[Column("Script"),Column("Interfaces")]
     
     def get_queryset(self):
-        return sorted([[x[0]] for x in script_registry.choices])
+        def get_interfaces(c):
+            return ", ".join([i.__class__.__name__ for i in c.implements])
+        return sorted([[n,get_interfaces(c)] for n,c in script_registry.classes.items()])
