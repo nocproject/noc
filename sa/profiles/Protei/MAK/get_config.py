@@ -1,7 +1,9 @@
 import noc.sa.script
+from noc.sa.interfaces import IGetConfig
 
 class Script(noc.sa.script.Script):
     name="Protei.MAK.get_config"
+    implements=[IGetConfig]
     def execute(self):
         self.cli("cd /usr/protei/CLI/Client")
         self.cli("./clip")
