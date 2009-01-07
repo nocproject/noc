@@ -41,6 +41,9 @@ class Script(threading.Thread):
     __metaclass__=ScriptBase
     name=None
     description=None
+    # Interfaces list. Each element of list must be Interface subclass
+    implements=[]
+    # Constants
     TELNET=scheme_id["telnet"]
     SSH=scheme_id["ssh"]
     HTTP=scheme_id["http"]
@@ -64,6 +67,9 @@ class Script(threading.Thread):
         self.result=None
         self.strip_echo=True
         self.kwargs=kwargs
+        # Enforce interface type checking
+        for i in self.implements:
+            self.kwargs=i.clean(self.kwargs)
         
     def debug(self,msg):
         logging.debug("[%s] %s"%(self.debug_name,msg))
@@ -71,6 +77,9 @@ class Script(threading.Thread):
     def run(self):
         self.debug("Running")
         self.result=self.execute(**self.kwargs)
+        # Enforce interface result checking
+        for i in self.implements:
+            self.result=i.clean_result(self.result)
         self.status=True
         self.debug("Closing")
         if self.cli_provider:
