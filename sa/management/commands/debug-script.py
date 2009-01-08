@@ -108,5 +108,4 @@ class Command(BaseCommand):
         controller.transaction=tf.begin()
         service.script(controller=controller,request=r,done=handle_callback)
         service.activator.factory.run()
-        print service.activator.factory.tick_callback
         service.activator.factory.tick_callback()
