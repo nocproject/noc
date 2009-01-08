@@ -17,6 +17,7 @@ profile_registry=ProfileRegistry()
 class ProfileBase(type):
     def __new__(cls,name,bases,attrs):
         m=type.__new__(cls,name,bases,attrs)
+        m.scripts={}
         profile_registry.register(m.name,m)
         return m
 
@@ -119,7 +120,7 @@ class Profile(object):
     config_volatile=None
     #
     # Skip first N lines of config output. None - skip no lines
-    #
+    # (Marked for deprecation)
     config_skip_head=1
     #
     # Clean up config
@@ -144,3 +145,4 @@ class Profile(object):
     oid_trap_config_changed=None
     # Regular expression to parse "config changed" syslog message
     syslog_config_changed=None
+    #
