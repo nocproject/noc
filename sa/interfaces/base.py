@@ -109,6 +109,24 @@ class BooleanParameter(Parameter):
 ##
 ##
 class IntParameter(Parameter):
+    """
+    >>> IntParameter().clean(1)
+    1
+    >>> IntParameter().clean("1")
+    1
+    >>> IntParameter().clean("not a number")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    >>> IntParameter(min_value=10).clean(5)
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    >>> IntParameter(max_value=7).clean(10)
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    """
     def __init__(self,required=True,default=None,min_value=None,max_value=None):
         super(IntParameter,self).__init__(required=required,default=default)
         self.min_value=min_value
@@ -151,6 +169,12 @@ class StringListParameter(ListOfParameter):
 ##
 ##
 class DictParameter(Parameter):
+    """
+    >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":10,"s":"ten"})
+    {'i': 10, 's': 'ten'}
+    >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":"10","s":"ten"})
+    {'i': 10, 's': 'ten'}
+    """
     def __init__(self,required=True,default=None,attrs=None):
         super(DictParameter,self).__init__(required=required,default=default)
         self.attrs=attrs
@@ -169,6 +193,7 @@ class DictParameter(Parameter):
                     out_value[a_name]=attr.clean(in_value[a_name])
                 except InterfaceTypeError:
                     raise InterfaceTypeError("Invalid value for '%s'"%a_name)
+                del in_value[a_name]
         for k,v in in_value.items():
             out_value[k]=v
         return out_value
@@ -186,6 +211,24 @@ class IPParameter(StringParameter):
         except:
             return InterfaceTypeError
         return v
+##
+##
+##
+class VLANIDParameter(IntParameter):
+    """
+    >>> VLANIDParameter().clean(10)
+    10
+    >>> VLANIDParameter().clean(5000)
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    >>> VLANIDParameter().clean(0)
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    """
+    def __init__(self,required=True,default=None):
+        super(VLANIDParameter,self).__init__(required=required,default=default,min_value=1,max_value=4095)
 ##
 ##
 ##
