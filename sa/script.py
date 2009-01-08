@@ -34,6 +34,10 @@ class ScriptBase(type):
         m=type.__new__(cls,name,bases,attrs)
         m.implements=[c() for c in m.implements]
         script_registry.register(m.name,m)
+        if m.name:
+            pv,pos,sn=m.name.split(".",2)
+            pr=profile_registry["%s.%s"%(pv,pos)]
+            pr.scripts[sn]=m
         return m
 ##
 ##
