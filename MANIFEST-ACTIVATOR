@@ -11,6 +11,7 @@ sa/actions/__init__.py
 sa/actions/cli.py
 sa/actions/http.py
 sa/profiles/__init__.py
+sa/script.py
 lib/__init__.py
 lib/debug.py
 lib/ip.py
