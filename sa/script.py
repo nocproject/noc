@@ -31,7 +31,7 @@ class ScriptCallProxy(object):
         self.script=script
         
     def __call__(self,**kwargs):
-        s=self.script(self.parent.activator,self.parent.access_profile,**kwargs)
+        s=self.script(self.parent.activator,self.parent.access_profile,parent=self.parent,**kwargs)
         return s.guarded_run()
 ##
 ##
@@ -70,7 +70,8 @@ class Script(threading.Thread):
     SSH=scheme_id["ssh"]
     HTTP=scheme_id["http"]
 
-    def __init__(self,activator,access_profile,**kwargs):
+    def __init__(self,activator,access_profile,parent=None,**kwargs):
+        self.parent=parent
         self.access_profile=access_profile
         if self.access_profile.address:
             p=self.access_profile.address
@@ -119,9 +120,10 @@ class Script(threading.Thread):
     def execute(self,**kwargs):
         return None
     
-    def cli(self,cmd):
-        self.debug("cli(%s)"%cmd)
-        if self.cli_provider is None:
+    def request_cli_provider(self):
+        if self.parent:
+            self.cli_provider=self.parent.request_cli_provider()
+        elif self.cli_provider is None:
             self.debug("Running new provider")
             if self.access_profile.scheme==TELNET:
                 s_class=CLITelnetSocket
@@ -131,7 +133,12 @@ class Script(threading.Thread):
                 raise Exception("Invalid access scheme '%d' for CLI"%self.access_profile.scheme)
             self.cli_provider=s_class(self.activator.factory,self.profile,self.access_profile)
             self.cli_provider.queue.get(block=True) # Wait until provider in PROMPT
-            self.debug("Provider is ready")
+            self.debug("CLI Provider is ready")
+        return self.cli_provider
+        
+    def cli(self,cmd):
+        self.debug("cli(%s)"%cmd)
+        self.request_cli_provider()
         self.cli_provider.submit(cmd)
         data=self.cli_provider.queue.get(block=True)
         if self.strip_echo and data.startswith(cmd):
