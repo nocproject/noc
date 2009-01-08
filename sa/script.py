@@ -19,6 +19,23 @@ scheme_id={
 ##
 ##
 ##
+class ScriptProxy(object):
+    def __init__(self,parent):
+        self._parent=parent
+    def __getattr__(self,name):
+        return ScriptCallProxy(self._parent,self._parent.profile.scripts[name])
+
+class ScriptCallProxy(object):
+    def __init__(self,parent,script):
+        self.parent=parent
+        self.script=script
+        
+    def __call__(self,**kwargs):
+        s=self.script(self.parent.activator,self.parent.access_profile,**kwargs)
+        return s.guarded_run()
+##
+##
+##
 class ScriptRegistry(Registry):
     name="ScriptRegistry"
     subdir="profiles"
@@ -72,25 +89,31 @@ class Script(threading.Thread):
         self.result=None
         self.strip_echo=True
         self.kwargs=kwargs
-        # Enforce interface type checking
-        for i in self.implements:
-            self.kwargs=i.clean(**self.kwargs)
+        self.scripts=ScriptProxy(self)
         
     def debug(self,msg):
         logging.debug("[%s] %s"%(self.debug_name,msg))
         
-    def run(self):
-        self.debug("Running")
-        self.result=self.execute(**self.kwargs)
+    def guarded_run(self):
+        self.debug("Guarded run")
+        # Enforce interface type checking
+        for i in self.implements:
+            self.kwargs=i.clean(**self.kwargs)
+        # Calling script body
+        result=self.execute(**self.kwargs)
         # Enforce interface result checking
         for i in self.implements:
-            self.result=i.clean_result(self.result)
+            result=i.clean_result(result)
+        self.debug("Script returns with result: %s"%result)
+        return result
+        
+    def run(self):
+        self.debug("Running")
+        self.result=self.guarded_run()
         self.status=True
         self.debug("Closing")
         if self.cli_provider:
-            #self.cli_provider.close()
             self.activator.request_call(self.cli_provider.close)
-        self.debug("Script terminated with result: %s"%self.result)
         self.activator.on_script_exit(self)
         
     def execute(self,**kwargs):
