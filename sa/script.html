@@ -1,0 +1,7 @@
+{% extends "template/template.html" %}
+<{% block content %}
+<h1>Object: {{object.repo_path}} ({{object.profile_name}}) Script: {{script}}</h1>
+<PRE>
+{{result}}
+</PRE>
+{%endblock%}

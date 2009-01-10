@@ -4,5 +4,5 @@ from noc.sa.views import object_scripts,object_script
 
 urlpatterns = patterns ( "",
     (r"^(?P<object_id>\d+)/scripts/$", login_required(object_scripts)),
-    (r"^(?P<object_id>\d+)/script/(?P<script>[^/]+)/$", login_required(object_script)),
+    (r"^(?P<object_id>\d+)/scripts/(?P<script>[^/]+)/$", login_required(object_script)),
 )
