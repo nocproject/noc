@@ -135,10 +135,19 @@ class TCPSocket(Socket):
         self.out_buffer=""
         if self.protocol_class:
             self.protocol=self.protocol_class(self.on_read)
+        self.in_shutdown=False
+        
+    def close(self,flush=False):
+        if flush and len(self.out_buffer)>0:
+            self.in_shutdown=True
+        else:
+            super(TCPSocket,self).close()
         
     def handle_write(self):
         sent=self.socket.send(self.out_buffer)
         self.out_buffer=self.out_buffer[sent:]
+        if self.in_shutdown and len(self.out_buffer)==0:
+            self.close()
         
     def handle_connect(self):
         self.is_connected=True
