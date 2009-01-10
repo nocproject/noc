@@ -4,7 +4,7 @@ from noc.lib.registry import Registry
 from noc.lib.nbsocket import PTYSocket
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.sa.profiles import profile_registry
-import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib
+import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib,cPickle
 
 
 ##
@@ -106,7 +106,10 @@ class Script(threading.Thread):
         for i in self.implements:
             result=i.clean_result(result)
         self.debug("Script returns with result: %s"%result)
-        return result
+        return self.serialize_result(result)
+        
+    def serialize_result(self,result):
+        return cPickle.dumps(result)
         
     def run(self):
         self.debug("Running")

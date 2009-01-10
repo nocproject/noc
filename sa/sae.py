@@ -5,9 +5,10 @@ from noc.sa.models import Activator
 from noc.cm.models import Config
 
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
-import logging,time,threading,datetime,os,sets,random,xmlrpclib
+import logging,time,threading,datetime,os,sets,random,xmlrpclib,cPickle
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
+from noc.cm.models import Config
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.debug import error_report
@@ -205,6 +206,10 @@ class XMLRPCService(object):
     def listMethods(self,done):
         done([m for m in dir(self) if not m.startswith("_") and callable(getattr(self,m))])
     
+    def script(self,done,name,object_id,*args):
+        object=Config.objects.get(id=int(object_id))
+        self._sae.script(object,name,done,*args)
+
 ##
 ## PDU Parsing
 ##
@@ -359,6 +364,7 @@ class SAE(Daemon):
                 callback(error=error)
                 return
             result=response.result
+            result=cPickle.loads(str(result)) # De-serialize
             callback(result=result)
         stream=self.get_activator_stream(object.activator.name)
         r=ScriptRequest()
