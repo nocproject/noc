@@ -7,9 +7,6 @@ sa/trapcollector.py
 sa/syslogcollector.py
 sa/protocols/__init__.py
 sa/protocols/sae_pb2.py
-sa/actions/__init__.py
-sa/actions/cli.py
-sa/actions/http.py
 sa/profiles/__init__.py
 sa/script.py
 lib/__init__.py
