@@ -5,19 +5,20 @@ from noc.sa.models import Activator
 from noc.cm.models import Config
 
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
-import logging,time,threading,datetime,os,sets,random
+import logging,time,threading,datetime,os,sets,random,xmlrpclib
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import TaskSchedule
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.debug import error_report
-from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,SocketFactory
+from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,SocketFactory,Protocol
 
 ##
 ## Additions to MANIFEST-ACTIVATOR file
 ##
 ACTIVATOR_MANIFEST=[
     "sa/profiles/",
+    "sa/interfaces/",
 ]
 
 ##
@@ -187,6 +188,55 @@ class SAESocket(RPCSocket,AcceptedTCPSocket):
         RPCSocket.__init__(self,factory.sae.service)
         self.nonce=None
         self.is_authenticated=True
+##
+## XML-RPC support
+##
+
+##
+## Service
+##
+class XMLRPCService(object):
+    def __init__(self,sae):
+        self._sae=sae
+        
+    def _call_xmlrpc_method(self,done,method,*args):
+        getattr(self,method)(done,*args)
+        
+    def listMethods(self,done):
+        done([m for m in dir(self) if not m.startswith("_") and callable(getattr(self,m))])
+    
+##
+## PDU Parsing
+##
+class XMLRPCProtocol(Protocol):
+    def parse_pdu(self):
+        r=[]
+        while True:
+            idx=self.in_buffer.find("</methodCall>")
+            if idx==-1:
+                break
+            r.append(self.in_buffer[:idx+13])
+            self.in_buffer=self.in_buffer[idx+13:]
+        return r
+##
+## N.B. Socket and XML-RPC HTTP server
+##
+class XMLRPCSocket(AcceptedTCPSocket):
+    protocol_class=XMLRPCProtocol
+    def __init__(self,factory,socket):
+        AcceptedTCPSocket.__init__(self,factory,socket)
+        
+    def on_read(self,data):
+        def on_read_callback(result):
+            body=xmlrpclib.dumps((result,),methodresponse=True)
+            response="HTTP/1.1 200 OK\r\nContent-Type: text/xml\r\nContent-Length: %d\r\nServer: nocproject.org\r\n\r\n"%len(body)+body
+            self.write(response)
+            self.close(flush=True)
+        headers,data=data.split("\r\n\r\n")
+        params,methodname=xmlrpclib.loads(data,use_datetime=True)
+        self.debug("XMLRPC Call: %s(*%s)"%(methodname,params))
+        self.factory.sae.xmlrpc_service._call_xmlrpc_method(on_read_callback,methodname,*params)
+
 
 ##
 ## SAE Supervisor
@@ -199,6 +249,8 @@ class SAE(Daemon):
         #
         self.service=Service()
         self.service.sae=self
+        #
+        self.xmlrpc_service=XMLRPCService(self)
         #
         self.factory=SocketFactory()
         self.factory.sae=self
@@ -236,6 +288,7 @@ class SAE(Daemon):
         self.build_manifest()
         logging.info("Starting listener at %s:%d"%(self.config.get("sae","listen"),self.config.getint("sae","port")))
         self.factory.listen_tcp(self.config.get("sae","listen"),self.config.getint("sae","port"),SAESocket)
+        self.factory.listen_tcp(self.config.get("xmlrpc","listen"),self.config.getint("xmlrpc","port"),XMLRPCSocket)
         
         last_cleanup=time.time()
         last_task_check=time.time()
