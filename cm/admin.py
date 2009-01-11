@@ -87,7 +87,6 @@ class ConfigAdmin(ObjectAdmin):
     ## Dirty hack to display PasswordInput in admin form
     ##
     def formfield_for_dbfield(self, db_field, **kwargs):
-        print db_field.name,kwargs
         if db_field.name=="password":
             kwargs["widget"]=forms.widgets.PasswordInput
             return db_field.formfield(**kwargs)
