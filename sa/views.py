@@ -16,7 +16,7 @@ def object_scripts(request,object_id):
         return HttpResponseForbidden("Access denied")
     p=o.profile_name
     lp=len(p)+1
-    scripts=[(x[0],x[0][lp:]) for x in script_registry.choices if x[0].startswith(p)]
+    scripts=[(x[0],x[0][lp:]) for x in script_registry.choices if x[0].startswith(p+".")]
     return render(request,"sa/scripts.html",{"object":o,"scripts":scripts})
 
 def object_script(request,object_id,script):
