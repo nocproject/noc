@@ -129,8 +129,8 @@ class Profile(object):
         if self.config_skip_head:
             # Wipe out first N lines
             cl=cfg.split("\n")
-            if len(cl)>self.config_skip_head:
-                cfg="\n".join(cl[self.config_skip_head:])
+            #if len(cl)>self.config_skip_head:
+            #    cfg="\n".join(cl[self.config_skip_head:])
         if self.config_volatile:
             # Wipe out volatile strings before returning result
             for r in self.config_volatile:
