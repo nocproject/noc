@@ -5,7 +5,7 @@ from noc.sa.models import script_registry
 from django.http import HttpResponseForbidden
 from xmlrpclib import ServerProxy, Error
 from noc.settings import config
-import pprint
+import pprint,types
 
 def xmlrpc_server():
     return ServerProxy("http://%s:%d"%(config.get("xmlrpc","server"),config.getint("xmlrpc","port")))
@@ -25,5 +25,6 @@ def object_script(request,object_id,script):
         return HttpResponseForbidden("Access denied")
     server=xmlrpc_server()
     result=server.script(script,object_id)
-    result=pprint.pformat(result)
+    if type(result) not in [types.StringType,types.UnicodeType]:
+        result=pprint.pformat(result)
     return render(request,"sa/script.html",{"object":o,"result":result,"script":script})
