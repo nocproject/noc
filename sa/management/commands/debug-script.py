@@ -11,7 +11,7 @@ from noc.sa.script import script_registry,scheme_id
 from noc.sa.activator import Service
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
-import logging,sys,ConfigParser,Queue
+import logging,sys,ConfigParser,Queue,time
 from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory
 
@@ -107,5 +107,9 @@ class Command(BaseCommand):
         tf=TransactionFactory()
         controller.transaction=tf.begin()
         service.script(controller=controller,request=r,done=handle_callback)
+        # Wait for script sockets before run factory
+        while len(service.activator.factory.sockets)==0:
+            logging.debug("waiting")
+            time.sleep(1)
         service.activator.factory.run()
         service.activator.factory.tick_callback()
