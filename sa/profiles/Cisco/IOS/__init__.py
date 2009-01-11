@@ -16,7 +16,6 @@ class Profile(noc.sa.profiles.Profile):
     pattern_lg_best_path=r"(<A HREF.+?>.+?best)"
     requires_netmask_conversion=True
     config_volatile=["^ntp clock-period .*?^"]
-    config_skip_head=5
     oid_trap_config_changed="1.3.6.1.4.1.9.9.43.2"
     syslog_config_changed="%SYS-5-CONFIG_I: Configured from"
     

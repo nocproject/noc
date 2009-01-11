@@ -14,7 +14,6 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^\S+?#"
     command_more=" "
     requires_netmask_conversion=True
-    config_skip_head=1
     
     def generate_prefix_list(self,name,pl,strict=True):
         p="ip prefix-list %s permit %%s"%name

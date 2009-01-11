@@ -10,4 +10,3 @@ class Profile(noc.sa.profiles.Profile):
     supported_schemes=[TELNET,SSH]
     command_submit="\r"
     pattern_prompt="(^\S+\$|ITG>)"
-    config_skip_head=10
