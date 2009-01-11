@@ -232,6 +232,40 @@ class VLANIDParameter(IntParameter):
 ##
 ##
 ##
+rx_mac_address=re.compile("^[0-9A-F]{12}$")
+class MACAddressParameter(StringParameter):
+    """
+    >>> MACAddressParameter().clean("1234.5678.9ABC")
+    '12:34:56:78:9A:BC'
+    >>> MACAddressParameter().clean("1234.5678.9abc")
+    '12:34:56:78:9A:BC'
+    >>> MACAddressParameter().clean("12:34:56:78:9A:BC")
+    '12:34:56:78:9A:BC'
+    >>> MACAddressParameter().clean("12-34-56-78-9A-BC")
+    '12:34:56:78:9A:BC'
+    >>> MACAddressParameter().clean("12-34-56-78-9A-BC-DE")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    >>> MACAddressParameter().clean("AB-CD-EF-GH-HJ-KL")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    """
+    def clean(self,value):
+        value=super(MACAddressParameter,self).clean(value)
+        for sep in [".",":","-"]:
+            if sep in value:
+                value=value.replace(sep,"")
+                break
+        value=value.upper()
+        if not rx_mac_address.match(value):
+            raise InterfaceTypeError
+        return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
+
+##
+##
+##
 class Interface(object):
     def clean(self,**kwargs):
         in_kwargs=kwargs.copy()
