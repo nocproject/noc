@@ -194,7 +194,8 @@ class CLI(StreamFSM):
             "PROMPT"              : "PROMPT",
         },
         "UNPRIVELEGED_PROMPT":{
-            "PASSWORD"            : "SUPER_PASSWORD"
+            "PASSWORD"            : "SUPER_PASSWORD",
+            "PROMPT"              : "PROMPT",
         },
         "PROMPT":{
             "PROMPT": "PROMPT",
@@ -262,12 +263,12 @@ class CLI(StreamFSM):
         
     def on_UNPRIVELEGED_PROMPT_enter(self):
         self.set_patterns([
-            (self.profile.pattern_prompt,   self.s_command),
-            (self.profile.pattern_password, self.s_super_password),
+            (self.profile.pattern_prompt,   "PROMPT"),
+            (self.profile.pattern_password, "PASSWORD"),
         ])
         self.submit(self.profile.command_super)
     
-    def on_SUPER_PASWORD_enter(self):
+    def on_SUPER_PASSWORD_enter(self):
         self.set_patterns([
             (self.profile.pattern_prompt, "PROMPT"),
             (self.profile.pattern_password, "PASSWORD")
