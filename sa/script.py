@@ -212,6 +212,7 @@ class CLI(StreamFSM):
         self.access_profile=access_profile
         self.queue=Queue.Queue()
         self.is_ready=False
+        self.collected_data=""
         StreamFSM.__init__(self)
     
     def on_read(self,data):
@@ -253,8 +254,8 @@ class CLI(StreamFSM):
                 (self.profile.pattern_unpriveleged_prompt,"UNPRIVELEGED_PROMPT"),
             ]
         p+=[
-            (self.profile.pattern_username, "FAILURE"),
-            (self.profile.pattern_password, "FAILURE")
+            (self.profile.pattern_username, "USERNAME"),
+            (self.profile.pattern_password, "PASSWORD")
             ]
         self.set_patterns(p)
         self.submit(self.access_profile.password)
@@ -277,10 +278,20 @@ class CLI(StreamFSM):
         if not self.is_ready:
             self.queue.put(None) # Signal provider passing into PROMPT state
             self.is_ready=True
-        self.set_patterns([(self.profile.pattern_prompt, "PROMPT")])
+        self.set_patterns([
+            (self.profile.pattern_prompt, "PROMPT"),
+            (self.profile.pattern_more,   "PAGER"),
+            ])
         
     def on_PROMPT_match(self,data,match):
-        self.queue.put(data)
+        if match.re.pattern==self.profile.pattern_more:
+            self.collected_data+=data
+        elif match.re.pattern==self.profile.pattern_prompt:
+            self.queue.put(self.collected_data+data)
+            self.collected_data=""
+        
+    def on_PROMPT_PAGER(self):
+        self.write(self.profile.command_more)
     
     def on_FAILURE_enter(self):
         self.set_patterns([])
