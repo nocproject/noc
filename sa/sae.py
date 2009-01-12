@@ -206,9 +206,9 @@ class XMLRPCService(object):
     def listMethods(self,done):
         done([m for m in dir(self) if not m.startswith("_") and callable(getattr(self,m))])
     
-    def script(self,done,name,object_id,*args):
+    def script(self,done,name,object_id,kwargs):
         object=Config.objects.get(id=int(object_id))
-        self._sae.script(object,name,done,*args)
+        self._sae.script(object,name,done,**kwargs)
 
 ##
 ## PDU Parsing
@@ -385,7 +385,7 @@ class SAE(Daemon):
         for k,v in kwargs.items():
             a=r.kwargs.add()
             a.key=str(k)
-            a.value=str(value)
+            a.value=str(v)
         stream.proxy.script(r,script_callback)
     # Signal handlers
 

@@ -62,7 +62,7 @@ class Service(SAEService):
             return
         kwargs={}
         for a in request.kwargs:
-            kwargs[a.key]=a.value
+            kwargs[str(a.key)]=a.value
         self.activator.run_script(request.script,request.access_profile,script_callback,**kwargs)
 ##
 ##
