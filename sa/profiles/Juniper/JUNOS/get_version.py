@@ -10,7 +10,6 @@ class Script(noc.sa.script.Script):
     def execute(self):
         self.cli("set cli screen-length 0")
         v=self.cli("show version")
-        print v
         match=rx_ver.search(v)
         return {
             "vendor"    : "Juniper",
