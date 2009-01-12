@@ -1,7 +1,17 @@
 {% extends "template/template.html" %}
 <{% block content %}
 <h1>Object: {{object.repo_path}} ({{object.profile_name}}) Script: {{script}}</h1>
+{% if form %}
+<FORM METHOD="POST">
+    <TABLE BORDER="0">
+    {{form.as_table}}
+    </TABLE>
+    <INPUT TYPE="submit">
+</FORM>
+{% endif %}
+{% if result %}
 <PRE>
 {{result}}
 </PRE>
+{% endif %}
 {%endblock%}

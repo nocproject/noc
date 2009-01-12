@@ -3,6 +3,14 @@
 ##
 import re,types
 
+try:
+    from django import forms
+except ImportError:
+    # No django. Interface.get_form() is meaningless
+    pass
+##
+##
+##
 class InterfaceTypeError(Exception): pass
 ##
 ## Abstract parameter
@@ -16,6 +24,9 @@ class Parameter(object):
         
     def clean(self,value):
         raise InterfaceTypeError
+        
+    def get_form_field(self):
+        return forms.CharField(required=self.required)
 ##
 ##
 ##
@@ -305,6 +316,25 @@ class Interface(object):
         except AttributeError:
             return result # No return result restriction
         return rp.clean(result)
+    def requires_input(self):
+        for n,p in [(n,p) for n,p in self.__class__.__dict__.items() if issubclass(p.__class__,Parameter)]:
+            if n=="returns":
+                continue
+            return True
+        return False
+    def get_form(self,data=None):
+        def clean_field_wrapper(form,name,param):
+            try:
+                return param.clean(form.cleaned_data[name])
+            except InterfaceTypeError:
+                raise forms.ValidationError("Invalid value")
+        f=forms.Form(data)
+        for n,p in [(n,p) for n,p in self.__class__.__dict__.items() if issubclass(p.__class__,Parameter)]:
+            if n=="returns":
+                continue
+            f.fields[n]=p.get_form_field()
+            setattr(f,"clean_%s"%n,lambda: clean_field_wrapper(f,n,p))
+        return f
 ##
 ## Module Test
 ##
