@@ -57,6 +57,8 @@ class ScriptBase(type):
             pr.scripts[sn]=m
         return m
 ##
+rx_html_tags=re.compile("</?[^>+]+>",re.MULTILINE|re.DOTALL)
+##
 ##
 ##
 class Script(threading.Thread):
@@ -144,8 +146,8 @@ class Script(threading.Thread):
         self.request_cli_provider()
         self.cli_provider.submit(cmd)
         data=self.cli_provider.queue.get(block=True)
-        if self.strip_echo and data.startswith(cmd):
-            data=self.strip_first_lines(data)
+        if self.strip_echo and data.lstrip().startswith(cmd):
+            data=self.strip_first_lines(data.lstrip())
         self.debug("cli() returns:\n---------\n%s\n---------"%data)
         return data
     ##
@@ -162,6 +164,14 @@ class Script(threading.Thread):
             return ""
         else:
             return "\n".join(t[lines:])
+    ##
+    ## Wipe out HTML tags (rude and dirty implemention)
+    ##
+    def strip_html_tags(self,text):
+        t=rx_html_tags.sub("",text)
+        for k,v in [("&nbsp;"," "),("&lt;","<"),("&gt;",">"),("&amp;","&")]:
+            t=t.replace(k,v)
+        return t
     
 ##
 ##
