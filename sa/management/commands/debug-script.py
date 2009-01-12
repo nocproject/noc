@@ -107,9 +107,5 @@ class Command(BaseCommand):
         tf=TransactionFactory()
         controller.transaction=tf.begin()
         service.script(controller=controller,request=r,done=handle_callback)
-        # Wait for script sockets before run factory
-        while len(service.activator.factory.sockets)==0:
-            logging.debug("waiting")
-            time.sleep(1)
         service.activator.factory.run()
         service.activator.factory.tick_callback()

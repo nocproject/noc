@@ -445,6 +445,9 @@ class SocketFactory(object):
             cond=lambda:True
         else:
             cond=lambda:len(self.sockets)>0
+            # Wait for any socket
+            while not cond():
+                time.sleep(1)
         last_tick=time.time()
         last_stale=time.time()
         while cond():
