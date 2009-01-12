@@ -232,17 +232,24 @@ class VLANIDParameter(IntParameter):
 ##
 ##
 ##
-rx_mac_address=re.compile("^[0-9A-F]{12}$")
+rx_mac_address_cisco=re.compile("^[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{4}$")
+rx_mac_address_sixblock=re.compile("^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$")
 class MACAddressParameter(StringParameter):
     """
     >>> MACAddressParameter().clean("1234.5678.9ABC")
     '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("1234.5678.9abc")
     '12:34:56:78:9A:BC'
+    >>> MACAddressParameter().clean("1234.5678.9abc.def0")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
     >>> MACAddressParameter().clean("12:34:56:78:9A:BC")
     '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("12-34-56-78-9A-BC")
     '12:34:56:78:9A:BC'
+    >>> MACAddressParameter().clean("0:13:46:50:87:5")
+    '00:13:46:50:87:05'
     >>> MACAddressParameter().clean("12-34-56-78-9A-BC-DE")
     Traceback (most recent call last):
         ...
@@ -254,15 +261,22 @@ class MACAddressParameter(StringParameter):
     """
     def clean(self,value):
         value=super(MACAddressParameter,self).clean(value)
-        for sep in [".",":","-"]:
-            if sep in value:
-                value=value.replace(sep,"")
-                break
         value=value.upper()
-        if not rx_mac_address.match(value):
-            raise InterfaceTypeError
+        match=rx_mac_address_cisco.match(value)
+        if match:
+            value=value.replace(".","")
+        else:
+            value=value.replace("-",":")
+            match=rx_mac_address_sixblock.match(value)
+            if not match:
+                raise InterfaceTypeError
+            value=""
+            for i in range(1,7):
+                v=match.group(i)
+                if len(v)==1:
+                    v="0"+v
+                value+=v
         return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
-
 ##
 ##
 ##
