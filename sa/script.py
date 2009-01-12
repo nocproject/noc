@@ -108,14 +108,14 @@ class Script(threading.Thread):
         for i in self.implements:
             result=i.clean_result(result)
         self.debug("Script returns with result: %s"%result)
-        return self.serialize_result(result)
+        return result
         
     def serialize_result(self,result):
         return cPickle.dumps(result)
         
     def run(self):
         self.debug("Running")
-        self.result=self.guarded_run()
+        self.result=self.serialize_result(self.guarded_run())
         self.status=True
         self.debug("Closing")
         if self.cli_provider:
