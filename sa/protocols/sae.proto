@@ -41,6 +41,7 @@ enum ErrorCode {
     ERR_INVALID_UPGRADE     =11; // Invalid file requested for upgrade
     ERR_OVERLOAD            =12; // System limit exceeded. Retry operation after delay
     ERR_INVALID_SCRIPT      =13; // Invalid script
+    ERR_SCRIPT_EXCEPTION    =14; // Script terminated with exception
 }
 
 //

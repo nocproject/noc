@@ -22,14 +22,14 @@ class Service(SAEService):
         
     def script(self,controller,request,done):
         def script_callback(script):
-            if script.status:
+            if script.result:
                 c=ScriptResponse()
                 c.result=script.result
                 done(controller,response=c)
             else:
                 e=Error()
-                e.code=ERR_INTERNAL
-                e.text="script internal error"
+                e.code=ERR_SCRIPT_EXCEPTION
+                e.text=script.error_traceback
                 done(controller,error=e)
         try:
             profile=profile_registry[request.access_profile.profile]

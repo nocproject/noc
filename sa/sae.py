@@ -232,8 +232,11 @@ class XMLRPCSocket(AcceptedTCPSocket):
         AcceptedTCPSocket.__init__(self,factory,socket)
         
     def on_read(self,data):
-        def on_read_callback(result):
-            body=xmlrpclib.dumps((result,),methodresponse=True)
+        def on_read_callback(result=None,error=None):
+            if result:
+                body=xmlrpclib.dumps((result,),methodresponse=True)
+            elif error:
+                body=xmlrpclib.dumps(xmlrpclib.Fault(ERR_SCRIPT_EXCEPTION,"Script exception"),methodresponse=True)
             response="HTTP/1.1 200 OK\r\nContent-Type: text/xml\r\nContent-Length: %d\r\nServer: nocproject.org\r\n\r\n"%len(body)+body
             self.write(response)
             self.close(flush=True)
@@ -360,7 +363,7 @@ class SAE(Daemon):
     def script(self,object,name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
             if error:
-                logging.error("script(%s,*%s,**%s) failed: %s"%(name,args,kwargs,error.text))
+                logging.error("script(%s,**%s) failed: %s"%(name,kwargs,error.text))
                 callback(error=error)
                 return
             result=response.result

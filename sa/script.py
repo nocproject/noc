@@ -2,9 +2,10 @@ from noc.lib.fsm import StreamFSM
 from noc.lib.ecma48 import strip_control_sequences
 from noc.lib.registry import Registry
 from noc.lib.nbsocket import PTYSocket
+from noc.lib.debug import format_frames,get_traceback_frames
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.sa.profiles import profile_registry
-import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib,cPickle
+import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib,cPickle,sys
 
 
 ##
@@ -90,6 +91,7 @@ class Script(threading.Thread):
         self.http=HTTPProvider(self.access_profile)
         self.status=False
         self.result=None
+        self.error_traceback=None
         self.strip_echo=True
         self.kwargs=kwargs
         self.scripts=ScriptProxy(self)
@@ -115,8 +117,14 @@ class Script(threading.Thread):
         
     def run(self):
         self.debug("Running")
-        self.result=self.serialize_result(self.guarded_run())
-        self.status=True
+        try:
+            self.result=self.serialize_result(self.guarded_run())
+        except:
+            t,v,tb=sys.exc_info()
+            r=[str(t),str(v)]
+            r+=[format_frames(get_traceback_frames(tb))]
+            self.error_traceback="\n".join(r)
+            self.debug("Script traceback:\n%s"%self.error_traceback)
         self.debug("Closing")
         if self.cli_provider:
             self.activator.request_call(self.cli_provider.close)
