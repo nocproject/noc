@@ -7,9 +7,16 @@ rx_line=re.compile(r"^\*\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+\S+
 class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_mac_address_table"
     implements=[IGetMACAddressTable]
-    def execute(self):
+    def execute(self,interface=None,vlan=None,mac=None):
+        cmd="show mac-address-table"
+        if mac is not None:
+            cmd+=" address %s"%self.profile.convert_mac(mac)
+        if interface is not None:
+            cmd+=" interface %s"%interface
+        if vlan is not None:
+            cmd+=" vlan %s"%vlan
         self.cli("terminal length 0")
-        vlans=self.cli("show mac-address-table")
+        vlans=self.cli(cmd)
         r=[]
         for l in vlans.split("\n"):
             match=rx_line.match(l.strip())
