@@ -100,6 +100,29 @@ class Profile(object):
             return "%s %s"%(net,mask)
         return prefix
     #
+    # Leave 00:11:22:33:44:55 style MAC-address untouched
+    #
+    def convert_mac_to_colon(self,mac):
+        return mac
+    #
+    # Convert 00:11:22:33:44:55 style MAC-address to 0011.2233.4455
+    #
+    def convert_mac_to_cisco(self,mac):
+        v=mac.replace(":","").lower()
+        return "%s.%s.%s"%(v[:4],v[4:8],v[8:])
+    #
+    # Convert 00:11:22:33:44:55 style MAC-address to 00-11-22-33-44-55
+    #
+    def convert_mac_to_dashed(self,mac):
+        v=mac.replace(":","").lower()
+        return "%s-%s-%s-%s-%s-%s"%(v[:2],v[2:4],v[4:6],v[6:8],v[8:10],v[10:])
+    #
+    # Convert 00:11:22:33:44:55 style MAC-address to local format
+    # Can be changed in derived classes
+    #
+    convert_mac=convert_mac_to_colon
+    
+    #
     # Configuration generators
     #
     
