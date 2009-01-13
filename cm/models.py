@@ -11,7 +11,7 @@ from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging,sets
 from noc.sa.models import Activator
-from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
+from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP,ERR_OVERLOAD
 
 profile_registry.register_all()
 vcs_registry.register_all()
