@@ -37,7 +37,11 @@ def object_script(request,object_id,script):
         if request.POST:
             form=scr.implements[0].get_form(request.POST)
             if form.is_valid():
-                result=get_result(script,object_id,**form.cleaned_data)
+                data={}
+                for k,v in form.cleaned_data.items():
+                    if v:
+                        data[k]=v
+                result=get_result(script,object_id,**data)
         else:
             form=scr.implements[0].get_form()
     else:

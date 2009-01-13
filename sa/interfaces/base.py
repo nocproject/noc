@@ -26,7 +26,7 @@ class Parameter(object):
         raise InterfaceTypeError
         
     def get_form_field(self):
-        return forms.CharField(required=self.required)
+        return forms.CharField(required=self.required,initial=self.default)
 ##
 ##
 ##
@@ -323,17 +323,22 @@ class Interface(object):
             return True
         return False
     def get_form(self,data=None):
-        def clean_field_wrapper(form,name,param):
-            try:
-                return param.clean(form.cleaned_data[name])
-            except InterfaceTypeError:
-                raise forms.ValidationError("Invalid value")
+        def get_clean_field_wrapper(form,name,param):
+            def clean_field_wrapper(form,name,param):
+                data=form.cleaned_data[name]
+                if not param.required and not data:
+                    return data
+                try:
+                    return param.clean(data)
+                except InterfaceTypeError:
+                    raise forms.ValidationError("Invalid value")
+            return lambda: clean_field_wrapper(form,name,param)
         f=forms.Form(data)
         for n,p in [(n,p) for n,p in self.__class__.__dict__.items() if issubclass(p.__class__,Parameter)]:
             if n=="returns":
                 continue
             f.fields[n]=p.get_form_field()
-            setattr(f,"clean_%s"%n,lambda: clean_field_wrapper(f,n,p))
+            setattr(f,"clean_%s"%n,get_clean_field_wrapper(f,n,p))
         return f
 ##
 ## Module Test
