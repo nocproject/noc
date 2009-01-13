@@ -189,6 +189,10 @@ class SAESocket(RPCSocket,AcceptedTCPSocket):
         RPCSocket.__init__(self,factory.sae.service)
         self.nonce=None
         self.is_authenticated=True
+        
+    @classmethod
+    def check_access(cls,address):
+        return Activator.objects.filter(ip=address).count()>0
 ##
 ## XML-RPC support
 ##
@@ -261,9 +265,7 @@ class SAE(Daemon):
         self.xmlrpc_service=XMLRPCService(self)
         #
         self.factory=SocketFactory()
-        self.factory.sae=self
-        self.factory.check_access=self.check_activator_access
-        
+        self.factory.sae=self        
         # Periodic tasks
         self.active_periodic_tasks={}
         self.periodic_task_lock=threading.Lock()
@@ -344,9 +346,6 @@ class SAE(Daemon):
         if cwd!=new_cwd:
             logging.error("CWD changed by periodic '%s' ('%s' -> '%s'). Restoring old cwd"%(unicode(task),cwd,new_cwd))
             os.chdir(cwd)
-    ##
-    def check_activator_access(self,address):
-        return Activator.objects.filter(ip=address).count()>0
         
     def on_stream_close(self,stream):
         self.streams.unregister(stream)

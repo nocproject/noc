@@ -98,7 +98,7 @@ class ListenTCPSocket(Socket):
     
     def handle_read(self):
         s,addr=self.socket.accept()
-        if self.factory.check_access(addr[0]):
+        if self.socket_class.check_access(addr[0]):
             self.socket_class(self.factory,s)
         else:
             logging.error("Refusing connection from %s"%addr[0])
@@ -164,6 +164,7 @@ class TCPSocket(Socket):
 ##
 ## A socket wrapping accepted TCP connection.
 ## Following methods can be overrided for desired behavior:
+## check_access(cls, address) - called before object creation
 ## on_connect(self)   - called when socket connected (just after creation)
 ## on_close(self)     - called when socket closed. Last method called
 ## on_read(self,data) - called when new portion of data available when protocol=None or when new PDU available
@@ -175,6 +176,10 @@ class AcceptedTCPSocket(TCPSocket):
     def __init__(self,factory,socket):
         TCPSocket.__init__(self,factory,socket)
         self.handle_connect()
+    
+    @classmethod
+    def check_access(cls,address):
+        return True
         
     def handle_read(self):
         try:
@@ -383,9 +388,6 @@ class SocketFactory(object):
         if not issubclass(socket_class,ConnectedTCPSocket):
             raise "socket_class should be a ConnectedTCPSocket subclass"
         return socket_class(self,address,port)
-        
-    def check_access(self,address):
-        return True
         
     def get_socket_by_name(self,name):
         return self.name_socket[name]
