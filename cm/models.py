@@ -9,7 +9,7 @@ from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
-import os,datetime,stat,logging,sets
+import os,datetime,stat,logging,sets,random
 from noc.sa.models import Activator
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP,ERR_OVERLOAD
 
