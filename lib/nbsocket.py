@@ -217,7 +217,7 @@ class ConnectedTCPSocket(TCPSocket):
         elif e in (EINPROGRESS, EALREADY, EWOULDBLOCK):
             return
         else:
-            raise socket.error, (e, errcode[e])
+            raise socket.error, (e, errorcode[e])
         
     def handle_read(self):
         if not self.is_connected:
