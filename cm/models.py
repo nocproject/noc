@@ -142,9 +142,7 @@ class Object(models.Model):
     
     def change_notify_list(self,immediately=False,delayed=False):
         emails=sets.Set()
-        for n in ObjectNotify.objects.filter(Q(type=self.repo_name)\
-                    &(Q(location__isnull=True)|Q(location=self.location))\
-                    &(Q(category__isnull=True)|Q(category__in=self.categories.all))):
+        for n in ObjectNotify.objects.filter(type=self.repo_name):
             if immediately and not n.notify_immediately:
                 continue
             if delayed and not n.notify_delayed:
@@ -226,6 +224,19 @@ class Config(Object):
         # Idiotic implementation
         ids=[o.id for o in cls.objects.all() if o.has_access(user)]
         return cls.objects.filter(id__in=ids)
+    
+    def change_notify_list(self,immediately=False,delayed=False):
+        emails=sets.Set()
+        for n in ObjectNotify.objects.filter(Q(type=self.repo_name)\
+                    &(Q(administrative_domain__isnull=True)|Q(administrative_domain=self.administrative_domain))\
+                    &(Q(group__isnull=True)|Q(group__in=self.groups.all))):
+            if immediately and not n.notify_immediately:
+                continue
+            if delayed and not n.notify_delayed:
+                continue
+            emails.update(n.emails.split())
+        return list(emails)
+
 ##
 ## PrefixList
 ##
