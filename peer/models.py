@@ -3,7 +3,8 @@ from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
 from noc.sa.profiles import profile_registry
-from noc.cm.models import PrefixList,ObjectLocation
+from noc.cm.models import PrefixList
+from noc.sa.models import AdministrativeDomain
 import random,sets
 
 class RIR(models.Model):
@@ -237,9 +238,8 @@ class PeeringPoint(models.Model):
                 p.delete()
             else:
                 del peers_pl[pl]
-        location=ObjectLocation.default_location()
         for pl in peers_pl:
-            o=PrefixList(repo_path=h+pl,location=location)
+            o=PrefixList(repo_path=h+pl)
             o.save()
     #
     # Returns a list of (prefix-list-name, rpsl-filter)
