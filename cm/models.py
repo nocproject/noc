@@ -210,7 +210,7 @@ class Config(Object):
                 self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=self.pull_every)
                 self.save()
             self.write(result)
-        sae.script(self,"%s.get_config"%self.profile_name,pull_callback)
+        sae.script(self.managed_object,"%s.get_config"%self.managed_object.profile_name,pull_callback)
     def scripts_link(self):
         return "<A HREF='/sa/%d/scripts/'>Scripts</A>"%(self.id)
     scripts_link.short_description="Scripts"
