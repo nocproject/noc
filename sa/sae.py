@@ -1,14 +1,10 @@
 ##
 ## Service Activation Engine
 ##
-from noc.sa.models import Activator
-from noc.cm.models import Config
-
+from noc.sa.models import Activator, ManagedObject, TaskSchedule
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
 import logging,time,threading,datetime,os,sets,random,xmlrpclib,cPickle
 from noc.sa.protocols.sae_pb2 import *
-from noc.sa.models import TaskSchedule
-from noc.cm.models import Config
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.debug import error_report
@@ -112,7 +108,7 @@ class Service(SAEService):
         r=EventFilterResponse()
         r.expire=self.sae.config.getint("sae","refresh_event_filter")
         sources=list(request.sources)
-        for c in Config.objects.filter(activator=activator,trap_source_ip__isnull=False):
+        for c in ManagedObject.objects.filter(activator=activator,trap_source_ip__isnull=False):
             profile=c.profile
             if ES_SNMP_TRAP in sources:
                 if profile.oid_trap_config_changed:
@@ -149,8 +145,8 @@ class Service(SAEService):
             return
         activator=self.get_controller_activator(controller)
         try:
-            c=Config.objects.get(activator=activator,trap_source_ip=request.ip)
-        except Config.DoesNotExist:
+            c=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
+        except ManagedObject.DoesNotExist:
             e=Error()
             e.code=ERR_UNKNOWN_EVENT_SOURCE
             e.text="Unknown event source '%s'"%request.ip
@@ -168,8 +164,8 @@ class Service(SAEService):
             return
         activator=self.get_controller_activator(controller)
         try:
-            c=Config.objects.get(activator=activator,trap_source_ip=request.ip)
-        except Config.DoesNotExist:
+            c=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
+        except ManagedObject.DoesNotExist:
             e=Error()
             e.code=ERR_UNKNOWN_EVENT_SOURCE
             e.text="Unknown event source '%s'"%request.ip
@@ -211,7 +207,7 @@ class XMLRPCService(object):
         done([m for m in dir(self) if not m.startswith("_") and callable(getattr(self,m))])
     
     def script(self,done,name,object_id,kwargs):
-        object=Config.objects.get(id=int(object_id))
+        object=ManagedObject.objects.get(id=int(object_id))
         self._sae.script(object,name,done,**kwargs)
 
 ##

@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from noc.lib.render import render
-from noc.cm.models import Config
+from noc.sa.models import ManagedObject
 from noc.sa.models import script_registry
 from django.http import HttpResponseForbidden,HttpResponseNotFound
 from xmlrpclib import ServerProxy, Error
@@ -8,7 +8,7 @@ from noc.settings import config
 import pprint,types
 
 def object_scripts(request,object_id):
-    o=get_object_or_404(Config,id=int(object_id))
+    o=get_object_or_404(ManagedObject,id=int(object_id))
     if not o.has_access(request.user):
         return HttpResponseForbidden("Access denied")
     p=o.profile_name
@@ -24,7 +24,7 @@ def object_script(request,object_id,script):
             result=pprint.pformat(result)
         return result
         
-    o=get_object_or_404(Config,id=int(object_id))
+    o=get_object_or_404(ManagedObject,id=int(object_id))
     if not o.has_access(request.user):
         return HttpResponseForbidden("Access denied")
     try:

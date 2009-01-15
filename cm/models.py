@@ -10,54 +10,23 @@ from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging,sets,random
-from noc.sa.models import Activator
+from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObject
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP,ERR_OVERLOAD
 
 profile_registry.register_all()
 vcs_registry.register_all()
 
-class ObjectCategory(models.Model):
-    class Meta:
-        verbose_name="Object Category"
-        verbose_name_plural="Object Categories"
-    name=models.CharField("Name",max_length=64,unique=True)
-    description=models.CharField("Description",max_length=128,null=True,blank=True)
-    def __unicode__(self):
-        return self.name
-        
-class ObjectLocation(models.Model):
-    class Meta:
-        verbose_name="Object Location"
-        verbose_name_plural="Object Locations"
-    name=models.CharField("Name",max_length=64,unique=True)
-    description=models.CharField("Description",max_length=128,null=True,blank=True)
-    def __unicode__(self):
-        return self.name
-    @classmethod
-    def default_location(cls):
-        return cls.objects.order_by("id")[0]
 #
 OBJECT_TYPES=["config","dns","prefix-list","rpsl"]
 OBJECT_TYPE_CHOICES=[(x,x) for x in OBJECT_TYPES]
-
-class ObjectAccess(models.Model):
-    class Meta:
-        verbose_name="Object Access"
-        verbose_name_plural="Object Access"
-    type=models.CharField("Type",max_length=16,choices=OBJECT_TYPE_CHOICES)
-    category=models.ForeignKey(ObjectCategory,verbose_name="Category",blank=True,null=True)
-    location=models.ForeignKey(ObjectLocation,verbose_name="Location",blank=True,null=True)
-    user=models.ForeignKey(User,verbose_name="User")
-    def __unicode__(self):
-        return "(%s,%s,%s,%s)"%(self.type,self.category,self.location,self.user)
 
 class ObjectNotify(models.Model):
     class Meta:
         verbose_name="Object Notify"
         verbose_name_plural="Object Notifies"
     type=models.CharField("Type",max_length=16,choices=OBJECT_TYPE_CHOICES)
-    category=models.ForeignKey(ObjectCategory,verbose_name="Category",blank=True,null=True)
-    location=models.ForeignKey(ObjectLocation,verbose_name="Location",blank=True,null=True)
+    administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name="Administrative Domain",blank=True,null=True)
+    group=models.ForeignKey(ObjectGroup,verbose_name="Group",blank=True,null=True)
     emails=models.CharField("Emails",max_length=128)
     notify_immediately=models.BooleanField("Notify Immediately")
     notify_delayed=models.BooleanField("Notify Delayed")
@@ -69,8 +38,8 @@ class Object(models.Model):
     class Meta:
         abstract=True
     repo_path=models.CharField("Repo Path",max_length=128,unique=True)
-    location=models.ForeignKey(ObjectLocation,verbose_name="Location")
-    categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories",null=True,blank=True)
+    #location=models.ForeignKey(ObjectLocation,verbose_name="Location")
+    #categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories",null=True,blank=True)
     #
     last_modified=models.DateTimeField("Last Modified",blank=True,null=True)
     #
@@ -170,43 +139,6 @@ class Object(models.Model):
             return RPSL
         else:
             raise Exception("Invalid repo '%s'"%repo)
-    ##
-    ## Access control
-    ##
-    def has_access(self,user):
-        if user.is_superuser:
-            return True
-        return user.objectaccess_set.filter(
-                    Q(type=self.repo_name)\
-                    &(Q(location__isnull=True)|Q(location=self.location))\
-                    &(Q(category__isnull=True)|Q(category__in=self.categories.all))
-                    ).count()>0
-
-    def can_change(self,user,location,categories):
-        if user.is_superuser:
-            return True
-        if user.objectaccess_set.filter(
-                Q(type=self.repo_name)\
-                &(Q(location__isnull=True)|Q(location=self.location))\
-                &Q(category__isnull=True)
-                ).count()>0:
-            return True
-        if categories:
-            for c in categories:
-                if user.objectaccess_set.filter(
-                        Q(type=self.repo_name)\
-                        &(Q(location__isnull=True)|Q(location=self.location))\
-                        &Q(category=c)
-                        ).count()==0:
-                    return False
-            return True
-        return False
-        
-    @classmethod
-    def queryset(cls,user):
-        # Idiotic implementation
-        ids=[o.id for o in cls.objects.all() if o.has_access(user)]
-        return cls.objects.filter(id__in=ids)
     
     def change_notify_list(self,immediately=False,delayed=False):
         emails=sets.Set()
@@ -256,17 +188,7 @@ class Config(Object):
     class Meta:
         verbose_name="Config"
         verbose_name_plural="Configs"
-    activator=models.ForeignKey(Activator,verbose_name="Activator")
-    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
-    scheme=models.IntegerField("Scheme",choices=[(TELNET,"telnet"),(SSH,"ssh"),(HTTP,"http")])
-    address=models.CharField("Address",max_length=64)
-    port=models.PositiveIntegerField("Port",blank=True,null=True)
-    user=models.CharField("User",max_length=32,blank=True,null=True)
-    password=models.CharField("Password",max_length=32,blank=True,null=True)
-    super_password=models.CharField("Super Password",max_length=32,blank=True,null=True)
-    remote_path=models.CharField("Path",max_length=32,blank=True,null=True)
-    trap_source_ip=models.IPAddressField("Trap Source IP",null=True)
-    trap_community=models.CharField("Trap Community",blank=True,null=True,max_length=64)
+    managed_object=models.OneToOneField(ManagedObject,verbose_name="Managed Object",unique=True)
     
     repo_name="config"
     def _profile(self):
@@ -293,7 +215,17 @@ class Config(Object):
         return "<A HREF='/sa/%d/scripts/'>Scripts</A>"%(self.id)
     scripts_link.short_description="Scripts"
     scripts_link.allow_tags=True
-
+    ##
+    ## Access control
+    ##
+    def has_access(self,user):
+        return self.managed_object.has_access(user)
+        
+    @classmethod
+    def queryset(cls,user):
+        # Idiotic implementation
+        ids=[o.id for o in cls.objects.all() if o.has_access(user)]
+        return cls.objects.filter(id__in=ids)
 ##
 ## PrefixList
 ##
