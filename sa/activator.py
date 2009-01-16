@@ -237,7 +237,9 @@ class Activator(Daemon,FSM):
     ## Script support
     ##
     def run_script(self,name,access_profile,callback,**kwargs):
-        script=script_registry[name](self,access_profile,**kwargs)
+        pv,pos,sn=name.split(".",2)
+        profile=profile_registry["%s.%s"%(pv,pos)]()        
+        script=script_registry[name](profile,self,access_profile,**kwargs)
         self.script_lock.acquire()
         self.script_threads[script]=callback
         self.script_lock.release()

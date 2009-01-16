@@ -32,7 +32,7 @@ class ScriptCallProxy(object):
         self.script=script
         
     def __call__(self,**kwargs):
-        s=self.script(self.parent.activator,self.parent.access_profile,parent=self.parent,**kwargs)
+        s=self.script(self.parent.profile,self.parent.activator,self.parent.access_profile,parent=self.parent,**kwargs)
         return s.guarded_run()
 ##
 ##
@@ -42,6 +42,27 @@ class ScriptRegistry(Registry):
     subdir="profiles"
     classname="Script"
     apps=["noc.sa"]
+    def register_generics(self):
+        for c in [c for c in self.classes.values() if c.name and c.name.startswith("Generic.") and c.requires]:
+            g,name=c.name.split(".")
+            for p in profile_registry.classes:
+                s_name=p+"."+name
+                # Do not register generic when specific exists
+                if s_name in self.classes:
+                    continue
+                to_register=True
+                for r_name,r_interface in c.requires:
+                    rs_name=p+"."+r_name
+                    if rs_name not in self.classes or not self.classes[rs_name].implements_interface(r_interface):
+                        to_register=False
+                        break
+                if to_register:
+                    logging.debug("Script Registry: Register generic %s"%s_name)
+                    self.classes[s_name]=c
+                    profile_registry[p].scripts[name]=c
+    def register_all(self):
+        super(ScriptRegistry,self).register_all()
+        self.register_generics()
 
 script_registry=ScriptRegistry()
 ##
@@ -52,10 +73,9 @@ class ScriptBase(type):
         m=type.__new__(cls,name,bases,attrs)
         m.implements=[c() for c in m.implements]
         script_registry.register(m.name,m)
-        if m.name:
+        if m.name and not m.name.startswith("Generic."):
             pv,pos,sn=m.name.split(".",2)
-            pr=profile_registry["%s.%s"%(pv,pos)]
-            pr.scripts[sn]=m
+            profile_registry["%s.%s"%(pv,pos)].scripts[sn]=m
         return m
 ##
 rx_html_tags=re.compile("</?[^>+]+>",re.MULTILINE|re.DOTALL)
@@ -68,12 +88,16 @@ class Script(threading.Thread):
     description=None
     # Interfaces list. Each element of list must be Interface subclass
     implements=[]
+    # Scripts required by generic script.
+    # For common scripts - empty list
+    # For generics - list of pairs (script_name,interface)
+    requires=[]
     # Constants
     TELNET=scheme_id["telnet"]
     SSH=scheme_id["ssh"]
     HTTP=scheme_id["http"]
 
-    def __init__(self,activator,access_profile,parent=None,**kwargs):
+    def __init__(self,profile,activator,access_profile,parent=None,**kwargs):
         self.parent=parent
         self.access_profile=access_profile
         if self.access_profile.address:
@@ -85,8 +109,7 @@ class Script(threading.Thread):
         self.debug_name="script-%s-%s"%(p,self.name)
         super(Script,self).__init__(name=self.debug_name,kwargs=kwargs)
         self.activator=activator
-        pv,pos,sn=self.name.split(".",2)
-        self.profile=profile_registry["%s.%s"%(pv,pos)]()
+        self.profile=profile
         self.cli_provider=None
         self.http=HTTPProvider(self.access_profile)
         self.status=False
@@ -95,6 +118,13 @@ class Script(threading.Thread):
         self.strip_echo=True
         self.kwargs=kwargs
         self.scripts=ScriptProxy(self)
+    
+    @classmethod
+    def implements_interface(cls,interface):
+        for i in cls.implements:
+            if type(i)==interface:
+                return True
+        return False
         
     def debug(self,msg):
         logging.debug("[%s] %s"%(self.debug_name,msg))
@@ -180,7 +210,6 @@ class Script(threading.Thread):
         for k,v in [("&nbsp;"," "),("&lt;","<"),("&gt;",">"),("&amp;","&")]:
             t=t.replace(k,v)
         return t
-    
 ##
 ##
 ##
