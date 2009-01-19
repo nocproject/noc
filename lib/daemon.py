@@ -29,13 +29,8 @@ class Daemon(object):
         if len(self.args)<1 or self.args[0] not in ["start","stop","refresh"]:
             self.opt_parser.error("You must supply one of start|stop|refresh commands")
         # Read config
-        self.config=ConfigParser.SafeConfigParser()
-        if self.defaults_config_path:
-            self.config.read(self.defaults_config_path%{"daemon_name":self.daemon_name})
-        if self.options.config:
-            self.config.read(self.options.config)
-        elif self.config_path:
-            self.config.read(self.config_path%{"daemon_name":self.daemon_name})
+        self.config=None
+        self.load_config()
         # Set up logging
         if self.config.get("main","loglevel") not in self.LOG_LEVELS:
             raise Exception("Invalid loglevel '%s'"%self.config.get("main","loglevel"))
@@ -58,7 +53,29 @@ class Daemon(object):
                 logging.error("Signal '%s' is not supported on this platform"%s)
                 continue
             signal.signal(sig,getattr(self,s))
-
+            
+    ##
+    ##
+    ##
+    def load_config(self):
+        first_run=True
+        if self.config:
+            logging.info("Loading config")
+            first_run=False
+        self.config=ConfigParser.SafeConfigParser()
+        if self.defaults_config_path:
+            self.config.read(self.defaults_config_path%{"daemon_name":self.daemon_name})
+        if self.options.config:
+            self.config.read(self.options.config)
+        elif self.config_path:
+            self.config.read(self.config_path%{"daemon_name":self.daemon_name})
+        if not first_run:
+            self.on_load_config()
+    ##
+    ## Called after config reloaded by SIGHUP.
+    ##
+    def on_load_config(self):
+        pass
     ##
     ## Main daemon loop. Should be overriden
     ##
@@ -141,3 +158,8 @@ class Daemon(object):
     ##
     def SIGUSR2(self,signo,frame):
         frame_report(frame)
+    ##
+    ## Reload config on SIGHUP
+    ##
+    def SIGHUP(self,signo,frame):
+        self.load_config()
