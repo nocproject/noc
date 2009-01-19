@@ -210,6 +210,24 @@ class Script(threading.Thread):
         for k,v in [("&nbsp;"," "),("&lt;","<"),("&gt;",">"),("&amp;","&")]:
             t=t.replace(k,v)
         return t
+    ##
+    ## Expands expressions like "1,2,5-7" to [1,2,5,6,7]
+    ##
+    def expand_rangelist(self,s):
+        result={}
+        for x in s.split(","):
+            x=x.strip()
+            if "-" in x:
+                l,r=[int(y) for y in x.split("-")]
+                if l>r:
+                    x=r
+                    r=l
+                    l=x
+                for i in range(l,r+1):
+                    result[i]=None
+            else:
+                result[int(x)]=None
+        return sorted(result.keys())
 ##
 ##
 ##
