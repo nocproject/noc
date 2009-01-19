@@ -217,6 +217,8 @@ class Script(threading.Thread):
         result={}
         for x in s.split(","):
             x=x.strip()
+            if x=="":
+                continue
             if "-" in x:
                 l,r=[int(y) for y in x.split("-")]
                 if l>r:
