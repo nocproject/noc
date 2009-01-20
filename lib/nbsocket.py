@@ -95,6 +95,8 @@ class ListenTCPSocket(Socket):
         self.socket.bind((address,port))
         self.socket.listen(5)
         self.socket_class=socket_class
+        self.address=address
+        self.port=port
     
     def handle_read(self):
         s,addr=self.socket.accept()
@@ -383,6 +385,7 @@ class SocketFactory(object):
             raise "socket_class should be a AcceptedTCPSocket subclass"
         l=ListenTCPSocket(self,address,port,socket_class)
         l.set_name("listen-tcp-%s:%d"%(address,port))
+        return l
     
     def connect_tcp(self,address,port,socket_class):
         if not issubclass(socket_class,ConnectedTCPSocket):
