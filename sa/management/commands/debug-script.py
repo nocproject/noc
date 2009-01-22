@@ -14,6 +14,7 @@ from noc.sa.rpc import TransactionFactory
 import logging,sys,ConfigParser,Queue,time
 from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory
+from optparse import OptionParser, make_option
 
 class Controller(object): pass
 
@@ -52,6 +53,9 @@ class ActivatorStub(object):
 
 class Command(BaseCommand):
     help="Debug SA Script"
+    option_list=BaseCommand.option_list+(
+        make_option("-c","--read-community",dest="snmp_ro"),
+    )
     def handle(self, *args, **options):
         def handle_callback(controller,response=None,error=None):
             if error:
@@ -97,6 +101,8 @@ class Command(BaseCommand):
         else:
             r.access_profile.password   = url.password
         r.access_profile.path           = url.path
+        if "snmp_ro" in options:
+            r.access_profile.snmp_ro=options["snmp_ro"]
         # Parse script args
         if len(args)==3:
             for p in args[2].split(","):
