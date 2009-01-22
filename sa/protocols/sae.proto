@@ -62,6 +62,8 @@ message AccessProfile {
     optional string       password       = 6;
     optional string       super_password = 7;
     optional string       path           = 8;
+    optional string       snmp_ro        = 9;
+    optional string       snmp_rw        =10;
 }
 //
 // Ping server
