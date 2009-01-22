@@ -26,7 +26,7 @@ class Migration:
         
         # Move objects
         for id,repo_path,activator_id,profile_name,scheme,address,port,user,password,super_password,remote_path,location_id,trap_source_ip,trap_community\
-            in db.execute("SELECT id,repo_path,activator_id,profile_name,scheme,address,port,user,password,super_password,remote_path,location_id,trap_source_ip,trap_community FROM cm_config"):
+            in db.execute("SELECT id,repo_path,activator_id,profile_name,scheme,address,port,\"user\",password,super_password,remote_path,location_id,trap_source_ip,trap_community FROM cm_config"):
             name=os.path.basename(repo_path)
             db.execute("INSERT INTO sa_managedobject(name,repo_path,activator_id,profile_name,scheme,address,port,\"user\",password,super_password,remote_path,administrative_domain_id,trap_source_ip,trap_community) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
             [name,repo_path,activator_id,profile_name,scheme,address,port,user,password,super_password,remote_path,location2domain[location_id],trap_source_ip,trap_community])
