@@ -5,7 +5,16 @@ from noc.lib.nbsocket import PTYSocket
 from noc.lib.debug import format_frames,get_traceback_frames
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.sa.profiles import profile_registry
-import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib,cPickle,sys
+import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib,cPickle,sys,time
+
+try:
+    from pysnmp.carrier.asynsock.dispatch import AsynsockDispatcher
+    from pysnmp.carrier.asynsock.dgram import udp
+    from pyasn1.codec.ber import encoder, decoder
+    from pysnmp.proto import api
+    HAS_SNMP=True
+except ImportError:
+    HAS_SNMP=False
 
 
 ##
@@ -112,6 +121,10 @@ class Script(threading.Thread):
         self.profile=profile
         self.cli_provider=None
         self.http=HTTPProvider(self.access_profile)
+        if HAS_SNMP:
+            self.snmp=SNMPProvider(self.access_profile)
+        else:
+            self.snmp=None
         self.status=False
         self.result=None
         self.error_traceback=None
@@ -461,3 +474,57 @@ class HTTPProvider(object):
             params=urllib.urlencode(params)
             headers["Content-Type"]="application/x-www-form-urlencoded"
         return self.request("POST",path,params,headers)
+##
+##
+##
+class SNMPProvider(object):
+    def __init__(self,access_profile):
+        self.access_profile=access_profile
+        self.queue=Queue.Queue()
+    
+    def str_to_oid(self,s):
+        return tuple([int(x) for x in s.split(".")])
+        
+    def get(self,oid):
+        self.run_get(oid)
+        return self.queue.get(block=True)
+    
+    def run_get(self,oid):
+        logging.debug("SNMP GET %s"%oid)
+        # Protocol version to use
+        protocol = api.protoModules[api.protoVersion1]
+        # Build PDU
+        req_pdu =  protocol.GetRequestPDU()
+        protocol.apiPDU.setDefaults(req_pdu)
+        protocol.apiPDU.setVarBinds(req_pdu, ((self.str_to_oid(oid), protocol.Null()),))
+        # Build message
+        req = protocol.Message()
+        protocol.apiMessage.setDefaults(req)
+        protocol.apiMessage.setCommunity(req, self.access_profile.snmp_ro)
+        protocol.apiMessage.setPDU(req, req_pdu)
+        def timer_callback(timeNow, start_time=time.time()):
+            if timeNow - start_time > 3:
+                raise "Request timed out"
+        def recv_callback(transportDispatcher, transportDomain, transportAddress, msg, req_pdu=req_pdu):
+            while msg:
+                rsp_msg, msg = decoder.decode(msg, asn1Spec=protocol.Message())
+                rspPDU = protocol.apiMessage.getPDU(rsp_msg)
+                # Match response to request
+                if protocol.apiPDU.getRequestID(req_pdu)==protocol.apiPDU.getRequestID(rspPDU):
+                    # Check for SNMP errors reported
+                    errorStatus = protocol.apiPDU.getErrorStatus(rspPDU)
+                    #if errorStatus:
+                    #    print errorStatus.prettyPrint()
+                    #else:
+                    for oid, val in protocol.apiPDU.getVarBinds(rspPDU):
+                        self.queue.put(str(val))
+                    transportDispatcher.jobFinished(1)
+            return msg
+        transportDispatcher = AsynsockDispatcher()
+        transportDispatcher.registerTransport(udp.domainName, udp.UdpSocketTransport().openClientMode())
+        transportDispatcher.registerRecvCbFun(recv_callback)
+        transportDispatcher.registerTimerCbFun(timer_callback)
+        transportDispatcher.sendMessage(encoder.encode(req), udp.domainName, (self.access_profile.address, 161))
+        transportDispatcher.jobStarted(1)
+        transportDispatcher.runDispatcher()
+        transportDispatcher.closeDispatcher()
