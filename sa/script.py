@@ -246,6 +246,10 @@ class Script(threading.Thread):
 ##
 ##
 ##
+class TimeOutError(Exception): pass
+##
+##
+##
 class CLI(StreamFSM):
     FSM_NAME="CLI"
     DEFAULT_STATE="START"
@@ -478,6 +482,7 @@ class HTTPProvider(object):
 ##
 ##
 class SNMPProvider(object):
+    TimeOutError=TimeOutError
     def __init__(self,access_profile):
         self.access_profile=access_profile
         self.queue=Queue.Queue()
@@ -504,7 +509,7 @@ class SNMPProvider(object):
         protocol.apiMessage.setPDU(req, req_pdu)
         def timer_callback(timeNow, start_time=time.time()):
             if timeNow - start_time > 3:
-                raise "Request timed out"
+                raise TimeOutError
         def recv_callback(transportDispatcher, transportDomain, transportAddress, msg, req_pdu=req_pdu):
             while msg:
                 rsp_msg, msg = decoder.decode(msg, asn1Spec=protocol.Message())
