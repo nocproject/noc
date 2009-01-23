@@ -261,7 +261,10 @@ class SAE(Daemon):
         self.xmlrpc_service=XMLRPCService(self)
         #
         self.factory=SocketFactory()
-        self.factory.sae=self        
+        self.factory.sae=self
+        #
+        self.sae_listener=None
+        self.xmlrpc_listener=None
         # Periodic tasks
         self.active_periodic_tasks={}
         self.periodic_task_lock=threading.Lock()
@@ -289,13 +292,30 @@ class SAE(Daemon):
             cs=self.activator_manifest.files.add()
             cs.name=f
             cs.hash=file_hash(f)
-
+            
+    def start_listeners(self):
+        # SAE Listener
+        sae_listen=self.config.get("sae","listen")
+        sae_port=self.config.getint("sae","port")
+        if self.sae_listener and (self.sae_listener.address!=sae_listen or self.sae_listener.port!=sae_port):
+            self.sae_listener.close()
+            self.sae_listener=None
+        if self.sae_listener is None:
+            logging.info("Starting SAE listener at %s:%d"%(sae_listen,sae_port))
+            self.sae_listener=self.factory.listen_tcp(sae_listen,sae_port,SAESocket)
+        # XML-RPC listener
+        xmlrpc_listen=self.config.get("xmlrpc","listen")
+        xmlrpc_port=self.config.getint("xmlrpc","port")
+        if self.xmlrpc_listener and (self.xmlrpc_listener.address!=xmlrpc_listen or self.xmlrpc_listen.port!=xmlrpc_port):
+            self.xmlrpc_listener.close()
+            self.xmlrpc_listener=None
+        if self.xmlrpc_listener is None:
+            logging.info("Starting XML-RPC listener at %s:%d"%(xmlrpc_listen,xmlrpc_port))
+            self.sae_listener=self.factory.listen_tcp(xmlrpc_listen,xmlrpc_port,XMLRPCSocket)
+        
     def run(self):
         self.build_manifest()
-        logging.info("Starting listener at %s:%d"%(self.config.get("sae","listen"),self.config.getint("sae","port")))
-        self.factory.listen_tcp(self.config.get("sae","listen"),self.config.getint("sae","port"),SAESocket)
-        self.factory.listen_tcp(self.config.get("xmlrpc","listen"),self.config.getint("xmlrpc","port"),XMLRPCSocket)
-        
+        self.start_listeners()
         last_cleanup=time.time()
         last_task_check=time.time()
         while True:
@@ -380,11 +400,20 @@ class SAE(Daemon):
             r.access_profile.super_password= object.super_password
         if object.remote_path:
             r.access_profile.path          = object.remote_path
+        if object.snmp_ro:
+            r.access_profile.snmp_ro       = object.snmp_ro
+        if object.snmp_rw:
+            r.access_profile.snmp_rw       = object.snmp_rw
         for k,v in kwargs.items():
             a=r.kwargs.add()
             a.key=str(k)
             a.value=str(v)
         stream.proxy.script(r,script_callback)
+    ##
+    ## Called after config reloaded by SIGHUP.
+    ##
+    def on_load_config(self):
+        self.start_listeners()
     # Signal handlers
 
     # SIGUSR1 returns process info
