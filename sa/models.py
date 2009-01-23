@@ -68,6 +68,8 @@ class ManagedObject(models.Model):
     remote_path=models.CharField("Path",max_length=32,blank=True,null=True)
     trap_source_ip=models.IPAddressField("Trap Source IP",null=True)
     trap_community=models.CharField("Trap Community",blank=True,null=True,max_length=64)
+    snmp_ro=models.CharField("RO Community",blank=True,null=True,max_length=64)
+    snmp_rw=models.CharField("RW Community",blank=True,null=True,max_length=64)
     # CM
     is_configuration_managed=models.BooleanField("Is Configuration Managed?",default=True)
     repo_path=models.CharField("Repo Path",max_length=128,blank=True,null=True)

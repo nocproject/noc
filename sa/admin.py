@@ -40,7 +40,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("user","password","super_password")
         }),
         ("SNMP",{
-            "fields": ("trap_source_ip","trap_community")
+            "fields": ("snmp_ro","snmp_rw","trap_source_ip","trap_community")
         }),
         ("CM",{
             "fields": ("is_configuration_managed","repo_path")
