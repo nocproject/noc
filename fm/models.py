@@ -24,7 +24,10 @@ class MIB(models.Model):
         os.unlink(p)
         mib_name=m.MIB["moduleName"]
         # Get MIB latest revision date
-        last_updated=datetime.datetime.strptime(sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1],"%Y-%m-%d %H:%M")
+        try:
+            last_updated=datetime.datetime.strptime(sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1],"%Y-%m-%d %H:%M")
+        except:
+            last_updated=datetime.datetime(year=1970,month=1,day=1)
         # Check mib already uploaded
         try:
             o=MIB.objects.get(name=mib_name)
@@ -37,7 +40,7 @@ class MIB(models.Model):
             # Remove old version and data
             from django.db import connection
             cursor = connection.cursor()
-            cursor.execute("DELETE FROM %s WHERE mib_id=%s"%MIBData.table_name,[o.id])
+            cursor.execute("DELETE FROM %s WHERE mib_id=%%s"%MIBData._meta.db_table,[o.id])
             o.delete()
         mib_description=m.MIB[mib_name].get("description",None)
         mib=MIB(name=mib_name,description=mib_description,uploaded=datetime.datetime.now(),last_updated=last_updated)
