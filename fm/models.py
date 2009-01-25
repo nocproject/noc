@@ -50,7 +50,30 @@ class MIB(models.Model):
         for node,v in m.MIB["nodes"].items():
             d=MIBData(mib=mib,oid=v["oid"],name="%s::%s"%(mib_name,node),description=v.get("description",None))
             d.save()
-        
+            
+    @classmethod
+    def get_oid(cls,name):
+        try:
+            o=MIBData.objects.get(name=name)
+            return o.oid
+        except MIBData.DoesNotExist:
+            return None
+            
+    @classmethod
+    def get_name(cls,oid):
+        l_oid=oid.split(".")
+        rest=[]
+        while l_oid:
+            c_oid=".".join(l_oid)
+            try:
+                o=MIBData.objects.get(oid=c_oid)
+                name=o.name
+                if rest:
+                    name+="."+".".join(rest)
+                return name
+            except MIBData.DoesNotExist:
+                rest.append(l_oid.pop())
+        return None
 
 class MIBData(models.Model):
     class Meta:
