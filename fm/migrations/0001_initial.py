@@ -11,7 +11,8 @@ class Migration:
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('name', models.CharField("Name",max_length=64,unique=True)),
             ('description', models.TextField("Description",blank=True,null=True)),
-            ('uploaded', models.DateTimeField("Uploaded",auto_now_add=True))
+            ('last_updated', models.DateTimeField("Last Updated")),
+            ('uploaded', models.DateTimeField("Uploaded"))
         ))
         
         # Mock Models
