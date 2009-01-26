@@ -142,47 +142,25 @@ message SoftwareUpgradeResponse {
 //
 // Event processing
 //
-enum EventSource {
-    ES_UNKNOWN   = 0;
-    ES_SNMP_TRAP = 1;
-    ES_SYSLOG    = 2;
-}
-
-enum EventAction {
-    EA_IGNORE         = 0;
-    EA_PROXY          = 1;
-    EA_CONFIG_CHANGED = 2;
-}
-
 message EventFilterRequest {
-    repeated EventSource sources = 1;
 }
 
 message EventFilterResponse {
-    message EventFilter {
-        required EventSource source = 1;
-        required string      ip     = 2;
-        required string      mask   = 3;
-        required EventAction action = 4;
+    required int32  expire  = 1;
+    repeated string sources = 2;
+}
+
+message EventRequest {
+    message EventBodyItem {
+        required string key   = 1;
+        required string value = 2;
     }
-    required int32       expire  = 1;
-    repeated EventFilter filters = 2;
+    required int32         timestamp = 1;
+    required string        ip        = 2;
+    repeated EventBodyItem body      = 3;
 }
 
-message EventResponse {
-}
-
-message EventProxyRequest {
-    required EventSource source = 1;
-    required string      ip     = 2;
-    required string      message= 3;
-    optional string      body   = 4;
-}
-
-message EventConfigChangedRequest {
-    required EventSource source = 1;
-    required string      ip     = 2;
-}
+message EventResponse {}
 
 //
 // RPC Services
@@ -195,6 +173,5 @@ service SAEService {
     rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
     rpc script           (ScriptRequest)          returns (ScriptResponse);
     rpc event_filter     (EventFilterRequest)     returns (EventFilterResponse);
-    rpc event_proxy      (EventProxyRequest)      returns (EventResponse);
-    rpc event_config_changed (EventConfigChangedRequest) returns (EventResponse);
+    rpc event            (EventRequest)           returns (EventResponse);
 }

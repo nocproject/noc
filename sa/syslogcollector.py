@@ -3,24 +3,42 @@
 ## (RFC3164)
 ##
 from noc.lib.nbsocket import ListenUDPSocket
-import logging
 from noc.sa.eventcollector import EventCollector
-from noc.sa.protocols.sae_pb2 import ES_SYSLOG
-
+import time
+##
+## Body has following keys:
+##  source, facility, severity, message
+##
+##
 class SyslogCollector(ListenUDPSocket,EventCollector):
-    EVENT_SOURCE=ES_SYSLOG
-    def __init__(self,factory,address,port):
-        logging.info("Initializing log collector")
-        ListenUDPSocket.__init__(self,factory,address,port)
-        EventCollector.__init__(self)
+    def __init__(self,activator,address,port):
+        self.info("Initializing")
+        ListenUDPSocket.__init__(self,activator.factory,address,port)
+        EventCollector.__init__(self,activator)
         
     def on_read(self,msg,address,port):
+        self.debug(msg)
         if not self.check_source_address(address):
             return
+        self.debug(">>>")
+        # Parse priority
+        priority=0
         if msg.startswith("<"):
             idx=msg.find(">")
             if idx==-1:
                 return
-            msg=msg[idx+1:]
-            # TODO: Parse timestamp
-        self.process_event(address,msg)
+            try:
+                priority=int(msg[1:idx])
+            except:
+                pass
+            msg=msg[idx+1:].strip()
+        # Parse HEADER if exists
+        ts=int(time.time())
+        #
+        body={
+            "source"  : "syslog",
+            "facility": priority>>3,
+            "severity": priority&7,
+            "message" : msg
+        }
+        self.process_event(ts,address,body)

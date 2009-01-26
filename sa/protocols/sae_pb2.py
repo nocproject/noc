@@ -99,50 +99,6 @@ _ACCESSSCHEME = descriptor.EnumDescriptor(
 )
 
 
-_EVENTSOURCE = descriptor.EnumDescriptor(
-  name='EventSource',
-  full_name='sae.EventSource',
-  filename='EventSource',
-  values=[
-    descriptor.EnumValueDescriptor(
-      name='ES_UNKNOWN', index=0, number=0,
-      options=None,
-      type=None),
-    descriptor.EnumValueDescriptor(
-      name='ES_SNMP_TRAP', index=1, number=1,
-      options=None,
-      type=None),
-    descriptor.EnumValueDescriptor(
-      name='ES_SYSLOG', index=2, number=2,
-      options=None,
-      type=None),
-  ],
-  options=None,
-)
-
-
-_EVENTACTION = descriptor.EnumDescriptor(
-  name='EventAction',
-  full_name='sae.EventAction',
-  filename='EventAction',
-  values=[
-    descriptor.EnumValueDescriptor(
-      name='EA_IGNORE', index=0, number=0,
-      options=None,
-      type=None),
-    descriptor.EnumValueDescriptor(
-      name='EA_PROXY', index=1, number=1,
-      options=None,
-      type=None),
-    descriptor.EnumValueDescriptor(
-      name='EA_CONFIG_CHANGED', index=2, number=2,
-      options=None,
-      type=None),
-  ],
-  options=None,
-)
-
-
 ERR_OK = 0
 ERR_INTERNAL = 1
 ERR_INVALID_METHOD = 2
@@ -161,12 +117,6 @@ ERR_SCRIPT_EXCEPTION = 14
 TELNET = 0
 SSH = 1
 HTTP = 2
-ES_UNKNOWN = 0
-ES_SNMP_TRAP = 1
-ES_SYSLOG = 2
-EA_IGNORE = 0
-EA_PROXY = 1
-EA_CONFIG_CHANGED = 2
 
 
 
@@ -727,13 +677,6 @@ _EVENTFILTERREQUEST = descriptor.Descriptor(
   filename='sae.proto',
   containing_type=None,
   fields=[
-    descriptor.FieldDescriptor(
-      name='sources', full_name='sae.EventFilterRequest.sources', index=0,
-      number=1, type=14, cpp_type=8, label=3,
-      default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -742,48 +685,6 @@ _EVENTFILTERREQUEST = descriptor.Descriptor(
   ],
   options=None)
 
-
-_EVENTFILTERRESPONSE_EVENTFILTER = descriptor.Descriptor(
-  name='EventFilter',
-  full_name='sae.EventFilterResponse.EventFilter',
-  filename='sae.proto',
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='source', full_name='sae.EventFilterResponse.EventFilter.source', index=0,
-      number=1, type=14, cpp_type=8, label=2,
-      default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='ip', full_name='sae.EventFilterResponse.EventFilter.ip', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='mask', full_name='sae.EventFilterResponse.EventFilter.mask', index=2,
-      number=3, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='action', full_name='sae.EventFilterResponse.EventFilter.action', index=3,
-      number=4, type=14, cpp_type=8, label=2,
-      default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],  # TODO(robinson): Implement.
-  enum_types=[
-  ],
-  options=None)
 
 _EVENTFILTERRESPONSE = descriptor.Descriptor(
   name='EventFilterResponse',
@@ -799,8 +700,72 @@ _EVENTFILTERRESPONSE = descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='filters', full_name='sae.EventFilterResponse.filters', index=1,
-      number=2, type=11, cpp_type=10, label=3,
+      name='sources', full_name='sae.EventFilterResponse.sources', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_EVENTREQUEST_EVENTBODYITEM = descriptor.Descriptor(
+  name='EventBodyItem',
+  full_name='sae.EventRequest.EventBodyItem',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='key', full_name='sae.EventRequest.EventBodyItem.key', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='value', full_name='sae.EventRequest.EventBodyItem.value', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+_EVENTREQUEST = descriptor.Descriptor(
+  name='EventRequest',
+  full_name='sae.EventRequest',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='timestamp', full_name='sae.EventRequest.timestamp', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='ip', full_name='sae.EventRequest.ip', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='body', full_name='sae.EventRequest.body', index=2,
+      number=3, type=11, cpp_type=10, label=3,
       default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -829,78 +794,6 @@ _EVENTRESPONSE = descriptor.Descriptor(
   options=None)
 
 
-_EVENTPROXYREQUEST = descriptor.Descriptor(
-  name='EventProxyRequest',
-  full_name='sae.EventProxyRequest',
-  filename='sae.proto',
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='source', full_name='sae.EventProxyRequest.source', index=0,
-      number=1, type=14, cpp_type=8, label=2,
-      default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='ip', full_name='sae.EventProxyRequest.ip', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='message', full_name='sae.EventProxyRequest.message', index=2,
-      number=3, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='body', full_name='sae.EventProxyRequest.body', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],  # TODO(robinson): Implement.
-  enum_types=[
-  ],
-  options=None)
-
-
-_EVENTCONFIGCHANGEDREQUEST = descriptor.Descriptor(
-  name='EventConfigChangedRequest',
-  full_name='sae.EventConfigChangedRequest',
-  filename='sae.proto',
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='source', full_name='sae.EventConfigChangedRequest.source', index=0,
-      number=1, type=14, cpp_type=8, label=2,
-      default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='ip', full_name='sae.EventConfigChangedRequest.ip', index=1,
-      number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],  # TODO(robinson): Implement.
-  enum_types=[
-  ],
-  options=None)
-
-
 _MESSAGE.fields_by_name['request'].message_type = _REQUEST
 _MESSAGE.fields_by_name['response'].message_type = _RESPONSE
 _MESSAGE.fields_by_name['error'].message_type = _ERROR
@@ -910,12 +803,7 @@ _SCRIPTREQUEST.fields_by_name['access_profile'].message_type = _ACCESSPROFILE
 _SCRIPTREQUEST.fields_by_name['kwargs'].message_type = _SCRIPTREQUEST_KWARG
 _MANIFESTRESPONSE.fields_by_name['files'].message_type = _FILECHECKSUM
 _SOFTWAREUPGRADERESPONSE.fields_by_name['codes'].message_type = _FILECODE
-_EVENTFILTERREQUEST.fields_by_name['sources'].enum_type = _EVENTSOURCE
-_EVENTFILTERRESPONSE_EVENTFILTER.fields_by_name['source'].enum_type = _EVENTSOURCE
-_EVENTFILTERRESPONSE_EVENTFILTER.fields_by_name['action'].enum_type = _EVENTACTION
-_EVENTFILTERRESPONSE.fields_by_name['filters'].message_type = _EVENTFILTERRESPONSE_EVENTFILTER
-_EVENTPROXYREQUEST.fields_by_name['source'].enum_type = _EVENTSOURCE
-_EVENTCONFIGCHANGEDREQUEST.fields_by_name['source'].enum_type = _EVENTSOURCE
+_EVENTREQUEST.fields_by_name['body'].message_type = _EVENTREQUEST_EVENTBODYITEM
 
 class Message(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1003,23 +891,19 @@ class EventFilterRequest(message.Message):
 
 class EventFilterResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  
-  class EventFilter(message.Message):
-    __metaclass__ = reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _EVENTFILTERRESPONSE_EVENTFILTER
   DESCRIPTOR = _EVENTFILTERRESPONSE
+
+class EventRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class EventBodyItem(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _EVENTREQUEST_EVENTBODYITEM
+  DESCRIPTOR = _EVENTREQUEST
 
 class EventResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _EVENTRESPONSE
-
-class EventProxyRequest(message.Message):
-  __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _EVENTPROXYREQUEST
-
-class EventConfigChangedRequest(message.Message):
-  __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _EVENTCONFIGCHANGEDREQUEST
 
 
 _SAESERVICE = descriptor.ServiceDescriptor(
@@ -1092,20 +976,11 @@ _SAESERVICE = descriptor.ServiceDescriptor(
     options=None,
   ),
   descriptor.MethodDescriptor(
-    name='event_proxy',
-    full_name='sae.SAEService.event_proxy',
+    name='event',
+    full_name='sae.SAEService.event',
     index=7,
     containing_service=None,
-    input_type=_EVENTPROXYREQUEST,
-    output_type=_EVENTRESPONSE,
-    options=None,
-  ),
-  descriptor.MethodDescriptor(
-    name='event_config_changed',
-    full_name='sae.SAEService.event_config_changed',
-    index=8,
-    containing_service=None,
-    input_type=_EVENTCONFIGCHANGEDREQUEST,
+    input_type=_EVENTREQUEST,
     output_type=_EVENTRESPONSE,
     options=None,
   ),

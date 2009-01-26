@@ -1,7 +1,7 @@
 ##
 ## Service Activator
 ##
-import os,logging,pty,signal,time,re,sys,signal,Queue
+import os,logging,pty,signal,time,re,sys,signal,Queue,sets
 from errno import ECONNREFUSED
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,ScriptSocket
@@ -135,6 +135,7 @@ class Activator(Daemon,FSM):
         self.factory.activator=self
         self.children={}
         self.sae_stream=None
+        self.event_sources=sets.Set()
         self.trap_collector=None
         self.syslog_collector=None
         logging.info("Loading profile classes")
@@ -213,7 +214,7 @@ class Activator(Daemon,FSM):
     def start_trap_collector(self):
         logging.debug("Starting trap collector")
         from noc.sa.trapcollector import TrapCollector
-        self.trap_collector=TrapCollector(self.factory,self.config.get("activator","listen_traps"),162)
+        self.trap_collector=TrapCollector(self,self.config.get("activator","listen_traps"),162)
         
     def stop_trap_collector(self):
         if self.trap_collector:
@@ -226,7 +227,7 @@ class Activator(Daemon,FSM):
     def start_syslog_collector(self):
         logging.debug("Starting syslog collector")
         from noc.sa.syslogcollector import SyslogCollector
-        self.syslog_collector=SyslogCollector(self.factory,self.config.get("activator","listen_syslog"),514)
+        self.syslog_collector=SyslogCollector(self,self.config.get("activator","listen_syslog"),514)
         
     def stop_syslog_collector(self):
         if self.syslog_collector:
@@ -255,6 +256,9 @@ class Activator(Daemon,FSM):
     def request_call(self,f,*args,**kwargs):
         logging.debug("Requesting call: %s(*%s,**%s)"%(f,args,kwargs))
         self.script_call_queue.put((f,args,kwargs))
+    
+    def check_event_source(self,address):
+        return address in self.event_sources
         
     ##
     ## Main event loop
@@ -391,63 +395,25 @@ class Activator(Daemon,FSM):
             if error:
                 logging.error("get_event_filter error: %s"%error.text)
                 return
-            # source -> [(ip,mask,callback)]
-            filters={ES_SNMP_TRAP:[],ES_SYSLOG:[]}
-            for r in response.filters:
-                try:
-                    m=re.compile(r.mask)
-                except:
-                    logging.error("get_event_filter(): invalid REGEXP '%s'"%r.mask)
-                    continue
-                f=(r.ip,m,
-                    {
-                    EA_IGNORE        : None,
-                    EA_PROXY         : self.on_event_proxy,
-                    EA_CONFIG_CHANGED: self.on_event_config_changed,
-                    }[r.action]
-                )
-                filters[r.source].append(f)
-            if self.trap_collector:
-                self.trap_collector.set_event_filter(filters[ES_SNMP_TRAP])
-            if self.syslog_collector:
-                self.syslog_collector.set_event_filter(filters[ES_SYSLOG])
+            self.event_sources=sets.Set(response.sources)
             self.next_filter_update=time.time()+response.expire
-        s=[]
-        if self.trap_collector:
-            s.append(ES_SNMP_TRAP)
-        if self.syslog_collector:
-            s.append(ES_SYSLOG)
-        if not s:
-            return
         r=EventFilterRequest()
-        for es in s:
-            r.sources.append(es)
         self.sae_stream.proxy.event_filter(r,event_filter_callback)
     ##
     ##
     ##
-    def on_event_proxy(self,source,ip,message,body=None):
-        def on_event_proxy_callback(transaction,response=None,error=None):
+    def on_event(self,timestamp,ip,body):
+        def on_event_callback(transaction,response=None,error=None):
             if error:
                 logging.error("event_proxy failed: %s"%error)
-                return
-        r=EventProxyRequest()
-        r.source=source
+        r=EventRequest()
+        r.timestamp=timestamp
         r.ip=ip
-        r.message=message
-        if body:
-            r.body=body
-        self.sae_stream.proxy.event_proxy(r,on_event_proxy_callback)
-    ##
-    def on_event_config_changed(self,source,ip,message,body=None):
-        def on_event_config_changed(transaction,response=None,error=None):
-            if error:
-                logging.error("event_config_changed failed: %s"%error)
-                return
-        r=EventConfigChangedRequest()
-        r.source=source
-        r.ip=ip
-        self.sae_stream.proxy.event_config_changed(r,on_event_config_changed)
+        for k,v in body.items():
+            i=r.body.add()
+            i.key=str(k)
+            i.value=str(v)
+        self.sae_stream.proxy.event(r,on_event_callback)
     # Signal handlers
 
     # SIGUSR1 returns process info

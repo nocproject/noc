@@ -2,6 +2,7 @@
 ## Service Activation Engine
 ##
 from noc.sa.models import Activator, ManagedObject, TaskSchedule
+from noc.fm.models import Event,EventData,EventPriority,EventClass
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
 import logging,time,threading,datetime,os,sets,random,xmlrpclib,cPickle
 from noc.sa.protocols.sae_pb2 import *
@@ -107,36 +108,11 @@ class Service(SAEService):
         activator=self.get_controller_activator(controller)
         r=EventFilterResponse()
         r.expire=self.sae.config.getint("sae","refresh_event_filter")
-        sources=list(request.sources)
         for c in ManagedObject.objects.filter(activator=activator,trap_source_ip__isnull=False):
-            profile=c.profile
-            if ES_SNMP_TRAP in sources:
-                if profile.oid_trap_config_changed:
-                    f=r.filters.add()
-                    f.source=ES_SNMP_TRAP
-                    f.ip=c.trap_source_ip
-                    f.mask=profile.oid_trap_config_changed
-                    f.action=EA_CONFIG_CHANGED
-                f=r.filters.add()
-                f.source=ES_SNMP_TRAP
-                f.ip=c.trap_source_ip
-                f.mask=".*"
-                f.action=EA_PROXY
-            if ES_SYSLOG in sources:
-                if profile.syslog_config_changed:
-                    f=r.filters.add()
-                    f.source=ES_SYSLOG
-                    f.ip=c.trap_source_ip
-                    f.mask=profile.syslog_config_changed
-                    f.action=EA_CONFIG_CHANGED
-                f=r.filters.add()
-                f.source=ES_SYSLOG
-                f.ip=c.trap_source_ip
-                f.mask=".*"
-                f.action=EA_PROXY
+            r.sources.append(c.trap_source_ip)
         done(controller,response=r)
         
-    def event_proxy(self,controller,request,done):
+    def event(self,controller,request,done):
         if not controller.stream.is_authenticated:
             e=Error()
             e.code=ERR_AUTH_REQUIRED
@@ -145,36 +121,46 @@ class Service(SAEService):
             return
         activator=self.get_controller_activator(controller)
         try:
-            c=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
+            mo=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
         except ManagedObject.DoesNotExist:
             e=Error()
             e.code=ERR_UNKNOWN_EVENT_SOURCE
             e.text="Unknown event source '%s'"%request.ip
             done(controller,error=e)
             return
-        logging.info("event from: %s: %s"%(c.repo_path,repr(request.message)))
+        # Do all the magic here
+        e=Event(
+            timestamp=datetime.datetime.fromtimestamp(request.timestamp),
+            event_priority=EventPriority.objects.get(name="DEFAULT"),
+            event_class=EventClass.objects.get(name="DEFAULT"),
+            managed_object=mo
+            )
+        e.save()
+        for b in request.body:
+            d=EventData(event=e,key=b.key,value=b.value)
+            d.save()
         done(controller,EventResponse())
     
-    def event_config_changed(self,controller,request,done):
-        if not controller.stream.is_authenticated:
-            e=Error()
-            e.code=ERR_AUTH_REQUIRED
-            e.text="Authentication required"
-            done(controller,error=e)
-            return
-        activator=self.get_controller_activator(controller)
-        try:
-            c=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
-        except ManagedObject.DoesNotExist:
-            e=Error()
-            e.code=ERR_UNKNOWN_EVENT_SOURCE
-            e.text="Unknown event source '%s'"%request.ip
-            done(controller,error=e)
-            return
-        logging.info("%s configuration changed"%(c.repo_path))
-        c.next_pull=min(c.next_pull,datetime.datetime.now()+datetime.timedelta(minutes=10))
-        c.save()
-        done(controller,EventResponse())
+#    def event_config_changed(self,controller,request,done):
+#        if not controller.stream.is_authenticated:
+#            e=Error()
+#            e.code=ERR_AUTH_REQUIRED
+#            e.text="Authentication required"
+#            done(controller,error=e)
+#            return
+#        activator=self.get_controller_activator(controller)
+#        try:
+#            c=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
+#        except ManagedObject.DoesNotExist:
+#            e=Error()
+#            e.code=ERR_UNKNOWN_EVENT_SOURCE
+#            e.text="Unknown event source '%s'"%request.ip
+#            done(controller,error=e)
+#            return
+#        logging.info("%s configuration changed"%(c.repo_path))
+#        c.next_pull=min(c.next_pull,datetime.datetime.now()+datetime.timedelta(minutes=10))
+#        c.save()
+#        done(controller,EventResponse())
 
 ##
 ## AcceptedTCPSocket with RPC Protocol
