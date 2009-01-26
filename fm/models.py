@@ -1,11 +1,12 @@
 from django.db import models
+from noc.sa.models import ManagedObject
 import imp,subprocess,tempfile,os,datetime
 
 class MIB(models.Model):
     class Meta:
         verbose_name="MIB"
         verbose_name_plural="MIBs"
-        ordering=[("name")]
+        ordering=["name"]
     name=models.CharField("Name",max_length=64,unique=True)
     description=models.TextField("Description",blank=True,null=True)
     last_updated=models.DateTimeField("Last Updated") # Latest revision of MIB
@@ -73,15 +74,65 @@ class MIB(models.Model):
                 return name
             except MIBData.DoesNotExist:
                 rest.append(l_oid.pop())
-        return None
+        return oid
 
 class MIBData(models.Model):
     class Meta:
         verbose_name="MIB Data"
         verbose_name_plural="MIB Data"
-        ordering=[("oid")]
+        ordering=["oid"]
     mib = models.ForeignKey(MIB,verbose_name="MIB")
     oid = models.CharField("OID",max_length=128,unique=True)
     name= models.CharField("Name",max_length=128,unique=True)
     description= models.TextField("Description",blank=True,null=True)
+
+class EventPriority(models.Model):
+    class Meta:
+        verbose_name="Event Priority"
+        verbose_name_plural="Event Priorities"
+        ordering=["priority"]
+    name=models.CharField("Name",max_length=32,unique=True)
+    priority=models.IntegerField("Priority")
+    description=models.TextField("Description",blank=True,null=True)
+    def __unicode__(self):
+        return self.name
+
+class EventClass(models.Model):
+    class Meta:
+        verbose_name="Event Class"
+        verbose_name_plural="Event Classes"
+        ordering=["name"]
+    name=models.CharField("Name",max_length=32,unique=True)
+    description=models.TextField("Description",blank=True,null=True)
     
+    def __unicode__(self):
+        return self.name
+
+class Event(models.Model):
+    class Meta:
+        verbose_name="Event"
+        verbose_name_plural="Events"
+        ordering=[("id")]
+    timestamp=models.DateTimeField("Timestamp")
+    managed_object=models.ForeignKey(ManagedObject,verbose_name="Managed Object")
+    event_priority=models.ForeignKey(EventPriority,verbose_name="Priority")
+    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
+    parent=models.ForeignKey("Event",verbose_name="Parent",blank=True,null=True) # Set up by correlator
+    subject=models.CharField("Subject",max_length=256,null=True,blank=True)      # Not null when classified
+    body=models.TextField("Body",null=True,blank=True)
+    
+    def __unicode__(self):
+        return u"Event #%d: %s"%(self.id,str(subject))
+
+class EventData(models.Model):
+    class Meta:
+        verbose_name="Event Data"
+        verbose_name_plural="Event Data"
+        unique_together=[("event","key")]
+    event=models.ForeignKey(Event,verbose_name="Event")
+    key=models.CharField("Key",max_length=64)
+    value=models.TextField("Value",blank=True,null=True)
+    
+    def __unicode__(self):
+        return u"Event #%d: %s=%s"%(self.id,self.key,self.value)
+
