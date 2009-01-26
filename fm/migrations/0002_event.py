@@ -46,7 +46,8 @@ class Migration:
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('event', models.ForeignKey(Event,verbose_name=Event)),
             ('key', models.CharField("Key",max_length=64)),
-            ('value', models.TextField("Value",blank=True,null=True))
+            ('value', models.TextField("Value",blank=True,null=True)),
+            ('is_enriched', models.BooleanField("Is Enriched",blank=True,null=True,default=False))
         ))
         db.create_index('fm_eventdata', ['event_id','key'], unique=True, db_tablespace='')
         

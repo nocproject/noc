@@ -132,6 +132,7 @@ class EventData(models.Model):
     event=models.ForeignKey(Event,verbose_name="Event")
     key=models.CharField("Key",max_length=64)
     value=models.TextField("Value",blank=True,null=True)
+    is_enriched=models.BooleanField("Is Enriched",blank=True,null=True,default=False) # pair added by classifier
     
     def __unicode__(self):
         return u"Event #%d: %s=%s"%(self.id,self.key,self.value)
