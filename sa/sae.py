@@ -2,7 +2,7 @@
 ## Service Activation Engine
 ##
 from noc.sa.models import Activator, ManagedObject, TaskSchedule
-from noc.fm.models import Event,EventData,EventPriority,EventClass
+from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
 import logging,time,threading,datetime,os,sets,random,xmlrpclib,cPickle
 from noc.sa.protocols.sae_pb2 import *
@@ -133,6 +133,7 @@ class Service(SAEService):
             timestamp=datetime.datetime.fromtimestamp(request.timestamp),
             event_priority=EventPriority.objects.get(name="DEFAULT"),
             event_class=EventClass.objects.get(name="DEFAULT"),
+            event_category=EventCategory.objects.get(name="DEFAULT"),
             managed_object=mo
             )
         e.save()

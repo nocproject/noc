@@ -6,9 +6,9 @@
         <TH>#</TH>
         <TH>Object</TH>
         <TH>Time</TH>
+        <TH>Category</TH>
         <TH>Class</TH>
         <TH>Priority</TH>
-        <TH>Root</TH>
         <TH>Subject</TH>
     </TR>
 {% for e in events %}
@@ -16,9 +16,9 @@
         <TD><A HREF='{{e.id}}/'>{{e.id}}</A></TD>
         <TD>{{e.managed_object}}</TD>
         <TD>{{e.timestamp}}</TD>
+        <TD>{{e.event_category}}</TD>
         <TD>{{e.event_class}}</TD>
         <TD>{{e.event_priority}}</TD>
-        <TD>{% if e.root %}e.root.id{%else%}-{%endif%}</TD>
         <TD>{% if e.subject %}{{e.subject}}{%else%}-{%endif%}</TD>
     </TR>
 {% endfor %}

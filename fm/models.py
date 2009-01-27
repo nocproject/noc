@@ -173,5 +173,5 @@ class EventData(models.Model):
     value=models.TextField("Value",blank=True,null=True)
     is_enriched=models.BooleanField("Is Enriched",blank=True,null=True,default=False) # pair added by classifier
     
-    def __unicode__(self):
-        return u"Event #%d: %s=%s"%(self.id,self.key,self.value)
+    #def __unicode__(self):
+    #    return u"Event %s: %s=%s"%(self.event,self.key,self.value)
