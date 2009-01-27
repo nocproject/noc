@@ -85,7 +85,9 @@ class MIBData(models.Model):
     oid = models.CharField("OID",max_length=128,unique=True)
     name= models.CharField("Name",max_length=128,unique=True)
     description= models.TextField("Description",blank=True,null=True)
-
+##
+## Events
+##
 class EventPriority(models.Model):
     class Meta:
         verbose_name="Event Priority"
@@ -97,17 +99,53 @@ class EventPriority(models.Model):
     def __unicode__(self):
         return self.name
 
+class EventCategory(models.Model):
+    class Meta:
+        verbose_name="Event Category"
+        verbose_name_plural="Event Categories"
+        ordering=["name"]
+    name=models.CharField("Name",max_length=32,unique=True)
+    description=models.TextField("Description",blank=True,null=True)
+
+    def __unicode__(self):
+        return self.name
+##
+## Rules
+##
 class EventClass(models.Model):
     class Meta:
         verbose_name="Event Class"
         verbose_name_plural="Event Classes"
-        ordering=["name"]
-    name=models.CharField("Name",max_length=32,unique=True)
-    description=models.TextField("Description",blank=True,null=True)
+    name=models.CharField("Name",max_length=64)
+    category=models.ForeignKey(EventCategory,verbose_name="Event Category")
+    default_priority=models.ForeignKey(EventPriority,verbose_name="Default Priority")
+    variables=models.CharField("Variables",max_length=128)
+    subject_template=models.CharField("Subject Template",max_length=128)
+    body_template=models.TextField("Body Template")
+    last_modified=models.DateTimeField("last_modified",auto_now=True)
     
     def __unicode__(self):
         return self.name
 
+class EventClassificationRule(models.Model):
+    class Meta:
+        verbose_name="Event Classification Rule"
+        verbose_name_plural="Event Classification Rules"
+        ordering=["preference"]
+    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
+    name=models.CharField("Name",max_length=64)
+    preference=models.IntegerField("Preference",1000)
+    
+class EventClassificationRE(models.Model):
+    class Meta:
+        verbose_name="Event Classification RE"
+        verbose_name_plural="Event Classification REs"
+    rule=models.ForeignKey(EventClassificationRule,verbose_name="Event Classification Rule")
+    left_re=models.CharField("Left RE",max_length=256)
+    right_re=models.CharField("Right RE",max_length=256)
+##
+##
+##
 class Event(models.Model):
     class Meta:
         verbose_name="Event"
@@ -116,6 +154,7 @@ class Event(models.Model):
     timestamp=models.DateTimeField("Timestamp")
     managed_object=models.ForeignKey(ManagedObject,verbose_name="Managed Object")
     event_priority=models.ForeignKey(EventPriority,verbose_name="Priority")
+    event_category=models.ForeignKey(EventCategory,verbose_name="Event Category")
     event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
     parent=models.ForeignKey("Event",verbose_name="Parent",blank=True,null=True) # Set up by correlator
     subject=models.CharField("Subject",max_length=256,null=True,blank=True)      # Not null when classified
@@ -136,4 +175,3 @@ class EventData(models.Model):
     
     def __unicode__(self):
         return u"Event #%d: %s=%s"%(self.id,self.key,self.value)
-
