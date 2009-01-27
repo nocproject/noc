@@ -1,0 +1,15 @@
+{% extends "template/template.html" %}
+<{% block content %}
+<h1>Fault Management: Event #{{e.id}}</h1>
+<B>Subject:</B> {{e.subject}}<BR/>
+<PRE>
+    {{e.body}}
+</PRE>
+
+<TABLE BORDER='0'>
+    {% for ed in e.eventdata_set.all %}
+    <TR><TD>{%if ed.is_enriched%}[E]{%endif%}</TD><TD>{{ed.key}}</TD><TD>{{ed.value}}</TD></TR>
+    {% endfor %}
+</TABLE>
+
+{%endblock%}

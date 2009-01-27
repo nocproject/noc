@@ -122,7 +122,7 @@ class Event(models.Model):
     body=models.TextField("Body",null=True,blank=True)
     
     def __unicode__(self):
-        return u"Event #%d: %s"%(self.id,str(subject))
+        return u"Event #%d: %s"%(self.id,str(self.subject))
 
 class EventData(models.Model):
     class Meta:
