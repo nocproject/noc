@@ -1,6 +1,6 @@
 {% extends "template/template.html" %}
 <{% block content %}
-<h1>Fault Management: Event #{{e.id}}</h1>
+<h1><A HREF="/fm/">Fault Management:</A> Event #{{e.id}}</h1>
 <TABLE BORDER="0">
     <TR><TD>Managed Object</TD><TD>{{e.managed_object}}</TD></TR>
     <TR><TD>Class</TD><TD>{{e.event_class}}</TD></TR>
@@ -14,7 +14,7 @@
 
 <TABLE BORDER='0'>
     {% for ed in e.eventdata_set.all %}
-    <TR><TD>{%if ed.is_enriched%}[E]{%endif%}</TD><TD>{{ed.key}}</TD><TD>{{ed.value}}</TD></TR>
+    <TR><TD>{{ed.type}}</TD><TD>{{ed.key}}</TD><TD>{{ed.value}}</TD></TR>
     {% endfor %}
 </TABLE>
 

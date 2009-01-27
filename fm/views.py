@@ -24,7 +24,7 @@ def create_rule(request,event_id):
     event=get_object_or_404(Event,id=int(event_id))
     rule=EventClassificationRule(event_class=event.event_class,name="Rule #%d:%d"%(event.id,random.randint(0,100000)),preference=1000)
     rule.save()
-    for d in event.eventdata_set.filter(is_enriched=False):
+    for d in event.eventdata_set.filter(type__in=[">","R"]):
         r=EventClassificationRE(rule=rule,left_re=re_q(d.key),right_re=re_q(d.value))
         r.save()
     return HttpResponseRedirect("/admin/fm/eventclassificationrule/%d/"%rule.id)

@@ -82,9 +82,9 @@ class Migration:
             ('event', models.ForeignKey(Event,verbose_name=Event)),
             ('key', models.CharField("Key",max_length=64)),
             ('value', models.TextField("Value",blank=True,null=True)),
-            ('is_enriched', models.BooleanField("Is Enriched",blank=True,null=True,default=False))
+            ('type', models.CharField("Type",max_length=1,choices=[(">","Received"),("V","Variable"),("R","Resolved")],default=">"))
         ))
-        db.create_index('fm_eventdata', ['event_id','key'], unique=True, db_tablespace='')
+        db.create_index('fm_eventdata', ['event_id','key','type'], unique=True, db_tablespace='')
         
         db.send_create_signal('fm', ['EventPriority','EventCategory','EventClass','EventClassificationRule','EventClassificationRE',
             'Event','EventData'])

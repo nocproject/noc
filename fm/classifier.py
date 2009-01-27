@@ -1,8 +1,9 @@
 from noc.lib.daemon import Daemon
-from noc.fm.models import EventClassificationRule,Event,EventData,EventClass
+from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB
 import re,logging,time
 
 rx_template=re.compile(r"\{\{([^}]+)\}\}")
+rx_oid=re.compile(r"^(\d+\.){6,}")
 
 class Rule(object):
     def __init__(self,rule):
@@ -48,8 +49,35 @@ class Classifier(Daemon):
         return rx_template.sub(lambda m:str(vars.get(m.group(1),"{{UNKNOWN VAR}}")),template)
     
     def classify_event(self,event):
-        # Extract event properties
-        props=[(x.key,x.value) for x in event.eventdata_set.filter(is_enriched=False)]
+        def is_oid(s):
+            return rx_oid.search(s) is not None
+        def update_var(event,k,v,t):
+            try:
+                ed=EventData.objects.get(event=event,key=k,type=t)
+                ed.value=v
+            except EventData.DoesNotExist:
+                ed=EventData(event=event,key=k,value=v,type=t)
+            ed.save()
+        # Extract received event properties
+        props=[(x.key,x.value) for x in event.eventdata_set.filter(type=">")]
+        # Resolve additional event properties
+        source=None
+        for k,v in props:
+            if k=="source":
+                source=v
+                break
+        resolved={
+            "profile":event.managed_object.profile_name
+        }
+        # Resolve SNMP oids
+        if source=="SNMP Trap":
+            for k,v in props:
+                if is_oid(k):
+                    oid=MIB.get_name(k)
+                    if oid!=k:
+                        resolved[oid]=v
+        if resolved:
+            props+=resolved.items()
         # Find rule
         event_class=None
         for r in self.rules:
@@ -62,16 +90,19 @@ class Classifier(Daemon):
             vars={}
         # Do additional processing
         # Clean up enriched data
-        [d.delete() for d in  event.eventdata_set.filter(is_enriched=True)]
+        [d.delete() for d in  event.eventdata_set.filter(type__in=["R","V"])]
         # Enrich event by extracted variables
         for k,v in vars.items():
-            ed=EventData(event=event,key=k,value=v,is_enriched=True)
-            ed.save()
+            update_var(event,k,v,"V")
+        # Enrich event by resolved variables
+        for k,v in resolved.items():
+            update_var(event,k,v,"R")
         # Set up event class, category and priority
         event.event_class=event_class
         event.event_category=event_class.category
         event.event_priority=event_class.default_priority
         # Fill event subject and body
+        vars.update(resolved)
         event.subject=self.expand_template(event_class.subject_template,vars)
         event.body=self.expand_template(event_class.body_template,vars)
         event.save()

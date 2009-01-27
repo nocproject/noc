@@ -167,11 +167,8 @@ class EventData(models.Model):
     class Meta:
         verbose_name="Event Data"
         verbose_name_plural="Event Data"
-        unique_together=[("event","key")]
+        unique_together=[("event","key","type")]
     event=models.ForeignKey(Event,verbose_name="Event")
     key=models.CharField("Key",max_length=64)
     value=models.TextField("Value",blank=True,null=True)
-    is_enriched=models.BooleanField("Is Enriched",blank=True,null=True,default=False) # pair added by classifier
-    
-    #def __unicode__(self):
-    #    return u"Event %s: %s=%s"%(self.event,self.key,self.value)
+    type=models.CharField("Type",max_length=1,choices=[(">","Received"),("V","Variable"),("R","Resolved")],default=">")
