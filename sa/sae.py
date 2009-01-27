@@ -140,6 +140,9 @@ class Service(SAEService):
         for b in request.body:
             d=EventData(event=e,key=b.key,value=b.value)
             d.save()
+        # Additional fields
+        d=EventData(event=e,key="profile",value=mo.profile_name)
+        d.save()
         done(controller,EventResponse())
     
 #    def event_config_changed(self,controller,request,done):
