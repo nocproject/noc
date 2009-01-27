@@ -70,7 +70,7 @@ class Classifier(Daemon):
         # Set up event class, category and priority
         event.event_class=event_class
         event.event_category=event_class.category
-        event.priority=event_class.default_priority
+        event.event_priority=event_class.default_priority
         # Fill event subject and body
         event.subject=self.expand_template(event_class.subject_template,vars)
         event.body=self.expand_template(event_class.body_template,vars)
