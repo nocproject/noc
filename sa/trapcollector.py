@@ -6,6 +6,7 @@ from pysnmp.proto import api
 from noc.lib.nbsocket import ListenUDPSocket
 from noc.sa.eventcollector import EventCollector
 import time
+
 ##
 ## Body has following structure:
 ## {
@@ -35,19 +36,14 @@ class TrapCollector(ListenUDPSocket,EventCollector):
             req_msg,whole_msg=decoder.decode(whole_msg,asn1Spec=p_mod.Message())
             req_pdu = p_mod.apiMessage.getPDU(req_msg)
             if req_pdu.isSameTypeWith(p_mod.TrapPDU()):
+                body={"source":"SNMP Trap"}
                 if msg_version==api.protoVersion1:
-                    #oid=oid_to_str(p_mod.apiTrapPDU.getEnterprise(req_pdu))
+                    oid=oid_to_str(p_mod.apiTrapPDU.getEnterprise(req_pdu))
+                    body["1.3.6.1.6.3.1.1.4.1.0"]=oid # snmpTrapOID.0
                     var_binds=p_mod.apiTrapPDU.getVarBindList(req_pdu)
                 else:
-                    #oid=oid_to_str(p_mod.apiPDU.getEnterprise(req_pdu))
                     var_binds=p_mod.apiPDU.getVarBindList(req_pdu)
-                    #oid="1"
-                #self.debug("Trap from %s (%s)"%(address,oid))
                 ts=int(time.time())
-                body={
-                    "source" : "SNMP Trap",
-                    #"oid":oid,
-                }
                 for o,v in var_binds:
                     body[oid_to_str(o)]=v.prettyPrint().split("\n")[3].strip().split("=")[1]
                 print body
