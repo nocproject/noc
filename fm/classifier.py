@@ -75,6 +75,8 @@ class Classifier(Daemon):
                 if is_oid(k):
                     oid=MIB.get_name(k)
                     if oid!=k:
+                        if is_oid(v):
+                            v=MIB.get_name(v)
                         resolved[oid]=v
         if resolved:
             props+=resolved.items()
