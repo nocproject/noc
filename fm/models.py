@@ -70,7 +70,7 @@ class MIB(models.Model):
                 o=MIBData.objects.get(oid=c_oid)
                 name=o.name
                 if rest:
-                    name+="."+".".join(rest)
+                    name+="."+".".join(reversed(rest))
                 return name
             except MIBData.DoesNotExist:
                 rest.append(l_oid.pop())
