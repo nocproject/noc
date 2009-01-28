@@ -2,10 +2,20 @@ from django.shortcuts import get_object_or_404
 from noc.lib.render import render
 from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE
 from django.http import HttpResponseRedirect,HttpResponseForbidden
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
 import random
 
 def index(request):
-    events=Event.objects.order_by("-id")
+    event_list=Event.objects.order_by("-id")
+    paginator=Paginator(event_list,100)
+    try:
+        page=int(request.GET.get("page","1"))
+    except ValueError:
+        page=1
+    try:
+        events=paginator.page(page)
+    except (EmptyPage,InvalidPage):
+        events=paginator.page(paginator.num_pages)
     return render(request,"fm/index.html",{"events":events})
 
 def event(request,event_id):

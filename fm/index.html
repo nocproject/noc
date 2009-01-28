@@ -1,4 +1,7 @@
 {% extends "template/template.html" %}
+{% block header %}
+    <meta http-equiv="refresh" content="60" />
+{% endblock %}
 <{% block content %}
 <h1>Fault Management</h1>
 <TABLE BORDER='0'>
@@ -11,7 +14,7 @@
         <TH>Priority</TH>
         <TH>Subject</TH>
     </TR>
-{% for e in events %}
+{% for e in events.object_list %}
     <TR>
         <TD><A HREF='{{e.id}}/'>{{e.id}}</A></TD>
         <TD>{{e.managed_object}}</TD>
@@ -23,4 +26,19 @@
     </TR>
 {% endfor %}
 </TABLE>
+<DIV class="pagination">
+    <span class="step-links">
+        {% if events.has_previous %}
+            <a href="?page={{events.previous_page_number}}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{events.number}} of {{events.paginator.num_pages}}.
+        </span>
+
+        {% if events.has_next %}
+            <a href="?page={{events.next_page_number}}">next</a>
+        {% endif %}
+    </span>
+</DIV>
 {%endblock%}
