@@ -214,7 +214,7 @@ class Activator(Daemon,FSM):
     def start_trap_collector(self):
         logging.debug("Starting trap collector")
         from noc.sa.trapcollector import TrapCollector
-        self.trap_collector=TrapCollector(self,self.config.get("activator","listen_traps"),162)
+        self.trap_collector=TrapCollector(self,self.resolve_address(self.config.get("activator","listen_traps")),162)
         
     def stop_trap_collector(self):
         if self.trap_collector:
@@ -227,7 +227,7 @@ class Activator(Daemon,FSM):
     def start_syslog_collector(self):
         logging.debug("Starting syslog collector")
         from noc.sa.syslogcollector import SyslogCollector
-        self.syslog_collector=SyslogCollector(self,self.config.get("activator","listen_syslog"),514)
+        self.syslog_collector=SyslogCollector(self,self.resolve_address(self.config.get("activator","listen_syslog")),514)
         
     def stop_syslog_collector(self):
         if self.syslog_collector:
