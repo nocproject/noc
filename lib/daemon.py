@@ -3,6 +3,14 @@
 ##
 import ConfigParser,sys,logging,os,signal,optparse,datetime,traceback
 from noc.lib.debug import error_report,frame_report
+from noc.lib.validators import is_ipv4
+
+# Load netifaces to resolve interface addresses when possible
+try:
+    import netifaces
+    USE_NETIFACES=True
+except ImportError:
+    USE_NETIFACES=False
 
 class Daemon(object):
     daemon_name="daemon"
@@ -111,6 +119,22 @@ class Daemon(object):
         os.dup2(e.fileno(), sys.stderr.fileno())
         sys.stdout=o
         sys.stderr=e
+    ##
+    ## Returns IP address for IP addresses or interface names
+    ##
+    def resolve_address(self,s):
+        if is_ipv4(s):
+            return s
+        if USE_NETIFACES:
+            try:
+                a=netifaces.ifaddresses(s)
+            except ValueError:
+                raise Exception("Invalid interface '%s'"%s)
+            try:
+                return a[2][0]["addr"]
+            except (IndexError,KeyError):
+                raise Exception("No ip address for interface: '%s' found"%s)
+        raise Exception("Cannot resolve address '%s'"%s)
     ##
     ## Add additional options to setup_opt_parser
     ##
