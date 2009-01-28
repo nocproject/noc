@@ -132,7 +132,7 @@ class EventClass(models.Model):
     name=models.CharField("Name",max_length=64)
     category=models.ForeignKey(EventCategory,verbose_name="Event Category")
     default_priority=models.ForeignKey(EventPriority,verbose_name="Default Priority")
-    variables=models.CharField("Variables",max_length=128)
+    variables=models.CharField("Variables",max_length=128,blank=True,null=True)
     subject_template=models.CharField("Subject Template",max_length=128)
     body_template=models.TextField("Body Template")
     last_modified=models.DateTimeField("last_modified",auto_now=True)
