@@ -96,8 +96,21 @@ class EventPriority(models.Model):
     name=models.CharField("Name",max_length=32,unique=True)
     priority=models.IntegerField("Priority")
     description=models.TextField("Description",blank=True,null=True)
+    font_color=models.CharField("Font Color",max_length=32,blank=True,null=True)
+    background_color=models.CharField("Background Color",max_length=32,blank=True,null=True)
     def __unicode__(self):
         return self.name
+    def _css_style_name(self):
+        return "CSS_%s"%self.name.replace(" ","")
+    css_style_name=property(_css_style_name)
+    def _css_style(self):
+        s=[]
+        if self.font_color:
+            s+=["    color: %s;"%self.font_color]
+        if self.background_color:
+            s+=["    background: %s;"%self.background_color]
+        return ".%s {\n%s\n}"%(self.css_style_name,"\n".join(s))
+    css_style=property(_css_style)
 
 class EventCategory(models.Model):
     class Meta:

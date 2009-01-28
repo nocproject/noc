@@ -1,6 +1,7 @@
 {% extends "template/template.html" %}
 {% block header %}
     <meta http-equiv="refresh" content="60" />
+    <link rel="stylesheet" type="text/css" href="/fm/event_list_css/" />
 {% endblock %}
 <{% block content %}
 <h1>Fault Management</h1>
@@ -15,7 +16,7 @@
         <TH>Subject</TH>
     </TR>
 {% for e in events.object_list %}
-    <TR>
+    <TR CLASS="{{e.event_priority.css_style_name}}">
         <TD><A HREF='{{e.id}}/'>{{e.id}}</A></TD>
         <TD>{{e.managed_object}}</TD>
         <TD>{{e.timestamp}}</TD>

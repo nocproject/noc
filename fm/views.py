@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from noc.lib.render import render
-from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE
-from django.http import HttpResponseRedirect,HttpResponseForbidden
+from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority
+from django.http import HttpResponseRedirect,HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 import random
 
@@ -17,6 +17,10 @@ def index(request):
     except (EmptyPage,InvalidPage):
         events=paginator.page(paginator.num_pages)
     return render(request,"fm/index.html",{"events":events})
+
+def event_list_css(request):
+    text="\n\n".join([p.css_style for p in EventPriority.objects.all()])
+    return HttpResponse(text,mimetype="text/css")
 
 def event(request,event_id):
     event=get_object_or_404(Event,id=int(event_id))
