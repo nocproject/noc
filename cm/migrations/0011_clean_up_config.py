@@ -17,6 +17,7 @@ class Migration:
         for table in ["cm_config","cm_rpsl","cm_dns","cm_prefixlist"]:
             db.delete_column(table,"location_id")
             db.drop_table("%s_categories"%table)
+        db.drop_table("cm_object_categories")
         db.drop_table("cm_objectaccess")
         db.execute("DELETE FROM cm_objectcategory")
         db.drop_table("cm_objectcategory")
