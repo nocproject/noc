@@ -45,6 +45,6 @@ class TrapCollector(ListenUDPSocket,EventCollector):
                     var_binds=p_mod.apiPDU.getVarBindList(req_pdu)
                 ts=int(time.time())
                 for o,v in var_binds:
-                    body[oid_to_str(o)]=v.prettyPrint().split("\n")[3].strip().split("=")[1]
+                    body[oid_to_str(o)]=[x.strip() for x in v.prettyPrint().split("\n") if x.strip()][-1].split("=")[1]
                 print body
                 self.process_event(ts,address,body)
