@@ -24,6 +24,25 @@ class TrapCollector(ListenUDPSocket,EventCollector):
     def on_read(self,whole_msg,address,port):
         def oid_to_str(o):
             return ".".join([str(x) for x in o])
+        def extract(val):
+            def unchain(val): 
+                c = []
+                for i in range(len(val._componentValues)):
+                    k=val._componentValues[i]
+                    if k is not None:
+                        if hasattr(k,"getComponentType"):
+                            c.append(k.getComponentType().getNameByPosition(i))
+                            c.extend(unchain(k))
+                        elif hasattr(k,"_value"):
+                            c.append(k._value)
+                return c
+            v=unchain(val)
+            if len(v)==0:
+                return ""
+            v=v[-1]
+            if type(v)==tuple:
+                return oid_to_str(v)
+            return v
         if not self.check_source_address(address):
             return
         while whole_msg:
@@ -45,6 +64,5 @@ class TrapCollector(ListenUDPSocket,EventCollector):
                     var_binds=p_mod.apiPDU.getVarBindList(req_pdu)
                 ts=int(time.time())
                 for o,v in var_binds:
-                    body[oid_to_str(o)]=[x.strip() for x in v.prettyPrint().split("\n") if x.strip()][-1].split("=")[1]
-                print body
+                    body[oid_to_str(o._value)]=extract(v)
                 self.process_event(ts,address,body)
