@@ -316,7 +316,7 @@ class CLI(StreamFSM):
             (self.profile.pattern_username,"USERNAME"),
             (self.profile.pattern_password,"PASSWORD"),
         ]
-        if self.profile.pattern_unpriveleged_prompt and self.access_profile.super_password:
+        if self.profile.pattern_unpriveleged_prompt:
             p+=[
                 (self.profile.pattern_unpriveleged_prompt,"UNPRIVELEGED_PROMPT"),
             ]
@@ -334,7 +334,7 @@ class CLI(StreamFSM):
         
     def on_PASSWORD_enter(self):
         p=[(self.profile.pattern_prompt, "PROMPT")]
-        if self.profile.pattern_unpriveleged_prompt and self.access_profile.super_password:
+        if self.profile.pattern_unpriveleged_prompt:
             p+=[
                 (self.profile.pattern_unpriveleged_prompt,"UNPRIVELEGED_PROMPT"),
             ]
@@ -357,7 +357,10 @@ class CLI(StreamFSM):
             (self.profile.pattern_prompt, "PROMPT"),
             (self.profile.pattern_password, "PASSWORD")
         ])
-        self.submit(self.access_profile.super_password)
+        sp=self.access_profile.super_password
+        if not sp:
+            sp=""
+        self.submit(sp)
         
     def on_PROMPT_enter(self):
         if not self.is_ready:
