@@ -101,7 +101,7 @@ class Command(BaseCommand):
         else:
             r.access_profile.password   = url.password
         r.access_profile.path           = url.path
-        if "snmp_ro" in options:
+        if options["snmp_ro"]:
             r.access_profile.snmp_ro=options["snmp_ro"]
         # Parse script args
         if len(args)==3:
