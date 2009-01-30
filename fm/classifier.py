@@ -28,6 +28,10 @@ class Rule(object):
             if not found:
                 return None
         return vars
+    
+    def _drop_event(self):
+        return self.rule.drop_event
+    drop_event=property(_drop_event)
 
 class Classifier(Daemon):
     daemon_name="noc-classifier"
@@ -85,6 +89,12 @@ class Classifier(Daemon):
         for r in self.rules:
             vars=r.match(props)
             if vars is not None:
+                # Silently drop event when rule is drop rule
+                if r.drop_event:
+                    logging.debug("Drop event %d"%event.id)
+                    [ed.delete() for ed in event.eventdata_set.all()]
+                    event.delete()
+                    return
                 event_class=r.rule.event_class
                 break
         if event_class is None:

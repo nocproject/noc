@@ -27,9 +27,9 @@ class EventClassificationREAdmin(admin.TabularInline):
     model=EventClassificationRE
         
 class EventClassificationRuleAdmin(admin.ModelAdmin):
-    list_display=["event_class","name","preference"]
+    list_display=["event_class","name","preference","drop_event"]
     search_fields=["name"]
-    list_filter=["event_class"]
+    list_filter=["event_class","drop_event"]
     inlines=[EventClassificationREAdmin]
 
 admin.site.register(MIB, MIBAdmin)

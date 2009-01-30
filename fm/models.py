@@ -148,6 +148,7 @@ class EventClassificationRule(models.Model):
     event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
     name=models.CharField("Name",max_length=64)
     preference=models.IntegerField("Preference",1000)
+    drop_event=models.BooleanField("Drop Event",default=False)
     
 class EventClassificationRE(models.Model):
     class Meta:
