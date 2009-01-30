@@ -1,7 +1,8 @@
 ##
 ## Event Collector Interface
 ##
-import logging
+import logging,time
+
 class EventCollector(object):
     name="EventCollector"
     def __init__(self,activator):
@@ -19,6 +20,16 @@ class EventCollector(object):
     def check_source_address(self,ip):
         if not self.activator.check_event_source(ip):
             self.error("Invalid event source %s"%ip)
+            # Generate "Invalid event source" Event
+            body={
+                "source"   : "system",
+                "component": "noc-activator",
+                "activator": self.activator.activator_name,
+                "collector": self.name,
+                "type"     : "Invalid Event Source",
+                "ip"       : ip
+            }
+            self.process_event(int(time.time()),"",body)
             return False
         return True
         

@@ -121,7 +121,11 @@ class Service(SAEService):
             return
         activator=self.get_controller_activator(controller)
         try:
-            mo=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
+            if request.ip=="":
+                # Event belongs to ROOT object
+                mo=ManagedObject.objects.get(name="ROOT")
+            else:
+                mo=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
         except ManagedObject.DoesNotExist:
             e=Error()
             e.code=ERR_UNKNOWN_EVENT_SOURCE

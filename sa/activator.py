@@ -128,7 +128,8 @@ class Activator(Daemon,FSM):
     }
     def __init__(self):
         Daemon.__init__(self)
-        logging.info("Running activator '%s'"%self.config.get("activator","name"))
+        self.activator_name=self.config.get("activator","name")
+        logging.info("Running activator '%s'"%self.activator_name)
         self.service=Service()
         self.service.activator=self
         self.factory=SocketFactory(tick_callback=self.tick)
@@ -311,7 +312,7 @@ class Activator(Daemon,FSM):
             self.event("register")
         logging.info("Registering as '%s'"%self.config.get("activator","name"))
         r=RegisterRequest()
-        r.name=self.config.get("activator","name")
+        r.name=self.activator_name
         self.sae_stream.proxy.register(r,register_callback)
     ##
     ## Auth
