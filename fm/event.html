@@ -6,11 +6,10 @@
     <TR><TD>Class</TD><TD>{{e.event_class}}</TD></TR>
     <TR><TD>Priority</TD><TD>{{e.event_priority}}</TD></TR>
     <TR><TD>Category</TD><TD>{{e.event_category}}</TD></TR>
+    <TR><TD>Time:</TD><TD>{{e.timestamp}}</TD</TR>
 </TABLE>
 <B>Subject:</B> {{e.subject}}<BR/>
-<PRE STYLE="border: 1px solid">
-    {{e.body}}
-</PRE>
+<PRE STYLE="border: 1px solid #CCCCCC">{{e.body}}</PRE>
 
 <TABLE BORDER='0'>
     {% for ed in e.eventdata_set.all %}
