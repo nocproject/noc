@@ -2,21 +2,32 @@
 <{% block content %}
 <h1><A HREF="/fm/">Fault Management:</A> Event #{{e.id}}</h1>
 <TABLE BORDER="0">
-    <TR><TD>Managed Object</TD><TD>{{e.managed_object}}</TD></TR>
-    <TR><TD>Class</TD><TD>{{e.event_class}}</TD></TR>
-    <TR><TD>Priority</TD><TD>{{e.event_priority}}</TD></TR>
-    <TR><TD>Category</TD><TD>{{e.event_category}}</TD></TR>
-    <TR><TD>Time:</TD><TD>{{e.timestamp}}</TD</TR>
+    <TR><TD><B>Managed Object:</B></TD><TD>{{e.managed_object}}</TD></TR>
+    <TR><TD><B>Class:</B></TD><TD>{{e.event_class}}</TD></TR>
+    <TR><TD><B>Priority:</B></TD><TD>{{e.event_priority}}</TD></TR>
+    <TR><TD><B>Category:</B></TD><TD>{{e.event_category}}</TD></TR>
+    <TR><TD><B>Time:</B></TD><TD>{{e.timestamp}}</TD</TR>
 </TABLE>
+<BR/>
 <B>Subject:</B> {{e.subject}}<BR/>
 <PRE STYLE="border: 1px solid #CCCCCC">{{e.body}}</PRE>
 
+<B>Variables:</B>
 <TABLE BORDER='0'>
     {% for ed in e.eventdata_set.all %}
     <TR><TD>{{ed.type}}</TD><TD>{{ed.key}}</TD><TD>{{ed.value}}</TD></TR>
     {% endfor %}
 </TABLE>
-
+<BR/>
+{%if e.repeats %}
+<B>Previous occurences:</B>
+<TABLE BORDER="0">
+{% for r in e.eventrepeat_set.all %}
+<TR><TD>{{r.timestamp}}</TD></TR>
+{% endfor %}
+</TABLE>
+{% endif %}
+<BR/>
 <A ONCLICK="document.location='/fm/{{e.id}}/reclassify/'">Re-Classify</A>
 <A ONCLICK="document.location='/fm/{{e.id}}/create_rule/'">Create Rule</A>
 

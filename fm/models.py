@@ -132,13 +132,29 @@ class EventClass(models.Model):
     name=models.CharField("Name",max_length=64)
     category=models.ForeignKey(EventCategory,verbose_name="Event Category")
     default_priority=models.ForeignKey(EventPriority,verbose_name="Default Priority")
-    variables=models.CharField("Variables",max_length=128,blank=True,null=True)
+    #variables=models.CharField("Variables",max_length=128,blank=True,null=True)
     subject_template=models.CharField("Subject Template",max_length=128)
     body_template=models.TextField("Body Template")
     last_modified=models.DateTimeField("last_modified",auto_now=True)
+    repeat_suppression=models.BooleanField("Repeat Suppression",default=False)
+    repeat_suppression_interval=models.IntegerField("Repeat Suppression interval (secs)",default=3600)
     
     def __unicode__(self):
         return self.name
+##
+##
+##
+class EventClassVar(models.Model):
+    class Meta:
+        verbose_name="Event Class Variable"
+        verbose_name_plural="Event Class Variables"
+        unique_together=[("event_class","name")]
+    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
+    name=models.CharField("Name",max_length=64)
+    required=models.BooleanField("Required",default=True)
+    repeat_suppression=models.BooleanField("Repeat Suppression",default=False) # Used for repeat supression
+    def __unicode__(self):
+        return "%s: %s"%(self.event_class,self.name)
 
 class EventClassificationRule(models.Model):
     class Meta:
@@ -176,6 +192,24 @@ class Event(models.Model):
     
     def __unicode__(self):
         return u"Event #%d: %s"%(self.id,str(self.subject))
+    
+    def _repeats(self):
+        return self.eventrepeat_set.count()
+    repeats=property(_repeats)
+    
+    def _data(self):
+        r={}
+        for d in self.eventdata_set.all():
+            r[d.key]=d.value
+        return r
+    data=property(_data)
+    
+    def match_data(self,vars):
+        data=self.data
+        for k,v in vars.items():
+            if k not in data or data[k]!=v:
+                return False
+        return True
 
 class EventData(models.Model):
     class Meta:
@@ -186,3 +220,10 @@ class EventData(models.Model):
     key=models.CharField("Key",max_length=64)
     value=models.TextField("Value",blank=True,null=True)
     type=models.CharField("Type",max_length=1,choices=[(">","Received"),("V","Variable"),("R","Resolved")],default=">")
+
+class EventRepeat(models.Model):
+    class Meta:
+        verbose_name="Event Repeat"
+        verbose_name_plural="Event Repeats"
+    event=models.ForeignKey(Event,verbose_name="Event")
+    timestamp=models.DateTimeField("Timestamp")

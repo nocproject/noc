@@ -18,14 +18,22 @@ class EventCategoryAdmin(admin.ModelAdmin):
     list_display=["name"]
     search_fields=["name"]
 
+#class EventClassVarAdmin(admin.StackedInline):
+#    extra=1
+#    model=EventClassVar
+    
 class EventClassAdmin(admin.ModelAdmin):
-    list_display=["name","category","default_priority","last_modified"]
+    list_display=["name","category","default_priority","repeat_suppression","repeat_suppression_interval","last_modified"]
     search_fields=["name"]
+#    inlines=[EventClassVarAdmin]
+class EventClassVarAdmin(admin.ModelAdmin):
+    list_display=["event_class","name","required","repeat_suppression"]
+    list_filter=["event_class"]
 
 class EventClassificationREAdmin(admin.TabularInline):
     extra=3
     model=EventClassificationRE
-        
+
 class EventClassificationRuleAdmin(admin.ModelAdmin):
     list_display=["event_class","name","preference","drop_event"]
     search_fields=["name"]
@@ -37,4 +45,5 @@ admin.site.register(MIBData, MIBDataAdmin)
 admin.site.register(EventPriority, EventPriorityAdmin)
 admin.site.register(EventCategory, EventCategoryAdmin)
 admin.site.register(EventClass, EventClassAdmin)
+admin.site.register(EventClassVar, EventClassVarAdmin)
 admin.site.register(EventClassificationRule, EventClassificationRuleAdmin)

@@ -1,6 +1,7 @@
 from noc.lib.daemon import Daemon
-from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB
-import re,logging,time
+from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat
+from django.db import transaction
+import re,logging,time,datetime
 
 rx_template=re.compile(r"\{\{([^}]+)\}\}")
 rx_oid=re.compile(r"^(\d+\.){6,}")
@@ -96,6 +97,31 @@ class Classifier(Daemon):
                     event.delete()
                     return
                 event_class=r.rule.event_class
+                # Check the event is repeatition of existing one
+                if event_class.repeat_suppression and event_class.repeat_suppression_interval>0:
+                    # Delete event as repeatition of the known event
+                    # Build keys
+                    kv={}
+                    for name in [v.name for v in EventClassVar.objects.filter(event_class=event_class,repeat_suppression=True)]:
+                        if name in vars:
+                            kv[name]=vars[name]
+                        else:
+                            kv=None
+                            break
+                    if kv is not None:
+                        r=[e for e in Event.objects.filter(event_class=event_class,
+                            timestamp__gte=event.timestamp-datetime.timedelta(seconds=event_class.repeat_suppression_interval)).order_by("-timestamp")
+                            if e.match_data(kv)]
+                        if len(r)>0:
+                            pe=r[0]
+                            logging.debug("Event #%d repeats event #%d"%(event.id,pe.id))
+                            er=EventRepeat(event=pe,timestamp=pe.timestamp)
+                            er.save()
+                            pe.timestamp=event.timestamp
+                            pe.save()
+                            [ed.delete() for ed in event.eventdata_set.all()]
+                            event.delete()
+                            return
                 break
         if event_class is None:
             event_class=EventClass.objects.get(name="DEFAULT")
@@ -120,12 +146,21 @@ class Classifier(Daemon):
         event.save()
         
     def run(self):
+        INTERVAL=10
+        last_sleep=time.time()
+        transaction.enter_transaction_management()
         while True:
             n=0
-            for e in Event.objects.filter(subject__isnull=True):
+            for e in Event.objects.filter(subject__isnull=True).order_by("id"):
                 self.classify_event(e)
+                transaction.commit()
                 n+=1
             if n:
                 logging.info("%d events classified"%n)
-            time.sleep(10)
+            t=time.time()
+            if t-last_sleep<=INTERVAL:
+                time.sleep(INTERVAL-t+last_sleep)
+            last_sleep=t
+        transaction.leave_transaction_management()
+        
 

@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 import random
 
 def index(request):
-    event_list=Event.objects.order_by("-id")
+    event_list=Event.objects.order_by("-timestamp")
     paginator=Paginator(event_list,100)
     try:
         page=int(request.GET.get("page","1"))
