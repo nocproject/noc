@@ -2,6 +2,7 @@
 ---
  * fm
    * Optional repeated events suppression
+   * New Reports: fm.event_class_events
 
 0.1RC2 (29-JAN-2008)
 --------------------
