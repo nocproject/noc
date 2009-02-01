@@ -9,6 +9,7 @@ rx_oid=re.compile(r"^(\d+\.){6,}")
 class Rule(object):
     def __init__(self,rule):
         self.rule=rule
+        self.name=rule.name
         self.re=[(re.compile(x.left_re),re.compile(x.right_re)) for x in rule.eventclassificationre_set.all()]
         
     def match(self,o):
@@ -89,43 +90,50 @@ class Classifier(Daemon):
         event_class=None
         for r in self.rules:
             vars=r.match(props)
-            if vars is not None:
-                # Silently drop event when rule is drop rule
-                if r.drop_event:
-                    logging.debug("Drop event %d"%event.id)
-                    [ed.delete() for ed in event.eventdata_set.all()]
-                    event.delete()
-                    return
-                event_class=r.rule.event_class
-                # Check the event is repeatition of existing one
-                if event_class.repeat_suppression and event_class.repeat_suppression_interval>0:
-                    # Delete event as repeatition of the known event
-                    # Build keys
-                    kv={}
-                    for name in [v.name for v in EventClassVar.objects.filter(event_class=event_class,repeat_suppression=True)]:
-                        if name in vars:
-                            kv[name]=vars[name]
-                        else:
-                            kv=None
-                            break
-                    if kv is not None:
-                        r=[e for e in Event.objects.filter(event_class=event_class,
-                            timestamp__gte=event.timestamp-datetime.timedelta(seconds=event_class.repeat_suppression_interval)).order_by("-timestamp")
-                            if e.match_data(kv)]
-                        if len(r)>0:
-                            pe=r[0]
-                            logging.debug("Event #%d repeats event #%d"%(event.id,pe.id))
-                            er=EventRepeat(event=pe,timestamp=pe.timestamp)
-                            er.save()
-                            pe.timestamp=event.timestamp
-                            pe.save()
-                            [ed.delete() for ed in event.eventdata_set.all()]
-                            event.delete()
-                            return
-                break
+            if vars is None:
+                continue
+            # Silently drop event when rule is drop rule
+            if r.drop_event:
+                logging.debug("Drop event %d"%event.id)
+                [ed.delete() for ed in event.eventdata_set.all()]
+                event.delete()
+                return
+            event_class=r.rule.event_class
+            logging.debug("Matching class for event %d found: %s (Rule: %s)"%(event.id,event_class.name,r.name))
+            # Check the event is repeatition of existing one
+            if event_class.repeat_suppression and event_class.repeat_suppression_interval>0:
+                # Delete event as repeatition of the known event
+                # Build keys
+                kv={}
+                for name in [v.name for v in EventClassVar.objects.filter(event_class=event_class,repeat_suppression=True)]:
+                    if name in vars:
+                        kv[name]=vars[name]
+                    else:
+                        kv=None
+                        break
+                if kv is not None:
+                    r=[e for e in Event.objects.filter(
+                        event_class=event_class,
+                        managed_object=event.managed_object,
+                        timestamp__gte=event.timestamp-datetime.timedelta(seconds=event_class.repeat_suppression_interval),
+                        timestamp__lte=event.timestamp
+                        ).exclude(id=event.id).order_by("-timestamp")
+                        if e.match_data(kv)]
+                    if len(r)>0:
+                        pe=r[0]
+                        logging.debug("Event #%d repeats event #%d"%(event.id,pe.id))
+                        er=EventRepeat(event=pe,timestamp=pe.timestamp)
+                        er.save()
+                        pe.timestamp=event.timestamp
+                        pe.save()
+                        [ed.delete() for ed in event.eventdata_set.all()]
+                        event.delete()
+                        return
+            break
         if event_class is None:
             event_class=EventClass.objects.get(name="DEFAULT")
             vars={}
+            logging.debug("No rule found for event %d. Falling back to DEFAULT"%event.id)
         # Do additional processing
         # Clean up enriched data
         [d.delete() for d in  event.eventdata_set.filter(type__in=["R","V"])]
