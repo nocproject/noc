@@ -124,6 +124,9 @@ class ListenUDPSocket(Socket):
     
     def on_read(self,data,address,port):
         pass
+    
+    def can_write(self):
+        return False
 
 ##
 ## Base class for TCP sockets. Should not be used directly.
