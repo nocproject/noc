@@ -233,7 +233,7 @@ class Config(Object):
     def change_notify_list(self,immediately=False,delayed=False):
         emails=sets.Set()
         for n in ObjectNotify.objects.filter(Q(type=self.repo_name)\
-                    &(Q(administrative_domain__isnull=True)|Q(administrative_domain=self.administrative_domain))\
+                    &(Q(administrative_domain__isnull=True)|Q(administrative_domain=self.managed_object.administrative_domain))\
                     &(Q(group__isnull=True)|Q(group__in=self.groups.all))):
             if immediately and not n.notify_immediately:
                 continue
