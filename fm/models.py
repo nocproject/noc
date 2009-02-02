@@ -217,7 +217,7 @@ class EventData(models.Model):
         verbose_name_plural="Event Data"
         unique_together=[("event","key","type")]
     event=models.ForeignKey(Event,verbose_name="Event")
-    key=models.CharField("Key",max_length=64)
+    key=models.CharField("Key",max_length=256)
     value=models.TextField("Value",blank=True,null=True)
     type=models.CharField("Type",max_length=1,choices=[(">","Received"),("V","Variable"),("R","Resolved")],default=">")
 
