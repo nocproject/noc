@@ -42,6 +42,11 @@ class TrapCollector(ListenUDPSocket,EventCollector):
             v=v[-1]
             if type(v)==tuple:
                 return oid_to_str(v)
+            # Try to detect and handle binary data
+            try:
+                u=unicode(v,'ascii')
+            except UnicodeDecodeError:
+                v=".".join(["%d"%ord(c) for c in list(str(v))])
             return v
         if not self.check_source_address(address):
             return
