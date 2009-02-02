@@ -31,7 +31,7 @@ class ObjectNotify(models.Model):
     notify_immediately=models.BooleanField("Notify Immediately")
     notify_delayed=models.BooleanField("Notify Delayed")
     def __unicode__(self):
-        return "(%s,%s,%s,%s)"%(self.type,self.category,self.location,self.emails)
+        return "(%s,%s,%s,%s)"%(self.type,self.administrative_domain,self.group,self.emails)
 
 #
 class Object(models.Model):
