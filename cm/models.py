@@ -38,8 +38,6 @@ class Object(models.Model):
     class Meta:
         abstract=True
     repo_path=models.CharField("Repo Path",max_length=128,unique=True)
-    #location=models.ForeignKey(ObjectLocation,verbose_name="Location")
-    #categories=models.ManyToManyField(ObjectCategory,verbose_name="Categories",null=True,blank=True)
     #
     last_modified=models.DateTimeField("Last Modified",blank=True,null=True)
     #
@@ -179,6 +177,13 @@ class Object(models.Model):
     #
     @classmethod
     def global_pull(self): pass
+    #
+    # Permission checks
+    #
+    def has_access(self,user):
+        if user.is_superuser:
+            return True
+        return False
 ##
 ## Config
 ##
@@ -248,7 +253,6 @@ class PrefixList(Object):
     @classmethod
     def global_pull(cls):
         from noc.peer.builder import build_prefix_lists
-        location=ObjectLocation.default_location()
         objects={}
         for o in PrefixList.objects.all():
             objects[o.repo_path]=o
@@ -260,7 +264,7 @@ class PrefixList(Object):
                 o=objects[path]
                 del objects[path]
             else:
-                o=PrefixList(repo_path=path,location=location)
+                o=PrefixList(repo_path=path)
                 o.save()
             o.write(pl)
         for o in objects.values():
@@ -277,7 +281,6 @@ class DNS(Object):
     def global_pull(cls):
         from noc.dns.models import DNSZone,DNSServer
         
-        location=ObjectLocation.default_location()
         objects={}
         changed={}
         for o in DNS.objects.exclude(repo_path__endswith="autozones.conf"):
@@ -290,7 +293,7 @@ class DNS(Object):
                     del objects[path]
                 else:
                     logging.debug("DNSHandler.global_pull: Creating object %s"%path)
-                    o=DNS(repo_path=path,location=location)
+                    o=DNS(repo_path=path)
                     o.save()
                 if is_differ(o.path,z.zonedata(ns)):
                     changed[z]=None
@@ -337,7 +340,6 @@ class RPSL(Object):
     @classmethod
     def global_pull(cls):
         def global_pull_class(name,c,name_fun):
-            location=ObjectLocation.default_location()
             objects={}
             for o in RPSL.objects.filter(repo_path__startswith=name+os.sep):
                 objects[o.repo_path]=o
@@ -349,7 +351,7 @@ class RPSL(Object):
                     o=objects[path]
                     del objects[path]
                 else:
-                    o=RPSL(repo_path=path,location=location)
+                    o=RPSL(repo_path=path)
                     o.save()
                 o.write(a.rpsl)
             for o in objects.values():
