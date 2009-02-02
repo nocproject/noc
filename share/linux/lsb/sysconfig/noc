@@ -1,0 +1,2 @@
+NOC_PREFIX=/var/www/noc
+NOC_USER=noc
