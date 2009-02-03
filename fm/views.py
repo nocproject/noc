@@ -1,10 +1,12 @@
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import permission_required
 from noc.lib.render import render
 from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority
 from django.http import HttpResponseRedirect,HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 import random
 
+@permission_required("fm.change_event")
 def index(request):
     event_list=Event.objects.order_by("-timestamp")
     paginator=Paginator(event_list,100)
@@ -22,6 +24,7 @@ def event_list_css(request):
     text="\n\n".join([p.css_style for p in EventPriority.objects.all()])
     return HttpResponse(text,mimetype="text/css")
 
+@permission_required("fm.change_event")
 def event(request,event_id):
     event=get_object_or_404(Event,id=int(event_id))
     return render(request,"fm/event.html",{"e":event})
