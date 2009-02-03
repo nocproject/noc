@@ -85,6 +85,9 @@ class MIBData(models.Model):
     oid = models.CharField("OID",max_length=128,unique=True)
     name= models.CharField("Name",max_length=128,unique=True)
     description= models.TextField("Description",blank=True,null=True)
+
+    def __unicode__(self):
+        return "%s:%s = %s"%(self.mib.name,self.name,self.oid)
 ##
 ## Events
 ##
