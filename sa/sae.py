@@ -198,7 +198,7 @@ class XMLRPCService(object):
         done([m for m in dir(self) if not m.startswith("_") and callable(getattr(self,m))])
     
     def script(self,done,name,object_id,kwargs):
-        logging.info("XML-RPC.script %s(object_id=%d)"%(name,object_id))
+        logging.info("XML-RPC.script %s(object_id=%d)"%(name,int(object_id)))
         object=ManagedObject.objects.get(id=int(object_id))
         self._sae.script(object,name,done,**kwargs)
 
