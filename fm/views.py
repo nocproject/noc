@@ -29,12 +29,14 @@ def event(request,event_id):
     event=get_object_or_404(Event,id=int(event_id))
     return render(request,"fm/event.html",{"e":event})
 
+@permission_required("fm.change_event")
 def reclassify(request,event_id):
     event=get_object_or_404(Event,id=int(event_id))
     event.subject=None
     event.save()
     return HttpResponseRedirect("/fm/%d/"%event.id)
 
+@permission_required("fm.add_eventclassificationrule")
 def create_rule(request,event_id):
     def re_q(s):
         return s.replace("\\","\\\\").replace(".","\\.").replace("+","\\+").replace("*","\\*")
@@ -45,3 +47,7 @@ def create_rule(request,event_id):
         r=EventClassificationRE(rule=rule,left_re=re_q(d.key),right_re=re_q(d.value))
         r.save()
     return HttpResponseRedirect("/admin/fm/eventclassificationrule/%d/"%rule.id)
+
+@permission_required("fm.change_eventclassificationrule")
+def view_rules(request):
+    return render(request,"fm/view_rules.html",{"rules":EventClassificationRule.objects.order_by("preference")})

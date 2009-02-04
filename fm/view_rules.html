@@ -1,0 +1,14 @@
+{% extends "template/template.html" %}
+<{% block content %}
+<h1>Event Classification Rules</h1>
+<TABLE BORDER=1>
+{% for r in rules %}
+    <TR><TH COLSPAN="2">{{r.name}} ({{r.preference}}) {% if r.drop_event %}(DROP){%endif%}</TH></TR>
+    <TR><TD COLSPAN="2"><B>Event Class:</B> {{r.event_class}}</TD></TR>
+    {% for rr in r.eventclassificationre_set.all %}
+    <TR><TD>{{rr.left_re}}</TD><TD>{{rr.right_re}}</TD></TR>
+    {%endfor%}
+    <TR><TD COLSPAN="2">&nbsp;</TD></TR>
+{% endfor %}
+</TABLE>
+{%endblock%}
