@@ -239,6 +239,7 @@ class Activator(Daemon,FSM):
     ## Script support
     ##
     def run_script(self,name,access_profile,callback,**kwargs):
+        logging.info("Script %s(%s)"%(name,access_profile.address))
         pv,pos,sn=name.split(".",2)
         profile=profile_registry["%s.%s"%(pv,pos)]()        
         script=script_registry[name](profile,self,access_profile,**kwargs)
