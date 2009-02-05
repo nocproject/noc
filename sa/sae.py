@@ -377,7 +377,15 @@ class SAE(Daemon):
             result=cPickle.loads(str(result)) # De-serialize
             callback(result=result)
         logging.info("script %s(%s)"%(name,object))
-        stream=self.get_activator_stream(object.activator.name)
+        try:
+            stream=self.get_activator_stream(object.activator.name)
+        except:
+            e=Error()
+            e.code=ERR_ACTIVATOR_NOT_AVAILABLE
+            e.text="Activator '%s' not available"%object.activator.name
+            logging.error(e.text)
+            callback(error=e)
+            return
         r=ScriptRequest()
         r.script=name
         r.access_profile.profile           = object.profile_name

@@ -72,6 +72,10 @@ _ERRORCODE = descriptor.EnumDescriptor(
       name='ERR_SCRIPT_EXCEPTION', index=14, number=14,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_ACTIVATOR_NOT_AVAILABLE', index=15, number=15,
+      options=None,
+      type=None),
   ],
   options=None,
 )
@@ -114,6 +118,7 @@ ERR_INVALID_UPGRADE = 11
 ERR_OVERLOAD = 12
 ERR_INVALID_SCRIPT = 13
 ERR_SCRIPT_EXCEPTION = 14
+ERR_ACTIVATOR_NOT_AVAILABLE = 15
 TELNET = 0
 SSH = 1
 HTTP = 2
