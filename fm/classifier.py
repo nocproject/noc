@@ -149,7 +149,10 @@ class Classifier(Daemon):
         event.event_priority=event_class.default_priority
         # Fill event subject and body
         vars.update(resolved)
-        event.subject=self.expand_template(event_class.subject_template,vars)
+        subject=self.expand_template(event_class.subject_template,vars)
+        if len(subject)>255:
+            subject=subject[:250]+" ..."
+        event.subject=subject
         event.body=self.expand_template(event_class.body_template,vars)
         event.save()
         
