@@ -18,6 +18,9 @@ lib/fileutils.py
 lib/ecma48.py
 lib/fsm.py
 lib/nbsocket.py
+lib/validators.py
 scripts/noc-activator.py
 etc/noc-activator.defaults
 share/sunos/manifest/noc-activator.xml
+share/linux/lsb/sysconfig/noc
+share/linux/lsb/init.d/noc-activator
