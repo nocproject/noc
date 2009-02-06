@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Django URL dispatcher.
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from django.conf.urls.defaults import *
 from django.contrib import admin
 admin.autodiscover()
