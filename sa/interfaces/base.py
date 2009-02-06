@@ -218,15 +218,24 @@ class DictParameter(Parameter):
 ##
 ##
 class IPParameter(StringParameter):
+    """
+    >>> IPParameter().clean("192.168.0.1")
+    '192.168.0.1'
+    >>> IPParameter().clean("192.168.0.256")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    """
     def clean(self,value):
         v=super(IPParameter,self).clean(value)
         X=v.split(".")
         if len(X)!=4:
             raise InterfaceTypeError
         try:
-            return len([x for x in X if 0<=int(x)<=255])==4
+            if len([x for x in X if 0<=int(x)<=255])!=4:
+                raise InterfaceTypeError
         except:
-            return InterfaceTypeError
+            raise InterfaceTypeError
         return v
 ##
 ##
