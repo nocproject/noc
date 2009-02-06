@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import os,logging,pty,signal,time,re,sys,signal,Queue,sets
+import os,logging,pty,signal,time,re,sys,signal,Queue,sets,cPickle
 from errno import ECONNREFUSED
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,ScriptSocket
@@ -17,6 +17,7 @@ from noc.lib.fileutils import safe_rewrite
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM,check_state
 from noc.lib.nbsocket import ConnectedTCPSocket,SocketFactory
+from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 from threading import Lock
 
 ##
@@ -136,6 +137,7 @@ class Activator(Daemon,FSM):
         Daemon.__init__(self)
         self.activator_name=self.config.get("activator","name")
         logging.info("Running activator '%s'"%self.activator_name)
+        self.stand_alone_mode=self.config.get("activator","software_update") and not os.path.exists(os.path.join("sa","sae.py"))
         self.service=Service()
         self.service.activator=self
         self.factory=SocketFactory(tick_callback=self.tick)
@@ -151,6 +153,7 @@ class Activator(Daemon,FSM):
         self.nonce=None
         FSM.__init__(self)
         self.next_filter_update=None
+        self.next_crashinfo_check=None
         self.script_threads={}
         self.script_lock=Lock()
         self.script_call_queue=Queue.Queue()
@@ -190,7 +193,7 @@ class Activator(Daemon,FSM):
     ## AUTHENTICATED
     ##
     def on_AUTHENTICATED_enter(self):
-        if self.config.get("activator","software_update") and not os.path.exists(os.path.join("sa","sae.py")):
+        if self.stand_alone_mode:
             self.event("upgrade")
         else:
             logging.info("In-bundle package. Skiping software updates")
@@ -215,6 +218,8 @@ class Activator(Daemon,FSM):
             to_refresh_filters=True
         if to_refresh_filters:
             self.get_event_filter()
+        if self.stand_alone_mode:
+            self.check_crashinfo()
     ##
     ##
     ##
@@ -278,6 +283,9 @@ class Activator(Daemon,FSM):
         # Request filter updates
         if self.next_filter_update and time.time()>self.next_filter_update:
             self.get_event_filter()
+        # Check for pending crashinfos
+        if self.stand_alone_mode and self.next_crashinfo_check and time.time()>self.next_crashinfo_check:
+            self.check_crashinfo()
         # Perform delayed calls
         while not self.script_call_queue.empty():
             try:
@@ -408,7 +416,33 @@ class Activator(Daemon,FSM):
         r=EventFilterRequest()
         self.sae_stream.proxy.event_filter(r,event_filter_callback)
     ##
+    ## Collect crashinfo files and send them as system events to SAE
+    ## (Called only in standalone mode)
     ##
+    @check_state("ESTABLISHED")
+    def check_crashinfo(self):
+        if not self.config.get("main","logfile"):
+            return
+        c_d=os.path.dirname(self.config.get("main","logfile"))
+        if not os.path.isdir(c_d):
+            return
+        for fn in [fn for fn in os.listdir(c_d) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
+            # Load and unpickle crashinfo
+            path=os.path.join(c_d,fn)
+            f=open(path)
+            data=f.read()
+            f.close()
+            data=cPickle.loads(data)
+            ts=data["ts"]
+            del data["ts"]
+            # Send event. "" is an virtual address of ROOT object
+            self.on_event(ts,"",data)
+            os.unlink(path)
+        # Next check - after 60 seconds timeout
+        self.next_crashinfo_check=time.time()+60
+        
+    ##
+    ## Send FM event to SAE
     ##
     def on_event(self,timestamp,ip,body):
         def on_event_callback(transaction,response=None,error=None):
