@@ -1,6 +1,12 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Version Control System support
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.lib.registry import Registry
 from lib.fileutils import copy_file
 from noc.settings import config

@@ -1,4 +1,5 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Prefix-list-optimizing tree
 ##
 ## Tree is a binary tree containing prefixes.
@@ -7,6 +8,12 @@
 ## Zero bit on apropriative position in prefix means
 ## the prefix will be directed left from current node.
 ## The set bit means right direction.
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.lib.ip import prefix_to_bin,bin_to_prefix
 
 class Node(object):

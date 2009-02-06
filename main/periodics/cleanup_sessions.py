@@ -1,10 +1,10 @@
-##
-## Backup database to main.backupdir
-## TODO:
-##      * Remove backup when pg_dump failed
-##      * Provide pg_dump with password when requred
-##      * Remove old dumps
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 import noc.sa.periodic
 from noc.settings import config
 import os,subprocess,datetime

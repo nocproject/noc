@@ -1,6 +1,12 @@
-##
-## SNMP Trap collector
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## SNMP Trap Collector
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from pyasn1.codec.ber import decoder
 from pysnmp.proto import api
 from noc.lib.nbsocket import ListenUDPSocket

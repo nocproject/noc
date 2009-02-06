@@ -1,6 +1,10 @@
-##
-## This file is a part of Effortel's NOC db project
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 import socket,struct
 from django.db import models
 from django.contrib.auth.models import User

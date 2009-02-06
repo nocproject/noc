@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 import re,os,time,md5,subprocess
 from django.db import models
 from noc.settings import config

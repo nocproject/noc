@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-#
-# Various debugging utilities
-#
+##----------------------------------------------------------------------
+## Various debugging utilities
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 import sys,re,logging,datetime,os
 
 # Borrowed from django

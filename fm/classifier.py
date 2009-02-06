@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat
 from django.db import transaction

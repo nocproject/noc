@@ -1,10 +1,16 @@
-## 
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Usage: debug-script <profile> <script> <stream-url>
 ##
 ## WARNING!!!
 ## This module implements part of activator functionality.
 ## Sometimes via dirty hacks
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from django.core.management.base import BaseCommand
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,scheme_id

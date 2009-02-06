@@ -1,6 +1,10 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Various system utils
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 import ConfigParser,sys,logging,os,signal,optparse,datetime,traceback
 from noc.lib.debug import error_report,frame_report
 from noc.lib.validators import is_ipv4

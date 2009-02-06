@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 import datetime,os
 from noc.lib.registry import Registry
 

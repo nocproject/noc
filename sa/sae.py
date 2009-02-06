@@ -1,6 +1,12 @@
-##
-## Service Activation Engine
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Service Activation Engine Daemon
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.sa.models import Activator, ManagedObject, TaskSchedule
 from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce

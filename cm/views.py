@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.cm.models import Object
 from django.shortcuts import get_object_or_404
 from noc.lib.render import render,render_plain_text

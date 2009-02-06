@@ -1,6 +1,10 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## ECMA-48 control sequences processing
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 import re
 ## Convert ECMA Notation to byte form
 def c(x,y):

@@ -1,6 +1,10 @@
-##
-## This file is a part of Effortel's NOC db project
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Data type validators
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 import re
 from django.forms import ValidationError
 ##

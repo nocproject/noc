@@ -1,6 +1,10 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Clean and lightweight non-blocking socket I/O implementation
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 import socket,select,errno,time,logging,pty,os,signal
 from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
      ENOTCONN, ESHUTDOWN, EINTR, EISCONN, ECONNREFUSED, EPIPE, errorcode

@@ -1,7 +1,13 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Mercurial support
 ## (http://www.selenic.com/mercurial/wiki/)
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 import noc.cm.vcs
 import os,datetime
 

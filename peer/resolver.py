@@ -1,6 +1,12 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Object resolver supervisor
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.peer.whois import Whois
 from noc.lib.validators import is_asn,is_cidr
 from noc.lib.nbsocket import SocketFactory

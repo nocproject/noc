@@ -1,6 +1,12 @@
-#
-# Prefix list builder
-#
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Prefix list builder
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.peer.models import PeeringPoint
 from noc.peer.resolver import Resolver
 from noc.peer.tree import optimize_prefix_list

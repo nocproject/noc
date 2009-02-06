@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Django URL dispatcher for module PEER
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
 from noc.peer.views import as_rpsl,as_set_rpsl,as_dot,lg,lg_json,inet_rtr_rpsl,person_rpsl,maintainer_rpsl

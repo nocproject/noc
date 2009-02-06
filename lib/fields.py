@@ -1,6 +1,10 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Custom field types
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 from django.db import models
 from lib.ip import normalize_prefix
 ##

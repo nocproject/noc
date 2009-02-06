@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.main.report import Column,BooleanColumn
 import noc.main.report
 from noc.sa.profiles import profile_registry

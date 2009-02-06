@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django import forms

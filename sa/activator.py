@@ -1,6 +1,12 @@
-##
-## Service Activator
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Service Activator Daemon
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 import os,logging,pty,signal,time,re,sys,signal,Queue,sets
 from errno import ECONNREFUSED
 from noc.sa.profiles import profile_registry

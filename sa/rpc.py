@@ -1,6 +1,12 @@
-##
-## SAE-activator RPC
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## SAE RPC Protocol
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.sa.protocols.sae_pb2 import Message,Error
 import struct,logging,random,time,sha,zlib
 from google.protobuf.service import RpcController

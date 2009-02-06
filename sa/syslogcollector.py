@@ -1,7 +1,13 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Syslog Collector
 ## (RFC3164)
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.lib.nbsocket import ListenUDPSocket
 from noc.sa.eventcollector import EventCollector
 import time

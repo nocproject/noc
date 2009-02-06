@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Django URL dispatcher for module IP
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
 from noc.ip.views import index,vrf_index,allocate_block,deallocate_block,assign_address,revoke_address

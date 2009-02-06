@@ -1,6 +1,12 @@
-##
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
 ## Simple RIPE whois client
-##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 import logging
 from noc.lib.nbsocket import ConnectedTCPSocket
 

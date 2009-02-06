@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
 from noc.lib.fsm import StreamFSM
 from noc.lib.ecma48 import strip_control_sequences
 from noc.lib.registry import Registry
