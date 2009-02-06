@@ -5,7 +5,21 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import sys,re,logging,datetime,os
+"""
+"""
+import sys,re,logging,datetime,os,tempfile,cPickle,time
+
+#
+# Error reporting context
+#
+DEBUG_CTX_COMPONENT=None
+DEBUG_CTX_CRASH_DIR=None
+DEBUG_CTX_CRASH_PREFIX="crashinfo-"
+#
+def set_crashinfo_context(component,crash_dir):
+    global DEBUG_CTX_COMPONENT,DEBUG_CTX_CRASH_DIR
+    DEBUG_CTX_COMPONENT=component
+    DEBUG_CTX_CRASH_DIR=crash_dir
 
 # Borrowed from django
 def get_lines_from_file(filename,lineno,context_lines,loader=None,module_name=None):
@@ -147,7 +161,20 @@ def error_report():
     r+=["Working directory: %s"%os.getcwd()]
     r+=[str(t),str(v)]
     r+=[format_frames(get_traceback_frames(tb))]
-    logging.error("\n".join(r))
+    r="\n".join(r)
+    logging.error(r)
+    if DEBUG_CTX_COMPONENT and DEBUG_CTX_CRASH_DIR:
+        c={
+            "source"    : "system",
+            "type"      : "Unhandled Exception",
+            "ts"        : int(time.time()),
+            "component" : DEBUG_CTX_COMPONENT,
+            "traceback" : r,
+        }
+        h,p=tempfile.mkstemp(suffix="",prefix=DEBUG_CTX_CRASH_PREFIX,dir=DEBUG_CTX_CRASH_DIR)
+        f=os.fdopen(h,"w")
+        f.write(cPickle.dumps(c))
+        f.close()
 
 def frame_report(frame):
     now=datetime.datetime.now()

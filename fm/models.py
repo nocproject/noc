@@ -201,7 +201,7 @@ class Event(models.Model):
     body=models.TextField("Body",null=True,blank=True)
     
     def __unicode__(self):
-        return u"Event #%d: %s"%(self.id,str(self.subject))
+        return u"Event #%s: %s"%(str(self.id),str(self.subject))
     
     def _repeats(self):
         return self.eventrepeat_set.count()

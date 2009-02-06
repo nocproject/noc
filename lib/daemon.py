@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import ConfigParser,sys,logging,os,signal,optparse,datetime,traceback
-from noc.lib.debug import error_report,frame_report
+from noc.lib.debug import error_report,frame_report,set_crashinfo_context
 from noc.lib.validators import is_ipv4
 
 # Load netifaces to resolve interface addresses when possible
@@ -65,7 +65,6 @@ class Daemon(object):
                 logging.error("Signal '%s' is not supported on this platform"%s)
                 continue
             signal.signal(sig,getattr(self,s))
-            
     ##
     ##
     ##
@@ -83,6 +82,10 @@ class Daemon(object):
             self.config.read(self.config_path%{"daemon_name":self.daemon_name})
         if not first_run:
             self.on_load_config()
+        if self.config.get("main","logfile"):
+            set_crashinfo_context(self.daemon_name,os.path.dirname(self.config.get("main","logfile")))
+        else:
+            set_crashinfo_context(None,None)
     ##
     ## Called after config reloaded by SIGHUP.
     ##
@@ -158,10 +161,12 @@ class Daemon(object):
             self.become_daemon()
         try:
             self.run()
+        except KeyboardInterrupt:
+            pass
         except:
             error_report()
     ##
-    ## "stop" comamnd handler
+    ## "stop" command handler
     ##
     def stop(self):
         pidfile=self.config.get("main","pidfile")

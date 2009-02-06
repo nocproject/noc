@@ -14,7 +14,7 @@ import logging,time,threading,datetime,os,sets,random,xmlrpclib,cPickle
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
-from noc.lib.debug import error_report
+from noc.lib.debug import error_report,DEBUG_CTX_CRASH_PREFIX
 from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,SocketFactory,Protocol
 
 ##
@@ -316,15 +316,54 @@ class SAE(Daemon):
         self.start_listeners()
         last_cleanup=time.time()
         last_task_check=time.time()
+        last_crashinfo_check=time.time()
         while True:
             self.factory.loop(1)
-            if time.time()-last_task_check>10:
+            if time.time()-last_task_check>=10:
                 self.periodic_task_lock.acquire()
                 tasks = TaskSchedule.get_pending_tasks(exclude=self.active_periodic_tasks.keys())
                 self.periodic_task_lock.release()
+                last_task_check=time.time()
                 if tasks:
                     for t in tasks:
                         self.run_periodic_task(t)
+            if time.time()-last_crashinfo_check>=60:
+                self.collect_crashinfo()
+                last_crashinfo_check=time.time()
+    ##
+    ## Collect crashinfo and write as FM events
+    ##
+    def collect_crashinfo(self):
+        if not self.config.get("main","logfile"):
+            return
+        c_d=os.path.dirname(self.config.get("main","logfile"))
+        if not os.path.isdir(c_d):
+            return
+        mo=ManagedObject.objects.get(name="ROOT")
+        event_priority=EventPriority.objects.get(name="DEFAULT")
+        event_class=EventClass.objects.get(name="DEFAULT")
+        event_category=EventCategory.objects.get(name="DEFAULT")
+        for fn in [fn for fn in os.listdir(c_d) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
+            path=os.path.join(c_d,fn)
+            f=open(path)
+            data=f.read()
+            f.close()
+            data=cPickle.loads(data)
+            ts=data["ts"]
+            del data["ts"]
+            e=Event(
+                timestamp=datetime.datetime.fromtimestamp(ts),
+                event_priority=event_priority,
+                event_class=event_class,
+                event_category=event_category,
+                managed_object=mo
+            )
+            e.save()
+            for k,v in data.items():
+                d=EventData(event=e,key=k,value=v)
+                d.save()
+            os.unlink(path)
+            
     ##
     ## Periodic tasks
     ##
