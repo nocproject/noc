@@ -17,7 +17,7 @@ class Rule(object):
     def __init__(self,rule):
         self.rule=rule
         self.name=rule.name
-        self.re=[(re.compile(x.left_re),re.compile(x.right_re)) for x in rule.eventclassificationre_set.all()]
+        self.re=[(re.compile(x.left_re),re.compile(x.right_re,re.MULTILINE|re.DOTALL)) for x in rule.eventclassificationre_set.all()]
         
     def match(self,o):
         vars={}
