@@ -799,6 +799,50 @@ _EVENTRESPONSE = descriptor.Descriptor(
   options=None)
 
 
+_PINGCHECKREQUEST = descriptor.Descriptor(
+  name='PingCheckRequest',
+  full_name='sae.PingCheckRequest',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='addresses', full_name='sae.PingCheckRequest.addresses', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_PINGCHECKRESPONSE = descriptor.Descriptor(
+  name='PingCheckResponse',
+  full_name='sae.PingCheckResponse',
+  filename='sae.proto',
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='unreachables', full_name='sae.PingCheckResponse.unreachables', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
 _MESSAGE.fields_by_name['request'].message_type = _REQUEST
 _MESSAGE.fields_by_name['response'].message_type = _RESPONSE
 _MESSAGE.fields_by_name['error'].message_type = _ERROR
@@ -910,6 +954,14 @@ class EventResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _EVENTRESPONSE
 
+class PingCheckRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _PINGCHECKREQUEST
+
+class PingCheckResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _PINGCHECKRESPONSE
+
 
 _SAESERVICE = descriptor.ServiceDescriptor(
   name='SAEService',
@@ -987,6 +1039,15 @@ _SAESERVICE = descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_EVENTREQUEST,
     output_type=_EVENTRESPONSE,
+    options=None,
+  ),
+  descriptor.MethodDescriptor(
+    name='ping_check',
+    full_name='sae.SAEService.ping_check',
+    index=8,
+    containing_service=None,
+    input_type=_PINGCHECKREQUEST,
+    output_type=_PINGCHECKRESPONSE,
     options=None,
   ),
 ])

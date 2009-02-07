@@ -164,6 +164,17 @@ message EventRequest {
 message EventResponse {}
 
 //
+// Ping hosts
+//
+message PingCheckRequest {
+    repeated string addresses = 1;
+}
+
+message PingCheckResponse {
+    repeated string unreachables = 1;
+}
+
+//
 // RPC Services
 //
 service SAEService {
@@ -175,4 +186,5 @@ service SAEService {
     rpc script           (ScriptRequest)          returns (ScriptResponse);
     rpc event_filter     (EventFilterRequest)     returns (EventFilterResponse);
     rpc event            (EventRequest)           returns (EventResponse);
+    rpc ping_check       (PingCheckRequest)       returns (PingCheckResponse);
 }

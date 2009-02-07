@@ -21,3 +21,6 @@ max_pull_config = 10
 host = 127.0.0.1
 port = 19701
 local_address =
+
+[path]
+fping      =

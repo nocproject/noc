@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import os,logging,pty,signal,time,re,sys,signal,Queue,sets,cPickle
+import os,logging,pty,signal,time,re,sys,signal,Queue,sets,cPickle,tempfile
 from errno import ECONNREFUSED
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,ScriptSocket
@@ -16,7 +16,7 @@ from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM,check_state
-from noc.lib.nbsocket import ConnectedTCPSocket,SocketFactory
+from noc.lib.nbsocket import ConnectedTCPSocket,SocketFactory,PTYSocket
 from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 from threading import Lock
 
@@ -71,6 +71,14 @@ class Service(SAEService):
         for a in request.kwargs:
             kwargs[str(a.key)]=a.value
         self.activator.run_script(request.script,request.access_profile,script_callback,**kwargs)
+    
+    def ping_check(self,controller,request,done):
+        def ping_check_callback(unreachables):
+            r=PingCheckResponse()
+            for u in unreachables:
+                r.unreachables.append(u)
+            done(controller,response=r)
+        self.activator.ping_check([a for a in request.addresses],ping_check_callback)
 ##
 ##
 ##
@@ -90,6 +98,34 @@ class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
     
     def on_conn_refused(self):
         self.activator_event("refused")
+##
+## External fping process.
+## Runs fping, supplies a list of checked hosts
+## and reads a list uf unreachable hosts
+##
+class FPingProbeSocket(PTYSocket):
+    def __init__(self,factory,fping_path,addresses,callback):
+        self.result=""
+        # Write hosts list to temporary file
+        h,self.tmp_path=tempfile.mkstemp()
+        f=os.fdopen(h,"w")
+        f.write("\n".join(addresses)+"\n")
+        f.close()
+        self.callback=callback
+        # Fping requires root to read hosts from file. Run it through the wrapper
+        PTYSocket.__init__(self,factory,["./scripts/stdin-wrapper",self.tmp_path,fping_path,"-A","-u"])
+        
+    def on_close(self):
+        os.unlink(self.tmp_path)
+        # fping issues duplicated addresses sometimes.
+        # Remove duplicates
+        r={}
+        for u in [x.strip() for x in self.result.split("\n") if x.strip()]:
+            r[u]=None
+        self.callback(r.keys())
+        
+    def on_read(self,data):
+        self.result+=data
 ##
 ## Activator supervisor and daemon
 ##
@@ -269,7 +305,14 @@ class Activator(Daemon,FSM):
     def request_call(self,f,*args,**kwargs):
         logging.debug("Requesting call: %s(*%s,**%s)"%(f,args,kwargs))
         self.script_call_queue.put((f,args,kwargs))
-    
+    ##
+    ##
+    ##
+    def ping_check(self,addresses,callback):
+        fping_probe_socket=FPingProbeSocket(self.factory,self.config.get("path","fping"),addresses,callback)
+    ##
+    ##
+    ##
     def check_event_source(self,address):
         return address in self.event_sources
         

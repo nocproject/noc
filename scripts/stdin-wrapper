@@ -1,0 +1,12 @@
+#!/bin/sh
+##----------------------------------------------------------------------
+## Convert contents of $1 file into stdin for the rest arguments
+## ( ./stdin_wrapper f1 wc -l  ---> cat f1 | wc -l)
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+l=$1
+shift
+cat $l | $@
+

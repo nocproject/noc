@@ -36,7 +36,7 @@ class Service(SAEService):
     ##
     def ping(self,controller,request,done):
         done(controller,response=PingResponse())
-        
+    
     def register(self,controller,request,done):
         try:
             activator=Activator.objects.get(name=request.name)
@@ -455,6 +455,56 @@ class SAE(Daemon):
             a.key=str(k)
             a.value=str(v)
         stream.proxy.script(r,script_callback)
+    ##
+    ## Send a list of addresses to activator
+    ## and generate fault events for unreachable ones
+    ##
+    def ping_check(self,activator,addresses):
+        def ping_check_callback(transaction,response=None,error=None):
+            if error:
+                logging.error("ping_check failed: %s"%error.text)
+                return
+            ts=datetime.datetime.now()
+            event_priority=EventPriority.objects.get(name="DEFAULT")
+            event_class=EventClass.objects.get(name="DEFAULT")
+            event_category=EventCategory.objects.get(name="DEFAULT")
+            activator_name=activator.name
+            for u in response.unreachables:
+                try:
+                    mo=ManagedObject.objects.get(activator=activator,trap_source_ip=u)
+                except ManagedObject.DoesNotExist:
+                    logging.error("Unknown object in ping_check: %s"%u)
+                    continue
+                e=Event(
+                    timestamp=ts,
+                    event_priority=event_priority,
+                    event_class=event_class,
+                    event_category=event_category,
+                    managed_object=mo
+                    )
+                e.save()
+                for k,v in [("source","system"),
+                            ("activator",activator_name),
+                            ("probe","ping"),
+                            ("ip",u),
+                            ("type","failed"),
+                            ("reason","Host Unreachable")]:
+                    d=EventData(event=e,key=k,value=v)
+                    d.save()
+
+        logging.debug("ping_check(%s)"%activator.name)
+        try:
+            stream=self.get_activator_stream(activator.name)
+        except:
+            e=Error()
+            e.code=ERR_ACTIVATOR_NOT_AVAILABLE
+            e.text="Activator '%s' not available"%activator.name
+            logging.error(e.text)
+            return
+        r=PingCheckRequest()
+        for a in addresses:
+            r.addresses.append(a)
+        stream.proxy.ping_check(r,ping_check_callback)
     ##
     ## Called after config reloaded by SIGHUP.
     ##
