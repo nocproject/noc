@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
+## Django's standard views module
+## for IP space management module
+##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect,HttpResponseForbidden
+from django.http import HttpResponse,HttpResponseRedirect,HttpResponseForbidden
 from django import forms
 
 from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address
@@ -14,7 +17,11 @@ from noc.peer.models import AS
 from noc.lib.render import render
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
 from noc.lib.ip import normalize_prefix
+import csv,cStringIO,datetime
 
+##
+## VRF list
+##
 def index(request):
     search_by_name=None
     search_by_rd=None
@@ -39,7 +46,9 @@ def index(request):
     if query is None:
         query=""
     return render(request,"ip/index.html",{"groups":l,"query":query})
-    
+##
+## Allocated blocks in VRF
+##
 def vrf_index(request,vrf_id,prefix="0.0.0.0/0"):
     vrf_id=int(vrf_id)
     vrf=get_object_or_404(VRF,id=vrf_id)
@@ -49,7 +58,9 @@ def vrf_index(request,vrf_id,prefix="0.0.0.0/0"):
     prefix=vrf.prefix(prefix)
     return render(request,"ip/vrf_index.html",{"vrf":vrf,"parents":parents,"prefixes":prefixes,"prefix":prefix,
                         "can_allocate":can_allocate})
-
+##
+## Allocate new block handler
+##
 class AllocateBlockForm(forms.Form):
     prefix=forms.CharField(label="prefix",required=True)
     description=forms.CharField(label="description",required=True)
@@ -96,7 +107,9 @@ def allocate_block(request,vrf_id,prefix=None):
     else:
         form=AllocateBlockForm(initial=initial)
     return render(request,"ip/allocate_block.html",{"vrf":vrf,"form":form,"p":p})
-    
+##
+## Deallocate block handler
+##
 def deallocate_block(request,vrf_id,prefix):
     assert is_cidr(prefix)
     vrf_id=int(vrf_id)
@@ -108,7 +121,9 @@ def deallocate_block(request,vrf_id,prefix):
     parent=parents[-1].prefix
     block.delete()
     return HttpResponseRedirect("/ip/%d/%s/"%(vrf_id,parent))
-    
+##
+## Assign new IP address handler
+##
 class AssignAddressForm(forms.Form):
     fqdn=forms.CharField(label="FQDN",required=True)
     ip=forms.CharField(label="IP",required=True)
@@ -159,7 +174,9 @@ def assign_address(request,vrf_id,ip=None):
     else:
         form=AssignAddressForm(initial=initial)
     return render(request,"ip/assign_address.html",{"vrf":vrf,"form":form,"p":p})
-    
+##
+## Deallocate ip address handler
+##
 def revoke_address(request,vrf_id,ip):
     assert is_ipv4(ip)
     vrf_id=int(vrf_id)
@@ -170,3 +187,74 @@ def revoke_address(request,vrf_id,ip):
     prefix=address.parent.prefix
     address.delete()
     return HttpResponseRedirect("/ip/%d/%s/"%(vrf_id,prefix))
+##
+## An index of tools available for block
+##
+def block_tools(request,vrf_id,prefix):
+    assert is_cidr(prefix)
+    vrf_id=int(vrf_id)
+    vrf=get_object_or_404(VRF,id=vrf_id)
+    if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
+        return HttpResponseForbidden("Permission denied")
+    return render(request,"ip/tools.html",{"vrf":vrf,"prefix":prefix,"upload_ips_form":IPUploadForm()})
+##
+## Download block's allocated IPs in CSV format
+## Columns are: ip,fqdn,description,tt
+##
+def download_ips(request,vrf_id,prefix):
+    assert is_cidr(prefix)
+    vrf_id=int(vrf_id)
+    vrf=get_object_or_404(VRF,id=vrf_id)
+    if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
+        return HttpResponseForbidden("Permission denied")
+    block=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
+    out=cStringIO.StringIO()
+    writer=csv.writer(out)
+    for a in block.addresses:
+        writer.writerow([a.ip,a.fqdn,a.description,a.tt])
+    return HttpResponse(out.getvalue(),mimetype="text/csv")
+##
+## Upload allocated IPs in CSV format
+## CSV should contain two to four columns rows (ip,fqdn, description, tt)
+##
+class IPUploadForm(forms.Form):
+    file=forms.FileField()
+    
+def upload_ips(request,vrf_id,prefix):
+    def upload_csv(file):
+        reader=csv.reader(file)
+        for row in reader:
+            if len(row)<2:
+                continue
+            if not is_ipv4(row[0]) or not is_fqdn(row[1]):
+                continue
+            changed=False
+            try:
+                a=IPv4Address.objects.get(vrf=vrf,ip=row[0])
+            except IPv4Address.DoesNotExist:
+                a=IPv4Address(vrf=vrf,ip=row[0])
+                changed=True
+            if a.fqdn!=row[1]:
+                a.fqdn=row[1]
+                changed=True
+            if len(row)>=3 and row[2]:
+                a.description=row[2]
+                changed=True
+            if len(row)>=4 and row[3]:
+                a.tt=row[3]
+                changed=True
+            if changed:
+                a.modified_by=request.user
+                a.last_modified=datetime.datetime.now()
+            a.save()
+    assert is_cidr(prefix)
+    vrf_id=int(vrf_id)
+    vrf=get_object_or_404(VRF,id=vrf_id)
+    if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
+        return HttpResponseForbidden("Permission denied")
+    if request.method=="POST":
+        form = IPUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            upload_csv(request.FILES['file'])
+            return HttpResponseRedirect('/main/success/')
+    return HttpResponseRedirect("/ip/%d/%s/tools/"%(vrf_id,prefix))
