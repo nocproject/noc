@@ -17,7 +17,7 @@ from noc.peer.models import AS
 from noc.lib.render import render
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
 from noc.lib.ip import normalize_prefix,contains
-import csv,cStringIO,datetime
+import csv,cStringIO,datetime,subprocess
 
 ##
 ## VRF list
@@ -196,7 +196,7 @@ def block_tools(request,vrf_id,prefix):
     vrf=get_object_or_404(VRF,id=vrf_id)
     if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
         return HttpResponseForbidden("Permission denied")
-    return render(request,"ip/tools.html",{"vrf":vrf,"prefix":prefix,"upload_ips_form":IPUploadForm()})
+    return render(request,"ip/tools.html",{"vrf":vrf,"prefix":prefix,"upload_ips_form":IPUploadForm(),"upload_ips_axfr_form":AXFRForm()})
 ##
 ## Download block's allocated IPs in CSV format
 ## Columns are: ip,fqdn,description,tt
@@ -260,5 +260,63 @@ def upload_ips(request,vrf_id,prefix):
         form = IPUploadForm(request.POST, request.FILES)
         if form.is_valid():
             upload_csv(request.FILES['file'])
+            return HttpResponseRedirect('/main/success/')
+    return HttpResponseRedirect("/ip/%d/%s/tools/"%(vrf_id,prefix))
+##
+## Import IP addresses from zone transfer
+##
+class AXFRForm(forms.Form):
+    ns=forms.CharField()
+    zone=forms.CharField()
+    source_address=forms.IPAddressField(required=False)
+
+def upload_axfr(request,vrf_id,prefix):
+    def upload_axfr(data):
+        for row in data:
+            row=row.strip()
+            if row=="" or row.startswith(";"):
+                continue
+            row=row.split()
+            if len(row)!=5 or row[2]!="IN" or row[3]!="PTR":
+                continue
+            if row[3]=="PTR":
+                x=row[0].split(".")
+                ip="%s.%s.%s.%s"%(x[3],x[2],x[1],x[0])
+                fqdn=row[4]
+                if fqdn.endswith("."):
+                    fqdn=fqdn[:-1]
+            # Leave only addresses residing into "prefix"
+            # To prevent uploading to not-owned blocks
+            if not contains(prefix,ip):
+                continue
+            changed=False
+            try:
+                a=IPv4Address.objects.get(vrf=vrf,ip=ip)
+            except IPv4Address.DoesNotExist:
+                a=IPv4Address(vrf=vrf,ip=ip)
+                changed=True
+            if a.fqdn!=fqdn:
+                a.fqdn=fqdn
+                changed=True
+            if changed:
+                a.modified_by=request.user
+                a.last_modified=datetime.datetime.now()
+            a.save()
+    assert is_cidr(prefix)
+    vrf_id=int(vrf_id)
+    vrf=get_object_or_404(VRF,id=vrf_id)
+    if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
+        return HttpResponseForbidden("Permission denied")
+    if request.POST:
+        form=AXFRForm(request.POST)
+        if form.is_valid():
+            opts=[]
+            if form.cleaned_data["source_address"]:
+                opts+=["-b",form.cleaned_data["source_address"]]
+            pipe = subprocess.Popen(["dig"]+opts+["axfr","@%s"%form.cleaned_data["ns"],form.cleaned_data["zone"]],
+                shell=False, stdout=subprocess.PIPE).stdout
+            data=pipe.read()
+            pipe.close()
+            upload_axfr(data.split("\n"))
             return HttpResponseRedirect('/main/success/')
     return HttpResponseRedirect("/ip/%d/%s/tools/"%(vrf_id,prefix))

@@ -10,7 +10,7 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
 from noc.ip.views import index,vrf_index,allocate_block,deallocate_block,assign_address,revoke_address,block_tools,download_ips,\
-    upload_ips
+    upload_ips,upload_axfr
 
 urlpatterns = patterns ( "",
     (r"^$",                   login_required(index)),
@@ -25,4 +25,5 @@ urlpatterns = patterns ( "",
     (r"^(?P<vrf_id>\d+)/(?P<prefix>\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}/\d{1,2})/tools/$", login_required(block_tools)),
     (r"^(?P<vrf_id>\d+)/(?P<prefix>\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}/\d{1,2})/download_ips/$", login_required(download_ips)),
     (r"^(?P<vrf_id>\d+)/(?P<prefix>\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}/\d{1,2})/upload_ips/$", login_required(upload_ips)),
+    (r"^(?P<vrf_id>\d+)/(?P<prefix>\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}/\d{1,2})/upload_axfr/$", login_required(upload_axfr)),
 )
