@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
+## Django's standard views module
+## for MAIN module
+##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
@@ -10,17 +13,25 @@ from django.http import HttpResponseRedirect,HttpResponseNotFound
 from noc.lib.render import render
 from noc.main.report import report_registry
 import os
-
+##
+## Startup boilerplate
+##
 def index(request):
     return render(request,"main/index.html")
-
+##
+## Log out current user
+##
 def logout(request):
     django.contrib.auth.logout(request)
     return HttpResponseRedirect("/")
-
+##
+## Called on 404 event
+##
 def handler404(request):
     return render(request,"main/404.html")
-
+##
+## Render report
+##
 def report(request,report):
     try:
         rc=report_registry[report]
@@ -31,7 +42,9 @@ def report(request,report):
         return report.render()
     else:
         return render(request,"main/report_form.html",{"report":report})
-
+##
+## Render report list
+##
 def report_index(request):
     r={}
     for cn,c in report_registry.classes.items():
@@ -48,3 +61,8 @@ def report_index(request):
         v.sort(lambda x,y:cmp(x.title,y.title))
         out.append([k,v])
     return render(request,"main/report_index.html",{"reports":out})
+##
+## Success page
+##
+def success(request):
+    return render(request,"main/success.html")
