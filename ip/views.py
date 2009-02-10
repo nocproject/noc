@@ -16,7 +16,7 @@ from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address
 from noc.peer.models import AS
 from noc.lib.render import render
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
-from noc.lib.ip import normalize_prefix
+from noc.lib.ip import normalize_prefix,contains
 import csv,cStringIO,datetime
 
 ##
@@ -227,6 +227,10 @@ def upload_ips(request,vrf_id,prefix):
             if len(row)<2:
                 continue
             if not is_ipv4(row[0]) or not is_fqdn(row[1]):
+                continue
+            # Leave only addresses residing into "prefix"
+            # To prevent uploading to not-owned blocks
+            if not contains(prefix,row[0]):
                 continue
             changed=False
             try:
