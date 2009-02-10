@@ -1,0 +1,26 @@
+{% extends "template/template.html" %}
+{% block content %}
+<H1>VRF:{{vrf}} {{prefix}} tools</H1>
+<H2>Download allocated IP addresses</H2>
+    <P>Download list of allocated IP addresses in CSV format (ip,fqdn,description,tt)</P>
+    <FORM METHOD="POST" ACTION="/ip/{{vrf.id}}/{{prefix}}/download_ips/">
+        <INPUT TYPE="submit" VALUE="Download IP Addresses" />
+    </FORM>
+
+<H2>Upload allocated IP addresses</H2>
+    <P>Upload list of allocated IP addresses in CSV format.
+        Each CSV row must contain two to four columns (ip,fqnd,description,tt)</P>
+    <FORM METHOD="POST" ACTION="/ip/{{vrf.id}}/{{prefix}}/upload_ips/" enctype="multipart/form-data">
+        {{upload_ips_form}}
+        <INPUT TYPE="submit" VALUE="Upload IP Addresses" />
+    </FORM>
+
+<H2>Upload allocated IP addresses via Zone Transfer</H2>
+    <P>Upload list of allcated IP addresses from existing DNS servers via AXFR request</P>
+    <FORM METHOD="POST" ACTION="/ip/{{vrf.id}}/{{prefix}}/upload_axfr/">
+        <TABLE BORDER="0">
+            {{upload_ips_axfr_form.as_table}}
+        </TABLE>
+        <INPUT TYPE="submit" VALUE="Perform zone transfer" />
+    </FORM>
+{%endblock%}
