@@ -83,6 +83,20 @@ def normalize_prefix(prefix):
     m=int(m)
     return "%s/%d"%(int_to_address(address_to_int(n)&bits_to_int(m)),m)
 ##
+## Check wrether address is in prefix
+##
+def contains(prefix,address):
+    """
+    >>> contains("10.0.0.0/8","192.168.0.1")
+    False
+    >>> contains("10.0.0.0/8","10.10.12.5")
+    True
+    >>> contains("10.0.0.0/16","10.10.12.5")
+    False
+    """
+    n,m=prefix.split("/")
+    return network(prefix)==network(address+"/%d"%int(m))
+##
 ##
 ##
 def broadcast(prefix):
