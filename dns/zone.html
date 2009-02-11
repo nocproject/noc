@@ -1,0 +1,7 @@
+{% extends "template/template.html" %}
+{% block content %}
+<h1><A HREF="/dns/">DNS Zones:</A> {{zone.name}}</h1>
+<PRE>
+{{zone.zonedata}}
+</PRE>
+{%endblock%}

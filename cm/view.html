@@ -1,0 +1,39 @@
+{% extends "template/template.html" %}
+<{% block content %}
+<h1>Object: {{o.handler_class_name}}::{{o.repo_path}}</h1>
+<DIV CLASS="module">
+    <TABLE SUMMARY="Object info" WIDTH="100%">
+        <CAPTION>Object info</CAPTION>
+        <TR><TD><b>ID</b></TD><TD>{{o.id}}</TD></TR>
+        <TR><TD><b>Repo Path</b></TD><TD>{{o.repo_path}}</TD></TR>
+        <TR><TD><b>Revision</b></TD><TD>{{r.revision}}</TD></TR>
+        <TR><TD><b>Modified</b></TD><TD>{{r.date}}</TD></TR>
+        <TR><TD><b>Categories</b></TD><TD>{% for c in o.categories.all %} {{c}} {% endfor %}</TD></TR>
+    </TABLE>
+</DIV>
+
+<DIV CLASS="module">
+    <TABLE SUMMARY="Content" WIDTH="100%">
+        <CAPTION>Content</CAPTION>
+        <TR><TD><PRE>{{content}}</PRE></TD></TR>
+    </TABLE>
+</DIV>
+<A HREF="text/">Plain Text</A>
+
+<DIV CLASS="module">
+    <FORM METHOD="POST" ACTION="/cm/view/{{o.repo_name}}/{{o.id}}/diff/">
+    <TABLE SUMMARY="Revisions" WIDTH="100%">
+        <CAPTION>Revisions</CAPTION>
+        {% for rev in o.revisions %}
+            <TR>
+                <TD><A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/{{rev.revision}}/">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
+                <TD>{{rev.date}}</TD>
+                <TD><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
+                <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>                
+            </TR>
+        {% endfor %}
+    </TABLE>
+    <INPUT TYPE="submit" VALUE="Diff">
+    </FORM>
+</DIV>
+{%endblock%}
