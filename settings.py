@@ -94,6 +94,7 @@ INSTALLED_APPS = (
     "noc.fm",
     "noc.cm",
     "noc.ip",
+    "noc.vc",
     "noc.dns",
     "noc.peer",
 )
