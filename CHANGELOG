@@ -1,10 +1,29 @@
-0.1
+0.1.1 (11-FEB-2009)
+-----
+ * general
+   * Various bugfixes
+   * Documentation improvements
+ * vc
+   * New module: vc. Database of 802.1Q VLANs, 802.1ad Q-in-Q VLAN stacks,
+     FR DLCI, ATM VPI/VCI, MPLS labels, X.25 logical group/channels
+ * ip
+   * IP addresses export/import to/from CSV file
+   * IP addresses can be imported directly via zone transfer
+ * fm
+   * Activator can check managed objects availability via fping and raise FM events
+   * All unhandled exceptions in daemons passed as events to FM
+ * sa
+   * New script interface - IGetDot11Associations
+   * Cisco.IOS.get_dot11_associations, ZTE.ZXDSL531.get_dot11_associations scripts
+   * Not registered activator no longer breaks config pulling process
+   
+0.1 (03-FEB-2009)
 ---
  * fm
    * Optional repeated events suppression
    * New Reports: fm.event_class_events
 
-0.1RC2 (29-JAN-2008)
+0.1RC2 (29-JAN-2009)
 --------------------
  * general
    * site_settings.py replaced with etc/noc.ini configuration file
