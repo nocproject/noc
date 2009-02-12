@@ -10,7 +10,7 @@
 """
 import django.contrib.auth
 from django.http import HttpResponseRedirect,HttpResponseNotFound
-from noc.lib.render import render
+from noc.lib.render import render,render_success,render_failure
 from noc.main.report import report_registry
 import os
 ##
@@ -65,4 +65,14 @@ def report_index(request):
 ## Success page
 ##
 def success(request):
-    return render(request,"main/success.html")
+    print request.GET
+    subject=request.GET.get("subject",None)
+    text=request.GET.get("text",None)
+    return render_success(request,subject=subject,text=text)
+##
+## Failure page
+##
+def failure(request):
+    subject=request.GET.get("subject",None)
+    text=request.GET.get("text",None)
+    return render_failure(request,subject=subject,text=text)
