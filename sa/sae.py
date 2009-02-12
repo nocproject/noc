@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 from noc.sa.models import Activator, ManagedObject, TaskSchedule
 from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
@@ -345,10 +346,12 @@ class SAE(Daemon):
         event_category=EventCategory.objects.get(name="DEFAULT")
         for fn in [fn for fn in os.listdir(c_d) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
             path=os.path.join(c_d,fn)
-            f=open(path)
-            data=f.read()
-            f.close()
-            data=cPickle.loads(data)
+            try:
+                with open(path,"r") as f:
+                    data=cPickle.loads(f.read())
+            except:
+                logging.error("Cannot import crashinfo: %s"%path)
+                continue
             ts=data["ts"]
             del data["ts"]
             e=Event(
