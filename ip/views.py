@@ -14,7 +14,7 @@ from django import forms
 
 from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address
 from noc.peer.models import AS
-from noc.lib.render import render
+from noc.lib.render import render,render_success
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
 from noc.lib.ip import normalize_prefix,contains
 import csv,cStringIO,datetime,subprocess
@@ -222,6 +222,7 @@ class IPUploadForm(forms.Form):
     
 def upload_ips(request,vrf_id,prefix):
     def upload_csv(file):
+        count=0
         reader=csv.reader(file)
         for row in reader:
             if len(row)<2:
@@ -250,7 +251,9 @@ def upload_ips(request,vrf_id,prefix):
             if changed:
                 a.modified_by=request.user
                 a.last_modified=datetime.datetime.now()
-            a.save()
+                a.save()
+                count+=1
+        return count
     assert is_cidr(prefix)
     vrf_id=int(vrf_id)
     vrf=get_object_or_404(VRF,id=vrf_id)
@@ -259,8 +262,8 @@ def upload_ips(request,vrf_id,prefix):
     if request.method=="POST":
         form = IPUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            upload_csv(request.FILES['file'])
-            return HttpResponseRedirect('/main/success/')
+            count=upload_csv(request.FILES['file'])
+            return render_success(request,"CSV file uploaded","%d IP addresses updated"%count)
     return HttpResponseRedirect("/ip/%d/%s/tools/"%(vrf_id,prefix))
 ##
 ## Import IP addresses from zone transfer
@@ -272,6 +275,7 @@ class AXFRForm(forms.Form):
 
 def upload_axfr(request,vrf_id,prefix):
     def upload_axfr(data):
+        count=0
         for row in data:
             row=row.strip()
             if row=="" or row.startswith(";"):
@@ -301,7 +305,9 @@ def upload_axfr(request,vrf_id,prefix):
             if changed:
                 a.modified_by=request.user
                 a.last_modified=datetime.datetime.now()
-            a.save()
+                a.save()
+                count+=1
+        return count
     assert is_cidr(prefix)
     vrf_id=int(vrf_id)
     vrf=get_object_or_404(VRF,id=vrf_id)
@@ -317,6 +323,6 @@ def upload_axfr(request,vrf_id,prefix):
                 shell=False, stdout=subprocess.PIPE).stdout
             data=pipe.read()
             pipe.close()
-            upload_axfr(data.split("\n"))
-            return HttpResponseRedirect('/main/success/')
+            count=upload_axfr(data.split("\n"))
+            return render_success(request,"Zone transfered","%d IP addresses updated"%count)
     return HttpResponseRedirect("/ip/%d/%s/tools/"%(vrf_id,prefix))
