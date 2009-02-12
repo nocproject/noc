@@ -21,6 +21,9 @@ class Script(noc.sa.script.Script):
         for l in vlans.split("\n"):
             match=rx_vlan_line.match(l.strip())
             if match:
+                name=match.group("name")
+                if name in ["fddi-default","trcrf-default","fddinet-default","trbrf-default"]:
+                    continue
                 r.append({"vlan_id": int(match.group("vlan_id")),
-                          "name"   : match.group("name")})
+                          "name"   : name})
         return r
