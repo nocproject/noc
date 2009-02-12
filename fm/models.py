@@ -9,6 +9,9 @@ from django.db import models
 from noc.sa.models import ManagedObject
 import imp,subprocess,tempfile,os,datetime
 
+##
+## SNMP MIB
+##
 class MIB(models.Model):
     class Meta:
         verbose_name="MIB"
@@ -21,7 +24,10 @@ class MIB(models.Model):
     
     def __unicode__(self):
         return self.name
-    
+    ##
+    ## Load MIB into database
+    ## smidump from libsmi used to parse MIB
+    ##
     @classmethod
     def load(self,path):
         # Convert MIB to python module and load
@@ -58,7 +64,9 @@ class MIB(models.Model):
         for node,v in m.MIB["nodes"].items():
             d=MIBData(mib=mib,oid=v["oid"],name="%s::%s"%(mib_name,node),description=v.get("description",None))
             d.save()
-            
+    ##
+    ## Get OID by name
+    ##
     @classmethod
     def get_oid(cls,name):
         try:
@@ -66,7 +74,9 @@ class MIB(models.Model):
             return o.oid
         except MIBData.DoesNotExist:
             return None
-            
+    ##
+    ## Get longest matched name by oid
+    ##
     @classmethod
     def get_name(cls,oid):
         l_oid=oid.split(".")
@@ -82,7 +92,9 @@ class MIB(models.Model):
             except MIBData.DoesNotExist:
                 rest.append(l_oid.pop())
         return oid
-
+##
+## MIB elements
+##
 class MIBData(models.Model):
     class Meta:
         verbose_name="MIB Data"
@@ -121,7 +133,10 @@ class EventPriority(models.Model):
             s+=["    background: %s;"%self.background_color]
         return ".%s {\n%s\n}"%(self.css_style_name,"\n".join(s))
     css_style=property(_css_style)
-
+##
+## Event categories.
+## Event categories separate events to area of responsibility (Network event, System event, Security event)
+##
 class EventCategory(models.Model):
     class Meta:
         verbose_name="Event Category"
@@ -133,7 +148,10 @@ class EventCategory(models.Model):
     def __unicode__(self):
         return self.name
 ##
-## Rules
+## Event classes.
+## Event class specifies a kind of event with predefined set of event variables.
+## Event classes are assigned by Classifier process.
+## Correlator process performs event corelation mostly using event class analysys
 ##
 class EventClass(models.Model):
     class Meta:
@@ -152,7 +170,7 @@ class EventClass(models.Model):
     def __unicode__(self):
         return self.name
 ##
-##
+## Event class variables
 ##
 class EventClassVar(models.Model):
     class Meta:
@@ -165,7 +183,10 @@ class EventClassVar(models.Model):
     repeat_suppression=models.BooleanField("Repeat Suppression",default=False) # Used for repeat supression
     def __unicode__(self):
         return "%s: %s"%(self.event_class,self.name)
-
+##
+## Classification rule.
+## Used by Correlator process for assigning event class to unclassified events
+##
 class EventClassificationRule(models.Model):
     class Meta:
         verbose_name="Event Classification Rule"
@@ -175,7 +196,9 @@ class EventClassificationRule(models.Model):
     name=models.CharField("Name",max_length=64)
     preference=models.IntegerField("Preference",1000)
     drop_event=models.BooleanField("Drop Event",default=False)
-    
+##
+## Regular expressions to match event vars
+##
 class EventClassificationRE(models.Model):
     class Meta:
         verbose_name="Event Classification RE"
@@ -184,7 +207,7 @@ class EventClassificationRE(models.Model):
     left_re=models.CharField("Left RE",max_length=256)
     right_re=models.CharField("Right RE",max_length=256)
 ##
-##
+## Event itself
 ##
 class Event(models.Model):
     class Meta:
@@ -220,7 +243,9 @@ class Event(models.Model):
             if k not in data or data[k]!=v:
                 return False
         return True
-
+##
+## Event body
+##
 class EventData(models.Model):
     class Meta:
         verbose_name="Event Data"
@@ -230,7 +255,9 @@ class EventData(models.Model):
     key=models.CharField("Key",max_length=256)
     value=models.TextField("Value",blank=True,null=True)
     type=models.CharField("Type",max_length=1,choices=[(">","Received"),("V","Variable"),("R","Resolved")],default=">")
-
+##
+## Repeated events are deleated from Event table and only short record in EventRepeat remains
+##
 class EventRepeat(models.Model):
     class Meta:
         verbose_name="Event Repeat"
