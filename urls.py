@@ -26,6 +26,7 @@ urlpatterns = patterns('',
      (r'^fm/', include('noc.fm.urls')),
      (r'^cm/',  include('noc.cm.urls')),
      (r"^ip/", include("noc.ip.urls")),
+     (r"^vc/", include("noc.vc.urls")),
      (r"^peer/", include("noc.peer.urls")),
      (r"^dns/", include("noc.dns.urls")),
 )
