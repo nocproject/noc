@@ -32,6 +32,7 @@ class EventClassVarAdmin(admin.TabularInline):
 class EventClassAdmin(admin.ModelAdmin):
     list_display=["name","category","default_priority","repeat_suppression","repeat_suppression_interval","last_modified"]
     search_fields=["name"]
+    list_filter=["category"]
     inlines=[EventClassVarAdmin]
 #class EventClassVarAdmin(admin.ModelAdmin):
 #    list_display=["event_class","name","required","repeat_suppression"]
