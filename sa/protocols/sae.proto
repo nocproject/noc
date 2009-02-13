@@ -171,7 +171,8 @@ message PingCheckRequest {
 }
 
 message PingCheckResponse {
-    repeated string unreachables = 1;
+    repeated string reachable   = 1;
+    repeated string unreachable = 2;
 }
 
 //

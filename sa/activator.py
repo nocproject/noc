@@ -73,10 +73,14 @@ class Service(SAEService):
         self.activator.run_script(request.script,request.access_profile,script_callback,**kwargs)
     
     def ping_check(self,controller,request,done):
-        def ping_check_callback(unreachables):
+        def ping_check_callback(unreachable):
+            u=sets.Set(unreachable)
             r=PingCheckResponse()
-            for u in unreachables:
-                r.unreachables.append(u)
+            for a in request.addresses:
+                if a in u:
+                    r.unreachable.append(a)
+                else:
+                    r.reachable.append(a)
             done(controller,response=r)
         self.activator.ping_check([a for a in request.addresses],ping_check_callback)
 ##

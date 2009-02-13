@@ -51,7 +51,7 @@ class ObjectUnreachableRule(ClassificationRule):
     event_class=ObjectUnreachable
     patterns=[
         (r"^source$",  r"^system$"),
-        (r"^type$",    r"^failed$"),
+        (r"^result$",  r"^failed$"),
         (r"^probe$",   r"^ping$")
     ]
 ##
@@ -62,6 +62,6 @@ class ObjectReachableRule(ClassificationRule):
     event_class=ObjectReachable
     patterns=[
         (r"^source$",  r"^system$"),
-        (r"^type$",    r"^success$"),
+        (r"^result$",  r"^success$"),
         (r"^probe$",   r"^ping$")
     ]

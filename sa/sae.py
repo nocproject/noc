@@ -464,20 +464,12 @@ class SAE(Daemon):
     ##
     def ping_check(self,activator,addresses):
         def ping_check_callback(transaction,response=None,error=None):
-            if error:
-                logging.error("ping_check failed: %s"%error.text)
-                return
-            ts=datetime.datetime.now()
-            event_priority=EventPriority.objects.get(name="DEFAULT")
-            event_class=EventClass.objects.get(name="DEFAULT")
-            event_category=EventCategory.objects.get(name="DEFAULT")
-            activator_name=activator.name
-            for u in response.unreachables:
+            def save_probe_result(u,result):
                 try:
                     mo=ManagedObject.objects.get(activator=activator,trap_source_ip=u)
                 except ManagedObject.DoesNotExist:
                     logging.error("Unknown object in ping_check: %s"%u)
-                    continue
+                    return
                 e=Event(
                     timestamp=ts,
                     event_priority=event_priority,
@@ -490,11 +482,21 @@ class SAE(Daemon):
                             ("activator",activator_name),
                             ("probe","ping"),
                             ("ip",u),
-                            ("type","failed"),
-                            ("reason","Host Unreachable")]:
+                            ("result",result)]:
                     d=EventData(event=e,key=k,value=v)
                     d.save()
-
+            if error:
+                logging.error("ping_check failed: %s"%error.text)
+                return
+            ts=datetime.datetime.now()
+            event_priority=EventPriority.objects.get(name="DEFAULT")
+            event_class=EventClass.objects.get(name="DEFAULT")
+            event_category=EventCategory.objects.get(name="DEFAULT")
+            activator_name=activator.name
+            for u in response.unreachable:
+                save_probe_result(u,"failed")
+            for u in response.reachable:
+                save_probe_result(u,"success")
         logging.debug("ping_check(%s)"%activator.name)
         try:
             stream=self.get_activator_stream(activator.name)

@@ -828,8 +828,15 @@ _PINGCHECKRESPONSE = descriptor.Descriptor(
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='unreachables', full_name='sae.PingCheckResponse.unreachables', index=0,
+      name='reachable', full_name='sae.PingCheckResponse.reachable', index=0,
       number=1, type=9, cpp_type=9, label=3,
+      default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='unreachable', full_name='sae.PingCheckResponse.unreachable', index=1,
+      number=2, type=9, cpp_type=9, label=3,
       default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,

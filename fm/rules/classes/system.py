@@ -67,7 +67,7 @@ class ObjectUnreachable(EventClass):
         source=Var(required=True)
         activator=Var(required=True)
         probe=Var(required=True)
-        type=Var(required=True)
+        result=Var(required=True)
         ip=Var(required=True)
 ##
 ## Managed Reachable during ping probe
@@ -82,5 +82,5 @@ class ObjectReachable(EventClass):
         source=Var(required=True)
         activator=Var(required=True)
         probe=Var(required=True)
-        type=Var(required=True)
+        result=Var(required=True)
         ip=Var(required=True)
