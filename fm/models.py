@@ -169,6 +169,11 @@ class EventClass(models.Model):
     
     def __unicode__(self):
         return self.name
+    
+    def python_link(self):
+        return "<A HREF='/fm/py_event_class/%d/'>Python</A>"%self.id
+    python_link.short_description="Python"
+    python_link.allow_tags=True
 ##
 ## Event class variables
 ##

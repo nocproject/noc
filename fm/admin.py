@@ -30,7 +30,7 @@ class EventClassVarAdmin(admin.TabularInline):
     model=EventClassVar
     
 class EventClassAdmin(admin.ModelAdmin):
-    list_display=["name","category","default_priority","repeat_suppression","repeat_suppression_interval","last_modified"]
+    list_display=["name","category","default_priority","repeat_suppression","repeat_suppression_interval","last_modified","python_link"]
     search_fields=["name"]
     list_filter=["category"]
     inlines=[EventClassVarAdmin]

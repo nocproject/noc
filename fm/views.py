@@ -10,8 +10,8 @@
 """
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
-from noc.lib.render import render
-from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority
+from noc.lib.render import render,render_plain_text
+from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass
 from django.http import HttpResponseRedirect,HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 import random
@@ -73,3 +73,25 @@ def create_rule(request,event_id):
 @permission_required("fm.change_eventclassificationrule")
 def view_rules(request):
     return render(request,"fm/view_rules.html",{"rules":EventClassificationRule.objects.order_by("preference")})
+##
+## Convert event class description to python code
+##
+@permission_required("fm.add_eventclass")
+def py_event_class(request,event_class_id):
+    def py_q(s):
+        return s.replace("\"","\\\"")
+    event_class=EventClass.objects.get(id=int(event_class_id))
+    s="##\n## %s\n##\n"%event_class.name
+    s+="class %s(EventClass):\n"%event_class.name.replace(" ","").replace("-","_")
+    s+="    name     = \"%s\"\n"%py_q(event_class.name)
+    s+="    category = \"%s\"\n"%py_q(event_class.category.name)
+    s+="    priority = \"%s\"\n"%py_q(event_class.default_priority.name)
+    s+="    subject_template=\"%s\"\n"%py_q(event_class.subject_template)
+    s+="    body_template=\"\"\"%s\"\"\"\n"%event_class.body_template
+    vars=list(event_class.eventclassvar_set.all())
+    if vars:
+        s+="    class Vars:\n"
+        for v in event_class.eventclassvar_set.all():
+            s+="        %s=Var(required=%s,repeat=%s)\n"%(v.name,v.required,v.repeat_suppression)
+    s+="\n"
+    return render_plain_text(s)
