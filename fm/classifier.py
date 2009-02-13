@@ -169,12 +169,18 @@ class Classifier(Daemon):
         transaction.enter_transaction_management()
         while True:
             n=0
+            t0=time.time()
             for e in Event.objects.filter(subject__isnull=True).order_by("id"):
                 self.classify_event(e)
                 transaction.commit()
                 n+=1
             if n:
-                logging.info("%d events classified"%n)
+                dt=time.time()-t0
+                if dt>0:
+                    perf=n/dt
+                else:
+                    perf=0
+                logging.info("%d events classified (%10.4f second elapsed. %10.4f events/sec)"%(n,dt,perf))
             t=time.time()
             if t-last_sleep<=INTERVAL:
                 time.sleep(INTERVAL-t+last_sleep)
