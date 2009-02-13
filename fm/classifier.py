@@ -13,6 +13,9 @@ import re,logging,time,datetime
 rx_template=re.compile(r"\{\{([^}]+)\}\}")
 rx_oid=re.compile(r"^(\d+\.){6,}")
 
+##
+## In-memory Rule representation
+##
 class Rule(object):
     def __init__(self,rule):
         self.rule=rule
@@ -41,29 +44,44 @@ class Rule(object):
     def _drop_event(self):
         return self.rule.drop_event
     drop_event=property(_drop_event)
-
+##
+## Noc-classifier daemon
+##
 class Classifier(Daemon):
     daemon_name="noc-classifier"
     def __init__(self):
         self.rules=[]
         Daemon.__init__(self)
         logging.info("Running Classifier")
-    
+    ##
+    ## Load rules from database after loading config
+    ##
     def load_config(self):
         super(Classifier,self).load_config()
         self.load_rules()
-    
+    ##
+    ## Load rules from database
+    ##
     def load_rules(self):
         logging.info("Loading rules")
         self.rules=[Rule(r) for r in EventClassificationRule.objects.order_by("preference")]
         logging.info("%d rules loaded"%len(self.rules))
-    
+    ##
+    ## Replace all variable occurences in template by variables content
+    ##
     def expand_template(self,template,vars):
         return rx_template.sub(lambda m:str(vars.get(m.group(1),"{{UNKNOWN VAR}}")),template)
-    
+    ##
+    ## Classify single event:
+    ## 1. Resolve OIDs when source is SNMP Trap
+    ## 2. Try to find matching rule
+    ## 3. Drop event if required by rule
+    ## 4. Set event class of the matched rule or DEFAULT
+    ## 
     def classify_event(self,event):
         def is_oid(s):
             return rx_oid.search(s) is not None
+        # Save event's variables
         def update_var(event,k,v,t):
             try:
                 ed=EventData.objects.get(event=event,key=k,type=t)
@@ -95,11 +113,13 @@ class Classifier(Daemon):
             props+=resolved.items()
         # Find rule
         event_class=None
+        # Try to find matching rule
         for r in self.rules:
+            # Try to match rule
             vars=r.match(props)
             if vars is None:
                 continue
-            # Silently drop event when rule is drop rule
+            # Silently drop event when required by rule
             if r.drop_event:
                 logging.debug("Drop event %d"%event.id)
                 [ed.delete() for ed in event.eventdata_set.all()]
@@ -137,6 +157,7 @@ class Classifier(Daemon):
                         event.delete()
                         return
             break
+        # Set event class to DEFAULT when no matching rule found
         if event_class is None:
             event_class=EventClass.objects.get(name="DEFAULT")
             vars={}
@@ -155,12 +176,14 @@ class Classifier(Daemon):
         event.event_category=event_class.category
         event.event_priority=event_class.default_priority
         # Fill event subject and body
-        vars.update(resolved)
-        subject=self.expand_template(event_class.subject_template,vars)
-        if len(subject)>255:
+        f_vars=dict(props) # f_vars contains all event vars, including original, extracted and resolved
+        f_vars.update(vars)
+        f_vars.update(resolved)
+        subject=self.expand_template(event_class.subject_template,f_vars)
+        if len(subject)>255: # Too long subject must be truncated
             subject=subject[:250]+" ..."
         event.subject=subject
-        event.body=self.expand_template(event_class.body_template,vars)
+        event.body=self.expand_template(event_class.body_template,f_vars)
         event.save()
         
     def run(self):
