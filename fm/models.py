@@ -201,6 +201,14 @@ class EventClassificationRule(models.Model):
     name=models.CharField("Name",max_length=64)
     preference=models.IntegerField("Preference",1000)
     drop_event=models.BooleanField("Drop Event",default=False)
+    
+    def __unicode__(self):
+        return self.name
+        
+    def python_link(self):
+        return "<A HREF='/fm/py_event_classification_rule/%d/'>Python</A>"%self.id
+    python_link.short_description="Python"
+    python_link.allow_tags=True
 ##
 ## Regular expressions to match event vars
 ##

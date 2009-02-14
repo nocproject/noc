@@ -80,7 +80,7 @@ def view_rules(request):
 def py_event_class(request,event_class_id):
     def py_q(s):
         return s.replace("\"","\\\"")
-    event_class=EventClass.objects.get(id=int(event_class_id))
+    event_class=get_object_or_404(EventClass,id=int(event_class_id))
     s="##\n## %s\n##\n"%event_class.name
     s+="class %s(EventClass):\n"%event_class.name.replace(" ","").replace("-","_")
     s+="    name     = \"%s\"\n"%py_q(event_class.name)
@@ -94,4 +94,22 @@ def py_event_class(request,event_class_id):
         for v in event_class.eventclassvar_set.all():
             s+="        %s=Var(required=%s,repeat=%s)\n"%(v.name,v.required,v.repeat_suppression)
     s+="\n"
+    return render_plain_text(s)
+##
+## Convert event classification rule to python code
+##
+@permission_required("fm.add_eventclassificationrule")
+def py_event_classification_rule(request,rule_id):
+    def py_q(s):
+        return s.replace("\"","\\\"")
+    rule=get_object_or_404(EventClassificationRule,id=int(rule_id))
+    s="##\n## %s\n##\n"%rule.name
+    s+="class %sRule(ClassificationRule):\n"%rule.name.replace(" ","").replace("-","_")
+    s+="    name=\"%s\"\n"%py_q(rule.name)
+    s+="    event_class=%s\n"%rule.event_class.name.replace(" ","").replace("-","_")
+    s+="    preference=%d\n"%rule.preference
+    s+="    patterns=[\n"
+    for p in rule.eventclassificationre_set.all():
+        s+="        (\"%s\",\"%s\"),\n"%(py_q(p.left_re),py_q(p.right_re))
+    s+="    ]\n"
     return render_plain_text(s)

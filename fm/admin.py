@@ -43,7 +43,7 @@ class EventClassificationREAdmin(admin.TabularInline):
     model=EventClassificationRE
 
 class EventClassificationRuleAdmin(admin.ModelAdmin):
-    list_display=["event_class","name","preference","drop_event"]
+    list_display=["event_class","name","preference","drop_event","python_link"]
     search_fields=["name"]
     list_filter=["event_class","drop_event"]
     inlines=[EventClassificationREAdmin]
