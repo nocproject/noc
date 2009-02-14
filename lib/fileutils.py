@@ -59,4 +59,28 @@ def copy_file(f,t):
     if d is None:
         d=""
     safe_rewrite(t,d)
-    
+##
+## Create temporary file, write content and return path
+##
+def write_tempfile(text):
+    h,p=tempfile.mkstemp()
+    f=os.fdopen(h,"w")
+    f.write(text)
+    f.close()
+    return p
+##
+## Temporary file context manager.
+## Writes data to temporary file an returns path.
+## Unlinks temporary file on exit
+## USAGE:
+##     with temporary_file("line1\nline2") as p:
+##         subprocess.Popen(["wc","-l",p])
+##
+class temporary_file(object):
+    def __init__(self,text):
+        self.text=text
+    def __enter__(self):
+        self.p=write_tempfile(self.text)
+        return self.p
+    def __exit__(self, type, value, tb):
+        os.unlink(self.p)
