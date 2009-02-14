@@ -8,12 +8,15 @@
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
-from noc.lib.render import render,render_plain_text
-from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass
+from noc.lib.render import render,render_plain_text,render_success,render_failure
+from noc.lib.fileutils import temporary_file
+from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass, MIB
 from django.http import HttpResponseRedirect,HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django import forms
 import random,re
 ##
 ## Display active events list
@@ -115,3 +118,20 @@ def py_event_classification_rule(request,rule_id):
         s+="        (r\"%s\",r\"%s\"),\n"%(py_q(p.left_re),py_q(p.right_re))
     s+="    ]\n"
     return render_plain_text(s)
+##
+## MIB Upload
+##
+class MIBUploadForm(forms.Form):
+    file=forms.FileField()
+
+@permission_required("fm.add_mib")
+def upload_mib(request):
+    if request.method=="POST":
+        form = MIBUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            with temporary_file(request.FILES['file'].read()) as path:
+                mib=MIB.load(path)
+            return HttpResponseRedirect("/admin/fm/mib/%d/"%mib.id)
+    else:
+        form=MIBUploadForm()
+    return render(request,"fm/mib_upload.html",{"form":form})

@@ -1,0 +1,8 @@
+{% extends "template/template.html" %}
+{% block content %}
+<H1>Upload MIB</H1>
+<FORM METHOD="POST" ACTION="/fm/upload_mib/" enctype="multipart/form-data">
+    {{form}}
+    <INPUT TYPE="submit" VALUE="Upload MIB" />
+</FORM>
+{% endblock %}

@@ -78,7 +78,7 @@ class MIB(models.Model):
             mib=MIB.objects.get(name=mib_name)
             # Skip same version
             if mib.last_updated>=last_updated:
-                return
+                return mib
             mib.description=mib_description
             mib.uploaded=datetime.datetime.now()
             mib.last_updated=last_updated
@@ -103,12 +103,12 @@ class MIB(models.Model):
         cache_path=os.path.join("share","mibs","%s.mib"%mib_name)
         if (os.path.exists(local_cache_path) and os.path.samefile(path,local_cache_path))\
             or (os.path.exists(cache_path) and os.path.samefile(path,cache_path)):
-            print "in cache"
-            return
+            return mib
         with open(path) as f:
             data=f.read()
         cache_path=os.path.join(*["local","share","mibs","%s.mib"%mib_name])
         safe_rewrite(cache_path,data)
+        return mib
     ##
     ## Get OID by name
     ##
