@@ -13,8 +13,8 @@ from noc.fm.rules.classes.fallback import *
 ##
 ## Match any unhandled SNMP Trap
 ##
-class UnhandledExceptionRule(ClassificationRule):
-    name="Unhandled SNMP fallback"
+class UnhandledSNMPRule(ClassificationRule):
+    name="Unhandled SNMP"
     event_class=UnhandledSNMPTrap
     preference=100000
     patterns=[
@@ -25,7 +25,7 @@ class UnhandledExceptionRule(ClassificationRule):
 ## Match any unhandled Syslog message
 ##
 class UnhandledSyslogRule(ClassificationRule):
-    name="Unhandled Syslog fallback"
+    name="Unhandled Syslog"
     event_class=UnhandledSyslog
     preference=100000
     patterns=[
