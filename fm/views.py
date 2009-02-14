@@ -14,7 +14,7 @@ from noc.lib.render import render,render_plain_text
 from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass
 from django.http import HttpResponseRedirect,HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-import random
+import random,re
 ##
 ## Display active events list
 ##
@@ -74,6 +74,8 @@ def create_rule(request,event_id):
 def view_rules(request):
     return render(request,"fm/view_rules.html",{"rules":EventClassificationRule.objects.order_by("preference")})
 ##
+rx_py_id=re.compile("[^0-9a-zA-Z]+")
+##
 ## Convert event class description to python code
 ##
 @permission_required("fm.add_eventclass")
@@ -82,7 +84,7 @@ def py_event_class(request,event_class_id):
         return s.replace("\"","\\\"")
     event_class=get_object_or_404(EventClass,id=int(event_class_id))
     s="##\n## %s\n##\n"%event_class.name
-    s+="class %s(EventClass):\n"%event_class.name.replace(" ","").replace("-","_")
+    s+="class %s(EventClass):\n"%rx_py_id.sub("",event_class.name)
     s+="    name     = \"%s\"\n"%py_q(event_class.name)
     s+="    category = \"%s\"\n"%py_q(event_class.category.name)
     s+="    priority = \"%s\"\n"%py_q(event_class.default_priority.name)
@@ -104,12 +106,12 @@ def py_event_classification_rule(request,rule_id):
         return s.replace("\"","\\\"")
     rule=get_object_or_404(EventClassificationRule,id=int(rule_id))
     s="##\n## %s\n##\n"%rule.name
-    s+="class %sRule(ClassificationRule):\n"%rule.name.replace(" ","").replace("-","_")
+    s+="class %s_Rule(ClassificationRule):\n"%rx_py_id.sub("_",rule.name)
     s+="    name=\"%s\"\n"%py_q(rule.name)
     s+="    event_class=%s\n"%rule.event_class.name.replace(" ","").replace("-","_")
     s+="    preference=%d\n"%rule.preference
     s+="    patterns=[\n"
     for p in rule.eventclassificationre_set.all():
-        s+="        (\"%s\",\"%s\"),\n"%(py_q(p.left_re),py_q(p.right_re))
+        s+="        (r\"%s\",r\"%s\"),\n"%(py_q(p.left_re),py_q(p.right_re))
     s+="    ]\n"
     return render_plain_text(s)
