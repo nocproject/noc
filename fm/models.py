@@ -99,6 +99,7 @@ class MIB(models.Model):
             md=MIBDependency(mib=mib,requires_mib=r)
             md.save()
         # Save MIB to cache if not uploaded from cache
+        os.makedirs(os.path.join("local","share","mibs")) # Ensure directory exists
         local_cache_path=os.path.join("local","share","mibs","%s.mib"%mib_name)
         cache_path=os.path.join("share","mibs","%s.mib"%mib_name)
         if (os.path.exists(local_cache_path) and os.path.samefile(path,local_cache_path))\
@@ -106,8 +107,7 @@ class MIB(models.Model):
             return mib
         with open(path) as f:
             data=f.read()
-        cache_path=os.path.join(*["local","share","mibs","%s.mib"%mib_name])
-        safe_rewrite(cache_path,data)
+        safe_rewrite(local_cache_path,data)
         return mib
     ##
     ## Get OID by name
