@@ -5,9 +5,23 @@
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 from django.db import models
 from noc.sa.models import ManagedObject
+from noc.settings import config
+from noc.lib.fileutils import safe_rewrite
 import imp,subprocess,tempfile,os,datetime
+
+##
+## Exceptions
+##
+class MIBRequiredException(Exception):
+    def __init__(self,mib,requires_mib):
+        super(MIBRequiredException,self).__init__()
+        self.mib=mib
+        self.requires_mib=requires_mib
+    def __str__(self):
+        return "%s requires %s"%(self.mib,self.requires_mib)
 
 ##
 ## SNMP MIB
@@ -30,40 +44,71 @@ class MIB(models.Model):
     ##
     @classmethod
     def load(self,path):
+        # Build SMIPATH variable for smidump to exclude locally installed MIBs
+        smipath=["share/mibs","local/share/mibs"]
         # Convert MIB to python module and load
         h,p=tempfile.mkstemp()
-        subprocess.check_call(["smidump","-k","-f","python","-o",p,path])
+        subprocess.check_call([config.get("path","smidump"),"-k","-f","python","-o",p,path],
+            env={"SMIPATH":":".join(smipath)})
         m=imp.load_source("mib",p)
         os.close(h)
         os.unlink(p)
         mib_name=m.MIB["moduleName"]
+        # Check module dependencies
+        depends_on={}
+        if "imports" in m.MIB:
+            for i in m.MIB["imports"]:
+                if "module" not in i:
+                    continue
+                rm=i["module"]
+                if rm in depends_on:
+                    continue
+                try:
+                    depends_on[rm]=MIB.objects.get(name=rm)
+                except MIB.DoesNotExist:
+                    raise MIBRequiredException(mib_name,rm)
         # Get MIB latest revision date
         try:
             last_updated=datetime.datetime.strptime(sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1],"%Y-%m-%d %H:%M")
         except:
             last_updated=datetime.datetime(year=1970,month=1,day=1)
         # Check mib already uploaded
+        mib_description=m.MIB[mib_name].get("description",None)
         try:
-            o=MIB.objects.get(name=mib_name)
+            mib=MIB.objects.get(name=mib_name)
+            # Skip same version
+            if mib.last_updated>=last_updated:
+                return
+            mib.description=mib_description
+            mib.uploaded=datetime.datetime.now()
+            mib.last_updated=last_updated
+            mib.save()
+            # Delete all MIB Data
+            [d.delete() for d in mib.mibdata_set.all()]
         except MIB.DoesNotExist:
             o=None
-        if o:
-            # Skip same version
-            if o.last_updated>=last_updated:
-                return
-            # Remove old version and data
-            from django.db import connection
-            cursor = connection.cursor()
-            cursor.execute("DELETE FROM %s WHERE mib_id=%%s"%MIBData._meta.db_table,[o.id])
-            o.delete()
-        mib_description=m.MIB[mib_name].get("description",None)
-        mib=MIB(name=mib_name,description=mib_description,uploaded=datetime.datetime.now(),last_updated=last_updated)
-        mib.save()
-        if "nodes" not in m.MIB:
+            mib=MIB(name=mib_name,description=mib_description,uploaded=datetime.datetime.now(),last_updated=last_updated)
+            mib.save()
+        # Save MIB Data
+        if "nodes" in m.MIB:
+            for node,v in m.MIB["nodes"].items():
+                d=MIBData(mib=mib,oid=v["oid"],name="%s::%s"%(mib_name,node),description=v.get("description",None))
+                d.save()
+        # Save MIB Dependency
+        for r in depends_on.values():
+            md=MIBDependency(mib=mib,requires_mib=r)
+            md.save()
+        # Save MIB to cache if not uploaded from cache
+        local_cache_path=os.path.join("local","share","mibs","%s.mib"%mib_name)
+        cache_path=os.path.join("share","mibs","%s.mib"%mib_name)
+        if (os.path.exists(local_cache_path) and os.path.samefile(path,local_cache_path))\
+            or (os.path.exists(cache_path) and os.path.samefile(path,cache_path)):
+            print "in cache"
             return
-        for node,v in m.MIB["nodes"].items():
-            d=MIBData(mib=mib,oid=v["oid"],name="%s::%s"%(mib_name,node),description=v.get("description",None))
-            d.save()
+        with open(path) as f:
+            data=f.read()
+        cache_path=os.path.join(*["local","share","mibs","%s.mib"%mib_name])
+        safe_rewrite(cache_path,data)
     ##
     ## Get OID by name
     ##
@@ -107,6 +152,20 @@ class MIBData(models.Model):
 
     def __unicode__(self):
         return "%s:%s = %s"%(self.mib.name,self.name,self.oid)
+##
+## MIB Dependency
+##
+class MIBDependency(models.Model):
+    class Meta:
+        verbose_name="MIB Import"
+        verbose_name_plural="MIB Imports"
+        unique_together=[("mib","requires_mib")]
+    mib=models.ForeignKey(MIB,verbose_name="MIB")
+    requires_mib=models.ForeignKey(MIB,verbose_name="Requires MIB",related_name="requiredbymib_set")
+    
+    def __unicode__(self):
+        return "%s requires %s"%(self.mib.name,self.requires_mib.name)
+    
 ##
 ## Events
 ##
