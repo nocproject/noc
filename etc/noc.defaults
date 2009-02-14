@@ -60,6 +60,9 @@ telnet     = /usr/bin/telnet
 ssh        = /usr/bin/ssh
 rsync      = /usr/bin/rsync
 pg_dump    = /usr/local/bin/pg_dump
+tar        = /usr/bin/tar
+gzip       = /usr/bin/gzip
+smidump    = /usr/bin/smidump
 #
 # SAE XML-RPC interface
 #
