@@ -7,6 +7,7 @@
 """
 from noc.main.report import Column
 import noc.main.report
+from noc.lib.version import get_version
 import os,sys
 import django
 
@@ -17,8 +18,8 @@ class Report(noc.main.report.Report):
     columns=[Column("Component"),Column("Version")]
     def get_queryset(self):
         return [
-            ["OS"," ".join(os.uname())],
-            ["Python",sys.version],
-            ["Django","%d.%d %s"%django.VERSION],
-            # NOC Version, hg tip
+            ["NOC"    , get_version()],
+            ["OS"     , " ".join(os.uname())],
+            ["Python" , sys.version],
+            ["Django" , "%s"%str(django.VERSION)],
         ]
