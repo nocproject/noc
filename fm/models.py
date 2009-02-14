@@ -165,7 +165,23 @@ class MIBDependency(models.Model):
     
     def __unicode__(self):
         return "%s requires %s"%(self.mib.name,self.requires_mib.name)
-    
+    ##
+    ## Return graphviz dot with MIB dependencies
+    ##
+    @classmethod
+    def get_dot(cls):
+        r=["digraph {"]
+        r+=["label=\"MIB Dependencies\";"]
+        for d in cls.objects.all():
+            r+=["\"%s\" -> \"%s\";"%(d.mib.name,d.requires_mib.name)]
+        r+=["}"]
+        return "\n".join(r)
+    ##
+    ## Write graphviz dot with MIB dependencies
+    ##
+    @classmethod
+    def write_dot(cls,path):
+        safe_rewrite(path,cls.get_dot())
 ##
 ## Events
 ##
