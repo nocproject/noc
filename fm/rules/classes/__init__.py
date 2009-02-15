@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.models import EventCategory,EventPriority,EventClassVar
+from noc.fm.models import EventCategory,EventPriority,EventClassVar,event_trigger_registry
 import noc.fm.models
 import re
 
@@ -83,6 +83,7 @@ class EventClass(object):
     body_template=""
     repeat_suppression=False
     repeat_suppression_interval=3600
+    trigger=None
     class Vars: pass
     ##
     ## Syncronize class with database
@@ -90,6 +91,10 @@ class EventClass(object):
     @classmethod
     def sync(cls):
         print "Syncing class:",cls.name,
+        # Check trigger
+        if cls.trigger and cls.trigger not in event_trigger_registry.classes:
+            raise "Invalid event trigger: %s"%cls.trigger
+        # Create/update event class
         try:
             ec=noc.fm.models.EventClass.objects.get(name=cls.name)
             ec.category=get_category(cls.category)
@@ -98,6 +103,7 @@ class EventClass(object):
             ec.body_template=cls.body_template
             ec.repeat_suppression=cls.repeat_suppression
             ec.repeat_suppression_interval=cls.repeat_suppression_interval
+            ec.trigger=cls.trigger
             print "<updated>"
         except noc.fm.models.EventClass.DoesNotExist:
             ec=noc.fm.models.EventClass(
@@ -107,7 +113,8 @@ class EventClass(object):
                 subject_template=cls.subject_template,
                 body_template=cls.body_template,
                 repeat_suppression=cls.repeat_suppression,
-                repeat_suppression_interval=cls.repeat_suppression_interval)
+                repeat_suppression_interval=cls.repeat_suppression_interval,
+                trigger=cls.trigger)
             print "<created>"
         ec.save()
         # Syncronize vars
