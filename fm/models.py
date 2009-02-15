@@ -15,6 +15,11 @@ import imp,subprocess,tempfile,os,datetime,re
 
 ##
 event_trigger_registry.register_all()
+##
+## Python quote helper
+##
+def py_q(s):
+    return s.replace("\"","\\\"")
 
 ##
 ## Exceptions
@@ -30,6 +35,7 @@ class MIBRequiredException(Exception):
 ## Regular expressions
 ##
 rx_module_not_found=re.compile(r"{module-not-found}.*`([^']+)'")
+rx_py_id=re.compile("[^0-9a-zA-Z]+")
 
 ##
 ## SNMP MIB
@@ -272,6 +278,31 @@ class EventClass(models.Model):
     def run_trigger(self,event):
         if self.trigger and self.trigger in event_trigger_registry.classes:
             event_trigger_registry.classes[self.trigger]().handle(event)
+    ##
+    ## Python representation of data structure
+    ##
+    def _python_code(self):
+        s=["##","## %s"%self.name,"##"]
+        s+=["class %s(EventClass):"%rx_py_id.sub("",self.name)]
+        s+=["    name     = \"%s\""%py_q(self.name)]
+        s+=["    category = \"%s\""%py_q(self.category.name)]
+        s+=["    priority = \"%s\""%py_q(self.default_priority.name)]
+        s+=["    subject_template=\"%s\""%py_q(self.subject_template)]
+        s+=["    body_template=\"\"\"%s\"\"\""%self.body_template]
+        s+=["    repeat_suppression=%s"%self.repeat_suppression]
+        s+=["    repeat_suppression_interval=%d"%self.repeat_suppression_interval]
+        if self.trigger:
+            s+=["    trigger=\"%s\""%self.trigger]
+        else:
+            s+=["    trigger=None"]
+        vars=list(self.eventclassvar_set.all())
+        if vars:
+            s+=["    class Vars:"]
+            for v in vars:
+                s+=["        %s=Var(required=%s,repeat=%s)"%(v.name,v.required,v.repeat_suppression)]
+        s+=[]
+        return "\n".join(s)
+    python_code=property(_python_code)
 ##
 ## Event class variables
 ##
@@ -307,6 +338,21 @@ class EventClassificationRule(models.Model):
         return "<A HREF='/fm/py_event_classification_rule/%d/'>Python</A>"%self.id
     python_link.short_description="Python"
     python_link.allow_tags=True
+    ##
+    ## Python representation of data structure
+    ##
+    def _python_code(self):
+        s=["##","## %s"%self.name,"##"]
+        s+=["class %s_Rule(ClassificationRule):"%rx_py_id.sub("_",self.name)]
+        s+=["    name=\"%s\""%py_q(self.name)]
+        s+=["    event_class=%s"%self.event_class.name.replace(" ","").replace("-","_")]
+        s+=["    preference=%d"%self.preference]
+        s+=["    patterns=["]
+        for p in self.eventclassificationre_set.all():
+            s+=["        (r\"%s\",r\"%s\"),"%(py_q(p.left_re),py_q(p.right_re))]
+        s+=["    ]",""]
+        return "\n".join(s)
+    python_code=property(_python_code)
 ##
 ## Regular expressions to match event vars
 ##

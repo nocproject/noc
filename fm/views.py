@@ -77,47 +77,19 @@ def create_rule(request,event_id):
 def view_rules(request):
     return render(request,"fm/view_rules.html",{"rules":EventClassificationRule.objects.order_by("preference")})
 ##
-rx_py_id=re.compile("[^0-9a-zA-Z]+")
-##
 ## Convert event class description to python code
 ##
 @permission_required("fm.add_eventclass")
 def py_event_class(request,event_class_id):
-    def py_q(s):
-        return s.replace("\"","\\\"")
     event_class=get_object_or_404(EventClass,id=int(event_class_id))
-    s="##\n## %s\n##\n"%event_class.name
-    s+="class %s(EventClass):\n"%rx_py_id.sub("",event_class.name)
-    s+="    name     = \"%s\"\n"%py_q(event_class.name)
-    s+="    category = \"%s\"\n"%py_q(event_class.category.name)
-    s+="    priority = \"%s\"\n"%py_q(event_class.default_priority.name)
-    s+="    subject_template=\"%s\"\n"%py_q(event_class.subject_template)
-    s+="    body_template=\"\"\"%s\"\"\"\n"%event_class.body_template
-    vars=list(event_class.eventclassvar_set.all())
-    if vars:
-        s+="    class Vars:\n"
-        for v in event_class.eventclassvar_set.all():
-            s+="        %s=Var(required=%s,repeat=%s)\n"%(v.name,v.required,v.repeat_suppression)
-    s+="\n"
-    return render_plain_text(s)
+    return render_plain_text(event_class.python_code)
 ##
 ## Convert event classification rule to python code
 ##
 @permission_required("fm.add_eventclassificationrule")
 def py_event_classification_rule(request,rule_id):
-    def py_q(s):
-        return s.replace("\"","\\\"")
     rule=get_object_or_404(EventClassificationRule,id=int(rule_id))
-    s="##\n## %s\n##\n"%rule.name
-    s+="class %s_Rule(ClassificationRule):\n"%rx_py_id.sub("_",rule.name)
-    s+="    name=\"%s\"\n"%py_q(rule.name)
-    s+="    event_class=%s\n"%rule.event_class.name.replace(" ","").replace("-","_")
-    s+="    preference=%d\n"%rule.preference
-    s+="    patterns=[\n"
-    for p in rule.eventclassificationre_set.all():
-        s+="        (r\"%s\",r\"%s\"),\n"%(py_q(p.left_re),py_q(p.right_re))
-    s+="    ]\n"
-    return render_plain_text(s)
+    return render_plain_text(rule.python_code)
 ##
 ## MIB Upload
 ##
