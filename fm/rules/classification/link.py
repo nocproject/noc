@@ -27,7 +27,7 @@ class SNMP_Link_Down_Rule(ClassificationRule):
 ## SNMP Link Up
 ##
 class SNMP_Link_Up_Rule(ClassificationRule):
-    name="SNMP Link Down"
+    name="SNMP Link Up"
     event_class=LinkUp
     preference=1000
     required_mibs=["IF-MIB"]
