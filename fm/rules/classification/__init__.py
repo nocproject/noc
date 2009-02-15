@@ -9,7 +9,7 @@
 """
 import re
 from noc.fm.rules.classes.default import Default
-from noc.fm.models import EventClass,EventClassificationRule,EventClassificationRE
+from noc.fm.models import MIB,EventClass,EventClassificationRule,EventClassificationRE,MIBNotFoundException
 
 re_var=re.compile(r"\(\?P<([^>]+>)\)")
 ##
@@ -56,6 +56,13 @@ class ClassificationRule(object):
     @classmethod
     def sync(cls):
         print "Syncing rule:",cls.name,
+        # Check all required MIBs are uploaded
+        for mib_name in cls.required_mibs:
+            try:
+                mib=MIB.objects.get(name=mib_name)
+            except MIB.DoesNotExist:
+                raise MIBNotFoundException(mib_name)
+        # Create or update event classification rule
         try:
             r=EventClassificationRule.objects.get(name=cls.name)
             r.event_class=get_event_class(cls.event_class)
