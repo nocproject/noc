@@ -63,6 +63,7 @@ pg_dump    = /usr/local/bin/pg_dump
 tar        = /usr/bin/tar
 gzip       = /usr/bin/gzip
 smidump    = /usr/bin/smidump
+smilint    = /usr/bin/smilint
 #
 # SAE XML-RPC interface
 #

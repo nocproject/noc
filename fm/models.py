@@ -61,8 +61,7 @@ class MIB(models.Model):
         # Build SMIPATH variable for smidump to exclude locally installed MIBs
         smipath=["share/mibs","local/share/mibs"]
         # Pass MIB through smilint to detect missed modules
-        smilint_path=os.path.join(os.path.dirname(config.get("path","smidump")),"smilint")
-        f=subprocess.Popen([smilint_path,"-m",path],stderr=subprocess.PIPE,env={"SMIPATH":":".join(smipath)}).stderr
+        f=subprocess.Popen([config.get("path","smilint"),"-m",path],stderr=subprocess.PIPE,env={"SMIPATH":":".join(smipath)}).stderr
         for l in f:
             match=rx_module_not_found.search(l.strip())
             if match:
