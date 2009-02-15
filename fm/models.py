@@ -266,6 +266,12 @@ class EventClass(models.Model):
         return "<A HREF='/fm/py_event_class/%d/'>Python</A>"%self.id
     python_link.short_description="Python"
     python_link.allow_tags=True
+    ##
+    ## Run trigger if defined
+    ##
+    def run_trigger(self,event):
+        if self.trigger and self.trigger in event_trigger_registry.classes:
+            event_trigger_registry.classes[self.trigger]().handle(event)
 ##
 ## Event class variables
 ##
