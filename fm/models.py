@@ -10,7 +10,11 @@ from django.db import models
 from noc.sa.models import ManagedObject
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
+from noc.fm.triggers import event_trigger_registry
 import imp,subprocess,tempfile,os,datetime,re
+
+##
+event_trigger_registry.register_all()
 
 ##
 ## Exceptions
