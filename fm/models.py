@@ -10,7 +10,7 @@ from django.db import models
 from noc.sa.models import ManagedObject
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
-import imp,subprocess,tempfile,os,datetime
+import imp,subprocess,tempfile,os,datetime,re
 
 ##
 ## Exceptions
@@ -22,6 +22,10 @@ class MIBRequiredException(Exception):
         self.requires_mib=requires_mib
     def __str__(self):
         return "%s requires %s"%(self.mib,self.requires_mib)
+##
+## Regular expressions
+##
+rx_module_not_found=re.compile(r"{module-not-found}.*`([^']+)'")
 
 ##
 ## SNMP MIB
@@ -46,6 +50,13 @@ class MIB(models.Model):
     def load(self,path):
         # Build SMIPATH variable for smidump to exclude locally installed MIBs
         smipath=["share/mibs","local/share/mibs"]
+        # Pass MIB through smilint to detect missed modules
+        smilint_path=os.path.join(os.path.dirname(config.get("path","smidump")),"smilint")
+        f=subprocess.Popen([smilint_path,"-m",path],stderr=subprocess.PIPE,env={"SMIPATH":":".join(smipath)}).stderr
+        for l in f:
+            match=rx_module_not_found.search(l.strip())
+            if match:
+                raise MIBRequiredException("Uploaded MIB",match.group(1))
         # Convert MIB to python module and load
         h,p=tempfile.mkstemp()
         subprocess.check_call([config.get("path","smidump"),"-k","-f","python","-o",p,path],
@@ -99,8 +110,10 @@ class MIB(models.Model):
             md=MIBDependency(mib=mib,requires_mib=r)
             md.save()
         # Save MIB to cache if not uploaded from cache
-        os.makedirs(os.path.join("local","share","mibs")) # Ensure directory exists
-        local_cache_path=os.path.join("local","share","mibs","%s.mib"%mib_name)
+        lcd=os.path.join("local","share","mibs")
+        if not os.path.isdir(lcd): # Ensure directory exists
+            os.makedirs(os.path.join("local","share","mibs")) 
+        local_cache_path=os.path.join(lcd,"%s.mib"%mib_name)
         cache_path=os.path.join("share","mibs","%s.mib"%mib_name)
         if (os.path.exists(local_cache_path) and os.path.samefile(path,local_cache_path))\
             or (os.path.exists(cache_path) and os.path.samefile(path,cache_path)):
