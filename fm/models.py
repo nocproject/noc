@@ -252,12 +252,12 @@ class EventClass(models.Model):
     name=models.CharField("Name",max_length=64)
     category=models.ForeignKey(EventCategory,verbose_name="Event Category")
     default_priority=models.ForeignKey(EventPriority,verbose_name="Default Priority")
-    #variables=models.CharField("Variables",max_length=128,blank=True,null=True)
     subject_template=models.CharField("Subject Template",max_length=128)
     body_template=models.TextField("Body Template")
     last_modified=models.DateTimeField("last_modified",auto_now=True)
     repeat_suppression=models.BooleanField("Repeat Suppression",default=False)
     repeat_suppression_interval=models.IntegerField("Repeat Suppression interval (secs)",default=3600)
+    trigger=models.CharField("Trigger",max_length=64,null=True,blank=True,choices=event_trigger_registry.choices)
     
     def __unicode__(self):
         return self.name
