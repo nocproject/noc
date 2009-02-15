@@ -59,8 +59,8 @@ class DNSZoneProfile(models.Model):
         verbose_name="DNS Zone Profile"
         verbose_name_plural="DNS Zone Profiles"
     name=models.CharField("Name",max_length=32,unique=True)
-    masters=models.ManyToManyField(DNSServer,verbose_name="Masters",related_name="masters")
-    slaves=models.ManyToManyField(DNSServer,verbose_name="Slaves",related_name="slaves")
+    masters=models.ManyToManyField(DNSServer,verbose_name="Masters",related_name="masters",blank=True)
+    slaves=models.ManyToManyField(DNSServer,verbose_name="Slaves",related_name="slaves",blank=True)
     zone_soa=models.CharField("SOA",max_length=64)
     zone_contact=models.CharField("Contact",max_length=64)
     zone_refresh=models.IntegerField("Refresh",default=3600)
