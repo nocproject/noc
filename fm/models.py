@@ -32,6 +32,15 @@ class MIBRequiredException(Exception):
     def __str__(self):
         return "%s requires %s"%(self.mib,self.requires_mib)
 ##
+class MIBNotFoundException(Exception):
+    def __init__(self,mib):
+        super(MIBNotFoundException,self).__init__()
+        self.mib=mib
+    def __str__(self):
+        return "MIB not found: %s"%self.mib
+
+
+##
 ## Regular expressions
 ##
 rx_module_not_found=re.compile(r"{module-not-found}.*`([^']+)'")
