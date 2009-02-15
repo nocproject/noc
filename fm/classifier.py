@@ -185,6 +185,8 @@ class Classifier(Daemon):
         event.subject=subject
         event.body=self.expand_template(event_class.body_template,f_vars)
         event.save()
+        # Finally run event class trigger
+        event.event_class.run_trigger(event)
         
     def run(self):
         INTERVAL=10
