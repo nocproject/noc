@@ -263,6 +263,7 @@ class EventClass(models.Model):
     repeat_suppression=models.BooleanField("Repeat Suppression",default=False)
     repeat_suppression_interval=models.IntegerField("Repeat Suppression interval (secs)",default=3600)
     trigger=models.CharField("Trigger",max_length=64,null=True,blank=True,choices=event_trigger_registry.choices)
+    is_builtin=models.BooleanField("Is Builtin",default=False)
     
     def __unicode__(self):
         return self.name
@@ -329,6 +330,7 @@ class EventClassificationRule(models.Model):
     name=models.CharField("Name",max_length=64)
     preference=models.IntegerField("Preference",1000)
     drop_event=models.BooleanField("Drop Event",default=False)
+    is_builtin=models.BooleanField("Is Builtin",default=False)
     
     def __unicode__(self):
         return self.name

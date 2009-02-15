@@ -59,15 +59,17 @@ class ClassificationRule(object):
         try:
             r=EventClassificationRule.objects.get(name=cls.name)
             r.event_class=get_event_class(cls.event_class)
-            preference=r.preference
-            drop_event=r.drop_event
+            r.preference=cls.preference
+            r.drop_event=cls.drop_event
+            r.is_builtin=True
             print "<updated>"
         except EventClassificationRule.DoesNotExist:
             r=EventClassificationRule(
                 event_class=get_event_class(cls.event_class),
                 name=cls.name,
                 preference=cls.preference,
-                drop_event=cls.drop_event
+                drop_event=cls.drop_event,
+                is_builtin=True
             )
             print "<created>"
         r.save()

@@ -104,6 +104,7 @@ class EventClass(object):
             ec.repeat_suppression=cls.repeat_suppression
             ec.repeat_suppression_interval=cls.repeat_suppression_interval
             ec.trigger=cls.trigger
+            ec.is_builtin=True
             print "<updated>"
         except noc.fm.models.EventClass.DoesNotExist:
             ec=noc.fm.models.EventClass(
@@ -114,7 +115,8 @@ class EventClass(object):
                 body_template=cls.body_template,
                 repeat_suppression=cls.repeat_suppression,
                 repeat_suppression_interval=cls.repeat_suppression_interval,
-                trigger=cls.trigger)
+                trigger=cls.trigger,
+                is_builtin=True)
             print "<created>"
         ec.save()
         # Syncronize vars

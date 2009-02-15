@@ -35,9 +35,10 @@ class EventClassVarAdmin(admin.TabularInline):
     model=EventClassVar
 ##
 class EventClassAdmin(admin.ModelAdmin):
-    list_display=["name","category","default_priority","repeat_suppression","repeat_suppression_interval","trigger","last_modified","python_link"]
+    list_display=["name","category","default_priority","is_builtin","repeat_suppression","repeat_suppression_interval",
+        "trigger","last_modified","python_link"]
     search_fields=["name"]
-    list_filter=["category"]
+    list_filter=["is_builtin","category"]
     inlines=[EventClassVarAdmin]
 ##
 class EventClassificationREAdmin(admin.TabularInline):
@@ -45,9 +46,9 @@ class EventClassificationREAdmin(admin.TabularInline):
     model=EventClassificationRE
 ##
 class EventClassificationRuleAdmin(admin.ModelAdmin):
-    list_display=["event_class","name","preference","drop_event","python_link"]
+    list_display=["event_class","name","preference","is_builtin","drop_event","python_link"]
     search_fields=["name"]
-    list_filter=["event_class","drop_event"]
+    list_filter=["is_builtin","drop_event","event_class"]
     inlines=[EventClassificationREAdmin]
 ##
 admin.site.register(MIB, MIBAdmin)
