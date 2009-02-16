@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from noc.fm.rules.classes import EventClass
 from noc.fm.rules.classification import ClassificationRule
-from noc.fm.models import MIB,MIBRequiredException
+from noc.fm.models import MIB,MIBRequiredException,EventClassificationRule
 import os
 
 class Command(BaseCommand):
@@ -50,8 +50,20 @@ class Command(BaseCommand):
     ## Syncronize event classification rules
     ##
     def sync_classification_rules(self):
+        # Make built-in rules list
+        loaded_rules={}
+        for r in EventClassificationRule.objects.filter(is_builtin=True):
+            loaded_rules[r.name]=None
+        # Sync new rules
         for c in self.search(ClassificationRule,"fm/rules/classification"):
             c.sync()
+            if c.name in loaded_rules:
+                del loaded_rules[c.name]
+        # Delete stale rules
+        for r in loaded_rules:
+            rule=EventClassificationRule.objects.get(name=r)
+            rule.delete()
+            print "DELETE RULE %s"%r
     ##
     ## Syncronize built-in MIBs
     ##
