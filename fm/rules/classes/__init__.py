@@ -90,7 +90,6 @@ class EventClass(object):
     ##
     @classmethod
     def sync(cls):
-        print "Syncing class:",cls.name,
         # Check trigger
         if cls.trigger and cls.trigger not in event_trigger_registry.classes:
             raise "Invalid event trigger: %s"%cls.trigger
@@ -105,7 +104,7 @@ class EventClass(object):
             ec.repeat_suppression_interval=cls.repeat_suppression_interval
             ec.trigger=cls.trigger
             ec.is_builtin=True
-            print "<updated>"
+            print "UPDATE CLASS %s"%cls.name
         except noc.fm.models.EventClass.DoesNotExist:
             ec=noc.fm.models.EventClass(
                 name=cls.name,
@@ -117,7 +116,7 @@ class EventClass(object):
                 repeat_suppression_interval=cls.repeat_suppression_interval,
                 trigger=cls.trigger,
                 is_builtin=True)
-            print "<created>"
+            print "CREATE CLASS %s"%cls.name
         ec.save()
         # Syncronize vars
         [v.delete() for v in ec.eventclassvar_set.all()]
