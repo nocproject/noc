@@ -361,6 +361,8 @@ class EventClassificationRule(models.Model):
         s+=["    name=\"%s\""%py_q(self.name)]
         s+=["    event_class=%s"%self.event_class.name.replace(" ","").replace("-","_")]
         s+=["    preference=%d"%self.preference]
+        if self.drop_event:
+            s+=["    drop_event=True"]
         s+=["    patterns=["]
         for p in self.eventclassificationre_set.all():
             s+=["        (r\"%s\",r\"%s\"),"%(py_q(p.left_re),py_q(p.right_re))]
