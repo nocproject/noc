@@ -55,7 +55,6 @@ class ClassificationRule(object):
     ##
     @classmethod
     def sync(cls):
-        print "Syncing rule:",cls.name,
         # Check all required MIBs are uploaded
         for mib_name in cls.required_mibs:
             try:
@@ -69,7 +68,7 @@ class ClassificationRule(object):
             r.preference=cls.preference
             r.drop_event=cls.drop_event
             r.is_builtin=True
-            print "<updated>"
+            print "UPDATE RULE %s"%cls.name
         except EventClassificationRule.DoesNotExist:
             r=EventClassificationRule(
                 event_class=get_event_class(cls.event_class),
@@ -78,7 +77,7 @@ class ClassificationRule(object):
                 drop_event=cls.drop_event,
                 is_builtin=True
             )
-            print "<created>"
+            print "CREATE RULE %s"%cls.name
         r.save()
         [rx.delete() for rx in r.eventclassificationre_set.all()]
         for rx_l,rx_r in cls.patterns:
