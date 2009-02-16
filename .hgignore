@@ -9,3 +9,4 @@ dist/
 build/
 noc.egg-info/
 etc/*.conf
+local/*
