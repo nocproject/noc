@@ -13,8 +13,8 @@ from noc.fm.rules.classes.dot11 import *
 ##
 ## CISCO.IOS dot11 Associated
 ##
-class CISCO_IOS_dot11_Associated_Rule(ClassificationRule):
-    name="CISCO.IOS dot11 Associated"
+class CISCO_IOS_dot11_Associated_SNMP_Rule(ClassificationRule):
+    name="CISCO.IOS dot11 Associated SNMP"
     event_class=Dot11Associated
     preference=1000
     patterns=[
@@ -25,8 +25,8 @@ class CISCO_IOS_dot11_Associated_Rule(ClassificationRule):
 ##
 ## Cisco.IOS dot11 Disassociated
 ##
-class Cisco_IOS_dot11_Disassociated_Rule(ClassificationRule):
-    name="Cisco.IOS dot11 Disassociated"
+class Cisco_IOS_dot11_Disassociated_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS dot11 Disassociated SNMP"
     event_class=Dot11Disassociated
     preference=1000
     patterns=[
