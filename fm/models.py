@@ -121,8 +121,11 @@ class MIB(models.Model):
         # Save MIB Data
         if "nodes" in m.MIB:
             for node,v in m.MIB["nodes"].items():
-                d=MIBData(mib=mib,oid=v["oid"],name="%s::%s"%(mib_name,node),description=v.get("description",None))
-                d.save()
+                try: # Do not import duplicated OIDs
+                    MIBData.objects.get(oid=v["oid"])
+                except MIBData.DoesNotExist:
+                    d=MIBData(mib=mib,oid=v["oid"],name="%s::%s"%(mib_name,node),description=v.get("description",None))
+                    d.save()
         # Save MIB Dependency
         for r in depends_on.values():
             md=MIBDependency(mib=mib,requires_mib=r)
