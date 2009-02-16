@@ -17,6 +17,7 @@ class Cisco_IOS_TCP_Connection_Closed_Rule(ClassificationRule):
     event_class=DROP
     preference=90000
     drop_event=True
+    required_mibs=["CISCOTRAP-MIB"]
     patterns=[
         (r"^source$",r"^SNMP Trap$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.0\.1$"),
