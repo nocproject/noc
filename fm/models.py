@@ -119,13 +119,14 @@ class MIB(models.Model):
             mib=MIB(name=mib_name,description=mib_description,uploaded=datetime.datetime.now(),last_updated=last_updated)
             mib.save()
         # Save MIB Data
-        if "nodes" in m.MIB:
-            for node,v in m.MIB["nodes"].items():
-                try: # Do not import duplicated OIDs
-                    MIBData.objects.get(oid=v["oid"])
-                except MIBData.DoesNotExist:
-                    d=MIBData(mib=mib,oid=v["oid"],name="%s::%s"%(mib_name,node),description=v.get("description",None))
-                    d.save()
+        for i in ["nodes","notifications"]:
+            if i in m.MIB:
+                for node,v in m.MIB[i].items():
+                    try: # Do not import duplicated OIDs
+                        MIBData.objects.get(oid=v["oid"])
+                    except MIBData.DoesNotExist:
+                        d=MIBData(mib=mib,oid=v["oid"],name="%s::%s"%(mib_name,node),description=v.get("description",None))
+                        d.save()
         # Save MIB Dependency
         for r in depends_on.values():
             md=MIBDependency(mib=mib,requires_mib=r)
