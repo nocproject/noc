@@ -14,3 +14,12 @@ from noc.fm.rules.classes import EventClass,Var
 ##
 class Default(EventClass):
     name="DEFAULT"
+##
+## DROP
+##
+class DROP(EventClass):
+    name     = "DROP"
+    category = "DEFAULT"
+    priority = "DEFAULT"
+    subject_template="DROPPED EVENT"
+    body_template="""DROPPED EVENT"""
