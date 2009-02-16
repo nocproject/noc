@@ -42,19 +42,25 @@ class TrapCollector(ListenUDPSocket,EventCollector):
                         elif hasattr(k,"_value"):
                             c.append(k._value)
                 return c
+            # Quote binary data to ASCII string
+            def bin_quote(s):
+                def qc(c):
+                    if c=="\\":
+                        return "\\\\"
+                    oc=ord(c)
+                    if oc<32 or oc>126:
+                        return "\\x%02x"%oc
+                    return c
+                return "".join([qc(c) for c in s])
+                
             v=unchain(val)
             if len(v)==0:
                 return ""
             v=v[-1]
             if type(v)==tuple:
                 return oid_to_str(v)
-            # Try to detect and handle binary data
-            v=str(v)
-            try:
-                u=unicode(v,'ascii')
-            except UnicodeDecodeError:
-                v=".".join(["%d"%ord(c) for c in list(v)])
-            return v
+            return bin_quote(str(v))
+
         if not self.check_source_address(address):
             return
         while whole_msg:
