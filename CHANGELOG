@@ -1,5 +1,30 @@
+0.1.2 (18-FEB-2009)
+-------------------
+MIGRATION:
+ * Create local/ directory in NOC root owned by NOC daemons user
+ * Set up tar, gzip, smidump and smilint paths in etc/noc.conf
+ * Follow http://trac.nocproject.org/trac/wiki/NocUpdate procedure
+CHANGES:
+ * fm
+   * Built-in event classes and rules are provided with system (15 classes and 13 rules)
+   * manage.py sync-rules command to import built-in classes, rules and MIBs
+   * Link to preview Event Classification Rules
+   * Link to convert Event Class/Classification rule to python representation
+   * New reports: fm.event_priority_events, fm.unclassified_trap_oids
+   * MIB dependency checking
+   * MIB uploading via web-interface
+   * Local MIB cache
+   * smidump and smilint paths can be set via etc/conf.conf
+ * main
+   * main.system report shows NOC version
+   * tar and gzip paths can be set via etc/noc.conf
+ * sa
+   * SAE no longer crashes when fails to read/deserialize crashinfo
+ * vc
+   * Import VLANs directly from switches
+
 0.1.1 (11-FEB-2009)
------
+-------------------
  * general
    * Various bugfixes
    * Documentation improvements
@@ -18,7 +43,7 @@
    * Not registered activator no longer breaks config pulling process
    
 0.1 (03-FEB-2009)
----
+-----------------
  * fm
    * Optional repeated events suppression
    * New Reports: fm.event_class_events
@@ -50,8 +75,6 @@
    * noc-classifier daemon
    * SNMP Trap and Syslog collector
    * MIB compilation and uploading
- * ip
-   * 
 
 0.1RC1 (19-DEC-2008)
 --------------------
