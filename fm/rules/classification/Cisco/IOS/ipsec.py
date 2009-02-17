@@ -1,0 +1,71 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Cisco.IOS IPsec classification rules
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classes.ipsec import *
+##
+## Cisco.IOS IPsec Phase1 Tunnel Start SNMP
+##
+class Cisco_IOS_IPsec_Phase1_Tunnel_Start_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS IPsec Phase1 Tunnel Start SNMP"
+    event_class=IPsecPhase1TunnelStart
+    preference=1000
+    required_mibs=["CISCO-IPSEC-FLOW-MONITOR-MIB"]
+    patterns=[
+        (r"^profile$",r"^Cisco\.IOS$"),
+        (r"^source$",r"^SNMP Trap$"),
+        (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.1$"),   # cikeTunnelStart
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.6\..*",r"^(?P<local_ip__ipv4>....)"),  # cikePeerLocalAddr
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.7\..*",r"^(?P<remote_ip__ipv4>....)"), # cikePeerRemoteAddr
+    ]
+##
+## Cisco.IOS IPsec Phase1 Tunnel Stop SNMP
+##
+class Cisco_IOS_IPsec_Phase1_Tunnel_Stop_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS IPsec Phase1 Tunnel Stop SNMP"
+    event_class=IPsecPhase1TunnelStop
+    preference=1000
+    required_mibs=["CISCO-IPSEC-FLOW-MONITOR-MIB"]
+    patterns=[
+        (r"^profile$",r"^Cisco\.IOS$"),
+        (r"^source$",r"^SNMP Trap$"),
+        (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.2$"),   # cikeTunnelStop
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.6\..*",r"^(?P<local_ip__ipv4>....)"),  # cikePeerLocalAddr
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.7\..*",r"^(?P<remote_ip__ipv4>....)"), # cikePeerRemoteAddr
+    ]
+##
+## Cisco.IOS IPsec Phase2 Tunnel Start SNMP
+##
+class Cisco_IOS_IPsec_Phase2_Tunnel_Start_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS IPsec Phase2 Tunnel Start SNMP"
+    event_class=IPsecPhase2TunnelStart
+    preference=1000
+    required_mibs=["CISCO-IPSEC-FLOW-MONITOR-MIB"]
+    patterns=[
+        (r"^source$",r"^SNMP Trap$"),
+        (r"^profile$",r"^Cisco\.IOS$"),
+        (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.7$"),      # cipSecTunnelStart
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.12\.\d+",r"(?P<remote_ip__ipv4>....)"),# cipSecEndPtHistRemoteAddr1
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.6\.\d+",r"(?P<local_ip__ipv4>....)"),  # cipSecEndPtHistLocalAddr1
+    ]
+##
+## Cisco.IOS IPsec Phase2 Tunnel Stop SNMP
+##
+class Cisco_IOS_IPsec_Phase2_Tunnel_Stop_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS IPsec Phase2 Tunnel Stop SNMP"
+    event_class=IPsecPhase2TunnelStop
+    preference=1000
+    required_mibs=["CISCO-IPSEC-FLOW-MONITOR-MIB"]
+    patterns=[
+        (r"^source$",r"^SNMP Trap$"),
+        (r"^profile$",r"^Cisco\.IOS$"),
+        (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.8$"),      # cipSecTunnelStop
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.12\.\d+",r"(?P<remote_ip__ipv4>....)"),# cipSecEndPtHistRemoteAddr1
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.6\.\d+",r"(?P<local_ip__ipv4>....)"),  # cipSecEndPtHistLocalAddr1
+    ]
