@@ -1,18 +1,27 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
+## noc-classifier daemon
+##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
 from noc.lib.daemon import Daemon
+from noc.lib.pyquote import bin_quote,bin_unquote
 from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat
 from django.db import transaction
 import re,logging,time,datetime
 
+##
+## Patterns
+##
 rx_template=re.compile(r"\{\{([^}]+)\}\}")
 rx_oid=re.compile(r"^(\d+\.){6,}")
-
+##
+## Exceptions
+##
+class DecodeError(Exception): pass
 ##
 ## In-memory Rule representation
 ##
@@ -20,8 +29,10 @@ class Rule(object):
     def __init__(self,rule):
         self.rule=rule
         self.name=rule.name
-        self.re=[(re.compile(x.left_re),re.compile(x.right_re,re.MULTILINE|re.DOTALL)) for x in rule.eventclassificationre_set.all()]
-        
+        self.re=[(re.compile(x.left_re,re.MULTILINE|re.DOTALL),re.compile(x.right_re,re.MULTILINE|re.DOTALL)) for x in rule.eventclassificationre_set.all()]
+    ##
+    ## Return a hash of extracted variables for object o, or None
+    ##
     def match(self,o):
         vars={}
         for l,r in self.re:
@@ -34,16 +45,36 @@ class Rule(object):
                 if not r_match:
                     continue
                 found=True
-                vars.update(l_match.groupdict())
-                vars.update(r_match.groupdict())
+                # Apply decoders if necessary
+                # Decoders are given as (?P<name__decoder>.....) patters
+                try:
+                    for gd in [l_match.groupdict(),r_match.groupdict()]:
+                        for k,v in gd.items():
+                            if "__" in k:
+                                k_name,decoder=k.split("__",1)
+                                vars[k_name]=getattr(self,"decode_%s"%decoder)(v) # Apply decoder
+                            else:
+                                vars[k]=v # Pass unchanged
+                except DecodeError:
+                    return None # No match when decoder failed
+                except AttributeError:
+                    return None # No match when decoder not found
                 break
             if not found:
                 return None
         return vars
-    
+    ## Rule is drop rule
     def _drop_event(self):
         return self.rule.drop_event
     drop_event=property(_drop_event)
+    ##
+    ## 
+    ##
+    def decode_ipv4(self,s):
+        if len(s)!=4:
+            raise DecodeError
+        return ".".join(["%d"%ord(c) for c in list(s)])
+        
 ##
 ## Noc-classifier daemon
 ##
@@ -83,6 +114,7 @@ class Classifier(Daemon):
             return rx_oid.search(s) is not None
         # Save event's variables
         def update_var(event,k,v,t):
+            v=bin_quote(v)
             try:
                 ed=EventData.objects.get(event=event,key=k,type=t)
                 ed.value=v
@@ -90,7 +122,7 @@ class Classifier(Daemon):
                 ed=EventData(event=event,key=k,value=v,type=t)
             ed.save()
         # Extract received event properties
-        props=[(x.key,x.value) for x in event.eventdata_set.filter(type=">")]
+        props=[(x.key,bin_unquote(x.value)) for x in event.eventdata_set.filter(type=">")]
         # Resolve additional event properties
         source=None
         for k,v in props:
