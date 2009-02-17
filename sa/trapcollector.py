@@ -11,6 +11,7 @@ from pyasn1.codec.ber import decoder
 from pysnmp.proto import api
 from noc.lib.nbsocket import ListenUDPSocket
 from noc.sa.eventcollector import EventCollector
+from noc.lib.pyquote import bin_quote
 import time
 
 ##
@@ -42,16 +43,6 @@ class TrapCollector(ListenUDPSocket,EventCollector):
                         elif hasattr(k,"_value"):
                             c.append(k._value)
                 return c
-            # Quote binary data to ASCII string
-            def bin_quote(s):
-                def qc(c):
-                    if c=="\\":
-                        return "\\\\"
-                    oc=ord(c)
-                    if oc<32 or oc>126:
-                        return "\\x%02x"%oc
-                    return c
-                return "".join([qc(c) for c in s])
                 
             v=unchain(val)
             if len(v)==0:
