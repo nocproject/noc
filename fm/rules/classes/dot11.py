@@ -43,3 +43,14 @@ class Dot11Roamed(EventClass):
     body_template="dot11 station roamed: {{mac}}"
     class Vars:
         mac=Var(required=True)
+##
+##
+##
+class Dot11Deauthenticate(EventClass):
+    name="dot11 Deauthenticate"
+    category="NETWORK"
+    priority="INFO"
+    subject_template="dot11 deauthenticate: {{mac}}"
+    body_template="dot11 deauthenticate: {{mac}}"
+    class Vars:
+        mac=Var(required=True)
