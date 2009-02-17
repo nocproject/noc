@@ -305,12 +305,12 @@ class FileWrapper(object):
 ##
 class PTYSocket(Socket):
     def __init__(self,factory,argv):
+        self.out_buffer=""
         self.pid,fd=pty.fork()
         if self.pid==0:
             os.execv(argv[0],argv)
         else:
             Socket.__init__(self,factory,FileWrapper(fd))
-        self.out_buffer=""
             
     def handle_read(self):
         data=self.socket.read(8192)
