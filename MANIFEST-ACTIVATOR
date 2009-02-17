@@ -19,6 +19,7 @@ lib/ecma48.py
 lib/fsm.py
 lib/nbsocket.py
 lib/validators.py
+lib/pyquote.py
 scripts/noc-activator.py
 etc/noc-activator.defaults
 share/sunos/manifest/noc-activator.xml
