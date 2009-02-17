@@ -68,13 +68,20 @@ class Rule(object):
         return self.rule.drop_event
     drop_event=property(_drop_event)
     ##
-    ## 
+    ## Decode IPv4 from 4 octets
     ##
     def decode_ipv4(self,s):
         if len(s)!=4:
             raise DecodeError
         return ".".join(["%d"%ord(c) for c in list(s)])
-        
+    ##
+    ## Decode MAC address from 6 octets
+    ##
+    def decode_mac(self,s):
+        if len(s)==6:
+            print repr(s)
+            return "%02X:%02X:%02X:%02X:%02X:%02X"%tuple([ord(x) for x in list(s)])
+        raise DecodeError
 ##
 ## Noc-classifier daemon
 ##
