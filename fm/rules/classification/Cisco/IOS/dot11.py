@@ -19,7 +19,7 @@ class CISCO_IOS_dot11_Associated_SNMP_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"%DOT11-6-ASSOC:.+?(?P<mac>\S+) (?:A|Rea)ssociated"),
+        (r"^message$",r"%DOT11-6-ASSOC:.+?(?P<mac__mac>\S+) (?:A|Rea)ssociated"),
         (r"^profile$",r"^Cisco\.IOS$"),
     ]
 ##
@@ -31,6 +31,6 @@ class Cisco_IOS_dot11_Disassociated_SNMP_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"%DOT11-6-DISASSOC: .+?(?P<mac>\S+) Reason"),
+        (r"^message$",r"%DOT11-6-DISASSOC: .+?(?P<mac__mac>\S+) Reason"),
         (r"^profile$",r"^Cisco\.IOS$"),
     ]
