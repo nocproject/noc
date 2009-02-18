@@ -67,5 +67,16 @@ class IPsecPhase2TunnelStop(EventClass):
 #class IPsecPhase2NoSA(EventClass):
 #    pass
 #
-#class IPsecInvalidSPI(EventClass):
-#    pass
+##
+## IPsec Invalid SPI
+##
+class IPsecInvalidSPI(EventClass):
+    name     = "IPsec Invalid SPI"
+    category = "NETWORK"
+    priority = "MAJOR"
+    subject_template="IPsec Invalid packet SPI: {{src_ip}} - {{dst_ip}}"
+    body_template="""IPsec Invalid packet SPI:
+{{src_ip}} - {{dst_ip}}"""
+    class Vars:
+        src_ip=Var(required=True)
+        dst_ip=Var(required=True)
