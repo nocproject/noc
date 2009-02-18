@@ -9,6 +9,8 @@
 """
 from noc.fm.rules.classification import ClassificationRule
 from noc.fm.rules.classes.ipsec import *
+from noc.fm.rules.classes.default import DROP
+
 ##
 ## Cisco.IOS IPsec Phase1 Tunnel Start SNMP
 ##
@@ -68,4 +70,33 @@ class Cisco_IOS_IPsec_Phase2_Tunnel_Stop_SNMP_Rule(ClassificationRule):
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.8$"),      # cipSecTunnelStop
         (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.12\.\d+",r"(?P<remote_ip__ipv4>....)"),# cipSecEndPtHistRemoteAddr1
         (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.6\.\d+",r"(?P<local_ip__ipv4>....)"),  # cipSecEndPtHistLocalAddr1
+    ]
+##
+## Cisco.IOS IPsec Crypto Map Added SNMP
+##
+class Cisco_IOS_IPsec_Crypto_Map_Added_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS IPsec Crypto Map Added SNMP"
+    event_class=DROP
+    preference=1000
+    drop_event=True
+    required_mibs=["CISCO-IPSEC-MIB"]
+    patterns=[
+        (r"^source$",r"^SNMP Trap$"),
+        (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.10\.62\.2\.0\.3$"), # cipsCryptomapAdded
+        (r"^profile$",r"^Cisco\.IOS$"),
+    ]
+
+##
+## Cisco.IOS IPsec Crypto Map Deleted SNMP
+##
+class Cisco_IOS_IPsec_Crypto_Map_Deleted_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS IPsec Crypto Map Deleted SNMP"
+    event_class=DROP
+    preference=1000
+    drop_event=True
+    required_mibs=["CISCO-IPSEC-MIB"]
+    patterns=[
+        (r"^source$",r"^SNMP Trap$"),
+        (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.10\.62\.2\.0\.4$"), # cipsCryptomapDeleted
+        (r"^profile$",r"^Cisco\.IOS$"),
     ]
