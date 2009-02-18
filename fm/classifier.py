@@ -18,6 +18,7 @@ import re,logging,time,datetime
 ##
 rx_template=re.compile(r"\{\{([^}]+)\}\}")
 rx_oid=re.compile(r"^(\d+\.){6,}")
+rx_mac_cisco=re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 ##
 ## Exceptions
 ##
@@ -81,6 +82,9 @@ class Rule(object):
         if len(s)==6:
             print repr(s)
             return "%02X:%02X:%02X:%02X:%02X:%02X"%tuple([ord(x) for x in list(s)])
+        if rx_mac_cisco.match(s):
+            s=s.replace(".","").upper()
+            return "%s:%s:%s:%s:%s:%s"%(s[:2],s[2:4],s[4:6],s[6:8],s[8:10],s[10:])
         raise DecodeError
 ##
 ## Noc-classifier daemon
