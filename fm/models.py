@@ -267,6 +267,7 @@ class EventClass(models.Model):
     class Meta:
         verbose_name="Event Class"
         verbose_name_plural="Event Classes"
+        ordering=["name"]
     name=models.CharField("Name",max_length=64)
     category=models.ForeignKey(EventCategory,verbose_name="Event Category")
     default_priority=models.ForeignKey(EventPriority,verbose_name="Default Priority")
