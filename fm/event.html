@@ -1,5 +1,6 @@
 {% extends "template/template.html" %}
-<{% block content %}
+{% block title%}Event #{{e.id}}{% endblock %}
+{% block content %}
 <h1><A HREF="/fm/">Fault Management:</A> Event #{{e.id}}</h1>
 <TABLE BORDER="0">
     <TR><TD><B>Managed Object:</B></TD><TD>{{e.managed_object}}</TD></TR>
