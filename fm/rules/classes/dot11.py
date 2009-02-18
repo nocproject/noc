@@ -54,3 +54,14 @@ class Dot11Deauthenticate(EventClass):
     body_template="dot11 deauthenticate: {{mac}}"
     class Vars:
         mac=Var(required=True)
+##
+## Too many retries to client
+##
+class Dot11MaxRetries(EventClass):
+    name="dot11 Max Retries"
+    category="NETWORK"
+    priority="INFO"
+    subject_template="dot11 Too Many Retries: {{mac}}"
+    body_template="dot11 Too many retries: {{mac}}. Removing the client"
+    class Vars:
+        mac=Var(required=True)
