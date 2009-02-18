@@ -53,8 +53,8 @@ class Cisco_IOS_IPsec_Phase2_Tunnel_Start_SNMP_Rule(ClassificationRule):
         (r"^source$",r"^SNMP Trap$"),
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.7$"),      # cipSecTunnelStart
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.12\.\d+",r"(?P<remote_ip__ipv4>....)"),# cipSecEndPtHistRemoteAddr1
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.6\.\d+",r"(?P<local_ip__ipv4>....)"),  # cipSecEndPtHistLocalAddr1
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.3\.3\.1\.10\.",r"(?P<remote_ip__ipv4>....)"),      # cipSecEndPtRemoteAddr1
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.3\.3\.1\.4\.",r"(?P<local_ip__ipv4>....)"),        # cipSecEndPtLocalAddr1
     ]
 ##
 ## Cisco.IOS IPsec Phase2 Tunnel Stop SNMP
@@ -99,4 +99,32 @@ class Cisco_IOS_IPsec_Crypto_Map_Deleted_SNMP_Rule(ClassificationRule):
         (r"^source$",r"^SNMP Trap$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.10\.62\.2\.0\.4$"), # cipsCryptomapDeleted
         (r"^profile$",r"^Cisco\.IOS$"),
+    ]
+##
+## Cisco.IOS IPsec Invalid SPI SYSLOG
+##
+class Cisco_IOS_IPsec_Invalid_SPI_SYSLOG_Rule(ClassificationRule):
+    name="Cisco.IOS IPsec Invalid SPI SYSLOG"
+    event_class=IPsecInvalidSPI
+    preference=1000
+    patterns=[
+        (r"^profile$",r"^Cisco\.IOS$"),
+        (r"^source$",r"^syslog$"),
+        (r"^severity$",r"^4$"),
+        (r"^message$",r"%CRYPTO-4-RECVD_PKT_INV_SPI: decaps: rec'd IPSEC packet has invalid spi for destaddr=(?P<dst_ip>.+), prot=50, spi=.*, srcaddr=(?P<src_ip>\S+)$"),
+    ]
+##
+## Cisco.IOS IPsec Invalid SPI SYSLOG SNMP
+##
+class Cisco_IOS_IPsec_Invalid_SPI_SYSLOG_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS IPsec Invalid SPI SYSLOG SNMP"
+    event_class=IPsecInvalidSPI
+    preference=1000
+    patterns=[
+        (r"^profile$",r"^Cisco\.IOS$"),
+        (r"^source$",r"^SNMP Trap$"),
+        (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.2\.0\.1$"),
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.2\.\d+$",r"^CRYPTO$"),
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.4\.\d+$",r"^RECVD_PKT_INV_SPI$"),
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.5\.\d+$",r"^decaps: rec'd IPSEC packet has invalid spi for destaddr=(?P<dst_ip>\S+), prot=50, spi=.+, srcaddr=(?P<src_ip>\S+)$"),
     ]
