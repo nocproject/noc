@@ -7,6 +7,7 @@
 """
 from noc.main.report import Column,BooleanColumn
 import noc.main.report
+from noc.fm.models import MIB
 
 class Report(noc.main.report.Report):
     name="fm.unclassified_trap_oids"
@@ -14,10 +15,11 @@ class Report(noc.main.report.Report):
     requires_cursor=True
     columns=[
         Column("OID"),
-        Column("Count")]
+        Column("Name"),
+        Column("Count",align="RIGHT")]
     
     def get_queryset(self):
-        return self.execute("""
+        return [(x[0],MIB.get_name(x[0]),x[1]) for x in self.execute("""
             SELECT ed.value,COUNT(*)
             FROM fm_eventdata ed JOIN fm_event e ON (e.id=ed.event_id)
             WHERE ed.key='1.3.6.1.6.3.1.1.4.1.0'
@@ -26,5 +28,5 @@ class Report(noc.main.report.Report):
                     WHERE name IN ('DEFAULT','SNMP Trap')
                     )
             GROUP BY 1
-            ORDER BY 2 DESC""")
+            ORDER BY 2 DESC""")]
 
