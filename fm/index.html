@@ -1,46 +1,95 @@
 {% extends "template/template.html" %}
 {% block header %}
-    <meta http-equiv="refresh" content="60" />
+    <!--<meta http-equiv="refresh" content="60" />-->
     <link rel="stylesheet" type="text/css" href="/fm/event_list_css/" />
+    <link type="text/css" rel="stylesheet" href="/static/css/jquery.autocomplete.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/jquery.pager.css">
+    <script type="text/javascript" src="/static/js/jquery.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.form.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.autocomplete.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.pager.js"></script>
 {% endblock %}
 {% block title %}Fault Management{% endblock %}
 <{% block content %}
 <h1>Fault Management</h1>
-<TABLE BORDER='0'>
-    <TR>
-        <TH>#</TH>
-        <TH>Object</TH>
-        <TH>Time</TH>
-        <TH>Category</TH>
-        <TH>Class</TH>
-        <TH>Priority</TH>
-        <TH>Subject</TH>
-    </TR>
-{% for e in events.object_list %}
-    <TR CLASS="{{e.event_priority.css_style_name}}">
-        <TD><A HREF='{{e.id}}/'>{{e.id}}</A></TD>
-        <TD>{{e.managed_object}}</TD>
-        <TD>{{e.timestamp}}</TD>
-        <TD>{{e.event_category}}</TD>
-        <TD>{{e.event_class}}</TD>
-        <TD>{{e.event_priority}}</TD>
-        <TD>{% if e.subject %}{{e.subject}}{%else%}-{%endif%}</TD>
-    </TR>
-{% endfor %}
-</TABLE>
-<DIV class="pagination">
-    <span class="step-links">
-        {% if events.has_previous %}
-            <a href="?page={{events.previous_page_number}}">previous</a>
-        {% endif %}
 
-        <span class="current">
-            Page {{events.number}} of {{events.paginator.num_pages}}.
-        </span>
+<script type="text/javascript">
+function show_result(data) {
+    var tb=$("#events_table TBODY");
+    tb.empty();
+    $.each(data["events"],function(i,r){
+        var tr=document.createElement("tr");
+        var $tr=$(tr);
+        $tr.addClass(r[0]);
+        tb.append($tr);
+        $.each(r, function(j,d) {
+            if(j>0) {
+                var td=document.createElement("td");
+                var $td=$(td);
+                $tr.append($td);
+                if(j==1) {
+                    $td.html("<A HREF='"+d+"/'>"+d+"</A>");
+                } else {
+                    $td.text(d);
+                }
+            }
+        });
+    });
+    // Set up pager
+    $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
+    $("#events_count").text(data["count"]);
+}
 
-        {% if events.has_next %}
-            <a href="?page={{events.next_page_number}}">next</a>
-        {% endif %}
-    </span>
+function toggle_panel() {
+    var fp=$("#form_panel");
+    fp.toggle();
+    if(fp.is(":hidden")) {
+        $("#toggle_panel_link").text("[Show filter]");
+    } else {
+        $("#toggle_panel_link").text("[Hide filter]");
+    }
+    return false;
+}
+
+function pager_click(number) {
+    $("#id_page").val(number);
+    $("#form").submit();
+}
+
+$(document).ready(function(){
+    $("#form").ajaxForm({
+        dataType: "json",
+        success : show_result,
+        url     : "/fm/lookup/events/"
+    });
+    $("#form").submit();
+});
+
+</script>
+
+<DIV ID="form_panel">
+    <FORM ID="form">
+        <TABLE BORDER="0">
+        {{form.as_table}}
+        </TABLE>
+        <INPUT TYPE="submit" VALUE="Filter" />
+    </FORM>
 </DIV>
+<DIV>Events: <SPAN ID="events_count"></SPAN> <A HREF="#" ID="toggle_panel_link" ONCLICK="toggle_panel();">[Hide filter]</A></DIV>
+<TABLE BORDER='0' ID="events_table">
+    <THEAD>
+        <TR>
+            <TH>#</TH>
+            <TH>Object</TH>
+            <TH>Time</TH>
+            <TH>Category</TH>
+            <TH>Class</TH>
+            <TH>Priority</TH>
+            <TH>Subject</TH>
+        </TR>
+    </THEAD>
+    <TBODY>
+    </TBODY>
+</TABLE>
+<DIV ID="pager"></DIV>
 {%endblock%}
