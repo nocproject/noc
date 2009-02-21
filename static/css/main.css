@@ -1,1 +1,5 @@
 @import url("/media/css/dashboard.css");
+
+#footer {
+	text-align: center;
+}
