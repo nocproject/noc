@@ -21,3 +21,5 @@ class ConfigChanged(EventClass):
     repeat_suppression=False
     repeat_suppression_interval=3600
     trigger="on_config_changed"
+    class Vars:
+        user=Var(required=False)
