@@ -19,7 +19,11 @@ category_cache={}
 def get_category(name):
     global category_cache
     if name not in category_cache:
-        category_cache[name]=EventCategory.objects.get(name=name)
+        try:
+            category_cache[name]=EventCategory.objects.get(name=name)
+        except EventCategory.DoesNotExist:
+            category_cache[name]=EventCategory(name=name)
+            category_cache[name].save()
     return category_cache[name]
 ##
 ## EventPriority cache
