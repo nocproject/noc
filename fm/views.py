@@ -51,6 +51,10 @@ def lookup_events(request):
         if form.is_valid():
             if form.cleaned_data["page"]:
                 page=form.cleaned_data["page"]-1
+            if form.cleaned_data["from_time"]:
+                events=events.filter(timestamp__gte=form.cleaned_data["from_time"])
+            if form.cleaned_data["to_time"]:
+                events=events.filter(timestamp__lte=form.cleaned_data["to_time"])
             if form.cleaned_data["managed_object"]:
                 try:
                     mo=ManagedObject.objects.get(name=form.cleaned_data["managed_object"])
@@ -79,6 +83,8 @@ def lookup_events(request):
 ##
 class EventSearchForm(forms.Form):
     page=forms.IntegerField(required=False,min_value=0,widget=HiddenInput)
+    from_time=forms.DateTimeField(required=False,input_formats=["%d.%m.%Y %H:%M:%S"])
+    to_time=forms.DateTimeField(required=False,input_formats=["%d.%m.%Y %H:%M:%S"])
     managed_object=forms.CharField(required=False,widget=AutoCompleteTextInput("/fm/lookup/managed_object/"))
     event_category=forms.ModelChoiceField(required=False,queryset=EventCategory.objects.all())
     event_class=forms.ModelChoiceField(required=False,queryset=EventClass.objects.all())
@@ -88,16 +94,6 @@ class EventSearchForm(forms.Form):
 ##
 @permission_required("fm.change_event")
 def index(request):
-    #event_list=Event.objects.order_by("-timestamp")
-    #paginator=Paginator(event_list,100)
-    #try:
-    #    page=int(request.GET.get("page","1"))
-    #except ValueError:
-    #    page=1
-    #try:
-    #    events=paginator.page(page)
-    #except (EmptyPage,InvalidPage):
-    #    events=paginator.page(paginator.num_pages)
     form=EventSearchForm()
     return render(request,"fm/index.html",{"form":form})
 ##
