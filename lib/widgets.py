@@ -9,7 +9,6 @@
 """
 from django import forms
 from django.http import HttpResponse
-import itertools
 
 ##
 ## Autocomplete widget
@@ -30,5 +29,5 @@ def lookup(request,func):
     if request.GET and "q" in request.GET:
         q=request.GET["q"]
         if len(q)>2: # Ignore requests shorter than 3 letters
-            result=list(itertools.islice(func(q),15))
+            result=list(func(q))
     return HttpResponse("\n".join(result), mimetype='text/plain')
