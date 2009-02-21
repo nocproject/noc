@@ -11,29 +11,95 @@
 from __future__ import with_statement
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
-from noc.lib.render import render,render_plain_text,render_success,render_failure
+from noc.lib.render import render,render_plain_text,render_success,render_failure,render_json
 from noc.lib.fileutils import temporary_file
-from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass, MIB, MIBRequiredException
+from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass, MIB, MIBRequiredException, EventCategory
+from noc.sa.models import ManagedObject
 from django.http import HttpResponseRedirect,HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django import forms
 import random,re
+from noc.lib.widgets import AutoCompleteTextInput,lookup
+from django.forms.widgets import HiddenInput
+
 ##
-## Display active events list
+## Returns Managed object names completion
+##
+@permission_required("fm.change_event")
+def lookup_managed_object(request):
+    def lookup_function(q):
+        for m in ManagedObject.objects.filter(name__startswith=q):
+            yield m.name
+    return lookup(request,lookup_function)
+##
+## Event searching AJAX handler.
+## Returns:
+## { 
+##    count:
+##    page:
+##    pages:
+##    events: [list of events]
+## }
+##
+PAGE_SIZE=20
+@permission_required("fm.change_event")
+def lookup_events(request):
+    events=Event.objects
+    page=0
+    if request.GET:
+        form=EventSearchForm(request.GET)
+        if form.is_valid():
+            if form.cleaned_data["page"]:
+                page=form.cleaned_data["page"]-1
+            if form.cleaned_data["managed_object"]:
+                try:
+                    mo=ManagedObject.objects.get(name=form.cleaned_data["managed_object"])
+                    events=events.filter(managed_object=mo)
+                except ManagedObject.DoesNotExist:
+                    pass
+            if form.cleaned_data["event_class"]:
+                events=events.filter(event_class=form.cleaned_data["event_class"])
+            if form.cleaned_data["event_category"]:
+                events=events.filter(event_category=form.cleaned_data["event_category"])
+            if form.cleaned_data["subject"]:
+                events=events.filter(subject__icontains=form.cleaned_data["subject"])
+    count=events.count()
+    return render_json({
+        "count" : count,
+        "page"  : page,
+        "pages" : count/PAGE_SIZE,
+        "events": [[e.event_priority.css_style_name,e.id,e.managed_object.name,str(e.timestamp),\
+                    e.event_category.name,e.event_class.name,e.event_priority.name,e.subject]\
+                    for e in events.order_by("-timestamp")[PAGE_SIZE*page:PAGE_SIZE*(page+1)]]
+    }
+    )
+
+##
+## Event search form
+##
+class EventSearchForm(forms.Form):
+    page=forms.IntegerField(required=False,min_value=0,widget=HiddenInput)
+    managed_object=forms.CharField(required=False,widget=AutoCompleteTextInput("/fm/lookup/managed_object/"))
+    event_category=forms.ModelChoiceField(required=False,queryset=EventCategory.objects.all())
+    event_class=forms.ModelChoiceField(required=False,queryset=EventClass.objects.all())
+    subject=forms.CharField(required=False)
+##
+## Display events list scheet
 ##
 @permission_required("fm.change_event")
 def index(request):
-    event_list=Event.objects.order_by("-timestamp")
-    paginator=Paginator(event_list,100)
-    try:
-        page=int(request.GET.get("page","1"))
-    except ValueError:
-        page=1
-    try:
-        events=paginator.page(page)
-    except (EmptyPage,InvalidPage):
-        events=paginator.page(paginator.num_pages)
-    return render(request,"fm/index.html",{"events":events})
+    #event_list=Event.objects.order_by("-timestamp")
+    #paginator=Paginator(event_list,100)
+    #try:
+    #    page=int(request.GET.get("page","1"))
+    #except ValueError:
+    #    page=1
+    #try:
+    #    events=paginator.page(page)
+    #except (EmptyPage,InvalidPage):
+    #    events=paginator.page(paginator.num_pages)
+    form=EventSearchForm()
+    return render(request,"fm/index.html",{"form":form})
 ##
 ## Dynamically generated CSS for event list priorities
 ##
