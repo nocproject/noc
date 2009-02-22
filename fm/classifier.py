@@ -123,18 +123,9 @@ class Classifier(Daemon):
     ## 3. Drop event if required by rule
     ## 4. Set event class of the matched rule or DEFAULT
     ## 
-    def classify_event(self,event):
+    def classify_event(self,cursor,event):
         def is_oid(s):
             return rx_oid.search(s) is not None
-        # Save event's variables
-        def update_var(event,k,v,t):
-            v=bin_quote(v)
-            try:
-                ed=EventData.objects.get(event=event,key=k,type=t)
-                ed.value=v
-            except EventData.DoesNotExist:
-                ed=EventData(event=event,key=k,value=v,type=t)
-            ed.save()
         # Extract received event properties
         props=[(x.key,bin_unquote(x.value)) for x in event.eventdata_set.filter(type=">")]
         # Resolve additional event properties
@@ -208,19 +199,6 @@ class Classifier(Daemon):
             event_class=EventClass.objects.get(name="DEFAULT")
             vars={}
             logging.debug("No rule found for event %d. Falling back to DEFAULT"%event.id)
-        # Do additional processing
-        # Clean up enriched data
-        [d.delete() for d in  event.eventdata_set.filter(type__in=["R","V"])]
-        # Enrich event by extracted variables
-        for k,v in vars.items():
-            update_var(event,k,v,"V")
-        # Enrich event by resolved variables
-        for k,v in resolved.items():
-            update_var(event,k,v,"R")
-        # Set up event class, category and priority
-        event.event_class=event_class
-        event.event_category=event_class.category
-        event.event_priority=event_class.default_priority
         # Fill event subject and body
         f_vars=dict(props) # f_vars contains all event vars, including original, extracted and resolved
         f_vars.update(vars)
@@ -228,9 +206,18 @@ class Classifier(Daemon):
         subject=self.expand_template(event_class.subject_template,f_vars)
         if len(subject)>255: # Too long subject must be truncated
             subject=subject[:250]+" ..."
-        event.subject=subject
-        event.body=self.expand_template(event_class.body_template,f_vars)
-        event.save()
+        body=self.expand_template(event_class.body_template,f_vars)
+        # Prepare and call update_event_classification stored procedure for bulk event update
+        v_args=[]
+        for k,v in resolved.items():
+            v_args+=["R",k,v]
+        for k,v in vars.items():
+            v_args+=["V",k,v]
+        p="SELECT update_event_classification(%s,%s,%s,%s,%s,%s,ARRAY["
+        p+=",".join(["ARRAY[%s,%s,%s]"]*(len(v_args)/3))
+        p+="])"
+        cursor.execute(p,[event.id,event_class.id,event_class.category.id,event_class.default_priority.id,subject,body]+v_args)
+        cursor.execute("COMMIT")
         # Finally run event class trigger
         event.event_class.run_trigger(event)
         
@@ -238,11 +225,13 @@ class Classifier(Daemon):
         INTERVAL=10
         last_sleep=time.time()
         transaction.enter_transaction_management()
+        from django.db import connection
+        cursor = connection.cursor()
         while True:
             n=0
             t0=time.time()
             for e in Event.objects.filter(subject__isnull=True).order_by("id"):
-                self.classify_event(e)
+                self.classify_event(cursor,e)
                 transaction.commit()
                 n+=1
             if n:
