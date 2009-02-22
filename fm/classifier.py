@@ -9,6 +9,7 @@
 """
 from noc.lib.daemon import Daemon
 from noc.lib.pyquote import bin_quote,bin_unquote
+from noc.lib.validators import is_ipv4
 from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat
 from django.db import transaction
 import re,logging,time,datetime
@@ -44,7 +45,7 @@ class Rule(object):
                     continue
                 r_match=r.search(o_r)
                 if not r_match:
-                    continue
+                    return None
                 found=True
                 # Apply decoders if necessary
                 # Decoders are given as (?P<name__decoder>.....) patters
@@ -72,9 +73,11 @@ class Rule(object):
     ## Decode IPv4 from 4 octets
     ##
     def decode_ipv4(self,s):
-        if len(s)!=4:
-            raise DecodeError
-        return ".".join(["%d"%ord(c) for c in list(s)])
+        if len(s)==4:
+            return ".".join(["%d"%ord(c) for c in list(s)])
+        if is_ipv4(s):
+            return s
+        raise DecodeError
     ##
     ## Decode MAC address from 6 octets
     ##
