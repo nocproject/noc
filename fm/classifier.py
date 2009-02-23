@@ -210,9 +210,9 @@ class Classifier(Daemon):
         # Prepare and call update_event_classification stored procedure for bulk event update
         v_args=[]
         for k,v in resolved.items():
-            v_args+=["R",k,v]
+            v_args+=["R",k,bin_quote(v)]
         for k,v in vars.items():
-            v_args+=["V",k,v]
+            v_args+=["V",k,bin_quote(v)]
         p="SELECT update_event_classification(%s,%s,%s,%s,%s,%s,ARRAY["
         p+=",".join(["ARRAY[%s,%s,%s]"]*(len(v_args)/3))
         p+="])"
