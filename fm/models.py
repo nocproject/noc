@@ -383,6 +383,7 @@ class EventClassificationRE(models.Model):
 ##
 ## Event itself
 ##
+EVENT_STATUS_CHOICES=[("U","Unclassified"),("A","Active"),("C","Closed")]
 class Event(models.Model):
     class Meta:
         verbose_name="Event"
@@ -393,8 +394,11 @@ class Event(models.Model):
     event_priority=models.ForeignKey(EventPriority,verbose_name="Priority")
     event_category=models.ForeignKey(EventCategory,verbose_name="Event Category")
     event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
-    parent=models.ForeignKey("Event",verbose_name="Parent",blank=True,null=True) # Set up by correlator
-    subject=models.CharField("Subject",max_length=256,null=True,blank=True)      # Not null when classified
+    status=models.CharField("Status",max_length=1,choices=EVENT_STATUS_CHOICES,default="U")
+    close_timestamp=models.DateTimeField("Close Timestamp",blank=True,null=True)
+    active_till=models.DateTimeField("Active Till",blank=True,null=True)          # Time-based event closing
+    root=models.ForeignKey("Event",verbose_name="Root cause",blank=True,null=True)# Set up by correlator, Null for root cause
+    subject=models.CharField("Subject",max_length=256,null=True,blank=True)       # Not null when classified
     body=models.TextField("Body",null=True,blank=True)
     
     def __unicode__(self):
@@ -417,6 +421,12 @@ class Event(models.Model):
             if k not in data or data[k]!=v:
                 return False
         return True
+    ##
+    ## Reset event status to "Unclassified"
+    ##
+    def reclassify(self):
+        self.status="U"
+        self.save()
 ##
 ## Event body
 ##
