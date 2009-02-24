@@ -8,7 +8,7 @@ class Migration:
         db.execute(PROC)
     
     def backwards(self):
-        db.execute("DROP FUNCTION update_event_classification(INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT[][])")
+        pass
 
 PROC="""
 CREATE OR REPLACE
@@ -39,6 +39,7 @@ BEGIN
         event_class_id=p_event_class_id,
         event_category_id=p_event_category_id,
         event_priority_id=p_event_priority_id,
+        status='A',
         subject=p_subject,
         body=p_body
     WHERE id=p_event_id;

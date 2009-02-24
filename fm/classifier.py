@@ -230,7 +230,7 @@ class Classifier(Daemon):
         while True:
             n=0
             t0=time.time()
-            for e in Event.objects.filter(subject__isnull=True).order_by("id"):
+            for e in Event.objects.filter(status="U").order_by("id"):
                 self.classify_event(cursor,e)
                 transaction.commit()
                 n+=1

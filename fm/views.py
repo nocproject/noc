@@ -13,7 +13,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from noc.lib.render import render,render_plain_text,render_success,render_failure,render_json
 from noc.lib.fileutils import temporary_file
-from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass, MIB, MIBRequiredException, EventCategory
+from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass,\
+    MIB, MIBRequiredException, EventCategory, EVENT_STATUS_CHOICES
 from noc.sa.models import ManagedObject
 from django.http import HttpResponseRedirect,HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -64,6 +65,8 @@ def lookup_events(request):
                     pass
             if form.cleaned_data["event_class"]:
                 events=events.filter(event_class=form.cleaned_data["event_class"])
+            if form.cleaned_data["status"]:
+                events=events.filter(status=form.cleaned_data["status"])
             if form.cleaned_data["event_category"]:
                 events=events.filter(event_category=form.cleaned_data["event_category"])
             if form.cleaned_data["subject"]:
@@ -89,6 +92,7 @@ class EventSearchForm(forms.Form):
     managed_object=forms.CharField(required=False,widget=AutoCompleteTextInput("/fm/lookup/managed_object/"))
     event_category=forms.ModelChoiceField(required=False,queryset=EventCategory.objects.all())
     event_class=forms.ModelChoiceField(required=False,queryset=EventClass.objects.all())
+    status=forms.ChoiceField(required=False,choices=[("","---------")]+EVENT_STATUS_CHOICES)
     subject=forms.CharField(required=False)
 ##
 ## Display events list scheet
@@ -116,8 +120,7 @@ def event(request,event_id):
 @permission_required("fm.change_event")
 def reclassify(request,event_id):
     event=get_object_or_404(Event,id=int(event_id))
-    event.subject=None
-    event.save()
+    event.reclassify()
     return HttpResponseRedirect("/fm/%d/"%event.id)
 ##
 ## Create event classification rule from event
