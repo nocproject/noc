@@ -20,6 +20,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django import forms
 import random,re
 from noc.lib.widgets import AutoCompleteTextInput,lookup
+from noc.lib.sysutils import refresh_config
 from django.forms.widgets import HiddenInput
 
 ##
@@ -172,3 +173,11 @@ def upload_mib(request):
     else:
         form=MIBUploadForm()
     return render(request,"fm/mib_upload.html",{"form":form})
+##
+## Reload noc-classifier config
+##
+@permission_required("fm.add_eventclassificationrule")
+def reload_classifier_config(request):
+    referer=request.META.get("HTTP_REFERER","/admin/fm/eventclassificationrule/")
+    refresh_config("noc-classifier")
+    return HttpResponseRedirect(referer)
