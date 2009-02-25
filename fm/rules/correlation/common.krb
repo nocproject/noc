@@ -1,0 +1,104 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Common rules
+## Root of rulebase. Other rulebase files are extending common
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+##
+## e1 and e2 are different events belong to same managed object
+##
+same_object
+    use same_object($e1, $e2)
+    when
+        fm.managed_object($e1, $o)
+        fm.managed_object($e2, $o)
+        check $e1 != $e2
+##
+## e1 and e2 are belong to same event class
+##
+same_class
+    use same_class($e1, $e2)
+    when
+        fm.event_class($e1, $ec)
+        fm.event_class($e2, $ec)
+##
+## e1 and e2 occured in tw seconds
+##
+in_time
+    use in_time($e1, $e2, $tw)
+    when
+        fm.timestamp($e1, $t1)
+        fm.timestamp($e2, $t2)
+        check abs($t1-$t2)<$tw
+##
+## e1 occured after e2
+##
+follow
+    use follow($e1, $e2)
+    when
+        fm.timestamp($e1,$t1)
+        fm.timestamp($e2,$t2)
+        check $t1>=$t2 and $e1>$e2
+##
+## e1 and e2 have same value of var
+##
+same_vars_1
+    use same_vars_1($e1, $e2, $v1)
+    when
+        fm.var($e1, $v1, $x)
+        fm.var($e2, $v1, $x)
+##
+## e1 and e2 belong to same managed object and
+## e2 occured after e1
+##
+same_object_follow
+    use same_object_follow($e1, $e2)
+    when
+        same_object($e1, $e2)
+        follow($e1,$e2)
+##
+## e1 and e2 belong to same managed object
+## and occured in tw seconds
+##
+same_object_in_time
+    use same_object_in_time($e1, $e2, $tw)
+    when
+        same_object($e1, $e2)
+        in_time($e1, $e2, $tw)
+##
+## e1 and e2 belong to same managed object.
+## e1 is of class c1, and e2 is of class e2
+##
+same_object_classes
+    use same_object_classes($e1,$e2,$c1,$c2)
+    when
+        same_object($e1, $e2)
+        fm.event_class($e1, $c1)
+        fm.event_class($e2, $c2)
+##
+## Two events of given classes belong to same
+## managed object and occured in tw seconds
+##
+same_object_classess_in_time
+    use same_object_classes_in_time($e1, $e2, $tw, $c1, $c2)
+    when
+        same_object_classes($e1, $e2, $c1, $c2)
+        same_object_in_time($e1, $e2, $tw)
+##
+## Two events of given class belong to same managed object.
+## e1 occured after e2
+##
+same_object_classes_follow
+    use same_object_classes_follow($e1, $e2, $c1, $c2)
+    when
+        same_object_classes($e1, $e2, $c1, $c2)
+        follow($e1, $e2)
+##
+same_object_classes_follow_vars_1
+    use same_object_classes_follow_vars_1($e1, $e2, $c1, $c2, $v1)
+    when
+        same_object_classes_follow($e1, $e2, $c1, $c2)
+        same_vars_1($e1, $e2, $v1)
