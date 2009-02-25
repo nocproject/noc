@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## LDP Related Rules
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+##
+## 'LDP LSP Up' closes 'LDP LSP Down' on same managed object and same 'fec'
+##
+lsp_up_closes_down
+    use close($e1, $e2)
+    when
+        same_object_classes_follow_vars_1($e1, $e2, 'LDP LSP Up', 'LDP LSP Down', 'fec')
+
+##
+## 'LDP LSP Down' closes 'LDP LSP Up' on same managed object and same 'fec'
+##
+lsp_down_closes_up
+    use close($e1, $e2)
+    when
+        same_object_classes_follow_vars_1($e1, $e2, 'LDP LSP Down', 'LDP LSP Up', 'fec')
