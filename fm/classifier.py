@@ -151,11 +151,13 @@ class Classifier(Daemon):
         # Find rule
         event_class=None
         # Try to find matching rule
+        rule_id=0
         for r in self.rules:
             # Try to match rule
             vars=r.match(props)
             if vars is None:
                 continue
+            rule_id=r.rule.id
             # Silently drop event when required by rule
             if r.drop_event:
                 logging.debug("Drop event %d"%event.id)
@@ -213,10 +215,10 @@ class Classifier(Daemon):
             v_args+=["R",k,bin_quote(v)]
         for k,v in vars.items():
             v_args+=["V",k,bin_quote(v)]
-        p="SELECT update_event_classification(%s,%s,%s,%s,%s,%s,ARRAY["
+        p="SELECT update_event_classification(%s,%s,%s,%s,%s,%s,%s,ARRAY["
         p+=",".join(["ARRAY[%s,%s,%s]"]*(len(v_args)/3))
         p+="])"
-        cursor.execute(p,[event.id,event_class.id,event_class.category.id,event_class.default_priority.id,subject,body]+v_args)
+        cursor.execute(p,[event.id,rule_id,event_class.id,event_class.category.id,event_class.default_priority.id,subject,body]+v_args)
         cursor.execute("COMMIT")
         # Finally run event class trigger
         event.event_class.run_trigger(event)

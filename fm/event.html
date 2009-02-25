@@ -12,17 +12,24 @@
 </TABLE>
 <BR/>
 <B>Subject:</B> {{e.subject}}<BR/>
-<PRE STYLE="border: 1px solid #CCCCCC">{{e.body}}</PRE>
+<PRE STYLE="border: 1px solid #CCCCCC; padding: 8px">{{e.body}}</PRE>
 
-<B>Variables:</B>
+<h2>Variables:</h2>
 <TABLE BORDER='0'>
     {% for ed in e.eventdata_set.all %}
     <TR><TD>{{ed.type}}</TD><TD>{{ed.key}}</TD><TD>{{ed.value}}</TD></TR>
     {% endfor %}
 </TABLE>
-<BR/>
+
+<h2>History:</h2>
+<TABLE BORDER="0">
+    {% for l in e.eventlog_set.all %}
+    <TR><TD>{{l.timestamp}}</TD><TD>{{l.from_status}}</TD><TD>{{l.to_status}}</TD><TD>{{l.message}}</TD></TR>
+    {% endfor %}
+</TABLE>
+
 {%if e.repeats %}
-<B>Previous occurences:</B>
+<H2>Previous occurences:</H2>
 <TABLE BORDER="0">
 {% for r in e.eventrepeat_set.all %}
 <TR><TD>{{r.timestamp}}</TD></TR>
@@ -30,7 +37,6 @@
 </TABLE>
 {% endif %}
 <BR/>
-<A ONCLICK="document.location='/fm/{{e.id}}/reclassify/'">Re-Classify</A>
-<A ONCLICK="document.location='/fm/{{e.id}}/create_rule/'">Create Rule</A>
-
+<A HREF="/fm/{{e.id}}/reclassify/" class="addlink">Re-Classify</A>
+<A HREF="/fm/{{e.id}}/create_rule/"class="addlink">Create Rule</A>
 {%endblock%}

@@ -51,10 +51,15 @@ class EventClassificationRuleAdmin(admin.ModelAdmin):
     list_filter=["is_builtin","drop_event","event_class"]
     inlines=[EventClassificationREAdmin]
 ##
+class EventCorrelationRuleAdmin(admin.ModelAdmin):
+    list_display=["name","is_builtin"]
+    search_fields=["name"]
+    list_filter=["is_builtin"]
+##
 admin.site.register(MIB, MIBAdmin)
 admin.site.register(MIBData, MIBDataAdmin)
 admin.site.register(EventPriority, EventPriorityAdmin)
 admin.site.register(EventCategory, EventCategoryAdmin)
 admin.site.register(EventClass, EventClassAdmin)
-#admin.site.register(EventClassVar, EventClassVarAdmin)
 admin.site.register(EventClassificationRule, EventClassificationRuleAdmin)
+admin.site.register(EventCorrelationRule, EventCorrelationRuleAdmin)
