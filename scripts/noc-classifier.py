@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Service Activation Engine
+# FM Classifier daemon
 #
 import os,sys,getopt
 
