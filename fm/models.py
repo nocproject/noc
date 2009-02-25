@@ -381,6 +381,32 @@ class EventClassificationRE(models.Model):
     left_re=models.CharField("Left RE",max_length=256)
     right_re=models.CharField("Right RE",max_length=256)
 ##
+## Event Correlation Rule
+## Correlation rules are the PyKE statements
+##
+class EventCorrelationRule(models.Model):
+    class Meta:
+        verbose_name="Event Correlation Rule"
+        verbose_name_plural="Event Correlation Rules"
+        ordering=["name"]
+    name=models.CharField("Name",max_length=64,unique=True)
+    rule=models.TextField("Rule")
+    description=models.TextField("Description",null=True,blank=True)
+    is_builtin=models.BooleanField("Is Builtin",default=False)
+    def __unicode__(self):
+        return self.name
+    def _pyke_id(self):
+        return rx_py_id.sub(self.name,"_")
+    pyke_id=property(_pyke_id)
+    def _pyke_code(self):
+        s=[]
+        if self.description:
+            s+=["##"]+["## %s"%l for l in self.description.split("\n")]+["##"]
+        s+=[self.pyke_id]
+        s+=["    %s"%l for l in self.rule.split("\n")]+[""]
+        return "\n".join(s)
+    pyke_code=property(_pyke_code)
+##
 ## Event itself
 ##
 EVENT_STATUS_CHOICES=[("U","Unclassified"),("A","Active"),("C","Closed")]
@@ -425,8 +451,29 @@ class Event(models.Model):
     ## Reset event status to "Unclassified"
     ##
     def reclassify(self):
-        self.status="U"
+        self.change_status("U","Reclassification requested")
+    ##
+    ## Change event status
+    ##
+    def change_status(self,status,msg=None):
+        if self.status==status:
+            return
+        if msg is None:
+            msg="Status changed from %s to %s"%(self.status,status)
+        from_status=self.status
+        self.status=status
         self.save()
+        self.log(msg,from_status,status)
+    ##
+    ## Log event processing message
+    ##
+    def log(self,msg,from_status=None,to_status=None):
+        if from_status is None:
+            from_status=self.status
+        if to_status is None:
+            to_status=self.self
+        l=EventLog(event=self,timestamp=datetime.datetime.now(),from_status=from_status,to_status=to_status,message=msg)
+        l.save()
 ##
 ## Event body
 ##
@@ -448,3 +495,16 @@ class EventRepeat(models.Model):
         verbose_name_plural="Event Repeats"
     event=models.ForeignKey(Event,verbose_name="Event")
     timestamp=models.DateTimeField("Timestamp")
+##
+## Event Processing Log
+##
+class EventLog(models.Model):
+    class Meta:
+        verbose_name="Event Log"
+        verbose_name="Event Logs"
+        ordering=["event","timestamp"]
+    event=models.ForeignKey(Event,verbose_name="Event")
+    timestamp=models.DateTimeField("Timestamp")
+    from_status=models.CharField("From Status",max_length=1,choices=EVENT_STATUS_CHOICES)
+    to_status=models.CharField("To Status",max_length=1,choices=EVENT_STATUS_CHOICES)
+    message=models.TextField("Message")
