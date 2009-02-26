@@ -38,6 +38,9 @@ function show_result(data) {
     // Set up pager
     $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
     $("#events_count").text(data["count"]);
+    window.setTimeout(function() {
+        $("#form").submit()
+    },60000);
 }
 
 function toggle_panel() {
