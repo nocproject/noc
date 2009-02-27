@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## LDP Related Rules
+## Link Related Rules
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ##
-## 'LDP LSP Down', 'LDP LSP Up' on same 'fec'
+## 'Link Down', 'Link Up' on same 'interface'
 ##
-lsp_close
+link_close
     use close($e1, $e2)
     when
-        seq_object_classes_vars($e1, $e2, ('LDP LSP Down','LDP LSP Up'), ('fec',))
+        seq_object_classes_vars($e1, $e2, ('Link Down','Link Up'), ('interface',))
