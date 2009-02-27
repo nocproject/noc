@@ -14,6 +14,13 @@ from noc.lib.fileutils import rewrite_when_differ
 from pyke import knowledge_engine
 import logging,time,os
 
+##
+## Default knowledge base name
+##
+KNOWLEDGE_BASE="kb"
+##
+## noc-correlator daemon
+##
 class Correlator(Daemon):
     daemon_name="noc-correlator"
     def __init__(self):
@@ -33,7 +40,7 @@ class Correlator(Daemon):
         except:
             pass
         # Write krb
-        rewrite_when_differ(os.path.join(d,"kb.krb"),"\n".join(s))
+        rewrite_when_differ(os.path.join(d,"%s.krb"%KNOWLEDGE_BASE),"\n".join(s))
         # Write modules __init__.py files when necessary
         for i in range(len(c)):
             path=os.path.join(*c[:i+1]+["__init__.py"])
@@ -48,7 +55,7 @@ class Correlator(Daemon):
         self.ke.reset()
         # Load event window.
         # Populate knowledge base by facts
-        for e in Event.objects.order_by("-timestamp")[:1000]:
+        for e in Event.objects.order_by("-timestamp")[:140]:
             en=e.id
             self.ke.assert_("fm","event_class",(en,str(e.event_class.name)))
             self.ke.assert_("fm","managed_object",(en,str(e.managed_object.name)))
@@ -57,36 +64,43 @@ class Correlator(Daemon):
                 self.ke.assert_("fm","var",(en,str(v.key),str(v.value)))
             r.append(e)
         # Activate rulebase again
-        self.ke.activate("kb")
+        self.ke.activate(KNOWLEDGE_BASE)
         return r
     ##
     ## Search possible solutions for rule(event,$x)
     ##
-    def search(self,rule,event):
-        with self.ke.prove_n("kb",rule,(event,),1) as gen:
+    def search_1(self,rule,event):
+        with self.ke.prove_n(KNOWLEDGE_BASE,rule,(event,),1) as gen:
             for ans in gen:
                 yield ans[0][0]
     ##
+    ## Search possible solutions for rule($x,$y)
     ##
+    def search_2(self,rule):
+        with self.ke.prove_n(KNOWLEDGE_BASE,rule,tuple(),2) as gen:
+            for ans in gen:
+                yield ans[0]
     ##
-    def process_event(self,e):
-        event_id=e.id
-        # close(event_id,$x) means $x is closed by event_id
-        for ans in self.search("close",event_id):
-            logging.debug("Event %d closes event %s"%(event_id,ans))
+    ## 
+    ##
+    def start_trace(self):
+        for r in self.ke.get_rb(KNOWLEDGE_BASE).rules.keys():
+            self.ke.trace(KNOWLEDGE_BASE,r)
     ##
     ## main daemon loop
     ##
     def run(self):
         self.build_rulebase()
         self.ke=knowledge_engine.engine("noc.local.fm.rules.correlation")
-        #for r in self.ke.get_rb("kb").rules.keys():
-        #    self.ke.trace("kb",r)
         events=self.load_window()
         #self.ke.get_kb("fm").dump_specific_facts()
+        #self.start_trace()
         t0=time.time()
-        for e in events:
-            self.process_event(e)
+        n=0
+        for x,y in self.search_2("close"):
+            print x,y
+            n+=1
+        logging.debug("%d closing pairs found"%n)
         dt=time.time()-t0
         ne=len(events)
         if dt>0:
