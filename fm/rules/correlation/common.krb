@@ -43,62 +43,59 @@ follow
         fm.timestamp($e2,$t2)
         check $t1>=$t2 and $e1>$e2
 ##
-## e1 and e2 have same value of var
+## e matches the head of list of event classes
+##
+classes_1
+    use classes($e, ($c, *$rest))
+    when
+        fm.event_class($e,$c)
+##
+## e matches the rest of list of event classes
+##
+classes_2
+    use classes($e, ($_, *$rest))
+    when
+        classes($e, $rest)
+##
+## No more vars list to match
+##
+same_vars_done
+    use same_vars($e1, $e2, ())
+##
+## match head of list of vars and the rest
 ##
 same_vars_1
-    use same_vars_1($e1, $e2, $v1)
+    use same_vars($e1, $e2, ($v1, *$rest))
     when
         fm.var($e1, $v1, $x)
         fm.var($e2, $v1, $x)
+        same_vars($e1, $e2, $rest)
 ##
-## e1 and e2 belong to same managed object and
-## e2 occured after e1
+## There is event between two given events, of given class
+## with given vars
 ##
-same_object_follow
-    use same_object_follow($e1, $e2)
+between_object_classes_vars
+    use between_object_classes_vars($e1, $e2, $C, $V)
+    when
+        follow($e1, $e3)
+        follow($e3, $e2)
+        same_object($e1, $e3)
+        same_vars($e1, $e3, $V)
+        classes($e3, $C)
+##
+## Match pair of events:
+## 1. e1 follows e2
+## 2. e1, e2 matches list of classes C
+## 3. e1, e2 have common values of variables V
+## 4. There is no other event between e1 and e2 with properties 2, 3
+##
+seq_object_classes_vars
+    use seq_object_classes_vars($e1, $e2, $C, $V)
     when
         same_object($e1, $e2)
-        follow($e1,$e2)
-##
-## e1 and e2 belong to same managed object
-## and occured in tw seconds
-##
-same_object_in_time
-    use same_object_in_time($e1, $e2, $tw)
-    when
-        same_object($e1, $e2)
-        in_time($e1, $e2, $tw)
-##
-## e1 and e2 belong to same managed object.
-## e1 is of class c1, and e2 is of class e2
-##
-same_object_classes
-    use same_object_classes($e1,$e2,$c1,$c2)
-    when
-        same_object($e1, $e2)
-        fm.event_class($e1, $c1)
-        fm.event_class($e2, $c2)
-##
-## Two events of given classes belong to same
-## managed object and occured in tw seconds
-##
-same_object_classess_in_time
-    use same_object_classes_in_time($e1, $e2, $tw, $c1, $c2)
-    when
-        same_object_classes($e1, $e2, $c1, $c2)
-        same_object_in_time($e1, $e2, $tw)
-##
-## Two events of given class belong to same managed object.
-## e1 occured after e2
-##
-same_object_classes_follow
-    use same_object_classes_follow($e1, $e2, $c1, $c2)
-    when
-        same_object_classes($e1, $e2, $c1, $c2)
         follow($e1, $e2)
-##
-same_object_classes_follow_vars_1
-    use same_object_classes_follow_vars_1($e1, $e2, $c1, $c2, $v1)
-    when
-        same_object_classes_follow($e1, $e2, $c1, $c2)
-        same_vars_1($e1, $e2, $v1)
+        same_vars($e1, $e2, $V)
+        classes($e1, $C)
+        classes($e2, $C)
+        notany
+            between_object_classes_vars($e1, $e2, $C, $V)
