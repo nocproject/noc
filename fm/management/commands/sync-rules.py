@@ -104,6 +104,7 @@ class Command(BaseCommand):
                                 description+=[match.group(1)]
                             continue
                         elif l.strip()=="":
+                            description=[]
                             continue
                         else:
                             name=pkg+"_"+l.strip()
