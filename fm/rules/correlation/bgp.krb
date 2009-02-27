@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## LDP Related Rules
+## BGP Related Rules
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ##
-## 'LDP LSP Down', 'LDP LSP Up' on same 'fec'
+## 'BGP FSM State Change', 'BGB Backward Transition' on same 'neighbor_ip' 
 ##
-lsp_close
+fsm_close
     use close($e1, $e2)
     when
-        seq_object_classes_vars($e1, $e2, ('LDP LSP Down','LDP LSP Up'), ('fec',))
+        seq_object_classes_vars($e1, $e2, ('BGP FSM State Change','BGP Backward Transition'), ('neighbor_ip',))
