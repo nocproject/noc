@@ -450,8 +450,18 @@ class Event(models.Model):
     ##
     ## Reset event status to "Unclassified"
     ##
-    def reclassify(self):
-        self.change_status("U","Reclassification requested")
+    def reclassify_event(self,message="Reclassification requested"):
+        self.change_status("U",message)
+    ##
+    ## Close event
+    ##
+    def close_event(self,message="Event Closed"):
+        self.change_status("C",message)
+    ##
+    ##
+    ##
+    def open_event(self,message="Event Opened"):
+        self.change_status("A",message)
     ##
     ## Change event status
     ##

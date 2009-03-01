@@ -37,6 +37,10 @@
 </TABLE>
 {% endif %}
 <BR/>
-<A HREF="/fm/{{e.id}}/reclassify/" class="addlink">Re-Classify</A>
+
+{% ifequal e.status 'A' %}<A HREF="/fm/{{e.id}}/status/close/" class="addlink">Close</A>{% endifequal %}
+{% ifequal e.status 'C' %}<A HREF="/fm/{{e.id}}/status/open/" class="addlink">Open</A>{% endifequal %}
+
+<A HREF="/fm/{{e.id}}/status/reclassify/" class="addlink">Re-Classify</A>
 <A HREF="/fm/{{e.id}}/create_rule/"class="addlink">Create Rule</A>
 {%endblock%}

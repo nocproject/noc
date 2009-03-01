@@ -76,7 +76,7 @@ def lookup_events(request):
         "count" : count,
         "page"  : page,
         "pages" : count/PAGE_SIZE,
-        "events": [[e.event_priority.css_style_name,e.id,e.managed_object.name,str(e.timestamp),\
+        "events": [[e.event_priority.css_style_name,e.id,e.managed_object.name,str(e.timestamp),e.status,\
                     e.event_category.name,e.event_class.name,e.event_priority.name,e.subject]\
                     for e in events.order_by("-timestamp")[PAGE_SIZE*page:PAGE_SIZE*(page+1)]]
     }
@@ -118,10 +118,29 @@ def event(request,event_id):
 ## Drop classification mask on event so it can be classified again
 ##
 @permission_required("fm.change_event")
-def reclassify(request,event_id):
+def reclassify_event(request,event_id):
     event=get_object_or_404(Event,id=int(event_id))
-    event.reclassify()
-    return HttpResponseRedirect("/fm/%d/"%event.id)
+    event.reclassify_event("Reclassification requested by '%s'"%request.user.username)
+    link=request.META.get("HTTP_REFERER","/fm/%d/"%event.id)
+    return HttpResponseRedirect(link)
+##
+## Change event status to Open
+##
+@permission_required("fm.change_event")
+def open_event(request,event_id):
+    event=get_object_or_404(Event,id=int(event_id))
+    event.open_event("Event opened by '%s'"%request.user.username)
+    link=request.META.get("HTTP_REFERER","/fm/%d/"%event.id)
+    return HttpResponseRedirect(link)
+##
+## Change event status to Close
+##
+@permission_required("fm.change_event")
+def close_event(request,event_id):
+    event=get_object_or_404(Event,id=int(event_id))
+    event.close_event("Event closed by '%s'"%request.user.username)
+    link=request.META.get("HTTP_REFERER","/fm/%d/"%event.id)
+    return HttpResponseRedirect(link)
 ##
 ## Create event classification rule from event
 ##
