@@ -6,12 +6,14 @@
 """
 """
 import noc.sa.script
+from noc.sa.interfaces import IPing
 import re
 
 rx_result=re.compile(r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms)?",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="Cisco.IOS.ping"
+    implements=[IPing]
     def execute(self,address,count=None,source_address=None,size=None,df=None):
         cmd="ping ip %s"%address
         if count:

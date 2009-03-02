@@ -12,4 +12,5 @@ from noc.sa.interfaces.ihasvlan import IHasVlan
 from noc.sa.interfaces.igetversion import IGetVersion
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.sa.interfaces.igetdot11associations import IGetDot11Associations
+from noc.sa.interfaces.iping import IPing
 
