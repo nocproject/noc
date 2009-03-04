@@ -13,6 +13,7 @@ from noc.lib.tt import tt_url
 from noc.peer.models import AS
 from noc.lib.fields import CIDRField
 from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast
+from noc.main.menu import Menu
 ##
 ##
 ##
@@ -232,3 +233,18 @@ class IPv4Address(models.Model):
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
+##
+## Application Menu
+##
+class AppMenu(Menu):
+    app="ip"
+    title="Address Space Management"
+    items=[
+        ("Assigned addresses", "/ip/", "ip.change_ipv4block"),
+        ("Setup",[
+            ("VRF Groups",  "/admin/ip/vrfgroup/",        "ip.change_vrfgroup"),
+            ("VRFs",        "/admin/ip/vrf/",             "ip.change_vrf"),
+            ("Block Access","/admin/ip/ipv4blockaccess/", "ip.change_ipv4blockaccess"),
+            ]
+        )
+    ]

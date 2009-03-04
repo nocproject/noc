@@ -9,6 +9,7 @@
 """
 """
 from django.db import models
+from noc.main.menu import Menu
 
 ##
 ## Virtual circuit domain, allows to separate unique VC spaces
@@ -68,3 +69,15 @@ class VC(models.Model):
         if min_labels>1 and not in_range(self.l2,l2range):
             raise Exception("Invalid value for L2")
         super(VC,self).save()
+##
+## Application Menu
+##
+class AppMenu(Menu):
+    app="vc"
+    title="Virtual Circuit Management"
+    items=[
+        ("Virtual Circuits", "/admin/vc/vc/", "vc.change_vc"),
+        ("Setup",[
+            ("VC Domains", "/admin/vc/vcdomain/", "vc.change_vcdomain"),
+        ])
+    ]

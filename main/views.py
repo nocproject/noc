@@ -10,9 +10,11 @@
 """
 import django.contrib.auth
 from django.http import HttpResponseRedirect,HttpResponseNotFound
-from noc.lib.render import render,render_success,render_failure
+from django.core.cache import cache
+from noc.lib.render import render,render_success,render_failure,render_json
 from noc.main.report import report_registry
-import os
+from noc.main.menu import MENU
+import os, types
 ##
 ## Startup boilerplate
 ##
@@ -29,6 +31,34 @@ def logout(request):
 ##
 def handler404(request):
     return render(request,"main/404.html")
+##
+## Returns JSON with user's menu
+##
+def menu(request):
+    cache_key="menu:%d"%request.user.id
+    menu=cache.get(cache_key)
+    if menu is None:
+        menu=[]
+        user=request.user
+        for m in MENU:
+            r=[]
+            for mi in m["items"]:
+                if len(mi)==3 and user.has_perm(mi[2]):
+                    r+=[(mi[0],mi[1])]
+                elif type(mi[1])==types.DictType:
+                    sr=[(x[0],x[1]) for x in mi[1]["items"] if len(x)==2 or user.has_perm(x[2])]
+                    if sr:
+                        r+=[(mi[0],{"items":sr})]
+            if r:
+                mi={"items":r}
+                for k,v in m.items():
+                    if k=="items":
+                        continue
+                    mi[k]=v
+                menu.append(mi)
+        print menu
+        cache.set(cache_key,menu,300)
+    return render_json(menu)
 ##
 ## Render report
 ##
