@@ -1,0 +1,59 @@
+#menu {
+    float: left;
+    width: 200px;
+    position: relative;
+}
+
+.app {
+    padding: 0px;
+    margin: 0px;
+}
+
+.app_title {
+    background:#eee url(/media/img/admin/nav-bg.gif) bottom left repeat-x;
+    color:#666;
+    font-weight: bold;
+    padding: 0px 0px 0px 4px;
+    cursor: pointer;
+}
+
+.app ul {
+    padding: 0px 0px 0px 12px;
+    margin: 0px;
+}
+
+.active_ul {
+    color: #666;
+}
+
+.active_ul a {
+    color: #666;
+}
+
+.active_ul a:link, .active_ul a:visited {
+}
+
+.active_ul a:hover {
+    color: #036;
+}
+
+.collapsed_ul {
+    color: blue;
+    display: none;
+}
+
+.collapsed_ul LI {
+    display: inline;
+}
+
+.collapsed_ul li:after {
+    content: ", ";
+}
+        
+.collapsed_ul li.last:after {
+    content: ".";
+}
+
+.active_ul LI {
+    list-style: square inside;
+}
