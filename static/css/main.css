@@ -3,3 +3,15 @@
 #footer {
 	text-align: center;
 }
+
+#content {
+    margin-left: 204px;
+}
+
+div.breadcrumbs {
+    margin-left: 204px;
+}
+
+ul.messagelist {
+    margin-left: 204px;
+}

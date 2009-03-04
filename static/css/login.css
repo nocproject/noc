@@ -48,5 +48,18 @@ body {
 
 LABEL {
     color: red;
+    padding-left: 8px;
 }
 
+#content {
+    margin-left: 0px;
+}
+
+#menu {
+    display: none;
+}
+
+#container {
+    min-width: 308px;
+    width: 308px;
+}

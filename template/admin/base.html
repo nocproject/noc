@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE }}" xml:lang="{{ LANGUAGE_CODE }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+<title>{% block title %}{% endblock %} | NOC</title>
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/menu.css" />
+<META NAME="Copyright" CONTENT="2007, nocproject.org" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.js"></SCRIPT>
+<SCRIPT TYPE="text/javascript" SRC="/static/js/menu.js"></SCRIPT>
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
+{% block extrastyle %}{% endblock %}
+{% block extrahead %}{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+</head>
+{% load i18n %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
+<script type="text/javascript">
+    $(document).ready(menu);
+</script>
+<!-- Container -->
+<div id="container">
+
+    {% if not is_popup %}
+    <!-- Header -->
+    <div id="header">
+        <div id="branding">
+        {% block branding %}<h1 ID="site-name">NOC</h1>{% endblock %}
+        </div>
+        {% if user.is_authenticated and user.is_staff %}
+        <div id="user-tools">{% trans 'Welcome,' %} <strong>{% firstof user.first_name user.username %}</strong>. {% block userlinks %}{% url django-admindocs-docroot as docsroot %}{% if docsroot %}<a href="{{ docsroot }}">{% trans 'Documentation' %}</a> / {% endif %}<a href="/admin/password_change/">{% trans 'Change password' %}</a> / <a href="/admin/logout/">{% trans 'Log out' %}</a>{% endblock %}</div>
+        {% endif %}
+        {% block nav-global %}{% endblock %}
+    </div>
+    <div id="menu"></div>
+    <!-- END Header -->
+    {% block breadcrumbs %}<div class="breadcrumbs"><a href="/">{% trans 'Home' %}</a>{% if title %} &rsaquo; {{ title }}{% endif %}</div>{% endblock %}
+    {% endif %}
+
+    {% if messages %}
+    <ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+    {% endif %}
+        
+    <!-- Content -->
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+        {% block pretitle %}{% endblock %}
+        {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+        {% block content %}
+        {% block object-tools %}{% endblock %}
+        {{ content }}
+        {% endblock %}
+        {% block sidebar %}{% endblock %}
+        <br class="clear" />
+    </div>
+    <!-- END Content -->
+
+    {% block footer %}<div id="footer">&copy;2007-2009, <A HREF="http://nocproject.org/">nocproject.org</A></div>{% endblock %}
+</div>
+<!-- END Container -->
+
+</body>
+</html>
