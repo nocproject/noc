@@ -13,6 +13,7 @@ from noc.sa.profiles import profile_registry
 from noc.sa.periodic import periodic_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
+from noc.main.menu import Menu
 
 profile_registry.register_all()
 periodic_registry.register_all()
@@ -195,3 +196,19 @@ class TaskSchedule(models.Model):
             TaskSchedule.objects.filter(next_run__lte=datetime.datetime.now(),is_enabled=True).exclude(id__in=exclude).order_by("-next_run")
         else:
             return TaskSchedule.objects.filter(next_run__lte=datetime.datetime.now(),is_enabled=True).order_by("-next_run")
+##
+## Application Menu
+##
+class AppMenu(Menu):
+    app="sa"
+    title="Service Activation"
+    items=[
+        ("Managed Objects", "/admin/sa/managedobject/", "sa.change_managedobject"),
+        ("Task Schedules",  "/admin/sa/taskschedule/",  "sa.change_taskschedule"),
+        ("Setup", [
+            ("Activators",             "/admin/sa/activator/"            , "sa.change_activator"),
+            ("Administrative Domains", "/admin/sa/administrativedomain/" , "sa.change_administrativedomain"),
+            ("Object Groups",          "/admin/sa/objectgroup/"          , "sa.change_objectgroup"),
+            ("User Access",            "/admin/sa/useraccess/"           , "sa.change_useraccess"),
+        ])
+    ]

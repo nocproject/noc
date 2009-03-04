@@ -13,6 +13,7 @@ from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 from noc.dns.generators import generator_registry
 from noc.lib.rpsl import rpsl_format
+from noc.main.menu import Menu
 
 ##
 ## register all generator classes
@@ -286,3 +287,17 @@ class DNSZoneRecord(models.Model):
         return "%s %s"%(self.zone.name," ".join([x for x in [self.left,self.type.type,self.right] if x is not None]))
     def __unicode__(self):
         return unicode(str(self))
+##
+## Application Menu
+##
+class AppMenu(Menu):
+    app="dns"
+    title="DNS"
+    items=[
+        ("Zones", "/admin/dns/dnszone/", "dns.change_dnszone"),
+        ("Setup",[
+            ("DNS Servers",      "/admin/dns/dnsserver/",         "dns.change_dnsserver"),
+            ("Zone Profiles",    "/admin/dns/dnszoneprofile/",    "dns.change_dnszoneprofile"),
+            ("Zone Record Types","/admin/dns/dnszonerecordtype/", "dns.change_dnszonerecordtype"),
+        ])
+    ]

@@ -12,6 +12,7 @@ from noc.lib.rpsl import rpsl_format
 from noc.sa.profiles import profile_registry
 from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
+from noc.main.menu import Menu
 import random,sets
 
 class RIR(models.Model):
@@ -382,3 +383,21 @@ class Peer(models.Model):
             return self.peer_group.max_prefixes
         return 0
     effective_max_prefixes=property(_effective_max_prefixes)
+##
+## Application Menu
+##
+class AppMenu(Menu):
+    app="peer"
+    title="Peering Management"
+    items=[
+        ("ASes",          "/admin/peer/as/"           ,"peer.change_as"),
+        ("ASsets",        "/admin/peer/asset/"        ,"peer.change_asset"),
+        ("Communities",   "/admin/peer/community/"    ,"peer.change_community"),
+        ("Peering Points","/admin/peer/peeringpoint/" ,"peer.change_peeringpoint"),
+        ("Peers",         "/admin/peer/peer/"         ,"peer.change_peer"),
+        ("Setup",[
+            ("Community Types", "/admin/peer/communitytype/", "peer.change_communitytype"),
+            ("RIRs",            "/admin/peer/rir/",           "peer.change_rir"),
+            ("Persons",         "/admin/peer/person/",        "peer.change_person"),
+        ])
+    ]

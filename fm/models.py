@@ -11,6 +11,7 @@ from noc.sa.models import ManagedObject
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
 from noc.fm.triggers import event_trigger_registry
+from noc.main.menu import Menu
 import imp,subprocess,tempfile,os,datetime,re
 
 ##
@@ -518,3 +519,21 @@ class EventLog(models.Model):
     from_status=models.CharField("From Status",max_length=1,choices=EVENT_STATUS_CHOICES)
     to_status=models.CharField("To Status",max_length=1,choices=EVENT_STATUS_CHOICES)
     message=models.TextField("Message")
+##
+## Application Menu
+##
+class AppMenu(Menu):
+    app="fm"
+    title="Fault Management"
+    items=[
+        ("Events", "/fm/", "fm.change_event"),
+        ("Setup", [
+            ("MIBs",                "/admin/fm/mib/",                     "fm.change_mib"),
+            ("MIB Data",            "/admin/fm/mibdata/",                 "fm.change_mibdata"),
+            ("Event Classes",       "/admin/fm/eventclass/",              "fm.change_eventclass"),
+            ("Event Categories",    "/admin/fm/eventcategory/",           "fm.change_eventcategory"),
+            ("Event Priorities",    "/admin/fm/eventpriority/",           "fm.change_eventpriority"),
+            ("Classification Rules","/admin/fm/eventclassificationrule/", "fm.change_eventclassificationrule"),
+            ("Correlation Rules",   "/admin/fm/eventcorrelationrule/",    "fm.change_eventcorrelationrule"),
+        ])
+    ]

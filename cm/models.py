@@ -18,7 +18,7 @@ from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging,sets,random
 from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObject
-from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP,ERR_OVERLOAD
+from noc.main.menu import Menu
 
 profile_registry.register_all()
 vcs_registry.register_all()
@@ -373,3 +373,18 @@ class RPSL(Object):
     
     @classmethod
     def global_push(cls): pass
+##
+## Application Menu
+##
+class AppMenu(Menu):
+    app="cm"
+    title="Configuration Management"
+    items=[
+        ("Config",      "/admin/cm/config/",     "cm.change_config"),
+        ("DNS Objects", "/admin/cm/dns/",        "cm.change_dns"),
+        ("Prefix Lists","/admin/cm/prefixlist/", "cm.change_prefixlist"),
+        ("RPSL Objects","/admin/cm/rpsl/",       "cm.change_rpsl"),
+        ("Setup",[
+            ("Object Notifies","/admin/cm/objectnotify/", "cm.change_objectnotify"),
+        ])
+    ]
