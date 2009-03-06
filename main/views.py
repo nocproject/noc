@@ -56,7 +56,6 @@ def menu(request):
                         continue
                     mi[k]=v
                 menu.append(mi)
-        print menu
         cache.set(cache_key,menu,300)
     return render_json(menu)
 ##
