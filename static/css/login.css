@@ -21,15 +21,10 @@ body {
 
 #footer {
     position: relative;
-    width: 300px;
-    height: 20px;
     padding: 4px;
     border: 0px;
     text-align: center;
-    background: #F0F0F0;
-    color: red;
     clear: both;
-    height: 50px;
 }
 
 #caption {
