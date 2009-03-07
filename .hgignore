@@ -3,10 +3,10 @@ syntax: glob
 *.pyo
 *.swp
 site_settings.py
-share/doc/users_guide/html/*
-share/doc/users_guide/src/.build/*
 dist/
 build/
 noc.egg-info/
 etc/*.conf
 local/*
+static/doc/*
+
