@@ -20,7 +20,10 @@ class AppMenu(Menu):
         ("Setup", [
             ("Users",  "/admin/auth/user/",  "auth.change_user"),
             ("Groups", "/admin/auth/group/", "auth.change_group")
-        ])
+        ]),
+        ("Documentation", [
+            ("Administrator's Guide", "/static/doc/en/ag/html/index.html"),
+        ]),
     ]
 ##
 ## Load and register reports
