@@ -29,7 +29,8 @@ MANIFEST=[]
 def get_manifest():
     global MANIFEST
     if not MANIFEST:
-        if not os.path.exists("MANIFEST"):
+        if os.path.exists(".hg"):
+            # Rebuild MANIFEST file every time mercurial repo found
             proc=subprocess.Popen(["hg","locate"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             stdout,stderr=proc.communicate()
             with open("MANIFEST","w") as f:
