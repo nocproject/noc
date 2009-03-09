@@ -1,0 +1,13 @@
+#!/bin/sh
+##----------------------------------------------------------------------
+## NOC post-update script
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+PREFIX=/opt/noc
+
+cd $PREFIX
+python manage.py migrate
+python manage.py sync-rules
+python manage.py sync-doc
