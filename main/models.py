@@ -23,6 +23,7 @@ class AppMenu(Menu):
         ]),
         ("Documentation", [
             ("Administrator's Guide", "/static/doc/en/ag/html/index.html"),
+            ("User's Guide", "/static/doc/en/ug/html/index.html"),
         ]),
     ]
 ##
