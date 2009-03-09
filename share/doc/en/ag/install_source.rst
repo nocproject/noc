@@ -143,6 +143,11 @@ Install::
 
     # easy_install pyke
 
+fping
+^^^^^
+`fping <http://fping.sourceforge.net/>`_ is a tool to perform parralel ICMP host checking. fping is used by Fault Management module
+to check Managed Objects availability. Install fping according to your operation system's requirements.
+
 Getting NOC
 ===========
 NOC sources can be obtained via source archive download or from mercurial repository
