@@ -9,4 +9,5 @@ noc.egg-info/
 etc/*.conf
 local/*
 static/doc/*
+MANIFEST
 
