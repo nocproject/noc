@@ -24,8 +24,12 @@ environment may have different PATHs. Ensure you are calling proper Python versi
 
 PostgreSQL
 ^^^^^^^^^^
-
 8.1 or later required. Please install PostgreSQL according to your operation system requirements.
+
+**WARNING:** Common installation troubles are causedby two versions of PostgreSQL installed in the system.
+If your system have several versions of PostgreSQL installed ensure you calling and linking with right version when installing
+required packages, NOC and performing NOC maintenance. Please note, ``noc``, ``root`` users and daemon
+environment may have different PATHs. Ensure you are calling proper PostgreSQL version each case.
  
 setuptools
 ^^^^^^^^^^
@@ -56,6 +60,17 @@ Install::
 
     # easy_install Django
 
+Verify Django's version::
+
+    # python
+    Python 2.5.4 (r254:67916, Feb 17 2009, 20:16:45) 
+    [GCC 4.3.3] on linux2 
+    Type "help", "copyright", "credits" or "license" for more information. 
+    >>> import django 
+    >>> django.VERSION 
+    (1, 0, 2, 'final', 0) 
+     >>>
+
 South
 ^^^^^
 `South <http://south.aeracode.org/>`_ is an intillegent Django scheme migration tool.
@@ -73,7 +88,7 @@ protobuf
 `Protocol Buffers <http://code.google.com/p/protobuf/>`_ is compact Google's data interchange format,
 used for internal RPC between SAE and Activators.
 
-Install:
+Install::
     
     # wget http://protobuf.googlecode.com/files/protobuf-2.0.2.tar.bz2
     # bzip2 -dc protobuf-2.0.2.tar.bz2 | tar xf -
@@ -82,7 +97,9 @@ Install:
 
 Sphinx
 ^^^^^^
-Python documentation tool. Required to rebuild online documentation (See wiki:Install/Sphinx)
+Python documentation tool required to rebuild online documentation. Install::
+
+    # easy-install Sphinx
 
 flup
 ^^^^
@@ -173,22 +190,11 @@ To fetch particular release (0.1.6 in example)::
 
 System Users and Groups
 =======================
-All noc files except ``/opt/noc/local`` directory must be owned by ``root``.
-All noc daemons are running from ``noc`` user. Ensure user and group ``noc`` are
-exists in your system before continuing installation
+All noc files except ``/opt/noc/local`` and ``/opt/noc/static/doc`` directories must be owned by ``root``.
+All noc daemons are running from ``noc`` user. Create ``noc`` user and group before continuing installation::
 
-Creating Database
-=================
-Create database user ``noc`` from postgresql superuser::
-    
-    $ createuser noc
-    Shall the new role be a superuser? (y/n) n
-    Shall the new role be allowed to create databases? (y/n) n
-    Shall the new role be allowed to create more new roles? (y/n) n
-
-Create postgresql database ``noc`` owned by user ``noc`` from postgresql superuser::
-    
-    $ createdb -EUTF8 -Onoc noc
+    # groupadd noc
+    # useradd -g noc -s /bin/sh -d /home/noc noc
 
 Installing NOC
 ==============
@@ -197,10 +203,10 @@ Go to unpacked NOC source distribution as ``root`` user and install NOC::
     # cd noc-<version>
     # python manage.py install
 
-NOC will be installed into ``/opt/noc/`` directory. Perform initial NOC and database setup::
+NOC will be installed into ``/opt/noc/`` directory. Finish your installation by::
 
     # cd /opt/noc
     # ./scripts/post-install
 
-During intialization you will be prompted to create first NOC database superuser.
-Enter superuser's name, password and email.
+``post-install`` script will create required additional directories, set up permissions,
+create configuration files and set up paths.
