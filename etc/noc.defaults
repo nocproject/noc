@@ -64,6 +64,7 @@ tar        = /usr/bin/tar
 gzip       = /usr/bin/gzip
 smidump    = /usr/bin/smidump
 smilint    = /usr/bin/smilint
+dig        = /usr/bin/dig
 #
 # SAE XML-RPC interface
 #
