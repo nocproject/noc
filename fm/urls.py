@@ -10,7 +10,8 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
 from noc.fm.views import index,event,reclassify_event,open_event,close_event,create_rule,event_list_css,view_rules,\
-    py_event_class,py_event_classification_rule,upload_mib,lookup_managed_object,lookup_events,reload_classifier_config
+    py_event_class,py_event_classification_rule,upload_mib,lookup_managed_object,lookup_events,reload_classifier_config,\
+    clone_rule
 
 urlpatterns = patterns ( "",
     (r"^(?P<event_id>\d+)/status/reclassify/$", login_required(reclassify_event)),
@@ -26,5 +27,6 @@ urlpatterns = patterns ( "",
     (r"^$",                   login_required(index)),
     (r"^lookup/managed_object/", lookup_managed_object),
     (r"^lookup/events/",      lookup_events),
-    (r"^reload_classifier_config", login_required(reload_classifier_config))
+    (r"^reload_classifier_config", login_required(reload_classifier_config)),
+    (r"^clone_rule/(?P<rule_id>\d+)/$", login_required(clone_rule)),
 )

@@ -156,6 +156,34 @@ def create_rule(request,event_id):
         r.save()
     return HttpResponseRedirect("/admin/fm/eventclassificationrule/%d/"%rule.id)
 ##
+## Clone classification rule from existing one
+##
+@permission_required("fm.add_eventclassificationrule")
+def clone_rule(request,rule_id):
+    rule=get_object_or_404(EventClassificationRule,id=int(rule_id))
+    # Find suitable rule name
+    i=1
+    while True:
+        name=rule.name+" copy #%d"%i
+        try:
+            EventClassificationRule.objects.get(name=name)
+        except EventClassificationRule.DoesNotExist:
+            break
+        i+=1
+    # Create cloned rule
+    new_rule=EventClassificationRule(
+        name=name,
+        event_class=rule.event_class,
+        preference=rule.preference,
+        drop_event=rule.drop_event,
+        is_builtin=False)
+    new_rule.save()
+    for r in rule.eventclassificationre_set.all():
+        new_r=EventClassificationRE(rule=new_rule,left_re=r.left_re,right_re=r.right_re)
+        new_r.save()
+    return HttpResponseRedirect("/admin/fm/eventclassificationrule/%d/"%new_rule.id)
+
+##
 ## Event classification rules overview sheet
 ##
 @permission_required("fm.change_eventclassificationrule")
