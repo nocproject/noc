@@ -8,6 +8,7 @@
 PREFIX=/opt/noc
 
 cd $PREFIX
+python manage.py syncdb
 python manage.py migrate
 python manage.py sync-rules
 python manage.py sync-doc
