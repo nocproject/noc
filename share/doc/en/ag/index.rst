@@ -5,7 +5,10 @@ NOC: Administrator's Guide
     :maxdepth: 2
     
     install
+    configuration
+    testing
+    webserver
     update
     database
-    solaris10
-    linux
+    specific
+

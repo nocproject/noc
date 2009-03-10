@@ -2,19 +2,18 @@
 Updating NOC
 ************
 
+Updating
+========
+
 Updating from Mercurial repo
-============================
+----------------------------
 Fetch updates::
     
     # cd /opt/noc
     # hg pull -u
     
-Syncronize database, fault management rules and MIBs and documentation::
-
-    # ./scripts/post-update
-
 Updating from source
-====================
+--------------------
 Fetch and unpack new version::
 
     # wget http://......
@@ -22,8 +21,11 @@ Fetch and unpack new version::
     # cd noc-<version>
     # python manage.py install
 
-Syncronize database, fault management rules and MIBs and documentation::
+Syncronize database
+===================
+Syncronize database, fault management rules and MIBs and documentation after software update::
 
-    # cd /opt/noc/
-    # ./scripts/post-update
+    # su - noc
+    $ cd /opt/noc/
+    $ ./scripts/post-update
 
