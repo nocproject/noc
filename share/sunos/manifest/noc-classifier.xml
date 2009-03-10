@@ -40,8 +40,8 @@
         <property_group name="noc-classifier" type="framework">
             <stability value="Evolving"/>
             <propval name="python"      type="astring" value="/opt/csw/bin/python" />
-            <propval name="prefix"      type="astring" value="/var/www/noc" />
-            <propval name="config"      type="astring" value="/var/www/noc/etc/noc-classifier.conf" />
+            <propval name="prefix"      type="astring" value="/opt/noc" />
+            <propval name="config"      type="astring" value="/opt/noc/etc/noc-classifier.conf" />
         </property_group>
         <template>
             <common_name>
