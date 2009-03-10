@@ -24,9 +24,9 @@ for d in etc/*.defaults; do
 done
 rm $sed_script
 
-# Create local cache
-[ ! -d "local" ] && mkdir local
-[ ! -d "static/doc" ] && mkdir static/doc
-chown noc:noc local static/doc
+for d in local static/doc /var/repo /var/backup; do
+    [ ! -d $d ] && mkdir $d
+    chown noc:noc $d
+done
 
 # Perform post-update to syncronize the rest
