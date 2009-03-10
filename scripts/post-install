@@ -18,7 +18,9 @@ done
 
 for d in etc/*.defaults; do
     conf=`echo $d|sed 's/.defaults$/.conf/'`
-    sed -f $sed_script < $d > $conf
+    if [ ! -f $conf ]; then
+        sed -f $sed_script < $d > $conf
+    fi
 done
 rm $sed_script
 
