@@ -90,10 +90,12 @@ configuration management, DNS provisioning, peering management, RPSL and BGP fil
       requires=[
         "psycopg2 (>= 2.0.5)",
         "Django (>= 1.0.2)",
-        #"south"
+        "South (>= 0.4)",
         "flup (>= 1.0)",
+        "protobuf (>= 2.0.3)",
         "pysnmp (>= 4.1.7)",
         "pyasn1 (>= 0.0.6)",
         "pyke (>= 0.7)",
+        "Sphinx (>= 0.5)",
       ],
      )
