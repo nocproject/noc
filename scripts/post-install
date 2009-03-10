@@ -23,14 +23,8 @@ done
 rm $sed_script
 
 # Create local cache
-if [ ! -d "local" ]; then
-    mkdir local
-    chown noc:noc local
-fi
-
-if [ ! -d "static/doc" ]; then
-    mkdir static/doc
-    chown noc:noc static/doc
-fi
+[ ! -d "local" ] && mkdir local
+[ ! -d "static/doc" ] && mkdir static/doc
+chown noc:noc local static/doc
 
 # Perform post-update to syncronize the rest
