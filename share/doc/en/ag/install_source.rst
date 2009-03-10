@@ -80,7 +80,7 @@ Install::
 
     # wget http://www.aeracode.org/releases/south/south-0.4.tar.gz
     # gzip -dc south-0.4.tar.gz | tar xf -
-    # cd south-0.4
+    # cd south
     # python setup.py install
 
 protobuf
@@ -99,11 +99,13 @@ Sphinx
 ^^^^^^
 Python documentation tool required to rebuild online documentation. Install::
 
-    # easy-install Sphinx
+    # easy_install Sphinx
 
 flup
 ^^^^
-Required to run NOC web daemon in FastCGI mode. Please install flup according to your operation system's requirements.
+Required to run NOC web daemon in FastCGI mode. Install::
+
+    # easy_install flup
 
 webserver
 ^^^^^^^^^
@@ -164,6 +166,11 @@ fping
 ^^^^^
 `fping <http://fping.sourceforge.net/>`_ is a tool to perform parralel ICMP host checking. fping is used by Fault Management module
 to check Managed Objects availability. Install fping according to your operation system's requirements.
+
+rsync
+^^^^^
+`rsync <http://samba.anu.edu.au/rsync/>`_ is an incremental file transfer tool widely used in DNS provisioning module. Install rsync
+fping according to your operation system's requirements.
 
 Getting NOC
 ===========
