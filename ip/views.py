@@ -17,6 +17,7 @@ from noc.peer.models import AS
 from noc.lib.render import render,render_success
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
 from noc.lib.ip import normalize_prefix,contains
+from noc.settings import config
 import csv,cStringIO,datetime,subprocess
 
 ##
@@ -319,7 +320,7 @@ def upload_axfr(request,vrf_id,prefix):
             opts=[]
             if form.cleaned_data["source_address"]:
                 opts+=["-b",form.cleaned_data["source_address"]]
-            pipe = subprocess.Popen(["dig"]+opts+["axfr","@%s"%form.cleaned_data["ns"],form.cleaned_data["zone"]],
+            pipe = subprocess.Popen([config.get("path","dig")]+opts+["axfr","@%s"%form.cleaned_data["ns"],form.cleaned_data["zone"]],
                 shell=False, stdout=subprocess.PIPE).stdout
             data=pipe.read()
             pipe.close()
