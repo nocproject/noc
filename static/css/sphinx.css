@@ -14,7 +14,8 @@ body {
 /* :::: LAYOUT :::: */
 
 div.document {
-    background-color: #1c4e63;
+    /* background-color: #1c4e63; */
+    background-color: rgb(65, 118, 144);
 }
 
 div.documentwrapper {
@@ -23,7 +24,7 @@ div.documentwrapper {
 }
 
 div.bodywrapper {
-    margin: 0 0 0 230px;
+    margin: 0 0 0 200px;
 }
 
 div.body {
@@ -60,10 +61,11 @@ div.footer a {
 }
 
 div.related {
-    background-color: #133f52;
+    /* background-color: #133f52; */
+    background-color: rgb(65, 118, 144);
     color: #fff;
     width: 100%;
-    line-height: 30px;
+    line-height: 37px;
     font-size: 90%;
 }
 
