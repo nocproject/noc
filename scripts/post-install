@@ -8,11 +8,29 @@
 PREFIX=/opt/noc
 
 cd $PREFIX
+
+# Copy configs and perform paths auto-discovery
+sed_script=`mktemp tmp.XXXXXX`
+rm $sed_script
+for cmd in telnet ssh rsync pg_dump tar gzip smidump smilint fping; do
+    echo "s@^\\($cmd *\\)=.*\$@"\\1= `which $cmd`"@" >> $sed_script
+done
+
+for d in etc/*.defaults; do
+    conf=`echo $d|sed 's/.defaults$/.conf/'`
+    sed -f $sed_script < $d > $conf
+done
+rm $sed_script
+
+# Create local cache
 if [ ! -d "local" ]; then
     mkdir local
     chown noc:noc local
 fi
 
-python manage.py syncdb
-python manage.py migrate
-python manage.py sync-rules
+if [ ! -d "static/doc" ]; then
+    mkdir static/doc
+    chown noc:noc static/doc
+fi
+
+# Perform post-update to syncronize the rest
