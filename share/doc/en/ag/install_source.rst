@@ -78,10 +78,7 @@ Version 0.4 or later required.
 
 Install::
 
-    # wget http://www.aeracode.org/releases/south/south-0.4.tar.gz
-    # gzip -dc south-0.4.tar.gz | tar xf -
-    # cd south
-    # python setup.py install
+    # easy_install South
 
 protobuf
 ^^^^^^^^
@@ -90,10 +87,7 @@ used for internal RPC between SAE and Activators.
 
 Install::
     
-    # wget http://protobuf.googlecode.com/files/protobuf-2.0.2.tar.bz2
-    # bzip2 -dc protobuf-2.0.2.tar.bz2 | tar xf -
-    # cd protobuf-2.0.2/python/
-    # python setup.py install
+    # easy_install protobuf
 
 Sphinx
 ^^^^^^
