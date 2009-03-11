@@ -289,9 +289,11 @@ class CLI(StreamFSM):
             "PROMPT"              : "PROMPT",
         },
         "PROMPT":{
-            "PROMPT": "PROMPT",
-            "PAGER" : "PROMPT",
-            "CLOSE" : "CLOSED",
+            "PROMPT"      : "PROMPT",
+            "PAGER"       : "PROMPT",
+            "PAGER_START" : "PROMPT",
+            "PAGER_END"   : "PROMPT",
+            "CLOSE"       : "CLOSED",
         },
         "FAILURE":{
         },
@@ -373,10 +375,15 @@ class CLI(StreamFSM):
         if not self.is_ready:
             self.queue.put(None) # Signal provider passing into PROMPT state
             self.is_ready=True
-        self.set_patterns([
+        p=[
             (self.profile.pattern_prompt, "PROMPT"),
             (self.profile.pattern_more,   "PAGER"),
-            ])
+            ]
+        if self.profile.pattern_more_start:
+            p+=[(self.profile.pattern_more_start, "PAGER_START")]
+        if self.profile.pattern_more_end:
+            p+=[(self.profile.pattern_more_end, "PAGER_END")]
+        self.set_patterns(p)
         
     def on_PROMPT_match(self,data,match):
         if match.re.pattern==self.profile.pattern_more:
@@ -388,6 +395,18 @@ class CLI(StreamFSM):
     def on_PROMPT_PAGER(self):
         self.write(self.profile.command_more)
     
+    def on_PROMPT_PAGER_START(self):
+        if self.profile.command_more_start is None:
+            self.write(self.profile.command_more)
+        else:
+            self.write(self.profile.command_more_start)
+    
+    def on_PROMPT_PAGER_END(self):
+        if self.profile.command_more_end is None:
+            self.write(self.profile.command_more)
+        else:
+            self.write(self.profile.command_more_end)
+
     def on_FAILURE_enter(self):
         self.set_patterns([])
 

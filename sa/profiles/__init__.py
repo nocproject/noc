@@ -61,12 +61,24 @@ class Profile(object):
     # Regular expression to catch pager
     # (Used in command results)
     pattern_more="^---MORE---"
+    # Regular expression to catch first pager occurence.
+    # (If differ from pattern_more)
+    pattern_more_start=None
+    # Regular expression to catch last pager occurence.
+    # (If differ from pattern_more)
+    pattern_more_end=None
     # Sequence to be send at the end of all CLI commands
     #
     command_submit="\n"
     # Sequence to be send to list forward pager
     #
     command_more="\n"
+    # Sequence to be send to list pager at first occurence.
+    # (If set to None command_more used)
+    command_more_start=None
+    # Sequence to be send to quit pager when paged to the end
+    # (If set to None command_more used)
+    command_more_end=None
     # Sequence to gracefully close session
     #
     command_exit="exit"
