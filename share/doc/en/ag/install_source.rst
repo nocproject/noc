@@ -202,7 +202,7 @@ Installing NOC
 Go to unpacked NOC source distribution as ``root`` user and install NOC::
 
     # cd noc-<version>
-    # python manage.py install
+    # python setup.py install
 
 NOC will be installed into ``/opt/noc/`` directory. Finish your installation by::
 
