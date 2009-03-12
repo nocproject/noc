@@ -9,7 +9,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"Model:\s+(?P<platform>\S+).+JUNOS Base OS Software Suite \[(?P<version>[^\]]+)\]",re.MULTILINE|re.DOTALL)
+rx_ver=re.compile(r"Model:\s+(?P<platform>\S+).+JUNOS .*? \[(?P<version>[^\]]+)\]",re.MULTILINE|re.DOTALL)
 rx_snmp_ver=re.compile(r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?JUNOS\s+(?P<version>\S+)")
 
 class Script(noc.sa.script.Script):
