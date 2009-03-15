@@ -49,8 +49,8 @@ def get_packages():
 def get_data():
     data={}
     for df in get_manifest():
-        if df.endswith(".py"):
-            continue
+        #if df.endswith(".py"):
+        #    continue
         d,f=os.path.split(df)
         if d not in data:
             data[d]=[df]
