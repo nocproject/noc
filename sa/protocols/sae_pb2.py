@@ -277,8 +277,8 @@ _ACCESSPROFILE = descriptor.Descriptor(
       options=None),
     descriptor.FieldDescriptor(
       name='port', full_name='sae.AccessProfile.port', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
+      number=4, type=13, cpp_type=3, label=1,
+      default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
