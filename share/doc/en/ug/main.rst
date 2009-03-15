@@ -3,6 +3,13 @@ Main
 ****
 Overview
 ========
+Main module is a core or noc. Main module provides following services:
+
+* Core system services
+* Database access, migration and backup tools
+* User authentication and authorization
+* Online documentation access
+* Reporting engine
 
 Terminology
 ============
@@ -92,3 +99,10 @@ Permissions
 preview ANY
 ======= ========================================
 
+Periodic Tasks
+==============
+main.backup
+-----------
+
+main.cleanup_sessions
+---------------------

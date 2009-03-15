@@ -5,8 +5,10 @@ NOC: User's Guide
 
     overview
     license
+    conventions
     features
     modules
+    configuration
     main
     sa
     fm
