@@ -3,9 +3,31 @@ Configuration Management
 ************************
 Overview
 ========
+Configuration management. Contains generalized interface to Version Control System
+to track the state and changes of the objects. Web interface allows to preview given object
+for an any moment of time and to preview differences between any two moments of time.
+Email notification on object changes.
+
+Objects handled by cm:
+
+* Device configurations
+* DNS zones
+* RPSL objects
+* Prefix lists
+
+cm performs two major operation: ''push'' to repository and ''pull'' from repository
 
 Terminology
 ============
+
+* Repository
+* Object
+* Push
+* Pull
+
+Configuration
+=============
+
 Forms
 =====
 Config

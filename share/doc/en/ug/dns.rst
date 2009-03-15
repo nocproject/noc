@@ -3,9 +3,18 @@ DNS
 ***
 Overview
 ========
+DNS Provisioning. Generates forward and reverse zones for allocated IP addresses (ip module). Contains web-interface
+for DNS Zone editing and provisioning. Generated DNS Zones are stored in cm repo.
+Resulting zones and configuration are provisioning to DNS Servers.
+Zones can be redistributed via several authoritative DNS servers (may be of different types) allowing to share load.
 
 Terminology
 ============
+* Zone
+* Reverse Zone
+* Generatior
+* Nameserver
+
 Forms
 =====
 Zones
