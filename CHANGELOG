@@ -1,5 +1,5 @@
-0.1.7
------
+0.1.7 (16-MAR-2009)
+-------------------
 MIGRATION:
  * Set up 'dig' path in [path]/dig option in etc/noc.conf
  * Migration process is simplified. Just after update perform
