@@ -58,7 +58,7 @@ message AccessProfile {
     required string       profile        = 1;
     required AccessScheme scheme         = 2;
     required string       address        = 3;
-    optional string       port           = 4;
+    optional uint32       port           = 4;
     optional string       user           = 5;
     optional string       password       = 6;
     optional string       super_password = 7;
