@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 import re
 
-rx_url=re.compile(r"^(?P<scheme>[^:]+)://(?P<user>[^:]+):(?P<password>[^@]+)@(?P<host>[^/]+)(?:(?P<port>\d+))?(?P<path>.*)$")
+rx_url=re.compile(r"^(?P<scheme>[^:]+)://(?:(?P<user>[^:]+):(?P<password>[^@]+)@)(?P<host>[^/:]+)(?::(?P<port>\d+))?(?P<path>.*)$")
 
 class InvalidURLException(Exception): pass
 
@@ -21,5 +21,5 @@ class URL(object):
         self.user=match.group("user")
         self.password=match.group("password")
         self.host=match.group("host")
-        self.port=match.group("port")
+        self.port=int(match.group("port"))
         self.path=match.group("path")
