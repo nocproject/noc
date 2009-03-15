@@ -6,12 +6,12 @@
 """
 """
 from django.shortcuts import get_object_or_404
-from noc.lib.render import render
+from noc.lib.render import render, render_failure
 from noc.sa.models import ManagedObject,script_registry,profile_registry
 from django.http import HttpResponseForbidden,HttpResponseNotFound
 from xmlrpclib import ServerProxy, Error
 from noc.settings import config
-import pprint,types
+import pprint,types,socket
 
 def object_scripts(request,object_id):
     o=get_object_or_404(ManagedObject,id=int(object_id))
@@ -24,7 +24,10 @@ def object_scripts(request,object_id):
 def object_script(request,object_id,script):
     def get_result(script,object_id,**kwargs):
         server=ServerProxy("http://%s:%d"%(config.get("xmlrpc","server"),config.getint("xmlrpc","port")))
-        result=server.script(script,object_id,kwargs)
+        try:
+            result=server.script(script,object_id,kwargs)
+        except socket.error,why:
+            raise Exception("XML-RPC socket error: "+why[1])
         if type(result) not in [types.StringType,types.UnicodeType]:
             result=pprint.pformat(result)
         return result
@@ -46,9 +49,15 @@ def object_script(request,object_id,script):
                 for k,v in form.cleaned_data.items():
                     if v:
                         data[k]=v
-                result=get_result(script,object_id,**data)
+                try:
+                    result=get_result(script,object_id,**data)
+                except Exception,why:
+                    return render_failure(request,"Script Failed",why)
         else:
             form=scr.implements[0].get_form()
     else:
-        result=get_result(script,object_id)
+        try:
+            result=get_result(script,object_id)
+        except Exception,why:
+            return render_failure(request,"Script Failed",why)
     return render(request,"sa/script.html",{"object":o,"result":result,"script":script,"form":form})
