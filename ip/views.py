@@ -14,7 +14,7 @@ from django import forms
 
 from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address
 from noc.peer.models import AS
-from noc.lib.render import render,render_success
+from noc.lib.render import render,render_success,render_failure
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
 from noc.lib.ip import normalize_prefix,contains
 from noc.settings import config
@@ -167,6 +167,9 @@ def assign_address(request,vrf_id,ip=None):
                 address.description=form.cleaned_data["description"]
                 address.tt=form.cleaned_data["tt"]
             else:
+                # Check no duplicated IPs
+                if IPv4Address.objects.filter(vrf=vrf,ip=form.cleaned_data["ip"]).count()>0:
+                    return render_failure(request,"Duplicated IP address","Address %s is already present in VRF %s"%(form.cleaned_data["ip"],vrf.name))
                 address=IPv4Address(vrf=vrf,fqdn=form.cleaned_data["fqdn"],
                     ip=form.cleaned_data["ip"],description=form.cleaned_data["description"],
                     modified_by=request.user)
