@@ -34,7 +34,6 @@ class Generator(object):
         return """;;
 ;; WARNING: Auto-generated zone file
 ;; Do not edit manually
-;; Use python manage.py sync-zones to rebuild
 ;;
 """
     def get_footer(self):
