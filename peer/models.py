@@ -396,6 +396,7 @@ class AppMenu(Menu):
         ("Peering Points","/admin/peer/peeringpoint/" ,"peer.change_peeringpoint"),
         ("Peers",         "/admin/peer/peer/"         ,"peer.change_peer"),
         ("Setup",[
+            ("Peer Groups",     "/admin/peer/peergroup/"    , "peer.change_peergroup"),
             ("Community Types", "/admin/peer/communitytype/", "peer.change_communitytype"),
             ("RIRs",            "/admin/peer/rir/",           "peer.change_rir"),
             ("Persons",         "/admin/peer/person/",        "peer.change_person"),
