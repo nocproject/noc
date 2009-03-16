@@ -14,7 +14,7 @@
 </SCRIPT>
 <h1>Allocated blocks</h1>
 <DIV CLASS="module">
-    <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}">
+    <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}" WIDTH="100%">
         <CAPTION>
             <A HREF="/ip/"><B>VRF</B></A> {{vrf.name}} ({{vrf.rd}})<BR/>
             {% for p in parents %}
@@ -43,7 +43,7 @@
 {% if prefix.has_children %}
 {% else %}
 <DIV CLASS="module">
-    <TABLE SUMMARY="Allocated addresses within {{prefix.prefix}}">
+    <TABLE SUMMARY="Allocated addresses within {{prefix.prefix}}" WIDTH="100%">
         <TR><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
         {% for a in prefix.addresses %}
         <TR>
