@@ -11,6 +11,7 @@
 import django.contrib.auth
 from django.http import HttpResponseRedirect,HttpResponseNotFound
 from django.core.cache import cache
+from django.utils.cache import patch_response_headers
 from noc.lib.render import render,render_success,render_failure,render_json
 from noc.main.report import report_registry
 from noc.main.menu import MENU
@@ -34,6 +35,7 @@ def handler404(request):
 ##
 ## Returns JSON with user's menu
 ##
+MENU_CACHE_TIME=600 # Should be settable from config
 def menu(request):
     cache_key="menu:%d"%request.user.id
     menu=cache.get(cache_key)
@@ -56,8 +58,10 @@ def menu(request):
                         continue
                     mi[k]=v
                 menu.append(mi)
-        cache.set(cache_key,menu,300)
-    return render_json(menu)
+        cache.set(cache_key,menu,MENU_CACHE_TIME)
+    response=render_json(menu)
+    patch_response_headers(response,MENU_CACHE_TIME)
+    return response
 ##
 ## Render report
 ##
