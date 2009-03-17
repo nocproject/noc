@@ -48,6 +48,7 @@ LABEL {
 
 #content {
     margin-left: 0px;
+    min-height:  0px;
 }
 
 #menu {
