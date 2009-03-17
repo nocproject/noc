@@ -18,7 +18,7 @@ from noc.main.menu import Menu
 profile_registry.register_all()
 periodic_registry.register_all()
 script_registry.register_all()
-
+scheme_choices=[(TELNET,"telnet"),(SSH,"ssh"),(HTTP,"http")]
 ##
 ##
 ##
@@ -67,7 +67,7 @@ class ManagedObject(models.Model):
     activator=models.ForeignKey(Activator,verbose_name="Activator")
     profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     # Access
-    scheme=models.IntegerField("Scheme",choices=[(TELNET,"telnet"),(SSH,"ssh"),(HTTP,"http")])
+    scheme=models.IntegerField("Scheme",choices=scheme_choices)
     address=models.CharField("Address",max_length=64)
     port=models.PositiveIntegerField("Port",blank=True,null=True)
     user=models.CharField("User",max_length=32,blank=True,null=True)

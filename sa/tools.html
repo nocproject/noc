@@ -1,0 +1,16 @@
+{% extends "template/template.html" %}
+{% block content %}
+<H1>Managed Objects Tools</H1>
+<H2>Upload Managed Objects</H2>
+    <P>Upload list of managed objects in CVS file. First row of CVS file must contain
+        field names from list:<br/> <b>name</b>, <b>profile_name</b>, <b>scheme</b>, <b>address</b>,
+        port,user,password,super_password,remote_path,
+        trap_source_ip, trap_community, snmp_ro, snmp_rw, repo_path (Bold ones are required)
+    </P>
+    <FORM METHOD="POST" ACTION="/sa/tools/upload_managed_objects/" enctype="multipart/form-data">
+        <TABLE BORDER="0">
+        {{upload_mo_form.as_table}}
+        </TABLE>
+        <INPUT TYPE="submit" VALUE="Upload Managed Objects" />
+    </FORM>
+{% endblock%}
