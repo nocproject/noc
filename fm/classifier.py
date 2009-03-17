@@ -12,6 +12,7 @@ from noc.lib.pyquote import bin_quote,bin_unquote
 from noc.lib.validators import is_ipv4
 from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat
 from django.db import transaction
+from django.template import Template, Context
 import re,logging,time,datetime
 
 ##
@@ -96,6 +97,7 @@ class Classifier(Daemon):
     daemon_name="noc-classifier"
     def __init__(self):
         self.rules=[]
+        self.templates={} # event_class_id -> (body_template,subject_template)
         Daemon.__init__(self)
         logging.info("Running Classifier")
     ##
@@ -110,12 +112,10 @@ class Classifier(Daemon):
     def load_rules(self):
         logging.info("Loading rules")
         self.rules=[Rule(r) for r in EventClassificationRule.objects.order_by("preference")]
-        logging.info("%d rules loaded"%len(self.rules))
-    ##
-    ## Replace all variable occurences in template by variables content
-    ##
-    def expand_template(self,template,vars):
-        return rx_template.sub(lambda m:str(vars.get(m.group(1),"{{UNKNOWN VAR}}")),template)
+        logging.info("%d rules are loaded"%len(self.rules))
+        logging.info("Compiling templates")
+        self.templates=dict([(ec.id,(Template(ec.subject_template),Template(ec.body_template))) for ec in EventClass.objects.all()])
+        logging.info("%d templates are compiled"%len(self.templates)*2)
     ##
     ## Classify single event:
     ## 1. Resolve OIDs when source is SNMP Trap
@@ -205,10 +205,12 @@ class Classifier(Daemon):
         f_vars=dict(props) # f_vars contains all event vars, including original, extracted and resolved
         f_vars.update(vars)
         f_vars.update(resolved)
-        subject=self.expand_template(event_class.subject_template,f_vars)
+        subject_template,body_template=self.templates[event_class.id]
+        context=Context(f_vars)
+        subject=subject_template.render(context)
         if len(subject)>255: # Too long subject must be truncated
             subject=subject[:250]+" ..."
-        body=self.expand_template(event_class.body_template,f_vars)
+        body=body_template.render(context)
         # Prepare and call update_event_classification stored procedure for bulk event update
         v_args=[]
         for k,v in resolved.items():
