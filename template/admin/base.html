@@ -28,7 +28,7 @@
     <!-- Header -->
     <div id="header">
         <div id="branding">
-        {% block branding %}<h1 ID="site-name">NOC</h1>{% endblock %}
+        {% block branding %}<h1 ID="site-name">{{setup.installation_name}}</h1>{% endblock %}
         </div>
         {% if user.is_authenticated and user.is_staff %}
         <div id="user-tools">{% trans 'Welcome,' %} <strong>{% firstof user.first_name user.username %}</strong>. {% block userlinks %}{% comment %}<a href="/static/doc/en/">{% trans 'Documentation' %}</a> / {%endcomment%}<a href="/admin/password_change/">{% trans 'Change password' %}</a> / <a href="/admin/logout/">{% trans 'Log out' %}</a>{% endblock %}</div>
