@@ -32,6 +32,12 @@ host     =
 port     =
 
 #
+# Site customization
+#
+[customization]
+installation_name = Unconfigured Installation
+
+#
 # cm module setup
 #
 [cm]
