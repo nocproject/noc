@@ -1,0 +1,6 @@
+{% extends "admin/change_list.html" %}
+{% block object-tools %}
+{% if has_add_permission %}
+<ul class="object-tools">{% if user.is_superuser %}<li><a href="/sa/tools/" class="addlink">Tools</a></li>{% endif %}<li><a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">Add {{ name }}</a></li></ul>
+{% endif %}
+{% endblock %}

@@ -9,9 +9,11 @@
 """
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
-from noc.sa.views import object_scripts,object_script
+from noc.sa.views import object_scripts,object_script,tools,upload_managed_objects
 
 urlpatterns = patterns ( "",
-    (r"^(?P<object_id>\d+)/scripts/$", login_required(object_scripts)),
+    (r"^(?P<object_id>\d+)/scripts/$",  login_required(object_scripts)),
     (r"^(?P<object_id>\d+)/scripts/(?P<script>[^/]+)/$", login_required(object_script)),
+    (r"^tools/$",                       login_required(tools)),
+    (r"^tools/upload_managed_objects/", login_required(upload_managed_objects)),
 )
