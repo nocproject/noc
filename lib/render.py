@@ -9,7 +9,21 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
 from django.utils.simplejson.encoder import JSONEncoder
+from noc.settings import config
 
+##
+## Setup Context Processor.
+## Used via TEMPLATE_CONTEXT_PROCESSORS variable in settings.py
+## Adds "setup" variable to context.
+## "setup" is a hash of
+##      "installation_name" 
+##
+def setup_processor(request):
+    return {
+        "setup" : {
+            "installation_name" : config.get("customization","installation_name")
+        }
+    }
 ##
 ## Render template within context
 ##
