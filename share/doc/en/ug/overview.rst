@@ -14,4 +14,4 @@ Areas covered by NOC:
 * Peering management, RPSL and BGP filters generator, integrated looking glass
 * Reporting
 
-NOC is Open Source Software distributed under the term of BSD-like :ref:`LICENSE`.
+NOC is Open Source Software distributed under the terms of BSD-like :ref:`LICENSE`.
