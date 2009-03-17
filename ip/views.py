@@ -192,7 +192,8 @@ def assign_address(request,vrf_id,ip=None):
                 if ip:
                     initial["ip"]=ip
                 else:
-                    return render_failure(request,"IP Address allocation failed","No free IP addresses in VRF %s block %s"%(vrf.name,block))
+                    initial["ip"]="NO FREE IP"
+                    #return render_failure(request,"IP Address allocation failed","No free IP addresses in VRF %s block %s"%(vrf.name,block))
         form=AssignAddressForm(initial=initial)
     return render(request,"ip/assign_address.html",{"vrf":vrf,"form":form,"p":p})
 ##
