@@ -35,6 +35,7 @@ port     =
 # Site customization
 #
 [customization]
+# Installation name. Displayed in top left corner of web interface
 installation_name = Unconfigured Installation
 
 #
