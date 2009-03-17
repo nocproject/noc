@@ -19,4 +19,4 @@ class Report(noc.main.report.Report):
             ]
     
     def get_queryset(self):
-        return [(c.repo_path,c.address) for c in Config.objects.all() if is_ipv4(c.address)]
+        return [(c.repo_path,c.managed_object.address) for c in Config.objects.all() if is_ipv4(c.managed_object.address)]
