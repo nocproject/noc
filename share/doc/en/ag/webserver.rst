@@ -22,6 +22,10 @@ Set up lighttpd.conf::
                                 "mod_access",
                                 "mod_fastcgi",
                                 "mod_accesslog" )
+    
+    static-file.etags = "enable"
+    etag.use-mtime = "enable"
+    
     fastcgi.server = (
         "/noc.fcgi" => (
                 "main" => (
