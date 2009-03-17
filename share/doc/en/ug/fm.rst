@@ -43,11 +43,10 @@ Classifier uses Message Classification Rules and regular expressions pattern mat
 to determine Event Class for the message. 
 
 When matching rule found Classifier performs:
+
 * Drops event if required by rule, or
-* Check, if event repeats already registred event, if required by Event Class, and suppress repeated event, or
-* Set ups Event Class
-* Set ups Event Category
-* Set ups Event Priority
+* Check, if event repeats already registered event, if required by Event Class, and suppress repeated event, or
+* Set ups Event Class, Category and Priority
 * Resolves Message's SNMP OIDs via MIB Lookup
 * Uses Message Classification Rules to extract refined Message Variables
 * Communicates with external systems and databases to extract additional event data and performs Event Enrichment
@@ -60,10 +59,12 @@ and Event Correlation Rules to perform corellation.
 
 During correlation process following decisions made:
 
-* Does Event be silently discarded?
-* Does Event is just repeat of known Event in the Event Window?
-* Does Event is caused by known Event in the Event Window? (Does Event has Root)
-* Does Event causing known Events in the Event Window? (Is Event a Root for other Events)
+* Should Event be silently discarded?
+* Should Event be automatically closed or dropped?
+* Does event automatically close known event in the Event Window?
+* Does event repeat already known event in the Event Window?
+* Does event caused by already known event in the Event Window (Has root cause)?
+* Does event cause already known event in the Event Window (Event is root cause)?
 
 Decisions are made considering Event Variables, extracted by Correlator.
 Root cause decisions are not permanent. Event may become a Root Cause or receive Root Cause with new events.
