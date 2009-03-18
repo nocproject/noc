@@ -178,22 +178,22 @@ def assign_address(request,vrf_id,ip=None):
             address.save()
             return HttpResponseRedirect("/ip/%d/%s/"%(vrf.id,address.parent.prefix))
     else:
-        # Try to calculate ip address from referer
-        referer=request.META.get("HTTP_REFERER",None)
-        if referer:
-            match=rx_url_cidr.match(referer)
-            if match and is_cidr(match.group(1)):
-                block=match.group(1)
-                # Find first free IP address
-                from django.db import connection
-                c=connection.cursor()
-                c.execute("SELECT free_ip(%s,%s)",[vrf.id,block])
-                ip=c.fetchall()[0][0]
-                if ip:
-                    initial["ip"]=ip
-                else:
-                    initial["ip"]="NO FREE IP"
-                    #return render_failure(request,"IP Address allocation failed","No free IP addresses in VRF %s block %s"%(vrf.name,block))
+        if "ip" not in initial:
+            # Try to calculate ip address from referer
+            referer=request.META.get("HTTP_REFERER",None)
+            if referer:
+                match=rx_url_cidr.match(referer)
+                if match and is_cidr(match.group(1)):
+                    block=match.group(1)
+                    # Find first free IP address
+                    from django.db import connection
+                    c=connection.cursor()
+                    c.execute("SELECT free_ip(%s,%s)",[vrf.id,block])
+                    ip=c.fetchall()[0][0]
+                    if ip:
+                        initial["ip"]=ip
+                    else:
+                        initial["ip"]="NO FREE IP"
         form=AssignAddressForm(initial=initial)
     return render(request,"ip/assign_address.html",{"vrf":vrf,"form":form,"p":p})
 ##
