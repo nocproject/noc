@@ -1,3 +1,19 @@
+0.1.8 (19-MAR-2009)
+-------------------
+MIGRATION:
+ * set up etc/noc.conf:[customization]/installation_name
+CHANGES:
+ * main
+   * Site customization via etc/noc.conf:[customization]/installation_name setting
+ * sa
+   * Managed Objects can be uploaded from CSV file
+ * ip
+   * Offer first free IP in "Assign IP Address" form
+ * cm
+   * cm.ip_addresses_in_config report fixed
+ * fm
+   * Event search fixed
+ 
 0.1.7 (16-MAR-2009)
 -------------------
 MIGRATION:
