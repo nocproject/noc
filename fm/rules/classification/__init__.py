@@ -40,6 +40,12 @@ class ClassificationRuleBase(type):
         # Check variables
         return m
 ##
+## Rule actions
+##
+MAKE_ACTIVE="A"
+DROP_EVENT="D"
+CLOSE_EVENT="C"
+##
 ## Event classification rule
 ##
 class ClassificationRule(object):
@@ -47,7 +53,7 @@ class ClassificationRule(object):
     name="Classification Rule"
     event_class=Default
     preference=1000
-    drop_event=False
+    action=MAKE_ACTIVE
     required_mibs=[] # A list of required MIB Names
     patterns=[]  # Pair of (left_re,right_re)
     ##
@@ -66,7 +72,7 @@ class ClassificationRule(object):
             r=EventClassificationRule.objects.get(name=cls.name)
             r.event_class=get_event_class(cls.event_class)
             r.preference=cls.preference
-            r.drop_event=cls.drop_event
+            r.action=cls.action
             r.is_builtin=True
             print "UPDATE RULE %s"%cls.name
         except EventClassificationRule.DoesNotExist:
@@ -74,7 +80,7 @@ class ClassificationRule(object):
                 event_class=get_event_class(cls.event_class),
                 name=cls.name,
                 preference=cls.preference,
-                drop_event=cls.drop_event,
+                action=cls.action,
                 is_builtin=True
             )
             print "CREATE RULE %s"%cls.name
