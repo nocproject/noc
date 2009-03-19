@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classification import ClassificationRule,DROP_EVENT
 from noc.fm.rules.classes.config import *
 from noc.fm.rules.classes.default import DROP
 
@@ -33,7 +33,7 @@ class Cisco_IOS_Config_Event_Drop_SNMP_Rule(ClassificationRule):
     name="Cisco.IOS Config Event Drop SNMP"
     event_class=DROP
     preference=90000
-    drop_event=True
+    action=DROP_EVENT
     required_mibs=["CISCO-CONFIG-MAN-MIB"]
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),

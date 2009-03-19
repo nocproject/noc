@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classification import ClassificationRule,DROP_EVENT
 from noc.fm.rules.classes.link import *
 from noc.fm.rules.classes.default import DROP
 ##
@@ -99,7 +99,7 @@ class Cisco_IOS_Line_Protocol_SYSLOG_Rule(ClassificationRule):
     name="Cisco.IOS Line Protocol SYSLOG"
     event_class=DROP
     preference=1000
-    drop_event=True
+    action=DROP_EVENT
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^syslog$"),

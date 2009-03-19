@@ -46,9 +46,9 @@ class EventClassificationREAdmin(admin.TabularInline):
     model=EventClassificationRE
 ##
 class EventClassificationRuleAdmin(admin.ModelAdmin):
-    list_display=["name","event_class","preference","is_builtin","drop_event","python_link"]
+    list_display=["name","event_class","preference","is_builtin","action","python_link"]
     search_fields=["name"]
-    list_filter=["is_builtin","drop_event","event_class"]
+    list_filter=["is_builtin","action","event_class"]
     inlines=[EventClassificationREAdmin]
 ##
 class EventCorrelationRuleAdmin(admin.ModelAdmin):

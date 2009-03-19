@@ -344,7 +344,7 @@ class EventClassificationRule(models.Model):
     event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
     name=models.CharField("Name",max_length=64)
     preference=models.IntegerField("Preference",1000)
-    drop_event=models.BooleanField("Drop Event",default=False)
+    action=models.CharField("Action",max_length=1,choices=[("A","Make Active"),("C","Close"),("D","Drop")],default="A")
     is_builtin=models.BooleanField("Is Builtin",default=False)
     
     def __unicode__(self):
@@ -358,13 +358,14 @@ class EventClassificationRule(models.Model):
     ## Python representation of data structure
     ##
     def _python_code(self):
-        s=["##","## %s"%self.name,"##"]
+        s=["from noc.fm.rules.classification import ClassificationRule,CLOSE_EVENT,DROP_EVENT"]
+        s+=["##","## %s"%self.name,"##"]
         s+=["class %s_Rule(ClassificationRule):"%rx_py_id.sub("_",self.name)]
         s+=["    name=\"%s\""%py_q(self.name)]
         s+=["    event_class=%s"%self.event_class.name.replace(" ","").replace("-","_")]
         s+=["    preference=%d"%self.preference]
-        if self.drop_event:
-            s+=["    drop_event=True"]
+        if self.action!="A":
+            s+=["    action=%s"%{"C":"CLOSE_EVENT","D":"DROP_EVENT"}[self.action]]
         s+=["    patterns=["]
         for p in self.eventclassificationre_set.all():
             s+=["        (r\"%s\",r\"%s\"),"%(py_q(p.left_re),py_q(p.right_re))]

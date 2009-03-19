@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classification import ClassificationRule,DROP_EVENT
 from noc.fm.rules.classes.default import DROP
 ##
 ## Cisco.IOS TCP Connection Closed
@@ -16,7 +16,7 @@ class Cisco_IOS_TCP_Connection_Closed_Rule(ClassificationRule):
     name="Cisco.IOS TCP Connection Closed"
     event_class=DROP
     preference=90000
-    drop_event=True
+    action=DROP_EVENT
     required_mibs=["CISCOTRAP-MIB"]
     patterns=[
         (r"^source$",r"^SNMP Trap$"),

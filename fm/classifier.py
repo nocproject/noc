@@ -66,10 +66,6 @@ class Rule(object):
             if not found:
                 return None
         return vars
-    ## Rule is drop rule
-    def _drop_event(self):
-        return self.rule.drop_event
-    drop_event=property(_drop_event)
     ##
     ## Decode IPv4 from 4 octets
     ##
@@ -159,9 +155,9 @@ class Classifier(Daemon):
                 continue
             rule_id=r.rule.id
             # Silently drop event when required by rule
-            if r.drop_event:
+            if r.rule.action=="D":
                 logging.debug("Drop event %d"%event.id)
-                [ed.delete() for ed in event.eventdata_set.all()]
+                #[ed.delete() for ed in event.eventdata_set.all()]
                 event.delete()
                 return
             event_class=r.rule.event_class
@@ -221,6 +217,9 @@ class Classifier(Daemon):
         p+=",".join(["ARRAY[%s,%s,%s]"]*(len(v_args)/3))
         p+="])"
         cursor.execute(p,[event.id,rule_id,event_class.id,event_class.category.id,event_class.default_priority.id,subject,body]+v_args)
+        if r.rule.action!="A":
+            event.status=r.rule.action
+            event.save()
         cursor.execute("COMMIT")
         # Finally run event class trigger
         event.event_class.run_trigger(event)

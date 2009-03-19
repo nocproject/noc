@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classification import ClassificationRule,DROP_EVENT
 from noc.fm.rules.classes.ipsec import *
 from noc.fm.rules.classes.default import DROP
 
@@ -78,7 +78,7 @@ class Cisco_IOS_IPsec_Crypto_Map_Added_SNMP_Rule(ClassificationRule):
     name="Cisco.IOS IPsec Crypto Map Added SNMP"
     event_class=DROP
     preference=1000
-    drop_event=True
+    action=DROP_EVENT
     required_mibs=["CISCO-IPSEC-MIB"]
     patterns=[
         (r"^source$",r"^SNMP Trap$"),
@@ -93,7 +93,7 @@ class Cisco_IOS_IPsec_Crypto_Map_Deleted_SNMP_Rule(ClassificationRule):
     name="Cisco.IOS IPsec Crypto Map Deleted SNMP"
     event_class=DROP
     preference=1000
-    drop_event=True
+    action=DROP_EVENT
     required_mibs=["CISCO-IPSEC-MIB"]
     patterns=[
         (r"^source$",r"^SNMP Trap$"),
