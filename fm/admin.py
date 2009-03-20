@@ -51,6 +51,28 @@ class EventClassificationRuleAdmin(admin.ModelAdmin):
     list_filter=["is_builtin","action","event_class"]
     inlines=[EventClassificationREAdmin]
 ##
+## Inline for EventPostProcessingRuleAdmin
+##
+class EventPostProcessingREAdmin(admin.TabularInline):
+    extra=3
+    model=EventPostProcessingRE
+##
+##
+##
+class EventPostProcessingRuleAdmin(admin.ModelAdmin):
+    fieldsets=(
+        (None,{
+            "fields": ("name","event_class","preference","is_active","description")}
+        ),
+        ("Action",{
+            "fields": ("action","change_priority","change_category")
+        }),
+    )
+    list_display=["name","event_class","preference","is_active","action","change_priority","change_category"]
+    search_fields=["name"]
+    list_filter=["is_active","event_class"]
+    inlines=[EventPostProcessingREAdmin]
+##
 class EventCorrelationRuleAdmin(admin.ModelAdmin):
     list_display=["name","is_builtin"]
     search_fields=["name"]
@@ -62,4 +84,5 @@ admin.site.register(EventPriority, EventPriorityAdmin)
 admin.site.register(EventCategory, EventCategoryAdmin)
 admin.site.register(EventClass, EventClassAdmin)
 admin.site.register(EventClassificationRule, EventClassificationRuleAdmin)
+admin.site.register(EventPostProcessingRule, EventPostProcessingRuleAdmin)
 admin.site.register(EventCorrelationRule, EventCorrelationRuleAdmin)

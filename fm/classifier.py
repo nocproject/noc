@@ -10,7 +10,7 @@
 from noc.lib.daemon import Daemon
 from noc.lib.pyquote import bin_quote,bin_unquote
 from noc.lib.validators import is_ipv4
-from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat
+from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat,EventPostProcessingRule
 from django.db import transaction
 from django.template import Template, Context
 import re,logging,time,datetime
@@ -87,6 +87,27 @@ class Rule(object):
             return "%s:%s:%s:%s:%s:%s"%(s[:2],s[2:4],s[4:6],s[6:8],s[8:10],s[10:])
         raise DecodeError
 ##
+## Post-Process rule
+##
+class PostProcessRule(object):
+    def __init__(self,rule):
+        self.rule=rule
+        self.name=rule.name
+        self.re=[(re.compile(x.var_re,re.MULTILINE|re.DOTALL),re.compile(x.value_re,re.MULTILINE|re.DOTALL)) for x in rule.eventpostprocessingre_set.all()]
+    
+    def match(self,vars):
+        v=vars.items()
+        for rx_var,rx_value in self.re:
+            matched=False
+            for var,value in v:
+                if rx_var.match(var) and rx_value.match(value):
+                    matched=True
+                    break
+            if not matched:
+                return False
+        return True
+
+##
 ## Noc-classifier daemon
 ##
 class Classifier(Daemon):
@@ -94,6 +115,7 @@ class Classifier(Daemon):
     def __init__(self):
         self.rules=[]
         self.templates={} # event_class_id -> (body_template,subject_template)
+        self.post_process={} # event_class_id -> [rule1, ..., ruleN]
         Daemon.__init__(self)
         logging.info("Running Classifier")
     ##
@@ -112,6 +134,16 @@ class Classifier(Daemon):
         logging.info("Compiling templates")
         self.templates=dict([(ec.id,(Template(ec.subject_template),Template(ec.body_template))) for ec in EventClass.objects.all()])
         logging.info("%d templates are compiled"%len(self.templates)*2)
+        logging.info("Loading post-process rules")
+        self.post_process={}
+        n=0
+        for r in EventPostProcessingRule.objects.order_by("preference"):
+            ec_id=r.event_class.id
+            if id not in self.post_process:
+                self.post_process[ec_id]=[]
+            self.post_process[ec_id].append(PostProcessRule(r))
+            n+=1
+        logging.info("%d post-processing rules are loaded"%n)
     ##
     ## Classify single event:
     ## 1. Resolve OIDs when source is SNMP Trap
@@ -120,81 +152,51 @@ class Classifier(Daemon):
     ## 4. Set event class of the matched rule or DEFAULT
     ## 
     def classify_event(self,cursor,event):
-        def is_oid(s):
-            return rx_oid.search(s) is not None
         # Extract received event properties
         props=[(x.key,bin_unquote(x.value)) for x in event.eventdata_set.filter(type=">")]
         # Resolve additional event properties
-        source=None
-        for k,v in props:
-            if k=="source":
-                source=v
-                break
         resolved={
             "profile":event.managed_object.profile_name
         }
         # Resolve SNMP oids
-        if source=="SNMP Trap":
-            for k,v in props:
-                if is_oid(k):
-                    oid=MIB.get_name(k)
-                    if oid!=k:
-                        if is_oid(v):
-                            v=MIB.get_name(v)
-                        resolved[oid]=v
-        if resolved:
-            props+=resolved.items()
+        if self.get_source(props)=="SNMP Trap":
+            resolved.update(self.resolve_snmp_oids(props))
+        props+=resolved.items()
         # Find rule
-        event_class=None
-        # Try to find matching rule
-        rule_id=0
-        for r in self.rules:
-            # Try to match rule
-            vars=r.match(props)
-            if vars is None:
-                continue
-            rule_id=r.rule.id
-            # Silently drop event when required by rule
-            if r.rule.action=="D":
-                logging.debug("Drop event %d"%event.id)
-                event.delete()
+        status="A"
+        rule,vars=self.find_classification_rule(event,props)
+        if rule: # Rule found
+            if rule.rule.action=="D": # Drop event when required by rule
+                self.drop_event(event)
                 return
-            event_class=r.rule.event_class
-            logging.debug("Matching class for event %d found: %s (Rule: %s)"%(event.id,event_class.name,r.name))
-            # Check the event is repeatition of existing one
-            if event_class.repeat_suppression and event_class.repeat_suppression_interval>0:
-                # Delete event as repeatition of the known event
-                # Build keys
-                kv={}
-                for name in [v.name for v in EventClassVar.objects.filter(event_class=event_class,repeat_suppression=True)]:
-                    if name in vars:
-                        kv[name]=vars[name]
-                    else:
-                        kv=None
-                        break
-                if kv is not None:
-                    r=[e for e in Event.objects.filter(
-                        event_class=event_class,
-                        managed_object=event.managed_object,
-                        timestamp__gte=event.timestamp-datetime.timedelta(seconds=event_class.repeat_suppression_interval),
-                        timestamp__lte=event.timestamp
-                        ).exclude(id=event.id).order_by("-timestamp")
-                        if e.match_data(kv)]
-                    if len(r)>0:
-                        pe=r[0]
-                        logging.debug("Event #%d repeats event #%d"%(event.id,pe.id))
-                        er=EventRepeat(event=pe,timestamp=pe.timestamp)
-                        er.save()
-                        pe.timestamp=event.timestamp
-                        pe.save()
-                        event.delete()
-                        return
-            break
-        # Set event class to DEFAULT when no matching rule found
-        if event_class is None:
+            event_class=rule.rule.event_class
+            event.event_class=event_class
+            if event_class.repeat_suppression and event_class.repeat_suppression_interval>0 and self.suppress_repeat(event):
+                return # Event is suppressed, no further processing
+            event_category=event_class.category
+            event_priority=event_class.default_priority
+            # Find post-processing rule
+            post_process=self.find_post_processing_rule(event,vars)
+            if post_process:
+                if post_process.rule.action=="D": # Drop event if required by post_process_rule
+                    self.drop_event(event)
+                    return
+                if post_process.rule.change_category:
+                    event_category=post_process.rule.change_category # Set up priority and category from rule
+                if post_process.rule.change_priority:
+                    event_priority=post_process.rule.change_priority
+                status=post_process.rule.action
+            event.log("CLASSIFICATION RULE: %s"%rule.name,to_status=status)
+            if post_process:
+                event.log("POST-PROCESS RULE: %s"%post_process.name,from_status=status,to_status=status)
+        else:
+            # Set event class to DEFAULT when no matching rule found
             event_class=EventClass.objects.get(name="DEFAULT")
             vars={}
             logging.debug("No rule found for event %d. Falling back to DEFAULT"%event.id)
+            event_category=event_class.category
+            event_priority=event_class.default_priority
+            event.log("FALLBACK TO DEFAULT")
         # Fill event subject and body
         f_vars=dict(props) # f_vars contains all event vars, including original, extracted and resolved
         f_vars.update(vars)
@@ -205,23 +207,112 @@ class Classifier(Daemon):
         if len(subject)>255: # Too long subject must be truncated
             subject=subject[:250]+" ..."
         body=body_template.render(context)
-        # Prepare and call update_event_classification stored procedure for bulk event update
-        v_args=[]
+        # Set up event
+        event.event_class=event_class
+        event.event_category=event_category
+        event.event_priority=event_priority
+        event.status=status
+        event.subject=subject
+        event.body=body
+        event.save()
+        # Write event vars
+        event.eventdata_set.filter(type__in=["R","V"]).delete() # Delete old "R" and "V" vars
+        # Write vars
         for k,v in resolved.items():
-            v_args+=["R",k,bin_quote(v)]
+            EventData(event=event,key=k,value=v,type="R").save()
         for k,v in vars.items():
-            v_args+=["V",k,bin_quote(v)]
-        p="SELECT update_event_classification(%s,%s,%s,%s,%s,%s,%s,ARRAY["
-        p+=",".join(["ARRAY[%s,%s,%s]"]*(len(v_args)/3))
-        p+="])"
-        cursor.execute(p,[event.id,rule_id,event_class.id,event_class.category.id,event_class.default_priority.id,subject,body]+v_args)
-        if r.rule.action!="A":
-            event.status=r.rule.action
-            event.save()
-        cursor.execute("COMMIT")
+            EventData(event=event,key=k,value=v,type="V").save()
         # Finally run event class trigger
         event.event_class.run_trigger(event)
+    ##
+    ## Return event source
+    ##
+    def get_source(self,props):
+        for k,v in props:
+            if k=="source":
+                return v
+        return None
+    ##
+    ## Resolve SNMP oids to symbolic names
+    ##
+    def resolve_snmp_oids(self,props):
+        def is_oid(s):
+            return rx_oid.search(s) is not None
+        resolved={}
+        for k,v in props:
+            if is_oid(k):
+                oid=MIB.get_name(k)
+                if oid!=k:
+                    if is_oid(v):
+                        v=MIB.get_name(v)
+                    resolved[oid]=v
+        return resolved
         
+    ##
+    ## Find classification rule.
+    ## Returns Rule,vars or None,None
+    ##
+    def find_classification_rule(self,event,props):
+        for r in self.rules:
+            # Try to match rule
+            vars=r.match(props)
+            if vars is not None:
+                logging.debug("Matching class for event %d found: %s (Rule: %s)"%(event.id,r.rule.event_class.name,r.name))
+                return r,vars
+        return None,None
+        
+    ##
+    ## Find matching postprocessing rule for event class.
+    ## Returns PostProcessRule or None
+    ##
+    def find_post_processing_rule(self,event,vars):
+        event_class=event.event_class
+        if event_class.id in self.post_process:
+            for r in self.post_process[event_class.id]:
+                if r.match(vars):
+                    logging.debug("Event #%d matches post-processing rule '%s'"%(event.id,r.name))
+                    return r
+        return None
+    ##
+    ## Drop event
+    ##
+    def drop_event(self,event):
+        logging.debug("Drop event #%d"%event_delete)
+    ##
+    ## Suppress repeats.
+    ## Return True if event is suppressed, False otherwise
+    ##
+    def suppress_repeat(self,event):
+        event_class=event.event_class
+        # Build keys
+        kv={}
+        for name in [v.name for v in EventClassVar.objects.filter(event_class=event_class,repeat_suppression=True)]:
+            if name in vars:
+                kv[name]=vars[name]
+            else:
+                kv=None
+                break
+        if kv is not None:
+            r=[e for e in Event.objects.filter(
+                event_class=event_class,
+                managed_object=event.managed_object,
+                timestamp__gte=event.timestamp-datetime.timedelta(seconds=event_class.repeat_suppression_interval),
+                timestamp__lte=event.timestamp
+                ).exclude(id=event.id).order_by("-timestamp")
+                if e.match_data(kv)]
+            if len(r)>0:
+                pe=r[0]
+                logging.debug("Event #%d repeats event #%d"%(event.id,pe.id))
+                er=EventRepeat(event=pe,timestamp=pe.timestamp)
+                er.save()
+                pe.timestamp=event.timestamp
+                pe.save()
+                event.delete()
+                return True
+        return False
+    ##
+    ## Main daemon loop
+    ##
     def run(self):
         INTERVAL=10
         last_sleep=time.time()

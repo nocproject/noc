@@ -11,13 +11,14 @@ from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
 from noc.fm.views import index,event,reclassify_event,open_event,close_event,create_rule,event_list_css,view_rules,\
     py_event_class,py_event_classification_rule,upload_mib,lookup_managed_object,lookup_events,reload_classifier_config,\
-    clone_rule
+    clone_rule,create_postprocessing_rule
 
 urlpatterns = patterns ( "",
     (r"^(?P<event_id>\d+)/status/reclassify/$", login_required(reclassify_event)),
     (r"^(?P<event_id>\d+)/status/open/$",       login_required(open_event)),
     (r"^(?P<event_id>\d+)/status/close/$",      login_required(close_event)),
     (r"^(?P<event_id>\d+)/create_rule/$", login_required(create_rule)),
+    (r"^(?P<event_id>\d+)/create_postprocessing_rule/$", login_required(create_postprocessing_rule)),
     (r"^(?P<event_id>\d+)/$", login_required(event)),
     (r"^event_list_css/$",    login_required(event_list_css)),
     (r"^view_rules/$",        login_required(view_rules)),
