@@ -21,5 +21,8 @@ class URL(object):
         self.user=match.group("user")
         self.password=match.group("password")
         self.host=match.group("host")
-        self.port=int(match.group("port"))
+        if match.group("port"):
+            self.port=int(match.group("port"))
+        else:
+            self.port=None
         self.path=match.group("path")
