@@ -383,6 +383,34 @@ class EventClassificationRE(models.Model):
     left_re=models.CharField("Left RE",max_length=256)
     right_re=models.CharField("Right RE",max_length=256)
 ##
+## Event Post Processing
+##
+class EventPostProcessingRule(models.Model):
+    class Meta:
+        verbose_name="Event Post-Processing Rule"
+        verbose_name_plural="Event Post-Processing Rules"
+    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
+    name=models.CharField("Name",max_length=64)
+    preference=models.IntegerField("Preference",default=1000)
+    is_active=models.BooleanField("Is Active",default=True)
+    description=models.TextField("Description",blank=True,null=True)
+    # Actions
+    change_priority=models.ForeignKey(EventPriority,verbose_name="Change Priority to",blank=True,null=True)
+    change_category=models.ForeignKey(EventCategory,verbose_name="Change Category to",blank=True,null=True)
+    action=models.CharField("Action",max_length=1,choices=[("A","Make Active"),("C","Close"),("D","Drop")],default="A")
+    def __unicode__(self):
+        return self.name
+##
+## Regular expressions to match event vars
+##
+class EventPostProcessingRE(models.Model):
+    class Meta:
+        verbose_name="Event Post-Processing RE"
+        verbose_name_plural="Event Post-Processing REs"
+    rule=models.ForeignKey(EventPostProcessingRule,verbose_name="Event Post-Processing Rule")
+    var_re=models.CharField("Var RE",max_length=256)
+    value_re=models.CharField("Value RE",max_length=256)
+##
 ## Event Correlation Rule
 ## Correlation rules are the PyKE statements
 ##
@@ -483,7 +511,7 @@ class Event(models.Model):
         if from_status is None:
             from_status=self.status
         if to_status is None:
-            to_status=self.self
+            to_status=self.status
         l=EventLog(event=self,timestamp=datetime.datetime.now(),from_status=from_status,to_status=to_status,message=msg)
         l.save()
 ##
@@ -535,6 +563,7 @@ class AppMenu(Menu):
             ("Event Categories",    "/admin/fm/eventcategory/",           "fm.change_eventcategory"),
             ("Event Priorities",    "/admin/fm/eventpriority/",           "fm.change_eventpriority"),
             ("Classification Rules","/admin/fm/eventclassificationrule/", "fm.change_eventclassificationrule"),
+            ("Post-Processing Rules", "/admin/fm/eventpostprocessingrule/", "fm.change_eventpostprocessingrule"),
             ("Correlation Rules",   "/admin/fm/eventcorrelationrule/",    "fm.change_eventcorrelationrule"),
         ])
     ]

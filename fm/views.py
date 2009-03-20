@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import permission_required
 from noc.lib.render import render,render_plain_text,render_success,render_failure,render_json
 from noc.lib.fileutils import temporary_file
 from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass,\
-    MIB, MIBRequiredException, EventCategory, EVENT_STATUS_CHOICES
+    MIB, MIBRequiredException, EventCategory, EVENT_STATUS_CHOICES, EventPostProcessingRule, EventPostProcessingRE
 from noc.sa.models import ManagedObject
 from django.http import HttpResponseRedirect,HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -152,7 +152,7 @@ def create_rule(request,event_id):
     rule=EventClassificationRule(event_class=event.event_class,name="Rule #%d:%d"%(event.id,random.randint(0,100000)),preference=1000)
     rule.save()
     for d in event.eventdata_set.filter(type__in=[">","R"]):
-        r=EventClassificationRE(rule=rule,left_re="^%s$"%re_q(d.key)[:254],right_re="^%s$"%re_q(d.value))
+        r=EventClassificationRE(rule=rule,left_re="^%s$"%re_q(d.key)[:254],right_re="^%s$"%re_q(d.value)[:254])
         r.save()
     return HttpResponseRedirect("/admin/fm/eventclassificationrule/%d/"%rule.id)
 ##
@@ -182,7 +182,20 @@ def clone_rule(request,rule_id):
         new_r=EventClassificationRE(rule=new_rule,left_re=r.left_re,right_re=r.right_re)
         new_r.save()
     return HttpResponseRedirect("/admin/fm/eventclassificationrule/%d/"%new_rule.id)
-
+##
+## Create post-processing rule from event
+##
+@permission_required("fm.add_eventprostprocessingrule")
+def create_postprocessing_rule(request,event_id):
+    def re_q(s):
+        return s.replace("\\","\\\\").replace(".","\\.").replace("+","\\+").replace("*","\\*")
+    event=get_object_or_404(Event,id=int(event_id))
+    rule=EventPostProcessingRule(event_class=event.event_class,name="Rule #%d:%d"%(event.id,random.randint(0,100000)),preference=1000)
+    rule.save()
+    for d in event.eventdata_set.filter(type="V"):
+        r=EventPostProcessingRE(rule=rule,var_re="^%s$"%re_q(d.key)[:254],value_re="^%s$"%re_q(d.value)[:254])
+        r.save()
+    return HttpResponseRedirect("/admin/fm/eventpostprocessingrule/%d/"%rule.id)
 ##
 ## Event classification rules overview sheet
 ##
