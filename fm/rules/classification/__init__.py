@@ -85,7 +85,7 @@ class ClassificationRule(object):
             )
             print "CREATE RULE %s"%cls.name
         r.save()
-        [rx.delete() for rx in r.eventclassificationre_set.all()]
+        r.eventclassificationre_set.all().delete()
         for rx_l,rx_r in cls.patterns:
             rx=EventClassificationRE(rule=r,left_re=rx_l,right_re=rx_r)
             rx.save()

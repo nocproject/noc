@@ -123,7 +123,7 @@ class EventClass(object):
             print "CREATE CLASS %s"%cls.name
         ec.save()
         # Syncronize vars
-        [v.delete() for v in ec.eventclassvar_set.all()]
+        ec.eventclassvar_set.all().delete()
         for name,var in cls.vars.items():
             v=EventClassVar(event_class=ec,name=name,required=var.required,repeat_suppression=var.repeat)
             v.save()
