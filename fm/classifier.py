@@ -157,7 +157,6 @@ class Classifier(Daemon):
             # Silently drop event when required by rule
             if r.rule.action=="D":
                 logging.debug("Drop event %d"%event.id)
-                #[ed.delete() for ed in event.eventdata_set.all()]
                 event.delete()
                 return
             event_class=r.rule.event_class
@@ -188,7 +187,6 @@ class Classifier(Daemon):
                         er.save()
                         pe.timestamp=event.timestamp
                         pe.save()
-                        [ed.delete() for ed in event.eventdata_set.all()]
                         event.delete()
                         return
             break
