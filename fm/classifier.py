@@ -139,7 +139,7 @@ class Classifier(Daemon):
         n=0
         for r in EventPostProcessingRule.objects.order_by("preference"):
             ec_id=r.event_class.id
-            if id not in self.post_process:
+            if ec_id not in self.post_process:
                 self.post_process[ec_id]=[]
             self.post_process[ec_id].append(PostProcessRule(r))
             n+=1
@@ -277,7 +277,8 @@ class Classifier(Daemon):
     ## Drop event
     ##
     def drop_event(self,event):
-        logging.debug("Drop event #%d"%event_delete)
+        logging.debug("Drop event #%d"%event.id)
+        event.delete()
     ##
     ## Suppress repeats.
     ## Return True if event is suppressed, False otherwise
