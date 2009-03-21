@@ -98,6 +98,9 @@ class AS(models.Model):
         return "AS%d (%s)"%(self.asn,self.description)
     def __unicode__(self):
         return u"AS%d (%s)"%(self.asn,self.description)
+    @classmethod
+    def default_as(cls):
+        return AS.objects.get(asn=0)
     def _rpsl(self):
         sep="remark: %s"%("-"*72)
         s=[]
