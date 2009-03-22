@@ -3,14 +3,18 @@ Fault Management
 ****************
 Overview
 ========
+Primary task of the Fault Management is to collect and process events.
+Events are created as result of network activity, user operations, clients activity, equipment faults etc.
+Working network can generate thousands of events every minute. FM module allows to collect them, classify, assign priorities,
+correlate events and automatically determine root cause of failure. System supports life cycle
+of events ensuring no important events left unnoticed or unhandled.
 
 Terminology
 ============
-
-* Event Class
-* Event Category
-* Event Classification
-* Event Correlation
+* Event Class - Meaning of event
+* Event Category - Zone of interest. 
+* Event Classification - A process of analyzing event and assigning Event Class
+* Event Correlation 
 * Root-cause analysys
 
 Stages of event processing
@@ -29,28 +33,48 @@ Supported message protocols are:
 Activator check did message arrived from valid Managed Object, collects message, converts
 it to protocol-independed message format and transmits it to the SAE via SAE RPC stream.
 
+Events are represented as two-column tables. Left column represents *key* or *parameter name*.
+Right column represents *value*. Each parameter represented by one row (both *kwy* and *value* parts).
+
+Examples:
+
+======== =============
+source   syslog
+message  -- MARK --
+severity 6
+facility 5
+======== =============
+
+or
+
+===================== =========================
+source                SNMP Trap
+1.3.6.1.6.3.1.1.4.1.0 1.3.6.1.6.3.1.1.5.1
+1.3.6.1.2.1.1.3.0     7
+1.3.6.1.6.3.1.1.4.3.0 1.3.6.1.4.1.4413.2.10
+===================== =========================
+
 Storing
 -------
 Protocol-independed messages are received by SAE. SAE does not perform
-additional message processing and stores messages into Database as soon as possible
+additional message processing and stores messages into Database as soon as possible.
 
 Classification
 --------------
-noc-classifier (Classifier) daemon looks for not yet classified messages in database
-and performs message classification. 
+The task of Event Classification is to determine Event Class and retrieve all Class Variables
+from the given message. Event Classification helps to understand the very meaning of event.
+All further event processing based of Event Class and fetched Class Variables.
 
-Classifier uses Message Classification Rules and regular expressions pattern matching
-to determine Event Class for the message. 
+Events classified by passing via set of Event Classification Rules. Event Classification Rule
+consist of a set of pairs of regular expressions. Rules are evaluated in order of *preference*.
 
-When matching rule found Classifier performs:
+Event classification performed by *noc-classifier* (Classifier daemon). *Classifier* periodically queries
+database for the unclassified event and performs classification process, each event in separate transaction.
+Classification results are written back to database.
 
-* Drops event if required by rule, or
-* Check, if event repeats already registered event, if required by Event Class, and suppress repeated event, or
-* Set ups Event Class, Category and Priority
-* Resolves Message's SNMP OIDs via MIB Lookup
-* Uses Message Classification Rules to extract refined Message Variables
-* Communicates with external systems and databases to extract additional event data and performs Event Enrichment
-* Fills Event Subject and Body by applying extracted Message Variables to the Subject and Body Templates
+Overview of event classification process given in flowchart below:
+
+.. image:: fm_event_classification.png
 
 Correlation
 -----------
@@ -69,27 +93,11 @@ During correlation process following decisions made:
 Decisions are made considering Event Variables, extracted by Correlator.
 Root cause decisions are not permanent. Event may become a Root Cause or receive Root Cause with new events.
 
-Message Format
+Message Status
 ==============
-Each message is a two-column table known as Left and Right parts.
-
-For example
-
-======== =============
-source   syslog
-message  -- MARK --
-severity 6
-facility 5
-======== =============
-
-or
-
-===================== =========================
-source                SNMP Trap
-1.3.6.1.6.3.1.1.4.1.0 1.3.6.1.6.3.1.1.5.1
-1.3.6.1.2.1.1.3.0     7
-1.3.6.1.6.3.1.1.4.3.0 1.3.6.1.4.1.4413.2.10
-===================== =========================
+* Unclassified
+* Active
+* Closed
 
 Event Classification Rules
 ==========================
@@ -170,6 +178,17 @@ add     fm | Event Classification Rule | Can add Event Classification Rule
 change  fm | Event Classification Rule | Can change Event Classification Rule
 delete  fm | Event Classification Rule | Can delete Event Classification Rule
 ======= ========================================
+
+Post-Processing Rules
+---------------------
+Permissions
+^^^^^^^^^^^
+======= ========================================
+add     fm | Event Post-Processing Rule | Can add Event Post-Processing Rule
+change  fm | Event Post-Processing Rule | Can change Event Post-Processing Rule
+delete  fm | Event Post-Processing Rule | Can delete Event Post-Processing Rule
+======= ========================================
+
 
 Correlation Rules
 -----------------
