@@ -151,7 +151,7 @@ class Classifier(Daemon):
     ## 3. Drop event if required by rule
     ## 4. Set event class of the matched rule or DEFAULT
     ## 
-    def classify_event(self,cursor,event):
+    def classify_event(self,event):
         # Extract received event properties
         props=[(x.key,bin_unquote(x.value)) for x in event.eventdata_set.filter(type=">")]
         # Resolve additional event properties
@@ -318,13 +318,11 @@ class Classifier(Daemon):
         INTERVAL=10
         last_sleep=time.time()
         transaction.enter_transaction_management()
-        from django.db import connection
-        cursor = connection.cursor()
         while True:
             n=0
             t0=time.time()
             for e in Event.objects.filter(status="U").order_by("id"):
-                self.classify_event(cursor,e)
+                self.classify_event(e)
                 transaction.commit()
                 n+=1
             if n:
