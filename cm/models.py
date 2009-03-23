@@ -19,6 +19,7 @@ from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging,sets,random
 from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObject
 from noc.main.menu import Menu
+from noc.sa.protocols.sae_pb2 import *
 
 profile_registry.register_all()
 vcs_registry.register_all()
@@ -210,6 +211,8 @@ class Config(Object):
             if error:
                 if error.code==ERR_OVERLOAD:
                     timeout=150
+                elif error.code==ERR_DOWN:
+                    timeout=60
                 else:
                     timeout=300
                 timeout+=random.randint(-timeout/10,timeout/10) # Add jitter to avoid blocking by dead task

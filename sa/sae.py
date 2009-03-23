@@ -233,7 +233,7 @@ class XMLRPCSocket(AcceptedTCPSocket):
     def on_read(self,data):
         def on_read_callback(result=None,error=None):
             if error:
-                body=xmlrpclib.dumps(xmlrpclib.Fault(ERR_SCRIPT_EXCEPTION,"Script exception"),methodresponse=True)
+                body=xmlrpclib.dumps(xmlrpclib.Fault(error.code,error.text),methodresponse=True)
             else:
                 body=xmlrpclib.dumps((result,),methodresponse=True)
             response="HTTP/1.1 200 OK\r\nContent-Type: text/xml\r\nContent-Length: %d\r\nServer: nocproject.org\r\n\r\n"%len(body)+body
