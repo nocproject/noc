@@ -67,7 +67,7 @@ def object_script(request,object_id,script):
         try:
             result=get_result(script,object_id)
         except Exception,why:
-            return render_failure(request,"Script Failed",why)
+            return render_failure(request,"Script Failed",why.faultString)
     return render(request,"sa/script.html",{"object":o,"result":result,"script":script,"form":form})
 ##
 ## Form for uploading managed objects

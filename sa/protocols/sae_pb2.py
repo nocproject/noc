@@ -76,6 +76,10 @@ _ERRORCODE = descriptor.EnumDescriptor(
       name='ERR_ACTIVATOR_NOT_AVAILABLE', index=15, number=15,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_DOWN', index=16, number=16,
+      options=None,
+      type=None),
   ],
   options=None,
 )
@@ -119,6 +123,7 @@ ERR_OVERLOAD = 12
 ERR_INVALID_SCRIPT = 13
 ERR_SCRIPT_EXCEPTION = 14
 ERR_ACTIVATOR_NOT_AVAILABLE = 15
+ERR_DOWN = 16
 TELNET = 0
 SSH = 1
 HTTP = 2

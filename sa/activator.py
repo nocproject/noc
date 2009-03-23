@@ -61,6 +61,16 @@ class Service(SAEService):
                 request.access_profile.profile)
             done(controller,error=e)
             return
+        # Check host was checked by ping. Reject executing of script on known unreachable hosts
+        if self.activator.ping_check_results\
+                and request.access_profile.address in self.activator.ping_check_results\
+                and not self.activator.ping_check_results[request.access_profile.address]:
+            e=Error()
+            e.code=ERR_DOWN
+            e.text="Host is down"
+            done(controller,error=e)
+            return
+        # Check [activator]/max_pull_config limit
         if self.activator.factory.count_subclass_sockets(ScriptSocket)>=self.activator.config.getint("activator","max_pull_config"):
             e=Error()
             e.code=ERR_OVERLOAD
@@ -76,15 +86,19 @@ class Service(SAEService):
         def ping_check_callback(unreachable):
             u=sets.Set(unreachable)
             r=PingCheckResponse()
+            self.activator.ping_check_results={} # Reset previous ping checks
             for a in request.addresses:
                 if a in u:
                     r.unreachable.append(a)
+                    self.activator.ping_check_results[a]=False
                 else:
                     r.reachable.append(a)
+                    self.activator.ping_check_results[a]=True
+            print self.activator.ping_check_results
             done(controller,response=r)
         self.activator.ping_check([a for a in request.addresses],ping_check_callback)
 ##
-##
+## Activator-SAE channel
 ##
 class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
     def __init__(self,factory,address,port,local_address=None):
@@ -183,6 +197,7 @@ class Activator(Daemon,FSM):
         self.factory=SocketFactory(tick_callback=self.tick)
         self.factory.activator=self
         self.children={}
+        self.ping_check_results={} # address -> last ping check result
         self.sae_stream=None
         self.event_sources=sets.Set()
         self.trap_collector=None
