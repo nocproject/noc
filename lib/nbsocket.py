@@ -313,7 +313,11 @@ class PTYSocket(Socket):
             Socket.__init__(self,factory,FileWrapper(fd))
             
     def handle_read(self):
-        data=self.socket.read(8192)
+        try:
+            data=self.socket.read(8192)
+        except OSError:
+            self.close()
+            return
         if data:
             self.on_read(data)
         else:
