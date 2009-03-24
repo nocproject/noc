@@ -219,9 +219,9 @@ class Classifier(Daemon):
         event.eventdata_set.filter(type__in=["R","V"]).delete() # Delete old "R" and "V" vars
         # Write vars
         for k,v in resolved.items():
-            EventData(event=event,key=k,value=v,type="R").save()
+            EventData(event=event,key=k,value=bin_quote(v),type="R").save()
         for k,v in vars.items():
-            EventData(event=event,key=k,value=v,type="V").save()
+            EventData(event=event,key=k,value=bin_quote(v),type="V").save()
         # Finally run event class trigger
         event.event_class.run_trigger(event)
     ##
