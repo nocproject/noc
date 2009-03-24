@@ -315,27 +315,25 @@ class Classifier(Daemon):
     ## Main daemon loop
     ##
     def run(self):
+        CHUNK=1000 # Maximum amount of events to proceed at once
         INTERVAL=10
-        last_sleep=time.time()
         transaction.enter_transaction_management()
         while True:
             n=0
             t0=time.time()
-            for e in Event.objects.filter(status="U").order_by("id"):
+            for e in Event.objects.filter(status="U").order_by("-id")[:CHUNK]:
                 self.classify_event(e)
                 transaction.commit()
                 n+=1
-            if n:
+            if n: # Write out performance data
                 dt=time.time()-t0
                 if dt>0:
                     perf=n/dt
                 else:
                     perf=0
                 logging.info("%d events classified (%10.4f second elapsed. %10.4f events/sec)"%(n,dt,perf))
-            t=time.time()
-            if t-last_sleep<=INTERVAL:
-                time.sleep(INTERVAL-t+last_sleep)
-            last_sleep=t
+            else: # No events classified this pass. Sleep
+                time.sleep(INTERVAL)
         transaction.leave_transaction_management()
         
 
