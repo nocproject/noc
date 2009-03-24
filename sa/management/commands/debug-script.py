@@ -34,6 +34,7 @@ class ActivatorStub(object):
         self.config.add_section("activator")
         self.config.set("activator","max_pull_config","2")
         self.script_call_queue=Queue.Queue()
+        self.ping_check_results=None
     
     def tick(self):
         while not self.script_call_queue.empty():
