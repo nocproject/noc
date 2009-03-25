@@ -178,8 +178,6 @@ case "$1" in
 	## Start daemon with startproc(8). If this fails
 	## the return value is set appropriately by startproc.
 	su -l $NOC_USER -c "cd $NOC_PREFIX && ./scripts/noc-fcgi.py start"
-	# Fix unix sockets permissions
-	test -S /tmp/noc.fcgi && (sleep 10 && chmod 770 /tmp/noc.fcgi)&
 	;;
     stop)
 	echo -n "Shutting down noc-fcgi "
