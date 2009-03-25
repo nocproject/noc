@@ -1,20 +1,25 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
+## noc-fcgi daemon
+##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
 from noc.lib.daemon import Daemon
-from django.core.servers.fastcgi import runfastcgi
+from django.core.handlers.wsgi import WSGIHandler
+from flup.server.fcgi import WSGIServer
 
 class FCGI(Daemon):
     daemon_name="noc-fcgi"
     def run(self):
-        runfastcgi(["method=threaded", 
-                    "daemonize=false",
-                    "socket=%s"%self.config.get("fcgi","socket"),
-                    "minspare=%d"%self.config.getint("fcgi","minspare"),
-                    "maxspare=%d"%self.config.getint("fcgi","maxspare"),
-                    "maxrequests=%s"%self.config.getint("fcgi","maxrequests"),
-                    "maxchildren=%s"%self.config.getint("fcgi","maxchildren")])
+        wsgi_opts={
+            "minSpare"   : int(self.config.getint("fcgi","minspare")),
+            "maxSpare"   : int(self.config.getint("fcgi","maxspare")),
+            "maxThreads" : self.config.getint("fcgi","maxchildren"),
+            "debug"      : False, # turn off flup tracebacks
+            "bindAddress": self.config.get("fcgi","socket"),
+            "umask"      : 0, # Emulate BSD behavior on linux
+        }
+        WSGIServer(WSGIHandler(), **wsgi_opts).run()
