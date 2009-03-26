@@ -7,8 +7,6 @@
 ##----------------------------------------------------------------------
 import re
 
-rx_header_start=re.compile(r"^\s*[-=]+\s+[-=]+")
-rx_col=re.compile(r"^(\s*)([\-]+|[=]+)")
 ##
 ## Parse string containing table an return a list of table rows.
 ## Each row is a list of cells.
@@ -21,6 +19,8 @@ rx_col=re.compile(r"^(\s*)([\-]+|[=]+)")
 ## ddd   eee     fff
 ## Will be parsed down to the [["a","b","c"],["ddd","eee","fff"]]
 ##
+rx_header_start=re.compile(r"^\s*[-=]+\s+[-=]+")
+rx_col=re.compile(r"^(\s*)([\-]+|[=]+)")
 def parse_table(s):
     columns=None
     r=[]
@@ -42,3 +42,12 @@ def parse_table(s):
         elif columns: # Fetch cells
             r.append([l[f:t].strip() for f,t in columns])
     return r
+##
+## Convert HTML to plain text
+##
+rx_html_tags=re.compile("</?[^>+]+>",re.MULTILINE|re.DOTALL)
+def strip_html_tags(s):
+    t=rx_html_tags.sub("",s)
+    for k,v in [("&nbsp;"," "),("&lt;","<"),("&gt;",">"),("&amp;","&")]:
+        t=t.replace(k,v)
+    return t

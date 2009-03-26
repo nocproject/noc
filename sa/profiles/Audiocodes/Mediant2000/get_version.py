@@ -7,6 +7,7 @@
 """
 import noc.sa.script
 from noc.sa.interfaces import IGetVersion
+from noc.lib.text import strip_html_tags
 import re
 
 rx_ver=re.compile(r"^Board type: (?P<platform>.+), firmware version (?P<version>\S+)",re.MULTILINE|re.DOTALL)
@@ -26,7 +27,7 @@ class Script(noc.sa.script.Script):
             }
         elif self.access_profile.scheme==self.HTTP:
             v=self.http.get("/SoftwareVersion")
-            v=self.strip_html_tags(v)
+            v=strip_html_tags(v)
             match=rx_html_ver.search(v)
             return {
                 "vendor"    : "Audiocodes",

@@ -94,8 +94,6 @@ class ScriptBase(type):
             profile_registry["%s.%s"%(pv,pos)].scripts[sn]=m
         return m
 ##
-rx_html_tags=re.compile("</?[^>+]+>",re.MULTILINE|re.DOTALL)
-##
 ##
 ##
 class Script(threading.Thread):
@@ -222,14 +220,6 @@ class Script(threading.Thread):
             return ""
         else:
             return "\n".join(t[lines:])
-    ##
-    ## Wipe out HTML tags (rude and dirty implemention)
-    ##
-    def strip_html_tags(self,text):
-        t=rx_html_tags.sub("",text)
-        for k,v in [("&nbsp;"," "),("&lt;","<"),("&gt;",">"),("&amp;","&")]:
-            t=t.replace(k,v)
-        return t
     ##
     ## Expands expressions like "1,2,5-7" to [1,2,5,6,7]
     ##

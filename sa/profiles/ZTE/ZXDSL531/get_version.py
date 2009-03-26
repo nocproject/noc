@@ -7,6 +7,7 @@
 """
 import noc.sa.script
 from noc.sa.interfaces import IGetVersion
+from noc.lib.text import strip_html_tags
 import re
 
 rx_html_ver=re.compile(r"Firmware Version\s+\S+\s+(?P<version>\S+)")
@@ -20,7 +21,7 @@ class Script(noc.sa.script.Script):
             platform,version=v.split()
         elif self.access_profile.scheme==self.HTTP:
             v=self.http.get("/info.html")
-            v=self.strip_html_tags(v)
+            v=strip_html_tags(v)
             match=rx_html_ver.search(v)
             version=match.group("version")
         else:
