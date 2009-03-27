@@ -8,6 +8,9 @@
 from django.contrib import admin
 from django import forms
 from models import *
+from noc.lib.fileutils import in_dir
+from noc.settings import config
+import os
 
 class ActivatorAdmin(admin.ModelAdmin):
     list_display=["name","ip","is_active"]
@@ -33,6 +36,12 @@ class ManagedObjectAdminForm(forms.ModelForm):
         if self.cleaned_data["scheme"] not in profile.supported_schemes:
             raise forms.ValidationError("Selected scheme is not supported for profile '%s'"%self.cleaned_data["profile_name"])
         return self.cleaned_data["scheme"]
+    # Check repo_path remains inside repo
+    def clean_repo_path(self):
+        repo=os.path.join(config.get("cm","repo"),"config")
+        if not in_dir(os.path.join(repo,self.cleaned_data["repo_path"]),repo) or self.cleaned_data["repo_path"].startswith(os.sep):
+            raise forms.ValidationError("Repo path must be relative path inside repo")
+        return os.path.normpath(self.cleaned_data["repo_path"])
         
 class ManagedObjectAdmin(admin.ModelAdmin):
     form=ManagedObjectAdminForm
