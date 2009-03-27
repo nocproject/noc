@@ -13,7 +13,7 @@ from django.conf import settings
 from noc.sa.profiles import profile_registry
 from noc.settings import config
 from noc.lib.url import URL
-from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ
+from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ,in_dir
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging,sets,random
@@ -65,6 +65,8 @@ class Object(models.Model):
     vcs=property(_vcs)
         
     def save(self,*args,**kwargs):
+        if not in_dir(self.path,self.repo):
+            raise Exception("Attempting to write outside of repo")
         mv=None
         if self._get_pk_val():
             old=self.__class__.objects.get(pk=self._get_pk_val())
@@ -89,6 +91,8 @@ class Object(models.Model):
     #
     def write(self,data):
         path=self.path
+        if not in_dir(path,self.repo):
+            raise Exception("Attempting to write outside of repo")
         is_new=not os.path.exists(path)
         now=datetime.datetime.now()
         if rewrite_when_differ(self.path,data):
