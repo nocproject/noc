@@ -132,16 +132,28 @@ class ManagedObject(models.Model):
         # Idiotic implementation
         ids=[o.id for o in cls.objects.all() if o.has_access(user)]
         return cls.objects.filter(id__in=ids)
-    
+    ##
+    ## Override model's save()
+    ## Change related Config object as well
+    ##
     def save(self):
         super(ManagedObject,self).save()
         try:
-            config=self.config
+            config=self.config # self.config is OneToOne field created by Config
         except:
             config=None
-        if config is None:
-            from noc.cm.models import Config
-            config=Config(managed_object=self,repo_path=self.repo_path,pull_every=86400)
+        if config is None: # No related Config object
+            if self.is_configuration_managed: # Object is configuration managed, create related object
+                from noc.cm.models import Config
+                config=Config(managed_object=self,repo_path=self.repo_path,pull_every=86400)
+                config.save()
+        else: # Update existing config entry when necessary
+            if self.repo_path!=self.config.repo_path: # Repo path changed
+                config.repo_path=self.repo_path
+            if self.is_configuration_managed and config.pull_every is None: # Device is configuration managed but not on periodic pull
+                config.pull_every=86400
+            elif not self.is_configuration_managed and config.pull_every: # Reset pull_every for unmanaged devices
+                config.pull_every=None
             config.save()
     
     def delete(self):
