@@ -88,4 +88,4 @@ class temporary_file(object):
 ## Check file is inside dir
 ##
 def in_dir(file,dir):
-    return os.path.commonprefix([dir,os.path.realpath(file)])==dir
+    return os.path.commonprefix([dir,os.path.normpath(file)])==dir
