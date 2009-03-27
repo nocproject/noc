@@ -160,11 +160,12 @@ def free_blocks(prefix,allocated):
         a=address_to_int(n)
         b=bits_to_int(m)
         return (a&b,a|(0xFFFFFFFFL^b))
+    # Return a minimal list of prefixes coverting f and t addresses
     def cover_blocks(f,t,b=[]):
         def rank(i):
             j=32
             n=1
-            while (i&n)==0:
+            while (i&n)==0 and j:
                 j-=1
                 n=(n<<1)|1
             return j
