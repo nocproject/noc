@@ -111,7 +111,8 @@ class Object(models.Model):
     data=property(_data)
     #
     def delete(self):
-        self.vcs.rm(self.repo_path)
+        if os.path.exists(self.repo_path):
+            self.vcs.rm(self.path)
         super(Object,self).delete()
 
     def view_link(self):
