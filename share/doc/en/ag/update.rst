@@ -19,7 +19,7 @@ Fetch and unpack new version::
     # wget http://......
     # gzip -dc noc-<version> | tar xf -
     # cd noc-<version>
-    # python manage.py install
+    # python setup.py install
 
 Syncronize database
 ===================
