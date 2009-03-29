@@ -11,16 +11,10 @@
 PREFIX=/opt/noc/
 NAME=noc-activator
 DAEMON=./scripts/$NAME.py
-USER=noc
+USER=root
 
 test -x $PREFIX$DAEMON || exit 0
 set -e
-
-# Check for POSIX Capabilities present
-EXECCAP=""
-if [ -x /sbin/execcap ]; then
-    EXECCAP="execcap cap_net_bind_service=ip"
-fi
 
 . /lib/lsb/init-functions
 
@@ -28,7 +22,7 @@ cd $PREFIX
 case "$1" in
     start)
         echo -n "Starting $NAME: "
-        $EXECCAP su -l $USER -c "cd $PREFIX && $DAEMON start"
+        su -l $USER -c "cd $PREFIX && $DAEMON start"
         echo "$NAME."
         ;;
     
