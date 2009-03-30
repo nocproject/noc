@@ -236,7 +236,7 @@ class Classifier(Daemon):
         f_vars.update(resolved)
         # Does rule contain additional expressions which are need to be calculated?
         if rule and rule.expressions:
-            c_vars=dict([(x[0],eval(x[1],f_vars,eval_globals)) for x in rule.expressions]) # Evaluate all expressions
+            c_vars=dict([(x[0],str(eval(x[1],f_vars,eval_globals))) for x in rule.expressions]) # Evaluate all expressions
             f_vars.update(c_vars) # Update var dicts
             vars.update(c_vars)
         subject_template,body_template=self.templates[event_class.id]
