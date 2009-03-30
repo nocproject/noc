@@ -15,10 +15,11 @@ class PhoneCall(EventClass):
     name="Phone Call"
     category="PHONE"
     priority="INFO"
-    subject_template="Phone call: {{calling_number}} -> {{called_number}} ({{call_clearing}})"
+    subject_template="Phone call: {{calling_number}} -> {{called_number}} (Duration: {{duration}}s, Clearing: {{call_clearing}})"
     body_template="""Phone call:
 Calling number: {{calling_number}}
 Called number: {{called_number}}
+Duration: {{duration}}
 Connect time: {{connect_time}}
 Disconnect time: {{disconnect_time}}
 Call clearing: {{call_clearing}}
@@ -29,3 +30,4 @@ Call clearing: {{call_clearing}}
         connect_time=Var(required=True)
         disconnect_time=Var(required=True)
         call_clearing=Var(required=True)
+        duration=Var(required=True)
