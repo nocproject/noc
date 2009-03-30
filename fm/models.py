@@ -358,7 +358,7 @@ class EventClassificationRule(models.Model):
     ## Python representation of data structure
     ##
     def _python_code(self):
-        s=["from noc.fm.rules.classification import ClassificationRule,CLOSE_EVENT,DROP_EVENT"]
+        s=["from noc.fm.rules.classification import ClassificationRule,Expression,CLOSE_EVENT,DROP_EVENT"]
         s+=["##","## %s"%self.name,"##"]
         s+=["class %s_Rule(ClassificationRule):"%rx_py_id.sub("_",self.name)]
         s+=["    name=\"%s\""%py_q(self.name)]
@@ -368,7 +368,10 @@ class EventClassificationRule(models.Model):
             s+=["    action=%s"%{"C":"CLOSE_EVENT","D":"DROP_EVENT"}[self.action]]
         s+=["    patterns=["]
         for p in self.eventclassificationre_set.all():
-            s+=["        (r\"%s\",r\"%s\"),"%(py_q(p.left_re),py_q(p.right_re))]
+            if p.is_expression:
+                s+=["        Expression(r\"%s\",r\"%s\"),"%(py_q(p.left_re),py_q(p.right_re))]
+            else:
+                s+=["        (r\"%s\",r\"%s\"),"%(py_q(p.left_re),py_q(p.right_re))]
         s+=["    ]",""]
         return "\n".join(s)
     python_code=property(_python_code)
@@ -382,6 +385,14 @@ class EventClassificationRE(models.Model):
     rule=models.ForeignKey(EventClassificationRule,verbose_name="Event Classification Rule")
     left_re=models.CharField("Left RE",max_length=256)
     right_re=models.CharField("Right RE",max_length=256)
+    is_expression=models.BooleanField("Is Expression",default=False)
+    ##
+    ## Check expression syntax before save
+    ##
+    def save(self):
+        if self.is_expression:
+            compile(self.right_re,"inline","eval") # Raise SyntaxError in case of invalid expression
+        super(EventClassificationRE,self).save()
 ##
 ## Event Post Processing
 ##

@@ -22,6 +22,37 @@ rx_template=re.compile(r"\{\{([^}]+)\}\}")
 rx_oid=re.compile(r"^(\d+\.){6,}")
 rx_mac_cisco=re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 ##
+## Global functions for variables evaluation
+##
+
+##
+## Decode IPv4 from 4 octets
+##
+def decode_ipv4(s):
+    if len(s)==4:
+        return ".".join(["%d"%ord(c) for c in list(s)])
+    if is_ipv4(s):
+        return s
+    raise DecodeError
+##
+## Decode MAC address from 6 octets
+##
+def decode_mac(s):
+    if len(s)==6:
+        return "%02X:%02X:%02X:%02X:%02X:%02X"%tuple([ord(x) for x in list(s)])
+    if rx_mac_cisco.match(s):
+        s=s.replace(".","").upper()
+        return "%s:%s:%s:%s:%s:%s"%(s[:2],s[2:4],s[4:6],s[6:8],s[8:10],s[10:])
+    raise DecodeError
+##
+## Global variables dict
+##
+eval_globals={
+    "decode_ipv4" : decode_ipv4,
+    "decode_mac"  : decode_mac,
+}
+
+##
 ## Exceptions
 ##
 class DecodeError(Exception): pass
@@ -32,7 +63,10 @@ class Rule(object):
     def __init__(self,rule):
         self.rule=rule
         self.name=rule.name
-        self.re=[(re.compile(x.left_re,re.MULTILINE|re.DOTALL),re.compile(x.right_re,re.MULTILINE|re.DOTALL)) for x in rule.eventclassificationre_set.all()]
+        self.re=[(re.compile(x.left_re,re.MULTILINE|re.DOTALL),re.compile(x.right_re,re.MULTILINE|re.DOTALL)) for x in rule.eventclassificationre_set.filter(is_expression=False)]
+        self.expressions=[(x.left_re,compile(x.right_re,"inline","eval")) for x in rule.eventclassificationre_set.filter(is_expression=True)]
+        if not self.expressions:
+            self.expressions=None
     ##
     ## Return a hash of extracted variables for object o, or None
     ##
@@ -80,7 +114,6 @@ class Rule(object):
     ##
     def decode_mac(self,s):
         if len(s)==6:
-            print repr(s)
             return "%02X:%02X:%02X:%02X:%02X:%02X"%tuple([ord(x) for x in list(s)])
         if rx_mac_cisco.match(s):
             s=s.replace(".","").upper()
@@ -201,6 +234,11 @@ class Classifier(Daemon):
         f_vars=dict(props) # f_vars contains all event vars, including original, extracted and resolved
         f_vars.update(vars)
         f_vars.update(resolved)
+        # Does rule contain additional expressions which are need to be calculated?
+        if rule and rule.expressions:
+            c_vars=dict([(x[0],eval(x[1],f_vars,eval_globals)) for x in rule.expressions]) # Evaluate all expressions
+            f_vars.update(c_vars) # Update var dicts
+            vars.update(c_vars)
         subject_template,body_template=self.templates[event_class.id]
         context=Context(f_vars)
         subject=subject_template.render(context)

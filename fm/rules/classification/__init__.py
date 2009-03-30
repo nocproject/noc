@@ -31,12 +31,16 @@ class ClassificationRuleBase(type):
         m=type.__new__(cls,name,bases,attrs)
         vars={}
         # Check regular expressions in patters
-        for l,r in m.patterns:
-            try:
-                re.compile(l)
-                re.compile(r,re.MULTILINE|re.DOTALL)
-            except:
-                raise Exception("Invalid pattern ('%s','%s') in rule %s"%(l,r,m.name))
+        for p in m.patterns:
+            if p.__class__==Expression:
+                pass
+            else:
+                l,r=p
+                try:
+                    re.compile(l)
+                    re.compile(r,re.MULTILINE|re.DOTALL)
+                except:
+                    raise Exception("Invalid pattern ('%s','%s') in rule %s"%(l,r,m.name))
         # Check variables
         return m
 ##
@@ -86,6 +90,17 @@ class ClassificationRule(object):
             print "CREATE RULE %s"%cls.name
         r.save()
         r.eventclassificationre_set.all().delete()
-        for rx_l,rx_r in cls.patterns:
-            rx=EventClassificationRE(rule=r,left_re=rx_l,right_re=rx_r)
-            rx.save()
+        for p in cls.patterns:
+            if p.__class__==Expression:
+                EventClassificationRE(rule=r,left_re=p.left,right_re=p.right,is_expression=True).save()
+            else:
+                rx_l,rx_r=p
+                EventClassificationRE(rule=r,left_re=rx_l,right_re=rx_r).save()
+##
+## Wrapper for expression variables
+##
+class Expression(object):
+    def __init__(self,left,right):
+        self.left=left
+        compile(right,"inline","eval") # Raise SyntaxError in case of invalid expression
+        self.right=right
