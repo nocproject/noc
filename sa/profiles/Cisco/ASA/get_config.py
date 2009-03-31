@@ -12,5 +12,6 @@ class Script(noc.sa.script.Script):
     name="Cisco.ASA.get_config"
     implements=[IGetConfig]
     def execute(self):
-        config=self.cli("show running-config")
+        self.cli("terminal pager 0")
+        config=self.cli("more system:running-config")
         return self.cleaned_config(config)
