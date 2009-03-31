@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import re
+import re,urllib
 
 rx_url=re.compile(r"^(?P<scheme>[^:]+)://(?:(?P<user>[^:]+):(?P<password>[^@]+)@)(?P<host>[^/:]+)(?::(?P<port>\d+))?(?P<path>.*)$")
 
@@ -18,8 +18,8 @@ class URL(object):
         if not match:
             raise InvalidURLException
         self.scheme=match.group("scheme")
-        self.user=match.group("user")
-        self.password=match.group("password")
+        self.user=urllib.unquote(match.group("user"))
+        self.password=urllib.unquote(match.group("password"))
         self.host=match.group("host")
         if match.group("port"):
             self.port=int(match.group("port"))
