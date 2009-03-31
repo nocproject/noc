@@ -65,7 +65,7 @@ class Object(models.Model):
     vcs=property(_vcs)
         
     def save(self,*args,**kwargs):
-        if not in_dir(self.path,self.repo):
+        if self.repo_path and not in_dir(self.path,self.repo):
             raise Exception("Attempting to write outside of repo")
         mv=None
         if self._get_pk_val():

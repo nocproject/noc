@@ -88,7 +88,7 @@ def tools(request):
 ##
 MO_IMPORT_CSV_FIELDS=["name","profile_name","scheme","address","port","user","password","super_password","remote_path",
     "trap_source_ip","trap_community","snmp_ro","snmp_rw","repo_path"]
-MO_IMPORT_REQUIRED_CSV_FIELDS=["name","profile_name","scheme","address"]
+MO_IMPORT_REQUIRED_CSV_FIELDS=["name","profile_name","scheme","address","repo_path"]
 SCHEME=dict([(x[1],x[0]) for x in scheme_choices])
 ##
 ## Upload managed objects from a CSV file
