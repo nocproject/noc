@@ -49,5 +49,54 @@ Set up lighttpd.conf::
         accesslog.filename="/var/log/lighttpd/yourdomain.access.log"
     }
 
+Nginx setup
+===========
+Set up nginx.conf::
+
+    worker_processes  1;
+    events {
+        worker_connections  1024;
+    }
+    http {
+        include       mime.types;
+        default_type  application/octet-stream;
+        sendfile        on;
+        keepalive_timeout  65;
+        server {
+            listen       80;
+            server_name  <yourdomain>;
+            location / {
+                root   /opt/noc;
+                index  index.html index.htm;
+            }
+            error_page   500 502 503 504  /50x.html;
+            location = /50x.html {
+                root   /usr/local/www/nginx-dist;
+            }
+              location / {
+                root   html;
+                index  index.html index.htm;
+                fastcgi_pass unix:/tmp/noc.fcgi;
+                fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+                fastcgi_param  SERVER_PORT        $server_port;
+                fastcgi_param  SERVER_NAME        $server_name;
+                fastcgi_param PATH_INFO $fastcgi_script_name;
+                fastcgi_param REQUEST_METHOD $request_method;
+                fastcgi_param QUERY_STRING $query_string;
+                fastcgi_param CONTENT_TYPE $content_type;
+                fastcgi_param CONTENT_LENGTH $content_length;
+                fastcgi_pass_header Authorization;
+                fastcgi_intercept_errors off;
+             }
+            location /media {
+                root <django-root>/contrib/admin/;
+                }
+            location /static {
+                root /opt/noc/;
+                }
+            rewrite ^/static/(.*)$ /static/$1 last;
+        }
+    }
+
 Apache Setup
 ============
