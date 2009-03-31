@@ -101,8 +101,8 @@ class Command(BaseCommand):
         if url.port:
             r.access_profile.port       = url.port
         r.access_profile.user           = url.user
-        if "/" in url.password:
-            p,s=url.password.split("/",1)
+        if "\x00" in url.password: # Check the password really the pair of password/enable password
+            p,s=url.password.split("\x00",1)
             r.access_profile.password   = p
             r.access_profile.super_password = s
         else:
