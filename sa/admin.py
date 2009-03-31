@@ -47,7 +47,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
     form=ManagedObjectAdminForm
     fieldsets=(
         (None,{
-            "fields": ("name","is_managed","administrative_domain","activator","profile_name","location")
+            "fields": ("name","is_managed","administrative_domain","activator","profile_name","description")
         }),
         ("Access",{
             "fields": ("scheme","address","port")
@@ -65,9 +65,9 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("groups",)
         }),
     )
-    list_display=["name","is_managed","profile_name","address","administrative_domain","activator","is_configuration_managed","location","repo_path","scripts_link","config_link"]
+    list_display=["name","is_managed","profile_name","address","administrative_domain","activator","is_configuration_managed","description","repo_path","scripts_link","config_link"]
     list_filter=["is_managed","is_configuration_managed","activator","administrative_domain","groups","profile_name"]
-    search_fields=["name","address","repo_path","location"]
+    search_fields=["name","address","repo_path","description"]
     object_class=ManagedObject
     ##
     ## Dirty hack to display PasswordInput in admin form

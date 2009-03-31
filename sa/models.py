@@ -66,7 +66,7 @@ class ManagedObject(models.Model):
     administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name="Administrative Domain")
     activator=models.ForeignKey(Activator,verbose_name="Activator")
     profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
-    location=models.CharField("Location",max_length=256,null=True,blank=True)
+    description=models.CharField("Description",max_length=256,null=True,blank=True)
     # Access
     scheme=models.IntegerField("Scheme",choices=scheme_choices)
     address=models.CharField("Address",max_length=64)
