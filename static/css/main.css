@@ -17,6 +17,10 @@ ul.messagelist {
     margin-left: 204px;
 }
 
+#changelist table thead th {
+    white-space: normal;
+}
+
 @media print {
     #menu {
         display: none;
