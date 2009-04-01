@@ -13,7 +13,7 @@ import noc.sa.profiles
 from noc.sa.protocols.sae_pb2 import TELNET,SSH
 
 class Profile(noc.sa.profiles.Profile):
-    name="DLink.DES35xx"
+    name="DLink.DES3xxx"
     supported_schemes=[TELNET,SSH]
     pattern_username="([Uu]ser[Nn]ame|[Ll]ogin):"
     pattern_password="[Pp]ass[Ww]ord:"
