@@ -21,6 +21,15 @@ ul.messagelist {
     white-space: normal;
 }
 
+#user-tools FORM {
+    display: inline;
+}
+
+#user-tools INPUT {
+    margin-top: -2px;
+    width: 140px;
+}
+
 @media print {
     #menu {
         display: none;
