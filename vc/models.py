@@ -9,8 +9,10 @@
 """
 """
 from django.db import models
+from django.db.models import Q
 from noc.main.menu import Menu
-
+from noc.main.search import SearchResult
+from noc.lib.validators import is_int
 ##
 ## Virtual circuit domain, allows to separate unique VC spaces
 ##
@@ -69,6 +71,23 @@ class VC(models.Model):
         if min_labels>1 and not in_range(self.l2,l2range):
             raise Exception("Invalid value for L2")
         super(VC,self).save()
+    ##
+    ## Search engine
+    ##
+    @classmethod
+    def search(cls,user,search,limit):
+        if user.has_perm("vc.change_vc"):
+            if is_int(search):
+                tag=int(search)
+                for r in VC.objects.filter(Q(l1=tag)|Q(l2=tag))[:limit]:
+                    if r.l2:
+                        label="%d,%d"%(r.l1,r.l2)
+                    else:
+                        label="%d"%r.l1
+                    yield SearchResult(url="/admin/vc/vc/%d/"%r.id,
+                        title="VC: %s, Domain: %s, Label=%s"%(r.type,r.vc_domain.name,label),
+                        text=r.description,
+                        relevancy=1.0)
 ##
 ## Application Menu
 ##
