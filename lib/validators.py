@@ -93,6 +93,15 @@ def is_re(v):
     except:
         return False
 ##
+## Check value is valid VLAN ID
+##
+def is_vlan(v):
+    try:
+        v=int(v)
+        return v>=1 and v<=4095
+    except:
+        return False
+##
 ## Validators for forms
 ##
 def generic_validator(value,check,error_msg):
@@ -119,3 +128,6 @@ def check_as_set(field_data,all_data):
 
 def check_re(field_data,all_data):
     generic_validator(field_data,is_re,"Invalid Regular Expression")
+
+def check_vlan(field_data,all_data):
+    generic_validator(field_data,is_vlan,"Invalid VLAN")
