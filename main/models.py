@@ -9,6 +9,7 @@ from django.db import models
 from noc.main.report import report_registry
 from noc.main.menu import populate_reports
 from noc.main.menu import Menu
+import noc.main.search # Set up signal handlers
 
 ##
 ## Application Menu
