@@ -31,7 +31,7 @@
         {% block branding %}<h1 ID="site-name">{{setup.installation_name}}</h1>{% endblock %}
         </div>
         {% if user.is_authenticated and user.is_staff %}
-        <div id="user-tools">{% trans 'Welcome,' %} <strong>{% firstof user.first_name user.username %}</strong>. {% block userlinks %}{% comment %}<a href="/static/doc/en/">{% trans 'Documentation' %}</a> / {%endcomment%}<a href="/admin/password_change/">{% trans 'Change password' %}</a> / <a href="/admin/logout/">{% trans 'Log out' %}</a>{% endblock %}</div>
+        <div id="user-tools">{% trans 'Welcome,' %} <strong>{% firstof user.first_name user.username %}</strong>. {% block userlinks %}{% comment %}<a href="/static/doc/en/">{% trans 'Documentation' %}</a> / {%endcomment%}<a href="/admin/password_change/">{% trans 'Change password' %}</a> / <a href="/admin/logout/">{% trans 'Log out' %}</a>.{% endblock %} <b>Search:</b> <FORM METHOD="POST" ACTION="/main/search/" STYLE="display: inline"><INPUT TYPE="text" NAME="query"/></FORM></div>
         {% endif %}
         {% block nav-global %}{% endblock %}
     </div>

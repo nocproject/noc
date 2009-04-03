@@ -12,9 +12,11 @@ import django.contrib.auth
 from django.http import HttpResponseRedirect,HttpResponseNotFound
 from django.core.cache import cache
 from django.utils.cache import patch_response_headers
+from django import forms
 from noc.lib.render import render,render_success,render_failure,render_json
 from noc.main.report import report_registry
 from noc.main.menu import MENU
+from noc.main.search import search as search_engine
 import os, types
 ##
 ## Startup boilerplate
@@ -109,3 +111,18 @@ def failure(request):
     subject=request.GET.get("subject",None)
     text=request.GET.get("text",None)
     return render_failure(request,subject=subject,text=text)
+##
+## Search engine
+##
+class SearchForm(forms.Form):
+    query=forms.CharField()
+    
+def search(request):
+    result=[]
+    if request.POST:
+        form=SearchForm(request.POST)
+        if form.is_valid():
+            result=search_engine(request.user,form.cleaned_data["query"])
+    else:
+        form=SearchForm()
+    return render(request,"main/search.html",{"form":form,"result":result})

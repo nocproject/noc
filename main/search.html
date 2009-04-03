@@ -1,0 +1,19 @@
+{% extends "template/template.html" %}
+{% block title%}Search{% endblock %}
+{% block content %}
+<h1>Search</h1>
+<FORM METHOD="POST">
+    {{form}}
+    <INPUT TYPE="submit" VALUE="search" />
+</FORM>
+
+{% if result %}
+    {% for r in result %}
+        <DIV>
+            <A HREF="{{r.url}}">{{r.title}}</A><BR/>
+            {{r.text}}<BR/>
+            Relevancy: {{r.relevancy}}
+        </DIV>
+    {% endfor %}
+{% endif %}
+{% endblock %}
