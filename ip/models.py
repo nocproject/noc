@@ -7,13 +7,15 @@
 """
 import socket,struct
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
-from noc.lib.validators import check_rd,check_cidr,is_cidr
+from noc.lib.validators import check_rd,check_cidr,is_cidr,is_ipv4
 from noc.lib.tt import tt_url
 from noc.peer.models import AS
 from noc.lib.fields import CIDRField
 from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast
 from noc.main.menu import Menu
+from noc.main.search import SearchResult
 ##
 ##
 ##
@@ -233,6 +235,28 @@ class IPv4Address(models.Model):
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
+    ##
+    ## Search engine
+    ##
+    @classmethod
+    def search(cls,user,search,limit):
+        if user.has_perm("ip.change_ipv4address"):
+            q=Q(fqdn__icontains=search)
+            if is_ipv4(search):
+                q|=Q(ip=search)
+            for r in IPv4Address.objects.filter(q):
+                if search==r.ip:
+                    relevancy=1.0
+                else:
+                    l=len(r.fqdn)
+                    if l:
+                        relevancy=float(len(search))/float(l)
+                    else:
+                        relevancy=0.0
+                yield SearchResult(url="/admin/ip/ipv4address/%d/"%r.id,
+                    title="IPv4 Address, VRF=%s, %s (%s)"%(r.vrf,r.ip,r.fqdn),
+                    text=r.description,
+                    relevancy=relevancy)
 ##
 ## Application Menu
 ##
