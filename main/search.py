@@ -8,7 +8,6 @@
 """
 """
 from django.db.models.signals import class_prepared
-import bisect
 ##
 ## A hash of Model.search classmethods.
 ## Populated by "class_prepared" signal listener
@@ -41,13 +40,12 @@ class SearchResult(object):
         self.relevancy=relevancy
     
     def __cmp__(self,other):
-        return cmp(other,self)
+        return cmp(other.relevancy,self.relevancy)
 ##
 ## Interface to built-in search system
 ##
 def search(user,query,limit=100):
     r=[]
     for sm in search_methods:
-        for sr in sm(user,query,limit):
-            bisect.insort(r,sr)
-    return r[:limit]
+        r+=list(sm(user,query,limit))
+    return sorted(r)[:limit]
