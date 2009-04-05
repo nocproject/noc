@@ -20,6 +20,7 @@ import os,datetime,stat,logging,sets,random
 from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObject
 from noc.main.menu import Menu
 from noc.sa.protocols.sae_pb2 import *
+from noc.main.search import SearchResult
 
 profile_registry.register_all()
 vcs_registry.register_all()
@@ -197,6 +198,24 @@ class Object(models.Model):
         if user.is_superuser:
             return True
         return False
+    ##
+    ## Search engine
+    ##
+    @classmethod
+    def search(cls,user,query,limit):
+        for o in [o for o in cls.objects.all() if o.repo_path and o.has_access(user)]:
+            data=o.data
+            if data and query in data: # Dumb substring search
+                idx=data.index(query)
+                idx_s=max(0,idx-100)
+                idx_e=min(len(data),idx+len(query)+100)
+                text=data[idx_s:idx_e]
+                yield SearchResult(
+                    url="/cm/view/%s/%d/"%(o.repo_name,o.id),
+                    title="CM: "+unicode(o),
+                    text=text,
+                    relevancy=1.0, # No weighted search yes
+                    )
 ##
 ## Config
 ##
