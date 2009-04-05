@@ -171,7 +171,7 @@ class ManagedObject(models.Model):
     ##
     @classmethod
     def search(cls,user,query,limit):
-        q=Q(repo_path__icontains=query)|Q(name__icontains=query)|Q(address__icontains=query)|Q(user__icontains=query)
+        q=Q(repo_path__icontains=query)|Q(name__icontains=query)|Q(address__icontains=query)|Q(user__icontains=query)|Q(description__icontains=query)
         for o in [o for o in cls.objects.filter(q) if o.has_access(user)]:
             relevancy=1.0
             yield SearchResult(
