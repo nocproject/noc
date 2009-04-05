@@ -14,6 +14,7 @@ from noc.sa.periodic import periodic_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.main.menu import Menu
+from noc.main.search import SearchResult
 
 profile_registry.register_all()
 periodic_registry.register_all()
@@ -165,6 +166,20 @@ class ManagedObject(models.Model):
         if config:
             config.delete()
         super(ManagedObject,self).delete()
+    ##
+    ## Search engine
+    ##
+    @classmethod
+    def search(cls,user,query,limit):
+        q=Q(repo_path__icontains=query)|Q(name__icontains=query)|Q(address__icontains=query)|Q(user__icontains=query)
+        for o in [o for o in cls.objects.filter(q) if o.has_access(user)]:
+            relevancy=1.0
+            yield SearchResult(
+                url="/admin/sa/managedobject/%d/"%o.id,
+                title="SA: "+unicode(o),
+                text=unicode(o),
+                relevancy=relevancy
+            )
 
 ##
 ##
