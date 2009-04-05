@@ -9,7 +9,7 @@
 
 {% if result %}
     {% for r in result %}
-        <DIV>
+        <DIV CLASS="{% cycle 'row1' 'row2' %}">
             <A HREF="{{r.url}}">{{r.title}}</A><BR/>
             {{r.text}}<BR/>
             Relevancy: {{r.relevancy}}
