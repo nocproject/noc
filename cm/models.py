@@ -205,7 +205,14 @@ class Object(models.Model):
     def search(cls,user,query,limit):
         for o in [o for o in cls.objects.all() if o.repo_path and o.has_access(user)]:
             data=o.data
-            if data and query in data: # Dumb substring search
+            if query in o.repo_path: # If repo_path matches
+                yield SearchResult(
+                    url="/cm/view/%s/%d/"%(o.repo_name,o.id),
+                    title="CM: "+unicode(o),
+                    text=unicode(o),
+                    relevancy=1.0, # No weighted search yes
+                    )                
+            elif data and query in data: # Dumb substring search in config
                 idx=data.index(query)
                 idx_s=max(0,idx-100)
                 idx_e=min(len(data),idx+len(query)+100)
