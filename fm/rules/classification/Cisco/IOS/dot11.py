@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classification import ClassificationRule,Expression
 from noc.fm.rules.classes.dot11 import *
 
 ##
@@ -19,8 +19,9 @@ class CISCO_IOS_dot11_Associated_SNMP_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"%DOT11-6-ASSOC:.+?(?P<mac__mac>\S+) (?:A|Rea)ssociated"),
+        (r"^message$",r"%DOT11-6-ASSOC:.+?(?P<raw_mac>\S+) (?:A|Rea)ssociated"),
         (r"^profile$",r"^Cisco\.IOS$"),
+        Expression("mac","decode_mac(raw_mac)")
     ]
 ##
 ## Cisco.IOS dot11 Disassociated
@@ -31,8 +32,9 @@ class Cisco_IOS_dot11_Disassociated_SNMP_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"%DOT11-6-DISASSOC: .+?(?P<mac__mac>\S+) Reason"),
+        (r"^message$",r"%DOT11-6-DISASSOC: .+?(?P<raw_mac>\S+) Reason"),
         (r"^profile$",r"^Cisco\.IOS$"),
+        Expression("mac","decode_mac(raw_mac)")
     ]
 ##
 ## Cisco.IOS dot11 Max Retries SYSLOG
@@ -44,7 +46,8 @@ class Cisco_IOS_dot11_Max_Retries_SYSLOG_Rule(ClassificationRule):
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"%DOT11-4-MAXRETRIES: Packet to client (?P<mac__mac>\S+) reached max retries, removing the client$"),
+        (r"^message$",r"%DOT11-4-MAXRETRIES: Packet to client (?P<raw_mac>\S+) reached max retries, removing the client$"),
+        Expression("mac","decode_mac(raw_mac)")
     ]
 ##
 ## Cisco.IOS dot11 Max Retries SYSLOG SNMP
@@ -57,7 +60,8 @@ class Cisco_IOS_dot11_Max_Retries_SYSLOG_SNMP_Rule(ClassificationRule):
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^SNMP Trap$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.2\.0\.1$"),
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.5\.",r"^Packet to client (?P<mac__mac>\S+) reached max retries, removing the client$"),
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.5\.",r"^Packet to client (?P<raw_mac>\S+) reached max retries, removing the client$"),
         (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.2\.",r"^DOT11$"),
         (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.4\.",r"^MAXRETRIES$"),
+        Expression("mac","decode_mac(raw_mac)")
     ]
