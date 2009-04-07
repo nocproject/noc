@@ -82,6 +82,8 @@ class Rule(object):
                 if not r_match:
                     return None
                 found=True
+                vars.update(l_match.groupdict()) # Populate vars with extracted variables
+                vars.update(r_match.groupdict())
                 break
             if not found:
                 return None
