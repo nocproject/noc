@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule,DROP_EVENT
+from noc.fm.rules.classification import ClassificationRule,DROP_EVENT,Expression
 from noc.fm.rules.classes.ipsec import *
 from noc.fm.rules.classes.default import DROP
 
@@ -23,8 +23,10 @@ class Cisco_IOS_IPsec_Phase1_Tunnel_Start_SNMP_Rule(ClassificationRule):
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^SNMP Trap$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.1$"),   # cikeTunnelStart
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.6\..*",r"^(?P<local_ip__ipv4>....)"),  # cikePeerLocalAddr
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.7\..*",r"^(?P<remote_ip__ipv4>....)"), # cikePeerRemoteAddr
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.6\..*",r"^(?P<bin_local_ip>....)"),  # cikePeerLocalAddr
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.7\..*",r"^(?P<bin_remote_ip>....)"), # cikePeerRemoteAddr
+        Expression("local_ip","decode_ipv4(bin_local_ip)"),
+        Expression("remote_ip","decode_ipv4(bin_remote_ip)"),
     ]
 ##
 ## Cisco.IOS IPsec Phase1 Tunnel Stop SNMP
@@ -38,8 +40,10 @@ class Cisco_IOS_IPsec_Phase1_Tunnel_Stop_SNMP_Rule(ClassificationRule):
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^SNMP Trap$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.2$"),   # cikeTunnelStop
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.6\..*",r"^(?P<local_ip__ipv4>....)"),  # cikePeerLocalAddr
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.7\..*",r"^(?P<remote_ip__ipv4>....)"), # cikePeerRemoteAddr
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.6\..*",r"^(?P<bin_local_ip>....)"),  # cikePeerLocalAddr
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.2\.2\.1\.7\..*",r"^(?P<bin_remote_ip>....)"), # cikePeerRemoteAddr
+        Expression("local_ip","decode_ipv4(bin_local_ip)"),
+        Expression("remote_ip","decode_ipv4(bin_remote_ip)"),
     ]
 ##
 ## Cisco.IOS IPsec Phase2 Tunnel Start SNMP
@@ -53,8 +57,10 @@ class Cisco_IOS_IPsec_Phase2_Tunnel_Start_SNMP_Rule(ClassificationRule):
         (r"^source$",r"^SNMP Trap$"),
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.7$"),      # cipSecTunnelStart
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.3\.3\.1\.10\.",r"(?P<remote_ip__ipv4>....)"),      # cipSecEndPtRemoteAddr1
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.3\.3\.1\.4\.",r"(?P<local_ip__ipv4>....)"),        # cipSecEndPtLocalAddr1
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.3\.3\.1\.10\.",r"(?P<bin_remote_ip>....)"),      # cipSecEndPtRemoteAddr1
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.3\.3\.1\.4\.",r"(?P<bin_local_ip>....)"),        # cipSecEndPtLocalAddr1
+        Expression("local_ip","decode_ipv4(bin_local_ip)"),
+        Expression("remote_ip","decode_ipv4(bin_remote_ip)"),
     ]
 ##
 ## Cisco.IOS IPsec Phase2 Tunnel Stop SNMP
@@ -68,8 +74,10 @@ class Cisco_IOS_IPsec_Phase2_Tunnel_Stop_SNMP_Rule(ClassificationRule):
         (r"^source$",r"^SNMP Trap$"),
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.2\.0\.8$"),      # cipSecTunnelStop
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.12\.\d+",r"(?P<remote_ip__ipv4>....)"),# cipSecEndPtHistRemoteAddr1
-        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.6\.\d+",r"(?P<local_ip__ipv4>....)"),  # cipSecEndPtHistLocalAddr1
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.12\.\d+",r"(?P<bin_remote_ip>....)"),# cipSecEndPtHistRemoteAddr1
+        (r"^1\.3\.6\.1\.4\.1\.9\.9\.171\.1\.4\.3\.2\.1\.6\.\d+",r"(?P<bin_local_ip>....)"),  # cipSecEndPtHistLocalAddr1
+        Expression("local_ip","decode_ipv4(bin_local_ip)"),
+        Expression("remote_ip","decode_ipv4(bin_remote_ip)"),
     ]
 ##
 ## Cisco.IOS IPsec Crypto Map Added SNMP
