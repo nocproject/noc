@@ -6,7 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import re
-from django.forms import ValidationError
+try:
+    from django.forms import ValidationError
+except:
+    pass
 ##
 ## Validators returning boolean
 ##
