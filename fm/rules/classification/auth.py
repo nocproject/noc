@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classification import ClassificationRule,Expression
 from noc.fm.rules.classes.auth import *
 ##
 ## Authentication Failure SNMP
@@ -21,7 +21,8 @@ class Authentication_Failure_SNMP_Rule(ClassificationRule):
     patterns=[
         (r"^source$",r"^SNMP Trap$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.6\.3\.1\.1\.5\.5$"),
-        (r"^1\.3\.6\.1\.4\.1\.9\.2\.1\.5\.0$",r"(?P<ip__ipv4>....)"),
+        (r"^1\.3\.6\.1\.4\.1\.9\.2\.1\.5\.0$",r"(?P<bin_ip>....)"),
+        Expression("ip","decode_ipv4(bin_ip)"),
     ]
 ##
 ## Authentication Failure Simple SNMP

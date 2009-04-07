@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classification import ClassificationRule,Expression
 from noc.fm.rules.classes.dot11 import *
 ##
 ## Dot11 Deauthenticate SNMP
@@ -20,5 +20,6 @@ class Dot11_Deauthenticate_SNMP_Rule(ClassificationRule):
     patterns=[
         (r"^source$",r"^SNMP Trap$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.2\.840\.10036\.1\.6\.0\.2$"),
-        (r"^1\.2\.840\.10036\.1\.1\.1\.18\.1$",r"(?P<mac__mac>......)"),
+        (r"^1\.2\.840\.10036\.1\.1\.1\.18\.1$",r"(?P<bin_mac>......)"),
+        Expression("mac","decode_mac(bin_mac)"),
     ]

@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classification import ClassificationRule,Expression
 from noc.fm.rules.classes.ldp import *
 
 ##
@@ -22,8 +22,10 @@ class Juniper_JUNOS_LDP_LSP_Up_SNMP_Rule(ClassificationRule):
         (r"^source$",r"^SNMP Trap$"),
         (r"^profile$",r"^Juniper\.JUNOS$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.2636\.4\.4\.0\.1$"),
-        (r"^1\.3\.6\.1\.4\.1\.2636\.3\.14\.1\.1\.\d+$",r"^(?P<fec__ipv4>.+)$"),
-        (r"^1\.3\.6\.1\.4\.1\.2636\.3\.14\.1\.2\.\d+$",r"^(?P<router_id__ipv4>.+)$"),
+        (r"^1\.3\.6\.1\.4\.1\.2636\.3\.14\.1\.1\.\d+$",r"^(?P<bin_fec>.+)$"),
+        (r"^1\.3\.6\.1\.4\.1\.2636\.3\.14\.1\.2\.\d+$",r"^(?P<bin_router_id>.+)$"),
+        Expression("fec","decode_ipv4(bin_fec)"),
+        Expression("router_id","decode_ipv4(bin_router_id)"),
     ]
     
 ##
@@ -38,6 +40,8 @@ class Juniper_JUNOS_LDP_LSP_Down_SNMP_Rule(ClassificationRule):
         (r"^source$",r"^SNMP Trap$"),
         (r"^profile$",r"^Juniper\.JUNOS$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",r"^1\.3\.6\.1\.4\.1\.2636\.4\.4\.0\.2$"),
-        (r"^1\.3\.6\.1\.4\.1\.2636\.3\.14\.1\.1\.\d+$",r"^(?P<fec__ipv4>.+)$"),
-        (r"^1\.3\.6\.1\.4\.1\.2636\.3\.14\.1\.2\.\d+$",r"^(?P<router_id__ipv4>.+)$"),
+        (r"^1\.3\.6\.1\.4\.1\.2636\.3\.14\.1\.1\.\d+$",r"^(?P<bin_fec>.+)$"),
+        (r"^1\.3\.6\.1\.4\.1\.2636\.3\.14\.1\.2\.\d+$",r"^(?P<bin_router_id>.+)$"),
+        Expression("fec","decode_ipv4(bin_fec)"),
+        Expression("router_id","decode_ipv4(bin_router_id)"),
     ]
