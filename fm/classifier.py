@@ -192,7 +192,7 @@ class Classifier(Daemon):
                 return
             event_class=rule.rule.event_class
             event.event_class=event_class
-            if event_class.repeat_suppression and event_class.repeat_suppression_interval>0 and self.suppress_repeat(event):
+            if event_class.repeat_suppression and event_class.repeat_suppression_interval>0 and self.suppress_repeat(event,vars):
                 return # Event is suppressed, no further processing
             event_category=event_class.category
             event_priority=event_class.default_priority
@@ -309,7 +309,7 @@ class Classifier(Daemon):
     ## Suppress repeats.
     ## Return True if event is suppressed, False otherwise
     ##
-    def suppress_repeat(self,event):
+    def suppress_repeat(self,event,vars):
         event_class=event.event_class
         # Build keys
         kv={}
