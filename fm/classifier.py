@@ -82,20 +82,6 @@ class Rule(object):
                 if not r_match:
                     return None
                 found=True
-                # Apply decoders if necessary
-                # Decoders are given as (?P<name__decoder>.....) patters
-                try:
-                    for gd in [l_match.groupdict(),r_match.groupdict()]:
-                        for k,v in gd.items():
-                            if "__" in k:
-                                k_name,decoder=k.split("__",1)
-                                vars[k_name]=getattr(self,"decode_%s"%decoder)(v) # Apply decoder
-                            else:
-                                vars[k]=v # Pass unchanged
-                except DecodeError:
-                    return None # No match when decoder failed
-                except AttributeError:
-                    return None # No match when decoder not found
                 break
             if not found:
                 return None
