@@ -67,6 +67,8 @@ def lookup_events(request):
                 events=events.filter(event_class=form.cleaned_data["event_class"])
             if form.cleaned_data["status"]:
                 events=events.filter(status=form.cleaned_data["status"])
+            if form.cleaned_data["event_priority"]:
+                events=events.filter(event_priority__priority__gte=form.cleaned_data["event_priority"].priority)
             if form.cleaned_data["event_category"]:
                 events=events.filter(event_category=form.cleaned_data["event_category"])
             if form.cleaned_data["subject"]:
@@ -93,13 +95,14 @@ class EventSearchForm(forms.Form):
     event_category=forms.ModelChoiceField(required=False,queryset=EventCategory.objects.all())
     event_class=forms.ModelChoiceField(required=False,queryset=EventClass.objects.all())
     status=forms.ChoiceField(required=False,choices=[("","---------")]+EVENT_STATUS_CHOICES)
+    event_priority=forms.ModelChoiceField(required=False,queryset=EventPriority.objects.all())
     subject=forms.CharField(required=False)
 ##
 ## Display events list scheet
 ##
 @permission_required("fm.change_event")
 def index(request):
-    form=EventSearchForm()
+    form=EventSearchForm(initial={"status":"A"})
     return render(request,"fm/index.html",{"form":form})
 ##
 ## Dynamically generated CSS for event list priorities
