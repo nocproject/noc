@@ -241,12 +241,13 @@ class Config(Object):
         def pull_callback(result=None,error=None):
             if error:
                 if error.code==ERR_OVERLOAD:
-                    timeout=150
+                    timeout=config.getint("cm","timeout_overload")
                 elif error.code==ERR_DOWN:
-                    timeout=60
+                    timeout=config.getint("cm","timeout_down")
                 else:
-                    timeout=300
-                timeout+=random.randint(-timeout/10,timeout/10) # Add jitter to avoid blocking by dead task
+                    timeout=config.getint("cm","timeout_error")
+                variation=config.getint("cm","timeout_variation")
+                timeout+=random.randint(-timeout/variation,timeout/variation) # Add jitter to avoid blocking by dead task
                 self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
                 self.save()
                 return            
