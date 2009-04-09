@@ -48,6 +48,16 @@ repo     = /var/repo
 vcs_type = hg
 # Path to VCS CLI utility
 vcs_path = /usr/local/bin/hg
+# Next check on activator overload
+timeout_overload = 150
+# Next check on down host
+timeout_down     = 60
+# Next check after config fetching error
+timeout_error    = 300
+# Random variation to timeout.
+# If timeout is T and variation is N means
+# the final timeout will be random value in range of [T-T/N,T+T/N]
+timeout_variation = 10
 
 #
 # Trouble Ticketing System integration
