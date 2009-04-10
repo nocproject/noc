@@ -105,6 +105,7 @@ INSTALLED_APPS = (
     "noc.vc",
     "noc.dns",
     "noc.peer",
+    "noc.kb",
 )
 
 FORCE_SCRIPT_NAME=""
