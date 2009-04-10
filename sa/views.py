@@ -154,7 +154,7 @@ def upload_managed_objects(request):
             activator=form.cleaned_data["activator"]
             count,error=upload_csv(request.FILES['file'])
             if error:
-                return render_failure("Managed Object Upload Failure",error)
+                return render_failure(request,"Managed Object Upload Failure",error)
             else:
                 return render_success(request,"Managed Objects are Uploaded","%d managed objects uploaded/updated"%count)
     return HttpResponseRedirect("/sa/tools/")
