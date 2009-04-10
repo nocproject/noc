@@ -29,4 +29,5 @@ urlpatterns = patterns('',
      (r"^vc/", include("noc.vc.urls")),
      (r"^peer/", include("noc.peer.urls")),
      (r"^dns/", include("noc.dns.urls")),
+     (r"^kb/", include("noc.kb.urls")),
 )
