@@ -1,0 +1,22 @@
+{% extends "template/template.html" %}
+{% block title%}Knowledge Base{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A></div>{% endblock %}
+{% block content %}
+<ul class="object-tools">
+    <LI><A HREF="/admin/kb/kbentry/add/" class="addlink">Add KB Entry</A></LI>
+</ul>
+<h1>Knowledge Base</h1>
+<DIV ID="latest">
+    <h2>Latest Articles</h2>
+    <TABLE BORDER="0">
+        <TR><TH>#</TH><TH>Subject</TH></TR>
+        {% for e in latest %}
+        <TR><TD ALIGN="right"><A HREF="/kb/{{e.id}}/">{{e.id}}</A></TD><TD>{{e.subject}}</TD></TR>
+        {% endfor %}
+    </TABLE>
+</DIV>
+
+<DIV ID="popular">
+
+</DIV>
+{% endblock %}
