@@ -6,10 +6,12 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.db import models
+from django.db.models import Q
 from noc.main.models import Language
 from noc.main.menu import Menu
 from django.contrib.auth.models import User
 from noc.kb.parsers import parser_registry
+from noc.main.search import SearchResult
 
 ##
 ## Register all wiki-syntax parsers
@@ -54,6 +56,20 @@ class KBEntry(models.Model):
         return "<A HREF='/kb/%d/'>View</A>"%self.id
     view_link.short_description="View"
     view_link.allow_tags=True
+    ##
+    ## Search engine
+    ##
+    @classmethod
+    def search(cls,user,query,limit):
+        if user.has_perm("kb.change_kbentry"):
+            for r in KBEntry.objects.filter(Q(subject__icontains=query)|Q(body__icontains=query)):
+                idx=r.body.index(query)
+                text=r.body[idx-100:idx+len(query)+100]
+                yield SearchResult(url="/kb/%d/"%r.id,
+                    title="KB%d: %s"%(r.id,r.subject),
+                    text=text,
+                    relevancy=1.0)
+    
 ##
 ##
 ##
