@@ -13,11 +13,15 @@ from django.shortcuts import get_object_or_404
 ## Title page
 ##
 def index(request):
-    latest=[h.kb_entry for h in KBEntryHistory.objects.order_by("-timestamp")[:20]]
-    return render(request,"kb/index.html",{"latest":latest})
+    return render(request,"kb/index.html",
+        {
+        "latest":KBEntry.last_modified(20),
+        "popular":KBEntry.most_popular(20),
+        })
 ##
 ## KB Entry Preview
 ##
 def view(request,kb_id):
     e=get_object_or_404(KBEntry,id=int(kb_id))
+    e.log_preview(request.user)
     return render(request,"kb/view.html",{"e":e})
