@@ -69,6 +69,21 @@ class KBEntry(models.Model):
                     title="KB%d: %s"%(r.id,r.subject),
                     text=text,
                     relevancy=1.0)
+    ##
+    ## Returns latest KBEntryHistory record
+    ##
+    def _last_history(self):
+        return self.kbentryhistory_set.order_by("-timestamp")[0]
+    last_history=property(_last_history)
+    ##
+    ## Returns a list of last modified KB Entries
+    ##
+    @classmethod
+    def last_modified(self,num=20):
+        from django.db import connection
+        c=connection.cursor()
+        c.execute("SELECT kb_entry_id,MAX(timestamp) FROM kb_kbentryhistory GROUP BY 1 ORDER BY 2 DESC LIMIT %d"%num)
+        return [KBEntry.objects.get(id=r[0]) for r in c.fetchall()]
     
 ##
 ##
