@@ -84,7 +84,27 @@ class KBEntry(models.Model):
         c=connection.cursor()
         c.execute("SELECT kb_entry_id,MAX(timestamp) FROM kb_kbentryhistory GROUP BY 1 ORDER BY 2 DESC LIMIT %d"%num)
         return [KBEntry.objects.get(id=r[0]) for r in c.fetchall()]
-    
+    ##
+    ## Write article preview log
+    ##
+    def log_preview(self,user):
+        KBEntryPreviewLog(kb_entry=self,user=user).save()
+    ##
+    ## Returns preview count
+    ##
+    def _preview_count(self):
+        return self.kbentrypreviewlog_set.count()
+    preview_count=property(_preview_count)
+    ##
+    ## Returns most popular articles
+    ##
+    @classmethod
+    def most_popular(self,num=20):
+        from django.db import connection
+        c=connection.cursor()
+        c.execute("SELECT kb_entry_id,COUNT(*) FROM kb_kbentrypreviewlog GROUP BY 1 ORDER BY 2 DESC LIMIT %d"%num)
+        return [KBEntry.objects.get(id=r[0]) for r in c.fetchall()]
+        
 ##
 ##
 ##
@@ -97,6 +117,17 @@ class KBEntryHistory(models.Model):
     timestamp=models.DateTimeField("Timestamp",auto_now_add=True)
     user=models.ForeignKey(User,verbose_name="User")
     diff=models.TextField("Diff")
+##
+##
+##
+class KBEntryPreviewLog(models.Model):
+    class Meta:
+        verbose_name="KB Entry Preview Log"
+        verbose_name_plural="KB Entry Preview Log"
+    kb_entry=models.ForeignKey(KBEntry,verbose_name="KB Entry")
+    timestamp=models.DateTimeField("Timestamp",auto_now_add=True)
+    user=models.ForeignKey(User,verbose_name="User")
+    
 ##
 ## Application menu
 ##
