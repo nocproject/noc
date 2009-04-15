@@ -13,10 +13,24 @@ from django.shortcuts import get_object_or_404
 ## Title page
 ##
 def index(request):
+    return index_latest(request)
+##
+##
+##
+def index_latest(request):
     return render(request,"kb/index.html",
         {
-        "latest":KBEntry.last_modified(20),
-        "popular":KBEntry.most_popular(20),
+        "tab"     : "latest",
+        "entries" : KBEntry.last_modified(20),
+        })
+##
+##
+##
+def index_popular(request):
+    return render(request,"kb/index.html",
+        {
+        "tab"     : "popular",
+        "entries" : KBEntry.most_popular(20),
         })
 ##
 ## KB Entry Preview
