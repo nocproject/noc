@@ -1,11 +1,14 @@
 {% extends "template/template.html" %}
 {% block title%}Knowledge Base: KB{{e.id}}{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A> &rsaquo; {{e.id}}</div>{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A> &rsaquo; KB{{e.id}}</div>{% endblock %}
 {% block content %}
 <ul class="object-tools">
-    <LI><A HREF="/kb/kbentry/add/" class="addlink">Add KB Entry</A></LI>
+    <LI><A HREF="/admin/kb/kbentry/add/" class="addlink">Add KB Entry</A></LI>
     <LI><A HREF="/admin/kb/kbentry/{{e.id}}/" class="addlink">Edit</A></LI>
 </ul>
 <h1>KB{{e.id}}: {{e.subject}}</h1>
 {{e.html|safe}}
+
+<hr/>
+Posted at {{e.last_history.timestamp}} by {{e.last_history.user}}
 {% endblock %}
