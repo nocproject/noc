@@ -15,7 +15,14 @@ class Parser(noc.kb.parsers.Parser):
     name="Creole"
     @classmethod
     def to_html(cls,text):
+        def custom_link_emit(node):
+            link=creole.HtmlEmitter.link_emit(html_emitter,node)
+            if link.startswith("<a href=\"http"):
+                return link
+            else:
+                return cls.convert_link(link[link.index(">")+1:-4])
         import creole
         parser=creole.Parser(unicode(text))
         html_emitter=creole.HtmlEmitter(parser.parse())
+        html_emitter.link_emit=custom_link_emit
         return html_emitter.emit()
