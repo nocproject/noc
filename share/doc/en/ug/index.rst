@@ -17,3 +17,4 @@ NOC: User's Guide
     ip
     vc
     dns
+    kb
