@@ -9,9 +9,11 @@
 """
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
-from noc.kb.views import index,view
+from noc.kb.views import index,index_latest,index_popular,view
 
 urlpatterns = patterns ( None,
         (r"^$",                login_required(index)),
+        (r"^latest/",          login_required(index_latest)),
+        (r"^popular/",         login_required(index_popular)),
         (r"^(?P<kb_id>\d+)/$", login_required(view)),
 )

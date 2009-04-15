@@ -2,42 +2,32 @@
 {% block title%}Knowledge Base{% endblock %}
 {% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A></div>{% endblock %}
 {% block content %}
-<script type="text/javascript">
-    $(function() { $("#tabs").tabs(); });
-</script>
 <ul class="object-tools">
     <LI><A HREF="/admin/kb/kbentry/add/" class="addlink">Add KB Entry</A></LI>
 </ul>
-<h1>Knowledge Base</h1>
 
-<DIV>
-    <DIV ID="latest" STYLE="width:400px; float: left">
-        <h2>Latest Articles</h2>
-        <TABLE BORDER="0">
-            <TR><TH>#</TH><TH>Subject</TH><TH>Modification time</TH><TH>Modified by</TH></TR>
-            {% for e in latest %}
-            <TR CLASS="{% cycle 'row1' 'row2' %}">
-                <TD ALIGN="right"><A HREF="/kb/{{e.id}}/">{{e.id}}</A></TD>
-                <TD>{{e.subject}}</TD>
-                <TD>{{ e.last_history.timestamp}}</TD>
-                <TD>{{e.last_history.user}}</TD>
-            </TR>
-            {% endfor %}
-        </TABLE>
-    </DIV>
-    <DIV ID="popular"  STYLE="width:400px; float: left">
-        <h2>Popular articles</h2>
-        <TABLE BORDER="0">
-            <TR><TH>#</TH><TH>Subject</TH><TH>Modification time</TH><TH>Modified by</TH></TR>
-            {% for e in popular %}
-            <TR CLASS="{% cycle 'row1' 'row2' %}">
-                <TD ALIGN="right"><A HREF="/kb/{{e.id}}/">{{e.id}}</A></TD>
-                <TD>{{e.subject}}</TD>
-                <TD>{{ e.last_history.timestamp}}</TD>
-                <TD>{{e.last_history.user}}</TD>
-            </TR>
-            {% endfor %}
-        </TABLE>
-    </DIV>
-</DIV>
+<h1>Knowledge Base</h1>
+<!--
+<FORM>
+    <B>Search:</B> 
+</FORM>
+-->
+{% ifequal tab "latest" %}
+[Last Changed] <A HREF="/kb/popular/">[Popular Articles]</A>
+{% endifequal %}
+{% ifequal tab "popular" %}
+<A HREF="/kb/latest/">[Last Changed]</A> [Popular Articles]
+{% endifequal %}
+<TABLE BORDER="0">
+    <TR><TH>#</TH><TH>Subject</TH><TH>Views</TH><TH>Modified</TH><TH>Modified by</TH></TR>
+    {% for e in entries %}
+    <TR CLASS="{% cycle 'row1' 'row2' %}">
+        <TD ALIGN="right"><A HREF="/kb/{{e.id}}/">KB{{e.id}}</A></TD>
+        <TD>{{e.subject}}</TD>
+        <TD>{{e.preview_count}}</TD>
+        <TD>{{e.last_history.timestamp}}</TD>
+        <TD>{{e.last_history.user}}</TD>
+    </TR>
+    {% endfor %}
+</TABLE>
 {% endblock %}
