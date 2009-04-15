@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.lib.registry import Registry
+from noc.lib.validators import is_int
 
 ##
 ## Parser Registry
@@ -43,3 +44,15 @@ class Parser(object):
     @classmethod
     def check(cls,text):
         cls.to_html(text)
+    ##
+    ## Convert extracted link to URL
+    ## Following link types are supported:
+    ##   KB<b> - Link to Knowledge Base article N
+    ##
+    @classmethod
+    def convert_link(cls,link):
+        if link.startswith("KB") and is_int(link[2:]):
+            return u"<a href='/kb/%s/'>%s</a>"%(link[2:],link)
+        else:
+            return link
+
