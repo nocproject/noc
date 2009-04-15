@@ -12,6 +12,7 @@ from noc.main.menu import Menu
 from django.contrib.auth.models import User
 from noc.kb.parsers import parser_registry
 from noc.main.search import SearchResult
+from noc.lib.validators import is_int
 
 ##
 ## Register all wiki-syntax parsers
@@ -62,9 +63,17 @@ class KBEntry(models.Model):
     @classmethod
     def search(cls,user,query,limit):
         if user.has_perm("kb.change_kbentry"):
-            for r in KBEntry.objects.filter(Q(subject__icontains=query)|Q(body__icontains=query)):
-                idx=r.body.index(query)
-                text=r.body[idx-100:idx+len(query)+100]
+            q=Q(subject__icontains=query)|Q(body__icontains=query)
+            if is_int(query):
+                q|=Q(id=int(query))
+            elif query.startswith("KB") and is_int(query[2:]):
+                q|=Q(id=int(query[2:]))
+            for r in KBEntry.objects.filter(q):
+                try:
+                    idx=r.body.index(query)
+                    text=r.body[idx-100:idx+len(query)+100]
+                except ValueError:
+                    text=r.body[:100]
                 yield SearchResult(url="/kb/%d/"%r.id,
                     title="KB%d: %s"%(r.id,r.subject),
                     text=text,
