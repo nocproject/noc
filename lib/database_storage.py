@@ -100,6 +100,7 @@ class DatabaseStorage(Storage):
     ##
     def delete(self,name):
         self.cursor.execute("DELETE FROM %s WHERE %s=%%s"%(self.db_table,self.name_field),[name])
+        self.cursor.execute("COMMIT")
     ##
     ## Returns converted file name (Required by Storage API)
     ##
