@@ -63,7 +63,6 @@ class DatabaseStorage(Storage):
         else:
             self.cursor.execute("INSERT INTO %s(%s,%s,%s,%s) VALUES(%%s,'now',%%s,%%s)"%(self.db_table,self.name_field,
                 self.mtime_field,self.size_field,self.data_field),[name,size,binary])
-        self.cursor.execute("COMMIT")
         return name
     ##
     ## Check a file exists
@@ -100,7 +99,6 @@ class DatabaseStorage(Storage):
     ##
     def delete(self,name):
         self.cursor.execute("DELETE FROM %s WHERE %s=%%s"%(self.db_table,self.name_field),[name])
-        self.cursor.execute("COMMIT")
     ##
     ## Returns converted file name (Required by Storage API)
     ##
