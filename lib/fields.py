@@ -24,3 +24,9 @@ class CIDRField(models.Field):
         # Convert value to pure network address to prevent
         # PostgreSQL exception
         return normalize_prefix(value)
+##
+## Binary Field maps to PostgreSQL BYTEA
+##
+class BinaryField(models.Field):
+    def db_type(self):
+        return "BYTEA"
