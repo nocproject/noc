@@ -9,6 +9,15 @@
 <h1>KB{{e.id}}: {{e.subject}}</h1>
 {{e.html|safe}}
 
+{% if e.has_visible_attachments %}
+<H2>Attachments</H2>
+<TABLE BORDER="0">
+    <TR><TH>Name</TH><TH>Size</TH><TH>Last Changed</TH></TR>
+{% for a in e.visible_attachments %}
+    <TR><TD><A HREF="{{a.url}}">{{a.name}}</A></TD><TD>{{a.size|filesizeformat}}</TD><TD>{{a.mtime}}</TD></TR>
+{% endfor %}
+</TABLE>
+{% endif %}
 <hr/>
 Posted at {{e.last_history.timestamp}} by {{e.last_history.user}}
 {% endblock %}
