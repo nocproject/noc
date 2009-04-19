@@ -12,12 +12,44 @@
     <B>Search:</B> 
 </FORM>
 -->
-{% ifequal tab "latest" %}
-[Last Changed] <A HREF="/kb/popular/">[Popular Articles]</A>
-{% endifequal %}
-{% ifequal tab "popular" %}
-<A HREF="/kb/latest/">[Last Changed]</A> [Popular Articles]
-{% endifequal %}
+<STYLE>
+#tabs {
+    padding: .2em;
+}
+
+#tabs-nav {
+    border-bottom: 1px solid #FFFFFF;
+    cursor: pointer;
+    background-color: #999999;
+    padding: 4px 0px 0px 4px;
+}
+
+.selected-tab {
+    background-color: #FFFFFF;
+}
+
+.unselected-tab {
+    background-color: #999999;
+}
+
+.selected-tab A {
+    color: #999999;
+    padding: 8px;
+    font-weight: bold;
+}
+
+.unselected-tab A {
+    color: #FFFFFF;
+    padding: 8px;
+    font-weight: bold;
+}
+</STYLE>
+
+<DIV ID="tabs">
+<DIV ID="tabs-nav">
+    <SPAN ID="t1" CLASS='{% ifequal tab "latest" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/latest/">Last Changed</A></SPAN>
+    <SPAN ID="t2" CLASS='{% ifequal tab "popular" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/popular/">Popular Articles</A></SPAN>
+</DIV>
 <TABLE BORDER="0">
     <TR><TH>#</TH><TH>Subject</TH><TH>Views</TH><TH>Modified</TH><TH>Modified by</TH></TR>
     {% for e in entries %}
@@ -30,4 +62,5 @@
     </TR>
     {% endfor %}
 </TABLE>
+</DIV>
 {% endblock %}
