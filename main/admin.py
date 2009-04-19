@@ -18,6 +18,13 @@ class LanguageAdmin(admin.ModelAdmin):
     search_fields=["name","native_name"]
     list_filter=["is_active"]
 ##
+## Admin for MIME Types
+##
+class MIMETypeAdmin(admin.ModelAdmin):
+    list_display=["ext","mime_type"]
+    search_fields=["ext","mime_type"]
+##
 ## Register administrative interfaces
 ##
 admin.site.register(Language, LanguageAdmin)
+admin.site.register(MIMEType, MIMETypeAdmin)

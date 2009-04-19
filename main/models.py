@@ -12,6 +12,7 @@ from noc.main.menu import Menu
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 import noc.main.search # Set up signal handlers
+import os
 
 ##
 ## Languages
@@ -60,6 +61,29 @@ class DatabaseStorage(models.Model):
 ##
 database_storage=DatabaseStorage.get_dbs()
 ##
+## Extension to MIME-type mapping
+##
+class MIMEType(models.Model):
+    class Meta:
+        verbose_name="MIME Type"
+        verbose_name_plural="MIME Types"
+    extension=models.CharField("Extension",max_length=32,unique=True)
+    mime_type=models.CharField("MIME Type",max_length=63)
+    def __unicode__(self):
+        return u"%s -> %s"%(self.extension,self.mime_type)
+    ##
+    ## Determine MIME type from filename
+    ##
+    @classmethod
+    def get_mime_type(cls,filename):
+        r,ext=os.path.splitext(filename)
+        try:
+            m=MIMEType.objects.get(extension=ext)
+            return m.mime_type
+        except MIMEType.DoesNotExist:
+            return "application/octet-stream"
+
+##
 ## Application Menu
 ##
 class AppMenu(Menu):
@@ -70,6 +94,7 @@ class AppMenu(Menu):
             ("Users",  "/admin/auth/user/",  "auth.change_user"),
             ("Groups", "/admin/auth/group/", "auth.change_group"),
             ("Languages","/admin/main/language/", "main.change_language"),
+            ("MIME Types", "/admin/main/mimetype/", "main.change_mimetype"),
         ]),
         ("Documentation", [
             ("Administrator's Guide", "/static/doc/en/ag/html/index.html"),
