@@ -14,8 +14,8 @@ import noc.kb.parsers
 class Parser(noc.kb.parsers.Parser):
     name="CSV"
     @classmethod
-    def to_html(cls,text):
-        reader=csv.reader([l.encode("utf-8") for l in text.splitlines()])
+    def to_html(cls,kb_entry):
+        reader=csv.reader([l.encode("utf-8") for l in kb_entry.body.splitlines()])
         r=["<TABLE BORDER='1'>"]
         for row in reader:
             r+=[u"<TR>"]+[u"<TD>%s</TD>"%unicode(c,"utf-8") for c in row]+[u"</TR>"]

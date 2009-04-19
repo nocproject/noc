@@ -37,7 +37,7 @@ class Parser(object):
     ## Convert wiki syntax to HTML
     ##
     @classmethod
-    def to_html(cls,text):
+    def to_html(cls,kb_entry):
         raise "Does not implemented"
     ##
     ## Check syntax
@@ -48,16 +48,20 @@ class Parser(object):
     ##
     ## Convert extracted link to URL
     ## Following link types are supported:
-    ##   KB<b> - Link to Knowledge Base article N
-    ##
+    ##   KB<n> - Link to Knowledge Base article <n>
+    ##   TT<n> - Link to Trouble Ticket <n>
+    ##   attach:<name> - Link to attachment <name>
     @classmethod
-    def convert_link(cls,link):
+    def convert_link(cls,kb_entry,link):
         if link.startswith("KB") and is_int(link[2:]):
             return u"<a href='/kb/%s/'>%s</a>"%(link[2:],link)
         elif link.startswith("TT"):
             tt={"tt":link[2:]}
             tt_url=config.get("tt","url",tt)%tt
             return u"<a href='%s'>%s</a>"%(tt_url,link)
+        elif link.startswith("attach:"):
+            name=link[7:]
+            return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,name,name)
         else:
             return link
 

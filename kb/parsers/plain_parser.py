@@ -14,5 +14,5 @@ import noc.kb.parsers
 class Parser(noc.kb.parsers.Parser):
     name="Plain Text"
     @classmethod
-    def to_html(cls,text):
-        return u"<pre>%s</pre>"%text
+    def to_html(cls,kb_entry):
+        return u"<pre>%s</pre>"%kb_entry.body
