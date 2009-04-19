@@ -21,8 +21,8 @@ class LanguageAdmin(admin.ModelAdmin):
 ## Admin for MIME Types
 ##
 class MIMETypeAdmin(admin.ModelAdmin):
-    list_display=["ext","mime_type"]
-    search_fields=["ext","mime_type"]
+    list_display=["extension","mime_type"]
+    search_fields=["extension","mime_type"]
 ##
 ## Register administrative interfaces
 ##
