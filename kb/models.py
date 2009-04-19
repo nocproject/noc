@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.db import models
 from django.db.models import Q
-from noc.main.models import Language
+from noc.main.models import Language,database_storage
 from noc.main.menu import Menu
 from django.contrib.auth.models import User
 from noc.kb.parsers import parser_registry
@@ -113,9 +113,74 @@ class KBEntry(models.Model):
         c=connection.cursor()
         c.execute("SELECT kb_entry_id,COUNT(*) FROM kb_kbentrypreviewlog GROUP BY 1 ORDER BY 2 DESC LIMIT %d"%num)
         return [KBEntry.objects.get(id=r[0]) for r in c.fetchall()]
-        
+    ##
+    ## Callable for KBEntryAttachment.file.upload_to
+    ##
+    @classmethod
+    def upload_to(cls,instance,filename):
+        return "/kb/%d/%s"%(instance.kb_entry.id,filename)
+    ##
+    ## Returns a list of visible attachments
+    ##
+    def _visible_attachments(self):
+        return [{"name":x.name,"size":x.size,"mtime":x.mtime,"url":x.url}
+            for x in self.kbentryattachment_set.filter(is_hidden=False).order_by("name")]
+    visible_attachments=property(_visible_attachments)
+    ##
+    ##
+    ##
+    def _has_visible_attachments(self):
+        return self.kbentryattachment_set.filter(is_hidden=False).count()>0
+    has_visible_attachments=property(_has_visible_attachments)
 ##
+## Attachments
 ##
+class KBEntryAttachment(models.Model):
+    class Meta:
+        verbose_name="KB Entry Attachment"
+        verbose_name_plural="KB Entry Attachments"
+        unique_together=[("kb_entry","name")]
+    kb_entry=models.ForeignKey(KBEntry,verbose_name="KB Entry")
+    name=models.CharField("Name",max_length=256)
+    description=models.CharField("Description",max_length=256,null=True,blank=True)
+    is_hidden=models.BooleanField("Is Hidden",default=False)
+    file=models.FileField("File",upload_to=KBEntry.upload_to,storage=database_storage)
+    def __unicode__(self):
+        return u"%d: %s"%(self.kb_entry.id,self.name)
+    ##
+    ## Delete object on database storage too
+    ##
+    def delete(self):
+        super(KBEntryAttachment,self).delete()
+        self.file.storage.delete(self.file.name)
+    ##
+    ## File size
+    ##
+    def _size(self):
+        s=self.file.storage.stat(self.file.name)
+        if s:
+            return s["size"]
+        else:
+            return None
+    size=property(_size)
+    ##
+    ## File mtime
+    ##
+    def _mtime(self):
+        s=self.file.storage.stat(self.file.name)
+        if s:
+            return s["mtime"]
+        else:
+            return None
+    mtime=property(_mtime)
+    ##
+    ## Download URL
+    ##
+    def _url(self):
+        return "/kb/%d/attachment/%s/"%(self.kb_entry.id,self.name)
+    url=property(_url)
+##
+## Modification History
 ##
 class KBEntryHistory(models.Model):
     class Meta:
