@@ -9,6 +9,8 @@ from django.db import models
 from noc.main.report import report_registry
 from noc.main.menu import populate_reports
 from noc.main.menu import Menu
+from noc.lib.fields import BinaryField
+from noc.lib.database_storage import DatabaseStorage as DBS
 import noc.main.search # Set up signal handlers
 
 ##
@@ -24,7 +26,39 @@ class Language(models.Model):
     is_active=models.BooleanField("Is Active",default=False)
     def __unicode__(self):
         return self.name
-    
+##
+##
+##
+class DatabaseStorage(models.Model):
+    class Meta:
+        verbose_name="Database Storage"
+        verbose_name_plural="Database Storage"
+    name=models.CharField("Name",max_length=256,unique=True)
+    data=BinaryField("Data")
+    size=models.IntegerField("Size")
+    mtime=models.DateTimeField("MTime")
+    ##
+    ## Options for DatabaseStorage
+    ##
+    @classmethod
+    def dbs_options(cls):
+        return {
+            "db_table"     : DatabaseStorage._meta.db_table,
+            "name_field"  : "name",
+            "data_field"  : "data",
+            "mtime_field" : "mtime",
+            "size_field"  : "size",
+        }
+    ##
+    ## Returns DatabaseStorage instance
+    ##
+    @classmethod
+    def get_dbs(cls):
+        return DBS(cls.dbs_options())
+##
+## Default database storage
+##
+database_storage=DatabaseStorage.get_dbs()
 ##
 ## Application Menu
 ##
