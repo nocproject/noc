@@ -27,14 +27,17 @@ import psycopg2
 ##
 class DatabaseStorage(Storage):
     def __init__(self,option):
-        assert 
         self.db_table    = option["db_table"]
         self.name_field  = option["name_field"]
         self.data_field  = option["data_field"]
         self.size_field  = option["size_field"]
         self.mtime_field = option["mtime_field"]
+    ##
+    ##
+    ##
+    def get_cursor(self):
         from django.db import connection
-        self.cursor=connection.cursor()
+        return connection.cursor()
     ##
     ## Internal implementation of the open()
     ##   name - is a full path
@@ -42,8 +45,9 @@ class DatabaseStorage(Storage):
     ## Returns File object or None
     ##
     def _open(self, name, mode="rb"):
-        self.cursor.execute("SELECT %s FROM %s WHERE %s=%%s"%(self.data_field,self.db_table,self.name_field),[name])
-        row=self.cursor.fetchone()
+        cursor=self.get_cursor()
+        cursor.execute("SELECT %s FROM %s WHERE %s=%%s"%(self.data_field,self.db_table,self.name_field),[name])
+        row=cursor.fetchone()
         if row is None:
             return None
         return ContentFile(row[0])
@@ -54,14 +58,15 @@ class DatabaseStorage(Storage):
     ## Returns file name
     ##
     def _save(self, name, content):
+        cursor=self.get_cursor()
         binary=content.read()
         size=len(binary)
         binary=psycopg2.Binary(binary)
         if self.exists(name):
-            self.cursor.execute("UPDATE %s SET %s=%%s,%s='now',%s=%%s WHERE %s=%%s"%(self.db_table,self.data_field,
+            cursor.execute("UPDATE %s SET %s=%%s,%s='now',%s=%%s WHERE %s=%%s"%(self.db_table,self.data_field,
                     self.mtime_field,self.size_field,self.name_field),[binary,size,name])
         else:
-            self.cursor.execute("INSERT INTO %s(%s,%s,%s,%s) VALUES(%%s,'now',%%s,%%s)"%(self.db_table,self.name_field,
+            cursor.execute("INSERT INTO %s(%s,%s,%s,%s) VALUES(%%s,'now',%%s,%%s)"%(self.db_table,self.name_field,
                 self.mtime_field,self.size_field,self.data_field),[name,size,binary])
         return name
     ##
@@ -70,8 +75,9 @@ class DatabaseStorage(Storage):
     ## Returns boolean
     ##
     def exists(self,name):
-        self.cursor.execute("SELECT COUNT(*) FROM %s WHERE %s=%%s"%(self.db_table,self.name_field),[name])
-        return self.cursor.fetchone()[0]>0
+        cursor=self.get_cursor()
+        cursor.execute("SELECT COUNT(*) FROM %s WHERE %s=%%s"%(self.db_table,self.name_field),[name])
+        return cursor.fetchone()[0]>0
     ##
     ## Returns full filesystem path as specified in Storage API
     ## Raises NotImplementedError because Storage is not related to filesystem
@@ -82,8 +88,9 @@ class DatabaseStorage(Storage):
     ## Returns file size or 0
     ##
     def size(self,name):
-        self.cursor.execute("SELECT %s FROM %s WHERE %s=%%s"%(self.size_field,self.db_table,self.name_field),[name])
-        row=self.cursor.fetchone()
+        cursor=self.get_cursor()
+        cursor.execute("SELECT %s FROM %s WHERE %s=%%s"%(self.size_field,self.db_table,self.name_field),[name])
+        row=cursor.fetchone()
         if row:
             return row[0]
         else:
@@ -98,7 +105,8 @@ class DatabaseStorage(Storage):
     ##    name is a full path
     ##
     def delete(self,name):
-        self.cursor.execute("DELETE FROM %s WHERE %s=%%s"%(self.db_table,self.name_field),[name])
+        cursor=self.get_cursor()
+        cursor.execute("DELETE FROM %s WHERE %s=%%s"%(self.db_table,self.name_field),[name])
     ##
     ## Returns converted file name (Required by Storage API)
     ##
@@ -110,8 +118,28 @@ class DatabaseStorage(Storage):
     ## Returns empty list when directory does not exists
     ##
     def listdir(self,name):
+        cursor=self.get_cursor()
         if not name.endswith("/"):
             name+="/"
         ln=len(name)
-        self.cursor.execute("SELECT %s FROM %s WHERE %s ~ '^%s[^/]+/?$'"%(self.name_field,self.db_table,self.name_field,name.replace("'","\\'")))
-        return [x[0][ln:] for x in self.cursor.fetchall()]
+        cursor.execute("SELECT %s FROM %s WHERE %s ~ '^%s[^/]+/?$'"%(self.name_field,self.db_table,self.name_field,name.replace("'","\\'")))
+        return [x[0][ln:] for x in cursor.fetchall()]
+    ##
+    ## Returns file stats.
+    ## stats is a hash of
+    ##    name  : full path
+    ##    size  : file size
+    ##    mtime : last modification time
+    ## Returns None when file does not exists
+    def stat(self,name):
+        cursor=self.get_cursor()
+        cursor.execute("SELECT %s,%s FROM %s WHERE %s=%%s"%(self.size_field,self.mtime_field,self.db_table,self.name_field),[name])
+        row=cursor.fetchone()
+        if row:
+            return {
+                "name" : "name",
+                "size" : row[0],
+                "mtime": row[1],
+            }
+        else:
+            return None
