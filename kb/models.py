@@ -50,7 +50,7 @@ class KBEntry(models.Model):
     parser=property(_parser)
     ## Returns parsed HTML
     def _html(self):
-        return self.parser.to_html(self.body)
+        return self.parser.to_html(self)
     html=property(_html)
     #
     def view_link(self):
