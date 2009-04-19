@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 from noc.kb.models import *
 from noc.lib.render import render
+from noc.main.models import MIMEType
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse,HttpResponseNotFound
 from django import forms
@@ -47,4 +48,4 @@ def view(request,kb_id):
 def attachment(request,kb_id,name):
     e=get_object_or_404(KBEntry,id=int(kb_id))
     a=get_object_or_404(KBEntryAttachment,kb_entry=e,name=name)
-    return HttpResponse(a.file.file.read()) # content-type
+    return HttpResponse(a.file.file.read(),content_type=MIMEType.get_mime_type(a.file.name))
