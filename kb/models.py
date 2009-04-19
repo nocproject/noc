@@ -179,6 +179,19 @@ class KBEntryAttachment(models.Model):
     def _url(self):
         return "/kb/%d/attachment/%s/"%(self.kb_entry.id,self.name)
     url=property(_url)
+    ##
+    ## Search engine
+    ##
+    @classmethod
+    def search(cls,user,query,limit):
+        if user.has_perm("kb.change_kbentry"):
+            q=Q(name__icontains=query)|Q(description__icontains=query)
+            for r in KBEntryAttachment.objects.filter(q):
+                yield SearchResult(url="/kb/%d/"%r.kb_entry.id,
+                    title="KB%d: %s"%(r.kb_entry.id,r.kb_entry.subject),
+                    text="Attachement: %s (%s)"%(r.name,r.description),
+                    relevancy=1.0)
+
 ##
 ## Modification History
 ##
