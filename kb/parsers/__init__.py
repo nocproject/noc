@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 from noc.lib.registry import Registry
 from noc.lib.validators import is_int
+from noc.settings import config
 
 ##
 ## Parser Registry
@@ -53,6 +54,10 @@ class Parser(object):
     def convert_link(cls,link):
         if link.startswith("KB") and is_int(link[2:]):
             return u"<a href='/kb/%s/'>%s</a>"%(link[2:],link)
+        elif link.startswith("TT"):
+            tt={"tt":link[2:]}
+            tt_url=config.get("tt","url",tt)%tt
+            return u"<a href='%s'>%s</a>"%(tt_url,link)
         else:
             return link
 
