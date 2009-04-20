@@ -31,6 +31,10 @@ DATABASE_PORT     = config.get("database","port")
 
 TIME_ZONE = config.get("main","timezone")
 LANGUAGE_CODE = config.get("main","language_code")
+# Set up date and time formats
+DATE_FORMAT     = config.get("main","date_format")
+TIME_FORMAT     = config.get("main","time_format")
+DATETIME_FORMAT = config.get("main","datetime_format")
 
 SITE_ID = 1
 
