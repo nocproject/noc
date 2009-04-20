@@ -57,7 +57,7 @@
         <TD ALIGN="right"><A HREF="/kb/{{e.id}}/">KB{{e.id}}</A></TD>
         <TD>{{e.subject}}</TD>
         <TD>{{e.preview_count}}</TD>
-        <TD>{{e.last_history.timestamp}}</TD>
+        <TD>{{e.last_history.timestamp|date}} {{e.last_history.timestamp|time}}</TD>
         <TD>{{e.last_history.user}}</TD>
     </TR>
     {% endfor %}

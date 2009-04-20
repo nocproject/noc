@@ -14,10 +14,10 @@
 <TABLE BORDER="0">
     <TR><TH>Name</TH><TH>Size</TH><TH>Last Changed</TH></TR>
 {% for a in e.visible_attachments %}
-    <TR><TD><A HREF="{{a.url}}">{{a.name}}</A></TD><TD>{{a.size|filesizeformat}}</TD><TD>{{a.mtime}}</TD></TR>
+    <TR><TD><A HREF="{{a.url}}">{{a.name}}</A></TD><TD>{{a.size|filesizeformat}}</TD><TD>{{a.mtime|date}} {{a.mtime|time}}</TD></TR>
 {% endfor %}
 </TABLE>
 {% endif %}
 <hr/>
-Posted at {{e.last_history.timestamp}} by {{e.last_history.user}}
+Posted at {{e.last_history.timestamp|date}} {{e.last_history.timestamp|time}} by {{e.last_history.user}}
 {% endblock %}
