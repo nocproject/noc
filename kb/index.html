@@ -47,8 +47,10 @@
 
 <DIV ID="tabs">
 <DIV ID="tabs-nav">
-    <SPAN ID="t1" CLASS='{% ifequal tab "latest" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/latest/">Last Changed</A></SPAN>
-    <SPAN ID="t2" CLASS='{% ifequal tab "popular" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/popular/">Popular Articles</A></SPAN>
+    <SPAN CLASS='{% ifequal tab "latest" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/latest/">Last Changed</A></SPAN>
+    <SPAN CLASS='{% ifequal tab "popular" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/popular/">Popular Articles</A></SPAN>
+    <SPAN CLASS='{% ifequal tab "all" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/all/">All Articles</A></SPAN>
+
 </DIV>
 <TABLE BORDER="0">
     <TR><TH>#</TH><TH>Subject</TH><TH>Views</TH><TH>Modified</TH><TH>Modified by</TH></TR>

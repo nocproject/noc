@@ -36,6 +36,15 @@ def index_popular(request):
         "entries" : KBEntry.most_popular(20),
         })
 ##
+##
+##
+def index_all(request):
+    return render(request,"kb/index.html",
+    {
+        "tab"     : "all",
+        "entries" : KBEntry.objects.order_by("-id")
+    })
+##
 ## KB Entry Preview
 ##
 def view(request,kb_id):
