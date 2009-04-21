@@ -88,7 +88,7 @@ Knowledge Base
 ==============
 
 * Built-in category management
-* Pluggable markup syntax (Creole)
+* Pluggable markup syntax (Creole, CSV, Plain-Text)
 * Unlimited number of attachments per article
 * Attachments are stored inside database for integrity and easy backup
 * Multi-Lingual support
