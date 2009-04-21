@@ -35,8 +35,7 @@ class KBEntryAdmin(admin.ModelAdmin):
     search_fields=["id","subject"]
     inlines=[KBEntryAttachmentAdmin]
     def save_model(self, request, obj, form, change):
-        admin.ModelAdmin.save_model(self,request,obj,form,change)
-        KBEntryHistory(kb_entry=obj,user=request.user,diff="zhopa").save()
+        obj.save(user=request.user)
 
 ##
 ## Register administrative interfaces

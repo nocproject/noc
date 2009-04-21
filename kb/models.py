@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from noc.kb.parsers import parser_registry
 from noc.main.search import SearchResult
 from noc.lib.validators import is_int
+import difflib
 
 ##
 ## Register all wiki-syntax parsers
@@ -132,6 +133,19 @@ class KBEntry(models.Model):
     def _has_visible_attachments(self):
         return self.kbentryattachment_set.filter(is_hidden=False).count()>0
     has_visible_attachments=property(_has_visible_attachments)
+    ##
+    ## save model, compute body's diff and save event history
+    ##
+    def save(self,user=None):
+        if self.id:
+            old_body=KBEntry.objects.get(id=self.id).body
+        else:
+            old_body=""
+        super(KBEntry,self).save()
+        if old_body!=self.body:
+            diff="\n".join(difflib.unified_diff(self.body.splitlines(),old_body.splitlines()))
+            KBEntryHistory(kb_entry=self,user=user,diff=diff).save()
+            
 ##
 ## Attachments
 ##
