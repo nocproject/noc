@@ -40,7 +40,7 @@ class KBEntry(models.Model):
         ordering=("id",)
     subject=models.CharField("Subject",max_length=256)
     body=models.TextField("Body")
-    language=models.ForeignKey(Language,verbose_name="Language")
+    language=models.ForeignKey(Language,verbose_name="Language",limit_choices_to={"is_active":True})
     markup_language=models.CharField("Markup Language",max_length="16",choices=parser_registry.choices)
     categories=models.ManyToManyField(KBCategory,verbose_name="Categories",null=True,blank=True)
     def __unicode__(self):
