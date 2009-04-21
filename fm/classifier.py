@@ -317,26 +317,23 @@ class Classifier(Daemon):
             if name in vars:
                 kv[name]=vars[name]
             else:
-                kv=None
-                break
-        if kv is not None:
-            r=[e for e in Event.objects.filter(
-                event_class=event_class,
-                managed_object=event.managed_object,
-                timestamp__gte=event.timestamp-datetime.timedelta(seconds=event_class.repeat_suppression_interval),
-                timestamp__lte=event.timestamp
-                ).exclude(id=event.id).order_by("-timestamp")
-                if e.match_data(kv)]
-            if len(r)>0:
-                pe=r[0]
-                logging.debug("Event #%d repeats event #%d"%(event.id,pe.id))
-                er=EventRepeat(event=pe,timestamp=pe.timestamp)
-                er.save()
-                pe.timestamp=event.timestamp
-                pe.save()
-                event.delete()
-                return True
-        return False
+                return False
+        r=[e for e in Event.objects.filter(
+            event_class=event_class,
+            managed_object=event.managed_object,
+            timestamp__gte=event.timestamp-datetime.timedelta(seconds=event_class.repeat_suppression_interval),
+            timestamp__lte=event.timestamp
+            ).exclude(id=event.id).order_by("-timestamp")
+            if e.match_data(kv)]
+        if len(r)>0:
+            pe=r[0]
+            logging.debug("Event #%d repeats event #%d"%(event.id,pe.id))
+            er=EventRepeat(event=pe,timestamp=pe.timestamp)
+            er.save()
+            pe.timestamp=event.timestamp
+            pe.save()
+            event.delete()
+            return True
     ##
     ## Main daemon loop
     ##
