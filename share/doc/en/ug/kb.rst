@@ -116,3 +116,34 @@ CSV article will be rendered as HTML Table.
 
 Forms
 =====
+Knowledge Base
+--------------
+Permissions
+^^^^^^^^^^^
+======= ========================================
+add     kb | KB Entry | Can add KBEntry
+change  kb | KB Entry | Can change KBEntry
+delete  kb | KB Entry | Can delete KBEntry
+======= ========================================
+
+Setup
+=====
+Categories
+----------
+Permissions
+^^^^^^^^^^^
+======= =========================================
+add     kb | KB Category | Can add KBCategory
+change  kb | KB Category | Can change KBCategory
+delete  kb | KB Category | Can delete KBCategory
+======= =========================================
+
+Entries
+-------
+Permissions
+^^^^^^^^^^^
+======= ========================================
+add     kb | KB Entry | Can add KBEntry
+change  kb | KB Entry | Can change KBEntry
+delete  kb | KB Entry | Can delete KBEntry
+======= ========================================
