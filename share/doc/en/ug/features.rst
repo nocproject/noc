@@ -18,6 +18,7 @@ Web Interface
 
 * Neat Django-based web interface
 * All major operation and configuration can be performed via web interface
+* Global search over all types of objects
 
 Service Activation
 ==================
@@ -82,6 +83,15 @@ DNS Management
 * Address Space Management integration
 * Zone and config file provisioning
 * Web interface to distribute load between nameservers
+
+Knowledge Base
+==============
+
+* Built-in category management
+* Pluggable markup syntax (Creole)
+* Unlimited number of attachments per article
+* Attachments are stored inside database for integrity and easy backup
+* Multi-Lingual support
 
 Reporting
 =========
