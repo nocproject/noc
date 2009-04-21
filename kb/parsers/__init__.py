@@ -64,4 +64,12 @@ class Parser(object):
             return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,name,name)
         else:
             return link
+    ##
+    ## Convert attachment ref
+    ##
+    @classmethod
+    def convert_attach(cls,kb_entry,href):
+        if href.startswith("http"):
+            return href
+        return "/kb/%d/attachment/%s/"%(kb_entry.id,href)
 
