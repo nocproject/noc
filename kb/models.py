@@ -124,7 +124,7 @@ class KBEntry(models.Model):
     ## Returns a list of visible attachments
     ##
     def _visible_attachments(self):
-        return [{"name":x.name,"size":x.size,"mtime":x.mtime,"url":x.url}
+        return [{"name":x.name,"size":x.size,"mtime":x.mtime,"url":x.url,"description":x.description}
             for x in self.kbentryattachment_set.filter(is_hidden=False).order_by("name")]
     visible_attachments=property(_visible_attachments)
     ##

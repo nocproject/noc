@@ -12,9 +12,9 @@
 {% if e.has_visible_attachments %}
 <H2>Attachments</H2>
 <TABLE BORDER="0">
-    <TR><TH>Name</TH><TH>Size</TH><TH>Last Changed</TH></TR>
+    <TR><TH>Name</TH><TH>Description</TH><TH>Size</TH><TH>Last Changed</TH></TR>
 {% for a in e.visible_attachments %}
-    <TR><TD><A HREF="{{a.url}}">{{a.name}}</A></TD><TD>{{a.size|filesizeformat}}</TD><TD>{{a.mtime|date}} {{a.mtime|time}}</TD></TR>
+    <TR><TD><A HREF="{{a.url}}">{{a.name}}</A></TD><TD>{{a.description}}</TD><TD>{{a.size|filesizeformat}}</TD><TD>{{a.mtime|date}} {{a.mtime|time}}</TD></TR>
 {% endfor %}
 </TABLE>
 {% endif %}
