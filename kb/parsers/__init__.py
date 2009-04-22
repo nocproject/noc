@@ -62,6 +62,9 @@ class Parser(object):
         elif link.startswith("attach:"):
             name=link[7:]
             return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,name,name)
+        elif link.startswith("attachment:"):
+            name=link[11:]
+            return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,name,name)
         else:
             return link
     ##
@@ -71,5 +74,9 @@ class Parser(object):
     def convert_attach(cls,kb_entry,href):
         if href.startswith("http"):
             return href
+        elif href.startswith("attach:"):
+            name=href[7:]
+        elif href.startswith("attachment:"):
+            href=href[11:]
         return "/kb/%d/attachment/%s/"%(kb_entry.id,href)
 
