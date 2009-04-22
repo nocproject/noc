@@ -26,7 +26,7 @@ class KBEntryAttachmentForm(forms.ModelForm):
 class KBEntryAttachmentAdmin(admin.TabularInline):
     form=KBEntryAttachmentForm
     model=KBEntryAttachment
-    extra=1
+    extra=3
 ##
 ## Admin for Entries
 ##
