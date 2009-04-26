@@ -18,3 +18,4 @@ NOC: User's Guide
     vc
     dns
     kb
+    supported

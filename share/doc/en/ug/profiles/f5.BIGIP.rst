@@ -1,0 +1,13 @@
+f5.BIGIP
+=================
+
+====== =============
+Vendor f5
+OS     BIG-IP
+====== =============
+
+f5.BIGIP profile supports f5 family of traffic managers
+
+Tested Equipment
+----------------
+.. supported:: f5.BIGIP
