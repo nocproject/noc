@@ -1,0 +1,13 @@
+ZyXEL.ZyNOS
+=================
+
+====== =============
+Vendor MikroTik
+OS     RouterOS
+====== =============
+
+ZyXEL.ZyNOS profile supports ZyXEL's family of ethernet switches
+
+Tested Equipment
+----------------
+.. supported:: ZyXEL.ZyNOS

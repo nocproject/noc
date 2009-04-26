@@ -29,7 +29,7 @@ clean:
 
 html:
 	mkdir -p $(TARGET)/html $(TARGET)/doctrees
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(TARGET)/html
+	$(SPHINXBUILD) $(OPTIONS) -b html $(ALLSPHINXOPTS) $(TARGET)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(TARGET)/html."
 
