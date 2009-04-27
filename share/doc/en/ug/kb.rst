@@ -208,6 +208,14 @@ No markup::
     This text will //not// be **formatted**.
     }}}
 
+Macros::
+
+    <<macro1 arg1='value1' arg2='value2'>>
+    ...
+    <<macro2 arg1='value1' arg2='value2'>>
+        Macro Text
+    <</macro2>>
+
 CSV
 ---
 `Comma-separated values <http://en.wikipedia.org/wiki/Comma-separated_values>`_ is a common data-interchange format.
