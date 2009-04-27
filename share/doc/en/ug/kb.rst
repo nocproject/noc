@@ -109,7 +109,8 @@ Example (Creole)::
             <allocation id="UPS" position="1" height="5U" />
             <allocation id="MX480" position="6" height="6U" />
         </rack>
-    <<rack>>
+    </rackset>
+    <</rack>>
 
 Tags are
 
