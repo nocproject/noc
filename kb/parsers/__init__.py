@@ -8,6 +8,9 @@
 from noc.lib.registry import Registry
 from noc.lib.validators import is_int
 from noc.settings import config
+from noc.kb.parsers.macros import macro_registry
+
+macro_registry.register_all()
 
 ##
 ## Parser Registry

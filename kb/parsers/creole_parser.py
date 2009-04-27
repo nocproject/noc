@@ -9,6 +9,13 @@
 import noc.kb.parsers
 
 ##
+## Macro wrapper
+##
+class MacroWrapper(object): pass
+macro_wrapper=MacroWrapper()
+for n,c in noc.kb.parsers.macro_registry.classes.items():
+    setattr(macro_wrapper,n,c.expand)
+##
 ## Creole Parser
 ##
 class Parser(noc.kb.parsers.Parser):
@@ -27,7 +34,7 @@ class Parser(noc.kb.parsers.Parser):
             return u'<img src="%s" alt="%s" />' % (html_emitter.attr_escape(target),html_emitter.attr_escape(text))
         import creole
         parser=creole.Parser(unicode(kb_entry.body))
-        html_emitter=creole.HtmlEmitter(parser.parse())
+        html_emitter=creole.HtmlEmitter(parser.parse(),macros=macro_wrapper)
         html_emitter.link_emit=custom_link_emit
         html_emitter.image_emit=custom_image_emit
         return html_emitter.emit()
