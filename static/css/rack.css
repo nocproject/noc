@@ -1,0 +1,27 @@
+.rack {
+    border: 2px solid black;
+    width: 20em;
+    font-size: 10pt;
+    caption-side: bottom;
+}
+
+.rack .ruler {
+    text-align: right;
+    width: 1em;
+    border: 1px solid;
+    padding: 1px;
+    margin: 0px;
+    height: 14pt;
+    color: #ffffff;
+    background-color: #999999;
+}
+
+.rack .occupied {
+    text-align: center;
+    border: 1px solid black;
+}
+
+.rack .empty {
+    background-color: #999999;
+    border: 1px solid black;
+}

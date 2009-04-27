@@ -1,5 +1,8 @@
 {% extends "template/template.html" %}
 {% block title%}Knowledge Base: KB{{e.id}}{% endblock %}
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet" href="/static/css/rack.css">
+{% endblock %}
 {% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A> &rsaquo; KB{{e.id}}</div>{% endblock %}
 {% block content %}
 <ul class="object-tools">

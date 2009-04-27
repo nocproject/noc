@@ -93,6 +93,57 @@ Example (Creole)::
     <<now>>
     <<now format='Y.m.d H:i:s'>>
 
+rack
+----
+Rack macro offers simple XML-based language for rack space allocation and renders neat rack image.
+
+Example (Creole)::
+
+    <<rack>>
+    <rackset id="test">
+        <rack id="Rack 01" height="42U">
+            <allocation id="UPS" position="1" height="5U" />
+        </rack>
+        
+        <rack id="Rack 02" height="44U">
+            <allocation id="UPS" position="1" height="5U" />
+            <allocation id="MX480" position="6" height="6U" />
+        </rack>
+    <<rack>>
+
+Tags are
+
+rackset
+^^^^^^^
+Top-level tag and rack container. There can be only single rackset per macro
+
+Attributes:
+
+ * id - name of the rackset
+
+rack
+^^^^
+Rack. Place for allocations.
+
+Parent tag: rackspace
+
+Attributes:
+
+ * id - name of the rack
+ * height - height of the rack in units. May have "U" letter at the end.
+
+allocation
+^^^^^^^^^^
+Rack space allocation. Can be equipment or reserved space. You need no declare empty space implicitly.
+
+Parent tag: rack
+
+Attributes:
+
+ * id - name of the allocation
+ * position - bottom position in the rack. Lowest position of the rack is 1.
+ * height - height in the units. May have "U" letter at the end.
+
 Markup Syntaxes
 ===============
 Plain Text
