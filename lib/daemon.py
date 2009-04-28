@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import ConfigParser,sys,logging,os,signal,optparse,datetime,traceback
-from noc.lib.debug import error_report,frame_report,set_crashinfo_context
+from noc.lib.debug import error_report,frame_report,set_crashinfo_context,GCStats
 from noc.lib.validators import is_ipv4
 
 # Load netifaces to resolve interface addresses when possible
@@ -57,6 +57,8 @@ class Daemon(object):
                                 filemode="a+")
         else:
             logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
+        # GC statistics collector
+        self.gc_stats=GCStats()
         # Register signal handlers if any
         for s in [s for s in dir(self) if s.startswith("SIG")]:
             try:
@@ -196,3 +198,8 @@ class Daemon(object):
     ##
     def SIGHUP(self,signo,frame):
         self.load_config()
+    ##
+    ## Build GC statistics on SIGPROF
+    ##
+    def SIGPROF(self,signo,frame):
+        logging.info(self.gc_stats.report())
