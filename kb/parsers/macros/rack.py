@@ -29,7 +29,6 @@ class Rack(object):
     
     def render_html(self):
         allocations=sorted(self.allocations,lambda x,y: -cmp(x.position,y.position))
-        print allocations
         sp=[]
         if len(allocations)==0:
             sp+=[(self.height,self.height,True,None)]
@@ -52,7 +51,6 @@ class Rack(object):
         if self.id:
             out+=["<caption>%s</caption>"%self.id]
         pos=self.height
-        print sp
         while sp:
             top,height,is_empty,name=sp.pop(0)
             if name is None:
