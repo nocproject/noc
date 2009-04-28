@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import sys,re,logging,datetime,os,tempfile,cPickle,time
+import sys,re,logging,datetime,os,tempfile,cPickle,time,gc
 
 #
 # Error reporting context
@@ -182,3 +182,23 @@ def frame_report(frame):
     r+=["Working directory: %s"%os.getcwd()]
     r+=[format_frames(get_execution_frames(frame))]
     logging.error("\n".join(r))
+##
+## Garbage collection profiling
+##
+class GCStats(object):
+    def __init__(self): pass
+    ##
+    ## Collect GC info and prepare report
+    ##
+    def report(self):
+        gc.collect()
+        counts={}
+        for obj in gc.get_objects():
+            objtype=type(obj)
+            if objtype in counts:
+                counts[objtype]+=1
+            else:
+                counts[objtype]=1
+        r=["OBJECT REFERENCE COUNT:"]
+        r+=["%s.%s: %d"%(c[0].__module__,c[0].__name__,c[1]) for c in sorted(counts.iteritems(),lambda x,y:-cmp(x[1],y[1]))]
+        return "\n".join(r)
