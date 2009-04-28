@@ -7,6 +7,7 @@
 
 .rack .ruler {
     text-align: right;
+    vertical-align: middle;
     width: 1em;
     border: 1px solid;
     padding: 1px;
@@ -19,6 +20,7 @@
 .rack .occupied {
     text-align: center;
     border: 1px solid black;
+    vertical-align: middle;
 }
 
 .rack .empty {
