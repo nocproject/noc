@@ -8,16 +8,19 @@
 from noc.kb.parsers.macros import Macro as MacroBase
 import xml.parsers.expat
 ##
-##
+## RackSet representation
 ##
 class RackSet(object):
     def __init__(self,id):
         self.id=id
         self.racks=[]
+    ##
+    ## Render RackSet contents to HTML
+    ##
     def render_html(self):
         return "<div>%s</div>"%"\n".join([r.render_html() for r in self.racks])
 ##
-##
+## Rack Representation
 ##
 class Rack(object):
     def __init__(self,rackset,id,height):
@@ -26,8 +29,11 @@ class Rack(object):
         self.height=height
         self.rackset.racks.append(self)
         self.allocations=[]
-    
+    ##
+    ## Render rack contents to HTML
+    ##
     def render_html(self):
+        # Convert rack allocations to a list of (top_position,height,is empty space?,name)
         allocations=sorted(self.allocations,lambda x,y: -cmp(x.position,y.position))
         sp=[]
         if len(allocations)==0:
@@ -47,6 +53,7 @@ class Rack(object):
                 sp+=[(a.height+a.position-1,a.height,False,a.id)]
             if a.position>1:
                 sp+=[(a.position-1,a.position-1,True,None)]
+        # Build HTML
         out=["<table class='rack'>"]
         if self.id:
             out+=["<caption>%s</caption>"%self.id]
@@ -71,7 +78,8 @@ class Rack(object):
         out+=["</table>"]
         return "\n".join(out)
 ##
-##
+## Allocation representation
+## Rendered to HTML by Rack.render_html
 ##
 class Allocation(object):
     def __init__(self,rack,id,position,height):
@@ -84,6 +92,12 @@ class Allocation(object):
     def __repr__(self):
         return "Allocation: id=%s position=%s height=%s"%(self.id,self.position,self.height)
 ##
+## Expat parser to render simple XML grammar
+## Tag hirrarchy:
+##     rackset attrs: id
+##       `-> rack attrs: id, height
+##              `-> allocation attrs: id, position, height
+##
 class XMLParser(object):
     def __init__(self,text):
         self.parser=xml.parsers.expat.ParserCreate()
@@ -92,7 +106,10 @@ class XMLParser(object):
         self.parser.CharacterDataHandler =self.char_data
         self.rackset=None
         self.last_rack=None
-        self.parser.Parse("<?xml version='1.0'?>\n"+text)
+        self.parser.Parse("<?xml version='1.0'?>\n"+text) # Add implicit xml prolog
+    ##
+    ## Called on tag opening
+    ##
     def start_element(self,name,attrs):
         if name=="rackset":
             self.rackset=RackSet(id=attrs.get("id",None))
@@ -109,6 +126,8 @@ class XMLParser(object):
     def end_element(self,name): pass
     def char_data(self,name): pass
 
+##
+## rack macro. XML contained in macro text
 ##
 class Macro(MacroBase):
     name="rack"
