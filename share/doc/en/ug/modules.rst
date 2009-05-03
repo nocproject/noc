@@ -81,3 +81,11 @@ DNS Provisioning. Generates forward and reverse zones for allocated IP addresses
 for DNS Zone editing and provisioning. Generated DNS Zones are stored in cm repo.
 Resulting zones and configuration are provisioned to the DNS Servers.
 Zones can be redistributed via several authoritative DNS servers (may be of different types) allowing to balance the load.
+
+kb
+==
+Knowledge Base. Database to share knowledge between the staff. Knowledge represented as a set of the articles.
+Article is a free-form text message (possible) containing some pieces of knowledge to be shared:
+troubleshooting info, hints, references, rumors, FAQs, whitepapers, guides, manuals,
+spoilers, common cases and other info. KB supports pluggable article syntax from plain-text and CSV to wiki-like Creole
+allowing easy customization to specific workflow.
