@@ -11,7 +11,7 @@ from noc.lib.daemon import Daemon
 from noc.lib.pyquote import bin_quote,bin_unquote
 from noc.lib.validators import is_ipv4
 from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat,EventPostProcessingRule
-from django.db import transaction
+from django.db import transaction,reset_queries
 from django.template import Template, Context
 import re,logging,time,datetime
 
@@ -347,6 +347,7 @@ class Classifier(Daemon):
             for e in Event.objects.filter(status="U").order_by("-id")[:CHUNK]:
                 self.classify_event(e)
                 transaction.commit()
+                reset_queries() # Free queries log
                 n+=1
             if n: # Write out performance data
                 dt=time.time()-t0
