@@ -8,14 +8,14 @@
 """
 """
 import noc.sa.script
-from noc.sa.interfaces import IGetConfig
+from noc.sa.interfaces import IGetVersion
 import re
 
 rx_ver=re.compile(r"Device Type\s+:\s+(?P<platform>\S+).+Firmware Version\s+:\s+(?P<version>\S+)",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="DLink.DGS3xxx.get_version"
-    implements=[IGetConfig]
+    implements=[IGetVersion]
     def execute(self):
         self.cli("disable clipaging")
         data=self.cli("show switch")
