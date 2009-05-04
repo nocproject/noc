@@ -184,14 +184,24 @@ def frame_report(frame):
     logging.error("\n".join(r))
 ##
 ## Garbage collection profiling
+## Instance created on daemon start
 ##
 class GCStats(object):
-    def __init__(self): pass
+    def __init__(self):
+        self.history={}
+    ##
+    def get_history(self,t):
+        if t in self.history:
+            return str(self.history[t])
+        else:
+            return "[]"
     ##
     ## Collect GC info and prepare report
     ##
     def report(self):
+        # Collect all collectable trash
         gc.collect()
+        # Calculate type counts
         counts={}
         for obj in gc.get_objects():
             objtype=type(obj)
@@ -199,6 +209,20 @@ class GCStats(object):
                 counts[objtype]+=1
             else:
                 counts[objtype]=1
+        for t,c in counts.iteritems():
+            if t in self.history:
+                self.history[t]=([c]+self.history[t])[:10]
+            else:
+                self.history[t]=[c]
+        sc=sorted(counts.iteritems(),lambda x,y:-cmp(x[1],y[1]))
         r=["OBJECT REFERENCE COUNT:"]
-        r+=["%s.%s: %d"%(c[0].__module__,c[0].__name__,c[1]) for c in sorted(counts.iteritems(),lambda x,y:-cmp(x[1],y[1]))]
+        r+=["Total objects: %d"%len(gc.get_objects())]
+        r+=["%80s: %10d %s"%("%s.%s"%(c[0].__module__,c[0].__name__),c[1],self.get_history(c[0])) for c in sc]
+        r+=["END OF OBJECT REFERENCE COUNT"]
         return "\n".join(r)
+    ##
+    ##
+    ##
+    def report_dot(self):
+        gc.collect()
+        
