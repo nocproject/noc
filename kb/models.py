@@ -136,7 +136,7 @@ class KBEntry(models.Model):
     ##
     ## save model, compute body's diff and save event history
     ##
-    def save(self,user=None):
+    def save(self,user=None,timestamp=None):
         if self.id:
             old_body=KBEntry.objects.get(id=self.id).body
         else:
@@ -144,7 +144,7 @@ class KBEntry(models.Model):
         super(KBEntry,self).save()
         if old_body!=self.body:
             diff="\n".join(difflib.unified_diff(self.body.splitlines(),old_body.splitlines()))
-            KBEntryHistory(kb_entry=self,user=user,diff=diff).save()
+            KBEntryHistory(kb_entry=self,user=user,diff=diff,timestamp=timestamp).save()
     ##
     ## Check has KBEntry any bookmarks
     ##
