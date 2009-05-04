@@ -36,9 +36,30 @@ class KBEntryAdmin(admin.ModelAdmin):
     inlines=[KBEntryAttachmentAdmin]
     def save_model(self, request, obj, form, change):
         obj.save(user=request.user)
+##
+## Admin for Global Bookmarks
+##
+class KBGlobalBookmarkAdmin(admin.ModelAdmin):
+    list_display=["kb_entry"]
+##
+## Admin for User Bookmarks
+##
+class UserBookmarksAdmin(admin.ModelAdmin):
+    def queryset(self,request):
+        return KBUserBookmark.objects.filter(user=request.user)
 
+    def has_change_permission(self,request,obj=None):
+        if obj:
+            return obj.has_access(request.user)
+        else:
+            return admin.ModelAdmin.has_delete_permission(self,request)
+
+    def has_delete_permission(self,request,obj=None):
+        return self.has_change_permission(request,obj)
+    
 ##
 ## Register administrative interfaces
 ##
 admin.site.register(KBCategory, KBCategoryAdmin)
 admin.site.register(KBEntry,    KBEntryAdmin)
+admin.site.register(KBGlobalBookmark, KBGlobalBookmarkAdmin)

@@ -6,6 +6,11 @@
 {% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A> &rsaquo; KB{{e.id}}</div>{% endblock %}
 {% block content %}
 <ul class="object-tools">
+    {% if has_bookmark %}
+    <LI><A HREF="/kb/{{e.id}}/bookmark/unset/" class="addlink">Unset Bookmark</A></LI>
+    {% else %}
+    <LI><A HREF="/kb/{{e.id}}/bookmark/set/" class="addlink">Set Bookmark</A></LI>
+    {% endif %}
     <LI><A HREF="/admin/kb/kbentry/add/" class="addlink">Add KB Entry</A></LI>
     <LI><A HREF="/admin/kb/kbentry/{{e.id}}/" class="addlink">Edit</A></LI>
 </ul>
