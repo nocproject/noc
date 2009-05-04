@@ -106,7 +106,9 @@ class XMLParser(object):
         self.parser.CharacterDataHandler =self.char_data
         self.rackset=None
         self.last_rack=None
-        self.parser.Parse("<?xml version='1.0'?>\n"+text) # Add implicit xml prolog
+        if not text.startswith("<?"):
+            text=u"<?xml version='1.0' encoding='utf-8' ?>\n"+text # Add missed XML prolog
+        self.parser.Parse(unicode(text).encode("utf-8"))
     ##
     ## Called on tag opening
     ##
