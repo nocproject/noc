@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Rebuild local/supported.csv
+## Script has no Django/NOC dependencies
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+from __future__ import with_statement
+import os,sha,tempfile,sys,cStringIO,csv
+##
+##
+##
+def safe_rewrite(path,text):
+    d=os.path.dirname(path)
+    if not os.path.exists(d):
+        os.makedirs(d)
+    b=os.path.basename(path)
+    h,p=tempfile.mkstemp(suffix=".tmp",prefix=b,dir=d)
+    f=os.fdopen(h,"w")
+    f.write(text)
+    f.close()
+    if os.path.exists(path):
+        os.unlink(path)
+    os.link(p,path)
+    os.unlink(p)
+##
+##
+##
+def is_differ(path,content):
+    if os.path.isfile(path):
+        f=open(path)
+        cs1=sha.sha(f.read()).digest()
+        f.close()
+        cs2=sha.sha(content).digest()
+        return cs1!=cs2
+    else:
+        return True
+##
+## Rewrites file when content is differ
+## Returns boolean signalling wherher file was rewritten
+##
+def rewrite_when_differ(path,content):
+    d=is_differ(path,content)
+    if d:
+        safe_rewrite(path,content)
+    return d
+##
+##
+##
+def update_se_db():
+    out=cStringIO.StringIO()
+    writer=csv.writer(out)
+    for dirpath,dirname,files in os.walk("sa/profiles/"):
+        if "supported.csv" in files:
+            pp=dirpath.split(os.path.sep)
+            profile="%s.%s"%(pp[-2],pp[-1])
+            with open(os.path.join(dirpath,"supported.csv")) as f:
+                r=[]
+                for row in csv.reader(f):
+                    vendor,model,version=row
+                    m="%s %s"%(vendor,model)
+                    r+=[(profile,m,version)]
+                for r in sorted(r):
+                    writer.writerow(r)
+    db_path="local/supported.csv"
+    return rewrite_when_differ(db_path,out.getvalue())
+
+if __name__=="__main__":
+    os.chdir(os.path.join(os.path.dirname(sys.argv[0]),".."))
+    update_se_db()
