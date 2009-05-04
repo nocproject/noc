@@ -21,6 +21,13 @@ instead of Wiki.
 Written natural language explicitly specified for article. Article also can
 be assigned to several **categories**.
 
+KB supports global and user bookmarks conception. Bookmarks are shortcuts for frequently
+used KB Articles. Global bookmarks are created by administrator and are visible for every user.
+User bookmarks are maintained by each user independently and seen only by this user. Bookmarks
+often used as entry points to knowledge base. Good practice is to set up bookmarks to
+index articles, containing links to other articles and usage hints. This will help users
+to navigate along KB.
+
 Terminology
 ============
 * Article - Free-form text message
@@ -28,6 +35,7 @@ Terminology
 * Category - Article can be assigned to
 * Language - Written natural language of article
 * Parser - plugin to convert specific markup syntax to HTML
+* Bookmark - shortcut to the KB article
 
 Link Syntax
 ===========
