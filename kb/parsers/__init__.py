@@ -55,21 +55,27 @@ class Parser(object):
     ##   TT<n> - Link to Trouble Ticket <n>
     ##   attach:<name> - Link to attachment <name>
     @classmethod
-    def convert_link(cls,kb_entry,link):
+    def convert_link(cls,kb_entry,link,text=None):
+        if text is None:
+            text=link
         if link.startswith("KB") and is_int(link[2:]):
-            return u"<a href='/kb/%s/'>%s</a>"%(link[2:],link)
+            return u"<a href='/kb/%s/'>%s</a>"%(link[2:],text)
         elif link.startswith("TT"):
             tt={"tt":link[2:]}
             tt_url=config.get("tt","url",tt)%tt
-            return u"<a href='%s'>%s</a>"%(tt_url,link)
+            return u"<a href='%s'>%s</a>"%(tt_url,text)
         elif link.startswith("attach:"):
-            name=link[7:]
-            return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,name,name)
+            if text==link:
+                text=link[7:]
+            link=link[7:]
+            return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,link,text)
         elif link.startswith("attachment:"):
-            name=link[11:]
-            return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,name,name)
+            if text==link:
+                text=link[11:]
+            link=link[11:]
+            return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,link,text)
         else:
-            return link
+            return u"a<href='%s'>%s</a>"%(link,text)
     ##
     ## Convert attachment ref
     ##
