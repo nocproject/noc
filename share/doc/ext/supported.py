@@ -21,7 +21,7 @@ class Supported(Directive):
         node.document=self.state.document
         node.line=self.lineno
         node["profile"]=self.arguments[0]
-        return node
+        return [node]
 
 def html_visit_supported(self,node):
     body=[]
