@@ -145,7 +145,28 @@ class KBEntry(models.Model):
         if old_body!=self.body:
             diff="\n".join(difflib.unified_diff(self.body.splitlines(),old_body.splitlines()))
             KBEntryHistory(kb_entry=self,user=user,diff=diff).save()
-            
+    ##
+    ## Check has KBEntry any bookmarks
+    ##
+    def is_bookmarked(self,user=None):
+        # Check Global bookmarks
+        if KBGlobalBookmark.objects.filter(kb_entry=self).count()>0:
+            return True
+        if user and KBUserBookmark.objects.filter(kb_entry=self,user=user).count()>0:
+            return True
+        return False
+    ##
+    ## Set user bookmark
+    ##
+    def set_user_bookmark(self,user):
+        if KBUserBookmark.objects.filter(kb_entry=self,user=user).count()==0:
+            KBUserBookmark(kb_entry=self,user=user).save()
+    ##
+    ## Uset user bookmark
+    ##
+    def unset_user_bookmark(self,user):
+        for b in  KBUserBookmark.objects.filter(kb_entry=self,user=user):
+            b.delete()
 ##
 ## Attachments
 ##
@@ -219,7 +240,7 @@ class KBEntryHistory(models.Model):
     user=models.ForeignKey(User,verbose_name="User")
     diff=models.TextField("Diff")
 ##
-##
+## Preview Log
 ##
 class KBEntryPreviewLog(models.Model):
     class Meta:
@@ -228,7 +249,28 @@ class KBEntryPreviewLog(models.Model):
     kb_entry=models.ForeignKey(KBEntry,verbose_name="KB Entry")
     timestamp=models.DateTimeField("Timestamp",auto_now_add=True)
     user=models.ForeignKey(User,verbose_name="User")
-    
+##
+## Global Bookmarks
+##
+class KBGlobalBookmark(models.Model):
+    class Meta:
+        verbose_name="KB Global Bookmark"
+        verbose_name_plural="KB Global Bookmarks"
+    kb_entry=models.ForeignKey(KBEntry,verbose_name="KBEntry",unique=True)
+    def __unicode__(self):
+        return unicode(self.kb_entry)
+##
+## User Bookmarks
+##
+class KBUserBookmark(models.Model):
+    class Meta:
+        verbose_name="KB User Bookmark"
+        verbose_name_plural="KB User Bookmarks"
+        unique_together=[("user","kb_entry")]
+    user=models.ForeignKey(User,verbose_name="User")
+    kb_entry=models.ForeignKey(KBEntry,verbose_name="KBEntry")
+    def __unicode__(self):
+        return u"%s: %s"%(unicode(self.user),unicode(self.kb_entry))
 ##
 ## Application menu
 ##
@@ -240,6 +282,8 @@ class AppMenu(Menu):
         ("Setup",[
             ("Categories","/admin/kb/kbcategory/", "kb.change_kbcategory"),
             ("Entries",   "/admin/kb/kbentry/",    "kb.change_kbentry"),
+            ("Global Bookmarks", "/admin/kb/kbglobalbookmark/", "kb.change_kbglobalbookmark"),
+            ("User Bookmarks",  "/admin/kb/kbuserbookmark/",    "kb.change_kbuserbookmark"),
         ])
     ]
 
