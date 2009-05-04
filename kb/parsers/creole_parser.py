@@ -23,11 +23,11 @@ class Parser(noc.kb.parsers.Parser):
     @classmethod
     def to_html(cls,kb_entry):
         def custom_link_emit(node):
-            link=creole.HtmlEmitter.link_emit(html_emitter,node)
-            if link.startswith("<a href=\"http"):
-                return link
+            if node.children:
+                text=html_emitter.emit_children(node)
             else:
-                return cls.convert_link(kb_entry,link[link.index(">")+1:-4])
+                text=None
+            return cls.convert_link(kb_entry,node.content,text)
         def custom_image_emit(node):
             target=cls.convert_attach(kb_entry,node.content)
             text=html_emitter.get_text(node)
