@@ -92,6 +92,7 @@ Knowledge Base
 * Unlimited number of attachments per article
 * Attachments are stored inside database for integrity and easy backup
 * Multi-Lingual support
+* Global and user bookmarks
 
 Reporting
 =========

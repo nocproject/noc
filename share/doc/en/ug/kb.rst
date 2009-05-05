@@ -271,3 +271,28 @@ add     kb | KB Entry | Can add KBEntry
 change  kb | KB Entry | Can change KBEntry
 delete  kb | KB Entry | Can delete KBEntry
 ======= ========================================
+
+Convert from other wiki/kb engines
+==================================
+
+MoinMoin
+--------
+Unpack MoinMoin **data** directory. **data** directory should contain at least **pages** directory,
+where Wiki pages and attachments are stored.
+
+Run converter tool::
+
+    # su - noc
+    $ cd /opt/noc
+    $ python manage.py convert-moin [--encoding=encoding] [--language=language] [--category=category] <path to data>
+
+where:
+
+* encoding - MoinMoin wiki encoding (utf-8 by default).
+* language - Language to be set on imported articles (English by default)
+* category - Category to include imported articles into (Do not set articles category by default)
+* path to data - full path to MoinMoin data directory
+
+Ensure **data** directory and files below are accessible from user **noc**.
+
+All attachments and modification history are migrated during convertion process.
