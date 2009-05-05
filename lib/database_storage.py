@@ -143,3 +143,9 @@ class DatabaseStorage(Storage):
             }
         else:
             return None
+    ##
+    ## Set file's mtime
+    ##
+    def set_mtime(self,name,mtime):
+        cursor=self.get_cursor()
+        cursor.execute("UPDATE %s SET %s=%%s WHERE %s=%%s"%(self.db_table,self.mtime_field,self.name_field),[mtime,name])
