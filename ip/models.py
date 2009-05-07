@@ -262,18 +262,23 @@ class IPv4Address(models.Model):
     @classmethod
     def search(cls,user,search,limit):
         if user.has_perm("ip.change_ipv4address"):
-            q=Q(fqdn__icontains=search)
+            q=Q(fqdn__icontains=search)|Q(description__icontains=search)
             if is_ipv4(search):
                 q|=Q(ip=search)
             for r in IPv4Address.objects.filter(q):
                 if search==r.ip:
                     relevancy=1.0
                 else:
-                    l=len(r.fqdn)
-                    if l:
-                        relevancy=float(len(search))/float(l)
+                    ls=float(len(search))
+                    if search in r.fqdn and len(r.fqdn)>0:
+                        r_fqdn=ls/float(len(r.fqdn))
                     else:
-                        relevancy=0.0
+                        r_fqdn=0.0
+                    if search in r.description and len(r.description)>0:
+                        r_description=ls/float(len(r.description))
+                    else:
+                        r_description=0.0
+                    relevancy=max(r_fqdn,r_description)
                 yield SearchResult(url="/admin/ip/ipv4address/%d/"%r.id,
                     title="IPv4 Address, VRF=%s, %s (%s)"%(r.vrf,r.ip,r.fqdn),
                     text=r.description,
