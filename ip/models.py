@@ -201,7 +201,28 @@ class IPv4Block(models.Model):
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
-
+    ##
+    ## Search engine plugin
+    ##
+    @classmethod
+    def search(cls,user,search,limit):
+        if user.has_perm("ip.change_ipv4block"):
+            q=Q(description__icontains=search)
+            if is_cidr(search):
+                q|=Q(prefix=search)
+            for r in IPv4Block.objects.filter(q):
+                if search==r.prefix:
+                    relevancy=1.0
+                else:
+                    l=len(r.description)
+                    if l:
+                        relevancy=float(len(search))/float(l)
+                    else:
+                        relevancy=0.0
+                yield SearchResult(url="/ip/%d/%s/"%(r.vrf.id,r.prefix),
+                    title="IPv4 Block, VRF=%s, %s"%(r.vrf,r.prefix),
+                    text=r.description,
+                    relevancy=relevancy)
 ##
 ##
 ##
