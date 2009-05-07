@@ -53,7 +53,6 @@ class Migration:
     
     def backwards(self):
         db.delete_table('kb_kbentryhistory')
-        db.delete_table('kb_kbentry')
-        db.delete_table('kb_kbcategory')
-        
         db.delete_table('kb_kbentry_categories')
+        db.delete_table('kb_kbcategory')
+        db.delete_table('kb_kbentry')
