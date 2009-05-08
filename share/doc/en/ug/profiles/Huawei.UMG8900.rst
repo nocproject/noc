@@ -1,10 +1,10 @@
 Huawei.UMG8900
 ==============
 
-====== =============
-Vendor Huawei
+====== ==================================
+Vendor `Huawei <http://www.huawei.com/>`_
 OS     UMG8900
-====== =============
+====== ==================================
 
 Huawei.UMG8900 profile supports UMG8900 family of media gateways
 

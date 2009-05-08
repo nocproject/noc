@@ -1,10 +1,10 @@
 f5.BIGIP
 =================
 
-====== =============
-Vendor f5
+====== ==========================
+Vendor `f5 <http://www.f5.com/>`_
 OS     BIG-IP
-====== =============
+====== ==========================
 
 f5.BIGIP profile supports f5 family of traffic managers
 
