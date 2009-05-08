@@ -15,6 +15,6 @@ class Profile(noc.sa.profiles.Profile):
     name="InfiNet.WANFlexX"
     supported_schemes=[TELNET]
     pattern_more="^-- more --"
-    pattern_prompt=r"^\S+?#\d+>"
+    pattern_prompt=r"\S+?#\d+>"
     command_submit="\r"
     command_more=" "
