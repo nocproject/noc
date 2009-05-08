@@ -31,6 +31,8 @@ class Command(BaseCommand):
                 with open(os.path.join(dirpath,"supported.csv")) as f:
                     r=[]
                     for row in csv.reader(f):
+                        if len(row)!=3:
+                            continue
                         vendor,model,version=row
                         m="%s %s"%(vendor,model)
                         r+=[(profile,m,version)]
