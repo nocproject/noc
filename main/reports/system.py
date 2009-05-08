@@ -14,7 +14,7 @@ import django
 class Report(noc.main.report.Report):
     name="main.system"
     title="System version"
-    requires_cursor=False
+    requires_cursor=True
     columns=[Column("Component"),Column("Version")]
     def get_queryset(self):
         return [
@@ -22,4 +22,5 @@ class Report(noc.main.report.Report):
             ["OS"     , " ".join(os.uname())],
             ["Python" , sys.version],
             ["Django" , "%s"%str(django.VERSION)],
+            ["PostgreSQL", self.execute("SELECT VERSION()")[0][0]],
         ]
