@@ -1,11 +1,10 @@
-.rack {
+.rackset {
     border: 2px solid black;
-    width: 20em;
     font-size: 10pt;
     caption-side: bottom;
 }
 
-.rack .ruler {
+.rackset .ruler {
     text-align: right;
     vertical-align: middle;
     width: 1em;
@@ -17,13 +16,24 @@
     background-color: #999999;
 }
 
-.rack .occupied {
+.rackset .occupied {
     text-align: center;
     border: 1px solid black;
     vertical-align: middle;
+    width: 20em;
 }
 
-.rack .empty {
+.rackset .empty {
     background-color: #999999;
     border: 1px solid black;
+    width: 20em;
+}
+
+.rackset .emptytop {
+    border-bottom: 2px solid black;
+}
+
+.rackset .racklabel {
+    text-align: center;
+    border-right: 1px solid #999999;
 }
