@@ -21,7 +21,10 @@ from noc.settings import config
 def setup_processor(request):
     return {
         "setup" : {
-            "installation_name" : config.get("customization","installation_name")
+            "installation_name" : config.get("customization","installation_name"),
+            "logo_url"          : config.get("customization","logo_url"),
+            "logo_width"        : config.get("customization","logo_width"),
+            "logo_height"       : config.get("customization","logo_height"),
         }
     }
 ##
