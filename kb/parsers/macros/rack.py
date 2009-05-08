@@ -116,54 +116,6 @@ class Rack(object):
         self.height=height
         self.rackset.racks.append(self)
         self.allocations=[]
-    ##
-    ## Render rack contents to HTML
-    ##
-    def render_html(self):
-        # Convert rack allocations to a list of (top_position,height,is empty space?,name)
-        allocations=sorted(self.allocations,lambda x,y: -cmp(x.position,y.position))
-        sp=[]
-        if len(allocations)==0:
-            sp+=[(self.height,self.height,True,None)]
-        else:
-            a=allocations.pop(0)
-            empty_top=self.height-a.position-a.height+1
-            if empty_top:
-                sp+=[(self.height,empty_top,True,None)]
-            sp+=[(a.position+a.height-1,a.height,False,a.id)]
-            while allocations:
-                last_a=a
-                a=allocations.pop(0)
-                empty_top=last_a.position-a.height-a.position
-                if empty_top:
-                    sp+=[(last_a.position-1,empty_top,True,None)]
-                sp+=[(a.height+a.position-1,a.height,False,a.id)]
-            if a.position>1:
-                sp+=[(a.position-1,a.position-1,True,None)]
-        # Build HTML
-        out=["<table class='rack'>"]
-        if self.id:
-            out+=["<caption>%s</caption>"%self.id]
-        pos=self.height
-        while sp:
-            top,height,is_empty,name=sp.pop(0)
-            if name is None:
-                name=""
-            if is_empty:
-                style='empty'
-            else:
-                style='occupied'
-            if height>1:
-                out+=["<tr><td rowspan='%d' class='%s'>%s</td><td class='ruler'>%d</td></tr>"%(height,style,name,pos)]
-                pos-=1
-                while pos>top-height:
-                    out+=["<tr><td class='ruler'>%d</td></tr>"%pos]
-                    pos-=1
-            else:
-                out+=["<tr><td class='%s'>%s</td><td class='ruler'>%d</td></tr>"%(style,name,pos)]
-                pos-=1
-        out+=["</table>"]
-        return "\n".join(out)
 ##
 ## Allocation representation
 ## Rendered to HTML by Rack.render_html
