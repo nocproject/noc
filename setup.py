@@ -97,6 +97,6 @@ configuration management, DNS provisioning, peering management, RPSL and BGP fil
         "pyasn1 (>= 0.0.6)",
         "pyke (>= 0.7)",
         "Sphinx (>= 0.5)",
-        "python-creole (>=0.1.0)",
+#        "python-creole (>=0.1.0)",
       ],
      )
