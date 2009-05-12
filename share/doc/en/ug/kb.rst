@@ -153,6 +153,31 @@ Attributes:
  * position - bottom position in the rack. Lowest position of the rack is 1.
  * height - height in the units. May have "U" letter at the end.
 
+search
+------
+*search* macro renders a list of articles satisfying given criteria. Format::
+
+    search [category=cat1,...,catN] [language=lang] [limit=N] [order_by=field] [display_list=field1,...,fieldN] [title=s]
+
+Where:
+
+* category=cat1,...,catN - Restrict articles to those having categories cat1 and cat2 and ... catN set
+* language=lang - Restrict articles to those having language *lang* set. Additional restriction to *category*
+* limit=N - limit list to first *N* items found
+* order_by=field - Order list by field. Field is one of id, subject. Prepend field name with minus (-) to apply descending order
+* display_list=field1,...,fieldN - Render field1,....,fieldN in a list. Available fields are id, subject
+* title=s - Render list title *s*
+
+Examples (Creole)::
+
+    <<search title="All articles">>
+    
+    <<search title="Russian articles" language="Russian">>
+    
+    <<search title="Rack schemes" category="Rack" >>
+    
+    <<search title="Last article" order_by="-id" limit="1">>
+
 Markup Syntaxes
 ===============
 Plain Text
