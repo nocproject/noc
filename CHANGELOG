@@ -1,3 +1,24 @@
+0.2.1 (12-MAY-2009)
+-------------------
+ * main
+   * Auto-updated list of supported equipment (from profile's supported.csv)
+   * Daemons can dump memory object statistics into log on SIGPROF signal
+   * main.system report shows PostgreSQL version too
+   * Customizable logo
+   * etc/noc.conf:[customization]/logo_url,logo_width and logo_height options
+ * sa
+   * New profile: InfiNet.WANFlexX (Revolution 5000)
+   * New scripts: DLink.DES3xxx.get_vlans, DLink.DGS3xxx.get_vlans
+   * Bugfixes in scripts: DLink.DES3xxx.get_version, DLink.DGS3xxx.get_version
+ * kb
+   * Pluggable Macros
+   * Macros: "now", "rack", "search"
+   * Global and User bookmarks
+   * MoinMoin converter
+ * ip
+   * Search by allocated IPv4 Blocks
+   * Search by IP address description
+   
 0.2 (21-APR-2009)
 -----------------
 MIGRATION:
