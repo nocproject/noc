@@ -5,6 +5,7 @@
         {% for p in parents %}
             <a href="/ip/{{vrf.id}}/{{p.prefix}}/" title="{{p.description}}">{{p.prefix}}</a> &rsaquo;
         {% endfor %}
+        <a href='/ip/{{vrf.id}}/{{prefix.prefix}}/' title="{{prefix.description}}">{{prefix.prefix}}</a> &rsaquo;
 </div>
 {% endblock %}
 {% block content %}
@@ -27,9 +28,9 @@
     }
     // -->
 </SCRIPT>
-<h1>Allocated blocks within {{vrf.name}}::{{prefix.prefix}} ({{prefix.description}})</h1>
 <DIV CLASS="module">
     <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}" WIDTH="100%">
+        <caption>Allocated blocks within {{vrf.name}}::{{prefix.prefix}} ({{prefix.description}})</caption>
         <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
         {%for p in prefixes %}
         <TR>
