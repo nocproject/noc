@@ -24,29 +24,12 @@ import csv,cStringIO,datetime,subprocess,re
 ## VRF list
 ##
 def index(request):
-    search_by_name=None
-    search_by_rd=None
-    query=None
-    if request.POST:
-        if request.POST["search"]:
-            query=request.POST["search"]
-            if is_rd(query):
-                search_by_rd=query
-            else:
-                search_by_name=query
     l=[]
     for vg in VRFGroup.objects.all():
-        if search_by_name:
-            vrfs=vg.vrf_set.filter(name__icontains=search_by_name)
-        elif search_by_rd:
-            vrfs=vg.vrf_set.filter(rd__exact=search_by_rd)
-        else:
-            vrfs=vg.vrf_set.all()
+        vrfs=vg.vrf_set.all()
         if len(vrfs)>0:
             l.append((vg,vrfs.order_by("name")))
-    if query is None:
-        query=""
-    return render(request,"ip/index.html",{"groups":l,"query":query})
+    return render(request,"ip/index.html",{"groups":l})
 ##
 ## Allocated blocks in VRF
 ##

@@ -1,5 +1,20 @@
 {% extends "template/template.html" %}
+{% block title%}IP: {{prefix.prefix}}{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/ip/">ip</A> &rsaquo; 
+    <a href='/ip/{{vrf.id}}/'>VRF: {{vrf.name}}</A> &rsaquo;
+        {% for p in parents %}
+            <a href="/ip/{{vrf.id}}/{{p.prefix}}/" title="{{p.description}}">{{p.prefix}}</a> &rsaquo;
+        {% endfor %}
+</div>
+{% endblock %}
 {% block content %}
+{% if can_allocate %}
+    <ul class="object-tools">
+        <li><A HREF="/ip/{{vrf.id}}/{{prefix}}/tools/" CLASS="changelink">Tools</A></li>
+        <li><A HREF="/ip/{{vrf.id}}/allocate_block/" CLASS="addlink">Allocate new block</A></li>
+        <li><A HREF="/ip/{{vrf.id}}/assign_address/" CLASS="addlink">Assign address</A></li>
+    </ul>
+{% endif %}
 <SCRIPT TYPE="text/javascript">
     <!--
     function confirm_delete(msg)
@@ -12,16 +27,9 @@
     }
     // -->
 </SCRIPT>
-<h1>Allocated blocks</h1>
+<h1>Allocated blocks within {{vrf.name}}::{{prefix.prefix}} ({{prefix.description}})</h1>
 <DIV CLASS="module">
     <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}" WIDTH="100%">
-        <CAPTION>
-            <A HREF="/ip/"><B>VRF</B></A> {{vrf.name}} ({{vrf.rd}})<BR/>
-            {% for p in parents %}
-                <A HREF="/ip/{{vrf.id}}/{{p.prefix}}/" STYLE="padding: 0px 0px 0px {{p.depth}}cm">{{p.prefix}}</A> ({{p.description}})<BR/>
-            {% endfor %}
-            <A HREF="/ip/{{vrf.id}}/{{prefix.prefix}}/" STYLE="padding: 0px 0px 0px {{prefix.depth}}cm">{{prefix.prefix}}</A> ({{prefix.description}})<BR/>
-        </CAPTION>
         <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
         {%for p in prefixes %}
         <TR>
@@ -38,7 +46,6 @@
         {%endfor%}
     </TABLE>
 </DIV>
-
 
 {% if prefix.has_children %}
 {% else %}
@@ -73,11 +80,4 @@
         <TR><TD>wildcard</TD><TD>{{prefix.wildcard}}</TD></TR>
     </TABLE>
 </DIV>
-
-{% if can_allocate %}
-<HR/>
-<A HREF="/ip/{{vrf.id}}/allocate_block/" CLASS="addlink">Allocate new block</A>
-<A HREF="/ip/{{vrf.id}}/assign_address/" CLASS="addlink">Assign address</A>
-<A HREF="/ip/{{vrf.id}}/{{prefix}}/tools/" CLASS="changelink">Tools</A>
-{% endif %}
 {% endblock %}

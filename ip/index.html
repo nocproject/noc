@@ -1,7 +1,6 @@
 {% extends "template/template.html" %}
 {% block content %}
-<h1>VRFs</h1>
-<FORM METHOD="POST"><B>Search:</B><INPUT TYPE="text" NAME="search" VALUE="{{query}}"/></FORM>
+<h1>Select VRF</h1>
 {% for g in groups %}
     <DIV CLASS="module">
         <TABLE SUMMARY="VRFs in {{g}} group" WIDTH="100%">
