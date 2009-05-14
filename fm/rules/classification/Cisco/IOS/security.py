@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.fm.rules.classification import ClassificationRule,Expression,CLOSE_EVENT,DROP_EVENT
+from noc.fm.rules.classes.security import ACLReject
+
 ##
 ## Cisco.IOS ACL Reject SYSLOG
 ##
