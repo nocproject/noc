@@ -95,6 +95,7 @@ class AppMenu(Menu):
             ("Groups", "/admin/auth/group/", "auth.change_group"),
             ("Languages","/admin/main/language/", "main.change_language"),
             ("MIME Types", "/admin/main/mimetype/", "main.change_mimetype"),
+            ("Configs",    "/main/config/",  "is_superuser()"),
         ]),
         ("Documentation", [
             ("Administrator's Guide", "/static/doc/en/ag/html/index.html"),

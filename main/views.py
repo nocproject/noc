@@ -8,8 +8,9 @@
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 import django.contrib.auth
-from django.http import HttpResponseRedirect,HttpResponseNotFound
+from django.http import HttpResponseRedirect,HttpResponseNotFound,HttpResponseForbidden
 from django.core.cache import cache
 from django.utils.cache import patch_response_headers
 from django import forms
@@ -17,7 +18,7 @@ from noc.lib.render import render,render_success,render_failure,render_json
 from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
-import os, types
+import os, types, ConfigParser, sets, pwd
 ##
 ## Startup boilerplate
 ##
@@ -47,7 +48,7 @@ def menu(request):
         for m in MENU:
             r=[]
             for mi in m["items"]:
-                if len(mi)==3 and user.has_perm(mi[2]):
+                if len(mi)==3 and ((mi[2]=="is_superuser()" and user.is_superuser) or (mi[2]!="is_superuser()" and user.has_perm(mi[2]))):
                     r+=[(mi[0],mi[1])]
                 elif type(mi[1])==types.DictType:
                     sr=[(x[0],x[1]) for x in mi[1]["items"] if len(x)==2 or user.has_perm(x[2])]
@@ -126,3 +127,71 @@ def search(request):
     else:
         form=SearchForm()
     return render(request,"main/search.html",{"form":form,"result":result})
+##
+## Configuration editor
+##
+CONFIGS=["noc.conf","noc-sae.conf","noc-classifier.conf"]
+
+def config_index(request):
+    config_list=CONFIGS[:]
+    return render(request,"main/config_index.html",{"configs":config_list})
+##
+## Edit configs
+##
+def config_view(request,config):
+    def encode_name(section,name):
+        return "%s::%s"%(section,name)
+    def decode_name(name):
+        return name.split("::")
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("Super-User privileges required")
+    if config not in CONFIGS:
+        return HttpResponseNotFound("%s not found"%config)
+    if request.POST:
+        ##
+        ## Attempt to save config
+        ##
+        conf=ConfigParser.RawConfigParser()
+        for name,value in request.POST.items():
+            if not value:
+                continue
+            section,option=decode_name(name)
+            if not conf.has_section(section):
+                conf.add_section(section)
+            conf.set(section,option,value)
+        with open("etc/%s"%config,"w") as f:
+            conf.write(f)
+        return HttpResponseRedirect("/main/config/%s/"%config)
+    ##
+    ## Read config data
+    ##
+    conf=ConfigParser.RawConfigParser()
+    conf.read("etc/%s"%config)
+    read_only=not os.access("etc/%s"%config,os.W_OK)
+    system_user=pwd.getpwuid(os.getuid())[0]
+    defaults_conf=ConfigParser.RawConfigParser()
+    defaults_conf.read("etc/%s.defaults"%config[:-5])
+    sections=sets.Set(conf.sections())
+    sections.update(defaults_conf.sections())
+    data=[]
+    for s in sections:
+        options=sets.Set()
+        if conf.has_section(s):
+            options.update(conf.options(s))
+        if defaults_conf.has_section(s):
+            options.update(defaults_conf.options(s))
+        sd=[]
+        for o in options:
+            x={"name":encode_name(s,o),"label":o}
+            if conf.has_option(s,o):
+                x["value"]=conf.get(s,o)
+            else:
+                x["value"]=""
+            if defaults_conf.has_option(s,o):
+                x["default"]=defaults_conf.get(s,o)
+            else:
+                x["default"]=""
+            sd.append(x)
+        data.append({"section":s,"data":sd})
+    return render(request,"main/config_view.html",{"config_name":config,"data":data,
+        "read_only":read_only,"system_user":system_user})

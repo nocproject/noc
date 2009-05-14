@@ -1,0 +1,36 @@
+{% extends "template/template.html" %}
+{% block title%}Config: {{config_name}}{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/main/config/">config</A> &rsaquo;
+<A HREF="/main/config/{{config_name}}/">{{config_name}}</a> &rsaquo;
+</div>
+{% endblock %}
+{% block content %}
+<h1>Config: {{config_name}}</h1>
+{% if read_only %}
+<div style="color: #FF0000">WARNING! etc/{{config_name}} file is not writable by user {{system_user}}. Read-only mode enabled!</div>
+<script type="text/javascript">
+function on_submit() {
+    alert("Read-only mode!");
+    return false;
+}
+</script>
+{% endif %}
+<FORM METHOD="POST" {% if read_only %}ONSUBMIT="return on_submit()"{% endif %}>
+<TABLE BORDER="0" WIDTH="100%">
+{% for s in data %}
+    <TR><TH COLSPAN="4">{{s.section}}</TH></TR>
+    {% for o in s.data %}
+        <TR>
+            <TD STYLE="width: 4pt"></TD>
+            <TD>{{o.label}}</TD>
+            <TD><INPUT TYPE="text" NAME="{{o.name}}" VALUE="{{o.value}}" /></TD>
+            <TD>{{o.default}}</TD>
+        </TR>
+    {% endfor %}
+{% endfor %}
+</TABLE>
+{% if read_only %}{% else %}
+<input type="submit" value="Save" />
+{% endif %}
+</FORM>
+{% endblock %}
