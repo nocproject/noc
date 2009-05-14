@@ -1,0 +1,12 @@
+{% extends "template/template.html" %}
+{% block title%}Configs{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/main/config/">config</A> &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<h1>Select config file</h1>
+<TABLE BORDER="0">
+    {% for c in configs %}
+    <TR><TD><A HREF="/main/config/{{c}}/">{{c}}</A></TD></TR>
+    {% endfor %}
+</TABLE>
+{% endblock %}
