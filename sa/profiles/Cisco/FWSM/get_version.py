@@ -11,7 +11,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r'FWSM Firewall Version (?P<version>\S+).*Hardware:\s+(?P<platform>\S+),')
+rx_ver=re.compile(r'FWSM Firewall Version (?P<version>\S+).*Hardware:\s+(?P<platform>\S+),',re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="Cisco.FWSM.get_version"
