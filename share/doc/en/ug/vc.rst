@@ -27,8 +27,7 @@ Importing existing VCs
 ^^^^^^^^^^^^^^^^^^^^^^
 
 * Press "Import VLANs from switch" button (upper right corner).
-* Select VC Domain to put collected VLANs and switch from which to pull VLANs. Switch must be
-set up as Managed Object (see Service Activation manual).
+* Select VC Domain to put collected VLANs and switch from which to pull VLANs. Switch must be set up as Managed Object (see Service Activation manual).
 
 Permissions
 ^^^^^^^^^^^
