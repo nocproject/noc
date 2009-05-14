@@ -1,6 +1,7 @@
 {% extends "template/template.html" %}
 {% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/admin/sa/">Sa</a> &rsaquo; <a href="/admin/sa/managedobject/">Managed Objects</a> &rsaquo; <a href="/admin/sa/managedobject/">{{object.name}}</a> &rsaquo; <a href="/sa/{{object.id}}/scripts/">Scripts</a> &rsaquo; {{script}} &rsaquo;
 </div>
+{%endblock%}
 <{% block content %}
 <h1>Object: {{object.repo_path}} ({{object.profile_name}}) Script: {{script}}</h1>
 {% if form %}
