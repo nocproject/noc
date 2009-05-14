@@ -9,7 +9,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"^Cisco IOS Software, (?P<platform>[^ ]+) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),",re.MULTILINE|re.DOTALL)
+rx_ver=re.compile(r"^(?:Cisco IOS Software,|IOS \(tm\)) (?P<platform>[^ ]+) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_version"
