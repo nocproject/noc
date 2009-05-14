@@ -38,10 +38,38 @@ change  auth | group | Can change group
 delete  auth | group | Can delete group
 ======= ========================================
 
+Languages
+---------
 Permissions
 ^^^^^^^^^^^
 ======= ========================================
-preview ANY
+add     main | Language | Can add Language
+change  main | Language | Can change Language
+delete  main | Language | Can delete Language
+======= ========================================
+
+MIME Types
+----------
+Database of file extension to MIME type mappings.
+Used to set up valid Content-Type for downloadable
+files and attachments (i.e. Knowledge Base attachments)
+
+Permissions
+^^^^^^^^^^^
+======= ========================================
+add     main | MIME Type | Can add MIME Type
+change  main | MIME Type | Can change MIME Type
+delete  main | MIME Type | Can delete MIME Type
+======= ========================================
+
+Configs
+-------
+Configuration files editor.
+
+Permissions
+^^^^^^^^^^^
+======= ========================================
+change  Superuser
 ======= ========================================
 
 Documentation
