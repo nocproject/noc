@@ -36,7 +36,7 @@ Direction: {{src_ip}}:{{src_port}} -> {{dst_ip}}:{{dst_port}}"""
 class ACLPermit(EventClass):
     name     = "ACL Permit"
     category = "SECURITY"
-    priority = "NORMAL"
+    priority = "INFO"
     subject_template="Packet permitted by ACL: {{src_ip}}:{{src_port}} -> {{dst_ip}}:{{dst_port}}"
     body_template="""ACL Name: {{acl_name}}
 Action: PERMIT
