@@ -14,7 +14,7 @@ class ACLReject(EventClass):
     name     = "ACL Reject"
     category = "SECURITY"
     priority = "NORMAL"
-    subject_template="Packed rejected by ACL: {{src_ip}}:{{src_port}} -> {{dst_ip}}:{{dst_port}}"
+    subject_template="Packet rejected by ACL: {{src_ip}}:{{src_port}} -> {{dst_ip}}:{{dst_port}}"
     body_template="""ACL Name: {{acl_name}}
 Action: REJECT
 Packets count: {{count}}
