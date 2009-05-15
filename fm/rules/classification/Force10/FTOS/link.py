@@ -1,0 +1,35 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Force10.FTOS Link rules
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.fm.rules.classification import ClassificationRule,Expression,CLOSE_EVENT,DROP_EVENT
+from noc.fm.rules.classes.link import *
+##
+## Force10.FTOS Link Up SYSLOG
+##
+class Force10_FTOS_Link_Up_SYSLOG_Rule(ClassificationRule):
+    name="Force10.FTOS Link Up SYSLOG"
+    event_class=LinkUp
+    preference=1000
+    patterns=[
+        (r"^profile$",r"^Force10\.FTOS$"),
+        (r"^message$",r"%IFMGR-5-OSTATE_UP: Changed interface state to up: (?P<interface>.+)$"),
+        (r"^source$",r"^syslog$"),
+    ]
+##
+## Force10.FTOS Link Down SYSLOG
+##
+class Force10_FTOS_Link_Down_SYSLOG_Rule(ClassificationRule):
+    name="Force10.FTOS Link Down SYSLOG"
+    event_class=LinkDown
+    preference=1000
+    patterns=[
+        (r"^profile$",r"^Force10\.FTOS$"),
+        (r"^message$",r"%IFMGR-5-OSTATE_DN: Changed interface state to down: (?P<interface>.+)$"),
+        (r"^source$",r"^syslog$"),
+    ]
