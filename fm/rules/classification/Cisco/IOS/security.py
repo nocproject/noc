@@ -29,6 +29,6 @@ class Cisco_IOS_ACL_Permit_SYSLOG_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
-        (r"^message$",r"%SEC-6-IPACCESSLOGP: list (?P<acl_name>.+?) permitted (?P<proto>\S+) (?P<src_ip>\S+)\((?P<src_port>\d+)\) \(.*\) -> (?P<dst_ip>\S+)\((?P<dst_port>\d+)\), (?P<count>\d+) packets?$"),
+        (r"^message$",r"%SEC-6-IPACCESSLOGP: list (?P<acl_name>.+?) permitted (?P<proto>\S+) (?P<src_ip>\S+)\((?P<src_port>\d+)\) -> (?P<dst_ip>\S+)\((?P<dst_port>\d+)\), (?P<count>\d+) packets?$"),
         (r"^source$",r"^syslog$"),
     ]
