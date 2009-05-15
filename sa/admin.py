@@ -65,7 +65,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("groups",)
         }),
     )
-    list_display=["name","is_managed","profile_name","address","administrative_domain","activator","is_configuration_managed","description","repo_path","scripts_link","config_link"]
+    list_display=["name","is_managed","profile_name","address","administrative_domain","activator","is_configuration_managed","description","repo_path","action_links"]
     list_filter=["is_managed","is_configuration_managed","activator","administrative_domain","groups","profile_name"]
     search_fields=["name","address","repo_path","description"]
     object_class=ManagedObject

@@ -88,6 +88,7 @@ class ManagedObject(models.Model):
     #
     def __unicode__(self):
         return self.name
+        
     def config_link(self):
         try:
             return "<A HREF='/cm/view/config/%d/'>Config</A>"%(self.config.id)
@@ -100,6 +101,17 @@ class ManagedObject(models.Model):
         return "<A HREF='/sa/%d/scripts/'>Scripts</A>"%(self.id)
     scripts_link.short_description="Scripts"
     scripts_link.allow_tags=True
+    
+    def action_links(self):
+        try:
+            l="<A HREF='/cm/view/config/%d/'>Config</A>"%(self.config.id)
+        except:
+            l=""
+        l+="<br/><A HREF='/sa/%d/scripts/'>Scripts</A>"%(self.id)
+        return l
+    action_links.short_description="Actions"
+    action_links.allow_tags=True
+        
     ##
     ## Access control
     ##
