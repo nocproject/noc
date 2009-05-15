@@ -50,7 +50,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("name","is_managed","administrative_domain","activator","profile_name","description")
         }),
         ("Access",{
-            "fields": ("scheme","address","port")
+            "fields": ("scheme","address","port","remote_path")
         }),
         ("Credentials",{
             "fields": ("user","password","super_password")
