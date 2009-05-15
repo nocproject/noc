@@ -24,15 +24,17 @@
 {% if cl.has_filters %}
 <div id="changelist-filter">
 <h2>{% trans 'Filter' %}</h2>
+<div id="changelist-content">
 {% for spec in cl.filter_specs %}
    {% admin_list_filter cl spec %}
 {% endfor %}
 </div>
+</div>
 <script type="text/javascript">
 $("#changelist-filter h2").click(
     function () {
-        $("#changelist-filter").slideToggle("slow");
-        $(this).toggleClass("active"); return false;
+        $("#changelist-content").slideToggle("slow");
+        return false;
     });
 </script>
 {% endif %}
