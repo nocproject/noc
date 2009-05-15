@@ -465,11 +465,11 @@ class SAE(Daemon):
     def ping_check(self,activator,addresses):
         def ping_check_callback(transaction,response=None,error=None):
             def save_probe_result(u,result):
-                try:
-                    mo=ManagedObject.objects.get(activator=activator,trap_source_ip=u)
-                except ManagedObject.DoesNotExist:
+                mo=ManagedObject.objects.filter(activator=activator,trap_source_ip=u).order_by("id")
+                if len(mo)<1:
                     logging.error("Unknown object in ping_check: %s"%u)
                     return
+                mo=mo[0] # Fetch first-created object in case of multiple objects with same trap_source_ip
                 e=Event(
                     timestamp=ts,
                     event_priority=event_priority,
