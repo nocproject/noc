@@ -18,7 +18,7 @@ from noc.lib.render import render,render_success,render_failure,render_json
 from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
-import os, types, ConfigParser, sets, pwd
+import os, types, ConfigParser, sets, pwd, re
 ##
 ## Startup boilerplate
 ##
@@ -130,7 +130,7 @@ def search(request):
 ##
 ## Configuration editor
 ##
-CONFIGS=["noc.conf","noc-sae.conf","noc-classifier.conf"]
+CONFIGS=["noc.conf","noc-sae.conf","noc-activator.conf","noc-classifier.conf"]
 
 def config_index(request):
     config_list=CONFIGS[:]
@@ -163,6 +163,16 @@ def config_view(request,config):
             conf.write(f)
         return HttpResponseRedirect("/main/config/%s/"%config)
     ##
+    ## Search for available online help
+    ##
+    help_path="static/doc/en/ug/html/_sources/configuration.txt"
+    help_prefix=config.replace(".","-")
+    help_href="/static/doc/en/ug/html/configuration.html#%s"
+    with open(help_path) as f:
+        help=f.read()
+    rx=re.compile(r"^\.\. _(%s.*?):"%help_prefix,re.MULTILINE)
+    help=sets.Set([x.replace("_","-") for x in rx.findall(help)])
+    ##
     ## Read config data
     ##
     conf=ConfigParser.RawConfigParser()
@@ -191,7 +201,17 @@ def config_view(request,config):
                 x["default"]=defaults_conf.get(s,o)
             else:
                 x["default"]=""
+            option_help="%s-%s-%s"%(help_prefix,s.replace("_","-"),o.replace("_","-"))
+            if option_help in help:
+                x["help"]=help_href%option_help
+            else:
+                x["help"]=None
             sd.append(x)
-        data.append({"section":s,"data":sd})
+        section_help="%s-%s"%(help_prefix,s.replace("_","-"))
+        if section_help in help:
+            section_help=help_href%section_help
+        else:
+            section_help=None
+        data.append({"section":s,"data":sd,"help":section_help})
     return render(request,"main/config_view.html",{"config_name":config,"data":data,
         "read_only":read_only,"system_user":system_user})
