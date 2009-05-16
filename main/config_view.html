@@ -18,13 +18,14 @@ function on_submit() {
 <FORM METHOD="POST" {% if read_only %}ONSUBMIT="return on_submit()"{% endif %}>
 <TABLE BORDER="0" WIDTH="100%">
 {% for s in data %}
-    <TR><TH COLSPAN="4">{{s.section}}</TH></TR>
+    <TR><TH COLSPAN="4">{{s.section}}</TH><TH>{% if s.help %}<a href="{{s.help}}">Help</a>{%endif%}</TH></TR>
     {% for o in s.data %}
-        <TR>
+        <TR class="{%cycle 'row1' 'row2'%}">
             <TD STYLE="width: 4pt"></TD>
             <TD>{{o.label}}</TD>
             <TD><INPUT TYPE="text" NAME="{{o.name}}" VALUE="{{o.value}}" /></TD>
             <TD>{{o.default}}</TD>
+            <TD>{% if o.help %}<a href="{{o.help}}">Help</a>{%endif%}</TD>
         </TR>
     {% endfor %}
 {% endfor %}
