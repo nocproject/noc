@@ -16,6 +16,7 @@ class Report(noc.main.report.Report):
     columns=[Column("App"),
             Column(".py lines",align="RIGHT"),
             Column(".html lines",align="RIGHT"),
+            Column(".rst lines",align="RIGHT"),
             Column(".mib lines",align="RIGHT"),
             Column("Other lines",align="RIGHT")]
     
@@ -29,6 +30,7 @@ class Report(noc.main.report.Report):
         for dirname in [d for d in os.listdir(".") if os.path.isdir(d) and not d.startswith(".")]:
             py_loc=0
             html_loc=0
+            rst_loc=0
             mib_loc=0
             other_loc=0
             for dirpath,dirnames,filenames in os.walk(dirname):
@@ -38,10 +40,12 @@ class Report(noc.main.report.Report):
                         py_loc+=lines
                     elif f.endswith(".html"):
                         html_loc+=lines
+                    elif f.endswith(".rst"):
+                        rst_loc+=lines
                     elif f.endswith(".mib"):
                         mib_loc+=lines
                     else:
                         other_loc+=lines
-            r.append((dirname,py_loc,html_loc,mib_loc,other_loc))
+            r.append((dirname,py_loc,html_loc,rst_loc,mib_loc,other_loc))
         return r
             
