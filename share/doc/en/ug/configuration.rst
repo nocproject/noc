@@ -55,6 +55,11 @@ Edit .conf file instead. .conf contains site-specific settings.
 Variables in .conf file override default values from .defaults.
 If no variable set in .conf default value from .defaults used.
 
+Editing configuration files
+===========================
+Configuration files can be edited directly via text editor or using
+Main > Setup > Config form
+
 .. _noc-conf:
 
 noc.conf
@@ -74,23 +79,29 @@ debug
 
 true - display error reports in HTML page. false - send error report via email to admin_emails
 
+.. _noc-conf-main-server_email:
+
+server_email
+^^^^^^^^^^^^
+From: field for all NOC-generated email
+
 .. _noc-conf-main-admin_emails:
 
 admin_emails
 ^^^^^^^^^^^^
-Comma-separated list of emails which will receive error_reports when debug = false
+Comma-separated list of emails which will receive error_reports when :ref:`noc-conf-main-debug` option set to *false*
 
 .. _noc-conf-main-timezone:
 
 timezone
 ^^^^^^^^
-Local time zone for installation. Choices can be found here: http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE although not all variations may be possible on all operating systems. If running in a Windows environment this must be set to the same as your system time zone.
+Local time zone for installation. Choices can be found here: `PostgreSQL DATETIME-TIMEZONE <http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE>`_ although not all variations may be possible on all operating systems. If running in a Windows environment this must be set to the same as your system time zone.
 
 .. _noc-conf-main-language_code:
 
 language_code
 ^^^^^^^^^^^^^
-Language code for installation. All choices can be found here: http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes http://blogs.law.harvard.edu/tech/stories/storyReader$15
+Language code for installation. All choices can be found here: `w3.org <http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes>`_
 
 .. _noc-conf-main-secret_key:
 
@@ -98,11 +109,24 @@ secret_key
 ^^^^^^^^^^
 Random string used as seed for web session protection. Make this key unique and keep secret.
 
-.. _noc-conf-main-server_email:
+.. _noc-conf-main-date_format:
 
-server_email
-^^^^^^^^^^^^
-From: field for all NOC-generated email
+date_format
+^^^^^^^^^^^
+Default date format to be used by noc. See :ref:`datetime_format` for format characters description.
+
+.. _noc-conf-main-time_format:
+
+time_format
+^^^^^^^^^^^
+Default time format to be used by noc. See :ref:`datetime_format` for format characters description.
+
+.. _noc-conf-main-datetime_format:
+
+datetime_format
+^^^^^^^^^^^^^^^
+Default date and time format to be used by noc. See :ref:`datetime_format` for format characters description.
+
 
 .. _noc-conf-database:
 
@@ -355,3 +379,32 @@ SAE port
 local_address
 -------------
 Use specified address as source address for SAE connections. Leave empty to use default address.
+
+.. _noc-classifier-conf:
+
+noc-classifier.conf
+===================
+Classifier configuration
+
+.. _noc-classifier-conf-main:
+
+[main] section
+--------------
+
+.. _noc-classifier-conf-main-logfile:
+
+logfile
+-------
+Log file path
+
+.. _noc-classifier-conf-main-loglevel:
+
+loglevel
+--------
+logging level. One of: debug, info, warning, error, critical
+
+.. _noc-classifier-conf-main-pidfile:
+
+pidfile
+-------
+Pid file path
