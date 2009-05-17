@@ -171,7 +171,7 @@ def config_view(request,config):
     with open(help_path) as f:
         help=f.read()
     rx=re.compile(r"^\.\. _(%s.*?):"%help_prefix,re.MULTILINE)
-    help=sets.Set([x.replace("_","-") for x in rx.findall(help)])
+    help=[x.replace("_","-") for x in rx.findall(help)]
     ##
     ## Read config data
     ##
@@ -201,17 +201,27 @@ def config_view(request,config):
                 x["default"]=defaults_conf.get(s,o)
             else:
                 x["default"]=""
+            # Try to find online help for option and determine option order
             option_help="%s-%s-%s"%(help_prefix,s.replace("_","-"),o.replace("_","-"))
-            if option_help in help:
+            try:
+                x["index"]=help.index(option_help)
                 x["help"]=help_href%option_help
-            else:
+            except ValueError:
+                x["index"]=10000
                 x["help"]=None
             sd.append(x)
+        # Order options like manual
+        sd=sorted(sd,lambda x,y:cmp(x["index"],y["index"]))
+        # Try to find online help for section and determine section order
         section_help="%s-%s"%(help_prefix,s.replace("_","-"))
-        if section_help in help:
+        try:
+            index=help.index(section_help)
             section_help=help_href%section_help
-        else:
+        except ValueError:
+            index=10000
             section_help=None
-        data.append({"section":s,"data":sd,"help":section_help})
+        data.append({"section":s,"data":sd,"help":section_help,"index":index})
+    # Order sections like manual
+    data=sorted(data,lambda x,y:cmp(x["index"],y["index"]))
     return render(request,"main/config_view.html",{"config_name":config,"data":data,
         "read_only":read_only,"system_user":system_user})
