@@ -23,9 +23,6 @@ class Socket(object):
         self.name=None
         self.start_time=time.time()
     
-    def __del__(self):
-        self.debug("Deallocating")
-        
     def can_read(self):
         return True
         
