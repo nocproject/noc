@@ -16,6 +16,7 @@ class ProfileRegistry(Registry):
     subdir="profiles"
     classname="Profile"
     apps=["noc.sa"]
+    exclude=["highlight"]
 profile_registry=ProfileRegistry()
 
 ##
@@ -93,9 +94,9 @@ class Profile(object):
     ## Looking glass hilighting support
     ##
     
-    # match.group(1) contains AS list
+    # match.group(1) contains AS list <!> Deprecated
     pattern_lg_as_path_list=None
-    # match.group(1) containts Best Path
+    # match.group(1) containts Best Path <!> Deprecated
     pattern_lg_best_path=None
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
@@ -171,3 +172,21 @@ class Profile(object):
                 rx=re.compile(r,re.DOTALL|re.MULTILINE)
                 cfg=rx.sub("",cfg)
         return unicode(cfg,"utf8","ignore").encode("utf8") # Prevent serialization errors
+    #
+    # Highligh config
+    # Try to include profile's highlight module and use its ConfigLexer
+    #
+    def highlight_config(self,cfg):
+        try:
+            from pygments import highlight
+            from pygments.formatters import HtmlFormatter
+            
+            h_mod="noc.sa.profiles.%s.highlight"%self.name
+            m=__import__(h_mod,{},{},"ConfigLexer")
+        except ImportError:
+            return cfg # No highlight module available
+        try:
+            lexer=m.ConfigLexer
+        except AttributeError:
+            return cfg # No lexer class
+        return highlight(cfg, lexer(), HtmlFormatter())
