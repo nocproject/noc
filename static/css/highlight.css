@@ -1,0 +1,13 @@
+span.lineno {
+    display: inline-block;
+    width: 4em;
+    overflow: hidden;
+    margin: 0 4pt 0 0;
+    padding: 1px 3px 1px 0;
+    text-align: right;
+    -webkit-user-select: none;
+    border-right: 1px solid #d7d7d7;
+    border-bottom: 1px solid #998;
+    background: #eee;
+    color: #999;
+}

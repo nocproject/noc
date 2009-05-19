@@ -10,7 +10,10 @@ from django.shortcuts import get_object_or_404
 from noc.lib.render import render,render_plain_text
 import os
 from django.http import HttpResponseNotFound,HttpResponseRedirect,HttpResponseForbidden
-
+from django.utils.html import escape
+##
+## Display object's revision
+##
 def view(request,repo,object_id,revision=None,format="html"):
     o=get_object_or_404(Object.get_object_class(repo),id=int(object_id))
     if not o.has_access(request.user):
@@ -34,6 +37,10 @@ def view(request,repo,object_id,revision=None,format="html"):
     else:
         content=None
     if format=="html":
+        if repo=="config":
+            content=o.managed_object.profile.highlight_config(content)
+        else:
+            content=escape(content).replace("\n","<br/>")
         return render(request,"cm/view.html",{"o":o,"r":r,"content":content})
     elif format=="text":
         return render_plain_text(content)
