@@ -35,7 +35,7 @@ def view(request,repo,object_id,revision=None,format="html"):
     if r:
         content=o.get_revision(r)
     else:
-        content=None
+        content=""
     if format=="html":
         if repo=="config":
             content=o.managed_object.profile.highlight_config(content)
