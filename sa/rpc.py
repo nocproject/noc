@@ -47,9 +47,6 @@ class Transaction(object):
         self.method=method
         self.callback=callback
         
-    def __del__(self):
-        logging.debug("Deleting transaction %s"%self.id)
-        
     def commit(self,response=None,error=None):
         if self.callback:
             self.callback(self,response,error)
