@@ -151,6 +151,18 @@ class Object(models.Model):
             return RPSL
         else:
             raise Exception("Invalid repo '%s'"%repo)
+    #
+    # Shortcut to object._meta.model_name
+    #
+    def _module_name(self):
+        return self._meta.module_name
+    module_name=property(_module_name)
+    #
+    # Shortcut to object._meta.verbose_name_plural
+    #
+    def _verbose_name_plural(self):
+        return self._meta.verbose_name_plural
+    verbose_name_plural=property(_verbose_name_plural)
     
     def change_notify_list(self,immediately=False,delayed=False):
         emails=sets.Set()
