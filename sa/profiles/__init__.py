@@ -103,7 +103,8 @@ class Profile(object):
     
     #
     # AS Path hilighting
-    #
+    # Deprecated <!>
+    # 
     def lg_as_path(self,m):
         def whois_formatter(q):
             return "<A HREF='http://www.db.ripe.net/whois?AS%s'>%s</A>"%(q,q)
@@ -170,12 +171,3 @@ class Profile(object):
                 rx=re.compile(r,re.DOTALL|re.MULTILINE)
                 cfg=rx.sub("",cfg)
         return unicode(cfg,"utf8","ignore").encode("utf8") # Prevent serialization errors
-    #
-    # SNMP support
-    #
-    
-    # OID of "config changed trap".
-    oid_trap_config_changed=None
-    # Regular expression to parse "config changed" syslog message
-    syslog_config_changed=None
-    #

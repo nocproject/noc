@@ -19,7 +19,6 @@ class Profile(noc.sa.profiles.Profile):
     command_more=" "
     pattern_lg_as_path_list=r"(?<=AS path: )(\d+(?: \d+)*)"
     pattern_lg_best_path=r"^(\s+[+*].+?\s+Router ID: \S+)"
-    oid_trap_config_changed="1.3.6.1.4.1.2636.4.5.0.1" # jnxCmCfgChange
     
     def generate_prefix_list(self,name,pl,strict=True):
         if strict:
