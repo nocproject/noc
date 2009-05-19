@@ -14,6 +14,7 @@ class Registry(object):
     subdir="directory"
     classname="Class"
     apps=None
+    exclude=[] # List of excluded modules
     def __init__(self):
         self.classes={}
         self.choices=[]
@@ -48,7 +49,11 @@ class Registry(object):
             for dirpath,dirnames,filenames in os.walk(pd):
                 mb=app+"."+".".join(dirpath.split(os.sep)[1:])+"."
                 for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
-                    __import__(mb+f[:-3],{},{},self.classname)
+                    f=f[:-3]
+                    if f in self.exclude:
+                        print "EXCLUDED",f
+                        continue
+                    __import__(mb+f,{},{},self.classname)
         self.is_registered=True
     #
     #
