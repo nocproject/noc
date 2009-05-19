@@ -88,6 +88,14 @@ class ManagedObject(models.Model):
     #
     def __unicode__(self):
         return self.name
+    # Returns object's profile
+    def _profile(self):
+        try:
+            return self._cached_profile
+        except AttributeError:
+            self._cached_profile=profile_registry[self.profile_name]()
+            return self._cached_profile
+    profile=property(_profile)
         
     def config_link(self):
         try:
