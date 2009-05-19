@@ -51,7 +51,6 @@ class Registry(object):
                 for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
                     f=f[:-3]
                     if f in self.exclude:
-                        print "EXCLUDED",f
                         continue
                     __import__(mb+f,{},{},self.classname)
         self.is_registered=True
