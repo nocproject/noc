@@ -3,8 +3,11 @@
 <link rel="stylesheet" type="text/css" href="/static/css/pygments.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/highlight.css" />
 {% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/admin/cm/">Cm</A> &rsaquo;
+    <A HREF="/admin/cm/{{o.module_name}}/">{{o.verbose_name_plural|capfirst}}</A> &rsaquo; {{o.repo_path}}</div>
+{%endblock%}
 <{% block content %}
-<h1>Object: {{o.handler_class_name}}::{{o.repo_path}}</h1>
+<h1>Object: {{o.repo_path}}</h1>
 <DIV CLASS="module">
     <TABLE SUMMARY="Object info" WIDTH="100%">
         <CAPTION>Object info</CAPTION>
