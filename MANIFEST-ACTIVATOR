@@ -23,6 +23,7 @@ lib/pyquote.py
 lib/text.py
 scripts/noc-activator.py
 etc/noc-activator.defaults
+scripts/stdin-wrapper
 share/sunos/manifest/noc-activator.xml
 share/linux/lsb/sysconfig/noc
 share/linux/lsb/init.d/noc-activator
