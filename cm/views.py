@@ -40,7 +40,7 @@ def view(request,repo,object_id,revision=None,format="html"):
         if repo=="config":
             content=o.managed_object.profile.highlight_config(content)
         else:
-            content=escape(content).replace("\n","<br/>")
+            content="<pre>%s</pre>"%escape(content).replace("\n","<br/>")
         return render(request,"cm/view.html",{"o":o,"r":r,"content":content})
     elif format=="text":
         return render_plain_text(content)
