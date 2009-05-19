@@ -58,6 +58,7 @@ class ScriptRegistry(Registry):
     subdir="profiles"
     classname="Script"
     apps=["noc.sa"]
+    exclude=["highlight"]
     def register_generics(self):
         for c in [c for c in self.classes.values() if c.name and c.name.startswith("Generic.") and c.requires]:
             g,name=c.name.split(".")
