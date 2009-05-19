@@ -346,7 +346,7 @@ class Activator(Daemon,FSM):
         if self.next_filter_update and time.time()>self.next_filter_update:
             self.get_event_filter()
         # Check for pending crashinfos
-        if self.stand_alone_mode and self.next_crashinfo_check and time.time()>self.next_crashinfo_check:
+        if self.stand_alone_mode and self.next_crashinfo_check and time.time()>self.next_crashinfo_check and self.get_state()=="ESTABLISHED":
             self.check_crashinfo()
         # Perform delayed calls
         while not self.script_call_queue.empty():
