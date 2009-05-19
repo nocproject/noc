@@ -1,4 +1,7 @@
 {% extends "template/template.html" %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/highlight.css" />
+{% endblock %}
 <{% block content %}
 <h1>Object: {{o.handler_class_name}}::{{o.repo_path}}</h1>
 <DIV CLASS="module">
@@ -15,7 +18,7 @@
 <DIV CLASS="module">
     <TABLE SUMMARY="Content" WIDTH="100%">
         <CAPTION>Content</CAPTION>
-        <TR><TD><PRE>{{content}}</PRE></TD></TR>
+        <TR><TD>{{content|safe}}</TD></TR>
     </TABLE>
 </DIV>
 <A HREF="text/">Plain Text</A>

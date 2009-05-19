@@ -175,18 +175,27 @@ class Profile(object):
     #
     # Highligh config
     # Try to include profile's highlight module and use its ConfigLexer
+    # Returns escaped HTML
     #
     def highlight_config(self,cfg):
+        from django.utils.html import escape
+        # Check for pygments available
         try:
             from pygments import highlight
-            from pygments.formatters import HtmlFormatter
-            
+        except ImportError:
+            # No pygments, no highlighting. Return escaped HTML
+            return escape(cfg).replace("\n","<br/>")
+        # Check for lexer available
+        from pygments.lexers import TextLexer
+        from noc.lib.highlight import NOCHtmlFormatter
+        try:
             h_mod="noc.sa.profiles.%s.highlight"%self.name
             m=__import__(h_mod,{},{},"ConfigLexer")
+            try:
+                lexer=m.ConfigLexer
+            except AttributeError:
+                lexer=TextLexer # Fallback to TextLexer
         except ImportError:
-            return cfg # No highlight module available
-        try:
-            lexer=m.ConfigLexer
-        except AttributeError:
-            return cfg # No lexer class
-        return highlight(cfg, lexer(), HtmlFormatter())
+            lexer=TextLexer
+        # Return highlighted text
+        return highlight(cfg, lexer(), NOCHtmlFormatter())
