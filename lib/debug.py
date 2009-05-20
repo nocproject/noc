@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import sys,re,logging,datetime,os,tempfile,cPickle,time,gc
+import sys,re,logging,datetime,os,tempfile,cPickle,time,gc,random
 
 #
 # Error reporting context
@@ -212,6 +212,7 @@ class GCStats(object):
                 counts[objtype]=1
             if objtype not in ref_counts:
                 ref_counts[objtype]={}
+            # Update referrers counters
             for ro in gc.get_referents(obj):
                 robjtype=type(ro)
                 if robjtype not in ref_counts:
@@ -237,6 +238,19 @@ class GCStats(object):
             r+=["REFERRERS TO: %s.%s"%(t.__module__,t.__name__)]
             rc=sorted(ref_counts[t].iteritems(),lambda x,y:-cmp(x[1],y[1]))
             r+=["    %80s: %10d"%("%s.%s"%(c[0].__module__,c[0].__name__),c[1]) for c in rc]
+        # Random object report
+        N=100 # N of samples
+        S=sc[0][1] # Top used objects count
+        T=sc[0][0] # Top used type
+        L=max(S/N,1)
+        r+=["RANDOM %d TOP USED OBJECTS:"%S]
+        for o in gc.get_objects():
+            if type(o)==T:
+                if random.randint(0,S)<=L:
+                    r+=[str(o)]
+                    N-=1
+                    if N==0:
+                        break
         r+=["END OF OBJECT REFERENCE COUNT"]
         return "\n".join(r)
     ##
