@@ -18,15 +18,15 @@ class ConfigLexer(RegexLexer):
             (r"//.*$", Comment),
             (r"/\*",   Comment, "comment"),
             (r"\"",    String.Double, "string"),
-            (r"(\S+\s+)(\S+\s+)({\s*)$", bygroups(Keyword,Name.Attribute,Punctuation) ),
-            (r"(\S\s+)({\s*)$",          bygroups(Keyword,Punctuation)),
+            (r"inactive:", Error),
+            (r"(\S+\s+)(\S+\s+)({)", bygroups(Keyword, Name.Attribute, Punctuation)),
+            (r"(\S+\s+)({)", bygroups(Keyword, Punctuation)),
             (r"https?://.*?[;]", String.Double),
             (r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(/\d{1,2})?", Number), # IPv4 Address/Prefix
             (r"49\.\d{4}\.\d{4}\.\d{4}\.\d{4}\.\d{2}",           Number), # NSAP
             (r"[;\[\]/:<>*{}]",  Punctuation),
-            (r'\s+',             Text),
-            (r'\w[\w\.-]*[\w]+', Text),
-            (r'\d+',             Number),
+            (r"\d+",             Number),
+            (r".",               Text),
         ],
         "comment" : [
             (r"[^/*]", Comment),
