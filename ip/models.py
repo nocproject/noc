@@ -13,7 +13,7 @@ from noc.lib.validators import check_rd,check_cidr,is_cidr,is_ipv4
 from noc.lib.tt import tt_url
 from noc.peer.models import AS
 from noc.lib.fields import CIDRField
-from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast
+from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast,address_to_int
 from noc.main.menu import Menu
 from noc.main.search import SearchResult
 ##
@@ -177,6 +177,24 @@ class IPv4Block(models.Model):
         c.execute("SELECT id FROM %s WHERE vrf_id=%d AND ip << '%s' ORDER BY ip"%(IPv4Address._meta.db_table,self.vrf.id,self.prefix))
         return [IPv4Address.objects.get(id=i[0]) for i in c.fetchall()]
     addresses=property(_addresses)
+    ##
+    ## Return a list of all used/unused addresses
+    ##
+    def _all_addresses(self):
+        if self.has_children:
+            return None
+        a=dict((x.ip,x) for x in self.addresses)
+        if len(a)==0:
+            return []
+        r=[]
+        for nip in range(address_to_int(self.network),address_to_int(self.broadcast)+1):
+            ip=int_to_address(nip)
+            if ip in a:
+                r.append(a[ip])
+            else:
+                r.append(ip)
+        return r
+    all_addresses=property(_all_addresses)
 
     def _netmask_bits(self):
         return int(str(self.prefix).split("/")[1])
