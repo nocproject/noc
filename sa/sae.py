@@ -17,6 +17,7 @@ from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.debug import error_report,DEBUG_CTX_CRASH_PREFIX
 from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,SocketFactory,Protocol
+from django.db import reset_queries
 
 ##
 ## Additions to MANIFEST-ACTIVATOR file
@@ -152,27 +153,6 @@ class Service(SAEService):
             d=EventData(event=e,key=b.key,value=b.value)
             d.save()
         done(controller,EventResponse())
-    
-#    def event_config_changed(self,controller,request,done):
-#        if not controller.stream.is_authenticated:
-#            e=Error()
-#            e.code=ERR_AUTH_REQUIRED
-#            e.text="Authentication required"
-#            done(controller,error=e)
-#            return
-#        activator=self.get_controller_activator(controller)
-#        try:
-#            c=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
-#        except ManagedObject.DoesNotExist:
-#            e=Error()
-#            e.code=ERR_UNKNOWN_EVENT_SOURCE
-#            e.text="Unknown event source '%s'"%request.ip
-#            done(controller,error=e)
-#            return
-#        logging.info("%s configuration changed"%(c.repo_path))
-#        c.next_pull=min(c.next_pull,datetime.datetime.now()+datetime.timedelta(minutes=10))
-#        c.save()
-#        done(controller,EventResponse())
 
 ##
 ## AcceptedTCPSocket with RPC Protocol
@@ -331,6 +311,7 @@ class SAE(Daemon):
             if time.time()-last_crashinfo_check>=60:
                 self.collect_crashinfo()
                 last_crashinfo_check=time.time()
+                reset_queries() # Clear debug SQL log
     ##
     ## Collect crashinfo and write as FM events
     ##
