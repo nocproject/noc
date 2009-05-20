@@ -203,21 +203,40 @@ class GCStats(object):
         gc.collect()
         # Calculate type counts
         counts={}
+        ref_counts={}
         for obj in gc.get_objects():
             objtype=type(obj)
             if objtype in counts:
                 counts[objtype]+=1
             else:
                 counts[objtype]=1
+            if objtype not in ref_counts:
+                ref_counts[objtype]={}
+            for ro in gc.get_referents(obj):
+                robjtype=type(ro)
+                if robjtype not in ref_counts:
+                    ref_counts[robjtype]={}
+                rc=ref_counts[robjtype]
+                if objtype in rc:
+                    rc[objtype]+=1
+                else:
+                    rc[objtype]=1
+        # Update history
         for t,c in counts.iteritems():
             if t in self.history:
                 self.history[t]=([c]+self.history[t])[:10]
             else:
                 self.history[t]=[c]
         sc=sorted(counts.iteritems(),lambda x,y:-cmp(x[1],y[1]))
+        # Generaate report
         r=["OBJECT REFERENCE COUNT:"]
         r+=["Total objects: %d"%len(gc.get_objects())]
         r+=["%80s: %10d %s"%("%s.%s"%(c[0].__module__,c[0].__name__),c[1],self.get_history(c[0])) for c in sc]
+        # Referrers to top 5 objects
+        for t,c in sc[:5]:
+            r+=["REFERRERS TO: %s.%s"%(t.__module__,t.__name__)]
+            rc=sorted(ref_counts[t].iteritems(),lambda x,y:-cmp(x[1],y[1]))
+            r+=["    %80s: %10d"%("%s.%s"%(c[0].__module__,c[0].__name__),c[1]) for c in rc]
         r+=["END OF OBJECT REFERENCE COUNT"]
         return "\n".join(r)
     ##
