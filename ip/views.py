@@ -124,7 +124,7 @@ class AssignAddressForm(forms.Form):
 
 rx_url_cidr=re.compile(r"^.*/(\d+\.\d+\.\d+\.\d+/\d+)/$")
 
-def assign_address(request,vrf_id,ip=None):
+def assign_address(request,vrf_id,ip=None,new_ip=None):
     vrf=get_object_or_404(VRF,id=int(vrf_id))
     if ip:
         assert is_ipv4(ip)
@@ -136,6 +136,10 @@ def assign_address(request,vrf_id,ip=None):
             "tt"          : address.tt,
         }
         p="/"+ip
+    elif new_ip:
+        assert is_ipv4(new_ip)
+        initial={"ip":new_ip}
+        p=""
     else:
         initial={}
         p=""
