@@ -184,7 +184,7 @@ class Profile(object):
             from pygments import highlight
         except ImportError:
             # No pygments, no highlighting. Return escaped HTML
-            return "<pre>%s</pre>"%escape(cfg).replace("\n","<br/>")
+            return "<pre><!--no pygments-->%s</pre>"%escape(cfg).replace("\n","<br/>")
         # Check for lexer available
         from pygments.lexers import TextLexer
         from noc.lib.highlight import NOCHtmlFormatter
