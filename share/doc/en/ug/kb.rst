@@ -61,6 +61,36 @@ Example (Creole)::
     <<now>>
     <<now format='Y.m.d H:i:s'>>
 
+format
+------
+Performs syntax highlighting for specified syntax. Accepts optional *syntax* argument.
+All `pygments built-in formats <http://pygments.org/docs/lexers/>`_ are supported.
+
+Examples (Creole)::
+
+    <<format syntax="python">>
+    def test(s):
+        return s+1
+    <</format>>
+    
+    <<format syntax="c">>
+    int main(int argc, char** argv)
+    {
+        return 0;
+    }
+    <</format>>
+
+NOC's built-in parsers can be used as well. To use built-in config parser *syntax* must
+be started with "noc.", followed by profile name.
+
+Example (Creole)::
+
+    <<format syntax="noc.Cisco.IOS">>
+    ! test
+    interface GigabitEthernet1/0/1
+        shutdown
+    <</format>>
+
 rack
 ----
 Rack macro offers simple XML-based language for rack space allocation and renders neat rack image.

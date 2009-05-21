@@ -1,7 +1,9 @@
 {% extends "template/template.html" %}
 {% block title%}Knowledge Base: KB{{e.id}}{% endblock %}
 {% block extrahead %}
-    <link type="text/css" rel="stylesheet" href="/static/css/rack.css">
+    <link type="text/css" rel="stylesheet" href="/static/css/rack.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/highlight.css" />
 {% endblock %}
 {% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A> &rsaquo; KB{{e.id}}</div>{% endblock %}
 {% block content %}
