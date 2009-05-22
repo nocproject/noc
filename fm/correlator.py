@@ -150,7 +150,7 @@ class Correlator(Daemon):
     ##
     def run(self):
         transaction.enter_transaction_management()
-        for e in Event.objects.order_by("timestamp"):
+        for e in Event.objects.filter(status="A").order_by("timestamp"):
             event_class_id=e.event_class.id
             if event_class_id not in self.ec_to_rule:
                 continue # No matching rules
@@ -167,8 +167,10 @@ class Correlator(Daemon):
                 for e_id,action in r.correlate(self.cursor,event,vars):
                     if action=="C":
                         # Close event
-                        Event.objects.get(id=e_id).close_event("Event closed by event %d (Correlation rule: %s)"%(e.id,r.name))
-                        logging.debug("Event %d closed by event %d (Correlation rule: %s)"%(e_id,e.id,r.name))
-                        transaction.commit()
+                        e=Event.objects.get(id=e_id)
+                        if e.status=="A":
+                            e.close_event("Event closed by event %d (Correlation rule: %s)"%(e.id,r.name))
+                            logging.debug("Event %d closed by event %d (Correlation rule: %s)"%(e_id,e.id,r.name))
+                            transaction.commit()
                         reset_queries()
         transaction.leave_transaction_management()
