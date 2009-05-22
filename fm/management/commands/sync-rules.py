@@ -12,6 +12,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from noc.fm.rules.classes import EventClass
 from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.correlation import CorrelationRule
 from noc.fm.models import MIB,MIBRequiredException,EventClassificationRule,EventCorrelationRule
 import os,re
 ##
@@ -76,64 +77,15 @@ class Command(BaseCommand):
     ## Syncronize event correlation rules
     ##
     def sync_correlation_rules(self):
-        # Generator returning rules in file
-        def get_rules(path):
-            pkg="_".join(path.split(os.path.sep)[3:])[:-4]
-            with open(path) as f:
-                description=[]
-                body=[]
-                name=None
-                for l in f.readlines():
-                    l=l[:-1].replace("\t","    ")
-                    if l.startswith(" "):
-                        body+=[l[4:]]
-                        continue
-                    else:
-                        if body and name:
-                            yield {
-                                "name"        : name,
-                                "body"        : "\n".join(body),
-                                "description" : "\n".join(description)
-                            }
-                            name=None
-                            body=[]
-                            description=[]
-                        if l.startswith("#"):
-                            match=rx_comment.match(l)
-                            if match:
-                                description+=[match.group(1)]
-                            continue
-                        elif l.strip()=="":
-                            description=[]
-                            continue
-                        else:
-                            name=pkg+"_"+l.strip()
-                            continue
-                if body and name:
-                    yield {
-                        "name"        : name,
-                        "body"        : "\n".join(body),
-                        "description" : "\n".join(description)
-                    }
+        # Make built-in rules list
         loaded_rules={}
         for r in EventCorrelationRule.objects.filter(is_builtin=True):
             loaded_rules[r.name]=None
-        # Retrieve rules
-        for dirpath,dirnames,filenames in os.walk(os.path.join("fm","rules","correlation")):
-            for f in [f for f in filenames if f.endswith(".krb")]:
-                for r in get_rules(os.path.join(dirpath,f)):
-                    try:
-                        rule=EventCorrelationRule.objects.get(name=r["name"])
-                        rule.rule=r["body"]
-                        rule.description=r["description"]
-                        rule.is_builtin=True
-                        print "UPDATE CORRELATION RULE %s"%r["name"]
-                    except EventCorrelationRule.DoesNotExist:
-                        rule=EventCorrelationRule(name=r["name"],rule=r["body"],description=r["description"],is_builtin=True)
-                        print "CREATE CORRELATION RULE %s"%r["name"]
-                    rule.save()
-                    if r["name"] in loaded_rules:
-                        del loaded_rules[r["name"]]
+        # Sync new rules
+        for c in self.search(CorrelationRule,"fm/rules/correlation"):
+            c.sync()
+            if c.name in loaded_rules:
+                del loaded_rules[c.name]
         # Delete stale rules
         for r in loaded_rules:
             rule=EventCorrelationRule.objects.get(name=r)
