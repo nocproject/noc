@@ -130,7 +130,7 @@ def search(request):
 ##
 ## Configuration editor
 ##
-CONFIGS=["noc.conf","noc-sae.conf","noc-activator.conf","noc-classifier.conf"]
+CONFIGS=["noc.conf","noc-sae.conf","noc-activator.conf","noc-classifier.conf","noc-correlator.conf"]
 
 def config_index(request):
     config_list=CONFIGS[:]
