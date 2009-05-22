@@ -8,104 +8,160 @@
 """
 """
 from __future__ import with_statement
+from django.db import transaction,reset_queries
 from noc.lib.daemon import Daemon
 from noc.fm.models import Event,EventCorrelationRule
-from noc.lib.fileutils import rewrite_when_differ
-from pyke import knowledge_engine
-import logging,time,os
+import logging,time,os,re
 
+## Regular expression for embedded vars
+rx_evar=re.compile(r"\${([^}]+?)}")
 ##
-## Default knowledge base name
+## Correlation rule
 ##
-KNOWLEDGE_BASE="kb"
+class Rule(object):
+    def __init__(self,name,action,classes,vars,same_object,window):
+        self.name=name
+        self.action=action
+        self.classes=classes # id
+        self.vars=vars
+        self.same_object=same_object
+        self.window=window
+        self.var_map=[]
+        self.prepare_statement=None
+        self.exec_statement=None
+    ##
+    ## Generator returning a list of assotiated event classes
+    ##
+    def get_registered_event_classes(self):
+        for c in self.classes:
+            yield c
+    ##
+    ## Accepts SQL SELECT statements with embedded vars.
+    ## Returns PREPARE statement and fills self.var_map
+    ## Variables in SQL statement are encoded as ${NAME}
+    ##
+    def cook_prepare_statement(self,cursor,stmt,vars):
+        order_map={}
+        self.var_map=[]
+        for i,v in enumerate(vars):
+            order_map[v]=i+1
+            self.var_map.append(vars[v])
+        stmt=rx_evar.sub(lambda m:"$%d"%order_map[m.group(1)],stmt)
+        stmt_name="stmt_%d"%id(self)
+        stmt="PREPARE %s(%s) AS %s"%(stmt_name,",".join(["CHAR"]*len(order_map)),stmt)
+        cursor.execute(stmt)
+        self.prepare_statement=stmt
+        self.exec_statement="EXECUTE %s(%s)"%(stmt_name,",".join(["%s"]*len(order_map)))
+    ##
+    ## Executes "PREPARE" sql statement
+    ##
+    def prepare_sql_statement(self,cursor):
+        pass
+    ##
+    ## Accepts a hash of event parameters
+    ## and a hash of vars
+    ## Returns a list of (event_id,action)
+    ##
+    def correlate(self,cursor,event,vars):
+        cursor.execute(self.exec_statement,[f(event,vars) for f in self.var_map])
+        return [(x[0],self.action) for x in cursor.fetchall()]
+##
+## Matches a nearest event of given classes with matching vars
+##
+class PairRule(Rule):
+    def prepare_sql_statement(self,cursor):
+        vars={
+            "event_id"  : lambda e,v: e["event_id"],
+            "timestamp" : lambda e,v: e["timestamp"]
+        }
+        # Create SQL select
+        stmt="SELECT e.id FROM fm_event e"
+        # Join tables
+        for i,var in enumerate(self.vars):
+            vars["var::%s"%var]=lambda e,v: v[var]
+            stmt+=" JOIN fm_eventdata ed%d ON (e.id=ed%d.event_id)"%(i,i)
+        stmt+=" WHERE "
+        stmt+=" e.id!=${event_id}::int "
+        stmt+=" AND e.timestamp<=${timestamp}::timestamp "
+        # Restrint to event clesses
+        stmt+=" AND e.event_class_id IN (%s)"%(",".join(["%d"%c for c in self.classes ]))
+        # Restrict search for same object if necessary
+        if self.same_object:
+            vars["managed_object_id"]=lambda e,v: e["managed_object_id"]
+            stmt+=" AND e.managed_object_id=${managed_object_id}::int "
+        for i,v in enumerate(self.vars):
+            stmt+=" AND ed%d.key='%s' AND ed%d.value=${var::%s} "%(i,v,i,v)
+        # Find nearest event
+        stmt+=" ORDER BY e.timestamp DESC LIMIT 1"
+        self.cook_prepare_statement(cursor,stmt,vars)
+
+RULE_TYPE={
+    "Pair" : PairRule,
+}
+
 ##
 ## noc-correlator daemon
 ##
 class Correlator(Daemon):
     daemon_name="noc-correlator"
     def __init__(self):
+        from django.db import connection
+        self.ec_to_rule={} # event_class_id -> list of applicable rules
+        self.cursor=connection.cursor()
         Daemon.__init__(self)
         logging.info("Running Correlator")
-    ##
-    ## Compile and build rule base
-    ##
-    def build_rulebase(self):
-        s=[]
-        for r in EventCorrelationRule.objects.order_by("name"):
-            s.append(r.pyke_code)
-        c=["local","fm","rules","correlation"]
-        d=os.path.join(*c)
-        try:
-            os.makedirs(d)
-        except:
-            pass
-        # Write krb
-        rewrite_when_differ(os.path.join(d,"%s.krb"%KNOWLEDGE_BASE),"\n".join(s))
-        # Write modules __init__.py files when necessary
-        for i in range(len(c)):
-            path=os.path.join(*c[:i+1]+["__init__.py"])
-            if not os.path.exists(path):
-                open(path,"w").close()
     
     ##
-    ## Populate knowledge base with facts
+    ## Load rules from database after loading config
     ##
-    def load_window(self):
-        r=[]
-        self.ke.reset()
-        # Load event window.
-        # Populate knowledge base by facts
-        for e in Event.objects.order_by("-timestamp")[:140]:
-            en=e.id
-            self.ke.assert_("fm","event_class",(en,str(e.event_class.name)))
-            self.ke.assert_("fm","managed_object",(en,str(e.managed_object.name)))
-            self.ke.assert_("fm","timestamp",(en,int(time.mktime(e.timestamp.timetuple()))))
-            for v in e.eventdata_set.filter(type="V"):
-                self.ke.assert_("fm","var",(en,str(v.key),str(v.value)))
-            r.append(e)
-        # Activate rulebase again
-        self.ke.activate(KNOWLEDGE_BASE)
-        return r
+    def load_config(self):
+        super(Correlator,self).load_config()
+        self.load_rules()
     ##
-    ## Search possible solutions for rule(event,$x)
+    ## Build rules
     ##
-    def search_1(self,rule,event):
-        with self.ke.prove_n(KNOWLEDGE_BASE,rule,(event,),1) as gen:
-            for ans in gen:
-                yield ans[0][0]
+    def load_rules(self):
+        self.ec_to_rule={}
+        for r in EventCorrelationRule.objects.all():
+            # Find rule class
+            try:
+                rc=RULE_TYPE[r.rule_type]
+            except:
+                logging.error("Unknown rule type '%s' in rule '%s'"%(r.rule_type,r.name))
+                continue
+            # Create rule object
+            rule=rc(
+                name=r.name,
+                action=r.action,
+                classes=[c.event_class.id for c in r.eventcorrelationmatchedclass_set.all()],
+                vars=[c.var for c in r.eventcorrelationmatchedvar_set.all()],
+                same_object=r.same_object,
+                window=r.window)
+            # Prepare SQL statement
+            rule.prepare_sql_statement(self.cursor)
+            # Associate rule object with classes
+            for c in rule.get_registered_event_classes():
+                if c not in self.ec_to_rule:
+                    self.ec_to_rule[c]=[rule]
+                else:
+                    self.ec_to_rule[c].append(rule)
     ##
-    ## Search possible solutions for rule($x,$y)
-    ##
-    def search_2(self,rule):
-        with self.ke.prove_n(KNOWLEDGE_BASE,rule,tuple(),2) as gen:
-            for ans in gen:
-                yield ans[0]
-    ##
-    ## 
-    ##
-    def start_trace(self):
-        for r in self.ke.get_rb(KNOWLEDGE_BASE).rules.keys():
-            self.ke.trace(KNOWLEDGE_BASE,r)
-    ##
-    ## main daemon loop
+    ## Main daemon loop
     ##
     def run(self):
-        self.build_rulebase()
-        self.ke=knowledge_engine.engine("noc.local.fm.rules.correlation")
-        events=self.load_window()
-        #self.ke.get_kb("fm").dump_specific_facts()
-        #self.start_trace()
-        t0=time.time()
-        n=0
-        for x,y in self.search_2("close"):
-            print x,y
-            n+=1
-        logging.debug("%d closing pairs found"%n)
-        dt=time.time()-t0
-        ne=len(events)
-        if dt>0:
-            p=ne/dt
-        else:
-            p=len(events)
-        logging.debug("%d events processed in %8.2f seconds (%8.2f events/sec)"%(ne,dt,p))
-        self.ke.print_stats()
+        for e in Event.objects.order_by("timestamp"):
+            event_class_id=e.event_class.id
+            if event_class_id not in self.ec_to_rule:
+                continue # No matching rules
+            # Prepare hashes
+            ts=e.timestamp
+            event={
+                "event_id"          : str(e.id),
+                "timestamp"         : "%04d-%02d-%02d %02d:%02d:%02d"%(ts.year,ts.month,ts.day,ts.hour,ts.minute,ts.second),
+                "managed_object_id" : str(e.managed_object.id),
+            }
+            vars=dict([(d.key,d.value) for d in e.eventdata_set.all()])
+            # Try to correlate events
+            for r in self.ec_to_rule[event_class_id]:
+                for e_id,action in r.correlate(self.cursor,event,vars):
+                    print "CORRELATION FOUND",e.id,e_id,action

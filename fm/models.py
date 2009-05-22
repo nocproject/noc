@@ -423,7 +423,6 @@ class EventPostProcessingRE(models.Model):
     value_re=models.CharField("Value RE",max_length=256)
 ##
 ## Event Correlation Rule
-## Correlation rules are the PyKE statements
 ##
 class EventCorrelationRule(models.Model):
     class Meta:
@@ -431,22 +430,35 @@ class EventCorrelationRule(models.Model):
         verbose_name_plural="Event Correlation Rules"
         ordering=["name"]
     name=models.CharField("Name",max_length=64,unique=True)
-    rule=models.TextField("Rule")
     description=models.TextField("Description",null=True,blank=True)
     is_builtin=models.BooleanField("Is Builtin",default=False)
+    rule_type=models.CharField("Rule Type",max_length=32,choices=[("Pair","Pair")])
+    action=models.CharField("Action",max_length=1,choices=[("C","Close"),("D","Drop"),("P","Root (parent)"),("c","Root (child)")])
+    same_object=models.BooleanField("Same Object",default=True)
+    window=models.IntegerField("Window (sec)",default=0)
+
     def __unicode__(self):
         return self.name
-    def _pyke_id(self):
-        return rx_py_id.sub(self.name,"_")
-    pyke_id=property(_pyke_id)
-    def _pyke_code(self):
-        s=[]
-        if self.description:
-            s+=["##"]+["## %s"%l for l in self.description.split("\n")]+["##"]
-        s+=[self.pyke_id]
-        s+=["    %s"%l for l in self.rule.split("\n")]+[""]
-        return "\n".join(s)
-    pyke_code=property(_pyke_code)
+##
+## Matched class list for correlation rule
+##
+class EventCorrelationMatchedClass(models.Model):
+    class Meta:
+        verbose_name="Event Correlation Rule Matched Class"
+        verbose_name="Event Correlation Rule Matched Classes"
+        unique_together=[("rule","event_class")]
+    rule=models.ForeignKey(EventCorrelationRule,verbose_name="Rule")
+    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
+##
+## Matched var list for correlation rule
+##
+class EventCorrelationMatchedVar(models.Model):
+    class Meta:
+        verbose_name="Event Correlation Rule Matched Var"
+        verbose_name="Event Correlation Rule Matched Vars"
+        unique_together=[("rule","var")]
+    rule=models.ForeignKey(EventCorrelationRule,verbose_name="Rule")
+    var=models.CharField("Variable Name",max_length=256)
 ##
 ## Event itself
 ##

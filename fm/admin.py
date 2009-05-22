@@ -73,10 +73,25 @@ class EventPostProcessingRuleAdmin(admin.ModelAdmin):
     list_filter=["is_active","event_class"]
     inlines=[EventPostProcessingREAdmin]
 ##
+##
+##
+class EventCorrelationMatchedClassAdmin(admin.TabularInline):
+    extra=3
+    model=EventCorrelationMatchedClass
+##
+##
+##
+class EventCorrelationMatchedVarAdmin(admin.TabularInline):
+    extra=3
+    model=EventCorrelationMatchedVar
+##
+##
+##
 class EventCorrelationRuleAdmin(admin.ModelAdmin):
     list_display=["name","is_builtin"]
     search_fields=["name"]
     list_filter=["is_builtin"]
+    inlines=[EventCorrelationMatchedClassAdmin,EventCorrelationMatchedVarAdmin]
 ##
 admin.site.register(MIB, MIBAdmin)
 admin.site.register(MIBData, MIBDataAdmin)
