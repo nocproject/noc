@@ -88,7 +88,7 @@ class EventCorrelationMatchedVarAdmin(admin.TabularInline):
 ##
 ##
 class EventCorrelationRuleAdmin(admin.ModelAdmin):
-    list_display=["name","is_builtin"]
+    list_display=["name","is_builtin","python_link"]
     search_fields=["name"]
     list_filter=["is_builtin"]
     inlines=[EventCorrelationMatchedClassAdmin,EventCorrelationMatchedVarAdmin]
