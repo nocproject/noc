@@ -159,7 +159,7 @@ class Correlator(Daemon):
         while True:
             n_closed=0
             t0=time.time()
-            for e in Event.objects.filter(status="A").order_by("timestamp")[:CHUNK]:
+            for e in Event.objects.filter(status="A").order_by("timestamp"):
                 event_class_id=e.event_class.id
                 if event_class_id not in self.ec_to_rule:
                     continue # No matching rules
