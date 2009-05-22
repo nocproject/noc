@@ -121,8 +121,11 @@ class Correlator(Daemon):
     ## Build rules
     ##
     def load_rules(self):
+        logging.info("Loading rules")
         self.ec_to_rule={}
+        n=0
         for r in EventCorrelationRule.objects.all():
+            n+=1
             # Find rule class
             try:
                 rc=RULE_TYPE[r.rule_type]
@@ -145,6 +148,7 @@ class Correlator(Daemon):
                     self.ec_to_rule[c]=[rule]
                 else:
                     self.ec_to_rule[c].append(rule)
+        logging.info("%d rules are loaded"%n)
     ##
     ## Main daemon loop
     ##
