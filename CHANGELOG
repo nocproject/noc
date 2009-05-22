@@ -3,10 +3,12 @@
  * sa
    * Memory leak in SAE daemon eliminated
  * cm
-   * Config file syntax hilighting
+   * Config file syntax highlighting
    * Improved navigation
  * ip
    * Show/Hide free IP addresses in the block
+ * kb
+   * New "format" macro for syntax highlighting
    
 0.2.2 (17-MAY-2009)
 -------------------
