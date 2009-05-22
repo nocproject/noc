@@ -16,17 +16,17 @@ def get_event_class(ec):
         event_class_cache[ec.name]=EventClass.objects.get(name=ec.name)
     return event_class_cache[ec.name]
 ##
-##
+## Basic event correlation rule
 ##
 class CorrelationRule(object):
-    name="Corellation Rule"
-    description=""
-    rule_type="Pair"
-    action=CLOSE_EVENT
-    same_object=True
-    window=0
-    classes=[]
-    vars=[]
+    name="Corellation Rule" # Name of the rule
+    description=""          # Description
+    rule_type="Pair"        # Matching algorithm
+    action=CLOSE_EVENT      # Action
+    same_object=True        # Restrict search to the same managed object
+    window=0                # Time window
+    classes=[]              # Classes to match
+    vars=[]                 # variables to match
     
     @classmethod
     def sync(cls):
@@ -54,6 +54,6 @@ class CorrelationRule(object):
         r.eventcorrelationmatchedclass_set.all().delete()
         for c in cls.classes:
             EventCorrelationMatchedClass(rule=r,event_class=get_event_class(c)).save()
+        r.eventcorrelationmatchedvar_set.all().delete()
         for v in cls.vars:
             EventCorrelationMatchedVar(rule=r,var=v).save()
-        r.eventcorrelationmatchedvar_set.all().delete()
