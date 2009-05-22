@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import permission_required
 from noc.lib.render import render,render_plain_text,render_success,render_failure,render_json
 from noc.lib.fileutils import temporary_file
 from noc.fm.models import Event,EventData,EventClassificationRule,EventClassificationRE,EventPriority, EventClass,\
-    MIB, MIBRequiredException, EventCategory, EVENT_STATUS_CHOICES, EventPostProcessingRule, EventPostProcessingRE
+    MIB, MIBRequiredException, EventCategory, EVENT_STATUS_CHOICES, EventPostProcessingRule, EventPostProcessingRE, EventCorrelationRule
 from noc.sa.models import ManagedObject
 from django.http import HttpResponseRedirect,HttpResponseForbidden, HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
@@ -221,6 +221,14 @@ def py_event_class(request,event_class_id):
 def py_event_classification_rule(request,rule_id):
     rule=get_object_or_404(EventClassificationRule,id=int(rule_id))
     return render_plain_text(rule.python_code)
+##
+## Convert event correlation rule to python code
+##
+@permission_required("fm.add_eventcorrelationrule")
+def py_event_correlation_rule(request,rule_id):
+    rule=get_object_or_404(EventCorrelationRule,id=int(rule_id))
+    return render_plain_text(rule.python_code)
+
 ##
 ## MIB Upload
 ##

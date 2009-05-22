@@ -439,6 +439,28 @@ class EventCorrelationRule(models.Model):
 
     def __unicode__(self):
         return self.name
+        
+    def python_link(self):
+        return "<A HREF='/fm/py_event_correlation_rule/%d/'>Python</A>"%self.id
+    python_link.short_description="Python"
+    python_link.allow_tags=True
+    ##
+    ## Python representation of data structure
+    ##
+    def _python_code(self):
+        s=["from noc.fm.rules.correlation import *"]
+        s+=["##","## %s"%self.name,"##"]
+        s+=["class %s_Rule(CorrelationRule):"%rx_py_id.sub("_",self.name)]
+        s+=["    name=\"%s\""%py_q(self.name)]
+        s+=["    description=\"%s\""%py_q(self.description)]
+        s+=["    rule_type=\"%s\""%py_q(self.rule_type)]
+        s+=["    action=%s"%{"C":"CLOSE_EVENT"}[self.action]]
+        s+=["    same_object=%s"%self.same_object]
+        s+=["    window=%s"%self.window]
+        s+=["    classes=[%s]"%(",".join([rx_py_id.sub("",x.event_class.name) for x in self.eventcorrelationmatchedclass_set.all()]))]
+        s+=["    vars=[%s]"%(",".join(["\"%s\""%x.var for x in self.eventcorrelationmatchedvar_set.all()]))]
+        return "\n".join(s)
+    python_code=property(_python_code)
 ##
 ## Matched class list for correlation rule
 ##
