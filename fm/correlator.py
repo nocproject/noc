@@ -149,28 +149,40 @@ class Correlator(Daemon):
     ## Main daemon loop
     ##
     def run(self):
+        CHUNK=1000 # Maximum amount of events to proceed at once
+        INTERVAL=10
         transaction.enter_transaction_management()
-        for e in Event.objects.filter(status="A").order_by("timestamp"):
-            event_class_id=e.event_class.id
-            if event_class_id not in self.ec_to_rule:
-                continue # No matching rules
-            # Prepare hashes
-            ts=e.timestamp
-            event={
-                "event_id"          : str(e.id),
-                "timestamp"         : "%04d-%02d-%02d %02d:%02d:%02d"%(ts.year,ts.month,ts.day,ts.hour,ts.minute,ts.second),
-                "managed_object_id" : str(e.managed_object.id),
-            }
-            vars=dict([(d.key,d.value) for d in e.eventdata_set.all()])
-            # Try to correlate events
-            for r in self.ec_to_rule[event_class_id]:
-                for e_id,action in r.correlate(self.cursor,event,vars):
-                    if action=="C":
-                        # Close event
-                        e=Event.objects.get(id=e_id)
-                        if e.status=="A":
-                            e.close_event("Event closed by event %d (Correlation rule: %s)"%(e.id,r.name))
-                            logging.debug("Event %d closed by event %d (Correlation rule: %s)"%(e_id,e.id,r.name))
-                            transaction.commit()
-                        reset_queries()
+        while True:
+            n_closed=0
+            t0=time.time()
+            for e in Event.objects.filter(status="A").order_by("timestamp")[:CHUNK]:
+                event_class_id=e.event_class.id
+                if event_class_id not in self.ec_to_rule:
+                    continue # No matching rules
+                # Prepare hashes
+                ts=e.timestamp
+                event={
+                    "event_id"          : str(e.id),
+                    "timestamp"         : "%04d-%02d-%02d %02d:%02d:%02d"%(ts.year,ts.month,ts.day,ts.hour,ts.minute,ts.second),
+                    "managed_object_id" : str(e.managed_object.id),
+                }
+                vars=dict([(d.key,d.value) for d in e.eventdata_set.all()])
+                # Try to correlate events
+                for r in self.ec_to_rule[event_class_id]:
+                    for e_id,action in r.correlate(self.cursor,event,vars):
+                        if action=="C":
+                            # Close event
+                            e=Event.objects.get(id=e_id)
+                            if e.status=="A":
+                                e.close_event("Event closed by event %d (Correlation rule: %s)"%(e.id,r.name))
+                                logging.debug("Event %d closed by event %d (Correlation rule: %s)"%(e_id,e.id,r.name))
+                                transaction.commit()
+                                n_closed+=1
+                            reset_queries()
+            # Dump performance data
+            if n_closed:
+                dt=time.time()-t0
+                logging.info("%d events were closed in %d seconds"%(n_closed,dt))
+            else:
+                time.sleep(INTERVAL)
         transaction.leave_transaction_management()
