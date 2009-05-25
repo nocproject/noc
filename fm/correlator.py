@@ -83,7 +83,10 @@ class PairRule(Rule):
         stmt+=" WHERE "
         stmt+=" e.id!=${event_id}::int "
         stmt+=" AND e.timestamp<=${timestamp}::timestamp "
-        # Restrint to event clesses
+        # Restrict to window
+        if self.window:
+            stmt+=" AND e.timestamp>=(${timestamp}::timestamp-'%d seconds'::interval) "%int(self.window)
+        # Restrint to event classes
         stmt+=" AND e.event_class_id IN (%s)"%(",".join(["%d"%c for c in self.classes ]))
         # Restrict search for same object if necessary
         if self.same_object:
