@@ -14,7 +14,7 @@ from noc.fm.rules.classes import EventClass,Var
 class LinkUp(EventClass):
     name="Link Up"
     category="NETWORK"
-    priority="MAJOR"
+    priority="NORMAL"
     subject_template="Link Up: {{interface}}"
     body_template="""Link Up: {{interface}}"""
     class Vars:
