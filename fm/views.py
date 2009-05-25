@@ -257,3 +257,11 @@ def reload_classifier_config(request):
     referer=request.META.get("HTTP_REFERER","/admin/fm/eventclassificationrule/")
     refresh_config("noc-classifier")
     return HttpResponseRedirect(referer)
+##
+## Reload noc-correlator config
+##
+@permission_required("fm.add_eventcorrelationrule")
+def reload_correlator_config(request):
+    referer=request.META.get("HTTP_REFERER","/admin/fm/eventcorrelationrule/")
+    refresh_config("noc-correlator")
+    return HttpResponseRedirect(referer)
