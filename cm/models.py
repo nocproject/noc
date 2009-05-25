@@ -368,7 +368,7 @@ class DNS(Object):
             path=os.path.join(ns.name,"autozones.conf")
             try:
                 o=DNS.objects.get(repo_path=path)
-            except Object.DoesNotExist:
+            except DNS.DoesNotExist:
                 o=DNS(repo_path=path)
                 o.save()
             o.write(g.get_include(ns))
