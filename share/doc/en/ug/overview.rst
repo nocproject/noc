@@ -7,6 +7,7 @@ Areas covered by NOC:
 
 * Fault Management
 * Service Activation/Provisioning
+* Knowledge Base
 * Multi-VRF Address space management
 * Virtual Circuits management
 * Configuration Management
