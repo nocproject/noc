@@ -155,14 +155,6 @@ Install::
 
     # easy_install netifaces
 
-Pyke
-^^^^
-`Pyke <http://pyke.sf.net/>`_ is a Python a knowledge-based inference engine used by Fault Management's Event Correlator.
-
-Install::
-
-    # easy_install pyke
-
 fping
 ^^^^^
 `fping <http://fping.sourceforge.net/>`_ is a tool to perform parralel ICMP host checking. fping is used by Fault Management module
