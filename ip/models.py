@@ -171,7 +171,7 @@ class IPv4Block(models.Model):
 
     def _addresses(self):
         if self.has_children:
-            return None
+            return []
         from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE vrf_id=%d AND ip << '%s' ORDER BY ip"%(IPv4Address._meta.db_table,self.vrf.id,self.prefix))
