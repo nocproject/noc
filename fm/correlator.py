@@ -166,9 +166,11 @@ class Correlator(Daemon):
         transaction.enter_transaction_management()
         while True:
             n_closed=0
+            n_checked=0
             t0=time.time()
             ws=datetime.datetime.now()-datetime.timedelta(seconds=self.config.getint("correlator","window")) # Start of the window
             for e in Event.objects.filter(status="A",timestamp__gte=ws).order_by("timestamp"):
+                n_checked+=1
                 event_class_id=e.event_class.id
                 if event_class_id not in self.ec_to_rule:
                     continue # No matching rules
@@ -195,7 +197,7 @@ class Correlator(Daemon):
             # Dump performance data
             if n_closed:
                 dt=time.time()-t0
-                logging.info("%d events were closed in %d seconds"%(n_closed,dt))
+                logging.info("%d events were closed in %d seconds (%d events checked)"%(n_closed,dt,n_checked))
             else:
                 time.sleep(INTERVAL)
         transaction.leave_transaction_management()
