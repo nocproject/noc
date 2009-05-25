@@ -102,7 +102,13 @@ class EventSearchForm(forms.Form):
 ##
 @permission_required("fm.change_event")
 def index(request):
-    form=EventSearchForm(initial={"status":"A"})
+    initial={"status":"A"}
+    try:
+        initial["event_priority"]=EventPriority.objects.get(name="WARNING").id
+    except EventPriority.DoesNotExist:
+        pass
+    print initial
+    form=EventSearchForm(initial=initial)
     return render(request,"fm/index.html",{"form":form})
 ##
 ## Dynamically generated CSS for event list priorities
