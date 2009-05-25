@@ -30,6 +30,11 @@ class Rule(object):
         self.prepare_statement=None
         self.exec_statement=None
     ##
+    ## Quote SQL string
+    ##
+    def q(self,s):
+        return s.replace("\\","\\\\").replace("'","\\'")
+    ##
     ## Generator returning a list of assotiated event classes
     ##
     def get_registered_event_classes(self):
@@ -93,7 +98,7 @@ class PairRule(Rule):
             vars["managed_object_id"]=lambda e,v: e["managed_object_id"]
             stmt+=" AND e.managed_object_id=${managed_object_id}::int "
         for i,v in enumerate(self.vars):
-            stmt+=" AND ed%d.key='%s' AND ed%d.value=${var::%s} "%(i,v,i,v)
+            stmt+=" AND ed%d.key='%s' AND ed%d.value=${var::%s} "%(i,self.q(v),i,v)
         # Find nearest event
         stmt+=" ORDER BY e.timestamp DESC LIMIT 1"
         self.cook_prepare_statement(cursor,stmt,vars)
