@@ -200,11 +200,15 @@ change  fm | Event Correlation Rule | Can change Event Correlation Rule
 delete  fm | Event Correlation Rule | Can delete Event Correlation Rule
 ======= ========================================
 
+Archivation Rules
+-----------------
 Permissions
 ^^^^^^^^^^^
-======= ========================================
-preview ANY
-======= ========================================
+======= ===============================================================
+add     fm | Event Archivation Rule | Can add Event Archivation Rule
+change  fm | Event Archivation Rule | Can change Event Archivation Rule
+delete  fm | Event Archivation Rule | Can delete Event Archivation Rule
+======= ===============================================================
 
 Reports
 =======
