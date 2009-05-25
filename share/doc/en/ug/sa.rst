@@ -56,7 +56,7 @@ Daemon mode
 By default SAE starts in daemon mode, detaches from terminal and continues execution in backgroung.
 To run SAE::
 
-    $ cd /var/www/noc
+    $ cd /opt/noc
     $ ./scripts/noc-sae.py start
 
 Foreground mode
@@ -64,14 +64,14 @@ Foreground mode
 When started in foreground mode SAE do not detaches from terminal and enforces full debug output directed to current terminal.
 To run SAE in foreground mode::
 
-    $ cd /var/www/noc
+    $ cd /opt/noc
     $ ./scripts/noc-sae.py -f start
 
 Stopping SAE
 ------------
 To stop SAE run::
 
-    $ cd /var/www/noc
+    $ cd /opt/noc
     $ ./scripts/noc-sae.py stop
 
 
@@ -110,7 +110,7 @@ stand-alone mode
 Stand-alone distribution is stripped NOC distribution with minimum files and dependencies.
 Stand-alone distribution can be created from full NOC distribution by::
 
-    $ cd /var/www/noc
+    $ cd /opt/noc
     $ ./scripts/clone-activator /tmp
     $ cd /tmp
     $ tar cf - noc | gzip > noc-activator.tgz
@@ -128,7 +128,7 @@ Daemon mode
 By default activator starts in daemon mode, detaches from terminal and continues execution in backgroung.
 To run SAE::
 
-    $ cd /var/www/noc
+    $ cd /opt/noc
     $ ./scripts/noc-activator.py start
 
 Foreground mode
@@ -137,7 +137,7 @@ Foreground mode
 When started in foreground mode activator do not detaches from terminal and enforces full debug output directed to current terminal.
 To run SAE in foreground mode::
 
-    $ cd /var/www/noc
+    $ cd /opt/noc
     $ ./scripts/noc-activator.py -f start
 
 
@@ -146,8 +146,8 @@ Stopping Activator
 
 To stop Activator run::
 
-    $ cd /var/www/noc
-    $ ./scripts/noc-sae.py stop
+    $ cd /opt/noc
+    $ ./scripts/noc-activator.py stop
 
 
 Enabling collectors
