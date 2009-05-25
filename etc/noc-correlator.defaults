@@ -8,3 +8,10 @@
 logfile  = /var/log/noc/noc-correlator.log
 loglevel = info
 pidfile  = /var/log/noc/noc-correlator.pid
+
+[correlator]
+##
+## Time window (in seconds) to search for active events
+## in correlation loop
+##
+window = 10800

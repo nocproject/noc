@@ -11,7 +11,7 @@ from __future__ import with_statement
 from django.db import transaction,reset_queries
 from noc.lib.daemon import Daemon
 from noc.fm.models import Event,EventCorrelationRule
-import logging,time,os,re
+import logging,time,os,re,datetime
 
 ## Regular expression for embedded vars
 rx_evar=re.compile(r"\${([^}]+?)}")
@@ -162,7 +162,8 @@ class Correlator(Daemon):
         while True:
             n_closed=0
             t0=time.time()
-            for e in Event.objects.filter(status="A").order_by("timestamp"):
+            ws=datetime.datetime.now()-datetime.timedelta(seconds=self.config.getint("correlator","window")) # Start of the window
+            for e in Event.objects.filter(status="A",timestamp__gte=ws).order_by("timestamp"):
                 event_class_id=e.event_class.id
                 if event_class_id not in self.ec_to_rule:
                     continue # No matching rules
