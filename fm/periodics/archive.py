@@ -19,6 +19,6 @@ class Task(noc.sa.periodic.Task):
         
         for rule in EventArchivationRule.objects.all():
             ts=datetime.datetime.now()-datetime.timedelta(seconds=rule.ttl*{"s":1,"m":60,"h":3600,"d":86400}[rule.ttl_measure])
-            Event.objects.filter(status="C",timestamp__gte=ts,event_class=rule.event_class).delete()
+            Event.objects.filter(status="C",timestamp__lte=ts,event_class=rule.event_class).delete()
         return True
 
