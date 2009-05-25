@@ -161,16 +161,17 @@ class Correlator(Daemon):
     ## Main daemon loop
     ##
     def run(self):
-        CHUNK=1000 # Maximum amount of events to proceed at once
         INTERVAL=10
+        last_id=0 # Max value of processes event.id
         transaction.enter_transaction_management()
         while True:
             n_closed=0
             n_checked=0
             t0=time.time()
             ws=datetime.datetime.now()-datetime.timedelta(seconds=self.config.getint("correlator","window")) # Start of the window
-            for e in Event.objects.filter(status="A",timestamp__gte=ws).order_by("timestamp"):
+            for e in Event.objects.filter(status="A",timestamp__gte=ws,id__gte=last_id).order_by("timestamp"):
                 n_checked+=1
+                last_id=max(last_id,e.id)
                 event_class_id=e.event_class.id
                 if event_class_id not in self.ec_to_rule:
                     continue # No matching rules
