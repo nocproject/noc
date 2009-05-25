@@ -182,7 +182,7 @@ class Correlator(Daemon):
                                 logging.debug("Event %d closed by event %d (Correlation rule: %s)"%(e_id,e.id,r.name))
                                 transaction.commit()
                                 n_closed+=1
-                            reset_queries()
+                reset_queries()
             # Dump performance data
             if n_closed:
                 dt=time.time()-t0
