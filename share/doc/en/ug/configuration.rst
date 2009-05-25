@@ -629,3 +629,43 @@ logging level. One of: debug, info, warning, error, critical
 pidfile
 ^^^^^^^
 Pid file path
+
+.. _noc-correlator-conf:
+
+noc-correlator.conf
+===================
+Correlator configuration
+
+.. _noc-correlator-conf-main:
+
+[main] section
+--------------
+
+.. _noc-correlator-conf-main-logfile:
+
+logfile
+^^^^^^^
+Log file path
+
+.. _noc-correlator-conf-main-loglevel:
+
+loglevel
+^^^^^^^^
+logging level. One of: debug, info, warning, error, critical
+
+.. _noc-correlator-conf-main-pidfile:
+
+pidfile
+^^^^^^^
+Pid file path
+
+.. _noc-correlator-conf-correlator:
+
+[correlator] section
+--------------------
+
+.. _noc-correlator-conf-correlator-window:
+
+window
+^^^^^^
+Window (in seconds) to search active events for correlation process
