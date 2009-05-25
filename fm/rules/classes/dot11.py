@@ -65,3 +65,29 @@ class Dot11MaxRetries(EventClass):
     body_template="dot11 Too many retries: {{mac}}. Removing the client"
     class Vars:
         mac=Var(required=True)
+##
+## CCMP Replay
+##
+class CCMPReplay(EventClass):
+    name     = "CCMP Replay"
+    category = "SECURITY"
+    priority = "MAJOR"
+    subject_template="CCMP Replay attempt from: {{mac}}"
+    body_template="""AES-CCMP TSC replay was indicated on a frame. A replay of the AES-CCMP TSC in a received packet almost indicates an active attack."""
+    repeat_suppression=False
+    repeat_suppression_interval=3600
+    trigger=None
+    class Vars:
+        mac=Var(required=True,repeat=False)
+##
+## WDS Authentication Timeout
+##
+class WDSAuthenticationTimeout(EventClass):
+    name     = "WDS Authentication Timeout"
+    category = "NETWORK"
+    priority = "MINOR"
+    subject_template="WDS Authentication Timeout"
+    body_template="""AP Timed out authenticating to the WDS"""
+    repeat_suppression=False
+    repeat_suppression_interval=0
+    trigger=None
