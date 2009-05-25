@@ -180,9 +180,9 @@ class Correlator(Daemon):
                     for e_id,action in r.correlate(self.cursor,event,vars):
                         if action=="C":
                             # Close event
-                            e=Event.objects.get(id=e_id)
-                            if e.status=="A":
-                                e.close_event("Event closed by event %d (Correlation rule: %s)"%(e.id,r.name))
+                            ce=Event.objects.get(id=e_id)
+                            if ce.status=="A":
+                                ce.close_event("Event closed by event %d (Correlation rule: %s)"%(e.id,r.name))
                                 logging.debug("Event %d closed by event %d (Correlation rule: %s)"%(e_id,e.id,r.name))
                                 transaction.commit()
                                 n_closed+=1
