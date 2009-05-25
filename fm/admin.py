@@ -93,6 +93,12 @@ class EventCorrelationRuleAdmin(admin.ModelAdmin):
     list_filter=["is_builtin"]
     inlines=[EventCorrelationMatchedClassAdmin,EventCorrelationMatchedVarAdmin]
 ##
+##
+##
+class EventArchivationRuleAdmin(admin.ModelAdmin):
+    list_display=["event_class","ttl","ttl_measure","action"]
+    list_filter=["action"]
+##
 admin.site.register(MIB, MIBAdmin)
 admin.site.register(MIBData, MIBDataAdmin)
 admin.site.register(EventPriority, EventPriorityAdmin)
@@ -101,3 +107,4 @@ admin.site.register(EventClass, EventClassAdmin)
 admin.site.register(EventClassificationRule, EventClassificationRuleAdmin)
 admin.site.register(EventPostProcessingRule, EventPostProcessingRuleAdmin)
 admin.site.register(EventCorrelationRule, EventCorrelationRuleAdmin)
+admin.site.register(EventArchivationRule, EventArchivationRuleAdmin)

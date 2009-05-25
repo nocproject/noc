@@ -594,6 +594,17 @@ class EventLog(models.Model):
     to_status=models.CharField("To Status",max_length=1,choices=EVENT_STATUS_CHOICES)
     message=models.TextField("Message")
 ##
+##
+##
+class EventArchivationRule(models.Model):
+    class Meta:
+        verbose_name="Event Archivation Rule"
+        verbose_name_plural="Event Archivation Rules"
+    event_class=models.ForeignKey(EventClass,verbose_name="Event Class",unique=True)
+    ttl=models.IntegerField("Time To Live")
+    ttl_measure=models.CharField("Measure",choices=[("s","Seconds"),("m","Minutes"),("h","Hours"),("d","Days")],default="h",max_length=1)
+    action=models.CharField("Action",choices=[("D","Drop")],default="D",max_length=1)
+##
 ## Application Menu
 ##
 class AppMenu(Menu):
@@ -610,5 +621,6 @@ class AppMenu(Menu):
             ("Classification Rules","/admin/fm/eventclassificationrule/", "fm.change_eventclassificationrule"),
             ("Post-Processing Rules", "/admin/fm/eventpostprocessingrule/", "fm.change_eventpostprocessingrule"),
             ("Correlation Rules",   "/admin/fm/eventcorrelationrule/",    "fm.change_eventcorrelationrule"),
+            ("Archivation Rules",   "/admin/fm/eventarchivationrule/",    "fm.change_eventarchivationrule"),
         ])
     ]
