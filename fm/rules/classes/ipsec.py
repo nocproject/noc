@@ -14,7 +14,7 @@ from noc.fm.rules.classes import EventClass,Var
 class IPsecPhase1TunnelStart(EventClass):
     name     = "IPsec Phase1 Tunnel Start"
     category = "NETWORK"
-    priority = "MAJOR"
+    priority = "NORMAL"
     subject_template="IPsec Phase1 Tunnel Start: {{local_ip}} - {{remote_ip}}"
     body_template="""IPsec Phase1 Tunnel Start:
 {{local_ip}} - {{remote_ip}}"""
@@ -43,7 +43,7 @@ class IPsecPhase1TunnelStop(EventClass):
 class IPsecPhase2TunnelStart(EventClass):
     name     = "IPsec Phase2 Tunnel Start"
     category = "NETWORK"
-    priority = "MAJOR"
+    priority = "NORMAL"
     subject_template="IPsec Phase2 Tunnel Start: {{local_ip}} - {{remote_ip}}"
     body_template="""IPsec Phase2 Tunnel Start:
 {{local_ip}} - {{remote_ip}}"""
