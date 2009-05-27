@@ -158,6 +158,7 @@ class Correlator(Daemon):
                 else:
                     self.ec_to_rule[c].append(rule)
         logging.info("%d rules are loaded"%n)
+        logging.debug("Rule map: %s"%str(self.ec_to_rule))
     ##
     ## Main daemon loop
     ##
