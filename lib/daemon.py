@@ -43,20 +43,6 @@ class Daemon(object):
         # Read config
         self.config=None
         self.load_config()
-        # Set up logging
-        if self.config.get("main","loglevel") not in self.LOG_LEVELS:
-            raise Exception("Invalid loglevel '%s'"%self.config.get("main","loglevel"))
-        loglevel=self.LOG_LEVELS[self.config.get("main","loglevel")]
-        for h in logging.root.handlers:
-            logging.root.removeHandler(h) # Dirty hack for baseConfig
-        if self.options.daemonize:
-            if self.config.get("main","logfile"):
-                logging.basicConfig(level=loglevel,
-                                filename=self.config.get("main","logfile"),
-                                format='%(asctime)s %(levelname)s %(message)s',
-                                filemode="a+")
-        else:
-            logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
         # GC statistics collector
         self.gc_stats=GCStats()
         # Register signal handlers if any
@@ -88,6 +74,20 @@ class Daemon(object):
             set_crashinfo_context(self.daemon_name,os.path.dirname(self.config.get("main","logfile")))
         else:
             set_crashinfo_context(None,None)
+        # Set up logging
+        if self.config.get("main","loglevel") not in self.LOG_LEVELS:
+            raise Exception("Invalid loglevel '%s'"%self.config.get("main","loglevel"))
+        loglevel=self.LOG_LEVELS[self.config.get("main","loglevel")]
+        for h in logging.root.handlers:
+            logging.root.removeHandler(h) # Dirty hack for baseConfig
+        if self.options.daemonize:
+            if self.config.get("main","logfile"):
+                logging.basicConfig(level=loglevel,
+                                filename=self.config.get("main","logfile"),
+                                format='%(asctime)s %(levelname)s %(message)s',
+                                filemode="a+")
+        else:
+            logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
     ##
     ## Called after config reloaded by SIGHUP.
     ##
