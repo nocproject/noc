@@ -612,6 +612,7 @@ class AppMenu(Menu):
     title="Fault Management"
     items=[
         ("Events", "/fm/", "fm.change_event"),
+        ("Active Problems", "/fm/active_problems_summary/", "fm.change_event"),
         ("Setup", [
             ("MIBs",                "/admin/fm/mib/",                     "fm.change_mib"),
             ("MIB Data",            "/admin/fm/mibdata/",                 "fm.change_mibdata"),
