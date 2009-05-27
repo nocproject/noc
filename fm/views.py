@@ -285,7 +285,7 @@ def active_problems_summary(request):
     WHERE
         e.status='A' AND ep.priority>1000
     GROUP BY 1,2,3
-    ORDER BY 1,2,3,4 DESC
+    ORDER BY 1,3,2,4 DESC
     """)
     data=cursor.fetchall()
     return render(request,"fm/active_problems_summary.html",{"data":data})
