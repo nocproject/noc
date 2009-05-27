@@ -57,6 +57,7 @@ class Rule(object):
         cursor.execute(stmt)
         self.prepare_statement=stmt
         self.exec_statement="EXECUTE %s(%s)"%(stmt_name,",".join(["%s"]*len(order_map)))
+        logging.debug("SQL statement for rule '%s':\n%s"%(self.name,stmt))
     ##
     ## Executes "PREPARE" sql statement
     ##
