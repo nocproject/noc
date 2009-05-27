@@ -271,3 +271,21 @@ def reload_correlator_config(request):
     referer=request.META.get("HTTP_REFERER","/admin/fm/eventcorrelationrule/")
     refresh_config("noc-correlator")
     return HttpResponseRedirect(referer)
+##
+## Active problems summary
+##
+@permission_required("fm.change_event")
+def active_problems_summary(request):
+    from django.db import connection
+    cursor=connection.cursor()
+    cursor.execute("""SELECT o.name AS object_name,ec.name AS class_name,ep.name AS priority_name,COUNT(*) AS count
+    FROM fm_event e JOIN sa_managedobject o ON (e.managed_object_id=o.id)
+        JOIN fm_eventclass ec ON (ec.id=e.event_class_id)
+        JOIN fm_eventpriority ep ON (e.event_priority_id=ep.id)
+    WHERE
+        e.status='A' AND ep.priority>1000
+    GROUP BY 1,2,3
+    ORDER BY 1,2,3,4 DESC
+    """)
+    data=cursor.fetchall()
+    return render(request,"fm/active_problems_summary.html",{"data":data})
