@@ -8,7 +8,7 @@
 """
 """
 import noc.dns.generators
-import time
+import time,os
 
 class Generator(noc.dns.generators.Generator):
     name="BINDv9"
@@ -61,6 +61,10 @@ $TTL %(ttl)d
 # Do not edit manually
 #
 """
+        if ns.autozones_path:
+            autozones_path=ns.expand_vars(ns.autozones_path)
+        else:
+            autozones_path="autozones"
         # id -> (zone, is_master, masters, slaves)
         zones={}
         for p in ns.masters.all():
@@ -79,12 +83,12 @@ $TTL %(ttl)d
             s+="zone %s {\n"%zone
             if is_master:
                 s+="    type master;\n"
-                s+="    file \"autozones/%s\";\n"%zone
+                s+="    file \"%s\";\n"%os.path.join(autozones_path,zone)
                 if slaves:
                     s+="    allow-transfer {%s};\n"%slaves
             else:
                 s+="    type slave;\n"
-                s+="    file \"slave/%s\";\n"%zone
+                s+="    file \"%s\";\n"%os.path.join(autozones_path,"slave",zone)
                 if masters:
                     s+="    masters {%s};\n"%masters
             s+="};\n"
