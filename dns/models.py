@@ -33,6 +33,8 @@ class DNSServer(models.Model):
     location=models.CharField("Location",max_length=128,blank=True,null=True)
     provisioning=models.CharField("Provisioning",max_length=128,blank=True,null=True,
         help_text="Script for zone provisioning")
+    autozones_path=models.CharField("Autozones path",max_length=256,blank=True,null=True,
+        default="autozones",help_text="Prefix for autozones in config files")
     def __unicode__(self):
         if self.location:
             return "%s (%s)"%(self.name,self.location)
