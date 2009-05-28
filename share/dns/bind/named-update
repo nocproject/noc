@@ -1,0 +1,40 @@
+#!/bin/sh
+##----------------------------------------------------------------------
+## named-update
+##    Check and update named configuration on repo push
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+CONFIG=`dirname $0`/named-update.conf
+
+if [ ! -f $CONFIG ]; then
+    echo "named-update.conf not found"
+    exit 1
+fi
+## Read config
+. $CONFIG
+
+# Remember current revision
+LAST_REV=`$HG tip --template "{rev}"`
+
+# Unpack changes
+$HG update
+# Check config and zones
+ARGS="-z -j"
+if [ ! -z "$NAMED_DIR" ]; then
+    ARGS="$ARGS -t $NAMED_DIR"
+fi
+
+$NAMED_CHECKCONF $ARGS
+
+if [ $? -eq "0" ]; then
+    # Success
+    $NAMED_RELOAD
+    exit 0
+else
+    # Failure
+    echo "Config check failed. Reverting to last working revision"
+    $HG revert -r $LAST_REV --all
+    exit 1
+fi
