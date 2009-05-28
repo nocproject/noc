@@ -43,9 +43,11 @@ class DNSServer(models.Model):
     # Expands variables if any
     def expand_vars(self,str):
         return str%{
-            "rsync": config.get("path","rsync"),
-            "ns"   : self.name,
-            "ip"   : self.ip,
+            "rsync"    : config.get("path","rsync"),
+            "vcs_path" : config.get("cm","vcs_path"),
+            "repo"     : config.get("cm","repo"),
+            "ns"       : self.name,
+            "ip"       : self.ip,
         }
     
     def provision_zones(self):
