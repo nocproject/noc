@@ -40,17 +40,22 @@ class DNSServer(models.Model):
             return "%s (%s)"%(self.name,self.location)
         else:
             return self.name
+    # Expands variables if any
+    def expand_vars(self,str):
+        return str%{
+            "rsync": config.get("path","rsync"),
+            "ns"   : self.name,
+            "ip"   : self.ip,
+        }
+    
     def provision_zones(self):
         if self.provisioning:
             env=os.environ.copy()
             env["RSYNC_RSH"]=config.get("path","ssh")
-            cmd=self.provisioning%{
-                "rsync": config.get("path","rsync"),
-                "ns"   : self.name,
-                "ip"   : self.ip,
-            }
+            cmd=self.expand_vars(self.provisioning)
             retcode=subprocess.call(cmd,shell=True,cwd=os.path.join(config.get("cm","repo"),"dns"),env=env)
             return retcode==0
+            
     def _generator_class(self):
         return generator_registry[self.generator_name]
     generator_class=property(_generator_class)
