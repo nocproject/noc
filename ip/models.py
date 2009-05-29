@@ -178,6 +178,16 @@ class IPv4Block(models.Model):
         return [IPv4Address.objects.get(id=i[0]) for i in c.fetchall()]
     addresses=property(_addresses)
     ##
+    ## Generator returning a nested ip addresses (including nested children)
+    ##
+    def _nested_addresses(self):
+        from django.db import connection
+        c=connection.cursor()
+        c.execute("SELECT id FROM %s WHERE vrf_id=%d AND ip << '%s' ORDER BY ip"%(IPv4Address._meta.db_table,self.vrf.id,self.prefix))
+        for row in c:
+            yield IPv4Address.objects.get(id=row[0])
+    nested_addresses=property(_nested_addresses)
+    ##
     ## Return a list of all used/unused addresses
     ##
     def _all_addresses(self):
