@@ -217,14 +217,13 @@ def download_ips(request,vrf_id,prefix):
         else:
             return ""
     assert is_cidr(prefix)
-    vrf_id=int(vrf_id)
-    vrf=get_object_or_404(VRF,id=vrf_id)
+    vrf=get_object_or_404(VRF,id=int(vrf_id))
     if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
         return HttpResponseForbidden("Permission denied")
     block=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
     out=cStringIO.StringIO()
     writer=csv.writer(out)
-    for a in block.addresses:
+    for a in block.nested_addresses:
         writer.writerow([a.ip,a.fqdn,to_utf8(a.description),a.tt])
     return HttpResponse(out.getvalue(),mimetype="text/csv")
 ##
