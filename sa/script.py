@@ -298,6 +298,7 @@ class CLI(StreamFSM):
         self.queue=Queue.Queue()
         self.is_ready=False
         self.collected_data=""
+        self.prompt_patters=[x for x in [self.profile.pattern_more,self.profile.pattern_more_start,self.profile.pattern_more_end] if x]
         StreamFSM.__init__(self)
     
     def on_read(self,data):
@@ -377,7 +378,7 @@ class CLI(StreamFSM):
         self.set_patterns(p)
         
     def on_PROMPT_match(self,data,match):
-        if match.re.pattern==self.profile.pattern_more:
+        if match.re.pattern in self.prompt_patters:
             self.collected_data+=data
         elif match.re.pattern==self.profile.pattern_prompt:
             self.queue.put(self.collected_data+data)
