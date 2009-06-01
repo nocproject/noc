@@ -22,6 +22,7 @@ class Socket(object):
         self.factory.register_socket(self)
         self.name=None
         self.start_time=time.time()
+        self.last_read=self.start_time+100
     
     def can_read(self):
         return True
@@ -51,10 +52,15 @@ class Socket(object):
     def set_name(self,name):
         self.name=name
         self.factory.register_socket(self,name)
+    ##
+    ## Update socket status to indicate socket still alive
+    ##
+    def update_status(self):
+        self.last_read=time.time()
     # Stale sockets detection.
     # Called by SocketFactory.close_stale to determine should socket be closed forcefully
     def is_stale(self):
-        return self.TTL and time.time()-self.start_time>=self.TTL
+        return self.TTL and time.time()-self.last_read>=self.TTL
 ##
 ## Abstract Protocol Parser.
 ## Accepts data via feed method, polupates internal buffer (self.in_buffer).
