@@ -18,5 +18,5 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt="bp>"
     pattern_more=r"^(/var/tmp/shell\.out\.\S+|:)"
     pattern_more_end=r"^\(END\)"
-    command_more=" "
+    command_more="w1000000\n"
     command_more_end="q"
