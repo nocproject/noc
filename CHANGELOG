@@ -1,14 +1,28 @@
-0.2.3
------
+0.2.3 (29-MAY-2009)
+-------------------
  * sa
    * Memory leak in SAE daemon eliminated
+   * Improved ESC control-sequences handling
+   * Improved complex pagers handling
+ * fm
+   * noc-correlator daemon is completely rewritten
+   * fm.archive periodic task to delete deprecated events
+   * New MIBs: F5-BIGIP-COMMON-MIB
+   * New event classes for dot11 and load balancers
+   * New classification rules for Cisco IOS, Cisco CSM module and f5 LTM
+   * "Active Problems Summary" dashboard
  * cm
    * Config file syntax highlighting
    * Improved navigation
  * ip
    * Show/Hide free IP addresses in the block
+   * "Download IP addresses" tool returns full list of IP addresses, including nested blocks
  * kb
    * New "format" macro for syntax highlighting
+ * dns
+   * New zone provisioning scripts for BIND
+   * DNSServer.autozones_path attribute
+   * Updated module documentation
    
 0.2.2 (17-MAY-2009)
 -------------------
