@@ -20,7 +20,6 @@ def c(x,y):
     return (x<<4)+y
 
 ESC=chr(c(1,11))
-
 ##
 ## Definitions of Control Character Sequences from ECMA-48
 ##
@@ -63,10 +62,21 @@ def compile_ecma_def(s):
 def get_ecma_re():
     re_csi=compile_ecma_def(CSI)
     re_c1=compile_ecma_def(C1).replace("\\x5b","")
-    re_c0=compile_ecma_def(C0).replace("\\x0d","").replace("\\x0a","").replace("\\x1b","").replace("\\x09","") # \n,\r, ESC, \t
-    re_vt100="\x1b[c()78]" # VT100
-    re_other="\x1b."       # Last resort. Skip all ESC+char
+    re_c0=compile_ecma_def(C0)
+    for xc in ["\\x08","\\x09","\\x0a","\\x0d","\\x1b"]:
+        re_c0=re_c0.replace(xc,"")
+    #re_c0=compile_ecma_def(C0).replace("\\x08","").replace("\\x0d","").replace("\\x0a","").replace("\\x1b","").replace("\\x09","") # \n,\r, ESC, \t, BS
+    re_vt100="\\x1b[c()78]" # VT100
+    re_other="\\x1b[^[]"       # Last resort. Skip all ESC+char
     return "|".join(["(%s)"%r for r in (re_csi,re_c1,re_c0,re_vt100,re_other)])
+##
+## Backspace pattern
+##
+rx_bs=re.compile("[^\x08]\x08")
+##
+## ESC sequence to go to the bottom-left corner of the screen
+##
+rx_esc_pager=re.compile("(^.*?\x1b\\[24;1H)|((?<=\n).*?\x1b\\[24;1H)",re.MULTILINE)
 ##
 ## Remove ECMA-48 Control Sequences from a string
 ##
@@ -79,7 +89,7 @@ def strip_control_sequences(s):
     
     CR,LF and ESC survive from C0 set
     >>> repr(strip_control_sequences("".join([chr(i) for i in range(32)])))
-    "'\\\\n\\\\r\\\\x1b'"
+    "'\\\\x08\\\\t\\\\n\\\\r\\\\x1b'"
     
     C1 set stripped (ESC+[ survive)
     >>> strip_control_sequences("".join(["\x1b"+chr(i) for i in range(64,96)]))
@@ -108,7 +118,27 @@ def strip_control_sequences(s):
     Incomplete C1 passed
     >>> strip_control_sequences('\x1b')
     '\\x1b'
+    
+    Single backspace
+    >>> strip_control_sequences('123\x084')
+    '124'
+    
+    Triple backspace
+    >>> strip_control_sequences('123\x08\x08\x084')
+    '4'
     """
+    def strip_while(s,rx):
+        while True:
+            ss=rx.sub("",s)
+            if ss==s:
+                return s
+            s=ss
+    
+    # Remove pager trash
+    s=strip_while(s,rx_esc_pager)
+    # Process backspaces
+    s=strip_while(s,rx_bs)
+    # Remove escape sequences
     return rx_ecma.sub("",s)
 
 if __name__ == "__main__":
