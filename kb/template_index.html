@@ -1,0 +1,11 @@
+{% extends "template/template.html" %}
+{% block title%}Knowledge Base: Create New from Template{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A> &rsaquo; Create New from Template</div>{% endblock %}
+{% block content %}
+<h1>Select Template</h1>
+<table border="0">
+{%for t in templates%}
+<tr class="{%cycle 'row1' 'row2'%}"><td><a href="/kb/template/{{t.id}}/">{{t.name}}</a></td></tr>
+{%endfor%}
+</table>
+{% endblock %}
