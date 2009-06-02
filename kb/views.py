@@ -11,6 +11,8 @@ from noc.main.models import MIMEType
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse,HttpResponseNotFound,HttpResponseRedirect
 from django import forms
+from django.contrib.auth.decorators import permission_required
+import re
 
 ##
 ## Title page
@@ -81,3 +83,34 @@ def bookmark(request,kb_id,action):
     else:
         e.unset_user_bookmark(request.user)
     return HttpResponseRedirect("/kb/%d/"%e.id)
+##
+## Generate template list
+##
+def template_index(request):
+    templates=KBEntryTemplate.objects.order_by("name")
+    return render(request,"kb/template_index.html", {"templates":templates})
+##
+## Create new entry from template
+##
+rx_template_var=re.compile("{{([^}]+)}}",re.MULTILINE)
+@permission_required("kb.change_kbentry")
+def from_template(request,template_id):
+    def expand(template,vars):
+        return rx_template_var.sub(lambda x:vars[x.group(1)],template)
+    template=get_object_or_404(KBEntryTemplate,id=int(template_id))
+    var_list=template.var_list
+    if var_list and not request.POST:
+        return render(request,"kb/template_form.html", {"template":template,"vars":var_list})
+    subject=template.subject
+    body=template.body
+    if var_list and request.POST:
+        vars={}
+        for v in var_list:
+            vars[v]=request.POST.get(v,"(((UNDEFINED)))")
+        subject=expand(subject,vars)
+        body=expand(body,vars)
+    kbe=KBEntry(subject=subject,body=body,language=template.language,markup_language=template.markup_language)
+    kbe.save(user=request.user)
+    for c in template.categories.all():
+        kbe.categories.add(c)
+    return HttpResponseRedirect("/kb/%d/"%kbe.id)

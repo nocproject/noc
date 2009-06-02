@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from noc.kb.parsers import parser_registry
 from noc.main.search import SearchResult
 from noc.lib.validators import is_int
-import difflib
+import difflib,re,sets
 
 ##
 ## Register all wiki-syntax parsers
@@ -271,6 +271,34 @@ class KBUserBookmark(models.Model):
     kb_entry=models.ForeignKey(KBEntry,verbose_name="KBEntry")
     def __unicode__(self):
         return u"%s: %s"%(unicode(self.user),unicode(self.kb_entry))
+
+## Regular expression to match template variable
+rx_template_var=re.compile("{{([^}]+)}}",re.MULTILINE)
+##
+## KB Entry Template
+##
+class KBEntryTemplate(models.Model):
+    class Meta:
+        verbose_name="KB Entry Template"
+        verbose_name_plural="KB Entry Templates"
+        ordering=("id",)
+    name=models.CharField("Name",max_length=128,unique=True)
+    subject=models.CharField("Subject",max_length=256)
+    body=models.TextField("Body")
+    language=models.ForeignKey(Language,verbose_name="Language",limit_choices_to={"is_active":True})
+    markup_language=models.CharField("Markup Language",max_length="16",choices=parser_registry.choices)
+    categories=models.ManyToManyField(KBCategory,verbose_name="Categories",null=True,blank=True)
+    def __unicode__(self):
+        return self.name
+    ##
+    ## Returns template variables list
+    ##
+    def _var_list(self):
+        var_set=sets.Set(rx_template_var.findall(self.subject))
+        var_set.update(rx_template_var.findall(self.body))
+        return sorted(var_set)
+    var_list=property(_var_list)
+
 ##
 ## Application menu
 ##
@@ -279,11 +307,13 @@ class AppMenu(Menu):
     title="Knowledge Base"
     items=[
         ("Knowledge Base", "/kb/", "kb.change_kbentry"),
+        ("New from Template", "/kb/template/", "kb.change_kbentry"),
         ("Setup",[
             ("Categories","/admin/kb/kbcategory/", "kb.change_kbcategory"),
             ("Entries",   "/admin/kb/kbentry/",    "kb.change_kbentry"),
             ("Global Bookmarks", "/admin/kb/kbglobalbookmark/", "kb.change_kbglobalbookmark"),
             ("User Bookmarks",  "/admin/kb/kbuserbookmark/",    "kb.change_kbuserbookmark"),
+            ("Templates",   "/admin/kb/kbentrytemplate/",    "kb.change_kbentrytemplate"),
         ])
     ]
 

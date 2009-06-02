@@ -9,7 +9,7 @@
 """
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
-from noc.kb.views import index,index_bookmarks,index_latest,index_popular,index_all,view,attachment,bookmark
+from noc.kb.views import index,index_bookmarks,index_latest,index_popular,index_all,view,attachment,bookmark,template_index,from_template
 
 urlpatterns = patterns ( None,
         (r"^$",                login_required(index)),
@@ -20,4 +20,6 @@ urlpatterns = patterns ( None,
         (r"^(?P<kb_id>\d+)/$", login_required(view)),
         (r"^(?P<kb_id>\d+)/attachment/(?P<name>.+)/$", login_required(attachment)),
         (r"^(?P<kb_id>\d+)/bookmark/(?P<action>set|unset)/$", login_required(bookmark)),
+        (r"^template/$",       login_required(template_index)),
+        (r"^template/(?P<template_id>\d+)/$", login_required(from_template)),
 )

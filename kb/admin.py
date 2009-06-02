@@ -56,10 +56,15 @@ class UserBookmarksAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self,request,obj=None):
         return self.has_change_permission(request,obj)
-    
+##
+##
+##
+class KBEntryTemplateAdmin(admin.ModelAdmin):
+    list_display=["name","subject"]
 ##
 ## Register administrative interfaces
 ##
 admin.site.register(KBCategory, KBCategoryAdmin)
 admin.site.register(KBEntry,    KBEntryAdmin)
 admin.site.register(KBGlobalBookmark, KBGlobalBookmarkAdmin)
+admin.site.register(KBEntryTemplate, KBEntryTemplateAdmin)
