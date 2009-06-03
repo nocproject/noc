@@ -14,11 +14,7 @@ from noc.fm.rules.classes import EventClass
 from noc.fm.rules.classification import ClassificationRule
 from noc.fm.rules.correlation import CorrelationRule
 from noc.fm.models import MIB,MIBRequiredException,EventClassificationRule,EventCorrelationRule
-import os,re
-##
-## patterns
-##
-rx_comment=re.compile(r"#+(.*)\s*$")
+import os
 ##
 ## Command handler
 ##
