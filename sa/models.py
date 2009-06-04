@@ -50,11 +50,18 @@ class Activator(models.Model):
         verbose_name="Activator"
         verbose_name_plural="Activators"
     name=models.CharField("Name",max_length=32,unique=True)
-    ip=models.IPAddressField("IP")
+    ip=models.IPAddressField("From IP")
+    to_ip=models.IPAddressField("To IP")
     auth=models.CharField("Auth String",max_length=64)
     is_active=models.BooleanField("Is Active",default=True)
     def __unicode__(self):
         return self.name
+    ##
+    ## Returns true if IP can belong to any activator
+    ##
+    @classmethod
+    def check_ip_access(self,ip):
+        return Activator.objects.filter(ip__gte=ip,to_ip__lte=ip).count()>0
 ##
 ##
 ##
