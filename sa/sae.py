@@ -166,7 +166,7 @@ class SAESocket(RPCSocket,AcceptedTCPSocket):
         
     @classmethod
     def check_access(cls,address):
-        return Activator.objects.filter(ip=address).count()>0
+        return Activator.check_ip_access(address)
 ##
 ## XML-RPC support
 ##
