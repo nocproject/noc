@@ -1,0 +1,19 @@
+{% extends "template/template.html" %}
+{% block title%}{{rb.name}} | Reference Books{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/main/refbook/">Reference Books</a> &rsaquo; {{rb.name}} &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<h1>{{rb.name}}</h1>
+<table border="0">
+    <tr>
+    {% for f in rb.refbookfield_set.all %}<th>{{f.name}}</th>{% endfor %}
+    </tr>
+    {% for row in rb.data %}
+    <tr>
+        {% for c in row %}
+        <td>{{c}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

@@ -10,6 +10,7 @@
 """
 from __future__ import with_statement
 import django.contrib.auth
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseNotFound,HttpResponseForbidden
 from django.core.cache import cache
 from django.utils.cache import patch_response_headers
@@ -18,6 +19,7 @@ from noc.lib.render import render,render_success,render_failure,render_json
 from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
+from noc.main.models import RefBook
 import os, types, ConfigParser, sets, pwd, re
 ##
 ## Startup boilerplate
@@ -49,6 +51,8 @@ def menu(request):
             r=[]
             for mi in m["items"]:
                 if len(mi)==3 and ((mi[2]=="is_superuser()" and user.is_superuser) or (mi[2]!="is_superuser()" and user.has_perm(mi[2]))):
+                    r+=[(mi[0],mi[1])]
+                elif len(mi)==3 and (mi[2]=="is_logged_user()" and user.is_authenticated()):
                     r+=[(mi[0],mi[1])]
                 elif type(mi[1])==types.DictType:
                     sr=[(x[0],x[1]) for x in mi[1]["items"] if len(x)==2 or user.has_perm(x[2])]
@@ -101,7 +105,6 @@ def report_index(request):
 ## Success page
 ##
 def success(request):
-    print request.GET
     subject=request.GET.get("subject",None)
     text=request.GET.get("text",None)
     return render_success(request,subject=subject,text=text)
@@ -225,3 +228,15 @@ def config_view(request,config):
     data=sorted(data,lambda x,y:cmp(x["index"],y["index"]))
     return render(request,"main/config_view.html",{"config_name":config,"data":data,
         "read_only":read_only,"system_user":system_user})
+##
+## Refbook index
+##
+def refbook_index(request):
+    ref_books=RefBook.objects.filter(is_enabled=True).order_by("name")
+    return render(request,"main/refbook_index.html",{"ref_books":ref_books})
+##
+## Refbook preview
+##
+def refbook_view(request,refbook_id):
+    rb=get_object_or_404(RefBook,id=int(refbook_id))
+    return render(request,"main/refbook_view.html",{"rb":rb})
