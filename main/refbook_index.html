@@ -1,0 +1,13 @@
+{% extends "template/template.html" %}
+{% block title%}Reference Books{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Reference Books &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<h1>Reference Books</h1>
+<TABLE BORDER="0">
+    <TR><TH>Name</TH><TH>Description</TH></TR>
+    {% for b in ref_books %}
+    <TR><TD><A HREF="/main/refbook/{{b.id}}/">{{b.name}}</A></TD><TD>{{b.description}}</TD></TR>
+    {% endfor %}
+</TABLE>
+{% endblock %}

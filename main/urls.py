@@ -9,7 +9,8 @@
 """
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
-from noc.main.views import index,logout,report,report_index,success,failure,menu,search,config_index,config_view
+from noc.main.views import index,logout,report,report_index,success,failure,menu,search,config_index,config_view,\
+    refbook_index,refbook_view
 
 urlpatterns = patterns ( None,
         (r"^$",        login_required(index)),
@@ -22,4 +23,6 @@ urlpatterns = patterns ( None,
         (r"search/$",  login_required(search)),
         (r"config/$",  login_required(config_index)),
         (r"config/(?P<config>.+)/$",  login_required(config_view)),
+        (r"refbook/$", login_required(refbook_index)),
+        (r"refbook/(?P<refbook_id>\d+)/$",  login_required(refbook_view)),
 )
