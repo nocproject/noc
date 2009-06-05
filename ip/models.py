@@ -302,7 +302,7 @@ class IPv4Address(models.Model):
                         r_fqdn=ls/float(len(r.fqdn))
                     else:
                         r_fqdn=0.0
-                    if search in r.description and len(r.description)>0:
+                    if r.description and search in r.description and len(r.description)>0:
                         r_description=ls/float(len(r.description))
                     else:
                         r_description=0.0
