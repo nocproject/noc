@@ -11,6 +11,7 @@ from __future__ import with_statement
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from noc.main.refbooks.refbooks import RefBook
+from noc.main.models import RefBook as RB
 import os
 ##
 ## Command handler
@@ -42,6 +43,15 @@ class Command(BaseCommand):
         return classes.keys()
     ##
     def sync_refbooks(self):
+        # Make built-in refbooks inventory
+        loaded_refbooks={}
+        for rb in RB.objects.filter(is_builtin=True):
+            loaded_refbooks[rb.name]=rb
         for r in self.search(RefBook,"main/refbooks/refbooks"):
             r.sync()
-        
+            if r.name in loaded_refbooks:
+                del loaded_refbooks[r.name]
+        # Delete stale refbooks
+        for rb in loaded_refbooks.values():
+            print "DELETE REFBOOK ",rb.name
+            rb.delete()
