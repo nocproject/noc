@@ -25,21 +25,21 @@ class VCDomain(models.Model):
     
     def __unicode__(self):
         return self.name
-
 ##
-## Virtual circuit checks
-## type -> (name, min labels, l1range, l2range)
-## where l1/l2 ranges are tuples of (min,max) or None
+## VC Type
 ##
-vc_checks={
-    "q": ("802.1Q VLAN",        1, (1,4095),     None),
-    "Q": ("802.1ad Q-in-Q",     2, (1,4095),     (1,4095)),
-    "D": ("FR DLCI",            1, (16,991),     None),
-    "M": ("MPLS",               1, (16,1048575), (16,1048575)),
-    "A": ("ATM VCI/VPI",        1, (0,65535),    (0,4095)),
-    "X": ("X.25 group/channel", 2, (0,15),       (0,255)),
-}
-vc_choices=[(k,v[0]) for k,v in vc_checks.items()]
+class VCType(models.Model):
+    class Meta:
+        verbose_name="VC Type"
+        verbose_name_plural="VC Types"
+    name=models.CharField("Name",max_length=32,unique=True)
+    min_labels=models.IntegerField("Min. Labels",default=1)
+    label1_min=models.IntegerField("Label1 min")
+    label1_max=models.IntegerField("Label1 max")
+    label2_min=models.IntegerField("Label2 min",null=True,blank=True)
+    label2_max=models.IntegerField("Label2 max",null=True,blank=True)
+    def __unicode__(self):
+        return self.name
 ##
 ## Virtual circuit
 ##
@@ -49,7 +49,7 @@ class VC(models.Model):
         verbose_name_plural="VCs"
         unique_together=[("vc_domain","type","l1","l2")]
     vc_domain=models.ForeignKey(VCDomain,verbose_name="VC Domain")
-    type=models.CharField("Type",max_length=1,choices=vc_choices)
+    type=models.ForeignKey(VCType,verbose_name="type")
     l1=models.IntegerField("Label 1")
     l2=models.IntegerField("Label 2",default=0)
     description=models.CharField("Description",max_length=256)
@@ -59,16 +59,15 @@ class VC(models.Model):
         if self.l2:
             s+=u"/%d"%self.l2
         return s
-    
+    ##
+    ## Enforce additional checks
+    ##
     def save(self):
-        def in_range(v,r):
-            return (v>=r[0]) and (v<=r[1]) 
-        description,min_labels,l1range,l2range=vc_checks[self.type]
-        if not in_range(self.l1,l1range):
+        if self.l1<self.type.label1_min or self.l1>self.type.label1_max:
             raise Exception("Invalid value for L1")
-        if min_labels>1 and not self.l2:
-            raise Exception("L2 required for type %s"%self.type)
-        if min_labels>1 and not in_range(self.l2,l2range):
+        if self.type.min_labels>1 and not self.l2:
+            raise Exception("L2 required")
+        if self.type.min_labels>1 and not (self.l2>=self.type.label2_min and self.l2<=self.type.label2_max):
             raise Exception("Invalid value for L2")
         super(VC,self).save()
     ##
@@ -98,5 +97,6 @@ class AppMenu(Menu):
         ("Virtual Circuits", "/admin/vc/vc/", "vc.change_vc"),
         ("Setup",[
             ("VC Domains", "/admin/vc/vcdomain/", "vc.change_vcdomain"),
+            ("VC Types",   "/admin/vc/vctype/", "vc.change_vctype"),
         ])
     ]
