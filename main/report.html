@@ -1,5 +1,10 @@
 {% extends "template/template.html" %}
 {% block title%}{{report.title}}{% endblock %}
+{% block extrahead %}
+{% if refresh %}
+<meta http-equiv="Refresh" content="{{refresh}}" />
+{% endif %}
+{% endblock %}
 {% block content %}
 <h1>{{report.title}}</h1>
 <DIV CLASS="module">
