@@ -79,6 +79,7 @@ class Report(object):
     title="Generic Report"
     requires_cursor=False
     columns=[]
+    refresh=None # Time to refresh report (in seconds)
     
     def __init__(self,request,query=None):
         self.request=request
@@ -105,7 +106,7 @@ class Report(object):
             out+="<TR CLASS='row%d'>"%((n%2)+1)+"".join([c.render_cell(v) for c,v in zip(self.columns,row)])+"</TR>"
             n+=1
         out+="</TABLE>"
-        return render(self.request,self.template,{"report":self,"query":self.query,"data":out})
+        return render(self.request,self.template,{"report":self,"query":self.query,"data":out,"refresh":self.refresh})
             
     def get_queryset(self):
         return []
