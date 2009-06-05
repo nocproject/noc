@@ -15,7 +15,18 @@ import noc.main.search # Set up signal handlers
 import os,datetime,re
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.main.search import SearchResult
+from django.contrib import databrowse
+from django.db.models.signals import class_prepared
 
+##
+## Databrowse register hook to intersept model creation
+##
+def register_databrowse_model(sender,**kwargs):
+    databrowse.site.register(sender)
+class_prepared.connect(register_databrowse_model)
+##
+## Initialize download registry
+##
 downloader_registry.register_all()
 ##
 ## Languages
@@ -255,6 +266,7 @@ class AppMenu(Menu):
     title="Main"
     items=[
         ("Reference Books", "/main/refbook/", "is_logged_user()"),
+        ("Browse Data",     "/main/databrowse/", "is_superuser()"),
         ("Setup", [
             ("Users",  "/admin/auth/user/",  "auth.change_user"),
             ("Groups", "/admin/auth/group/", "auth.change_group"),
