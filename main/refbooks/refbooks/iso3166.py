@@ -10,7 +10,7 @@ from noc.main.refbooks.refbooks import RefBook,Field
 ##
 ## IEEE OUI Refbook
 ##
-class E164(RefBook):
+class ISO3166(RefBook):
     name="ISO 3166 Country Codes"
     description="ISO 3166 Country Codes"
     downloader="CSV"

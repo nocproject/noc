@@ -10,7 +10,7 @@ from noc.main.refbooks.refbooks import RefBook,Field
 ##
 ## IEEE OUI Refbook
 ##
-class IEEEOUI(RefBook):
+class Q931CC(RefBook):
     name="Q.931 Call Clearings"
     description="Q.931 ISDN Call Clearings"
     downloader="CSV"
