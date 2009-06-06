@@ -27,11 +27,11 @@ class Downloader(DownloaderBase):
             if not header:
                 # Read first line
                 for i,h in enumerate(row):
-                    header[i]=h
+                    header[i]=unicode(h,"utf8","ignore")
                 continue
             r={}
             for i,v in enumerate(row):
-                r[header[i]]=v
+                r[header[i]]=unicode(v,"utf8","ignore")
             out.append(r)
         f.close()
         return out
