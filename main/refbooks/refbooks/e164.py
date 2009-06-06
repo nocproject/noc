@@ -18,5 +18,5 @@ class E164(RefBook):
     refresh_interval=90
     fields=[
         Field(name="Prefix"),
-        Field(name="Country",search_method="subscring"),
+        Field(name="Country",search_method="substring"),
         ]
