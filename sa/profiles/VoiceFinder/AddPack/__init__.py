@@ -17,4 +17,5 @@ class Profile(noc.sa.profiles.Profile):
     pattern_more="^-- more --"
     pattern_prompt=r"^\S+?#"
     command_more=" \n"
+    command_submit="\r"
 
