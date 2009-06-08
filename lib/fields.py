@@ -30,3 +30,9 @@ class CIDRField(models.Field):
 class BinaryField(models.Field):
     def db_type(self):
         return "BYTEA"
+##
+## Text Array field maps to PostgreSQL TEXT[] type
+##
+class TextArrayField(models.Field):
+    def db_type(self):
+        return "TEXT[]"
