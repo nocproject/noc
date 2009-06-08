@@ -6,7 +6,7 @@ Vendor `Cisco Systems <http://www.cisco.com/>`_
 OS     FWSM
 ====== ========================================
 
-Cisco.ASA profile supports Cisco's firewall services module.
+Cisco.FWSM profile supports Cisco's firewall services module (FWSM).
 
 Notes
 -----
