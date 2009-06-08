@@ -412,8 +412,11 @@ class ScriptSocket(object):pass
 class CLITelnetSocket(ScriptSocket,CLI,PTYSocket):
     def __init__(self,factory,profile,access_profile):
         logging.debug("CLITelnetSocket connecting '%s'"%access_profile.address)
+        cmd_args=["/usr/bin/telnet",access_profile.address]
+        if access_profile.port and access_profile.port!=23:
+            cmd_args+=[str(access_profile.port)]
         CLI.__init__(self,profile,access_profile)
-        PTYSocket.__init__(self,factory,["/usr/bin/telnet",access_profile.address])
+        PTYSocket.__init__(self,factory,cmd_args)
         ScriptSocket.__init__(self)
 ##
 ##
@@ -421,8 +424,12 @@ class CLITelnetSocket(ScriptSocket,CLI,PTYSocket):
 class CLISSHSocket(ScriptSocket,CLI,PTYSocket):
     def __init__(self,factory,profile,access_profile):
         logging.debug("CLISSHSocket connecting '%s'"%access_profile.address)
+        cmd_args=["/usr/bin/ssh","-o","StrictHostKeyChecking no","-l",access_profile.user]
+        if access_profile.port and access_profile.port!=22:
+            cmd_args+=["-p",str(access_profile.port)]
+        cmd_args+=[access_profile.address]
         CLI.__init__(self,profile,access_profile)
-        PTYSocket.__init__(self,factory,["/usr/bin/ssh","-o","StrictHostKeyChecking no","-l",access_profile.user,access_profile.address])
+        PTYSocket.__init__(self,factory,cmd_args)
         ScriptSocket.__init__(self)
 ##
 ##
