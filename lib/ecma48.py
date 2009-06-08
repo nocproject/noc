@@ -74,6 +74,10 @@ def get_ecma_re():
 ##
 rx_bs=re.compile("[^\x08]\x08")
 ##
+## \r<spaces>\r should be cut
+##
+rx_lf_spaces=re.compile(r"\r\s+\r")
+##
 ## ESC sequence to go to the bottom-left corner of the screen
 ##
 rx_esc_pager=re.compile("(^.*?\x1b\\[24;1H)|((?<=\n).*?\x1b\\[24;1H)",re.MULTILINE)
@@ -138,6 +142,8 @@ def strip_control_sequences(s):
     s=strip_while(s,rx_esc_pager)
     # Process backspaces
     s=strip_while(s,rx_bs)
+    # Process LFs
+    s=rx_lf_spaces.sub("",s)
     # Remove escape sequences
     return rx_ecma.sub("",s)
 
