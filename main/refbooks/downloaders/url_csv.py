@@ -9,23 +9,31 @@
 """
 """
 from noc.main.refbooks.downloaders import Downloader as DownloaderBase
-import urllib2,csv
+import urllib2,csv,gzip,cStringIO
 ##
-##
+## Download reference book from CSV file
+## First line of CSV file is field names
 ##
 class Downloader(DownloaderBase):
     name="CSV"
     @classmethod
     def download(cls,ref_book):
         out=[]
+        # Fetch data into StringIO wrapper
         f=urllib2.urlopen(ref_book.download_url)
-        reader=csv.reader(f)
+        data=cStringIO.StringIO(f.read())
+        f.close()
+        # Wrap GzipFile for gzipped content
+        if ref_book.download_url.endswith(".gz"):
+            data=gzip.GzipFile(fileobj=data)
+        # Iterate through CSV
+        reader=csv.reader(data)
         header={}
         for row in reader:
             if not row:
                 continue
             if not header:
-                # Read first line
+                # Read field names from first line
                 for i,h in enumerate(row):
                     header[i]=unicode(h,"utf8","ignore")
                 continue
@@ -33,5 +41,4 @@ class Downloader(DownloaderBase):
             for i,v in enumerate(row):
                 r[header[i]]=unicode(v,"utf8","ignore")
             out.append(r)
-        f.close()
         return out
