@@ -15,12 +15,14 @@ from django.http import HttpResponseRedirect,HttpResponseNotFound,HttpResponseFo
 from django.core.cache import cache
 from django.utils.cache import patch_response_headers
 from django import forms
+from django.views.generic import list_detail
 from noc.lib.render import render,render_success,render_failure,render_json
 from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
 from noc.main.models import RefBook
 import os, types, ConfigParser, sets, pwd, re
+
 ##
 ## Startup boilerplate
 ##
@@ -239,4 +241,10 @@ def refbook_index(request):
 ##
 def refbook_view(request,refbook_id):
     rb=get_object_or_404(RefBook,id=int(refbook_id))
-    return render(request,"main/refbook_view.html",{"rb":rb})
+    return list_detail.object_list(
+        request,
+        queryset=rb.refbookdata_set.all(),
+        template_name="main/refbook_view.html",
+        extra_context={"rb":rb},
+        paginate_by=100,
+    )
