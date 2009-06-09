@@ -17,6 +17,7 @@ from noc.main.refbooks.downloaders import downloader_registry
 from noc.main.search import SearchResult
 from django.contrib import databrowse
 from django.db.models.signals import class_prepared
+from noc.lib.fields import TextArrayField
 
 ##
 ## Databrowse register hook to intersept model creation
@@ -120,54 +121,38 @@ class RefBook(models.Model):
     # Update interval here
     def __unicode__(self):
         return self.name
-    #
-    # Returns first free record id
-    #
-    def get_record_id(self):
-        r=self.refbookdata_set.order_by("-record_id")[:1]
-        if r:
-            return r[0].record_id+1
-        else:
-            return 1
-        
     ##
-    ## Add single record
+    ## Add new record. data is a hash of field name -> value
     ##
-    def add_record(self,**kwargs):
-        record_id=self.get_record_id()
+    def add_record(self,data):
+        fields={}
         for f in self.refbookfield_set.all():
-            if f.name in kwargs:
-                RefBookData(ref_book=self,record_id=record_id,field=f,value=kwargs[f.name]).save()
-        return record_id
-    ##
-    ## Remove single record
-    ##
-    def delete_record(self,record_id):
-        RefBookData.objects.filter(ref_book=self,record_id=record_id).delete()
+            fields[f.name]=f.order-1
+        r=[None for f in range(len(fields))]
+        for k,v in data.items():
+            r[fields[k]]=v
+        RefBookData(ref_book=self,value=r).save()
+            
     ##
     ## Flush entire Ref Book
     ##
     def flush_refbook(self):
         RefBookData.objects.filter(ref_book=self).delete()
     ##
-    ## Returns a hash containing record
-    ##
-    def get_record(self,record_id):
-        return dict([(d.field.name,d.value) for d in RefBookData.objects.filter(ref_book=self,record_id=record_id)])
-    ##
     ## Bulk upload
     ## Data is a list of hashes [{field_name:value,...},...]
     ##
     def bulk_upload(self,data):
-        record_id=self.get_record_id()
         fields={}
         for f in self.refbookfield_set.all():
-            fields[f.name]=f
+            fields[f.name]=f.order-1
+        row_template=[None for f in range(len(fields))] # Prepare empty row template
         for r in data:
+            row=row_template[:] # Clone template row
             for k,v in r.items():
                 if k in fields:
-                    RefBookData(ref_book=self,record_id=record_id,field=fields[k],value=v).save()
-            record_id+=1
+                    row[fields[k]]=v
+            RefBookData(ref_book=self,value=row).save()
     ##
     ## Download refbook
     ##
@@ -182,48 +167,36 @@ class RefBook(models.Model):
                 self.next_update=self.last_updated+datetime.timedelta(days=self.refresh_interval)
                 self.save()
     ##
-    ## data
-    ##
-    def _data(self):
-        from django.db import connection
-        cursor=connection.cursor()
-        fields=[f.name for f in self.refbookfield_set.all()]
-        field_ids=dict([(f.name,f.id) for f in self.refbookfield_set.all()])
-        data_table=RefBookData._meta.db_table
-        ref_book_id=self.id
-        SQL="SELECT "+",".join(["f%d.value AS \"%s\""%(i,n) for i,n in enumerate(fields)])
-        SQL+=" FROM %s f0 "%data_table
-        for i in range(len(fields)-1):
-            SQL+=" FULL JOIN %s f%d USING(record_id) "%(data_table,i+1)
-        SQL+=" WHERE "+" AND ".join(["f%d.ref_book_id=%d"%(i,ref_book_id) for i,n in enumerate(fields)])
-        SQL+=" AND "+" AND ".join(["f%d.field_id=%d"%(i,field_ids[n]) for i,n in enumerate(fields)])
-        SQL+=" ORDER BY f0.record_id"
-        cursor.execute(SQL)
-        return cursor.fetchall()
-    data=property(_data)
-    ##
     ## Search engine plugin
     ##
     @classmethod
     def search(cls,user,search,limit):
         for b in RefBook.objects.filter(is_enabled=True):
+            field_names=[f.name for f in b.refbookfield_set.order_by("order")]
             for f in b.refbookfield_set.filter(search_method__isnull=False):
+                q=RefBookData.objects.filter(ref_book=b) # Filter by refbook
+                ## String method
+                if f.search_method=="string":
+                    q=q.extra(where=["value[%d]=%%s"%f.order],params=[search])
                 ## Substring method
-                if f.search_method=="substring":
-                    q=RefBookData.objects.filter(field=f,value__icontains=search)
+                elif f.search_method=="substring":
+                    q=q.extra(where=["value[%d] LIKE %%s"%f.order],params=["%"+search+"%"])
+                ## Starting method
+                elif f.search_method=="starting":
+                    q=q.extra(where=["value[%d] LIKE %%s"%f.order],params=[search+"%"])
                 ## MAC 3 Octets method
-                elif f.search_method=="mac_3_octets_upper":
+                elif f.search_method=="mac_3_octets_upper" and False:
                     mac=search.replace(":","").replace("-","").replace(".","")
                     if not rx_mac_3_octets.match(mac):
                         continue
-                    q=RefBookData.objects.filter(field=f,value=mac[:6].upper())
+                    q=q.extra(where=["value[%d]=%%s"%f.order],params=[mac])
                 else:
                     return
                 for r in q:
-                    text="\n".join(["%s = %s"%(k,v) for k,v in b.get_record(r.record_id).items()])
+                    text="\n".join(["%s = %s"%(k,v) for k,v in zip(field_names,r.value)])
                     yield SearchResult(
                         url="/main/refbook/%d/"%b.id,
-                        title="Reference Book: %s, column %s, %s"%(b.name,f.name,r.value),
+                        title="Reference Book: %s, column %s"%(b.name,f.name),
                         text=text,
                         relevancy=1.0,
                     )
@@ -242,7 +215,7 @@ class RefBookField(models.Model):
     is_required=models.BooleanField("Is Required",default=True)
     description=models.TextField("Description",blank=True,null=True)
     search_method=models.CharField("Search Method",max_length=64,blank=True,null=True,
-        choices=[("substring","substring"),("mac_3_octets_upper","3 Octets of the MAC")])
+        choices=[("string","string"),("substring","substring"),("starting","starting"),("mac_3_octets_upper","3 Octets of the MAC")])
     def __unicode__(self):
         return u"%s: %s"%(self.ref_book,self.name)
 ##
@@ -252,11 +225,8 @@ class RefBookData(models.Model):
     class Meta:
         verbose_name="Ref Book Data"
         verbose_name_plural="Ref Book Data"
-        unique_together=[("ref_book","record_id","field")]
     ref_book=models.ForeignKey(RefBook,verbose_name="Ref Book")
-    record_id=models.IntegerField("ID")
-    field=models.ForeignKey(RefBookField,verbose_name="Field")
-    value=models.TextField("Value",null=True,blank=True)
+    value=TextArrayField("Value")
 
 ##
 ## Application Menu
