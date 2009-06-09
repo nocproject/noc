@@ -4,16 +4,22 @@
 {% endblock %}
 {% block content %}
 <h1>{{rb.name}}</h1>
+
 <table border="0">
+    <thead>
     <tr>
     {% for f in rb.refbookfield_set.all %}<th>{{f.name}}</th>{% endfor %}
     </tr>
-    {% for row in rb.data %}
-    <tr>
-        {% for c in row %}
+    </thead>
+    {% for d in object_list %}
+    <tr class="{%cycle 'row1' 'row2'%}">
+        {% for c in d.value %}
         <td>{{c}}</td>
         {% endfor %}
     </tr>
     {% endfor %}
 </table>
+
+{% load paginator %}
+{% if is_paginated %}<div class="paginator">{% paginator %}</div>{% endif %}
 {% endblock %}
