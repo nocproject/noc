@@ -34,5 +34,10 @@ class BinaryField(models.Field):
 ## Text Array field maps to PostgreSQL TEXT[] type
 ##
 class TextArrayField(models.Field):
+    __metaclass__ = models.SubfieldBase
+    
     def db_type(self):
         return "TEXT[]"
+
+    def to_python(self,value):
+        return [unicode(x,"utf-8") for x in value]
