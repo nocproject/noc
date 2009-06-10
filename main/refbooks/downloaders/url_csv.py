@@ -9,7 +9,8 @@
 """
 """
 from noc.main.refbooks.downloaders import Downloader as DownloaderBase
-import urllib2,csv,gzip,cStringIO
+import csv,gzip,cStringIO
+from noc.lib.fileutils import urlopen
 ##
 ## Download reference book from CSV file
 ## First line of CSV file is field names
@@ -20,7 +21,7 @@ class Downloader(DownloaderBase):
     def download(cls,ref_book):
         out=[]
         # Fetch data into StringIO wrapper
-        f=urllib2.urlopen(ref_book.download_url)
+        f=urlopen(ref_book.download_url)
         data=cStringIO.StringIO(f.read())
         f.close()
         # Wrap GzipFile for gzipped content
