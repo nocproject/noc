@@ -3,7 +3,8 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import os,tempfile,sha
+import os,tempfile,sha,urllib2
+from noc.lib.version import get_version
 ##
 ## Create new file filled with "text" safely
 ##
@@ -93,3 +94,12 @@ class temporary_file(object):
 ##
 def in_dir(file,dir):
     return os.path.commonprefix([dir,os.path.normpath(file)])==dir
+##
+## urlopen wrapper
+##
+def urlopen(url):
+    if url.startswith("http://") or url.startswith("https://"):
+        r=urllib2.Request(url,headers={"User-Agent":"NOC/%s"%get_version()})
+        return urllib2.urlopen(r)
+    else:
+        return urllib2.urlopen(url)
