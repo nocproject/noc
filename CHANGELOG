@@ -1,4 +1,24 @@
-0.2.3 (29-MAY-2009)
+0.2.4 (10-JUN-2009)
+-------------------
+MIGRATION:
+Enable main.update_refbooks periodic task for reference books auto-update
+
+CHANGES:
+ * main
+   * update.nocproject.org online service
+   * Reference Books (IEEE OUI, Q.931 Call clearings)
+   * main.update_refbooks periodic task
+   * Data Browser
+ * sa
+   * Improved control-sequences handling
+   * Activator access can be restricted by IP address range
+   * New profile: VoiceFinder.AddPack
+ * kb
+   * Article templates
+ * vc
+   * Custom VC types
+   
+0.2.3 (01-JUN-2009)
 -------------------
  * sa
    * Memory leak in SAE daemon eliminated
