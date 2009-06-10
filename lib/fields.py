@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 from django.db import models
 from lib.ip import normalize_prefix
+import types
 ##
 ## CIDRField maps to PostgreSQL CIDR
 ##
@@ -40,4 +41,9 @@ class TextArrayField(models.Field):
         return "TEXT[]"
 
     def to_python(self,value):
-        return [unicode(x,"utf-8") for x in value]
+        def to_unicode(s):
+            if type(s)==types.UnicodeType:
+                return s
+            else:
+                return unicode(s,"utf-8")
+        return [to_unicode(x) for x in value]
