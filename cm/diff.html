@@ -1,24 +1,32 @@
 {% extends "template/template.html" %}
-<{% block content %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/diff.css" />
+{% endblock %}
+{% block content %}
 <h1>Diff: {{o.handler_class_name}}::{{o.repo_path}}</h1>
 <DIV CLASS="module">
     <TABLE SUMMARY="Object info" WIDTH="100%">
         <CAPTION>Object info</CAPTION>
         <TR><TD><b>ID</b></TD><TD>{{o.id}}</TD></TR>
         <TR><TD><b>Repo Path</b></TD><TD>{{o.repo_path}}</TD></TR>
-        <TR><TD><b>From Revision</b></TD><TD>{{r1.revision}}</TD></TR>
-        <TR><TD><b>To Revision</b></TD><TD>{{r2.revision}}</TD></TR>
+        <TR><TD><b>From Revision</b></TD><TD>{{r1}}</TD></TR>
+        <TR><TD><b>To Revision</b></TD><TD>{{r2}}</TD></TR>
         <TR><TD><b>Categories</b></TD><TD>{% for c in o.categories.all %} {{c}} {% endfor %}</TD></TR>
     </TABLE>
 </DIV>
-
+{%ifequal mode "2"%}
+<A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/diff/u/{{r1}}/{{r2}}/">Unified Diff</A>
+<B>Two column mode</B>
+{%else%}
+<B>Unified Diff</B>
+<A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/diff/2/{{r1}}/{{r2}}/">Two column mode</A>
+{%endifequal%}
 <DIV CLASS="module">
     <TABLE SUMMARY="Diff" WIDTH="100%">
         <CAPTION>Diff</CAPTION>
-        <TR><TD><PRE>{{diff}}</PRE></TD></TR>
+        <TR><TD>{%ifequal mode "2"%}{{diff|safe}}{%else%}<PRE>{{diff}}</PRE>{%endifequal%}</TD></TR>
     </TABLE>
 </DIV>
-<A HREF="text/">Plain Text</A>
 
 <DIV CLASS="module">
     <FORM METHOD="POST" ACTION="/cm/view/{{o.repo_name}}/{{o.id}}/diff/">
@@ -29,7 +37,7 @@
                 <TD><A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/{{rev.revision}}/">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
                 <TD>{{rev.date}}</TD>
                 <TD><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
-                <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>                
+                <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
             </TR>
         {% endfor %}
     </TABLE>

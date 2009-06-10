@@ -16,5 +16,6 @@ urlpatterns = patterns ( "",
     (r"^view/(?P<repo>[^/]+)/(?P<object_id>\d+)/(?P<revision>\d+)/$", login_required(view)),
     (r"^view/(?P<repo>[^/]+)/(?P<object_id>\d+)/text/$", login_required(view), {"format":"text"}),
     (r"^view/(?P<repo>[^/]+)/(?P<object_id>\d+)/(?P<revision>\d+)/text/$", login_required(view), {"format":"text"}),
-    (r"^view/(?P<repo>[^/]+)/(?P<object_id>\d+)/diff/", login_required(diff)),
+    (r"^view/(?P<repo>[^/]+)/(?P<object_id>\d+)/diff/$", login_required(diff)),
+    (r"^view/(?P<repo>[^/]+)/(?P<object_id>\d+)/diff/(?P<mode>[u2])/(?P<r1>.+)/(?P<r2>.+)/$", login_required(diff)),
 )

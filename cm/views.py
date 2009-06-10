@@ -8,7 +8,7 @@
 from noc.cm.models import Object
 from django.shortcuts import get_object_or_404
 from noc.lib.render import render,render_plain_text
-import os
+import os,difflib
 from django.http import HttpResponseNotFound,HttpResponseRedirect,HttpResponseForbidden
 from django.utils.html import escape
 ##
@@ -46,15 +46,26 @@ def view(request,repo,object_id,revision=None,format="html"):
         return render_plain_text(content)
     else:
         return HttpResponseNotFound("Invalid format: %s"%format)
-
-def diff(request,repo,object_id):
+##
+## Diff Preview
+##
+def diff(request,repo,object_id,mode="u",r1=None,r2=None):
     o=get_object_or_404(Object.get_object_class(repo),id=int(object_id))
     if not o.has_access(request.user):
         return HttpResponseForbidden("Access denied")
-    if request.POST and "r1" in request.POST and "r2" in request.POST:
-        r1=o.find_revision(request.POST["r1"])
-        r2=o.find_revision(request.POST["r2"])
-        diff=o.diff(r1,r2)
-        return render(request,"cm/diff.html",{"o":o,"diff":diff,"r1":r1,"r2":r2})
+    if request.POST:
+        r1=request.POST.get("r1",r1)
+        r2=request.POST.get("r2",r2)
+    if r1 and r2:
+        rev1=o.find_revision(r1)
+        rev2=o.find_revision(r2)
+        if mode=="2":
+            d1=o.get_revision(rev1)
+            d2=o.get_revision(rev2)
+            d=difflib.HtmlDiff()
+            diff=d.make_table(d1.splitlines(),d2.splitlines())
+        else:
+            diff=o.diff(rev1,rev2)
+        return render(request,"cm/diff.html",{"o":o,"diff":diff,"r1":r1,"r2":r2,"mode":mode})
     else:
         return HttpResponseRedirect("/cm/view/config/%d/"%o.id)
