@@ -48,9 +48,10 @@ class Command(BaseCommand):
         for rb in RB.objects.filter(is_builtin=True):
             loaded_refbooks[rb.name]=rb
         for r in self.search(RefBook,"main/refbooks/refbooks"):
+            name=unicode(r.name,"utf-8")
             r.sync()
-            if r.name in loaded_refbooks:
-                del loaded_refbooks[r.name]
+            if name in loaded_refbooks:
+                del loaded_refbooks[name]
         # Delete stale refbooks
         for rb in loaded_refbooks.values():
             print "DELETE REFBOOK ",rb.name
