@@ -4,8 +4,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import os,tempfile,sha
-
-def safe_rewrite(path,text):
+##
+## Create new file filled with "text" safely
+##
+def safe_rewrite(path,text,mode=None):
     d=os.path.dirname(path)
     if not os.path.exists(d):
         os.makedirs(d)
@@ -18,6 +20,8 @@ def safe_rewrite(path,text):
         os.unlink(path)
     os.link(p,path)
     os.unlink(p)
+    if mode:
+        os.chmod(path,mode)
 ##
 ## Check file content is differ from string
 ##
