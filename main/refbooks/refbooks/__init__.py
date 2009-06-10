@@ -63,7 +63,7 @@ class RefBook(object):
             es.add(f.name)
         ns=sets.Set()
         for f in cls.fields:
-            ns.add(f.name)
+            ns.add(unicode(f.name,"utf-8"))
         if es!=ns:
             print "Recreating fields"
             rb.flush_refbook()
