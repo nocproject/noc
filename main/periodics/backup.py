@@ -9,6 +9,7 @@
 """
 import noc.sa.periodic
 from noc.settings import config
+from noc.lib.fileutils import safe_rewrite
 import os,subprocess,datetime
 import logging
 
@@ -23,9 +24,12 @@ class Task(noc.sa.periodic.Task):
                 os.unlink(path)
             except:
                 pass
+        def pgpass_quote(s):
+            return s.replace("\\","\\\\").replace(":","\\:")
         from django.conf import settings
         # Build backup path
         now=datetime.datetime.now()
+        pgpass=["*","*","*","*",""] # host,port,database,user,password
         out="noc-%04d-%02d-%02d-%02d-%02d.dump"%(now.year,now.month,now.day,now.hour,now.minute)
         out=os.path.join(config.get("path","backup_dir"),out)
         # Build pg_dump command and options
@@ -33,16 +37,27 @@ class Task(noc.sa.periodic.Task):
         cmd+=["-f",out]
         if settings.DATABASE_USER:
             cmd+=["-U",settings.DATABASE_USER]
-        #if settings.DATABASE_PASSWORD:
-        #    cmd+=["-W"]
+            pgpass[3]=settings.DATABASE_USER
+        if settings.DATABASE_PASSWORD:
+            pgpass[4]=settings.DATABASE_PASSWORD
         if settings.DATABASE_HOST:
             cmd+=["-h",settings.DATABASE_HOST]
+            pgpass[0]=settings.DATABASE_HOST
         if settings.DATABASE_PORT:
             cmd+=["-p",str(settings.DATABASE_PORT)]
+            pgpass[1]=settings.DATABASE_PORT
         cmd+=[settings.DATABASE_NAME]
+        pgpass[2]=settings.DATABASE_NAME
+        # Create temporary .pgpass
+        pgpass_data=":".join([pgpass_quote(x) for x in pgpass])
+        pgpass_path=os.path.join(os.getcwd(),"local","cache","pgpass",".pgpass")
+        safe_rewrite(pgpass_path,pgpass_data,mode=0600)
+        print pgpass_data
+        env=os.environ.copy()
+        env["PGPASSFILE"]=pgpass_path
         # Launch pg_dump
         logging.info("main.backup: dumping database into %s"%out)
-        retcode=subprocess.call(cmd)
+        retcode=subprocess.call(cmd,env=env)
         if retcode!=0:
             logging.error("main.backup: dump failed. Removing broken dump '%s'"%out)
             safe_unlink(out)
