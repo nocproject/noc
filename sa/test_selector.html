@@ -1,0 +1,28 @@
+{% extends "template/template.html" %}
+{% block title%}{{selector.name}} | Test Selector{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/admin/sa/">Sa</a> &rsaquo;
+<a href="/admin/sa/managedobjectselector/">Managed Object Selectors</a> &rsaquo;
+<a href="/admin/sa/managedobjectselector/{{selector.id}}/">{{selector.name}}</a> &rsaquo; Test &rsaquo; </div>
+{% endblock %}
+{% block content %}
+<h1>{{selector.name}} test</h1>
+
+<table border="0">
+    <thead>
+        <tr><td>Id</td><td>Name</td><td>Profile</td><td>Address</td><td>Description</td>
+    </tr>
+    </thead>
+    {% for o in object_list %}
+    <tr class="{%cycle 'row1' 'row2'%}">
+        <td>{{o.id}}</td>
+        <td>{{o.name}}</td>
+        <td>{{o.profile_name}}</td>
+        <td>{{o.address}}</td>
+        <td>{{o.description}}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% load paginator %}
+{% if is_paginated %}<div class="paginator">{% paginator %}</div>{% endif %}
+{% endblock %}

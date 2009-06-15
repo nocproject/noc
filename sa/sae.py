@@ -8,7 +8,7 @@
 """
 """
 from __future__ import with_statement
-from noc.sa.models import Activator, ManagedObject, TaskSchedule
+from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask
 from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
 import logging,time,threading,datetime,os,sets,random,xmlrpclib,cPickle
@@ -298,6 +298,7 @@ class SAE(Daemon):
         last_cleanup=time.time()
         last_task_check=time.time()
         last_crashinfo_check=time.time()
+        last_mrtask_check=time.time()
         while True:
             self.factory.loop(1)
             if time.time()-last_task_check>=10:
@@ -312,6 +313,10 @@ class SAE(Daemon):
                 self.collect_crashinfo()
                 last_crashinfo_check=time.time()
                 reset_queries() # Clear debug SQL log
+            if time.time()-last_mrtask_check>=1:
+                # Check Map/Reduce task status
+                self.process_mrtasks()
+                last_mrtask_check=time.time()
     ##
     ## Collect crashinfo and write as FM events
     ##
@@ -491,6 +496,37 @@ class SAE(Daemon):
         for a in addresses:
             r.addresses.append(a)
         stream.proxy.ping_check(r,ping_check_callback)
+    ##
+    ## Process Map/Reduce tasks
+    ##
+    def process_mrtasks(self):
+        def map_callback(mt_id,result=None,error=None):
+            logging.debug("Map task completed: %d"%mt_id)
+            try:
+                mt=MapTask.objects.get(id=mt_id)
+            except MapTask.DoesNotExist:
+                logging.error("Map task %d suddently disappeared",mt_id)
+                return
+            if error:
+                logging.error("Map Task error: %s"%error.text)
+                mt.status="F"
+                mt.script_result=error.text
+            else:
+                mt.status="C"
+                mt.script_result=result
+            mt.save()
+        # Additional stack frame to store mt_id in a closure
+        def exec_script(mt):
+            self.script(mt.managed_object,mt.map_script,
+                    lambda result=None,error=None: map_callback(mt.id,result,error))
+        t=datetime.datetime.now()
+        for mt in MapTask.objects.filter(status="W",next_try__lte=t):
+            if mt.task.stop_time<t: # Task timeout
+                mt.status="F"
+                mt.save()
+            mt.status="R"
+            mt.save()
+            exec_script(mt)
     ##
     ## Called after config reloaded by SIGHUP.
     ##

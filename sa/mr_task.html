@@ -1,0 +1,15 @@
+{% extends "template/template.html" %}
+{% block title%}Run Map/Reduce Task{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/admin/sa/">Sa</a> &rsaquo;
+Map/Reduce Task &rsaquo;</div>
+{% endblock %}
+
+{% block content %}
+<h1>Run Map/Reduce Task</h1>
+<FORM METHOD="POST">
+    <TABLE BORDER="0">
+        {{form.as_table}}
+    </TABLE>
+    <INPUT TYPE="submit" VALUE="Run">
+</FORM>
+{% endblock %}
