@@ -10,7 +10,7 @@ from noc.lib.version import get_version
 ##
 def safe_rewrite(path,text,mode=None):
     d=os.path.dirname(path)
-    if not os.path.exists(d):
+    if d and not os.path.exists(d):
         os.makedirs(d)
     b=os.path.basename(path)
     h,p=tempfile.mkstemp(suffix=".tmp",prefix=b,dir=d)
