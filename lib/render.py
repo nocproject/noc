@@ -52,3 +52,10 @@ def render_success(request,subject=None,text=None):
 ##
 def render_failure(request,subject=None,text=None):
     return render(request,"main/failure.html",{"subject":subject,"text":text})
+##
+## Render wait page
+##
+def render_wait(request,subject=None,text=None,url=None,timeout=5):
+    if url is None:
+        url=request.path
+    return render(request,"main/wait.html",{"subject":subject,"text":text,"timeout":timeout,"url":url})
