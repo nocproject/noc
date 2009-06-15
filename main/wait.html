@@ -1,0 +1,13 @@
+{% extends "template/template.html" %}
+{% block extrahead %}
+<meta http-equiv="Refresh" content="{{timeout}}; {{url}}" />
+{% endblock %}
+{% block title%}Processing: {{subject}}{% endblock %}
+{% block content %}
+<H1>Processing: {{subject}}</H1>
+{%if text %}
+{{text}}
+{%else%}
+Processing, Please wait!
+{%endif%}
+{% endblock %}
