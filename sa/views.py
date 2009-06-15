@@ -9,11 +9,14 @@
 """
 from django.shortcuts import get_object_or_404
 from django import forms
-from noc.lib.render import render, render_success, render_failure
-from noc.sa.models import ManagedObject,script_registry,profile_registry,AdministrativeDomain,Activator,scheme_choices
+from noc.lib.render import render, render_success, render_failure, render_wait
+from noc.sa.models import ManagedObject,script_registry,profile_registry,AdministrativeDomain,Activator,scheme_choices,ManagedObjectSelector,\
+    ReduceTask, reduce_script_registry
 from django.http import HttpResponseForbidden,HttpResponseNotFound,HttpResponseRedirect
+from django.views.generic import list_detail
 from xmlrpclib import ServerProxy, Error
 from noc.settings import config
+from django.contrib.auth.decorators import permission_required
 import pprint,types,socket,csv
 
 ##
@@ -158,3 +161,55 @@ def upload_managed_objects(request):
             else:
                 return render_success(request,"Managed Objects are Uploaded","%d managed objects uploaded/updated"%count)
     return HttpResponseRedirect("/sa/tools/")
+##
+## Test Managed Object Selector
+##
+@permission_required("sa.change_managedobjectselector")
+def test_selector(request,selector_id):
+    selector=get_object_or_404(ManagedObjectSelector,id=int(selector_id))
+    return list_detail.object_list(
+        request,
+        queryset=selector.managed_objects,
+        template_name="sa/test_selector.html",
+        extra_context={"selector":selector},
+        paginate_by=100,
+    )
+##
+## Run new Map/Reduce task
+##
+class MRTaskForm(forms.Form):
+    selector=forms.ModelChoiceField(queryset=ManagedObjectSelector.objects)
+    reduce_script=forms.ChoiceField(choices=reduce_script_registry.choices)
+    reduce_script_params=forms.CharField(required=False)
+    map_script=forms.CharField()
+    map_script_params=forms.CharField(required=False)
+    timeout=forms.IntegerField()
+
+@permission_required("sa.add_reducetask")
+def mr_task(request):
+    if request.POST:
+        form = MRTaskForm(request.POST)
+        if form.is_valid():
+            t=ReduceTask.create_task(
+                object_selector=form.cleaned_data["selector"],
+                reduce_script=form.cleaned_data["reduce_script"],
+                reduce_script_params=form.cleaned_data["reduce_script_params"],
+                map_script=form.cleaned_data["map_script"],
+                map_script_params=form.cleaned_data["map_script_params"],
+                timeout=form.cleaned_data["timeout"]
+            )
+            return HttpResponseRedirect("/sa/mr_task/%d/"%t.id)
+    else:
+        form=MRTaskForm(initial={"timeout":180})
+    return render(request,"sa/mr_task.html",{"form":form})
+##
+## Get task result
+##
+@permission_required("sa.add_reducetask")
+def mr_task_result(request,task_id):
+    task=get_object_or_404(ReduceTask,id=int(task_id))
+    if not task.complete: # Render wait page
+        return render_wait(request,subject="map/reduce task") 
+    result=task.get_result()
+    task.delete()
+    return render(request,"sa/mr_task_result.html",{"result":result})

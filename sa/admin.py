@@ -102,9 +102,17 @@ class UserAccessAdmin(admin.ModelAdmin):
     list_display=["user","administrative_domain","group"]
     list_filter=["user","administrative_domain","group"]
 
+##
+##
+##
+class ManagedObjectSelectorAdmin(admin.ModelAdmin):
+    list_display=["name","is_enabled","test_link"]
+    list_filter=["is_enabled"]
+
 admin.site.register(Activator,            ActivatorAdmin)
 admin.site.register(AdministrativeDomain, AdministrativeDomainAdmin)
 admin.site.register(ObjectGroup,          ObjectGroupAdmin)
 admin.site.register(ManagedObject,        ManagedObjectAdmin)
 admin.site.register(UserAccess,           UserAccessAdmin)
 admin.site.register(TaskSchedule,         TaskScheduleAdmin)
+admin.site.register(ManagedObjectSelector, ManagedObjectSelectorAdmin)

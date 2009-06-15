@@ -11,14 +11,17 @@ from django.contrib.auth.models import User
 import datetime,random,cPickle,time
 from noc.sa.profiles import profile_registry
 from noc.sa.periodic import periodic_registry
+from noc.sa.scripts import reduce_script_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.main.menu import Menu
 from noc.main.search import SearchResult
+from noc.lib.fields import PickledField
 
 profile_registry.register_all()
 periodic_registry.register_all()
 script_registry.register_all()
+reduce_script_registry.register_all()
 scheme_choices=[(TELNET,"telnet"),(SSH,"ssh"),(HTTP,"http")]
 ##
 ##
@@ -252,6 +255,164 @@ class TaskSchedule(models.Model):
         else:
             return TaskSchedule.objects.filter(next_run__lte=datetime.datetime.now(),is_enabled=True).order_by("-next_run")
 ##
+## Object Selector
+##
+class ManagedObjectSelector(models.Model):
+    class Meta:
+        verbose_name="Managed Object Selector"
+        verbose_name_plural="Managed Object Selectors"
+        ordering=["name"]
+    name=models.CharField("Name",max_length=64,unique=True)
+    description=models.TextField("Description",blank=True,null=True)
+    is_enabled=models.BooleanField("Is Enabled",default=True)
+    filter_id=models.IntegerField("Filter by ID",null=True,blank=True)
+    filter_name=models.CharField("Filter by Name (REGEXP)",max_length=256,null=True,blank=True)
+    filter_profile=models.CharField("Filter by Profile",max_length=64,null=True,blank=True,choices=profile_registry.choices)
+    filter_address=models.CharField("Filter by Address (REGEXP)",max_length=256,null=True,blank=True)
+    filter_administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name="Filter by Administrative Domain",null=True,blank=True)
+    filter_user=models.CharField("Filter by User (REGEXP)",max_length=256,null=True,blank=True)
+    filter_remote_path=models.CharField("Filter by Remote Path (REGEXP)",max_length=256,null=True,blank=True)
+    filter_groups=models.ManyToManyField(ObjectGroup,verbose_name="Filter by Groups",null=True,blank=True)
+    filter_description=models.CharField("Filter by Description (REGEXP)",max_length=256,null=True,blank=True)
+    filter_repo_path=models.CharField("Filter by Repo Path (REGEXP)",max_length=256,null=True,blank=True)
+    source_combine_method=models.CharField("Source Combine Method",max_length=1,default="O",choices=[("A","AND"),("O","OR")])
+    sources=models.ManyToManyField("ManagedObjectSelector",verbose_name="Sources",symmetrical=False,null=True,blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    ##
+    ## Returns a queryset containing selected managed objects
+    ##
+    def _managed_objects(self):
+        # Apply restrictions
+        q=Q(is_managed=True)
+        if self.filter_id:
+            q&=Q(id=self.filter_id)
+        if self.filter_name:
+            q&=Q(name__regex=self.filter_name)
+        if self.filter_profile:
+            q&=Q(profile_name=self.filter_profile)
+        if self.filter_address:
+            q&=Q(address__regex=self.filter_address)
+        if self.filter_administrative_domain:
+            q&=Q(administrative_domain=self.filter_administrative_domain)
+        if self.filter_user:
+            q&=Q(user__regex=self.filter_user)
+        if self.filter_remote_path:
+            q&=Q(remote_path__regex=self.filter_remote_path)
+        if self.filter_description:
+            q&=Q(description__regex=self.filter_description)
+        if self.filter_repo_path:
+            q&=Q(repo_path__regex=self.filter_repo_path)
+        r=ManagedObject.objects.filter(q)
+        # Restrict to groups when necessary
+        for g in self.filter_groups.all():
+            r=r.extra(where=["id IN (SELECT managedobject_id FROM sa_managedobject_groups WHERE objectgroup_id=%s)"],
+                params=[g.id])
+        # Restrict to sources
+        if self.sources.count():
+            sm=self.source_combine_method
+            for s in self.sources.all():
+                if s.id==self.id: # Do not include self
+                    continue
+                if sm=="A": # AND
+                    r&=s.managed_objects
+                else: # OR
+                    r|=s.managed_objects
+        return r
+    managed_objects=property(_managed_objects)
+    ##
+    ## Link to the test
+    ##
+    def test_link(self):
+        try:
+            return "<A HREF='/sa/test_selector/%d/'>Test Selector</A>"%(self.id)
+        except:
+            return ""
+    test_link.short_description="Test Selector"
+    test_link.allow_tags=True
+##
+## Reduce Tasks
+##
+class ReduceTask(models.Model):
+    class Meta:
+        verbose_name="Map/Reduce Task"
+        verbose_name="Map/Reduce Tasks"
+    start_time=models.DateTimeField("Start Time")
+    stop_time=models.DateTimeField("Stop Time")
+    reduce_script=models.CharField("Script",max_length=256,choices=reduce_script_registry.choices)
+    script_params=PickledField("Params",null=True,blank=True)
+    
+    def __unicode__(self):
+        return u"%d: %s"%(self.id,self.reduce_script)
+    ##
+    ## Check all map tasks are completed
+    ##
+    def _complete(self):
+        return self.stop_time<=datetime.datetime.now()\
+            or (self.maptask_set.all().count()==self.maptask_set.filter(status__in=["C","F"]).count())
+    complete=property(_complete)
+    ##
+    ## Create map/reduce tasks
+    ##
+    @classmethod
+    def create_task(self,object_selector,reduce_script,reduce_script_params,map_script,map_script_params,timeout):
+        start_time=datetime.datetime.now()
+        r_task=ReduceTask(
+            start_time=start_time,
+            stop_time=start_time+datetime.timedelta(seconds=timeout),
+            reduce_script=reduce_script,
+            script_params=reduce_script_params,
+        )
+        r_task.save()
+        prepend_profile=len(map_script.split("."))!=3
+        for o in object_selector.managed_objects:
+            # Prepend profile name when necessary
+            if prepend_profile:
+                ms="%s.%s"%(o.profile_name,map_script)
+            else:
+                ms=map_script
+            #
+            status="W"
+            # Check script is present
+            if not ms.startswith(o.profile_name+".")\
+                or map_script not in profile_registry[o.profile_name].scripts:
+                    # No such script
+                    status="F"
+            #
+            MapTask(
+                task=r_task,
+                managed_object=o,
+                map_script=ms,
+                script_params=map_script_params,
+                next_try=start_time,
+                status=status
+            ).save()
+        return r_task
+    ##
+    ## Perform reduce script and execute result
+    ##
+    def get_result(self):
+        return reduce_script_registry[self.reduce_script].execute(self)
+##
+## Map Tasks
+##
+class MapTask(models.Model):
+    class Meta:
+        verbose_name="Map/Reduce Task Data"
+        verbose_name="Map/Reduce Task Data"
+    task=models.ForeignKey(ReduceTask,verbose_name="Task")
+    managed_object=models.ForeignKey(ManagedObject,verbose_name="Managed Object")
+    map_script=models.CharField("Script",max_length=256)
+    script_params=PickledField("Params",null=True,blank=True)
+    next_try=models.DateTimeField("Next Try")
+    retries_left=models.IntegerField("Retries Left",default=1)
+    status=models.CharField("Status",max_length=1,choices=[("W","Wait"),("R","Running"),("C","Complete"),("F","Failed")],default="W")
+    script_result=PickledField("Result",null=True,blank=True)
+    def __unicode__(self):
+        return u"%d: %s %s"%(self.id,self.managed_object,self.map_script)
+        
+##
 ## Application Menu
 ##
 class AppMenu(Menu):
@@ -259,11 +420,13 @@ class AppMenu(Menu):
     title="Service Activation"
     items=[
         ("Managed Objects", "/admin/sa/managedobject/", "sa.change_managedobject"),
+        ("Map/Reduce Tasks","/sa/mr_task/",             "sa.add_reducetask"),
         ("Task Schedules",  "/admin/sa/taskschedule/",  "sa.change_taskschedule"),
         ("Setup", [
             ("Activators",             "/admin/sa/activator/"            , "sa.change_activator"),
             ("Administrative Domains", "/admin/sa/administrativedomain/" , "sa.change_administrativedomain"),
             ("Object Groups",          "/admin/sa/objectgroup/"          , "sa.change_objectgroup"),
             ("User Access",            "/admin/sa/useraccess/"           , "sa.change_useraccess"),
+            ("Object Selectors",       "/admin/sa/managedobjectselector/", "sa.change_managedobjectselector"),
         ])
     ]
