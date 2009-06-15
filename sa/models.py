@@ -319,7 +319,7 @@ class ManagedObjectSelector(models.Model):
                     r&=s.managed_objects
                 else: # OR
                     r|=s.managed_objects
-        return r
+        return r.exclude(profile_name="NOC")
     managed_objects=property(_managed_objects)
     ##
     ## Link to the test
