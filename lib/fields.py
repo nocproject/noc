@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.db import models
 from lib.ip import normalize_prefix
-import types
+import types,cPickle
 ##
 ## CIDRField maps to PostgreSQL CIDR
 ##
@@ -47,3 +47,19 @@ class TextArrayField(models.Field):
             else:
                 return unicode(s,"utf-8")
         return [to_unicode(x) for x in value]
+##
+## Pickled object
+##
+class PickledField(models.Field):
+    __metaclass__ = models.SubfieldBase
+    def db_type(self):
+        return "TEXT"
+    def to_python(self,value):
+        if not value:
+            return None
+        try:
+            return cPickle.loads(str(value))
+        except:
+            return value
+    def get_db_prep_value(self,value):
+        return cPickle.dumps(value)
