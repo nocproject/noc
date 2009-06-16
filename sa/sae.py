@@ -509,6 +509,23 @@ class SAE(Daemon):
                 return
             if error:
                 logging.error("Map Task error: %s"%error.text)
+                # Process non-fatal reasons
+                TIMEOUTS={
+                    ERR_ACTIVATOR_NOT_AVAILABLE: 10,
+                    ERR_OVERLOAD:                10,
+                    ERR_DOWN:                    30,
+                }
+                if error.code in TIMEOUTS: # Any of non-fatal reasons require retry
+                    timeout=TIMEOUTS[error.code]
+                    variation=10
+                    timeout=random.randint(-timeout/variation,timeout/variation)
+                    next_try=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
+                    if next_try<t.task.stop_time: # Check we're still in task time
+                        logging.debug("Retry task: %d"%mt_id)
+                        mt.next_try=next_try
+                        mt.status="W"
+                        mt.save()
+                        return
                 mt.status="F"
                 mt.script_result=error.text
             else:
