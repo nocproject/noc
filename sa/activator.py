@@ -79,7 +79,7 @@ class Service(SAEService):
             return
         kwargs={}
         for a in request.kwargs:
-            kwargs[str(a.key)]=a.value
+            kwargs[str(a.key)]=cPickle.loads(str(a.value))
         self.activator.run_script(request.script,request.access_profile,script_callback,**kwargs)
     
     def ping_check(self,controller,request,done):

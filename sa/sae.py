@@ -442,7 +442,7 @@ class SAE(Daemon):
         for k,v in kwargs.items():
             a=r.kwargs.add()
             a.key=str(k)
-            a.value=str(v)
+            a.value=cPickle.dumps(v)
         stream.proxy.script(r,script_callback)
     ##
     ## Send a list of addresses to activator
