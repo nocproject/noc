@@ -534,8 +534,12 @@ class SAE(Daemon):
             mt.save()
         # Additional stack frame to store mt_id in a closure
         def exec_script(mt):
+            kwargs={}
+            if mt.script_params:
+                kwargs=mt.script_params
             self.script(mt.managed_object,mt.map_script,
-                    lambda result=None,error=None: map_callback(mt.id,result,error))
+                    lambda result=None,error=None: map_callback(mt.id,result,error),
+                    **kwargs)
         t=datetime.datetime.now()
         for mt in MapTask.objects.filter(status="W",next_try__lte=t):
             if mt.task.stop_time<t: # Task timeout
