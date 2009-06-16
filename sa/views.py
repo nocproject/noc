@@ -184,6 +184,20 @@ class MRTaskForm(forms.Form):
     map_script=forms.CharField()
     map_script_params=forms.CharField(required=False)
     timeout=forms.IntegerField()
+    def clean_reduce_script_params(self):
+        if self.cleaned_data["reduce_script_params"]=="":
+            return ""
+        try:
+            return eval(self.cleaned_data["reduce_script_params"],{},{})
+        except SyntaxError:
+            raise forms.ValidationError("Invalid syntax")
+    def clean_map_script_params(self):
+        if self.cleaned_data["map_script_params"]=="":
+            return ""
+        try:
+            return eval(self.cleaned_data["map_script_params"],{},{})
+        except SyntaxError:
+            raise forms.ValidationError("Invalid syntax")
 
 @permission_required("sa.add_reducetask")
 def mr_task(request):
