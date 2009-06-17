@@ -17,7 +17,6 @@ class Registry(object):
     exclude=[] # List of excluded modules
     def __init__(self):
         self.classes={}
-        self.choices=[]
         self.is_registered=False
     
     #
@@ -26,11 +25,8 @@ class Registry(object):
     def register(self,name,module):
         if name is None:
             return
-        if name in self.classes:
-            raise Exception,"Module %s registred twice"%name
         logging.info("%s: Register %s"%(self.name,name))
         self.classes[name]=module
-        self.choices.append((name,name))
     #
     # Should be called at the top of the models.py
     #
@@ -59,3 +55,9 @@ class Registry(object):
     #
     def __getitem__(self,name):
         return self.classes[name]
+    #
+    # choices for Model's choices=
+    #
+    def _choices(self):
+        return [(x,x) for x in sorted(self.classes.keys())]
+    choices=property(_choices)
