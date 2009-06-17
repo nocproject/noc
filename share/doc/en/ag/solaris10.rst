@@ -14,7 +14,7 @@ Import manifests first (if not imported by installer)::
     $ svccfg import /opt/noc/share/sunos/manifest/noc-activator.xml
     $ svccfg import /opt/noc/share/sunos/manifest/noc-classifier.xml
 
-Then you cat start service (noc-fcgi, noc-sae, noc-activator and noc-classifier)::
+Then you can start service (noc-fcgi, noc-sae, noc-activator and noc-classifier)::
 
     $ svcadm enable <service>
 
