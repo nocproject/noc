@@ -10,7 +10,7 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
 from noc.main.views import index,logout,report,report_index,success,failure,menu,search,config_index,config_view,\
-    refbook_index,refbook_view
+    refbook_index,refbook_view,svg_text_vertical
 from django.contrib import databrowse
 from noc.lib.decorators import superuser_required
 
@@ -20,12 +20,13 @@ urlpatterns = patterns ( None,
         (r"^databrowse/(.*)", superuser_required(databrowse.site.root)),
         (r"^report/(?P<report>[a-z0-9\-_.]+)/$", login_required(report)),
         (r"^report/$", login_required(report_index)),
-        (r"success/$", login_required(success)),
-        (r"failure/$", login_required(failure)),
-        (r"menu/$",    login_required(menu)),
-        (r"search/$",  login_required(search)),
-        (r"config/$",  login_required(config_index)),
-        (r"config/(?P<config>.+)/$",  login_required(config_view)),
-        (r"refbook/$", login_required(refbook_index)),
-        (r"refbook/(?P<refbook_id>\d+)/$",  login_required(refbook_view)),
+        (r"^success/$", login_required(success)),
+        (r"^failure/$", login_required(failure)),
+        (r"^menu/$",    login_required(menu)),
+        (r"^search/$",  login_required(search)),
+        (r"^config/$",  login_required(config_index)),
+        (r"^config/(?P<config>.+)/$",  login_required(config_view)),
+        (r"^refbook/$", login_required(refbook_index)),
+        (r"^refbook/(?P<refbook_id>\d+)/$",  login_required(refbook_view)),
+        (r"^svg/text/vertical/$", svg_text_vertical)
 )
