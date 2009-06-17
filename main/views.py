@@ -11,12 +11,13 @@
 from __future__ import with_statement
 import django.contrib.auth
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect,HttpResponseNotFound,HttpResponseForbidden
+from django.http import HttpResponseRedirect,HttpResponseNotFound,HttpResponseForbidden,HttpResponse
 from django.core.cache import cache
 from django.utils.cache import patch_response_headers
 from django import forms
 from django.views.generic import list_detail
 from noc.lib.render import render,render_success,render_failure,render_json
+from noc.lib.svg import vertical_text_svg
 from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
@@ -248,3 +249,12 @@ def refbook_view(request,refbook_id):
         extra_context={"rb":rb},
         paginate_by=100,
     )
+##
+## Render SVG with vertical text
+##
+def svg_text_vertical(request):
+    if request.GET:
+        text=request.GET.get("text",u"")
+    else:
+        text=u""
+    return HttpResponse(vertical_text_svg(text),mimetype="image/svg+xml")
