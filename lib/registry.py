@@ -53,6 +53,13 @@ class Registry(object):
                             f=""
                         else:
                             f="."+f[:-3]
+                            # Create missed __init__.py for local/
+                            if l:
+                                c=dirpath.split(os.sep)
+                                for i in range(1,len(c)+1):
+                                    i_path=os.path.join(os.sep.join(c[:i]),"__init__.py")
+                                    if not os.path.exists(i_path):
+                                        open(i_path,"w").close() # Create file
                         if f in self.exclude:
                             continue
                         __import__(mb+f,{},{},self.classname)
