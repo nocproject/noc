@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.sa.scripts import ReduceScript as ReduceScriptBase
+from noc.lib.svg import vertical_text_inline
 import types
 ##
 ##
@@ -14,8 +15,11 @@ class ReduceScript(ReduceScriptBase):
     name="MatrixReport"
     @classmethod
     def execute(cls,task,**kwargs):
-        def render_column_label(s):
+        def column_label_svg(s):
+            return vertical_text_inline(s)
+        def column_label_html(s):
             return "<BR/>".join(s)
+        column_label=column_label_svg
         data={}
         cl={}
         rl={}
@@ -34,7 +38,7 @@ class ReduceScript(ReduceScriptBase):
         cl=["status"]+sorted(cl.keys())
         rl=sorted(rl.keys())
         out="<TABLE SUMMARY='' BORDER='1'>"
-        out+="<TR><TH></TH>%s</TR>"%"".join(["<TH>%s</TH>"%render_column_label(c) for c in cl])
+        out+="<TR VALIGN='bottom'><TH></TH>%s</TR>"%"".join(["<TH>%s</TH>"%column_label(c) for c in cl])
         n=0
         for r in rl:
             out+="<TR CLASS='row%d'><TD><B>%s</B></TD>"%((n%2)+1,r)

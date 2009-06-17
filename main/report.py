@@ -7,6 +7,7 @@
 """
 from noc.lib.render import render
 from noc.lib.registry import Registry
+from noc.lib.svg import has_svg_support,vertical_text_inline
 from django.conf import settings
 
 #
@@ -120,8 +121,14 @@ class Report(object):
 ## get_queryset must return a triple of (column-label,row-label,value)
 class MatrixReport(Report):
     def render(self):
-        def render_column_label(s):
+        def column_label_svg(s):
+            return vertical_text_inline(s)
+        def column_label_html(s):
             return "<BR/>".join(s)
+        if has_svg_support(self.request):
+            column_label=column_label_svg
+        else:
+            column_label=column_label_html
         data={}
         cl={}
         rl={}
@@ -132,7 +139,7 @@ class MatrixReport(Report):
         cl=sorted(cl.keys())
         rl=sorted(rl.keys())
         out="<TABLE SUMMARY='%s' BORDER='1'>"%self.title
-        out+="<TR><TH></TH>%s</TR>"%"".join(["<TH>%s</TH>"%render_column_label(c) for c in cl])
+        out+="<TR><TH></TH>%s</TR>"%"".join(["<TH>%s</TH>"%column_label(c) for c in cl])
         n=0
         for r in rl:
             out+="<TR CLASS='row%d'><TD><B>%s</B></TD>"%((n%2)+1,r)
