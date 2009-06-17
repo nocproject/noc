@@ -11,13 +11,13 @@ from django.shortcuts import get_object_or_404
 from django import forms
 from noc.lib.render import render, render_success, render_failure, render_wait
 from noc.sa.models import ManagedObject,script_registry,profile_registry,AdministrativeDomain,Activator,scheme_choices,ManagedObjectSelector,\
-    ReduceTask, reduce_script_registry
+    ReduceTask, reduce_script_registry, script_registry
 from django.http import HttpResponseForbidden,HttpResponseNotFound,HttpResponseRedirect
 from django.views.generic import list_detail
 from xmlrpclib import ServerProxy, Error
 from noc.settings import config
 from django.contrib.auth.decorators import permission_required
-import pprint,types,socket,csv
+import pprint,types,socket,csv,sets
 
 ##
 ## Display a list of object's scripts
@@ -174,6 +174,8 @@ def test_selector(request,selector_id):
         extra_context={"selector":selector},
         paginate_by=100,
     )
+## Script choices
+map_script_choices=[(x,x) for x in sorted(sets.Set([x.split(".")[2] for x in script_registry.classes.keys() if not x.startswith("Generic.")]))]
 ##
 ## Run new Map/Reduce task
 ##
@@ -181,7 +183,7 @@ class MRTaskForm(forms.Form):
     selector=forms.ModelChoiceField(queryset=ManagedObjectSelector.objects)
     reduce_script=forms.ChoiceField(choices=reduce_script_registry.choices)
     reduce_script_params=forms.CharField(required=False)
-    map_script=forms.CharField()
+    map_script=forms.ChoiceField(choices=map_script_choices)
     map_script_params=forms.CharField(required=False)
     timeout=forms.IntegerField()
     def clean_reduce_script_params(self):
