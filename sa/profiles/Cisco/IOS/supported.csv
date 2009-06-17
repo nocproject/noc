@@ -1,7 +1,5 @@
-Cisco,12000,GS 12.0(32)SY3
 Cisco,1841,12.4(15)T5
 Cisco,7200,12.4(12.2r)T
-Cisco,7600,12.2(33r)SRB3
 Cisco,AS5350,12.3(21)
 Cisco,AS5350,12.4(11)T4
 Cisco,AS5350,12.4(9)T1
@@ -19,7 +17,11 @@ Cisco,C3750,12.2(37)SE
 Cisco,C3750,12.2(37)SE1
 Cisco,C3750,12.2(44)SE2
 Cisco,Catalyst 4500 L3 Switch,12.2(37)SG1
-Cisco,Catalyst ME3400,12.2(35)SE5
-Cisco,Catalyst ME3400,12.2(40)SE
+Cisco,ME340x,12.2(35)SE5
+Cisco,ME340x,12.2(40)SE
+Cisco,GS,GS 12.0(32)SY3
+Cisco,c7600rsp72043_rp,12.2(33)SRC
+Cisco,c7600rsp72043_rp,12.2(33)SRC2
+Cisco,c7600rsp72043_rp,12.2(33r)SRB3
 Cisco,s72033_rp,12.2(18)SXF14
 Cisco,s72033_rp,12.2(33)SXH2a
