@@ -38,17 +38,24 @@ class Registry(object):
             apps=[a for a in settings.INSTALLED_APPS if a.startswith("noc.")]
         else:
             apps=self.apps
-        for app in apps:
-            pd=os.path.join(app[4:],self.subdir)
-            if not os.path.isdir(pd):
-                continue
-            for dirpath,dirnames,filenames in os.walk(pd):
-                mb=app+"."+".".join(dirpath.split(os.sep)[1:])+"."
-                for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
-                    f=f[:-3]
-                    if f in self.exclude:
-                        continue
-                    __import__(mb+f,{},{},self.classname)
+        for l in ["","local"]: # Look in the local/ directory too
+            for app in apps:
+                pd=os.path.join(l,app[4:],self.subdir)
+                if not os.path.isdir(pd):
+                    continue
+                for dirpath,dirnames,filenames in os.walk(pd):
+                    if l:
+                        mb="noc.local.%s."%app[4:]+".".join(dirpath.split(os.sep)[2:])
+                    else:
+                        mb=app+"."+".".join(dirpath.split(os.sep)[1:])
+                    for f in [f for f in filenames if f.endswith(".py")]:
+                        if f=="__init__.py":
+                            f=""
+                        else:
+                            f="."+f[:-3]
+                        if f in self.exclude:
+                            continue
+                        __import__(mb+f,{},{},self.classname)
         self.is_registered=True
     #
     #
