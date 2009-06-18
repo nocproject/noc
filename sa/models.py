@@ -161,9 +161,31 @@ class ManagedObject(models.Model):
         
     @classmethod
     def queryset(cls,user):
-        # Idiotic implementation
-        ids=[o.id for o in cls.objects.all() if o.has_access(user)]
-        return cls.objects.filter(id__in=ids)
+        if user.is_superuser:
+            return cls.objects.all()
+        # Build query
+        r=[]
+        p=[]
+        for a in user.useraccess_set.all():
+            if a.administrative_domain is None and a.group is None: # Full access
+                return cls.objects.all()
+            rr=[]
+            pp=[]
+            if a.administrative_domain:
+                rr.append("(sa_managedobject.administrative_domain_id=%s)")
+                pp.append(a.administrative_domain.id)
+            if a.group:
+                rr.append("(id IN (SELECT managedobject_id FROM sa_managedobject_groups WHERE objectgroup_id=%s))")
+                pp.append(a.group.id)
+            if len(rr)==1: # Single clause
+                r+=rr
+            else: # AND together
+                r+=["(%s AND %s)"%(r[0],r[1])]
+            p+=pp
+        if not r: # No access
+            return cls.objects.extra(where=["0=1"]) # Return empty queryset
+        where=" OR ".join(r)
+        return cls.objects.extra(where=[where],params=p)
     ##
     ## Override model's save()
     ## Change related Config object as well
