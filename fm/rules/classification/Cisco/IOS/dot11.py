@@ -134,3 +134,16 @@ class Cisco_IOS_CCMP_Replay_SYSLOG_Rule(ClassificationRule):
         (r"^source$",r"^syslog$"),
         Expression(r"mac",r"decode_mac(raw_mac)"),
     ]
+##
+## Cisco.IOS dot11 Roamed SYSLOG
+##
+class Cisco_IOS_dot11_Roamed_SYSLOG_Rule(ClassificationRule):
+    name="Cisco.IOS dot11 Roamed SYSLOG"
+    event_class=Dot11Roamed
+    preference=1000
+    patterns=[
+        (r"^profile$",r"^Cisco\.IOS$"),
+        (r"^source$",r"^syslog$"),
+        (r"^message$",r"%DOT11-6-ROAMED: Station (?P<raw_mac>\S+) Roamed to"),
+        Expression(r"mac",r"decode_mac(raw_mac)"),
+    ]
