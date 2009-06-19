@@ -42,7 +42,7 @@ class ReduceScript(ReduceScriptBase):
         n={}
         out="Not in supported.csv<BR/>"
         for mt in task.maptask_set.all():
-            if task.status!="C": # Ignore failed tasks
+            if mt.status!="C": # Ignore failed tasks
                 continue
             r=mt.script_result
             if not r:
