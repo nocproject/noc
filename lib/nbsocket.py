@@ -204,6 +204,7 @@ class AcceptedTCPSocket(TCPSocket):
         if data=="":
             self.close()
             return
+        self.update_status()
         if self.protocol_class:
             self.protocol.feed(data)
         else:
@@ -254,6 +255,7 @@ class ConnectedTCPSocket(TCPSocket):
         if not data:
             self.close()
             return
+        self.update_status()
         if self.protocol_class:
             self.protocol.feed(data)
         else:
@@ -321,6 +323,7 @@ class PTYSocket(Socket):
         except OSError:
             self.close()
             return
+        self.update_status()
         if data:
             self.on_read(data)
         else:
@@ -475,7 +478,7 @@ class SocketFactory(object):
             if self.tick_callback and t-last_tick>=1:
                 self.tick_callback()
                 last_tick=t
-            if t-last_stale>10:
+            if t-last_stale>3:
                 self.close_stale()
                 last_stale=t
     
