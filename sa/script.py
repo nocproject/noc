@@ -205,7 +205,7 @@ class Script(threading.Thread):
         data=self.cli_provider.queue.get(block=True)
         if self.strip_echo and data.lstrip().startswith(cmd):
             data=self.strip_first_lines(data.lstrip())
-        self.debug("cli() returns:\n---------\n%s\n---------"%data)
+        self.debug("cli() returns:\n---------\n%s\n---------"%repr(data))
         return data
     ##
     ## Clean up config from all unnecessary trash
