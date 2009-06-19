@@ -5,9 +5,9 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-PREFIX=/opt/noc
-
+PREFIX=`dirname "$0"`/../
 cd $PREFIX
+
 python manage.py syncdb
 python manage.py migrate
 python manage.py sync-refbooks
