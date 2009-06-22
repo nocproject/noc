@@ -69,7 +69,11 @@ class Rule(object):
     ## Returns a list of (event_id,action)
     ##
     def correlate(self,cursor,event,vars):
-        cursor.execute(self.exec_statement,[f(event,vars) for f in self.var_map])
+        try:
+            cursor.execute(self.exec_statement,[f(event,vars) for f in self.var_map])
+        except KeyError:
+            # No required variable present in event
+            return []
         return [(x[0],self.action) for x in cursor.fetchall()]
 ##
 ## Matches a nearest event of given classes with matching vars
