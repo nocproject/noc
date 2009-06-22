@@ -78,7 +78,9 @@ class VCS(object):
             self.check_repository()
         subprocess.check_call([config.get("cm","vcs_path")]+cmd,cwd=self.repo)
     # Returns an output of cmd
-    def cmd_out(self,cmd):
+    def cmd_out(self,cmd,check=True):
+        if check:
+            self.check_repository()
         p=subprocess.Popen([config.get("cm","vcs_path")]+cmd,stdout=subprocess.PIPE,cwd=self.repo)
         d=p.stdout.read()
         return d
