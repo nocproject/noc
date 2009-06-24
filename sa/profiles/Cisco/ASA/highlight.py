@@ -18,6 +18,7 @@ class ConfigLexer(RegexLexer):
             (r"(password)(\s+\S+\s+)(encrypted)", bygroups(Keyword,String.Double,Keyword)),
             (r"^(interface|router\s+\S+)(.*?)$", bygroups(Keyword,Name.Attribute)),
             (r"^(group-policy)(\s+\S+\s+)(\S+)", bygroups(Keyword,Name.Attribute,Keyword)),
+            (r"(nameif\s+)(.*?)$",               bygroups(Keyword,Name.Attribute)),
             (r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(/\d{1,2})?", Number), # IPv4 Address/Prefix
             (r"^(?:no\s+)?\S+", Keyword),
             (r"\d+", Number),
