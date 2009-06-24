@@ -21,7 +21,7 @@ from noc.lib.svg import vertical_text_svg
 from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
-from noc.main.models import RefBook
+from noc.main.models import RefBook, RefBookData
 import os, types, ConfigParser, sets, pwd, re
 
 ##
@@ -242,13 +242,32 @@ def refbook_index(request):
 ##
 def refbook_view(request,refbook_id):
     rb=get_object_or_404(RefBook,id=int(refbook_id))
+    can_edit=not rb.is_builtin and request.user.has_perm("main.change_refbookdata")
+    if request.POST: # Edit refbook
+        if not can_edit:
+            return HttpResponseForbidden("Read-only refbook")
+        record=get_object_or_404(RefBookData,id=int(request.POST["record_id"]))
+        # Retrieve record data
+        fns=[int(k[6:]) for k in request.POST.keys() if k.startswith("field_")]
+        data=["" for i in range(max(fns)+1)]
+        for i in fns:
+            data[i]=request.POST["field_%d"%i]
+        record.value=data
+        record.save()
     return list_detail.object_list(
         request,
         queryset=rb.refbookdata_set.all(),
         template_name="main/refbook_view.html",
-        extra_context={"rb":rb},
+        extra_context={"rb":rb,"can_edit":can_edit},
         paginate_by=100,
     )
+##
+## Refbook edit
+##
+def refbook_edit(request,refbook_id,record_id=None):
+    if request.POST:
+        print request.POST
+
 ##
 ## Render SVG with vertical text
 ##
