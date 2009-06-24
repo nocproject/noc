@@ -246,13 +246,17 @@ def refbook_view(request,refbook_id):
     if request.POST: # Edit refbook
         if not can_edit:
             return HttpResponseForbidden("Read-only refbook")
-        record=get_object_or_404(RefBookData,id=int(request.POST["record_id"]))
         # Retrieve record data
         fns=[int(k[6:]) for k in request.POST.keys() if k.startswith("field_")]
         data=["" for i in range(max(fns)+1)]
         for i in fns:
             data[i]=request.POST["field_%d"%i]
-        record.value=data
+        record_id=int(request.POST["record_id"])
+        if record_id: # Edit existing
+            record=get_object_or_404(RefBookData,id=int(request.POST["record_id"]))
+            record.value=data
+        else: # Create new
+            record=RefBookData(ref_book=rb,value=data)
         record.save()
     return list_detail.object_list(
         request,

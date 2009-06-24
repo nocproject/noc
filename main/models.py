@@ -205,7 +205,7 @@ class RefBook(models.Model):
 class RefBookField(models.Model):
     class Meta:
         verbose_name="Ref Book Field"
-        verbose_name="Ref Book Fields"
+        verbose_name_plural="Ref Book Fields"
         unique_together=[("ref_book","order"),("ref_book","name")]
         ordering=["ref_book","order"]
     ref_book=models.ForeignKey(RefBook,verbose_name="Ref Book")
