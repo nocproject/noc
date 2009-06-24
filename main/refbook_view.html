@@ -45,4 +45,22 @@ function on_edit(x,record_id) {
 
 {% load paginator %}
 {% if is_paginated %}<div class="paginator">{% paginator %}</div>{% endif %}
+
+{% if can_edit %}
+<h2>Add new record</h2>
+<form method="post" action="/main/refbook/{{rb.id}}/?page={{page}}" id="form">
+<table border="0">
+    <thead>
+    <tr>
+    {% for f in rb.refbookfield_set.all %}<th>{{f.name}}</th>{% endfor %}
+    <th></th>
+    </tr>
+    </thead>
+    <tr>
+        {% for f in rb.refbookfield_set.all %}<td><input type="text" name="field_{{forloop.counter0}}"/></td>{% endfor %}
+        <td><input type="hidden" name="record_id" value="0"/><input type="submit" value="Add"/></td>
+    </tr>
+</table>
+</form>
+{% endif %}
 {% endblock %}
