@@ -4,11 +4,28 @@
 {% endblock %}
 {% block content %}
 <h1>{{rb.name}}</h1>
-
+{% if can_edit %}
+<script type="text/javascript">
+function on_edit(x,record_id) {
+    var i=0;
+    $(x).parent().parent().children().each(function(){
+        var t=$(this);
+        if(t.hasClass("edit_link")) {
+            t.html("<td><input type='hidden' name='record_id' value='"+record_id+"' /><input type='submit' value='save' /></td>")
+        } else {
+            t.html("<td><input type='text' value='"+t.html()+"' name='field_"+i+"'/></td>");
+            i+=1;
+        }
+    });
+}
+</script>
+<form method="post" action="/main/refbook/{{rb.id}}/?page={{page}}" id="form">
+{% endif %}
 <table border="0">
     <thead>
     <tr>
     {% for f in rb.refbookfield_set.all %}<th>{{f.name}}</th>{% endfor %}
+    {% if can_edit %}<th></th>{% endif %}
     </tr>
     </thead>
     {% for d in object_list %}
@@ -16,9 +33,15 @@
         {% for c in d.value %}
         <td>{{c}}</td>
         {% endfor %}
+        {% if can_edit %}
+        <td class='edit_link'><a onclick="on_edit(this,{{d.id}});">edit</a></td>
+        {% endif %}
     </tr>
     {% endfor %}
 </table>
+{% if can_edit %}
+</form>
+{% endif %}
 
 {% load paginator %}
 {% if is_paginated %}<div class="paginator">{% paginator %}</div>{% endif %}

@@ -132,7 +132,6 @@ class RefBook(models.Model):
         for k,v in data.items():
             r[fields[k]]=v
         RefBookData(ref_book=self,value=r).save()
-            
     ##
     ## Flush entire Ref Book
     ##
@@ -221,12 +220,19 @@ class RefBookField(models.Model):
 ##
 ## Ref Book Data
 ##
+class RBDManader(models.Manager):
+    # Order by first field
+    def get_query_set(self):
+        return super(RBDManader,self).get_query_set().extra(order_by=["main_refbookdata.value[1]"])
+        
 class RefBookData(models.Model):
     class Meta:
         verbose_name="Ref Book Data"
         verbose_name_plural="Ref Book Data"
     ref_book=models.ForeignKey(RefBook,verbose_name="Ref Book")
     value=TextArrayField("Value")
+    
+    objects=RBDManader()
 
 ##
 ## Application Menu
