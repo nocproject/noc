@@ -47,7 +47,7 @@ function on_edit(x,record_id) {
         <td>{{c}}</td>
         {% endfor %}
         {% if can_edit %}
-        <td class='edit_link'><a onclick="on_edit(this,{{d.id}});">edit</a></td>
+        <td class='edit_link'><a onclick="on_edit(this,{{d.id}});" class="changelink">Change</a></td>
         {% endif %}
     </tr>
     {% endfor %}
