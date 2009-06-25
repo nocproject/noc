@@ -17,6 +17,7 @@ function on_edit(x,record_id) {
             i+=1;
         }
     });
+    return false;
 }
 </script>
 <div class="module filtered" id="changelist">
@@ -47,7 +48,7 @@ function on_edit(x,record_id) {
         <td>{{c}}</td>
         {% endfor %}
         {% if can_edit %}
-        <td class='edit_link'><a onclick="on_edit(this,{{d.id}});" class="changelink">Change</a></td>
+        <td class='edit_link'><a onclick="on_edit(this,{{d.id}});" class="changelink" href="#">Change</a></td>
         {% endif %}
     </tr>
     {% endfor %}
