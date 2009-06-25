@@ -258,11 +258,29 @@ def refbook_view(request,refbook_id):
         else: # Create new
             record=RefBookData(ref_book=rb,value=data)
         record.save()
+    queryset=rb.refbookdata_set.all()
+    # Search
+    if request.GET and request.GET.has_key("query") and request.GET["query"]:
+        query=request.GET["query"]
+        # Build query clause
+        w=[]
+        p=[]
+        for f in rb.refbookfield_set.filter(search_method__isnull=False):
+            x=f.get_extra(query)
+            if not x:
+                continue
+            w+=x["where"]
+            p+=x["params"]
+        w=" OR ".join(["(%s)"%x for x in w])
+        queryset=queryset.extra(where=["(%s)"%w],params=p)
+    else:
+        query=""
+    # Use generic view for final result
     return list_detail.object_list(
         request,
-        queryset=rb.refbookdata_set.all(),
+        queryset=queryset,
         template_name="main/refbook_view.html",
-        extra_context={"rb":rb,"can_edit":can_edit},
+        extra_context={"rb":rb,"can_edit":can_edit,"query":query},
         paginate_by=100,
     )
 ##
