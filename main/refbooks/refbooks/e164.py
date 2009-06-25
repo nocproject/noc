@@ -17,6 +17,6 @@ class E164(RefBook):
     download_url="http://update.nocproject.org/db/e164.csv"
     refresh_interval=90
     fields=[
-        Field(name="Prefix"),
+        Field(name="Prefix",search_method="string"),
         Field(name="Country",search_method="substring"),
         ]
