@@ -173,24 +173,10 @@ class RefBook(models.Model):
         for b in RefBook.objects.filter(is_enabled=True):
             field_names=[f.name for f in b.refbookfield_set.order_by("order")]
             for f in b.refbookfield_set.filter(search_method__isnull=False):
-                q=RefBookData.objects.filter(ref_book=b) # Filter by refbook
-                ## String method
-                if f.search_method=="string":
-                    q=q.extra(where=["value[%d]=%%s"%f.order],params=[search])
-                ## Substring method
-                elif f.search_method=="substring":
-                    q=q.extra(where=["value[%d] LIKE %%s"%f.order],params=["%"+search+"%"])
-                ## Starting method
-                elif f.search_method=="starting":
-                    q=q.extra(where=["value[%d] LIKE %%s"%f.order],params=[search+"%"])
-                ## MAC 3 Octets method
-                elif f.search_method=="mac_3_octets_upper" and False:
-                    mac=search.replace(":","").replace("-","").replace(".","")
-                    if not rx_mac_3_octets.match(mac):
-                        continue
-                    q=q.extra(where=["value[%d]=%%s"%f.order],params=[mac])
-                else:
-                    return
+                x=f.get_extra(search)
+                if not x:
+                    continue
+                q=RefBookData.objects.filter(ref_book=b).extra(**x)
                 for r in q:
                     text="\n".join(["%s = %s"%(k,v) for k,v in zip(field_names,r.value)])
                     yield SearchResult(
@@ -199,6 +185,12 @@ class RefBook(models.Model):
                         text=text,
                         relevancy=1.0,
                     )
+    ##
+    ## Returns true if refbook has at least one searchable field
+    ##
+    def _can_search(self):
+        return self.refbookfield_set.filter(search_method__isnull=False).count()>0
+    can_search=property(_can_search)
 ##
 ## Ref Book Fields
 ##
@@ -217,6 +209,39 @@ class RefBookField(models.Model):
         choices=[("string","string"),("substring","substring"),("starting","starting"),("mac_3_octets_upper","3 Octets of the MAC")])
     def __unicode__(self):
         return u"%s: %s"%(self.ref_book,self.name)
+    # Return **kwargs for extra
+    def get_extra(self,search):
+        if self.search_method:
+            return getattr(self,"search_%s"%self.search_method)(search)
+        else:
+            return {}
+    # String match
+    def search_string(self,search):
+        return {
+            "where" : ["value[%d]=%%s"%self.order],
+            "params": [search]
+        }
+    # Substring match
+    def search_substring(self,search):
+        return {
+            "where" : ["value[%d] LIKE %%s"%self.order],
+            "params": ["%"+search+"%"]
+        }
+    # Starting
+    def search_starting(self,search):
+        return {
+            "where" : ["value[%d] LIKE %%s"%self.order],
+            "params": [search+"%"]
+        }
+    # Match first 3 octets of the mac address
+    def search_mac_3_octets_upper(self,search):
+        mac=search.replace(":","").replace("-","").replace(".","")
+        if not rx_mac_3_octets.match(mac):
+            return {}
+        return {
+            "where" : ["value[%d]=%%s"%self.order],
+            "params": [mac]
+        }
 ##
 ## Ref Book Data
 ##
