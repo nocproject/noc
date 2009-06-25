@@ -19,6 +19,19 @@ function on_edit(x,record_id) {
     });
 }
 </script>
+<div class="module filtered" id="changelist">
+{% if rb.can_search %}
+<div id="toolbar">
+    <form id="changelist-search" action="/main/refbook/{{rb.id}}/" method="get">
+        <div>
+            <input type="hidden" name="page" value="{{page}}" />
+            <label for="searchbar"><img src="/media/img/admin/icon_searchbox.png" alt="Search" /></label>
+            <input type="text" size="40" name="query" value="{{query}}" id="searchbar" />
+            <input type="submit" value="Go" />
+        </div>
+    </form>
+</div>
+{% endif %}
 <form method="post" action="/main/refbook/{{rb.id}}/?page={{page}}" id="form">
 {% endif %}
 <table border="0">
@@ -42,6 +55,8 @@ function on_edit(x,record_id) {
 {% if can_edit %}
 </form>
 {% endif %}
+
+</div>
 
 {% load paginator %}
 {% if is_paginated %}<div class="paginator">{% paginator %}</div>{% endif %}
