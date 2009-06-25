@@ -1,7 +1,7 @@
 # Django settings for noc project.
 # Do not modify this file directly
 # Edit etc/noc.conf instead
-import ConfigParser
+import ConfigParser,sys
 
 config=ConfigParser.SafeConfigParser()
 config.read("etc/noc.defaults")
@@ -116,3 +116,7 @@ INSTALLED_APPS = (
 )
 
 FORCE_SCRIPT_NAME=""
+##
+## Determine WEB process
+##
+IS_WEB=(len(sys.argv)>=2 and sys.argv[0]=="manage.py" and sys.argv[1]=="runserver") or sys.argv[0].endswith("noc-fcgi.py")
