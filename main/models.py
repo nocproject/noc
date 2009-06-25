@@ -6,6 +6,7 @@
 """
 """
 from django.db import models
+from django.contrib.auth.models import User
 from noc.main.report import report_registry
 from noc.main.menu import populate_reports
 from noc.main.menu import Menu
@@ -16,8 +17,10 @@ import os,datetime,re
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.main.search import SearchResult
 from django.contrib import databrowse
-from django.db.models.signals import class_prepared
+from django.db.models.signals import class_prepared,pre_save,pre_delete
 from noc.lib.fields import TextArrayField
+from noc.main.middleware import get_user
+from noc.settings import IS_WEB
 
 ##
 ## Databrowse register hook to intersept model creation
@@ -26,9 +29,92 @@ def register_databrowse_model(sender,**kwargs):
     databrowse.site.register(sender)
 class_prepared.connect(register_databrowse_model)
 ##
+## Exclude tables from audit
+##
+AUDIT_TRAIL_EXCLUDE={
+    "django_admin_log"   : None,
+    "auth_message"       : None,
+    "main_audittrail"    : None,
+    "kb_kbentryhistory"  : None,
+}
+##
+## Audit trail for INSERT and UPDATE operations
+##
+def audit_trail_save(sender,instance,**kwargs):
+    # Exclude tables
+    if sender._meta.db_table in AUDIT_TRAIL_EXCLUDE:
+        return
+    #
+    if instance.id:
+        # Update
+        old=sender.objects.get(id=instance.id)
+        message=[]
+        operation="M"
+        for f in sender._meta.fields:
+            od=f.value_to_string(old)
+            nd=f.value_to_string(instance)
+            if f.name=="id":
+                message+=["id: %s"%nd]
+            elif nd!=od:
+                message+=["%s: '%s' -> '%s'"%(f.name,od,nd)]
+        message="\n".join(message)
+    else:
+        # New record
+        operation="C"
+        message="\n".join(["%s = %s"%(f.name,f.value_to_string(instance)) for f in sender._meta.fields])
+    AuditTrail.log(sender,instance,operation,message)
+##
+## Audit trail for delete operations
+##
+def audit_trail_delete(sender,instance,**kwargs):
+    # Exclude tables
+    if sender._meta.db_table in AUDIT_TRAIL_EXCLUDE:
+        return
+    #
+    operation="D"
+    message="\n".join(["%s = %s"%(f.name,f.value_to_string(instance)) for f in sender._meta.fields])
+    AuditTrail.log(sender,instance,operation,message)
+##
+## Set up audit trail handlers
+##
+if IS_WEB:
+    pre_save.connect(audit_trail_save)
+    pre_delete.connect(audit_trail_delete)
+##
 ## Initialize download registry
 ##
 downloader_registry.register_all()
+##
+## Audit Trail
+##
+class AuditTrail(models.Model):
+    class Meta:
+        verbose_name="Audit Trail"
+        verbose_name_plural="Audit Trail"
+        ordering=["timestamp"]
+    user=models.ForeignKey(User,verbose_name="User")
+    timestamp=models.DateTimeField("Timestamp",auto_now=True)
+    model=models.CharField("Model",max_length=128)
+    db_table=models.CharField("Table",max_length=128)
+    operation=models.CharField("Operation",max_length=1,choices=[("C","Create"),("M","Modify"),("D","Delete")])
+    subject=models.CharField("Subject",max_length=256)
+    body=models.TextField("Body")
+    ##
+    ## Log Audit Trail
+    ##
+    @classmethod
+    def log(cls,sender,instance,operation,message):
+        user=get_user() # Retrieve user from thread local storage
+        if not user:
+            return # No user initialized, no audit trail
+        AuditTrail(
+            user=user,
+            model=sender.__name__,
+            db_table=sender._meta.db_table,
+            operation=operation,
+            subject=str(instance),
+            body=message
+        ).save()
 ##
 ## Languages
 ##
@@ -258,6 +344,9 @@ class RefBookData(models.Model):
     value=TextArrayField("Value")
     
     objects=RBDManader()
+    
+    def __unicode__(self):
+        return u"%s: %s"%(self.ref_book,self.value)
 
 ##
 ## Application Menu
@@ -266,8 +355,9 @@ class AppMenu(Menu):
     app="main"
     title="Main"
     items=[
-        ("Reference Books", "/main/refbook/", "is_logged_user()"),
-        ("Browse Data",     "/main/databrowse/", "is_superuser()"),
+        ("Auidit Trail",    "/admin/main/audittrail/", "is_superuser()"),
+        ("Reference Books", "/main/refbook/",          "is_logged_user()"),
+        ("Browse Data",     "/main/databrowse/",       "is_superuser()"),
         ("Setup", [
             ("Users",  "/admin/auth/user/",  "auth.change_user"),
             ("Groups", "/admin/auth/group/", "auth.change_group"),
