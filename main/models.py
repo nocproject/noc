@@ -32,10 +32,11 @@ class_prepared.connect(register_databrowse_model)
 ## Exclude tables from audit
 ##
 AUDIT_TRAIL_EXCLUDE={
-    "django_admin_log"   : None,
-    "auth_message"       : None,
-    "main_audittrail"    : None,
-    "kb_kbentryhistory"  : None,
+    "django_admin_log"    : None,
+    "auth_message"        : None,
+    "main_audittrail"     : None,
+    "kb_kbentryhistory"   : None,
+    "kb_kbentrypreviewlog": None,
 }
 ##
 ## Audit trail for INSERT and UPDATE operations
