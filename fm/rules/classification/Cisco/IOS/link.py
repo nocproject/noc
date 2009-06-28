@@ -49,7 +49,7 @@ class Cisco_IOS_Link_Up_SYSLOG_Rule(ClassificationRule):
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"%LINK-3-UPDOWN: Interface (?P<interface>.+), changed state to up$"),
+        (r"^message$",r"%LINK.*-3-UPDOWN: Interface (?P<interface>.+), changed state to up$"),
     ]
 ##
 ## Cisco.IOS Link Down SNMP
@@ -90,7 +90,7 @@ class Cisco_IOS_Link_Down_SYSLOG_Rule(ClassificationRule):
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"%LINK-3-UPDOWN: Interface (?P<interface>.+), changed state to down$"),
+        (r"^message$",r"%LINK.*-3-UPDOWN: Interface (?P<interface>.+), changed state to down$"),
     ]
 ##
 ## Cisco.IOS Line Protocol SYSLOG
