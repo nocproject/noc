@@ -33,6 +33,7 @@ class_prepared.connect(register_databrowse_model)
 ##
 AUDIT_TRAIL_EXCLUDE={
     "django_admin_log"    : None,
+    "django_session"      : None,
     "auth_message"        : None,
     "main_audittrail"     : None,
     "kb_kbentryhistory"   : None,
@@ -106,7 +107,7 @@ class AuditTrail(models.Model):
     @classmethod
     def log(cls,sender,instance,operation,message):
         user=get_user() # Retrieve user from thread local storage
-        if not user:
+        if not user or not user.is_authenticated():
             return # No user initialized, no audit trail
         AuditTrail(
             user=user,
