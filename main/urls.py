@@ -10,7 +10,7 @@
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
 from noc.main.views import index,logout,report,report_index,success,failure,menu,search,config_index,config_view,\
-    refbook_index,refbook_view,svg_text_vertical
+    refbook_index,refbook_view,svg_text_vertical,refbook_delete
 from django.contrib import databrowse
 from noc.lib.decorators import superuser_required
 
@@ -28,5 +28,6 @@ urlpatterns = patterns ( None,
         (r"^config/(?P<config>.+)/$",  login_required(config_view)),
         (r"^refbook/$", login_required(refbook_index)),
         (r"^refbook/(?P<refbook_id>\d+)/$",  login_required(refbook_view)),
+        (r"^refbook/(?P<refbook_id>\d+)/delete/(?P<record_id>\d+)/$",  login_required(refbook_delete)),
         (r"^svg/text/vertical/$", svg_text_vertical)
 )
