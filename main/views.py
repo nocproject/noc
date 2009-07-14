@@ -284,12 +284,16 @@ def refbook_view(request,refbook_id):
         paginate_by=100,
     )
 ##
-## Refbook edit
+## Delete refbook record
 ##
-def refbook_edit(request,refbook_id,record_id=None):
-    if request.POST:
-        print request.POST
-
+def refbook_delete(request,refbook_id,record_id):
+    rb=get_object_or_404(RefBook,id=int(refbook_id))
+    can_edit=not rb.is_builtin and request.user.has_perm("main.change_refbookdata")
+    if not can_edit:
+        return HttpResponseForbidden()
+    rbd=get_object_or_404(RefBookData,ref_book=rb,id=int(record_id))
+    rbd.delete()
+    return HttpResponseRedirect("/main/refbook/%d/"%rb.id)
 ##
 ## Render SVG with vertical text
 ##
