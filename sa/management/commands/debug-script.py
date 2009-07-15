@@ -17,7 +17,7 @@ from noc.sa.script import script_registry,scheme_id
 from noc.sa.activator import Service
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
-import logging,sys,ConfigParser,Queue,time
+import logging,sys,ConfigParser,Queue,time,cPickle
 from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory
 from optparse import OptionParser, make_option
@@ -70,8 +70,9 @@ class Command(BaseCommand):
             if response:
                 logging.debug("Config pulled")
                 logging.debug(response.config)
-        if len(args) not in [2,3]:
-            print "Usage: debug-script <script> <stream url> [key1=value1,....,keyN=valueN]"
+        if len(args)<2:
+            print "Usage: debug-script <script> <stream url> [key1=value1 key2=value2 ... ]"
+            print "Where value is valid python expression"
             return
         script_name=args[0]
         vendor,os_name,rest=script_name.split(".",2)
@@ -111,12 +112,13 @@ class Command(BaseCommand):
         if options["snmp_ro"]:
             r.access_profile.snmp_ro=options["snmp_ro"]
         # Parse script args
-        if len(args)==3:
-            for p in args[2].split(","):
-                k,v=p.strip().split("=")
+        if len(args)>=3:
+            for p in args[2:]:
+                k,v=p.split("=",1)
+                v=eval(v,{},{})
                 a=r.kwargs.add()
                 a.key=k
-                a.value=v
+                a.value=cPickle.dumps(v)
         #
         controller=Controller()
         tf=TransactionFactory()
