@@ -357,7 +357,7 @@ class AppMenu(Menu):
     app="main"
     title="Main"
     items=[
-        ("Auidit Trail",    "/admin/main/audittrail/", "is_superuser()"),
+        ("Audit Trail",    "/admin/main/audittrail/", "is_superuser()"),
         ("Reference Books", "/main/refbook/",          "is_logged_user()"),
         ("Browse Data",     "/main/databrowse/",       "is_superuser()"),
         ("Setup", [
