@@ -39,11 +39,16 @@ function show_result(data) {
         });
         var $td=$(document.createElement("td"));
         $tr.append($td);
+        var td_link="";
         if(status=="C") {
-            $td.html("<A HREF='/fm/"+event_id+"/status/open/'>[Open]</A><BR/><A HREF='/fm/"+event_id+"/status/reclassify/'>[Reclassify]</A>");
+            td_link+="<a href='javascript:change_status("+event_id+",\"open\");'>[Open]</a>";
         } else if (status=="A") {
-            $td.html("<A HREF='/fm/"+event_id+"/status/close/'>[Close]</A><BR/><A HREF='/fm/"+event_id+"/status/reclassify/'>[Reclassify]</A>");
+            td_link+="<a href='javascript:change_status("+event_id+",\"close\");'>[Close]</a>";
         }
+        if(td_link) {
+            td_link+="<br/><a href='javascript:change_status("+event_id+",\"reclassify\");'>[Reclassify]</a>";
+        }
+        $td.html(td_link);
     });
     // Set up pager
     $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
@@ -51,6 +56,16 @@ function show_result(data) {
     window.setTimeout(function() {
         $("#form").submit()
     },60000);
+}
+
+function change_status(event_id,status) {
+    $.ajax({
+        url     : "/fm/"+event_id+"/status/"+status+"/",
+        success : function(html) {
+            $("#form").submit();
+        }
+    });
+    return false;
 }
 
 function toggle_panel() {
