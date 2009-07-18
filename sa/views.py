@@ -54,7 +54,7 @@ def object_script(request,object_id,script):
     result=None
     if scr.implements and scr.implements[0].requires_input():
         if request.POST:
-            form=scr.implements[0].get_form(request.POST)
+            form=scr.implements[0].get_form(request.POST) #<<<?>>> need to combine interfaces
             if form.is_valid():
                 data={}
                 for k,v in form.cleaned_data.items():
