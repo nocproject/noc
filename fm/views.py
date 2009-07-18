@@ -77,7 +77,7 @@ def lookup_events(request):
     return render_json({
         "count" : count,
         "page"  : page,
-        "pages" : count/PAGE_SIZE,
+        "pages" : count/PAGE_SIZE+(1 if count%PAGE_SIZE else 0),
         "events": [[e.event_priority.css_style_name,e.id,e.managed_object.name,str(e.timestamp),e.status,\
                     e.event_category.name,e.event_class.name,e.event_priority.name,e.subject]\
                     for e in events.order_by("-timestamp")[PAGE_SIZE*page:PAGE_SIZE*(page+1)]]
