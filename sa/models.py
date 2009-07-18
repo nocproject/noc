@@ -359,7 +359,7 @@ class ManagedObjectSelector(models.Model):
 class ReduceTask(models.Model):
     class Meta:
         verbose_name="Map/Reduce Task"
-        verbose_name="Map/Reduce Tasks"
+        verbose_name_plural="Map/Reduce Tasks"
     start_time=models.DateTimeField("Start Time")
     stop_time=models.DateTimeField("Stop Time")
     reduce_script=models.CharField("Script",max_length=256,choices=reduce_script_registry.choices)
