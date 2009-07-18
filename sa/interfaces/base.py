@@ -27,10 +27,19 @@ class Parameter(object):
         if default:
             default=self.clean(default)
         self.default=default
-        
+    ##
+    ## Perform input parameter normalization
+    ##
     def clean(self,value):
         raise InterfaceTypeError
-        
+    ##
+    ## Perform input parameter normalization for form fields
+    ##
+    def form_clean(self,value):
+        return self.clean(value)
+    ##
+    ## Returns an form field object
+    ##
     def get_form_field(self):
         return forms.CharField(required=self.required,initial=self.default)
 ##
@@ -163,6 +172,12 @@ class ListParameter(Parameter):
     def clean(self,value):
         try:
             return list(value)
+        except:
+            raise InterfaceTypeError
+    
+    def form_clean(self,value):
+        try:
+            return self.clean(eval(value,{},{}))
         except:
             raise InterfaceTypeError
 ##
@@ -344,7 +359,7 @@ class Interface(object):
                 if not param.required and not data:
                     return data
                 try:
-                    return param.clean(data)
+                    return param.form_clean(data)
                 except InterfaceTypeError:
                     raise forms.ValidationError("Invalid value")
             return lambda: clean_field_wrapper(form,name,param)
