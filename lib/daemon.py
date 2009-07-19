@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 import ConfigParser,sys,logging,os,signal,optparse,datetime,traceback
 from noc.lib.debug import error_report,frame_report,set_crashinfo_context,GCStats
-from noc.lib.validators import is_ipv4
+from noc.lib.validators import is_ipv4, is_int
 
 # Load netifaces to resolve interface addresses when possible
 try:
@@ -144,6 +144,51 @@ class Daemon(object):
             except (IndexError,KeyError):
                 raise Exception("No ip address for interface: '%s' found"%s)
         raise Exception("Cannot resolve address '%s'"%s)
+    ##
+    ## Parses string and returns a list of (ip,port)
+    ## Addresses are separated by comma
+    ## Possible entries:
+    ## * ip
+    ## * ip:port
+    ## * iface
+    ## * iface:port
+    ##
+    def resolve_addresses(self,addr_list,default_port):
+        r=[]
+        for x in addr_list.split(","):
+            x=x.strip()
+            if not x:
+                continue
+            if ":" in x: # Implicit port notation
+                x,port=x.split(":",1)
+                if is_int(port):
+                    port=int(port)
+                else:
+                    try:
+                        port=socket.getservbyname(port)
+                    except socket.error:
+                        raise Exception("Invalid port: %s"%port)
+            else:
+                port=int(default_port)
+            if port<=0 or port>65535:
+                raise Exception("Invalid port: %s"%port)
+            if is_ipv4(x):
+                r+=[(x,port)]
+                continue
+            if USE_NETIFACES: # Can resolve interface names
+                try:
+                    a=netifaces.ifaddresses(x)
+                except ValueError:
+                    raise Exception("Invalid interface '%s'"%x)
+                try:
+                    x=a[2][0]["addr"]
+                except (IndexError,KeyError):
+                    raise Exception("No ip address for interface: '%s' found"%x)
+                r+=[(x,port)]
+                continue
+            raise Exception("Cannot resolve address '%s'"%x)
+        return r
+                    
     ##
     ## Add additional options to setup_opt_parser
     ##

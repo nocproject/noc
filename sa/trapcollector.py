@@ -23,8 +23,9 @@ import time
 ## }
 ##
 class TrapCollector(ListenUDPSocket,EventCollector):
+    name="TrapCollector"
     def __init__(self,activator,address,port):
-        self.info("Initializing")
+        self.info("Initializing at %s:%s"%(address,port))
         ListenUDPSocket.__init__(self,activator.factory,address,port)
         EventCollector.__init__(self,activator)
         

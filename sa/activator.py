@@ -200,8 +200,8 @@ class Activator(Daemon,FSM):
         self.ping_check_results={} # address -> last ping check result
         self.sae_stream=None
         self.event_sources=sets.Set()
-        self.trap_collector=None
-        self.syslog_collector=None
+        self.trap_collectors=[]   # List of SNMP Trap collectors
+        self.syslog_collectors=[] # List of SYSLOG collectors
         logging.info("Loading profile classes")
         profile_registry.register_all() # Should be performed from ESTABLISHED state
         script_registry.register_all()
@@ -220,10 +220,10 @@ class Activator(Daemon,FSM):
         if self.sae_stream:
             self.sae_stream.close()
             self.sae_stream=None
-        if self.trap_collector:
-            self.stop_trap_collector()
-        if self.syslog_collector:
-            self.stop_syslog_collector()
+        if self.trap_collectors:
+            self.stop_trap_collectors()
+        if self.syslog_collectors:
+            self.stop_syslog_collectors()
         self.set_timeout(5)
     ##
     ## CONNECT state
@@ -266,41 +266,55 @@ class Activator(Daemon,FSM):
         to_refresh_filters=False
         self.next_filter_update=None
         if self.config.get("activator","listen_traps"):
-            self.start_trap_collector()
+            self.start_trap_collectors()
             to_refresh_filters=True
         if self.config.get("activator","listen_syslog"):
-            self.start_syslog_collector()
+            self.start_syslog_collectors()
             to_refresh_filters=True
         if to_refresh_filters:
             self.get_event_filter()
         if self.stand_alone_mode:
             self.check_crashinfo()
     ##
+    ## Launch SNMP Trap collectors
     ##
-    ##
-    def start_trap_collector(self):
-        logging.debug("Starting trap collector")
+    def start_trap_collectors(self):
+        logging.debug("Starting trap collectors")
         from noc.sa.trapcollector import TrapCollector
-        self.trap_collector=TrapCollector(self,self.resolve_address(self.config.get("activator","listen_traps")),162)
-        
-    def stop_trap_collector(self):
-        if self.trap_collector:
-            logging.debug("Stopping trap collector")
-            self.trap_collector.close()
-            self.trap_collector=None
+        self.trap_collectors=[
+            TrapCollector(self,ip,port)
+            for ip,port
+            in self.resolve_addresses(self.config.get("activator","listen_traps"),162)
+        ]
     ##
+    ## Disable SNMP Trap collectors
     ##
+    def stop_trap_collectors(self):
+        if self.trap_collectors:
+            logging.debug("Stopping trap collectors")
+            for tc in self.trap_collectors:
+                tc.close()
+            self.trap_collectors=[]
     ##
-    def start_syslog_collector(self):
-        logging.debug("Starting syslog collector")
+    ## Launch syslog collectors
+    ##
+    def start_syslog_collectors(self):
+        logging.debug("Starting syslog collectors")
         from noc.sa.syslogcollector import SyslogCollector
-        self.syslog_collector=SyslogCollector(self,self.resolve_address(self.config.get("activator","listen_syslog")),514)
-        
-    def stop_syslog_collector(self):
-        if self.syslog_collector:
-            logging.debug("Stopping syslog collector")
-            self.syslog_collector.close()
-            self.syslog_collector=None
+        self.syslog_collectors=[
+            SyslogCollector(self,ip,port)
+            for ip,port
+            in self.resolve_addresses(self.config.get("activator","listen_syslog"),514)
+        ]
+    ##
+    ## Disable syslog collectors
+    ##
+    def stop_syslog_collectors(self):
+        if self.syslog_collectors:
+            logging.debug("Stopping syslog collectors")
+            for sc in self.syslog_collectors:
+                sc.close()
+            self.syslog_collectors=[]
     ##
     ## Script support
     ##
