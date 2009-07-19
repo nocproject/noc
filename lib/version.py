@@ -13,4 +13,16 @@ from __future__ import with_statement
 ##
 def get_version():
     with open("VERSION") as f:
-        return f.read().split("\n")[0].strip()
+        v=f.read().split("\n")[0].strip()
+    try:
+        from mercurial import ui,localrepo
+        
+        try:
+            lr=localrepo.localrepository(ui.ui(),path=".")
+            rev=lr.changelog.rev(lr.changelog.tip())
+            v+="r%s"%rev
+        except:
+            pass
+    except ImportError:
+        pass
+    return v
