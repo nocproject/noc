@@ -98,6 +98,7 @@ DNS Management
 * Address Space Management integration
 * Zone and config file provisioning
 * Web interface to distribute load between nameservers
+* RFC2317 (Classless IN-ADDR.ARPA delegation) transparent support
 
 Knowledge Base
 ==============
