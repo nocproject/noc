@@ -537,13 +537,25 @@ Activator name used for authentication
 
 listen_traps
 ^^^^^^^^^^^^
-IP address or interface name to listen for SNMP Traps. Empty to disable SNMP Trap collector
+A list of addresses/ports to listen for SNMP Traps. List elements are separated by commas.
+Following element formats are acceptable:
+
+* ip
+* ip:port
+* interface
+* interface:port
 
 .. _noc-activator-conf-activator-listen_syslog:
 
 listen_syslog
 ^^^^^^^^^^^^^
-IP address or interface name to listen for syslog. Empty to disable syslog collector
+A list of addresses/ports to listen for Syslog. List elements are separated by commas.
+Following element formats are acceptable:
+
+* ip
+* ip:port
+* interface
+* interface:port
 
 .. _noc-activator-conf-activator-secret:
 
