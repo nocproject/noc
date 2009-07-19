@@ -292,6 +292,7 @@ class ManagedObjectSelector(models.Model):
     filter_profile=models.CharField("Filter by Profile",max_length=64,null=True,blank=True,choices=profile_registry.choices)
     filter_address=models.CharField("Filter by Address (REGEXP)",max_length=256,null=True,blank=True)
     filter_administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name="Filter by Administrative Domain",null=True,blank=True)
+    filter_activator=models.ForeignKey(Activator,verbose_name="Filter by Activator",null=True,blank=True)
     filter_user=models.CharField("Filter by User (REGEXP)",max_length=256,null=True,blank=True)
     filter_remote_path=models.CharField("Filter by Remote Path (REGEXP)",max_length=256,null=True,blank=True)
     filter_groups=models.ManyToManyField(ObjectGroup,verbose_name="Filter by Groups",null=True,blank=True)
@@ -318,6 +319,8 @@ class ManagedObjectSelector(models.Model):
             q&=Q(address__regex=self.filter_address)
         if self.filter_administrative_domain:
             q&=Q(administrative_domain=self.filter_administrative_domain)
+        if self.filter_activator:
+            q&=Q(activator=self.filter_activator)
         if self.filter_user:
             q&=Q(user__regex=self.filter_user)
         if self.filter_remote_path:
