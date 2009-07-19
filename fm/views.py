@@ -107,7 +107,6 @@ def index(request):
         initial["event_priority"]=EventPriority.objects.get(name="WARNING").id
     except EventPriority.DoesNotExist:
         pass
-    print initial
     form=EventSearchForm(initial=initial)
     return render(request,"fm/index.html",{"form":form})
 ##
