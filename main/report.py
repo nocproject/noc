@@ -41,7 +41,9 @@ class Column(object):
     def render_header(self):
         return "<TH>%s</TH>"%self.name
         
-    def render_cell(self,value):
+    def render_cell(self,value,bold=False):
+        if value is None:
+            value=""
         if self.format:
             value=self.format(value)
         flags=[]
@@ -53,7 +55,10 @@ class Column(object):
             flags=" "+" ".join(flags)
         else:
             flags=""
-        return "<TD%s>%s</TD>"%(flags,value)
+        if bold:
+            return "<TD%s><B>%s</B></TD>"%(flags,value)
+        else:
+            return "<TD%s>%s</TD>"%(flags,value)
 ##
 ## Boolean field rendered as checkmark
 ##
@@ -154,9 +159,9 @@ class Report(object):
             n+=1
         if self.has_summary: # Render summary
             out+="<TR>"
-            for s in self.summary:
+            for c,s in zip(self.columns,self.summary):
                 if s:
-                    out+="<TD><B>%s</B></TD>"%s.get_result()
+                    out+=c.render_cell(s.get_result(),bold=True)
                 else:
                     out+="<TD></TD>"
             out+="</TR>"
