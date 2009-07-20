@@ -14,11 +14,11 @@ class Report(noc.main.report.Report):
     title="Lines of code"
     requires_cursor=False
     columns=[Column("App"),
-            Column(".py lines",align="RIGHT"),
-            Column(".html lines",align="RIGHT"),
-            Column(".rst lines",align="RIGHT"),
-            Column(".mib lines",align="RIGHT"),
-            Column("Other lines",align="RIGHT")]
+            Column(".py lines",align="RIGHT",summary="sum"),
+            Column(".html lines",align="RIGHT",summary="sum"),
+            Column(".rst lines",align="RIGHT",summary="sum"),
+            Column(".mib lines",align="RIGHT",summary="sum"),
+            Column("Other lines",align="RIGHT",summary="sum")]
     
     def get_queryset(self):
         def loc(f):

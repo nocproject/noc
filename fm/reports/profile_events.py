@@ -14,7 +14,7 @@ class Report(noc.main.report.Report):
     requires_cursor=True
     columns=[
         Column("Profile"),
-        Column("Events",align="RIGHT")]
+        Column("Events",align="RIGHT",summary="sum")]
     
     def get_queryset(self):
         return self.execute("""
