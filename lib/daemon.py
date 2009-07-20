@@ -39,8 +39,8 @@ class Daemon(object):
                 help="Do not daemonize. Run at the foreground")
         self.setup_opt_parser()
         self.options,self.args=self.opt_parser.parse_args()
-        if len(self.args)<1 or self.args[0] not in ["start","stop","refresh"]:
-            self.opt_parser.error("You must supply one of start|stop|refresh commands")
+        if len(self.args)<1 or self.args[0] not in ["start","launch","stop","refresh"]:
+            self.opt_parser.error("You must supply one of start|launch|stop|refresh commands")
         # Read config
         self.config=None
         self.load_config()
@@ -107,11 +107,12 @@ class Daemon(object):
     def become_daemon(self):
         try:
             if os.fork():
+                # Exit parent and retur control to the shell immediately
                 sys.exit(0)
         except OSError,e:
             sys.stderr.write("Fork failed")
             sys.exit(1)
-        os.setsid()
+        os.setsid() # Become session leader
         os.umask(022)
         try:
             pid=os.fork()
@@ -232,6 +233,32 @@ class Daemon(object):
             except:
                 pass
             os.unlink(pidfile)
+    ##
+    ## "launch" command handler
+    ##
+    def launch(self):
+        # Write pidfile
+        pidfile=self.config.get("main","pidfile")
+        pid=os.getpid()
+        f=open(pidfile,"w")
+        f.write(str(pid))
+        f.close()
+        # Close stdin/stdout/stderr
+        i=open("/dev/null","r")
+        o=open("/dev/null","a+")
+        e=open("/dev/null","a+")
+        os.dup2(i.fileno(), sys.stdin.fileno())
+        os.dup2(o.fileno(), sys.stdout.fileno())
+        os.dup2(e.fileno(), sys.stderr.fileno())
+        sys.stdout=o
+        sys.stderr=e
+        try:
+            self.run()
+        except KeyboardInterrupt:
+            pass
+        except:
+            error_report()
+    
     ##
     ## "refresh" command handler
     ##
