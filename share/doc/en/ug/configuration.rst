@@ -381,6 +381,18 @@ loglevel
 --------
 logging level. One of: debug, info, warning, error, critical
 
+.. _noc-fcgi-conf-main-logsize:
+
+logsize
+-------
+Maximum log file size in bytes. 0 (default) means unlimited size
+
+.. _noc-fcgi-conf-main-logfiles:
+
+logfiles
+--------
+Keep *logfiles* backup copies of log file
+
 .. _noc-fcgi-conf-main-pidfile:
 
 pidfile
@@ -444,6 +456,18 @@ Log file path
 loglevel
 ^^^^^^^^
 logging level. One of: debug, info, warning, error, critical
+
+.. _noc-sae-conf-main-logsize:
+
+logsize
+-------
+Maximum log file size in bytes. 0 (default) means unlimited size
+
+.. _noc-sae-conf-main-logfiles:
+
+logfiles
+--------
+Keep *logfiles* backup copies of log file
 
 .. _noc-sae-conf-main-pidfile:
 
@@ -515,6 +539,18 @@ Log file path
 loglevel
 ^^^^^^^^
 logging level. One of: debug, info, warning, error, critical
+
+.. _noc-activator-conf-main-logsize:
+
+logsize
+-------
+Maximum log file size in bytes. 0 (default) means unlimited size
+
+.. _noc-activator-conf-main-logfiles:
+
+logfiles
+--------
+Keep *logfiles* backup copies of log file
 
 .. _noc-activator-conf-main-pidfile:
 
@@ -636,6 +672,18 @@ loglevel
 ^^^^^^^^
 logging level. One of: debug, info, warning, error, critical
 
+.. _noc-classifier-conf-main-logsize:
+
+logsize
+-------
+Maximum log file size in bytes. 0 (default) means unlimited size
+
+.. _noc-classifier-conf-main-logfiles:
+
+logfiles
+--------
+Keep *logfiles* backup copies of log file
+
 .. _noc-classifier-conf-main-pidfile:
 
 pidfile
@@ -664,6 +712,18 @@ Log file path
 loglevel
 ^^^^^^^^
 logging level. One of: debug, info, warning, error, critical
+
+.. _noc-correlator-conf-main-logsize:
+
+logsize
+-------
+Maximum log file size in bytes. 0 (default) means unlimited size
+
+.. _noc-correlator-conf-main-logfiles:
+
+logfiles
+--------
+Keep *logfiles* backup copies of log file
 
 .. _noc-correlator-conf-main-pidfile:
 

@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import ConfigParser,sys,logging,os,signal,optparse,datetime,traceback
+import logging.handlers
 from noc.lib.debug import error_report,frame_report,set_crashinfo_context,GCStats
 from noc.lib.validators import is_ipv4, is_int
 
@@ -77,15 +78,19 @@ class Daemon(object):
         # Set up logging
         if self.config.get("main","loglevel") not in self.LOG_LEVELS:
             raise Exception("Invalid loglevel '%s'"%self.config.get("main","loglevel"))
-        loglevel=self.LOG_LEVELS[self.config.get("main","loglevel")]
         for h in logging.root.handlers:
             logging.root.removeHandler(h) # Dirty hack for baseConfig
         if self.options.daemonize:
             if self.config.get("main","logfile"):
-                logging.basicConfig(level=loglevel,
-                                filename=self.config.get("main","logfile"),
-                                format='%(asctime)s %(levelname)s %(message)s',
-                                filemode="a+")
+                loglevel=self.LOG_LEVELS[self.config.get("main","loglevel")]
+                logging.root.setLevel(loglevel)
+                rf_handler=logging.handlers.RotatingFileHandler(
+                    filename=self.config.get("main","logfile"),
+                    maxBytes=self.config.getint("main","logsize"),
+                    backupCount=self.config.getint("main","logfiles")
+                )
+                rf_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s',None))
+                logging.root.addHandler(rf_handler)
         else:
             logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
     ##
