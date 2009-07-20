@@ -7,4 +7,6 @@
 [main]
 logfile  = /var/log/noc/noc-classifier.log
 loglevel = info
+logsize  = 0
+logfiles = 0
 pidfile  = /var/log/noc/noc-classifier.pid
