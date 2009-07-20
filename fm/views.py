@@ -207,6 +207,36 @@ def create_postprocessing_rule(request,event_id):
         r.save()
     return HttpResponseRedirect("/admin/fm/eventpostprocessingrule/%d/"%rule.id)
 ##
+## Clone post-processing rule
+##
+@permission_required("fm.add_eventprostprocessingrule")
+def clone_postprocessing_rule(request,rule_id):
+    rule=get_object_or_404(EventPostProcessingRule,id=int(rule_id))
+    # Find suitable rule name
+    i=1
+    while True:
+        name=rule.name+" copy #%d"%i
+        try:
+            EventPostProcessingRule.objects.get(name=name)
+        except EventPostProcessingRule.DoesNotExist:
+            break
+        i+=1
+    # Create cloned rule
+    new_rule=EventPostProcessingRule(
+        name=name,
+        event_class=rule.event_class,
+        preference=rule.preference,
+        description=rule.description,
+        change_priority=rule.change_priority,
+        change_category=rule.change_category,
+        action=rule.action,
+        is_active=True)
+    new_rule.save()
+    for r in rule.eventpostprocessingre_set.all():
+        new_r=EventPostProcessingRE(rule=new_rule,var_re=r.var_re,value_re=r.value_re)
+        new_r.save()
+    return HttpResponseRedirect("/admin/fm/eventpostprocessingrule/%d/"%new_rule.id)
+##
 ## Event classification rules overview sheet
 ##
 @permission_required("fm.change_eventclassificationrule")
