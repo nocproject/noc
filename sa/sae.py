@@ -188,6 +188,10 @@ class XMLRPCService(object):
         logging.info("XML-RPC.script %s(object_id=%d)"%(name,int(object_id)))
         object=ManagedObject.objects.get(id=int(object_id))
         self._sae.script(object,name,done,**kwargs)
+    
+    def activator_status(self,done):
+        logging.info("XML-RPC.activator_status")
+        done(self._sae.get_activator_status())
 
 ##
 ## PDU Parsing
@@ -400,6 +404,19 @@ class SAE(Daemon):
             return self.factory.get_socket_by_name(name)
         except KeyError:
             raise Exception("Activator not available: %s"%name)
+    ##
+    ## Returns activator status
+    ##
+    def get_activator_status(self):
+        r=[]
+        for a in Activator.objects.all():
+            try:
+                self.get_activator_stream(a.name)
+                s=True
+            except:
+                s=False
+            r+=[(a.name,s)]
+        return r
     
     def script(self,object,name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
