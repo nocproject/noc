@@ -14,7 +14,7 @@ class Report(noc.main.report.Report):
     requires_cursor=True
     columns=[
         Column("Event Priority"),
-        Column("Events")]
+        Column("Events",align="RIGHT",summary="sum")]
     
     def get_queryset(self):
         return self.execute("""

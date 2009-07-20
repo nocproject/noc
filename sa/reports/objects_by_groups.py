@@ -12,7 +12,7 @@ class Report(noc.main.report.Report):
     name="sa.config_by_group"
     title="Configs by Groups"
     requires_cursor=True
-    columns=[Column("Group"),Column("Qty")]
+    columns=[Column("Group"),Column("Qty",align="RIGHT",summary="sum")]
     
     def get_queryset(self):
         return self.execute("""

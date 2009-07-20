@@ -18,8 +18,8 @@ class Report(noc.main.report.Report):
     columns=[
         Column("Table"),
         Column("Tablespace"),
-        Column("Pages",align="RIGHT"),
-        Column("Records",align="RIGHT"),
+        Column("Pages",align="RIGHT",summary="sum"),
+        Column("Records",align="RIGHT",summary="sum"),
     ]
     
     def get_queryset(self):
