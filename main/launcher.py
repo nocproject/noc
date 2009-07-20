@@ -11,6 +11,9 @@ from __future__ import with_statement
 from noc.lib.daemon import Daemon
 import time,subprocess,sys,os,logging,stat,ConfigParser
 
+##
+## Daemon wrapper
+##
 class DaemonData(object):
     def __init__(self,name,enabled):
         self.name=name
