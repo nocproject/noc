@@ -358,6 +358,106 @@ port
 ^^^^
 Port used by XML-RPC interface
 
+.. _noc-launcher-conf:
+
+noc-launcher.conf
+=================
+
+.. _noc-launcher-conf-main:
+
+[main] section
+--------------
+
+.. _noc-launcher-conf-main-logfile:
+ 
+logfile
+-------
+Log file path
+
+.. _noc-launcher-conf-main-loglevel:
+
+loglevel
+--------
+logging level. One of: debug, info, warning, error, critical
+
+.. _noc-launcher-conf-main-logsize:
+
+logsize
+-------
+Maximum log file size in bytes. 0 (default) means unlimited size
+
+.. _noc-launcher-conf-main-logfiles:
+
+logfiles
+--------
+Keep *logfiles* backup copies of log file
+
+.. _noc-launcher-conf-main-pidfile:
+
+pidfile
+-------
+Pid file path
+
+.. _noc-launcher-conf-noc-fcgi:
+
+[noc-fcgi] section
+------------------
+
+.. _noc-launcher-conf-noc-fcgi-enabled:
+
+enabled
+^^^^^^^
+true/false. Launch noc-fcgi daemon
+
+.. _noc-launcher-conf-noc-sae:
+
+[noc-sae] section
+------------------
+
+.. _noc-launcher-conf-noc-sae-enabled:
+
+enabled
+^^^^^^^
+true/false. Launch noc-sae daemon
+
+
+.. _noc-launcher-conf-noc-activator:
+
+[noc-activator] section
+-----------------------
+
+.. _noc-launcher-conf-noc-activator-enabled:
+
+enabled
+^^^^^^^
+true/false. Launch noc-activator daemon
+
+
+.. _noc-launcher-conf-noc-classifier:
+
+[noc-classifier] section
+------------------------
+
+.. _noc-launcher-conf-noc-classifier-enabled:
+
+enabled
+^^^^^^^
+true/false. Launch noc-classifier daemon
+
+
+.. _noc-launcher-conf-noc-correlator:
+
+[noc-correlator] section
+------------------------
+
+.. _noc-launcher-conf-noc-correlator-enabled:
+
+enabled
+^^^^^^^
+true/false. Launch noc-correlator daemon
+
+
+
 .. _noc-fcgi-conf:
 
 noc-fcgi.conf
@@ -366,8 +466,8 @@ Stores noc-fcgi daemon configuration
 
 .. _noc-fcgi-conf-main:
 
-[main] secttion
----------------
+[main] section
+--------------
 
 .. _noc-fcgi-conf-main-logfile:
  
