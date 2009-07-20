@@ -28,11 +28,15 @@ report_registry=ReportRegistry()
 ## 'format' is a function accepting value and returning valid html code
 ##
 class Column(object):
-    def __init__(self,name,align=None,v_align=None,format=None):
+    def __init__(self,name,align=None,v_align=None,format=None,summary=None):
         self.name=name
         self.align=align
         self.v_align=v_align
         self.format=format
+        if summary:
+            self.summary=AGGREGATE_FUNCTIONS[summary]
+        else:
+            self.summary=None
         
     def render_header(self):
         return "<TH>%s</TH>"%self.name
@@ -60,7 +64,37 @@ class BooleanColumn(Column):
         else:
             url=admin_media_prefix+"img/admin/icon-no.gif"
         return "<TD><IMG SRC='%s' /></TD>"%url
-
+##
+## Abstract aggregate function
+##
+class AggregateFunction(object):
+    def __init__(self):
+        pass
+    ##
+    ## Update with new value
+    ##
+    def update(self,value):
+        pass
+    ##
+    ## Return result
+    ##
+    def get_result(self):
+        return None
+##
+## SUM
+##
+class SumFunction(AggregateFunction):
+    def __init__(self):
+        self.v=0
+    def update(self,value):
+        if value:
+            self.v+=value
+    def get_result(self):
+        return self.v
+##
+AGGREGATE_FUNCTIONS={
+    "sum" : SumFunction,
+}
 ##
 ##
 ##
@@ -95,6 +129,14 @@ class Report(object):
         if self.requires_cursor:
             from django.db import connection
             self.cursor = connection.cursor()
+        self.has_summary=len([c for c in self.columns if c.summary])>0
+        if self.has_summary:
+            self.summary=[]
+            for c in self.columns:
+                if c.summary:
+                    self.summary+=[c.summary()]
+                else:
+                    self.summary+=[None]
             
     def is_valid(self):
         return self.form is None or self.form.is_valid()
@@ -105,7 +147,19 @@ class Report(object):
         n=0
         for row in self.get_queryset():
             out+="<TR CLASS='row%d'>"%((n%2)+1)+"".join([c.render_cell(v) for c,v in zip(self.columns,row)])+"</TR>"
+            if self.has_summary: # Calculate aggregates
+                for f,v in zip(self.summary,row):
+                    if f:
+                        f.update(v)
             n+=1
+        if self.has_summary: # Render summary
+            out+="<TR>"
+            for s in self.summary:
+                if s:
+                    out+="<TD><B>%s</B></TD>"%s.get_result()
+                else:
+                    out+="<TD></TD>"
+            out+="</TR>"
         out+="</TABLE>"
         return render(self.request,self.template,{"report":self,"query":self.query,"data":out,"refresh":self.refresh})
             
