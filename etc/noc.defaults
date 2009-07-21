@@ -54,7 +54,7 @@ installation_name = Unconfigured Installation
 # Logo url. Absolute or relative path
 logo_url = /static/img/logo.png
 # Logo width
-logo_width = 21
+logo_width = 43
 # Logo height
 logo_height = 21
 
