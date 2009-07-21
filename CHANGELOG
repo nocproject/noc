@@ -1,3 +1,25 @@
+0.2.6 (21-JUN-2009)
+-------------------
+ * main
+   * noc-launcher daemon
+   * New project logo
+   * Editable Reference Books
+   * Search on Reference Book
+   * Audit Trail
+   * Local modifications of config syntax highlighting
+   * Rotating log files
+   * main.database_summary report
+   * Column totals in reports
+ * sa
+   * New profiles: EdgeCore.ES4xxx, Linksys.SPS2xx
+   * Multiple instances of SNMP Trap/SYSLOG collectors on different addresses/ports
+   * Filter by activator in Managed Object Selectors
+   * sa.activator_status report
+ * fm
+   * New classification rules for Linksys.SPS2xx
+   * Open/Close/Reclassification requests no longer reset event filter
+   * Post-Processing Rules cloning
+   
 0.2.5 (22-JUN-2009)
 -------------------
  * main
@@ -8,7 +30,7 @@
    * Map/Reduce scripts
    * New interface: ICommands
    * New generic script: commands
-   * Speed optimization of row-level access
+   * Speed optimization for row-level access
  * cm
    * Two-column diff preview mode
    
