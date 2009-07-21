@@ -8,7 +8,6 @@
 """
 """
 import noc.sa.periodic
-from django.db.models import Q
 import datetime,logging
 
 class Task(noc.sa.periodic.Task):
@@ -19,7 +18,7 @@ class Task(noc.sa.periodic.Task):
         from noc.sa.models import Activator
         
         for a in Activator.objects.filter(is_active=True):
-            objects=[o.trap_source_ip for o in a.managedobject_set.filter(trap_source_ip__isnull=False)]
+            objects=[o.trap_source_ip for o in a.managedobject_set.filter(trap_source_ip__isnull=False,is_managed=True)]
             if objects:
                 self.sae.ping_check(a,objects)
         return True
