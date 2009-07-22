@@ -8,7 +8,7 @@
 """
 """
 from noc.sa.protocols.sae_pb2 import Message,Error
-import struct,logging,random,time,sha,zlib
+import struct,logging,random,time,hashlib,zlib
 from google.protobuf.service import RpcController
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.nbsocket import Protocol
@@ -254,13 +254,12 @@ def file_hash(path):
     f=open(path)
     data=f.read()
     f.close()
-    s=sha.new(data)
-    return s.hexdigest()
+    return hashlib.sha1(data).hexdigest()
 ##
 ## Generic hash for digest authetications
 ##
 def H(s):
-    return sha.new(s).hexdigest()
+    return hashlib.sha1(s).hexdigest()
 
 ##
 ## Generate random nonce for digest authetuication
