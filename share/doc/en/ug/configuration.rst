@@ -409,6 +409,18 @@ enabled
 ^^^^^^^
 true/false. Launch noc-fcgi daemon
 
+.. _noc-launcher-conf-noc-fcgi-user:
+
+user
+^^^^
+Run noc-fcgi daemon with *user* credentials
+
+.. _noc-launcher-conf-noc-fcgi-group:
+
+group
+^^^^^
+Run noc-fcgi daemon with *group* credentials
+
 .. _noc-launcher-conf-noc-sae:
 
 [noc-sae] section
@@ -420,6 +432,17 @@ enabled
 ^^^^^^^
 true/false. Launch noc-sae daemon
 
+.. _noc-launcher-conf-noc-sae-user:
+
+user
+^^^^
+Run noc-sae daemon with *user* credentials
+
+.. _noc-launcher-conf-noc-sae-group:
+
+group
+^^^^^
+Run noc-sae daemon with *group* credentials
 
 .. _noc-launcher-conf-noc-activator:
 
@@ -432,6 +455,17 @@ enabled
 ^^^^^^^
 true/false. Launch noc-activator daemon
 
+.. _noc-launcher-conf-noc-activator-user:
+
+user
+^^^^
+Run noc-activator daemon with *user* credentials
+
+.. _noc-launcher-conf-noc-activator-group:
+
+group
+^^^^^
+Run noc-activator daemon with *group* credentials
 
 .. _noc-launcher-conf-noc-classifier:
 
@@ -444,6 +478,17 @@ enabled
 ^^^^^^^
 true/false. Launch noc-classifier daemon
 
+.. _noc-launcher-conf-noc-classifier-user:
+
+user
+^^^^
+Run noc-classifier daemon with *user* credentials
+
+.. _noc-launcher-conf-noc-classifier-group:
+
+group
+^^^^^
+Run noc-classifier daemon with *group* credentials
 
 .. _noc-launcher-conf-noc-correlator:
 
@@ -456,7 +501,17 @@ enabled
 ^^^^^^^
 true/false. Launch noc-correlator daemon
 
+.. _noc-launcher-conf-noc-correlator-user:
 
+user
+^^^^
+Run noc-correlator daemon with *user* credentials
+
+.. _noc-launcher-conf-noc-correlator-group:
+
+group
+^^^^^
+Run noc-correlator daemon with *group* credentials
 
 .. _noc-fcgi-conf:
 

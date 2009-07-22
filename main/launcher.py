@@ -9,17 +9,22 @@
 """
 from __future__ import with_statement
 from noc.lib.daemon import Daemon
-import time,subprocess,sys,os,logging,stat,ConfigParser
+import time,subprocess,sys,os,logging,stat,ConfigParser,pwd,grp
 
 ##
 ## Daemon wrapper
 ##
 class DaemonData(object):
-    def __init__(self,name,enabled):
+    def __init__(self,name,is_superuser,enabled,user,uid,group,gid):
         self.name=name
         self.enabled=enabled
         self.pid=None
         self.pidfile=None
+        self.is_superuser=is_superuser
+        self.user=user
+        self.uid=uid
+        self.group=group
+        self.gid=gid
     
     def __repr__(self):
         return "<DaemonData %s>"%self.name
@@ -43,6 +48,10 @@ class DaemonData(object):
             logging.info("Daemon %s started as PID %d"%(self.name,self.pid))
         else:
             # Run child
+            if self.group:
+                os.setgid(self.gid)
+            if self.user:
+                os.setuid(self.uid)
             os.execv(sys.executable,[sys.executable,"./scripts/%s.py"%self.name,"launch"])
 
 class Launcher(Daemon):
@@ -50,10 +59,55 @@ class Launcher(Daemon):
     def __init__(self):
         super(Launcher,self).__init__()
         self.daemons=[]
+        gids={}
+        uids={}
+        is_superuser=os.getuid()==0
         for n in ["fcgi","sae","activator","classifier","correlator"]:
             dn="noc-%s"%n
             is_enabled=self.config.getboolean(dn,"enabled")
-            self.daemons+=[DaemonData(dn,is_enabled)]
+            # Resolve group name
+            group_name=self.config.get(dn,"group")
+            if group_name:
+                if group_name not in gids:
+                    try:
+                        gid=grp.getgrnam(group_name)[2]
+                        gids[group_name]=gid
+                    except KeyError:
+                        logging.error("Group '%s' is not found. Exiting."%group_name)
+                        sys.exit(1)
+                gid=gids[group_name]
+            else:
+                gid=None
+            # Resolve user name
+            user_name=self.config.get(dn,"user")
+            if user_name:
+                if user_name not in uids:
+                    try:
+                        uid=pwd.getpwnam(user_name)[2]
+                        uids[user_name]=uid
+                    except KeyError:
+                        logging.error("User '%s' is not found. Exiting."%user_name)
+                        sys.exit(1)
+                uid=uids[user_name]
+            else:
+                uid=None
+            # Superuser required to change uid/gid
+            if not is_superuser and uids:
+                logging.error("Need to be superuser to change UID")
+                sys.exit(1)
+            if not is_superuser and gids:
+                logging.error("Need to be superuser to change GID")
+                sys.exit(1)
+            # Initialize daemon data
+            self.daemons+=[
+                DaemonData(dn,
+                    is_superuser = is_superuser,
+                    enabled = self.config.getboolean(dn,"enabled"),
+                    user    = user_name,
+                    uid     = uid,
+                    group   = group_name,
+                    gid     = gid)
+                    ]
         
     def run(self):
         while True:
