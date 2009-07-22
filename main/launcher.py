@@ -49,8 +49,10 @@ class DaemonData(object):
         else:
             # Run child
             if self.group:
+                os.setegid(self.gid)
                 os.setgid(self.gid)
             if self.user:
+                os.seteuid(self.uid)
                 os.setuid(self.uid)
             os.execv(sys.executable,[sys.executable,"./scripts/%s.py"%self.name,"launch"])
 
