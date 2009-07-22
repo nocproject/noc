@@ -13,15 +13,25 @@ pidfile  = /var/log/noc/noc-launcher.pid
 
 [noc-fcgi]
 enabled = true
+user  =
+group =
 
 [noc-sae]
 enabled = true
+user  =
+group =
 
 [noc-activator]
 enabled = true
+user  =
+group =
 
 [noc-classifier]
 enabled = true
+user  =
+group =
 
 [noc-correlator]
 enabled = true
+user  =
+group =
