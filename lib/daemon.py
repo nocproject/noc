@@ -229,7 +229,7 @@ class Daemon(object):
             f.close()
             logging.info("Stopping %s pid=%s"%(self.daemon_name,pid))
             try:
-                os.kill(pid,signal.SIGKILL)
+                os.kill(pid,signal.SIGTERM)
             except:
                 pass
             os.unlink(pidfile)
