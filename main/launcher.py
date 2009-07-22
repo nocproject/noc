@@ -54,6 +54,8 @@ class DaemonData(object):
             if self.user:
                 os.setuid(self.uid)
                 os.seteuid(self.uid)
+                # Set up EGG Cache to prevent permissions problem
+                os.environ["PYTHON_EGG_CACHE"]="/tmp/.egg-cache%d"%self.uid
             os.execv(sys.executable,[sys.executable,"./scripts/%s.py"%self.name,"launch"])
 
 class Launcher(Daemon):
