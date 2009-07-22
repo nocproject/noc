@@ -3,7 +3,7 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import os,tempfile,sha,urllib2
+import os,tempfile,hashlib,urllib2
 from noc.lib.version import get_version
 ##
 ## Create new file filled with "text" safely
@@ -29,9 +29,9 @@ def safe_rewrite(path,text,mode=None):
 def is_differ(path,content):
     if os.path.isfile(path):
         f=open(path)
-        cs1=sha.sha(f.read()).digest()
+        cs1=hashlib.sha1(f.read()).digest()
         f.close()
-        cs2=sha.sha(content).digest()
+        cs2=hashlib.sha1(content).digest()
         return cs1!=cs2
     else:
         return True
