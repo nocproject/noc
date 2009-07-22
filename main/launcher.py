@@ -9,7 +9,7 @@
 """
 from __future__ import with_statement
 from noc.lib.daemon import Daemon
-import time,subprocess,sys,os,logging,stat,ConfigParser,pwd,grp
+import time,subprocess,sys,os,logging,stat,ConfigParser,pwd,grp,atexit,signal
 
 ##
 ## Daemon wrapper
@@ -112,6 +112,8 @@ class Launcher(Daemon):
                     group   = group_name,
                     gid     = gid)
                     ]
+        #
+        atexit.register(self.at_exit)
         
     def run(self):
         while True:
@@ -130,3 +132,18 @@ class Launcher(Daemon):
                         logging.info("%s daemon is terminated with status %d"%(d.name,d.pid))
                         d.pid=None
             time.sleep(1)
+        
+    def at_exit(self):
+        for d in self.daemons:
+            if d.enabled and d.pid:
+                try:
+                    logging.info("Stopping daemon: %s (PID %d)"%(d.name,d.pid))
+                    os.kill(d.pid,signal.SIGKILL)
+                    d.pid=None
+                except OSError:
+                    pass
+        logging.info("STOP")
+    
+    def SIGTERM(self,signo,frame):
+        self.at_exit()
+        os._exit(0)
