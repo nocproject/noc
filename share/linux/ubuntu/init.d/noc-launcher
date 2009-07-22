@@ -11,7 +11,6 @@
 PREFIX=/opt/noc/
 NAME=noc-launcher
 DAEMON=./scripts/$NAME.py
-USER=noc
 
 test -x $PREFIX$DAEMON || exit 0
 set -e
@@ -22,13 +21,15 @@ cd $PREFIX
 case "$1" in
     start)
         echo -n "Starting $NAME: "
-        su -l $USER -c "cd $PREFIX && $DAEMON start"
+        cd $PREFIX
+        $DAEMON start
         echo "$NAME."
         ;;
     
     stop)
         echo -n "Stopping $NAME: "
-        su -l $USER -c "cd $PREFIX && $DAEMON stop"
+        cd $PREFIX
+        $DAEMON stop
         echo "$NAME."
         ;;
     

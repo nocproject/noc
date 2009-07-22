@@ -125,8 +125,8 @@ test -r $NOC_CONFIG || { echo "$NOC_CONFIG not existing";
 
 # Check for missing binaries (stale symlinks should not happen)
 # Note: Special treatment of stop for LSB conformance
-NOC_FCGI_BIN=$NOC_PREFIX/scripts/noc-launcher.py
-test -x $NOC_FCGI_BIN || { echo "$NOC_FCGI_BIN not installed"; 
+NOC_LAUNCHER_BIN=$NOC_PREFIX/scripts/noc-launcher.py
+test -x $NOC_LAUNCHER_BIN || { echo "$NOC_LAUNCHER_BIN not installed"; 
 	if [ "$1" = "stop" ]; then exit 0;
 	else exit 5; fi; }
 
@@ -177,13 +177,15 @@ case "$1" in
 	echo -n "Starting noc-launcher "
 	## Start daemon with startproc(8). If this fails
 	## the return value is set appropriately by startproc.
-	su -l $NOC_USER -c "cd $NOC_PREFIX && ./scripts/noc-launcher.py start"
+	cd $NOC_PREFIX
+	./scripts/noc-launcher.py start
 	;;
     stop)
 	echo -n "Shutting down noc-launcher "
 	## Stop daemon with killproc(8) and if this fails
 	## killproc sets the return value according to LSB.
-	su -l $NOC_USER -c "cd $NOC_PREFIX && ./scripts/noc-launcher.py stop"
+	cd $NOC_PREFIX
+	./scripts/noc-launcher.py stop
 	;;
     try-restart|condrestart)
 	## Do a restart only if the service was active before.
@@ -218,7 +220,7 @@ case "$1" in
 
 	echo -n "Reload service noc-launcher "
 	## if it supports it:
-	killproc -HUP $NOC_FCGI_BIN
+	killproc -HUP $NOC_LAUNCHER_BIN
 	#touch /var/run/noc-launcher.pid
 	rc_status -v
 
@@ -232,7 +234,7 @@ case "$1" in
 
 	# If it supports signaling:
 	echo -n "Reload service noc-launcher "
-	killproc -HUP $NOC_FCGI_BIN
+	killproc -HUP $NOC_LAUNCHER_BIN
 	#touch /var/run/noc-launcher.pid
 	rc_status -v
 	
@@ -254,7 +256,7 @@ case "$1" in
 	# 5--199 reserved (5--99 LSB, 100--149 distro, 150--199 appl.)
 	
 	# NOTE: checkproc returns LSB compliant status values.
-	checkproc $NOC_FCGI_BIN
+	checkproc $NOC_LAUNCHER_BIN
 	# NOTE: rc_status knows that we called this init script with
 	# "status" option and adapts its messages accordingly.
 	rc_status -v
