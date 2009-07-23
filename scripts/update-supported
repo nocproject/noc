@@ -8,7 +8,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from __future__ import with_statement
-import os,sha,tempfile,sys,cStringIO,csv
+import os,hashlib,tempfile,sys,cStringIO,csv
 ##
 ##
 ##
@@ -31,9 +31,9 @@ def safe_rewrite(path,text):
 def is_differ(path,content):
     if os.path.isfile(path):
         f=open(path)
-        cs1=sha.sha(f.read()).digest()
+        cs1=hashlib.sha1(f.read()).digest()
         f.close()
-        cs2=sha.sha(content).digest()
+        cs2=hashlib.sha1(content).digest()
         return cs1!=cs2
     else:
         return True
