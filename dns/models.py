@@ -5,7 +5,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import re,os,time,md5,subprocess
+import re,os,time,subprocess
 from django.db import models
 from noc.settings import config
 from noc.ip.models import IPv4Address
