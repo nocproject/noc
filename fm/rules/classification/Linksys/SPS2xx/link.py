@@ -16,6 +16,7 @@ class Linksys_SPS2xx_Link_Up_SNMP_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^source$",                            r"^SNMP Trap$"),
+        (r"^profile$",                           r"^Linksys\.SPS2xx$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",   r"^1\.3\.6\.1\.6\.3\.1\.1\.5\.4$"),
         (r"^1\.3\.6\.1\.2\.1\.2\.2\.1\.1\.\d+$", r"(?P<interface>.*)"),
     ]
@@ -28,6 +29,7 @@ class Linksys_SPS2xx_Link_Down_SNMP_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^source$",                            r"^SNMP Trap$"),
+        (r"^profile$",                           r"^Linksys\.SPS2xx$"),
         (r"^1\.3\.6\.1\.6\.3\.1\.1\.4\.1\.0$",   r"^1\.3\.6\.1\.6\.3\.1\.1\.5\.3$"),
         (r"^1\.3\.6\.1\.2\.1\.2\.2\.1\.1\.\d+$", r"(?P<interface>.*)"),
     ]
