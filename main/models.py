@@ -355,6 +355,12 @@ class RefBookData(models.Model):
     
     def __unicode__(self):
         return u"%s: %s"%(self.ref_book,self.value)
+    ##
+    ## Returns list of pairs (field,data)
+    ##
+    def _items(self):
+        return zip(self.ref_book.fields,self.value)
+    items=property(_items)
 
 ##
 ## Application Menu
