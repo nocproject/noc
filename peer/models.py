@@ -13,7 +13,7 @@ from noc.sa.profiles import profile_registry
 from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
 from noc.main.menu import Menu
-import random,sets
+import random
 
 class RIR(models.Model):
     class Meta:
@@ -238,7 +238,7 @@ class PeeringPoint(models.Model):
         else:
             return self.hostname
     def sync_cm_prefix_list(self):
-        peers_pl=sets.Set([])
+        peers_pl=set([])
         peers_pl.update([p.import_filter_name for p in self.peer_set.filter(import_filter_name__isnull=False) if p.import_filter_name.strip()])
         peers_pl.update([p.export_filter_name for p in self.peer_set.filter(export_filter_name__isnull=False) if p.export_filter_name.strip()])
         h=self.hostname+"/"

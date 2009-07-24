@@ -9,7 +9,7 @@
 from __future__ import with_statement
 from sphinx.util.compat import Directive
 from docutils import nodes
-import csv,sets
+import csv
 
 class supported(nodes.Element): pass
 
@@ -31,7 +31,7 @@ def html_visit_supported(self,node):
     for r in [l for l in reader if l[0]==profile]:
         profile,model,version=r
         if model not in se:
-            se[model]=sets.Set()
+            se[model]=set()
         se[model].add(version)
     body+=["<table border=\"1\" class=\"docutils\">"]
     for m in sorted(se.keys()):

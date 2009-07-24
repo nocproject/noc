@@ -22,7 +22,7 @@ from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
 from noc.main.models import RefBook, RefBookData
-import os, types, ConfigParser, sets, pwd, re
+import os, types, ConfigParser, pwd, re
 
 ##
 ## Startup boilerplate
@@ -187,11 +187,11 @@ def config_view(request,config):
     system_user=pwd.getpwuid(os.getuid())[0]
     defaults_conf=ConfigParser.RawConfigParser()
     defaults_conf.read("etc/%s.defaults"%config[:-5])
-    sections=sets.Set(conf.sections())
+    sections=set(conf.sections())
     sections.update(defaults_conf.sections())
     data=[]
     for s in sections:
-        options=sets.Set()
+        options=set()
         if conf.has_section(s):
             options.update(conf.options(s))
         if defaults_conf.has_section(s):

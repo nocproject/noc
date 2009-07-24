@@ -16,7 +16,7 @@ from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ,in_dir
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
-import os,datetime,stat,logging,sets,random
+import os,datetime,stat,logging,random
 from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObject
 from noc.main.menu import Menu
 from noc.sa.protocols.sae_pb2 import *
@@ -165,7 +165,7 @@ class Object(models.Model):
     verbose_name_plural=property(_verbose_name_plural)
     
     def change_notify_list(self,immediately=False,delayed=False):
-        emails=sets.Set()
+        emails=set()
         for n in ObjectNotify.objects.filter(type=self.repo_name):
             if immediately and not n.notify_immediately:
                 continue
@@ -308,7 +308,7 @@ class Config(Object):
         return cls.objects.extra(where=[where],params=p)
     
     def change_notify_list(self,immediately=False,delayed=False):
-        emails=sets.Set()
+        emails=set()
         for n in ObjectNotify.objects.filter(Q(type=self.repo_name)\
                     &(Q(administrative_domain__isnull=True)|Q(administrative_domain=self.managed_object.administrative_domain))\
                     &(Q(group__isnull=True)|Q(group__in=self.managed_object.groups.all))):

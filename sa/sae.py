@@ -11,7 +11,7 @@ from __future__ import with_statement
 from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask
 from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
-import logging,time,threading,datetime,os,sets,random,xmlrpclib,cPickle
+import logging,time,threading,datetime,os,random,xmlrpclib,cPickle
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
@@ -260,9 +260,9 @@ class SAE(Daemon):
         manifest=read_file("MANIFEST-ACTIVATOR").split("\n")+ACTIVATOR_MANIFEST
         manifest=[x.strip() for x in manifest if x]
         self.activator_manifest=ManifestResponse()
-        self.activator_manifest_files=sets.Set()
+        self.activator_manifest_files=set()
         
-        files=sets.Set()
+        files=set()
         for f in manifest:
             if f.endswith("/"):
                 for dirpath,dirnames,filenames in os.walk(f):

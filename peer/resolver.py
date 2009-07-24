@@ -10,15 +10,15 @@
 from noc.peer.whois import Whois
 from noc.lib.validators import is_asn,is_cidr
 from noc.lib.nbsocket import SocketFactory
-import sets,logging
+import logging
 
 class AS(object):
     def __init__(self,parent,name):
         self.parent=parent
         self.name=name
-        self.prefixes=sets.Set([])
+        self.prefixes=set([])
         self.parent.ases[self.name]=self
-        self.as_sets=sets.Set([])
+        self.as_sets=set([])
         self.is_new=True
         logging.debug("Creating %s"%self.name)
         
@@ -48,10 +48,10 @@ class ASSet(object):
     def __init__(self,parent,name):
         self.parent=parent
         self.name=name
-        self.members=sets.Set([])
+        self.members=set([])
         self.parent.as_sets[self.name]=self
-        self.prefixes=sets.Set([])
-        self.as_sets=sets.Set([])
+        self.prefixes=set([])
+        self.as_sets=set([])
         self.is_new=True
         logging.debug("Creating %s"%self.name)
         
@@ -73,7 +73,7 @@ class ASSet(object):
             
     def add_members(self,members):
         logging.debug("Add %s to %s"%(str(members),self))
-        ms=sets.Set([])
+        ms=set([])
         for k,v in members:
             ms.update([x.strip().upper() for x in v.split(",")])
         for m in ms:

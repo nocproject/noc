@@ -17,7 +17,7 @@ from django.views.generic import list_detail
 from xmlrpclib import ServerProxy, Error
 from noc.settings import config
 from django.contrib.auth.decorators import permission_required
-import pprint,types,socket,csv,sets
+import pprint,types,socket,csv
 
 ##
 ## Display a list of object's scripts
@@ -175,7 +175,7 @@ def test_selector(request,selector_id):
         paginate_by=100,
     )
 ## Script choices
-map_script_choices=[(x,x) for x in sorted(sets.Set([x.split(".")[2] for x in script_registry.classes.keys() if not x.startswith("Generic.")]))]
+map_script_choices=[(x,x) for x in sorted(set([x.split(".")[2] for x in script_registry.classes.keys() if not x.startswith("Generic.")]))]
 ##
 ## Run new Map/Reduce task
 ##
