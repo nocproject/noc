@@ -382,31 +382,31 @@ noc-launcher.conf
 .. _noc-launcher-conf-main-logfile:
  
 logfile
--------
+^^^^^^^
 Log file path
 
 .. _noc-launcher-conf-main-loglevel:
 
 loglevel
---------
+^^^^^^^^
 logging level. One of: debug, info, warning, error, critical
 
 .. _noc-launcher-conf-main-logsize:
 
 logsize
--------
+^^^^^^^
 Maximum log file size in bytes. 0 (default) means unlimited size
 
 .. _noc-launcher-conf-main-logfiles:
 
 logfiles
---------
+^^^^^^^^
 Keep *logfiles* backup copies of log file
 
 .. _noc-launcher-conf-main-pidfile:
 
 pidfile
--------
+^^^^^^^
 Pid file path
 
 .. _noc-launcher-conf-noc-fcgi:
@@ -538,31 +538,31 @@ Stores noc-fcgi daemon configuration
 .. _noc-fcgi-conf-main-logfile:
  
 logfile
--------
+^^^^^^^
 Log file path
 
 .. _noc-fcgi-conf-main-loglevel:
 
 loglevel
---------
+^^^^^^^^
 logging level. One of: debug, info, warning, error, critical
 
 .. _noc-fcgi-conf-main-logsize:
 
 logsize
--------
+^^^^^^^
 Maximum log file size in bytes. 0 (default) means unlimited size
 
 .. _noc-fcgi-conf-main-logfiles:
 
 logfiles
---------
+^^^^^^^^
 Keep *logfiles* backup copies of log file
 
 .. _noc-fcgi-conf-main-pidfile:
 
 pidfile
--------
+^^^^^^^
 Pid file path
 
 .. _noc-fcgi-conf-fcgi:
@@ -573,31 +573,31 @@ Pid file path
 .. _noc-fcgi-conf-fcgi-socket:
 
 socket
-------
+^^^^^^
 Path to UNIX socket to communicate with HTTP server
 
 .. _noc-fcgi-conf-fcgi-minspare:
 
 minspare
---------
+^^^^^^^^
 Minimum spare worker threads
 
 .. _noc-fcgi-conf-fcgi-maxspare:
 
 maxspare
---------
+^^^^^^^^
 Maximum spare worker threads
 
 .. _noc-fcgi-conf-fcgi-maxrequests:
 
 maxrequests
------------
+^^^^^^^^^^^
 Maximum requests processed by worker threads
 
 .. _noc-fcgi-conf-fcgi-maxchildren:
 
 maxchildren
------------
+^^^^^^^^^^^
 Maximum worker threads
 
 .. _noc-sae-conf:
@@ -626,13 +626,13 @@ logging level. One of: debug, info, warning, error, critical
 .. _noc-sae-conf-main-logsize:
 
 logsize
--------
+^^^^^^^
 Maximum log file size in bytes. 0 (default) means unlimited size
 
 .. _noc-sae-conf-main-logfiles:
 
 logfiles
---------
+^^^^^^^^
 Keep *logfiles* backup copies of log file
 
 .. _noc-sae-conf-main-pidfile:
@@ -709,13 +709,13 @@ logging level. One of: debug, info, warning, error, critical
 .. _noc-activator-conf-main-logsize:
 
 logsize
--------
+^^^^^^^
 Maximum log file size in bytes. 0 (default) means unlimited size
 
 .. _noc-activator-conf-main-logfiles:
 
 logfiles
---------
+^^^^^^^^
 Keep *logfiles* backup copies of log file
 
 .. _noc-activator-conf-main-pidfile:
@@ -841,13 +841,13 @@ logging level. One of: debug, info, warning, error, critical
 .. _noc-classifier-conf-main-logsize:
 
 logsize
--------
+^^^^^^^
 Maximum log file size in bytes. 0 (default) means unlimited size
 
 .. _noc-classifier-conf-main-logfiles:
 
 logfiles
---------
+^^^^^^^^
 Keep *logfiles* backup copies of log file
 
 .. _noc-classifier-conf-main-pidfile:
@@ -882,13 +882,13 @@ logging level. One of: debug, info, warning, error, critical
 .. _noc-correlator-conf-main-logsize:
 
 logsize
--------
+^^^^^^^
 Maximum log file size in bytes. 0 (default) means unlimited size
 
 .. _noc-correlator-conf-main-logfiles:
 
 logfiles
---------
+^^^^^^^^
 Keep *logfiles* backup copies of log file
 
 .. _noc-correlator-conf-main-pidfile:
