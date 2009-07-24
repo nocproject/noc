@@ -279,6 +279,12 @@ class RefBook(models.Model):
     def _can_search(self):
         return self.refbookfield_set.filter(search_method__isnull=False).count()>0
     can_search=property(_can_search)
+    ##
+    ## Return a fields sorted by order
+    ##
+    def _fields(self):
+        return self.refbookfield_set.order_by("order")
+    fields=property(_fields)
 ##
 ## Ref Book Fields
 ##
