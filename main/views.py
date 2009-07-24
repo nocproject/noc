@@ -284,6 +284,14 @@ def refbook_view(request,refbook_id):
         paginate_by=100,
     )
 ##
+##
+##
+def refbook_item(request,refbook_id,record_id):
+    rb=get_object_or_404(RefBook,id=int(refbook_id))
+    rbr=get_object_or_404(RefBookData,id=int(record_id),ref_book=rb)
+    return render(request,"main/refbook_item.html",{"rb":rb,"record":rbr})
+
+##
 ## Delete refbook record
 ##
 def refbook_delete(request,refbook_id,record_id):

@@ -52,7 +52,7 @@ function on_delete(record_id) {
     {% for d in object_list %}
     <tr class="{%cycle 'row1' 'row2'%}">
         {% for c in d.value %}
-        <td>{{c}}</td>
+        <td><a href="{{d.id}}/">{{c}}</a></td>
         {% endfor %}
         {% if can_edit %}
         <td class='edit_link'>
