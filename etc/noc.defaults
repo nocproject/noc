@@ -80,6 +80,15 @@ timeout_error    = 300
 timeout_variation = 10
 
 #
+# Peer module setup
+#
+[peer]
+# RPSL pref semantics
+#   off -> pref == localpref
+#   on  -> pref == 65535 - localpref
+rpsl_inverse_pref_style = off
+
+#
 # Trouble Ticketing System integration
 #
 [tt]

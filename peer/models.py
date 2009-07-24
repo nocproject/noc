@@ -6,6 +6,7 @@
 """
 """
 from django.db import models
+from noc.settings import config
 from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
@@ -374,7 +375,12 @@ class Peer(models.Model):
         s="import: from AS%d"%self.remote_asn
         s+=" at %s"%self.peering_point.hostname
         if self.local_pref:
-            s+=" action pref=%d;"%self.local_pref
+            # Select pref meaning
+            if config.getboolean("peer","rpsl_inverse_pref_style"):
+                pref=65535-self.local_pref # RPSL style
+            else:
+                pref=self.local_pref                
+            s+=" action pref=%d;"%pref
         s+=" accept %s\n"%self.import_filter
         s+="export: to AS%s at %s announce %s"%(self.remote_asn,self.peering_point.hostname,self.export_filter)
         return s
