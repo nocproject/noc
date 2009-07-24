@@ -323,6 +323,17 @@ timeout_down
 Timeout to wait when activator reports target host is down. Target host reachability status updated every time
 ping probe executed
 
+.. _noc-conf-peer:
+
+[peer] section
+--------------
+
+.. _noc-conf-peer-rpsl_inverse_pref_style:
+
+rpsl_inverse_pref_style
+^^^^^^^^^^^^^^^^^^^^^^^
+Select RPSL pref= behavior. *off* means pref = localpref, *on* means standard RPSL's pref = 65535-localpref
+
 .. _noc-conf-tt:
 
 tt section
