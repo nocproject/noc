@@ -13,7 +13,7 @@ from django.contrib.auth.models import User
 from noc.kb.parsers import parser_registry
 from noc.main.search import SearchResult
 from noc.lib.validators import is_int
-import difflib,re,sets
+import difflib,re
 
 ##
 ## Register all wiki-syntax parsers
@@ -44,7 +44,10 @@ class KBEntry(models.Model):
     markup_language=models.CharField("Markup Language",max_length="16",choices=parser_registry.choices)
     categories=models.ManyToManyField(KBCategory,verbose_name="Categories",null=True,blank=True)
     def __unicode__(self):
-        return u"KB%d: %s"%(self.id,self.subject)
+        if self.id:
+            return u"KB%d: %s"%(self.id,self.subject)
+        else:
+            return u"New: %s"%self.subject
     ## Wiki parser class
     def _parser(self):
         return parser_registry[self.markup_language]
@@ -294,7 +297,7 @@ class KBEntryTemplate(models.Model):
     ## Returns template variables list
     ##
     def _var_list(self):
-        var_set=sets.Set(rx_template_var.findall(self.subject))
+        var_set=set(rx_template_var.findall(self.subject))
         var_set.update(rx_template_var.findall(self.body))
         return sorted(var_set)
     var_list=property(_var_list)
