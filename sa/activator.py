@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import os,logging,pty,signal,time,re,sys,signal,Queue,sets,cPickle,tempfile
+import os,logging,pty,signal,time,re,sys,signal,Queue,cPickle,tempfile
 from errno import ECONNREFUSED
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,ScriptSocket
@@ -84,7 +84,7 @@ class Service(SAEService):
     
     def ping_check(self,controller,request,done):
         def ping_check_callback(unreachable):
-            u=sets.Set(unreachable)
+            u=set(unreachable)
             r=PingCheckResponse()
             self.activator.ping_check_results={} # Reset previous ping checks
             for a in request.addresses:
@@ -199,7 +199,7 @@ class Activator(Daemon,FSM):
         self.children={}
         self.ping_check_results={} # address -> last ping check result
         self.sae_stream=None
-        self.event_sources=sets.Set()
+        self.event_sources=set()
         self.trap_collectors=[]   # List of SNMP Trap collectors
         self.syslog_collectors=[] # List of SYSLOG collectors
         logging.info("Loading profile classes")
@@ -487,7 +487,7 @@ class Activator(Daemon,FSM):
             if error:
                 logging.error("get_event_filter error: %s"%error.text)
                 return
-            self.event_sources=sets.Set(response.sources)
+            self.event_sources=set(response.sources)
             self.next_filter_update=time.time()+response.expire
         r=EventFilterRequest()
         self.sae_stream.proxy.event_filter(r,event_filter_callback)

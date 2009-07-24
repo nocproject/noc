@@ -9,7 +9,6 @@
 """
 from noc.main.models import RefBook as RB
 from noc.main.models import RefBookField,Language
-import sets
 ##
 lang_cache={}
 def get_language(name):
@@ -58,10 +57,10 @@ class RefBook(object):
             print "CREATE RefBook ",cls.name
         rb.save()
         # Sync Fields
-        es=sets.Set()
+        es=set()
         for f in rb.refbookfield_set.all():
             es.add(f.name)
-        ns=sets.Set()
+        ns=set()
         for f in cls.fields:
             ns.add(unicode(f.name,"utf-8"))
         if es!=ns:
