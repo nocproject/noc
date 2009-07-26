@@ -9,8 +9,7 @@
 """
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
-from noc.main.views import index,logout,report,report_index,success,failure,menu,search,config_index,config_view,\
-    refbook_index,refbook_view,svg_text_vertical,refbook_delete, refbook_item
+from noc.main.views import *
 from django.contrib import databrowse
 from noc.lib.decorators import superuser_required
 
@@ -27,8 +26,10 @@ urlpatterns = patterns ( None,
         (r"^config/$",  login_required(config_index)),
         (r"^config/(?P<config>.+)/$",  login_required(config_view)),
         (r"^refbook/$", login_required(refbook_index)),
-        (r"^refbook/(?P<refbook_id>\d+)/$",  login_required(refbook_view)),
+        (r"^refbook/(?P<refbook_id>\d+)/$",                            login_required(refbook_view)),
+        (r"^refbook/(?P<refbook_id>\d+)/new/$",                        login_required(refbook_new)),
         (r"^refbook/(?P<refbook_id>\d+)/(?P<record_id>\d+)/$",         login_required(refbook_item)),
-        (r"^refbook/(?P<refbook_id>\d+)/delete/(?P<record_id>\d+)/$",  login_required(refbook_delete)),
+        (r"^refbook/(?P<refbook_id>\d+)/(?P<record_id>\d+)/edit/$",    login_required(refbook_edit)),
+        (r"^refbook/(?P<refbook_id>\d+)/(?P<record_id>\d+)/delete/$",  login_required(refbook_delete)),
         (r"^svg/text/vertical/$", svg_text_vertical)
 )

@@ -3,20 +3,14 @@
 {% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/main/refbook/">Reference Books</a> &rsaquo; <a href="/main/refbook/{{rb.id}}/">{{rb.name}}</a> &rsaquo;</div> </div>
 {% endblock %}
 {% block content %}
+<h1>Edit record</h1>
+<form method="POST">
 <table border="0">
     {%for f,v in record.items%}
-    <tr class="{%cycle 'row1' 'row2'%}"><td><b>{{f.name}}</b></td><td>{{v}}</td></tr>
+    <tr class="{%cycle 'row1' 'row2'%}"><td><b>{{f.name}}</b></td>
+        <td><input type="text" name="field_{{forloop.counter0}}" value="{{v}}"/></td></tr>
     {%endfor%}
 </table>
-{% if can_edit %}
-<script type="text/javascript">
-function on_delete() {
-    if(confirm("Delete Record?")){
-        document.location="/main/refbook/{{rb.id}}/{{record.id}}/delete/";
-    }
-}
-</script>
-<a href="edit/" class="changelink">Change</a>
-<a href="#" class="deletelink" onclick="on_delete();">Delete</a>
-{% endif %}
+<input type="submit" value="save"/>
+</form>
 {% endblock %}
