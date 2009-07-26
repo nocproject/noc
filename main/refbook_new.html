@@ -1,0 +1,16 @@
+{% extends "template/template.html" %}
+{% block title%}Reference Books{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/main/refbook/">Reference Books</a> &rsaquo; <a href="/main/refbook/{{rb.id}}/">{{rb.name}}</a> &rsaquo;</div> </div>
+{% endblock %}
+{% block content %}
+<h1>Add record</h1>
+<form method="POST">
+<table border="0">
+    {%for f in rb.fields%}
+    <tr class="{%cycle 'row1' 'row2'%}"><td><b>{{f.name}}</b></td>
+        <td><input type="text" name="field_{{forloop.counter0}}" value=""/></td></tr>
+    {%endfor%}
+</table>
+<input type="submit" value="save"/>
+</form>
+{% endblock %}

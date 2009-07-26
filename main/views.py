@@ -243,21 +243,6 @@ def refbook_index(request):
 def refbook_view(request,refbook_id):
     rb=get_object_or_404(RefBook,id=int(refbook_id))
     can_edit=not rb.is_builtin and request.user.has_perm("main.change_refbookdata")
-    if request.POST: # Edit refbook
-        if not can_edit:
-            return HttpResponseForbidden("Read-only refbook")
-        # Retrieve record data
-        fns=[int(k[6:]) for k in request.POST.keys() if k.startswith("field_")]
-        data=["" for i in range(max(fns)+1)]
-        for i in fns:
-            data[i]=request.POST["field_%d"%i]
-        record_id=int(request.POST["record_id"])
-        if record_id: # Edit existing
-            record=get_object_or_404(RefBookData,id=int(request.POST["record_id"]))
-            record.value=data
-        else: # Create new
-            record=RefBookData(ref_book=rb,value=data)
-        record.save()
     queryset=rb.refbookdata_set.all()
     # Search
     if request.GET and request.GET.has_key("query") and request.GET["query"]:
@@ -289,7 +274,49 @@ def refbook_view(request,refbook_id):
 def refbook_item(request,refbook_id,record_id):
     rb=get_object_or_404(RefBook,id=int(refbook_id))
     rbr=get_object_or_404(RefBookData,id=int(record_id),ref_book=rb)
-    return render(request,"main/refbook_item.html",{"rb":rb,"record":rbr})
+    can_edit=not rb.is_builtin and request.user.has_perm("main.change_refbookdata")
+    return render(request,"main/refbook_item.html",{"rb":rb,"record":rbr,"can_edit":can_edit})
+##
+##
+##
+def refbook_edit(request,refbook_id,record_id=0):
+    rb=get_object_or_404(RefBook,id=int(refbook_id))
+    rbr=get_object_or_404(RefBookData,id=int(record_id),ref_book=rb)
+    can_edit=not rb.is_builtin and request.user.has_perm("main.change_refbookdata")
+    if not can_edit:
+        return HttpResponseForbidden("Read-only refbook")
+    if request.POST: # Edit refbook
+        if not can_edit:
+            return HttpResponseForbidden("Read-only refbook")
+        # Retrieve record data
+        fns=[int(k[6:]) for k in request.POST.keys() if k.startswith("field_")]
+        data=["" for i in range(max(fns)+1)]
+        for i in fns:
+            data[i]=request.POST["field_%d"%i]
+        rbr.value=data
+        rbr.save()
+        return HttpResponseRedirect("/main/refbook/%d/%d/"%(rb.id,rbr.id))
+    return render(request,"main/refbook_edit.html",{"rb":rb,"record":rbr})
+##
+##
+##
+def refbook_new(request,refbook_id):
+    rb=get_object_or_404(RefBook,id=int(refbook_id))
+    can_edit=not rb.is_builtin and request.user.has_perm("main.change_refbookdata")
+    if not can_edit:
+        return HttpResponseForbidden("Read-only refbook")
+    if request.POST: # Edit refbook
+        if not can_edit:
+            return HttpResponseForbidden("Read-only refbook")
+        # Retrieve record data
+        fns=[int(k[6:]) for k in request.POST.keys() if k.startswith("field_")]
+        data=["" for i in range(max(fns)+1)]
+        for i in fns:
+            data[i]=request.POST["field_%d"%i]
+        rbr=RefBookData(ref_book=rb,value=data)
+        rbr.save()
+        return HttpResponseRedirect("/main/refbook/%d/%d/"%(rb.id,rbr.id))
+    return render(request,"main/refbook_new.html",{"rb":rb})
 
 ##
 ## Delete refbook record
