@@ -30,7 +30,7 @@ from django.forms.widgets import HiddenInput
 @permission_required("fm.change_event")
 def lookup_managed_object(request):
     def lookup_function(q):
-        for m in ManagedObject.objects.filter(name__startswith=q):
+        for m in ManagedObject.objects.filter(name__istartswith=q):
             yield m.name
     return lookup(request,lookup_function)
 ##
