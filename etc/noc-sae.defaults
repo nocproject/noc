@@ -12,8 +12,11 @@ logfiles = 0
 pidfile  = /var/log/noc/noc-sae.pid
 
 [sae]
-listen = 127.0.0.1
-port   = 19701
+listen     = 127.0.0.1
+port       = 19701
+ssl_listen =
+ssl_port   = 19703
+ssl_cert   = etc/certs/sae.pem
 refresh_event_filter = 600
 
 [xmlrpc]
