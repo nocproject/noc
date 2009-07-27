@@ -10,6 +10,12 @@ from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
      ENOTCONN, ESHUTDOWN, EINTR, EISCONN, ECONNREFUSED, EPIPE, errorcode
 from noc.lib.debug import error_report
 
+try:
+    import ssl
+    HAS_SSL=True
+except ImportError:
+    HAS_SSL=False
+
 ##
 ## Abstract non-blocking socket wrapper.
 ##
@@ -95,7 +101,7 @@ class LineProtocol(Protocol):
 ## Should not be used directly. Use SocketFactory.listen_tcp method instead
 ##
 class ListenTCPSocket(Socket):
-    def __init__(self,factory,address,port,socket_class):
+    def __init__(self,factory,address,port,socket_class,**kwargs):
         Socket.__init__(self,factory,socket.socket(socket.AF_INET,socket.SOCK_STREAM))
         self.socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,
             self.socket.getsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR) | 1)
@@ -104,11 +110,12 @@ class ListenTCPSocket(Socket):
         self.socket_class=socket_class
         self.address=address
         self.port=port
+        self.kwargs=kwargs
     
     def handle_read(self):
         s,addr=self.socket.accept()
         if self.socket_class.check_access(addr[0]):
-            self.socket_class(self.factory,s)
+            self.socket_class(self.factory,s,**self.kwargs)
         else:
             logging.error("Refusing connection from %s"%addr[0])
             s.close()
@@ -213,6 +220,31 @@ class AcceptedTCPSocket(TCPSocket):
     def can_write(self):
         return self.out_buffer
 ##
+## SSL-enabled AcceptedTCPSocket
+##
+class AcceptedTCPSSLSocket(AcceptedTCPSocket):
+    def __init__(self,factory,socket,cert):
+        socket=ssl.wrap_socket(socket,server_side=True,do_handshake_on_connect=False,
+            keyfile=cert,certfile=cert,
+            ssl_version=ssl.PROTOCOL_TLSv1)
+        self.ssl_handshake_passed=False
+        TCPSocket.__init__(self,factory,socket)
+    
+    def handle_read(self):
+        if self.ssl_handshake_passed:
+            super(AcceptedTCPSSLSocket,self).handle_read()
+        else: # Process SSL Handshake
+            try:
+                self.socket.do_handshake()
+                self.ssl_handshake_passed=True
+                self.debug("SSL Handshake passed: %s"%str(self.socket.cipher()))
+                self.handle_connect() # handle_connect called after SSL negotiation
+            except ssl.SSLError,err:
+                if err.args[0] in [ssl.SSL_ERROR_WANT_READ,ssl.SSL_ERROR_WANT_WRITE]: # Incomplete handshake data
+                    return
+                logging.error("SSL Handshake failed: %s"%err[1])
+                self.close()
+##
 ## A socket wrapping connectiong TCP connection.
 ## Following methods can be overrided for desired behavior:
 ## on_connect(self)   - called when connection established and socket read to send data (first event)
@@ -279,6 +311,27 @@ class ConnectedTCPSocket(TCPSocket):
         TCPSocket.handle_write(self)
     
     def on_conn_refused(self): pass
+##
+##
+##
+class ConnectedTCPSSLSocket(ConnectedTCPSocket):
+    def __init__(self,factory,address,port,local_address=None):
+        self.ssl_handshake_passed=False
+        super(ConnectedTCPSSLSocket,self).__init__(factory,address,port,local_address)
+        self.socket=ssl.wrap_socket(self.socket,server_side=False,do_handshake_on_connect=False,ssl_version=ssl.PROTOCOL_TLSv1)
+    
+    def handle_read(self):
+        if self.ssl_handshake_passed:
+            super(ConnectedTCPSSLSocket,self).handle_read()
+        else: # Process SSL Handshake
+            try:
+                self.socket.do_handshake()
+                self.ssl_handshake_passed=True
+                self.debug("SSL Handshake passed: %s"%str(self.socket.cipher()))
+            except ssl.SSLError,err:
+                if err.args[0] in [ssl.SSL_ERROR_WANT_READ,ssl.SSL_ERROR_WANT_WRITE]: # Incomplete handshake data
+                    return
+                raise
 ##
 ## File wrapper to mimic behavior of socket
 ##
@@ -397,10 +450,10 @@ class SocketFactory(object):
         if old_name:
             del self.name_socket[old_name]
         
-    def listen_tcp(self,address,port,socket_class):
+    def listen_tcp(self,address,port,socket_class,**kwargs):
         if not issubclass(socket_class,AcceptedTCPSocket):
             raise "socket_class should be a AcceptedTCPSocket subclass"
-        l=ListenTCPSocket(self,address,port,socket_class)
+        l=ListenTCPSocket(self,address,port,socket_class,**kwargs)
         l.set_name("listen-tcp-%s:%d"%(address,port))
         return l
     
