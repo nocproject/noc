@@ -27,6 +27,7 @@ Security
 
 * Privilege separation for all major components for collaborative use
 * Record-level permissions
+* SSL/TLS data encryption of critical communications
 
 Web Interface
 =============
