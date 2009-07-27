@@ -100,3 +100,26 @@ Set up nginx.conf::
 
 Apache Setup
 ============
+Set up httpd.conf::
+
+    FastCGIExternalServer /opt/noc/noc.fcgi -socket /tmp/noc.fcgi
+    
+    <VirtualHost *:80>
+        DocumentRoot    /opt/noc
+        ServerName      yourdomain
+        Alias  /media <django root>/contrib/admin/media/
+        RewriteEngine On
+        RewriteRule ^/(media.*)$ /$1 [QSA,L,PT]
+        RewriteRule ^/(static.*)$  /$1 [QSA,L,PT]
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteRule ^/(.*)$ /mysite.fcgi/$1 [QSA,L]    
+        <Directory /opt/noc>
+            Order allow,deny
+            Allow from all
+        </Directory>
+        <Location /media>
+            Order allow,deny
+            Allow from all
+        </Location>
+    </VirtualHost>
+
