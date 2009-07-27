@@ -10,23 +10,59 @@
 import noc.sa.periodic
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
-import os,subprocess,datetime
+import os,subprocess,datetime,re
 import logging
+
+rx_backup=re.compile(r"^noc-(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})-\d{2}-\d{2}.(?:dump|tar\.gz)$")
 
 class Task(noc.sa.periodic.Task):
     name="main.backup"
     description=""
     
-    def execute(self):
-        def safe_unlink(path):
-            logging.debug("Unlinking: %s"%path)
+    def clean_backups(self):
+        backup_dir=config.get("path","backup_dir")
+        keep_days=config.getint("backup","keep_days")
+        keep_weeks=config.getint("backup","keep_weeks")
+        keep_day_of_week=config.getint("backup","keep_day_of_week")
+        keep_months=config.getint("backup","keep_months")
+        keep_day_of_month=config.getint("backup","keep_day_of_month")
+        
+        now=datetime.datetime.now()
+        for f in os.listdir(backup_dir):
+            match=rx_backup.match(f)
+            if not match:
+                continue
             try:
-                os.unlink(path)
+                bdate=datetime.datetime(year=int(match.group("year")),month=int(match.group("month")),day=int(match.group("day")))
             except:
-                pass
+                continue
+            # Filter out actual backups
+            delta=now-bdate
+            if delta.days<keep_days:
+                continue
+            elif delta.days<keep_days+keep_weeks*7:
+                if bdate.weekday()==keep_day_of_week:
+                    continue
+            elif delta.days<keep_days+keep_weeks*7+keep_months*31:
+                if bdate.day==keep_day_of_month:
+                    continue
+            # Remove deprecated backups
+            logging.info("Removing obsolete backup %s"%f)
+            self.safe_unlink(os.path.join(backup_dir,f))
+            
+    def safe_unlink(self,path):
+        logging.debug("Unlinking: %s"%path)
+        try:
+            os.unlink(path)
+        except:
+            pass
+            
+    def execute(self):
         def pgpass_quote(s):
             return s.replace("\\","\\\\").replace(":","\\:")
         from django.conf import settings
+        # Clean up old backups
+        self.clean_backups()
         # Build backup path
         now=datetime.datetime.now()
         pgpass=["*","*","*","*",""] # host,port,database,user,password
@@ -52,7 +88,6 @@ class Task(noc.sa.periodic.Task):
         pgpass_data=":".join([pgpass_quote(x) for x in pgpass])
         pgpass_path=os.path.join(os.getcwd(),"local","cache","pgpass",".pgpass")
         safe_rewrite(pgpass_path,pgpass_data,mode=0600)
-        print pgpass_data
         env=os.environ.copy()
         env["PGPASSFILE"]=pgpass_path
         # Launch pg_dump
@@ -60,7 +95,7 @@ class Task(noc.sa.periodic.Task):
         retcode=subprocess.call(cmd,env=env)
         if retcode!=0:
             logging.error("main.backup: dump failed. Removing broken dump '%s'"%out)
-            safe_unlink(out)
+            self.safe_unlink(out)
             return False
         #
         # Back up repo
@@ -76,5 +111,3 @@ class Task(noc.sa.periodic.Task):
         p2=subprocess.Popen(gzip_cmd,stdin=p1.stdout,stdout=f)
         f.close()
         return True
-        #logging.error("main.backup: repo dump failed. Removing broken dumps")
-        #safe_unlink(repo_out)

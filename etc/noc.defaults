@@ -117,3 +117,12 @@ dig        = /usr/bin/dig
 [xmlrpc]
 server     = 127.0.0.1
 port       = 19702
+#
+# Backup parameters
+#
+[backup]
+keep_days          = 14
+keep_weeks         = 12
+keep_day_of_week   = 6
+keep_months        = 12
+keep_day_of_month  = 1
