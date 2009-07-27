@@ -369,6 +369,45 @@ port
 ^^^^
 Port used by XML-RPC interface
 
+.. _noc-conf-backup:
+
+[backup] section
+----------------
+[backup] section contains settings for main.backup periodic task
+
+.. _noc-conf-backup-keep_days:
+
+keep_days
+^^^^^^^^^
+Keep last *keep_days* days of backups
+
+.. _noc-conf-backup-keep_weeks:
+
+keep_weeks
+^^^^^^^^^^
+After *keep_days* store only one backup per week for the next *keep_weeks* weeks.
+Only backups created at *keep_day_of_week* day of week are left.
+
+.. _noc-conf-backup-keep_day_of_week:
+
+keep_day_of_week
+^^^^^^^^^^^^^^^^
+Keep only backup performed at *keep_day_of_week* (0 - Monday, 6 - Saturday)
+
+.. _noc-conf-backup-keep_months:
+
+keep_months
+^^^^^^^^^^^
+After *keep_weeks* interval expired keep only one backup per month for the next
+*keep_months* months. Only backups created at *keep_day_of_months* days of months
+are left.
+
+.. _noc-conf-backup-keep_day_of_month:
+
+keep_day_of_month
+^^^^^^^^^^^^^^^^^
+Keep only backups performed at *keep_day_of_month* (1-based)
+
 .. _noc-launcher-conf:
 
 noc-launcher.conf
