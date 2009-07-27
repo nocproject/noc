@@ -664,6 +664,24 @@ refresh_event_filter
 ^^^^^^^^^^^^^^^^^^^^
 Event filter expire time. Activators will refresh their event filters after this time
 
+.. _noc-sae-conf-sae-ssl_cert:
+
+ssl_cert
+^^^^^^^^
+Path to the SAE SSL certificate. Certificate must contain public and private parts
+
+.. _noc-sae-conf-sae-ssl_listen:
+
+ssl_listen
+^^^^^^^^^^
+Listen for activator SSL connections at address
+
+.. _noc-sae-conf-sae-ssl_port:
+
+ssl_port
+^^^^^^^^
+Listen for activator SSL connections at port
+
 .. _noc-sae-conf-xmlrpc:
 
 xmlrpc section
@@ -787,7 +805,7 @@ Maximum concurrent telnet/ssh sessions
 
 host
 ^^^^
-SAE address
+Address to be used to connect SAE unless *ssl_host* is not defined
 
 .. _noc-activator-conf-sae-port:
 
@@ -800,6 +818,18 @@ SAE port
 local_address
 ^^^^^^^^^^^^^
 Use specified address as source address for SAE connections. Leave empty to use default address.
+
+.. _noc-activator-conf-sae-ssl_host:
+
+ssl_host
+^^^^^^^^
+Address to be used to connect SAE via SSL, when defined.
+
+.. _noc-activator-conf-sae-ssl_port:
+
+ssl_port
+^^^^^^^^
+SAE SSL port
 
 .. _noc-activator-conf-path:
 
