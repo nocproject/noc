@@ -7,6 +7,7 @@ dist/
 build/
 noc.egg-info/
 etc/*.conf
+etc/certs/*
 local/*
 static/doc/*
 MANIFEST
