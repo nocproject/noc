@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import sys,re,logging,datetime,os,tempfile,cPickle,time,gc,random
+import sys,re,logging,datetime,os,tempfile,cPickle,time,gc,random,stat
 
 #
 # Error reporting context
@@ -15,11 +15,14 @@ import sys,re,logging,datetime,os,tempfile,cPickle,time,gc,random
 DEBUG_CTX_COMPONENT=None
 DEBUG_CTX_CRASH_DIR=None
 DEBUG_CTX_CRASH_PREFIX="crashinfo-"
+DEBUG_CTX_SET_UID=None
 #
 def set_crashinfo_context(component,crash_dir):
-    global DEBUG_CTX_COMPONENT,DEBUG_CTX_CRASH_DIR
+    global DEBUG_CTX_COMPONENT,DEBUG_CTX_CRASH_DIR,DEBUG_CTX_SET_UID
     DEBUG_CTX_COMPONENT=component
     DEBUG_CTX_CRASH_DIR=crash_dir
+    if os.getuid()==0: # Daemon launched as a root
+        DEBUG_CTX_SET_UID=os.stat(crash_dir)[stat.ST_UID]
 
 # Borrowed from django
 def get_lines_from_file(filename,lineno,context_lines,loader=None,module_name=None):
@@ -175,6 +178,8 @@ def error_report():
         f=os.fdopen(h,"w")
         f.write(cPickle.dumps(c))
         f.close()
+        if DEBUG_CTX_SET_UID: # Change crashinfo userid to directory's owner
+            os.chown(h,DEBUG_CTX_SET_UID,-1)
 
 def frame_report(frame):
     now=datetime.datetime.now()
