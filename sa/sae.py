@@ -16,7 +16,7 @@ from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.debug import error_report,DEBUG_CTX_CRASH_PREFIX
-from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,SocketFactory,Protocol
+from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,AcceptedTCPSSLSocket,SocketFactory,Protocol,HAS_SSL
 from django.db import reset_queries
 
 ##
@@ -168,6 +168,20 @@ class SAESocket(RPCSocket,AcceptedTCPSocket):
     def check_access(cls,address):
         return Activator.check_ip_access(address)
 ##
+## SSL version of SAE socket
+##
+class SAESSLSocket(RPCSocket,AcceptedTCPSSLSocket):
+    def __init__(self,factory,socket,cert):
+        AcceptedTCPSSLSocket.__init__(self,factory,socket,cert)
+        RPCSocket.__init__(self,factory.sae.service)
+        self.nonce=None
+        self.is_authenticated=True
+        
+    @classmethod
+    def check_access(cls,address):
+        return Activator.check_ip_access(address)
+    
+##
 ## XML-RPC support
 ##
 
@@ -247,6 +261,7 @@ class SAE(Daemon):
         self.factory.sae=self
         #
         self.sae_listener=None
+        self.sae_ssl_listener=None
         self.xmlrpc_listener=None
         # Periodic tasks
         self.active_periodic_tasks={}
@@ -286,6 +301,17 @@ class SAE(Daemon):
         if self.sae_listener is None:
             logging.info("Starting SAE listener at %s:%d"%(sae_listen,sae_port))
             self.sae_listener=self.factory.listen_tcp(sae_listen,sae_port,SAESocket)
+        # SAE SSL Listener
+        if HAS_SSL:
+            sae_ssl_listen=self.config.get("sae","ssl_listen")
+            sae_ssl_port=self.config.getint("sae","ssl_port")
+            sae_ssl_cert=self.config.get("sae","ssl_cert")
+            if self.sae_ssl_listener and (self.sae_ssl_listener.address!=sae_ssl_listen or self.sae_ssl_listener.port!=sae_ssl_port):
+                self.sae_ssl_listener.close()
+                self.sae_ssl_listener=None
+            if self.sae_ssl_listener is None:
+                logging.info("Starting SAE SSL listener at %s:%d"%(sae_ssl_listen,sae_ssl_port))
+                self.sae_ssl_listener=self.factory.listen_tcp(sae_ssl_listen,sae_ssl_port,SAESSLSocket,cert=sae_ssl_cert)
         # XML-RPC listener
         xmlrpc_listen=self.config.get("xmlrpc","listen")
         xmlrpc_port=self.config.getint("xmlrpc","port")
@@ -294,7 +320,7 @@ class SAE(Daemon):
             self.xmlrpc_listener=None
         if self.xmlrpc_listener is None:
             logging.info("Starting XML-RPC listener at %s:%d"%(xmlrpc_listen,xmlrpc_port))
-            self.sae_listener=self.factory.listen_tcp(xmlrpc_listen,xmlrpc_port,XMLRPCSocket)
+            self.xmlrpc_listener=self.factory.listen_tcp(xmlrpc_listen,xmlrpc_port,XMLRPCSocket)
         
     def run(self):
         self.build_manifest()

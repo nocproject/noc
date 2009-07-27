@@ -16,7 +16,7 @@ from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM,check_state
-from noc.lib.nbsocket import ConnectedTCPSocket,SocketFactory,PTYSocket
+from noc.lib.nbsocket import ConnectedTCPSocket,ConnectedTCPSSLSocket,SocketFactory,PTYSocket,HAS_SSL
 from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 from threading import Lock
 
@@ -114,6 +114,25 @@ class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
     def on_close(self):
         self.activator_event("close")
     
+    def on_conn_refused(self):
+        self.activator_event("refused")
+##
+## SSL-enabled Activator socket
+##
+class ActivatorSSLSocket(RPCSocket,ConnectedTCPSSLSocket):
+    def __init__(self,factory,address,port,local_address=None):
+        ConnectedTCPSSLSocket.__init__(self,factory,address,port,local_address)
+        RPCSocket.__init__(self,factory.activator.service)
+        
+    def activator_event(self,event):
+        self.factory.activator.event(event)
+
+    def on_connect(self):
+        self.activator_event("connect")
+
+    def on_close(self):
+        self.activator_event("close")
+
     def on_conn_refused(self):
         self.activator_event("refused")
 ##
@@ -230,8 +249,12 @@ class Activator(Daemon,FSM):
     ##
     def on_CONNECT_enter(self):
         self.set_timeout(10)
-        self.sae_stream=ActivatorSocket(self.factory,self.config.get("sae","host"),self.config.getint("sae","port"),
-            self.config.get("sae","local_address"))
+        if HAS_SSL and self.config.get("sae","ssl_host"):
+            self.sae_stream=ActivatorSSLSocket(self.factory,self.config.get("sae","ssl_host"),self.config.getint("sae","ssl_port"),
+                self.config.get("sae","local_address"))
+        else:
+            self.sae_stream=ActivatorSocket(self.factory,self.config.get("sae","host"),self.config.getint("sae","port"),
+                self.config.get("sae","local_address"))
     ##
     ## CONNECTED state
     ##
