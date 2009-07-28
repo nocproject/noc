@@ -312,19 +312,19 @@ class RefBookField(models.Model):
     # String match
     def search_string(self,search):
         return {
-            "where" : ["value[%d]=%%s"%self.order],
+            "where" : ["value[%d] ILIKE %%s"%self.order],
             "params": [search]
         }
     # Substring match
     def search_substring(self,search):
         return {
-            "where" : ["value[%d] LIKE %%s"%self.order],
+            "where" : ["value[%d] ILIKE %%s"%self.order],
             "params": ["%"+search+"%"]
         }
     # Starting
     def search_starting(self,search):
         return {
-            "where" : ["value[%d] LIKE %%s"%self.order],
+            "where" : ["value[%d] ILIKE %%s"%self.order],
             "params": [search+"%"]
         }
     # Match first 3 octets of the mac address
