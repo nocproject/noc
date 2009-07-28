@@ -268,7 +268,7 @@ class RefBook(models.Model):
                 for r in q:
                     text="\n".join(["%s = %s"%(k,v) for k,v in zip(field_names,r.value)])
                     yield SearchResult(
-                        url="/main/refbook/%d/"%b.id,
+                        url="/main/refbook/%d/%d/"%(b.id,r.id),
                         title="Reference Book: %s, column %s"%(b.name,f.name),
                         text=text,
                         relevancy=1.0,
