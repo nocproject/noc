@@ -1,0 +1,31 @@
+{% extends "template/template.html" %}
+{% block title%}Test Time Pattern: {{time_pattern.name}}{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href='/admin/main/'>Main</a> &rsaquo; <a href='/admin/main/timepattern/'>Time Patterns</a> &rsaquo; {{time_pattern.name}} &rsaquo; Test &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<DIV CLASS="module">
+    <table width="100%">
+    <caption>Test Time Pattern</caption>
+    <form method="POST">
+    {{form.as_table}}
+    <tr><td colspan="2"><input type="submit" value="Test"></td></tr>
+    </form>
+    </table>
+</DIV>
+<DIV CLASS="module">
+    <table width="100%">
+        <caption>Test Result</caption>
+        <tr><td>{{result}}</td></tr>
+    </table>
+</DIV>
+<DIV CLASS="module">
+    <table width="100%">
+        <caption>Pattern</caption>
+        {% for t in time_pattern.timepatternterm_set.all %}
+        <tr><td>{{t.term}}</td></tr>
+        {% endfor %}
+    </table>
+</DIV>
+
+
+{% endblock %}

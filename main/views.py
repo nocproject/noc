@@ -21,8 +21,8 @@ from noc.lib.svg import vertical_text_svg
 from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
-from noc.main.models import RefBook, RefBookData
-import os, types, ConfigParser, pwd, re
+from noc.main.models import RefBook, RefBookData, TimePattern
+import os, types, ConfigParser, pwd, re, time, datetime
 
 ##
 ## Startup boilerplate
@@ -338,3 +338,21 @@ def svg_text_vertical(request):
     else:
         text=u""
     return HttpResponse(vertical_text_svg(text),mimetype="image/svg+xml")
+##
+## Test Time Pattern
+##
+class TimePatternTestForm(forms.Form):
+    time=forms.DateTimeField(input_formats=["%d.%m.%Y %H:%M:%S"])
+    
+def time_pattern_test(request,time_pattern_id):
+    time_pattern=get_object_or_404(TimePattern,id=int(time_pattern_id))
+    result=None
+    if request.POST:
+        form=TimePatternTestForm(request.POST)
+        if form.is_valid():
+            result=time_pattern.match(form.cleaned_data["time"])
+    else:
+        now=datetime.datetime.now()
+        s="%02d.%02d.%04d %02d:%02d:%02d"%(now.day,now.month,now.year,now.hour,now.minute,now.second)
+        form=TimePatternTestForm(initial={"time":s})
+    return render(request,"main/time_pattern_test.html",{"time_pattern":time_pattern,"form":form,"result":result})
