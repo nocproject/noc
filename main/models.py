@@ -21,6 +21,7 @@ from django.db.models.signals import class_prepared,pre_save,pre_delete
 from noc.lib.fields import TextArrayField
 from noc.main.middleware import get_user
 from noc.settings import IS_WEB
+from noc.lib.timepattern import TimePattern as TP
 
 ##
 ## Databrowse register hook to intersept model creation
@@ -361,7 +362,43 @@ class RefBookData(models.Model):
     def _items(self):
         return zip(self.ref_book.fields,self.value)
     items=property(_items)
-
+##
+## Time Patterns
+##
+class TimePattern(models.Model):
+    class Meta:
+        verbose_name="Time Pattern"
+        verbose_name_plural="Time Patterns"
+    name=models.CharField("Name",max_length=64,unique=True)
+    description=models.TextField("Description",null=True,blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    
+    def test_link(self):
+        return "<a href='/main/time_pattern/%d/test/'>Test</a>"%self.id
+    test_link.short_description="Test Time Pattern"
+    test_link.allow_tags=True
+    
+    ##
+    ## Suboptimal implementation
+    ##
+    def match(self,d):
+        tp=TP([t.term for t in self.timepatternterm_set.all()])
+        return tp.match(d)
+##
+## Time Pattern Terms
+##
+class TimePatternTerm(models.Model):
+    class Meta:
+        verbose_name="Time Pattern Term"
+        verbose_name_plural="Time Pattern Terms"
+        unique_together=[("time_pattern","term")]
+    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
+    term=models.CharField("Term",max_length=256)
+    
+    def __unicode__(self):
+        return "%s: %s"%(self.time_pattern.name,self.term)
 ##
 ## Application Menu
 ##
@@ -379,6 +416,7 @@ class AppMenu(Menu):
             ("MIME Types", "/admin/main/mimetype/", "main.change_mimetype"),
             ("Configs",    "/main/config/",  "is_superuser()"),
             ("Reference Books", "/admin/main/refbook/", "main.change_refbook"),
+            ("Time Patterns",   "/admin/main/timepattern/", "main.change_timepattern"),
         ]),
         ("Documentation", [
             ("Administrator's Guide", "/static/doc/en/ag/html/index.html"),

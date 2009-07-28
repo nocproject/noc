@@ -42,9 +42,21 @@ class RefBookAdmin(admin.ModelAdmin):
     list_filter=["is_enabled","is_builtin"]
     inlines=[RefBookFieldAdmin]
 ##
+## Admin for Time Patterns
+##
+class TimePatternTermAdmin(admin.TabularInline):
+    extra=5
+    model=TimePatternTerm
+    
+class TimePatternAdmin(admin.ModelAdmin):
+    list_display=["name","test_link"]
+    search_fields=["name"]
+    inlines=[TimePatternTermAdmin]
+##
 ## Register administrative interfaces
 ##
 admin.site.register(AuditTrail, AuditTrailAdmin)
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(MIMEType, MIMETypeAdmin)
 admin.site.register(RefBook, RefBookAdmin)
+admin.site.register(TimePattern, TimePatternAdmin)
