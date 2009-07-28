@@ -41,7 +41,7 @@ class Task(noc.sa.periodic.Task):
             if delta.days<keep_days:
                 continue
             elif delta.days<keep_days+keep_weeks*7:
-                if bdate.weekday()==keep_day_of_week:
+                if bdate.weekday()==keep_day_of_week or bdate.day==keep_day_of_month:
                     continue
             elif delta.days<keep_days+keep_weeks*7+keep_months*31:
                 if bdate.day==keep_day_of_month:
