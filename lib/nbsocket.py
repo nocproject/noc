@@ -301,7 +301,7 @@ class ConnectedTCPSocket(TCPSocket):
             try:
                 self.socket.send("")
             except socket.error,why:
-                if why[0]==EPIPE:
+                if why[0] in (EPIPE,ECONNREFUSED):
                     self.on_conn_refused()
                     self.close()
                     return
