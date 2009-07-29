@@ -16,28 +16,28 @@ class RackSet(object):
         self.racks=[]
     ##
     ## Return a list of allocations for a rack
-    ## allocation is a tuple of: top position, height, is empty space, title
+    ## allocation is a tuple of: top position, height, is empty space, title, is reserved
     ##
     def compile_allocations(self,rack):
         allocations=sorted(rack.allocations,lambda x,y: -cmp(x.position,y.position))
         sp=[]
         if len(allocations)==0:
-            sp+=[(rack.height,rack.height,True,None)]
+            sp+=[(rack.height,rack.height,True,None,False)]
         else:
             a=allocations.pop(0)
             empty_top=rack.height-a.position-a.height+1
             if empty_top:
-                sp+=[(rack.height,empty_top,True,None)]
-            sp+=[(a.position+a.height-1,a.height,False,a.id)]
+                sp+=[(rack.height,empty_top,True,None,False)]
+            sp+=[(a.position+a.height-1,a.height,False,a.id,a.reserved)]
             while allocations:
                 last_a=a
                 a=allocations.pop(0)
                 empty_top=last_a.position-a.height-a.position
                 if empty_top:
-                    sp+=[(last_a.position-1,empty_top,True,None)]
-                sp+=[(a.height+a.position-1,a.height,False,a.id)]
+                    sp+=[(last_a.position-1,empty_top,True,None,False)]
+                sp+=[(a.height+a.position-1,a.height,False,a.id,a.reserved)]
             if a.position>1:
-                sp+=[(a.position-1,a.position-1,True,None)]
+                sp+=[(a.position-1,a.position-1,True,None,False)]
         return sp
     ##
     ## Render RackSet contents to HTML
@@ -66,9 +66,11 @@ class RackSet(object):
         # Place allocations
         for j in range(len(self.racks)):
             for a in self.compile_allocations(self.racks[j]):
-                position,height,is_empty,title=a
+                position,height,is_empty,title,is_reserved=a
                 if is_empty:
                     style="empty"
+                elif is_reserved:
+                    style="reserved"
                 else:
                     style="occupied"
                 if height==1:
@@ -121,11 +123,12 @@ class Rack(object):
 ## Rendered to HTML by Rack.render_html
 ##
 class Allocation(object):
-    def __init__(self,rack,id,position,height):
+    def __init__(self,rack,id,position,height,reserved=False):
         self.rack=rack
         self.id=id
         self.position=position
         self.height=height
+        self.reserved=reserved
         self.rack.allocations.append(self)
     
     def __repr__(self):
@@ -163,7 +166,11 @@ class XMLParser(object):
             height=attrs.get("height","1U").upper()
             if height.endswith("U"):
                 height=height[:-1]
-            allocation=Allocation(self.last_rack,id=attrs.get("id",None),height=int(height),position=int(attrs.get("position",0)))
+            allocation=Allocation(self.last_rack,
+                id=attrs.get("id",None),
+                height=int(height),
+                position=int(attrs.get("position",0)),
+                reserved=int(attrs.get("reserved",0)))
     def end_element(self,name): pass
     def char_data(self,name): pass
 
