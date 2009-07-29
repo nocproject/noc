@@ -13,7 +13,7 @@ from noc.main.menu import Menu
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 import noc.main.search # Set up signal handlers
-import os,datetime,re
+import os,datetime,re,datetime
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.main.search import SearchResult
 from django.contrib import databrowse
@@ -384,7 +384,7 @@ class TimePattern(models.Model):
     ##
     def _time_pattern(self):
         return TP([t.term for t in self.timepatternterm_set.all()])
-    time_patterns=property(_time_pattern)
+    time_pattern=property(_time_pattern)
     ##
     ## Matches DateTime objects against time pattern
     ##
@@ -415,9 +415,106 @@ class TimePatternTerm(models.Model):
     def save(self,*args):
         TimePatternTerm.check_syntax(self.term)
         super(TimePatternTerm,self).save(*args)
+##
+## Notification Group
+##
+class NotificationGroup(models.Model):
+    class Meta:
+        verbose_name="Notification Group"
+        verbose_name_plural="Notification Groups"
+    name=models.CharField("Name",max_length=64,unique=True)
+    description=models.TextField("Description",null=True,blank=True)
     
+    def __unicode__(self):
+        return self.name
+    ##
+    ## Returns a list of (time_pattern,method,params)
+    ##
+    def _members(self):
+        m=[]
+        # Collect user notifications
+        for ngu in self.notificationgroupuser_set.filter(user__is_active=True,user__email__isnull=False):
+            x=(ngu.time_pattern,"mail",ngu.user.email)
+            if x not in m:
+                m+=[x]
+        # Collect other notifications
+        for ngo in self.notificationgroupother_set.all():
+            if ngo.notification_method=="mail" and "," in ngo.params:
+                for y in ngo.params.split(","):
+                    y=y.strip()
+                    x=(ngo.time_pattern,ngo.notification_method,y)
+                    if x not in m:
+                        m+=[x]
+            else:
+                x=(ngo.time_pattern,ngo.notification_method,ngo.params)
+                if x not in m:
+                    m+=[x]
+        return m
+    members=property(_members)
+    ##
+    ## Returns a list of currently active members: (method,params)
+    ##
+    def _active_members(self):
+        now=datetime.datetime.now()
+        return [(method,param) for tp,method,param in self.members if tp.match(now)]
+    active_members=property(_active_members)
+    ##
+    ## Send message to active members
+    ##
+    def notify(self,subject,body):
+        for method,params in self.active_members:
+            Notification(
+                notification_method=method,
+                notification_params=params,
+                subject=subject,
+                body=body
+            ).save()
+##
+## Users in Notification Groups
+##
+class NotificationGroupUser(models.Model):
+    class Meta:
+        verbose_name="Notification Group User"
+        verbose_name_plural="Notification Group Users"
+        unique_together=[("notification_group","time_pattern","user")]
+    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group")
+    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
+    user=models.ForeignKey(User,verbose_name="User")
     
+    def __unicode__(self):
+        return "%s: %s: %s"%(self.notification_group.name,self.time_pattern.name,self.user.username)
+##
+## Other Notification Group Items
+##
+NOTIFICATION_METHOD_CHOICES=[("mail","Email"),("file","File")]
+
+class NotificationGroupOther(models.Model):
+    class Meta:
+        verbose_name="Notification Group Other"
+        verbose_name_plural="Notification Group Others"
+        unique_together=[("notification_group","time_pattern","notification_method","params")]
+    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group")
+    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
+    notification_method=models.CharField("Method",max_length=16,choices=NOTIFICATION_METHOD_CHOICES)
+    params=models.CharField("Params",max_length=256)
     
+    def __unicode__(self):
+        return "%s: %s: %s: %s"%(self.notification_group.name,self.time_pattern.name,self.notification_method,self.params)
+##
+##
+##
+class Notification(models.Model):
+    class Meta:
+        verbose_name="Notification"
+        verbose_name_plural="Notifications"
+    timestamp=models.DateTimeField("Timestamp",auto_now=True,auto_now_add=True)
+    notification_method=models.CharField("Method",max_length=16,choices=NOTIFICATION_METHOD_CHOICES)
+    notification_params=models.CharField("Params",max_length=256)
+    subject=models.CharField("Subject",max_length=256)
+    body=models.TextField("Body")
+    next_try=models.DateTimeField("Next Try",null=True,blank=True)
+    actual_till=models.DateTimeField("Actual Till",null=True,blank=True)
+
 ##
 ## Application Menu
 ##
@@ -436,6 +533,8 @@ class AppMenu(Menu):
             ("Configs",    "/main/config/",  "is_superuser()"),
             ("Reference Books", "/admin/main/refbook/", "main.change_refbook"),
             ("Time Patterns",   "/admin/main/timepattern/", "main.change_timepattern"),
+            ("Notification Groups",   "/admin/main/notificationgroup/", "main.change_notificationgroup"),
+            ("Pending Notifications", "/admin/main/notification/", "main.change_notification"),
         ]),
         ("Documentation", [
             ("Administrator's Guide", "/static/doc/en/ag/html/index.html"),

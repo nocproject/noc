@@ -65,6 +65,26 @@ class TimePatternAdmin(admin.ModelAdmin):
     search_fields=["name"]
     inlines=[TimePatternTermAdmin]
 ##
+## Notification Groups Admin
+##
+class NotificationGroupUserAdmin(admin.TabularInline):
+    extra=5
+    model=NotificationGroupUser
+
+class NotificationGroupOtherAdmin(admin.TabularInline):
+    extra=5
+    model=NotificationGroupOther
+
+class NotificationGroupAdmin(admin.ModelAdmin):
+    list_display=["name"]
+    search_fields=["name"]
+    inlines=[NotificationGroupUserAdmin,NotificationGroupOtherAdmin]
+##
+## Notification Admin
+##
+class NotificationAdmin(admin.ModelAdmin):
+    list_display=["timestamp","notification_method","notification_params","subject","next_try"]
+##
 ## Register administrative interfaces
 ##
 admin.site.register(AuditTrail, AuditTrailAdmin)
@@ -72,3 +92,5 @@ admin.site.register(Language, LanguageAdmin)
 admin.site.register(MIMEType, MIMETypeAdmin)
 admin.site.register(RefBook, RefBookAdmin)
 admin.site.register(TimePattern, TimePatternAdmin)
+admin.site.register(NotificationGroup, NotificationGroupAdmin)
+admin.site.register(Notification, NotificationAdmin)
