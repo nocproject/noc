@@ -62,7 +62,10 @@ class Macro(MacroBase):
             link="/kb/%d/"%a.id
             out+=["<tr>"]
             for f in display_list:
-                out+=["<td><a href='%s'>%s</a></td>"%(link,getattr(a,f))]
+                if f=="id":
+                    out+=["<td><a href='%s'>KB%s</a></td>"%(link,getattr(a,f))]
+                else:
+                    out+=["<td><a href='%s'>%s</a></td>"%(link,getattr(a,f))]
             out+=["</tr>"]
         out+=["</table>"]
         return u"\n".join(out)
