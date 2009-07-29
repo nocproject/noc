@@ -104,7 +104,7 @@ Example (Creole)::
         </rack>
         
         <rack id="Rack 02" height="44U">
-            <allocation id="UPS" position="1" height="5U" />
+            <allocation id="UPS" position="1" height="5U" reserved="1" />
             <allocation id="MX480" position="6" height="6U" />
         </rack>
     </rackset>
@@ -142,6 +142,7 @@ Attributes:
  * id - name of the allocation
  * position - bottom position in the rack. Lowest position of the rack is 1.
  * height - height in the units. May have "U" letter at the end.
+ * reserved (optional) - 0 (default) - equipment present in rack, 1 - equipment is planned for placement
 
 search
 ------

@@ -29,6 +29,14 @@
     width: 20em;
 }
 
+.rackset .reserved {
+    background-color: #CCCCCC;
+    text-align: center;
+    border: 1px solid black;
+    vertical-align: middle;
+    width: 20em;
+}
+
 .rackset .emptytop {
     border-bottom: 2px solid black;
 }
