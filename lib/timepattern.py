@@ -70,6 +70,8 @@ class TimePattern(object):
                 if match:
                     return r(*match.groups())
             raise SyntaxError,"Invalid expression '%s'"%p
+        if tp is None:
+            return "True"
         if type(tp) in (types.ListType,types.TupleType):
             if len(tp)==0:
                 return "True"
