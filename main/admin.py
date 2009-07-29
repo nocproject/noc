@@ -8,6 +8,7 @@
 """
 """
 from django.contrib import admin
+from django import forms
 from noc.main.models import *
 
 ##
@@ -44,9 +45,20 @@ class RefBookAdmin(admin.ModelAdmin):
 ##
 ## Admin for Time Patterns
 ##
+class TimePatternTermForm(forms.ModelForm):
+    class Meta:
+        model=TimePatternTerm
+    def clean_term(self):
+        try:
+            TimePatternTerm.check_syntax(self.cleaned_data["term"])
+        except SyntaxError,why:
+            raise forms.ValidationError(why)
+        return self.cleaned_data["term"]
+    
 class TimePatternTermAdmin(admin.TabularInline):
     extra=5
     model=TimePatternTerm
+    form=TimePatternTermForm
     
 class TimePatternAdmin(admin.ModelAdmin):
     list_display=["name","test_link"]

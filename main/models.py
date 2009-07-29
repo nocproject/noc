@@ -379,13 +379,17 @@ class TimePattern(models.Model):
         return "<a href='/main/time_pattern/%d/test/'>Test</a>"%self.id
     test_link.short_description="Test Time Pattern"
     test_link.allow_tags=True
-    
     ##
-    ## Suboptimal implementation
+    ## Returns associated Time Pattern object
+    ##
+    def _time_pattern(self):
+        return TP([t.term for t in self.timepatternterm_set.all()])
+    time_patterns=property(_time_pattern)
+    ##
+    ## Matches DateTime objects against time pattern
     ##
     def match(self,d):
-        tp=TP([t.term for t in self.timepatternterm_set.all()])
-        return tp.match(d)
+        return self.time_pattern.match(d)
 ##
 ## Time Pattern Terms
 ##
@@ -399,6 +403,21 @@ class TimePatternTerm(models.Model):
     
     def __unicode__(self):
         return "%s: %s"%(self.time_pattern.name,self.term)
+    ##
+    ## Checks Time Pattern syntax. Raises SyntaxError in case of error
+    ##
+    @classmethod
+    def check_syntax(cls,term):
+        TP(term)
+    ##
+    ## Check syntax before save
+    ##
+    def save(self,*args):
+        TimePatternTerm.check_syntax(self.term)
+        super(TimePatternTerm,self).save(*args)
+    
+    
+    
 ##
 ## Application Menu
 ##
