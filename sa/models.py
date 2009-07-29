@@ -369,7 +369,10 @@ class ReduceTask(models.Model):
     script_params=PickledField("Params",null=True,blank=True)
     
     def __unicode__(self):
-        return u"%d: %s"%(self.id,self.reduce_script)
+        if self.id:
+            return u"%d: %s"%(self.id,self.reduce_script)
+        else:
+            return u"New: %s"%(self.reduce_script)
     ##
     ## Check all map tasks are completed
     ##
@@ -435,8 +438,10 @@ class MapTask(models.Model):
     status=models.CharField("Status",max_length=1,choices=[("W","Wait"),("R","Running"),("C","Complete"),("F","Failed")],default="W")
     script_result=PickledField("Result",null=True,blank=True)
     def __unicode__(self):
-        return u"%d: %s %s"%(self.id,self.managed_object,self.map_script)
-        
+        if self.id:
+            return u"%d: %s %s"%(self.id,self.managed_object,self.map_script)
+        else:
+            return u"New: %s %s"%(self.managed_object,self.map_script)
 ##
 ## Application Menu
 ##
