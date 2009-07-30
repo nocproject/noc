@@ -2,7 +2,6 @@ syntax: glob
 *.pyc
 *.pyo
 *.swp
-site_settings.py
 dist/
 build/
 noc.egg-info/
@@ -11,4 +10,3 @@ etc/certs/*
 local/*
 static/doc/*
 MANIFEST
-
