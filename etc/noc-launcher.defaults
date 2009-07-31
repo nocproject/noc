@@ -35,3 +35,8 @@ group =
 enabled = true
 user  = noc
 group =
+
+[noc-notifier]
+enabled = true
+user = noc
+group =
