@@ -105,6 +105,12 @@ def is_vlan(v):
     except:
         return False
 ##
+##
+##
+rx_email=re.compile("^[a-z0-9._\-]+@[a-z0-9\-.]+$",re.IGNORECASE)
+def is_email(v):
+    return rx_email.match(v)
+##
 ## Validators for forms
 ##
 def generic_validator(value,check,error_msg):
@@ -134,3 +140,6 @@ def check_re(field_data,all_data):
 
 def check_vlan(field_data,all_data):
     generic_validator(field_data,is_vlan,"Invalid VLAN")
+
+def check_email(field_data,all_data):
+    generic_validator(field_data,is_email,"Invalid EMail")
