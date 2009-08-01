@@ -87,6 +87,12 @@ class Object(models.Model):
     path=property(_path)
     
     #
+    # Check object in repository
+    #
+    def _in_repo(self):
+        return self.vcs.in_repo(self.repo_path)
+    in_repo=property(_in_repo)
+    #
     # If "data" differs from object's content in the repository
     # Write "data" to file and commit
     #
