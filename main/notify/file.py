@@ -17,7 +17,7 @@ import os
 class Notify(NotifyBase):
     name="file"
 
-    def send_message(self,params,subject,body):
+    def send_message(self,params,subject,body,link=None):
         # Resolve file path
         prefix=self.config.get(self.name,"prefix")
         path=os.path.normpath(os.path.join(prefix,params))

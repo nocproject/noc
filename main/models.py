@@ -461,13 +461,14 @@ class NotificationGroup(models.Model):
     ##
     ## Send message to active members
     ##
-    def notify(self,subject,body):
+    def notify(self,subject,body,link=None):
         for method,params in self.active_members:
             Notification(
                 notification_method=method,
                 notification_params=params,
                 subject=subject,
-                body=body
+                body=body,
+                link=link
             ).save()
 ##
 ## Users in Notification Groups
@@ -512,6 +513,7 @@ class Notification(models.Model):
     notification_params=models.CharField("Params",max_length=256)
     subject=models.CharField("Subject",max_length=256)
     body=models.TextField("Body")
+    link=models.CharField("Link",max_length=256,null=True,blank=True)
     next_try=models.DateTimeField("Next Try",null=True,blank=True)
     actual_till=models.DateTimeField("Actual Till",null=True,blank=True)
 

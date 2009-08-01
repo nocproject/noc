@@ -38,9 +38,9 @@ class Notify(object):
         self.info("Initializing")
         self.parent=parent
         self.task_queue=Queue.Queue()
-        self.max_queue_size=self.parent.config.getint(self.name,"queue_size")
-        self.ttl=datetime.timedelta(seconds=self.parent.config.getint(self.name,"time_to_live"))
-        self.retry_interval=datetime.timedelta(seconds=self.parent.config.getint(self.name,"retry_interval"))
+        self.max_queue_size=self.config.getint(self.name,"queue_size")
+        self.ttl=datetime.timedelta(seconds=self.config.getint(self.name,"time_to_live"))
+        self.retry_interval=datetime.timedelta(seconds=self.config.getint(self.name,"retry_interval"))
     
     def _config(self):
         return self.parent.config
@@ -62,17 +62,17 @@ class Notify(object):
     ##
     ## Called by daemon to spool new task
     ##
-    def new_task(self,task_id,params,subject,body):
-        self.task_queue.put((task_id,params,subject,body))
+    def new_task(self,task_id,params,subject,body,link=None):
+        self.task_queue.put((task_id,params,subject,body,link))
     ##
     ## Worker loop, executed in separate thread
     ##
     def run(self):
         while True:
-            task_id,params,subject,body=self.task_queue.get()
+            task_id,params,subject,body,link=self.task_queue.get()
             self.info("New task: %d"%task_id)
             try:
-                status=self.send_message(params,subject,body)
+                status=self.send_message(params,subject,body,link)
             except:
                 error_report()
                 self.parent.on_task_complete(task_id,False)
@@ -85,5 +85,5 @@ class Notify(object):
     ## send message.
     ## Overloaded by notification plugins
     ##
-    def send_message(self,params,subject,body):
+    def send_message(self,params,subject,body,link=None):
         return True
