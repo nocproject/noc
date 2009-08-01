@@ -18,6 +18,8 @@ def view(request,repo,object_id,revision=None,format="html"):
     o=get_object_or_404(Object.get_object_class(repo),id=int(object_id))
     if not o.has_access(request.user):
         return HttpResponseForbidden("Access denied")
+    if not o.in_repo: # Check object is in repo
+        return render(request,"cm/view.html",{"o":o,"r":[],"content":"Object not ready"})
     revs=o.revisions
     if revision:
         r=None
