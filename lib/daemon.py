@@ -280,3 +280,9 @@ class Daemon(object):
     ##
     def SIGPROF(self,signo,frame):
         logging.info(self.gc_stats.report())
+    ##
+    ##
+    ##
+    def SIGINT(self,signo,frame):
+        logging.info("SIGINT received. Exiting")
+        os._exit(0)
