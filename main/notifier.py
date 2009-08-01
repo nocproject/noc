@@ -97,7 +97,7 @@ class Notifier(Daemon):
                     if t.actual_till is None: # Set up actual till if necessary
                         t.actual_till=now+self.notifiers[m].ttl
                         t.save()
-                    self.notifiers[m].new_task(t.id,t.notification_params,t.subject,t.body)
+                    self.notifiers[m].new_task(t.id,t.notification_params,t.subject,t.body,t.link)
                     self.in_process.add(t.id)
             transaction.commit()
         transaction.leave_transaction_management()

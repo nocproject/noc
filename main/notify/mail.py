@@ -17,12 +17,14 @@ import email.utils
 class Notify(NotifyBase):
     name="mail"
 
-    def send_message(self,params,subject,body):
+    def send_message(self,params,subject,body,link=None):
         # Check params
         if not is_email(params):
             self.error("Invalid email: %s"%params)
             return True
         # Prepare message
+        if link:
+            body+="\n\nSee details: %s\n"%link
         from_address=self.config.get(self.name,"from_address")
         message=MIMEText(body,_charset="utf-8")
         message["From"]=Header(from_address,"utf-8")
