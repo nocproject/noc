@@ -18,6 +18,8 @@ class Script(noc.sa.script.Script):
         v=self.scripts.get_version()
         if "3612" in v["platform"]:
             config=self.cli("show config active")
+        elif "3100" in v["platform"]:
+            config=self.cli("show configuration running")
         else:
             config=self.cli("show config current_config")
         return self.cleaned_config(config)
