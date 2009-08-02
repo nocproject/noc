@@ -434,9 +434,9 @@ class NotificationGroup(models.Model):
         m=[]
         # Collect user notifications
         for ngu in self.notificationgroupuser_set.filter(user__is_active=True,user__email__isnull=False):
-            x=(ngu.time_pattern,"mail",ngu.user.email)
-            if x not in m:
-                m+=[x]
+            for c in ngu.contacts:
+                if c not in m:
+                    m+=[x]
         # Collect other notifications
         for ngo in self.notificationgroupother_set.all():
             if ngo.notification_method=="mail" and "," in ngo.params:
@@ -488,6 +488,7 @@ class NotificationGroupUser(models.Model):
 ## Other Notification Group Items
 ##
 NOTIFICATION_METHOD_CHOICES=[("mail","Email"),("file","File")]
+USER_NOTIFICATION_METHOD_CHOICES=[("mail","Email")]
 
 class NotificationGroupOther(models.Model):
     class Meta:
@@ -516,6 +517,65 @@ class Notification(models.Model):
     link=models.CharField("Link",max_length=256,null=True,blank=True)
     next_try=models.DateTimeField("Next Try",null=True,blank=True)
     actual_till=models.DateTimeField("Actual Till",null=True,blank=True)
+##
+## User Profile Manager
+## Leave only current user's profile
+class UserProfileManager(models.Manager):
+    def get_query_set(self):
+        user=get_user()
+        if user:
+            # Create profile when necessary
+            try:
+                p=super(UserProfileManager,self).get_query_set().get(user=user)
+            except UserProfile.DoesNotExist:
+                UserProfile(user=user).save()
+        return super(UserProfileManager,self).get_query_set().filter(user=user)
+##
+## User Profile
+##
+class UserProfile(models.Model):
+    class Meta:
+        verbose_name="User Profile"
+        verbose_name_plural="User Profiles"
+    user=models.ForeignKey(User,unique=True)
+    # User data
+    preferred_language=models.ForeignKey(Language,verbose_name="Preferred Language",null=True,blank=True)
+    #
+    objects=UserProfileManager()
+    #
+    def __unicode__(self):
+        return "%s's Profile"%(self.user.username)
+    #
+    def save(self,**kwargs):
+        user=get_user()
+        if user and self.user!=user:
+            raise Exception("Invalid user")
+        super(UserProfile,self).save(**kwargs)
+    ##
+    ##
+    ##
+    def _contacts(self):
+        return [(c.time_pattern,c.notification_method,c.params) for c in self.userprofilecontact_set.all()]
+    contacts=property(_contacts)
+    ##
+    ## Returns a list of currently active contacts: (method,params)
+    ##
+    def _active_contacts(self):
+        now=datetime.datetime.now()
+        return [(c.notification_method,c.params) for c in self.contacts if c.time_pattern.match(now)]
+    active_contacts=property(_active_contacts)
+##
+##
+##
+class UserProfileContact(models.Model):
+    class Meta:
+        verbose_name="User Profile Contact"
+        verbose_name_plural="User Profile Contacts"
+        unique_together=[("user_profile","time_pattern","notification_method","params")]
+    user_profile=models.ForeignKey(UserProfile,verbose_name="User Profile")
+    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
+    notification_method=models.CharField("Method",max_length=16,choices=USER_NOTIFICATION_METHOD_CHOICES)
+    params=models.CharField("Params",max_length=256)
 
 ##
 ## Application Menu
