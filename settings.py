@@ -116,6 +116,8 @@ INSTALLED_APPS = (
 )
 
 FORCE_SCRIPT_NAME=""
+
+AUTH_PROFILE_MODULE="main.UserProfile"
 ##
 ## Determine WEB process
 ##
