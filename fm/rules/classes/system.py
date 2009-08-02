@@ -36,11 +36,13 @@ class InvalidEventSource(EventClass):
     priority="WARNING"
     subject_template="Invalid event source: {{ip}}"
     body_template="""Invalid event source {{ip}} at activator {{activator}}"""
+    repeat_suppression=True
+    repeat_suppression_interval=9
     class Vars:
-        source=Var(required=True)
-        type=Var(required=True)
-        activator=Var(required=True)
-        ip=Var(required=True)
+        source=Var(required=True,repeat=True)
+        type=Var(required=True,repeat=True)
+        activator=Var(required=True,repeat=True)
+        ip=Var(required=True,repeat=True)
 ##
 ## Periodic task terminated with failure
 ##
