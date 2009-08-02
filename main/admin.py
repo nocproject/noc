@@ -85,6 +85,20 @@ class NotificationGroupAdmin(admin.ModelAdmin):
 class NotificationAdmin(admin.ModelAdmin):
     list_display=["timestamp","notification_method","notification_params","subject","next_try"]
 ##
+## UserProfile Admin
+##
+class UserProfileContactAdmin(admin.TabularInline):
+    extra=5
+    model=UserProfileContact
+    
+class UserProfileAdmin(admin.ModelAdmin):
+    inlines=[UserProfileContactAdmin]
+    fieldsets=(
+        (None, {
+            "fields" : ("preferred_language",),
+        }),
+    )
+##
 ## Register administrative interfaces
 ##
 admin.site.register(AuditTrail, AuditTrailAdmin)
@@ -94,3 +108,4 @@ admin.site.register(RefBook, RefBookAdmin)
 admin.site.register(TimePattern, TimePatternAdmin)
 admin.site.register(NotificationGroup, NotificationGroupAdmin)
 admin.site.register(Notification, NotificationAdmin)
+admin.site.register(UserProfile, UserProfileAdmin)
