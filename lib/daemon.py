@@ -9,6 +9,7 @@ import ConfigParser,sys,logging,os,signal,optparse,datetime,traceback
 import logging.handlers
 from noc.lib.debug import error_report,frame_report,set_crashinfo_context,GCStats
 from noc.lib.validators import is_ipv4, is_int
+from noc.lib.version import get_version
 
 # Load netifaces to resolve interface addresses when possible
 try:
@@ -37,8 +38,13 @@ class Daemon(object):
                 help="Read config from CONFIG")
         self.opt_parser.add_option("-f","--foreground",action="store_false",dest="daemonize",default=True,
                 help="Do not daemonize. Run at the foreground")
+        self.opt_parser.add_option("-V","--version",action="store_true",dest="show_version",default=False,
+                help="Show daemon version")
         self.setup_opt_parser()
         self.options,self.args=self.opt_parser.parse_args()
+        if self.options.show_version:
+            print get_version()
+            sys.exit(0)
         if len(self.args)<1 or self.args[0] not in ["start","launch","stop","refresh"]:
             self.opt_parser.error("You must supply one of start|launch|stop|refresh commands")
         # Read config
