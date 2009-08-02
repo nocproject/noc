@@ -422,6 +422,7 @@ class NotificationGroup(models.Model):
     class Meta:
         verbose_name="Notification Group"
         verbose_name_plural="Notification Groups"
+        ordering=[("name")]
     name=models.CharField("Name",max_length=64,unique=True)
     description=models.TextField("Description",null=True,blank=True)
     
