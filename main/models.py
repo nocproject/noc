@@ -470,6 +470,25 @@ class NotificationGroup(models.Model):
                 body=body,
                 link=link
             ).save()
+    ##
+    ## Send notification to a list of groups
+    ## Prevent duplicated messages
+    ##
+    @classmethod
+    def group_notify(cls,groups,subject,body,link=None):
+        ngs=set()
+        for g in groups:
+            for method,params in g.active_members:
+                ngs.add((method,params))
+        print ngs
+        for method,params in ngs:
+            Notification(
+                notification_method=method,
+                notification_params=params,
+                subject=subject,
+                body=body,
+                link=link
+            ).save()
 ##
 ## Users in Notification Groups
 ##
