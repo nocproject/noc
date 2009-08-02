@@ -976,3 +976,62 @@ Pid file path
 window
 ^^^^^^
 Window (in seconds) to search active events for correlation process
+
+.. _noc-notifier-conf:
+
+noc-notifier.conf
+=================
+
+.. _noc-notifier-conf-main:
+
+[main] section
+--------------
+
+.. _noc-notifier-conf-main-logfile:
+
+logfile
+^^^^^^^
+Log file path
+
+.. _noc-notifier-conf-main-loglevel:
+
+loglevel
+^^^^^^^^
+logging level. One of: debug, info, warning, error, critical
+
+.. _noc-notifier-conf-main-logsize:
+
+logsize
+^^^^^^^
+Maximum log file size in bytes. 0 (default) means unlimited size
+
+.. _noc-notifier-conf-main-logfiles:
+
+logfiles
+^^^^^^^^
+Keep *logfiles* backup copies of log file
+
+.. _noc-notifier-conf-main-pidfile:
+
+pidfile
+^^^^^^^
+Pid file path
+
+.. _noc-notifier-conf-notifier:
+
+[notifier section]
+
+.. _noc-notifier-conf-notifier-queue_check_interval:
+
+queue_check_interval
+^^^^^^^^^^^^^^^^^^^^
+
+Interval in seconds to re-read queue and start new tasks
+
+.. _noc-notifier-conf-mail:
+
+[mail]
+
+.. _noc-notifier-conf-file:
+
+[file]
