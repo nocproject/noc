@@ -481,7 +481,6 @@ class NotificationGroup(models.Model):
         for g in groups:
             for method,params in g.active_members:
                 ngs.add((method,params))
-        print ngs
         for method,params in ngs:
             Notification(
                 notification_method=method,
