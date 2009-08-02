@@ -7,7 +7,6 @@
 """
 from django.db import models
 from django.db.models import Q
-from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.conf import settings
 from noc.sa.profiles import profile_registry
@@ -21,6 +20,7 @@ from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObje
 from noc.main.menu import Menu
 from noc.sa.protocols.sae_pb2 import *
 from noc.main.search import SearchResult
+from noc.main.models import NotificationGroup
 
 profile_registry.register_all()
 vcs_registry.register_all()
@@ -36,11 +36,11 @@ class ObjectNotify(models.Model):
     type=models.CharField("Type",max_length=16,choices=OBJECT_TYPE_CHOICES)
     administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name="Administrative Domain",blank=True,null=True)
     group=models.ForeignKey(ObjectGroup,verbose_name="Group",blank=True,null=True)
-    emails=models.CharField("Emails",max_length=128)
     notify_immediately=models.BooleanField("Notify Immediately")
     notify_delayed=models.BooleanField("Notify Delayed")
+    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group")
     def __unicode__(self):
-        return "(%s,%s,%s,%s)"%(self.type,self.administrative_domain,self.group,self.emails)
+        return "(%s,%s,%s,%s)"%(self.type,self.administrative_domain,self.group,self.notification_group)
 
 #
 class Object(models.Model):
@@ -170,19 +170,17 @@ class Object(models.Model):
         return self._meta.verbose_name_plural
     verbose_name_plural=property(_verbose_name_plural)
     
-    def change_notify_list(self,immediately=False,delayed=False):
-        emails=set()
-        for n in ObjectNotify.objects.filter(type=self.repo_name):
-            if immediately and not n.notify_immediately:
-                continue
-            if delayed and not n.notify_delayed:
-                continue
-            emails.update(n.emails.split())
-        return list(emails)
+    def get_notification_groups(self,immediately=False,delayed=False):
+        q=Q(type=self.repo_name)
+        if immediately:
+            q&=Q(notify_immediately=True)
+        if delayed:
+            q&=Q(notify_delayed=True)
+        return set([n.notification_group for n in ObjectNotify.objects.filter(q)])
         
     def on_object_changed(self):
-        emails=self.change_notify_list(immediately=True)
-        if not emails:
+        notification_groups=self.get_notification_groups(immediately=True)
+        if not notification_groups:
             return
         revs=self.revisions
         now=datetime.datetime.now()
@@ -190,11 +188,13 @@ class Object(models.Model):
             subject="NOC: Object '%s' was created"%str(self)
             message="The object %s was created at %s\n"%(str(self),now)
             message+="Object value follows:\n---------------------------\n%s\n-----------------------\n"%self.data
+            link=None
         else:
             subject="NOC: Object changed '%s'"%str(self)
             message="The object %s was changed at %s\n"%(str(self),now)
             message+="Object changes follows:\n---------------------------\n%s\n-----------------------\n"%self.diff(revs[1],revs[0])
-        send_mail(subject=subject,message=message,from_email=settings.SERVER_EMAIL,recipient_list=emails,fail_silently=True)
+            link=None
+        NotificationGroup.group_notify(groups=notification_groups,subject=subject,body=message,link=link)
     ##
     ##
     def push(self): pass
@@ -313,18 +313,15 @@ class Config(Object):
         where="(managed_object_id IN (SELECT id FROM sa_managedobject WHERE %s))"%where
         return cls.objects.extra(where=[where],params=p)
     
-    def change_notify_list(self,immediately=False,delayed=False):
-        emails=set()
-        for n in ObjectNotify.objects.filter(Q(type=self.repo_name)\
-                    &(Q(administrative_domain__isnull=True)|Q(administrative_domain=self.managed_object.administrative_domain))\
-                    &(Q(group__isnull=True)|Q(group__in=self.managed_object.groups.all))):
-            if immediately and not n.notify_immediately:
-                continue
-            if delayed and not n.notify_delayed:
-                continue
-            emails.update(n.emails.split())
-        return list(emails)
-
+    def get_notification_groups(self,immediately=False,delayed=False):
+        q=Q(type=self.repo_name)
+        if immediately:
+            q&=Q(notify_immediately=True)
+        if delayed:
+            q&=Q(notify_delayed=True)
+        q&=(Q(administrative_domain__isnull=True)|Q(administrative_domain=self.managed_object.administrative_domain))
+        q&=(Q(group__isnull=True)|Q(group__in=self.managed_object.groups.all))
+        return set([n.notification_group for n in ObjectNotify.objects.filter(q)])
 ##
 ## PrefixList
 ##

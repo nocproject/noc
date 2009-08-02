@@ -11,17 +11,9 @@ from django import forms
 from noc.cm.models import ObjectNotify,Config,DNS,PrefixList,RPSL
 from noc.sa.profiles import profile_registry
 
-class ObjectNotifyAdminForm(forms.ModelForm):
-    class Meta:
-        model=ObjectNotify
-    def clean_emails(self):
-        emails=self.cleaned_data["emails"]
-        return " ".join(emails.replace(";"," ").replace(","," ").split())
-        
 class ObjectNotifyAdmin(admin.ModelAdmin):
-    form=ObjectNotifyAdminForm
-    list_display=["type","group","administrative_domain","notify_immediately","notify_delayed","emails"]
-    list_filter=["type","group","administrative_domain"]
+    list_display=["type","group","administrative_domain","notify_immediately","notify_delayed","notification_group"]
+    list_filter=["type","group","administrative_domain","notification_group"]
 
 class ObjectAdmin(admin.ModelAdmin):
     object_class=None
