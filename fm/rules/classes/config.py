@@ -23,3 +23,15 @@ class ConfigChanged(EventClass):
     trigger="on_config_changed"
     class Vars:
         user=Var(required=False)
+##
+## Config Synced
+##
+class ConfigSynced(EventClass):
+    name     = "Config Synced"
+    category = "SYSTEM"
+    priority = "INFO"
+    subject_template="Config has been synced"
+    body_template="""Config has been synced"""
+    repeat_suppression=False
+    repeat_suppression_interval=3600
+    trigger=None
