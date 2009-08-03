@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule,DROP_EVENT
+from noc.fm.rules.classification import ClassificationRule,DROP_EVENT,CLOSE_EVENT
 from noc.fm.rules.classes.config import *
 from noc.fm.rules.classes.default import DROP
 
@@ -51,4 +51,17 @@ class Cisco_IOS_Config_Changed_Syslog_Rule(ClassificationRule):
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^syslog$"),
         (r"^message$",r"%SYS-5-CONFIG_I: Configured"),
+    ]
+##
+## Cisco.IOS C4500 Config Synced SYSLOG
+##
+class Cisco_IOS_C4500_Config_Synced_SYSLOG_Rule(ClassificationRule):
+    name="Cisco.IOS C4500 Config Synced SYSLOG"
+    event_class=ConfigSynced
+    preference=1000
+    action=CLOSE_EVENT
+    patterns=[
+        (r"^profile$",r"^Cisco\.IOS$"),
+        (r"^message$",r"%C4K_REDUNDANCY-5-CONFIGSYNC:"),
+        (r"^source$",r"^syslog$"),
     ]
