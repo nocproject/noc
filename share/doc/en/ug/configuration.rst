@@ -494,7 +494,31 @@ group
 ^^^^^
 Run noc-sae daemon with *group* credentials
 
+.. _noc-launcher-conf-noc-notifier:
+
+[noc-notifier] section
+----------------------
+
+.. _noc-launcher-conf-noc-notifier-enabled:
+
+enabled
+^^^^^^^
+true/false. Launch noc-notifier daemon
+
+.. _noc-launcher-conf-noc-notifier-user:
+
+user
+^^^^
+Run noc-notifier daemon with *user* credentials
+
+.. _noc-launcher-conf-noc-notifier-group:
+
+group
+^^^^^
+Run noc-notifier daemon with *group* credentials
+
 .. _noc-launcher-conf-noc-activator:
+
 
 [noc-activator] section
 -----------------------
@@ -1026,12 +1050,113 @@ Pid file path
 queue_check_interval
 ^^^^^^^^^^^^^^^^^^^^
 
-Interval in seconds to re-read queue and start new tasks
+Timeout (in seconds) to wait before spooling new bunch of tasks.
 
 .. _noc-notifier-conf-mail:
 
 [mail]
 
+.. _noc-notifier-conf-mail-enabled:
+
+enabled
+^^^^^^^
+
+Enable/disable mail delivery (Boolean)
+
+.. _noc-notifier-conf-mail-queue_size:
+
+queue_size
+^^^^^^^^^^
+SMTP Task queue size. Mail plugin can deliver up to *queue_size* messages in *queue_check_interval* seconds.
+
+.. _noc-notifier-conf-mail-time_to_live:
+
+time_to_live
+^^^^^^^^^^^^
+Message lifetime. Scheduled message remains actual up to *time_to_live* seconds. If message cannot be delivered
+in *time_to_live* seconds it is silently dropped as non-actual.
+
+.. _noc-notifier-conf-mail-retry_interval:
+
+retry_interval
+^^^^^^^^^^^^^^
+Timeout in seconds to wait after failed message delivery.
+
+.. _noc-notifier-conf-mail-smtp_server:
+
+smtp_server
+^^^^^^^^^^^
+IP address or FQDN used to connect to the SMTP server
+
+.. _noc-notifier-conf-mail-smtp_port:
+
+smtp_port
+^^^^^^^^^
+Port used to connect to the SMTP server
+
+.. _noc-notifier-conf-mail-use_tls:
+
+use_tls
+^^^^^^^
+Enable/Disable SMTP TLS extensions
+
+.. _noc-notifier-conf-mail-smtp_user:
+
+smtp_user
+^^^^^^^^^
+If defined, perform SMTP server login as *smtp_user* with *smtp_password*
+
+.. _noc-notifier-conf-mail-smtp_password:
+
+smtp_password
+^^^^^^^^^^^^^
+If defined, perform SMTP server login as *smtp_user* with *smtp_password*
+
+.. _noc-notifier-conf-mail-from_address:
+
+from_address
+^^^^^^^^^^^^
+Messages From: field
+
+.. _noc-notifier-conf-mail-helo_hostname:
+
+helo_hostname
+^^^^^^^^^^^^^
+Custom HELO greeting
+
 .. _noc-notifier-conf-file:
 
 [file]
+
+.. _noc-notifier-conf-file-enabled:
+
+enabled
+^^^^^^^
+
+Enable/disable file logging (Boolean)
+
+.. _noc-notifier-conf-file-queue_size:
+
+queue_size
+^^^^^^^^^^
+SMTP Task queue size. File plugin can write up to *queue_size* messages in *queue_check_interval* seconds.
+
+.. _noc-notifier-conf-file-time_to_live:
+
+time_to_live
+^^^^^^^^^^^^
+Message lifetime. Scheduled message remains actual up to *time_to_live* seconds. If message cannot be written
+in *time_to_live* seconds it is silently dropped as non-actual.
+
+.. _noc-notifier-conf-file-retry_interval:
+
+retry_interval
+^^^^^^^^^^^^^^
+Timeout in seconds to wait after failed message saving attempt.
+
+.. _noc-notifier-conf-file-prefix:
+
+prefix
+^^^^^^
+A root directory in which all files to be stored. File plugin ignores attempt to save file outside of *prefix* directory.
+Full file path is combined from *prefix* and a notification param (relative path)
