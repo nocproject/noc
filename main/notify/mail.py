@@ -45,8 +45,16 @@ class Notify(NotifyBase):
         if self.config.getboolean(self.name,"use_tls"):
             smtp.starttls()
             smtp.ehlo(self.config.get(self.name,"helo_hostname"))
+        # Authenticate when necessary
         smtp_user=self.config.get(self.name,"smtp_user")
         smtp_password=self.config.get(self.name,"smtp_password")
+        if smtp_user and smtp_password:
+            self.debug("Authenticating as %s"%smtp_user)
+            try:
+                smtp.login(smtp_user,smtp_password)
+            except smtplib.SMTPAuthenticationError,why:
+                self.error("SMTP Authentication error: %s",why[1])
+                return False
         # Send mail
         try:
             smtp.sendmail(from_address,[params],message.as_string())
