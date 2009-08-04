@@ -29,7 +29,7 @@ class Migration:
         ))
         db.send_create_signal('main', ['UserProfileContact'])
         # Creating unique_together for [user_profile, time_pattern, notification_method, params] on UserProfileContact.
-        db.create_unique('main_userprofilecontact', ['user_profile_id', 'time_pattern_id', 'notification_method', 'params'])
+        db.create_index('main_userprofilecontact', ['user_profile_id', 'time_pattern_id', 'notification_method', 'params'],unique=True)
         
         
     
