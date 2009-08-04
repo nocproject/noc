@@ -65,3 +65,16 @@ class Cisco_IOS_C4500_Config_Synced_SYSLOG_Rule(ClassificationRule):
         (r"^message$",r"%C4K_REDUNDANCY-5-CONFIGSYNC:"),
         (r"^source$",r"^syslog$"),
     ]
+##
+## Cisco.IOS Config Synced SYSLOG
+##
+class Cisco_IOS_Config_Synced_SYSLOG_Rule(ClassificationRule):
+    name="Cisco.IOS Config Synced SYSLOG"
+    event_class=ConfigSynced
+    preference=1000
+    action=CLOSE_EVENT
+    patterns=[
+        (r"^profile$",r"^Cisco\.IOS$"),
+        (r"^message$",r"%PFINIT-SP-5-CONFIG_SYNC"),
+        (r"^source$",r"^syslog$"),
+    ]
