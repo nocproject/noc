@@ -22,6 +22,7 @@ from noc.lib.fields import TextArrayField
 from noc.main.middleware import get_user
 from noc.settings import IS_WEB
 from noc.lib.timepattern import TimePattern as TP
+from noc.lib.timepattern import TimePatternList
 
 ##
 ## Databrowse register hook to intersept model creation
@@ -434,34 +435,28 @@ class NotificationGroup(models.Model):
     def _members(self):
         m=[]
         # Collect user notifications
-        for ngu in self.notificationgroupuser_set.filter(user__is_active=True,user__email__isnull=False):
+        for ngu in self.notificationgroupuser_set.filter(user__is_active=True):
             try:
-                profile=ngu.get_profile()
+                profile=ngu.user.get_profile()
             except:
                 continue
-            for c in profile.contacts:
-                if c not in m:
-                    m+=[x]
+            for tp,method,params in profile.contacts:
+                m+=[(TimePatternList([ngu.time_pattern,tp]),method,params)]
         # Collect other notifications
         for ngo in self.notificationgroupother_set.all():
             if ngo.notification_method=="mail" and "," in ngo.params:
                 for y in ngo.params.split(","):
-                    y=y.strip()
-                    x=(ngo.time_pattern,ngo.notification_method,y)
-                    if x not in m:
-                        m+=[x]
+                    m+=[(ngo.time_pattern,ngo.notification_method,y.strip())]
             else:
-                x=(ngo.time_pattern,ngo.notification_method,ngo.params)
-                if x not in m:
-                    m+=[x]
+                m+=[(ngo.time_pattern,ngo.notification_method,ngo.params)]
         return m
     members=property(_members)
     ##
-    ## Returns a list of currently active members: (method,params)
+    ## Returns a set of currently active members: (method,params)
     ##
     def _active_members(self):
         now=datetime.datetime.now()
-        return [(method,param) for tp,method,param in self.members if tp.match(now)]
+        return set([(method,param) for tp,method,param in self.members if tp.match(now)])
     active_members=property(_active_members)
     ##
     ## Send message to active members
