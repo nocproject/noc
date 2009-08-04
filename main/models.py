@@ -552,7 +552,9 @@ class UserProfileManager(models.Manager):
                 p=super(UserProfileManager,self).get_query_set().get(user=user)
             except UserProfile.DoesNotExist:
                 UserProfile(user=user).save()
-        return super(UserProfileManager,self).get_query_set().filter(user=user)
+            return super(UserProfileManager,self).get_query_set().filter(user=user)
+        else:
+            return super(UserProfileManager,self).get_query_set()
 ##
 ## User Profile
 ##
