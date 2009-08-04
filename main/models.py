@@ -435,7 +435,11 @@ class NotificationGroup(models.Model):
         m=[]
         # Collect user notifications
         for ngu in self.notificationgroupuser_set.filter(user__is_active=True,user__email__isnull=False):
-            for c in ngu.contacts:
+            try:
+                profile=ngu.get_profile()
+            except:
+                continue
+            for c in profile.contacts:
                 if c not in m:
                     m+=[x]
         # Collect other notifications
