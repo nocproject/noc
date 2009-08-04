@@ -89,6 +89,17 @@ class TimePattern(object):
             return "True"
         else:
             return x
+##
+## Enclosure for a list of time patterns
+##
+class TimePatternList(object):
+    def __init__(self,patterns):
+        self.patterns=patterns
+    def match(self,d):
+        for tp in self.patterns:
+            if not tp.match(d):
+                return False
+        return True
 #
 # Tests
 #
