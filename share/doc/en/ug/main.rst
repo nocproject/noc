@@ -35,14 +35,16 @@ at least one expression matches.
 Date Selector Expressions
 -------------------------
 
-=============================== ===========================================================================
-<day>                           Matches day of month <day> of every month
-<day1>-<day2>                   Matches all days of month between <day1> and <day2> of every month
-<day>.<month>                   Matches date
-<day1>.<month1>-<day2>.<month2> Matches all days between two dates of every year
-<day of week>                   Matches day of week of every week (mon, tue, wen, thu, fri, sat, sun)
-<day of week1>-<day of week2>   Matches all days between two days of week
-=============================== ===========================================================================
+=============================================== ===========================================================================
+<day>                                           Matches day of month <day> of every month
+<day1>-<day2>                                   Matches all days of month between <day1> and <day2> of every month
+<day>.<month>                                   Matches date
+<day1>.<month1>-<day2>.<month2>                 Matches all days between two dates of every year
+<day>.<month>.<year>                            Matches date
+<day1>.<month1>.<year1>-<day2>.<month2>.<year2> Matches all days between two dates
+<day of week>                                   Matches day of week of every week (mon, tue, wen, thu, fri, sat, sun)
+<day of week1>-<day of week2>                   Matches all days between two days of week
+=============================================== ===========================================================================
 
 Time Selector
 -------------
