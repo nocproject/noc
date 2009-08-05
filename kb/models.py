@@ -170,6 +170,12 @@ class KBEntry(models.Model):
     def unset_user_bookmark(self,user):
         for b in  KBUserBookmark.objects.filter(kb_entry=self,user=user):
             b.delete()
+    ##
+    ## Returns True if KBEntry has categories attached
+    ##
+    def _has_categories(self):
+        return self.categories.count()>0
+    has_categories=property(_has_categories)
 ##
 ## Attachments
 ##
