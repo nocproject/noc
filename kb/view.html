@@ -28,6 +28,13 @@
 {% endfor %}
 </TABLE>
 {% endif %}
+{% if e.has_categories %}
+    {% for c in e.categories.all %}
+    <ul class="object-tags">
+        <li><a href="/">{{c.name}}</a></li>
+    </ul>
+    {% endfor %}
+{% endif %}
 <hr/>
 Posted at {{e.last_history.timestamp|date}} {{e.last_history.timestamp|time}} by {{e.last_history.user}}
 {% endblock %}

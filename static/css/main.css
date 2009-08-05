@@ -37,6 +37,32 @@ ul.messagelist {
 .paginate-link { padding: 2px 4px; border: 1px solid #ddd; }
 .paginate-current { padding: 2px 4px; border: 1px solid #ddd; font-weight: bold; background:#417690; color:#f4f379; }
 
+.object-tags {
+    font-size: 10px;
+    font-weight: bold;
+    display: block;
+    float: left;
+    position: relative;
+}
+
+.object-tags li {
+    display: block;
+    float: left;
+    background:url(/media/img/admin/tool-left.gif) 0 0 no-repeat;
+    padding:0 0 0 8px;
+    margin-left:2px;
+    height:16px;
+}
+
+.object-tags a:link, .object-tags a:visited {
+    display: block;
+    float: left;
+    color: white;
+    background:#999 url(/media/img/admin/tool-right.gif) 100% 0 no-repeat;
+    padding: .1em 14px .1em 8px;
+    height: 14px;
+}
+
 @media print {
     #menu {
         display: none;
