@@ -1,0 +1,24 @@
+{% extends "template/template.html" %}
+{% block title%}Knowledge Base{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A> &rsaquo;
+    <a href="/kb/categories/">Categories</a> &rsaquo; {{category.name}} &rsaquo;
+    </div>
+{% endblock %}
+{% block content %}
+<ul class="object-tools">
+    <LI><A HREF="/admin/kb/kbentry/add/" class="addlink">Add KB Entry</A></LI>
+</ul>
+
+<TABLE BORDER="0">
+    <TR><TH>#</TH><TH>Subject</TH><TH>Views</TH><TH>Modified</TH><TH>Modified by</TH></TR>
+    {% for e in entries %}
+    <TR CLASS="{% cycle 'row1' 'row2' %}">
+        <TD ALIGN="right"><A HREF="/kb/{{e.id}}/">KB{{e.id}}</A></TD>
+        <TD>{{e.subject}}</TD>
+        <TD>{{e.preview_count}}</TD>
+        <TD>{{e.last_history.timestamp|date}} {{e.last_history.timestamp|time}}</TD>
+        <TD>{{e.last_history.user}}</TD>
+    </TR>
+    {% endfor %}
+</TABLE>
+{% endblock %}
