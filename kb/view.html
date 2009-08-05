@@ -31,7 +31,7 @@
 {% if e.has_categories %}
     {% for c in e.categories.all %}
     <ul class="object-tags">
-        <li><a href="/">{{c.name}}</a></li>
+        <li><a href="/kb/categories/{{c.id}}/">{{c.name}}</a></li>
     </ul>
     {% endfor %}
 {% endif %}

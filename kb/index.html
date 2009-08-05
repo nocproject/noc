@@ -48,11 +48,19 @@
 <DIV ID="tabs">
 <DIV ID="tabs-nav">
     <SPAN CLASS='{% ifequal tab "bookmarks" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/bookmarks/">Bookmarks</A></SPAN>
+    <SPAN CLASS='{% ifequal tab "categories" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/categories/">Categories</A></SPAN>
     <SPAN CLASS='{% ifequal tab "latest" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/latest/">Last Changed</A></SPAN>
     <SPAN CLASS='{% ifequal tab "popular" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/popular/">Popular Articles</A></SPAN>
     <SPAN CLASS='{% ifequal tab "all" %}selected-tab{%else%}unselected-tab{%endifequal%}'><A HREF="/kb/all/">All Articles</A></SPAN>
 
 </DIV>
+{% ifequal tab "categories" %}
+<TABLE BORDER="0">
+{% for e in entries %}
+<TR CLASS="{% cycle 'row1' 'row2' %}"><td><a href="/kb/categories/{{e.id}}/">{{e.name}}</a></td></tr>
+{% endfor %}
+</TABLE>
+{%else%}
 <TABLE BORDER="0">
     <TR><TH>#</TH><TH>Subject</TH><TH>Views</TH><TH>Modified</TH><TH>Modified by</TH></TR>
     {% for e in entries %}
@@ -65,5 +73,6 @@
     </TR>
     {% endfor %}
 </TABLE>
+{%endifequal%}
 </DIV>
 {% endblock %}

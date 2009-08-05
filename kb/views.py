@@ -57,6 +57,22 @@ def index_all(request):
         "entries" : KBEntry.objects.order_by("-id")
     })
 ##
+##
+##
+def index_categories(request):
+    return render(request,"kb/index.html", 
+    {
+        "tab"       : "categories",
+        "entries"   : KBCategory.objects.order_by("name")
+    })
+##
+##
+##
+def index_category(request,category_id):
+    category=get_object_or_404(KBCategory,id=int(category_id))
+    return render(request,"kb/index_category.html",{"category":category,"entries":category.kbentry_set.order_by("id")})
+    
+##
 ## KB Entry Preview
 ##
 def view(request,kb_id):
