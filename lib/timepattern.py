@@ -20,6 +20,9 @@ DAY_PATTERNS=[
     (RC(r"^(\d{2})-(\d{2})$"),                   lambda from_day,to_day: "(%d<=T.day<=%d)"%(int(from_day),int(to_day))),
     (RC(r"^(\d{2})\.(\d{2})$"),                  lambda day,month:       "(T.day==%d and T.month==%d)"%(int(day),int(month))),
     (RC(r"^(\d{2})\.(\d{2})-(\d{2})\.(\d{2})$"), lambda from_day,from_month,to_day,to_month: "('%s%s'<=('%%02d%%02d'%%(T.month,T.day))<='%s%s')"%(from_month,from_day,to_month,to_day)),
+    (RC(r"^(\d{2})\.(\d{2})\.(\d{4})$"),         lambda day,month,year:  "(T.day==%d and T.month==%d and T.year==%d)"%(int(day),int(month),int(year))),
+    (RC(r"^(\d{2})\.(\d{2})\.(\d{4})-(\d{2})\.(\d{2})\.(\d{4})$"),
+                                                 lambda from_day,from_month,from_year,to_day,to_month,to_year: "('%s%s%s'<=('%%04d%%02d%%02d'%%(T.year,T.month,T.day))<='%s%s%s')"%(from_year,from_month,from_day,to_year,to_month,to_day)),
     (RC(r"^%s$"%DoWRE,re.IGNORECASE),            lambda dow:             "(T.weekday()==%d)"%DoW.index(dow.lower())),
     (RC(r"^%s-%s$"%(DoWRE,DoWRE),re.IGNORECASE), lambda from_dow,to_dow: "(%d<=T.weekday()<=%d)"%(DoW.index(from_dow.lower()),DoW.index(to_dow))),
 ]
@@ -46,6 +49,10 @@ class TimePattern(object):
     >>> TimePattern("13.03").match(datetime.datetime(year=2005,month=3,day=13))
     True
     >>> TimePattern("01.03-02.04").match(datetime.datetime(year=2005,month=3,day=13))
+    True
+    >>> TimePattern("13.03.2005").match(datetime.datetime(year=2005,month=3,day=13))
+    True
+    >>> TimePattern("01.03.2005-15.03.2005").match(datetime.datetime(year=2005,month=3,day=13))
     True
     >>> TimePattern("sun").match(datetime.datetime(year=2005,month=3,day=13))
     True
