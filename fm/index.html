@@ -41,12 +41,12 @@ function show_result(data) {
         $tr.append($td);
         var td_link="";
         if(status=="C") {
-            td_link+="<a href='javascript:change_status("+event_id+",\"open\");'>[Open]</a>";
+            td_link+="<a href='#' onclick='change_status("+event_id+",\"open\");return false;'>[Open]</a>";
         } else if (status=="A") {
-            td_link+="<a href='javascript:change_status("+event_id+",\"close\");'>[Close]</a>";
+            td_link+="<a href='#' onclick='change_status("+event_id+",\"close\");return false;'>[Close]</a>";
         }
         if(td_link) {
-            td_link+="<br/><a href='javascript:change_status("+event_id+",\"reclassify\");'>[Reclassify]</a>";
+            td_link+="<br/><a href='#' onclick='change_status("+event_id+",\"reclassify\");return false;'>[Reclassify]</a>";
         }
         $td.html(td_link);
     });
