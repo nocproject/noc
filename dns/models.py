@@ -186,13 +186,13 @@ class DNSZone(models.Model):
         else:
             records+=[[x.left,x.type.type,x.right] for x in zonerecords]
         # Add NS records if nesessary
+        suffix=".%s."%self.name
         l=len(self.name)
         for z in self.children:
             nested_nses=[]
             for ns in z.profile.authoritative_servers:
                 ns_name=self.get_ns_name(ns)
                 records+=[[z.name[:-l-1],"IN NS",ns_name]]
-                suffix=".%s."%self.name
                 if ns_name.endswith(suffix) and "." in ns_name[:-len(suffix)]: # Zone delegated to NS from the child zone
                     r=(ns_name[:-len(suffix)],ns.ip)
                     if r not in nested_nses:
@@ -200,8 +200,21 @@ class DNSZone(models.Model):
             if nested_nses: # Create A records for nested NSes
                 for name,ip in nested_nses:
                     records+=[[name,"IN A",ip]]
-        records.sort(lambda x,y:cmp(x[0],y[0]))
-        return records
+        # Create missed A records for NSses from zone
+        # Find in-zone NSes
+        in_zone_nses={}
+        for ns in self.profile.authoritative_servers:
+            ns_name=self.get_ns_name(ns)
+            if ns_name.endswith(suffix) and "." not in ns_name[:-len(suffix)]: # NS server from zone
+                in_zone_nses[ns_name[:-len(suffix)]]=ns.ip
+        # Find missed in-zone NSes
+        for l,t,r in records:
+            if l in in_zone_nses and t in ["A","IN A"]:
+                del in_zone_nses[l]
+        for name,ip in in_zone_nses.items():
+            records+=[[name,"IN A",ip]]
+        #
+        return sorted(records,lambda x,y:cmp(x[0],y[0]))
     records=property(_records)
     
     def zonedata(self,ns):
