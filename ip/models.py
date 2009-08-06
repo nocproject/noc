@@ -205,6 +205,17 @@ class IPv4Block(models.Model):
                 r.append(ip)
         return r
     all_addresses=property(_all_addresses)
+    ##
+    ## Returns a list of responsible persons with write permissions
+    ##
+    def _maintainers(self):
+        from django.db import connection
+        c=connection.cursor()
+        c.execute("SELECT id FROM auth_user WHERE is_active=True AND (is_superuser=True OR id IN (SELECT user_id FROM ip_ipv4blockaccess WHERE vrf_id=%s AND prefix>>=%s)) ORDER BY username",
+            [self.vrf.id,self.prefix])
+        for user_id, in c:
+            yield User.objects.get(id=user_id)
+    maintainers=property(_maintainers)
 
     def _netmask_bits(self):
         return int(str(self.prefix).split("/")[1])
