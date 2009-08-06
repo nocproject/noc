@@ -188,8 +188,18 @@ class DNSZone(models.Model):
         # Add NS records if nesessary
         l=len(self.name)
         for z in self.children:
-            for ns in z.ns_list:
-                records+=[[z.name[:-l-1],"IN NS",ns]]
+            nested_nses=[]
+            for ns in z.profile.authoritative_servers:
+                ns_name=self.get_ns_name(ns)
+                records+=[[z.name[:-l-1],"IN NS",ns_name]]
+                suffix=".%s."%self.name
+                if ns_name.endswith(suffix) and "." in ns_name[:-len(suffix)]: # Zone delegated to NS from the child zone
+                    r=(ns_name[:-len(suffix)],ns.ip)
+                    if r not in nested_nses:
+                        nested_nses+=[r]
+            if nested_nses: # Create A records for nested NSes
+                for name,ip in nested_nses:
+                    records+=[[name,"IN A",ip]]
         records.sort(lambda x,y:cmp(x[0],y[0]))
         return records
     records=property(_records)
@@ -210,16 +220,19 @@ class DNSZone(models.Model):
         l=len(self.name)
         return [z for z in DNSZone.objects.filter(name__iendswith="."+self.name) if "." not in z.name[:-l-1]]
     children=property(_children)
-    
+    ##
+    ## Add missed "." to the end of NS name in case of FQDN
+    ##
+    @classmethod
+    def get_ns_name(cls,ns):
+        name=ns.name.strip()
+        if not is_ipv4(name) and not name.endswith("."):
+            return name+"."
+        else:
+            return name
+        
     def _ns_list(self):
-        nses=[]
-        for ns in self.profile.authoritative_servers:
-            n=ns.name.strip()
-            if not is_ipv4(n) and not n.endswith("."):
-                n+="."
-            nses.append(n)
-        nses.sort()
-        return nses
+        return sorted([self.get_ns_name(ns) for ns in self.profile.authoritative_servers])
     ns_list=property(_ns_list)
     
     def _rpsl(self):
