@@ -11,9 +11,13 @@ import xml.parsers.expat
 ## RackSet representation
 ##
 class RackSet(object):
-    def __init__(self,id):
+    def __init__(self,id,label):
         self.id=id
         self.racks=[]
+        if label is None:
+            self.label="bottom"
+        else:
+            self.label=label.lower()
     ##
     ## Return a list of allocations for a rack
     ## allocation is a tuple of: top position, height, is empty space, title, is reserved
@@ -79,10 +83,21 @@ class RackSet(object):
                     rsm[position][j*2]={"class":style,"text":title,"rowspan":height}
                     for i in range(position-1,position-height,-1):
                         rsm[i][j*2]=None
+        # Build rack labels row
+        # Render rack titles
+        rack_labels=["<tr>"]
+        for r in self.racks:
+            if r.id:
+                rack_labels+=["<td colspan='2' class='racklabel'>%s</td>"%r.id]
+            else:
+                rack_labels+=["<td colspan='2' class='racklabel'></td>"]
+        rack_labels+=["</tr>"]
         # Render the matrix
         out=["<table class='rackset'>"]
         if self.id:
             out+=["<caption>%s</caption>"%self.id]
+        if self.label in ["both","top"]:
+            out+=rack_labels
         for i in range(self.height,0,-1):
             out+=["<tr>"]
             for j in range(len(self.racks)*2):
@@ -98,14 +113,8 @@ class RackSet(object):
                     td+="</td>"
                     out+=[td]
             out+=["</tr>"]
-        # Render rack titles
-        out+=["<tr>"]
-        for r in self.racks:
-            if r.id:
-                out+=["<td colspan='2' class='racklabel'>%s</td>"%r.id]
-            else:
-                out+=["<td colspan='2' class='racklabel'></td>"]
-        out+=["</tr>"]
+        if self.label in ["both","bottom"]:
+            out+=rack_labels
         out+=["</table>"]
         return u"\n".join(out)
 ##
@@ -156,7 +165,7 @@ class XMLParser(object):
     ##
     def start_element(self,name,attrs):
         if name=="rackset":
-            self.rackset=RackSet(id=attrs.get("id",None))
+            self.rackset=RackSet(id=attrs.get("id",None),label=attrs.get("label",None))
         elif name=="rack":
             height=attrs.get("height","1U").upper()
             if height.endswith("U"):
