@@ -119,6 +119,7 @@ Top-level tag and rack container. There can be only single rackset per macro
 Attributes:
 
  * id - name of the rackset
+ * label (optional) - rack labels position. One of - "bottom" (default), "top", "both" or "none"
 
 rack
 ^^^^
