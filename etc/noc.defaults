@@ -17,6 +17,12 @@ date_format = d.m.Y
 # Time format.
 # Allowed formats: http://docs.djangoproject.com/en/dev/ref/templates/builtins/#ttag-now
 time_format = H:i:s
+# Month/Day format
+# Allowed formats: http://docs.djangoproject.com/en/dev/ref/templates/builtins/#ttag-now
+month_day_format = F j
+# Month/Year format
+# Allowed formats: http://docs.djangoproject.com/en/dev/ref/templates/builtins/#ttag-now
+year_month_format = F Y
 #
 # DateTime format:
 # Allowed formats: http://docs.djangoproject.com/en/dev/ref/templates/builtins/#ttag-now
