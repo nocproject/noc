@@ -53,17 +53,26 @@ function show_result(data) {
     // Set up pager
     $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
     $("#events_count").text(data["count"]);
-    window.setTimeout(function() {
-        $("#form").submit()
-    },60000);
+    if(timeout_function) {
+        // Reset scheduled refresh
+        window.clearTimeout(timeout_function);
+    }
+}
+
+var timeout_submit;
+
+function update_data() {
+    $("#form").submit();
+    if(timeout_submit) {
+        window.clearTimeout(timeout_submit);
+    }
+    timeout_submit=window.setTimeout(update_data,60000);
 }
 
 function change_status(event_id,status) {
     $.ajax({
         url     : "/fm/"+event_id+"/status/"+status+"/",
-        success : function(html) {
-            $("#form").submit();
-        }
+        success : update_data
     });
     return false;
 }
@@ -81,7 +90,7 @@ function toggle_panel() {
 
 function pager_click(number) {
     $("#id_page").val(number);
-    $("#form").submit();
+    update_data();
 }
 
 $(document).ready(function(){
@@ -90,7 +99,7 @@ $(document).ready(function(){
         success : show_result,
         url     : "/fm/lookup/events/"
     });
-    $("#form").submit();
+    update_data();
 });
 
 </script>
