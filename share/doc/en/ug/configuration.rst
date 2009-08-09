@@ -121,6 +121,18 @@ time_format
 ^^^^^^^^^^^
 Default time format to be used by noc. See :ref:`datetime_format` for format characters description.
 
+.. _noc-conf-main-month_day_format:
+
+month_day_format
+^^^^^^^^^^^^^^^^
+Default month and day format to be used by noc. See :ref:`datetime_format` for format characters description.
+
+.. _noc-conf-main-year_month_format:
+
+year_month_format
+^^^^^^^^^^^^^^^^^
+Default year and month format to be used by noc. See :ref:`datetime_format` for format characters description.
+
 .. _noc-conf-main-datetime_format:
 
 datetime_format
