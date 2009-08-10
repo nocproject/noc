@@ -23,6 +23,10 @@ class RackSet(object):
     ## allocation is a tuple of: top position, height, is empty space, title, is reserved
     ##
     def compile_allocations(self,rack):
+        def format_title(s):
+            if s is None:
+                return ""
+            return s.replace("\\n","<br/>")
         allocations=sorted(rack.allocations,lambda x,y: -cmp(x.position,y.position))
         sp=[]
         if len(allocations)==0:
@@ -32,14 +36,14 @@ class RackSet(object):
             empty_top=rack.height-a.position-a.height+1
             if empty_top:
                 sp+=[(rack.height,empty_top,True,None,False)]
-            sp+=[(a.position+a.height-1,a.height,False,a.id,a.reserved)]
+            sp+=[(a.position+a.height-1,a.height,False,format_title(a.id),a.reserved)]
             while allocations:
                 last_a=a
                 a=allocations.pop(0)
                 empty_top=last_a.position-a.height-a.position
                 if empty_top:
                     sp+=[(last_a.position-1,empty_top,True,None,False)]
-                sp+=[(a.height+a.position-1,a.height,False,a.id,a.reserved)]
+                sp+=[(a.height+a.position-1,a.height,False,format_title(a.id),a.reserved)]
             if a.position>1:
                 sp+=[(a.position-1,a.position-1,True,None,False)]
         return sp
