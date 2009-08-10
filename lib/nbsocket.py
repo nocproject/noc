@@ -25,10 +25,10 @@ class Socket(object):
         self.factory=factory
         self.socket=sock
         self.socket.setblocking(0)
-        self.factory.register_socket(self)
-        self.name=None
         self.start_time=time.time()
         self.last_read=self.start_time+100
+        self.factory.register_socket(self)
+        self.name=None
     
     def can_read(self):
         return True
@@ -368,7 +368,7 @@ class PTYSocket(Socket):
         if self.pid==0:
             os.execv(argv[0],argv)
         else:
-            Socket.__init__(self,factory,FileWrapper(fd))
+            super(PTYSocket,self).__init__(factory,FileWrapper(fd))
             
     def handle_read(self):
         try:
