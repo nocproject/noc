@@ -27,8 +27,8 @@ class Notify(NotifyBase):
             body+="\n\nSee details: %s\n"%link
         from_address=self.config.get(self.name,"from_address")
         message=MIMEText(body,_charset="utf-8")
-        message["From"]=Header(from_address,"utf-8")
-        message["To"]=Header(params,"utf-8")
+        message["From"]=from_address
+        message["To"]=params
         message["Date"]=email.utils.formatdate()
         message["Subject"]=Header(subject,"utf-8")
         self.debug(message.as_string())
