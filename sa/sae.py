@@ -8,7 +8,7 @@
 """
 """
 from __future__ import with_statement
-from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask
+from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask, periodic_registry
 from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
 import logging,time,threading,datetime,os,random,xmlrpclib,cPickle
@@ -269,7 +269,17 @@ class SAE(Daemon):
         #
         self.activator_manifest=None
         self.activator_manifest_files=None
-    
+    ##
+    ## Create missed Task Schedules
+    ##
+    def update_task_schedules(self):
+        for pt in periodic_registry.classes:
+            if TaskSchedule.objects.filter(periodic_name=pt).count()==0:
+                logging.info("Creating task schedule for %s"%pt)
+                TaskSchedule(periodic_name=pt).save()
+    ##
+    ## Build activator manifest
+    ##
     def build_manifest(self):
         logging.info("Building manifest")
         manifest=read_file("MANIFEST-ACTIVATOR").split("\n")+ACTIVATOR_MANIFEST
@@ -323,6 +333,7 @@ class SAE(Daemon):
             self.xmlrpc_listener=self.factory.listen_tcp(xmlrpc_listen,xmlrpc_port,XMLRPCSocket)
         
     def run(self):
+        self.update_task_schedules()
         self.build_manifest()
         self.start_listeners()
         last_cleanup=time.time()
