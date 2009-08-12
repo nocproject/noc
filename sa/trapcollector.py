@@ -26,6 +26,7 @@ class TrapCollector(ListenUDPSocket,EventCollector):
     name="TrapCollector"
     def __init__(self,activator,address,port):
         self.info("Initializing at %s:%s"%(address,port))
+        self.collector_signature="%s:%s"%(address,port)
         ListenUDPSocket.__init__(self,activator.factory,address,port)
         EventCollector.__init__(self,activator)
         
@@ -65,7 +66,7 @@ class TrapCollector(ListenUDPSocket,EventCollector):
             req_msg,whole_msg=decoder.decode(whole_msg,asn1Spec=p_mod.Message())
             req_pdu = p_mod.apiMessage.getPDU(req_msg)
             if req_pdu.isSameTypeWith(p_mod.TrapPDU()):
-                body={"source":"SNMP Trap"}
+                body={"source":"SNMP Trap","collector":self.collector_signature}
                 if msg_version==api.protoVersion1:
                     oid=oid_to_str(p_mod.apiTrapPDU.getEnterprise(req_pdu))
                     body["1.3.6.1.6.3.1.1.4.1.0"]=oid # snmpTrapOID.0
