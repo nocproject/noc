@@ -15,12 +15,19 @@ WHOIS_SERVER="whois.ripe.net"
 WHOIS_PORT=43
 
 class Whois(ConnectedTCPSocket):
-    def __init__(self,factory,query,callback=None,fields=None,server=WHOIS_SERVER,port=WHOIS_PORT):
-        ConnectedTCPSocket.__init__(self,factory,server,port)
+    def __init__(self,factory,query,callback=None,fields=None):
+        # Find suitable whois server
+        if is_fqdn(query):
+            # Use TLD.whois-servers.net for domain lookup
+            tld=query.split(".")[-1]
+            server="%s.whois-servers.net"%tld
+        else:
+            server=WHOIS_SERVER
+        ConnectedTCPSocket.__init__(self,factory,server,WHOIS_PORT)
         self.query=query.strip()
         self.output=[]
         self.callback=callback
-        self.fields=fields
+        self.fields=set(fields) if fields else None
         logging.debug("whois(%s)"%self.query)
         
     def on_connect(self):
@@ -56,12 +63,6 @@ def whois(q,fields=None):
     f=SocketFactory()
     s=[]
     # Find suitable whois server
-    if is_fqdn(q):
-        # Use TLD.whois-servers.net for domain lookup
-        tld=q.split(".")[-1]
-        server="%s.whois-servers.net"%tld
-    else:
-        server=WHOIS_SERVER
-    w=Whois(f,q,s.append,fields,server=server)
+    w=Whois(f,q,s.append,fields)
     f.run()
-    return s
+    return s[0]
