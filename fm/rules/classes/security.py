@@ -53,3 +53,58 @@ Direction: {{src_ip}}:{{src_port}} -> {{dst_ip}}:{{dst_port}}"""
         dst_ip=Var(required=True,repeat=True)
         dst_port=Var(required=True,repeat=True)
         proto=Var(required=False,repeat=False)
+##
+## Login Success
+##
+class LoginSuccess(EventClass):
+    name     = "Login Success"
+    category = "SECURITY"
+    priority = "NORMAL"
+    subject_template="User: {{user}} IP: {{ip}}"
+    body_template="""Login succeeded.
+
+User: {{user}}
+IP: {{ip}}
+"""
+    repeat_suppression=False
+    repeat_suppression_interval=3600
+    trigger=None
+    class Vars:
+        user=Var(required=True,repeat=False)
+        ip=Var(required=True,repeat=False)
+##
+## Login Close
+##
+class LoginClose(EventClass):
+    name     = "Login Close"
+    category = "SECURITY"
+    priority = "NORMAL"
+    subject_template="User: {{user}} IP: {{ip}}"
+    body_template="""Session closed:
+
+User: {{user}}
+Ip: {{ip}}"""
+    repeat_suppression=False
+    repeat_suppression_interval=3600
+    trigger=None
+    class Vars:
+        user=Var(required=True,repeat=False)
+        ip=Var(required=True,repeat=False)
+##
+## Login Failed
+##
+class LoginFailed(EventClass):
+    name     = "Login Failed"
+    category = "SECURITY"
+    priority = "WARNING"
+    subject_template="User: {{user}} IP: {{ip}}"
+    body_template="""Login failed:
+
+User: {{user}}
+IP: {{ip}}"""
+    repeat_suppression=False
+    repeat_suppression_interval=3600
+    trigger=None
+    class Vars:
+        user=Var(required=True,repeat=False)
+        ip=Var(required=True,repeat=False)
