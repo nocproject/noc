@@ -14,8 +14,8 @@ WHOIS_SERVER="whois.ripe.net"
 WHOIS_PORT=43
 
 class Whois(ConnectedTCPSocket):
-    def __init__(self,factory,query,callback=None,fields=None):
-        ConnectedTCPSocket.__init__(self,factory,WHOIS_SERVER,WHOIS_PORT)
+    def __init__(self,factory,query,callback=None,fields=None,server=WHOIS_SERVER,port=WHOIS_PORT):
+        ConnectedTCPSocket.__init__(self,factory,server,port)
         self.query=query.strip()
         self.output=[]
         self.callback=callback
