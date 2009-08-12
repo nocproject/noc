@@ -346,6 +346,17 @@ rpsl_inverse_pref_style
 ^^^^^^^^^^^^^^^^^^^^^^^
 Select RPSL pref= behavior. *off* means pref = localpref, *on* means standard RPSL's pref = 65535-localpref
 
+.. _noc-conf-dns:
+
+[dns] section
+-------------
+
+.. _noc-conf-dns-warn_before_expired_days:
+
+warn_before_expired_days
+^^^^^^^^^^^^^^^^^^^^^^^^
+Start to issue domain expiration warnings from *warn_before_expired_days* day before deadline
+
 .. _noc-conf-tt:
 
 tt section
