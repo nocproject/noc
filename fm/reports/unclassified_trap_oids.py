@@ -7,7 +7,6 @@
 """
 from noc.main.report import Column,BooleanColumn
 import noc.main.report
-from noc.fm.models import MIB
 
 class Report(noc.main.report.Report):
     name="fm.unclassified_trap_oids"
@@ -19,6 +18,7 @@ class Report(noc.main.report.Report):
         Column("Count",align="RIGHT")]
     
     def get_queryset(self):
+        from noc.fm.models import MIB
         return [(x[0],MIB.get_name(x[0]),x[1]) for x in self.execute("""
             SELECT ed.value,COUNT(*)
             FROM fm_eventdata ed JOIN fm_event e ON (e.id=ed.event_id)
