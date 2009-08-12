@@ -43,7 +43,6 @@ class MenuBase(type):
                 return x
         m=type.__new__(cls,name,bases,attrs)
         if m.app and m.title:
-            print m.app
             r={
                 "app"   : m.app,
                 "title" : m.title,
