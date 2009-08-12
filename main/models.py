@@ -537,6 +537,25 @@ class Notification(models.Model):
     next_try=models.DateTimeField("Next Try",null=True,blank=True)
     actual_till=models.DateTimeField("Actual Till",null=True,blank=True)
 ##
+## System Notification
+##
+class SystemNotification(models.Model):
+    class Meta:
+        verbose_name="System Notification"
+        verbose_name_plural="System Notifications"
+    name=models.CharField("Name",max_length=64,unique=True)
+    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group",null=True,blank=True)
+    def __unicode__(self):
+        return self.name
+    @classmethod
+    def notify(cls,name,subject,body,link=None):
+        try:
+            sn=SystemNotification.objects.get(name=name)
+        except SystemNotification.DoesNotExist: # Ignore undefined notifications
+            return
+        if sn.notification_group:
+            sn.notification_group.notify(subject=subject,body=body,link=link)
+##
 ## User Profile Manager
 ## Leave only current user's profile
 class UserProfileManager(models.Manager):
@@ -617,6 +636,7 @@ class AppMenu(Menu):
             ("Reference Books", "/admin/main/refbook/", "main.change_refbook"),
             ("Time Patterns",   "/admin/main/timepattern/", "main.change_timepattern"),
             ("Notification Groups",   "/admin/main/notificationgroup/", "main.change_notificationgroup"),
+            ("System Notifications",   "/admin/main/systemnotification/", "main.change_systemnotification"),
             ("Pending Notifications", "/admin/main/notification/", "main.change_notification"),
         ]),
         ("Documentation", [
