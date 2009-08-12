@@ -98,6 +98,12 @@ class UserProfileAdmin(admin.ModelAdmin):
             "fields" : ("preferred_language",),
         }),
     )
+
+##
+## System Notification Admin
+##
+class SystemNotificationAdmin(admin.ModelAdmin):
+    list_display=["name","notification_group"]
 ##
 ## Register administrative interfaces
 ##
@@ -109,3 +115,4 @@ admin.site.register(TimePattern, TimePatternAdmin)
 admin.site.register(NotificationGroup, NotificationGroupAdmin)
 admin.site.register(Notification, NotificationAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
+admin.site.register(SystemNotification, SystemNotificationAdmin)
