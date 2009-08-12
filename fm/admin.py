@@ -31,7 +31,7 @@ class EventCategoryAdmin(admin.ModelAdmin):
     search_fields=["name"]
 ##
 class EventClassVarAdmin(admin.TabularInline):
-    extra=1
+    extra=5
     model=EventClassVar
 ##
 class EventClassAdmin(admin.ModelAdmin):
