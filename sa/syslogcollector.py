@@ -20,6 +20,7 @@ class SyslogCollector(ListenUDPSocket,EventCollector):
     name="SyslogCollector"
     def __init__(self,activator,address,port):
         self.info("Initializing at %s:%s"%(address,port))
+        self.collector_signature="%s:%s"%(address,port)
         ListenUDPSocket.__init__(self,activator.factory,address,port)
         EventCollector.__init__(self,activator)
         
@@ -43,9 +44,10 @@ class SyslogCollector(ListenUDPSocket,EventCollector):
         ts=int(time.time())
         #
         body={
-            "source"  : "syslog",
-            "facility": priority>>3,
-            "severity": priority&7,
-            "message" : msg
+            "source"   : "syslog",
+            "collector": self.collector_signature,
+            "facility" : priority>>3,
+            "severity" : priority&7,
+            "message"  : msg
         }
         self.process_event(ts,address,body)
