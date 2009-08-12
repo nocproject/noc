@@ -14,6 +14,11 @@ Flexibility and Portability
 * NOC mostly implemented in python language and available on all major telco platforms: Solaris, FreeBSD, Linux, Mac OS X
 * PosgreSQL database backend available on all platforms supported by NOC
 
+Reliability
+===========
+
+* Integrated monitoring and self-healing capabilities allow to recover from error conditions
+
 Scalability
 ===========
 
@@ -97,9 +102,10 @@ DNS Management
 * Pluggable zone generator interface (BINDv9 supported)
 * Web interface for zone creating and modification
 * Address Space Management integration
-* Zone and config file provisioning
+* DNS server provisioning
 * Web interface to distribute load between nameservers
 * Transparent support for classless IN-ADDR.ARPA delegation (RFC2317)
+* Domain expiration checking with registrar's databases synchronization via whois
 
 Knowledge Base
 ==============
@@ -110,6 +116,7 @@ Knowledge Base
 * Attachments are stored inside database for integrity and easy backup
 * Multi-Lingual support
 * Global and user bookmarks
+* IT-oriented set of macros
 
 Reporting
 =========
