@@ -24,8 +24,7 @@ class Script(noc.sa.script.Script):
             cmd+=" interface %s"%interface
         if vlan is not None:
             cmd+=" vlan %s"%vlan
-        self.cli("terminal length 0")
-        vlans=self.cli(cmd)
+        vlans=self.cli(cmd+" | no-more")
         r=[]
         for l in vlans.split("\n"):
             match=rx_line.match(l.strip())
