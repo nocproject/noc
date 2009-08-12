@@ -15,7 +15,7 @@ class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_mac_address_table"
     implements=[IGetMACAddressTable]
     def execute(self,interface=None,vlan=None,mac=None):
-        cmd="show mac-address-table"
+        cmd="show mac address-table"
         if mac is not None:
             cmd+=" address %s"%self.profile.convert_mac(mac)
         if interface is not None:
