@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
+import noc.settings
 import types
 ##
 ## Registered menu list
@@ -16,6 +17,10 @@ MENU=[]
 ## Populate MENU with reports
 ##
 def populate_reports(reports):
+    # Enforce menu loading
+    for app in [x for x in noc.settings.INSTALLED_APPS if x.startswith("noc.")]:
+        __import__(app+".models",{},{},"AppMenu")
+    #
     apps={}
     for r,title in reports:
         app,rest=r.split(".",1)
@@ -38,6 +43,7 @@ class MenuBase(type):
                 return x
         m=type.__new__(cls,name,bases,attrs)
         if m.app and m.title:
+            print m.app
             r={
                 "app"   : m.app,
                 "title" : m.title,
