@@ -111,6 +111,7 @@ class DNSZone(models.Model):
     is_auto_generated=models.BooleanField("Auto generated?")
     serial=models.CharField("Serial",max_length=10,default="0000000000")
     profile=models.ForeignKey(DNSZoneProfile,verbose_name="Profile")
+    paid_till=models.DateField("Paid Till",null=True,blank=True)
     
     # Managers
     objects=models.Manager()
