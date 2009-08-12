@@ -9,6 +9,7 @@
 """
 import logging
 from noc.lib.nbsocket import ConnectedTCPSocket
+from noc.lib.validators import is_fqdn
 
 WHOIS_SERVER="whois.ripe.net"
 WHOIS_PORT=43
@@ -49,11 +50,18 @@ class Whois(ConnectedTCPSocket):
         return out
 ##
 ## Simple whois client function for testing
-#3
+##
 def whois(q,fields=None):
     from noc.lib.nbsocket import SocketFactory
     f=SocketFactory()
     s=[]
-    w=Whois(f,q,s.append,fields)
+    # Find suitable whois server
+    if is_fqdn(q):
+        # Use TLD.whois-servers.net for domain lookup
+        tld=q.split(".")[-1]
+        server="%s.whois-servers.net"%tld
+    else:
+        server=WHOIS_SERVER
+    w=Whois(f,q,s.append,fields,server=server)
     f.run()
     return s
