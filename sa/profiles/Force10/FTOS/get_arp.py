@@ -17,8 +17,7 @@ class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_arp"
     implements=[IGetARP]
     def execute(self):
-        self.cli("terminal length 0")
-        s=self.cli("show arp")
+        s=self.cli("show arp | no-more")
         r=[]
         for l in s.split("\n"):
             match=rx_line.match(l.strip())

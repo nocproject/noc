@@ -16,5 +16,4 @@ class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_vlans"
     implements=[IGetVlans]
     def execute(self):
-        self.cli("terminal length 0")
-        return [{"vlan_id":x[0],"name":x[1]} for x in parse_table(self.cli("show vlan brief"))]
+        return [{"vlan_id":x[0],"name":x[1]} for x in parse_table(self.cli("show vlan brief | no-more"))]

@@ -14,7 +14,6 @@ class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_config"
     implements=[IGetConfig]
     def execute(self):
-        self.cli("terminal length 0")
-        config=self.cli("show running-config")
+        config=self.cli("show running-config | no-more")
         config=self.strip_first_lines(config,1)
         return self.cleaned_config(config)
