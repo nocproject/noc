@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import logging
+import logging, socket
 from noc.lib.nbsocket import ConnectedTCPSocket
 from noc.lib.validators import is_fqdn
 
@@ -23,6 +23,12 @@ class Whois(ConnectedTCPSocket):
             server="%s.whois-servers.net"%tld
         else:
             server=WHOIS_SERVER
+        # Try to resolve server
+        try:
+            server=socket.gethostbyname(server)
+        except:
+            logging.error("Cannot resolve host %s"%server)
+            return
         ConnectedTCPSocket.__init__(self,factory,server,WHOIS_PORT)
         self.query=query.strip()
         self.output=[]
