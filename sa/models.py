@@ -356,6 +356,11 @@ class ManagedObjectSelector(models.Model):
             return ""
     test_link.short_description="Test Selector"
     test_link.allow_tags=True
+    ##
+    ## Check Managed Object matches selector
+    ##
+    def match(self,managed_object):
+        return self.managed_objects.filter(id=managed_object.id).count()>0
 ##
 ## Reduce Tasks
 ##
