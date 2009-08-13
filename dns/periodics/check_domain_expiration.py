@@ -32,9 +32,8 @@ class Task(noc.sa.periodic.Task):
         now=datetime.date.today()
         ## Check expired soon domains
         days=config.getint("dns","warn_before_expired_days")
-        soon_expired_deadline=now-datetime.timedelta(days=days)
         soon_expired=list([(z.name,z.paid_till)
-            for z in DNSZone.objects.filter(paid_till__isnull=False,paid_till__gt=now,paid_till__gte=soon_expired_deadline).order_by("paid_till")])
+            for z in DNSZone.objects.filter(paid_till__isnull=False,paid_till__range=[now+datetime.timedelta(days=1),now+datetime.timedelta(days=days)]).order_by("paid_till")])
         if soon_expired:
             SystemNotification.notify("dns.domain_expiration_warning",
                 subject="%d domains to be expired in %d days"%(len(soon_expired),days),
