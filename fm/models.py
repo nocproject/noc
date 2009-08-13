@@ -7,7 +7,8 @@
 """
 from __future__ import with_statement
 from django.db import models
-from noc.sa.models import ManagedObject
+from noc.sa.models import ManagedObject,ManagedObjectSelector
+from noc.main.models import TimePattern,NotificationGroup
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
 from noc.fm.triggers import event_trigger_registry
@@ -400,15 +401,18 @@ class EventPostProcessingRule(models.Model):
     class Meta:
         verbose_name="Event Post-Processing Rule"
         verbose_name_plural="Event Post-Processing Rules"
-    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
     name=models.CharField("Name",max_length=64)
     preference=models.IntegerField("Preference",default=1000)
     is_active=models.BooleanField("Is Active",default=True)
+    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
     description=models.TextField("Description",blank=True,null=True)
+    managed_object_selector=models.ForeignKey(ManagedObjectSelector,verbose_name="Managed Object Selector",null=True,blank=True)
+    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern",null=True,blank=True)
     # Actions
     change_priority=models.ForeignKey(EventPriority,verbose_name="Change Priority to",blank=True,null=True)
     change_category=models.ForeignKey(EventCategory,verbose_name="Change Category to",blank=True,null=True)
     action=models.CharField("Action",max_length=1,choices=[("A","Make Active"),("C","Close"),("D","Drop")],default="A")
+    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group",null=True,blank=True)
     def __unicode__(self):
         return self.name
 ##
