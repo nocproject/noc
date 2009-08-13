@@ -62,10 +62,10 @@ class EventPostProcessingREAdmin(admin.TabularInline):
 class EventPostProcessingRuleAdmin(admin.ModelAdmin):
     fieldsets=(
         (None,{
-            "fields": ("name","event_class","preference","is_active","description")}
+            "fields": ("name","event_class","preference","is_active","description","time_pattern","managed_object_selector")}
         ),
         ("Action",{
-            "fields": ("action","change_priority","change_category")
+            "fields": ("action","change_priority","change_category","notification_group")
         }),
     )
     list_display=["name","event_class","preference","is_active","action","change_priority","change_category"]

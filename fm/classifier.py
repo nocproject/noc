@@ -199,6 +199,9 @@ class Classifier(Daemon):
             # Find post-processing rule
             post_process=self.find_post_processing_rule(event,vars)
             if post_process:
+                # Notify if necessary
+                if post_process.rule.notification_group:
+                    post_process.rule.notification_group.notify(subject=event.subject,body=event.body)
                 if post_process.rule.action=="D": # Drop event if required by post_process_rule
                     self.drop_event(event)
                     return
@@ -295,6 +298,13 @@ class Classifier(Daemon):
         event_class=event.event_class
         if event_class.id in self.post_process:
             for r in self.post_process[event_class.id]:
+                # Check time pattern
+                if r.rule.time_pattern and not r.rule.time_pattern.match(event.timestamp):
+                    continue
+                # Check object selector
+                if r.rule.managed_object_selector and not r.rule.managed_object_selector.match(event.managed_object):
+                    continue
+                # Check vars
                 if r.match(vars):
                     logging.debug("Event #%d matches post-processing rule '%s'"%(event.id,r.name))
                     return r
