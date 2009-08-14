@@ -8,7 +8,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.rules.classification import ClassificationRule
+from noc.fm.rules.classification import ClassificationRule,Expression,CLOSE_EVENT,DROP_EVENT
 from noc.fm.rules.classes.system import *
 
 ##
@@ -64,4 +64,31 @@ class ObjectReachableRule(ClassificationRule):
         (r"^source$",  r"^system$"),
         (r"^result$",  r"^success$"),
         (r"^probe$",   r"^ping$")
+    ]
+##
+## Periodic Success
+##
+class Periodic_Success_Rule(ClassificationRule):
+    name="Periodic Success"
+    event_class=PeriodicSuccess
+    preference=1000
+    action=CLOSE_EVENT
+    patterns=[
+        (r"^status$",r"^success$"),
+        (r"^task$",r"^(?P<task>.+)$"),
+        (r"^type$",r"^periodic status$"),
+        (r"^source$",r"^system$"),
+    ]
+##
+## Periodic Failed
+##
+class Periodic_Failed_Rule(ClassificationRule):
+    name="Periodic Failed"
+    event_class=PeriodicFailed
+    preference=1000
+    patterns=[
+        (r"^status$",r"^failure$"),
+        (r"^task$",r"^(?P<task>.+)$"),
+        (r"^type$",r"^periodic status$"),
+        (r"^source$",r"^system$"),
     ]

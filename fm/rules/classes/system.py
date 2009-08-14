@@ -86,3 +86,31 @@ class ObjectReachable(EventClass):
         probe=Var(required=True)
         result=Var(required=True)
         ip=Var(required=True)
+##
+## Periodic Success
+##
+class PeriodicSuccess(EventClass):
+    name     = "Periodic Success"
+    category = "SYSTEM"
+    priority = "NORMAL"
+    subject_template="Periodic Success: {{task}}"
+    body_template="""Task {{task}} completed successfully"""
+    repeat_suppression=False
+    repeat_suppression_interval=3600
+    trigger=None
+    class Vars:
+        task=Var(required=True,repeat=False)
+##
+## Periodic Failed
+##
+class PeriodicFailed(EventClass):
+    name     = "Periodic Failed"
+    category = "SYSTEM"
+    priority = "CRITICAL"
+    subject_template="Periodic Failed: {{task}}"
+    body_template="""Periodic task {{task}} failed!"""
+    repeat_suppression=False
+    repeat_suppression_interval=3600
+    trigger=None
+    class Vars:
+        task=Var(required=True,repeat=False)
