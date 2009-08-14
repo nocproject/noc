@@ -524,28 +524,18 @@ class SAE(Daemon):
                     logging.error("Unknown object in ping_check: %s"%u)
                     return
                 mo=mo[0] # Fetch first-created object in case of multiple objects with same trap_source_ip
-                e=Event(
-                    timestamp=ts,
-                    event_priority=event_priority,
-                    event_class=event_class,
-                    event_category=event_category,
-                    managed_object=mo
-                    )
-                e.save()
-                for k,v in [("source","system"),
-                            ("activator",activator_name),
-                            ("probe","ping"),
-                            ("ip",u),
-                            ("result",result)]:
-                    d=EventData(event=e,key=k,value=v)
-                    d.save()
+                self.write_event(
+                    data=[("source","system"),
+                        ("activator",activator_name),
+                        ("probe","ping"),
+                        ("ip",u),
+                        ("result",result)],
+                    managed_object=mo,
+                    timestamp=ts)
             if error:
                 logging.error("ping_check failed: %s"%error.text)
                 return
             ts=datetime.datetime.now()
-            event_priority=EventPriority.objects.get(name="DEFAULT")
-            event_class=EventClass.objects.get(name="DEFAULT")
-            event_category=EventCategory.objects.get(name="DEFAULT")
             activator_name=activator.name
             for u in response.unreachable:
                 save_probe_result(u,"failed")
