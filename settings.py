@@ -116,6 +116,10 @@ INSTALLED_APPS = (
     "noc.peer",
     "noc.kb",
 )
+# Populate list of locally-installed apps
+apps=config.get("main","installed_apps").strip()
+if apps:
+    INSTALLED_APPS+=tuple([app.strip() for app in apps.split(",")])
 
 FORCE_SCRIPT_NAME=""
 
