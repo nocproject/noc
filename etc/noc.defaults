@@ -124,6 +124,7 @@ gzip       = /usr/bin/gzip
 smidump    = /usr/bin/smidump
 smilint    = /usr/bin/smilint
 dig        = /usr/bin/dig
+gpg        = /usr/bin/gpg
 #
 # SAE XML-RPC interface
 #
@@ -139,3 +140,9 @@ keep_weeks         = 12
 keep_day_of_week   = 6
 keep_months        = 12
 keep_day_of_month  = 1
+#
+# PGP Settings
+#
+[pgp]
+use_key   = user@example.com
+keyserver = keys.gnupg.net
