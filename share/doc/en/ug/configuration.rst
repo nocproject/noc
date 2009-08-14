@@ -139,6 +139,11 @@ datetime_format
 ^^^^^^^^^^^^^^^
 Default date and time format to be used by noc. See :ref:`datetime_format` for format characters description.
 
+.. _noc-conf-main-installed_apps:
+
+installed_apps
+^^^^^^^^^^^^^^
+Comma-separated list of locally installed django applications
 
 .. _noc-conf-database:
 
