@@ -129,17 +129,18 @@ class Service(SAEService):
             return
         activator=self.get_controller_activator(controller)
         try:
-            if request.ip=="":
-                # Event belongs to ROOT object
-                mo=ManagedObject.objects.get(name="ROOT")
-            else:
-                mo=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip)
+            mo=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip) if request.ip else None
         except ManagedObject.DoesNotExist:
             e=Error()
             e.code=ERR_UNKNOWN_EVENT_SOURCE
             e.text="Unknown event source '%s'"%request.ip
             done(controller,error=e)
             return
+        self.sae.write_event(
+            data=[(b.key,b.value) for b in request.body],
+            timestamp=datetime.datetime.fromtimestamp(request.timestamp),
+            managed_object=mo
+        )
         # Do all the magic here
         e=Event(
             timestamp=datetime.datetime.fromtimestamp(request.timestamp),
@@ -359,6 +360,26 @@ class SAE(Daemon):
                 self.process_mrtasks()
                 last_mrtask_check=time.time()
     ##
+    ## Write event.
+    ## data is a list of (left,right)
+    ##
+    def write_event(self,data,timestamp=None,managed_object=None):
+        if managed_object is None:
+            managed_object=ManagedObject.objects.get(name="ROOT")
+        if timestamp is None:
+            timestamp=datetime.datetime.now()
+        e=Event(
+            timestamp=timestamp,
+            event_priority=EventPriority.objects.get(name="DEFAULT"),
+            event_class=EventClass.objects.get(name="DEFAULT"),
+            event_category=EventCategory.objects.get(name="DEFAULT"),
+            managed_object=managed_object
+            )
+        e.save()
+        for l,r in data:
+            d=EventData(event=e,key=l,value=r)
+            d.save()
+    ##
     ## Collect crashinfo and write as FM events
     ##
     def collect_crashinfo(self):
@@ -367,10 +388,6 @@ class SAE(Daemon):
         c_d=os.path.dirname(self.config.get("main","logfile"))
         if not os.path.isdir(c_d):
             return
-        mo=ManagedObject.objects.get(name="ROOT")
-        event_priority=EventPriority.objects.get(name="DEFAULT")
-        event_class=EventClass.objects.get(name="DEFAULT")
-        event_category=EventCategory.objects.get(name="DEFAULT")
         for fn in [fn for fn in os.listdir(c_d) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
             path=os.path.join(c_d,fn)
             try:
@@ -381,19 +398,8 @@ class SAE(Daemon):
                 continue
             ts=data["ts"]
             del data["ts"]
-            e=Event(
-                timestamp=datetime.datetime.fromtimestamp(ts),
-                event_priority=event_priority,
-                event_class=event_class,
-                event_category=event_category,
-                managed_object=mo
-            )
-            e.save()
-            for k,v in data.items():
-                d=EventData(event=e,key=k,value=v)
-                d.save()
+            self.write_event(data=data.items(),timestamp=datetime.datetime.fromtimestamp(ts))
             os.unlink(path)
-            
     ##
     ## Periodic tasks
     ##
@@ -425,6 +431,14 @@ class SAE(Daemon):
             del self.active_periodic_tasks[task.id]
         finally:
             self.periodic_task_lock.release()
+        # Write task complete status event
+        self.write_event([
+            ("source","system"),
+            ("type",  "periodic status"),
+            ("task",  unicode(task)),
+            ("status",{True:"success",False:"failure"}[status]),
+        ])
+        #
         new_cwd=os.getcwd()
         if cwd!=new_cwd:
             logging.error("CWD changed by periodic '%s' ('%s' -> '%s'). Restoring old cwd"%(unicode(task),cwd,new_cwd))
