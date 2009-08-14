@@ -281,6 +281,12 @@ smidump
 ^^^^^^^
 A path to the *smidump* utility. *smidump* is a part of *libsmi* distribution
 
+.. _noc-conf-path-gpg:
+
+gpg
+^^^
+A path to GnuPG binary.
+
 .. _noc-conf-cm:
 
 cm section
@@ -435,6 +441,23 @@ are left.
 keep_day_of_month
 ^^^^^^^^^^^^^^^^^
 Keep only backups performed at *keep_day_of_month* (1-based)
+
+.. _noc-conf-pgp:
+
+[pgp] section
+-------------
+
+.. _noc-conf-pgp-use_key:
+
+use_key
+^^^^^^^
+Private key used to encrypt message. Must me email or key id.
+
+.. _noc-conf-pgp-keyserver:
+
+keyserver
+^^^^^^^^^
+Keyserver used to retrieve missed keys
 
 .. _noc-launcher-conf:
 
