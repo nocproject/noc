@@ -1,0 +1,12 @@
+{% extends "template/template.html" %}
+{% block content %}
+<H1>DNS Zones Tools</H1>
+<H2>Upload Zones</H2>
+    <P>Upload list of DNS Zones from a file. Each zone must be placed at separate line</P>
+    <FORM METHOD="POST" ACTION="/dns/tools/upload_zones/" enctype="multipart/form-data">
+        <TABLE BORDER="0">
+        {{zones_upload_form.as_table}}
+        </TABLE>
+        <INPUT TYPE="submit" VALUE="Upload Zones" />
+    </FORM>
+{% endblock%}
