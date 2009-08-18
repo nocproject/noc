@@ -41,22 +41,19 @@ function show_result(data) {
         $tr.append($td);
         var td_link="";
         if(status=="C") {
-            td_link+="<a href='#' onclick='change_status("+event_id+",\"open\");return false;'>[Open]</a>";
+            td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"open\"); return false;'>[Open]</a>";
         } else if (status=="A") {
-            td_link+="<a href='#' onclick='change_status("+event_id+",\"close\");return false;'>[Close]</a>";
+            td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"close\"); return false;'>[Close]</a>";
         }
         if(td_link) {
-            td_link+="<br/><a href='#' onclick='change_status("+event_id+",\"reclassify\");return false;'>[Reclassify]</a>";
+            td_link+="<br/><a href='#' onclick='change_status(this,"+event_id+",\"reclassify\"); return false;'>[Reclassify]</a>";
         }
         $td.html(td_link);
     });
     // Set up pager
     $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
     $("#events_count").text(data["count"]);
-    if(timeout_function) {
-        // Reset scheduled refresh
-        window.clearTimeout(timeout_function);
-    }
+    $("#cover").hide();
 }
 
 var timeout_submit;
@@ -69,7 +66,9 @@ function update_data() {
     timeout_submit=window.setTimeout(update_data,60000);
 }
 
-function change_status(event_id,status) {
+function change_status(obj,event_id,status) {
+    show_cover();
+    $(obj).closest('tr').find('td').andSelf().fadeTo('normal', 0);
     $.ajax({
         url     : "/fm/"+event_id+"/status/"+status+"/",
         success : update_data
@@ -88,6 +87,21 @@ function toggle_panel() {
     return false;
 }
 
+function show_cover() {
+    var t=$("#events_table");
+    if ($("#cover").is(':hidden')) {
+        $("#cover").css({
+            width: t.width(),
+            height: t.height(),
+            background: "#cccccc",
+            position: "absolute",
+            top: t.position().top,
+            left: t.position().left,
+            opacity: 0.5
+        }).show();
+    }
+}
+
 function pager_click(number) {
     $("#id_page").val(number);
     update_data();
@@ -96,10 +110,11 @@ function pager_click(number) {
 $(document).ready(function(){
     $("#form").ajaxForm({
         dataType: "json",
+        beforeSubmit : show_cover,
         success : show_result,
         url     : "/fm/lookup/events/"
     });
-    update_data();
+    window.setTimeout(update_data, 200);
 });
 
 </script>
