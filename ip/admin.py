@@ -14,13 +14,13 @@ from noc.peer.models import AS
 ## Admin for VRFGroup
 ##
 class VRFGroupAdmin(admin.ModelAdmin):
-    list_display=["name","unique_addresses"]
+    list_display=["name","unique_addresses","description"]
     search_fields=["name"]
 ##
 ## Admin or VRF
 ##
 class VRFAdmin(admin.ModelAdmin):
-    list_display=["rd","name","vrf_group"]
+    list_display=["rd","name","vrf_group","description"]
     search_fields=["name","rd"]
     list_filter=["vrf_group"]
     def save_model(self, request, obj, form, change):

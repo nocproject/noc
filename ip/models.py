@@ -25,6 +25,7 @@ class VRFGroup(models.Model):
         verbose_name_plural="VRF Groups"
     name=models.CharField("VRF Group",unique=True,max_length=64)
     unique_addresses=models.BooleanField("Unique addresses in group")
+    description=models.CharField("Description",blank=True,null=True,max_length=128)
     def __str__(self):
         return self.name
     def __unicode__(self):
@@ -39,6 +40,7 @@ class VRF(models.Model):
     name=models.CharField("VRF name",unique=True,max_length=64)
     vrf_group=models.ForeignKey(VRFGroup,verbose_name="VRF Group")
     rd=models.CharField("rd",unique=True,max_length=21) # validator_list=[check_rd],
+    description=models.CharField("Description",blank=True,null=True,max_length=128)
     tt=models.IntegerField("TT",blank=True,null=True)
     def __str__(self):
         if self.rd=="0:0":
