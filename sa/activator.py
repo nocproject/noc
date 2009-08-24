@@ -13,11 +13,13 @@ from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,ScriptSocket
 from noc.sa.rpc import RPCSocket,file_hash,get_digest
 from noc.sa.protocols.sae_pb2 import *
+from noc.sa.protocols.pm_pb2 import *
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM,check_state
-from noc.lib.nbsocket import ConnectedTCPSocket,ConnectedTCPSSLSocket,SocketFactory,PTYSocket,HAS_SSL
+from noc.lib.nbsocket import ConnectedTCPSocket,ConnectedTCPSSLSocket,SocketFactory,PTYSocket,HAS_SSL,ListenUDPSocket
 from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
+from noc.lib.pmhash import pmhash
 from threading import Lock
 
 ##
@@ -94,7 +96,6 @@ class Service(SAEService):
                 else:
                     r.reachable.append(a)
                     self.activator.ping_check_results[a]=True
-            print self.activator.ping_check_results
             done(controller,response=r)
         self.activator.ping_check([a for a in request.addresses],ping_check_callback)
 ##
@@ -164,6 +165,27 @@ class FPingProbeSocket(PTYSocket):
     def on_read(self,data):
         self.result+=data
 ##
+## PM Collector socket
+##
+class PMCollectorSocket(ListenUDPSocket):
+    def __init__(self,activator,address,port):
+        self.activator=activator
+        super(PMCollectorSocket,self).__init__(activator.factory,address,port)
+
+    def on_read(self,data,address,port):
+        msg=PMMessage()
+        try:
+            msg.ParseFromString(data)
+        except:
+            return
+        # Check hash
+        if pmhash(address,self.activator.pm_data_secret,[d.timestamp for d in msg.result]+[d.timestamp for d in msg.data])!=msg.checksum:
+            logging.error("Invalid PM hash in packet from %s"%address)
+            return
+        # Queue data
+        self.activator.queue_pm_result([(d.probe_name,d.probe_type,d.timestamp,d.service,d.result,d.message) for d in msg.result if d.probe_name])
+        self.activator.queue_pm_data([(d.name,d.timestamp,d.is_null,d.value) for d in msg.data if d.name])
+##
 ## Activator supervisor and daemon
 ##
 class Activator(Daemon,FSM):
@@ -221,6 +243,7 @@ class Activator(Daemon,FSM):
         self.event_sources=set()
         self.trap_collectors=[]   # List of SNMP Trap collectors
         self.syslog_collectors=[] # List of SYSLOG collectors
+        self.pm_data_collectors=[] # List of PM Data collectors
         logging.info("Loading profile classes")
         profile_registry.register_all() # Should be performed from ESTABLISHED state
         script_registry.register_all()
@@ -231,7 +254,9 @@ class Activator(Daemon,FSM):
         self.script_threads={}
         self.script_lock=Lock()
         self.script_call_queue=Queue.Queue()
-        
+        self.pm_data_queue=[]
+        self.pm_result_queue=[]
+        self.pm_data_secret=self.config.get("activator","pm_data_secret")
     ##
     ## IDLE state 
     ##
@@ -243,6 +268,8 @@ class Activator(Daemon,FSM):
             self.stop_trap_collectors()
         if self.syslog_collectors:
             self.stop_syslog_collectors()
+        if self.pm_data_collectors:
+            self.stop_pm_data_collectors()
         self.set_timeout(5)
     ##
     ## CONNECT state
@@ -294,6 +321,9 @@ class Activator(Daemon,FSM):
         if self.config.get("activator","listen_syslog"):
             self.start_syslog_collectors()
             to_refresh_filters=True
+        if self.config.get("activator","listen_pm_data"):
+            self.start_pm_data_collectors()
+            to_refresh_filters=True
         if to_refresh_filters:
             self.get_event_filter()
         if self.stand_alone_mode:
@@ -339,6 +369,25 @@ class Activator(Daemon,FSM):
                 sc.close()
             self.syslog_collectors=[]
     ##
+    ## Launch PM data collectors
+    ##
+    def start_pm_data_collectors(self):
+        logging.debug("Starting PM Data collectors")
+        self.pm_data_collectors=[
+            PMCollectorSocket(self,ip,port)
+            for ip,port
+            in self.resolve_addresses(self.config.get("activator","listen_pm_data"),19704)
+        ]
+    ##
+    ## Disable syslog collectors
+    ##
+    def stop_pm_data_collectors(self):
+        if self.pm_data_collectors:
+            logging.debug("Stopping PM Data collectors")
+            for pdc in self.pm_data_collectors:
+                pdc.close()
+            self.pm_data_collectors=[]
+    ##
     ## Script support
     ##
     def run_script(self,name,access_profile,callback,**kwargs):
@@ -350,7 +399,7 @@ class Activator(Daemon,FSM):
         self.script_threads[script]=callback
         self.script_lock.release()
         script.start()
-        
+
     def on_script_exit(self,script):
         self.script_lock.acquire()
         cb=self.script_threads[script]
@@ -393,6 +442,9 @@ class Activator(Daemon,FSM):
                 break
             logging.debug("Calling delayed %s(*%s,**%s)"%(f,args,kwargs))
             apply(f,args,kwargs)
+        # Send collected PM data
+        if self.get_state()=="ESTABLISHED" and self.pm_data_queue:
+            self.send_pm_data()
         # Perform default daemon/fsm machinery
         super(Activator,self).tick()
                 
@@ -555,6 +607,41 @@ class Activator(Daemon,FSM):
             i.key=str(k)
             i.value=str(v)
         self.sae_stream.proxy.event(r,on_event_callback)
+    ##
+    ##
+    ##
+    def queue_pm_data(self,pm_data):
+        self.pm_data_queue+=pm_data
+    ##
+    ##
+    ##
+    def queue_pm_result(self,pm_result):
+        self.pm_result_queue+=pm_result
+    ##
+    ## Send collected PM data to the SAE
+    ##
+    def send_pm_data(self):
+        def pm_data_callback(transaction,response=None,error=None):
+            if error:
+                logging.error("pm_data failed: %s"%error)
+        r=PMDataRequest()
+        for probe_name,probe_type,timestamp,service,result,message in self.pm_result_queue:
+            d=r.result.add()
+            d.probe_name=probe_name
+            d.probe_type=probe_type
+            d.timestamp=timestamp
+            d.service=service
+            d.result=result
+            d.message=message
+        self.pm_result_queue=[]
+        for name,timestamp,is_null,value in self.pm_data_queue:
+            d=r.data.add()
+            d.name=name
+            d.timestamp=timestamp
+            d.is_null=is_null
+            d.value=value
+        self.pm_data_queue=[]
+        self.sae_stream.proxy.pm_data(r,pm_data_callback)
     # Signal handlers
 
     # SIGUSR1 returns process info

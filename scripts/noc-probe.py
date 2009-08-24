@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ##----------------------------------------------------------------------
-## SLA Monitor
+## noc-probe daemon
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
@@ -12,6 +12,6 @@ if __name__ == '__main__':
     sys.path.insert(0,os.path.join(d,"..",".."))
     sys.path.insert(0,os.path.join(d,".."))
     sys.path.insert(0,d)
-    from noc.pm.sla import SLAMonitor
-    sla=SLAMonitor()
-    sla.process_command()
+    from noc.pm.probe import Probe
+    probe=Probe()
+    probe.process_command()

@@ -11,6 +11,7 @@ from __future__ import with_statement
 from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask, periodic_registry
 from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
+from noc.pm.models import TimeSeries
 import logging,time,threading,datetime,os,random,xmlrpclib,cPickle
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import read_file
@@ -154,7 +155,32 @@ class Service(SAEService):
             d=EventData(event=e,key=b.key,value=b.value)
             d.save()
         done(controller,EventResponse())
-
+    ##
+    ## Performance management collected data stream
+    ##
+    def pm_data(self,controller,request,done):
+        if not controller.stream.is_authenticated:
+            e=Error()
+            e.code=ERR_AUTH_REQUIRED
+            e.text="Authentication required"
+            done(controller,error=e)
+            return
+        for d in request.result:
+            timestamp=datetime.datetime.fromtimestamp(d.timestamp)
+            self.sae.write_event([
+                    ("source",      "system"),
+                    ("type",        "pm probe"),
+                    ("probe_name",  d.probe_name),
+                    ("probe_type",  d.probe_type),
+                    ("service",     d.service),
+                    ("result",      d.result),
+                    ("message",     d.message),
+                ],
+                timestamp=timestamp)
+        for d in request.data:
+            value=d.value if not d.is_null else None
+            TimeSeries.register(d.name,d.timestamp,value)
+        done(controller,PMDataResponse())
 ##
 ## AcceptedTCPSocket with RPC Protocol
 ##
