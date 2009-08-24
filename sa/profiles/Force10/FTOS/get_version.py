@@ -11,7 +11,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"^Force10 Networks .*Force10 Application Software Version: (?P<version>\S+).*System Type: (?P<platform>\S+)",re.MULTILINE|re.DOTALL)
+rx_ver=re.compile(r"^Force10 Networks .*Force10 Application Software Version: (?P<version>\S+).*(?:System|Chassis) Type: (?P<platform>\S+)",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_version"
