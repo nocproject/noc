@@ -333,6 +333,33 @@ class ConnectedTCPSSLSocket(ConnectedTCPSocket):
                     return
                 raise
 ##
+## UDP send/receive socket
+##
+class UDPSocket(Socket):
+    def __init__(self,factory):
+        self.out_buffer=[]
+        super(UDPSocket,self).__init__(factory,socket.socket(socket.AF_INET,socket.SOCK_DGRAM))
+    
+    def can_write(self):
+        return self.out_buffer
+    
+    def handle_write(self):
+        msg,addr=self.out_buffer.pop(0)
+        self.socket.sendto(msg,addr)
+
+    def handle_read(self):
+        msg,transport_address=self.socket.recvfrom(8192)
+        if msg=="":
+            return
+        self.on_read(msg,transport_address[0],transport_address[1])
+    
+    def on_read(self,data,address,port):
+        pass
+
+    def sendto(self,msg,addr):
+        self.out_buffer+=[(msg,addr)]
+    
+##
 ## File wrapper to mimic behavior of socket
 ##
 class FileWrapper(object):
