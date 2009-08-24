@@ -1,0 +1,265 @@
+{% extends "template/template.html" %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.svg.css" />
+<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.svg.js"></SCRIPT>
+{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/pm/">Performance Management</a> &rsaquo; {{chart.name}} &rsaquo; </div>{% endblock %}
+{% block content %}
+<h1>{{chart.name}}</h1>
+
+<div id="svgplot" style="width: 600; height: 400px"></div>
+
+<script>
+var plot=null;
+$("#svgplot").svg({onLoad:function(svg) {
+    plot=svg;
+    load_data();
+    }});
+
+var WIDTH=600;
+var HEIGTH=400;
+var FONT_HEIGTH=10;
+var FONT_WIDTH=7;
+var FONT_SIZE='10';
+var TEXT_PADDING=2;
+
+var COLORS=["red","blue","yellow","green","white"];
+var LABEL_SCALES=[60,3600,86400,2592000];
+//
+var y0,x0,x_scale,min_ts;
+var legend_height;
+var labels_height;
+//
+function load_data(t0,t1) {
+    var url="/pm/data/{{chart.id}}/";
+    if(t0&&t1) {
+        url+="?t0="+t0+"&t1="+t1;
+    }
+    $.ajax({
+        dataType: "json",
+        url     : url,
+        success : draw_chart
+    });
+}
+//
+function legend_text_width(t) {
+    return t.length*FONT_WIDTH+3*TEXT_PADDING+FONT_HEIGTH;
+}
+//
+function pad(n,len) {
+    var v=String(n);
+    while(v.length<len) {
+        v="0"+v;
+    }
+    return v;
+}
+//
+function format_date(d) {
+    return pad(d.getDate(),2)+"."+pad(d.getMonth(),2)+"."+pad(d.getFullYear(),4)+" "+pad(d.getHours(),2)+":"+pad(d.getMinutes(),2);
+}
+// Fit value to 6 symbols
+function format_value(v) {
+    if(v==0) {
+        return "0";
+    }
+    var r="";
+    var x=v;
+    if(x<0) {
+        x=-x;
+        r="-";
+    }
+}
+//
+// Minimize legend square
+//
+function pack_legend(names) {
+    // Find number of legend lines
+    var N=names.length;
+    var lines;
+    var columns;;
+    var widths;
+    for(lines=1;lines<names.length;lines++) {
+        var columns=Math.ceil(N/lines);
+        var widths=[];
+        var total_width=0;
+        for(j=0;j<columns;j++) {
+            var w=0;
+            for(k=j;k<N;k+=columns) {
+                var w1=legend_text_width(names[k]);
+                if(w1>w) {
+                    w=w1;
+                }
+            }
+            widths[j]=w;
+            total_width+=w;
+        }
+        if(total_width<WIDTH) {
+            break;
+        }
+    }
+    return widths;
+}
+
+function draw_chart(data) {
+    // Draw legend
+    time_series=data["time_series"];
+    var N=time_series.length;
+    var widths=pack_legend(time_series);
+    var columns=widths.length;
+    var rows=Math.ceil(N/columns);
+    
+    plot.clear();
+    var x=0;
+    for(col=0;col<columns;col++) {
+        for(row=0;row<rows;row++) {
+            var i=row*columns+col;
+            if(i>=N)
+                continue;
+            var y=row*(2*TEXT_PADDING+FONT_HEIGTH)+TEXT_PADDING+FONT_HEIGTH;
+            plot.rect(x+TEXT_PADDING,y-FONT_HEIGTH,FONT_HEIGTH,FONT_HEIGTH,{fill:COLORS[i],stroke:"black",strokeWidth:1});
+            plot.text(x+2*TEXT_PADDING+FONT_HEIGTH,y,time_series[i],{fontFamily: 'Verdana', fontSize: FONT_SIZE});
+        }
+        x+=widths[col];
+    }
+    legend_height=rows*(2*TEXT_PADDING+FONT_HEIGTH);
+    //
+    labels_height=13*FONT_WIDTH+2*TEXT_PADDING; //16 chars
+    x0=TEXT_PADDING+1;
+    y0=legend_height;
+    
+    var main_field=plot.rect(x0,y0, WIDTH-2*TEXT_PADDING, HEIGTH-legend_height-labels_height-TEXT_PADDING,
+        {'fill':"#c0c0c0",stroke:'black',strokeWidth:1});
+    // Find bound box and scales
+    var points=data["points"];
+    min_ts=data["min_ts"];
+    var max_ts=data["max_ts"];
+    var min_v=data["min_v"];
+    var max_v=data["max_v"];
+    x_scale=(WIDTH-2*TEXT_PADDING-2)/(max_ts-min_ts);
+    var y_scale=(HEIGTH-legend_height-labels_height-TEXT_PADDING-2)/(max_v-min_v);
+    y0=HEIGTH-labels_height-TEXT_PADDING-1;
+    // Draw labels and grid
+    var ltw=(FONT_HEIGTH+2*TEXT_PADDING)/x_scale;
+    var label_delta=ltw;
+    for(i=0;i<LABEL_SCALES.length;i++) {
+        if(ltw<=LABEL_SCALES[i]) {
+            label_delta=LABEL_SCALES[i];
+            break;
+        }
+    }
+    var label_y_baseline=HEIGTH-TEXT_PADDING;
+    var lg=plot.group({fontFamily: 'Verdana',fontSize:FONT_SIZE});
+    var d=new Date();
+    for(lt=Math.floor(max_ts/label_delta)*label_delta;lt>min_ts;lt-=label_delta) {
+        var lx=x0+x_scale*(lt-min_ts);
+        d.setTime(lt*1000);
+        plot.line(lx,y0,lx,y0-(HEIGTH-legend_height-labels_height-TEXT_PADDING),{stroke:'#d0d0d0'});
+        var g=plot.group(plot.group(lg,
+            {transform:'translate('+(x0+lx)+','+label_y_baseline+')'}),
+                {transform:'rotate(-90)'});
+        plot.text(g,0,0,format_date(d));
+    }
+    plot.line(x0, y0-y_scale*(-min_v), WIDTH-2*TEXT_PADDING+2, y0-y_scale*(-min_v), {stroke:'#f0f0f0'}); // Zero line
+    //var vx=WIDTH-TEXT_PADDING-5*FONT_WIDTH;
+    //if(min_v!=0 && max_v!=0) {
+    //    plot.text(lg,vx,y0-y_scale*(-min_v)+FONT_HEIGTH/2,"0");
+    //}
+    //plot.text(lg,vx,y0+FONT_HEIGTH/2,String(min_v));
+    //plot.text(lg,vx,y0-y_scale*(max_v-min_v)+FONT_HEIGTH/2,String(max_v));
+    // Draw plots
+    for(i=0;i<points.length;i++) {
+        var p=[];
+        for(j=0;j<points[i].length;j++) {
+            var z=points[i][j];
+            var t=z[0];
+            var v=z[1];
+            p[j]=[x0+x_scale*(t-min_ts),y0-y_scale*(v-min_v)];
+        }
+        plot.polyline(p,{fill:"none", stroke:COLORS[i], strokeWidth: 1});
+    }
+    // Add controls
+    var scroll_step=(max_ts-min_ts)/2;
+    plot.script('function scroll_left(evt) {load_data('+Math.floor(min_ts-scroll_step)+','+Math.floor(max_ts-scroll_step)+');}');
+    plot.script('function scroll_right(evt) {load_data('+Math.floor(min_ts+scroll_step)+','+Math.floor(max_ts+scroll_step)+');}');
+    plot.script('function zoom_up(evt) {load_data('+Math.floor(min_ts-scroll_step)+','+Math.floor(max_ts+scroll_step)+');}');
+    plot.script('function zoom_down(evt) {load_data('+Math.floor(min_ts+scroll_step/2)+','+Math.floor(max_ts-scroll_step/2)+');}');
+    var cg=plot.group({stroke:'black',strokeWidth: 2,fill:'yellow',opacity:"0.25"});
+    var c_baseline=y0-(HEIGTH-legend_height-labels_height-TEXT_PADDING-2)/2;
+    var cx_baseline=x0+TEXT_PADDING;
+    var c_sz=FONT_WIDTH*2;
+    plot.polyline(cg,[[cx_baseline,c_baseline],[cx_baseline+c_sz,c_baseline-c_sz],
+        [cx_baseline+c_sz,c_baseline+c_sz],[cx_baseline,c_baseline]],{onclick:'scroll_left(evt)'});
+    plot.circle(cg,cx_baseline+c_sz/2,y0-TEXT_PADDING-c_sz/2,c_sz/2,{onclick:'zoom_down(evt)'}); // Zoom down
+    plot.line(cg,cx_baseline+c_sz/4,y0-TEXT_PADDING-c_sz/2,cx_baseline+c_sz*3/4,y0-TEXT_PADDING-c_sz/2,{onclick:'zoom_down(evt)'}); //
+    plot.line(cg,cx_baseline+c_sz/2,y0-TEXT_PADDING-c_sz/2+c_sz/4,cx_baseline+c_sz/2,
+        y0-TEXT_PADDING-c_sz/2-c_sz/4,{onclick:'zoom_down(evt)'}); //
+
+    
+    plot.circle(cg,cx_baseline+c_sz/2,y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,c_sz/2,{onclick:'zoom_up(evt)'});
+    plot.line(cg,cx_baseline+c_sz/4,y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,cx_baseline+c_sz*3/4,
+        y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,{onclick:'zoom_down(evt)'}); //
+    
+    cx_baseline=WIDTH-TEXT_PADDING*2;
+    plot.polyline(cg,[[cx_baseline,c_baseline],[cx_baseline-c_sz,c_baseline-c_sz],
+        [cx_baseline-c_sz,c_baseline+c_sz],[cx_baseline,c_baseline]],{onclick:'scroll_right(evt)'});
+    $(main_field).mousedown(start_drag).mouseup(stop_drag).mousemove(dragging);
+}
+
+//
+// Dynamic range selection
+//
+var drag_start=null;
+var outline=null;
+
+function start_drag(event) {
+    var offset = ($.browser.msie ? 0 : $('#svgplot').offset()["left"]); 
+    drag_start = event.clientX-offset;
+}
+
+//
+function x_to_t(x) {
+    return Math.floor((x-x0)/x_scale+min_ts)
+}
+function stop_drag(event) {
+    var offset = ($.browser.msie ? 0 : $('#svgplot').offset()["left"]);
+    var drag_end = event.clientX-offset;
+    $(outline).remove();
+    var t0,t1;
+    if(drag_end>drag_start) {
+        t0=x_to_t(drag_start);
+        t1=x_to_t(drag_end);
+    } else {
+        t0=x_to_t(drag_end);
+        t1=x_to_t(drag_start);
+    }
+    outline=null;
+    drag_start=null;
+    load_data(t0,t1);
+}
+
+function dragging(event) {
+    if(!drag_start) {
+        return;
+    }
+    var offset = ($.browser.msie ? 0 : $('#svgplot').offset()["left"]); 
+    drag_current = event.clientX-offset;
+    if(!outline) {
+        //outline=plot.rect(0,0,0,0,{fill: 'none', stroke: '#c0c0c0', strokeWidth: 1, strokeDashArray: '2,2'});
+        outline=plot.rect(0,0,0,0,{fill: '#d0d0d0', stroke: '#e0e0e0', strokeWidth: 1, strokeDashArray: '2,2',opacity:"0.5"});
+        $(outline).mouseup(stop_drag);
+    }
+    var width;
+    var x;
+    if(drag_current>drag_start) {
+        x=drag_start;
+        width=drag_current-drag_start;
+    } else {
+        x=drag_current;
+        width=drag_start-drag_current;
+    }
+    var height=(HEIGTH-legend_height-labels_height-TEXT_PADDING)
+    plot.change(outline,{x:x,y:y0-height,width:width,height:height});
+}
+</script>
+
+{%endblock%}
