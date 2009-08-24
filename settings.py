@@ -109,6 +109,7 @@ INSTALLED_APPS = (
     "noc.main",
     "noc.sa",
     "noc.fm",
+    "noc.pm",
     "noc.cm",
     "noc.ip",
     "noc.vc",
