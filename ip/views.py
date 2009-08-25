@@ -126,6 +126,7 @@ rx_url_cidr=re.compile(r"^.*/(\d+\.\d+\.\d+\.\d+/\d+)/$")
 
 def assign_address(request,vrf_id,ip=None,new_ip=None):
     vrf=get_object_or_404(VRF,id=int(vrf_id))
+    parents=[]
     if ip:
         assert is_ipv4(ip)
         address=get_object_or_404(IPv4Address,vrf=vrf,ip=ip)
@@ -136,6 +137,7 @@ def assign_address(request,vrf_id,ip=None,new_ip=None):
             "tt"          : address.tt,
         }
         p="/"+ip
+        parents=list(address.parent.parents)+[address.parent]
     elif new_ip:
         assert is_ipv4(new_ip)
         initial={"ip":new_ip}
@@ -182,7 +184,7 @@ def assign_address(request,vrf_id,ip=None,new_ip=None):
                     else:
                         initial["ip"]="NO FREE IP"
         form=AssignAddressForm(initial=initial)
-    return render(request,"ip/assign_address.html",{"vrf":vrf,"form":form,"p":p})
+    return render(request,"ip/assign_address.html",{"vrf":vrf,"form":form,"p":p,"parents":parents})
 ##
 ## Deallocate ip address handler
 ##
