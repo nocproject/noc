@@ -6,6 +6,7 @@ NOC is an Operation Support System (OSS) for the Telecommunication company, Serv
 Areas covered by NOC:
 
 * Fault Management
+* Performance Management
 * Service Activation/Provisioning
 * Knowledge Base
 * Multi-VRF Address space management

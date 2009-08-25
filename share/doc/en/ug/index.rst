@@ -12,6 +12,7 @@ NOC: User's Guide
     main
     sa
     fm
+    pm
     cm
     peer
     ip

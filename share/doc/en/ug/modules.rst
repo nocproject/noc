@@ -22,6 +22,12 @@ thousands of events every minute. FM module allows to collect them, classify, as
 correlate events and automatically determine root cause of failure. System supports life cycle
 of events ensuring no important events left unnoticed or unhandled.
 
+pm
+==
+Performance Management. Polls network equipment and collect various performance data. Collected
+data are checked against defined thresholds and stored into database for further analytic processing.
+PM module generates FM events in case of probe failure or out-of-the-thresholds data.
+
 cm
 ==
 Configuration management. Contains generalized interface to Version Control System
