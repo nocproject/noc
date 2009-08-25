@@ -19,6 +19,7 @@ lib/fileutils.py
 lib/ecma48.py
 lib/fsm.py
 lib/nbsocket.py
+lib/pmhash.py
 lib/validators.py
 lib/pyquote.py
 lib/text.py
