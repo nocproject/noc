@@ -320,7 +320,7 @@ class IPv4Address(models.Model):
                     else:
                         r_description=0.0
                     relevancy=max(r_fqdn,r_description)
-                yield SearchResult(url="/admin/ip/ipv4address/%d/"%r.id,
+                yield SearchResult(url="/ip/%d/%s/assign_address/"%(r.vrf.id,r.ip),
                     title="IPv4 Address, VRF=%s, %s (%s)"%(r.vrf,r.ip,r.fqdn),
                     text=r.description,
                     relevancy=relevancy)
