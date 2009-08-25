@@ -59,6 +59,18 @@ Fault Management
 * Collects events from managed objects (SNMP Trap, Syslog)
 * Performs event classification, correlation and root-cause analysis (Experimental)
 
+Performance Management
+======================
+
+* Extendable with plugins
+* Distributed polling
+* Scalable beyond thousands probes per second
+* SVG/AJAX interface for data analysys
+* Flexible thresholds verification
+* Integrated with Fault Management
+* Time series are stored in database
+* Legacy NAGIOS plugins can be used
+
 Configuration Management
 ========================
 
