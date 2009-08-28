@@ -16,7 +16,7 @@ class ActivatorAdmin(admin.ModelAdmin):
     list_display=["name","ip","is_active"]
     
 class TaskScheduleAdmin(admin.ModelAdmin):
-    list_display=["periodic_name","is_enabled","run_every","timeout","retries","retry_delay","next_run","retries_left"]
+    list_display=["periodic_name","is_enabled","run_every","next_run","run_now_link"]
 
 class AdministrativeDomainAdmin(admin.ModelAdmin):
     list_display=["name","description"]
