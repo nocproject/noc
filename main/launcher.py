@@ -66,7 +66,7 @@ class Launcher(Daemon):
         gids={}
         uids={}
         is_superuser=os.getuid()==0
-        for n in ["fcgi","sae","activator","classifier","correlator","notifier"]:
+        for n in ["fcgi","sae","activator","classifier","correlator","notifier","probe"]:
             dn="noc-%s"%n
             is_enabled=self.config.getboolean(dn,"enabled")
             # Resolve group name
