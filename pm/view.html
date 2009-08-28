@@ -57,17 +57,34 @@ function pad(n,len) {
 function format_date(d) {
     return pad(d.getDate(),2)+"."+pad(d.getMonth(),2)+"."+pad(d.getFullYear(),4)+" "+pad(d.getHours(),2)+":"+pad(d.getMinutes(),2);
 }
-// Fit value to 6 symbols
+// Fit value to 7 symbols
 function format_value(v) {
     if(v==0) {
         return "0";
     }
-    var r="";
-    var x=v;
-    if(x<0) {
-        x=-x;
-        r="-";
+    var sign="";
+    if(v<0){
+        sign="-";
     }
+    if(v<0) {
+        v=-v;
+    }
+    if(v<1000.0) {
+        return sign+String(v).substring(0,5);
+    }
+    if(v<1000000.0) {
+        return sign+String(v/1000.0).substring(0,5)+"k";
+    }
+    if(v<1000000000.0) {
+        return sign+String(v/1000000.0).substring(0,5)+"M";
+    }
+    if(v<1000000000000.0) {
+        return sign+String(v/1000000000.0).substring(0,5)+"G";
+    }
+    if(v<1000000000000000.0) {
+        return sign+String(v/1000000000000.0).substring(0,5)+"T";
+    }
+    return sign+String(v/1000000000000000.0).substring(0,5)+"P";
 }
 //
 // Minimize legend square
@@ -127,7 +144,7 @@ function draw_chart(data) {
     x0=TEXT_PADDING+1;
     y0=legend_height;
     
-    var main_field=plot.rect(x0,y0, WIDTH-2*TEXT_PADDING, HEIGTH-legend_height-labels_height-TEXT_PADDING,
+    var main_field=plot.rect(x0,y0, WIDTH-3*TEXT_PADDING-8*FONT_WIDTH, HEIGTH-legend_height-labels_height-TEXT_PADDING,
         {'fill':"#c0c0c0",stroke:'black',strokeWidth:1});
     // Find bound box and scales
     var points=data["points"];
@@ -135,10 +152,10 @@ function draw_chart(data) {
     var max_ts=data["max_ts"];
     var min_v=data["min_v"];
     var max_v=data["max_v"];
-    x_scale=(WIDTH-2*TEXT_PADDING-2)/(max_ts-min_ts);
+    x_scale=(WIDTH-3*TEXT_PADDING-2-8*FONT_WIDTH)/(max_ts-min_ts);
     var y_scale=(HEIGTH-legend_height-labels_height-TEXT_PADDING-2)/(max_v-min_v);
     y0=HEIGTH-labels_height-TEXT_PADDING-1;
-    // Draw labels and grid
+    // Draw x-labels and grid
     var ltw=(FONT_HEIGTH+2*TEXT_PADDING)/x_scale;
     var label_delta=ltw;
     for(i=0;i<LABEL_SCALES.length;i++) {
@@ -159,13 +176,17 @@ function draw_chart(data) {
                 {transform:'rotate(-90)'});
         plot.text(g,0,0,format_date(d));
     }
-    plot.line(x0, y0-y_scale*(-min_v), WIDTH-2*TEXT_PADDING+2, y0-y_scale*(-min_v), {stroke:'#f0f0f0'}); // Zero line
-    //var vx=WIDTH-TEXT_PADDING-5*FONT_WIDTH;
-    //if(min_v!=0 && max_v!=0) {
-    //    plot.text(lg,vx,y0-y_scale*(-min_v)+FONT_HEIGTH/2,"0");
-    //}
-    //plot.text(lg,vx,y0+FONT_HEIGTH/2,String(min_v));
-    //plot.text(lg,vx,y0-y_scale*(max_v-min_v)+FONT_HEIGTH/2,String(max_v));
+    // Draw y-labels
+    var ylabel_baseline=WIDTH-TEXT_PADDING-8*FONT_WIDTH;
+    var zy=y0+y_scale*min_v;
+    plot.line(x0, zy, WIDTH-2*TEXT_PADDING+2, zy, {stroke:'#f0f0f0'}); // Zero line
+    plot.text(lg,ylabel_baseline,zy+FONT_HEIGTH/2,"0");
+    if(zy-y0>FONT_HEIGTH+TEXT_PADDING) {
+        plot.text(lg,ylabel_baseline,y0+FONT_HEIGTH/2,format_value(min_v)); // Lower bound
+    }
+    if(zy-(y0-y_scale*(max_v-min_v))>FONT_HEIGTH+TEXT_PADDING) {
+        plot.text(lg,ylabel_baseline,y0-y_scale*(max_v-min_v)+FONT_HEIGTH/2,format_value(max_v)); // Upper bound
+    }
     // Draw plots
     for(i=0;i<points.length;i++) {
         var p=[];
@@ -193,13 +214,12 @@ function draw_chart(data) {
     plot.line(cg,cx_baseline+c_sz/4,y0-TEXT_PADDING-c_sz/2,cx_baseline+c_sz*3/4,y0-TEXT_PADDING-c_sz/2,{onclick:'zoom_down(evt)'}); //
     plot.line(cg,cx_baseline+c_sz/2,y0-TEXT_PADDING-c_sz/2+c_sz/4,cx_baseline+c_sz/2,
         y0-TEXT_PADDING-c_sz/2-c_sz/4,{onclick:'zoom_down(evt)'}); //
-
     
     plot.circle(cg,cx_baseline+c_sz/2,y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,c_sz/2,{onclick:'zoom_up(evt)'});
     plot.line(cg,cx_baseline+c_sz/4,y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,cx_baseline+c_sz*3/4,
         y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,{onclick:'zoom_down(evt)'}); //
     
-    cx_baseline=WIDTH-TEXT_PADDING*2;
+    cx_baseline=WIDTH-TEXT_PADDING*3-8*FONT_WIDTH;
     plot.polyline(cg,[[cx_baseline,c_baseline],[cx_baseline-c_sz,c_baseline-c_sz],
         [cx_baseline-c_sz,c_baseline+c_sz],[cx_baseline,c_baseline]],{onclick:'scroll_right(evt)'});
     $(main_field).mousedown(start_drag).mouseup(stop_drag).mousemove(dragging);
@@ -244,7 +264,6 @@ function dragging(event) {
     var offset = ($.browser.msie ? 0 : $('#svgplot').offset()["left"]); 
     drag_current = event.clientX-offset;
     if(!outline) {
-        //outline=plot.rect(0,0,0,0,{fill: 'none', stroke: '#c0c0c0', strokeWidth: 1, strokeDashArray: '2,2'});
         outline=plot.rect(0,0,0,0,{fill: '#d0d0d0', stroke: '#e0e0e0', strokeWidth: 1, strokeDashArray: '2,2',opacity:"0.5"});
         $(outline).mouseup(stop_drag);
     }
