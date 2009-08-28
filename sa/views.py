@@ -11,13 +11,13 @@ from django.shortcuts import get_object_or_404
 from django import forms
 from noc.lib.render import render, render_success, render_failure, render_wait
 from noc.sa.models import ManagedObject,script_registry,profile_registry,AdministrativeDomain,Activator,scheme_choices,ManagedObjectSelector,\
-    ReduceTask, reduce_script_registry, script_registry
+    ReduceTask, reduce_script_registry, script_registry, TaskSchedule
 from django.http import HttpResponseForbidden,HttpResponseNotFound,HttpResponseRedirect
 from django.views.generic import list_detail
 from xmlrpclib import ServerProxy, Error
 from noc.settings import config
 from django.contrib.auth.decorators import permission_required
-import pprint,types,socket,csv
+import pprint,types,socket,csv,datetime
 
 ##
 ## Display a list of object's scripts
@@ -229,3 +229,12 @@ def mr_task_result(request,task_id):
     result=task.get_result()
     task.delete()
     return render(request,"sa/mr_task_result.html",{"result":result})
+##
+## Reschedule task
+##
+@permission_required("sa.change_taskschedule")
+def run_now(request,task_id):
+    task=get_object_or_404(TaskSchedule,id=int(task_id))
+    task.next_run=datetime.datetime.now()
+    task.save()
+    return HttpResponseRedirect("/admin/sa/taskschedule/")
