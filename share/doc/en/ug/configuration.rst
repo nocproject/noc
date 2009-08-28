@@ -638,6 +638,29 @@ group
 ^^^^^
 Run noc-correlator daemon with *group* credentials
 
+.. _noc-launcher-conf-noc-probe:
+
+[noc-probe] section
+-------------------
+
+.. _noc-launcher-conf-noc-probe-enabled:
+
+enabled
+^^^^^^^
+true/false. Launch noc-probe daemon
+
+.. _noc-launcher-conf-noc-probe-user:
+
+user
+^^^^
+Run noc-probe daemon with *user* credentials
+
+.. _noc-launcher-conf-noc-probe-group:
+
+group
+^^^^^
+Run noc-probe daemon with *group* credentials
+
 .. _noc-fcgi-conf:
 
 noc-fcgi.conf
