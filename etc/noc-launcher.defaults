@@ -40,3 +40,8 @@ group =
 enabled = true
 user = noc
 group =
+
+[noc-probe]
+enabled = true
+user = noc
+group =
