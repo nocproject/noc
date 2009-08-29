@@ -60,7 +60,7 @@ class Param(object):
         else:
             self.type=PT_GAUGE
         # Set scale
-        self.scale=description.get("scale",1)
+        self.scale=description.get("scale",1.0)
         # Copy thresholds from descriptions
         if "threshold" in description:
             self.threshold=description["threshold"].copy()
@@ -91,7 +91,7 @@ class Param(object):
                 return PR_OK,"OK",None
             v=(value-self.last_value)/(t-self.last_time)
             self.last_time=t
-            self.last_value=v
+            self.last_value=value
             value=v
         if value is not None:
             # Check cleaned value thresholds
