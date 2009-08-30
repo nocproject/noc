@@ -209,19 +209,19 @@ function draw_chart(data) {
     var cx_baseline=x0+TEXT_PADDING;
     var c_sz=FONT_WIDTH*2;
     plot.polyline(cg,[[cx_baseline,c_baseline],[cx_baseline+c_sz,c_baseline-c_sz],
-        [cx_baseline+c_sz,c_baseline+c_sz],[cx_baseline,c_baseline]],{onclick:'scroll_left(evt)'});
+        [cx_baseline+c_sz,c_baseline+c_sz],[cx_baseline,c_baseline]],{onclick:'scroll_left(evt)'}); // Left Arrow
     plot.circle(cg,cx_baseline+c_sz/2,y0-TEXT_PADDING-c_sz/2,c_sz/2,{onclick:'zoom_down(evt)'}); // Zoom down
-    plot.line(cg,cx_baseline+c_sz/4,y0-TEXT_PADDING-c_sz/2,cx_baseline+c_sz*3/4,y0-TEXT_PADDING-c_sz/2,{onclick:'zoom_down(evt)'}); //
+    plot.line(cg,cx_baseline+c_sz/4,y0-TEXT_PADDING-c_sz/2,cx_baseline+c_sz*3/4,y0-TEXT_PADDING-c_sz/2,{onclick:'zoom_down(evt)'}); // +
     plot.line(cg,cx_baseline+c_sz/2,y0-TEXT_PADDING-c_sz/2+c_sz/4,cx_baseline+c_sz/2,
-        y0-TEXT_PADDING-c_sz/2-c_sz/4,{onclick:'zoom_down(evt)'}); //
+        y0-TEXT_PADDING-c_sz/2-c_sz/4,{onclick:'zoom_down(evt)'}); // +
     
     plot.circle(cg,cx_baseline+c_sz/2,y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,c_sz/2,{onclick:'zoom_up(evt)'});
     plot.line(cg,cx_baseline+c_sz/4,y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,cx_baseline+c_sz*3/4,
-        y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,{onclick:'zoom_down(evt)'}); //
+        y0-TEXT_PADDING-c_sz/2-c_sz-TEXT_PADDING,{onclick:'zoom_up(evt)'}); // -
     
     cx_baseline=WIDTH-TEXT_PADDING*3-8*FONT_WIDTH;
     plot.polyline(cg,[[cx_baseline,c_baseline],[cx_baseline-c_sz,c_baseline-c_sz],
-        [cx_baseline-c_sz,c_baseline+c_sz],[cx_baseline,c_baseline]],{onclick:'scroll_right(evt)'});
+        [cx_baseline-c_sz,c_baseline+c_sz],[cx_baseline,c_baseline]],{onclick:'scroll_right(evt)'}); // Right arrow
     $(main_field).mousedown(start_drag).mouseup(stop_drag).mousemove(dragging);
 }
 
