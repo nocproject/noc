@@ -47,6 +47,8 @@ class MIBNotFoundException(Exception):
 ##
 rx_module_not_found=re.compile(r"{module-not-found}.*`([^']+)'")
 rx_py_id=re.compile("[^0-9a-zA-Z]+")
+rx_mibentry=re.compile(r"^((\d+\.){5,}\d+)|(\S+::\S+)$")
+rx_mib_name=re.compile(r"^(\S+::\S+?)(.\d+)?$")
 
 ##
 ## SNMP MIB
@@ -174,6 +176,36 @@ class MIB(models.Model):
             except MIBData.DoesNotExist:
                 rest.append(l_oid.pop())
         return oid
+    ##
+    ## Returns description for symbolic/OID string
+    ##
+    @classmethod
+    def get_description(self,v):
+        if not rx_mibentry.match(v):
+            return ""
+        if "::" in v:
+            # MIB::name
+            match=rx_mib_name.match(v)
+            if not match:
+                return ""
+            try:
+                d=MIBData.objects.get(name=match.group(1))
+                return d.description
+            except MIBData.DoesNotExist:
+                return ""
+        else:
+            # Pure OID
+            try:
+                d=MIBData.objects.get(oid=v)
+                return d.description
+            except MIBData.DoesNotExist:
+                pass
+            try:
+                d=MIBData.objects.get(oid=".".join((v.split(".")[:-1])))
+                return d.description
+            except MIBData.DoesNotExist:
+                return ""
+            
 ##
 ## MIB elements
 ##
@@ -575,6 +607,15 @@ class EventData(models.Model):
     key=models.CharField("Key",max_length=256)
     value=models.TextField("Value",blank=True,null=True)
     type=models.CharField("Type",max_length=1,choices=[(">","Received"),("V","Variable"),("R","Resolved")],default=">")
+    ##
+    ## Resolve MIBs in key/value part and fill out hint
+    ##
+    def _description(self):
+        d=MIB.get_description(self.value)
+        if d:
+            return d
+        return MIB.get_description(self.key)
+    description=property(_description)
 ##
 ## Repeated events are deleated from Event table and only short record in EventRepeat remains
 ##
