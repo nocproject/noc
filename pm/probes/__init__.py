@@ -82,6 +82,8 @@ class Param(object):
     ## Returns (Result,message,cleaned_value)
     ##
     def clean(self,t,value):
+        if value is None:
+            return PR_FAIL,"Failed to retrieve parameter '%s'"%self.name,None
         value*=self.scale
         # PT_COUNTER returns relative difference against previous value
         if self.type==PT_COUNTER:
@@ -93,16 +95,15 @@ class Param(object):
             self.last_time=t
             self.last_value=value
             value=v
-        if value is not None:
-            # Check cleaned value thresholds
-            if "fail" in self.threshold\
-                and (("low" in self.threshold["fail"] and self.threshold["fail"]["low"]>value)\
-                    or ("high" in self.threshold["fail"] and self.threshold["fail"]["high"]<value)):
-                return PR_FAIL,"%s hits failure thresholds"%self.name,value
-            if "warn" in self.threshold\
-                and (("low" in self.threshold["warn"] and self.threshold["warn"]["low"]>value)\
-                    or ("high" in self.threshold["warn"] and self.threshold["warn"]["high"]<value)):
-                return PR_WARN,"%s hits warning thresholds"%self.name,value
+        # Check cleaned value thresholds
+        if "fail" in self.threshold\
+            and (("low" in self.threshold["fail"] and self.threshold["fail"]["low"]>value)\
+                or ("high" in self.threshold["fail"] and self.threshold["fail"]["high"]<value)):
+            return PR_FAIL,"%s hits failure thresholds"%self.name,value
+        if "warn" in self.threshold\
+            and (("low" in self.threshold["warn"] and self.threshold["warn"]["low"]>value)\
+                or ("high" in self.threshold["warn"] and self.threshold["warn"]["high"]<value)):
+            return PR_WARN,"%s hits warning thresholds"%self.name,value
         return PR_OK,"OK",value
 ##
 ## Check result
