@@ -42,7 +42,11 @@ class DaemonData(object):
     ##
     def launch(self):
         logging.info("Launching %s"%self.name)
-        pid=os.fork()
+        try:
+            pid=os.fork()
+        except OSError, e:
+            logging.error("%s: Fork failed: %s(%s)"%(self.name,e.strerror,e.errno))
+            return
         if pid:
             self.pid=pid
             logging.info("Daemon %s started as PID %d"%(self.name,self.pid))
@@ -54,7 +58,7 @@ class DaemonData(object):
             if self.user:
                 os.setuid(self.uid)
                 os.seteuid(self.uid)
-                # Set up EGG Cache to prevent permissions problem
+                # Set up EGG Cache to prevent permissions problem in python 2.6
                 os.environ["PYTHON_EGG_CACHE"]="/tmp/.egg-cache%d"%self.uid
             os.execv(sys.executable,[sys.executable,"./scripts/%s.py"%self.name,"launch"])
 
