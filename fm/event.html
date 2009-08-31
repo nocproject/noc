@@ -18,7 +18,26 @@
     <LI><A HREF="/fm/{{e.id}}/create_rule/"class="addlink">Create Rule</A></LI>
     <LI><A HREF="/fm/{{e.id}}/create_postprocessing_rule/"class="addlink">Create Post-Processing Rule</A></LI>
 </ul>
+<style type="text/css">
+.event_data_description {
+    display: none;
+}
+</style>
+<script type="text/javascript">
+var shown=false;
 
+function toggle() {
+    if(shown) {
+        $(".event_data_description").hide();
+        $("#toggle_link").text("Show Descriptions");
+        shown=false;
+    } else {
+        $(".event_data_description").show();
+        $("#toggle_link").text("Hide Descriptions");
+        shown=true;
+    }
+}
+</script>
 <h1>Event #{{e.id}}: {{e.subject}}</h1>
 <DIV CLASS="module">
     <TABLE WIDTH="100%">
@@ -40,11 +59,12 @@
 </DIV>
 
 <DIV CLASS="module">
-    <TABLE WIDTH="100%">
+    <TABLE WIDTH="100%" ID="event_data">
         <CAPTION><A CLASS="section">Event Data</A></CAPTION>
         {% for ed in e.eventdata_set.all %}
-            <TR class="{%cycle 'row1' 'row2'%}"><TD>{{ed.type}}</TD><TD STYLE="width: 400px">{{ed.key}}</TD><TD>{{ed.value}}</TD><TD>{{ed.description}}</TD></TR>
+            <TR class="{%cycle 'row1' 'row2'%}"><TD>{{ed.type}}</TD><TD STYLE="width: 400px">{{ed.key}}</TD><TD>{{ed.value}}</TD><TD CLASS="event_data_description">{{ed.description}}</TD></TR>
         {% endfor %}
+            <tr><td></td><td></td><td><b><a href="#" onclick="toggle();" id="toggle_link">Show Descriptions</a></b></td><td></td></tr>
     </TABLE>
 </DIV>
 
