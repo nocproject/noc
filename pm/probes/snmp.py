@@ -59,13 +59,13 @@ class SNMPSocket(UDPSocket):
                 else:
                     for oid, val in p_mod.apiPDU.getVarBinds(rsp_pdu):
                         self.probe.debug('%s SNMP GET REPLY: %s %s'%(self.service,oid.prettyPrint(),val.prettyPrint()))
-                        self.set_data(oid.prettyPrint(),val.prettyPrint())
+                        self.set_data(oid.prettyOut(),val.prettyOut())
         self.close()
     ##
     ## Convert value to float and set to probe
     ##
     def set_data(self,param,value):
-        self.probe.set_data(self.service,param,float(value))
+        self.probe.set_data(self.service,param,float(value) if value!="" else None)
     ##
     ## Set result
     ##
