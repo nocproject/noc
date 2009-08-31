@@ -32,7 +32,7 @@ class SNMPSocket(UDPSocket):
     ## Returns string containing SNMP GET requests to self.oids
     ##
     def get_snmp_request(self):
-        self.probe.debug("%s SNMP GET %s"%(self.service,str(oids)))
+        self.probe.debug("%s SNMP GET %s"%(self.service,str(self.oids)))
         p_mod=api.protoModules[api.protoVersion1]
         req_PDU =  p_mod.GetRequestPDU()
         p_mod.apiPDU.setDefaults(req_PDU)
