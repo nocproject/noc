@@ -32,6 +32,7 @@ class SNMPSocket(UDPSocket):
     ## Returns string containing SNMP GET requests to self.oids
     ##
     def get_snmp_request(self):
+        self.probe.debug("%s SNMP GET %s"%(self.service,str(oids)))
         p_mod=api.protoModules[api.protoVersion1]
         req_PDU =  p_mod.GetRequestPDU()
         p_mod.apiPDU.setDefaults(req_PDU)
@@ -54,9 +55,10 @@ class SNMPSocket(UDPSocket):
             if p_mod.apiPDU.getRequestID(self.req_PDU)==p_mod.apiPDU.getRequestID(rsp_pdu):
                 errorStatus = p_mod.apiPDU.getErrorStatus(rsp_pdu)
                 if errorStatus:
-                    print errorStatus.prettyPrint()
+                    self.probe.error("%s SNMP GET ERROR: %s"%(self.service,errorStatus.prettyPrint()))
                 else:
                     for oid, val in p_mod.apiPDU.getVarBinds(rsp_pdu):
+                        self.probe.debug('%s SNMP GET REPLY: %s %s'%(self.service,oid.prettyPrint(),val.prettyPrint()))
                         self.set_data(oid.prettyPrint(),val.prettyPrint())
         self.close()
     ##
@@ -87,6 +89,7 @@ class SNMPIfIndexSocket(SNMPSocket):
     ## Fill GET NEXT Request
     ##
     def get_snmp_request(self):
+        self.probe.debug("%s SNMP GETNEXT %s"%(self.service,str(self.oid_root)))
         p_mod=api.protoModules[api.protoVersion1]
         req_PDU =  p_mod.GetNextRequestPDU()
         p_mod.apiPDU.setDefaults(req_PDU)
