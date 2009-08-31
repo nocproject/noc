@@ -8,7 +8,7 @@
 """
 """
 from noc.lib.registry import Registry
-import time,re
+import time,re,logging
 ##
 ## Probe registry
 ##
@@ -163,6 +163,7 @@ class Probe(object):
         self.next_run=time.time()
         self.pm_result={} # service -> (timestamp,PR_OK|PR_ERR|PR_FAIL)
         self.pm_data={}   # service -> [(timestamp,param,value)]
+        self.info("Initialized")
     ##
     ## Probes are ordereb by next_run properties
     ##
@@ -215,6 +216,7 @@ class Probe(object):
     ## start() calls on_start() method which overriden in subclasses
     ##
     def start(self):
+        self.debug("Start")
         self.start_time=time.time()
         self.pm_result={}
         self.pm_data={}
@@ -224,6 +226,7 @@ class Probe(object):
     ## Called by noc-probe when probe timeout expired
     ##
     def stop(self):
+        self.debug("Stop")
         self.on_stop()
     ##
     ## Called by subclasses. Stores value of the service's parameter
@@ -261,6 +264,7 @@ class Probe(object):
     ## closing check round
     ##
     def exit(self):
+        self.debug("Exit")
         self.next_run=self.start_time+self.interval
         self.start_time=None
         data=[]
@@ -315,3 +319,15 @@ class Probe(object):
     # Return 'name' option of configuration section as float
     def getfloat(self,name,default=None):
         return self.__get(self.config.getfloat,name,default)
+    # Format log message
+    def __logformat(self,msg):
+        return "[%s/%s] %s"%(self.name,self.probe_name,msg)
+    # Log 'info' message
+    def info(self,msg):
+        logging.info(self.__logformat(msg))
+    # Log 'error' message
+    def error(self,msg):
+        logging.error(self.__logformat(msg))
+    # Log 'debug' message
+    def debug(self,msg):
+        logging.debug(self.__logformat(msg))

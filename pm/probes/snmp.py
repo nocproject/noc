@@ -219,11 +219,13 @@ class SNMPProbe(Probe):
     ## Set new ifindex mapping for service
     ##
     def set_ifindex(self,service,ifindex):
+        self.debug("Setting ifindexes for %s: %s"%(service,str(ifindex)))
         if not ifindex:
             try:
                 del self.ifindex[service]
             except:
                 pass
+            loggi
             return
         ifindex_to_name={}
         name_to_ifindex={}
