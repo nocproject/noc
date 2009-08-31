@@ -43,7 +43,7 @@
     <TABLE WIDTH="100%">
         <CAPTION><A CLASS="section">Event Data</A></CAPTION>
         {% for ed in e.eventdata_set.all %}
-            <TR class="{%cycle 'row1' 'row2'%}"><TD>{{ed.type}}</TD><TD STYLE="width: 400px">{{ed.key}}</TD><TD>{{ed.value}}</TD></TR>
+            <TR class="{%cycle 'row1' 'row2'%}"><TD>{{ed.type}}</TD><TD STYLE="width: 400px">{{ed.key}}</TD><TD>{{ed.value}}</TD><TD>{{ed.description}}</TD></TR>
         {% endfor %}
     </TABLE>
 </DIV>
