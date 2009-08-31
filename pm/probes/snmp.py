@@ -33,7 +33,7 @@ class SNMPSocket(UDPSocket):
     ##
     def get_snmp_request(self):
         self.probe.debug("%s SNMP GET %s"%(self.service,str(self.oids)))
-        p_mod=api.protoModules[api.protoVersion1]
+        p_mod=api.protoModules[api.protoVersion2c]
         req_PDU =  p_mod.GetRequestPDU()
         p_mod.apiPDU.setDefaults(req_PDU)
         p_mod.apiPDU.setVarBinds(req_PDU,[(self.oid_to_tuple(oid),p_mod.Null()) for oid in self.oids])
@@ -48,7 +48,7 @@ class SNMPSocket(UDPSocket):
     ## Call set_data for all returned values
     ##
     def on_read(self,data,address,port):
-        p_mod=api.protoModules[api.protoVersion1]
+        p_mod=api.protoModules[api.protoVersion2c]
         while data:
             rsp_msg, data = decoder.decode(data, asn1Spec=p_mod.Message())
             rsp_pdu = p_mod.apiMessage.getPDU(rsp_msg)
@@ -90,7 +90,7 @@ class SNMPIfIndexSocket(SNMPSocket):
     ##
     def get_snmp_request(self):
         self.probe.debug("%s SNMP GETNEXT %s"%(self.service,str(self.oid_root)))
-        p_mod=api.protoModules[api.protoVersion1]
+        p_mod=api.protoModules[api.protoVersion2c]
         req_PDU =  p_mod.GetNextRequestPDU()
         p_mod.apiPDU.setDefaults(req_PDU)
         p_mod.apiPDU.setVarBinds(req_PDU,[(p_mod.ObjectIdentifier(self.oid_to_tuple(self.oid_root)),p_mod.Null())])
@@ -105,7 +105,7 @@ class SNMPIfIndexSocket(SNMPSocket):
     ## Read the table and populate self.ifindex
     ##
     def on_read(self,data,address,port):
-        p_mod=api.protoModules[api.protoVersion1]
+        p_mod=api.protoModules[api.protoVersion2c]
         while data:
             rsp_msg, data = decoder.decode(data, asn1Spec=p_mod.Message())
             rsp_pdu = p_mod.apiMessage.getPDU(rsp_msg)
