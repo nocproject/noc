@@ -19,17 +19,16 @@ class TestProbe(Probe):
         "param1" : {},
         "param2" : {
             "threshold" : {
-                "warn": { "high" : 800 },
-                "err" : { "high" : 900 }
+                "warn" : { "high" : 800 },
+                "fail" : { "high" : 900 }
             }
         },
         "param3" : {
             "threshold" : {
-                "err" : { "low" : 100 }
+                "fail" : { "low" : 100 }
             }
         }
     }
-    
     def on_start(self):
         for service in self.services:
             if random.random()<0.25: # Simulate Fail
