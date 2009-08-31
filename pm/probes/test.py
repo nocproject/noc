@@ -27,8 +27,14 @@ class TestProbe(Probe):
             "threshold" : {
                 "fail" : { "low" : 100 }
             }
+        },
+        "param4" : {
+            "type" : "counter",
         }
     }
+    def __init__(self,daemon,probe_name,config):
+        super(TestProbe,self).__init__(daemon,probe_name,config)
+        self.ww=0
     def on_start(self):
         for service in self.services:
             if random.random()<0.25: # Simulate Fail
@@ -37,4 +43,6 @@ class TestProbe(Probe):
                 for i in range(1,4):
                     self.set_data(service,"param%d"%i, random.random()*1000-500)
                 self.set_result(service,PR_OK)
+            self.set_data(service,"param4",self.ww)
+        self.ww=(self.ww+1000000000)&0xFFFFFFFF # Simulate wrapping
         self.exit()
