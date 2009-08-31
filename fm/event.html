@@ -43,7 +43,7 @@
     <TABLE WIDTH="100%">
         <CAPTION><A CLASS="section">Event Data</A></CAPTION>
         {% for ed in e.eventdata_set.all %}
-            <TR><TD>{{ed.type}}</TD><TD STYLE="width: 400px">{{ed.key}}</TD><TD>{{ed.value}}</TD></TR>
+            <TR class="{%cycle 'row1' 'row2'%}"><TD>{{ed.type}}</TD><TD STYLE="width: 400px">{{ed.key}}</TD><TD>{{ed.value}}</TD></TR>
         {% endfor %}
     </TABLE>
 </DIV>
@@ -52,7 +52,7 @@
 <TABLE WIDTH="100%">
     <CAPTION><A CLASS="section">Event History</A></CAPTION>
     {% for l in e.eventlog_set.all %}
-        <TR><TD STYLE="width: 200px">{{l.timestamp}}</TD><TD>{{l.from_status}}</TD><TD>{{l.to_status}}</TD><TD>{{l.message}}</TD></TR>
+        <TR class="{%cycle 'row1' 'row2'%}"><TD STYLE="width: 200px">{{l.timestamp}}</TD><TD>{{l.from_status}}</TD><TD>{{l.to_status}}</TD><TD>{{l.message}}</TD></TR>
     {% endfor %}
 </TABLE>
 </DIV>
@@ -62,7 +62,7 @@
 <TABLE WIDTH="100%">
     <CAPTION><A CLASS="section">Previous occurences</A></CAPTION>
     {% for r in e.eventrepeat_set.all %}
-        <TR><TD>{{r.timestamp}}</TD></TR>
+        <TR class="{%cycle 'row1' 'row2'%}"><TD>{{r.timestamp}}</TD></TR>
     {% endfor %}
 </TABLE>
 {% endif %}
