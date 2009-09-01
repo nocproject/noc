@@ -22,8 +22,12 @@ class ProcessProbeSocket(PopenProbeSocket):
     def get_cmd_darwin(self):
         return ["/bin/ps","-ax","-o","rss,vsize,command"]
     ## Linux
-    def get_cmd_linus(self):
-        return []
+    def get_cmd_linux(self):
+        return ["/bin/ps","-ax","-o","rss,vsize,cmd"]
+    ## Solaris
+    def get_cmd_sunos(self):
+        return ["/bin/ps","-e","-o","rss,vsz,args"]
+    ## 
     ##
     ## Parse self.data
     ##
