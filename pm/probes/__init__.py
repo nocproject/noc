@@ -166,7 +166,7 @@ class Probe(object):
         self.probe_type=self.name
         self.factory=self.daemon.factory
         self.config=config
-        self.interval=self.getint("interval")
+        self.interval=self.getint("interval",60)
         self.services=self.expand_config_list("services")
         self.params={}
         if not self.delay_parameter_expansion():
