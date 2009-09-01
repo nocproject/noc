@@ -34,7 +34,15 @@ def data(request,chart_id):
     time_series=chart.time_series.all()
     now=int(time.time())
     if request.GET and "t0" in request.GET and "t1" in request.GET:
-        range=[int(request.GET["t0"]),int(request.GET["t1"])]
+        t0=int(request.GET["t0"])
+        t1=int(request.GET["t1"])
+        if t0>t1: # Swap ranges
+            v=t1
+            t1=t0
+            t0=v
+        if t1-t0<60: # Do not allow too small window
+            t0=t1-60
+        range=[t0,t1]
     else:
         range=[now-24*60,now]
     r={
