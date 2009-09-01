@@ -52,15 +52,19 @@ class DaemonData(object):
             logging.info("Daemon %s started as PID %d"%(self.name,self.pid))
         else:
             # Run child
-            if self.group:
-                os.setgid(self.gid)
-                os.setegid(self.gid)
-            if self.user:
-                os.setuid(self.uid)
-                os.seteuid(self.uid)
-                # Set up EGG Cache to prevent permissions problem in python 2.6
-                os.environ["PYTHON_EGG_CACHE"]="/tmp/.egg-cache%d"%self.uid
-            os.execv(sys.executable,[sys.executable,"./scripts/%s.py"%self.name,"launch"])
+            try:
+                if self.group:
+                    os.setgid(self.gid)
+                    os.setegid(self.gid)
+                if self.user:
+                    os.setuid(self.uid)
+                    os.seteuid(self.uid)
+                    # Set up EGG Cache to prevent permissions problem in python 2.6
+                    os.environ["PYTHON_EGG_CACHE"]="/tmp/.egg-cache%d"%self.uid
+                os.execv(sys.executable,[sys.executable,"./scripts/%s.py"%self.name,"launch"])
+            except OSError, e:
+                logging.error("%s: OS Error: %s(%s)"%(self.name,e.strerror,e.errno))
+                sys.exit(1)
 
 class Launcher(Daemon):
     daemon_name="noc-launcher"
