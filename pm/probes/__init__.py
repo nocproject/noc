@@ -96,7 +96,7 @@ class Param(object):
                 self.last_time=t
                 self.last_value=value
                 return PR_OK,"OK",None
-            if value>self.last_value:
+            if value>=self.last_value:
                 v=(value-self.last_value)/(t-self.last_time)
             else:
                 # Handle wrapping
