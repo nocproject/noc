@@ -18,7 +18,7 @@ class SNMPInterfaceProbe(SNMPProbe):
             "type"  : "counter",
             "scale" : 8,
         },
-        "{{ifname}}_out_bandwith" :   {
+        "{{ifname}}_out_bandwidth" :   {
             "oid"   : "1.3.6.1.2.1.2.2.1.16.{{ifindex}}",
             "type"  : "counter",
             "scale" : 8,
