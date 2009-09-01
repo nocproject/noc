@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import socket,select,errno,time,logging,pty,os,signal
+import socket,select,errno,time,logging,pty,os,signal,subprocess
 from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
      ENOTCONN, ESHUTDOWN, EINTR, EISCONN, ECONNREFUSED, EPIPE, errorcode
 from noc.lib.debug import error_report
@@ -441,7 +441,31 @@ class PTYSocket(Socket):
     
     def on_read(self,data):
         pass
+##
+## PopenSocket
+## Events: on_read, on_close
+##
+class PopenSocket(Socket):
+    def __init__(self,factory,argv):
+        self.debug("Launching %s"%argv)
+        self.p=subprocess.Popen(argv,stdout=subprocess.PIPE)
+        super(PopenSocket,self).__init__(factory,FileWrapper(self.p.stdout.fileno()))
+        self.update_status()
 
+    def handle_read(self):
+        try:
+            data=self.socket.read(8192)
+        except OSError:
+            self.close()
+            return
+        self.update_status()
+        if data:
+            self.on_read(data)
+        else:
+            self.close()
+
+    def close(self):
+        Socket.close(self)
 ##
 ## Socket Factory.
 ## Methods:
