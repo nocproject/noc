@@ -18,3 +18,4 @@ from noc.sa.interfaces.icommands import ICommands
 from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
 # User Management
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
+from noc.sa.interfaces.ihaslocaluser import IHasLocalUser
