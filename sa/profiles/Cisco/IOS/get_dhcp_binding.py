@@ -18,9 +18,9 @@ class Script(noc.sa.script.Script):
     implements=[IGetDHCPBinding]
     def execute(self):
         self.cli("terminal length 0")
-        vlans=self.cli("show ip dhcp binding")
+        data=self.cli("show ip dhcp binding")
         r=[]
-        for l in vlans.split("\n"):
+        for l in data.split("\n"):
             match=rx_line.match(l.strip().lower())
             if match:
                 d=match.group("expire")
