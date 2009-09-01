@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import re,types
+import re,types,datetime
 
 try:
     from django import forms
@@ -232,6 +232,19 @@ class DictParameter(Parameter):
 ##
 ##
 ##
+rx_datetime=re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
+class DateTimeParameter(StringParameter):
+    def clean(self,value):
+        if isinstance(value,datetime.datetime):
+            return value.isoformat()
+        if value.lower()=="infinite":
+            return datetime.datetime(year=datetime.MAXYEAR,month=1,day=1)
+        if rx_datetime.match(value):
+            return value
+        raise InterfaceTypeError
+##
+##
+##
 class IPParameter(StringParameter):
     """
     >>> IPParameter().clean("192.168.0.1")
@@ -274,12 +287,15 @@ class VLANIDParameter(IntParameter):
 ##
 ##
 rx_mac_address_cisco=re.compile("^[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{4}$")
+rx_mac_address_cisco_media=re.compile("^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
 rx_mac_address_sixblock=re.compile("^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$")
 class MACAddressParameter(StringParameter):
     """
     >>> MACAddressParameter().clean("1234.5678.9ABC")
     '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("1234.5678.9abc")
+    '12:34:56:78:9A:BC'
+    >>> MACAddressParameter().clean("0112.3456.789a.bc")
     '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("1234.5678.9abc.def0")
     Traceback (most recent call last):
@@ -303,6 +319,10 @@ class MACAddressParameter(StringParameter):
     def clean(self,value):
         value=super(MACAddressParameter,self).clean(value)
         value=value.upper()
+        match=rx_mac_address_cisco_media.match(value)
+        if match:
+            value=value.replace(".","")[2:]
+            return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
         match=rx_mac_address_cisco.match(value)
         if match:
             value=value.replace(".","")
