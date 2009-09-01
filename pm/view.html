@@ -55,7 +55,7 @@ function pad(n,len) {
 }
 //
 function format_date(d) {
-    return pad(d.getDate(),2)+"."+pad(d.getMonth(),2)+"."+pad(d.getFullYear(),4)+" "+pad(d.getHours(),2)+":"+pad(d.getMinutes(),2);
+    return pad(d.getDate(),2)+"."+pad(d.getMonth()+1,2)+"."+pad(d.getFullYear(),4)+" "+pad(d.getHours(),2)+":"+pad(d.getMinutes(),2);
 }
 // Fit value to 7 symbols
 function format_value(v) {
