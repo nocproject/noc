@@ -16,3 +16,5 @@ from noc.sa.interfaces.iping import IPing
 from noc.sa.interfaces.igetarp import IGetARP
 from noc.sa.interfaces.icommands import ICommands
 from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
+# User Management
+from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
