@@ -128,6 +128,7 @@ class Cisco_IOS_IPsec_Invalid_SPI_SYSLOG_SNMP_Rule(ClassificationRule):
     name="Cisco.IOS IPsec Invalid SPI SYSLOG SNMP"
     event_class=IPsecInvalidSPI
     preference=1000
+    required_mibs=["CISCO-SYSLOG-MIB"]
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^SNMP Trap$"),

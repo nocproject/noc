@@ -56,6 +56,7 @@ class Cisco_IOS_dot11_Max_Retries_SYSLOG_SNMP_Rule(ClassificationRule):
     name="Cisco.IOS dot11 Max Retries SYSLOG SNMP"
     event_class=Dot11MaxRetries
     preference=1000
+    required_mibs=["CISCO-SYSLOG-MIB"]
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^source$",r"^SNMP Trap$"),
@@ -81,10 +82,11 @@ class Cisco_IOS_Dot11_Deauthenticate_SYSLOG_Rule(ClassificationRule):
 ##
 ## Cisco.IOS WDS Auth Timeout SNMP
 ##
-class Cisco_IOS_WDS_Auth_Timeout_SNMP_Rule(ClassificationRule):
-    name="Cisco.IOS WDS Auth Timeout SNMP"
+class Cisco_IOS_WDS_Auth_Timeout_SYSLOG_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS WDS Auth Timeout SYSLOG SNMP"
     event_class=WDSAuthenticationTimeout
     preference=1000
+    required_mibs=["CISCO-SYSLOG-MIB"]
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.4\.\d+$",r"^TIMEOUT$"),
@@ -108,10 +110,11 @@ class Cisco_IOS_WDS_Auth_Timeout_SYSLOG_Rule(ClassificationRule):
 ##
 ## Cisco.IOS CCMP Replay SNMP
 ##
-class Cisco_IOS_CCMP_Replay_SNMP_Rule(ClassificationRule):
-    name="Cisco.IOS CCMP Replay SNMP"
+class Cisco_IOS_CCMP_Replay_SYSLOG_SNMP_Rule(ClassificationRule):
+    name="Cisco.IOS CCMP Replay SYSLOG SNMP"
     event_class=CCMPReplay
     preference=1000
+    required_mibs=["CISCO-SYSLOG-MIB"]
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.5\.\d+$",r"^AES-CCMP TSC replay was detected on a packet \(TSC \S+\) received from (?P<raw_mac>\S+)\.$"),

@@ -65,6 +65,7 @@ class Cisco_IOS_Login_Failed_SYSLOG_SNMP_Rule(ClassificationRule):
     name="Cisco.IOS Login Failed SYSLOG SNMP"
     event_class=LoginFailed
     preference=1000
+    required_mibs=["CISCO-SYSLOG-MIB"]
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.2\.\d+$",r"^SEC_LOGIN$"),

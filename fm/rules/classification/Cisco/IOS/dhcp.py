@@ -29,7 +29,7 @@ class Cisco_IOS_DHCPD_Address_Conflict_SYSLOG_SNMP_Rule(ClassificationRule):
     name="Cisco.IOS DHCPD Address Conflict SYSLOG SNMP"
     event_class=DHCPDAddressConflict
     preference=1000
-    require_mibs=["CISCO-SYSLOG-MIB"]
+    required_mibs=["CISCO-SYSLOG-MIB"]
     patterns=[
         (r"^source$",r"^SNMP Trap$"),
         (r"^profile$",r"^Cisco\.IOS$"),
