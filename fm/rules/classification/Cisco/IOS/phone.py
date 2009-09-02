@@ -16,6 +16,7 @@ class Cisco_IOS_Phone_Call_SNMP_Rule(ClassificationRule):
     name="Cisco.IOS Phone Call SNMP"
     event_class=PhoneCall
     preference=1000
+    required_mibs=["DIAL-CONTROL-MIB"]
     patterns=[
         (r"^source$",r"^SNMP Trap$"),
         (r"^profile$",r"^Cisco\.IOS$"),

@@ -28,6 +28,7 @@ class Cisco_IOS_Bad_DNS_Query_SYSLOG_SNMP_Rule(ClassificationRule):
     name="Cisco.IOS Bad DNS Query SYSLOG SNMP"
     event_class=BadDNSQuery
     preference=1000
+    required_mibs=["CISCO-SYSLOG-MIB"]
     patterns=[
         (r"^profile$",r"^Cisco\.IOS$"),
         (r"^1\.3\.6\.1\.4\.1\.9\.9\.41\.1\.2\.3\.1\.4\.\d+$",r"^BADQUERY$"),
