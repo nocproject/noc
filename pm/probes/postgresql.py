@@ -70,6 +70,7 @@ class PostgreSQLProbe(Probe):
             service=row[0]
             for param,value in zip(self.pg_stat_params,row[1:]):
                 self.set_data(service,param,value)
+        self.sql("COMMIT")
         self.exit()
     
     def on_stop(self):
