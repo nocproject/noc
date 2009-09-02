@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 import os,logging,pty,signal,time,re,sys,signal,Queue,cPickle,tempfile
 from errno import ECONNREFUSED
 from noc.sa.profiles import profile_registry
@@ -395,16 +396,16 @@ class Activator(Daemon,FSM):
         pv,pos,sn=name.split(".",2)
         profile=profile_registry["%s.%s"%(pv,pos)]()        
         script=script_registry[name](profile,self,access_profile,**kwargs)
-        self.script_lock.acquire()
-        self.script_threads[script]=callback
-        self.script_lock.release()
+        with self.script_lock:
+            self.script_threads[script]=callback
+            logging.info("%d script threads"%(len(self.script_threads)))
         script.start()
 
     def on_script_exit(self,script):
-        self.script_lock.acquire()
-        cb=self.script_threads[script]
-        del self.script_threads[script]
-        self.script_lock.release()
+        logging.info("Script %s(%s) completed"%(script.name,script.access_profile.address))
+        with self.script_lock:
+            cb=self.script_threads.pop(script)
+            logging.info("%d script threads left"%(len(self.script_threads)))
         cb(script)
         
     def request_call(self,f,*args,**kwargs):
