@@ -175,7 +175,7 @@ class ManagedObject(models.Model):
                 rr.append("(sa_managedobject.administrative_domain_id=%s)")
                 pp.append(a.administrative_domain.id)
             if a.group:
-                rr.append("(id IN (SELECT managedobject_id FROM sa_managedobject_groups WHERE objectgroup_id=%s))")
+                rr.append("(sa_managedobject.id IN (SELECT managedobject_id FROM sa_managedobject_groups WHERE objectgroup_id=%s))")
                 pp.append(a.group.id)
             if len(rr)==1: # Single clause
                 r+=rr
