@@ -79,6 +79,10 @@ _ERRORCODE = descriptor.EnumDescriptor(
       name='ERR_DOWN', index=16, number=16,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_TIMEOUT', index=17, number=17,
+      options=None,
+      type=None),
   ],
   options=None,
 )
@@ -123,6 +127,7 @@ ERR_INVALID_SCRIPT = 13
 ERR_SCRIPT_EXCEPTION = 14
 ERR_ACTIVATOR_NOT_AVAILABLE = 15
 ERR_DOWN = 16
+ERR_TIMEOUT = 17
 TELNET = 0
 SSH = 1
 HTTP = 2
