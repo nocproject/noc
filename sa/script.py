@@ -32,7 +32,8 @@ scheme_id={
     "ssh"    : SSH,
     "http"   : HTTP,
 }
-
+##
+class TimeOutError(Exception): pass
 ##
 ##
 ##
@@ -111,8 +112,11 @@ class Script(threading.Thread):
     TELNET=scheme_id["telnet"]
     SSH=scheme_id["ssh"]
     HTTP=scheme_id["http"]
+    TIMEOUT=120 # 2min by default
 
     def __init__(self,profile,activator,access_profile,parent=None,**kwargs):
+        self.start_time=time.time()
+        self.to_cancel=False
         self.parent=parent
         self.access_profile=access_profile
         if self.access_profile.address:
@@ -137,6 +141,11 @@ class Script(threading.Thread):
         self.strip_echo=True
         self.kwargs=kwargs
         self.scripts=ScriptProxy(self)
+    ##
+    ## Checks script is stale and must be terminated
+    ##
+    def is_stale(self):
+        return time.time()-self.start_time > self.TIMEOUT
     
     @classmethod
     def implements_interface(cls,interface):
@@ -147,6 +156,9 @@ class Script(threading.Thread):
         
     def debug(self,msg):
         logging.debug("[%s] %s"%(self.debug_name,msg))
+    
+    def error(self,msg):
+        logging.error("[%s] %s"%(self.debug_name,msg))
         
     def guarded_run(self):
         self.debug("Guarded run")
@@ -168,6 +180,8 @@ class Script(threading.Thread):
         self.debug("Running")
         try:
             self.result=self.serialize_result(self.guarded_run())
+        except TimeOutError:
+            self.error("Timed out")
         except:
             t,v,tb=sys.exc_info()
             r=[str(t),str(v)]
@@ -181,6 +195,20 @@ class Script(threading.Thread):
         
     def execute(self,**kwargs):
         return None
+    ##
+    ## Request CLI provider's queue
+    ## Handle cancel condition
+    ##
+    def cli_queue_get(self):
+        while True:
+            try:
+                return self.cli_provider.queue.get(block=True,timeout=1)
+            except Queue.Empty:
+                if self.to_cancel:
+                    self.error("Canceled")
+                    raise TimeOutError()
+                else:
+                    continue
     
     def request_cli_provider(self):
         if self.parent:
@@ -194,7 +222,7 @@ class Script(threading.Thread):
             else:
                 raise Exception("Invalid access scheme '%d' for CLI"%self.access_profile.scheme)
             self.cli_provider=s_class(self.activator.factory,self.profile,self.access_profile)
-            self.cli_provider.queue.get(block=True) # Wait until provider in PROMPT
+            self.cli_queue_get()
             self.debug("CLI Provider is ready")
         return self.cli_provider
         
@@ -202,7 +230,7 @@ class Script(threading.Thread):
         self.debug("cli(%s)"%cmd)
         self.request_cli_provider()
         self.cli_provider.submit(cmd)
-        data=self.cli_provider.queue.get(block=True)
+        data=self.cli_queue_get()
         if self.strip_echo and data.lstrip().startswith(cmd):
             data=self.strip_first_lines(data.lstrip())
         self.debug("cli() returns:\n---------\n%s\n---------"%repr(data))
@@ -241,6 +269,11 @@ class Script(threading.Thread):
             else:
                 result[int(x)]=None
         return sorted(result.keys())
+    ##
+    ## Cancel script
+    ##
+    def cancel_script(self):
+        self.to_cancel=True
 ##
 ##
 ##

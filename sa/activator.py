@@ -38,8 +38,12 @@ class Service(SAEService):
                 done(controller,response=c)
             else:
                 e=Error()
-                e.code=ERR_SCRIPT_EXCEPTION
-                e.text=script.error_traceback
+                if script.to_cancel: # Timeout
+                    e.code=ERR_TIMEOUT
+                    e.text="Timed out"
+                else:
+                    e.code=ERR_SCRIPT_EXCEPTION
+                    e.text=script.error_traceback
                 done(controller,error=e)
         try:
             profile=profile_registry[request.access_profile.profile]
@@ -446,6 +450,9 @@ class Activator(Daemon,FSM):
         # Send collected PM data
         if self.get_state()=="ESTABLISHED" and self.pm_data_queue:
             self.send_pm_data()
+        # Cancel stale scripts
+        if self.get_state()=="ESTABLISHED":
+            self.cancel_stale_scripts()
         # Perform default daemon/fsm machinery
         super(Activator,self).tick()
                 
@@ -643,6 +650,15 @@ class Activator(Daemon,FSM):
             d.value=value
         self.pm_data_queue=[]
         self.sae_stream.proxy.pm_data(r,pm_data_callback)
+    ##
+    ## Cancel stale scripts
+    ##
+    def cancel_stale_scripts(self):
+        to_cancel=[st for st in self.script_threads if st.is_stale()]
+        for script in to_cancel:
+            logging.info("Canceling stale script %s(%s)"%(script.name,script.access_profile.address))
+            st.cancel_script()
+        
     # Signal handlers
 
     # SIGUSR1 returns process info
