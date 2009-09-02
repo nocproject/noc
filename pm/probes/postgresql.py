@@ -11,32 +11,45 @@ from noc.pm.probes import *
 
 class PostgreSQLProbe(Probe):
     name="postgresql"
-    
-    # List of (name,type,sp_name)
-    DB_SP_COUNTERS=[
-        ("num_backends",   "pg_stat_get_db_numbackends"),
-        ("xact_commit",    "pg_stat_get_db_xact_commit"),
-        ("xact_rollback",  "pg_stat_get_db_xact_rollback"),
-        ("blocks_fetched", "pg_stat_get_db_blocks_fetched"),
-        ("blocks_hit",     "pg_stat_get_db_blocks_hit"),
-    ]
-    
+
     parameters={
-        "num_backends"   : {"type": "gauge"},
-        "xact_commit"    : {"type": "counter"},
-        "xact_rollback"  : {"type": "counter"},
-        "blocks_fetched" : {"type": "counter"},
-        "blocks_hit"     : {"type": "counter"},
+        "num_backends"    : {"type": "gauge"},
+        "xact_commit"     : {"type": "counter"},
+        "xact_rollback"   : {"type": "counter"},
+        "blocks_fetched"  : {"type": "counter"},
+        "blocks_hit"      : {"type": "counter"},
+        "records_returned": {"type": "counter"},
+        "records_fetched" : {"type": "counter"},
+        "records_inserted": {"type": "counter"},
+        "records_updated" : {"type": "counter"},
+        "records_deleted" : {"type": "counter"},
     }
-    
+
+    PG_STAT_DATABASE_COUNTERS={
+        "numbackends"   : "num_backends",
+        "xact_commit"   : "xact_commit",
+        "xact_rollback" : "xact_rollback",
+        "blks_read"     : "blocks_fetched",
+        "blks_hit"      : "blocks_hit",
+        "tup_returned"  : "records_returned",
+        "tup_fetched"   : "records_fetched",
+        "tup_inserted"  : "records_inserted",
+        "tup_updated"   : "records_updated",
+        "tup_deleted"   : "records_deleted",
+    }
+        
     def __init__(self,daemon,probe_name,config):
         super(PostgreSQLProbe,self).__init__(daemon,probe_name,config)
         self.dsn=self.get("dsn")
         self.connect=None
         self.cursor=None
-        self.db_query="SELECT datname,"+",".join([x[1]+"(datid)" for x in self.DB_SP_COUNTERS])\
+        self.pg_stat_names=[]
+        self.pg_stat_params=[]
+        for n,p in self.PG_STAT_DATABASE_COUNTERS.items():
+            self.pg_stat_names+=[n]
+            self.pg_stat_params+=[p]
+        self.db_query="SELECT datname,"+",".join(self.pg_stat_names)\
             +" FROM pg_stat_database WHERE datname IN (%s)"%",".join(["'%s'"%s for s in self.services])
-        self.db_param=[x[0] for x in self.DB_SP_COUNTERS[1:]]
     
     def get_cursor(self):
         import psycopg2
@@ -55,7 +68,7 @@ class PostgreSQLProbe(Probe):
     def on_start(self):
         for row in self.sql(self.db_query):
             service=row[0]
-            for param,value in zip(self.db_param,row[1:]):
+            for param,value in zip(self.pg_stat_params,row[1:]):
                 self.set_data(service,param,value)
         self.exit()
     
