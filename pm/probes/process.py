@@ -27,6 +27,9 @@ class ProcessProbeSocket(PopenProbeSocket):
     ## Solaris
     def get_cmd_sunos(self):
         return ["/bin/ps","-e","-o","rss,vsz,args"]
+    ## FreeBSD
+    def get_cmd_freebsd(self):
+        return ["/bin/ps","-ax","-o","rss,vsz,command"]
     ## 
     ##
     ## Parse self.data
