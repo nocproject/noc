@@ -91,3 +91,36 @@ class WDSAuthenticationTimeout(EventClass):
     repeat_suppression=False
     repeat_suppression_interval=0
     trigger=None
+##
+## Rogue AP Detected
+##
+class RogueAPDetected(EventClass):
+    name     = "Rogue AP Detected"
+    category = "SECURITY"
+    priority = "WARNING"
+    subject_template="Roque AP Detected by {{ap}}: {{mac}}"
+    body_template="""Access Point {{ap}} has detected roque AP with MAC address {{mac}} at channel {{channel}}.
+Rogue AP SSID is: {{ssid}}"""
+    repeat_suppression=False
+    repeat_suppression_interval=3600
+    trigger=None
+    class Vars:
+        mac=Var(required=True,repeat=False)
+        ap=Var(required=False,repeat=False)
+        channel=Var(required=False,repeat=False)
+        ssid=Var(required=False,repeat=False)
+##
+## Rogue AP Removed
+##
+class RogueAPRemoved(EventClass):
+    name     = "Rogue AP Removed"
+    category = "SECURITY"
+    priority = "NORMAL"
+    subject_template="Roque AP Removed: {{mac}}@{{ap}}"
+    body_template="""Roque AP {{mac}} has left {{ap}} area"""
+    repeat_suppression=False
+    repeat_suppression_interval=3600
+    trigger=None
+    class Vars:
+        ap=Var(required=True,repeat=False)
+        mac=Var(required=True,repeat=False)
