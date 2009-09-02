@@ -24,4 +24,4 @@ class Command(BaseCommand):
                 sys.stderr.flush()
                 continue
             for tsd in ts.timeseriesdata_set.all().order_by("timestamp"):
-                print "%d,%f"%(tsd.timestamp,tsd.value)
+                print "%d,%s"%(tsd.timestamp,"%f"%tsd.value if tsd.value is not None else "-")
