@@ -12,7 +12,7 @@ def prefix_to_zone(p):
     n,m=p.split("/")
     n=n.split(".")[:-1]
     n.reverse()
-    return "%s.%s.%s.in-addr.arpa"%(n[2],n[1],n[0])
+    return "%s.%s.%s.in-addr.arpa"%(n[0],n[1],n[2])
 
 class Report(noc.main.report.Report):
     name="dns.missed_reverse_zones"
