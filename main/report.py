@@ -148,7 +148,7 @@ class Report(object):
     
     def render(self):
         out="<TABLE SUMMARY='%s'>"%self.title
-        out+="<TR>"+"".join([c.render_header() for c in self.columns])+"</TR>"
+        out+="<THEAD><TR>"+"".join([c.render_header() for c in self.columns])+"</TR></THEAD>"
         n=0
         for row in self.get_queryset():
             out+="<TR CLASS='row%d'>"%((n%2)+1)+"".join([c.render_cell(v) for c,v in zip(self.columns,row)])+"</TR>"
