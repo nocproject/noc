@@ -36,7 +36,7 @@
         <caption>Allocated blocks within {{vrf.name}}::{{prefix.prefix}} ({{prefix.description}})</caption>
         <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
         {%for p in prefixes %}
-        <TR>
+        <TR class="{%cycle 'row1' 'row2'%}">
             <TD><A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/">{{p.prefix}}</A></TD>
             <TD><A HREF="/ip/{{p.vrf.id}}/">{{p.vrf.name}}</A></TD>
             <TD>{{p.description}}</TD>
@@ -81,7 +81,7 @@ function toggle_free() {
         <TR><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
         {% for a in prefix.all_addresses %}
             {% if a.ip %}
-                <TR>
+                <TR class="{%cycle 'row1' 'row2'%}">
                 <TD>{{a.ip}}</TD>
                 <TD>{{a.fqdn}}</TD>
                 <TD>{{a.description}}</TD>
