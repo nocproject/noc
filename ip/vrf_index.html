@@ -34,7 +34,9 @@
 <DIV CLASS="module">
     <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}" WIDTH="100%">
         <caption>Allocated blocks within {{vrf.name}}::{{prefix.prefix}} ({{prefix.description}})</caption>
-        <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
+        <THEAD>
+            <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
+        </THEAD>
         {%for p in prefixes %}
         <TR class="{%cycle 'row1' 'row2'%}">
             <TD><A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/">{{p.prefix}}</A></TD>
@@ -78,7 +80,9 @@ function toggle_free() {
 </SCRIPT>
 <DIV CLASS="module">
     <TABLE SUMMARY="Allocated addresses within {{prefix.prefix}}" WIDTH="100%">
-        <TR><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
+        <THEAD>
+            <TR><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
+        </THEAD>
         {% for a in prefix.all_addresses %}
             {% if a.ip %}
                 <TR class="{%cycle 'row1' 'row2'%}">
