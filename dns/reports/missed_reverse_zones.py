@@ -23,10 +23,11 @@ class Report(noc.main.report.Report):
     
     def get_queryset(self):
         vrf_id=self.execute("SELECT id FROM ip_vrf WHERE rd='0:0'")[0][0]
-        return self.execute("""
+        return self.execute(r"""
             SELECT prefix,prefix
             FROM ip_ipv4block
             WHERE vrf_id=%s
                 AND masklen(prefix)=24
-                AND regexp_replace(host(prefix),'([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)','\\3.\\2.\\1.in-addr.arpa')
-                    NOT IN (SELECT name FROM dns_dnszone)""",[vrf_id])
+                AND regexp_replace(host(prefix),E'([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)',E'\\3.\\2.\\1.in-addr.arpa')
+                    NOT IN (SELECT name FROM dns_dnszone WHERE name LIKE '%.in-addr.arpa')
+            ORDER BY 1""",[vrf_id])
