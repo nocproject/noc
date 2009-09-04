@@ -39,7 +39,7 @@ class VCDomain(models.Model):
     name=models.CharField("Name",max_length=64,unique=True)
     description=models.TextField("Description",blank=True,null=True)
     type=models.ForeignKey(VCType,verbose_name="Type")
-    enable_provisioning=models.BooleanField("Enable Provisioning",default=False) #<!>
+    enable_provisioning=models.BooleanField("Enable Provisioning",default=False)
     def __unicode__(self):
         return u"%s: %s"%(unicode(self.type),self.name)
 ##
@@ -69,6 +69,7 @@ class VC(models.Model):
         verbose_name="VC"
         verbose_name_plural="VCs"
         unique_together=[("vc_domain","l1","l2")]
+        ordering=["vc_domain","l1","l2"]
     vc_domain=models.ForeignKey(VCDomain,verbose_name="VC Domain")
     l1=models.IntegerField("Label 1")
     l2=models.IntegerField("Label 2",default=0)
