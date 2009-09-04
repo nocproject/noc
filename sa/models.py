@@ -8,7 +8,7 @@
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
-import datetime,random,cPickle,time
+import datetime,random,cPickle,time,types
 from noc.sa.profiles import profile_registry
 from noc.sa.periodic import periodic_registry
 from noc.sa.scripts import reduce_script_registry
@@ -410,7 +410,11 @@ class ReduceTask(models.Model):
         )
         r_task.save()
         prepend_profile=len(map_script.split("."))!=3
-        for o in object_selector.managed_objects:
+        if type(object_selector)==types.ListType:
+            objects=object_selector
+        else:
+            objects=object_selector.managed_objects
+        for o in objects:
             # Prepend profile name when necessary
             if prepend_profile:
                 ms="%s.%s"%(o.profile_name,map_script)
