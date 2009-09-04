@@ -28,7 +28,6 @@ class ProfileBase(type):
         m.scripts={}
         profile_registry.register(m.name,m)
         return m
-
 ##
 ## Abstract Profile
 ##
@@ -86,6 +85,15 @@ class Profile(object):
     # Sequence to enable priveleged mode
     #
     command_super=None
+    # Sequence to enter configuration mode
+    #
+    command_enter_config=None
+    # Sequence to leave configuration mode
+    #
+    command_leave_config=None
+    # Sequence to save configuration
+    #
+    command_save_config=None
     # List of chars to be stripped out of input stream
     # before checking any regular expressions
     # (when Action.CLEAN_INPUT==True)
