@@ -191,7 +191,7 @@ class Script(threading.Thread):
         self.debug("Running")
         try:
             self.result=self.serialize_result(self.guarded_run())
-            if self.parent and self.need_to_save and self.profile.command_save_config:
+            if self.parent is None and self.need_to_save and self.profile.command_save_config:
                 self.debug("Saving config")
                 self.cli(self.profile.command_save_config)
         except TimeOutError:
