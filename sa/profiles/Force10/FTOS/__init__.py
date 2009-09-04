@@ -17,5 +17,8 @@ class Profile(noc.sa.profiles.Profile):
     pattern_more="^ --More--"
     pattern_unpriveleged_prompt=r"^\S+?>"
     command_super="enable"
+    command_enter_config="configure terminal"
+    command_leave_config="exit"
+    command_save_config="write memory"
     pattern_prompt=r"^\S+?#"
     command_submit="\r"
