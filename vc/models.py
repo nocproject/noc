@@ -12,6 +12,7 @@ from django.db import models
 from django.db.models import Q
 from noc.main.menu import Menu
 from noc.main.search import SearchResult
+from noc.sa.models import ManagedObjectSelector
 from noc.lib.validators import is_int
 ##
 ## VC Type
@@ -38,8 +39,28 @@ class VCDomain(models.Model):
     name=models.CharField("Name",max_length=64,unique=True)
     description=models.TextField("Description",blank=True,null=True)
     type=models.ForeignKey(VCType,verbose_name="Type")
+    enable_provisioning=models.BooleanField("Enable Provisioning",default=False) #<!>
     def __unicode__(self):
         return u"%s: %s"%(unicode(self.type),self.name)
+##
+## Available provisioning parameters
+##
+VC_DOMAIN_PROVISONING_KEYS=[
+    ("enable","Enable"),
+    ("tagged_ports","Tagged Ports"),
+]
+##
+## VCDomain Provisioning Parameters
+##
+class VCDomainProvisioningConfig(models.Model):
+    class Meta:
+        verbose_name="VC Domain Provisioning Config"
+        verbose_name_plural="VC Domain Provisioning Config"
+        unique_together=[("vc_domain","selector","key")]
+    vc_domain=models.ForeignKey(VCDomain,verbose_name="VC Domain")
+    selector=models.ForeignKey(ManagedObjectSelector,verbose_name="Managed Object Selector")
+    key=models.CharField("Key",max_length=64,choices=VC_DOMAIN_PROVISONING_KEYS)
+    value=models.CharField("Value",max_length=256)
 ##
 ## Virtual circuit
 ##
