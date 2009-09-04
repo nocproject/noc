@@ -17,6 +17,9 @@ class Profile(noc.sa.profiles.Profile):
     pattern_more="^--More--"
     pattern_unpriveleged_prompt=r"^\S+?>"
     command_super="enable"
+    command_enter_config="configure terminal"
+    command_leave_config="exit"
+    command_save_config="copy running-config startup-config\n"
     pattern_prompt=r"^\S+?#"
     requires_netmask_conversion=True
     convert_mac=noc.sa.profiles.Profile.convert_mac_to_cisco
