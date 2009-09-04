@@ -13,9 +13,7 @@ from noc.sa.interfaces import IAddVlan
 class Script(noc.sa.script.Script):
     name="Cisco.NXOS.add_vlan"
     implements=[IAddVlan]
-    def execute(self,vlan_id,name):
-        if self.scripts.has_vlan(vlan_id=vlan_id):
-            return False
+    def execute(self,vlan_id,name,tagged_ports):
         with self.configure():
             self.cli("vlan %d"%vlan_id)
             self.cli("name %s"%name)
