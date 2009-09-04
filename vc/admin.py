@@ -9,15 +9,20 @@
 """
 """
 from django.contrib import admin
-from noc.vc.models import VCDomain,VC,VCType
+from noc.vc.models import VCDomain,VC,VCType,VCDomainProvisioningConfig
 
 ##
 ## Admin form for VCDomain
 ##
+class VCDomainProvisioningConfigAdmin(admin.TabularInline):
+    model=VCDomainProvisioningConfig
+    extra=10
+    
 class VCDomainAdmin(admin.ModelAdmin):
-    list_display=["name","type","description"]
+    list_display=["name","type","enable_provisioning","description"]
     search_fields=["name"]
-    list_filter=["type"]
+    list_filter=["type","enable_provisioning"]
+    inlines=[VCDomainProvisioningConfigAdmin]
 
 class VCAdmin(admin.ModelAdmin):
     list_display=["vc_domain","l1","l2","description"]
