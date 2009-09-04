@@ -23,7 +23,7 @@ class Task(noc.sa.periodic.Task):
             config={} # Selector -> config
             for c in vc_domain.vcdomainprovisioningconfig_set.all():
                 if c.selector.name not in config:
-                    config[c.selector.name]={"enable":False,"selector":c.selector}
+                    config[c.selector.name]={"enable":False,"selector":c.selector,"tagged_ports":""}
                 config[c.selector.name][c.key]=c.value
             # Normalize values
             for s in config:
@@ -32,19 +32,18 @@ class Task(noc.sa.periodic.Task):
                     if k=="enable":
                         config[s][k]=v.lower() in ["t","true","y","yes","1"]
                     elif k=="tagged_ports":
-                        config[s][k]=[x.strip() for x in config[s][k].split(",")]
+                        config[s][k]=[x.strip() for x in v.split(",")]
             # Get VCDomain vcs
             vcs=[{"vlan_id":vc.l1,"name":vc.description} for vc in vc_domain.vc_set.all()]
             
             # Run Map/Reduce task
             for s in config:
                 if config[s]["enable"]:
-                    print "X"
                     ReduceTask.create_task(object_selector=config[s]["selector"],
                         reduce_script="VLANSyncReport",
                         reduce_script_params=None,
                         map_script="sync_vlans",
-                        map_script_params={"vlans":vcs},
+                        map_script_params={"vlans":vcs,"tagged_ports":config[s]["tagged_ports"]},
                         timeout=30)
         return True
 
