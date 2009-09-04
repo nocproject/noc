@@ -19,7 +19,7 @@ class Profile(noc.sa.profiles.Profile):
     command_super="enable"
     command_enter_config="configure terminal"
     command_leave_config="exit"
-    command_save_config="copy running-config startup-config"
+    command_save_config="copy running-config startup-config\n"
     pattern_prompt=r"^\S+?#"
     pattern_lg_as_path_list=r"^(\s+\d+(?: \d+)*),"
     pattern_lg_best_path=r"(<A HREF.+?>.+?best)"
