@@ -96,6 +96,16 @@ class ScriptBase(type):
             profile_registry["%s.%s"%(pv,pos)].scripts[sn]=m
         return m
 ##
+## Configuration context manager to use with "with" statement
+##
+class ConfigurationContextManager(object):
+    def __init__(self,script):
+        self.script=script
+    def __enter__(self):
+        self.script.enter_config()
+    def __exit__(self,exc_type, exc_val, exc_tb):
+        self.script.leave_config()
+##
 ##
 ##
 class Script(threading.Thread):
@@ -141,6 +151,7 @@ class Script(threading.Thread):
         self.strip_echo=True
         self.kwargs=kwargs
         self.scripts=ScriptProxy(self)
+        self.need_to_save=False
     ##
     ## Checks script is stale and must be terminated
     ##
@@ -180,6 +191,9 @@ class Script(threading.Thread):
         self.debug("Running")
         try:
             self.result=self.serialize_result(self.guarded_run())
+            if self.parent and self.need_to_save and self.profile.command_save_config:
+                self.debug("Saving config")
+                self.cli(self.profile.command_save_config)
         except TimeOutError:
             self.error("Timed out")
         except:
@@ -274,6 +288,32 @@ class Script(threading.Thread):
     ##
     def cancel_script(self):
         self.to_cancel=True
+        
+    ## Returns configuration context
+    def configure(self):
+        return ConfigurationContextManager(self)
+        
+    # Enter configuration mote
+    def enter_config(self):
+        if self.profile.command_enter_config:
+            self.cli(self.profile.command_enter_config)
+    # Leave configuration mode
+    def leave_config(self):
+        if self.profile.command_leave_config:
+            self.cli(self.profile.command_leave_config)
+    # Save current config
+    def save_config(self,immediately=False):
+        if immediately:
+            if self.profile.command_save_config:
+                self.cli(self.profile.command_save_config)
+        else:
+            self.schedule_to_save()
+    #
+    def schedule_to_save(self):
+        self.need_to_save=True
+        if self.parent:
+            self.parent.schedule_to_save()
+
 ##
 ##
 ##
