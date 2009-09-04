@@ -14,18 +14,6 @@ from noc.main.menu import Menu
 from noc.main.search import SearchResult
 from noc.lib.validators import is_int
 ##
-## Virtual circuit domain, allows to separate unique VC spaces
-##
-class VCDomain(models.Model):
-    class Meta:
-        verbose_name="VC Domain"
-        verbose_name_plural="VC Domains"
-    name=models.CharField("Name",max_length=64,unique=True)
-    description=models.TextField("Description",blank=True,null=True)
-    
-    def __unicode__(self):
-        return self.name
-##
 ## VC Type
 ##
 class VCType(models.Model):
@@ -41,21 +29,32 @@ class VCType(models.Model):
     def __unicode__(self):
         return self.name
 ##
+## Virtual circuit domain, allows to separate unique VC spaces
+##
+class VCDomain(models.Model):
+    class Meta:
+        verbose_name="VC Domain"
+        verbose_name_plural="VC Domains"
+    name=models.CharField("Name",max_length=64,unique=True)
+    description=models.TextField("Description",blank=True,null=True)
+    type=models.ForeignKey(VCType,verbose_name="Type")
+    def __unicode__(self):
+        return u"%s: %s"%(unicode(self.type),self.name)
+##
 ## Virtual circuit
 ##
 class VC(models.Model):
     class Meta:
         verbose_name="VC"
         verbose_name_plural="VCs"
-        unique_together=[("vc_domain","type","l1","l2")]
+        unique_together=[("vc_domain","l1","l2")]
     vc_domain=models.ForeignKey(VCDomain,verbose_name="VC Domain")
-    type=models.ForeignKey(VCType,verbose_name="type")
     l1=models.IntegerField("Label 1")
     l2=models.IntegerField("Label 2",default=0)
     description=models.CharField("Description",max_length=256)
 
     def __unicode__(self):
-        s=u"%s %s %d"%(self.vc_domain,self.type,self.l1)
+        s=u"%s %d"%(self.vc_domain,self.l1)
         if self.l2:
             s+=u"/%d"%self.l2
         return s
@@ -63,11 +62,11 @@ class VC(models.Model):
     ## Enforce additional checks
     ##
     def save(self):
-        if self.l1<self.type.label1_min or self.l1>self.type.label1_max:
+        if self.l1<self.vc_domain.type.label1_min or self.l1>self.vc_domain.type.label1_max:
             raise Exception("Invalid value for L1")
-        if self.type.min_labels>1 and not self.l2:
+        if self.vc_domain.type.min_labels>1 and not self.l2:
             raise Exception("L2 required")
-        if self.type.min_labels>1 and not (self.l2>=self.type.label2_min and self.l2<=self.type.label2_max):
+        if self.vc_domain.type.min_labels>1 and not (self.l2>=self.vc_domain.type.label2_min and self.l2<=self.vc_domain.type.label2_max):
             raise Exception("Invalid value for L2")
         super(VC,self).save()
     ##
