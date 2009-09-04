@@ -10,4 +10,5 @@ from base import *
 class IAddVlan(Interface):
     vlan_id=VLANIDParameter()
     name=StringParameter()
+    tagged_ports=StringListParameter(default=[])
     returns=BooleanParameter()
