@@ -9,6 +9,9 @@ from noc.sa.interfaces.base import *
 from noc.sa.interfaces.igetconfig import IGetConfig
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.sa.interfaces.ihasvlan import IHasVlan
+from noc.sa.interfaces.iaddvlan import IAddVlan
+from noc.sa.interfaces.iremovevlan import IRemoveVlan
+from noc.sa.interfaces.isyncvlans import ISyncVlans
 from noc.sa.interfaces.igetversion import IGetVersion
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.sa.interfaces.igetdot11associations import IGetDot11Associations
