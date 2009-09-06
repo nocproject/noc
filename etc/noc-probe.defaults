@@ -11,6 +11,9 @@ logsize  = 0
 logfiles = 0
 pidfile  = /var/log/noc/noc-probe.pid
 
+[path]
+fping = /usr/bin/fping
+
 [activator]
 host = 127.0.0.1
 port = 19704
