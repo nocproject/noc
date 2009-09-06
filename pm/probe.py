@@ -42,7 +42,7 @@ class Probe(Daemon):
     ##
     def init_probes(self):
         for probe_name in self.config.sections():
-            if probe_name in ["main","activator"]:
+            if probe_name in ["main","activator","path"]:
                 continue
             probe=self.config.get(probe_name,"probe")
             if not probe:
