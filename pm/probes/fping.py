@@ -12,7 +12,7 @@ from noc.lib.nbsocket import PopenSocket
 
 ##
 ## Returns:
-##     min_delay, max_delay, avg_delay, packet_loss
+##     min_delay, max_delay, avg_delay, packet_loss, jitter
 ##
 class FPingProbeSocket(PopenProbeSocket):
     def get_cmd(self):
@@ -32,14 +32,30 @@ class FPingProbeSocket(PopenProbeSocket):
             cr=[float(x) for x in r if x!="-"]
             self.probe.set_data(s,"loss",float(len(r)-len(cr))/len(r))
             if cr:
-                self.probe.set_data(s,"min_delay",min(cr))
-                self.probe.set_data(s,"max_delay",max(cr))
-                self.probe.set_data(s,"avg_delay",reduce(lambda x,y:x+y,cr,0)/len(cr))
+                self.probe.set_data(s,"min_delay", min(cr))
+                self.probe.set_data(s,"max_delay", max(cr))
+                self.probe.set_data(s,"avg_delay", reduce(lambda x,y:x+y,cr,0)/len(cr))
+                self.probe.set_data(s,"jitter"   , self.jitter(cr))
             else:
-                self.probe.set_data(s,"min_delay",None)
-                self.probe.set_data(s,"max_delay",None)
-                self.probe.set_data(s,"avg_delay",None)
+                self.probe.set_data(s,"min_delay", None)
+                self.probe.set_data(s,"max_delay", None)
+                self.probe.set_data(s,"avg_delay", None)
+                self.probe.set_data(s,"jitter",    None)
         super(FPingProbeSocket,self).on_close()
+    ##
+    ## Calculate jitter (See RFC1889)
+    ##
+    def jitter(self,rtts):
+        transit=reduce(lambda x,y:x+y,rtts,0)/len(rtts) # Average delay
+        s_jitter=0.0
+        s_transit=rtts[0]
+        for transit in rtts[1:]:
+            d=transit-s_transit
+            s_transit=transit
+            if d<0:
+                d=-d
+            s_jitter+=(d-s_jitter)/16.0
+        return s_jitter
 ##
 ## FPing Probe
 ## * Executes fping command and parses output
@@ -52,6 +68,7 @@ class FPingProbe(PopenProbe):
         "avg_delay" : {},
         "max_delay" : {},
         "loss"      : {},
+        "jitter"    : {},
     }
     def __init__(self,daemon,probe_name,config):
         self.fping_path=daemon.config.get("path","fping")
