@@ -448,7 +448,7 @@ class PTYSocket(Socket):
 class PopenSocket(Socket):
     def __init__(self,factory,argv):
         self.debug("Launching %s"%argv)
-        self.p=subprocess.Popen(argv,stdout=subprocess.PIPE)
+        self.p=subprocess.Popen(argv,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
         super(PopenSocket,self).__init__(factory,FileWrapper(self.p.stdout.fileno()))
         self.update_status()
 
