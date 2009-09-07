@@ -19,6 +19,8 @@ class VlanProvisioningReportn(ReduceScriptBase):
         removed={}
         for mt in task.maptask_set.all():
             r=mt.script_result
+            if not r:
+                continue
             for vlan in r["created"]:
                 if vlan not in created:
                     created[vlan]=[mt.managed_object.name]
