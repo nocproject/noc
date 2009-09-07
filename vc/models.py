@@ -12,6 +12,7 @@ from django.db import models
 from django.db.models import Q
 from noc.main.menu import Menu
 from noc.main.search import SearchResult
+from noc.main.models import NotificationGroup
 from noc.sa.models import ManagedObjectSelector
 from noc.lib.validators import is_int
 ##
@@ -43,24 +44,29 @@ class VCDomain(models.Model):
     def __unicode__(self):
         return u"%s: %s"%(unicode(self.type),self.name)
 ##
-## Available provisioning parameters
-##
-VC_DOMAIN_PROVISONING_KEYS=[
-    ("enable","Enable"),
-    ("tagged_ports","Tagged Ports"),
-]
-##
 ## VCDomain Provisioning Parameters
 ##
 class VCDomainProvisioningConfig(models.Model):
     class Meta:
         verbose_name="VC Domain Provisioning Config"
         verbose_name_plural="VC Domain Provisioning Config"
-        unique_together=[("vc_domain","selector","key")]
+        unique_together=[("vc_domain","selector")]
     vc_domain=models.ForeignKey(VCDomain,verbose_name="VC Domain")
     selector=models.ForeignKey(ManagedObjectSelector,verbose_name="Managed Object Selector")
-    key=models.CharField("Key",max_length=64,choices=VC_DOMAIN_PROVISONING_KEYS)
-    value=models.CharField("Value",max_length=256)
+    is_enabled=models.BooleanField("Is Enabled",default=True)
+    tagged_ports=models.CharField("Tagged Ports",max_length=256,null=True,blank=True)
+    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group",null=True,blank=True)    
+    def __unicode__(self):
+        return u"%s: %s"%(unicode(self.vc_domain),unicode(self.selector))
+    ##
+    ## Returns a list of tagged ports
+    ##
+    def _tagged_ports_list(self):
+        if self.tagged_ports:
+            return [x.strip() for x in self.tagged_ports.split(",")]
+        else:
+            return []
+    tagged_ports_list=property(_tagged_ports_list)
 ##
 ## Virtual circuit
 ##
