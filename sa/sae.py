@@ -142,18 +142,6 @@ class Service(SAEService):
             timestamp=datetime.datetime.fromtimestamp(request.timestamp),
             managed_object=mo
         )
-        # Do all the magic here
-        e=Event(
-            timestamp=datetime.datetime.fromtimestamp(request.timestamp),
-            event_priority=EventPriority.objects.get(name="DEFAULT"),
-            event_class=EventClass.objects.get(name="DEFAULT"),
-            event_category=EventCategory.objects.get(name="DEFAULT"),
-            managed_object=mo
-            )
-        e.save()
-        for b in request.body:
-            d=EventData(event=e,key=b.key,value=b.value)
-            d.save()
         done(controller,EventResponse())
     ##
     ## Performance management collected data stream
