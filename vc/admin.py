@@ -16,7 +16,7 @@ from noc.vc.models import VCDomain,VC,VCType,VCDomainProvisioningConfig
 ##
 class VCDomainProvisioningConfigAdmin(admin.TabularInline):
     model=VCDomainProvisioningConfig
-    extra=10
+    extra=3
     
 class VCDomainAdmin(admin.ModelAdmin):
     list_display=["name","type","enable_provisioning","description"]
