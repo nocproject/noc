@@ -8,8 +8,10 @@
 """
 """
 import noc.sa.periodic
-import datetime
+import time
 
+TIMEOUT=30
+CHECK_TIMEOUT=TIMEOUT/10
 class Task(noc.sa.periodic.Task):
     name="vc.vc_provisioning"
     description=""
@@ -18,32 +20,29 @@ class Task(noc.sa.periodic.Task):
         from noc.vc.models import VCDomain
         from noc.sa.models import ReduceTask
         
+        tasks=[]
         # Get config
         for vc_domain in VCDomain.objects.filter(enable_provisioning=True):
-            config={} # Selector -> config
-            for c in vc_domain.vcdomainprovisioningconfig_set.all():
-                if c.selector.name not in config:
-                    config[c.selector.name]={"enable":False,"selector":c.selector,"tagged_ports":""}
-                config[c.selector.name][c.key]=c.value
-            # Normalize values
-            for s in config:
-                for k in config[s]:
-                    v=config[s][k]
-                    if k=="enable":
-                        config[s][k]=v.lower() in ["t","true","y","yes","1"]
-                    elif k=="tagged_ports":
-                        config[s][k]=[x.strip() for x in v.split(",")]
             # Get VCDomain vcs
             vcs=[{"vlan_id":vc.l1,"name":vc.description} for vc in vc_domain.vc_set.all()]
-            
             # Run Map/Reduce task
-            for s in config:
-                if config[s]["enable"]:
-                    ReduceTask.create_task(object_selector=config[s]["selector"],
-                        reduce_script="VLANSyncReport",
-                        reduce_script_params=None,
+            for c in vc_domain.vcdomainprovisioningconfig_set.filter(is_enabled=True):
+                    task=ReduceTask.create_task(object_selector=c.selector,
+                        reduce_script="VlanProvisioningReport",
+                        reduce_script_params=c.id,
                         map_script="sync_vlans",
-                        map_script_params={"vlans":vcs,"tagged_ports":config[s]["tagged_ports"]},
-                        timeout=30)
+                        map_script_params={"vlans":vcs,"tagged_ports":c.tagged_ports_list},
+                        timeout=TIMEOUT)
+                    tasks+=[task]
+        # Wait for tasks completion
+        while tasks:
+            time.sleep(CHECK_TIMEOUT)
+            nt=[]
+            for t in tasks:
+                if t.complete:
+                    t.get_result() # Trigger VlanProvisioningReport and delete task
+                else:
+                    nt+=[t]
+                tasks=nt
         return True
 
