@@ -16,7 +16,7 @@ from noc.lib.nbsocket import PopenSocket
 ##
 class FPingProbeSocket(PopenProbeSocket):
     def get_cmd(self):
-        return [self.probe.fping_path,"-q","-b",str(self.probe.packet_size-28),"-C",self.probe.num_requests]+self.probe.s_list
+        return [self.probe.fping_path,"-q","-b",str(self.probe.packet_size-28),"-C",str(self.probe.num_requests)]+self.probe.s_list
     ##
     ## Parse self.data
     ##
@@ -73,8 +73,8 @@ class FPingProbe(PopenProbe):
     def __init__(self,daemon,probe_name,config):
         self.fping_path=daemon.config.get("path","fping")
         super(FPingProbe,self).__init__(daemon,probe_name,config)
-        self.num_requests=self.get("num_requests",5)
-        self.packet_size=self.get("packet_size",64)
+        self.num_requests=self.getint("num_requests",5)
+        self.packet_size=self.getint("packet_size",64)
         self.s_list=self.services[:]
         self.services=["X"]
         
