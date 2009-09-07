@@ -12,6 +12,7 @@ import struct,logging,random,time,hashlib,zlib
 from google.protobuf.service import RpcController
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.nbsocket import Protocol
+from noc.lib.debug import error_report
 
 ##
 ## RPC Controller
@@ -163,7 +164,11 @@ class RPCSocket(object):
             logging.debug("Request accepted:\nid: %s\n%s"%(id,str(req)))
             controller=Controller(self)
             controller.transaction=self.transactions.begin(id=id,method=request.method)
-            self.service.CallMethod(method,controller,req,self.send_response)
+            try:
+                self.service.CallMethod(method,controller,req,self.send_response)
+            except:
+                self.send_error(id,ERR_INTERNAL,"RPC Call to %s failed"%request.method)
+                error_report()
         else:
             self.send_error(id,ERR_INVALID_METHOD,"invalid method '%s'"%request.method)
         
