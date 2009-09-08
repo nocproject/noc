@@ -24,7 +24,7 @@ class Task(noc.sa.periodic.Task):
         # Get config
         for vc_domain in VCDomain.objects.filter(enable_provisioning=True):
             # Get VCDomain vcs
-            vcs=[{"vlan_id":vc.l1,"name":vc.description} for vc in vc_domain.vc_set.all()]
+            vcs=[{"vlan_id":vc.l1,"name":vc.name} for vc in vc_domain.vc_set.all()]
             # Run Map/Reduce task
             for c in vc_domain.vcdomainprovisioningconfig_set.filter(is_enabled=True):
                     task=ReduceTask.create_task(object_selector=c.selector,
