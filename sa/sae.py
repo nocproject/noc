@@ -404,6 +404,8 @@ class SAE(Daemon):
             return
         for fn in [fn for fn in os.listdir(c_d) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
             path=os.path.join(c_d,fn)
+            if not os.access(path,os.R_OK|os.W_OK): # Wait for noc-launcher to fix permissions
+                continue
             try:
                 with open(path,"r") as f:
                     data=cPickle.loads(f.read())
