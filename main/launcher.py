@@ -16,12 +16,12 @@ import time,subprocess,sys,os,logging,stat,ConfigParser,pwd,grp,atexit,signal,st
 ## Daemon wrapper
 ##
 class DaemonData(object):
-    def __init__(self,name,self.is_superuser,enabled,user,uid,group,gid):
+    def __init__(self,name,is_superuser,enabled,user,uid,group,gid):
         self.name=name
         self.enabled=enabled
         self.pid=None
         self.pidfile=None
-        self.self.is_superuser=self.is_superuser
+        self.is_superuser=is_superuser
         self.user=user
         self.uid=uid
         self.group=group
@@ -116,7 +116,7 @@ class Launcher(Daemon):
             # Initialize daemon data
             self.daemons+=[
                 DaemonData(dn,
-                    self.is_superuser = self.is_superuser,
+                    is_superuser = self.is_superuser,
                     enabled = is_enabled,
                     user    = user_name,
                     uid     = uid,
