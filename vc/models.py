@@ -15,6 +15,7 @@ from noc.main.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.sa.models import ManagedObjectSelector
 from noc.lib.validators import is_int
+import re
 ##
 ## VC Type
 ##
@@ -70,19 +71,22 @@ class VCDomainProvisioningConfig(models.Model):
 ##
 ## Virtual circuit
 ##
+rx_vc_underline=re.compile("\s+")
+rx_vc_empty=re.compile(r"[^a-zA-Z0-9\-_]+")
 class VC(models.Model):
     class Meta:
         verbose_name="VC"
         verbose_name_plural="VCs"
-        unique_together=[("vc_domain","l1","l2")]
+        unique_together=[("vc_domain","l1","l2"),("vc_domain","name")]
         ordering=["vc_domain","l1","l2"]
     vc_domain=models.ForeignKey(VCDomain,verbose_name="VC Domain")
+    name=models.CharField("Name",max_length=64)
     l1=models.IntegerField("Label 1")
     l2=models.IntegerField("Label 2",default=0)
-    description=models.CharField("Description",max_length=256)
+    description=models.CharField("Description",max_length=256,null=True,blank=True)
 
     def __unicode__(self):
-        s=u"%s %d"%(self.vc_domain,self.l1)
+        s=u"%s %s %d"%(self.vc_domain,self.name,self.l1)
         if self.l2:
             s+=u"/%d"%self.l2
         return s
@@ -96,6 +100,13 @@ class VC(models.Model):
             raise Exception("L2 required")
         if self.vc_domain.type.min_labels>1 and not (self.l2>=self.vc_domain.type.label2_min and self.l2<=self.vc_domain.type.label2_max):
             raise Exception("Invalid value for L2")
+        # Format name
+        if self.name:
+            name=rx_vc_underline.sub("_",self.name)
+            name=rx_vc_empty.sub("",name)
+            self.name=name
+        else:
+            self.name="VC_%04d"%self.l1
         super(VC,self).save()
     ##
     ## Search engine

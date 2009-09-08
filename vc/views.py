@@ -40,7 +40,7 @@ def sa_import_vlans(request):
             try:
                 vc=VC.objects.get(vc_domain=vc_domain,l1=vlan_id)
             except VC.DoesNotExist:
-                vc=VC(vc_domain=vc_domain,l1=vlan_id,l2=0,description=name)
+                vc=VC(vc_domain=vc_domain,l1=vlan_id,l2=0,name=name,description=name)
                 vc.save()
                 count+=1
         return count

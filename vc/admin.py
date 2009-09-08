@@ -25,8 +25,8 @@ class VCDomainAdmin(admin.ModelAdmin):
     inlines=[VCDomainProvisioningConfigAdmin]
 
 class VCAdmin(admin.ModelAdmin):
-    list_display=["vc_domain","l1","l2","description"]
-    search_fields=["l1","l2","description"]
+    list_display=["vc_domain","name","l1","l2","description"]
+    search_fields=["name","l1","l2","description"]
     list_filter=["vc_domain"]
 ##
 class VCTypeAdmin(admin.ModelAdmin):
