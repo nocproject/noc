@@ -22,8 +22,10 @@ class Script(noc.sa.script.Script):
             match=rx_vlan_line.match(l.strip())
             if match:
                 name=match.group("name")
-                if name in ["fddi-default","trcrf-default","fddinet-default","trbrf-default"]:
+                vlan_id=int(match.group("vlan_id"))
+                if vlan_id>=1000 and vlan_id<=1005\
+                        and name in ["fddi-default","trcrf-default","token-ring-default","fddinet-default","trbrf-default","trnet-default"]:
                     continue
-                r.append({"vlan_id": int(match.group("vlan_id")),
+                r.append({"vlan_id": vlan_id,
                           "name"   : name})
         return r
