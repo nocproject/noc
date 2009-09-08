@@ -9,18 +9,19 @@
 """
 from __future__ import with_statement
 from noc.lib.daemon import Daemon
-import time,subprocess,sys,os,logging,stat,ConfigParser,pwd,grp,atexit,signal
+from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
+import time,subprocess,sys,os,logging,stat,ConfigParser,pwd,grp,atexit,signal,stat
 
 ##
 ## Daemon wrapper
 ##
 class DaemonData(object):
-    def __init__(self,name,is_superuser,enabled,user,uid,group,gid):
+    def __init__(self,name,self.is_superuser,enabled,user,uid,group,gid):
         self.name=name
         self.enabled=enabled
         self.pid=None
         self.pidfile=None
-        self.is_superuser=is_superuser
+        self.self.is_superuser=self.is_superuser
         self.user=user
         self.uid=uid
         self.group=group
@@ -73,7 +74,9 @@ class Launcher(Daemon):
         self.daemons=[]
         gids={}
         uids={}
-        is_superuser=os.getuid()==0
+        self.is_superuser=os.getuid()==0
+        self.crashinfo_uid=None
+        self.crashinfo_dir=None
         for n in ["fcgi","sae","activator","classifier","correlator","notifier","probe"]:
             dn="noc-%s"%n
             is_enabled=self.config.getboolean(dn,"enabled")
@@ -104,26 +107,31 @@ class Launcher(Daemon):
             else:
                 uid=None
             # Superuser required to change uid/gid
-            if not is_superuser and uids:
+            if not self.is_superuser and uids:
                 logging.error("Need to be superuser to change UID")
                 sys.exit(1)
-            if not is_superuser and gids:
+            if not self.is_superuser and gids:
                 logging.error("Need to be superuser to change GID")
                 sys.exit(1)
             # Initialize daemon data
             self.daemons+=[
                 DaemonData(dn,
-                    is_superuser = is_superuser,
-                    enabled = self.config.getboolean(dn,"enabled"),
+                    self.is_superuser = self.is_superuser,
+                    enabled = is_enabled,
                     user    = user_name,
                     uid     = uid,
                     group   = group_name,
                     gid     = gid)
                     ]
+            # Set crashinfo uid
+            if self.is_superuser and dn=="noc-sae" and is_enabled:
+                self.crashinfo_uid=uid
+                self.crashinfo_dir=os.path.dirname(self.config.get("main","logfile"))
         #
         atexit.register(self.at_exit)
         
     def run(self):
+        last_crashinfo_check=time.time()
         while True:
             for d in self.daemons:
                 if not d.enabled: # Skip disabled daemons
@@ -140,6 +148,20 @@ class Launcher(Daemon):
                         logging.info("%s daemon is terminated with status %d"%(d.name,d.pid))
                         d.pid=None
             time.sleep(1)
+            t=time.time()
+            if self.crashinfo_uid is not None and t-last_crashinfo_check>10:
+                # Fix crashinfo's permissions
+                for fn in [fn for fn in os.listdir(self.crashinfo_dir) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
+                    path=os.path.join(c_d,fn)
+                    if os.stat(path)[stat.ST_UID]==self.crashinfo_uid:
+                        continue # No need to fix
+                    try:
+                        os.chown(path,self.crashinfo_uid,-1)
+                        os.chmod(path,stat.S_IRUSR|stat.S_IWUSR)
+                        logging.info("Permissions for %s are fixed"%path)
+                    except:
+                        logging.error("Failed to fix permissions for %s"%path)
+                last_crashinfo_check=t
         
     def at_exit(self):
         for d in self.daemons:
