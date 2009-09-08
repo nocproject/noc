@@ -152,7 +152,7 @@ class Launcher(Daemon):
             if self.crashinfo_uid is not None and t-last_crashinfo_check>10:
                 # Fix crashinfo's permissions
                 for fn in [fn for fn in os.listdir(self.crashinfo_dir) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
-                    path=os.path.join(c_d,fn)
+                    path=os.path.join(self.crashinfo_dir,fn)
                     if os.stat(path)[stat.ST_UID]==self.crashinfo_uid:
                         continue # No need to fix
                     try:
