@@ -15,6 +15,6 @@ class Profile(noc.sa.profiles.Profile):
     name="Cisco.AireOS"
     supported_schemes=[TELNET,SSH]
     pattern_username=r"^User:"
-    pattern_more=r"^--More-- or \(q\)uit"
+    pattern_more=r"--More-- or \(q\)uit"
     pattern_prompt=r"^\(Cisco Controller\)\s+>"
     requires_netmask_conversion=True
