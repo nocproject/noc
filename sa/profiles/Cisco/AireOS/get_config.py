@@ -14,5 +14,10 @@ class Script(noc.sa.script.Script):
     name="Cisco.AireOS.get_config"
     implements=[IGetConfig]
     def execute(self):
-        config=self.cli("show running-config")
+        version=self.scripts.get_version()["version"]
+        v=int(version.split(".")[0])
+        if v>=5:
+            config=self.cli("show run-config commands")
+        else:
+            config=self.cli("show running-config")
         return self.cleaned_config(config)
