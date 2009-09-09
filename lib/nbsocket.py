@@ -5,9 +5,8 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import socket,select,errno,time,logging,pty,os,signal,subprocess
-from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
-     ENOTCONN, ESHUTDOWN, EINTR, EISCONN, ECONNREFUSED, EPIPE, errorcode
+import socket,select,errno,time,logging,pty,os,signal,subprocess,errno,sys
+from errno import *
 from noc.lib.debug import error_report
 
 try:
@@ -17,43 +16,138 @@ except ImportError:
     HAS_SSL=False
 
 ##
+## Exception classes
+##
+class SocketError(Exception):
+    message="Socket Library Error"
+
+class SocketNotImplemented(Exception):
+    message="Feature not implemented"
+
+class ProtocolNotSupportedError(SocketError):
+    message="The protocol type or the specified protocol is not supported within this domain"
+
+class AccessError(SocketError):
+    message="Permission to create a socket of the specified type and/or protocol is denied"
+
+class NoFilesError(SocketError):
+    message="Process/System file table is full"
+
+class NoBuffersError(SocketError):
+    message="Insufficient buffer space is available.  The socket cannot be created until sufficient resources are freed."
+
+class ConnectionRefusedError(SocketError):
+    message="Connection Refused"
+
+class NotConnectedError(SocketError):
+    message="The socket is associated with a connection-oriented protocol and has not been connected"
+
+##
+## Error name to Exception class mapping
+## Used to populate SOCKET_ERROR_TO_EXCEP
+##
+SOCKET_ERRORS=[
+    ("EPROTONOSUPPORT", ProtocolNotSupportedError),
+    ("EACCESS",         AccessError),
+    ("EMFILE",          NoFilesError),
+    ("ENFILE",          NoFilesError),
+    ("ENOBUFS",         NoBuffersError),
+    ("ECONNREFUSED",    ConnectionRefusedError),
+    ("ENOTCONN",        NotConnectedError),
+]
+##
+## socket.error to Exception class mapping
+##
+SOCKET_ERROR_TO_EXCEPTION={}
+for error_name,exception_class in SOCKET_ERRORS:
+    try:
+        c=getattr(errno,error_name)
+        SOCKET_ERROR_TO_EXCEPTION[c]=exception_class
+    except AttributeError:
+        pass
+##
+## Check wrether the exception was caused by socket error
+## Returns SocketException instance
+## of None if it was not the socket error
+##
+def get_socket_error():
+    t,v,tb=sys.exc_info()
+    if not t:
+        return
+    if t==socket.error:
+        if v.errno in SOCKET_ERROR_TO_EXCEPTION:
+            return SOCKET_ERROR_TO_EXCEPTION[v.errno]()
+    return None
+##
 ## Abstract non-blocking socket wrapper.
 ##
 class Socket(object):
     TTL=None # maximum time to live in seconds
-    def __init__(self,factory,sock):
+    def __init__(self,factory,socket=None):
         self.factory=factory
-        self.socket=sock
-        self.socket.setblocking(0)
+        self.socket=socket
         self.start_time=time.time()
         self.last_read=self.start_time+100
         self.factory.register_socket(self)
         self.name=None
+    ##
+    ## Performs actual socket creation
+    ##
+    def create_socket(self):
+        if not self.socket_is_ready(): # Socket was not created
+            raise SocketNotImplemented()
+        self.socket.setblocking(0)
+    ##
+    ## Returns True when socket created and ready for operation
+    ##
+    def socket_is_ready(self):
+        return self.socket is not None
     
     def can_read(self):
-        return True
+        return self.socket_is_ready()
         
     def can_write(self):
-        return True
+        return self.socket_is_ready()
         
     def handle_read(self):
         pass
         
     def handle_write(self):
         pass
-        
+    ##
+    ## Called on socket close
+    ##
     def on_close(self):
         pass
+    ##
+    ## Called on any socket error
+    ## Issues error message and closes socket
+    ## exc - is an SocketException instance
+    ##
+    def on_error(self,exc):
+        self.error(exc.message)
+        self.close()
         
     def close(self):
         if self.socket:
             self.factory.unregister_socket(self)
-            self.socket.close()
+            try:
+                self.socket.close() # Can raise EBADF/EINTR
+            except:
+                pass
             self.socket=None
             self.on_close()
+    ##
+    ## Returns a label for debug/error methods
+    ##
+    def log_label(self):
+        return "%s(0x%x)"%(self.__class__.__name__,id(self))
     
     def debug(self,msg):
-        logging.debug("[%s(0x%x)] %s"%(self.__class__.__name__,id(self),msg))
+        logging.debug("[%s] %s"%(self.log_label(),msg))
+    
+    def error(self,msg):
+        logging.error("[%s] %s"%(self.log_label(),msg))
     
     def set_name(self,name):
         self.name=name
@@ -66,7 +160,7 @@ class Socket(object):
     # Stale sockets detection.
     # Called by SocketFactory.close_stale to determine should socket be closed forcefully
     def is_stale(self):
-        return self.TTL and time.time()-self.last_read>=self.TTL
+        return self.socket_is_ready() and self.TTL and time.time()-self.last_read>=self.TTL
 ##
 ## Abstract Protocol Parser.
 ## Accepts data via feed method, polupates internal buffer (self.in_buffer).
@@ -102,15 +196,19 @@ class LineProtocol(Protocol):
 ##
 class ListenTCPSocket(Socket):
     def __init__(self,factory,address,port,socket_class,**kwargs):
-        Socket.__init__(self,factory,socket.socket(socket.AF_INET,socket.SOCK_STREAM))
-        self.socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,
-            self.socket.getsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR) | 1)
-        self.socket.bind((address,port))
-        self.socket.listen(5)
+        Socket.__init__(self,factory)
         self.socket_class=socket_class
         self.address=address
         self.port=port
         self.kwargs=kwargs
+    
+    def create_socket(self):
+        self.socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,
+            self.socket.getsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR) | 1)
+        self.socket.bind((self.address,self.port))
+        self.socket.listen(5)
+        super(ListenTCPSocket,self).create_socket()
     
     def handle_read(self):
         s,addr=self.socket.accept()
@@ -119,16 +217,25 @@ class ListenTCPSocket(Socket):
         else:
             logging.error("Refusing connection from %s"%addr[0])
             s.close()
+    
+    def log_label(self):
+        return "%s(0x%x,%s:%s)"%(self.__class__.__name__,id(self),self.address,self.port)
 ##
 ## UDP Listener
 ## Waits for UDP packets on specified ports
 ## and calls on_read for each packet
 class ListenUDPSocket(Socket):
     def __init__(self,factory,address,port):
-        Socket.__init__(self,factory,socket.socket(socket.AF_INET,socket.SOCK_DGRAM))
+        Socket.__init__(self,factory)
+        self.address=address
+        self.port=port
+    
+    def create_socket(self):
+        self.socket=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         self.socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,
             self.socket.getsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR) | 1)
-        self.socket.bind((address,port))
+        self.socket.bind((self.address,self.port))
+        super(ListenUDPSocket,self).create_socket()
     
     def handle_read(self):
         msg,transport_address=self.socket.recvfrom(8192)
@@ -148,9 +255,10 @@ class ListenUDPSocket(Socket):
 ##
 class TCPSocket(Socket):
     protocol_class=None
-    def __init__(self,factory,socket):
-        Socket.__init__(self,factory,socket)
+    def __init__(self,factory,socket=None):
+        super(TCPSocket,self).__init__(factory,socket)
         self.is_connected=False
+        self.s=socket
         self.out_buffer=""
         if self.protocol_class:
             self.protocol=self.protocol_class(self.on_read)
@@ -193,7 +301,7 @@ class TCPSocket(Socket):
 ##
 class AcceptedTCPSocket(TCPSocket):
     def __init__(self,factory,socket):
-        TCPSocket.__init__(self,factory,socket)
+        super(AcceptedTCPSocket,self).__init__(factory,socket)
         self.handle_connect()
     
     @classmethod
@@ -257,17 +365,19 @@ class AcceptedTCPSSLSocket(AcceptedTCPSocket):
 ##
 class ConnectedTCPSocket(TCPSocket):
     def __init__(self,factory,address,port,local_address=None):
-        TCPSocket.__init__(self,factory,socket.socket(socket.AF_INET,socket.SOCK_STREAM))
-        if local_address:
-            self.socket.bind((local_address,0))
-        e=self.socket.connect_ex((address,port))
-        if e in (0, EISCONN):
-            #self.handle_read()
-            return
-        elif e in (EINPROGRESS, EALREADY, EWOULDBLOCK):
-            return
-        else:
+        super(ConnectedTCPSocket,self).__init__(factory)
+        self.address=address
+        self.port=port
+        self.local_address=local_address
+    
+    def create_socket(self):
+        self.socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        if self.local_address:
+            self.socket.bind((self.local_address,0))
+        e=self.socket.connect_ex((self.address,self.port))
+        if e not in (0, EISCONN,EINPROGRESS, EALREADY, EWOULDBLOCK):
             raise socket.error, (e, errorcode[e])
+        super(ConnectedTCPSocket,self).create_socket()
         
     def handle_read(self):
         if not self.is_connected:
@@ -338,7 +448,11 @@ class ConnectedTCPSSLSocket(ConnectedTCPSocket):
 class UDPSocket(Socket):
     def __init__(self,factory):
         self.out_buffer=[]
-        super(UDPSocket,self).__init__(factory,socket.socket(socket.AF_INET,socket.SOCK_DGRAM))
+        super(UDPSocket,self).__init__(factory)
+    
+    def create_socket(self):
+        self.socket=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+        super(UDPSocket,self).create_socket()
     
     def can_write(self):
         return self.out_buffer
@@ -390,12 +504,18 @@ class FileWrapper(object):
 ##
 class PTYSocket(Socket):
     def __init__(self,factory,argv):
+        super(PTYSocket,self).__init__(factory)
+        self.argv=argv
         self.out_buffer=""
+    
+    def create_socket(self):
         self.pid,fd=pty.fork()
         if self.pid==0:
-            os.execv(argv[0],argv)
+            self.debug("EXECV(%s)"%str(self.argv))
+            os.execv(self.argv[0],self.argv)
         else:
-            super(PTYSocket,self).__init__(factory,FileWrapper(fd))
+            self.socket=FileWrapper(fd)
+            super(PTYSocket,self).create_socket()
             
     def handle_read(self):
         try:
@@ -447,10 +567,14 @@ class PTYSocket(Socket):
 ##
 class PopenSocket(Socket):
     def __init__(self,factory,argv):
-        self.debug("Launching %s"%argv)
-        self.p=subprocess.Popen(argv,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-        super(PopenSocket,self).__init__(factory,FileWrapper(self.p.stdout.fileno()))
+        super(PopenSocket,self).__init__(factory)
+        self.argv=argv
         self.update_status()
+    
+    def create_socket(self):
+        self.debug("Launching %s"%self.argv)
+        self.p=subprocess.Popen(self.argv,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        self.socket=FileWrapper(self.p.stdout.fileno())
 
     def handle_read(self):
         try:
@@ -475,13 +599,59 @@ class PopenSocket(Socket):
 ##
 class SocketFactory(object):
     def __init__(self,tick_callback=None):
-        self.sockets={}
-        self.socket_name={}
-        self.name_socket={}
+        self.sockets={}     # fileno -> socket
+        self.socket_name={} # socket -> name
+        self.name_socket={} # name -> socket
+        self.new_sockets=[] # list of (socket,name)
         self.tick_callback=tick_callback
-    
+    ##
+    ## Attack socket to the new_sockets list
+    ##
     def register_socket(self,socket,name=None):
         logging.debug("register_socket(%s,%s)"%(socket,name))
+        self.new_sockets+=[(socket,name)]
+    ##
+    ## Remove socket from factory
+    ##
+    def unregister_socket(self,socket):
+        logging.debug("unregister_socket(%s)"%socket)
+        if socket not in self.socket_name: # Not in factory yet
+            return
+        del self.sockets[socket.socket.fileno()]
+        old_name=self.socket_name[socket]
+        del self.socket_name[socket]
+        if old_name:
+            del self.name_socket[old_name]
+    ##
+    ## Safe call of socket's method
+    ## Returns call status (True/False)
+    ##
+    def guarded_socket_call(self,socket,method):
+        try:
+            method()
+        except:
+            exc=get_socket_error()
+            try:
+                if exc:
+                    socket.on_error(exc)
+                else:
+                    socket.error("Unhandled exception when calling %s"%str(method))
+                    error_report()
+                    socket.close()
+            except:
+                socket.error("Error when handling error condition")
+                error_report()
+            return False
+        return True
+    ##
+    ## Call socket's create_socket when necessary
+    ## and add socket to the fabric
+    ##
+    def init_socket(self,socket,name):
+        if not socket.socket_is_ready():
+            socket.debug("Initializing socket")
+            if not self.guarded_socket_call(socket,socket.create_socket):
+                return
         self.sockets[socket.socket.fileno()]=socket
         if socket in self.socket_name:
             # Socket was registred
@@ -492,14 +662,6 @@ class SocketFactory(object):
         self.socket_name[socket]=name
         if name:
             self.name_socket[name]=socket
-        
-    def unregister_socket(self,socket):
-        logging.debug("unregister_socket(%s)"%socket)
-        del self.sockets[socket.socket.fileno()]
-        old_name=self.socket_name[socket]
-        del self.socket_name[socket]
-        if old_name:
-            del self.name_socket[old_name]
         
     def listen_tcp(self,address,port,socket_class,**kwargs):
         if not issubclass(socket_class,AcceptedTCPSocket):
@@ -526,8 +688,17 @@ class SocketFactory(object):
         for s in [s for s in self.sockets.values() if s.is_stale()]:
             logging.debug("Closing stale socket %s"%s)
             s.close()
-        
+
+    ##
+    ## Create pending sockets
+    ##
+    def create_pending_sockets(self):
+        while self.new_sockets:
+            socket,name=self.new_sockets.pop(0)
+            self.init_socket(socket,name)
+    
     def loop(self,timeout=1):
+        self.create_pending_sockets()
         if self.sockets:
             r=[f for f,s in self.sockets.items() if s.can_read()]
             w=[f for f,s in self.sockets.items() if s.can_write()]
@@ -543,30 +714,19 @@ class SocketFactory(object):
                     # to catch connection refused causes
                     for f in w:
                         if f in self.sockets:
-                            try:
-                                self.sockets[f].handle_write()
-                            except:
-                                error_report()
-                                try:
-                                    self.sockets[f].close()
-                                except:
-                                    pass
+                            s=self.sockets[f]
+                            self.guarded_socket_call(s,s.handle_write)
                     for f in r:
                         if f in self.sockets:
-                            try:
-                                self.sockets[f].handle_read()
-                            except:
-                                error_report()
-                                try:
-                                    self.sockets[f].close()
-                                except:
-                                    pass
+                            s=self.sockets[f]
+                            self.guarded_socket_call(s,s.handle_read)
             else:
                 time.sleep(timeout)
         else:
             time.sleep(timeout)
-    
+    ##
     def run(self,run_forever=False):
+        self.create_pending_sockets()
         if run_forever:
             cond=lambda:True
         else:
