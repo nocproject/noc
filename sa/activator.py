@@ -457,7 +457,7 @@ class Activator(Daemon,FSM):
             self.cancel_stale_scripts()
         # Heartbeat when necessary
         if self.heartbeat_enable and (self.next_heartbeat is None or self.next_heartbeat<=t):
-            #self.heartbeat()
+            self.heartbeat()
             self.next_heartbeat=t+3
         # Perform default daemon/fsm machinery
         super(Activator,self).tick()
