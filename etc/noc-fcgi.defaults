@@ -10,6 +10,7 @@ loglevel = info
 logsize  = 0
 logfiles = 0
 pidfile  = /var/log/noc/noc-fcgi.pid
+heartbeat= off
 
 [fcgi]
 socket = /tmp/noc.fcgi

@@ -11,33 +11,31 @@ from __future__ import with_statement
 from noc.lib.daemon import Daemon
 from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 import time,subprocess,sys,os,logging,stat,ConfigParser,pwd,grp,atexit,signal,stat
-
+##
+HEARTBEAT_TIMEOUT=10
 ##
 ## Daemon wrapper
 ##
 class DaemonData(object):
     def __init__(self,name,is_superuser,enabled,user,uid,group,gid):
+        logging.debug("Reading config for %s"%name)
+        self.config=ConfigParser.SafeConfigParser()
+        self.config.read("etc/%s.defaults"%name)
+        self.config.read("etc/%s.conf"%name)
         self.name=name
         self.enabled=enabled
         self.pid=None
-        self.pidfile=None
+        self.pidfile=self.config.get("main","pidfile")
         self.is_superuser=is_superuser
         self.user=user
         self.uid=uid
         self.group=group
         self.gid=gid
+        self.enable_heartbeat=self.config.getboolean("main","heartbeat")
+        self.next_heartbeat_check=0
     
     def __repr__(self):
         return "<DaemonData %s>"%self.name
-    ##
-    ## Get pidfile path from daemon config
-    ##
-    def get_pidfile(self):
-        config=ConfigParser.SafeConfigParser()
-        config.read("etc/%s.defaults"%self.name)
-        config.read("etc/%s.conf"%self.name)
-        return config.get("main","pidfile")
-        
     ##
     ## Launch daemon
     ##
@@ -51,6 +49,7 @@ class DaemonData(object):
         if pid:
             self.pid=pid
             logging.info("Daemon %s started as PID %d"%(self.name,self.pid))
+            self.next_heartbeat_check=time.time()+HEARTBEAT_TIMEOUT
         else:
             # Run child
             try:
@@ -66,6 +65,36 @@ class DaemonData(object):
             except OSError, e:
                 logging.error("%s: OS Error: %s(%s)"%(self.name,e.strerror,e.errno))
                 sys.exit(1)
+    ##
+    ## Kill daemon
+    ##
+    def kill(self):
+        if not self.pid:
+            logging.info("%s: No PID to kill"%self.name)
+        try:
+            logging.info("%s: killing"%self.name)
+            os.kill(self.pid,signal.SIGTERM)
+        except:
+            logging.error("%s: Unable to kill daemon"%self.name)
+    ##
+    ##
+    ##
+    def check_heartbeat(self):
+        if not self.enabled or not self.pid or not self.enable_heartbeat:
+            return
+        t=time.time()
+        if t<self.next_heartbeat_check:
+            return
+        logging.debug("Checking heartbeat from %s"%self.name)
+        self.next_heartbeat_check=t+HEARTBEAT_TIMEOUT
+        try:
+            mt=os.stat(self.pidfile)[stat.ST_MTIME]
+        except:
+            logging.error("Unable to stat pidfile: %s"%self.pidfile)
+            return
+        if t-mt>=HEARTBEAT_TIMEOUT:
+            logging.info("%s: Heartbeat lost. Restarting"%self.name)
+            self.kill()
 
 class Launcher(Daemon):
     daemon_name="noc-launcher"
@@ -162,6 +191,8 @@ class Launcher(Daemon):
                     except:
                         logging.error("Failed to fix permissions for %s"%path)
                 last_crashinfo_check=t
+            # Check heartbeats
+            [d for d in self.daemons if d.check_heartbeat()]
         
     def at_exit(self):
         for d in self.daemons:

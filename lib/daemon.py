@@ -48,6 +48,7 @@ class Daemon(object):
         if len(self.args)<1 or self.args[0] not in ["start","launch","stop","refresh"]:
             self.opt_parser.error("You must supply one of start|launch|stop|refresh commands")
         # Read config
+        self.pidfile=None
         self.config=None
         self.load_config()
         # GC statistics collector
@@ -86,6 +87,7 @@ class Daemon(object):
             raise Exception("Invalid loglevel '%s'"%self.config.get("main","loglevel"))
         for h in logging.root.handlers:
             logging.root.removeHandler(h) # Dirty hack for baseConfig
+        self.heartbeat_enable=self.options.daemonize and self.config.getboolean("main","heartbeat")
         if self.options.daemonize:
             if self.config.get("main","logfile"):
                 loglevel=self.LOG_LEVELS[self.config.get("main","loglevel")]
@@ -97,6 +99,7 @@ class Daemon(object):
                 )
                 rf_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s',None))
                 logging.root.addHandler(rf_handler)
+            self.pidfile=self.config.get("main","pidfile")
         else:
             logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
     ##
@@ -126,9 +129,8 @@ class Daemon(object):
             sys.stderr.write("Fork failed")
             os._exit(1)
         if pid:
-            pidfile=self.config.get("main","pidfile")
-            if pidfile:
-                f=open(pidfile,"w")
+            if self.pidfile:
+                f=open(self.pidfile,"w")
                 f.write(str(pid))
                 f.close()
             os._exit(0)
@@ -200,7 +202,16 @@ class Daemon(object):
                 continue
             raise Exception("Cannot resolve address '%s'"%x)
         return r
-                    
+    ##
+    ## Touch pidfile
+    ##
+    def heartbeat(self):
+        if self.pidfile and self.heartbeat_enable:
+            try:
+                logging.debug("Touching pidfile: %s"%self.pidfile)
+                os.utime(self.pidfile,None)
+            except:
+                logging.error("Unable to touch pidfile")
     ##
     ## Add additional options to setup_opt_parser
     ##
@@ -244,9 +255,8 @@ class Daemon(object):
     ##
     def launch(self):
         # Write pidfile
-        pidfile=self.config.get("main","pidfile")
         pid=os.getpid()
-        f=open(pidfile,"w")
+        f=open(self.pidfile,"w")
         f.write(str(pid))
         f.close()
         # Close stdin/stdout/stderr
