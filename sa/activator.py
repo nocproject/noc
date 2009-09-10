@@ -256,6 +256,7 @@ class Activator(Daemon,FSM):
         FSM.__init__(self)
         self.next_filter_update=None
         self.next_crashinfo_check=None
+        self.next_heartbeat=None
         self.script_threads={}
         self.script_lock=Lock()
         self.script_call_queue=Queue.Queue()
@@ -433,6 +434,7 @@ class Activator(Daemon,FSM):
         self.factory.run(run_forever=True)
     ##
     def tick(self):
+        t=time.time()
         # Request filter updates
         if self.get_state()=="ESTABLISHED" and self.next_filter_update and time.time()>self.next_filter_update:
             self.get_event_filter()
@@ -453,6 +455,10 @@ class Activator(Daemon,FSM):
         # Cancel stale scripts
         if self.get_state()=="ESTABLISHED":
             self.cancel_stale_scripts()
+        # Heartbeat when necessary
+        if self.heartbeat_enable and (self.next_heartbeat is None or self.next_heartbeat<=t):
+            #self.heartbeat()
+            self.next_heartbeat=t+3
         # Perform default daemon/fsm machinery
         super(Activator,self).tick()
                 
