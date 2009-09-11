@@ -73,10 +73,12 @@ for error_name,exception_class in SOCKET_ERRORS:
 def get_socket_error():
     t,v,tb=sys.exc_info()
     if not t:
-        return
+        return None
     if t==socket.error:
-        if v.errno in SOCKET_ERROR_TO_EXCEPTION:
-            return SOCKET_ERROR_TO_EXCEPTION[v.errno]()
+        try:
+            return SOCKET_ERROR_TO_EXCEPTION[v.args[0]]()
+        except KeyError:
+            return None
     return None
 ##
 ## Abstract non-blocking socket wrapper.
