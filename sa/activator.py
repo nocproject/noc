@@ -78,7 +78,7 @@ class Service(SAEService):
             done(controller,error=e)
             return
         # Check [activator]/max_pull_config limit
-        if self.activator.factory.count_subclass_sockets(ScriptSocket)>=self.activator.config.getint("activator","max_pull_config"):
+        if not self.activator.can_run_script():
             e=Error()
             e.code=ERR_OVERLOAD
             e.text="script concurrent session limit reached"
@@ -258,6 +258,7 @@ class Activator(Daemon,FSM):
         self.next_crashinfo_check=None
         self.next_heartbeat=None
         self.script_threads={}
+        self.max_script_threads=self.config.getint("activator","max_pull_config")
         self.script_lock=Lock()
         self.script_call_queue=Queue.Queue()
         self.pm_data_queue=[]
@@ -393,6 +394,13 @@ class Activator(Daemon,FSM):
             for pdc in self.pm_data_collectors:
                 pdc.close()
             self.pm_data_collectors=[]
+    ##
+    ## Checks wrether max_pull_config limit exceeded
+    ##
+    def can_run_script(self):
+        with self.script_lock:
+            return len(self.script_threads)<self.max_script_threads
+    
     ##
     ## Script support
     ##
