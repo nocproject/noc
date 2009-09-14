@@ -6,19 +6,12 @@
 """
 """
 from noc.sa.interfaces.base import *
-from noc.sa.interfaces.igetconfig import IGetConfig
-from noc.sa.interfaces.igetvlans import IGetVlans
-from noc.sa.interfaces.ihasvlan import IHasVlan
-from noc.sa.interfaces.iaddvlan import IAddVlan
-from noc.sa.interfaces.iremovevlan import IRemoveVlan
-from noc.sa.interfaces.isyncvlans import ISyncVlans
-from noc.sa.interfaces.igetversion import IGetVersion
-from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-from noc.sa.interfaces.igetdot11associations import IGetDot11Associations
-from noc.sa.interfaces.iping import IPing
-from noc.sa.interfaces.igetarp import IGetARP
-from noc.sa.interfaces.icommands import ICommands
-from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
-# User Management
-from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
-from noc.sa.interfaces.ihaslocaluser import IHasLocalUser
+import os,inspect,sys
+# Interface autoloader
+im=sys.modules["noc.sa.interfaces"]
+for f in [f for f in os.listdir(__path__[0]) if f.endswith(".py") and f not in ["__init__.py","base.py"]]:
+    m=__import__("noc.sa.interfaces."+f[:-3],{},{},"*")
+    for cn in dir(m):
+        c=getattr(m,cn)
+        if inspect.isclass(c) and issubclass(c,Interface) and c!=Interface:
+            setattr(im,c.__name__,c)
