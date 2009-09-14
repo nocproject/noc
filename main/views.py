@@ -80,7 +80,8 @@ def report(request,report):
         rc=report_registry[report]
     except KeyError:
         return HttpResponseNotFound("No report found")
-    report=rc(request,request.POST)
+    format=request.GET.get("format","html")
+    report=rc(request,request.POST,format=format)
     if report.is_valid():
         return report.render()
     else:
