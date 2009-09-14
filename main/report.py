@@ -35,7 +35,7 @@ class Column(object):
         self.align=align
         self.v_align=v_align
         self.format=format
-        self.csv_format=csv_format if csv_format is not None else self.format
+        self.csv_format=csv_format
         if summary:
             self.summary=AGGREGATE_FUNCTIONS[summary]
         else:
@@ -43,7 +43,7 @@ class Column(object):
         
     def render_header(self):
         return "<TH>%s</TH>"%self.name
-        
+    
     def render_cell(self,value,bold=False):
         if value is None:
             value=""
@@ -66,7 +66,7 @@ class Column(object):
     def render_csv_header(self):
         return self.name
     
-    def render_csv_cell(self,value):
+    def render_csv_cell(self,value,bold=False):
         if value is None:
             return ""
         if self.csv_format:
@@ -188,7 +188,7 @@ class Report(object):
         writer=csv.writer(out)
         writer.writerow([c.render_csv_header() for c in self.columns])
         for row in self.get_queryset():
-            writer.writerow(row)
+            writer.writerow([c.render_csv_cell(v) for c,v in zip(self.columns,row)])
         return HttpResponse(out.getvalue(),mimetype="text/csv")
     
     def render(self):
