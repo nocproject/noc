@@ -9,6 +9,8 @@ from noc.lib.render import render
 from noc.lib.registry import Registry
 from noc.lib.svg import has_svg_support,vertical_text_inline
 from django.conf import settings
+from django.http import HttpResponse
+import cStringIO,csv
 
 #
 admin_media_prefix=settings.ADMIN_MEDIA_PREFIX
@@ -59,6 +61,14 @@ class Column(object):
             return "<TD%s><B>%s</B></TD>"%(flags,value)
         else:
             return "<TD%s>%s</TD>"%(flags,value)
+    
+    def render_csv_header(self):
+        return self.name
+    
+    def render_csv_cell(self,value):
+        if value is None:
+            return ""
+        return value
 ##
 ## Boolean field rendered as checkmark
 ##
@@ -121,9 +131,10 @@ class Report(object):
     columns=[]
     refresh=None # Time to refresh report (in seconds)
     
-    def __init__(self,request,query=None):
+    def __init__(self,request,query=None,format=None):
         self.request=request
         self.query=query
+        self.format=format if format is not None else "html"
         if self.form_class:
             if self.query:
                 self.form=self.form_class(query)
@@ -146,7 +157,7 @@ class Report(object):
     def is_valid(self):
         return self.form is None or self.form.is_valid()
     
-    def render(self):
+    def render_html(self):
         out="<TABLE SUMMARY='%s'>"%self.title
         out+="<THEAD><TR>"+"".join([c.render_header() for c in self.columns])+"</TR></THEAD>"
         n=0
@@ -166,8 +177,22 @@ class Report(object):
                     out+="<TD></TD>"
             out+="</TR>"
         out+="</TABLE>"
+        out+="<A HREF='?format=csv'><B>CSV Report</B></A>"
         return render(self.request,self.template,{"report":self,"query":self.query,"data":out,"refresh":self.refresh})
-            
+    
+    def render_csv(self):
+        out=cStringIO.StringIO()
+        writer=csv.writer(out)
+        writer.writerow([c.render_csv_header() for c in self.columns])
+        for row in self.get_queryset():
+            writer.writerow(row)
+        return HttpResponse(out.getvalue(),mimetype="text/csv")
+    
+    def render(self):
+        if self.format=="csv":
+            return self.render_csv()
+        return self.render_html()
+        
     def get_queryset(self):
         return []
         
