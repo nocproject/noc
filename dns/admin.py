@@ -15,7 +15,7 @@ class DNSServerAdmin(admin.ModelAdmin):
     list_filter=["generator_name"]
     
 class DNSZoneProfileAdmin(admin.ModelAdmin):
-    pass
+    filter_horizontal=["masters","slaves"]
 
 class DNSZoneRecordInlineForm(forms.ModelForm):
     class Meta:
