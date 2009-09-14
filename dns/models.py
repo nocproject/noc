@@ -77,6 +77,7 @@ class DNSZoneProfile(models.Model):
     zone_retry=models.IntegerField("Retry",default=900)
     zone_expire=models.IntegerField("Expire",default=86400)
     zone_ttl=models.IntegerField("TTL",default=3600)
+    description=models.TextField("Description",blank=True,null=True)
 
     def __str__(self):
         return self.name
