@@ -30,11 +30,12 @@ report_registry=ReportRegistry()
 ## 'format' is a function accepting value and returning valid html code
 ##
 class Column(object):
-    def __init__(self,name,align=None,v_align=None,format=None,summary=None):
+    def __init__(self,name,align=None,v_align=None,format=None,csv_format=None,summary=None):
         self.name=name
         self.align=align
         self.v_align=v_align
         self.format=format
+        self.csv_format=csv_format if csv_format is not None else self.format
         if summary:
             self.summary=AGGREGATE_FUNCTIONS[summary]
         else:
@@ -68,6 +69,8 @@ class Column(object):
     def render_csv_cell(self,value):
         if value is None:
             return ""
+        if self.csv_format:
+            value=self.csv_format(value)
         return value
 ##
 ## Boolean field rendered as checkmark
