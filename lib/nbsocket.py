@@ -42,6 +42,9 @@ class ConnectionRefusedError(SocketError):
 class NotConnectedError(SocketError):
     message="The socket is associated with a connection-oriented protocol and has not been connected"
 
+class BrokenPipeError(SocketError):
+    message="Broken pipe"
+
 class SocketTimeoutError(SocketError):
     message="Socket Timeout"
 
@@ -72,6 +75,7 @@ SOCKET_ERRORS=[
     ("ENOBUFS",         NoBuffersError),
     ("ECONNREFUSED",    ConnectionRefusedError),
     ("ENOTCONN",        NotConnectedError),
+    ("EPIPE",           BrokenPipeError),
 ]
 
 SOCKET_GAIERROR=[
