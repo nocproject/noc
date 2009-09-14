@@ -19,7 +19,7 @@ class Report(noc.main.report.Report):
     title="Missed Reverse Zones"
     requires_cursor=True
     columns=[Column("Prefix",format=lambda x:"<A HREF='/ip/%s/'>%s</A>"%(x,x.split("/",1)[0])),
-             Column('Zone', format=prefix_to_zone)]
+             Column('Zone', format=prefix_to_zone, csv_format=prefix_to_zone)]
     
     def get_queryset(self):
         vrf_id=self.execute("SELECT id FROM ip_vrf WHERE rd='0:0'")[0][0]
