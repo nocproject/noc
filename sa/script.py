@@ -600,7 +600,7 @@ class SNMPProvider(object):
     def run_get(self,oid):
         logging.debug("SNMP GET %s"%oid)
         # Protocol version to use
-        protocol = api.protoModules[api.protoVersion1]
+        protocol = api.protoModules[api.protoVersion2c]
         # Build PDU
         req_pdu =  protocol.GetRequestPDU()
         protocol.apiPDU.setDefaults(req_pdu)
