@@ -272,7 +272,7 @@ class SAE(Daemon):
         #
         self.xmlrpc_service=XMLRPCService(self)
         #
-        self.factory=SocketFactory()
+        self.factory=SocketFactory(tick_callback=self.tick)
         self.factory.sae=self
         #
         self.sae_listener=None
@@ -284,6 +284,12 @@ class SAE(Daemon):
         #
         self.activator_manifest=None
         self.activator_manifest_files=None
+        #
+        t=time.time()
+        self.last_task_check=t
+        self.last_crashinfo_check=t
+        self.last_mrtask_check=t
+        
     ##
     ## Create missed Task Schedules
     ##
@@ -346,33 +352,35 @@ class SAE(Daemon):
         if self.xmlrpc_listener is None:
             logging.info("Starting XML-RPC listener at %s:%d"%(xmlrpc_listen,xmlrpc_port))
             self.xmlrpc_listener=self.factory.listen_tcp(xmlrpc_listen,xmlrpc_port,XMLRPCSocket)
-        
+    ##
+    ## Run SAE event loop
+    ##
     def run(self):
         self.update_task_schedules()
         self.build_manifest()
         self.start_listeners()
-        last_cleanup=time.time()
-        last_task_check=time.time()
-        last_crashinfo_check=time.time()
-        last_mrtask_check=time.time()
-        while True:
-            self.factory.loop(1)
-            if time.time()-last_task_check>=10:
-                self.periodic_task_lock.acquire()
+        self.factory.run(run_forever=True)
+    ##
+    ## Called every second
+    ##
+    def tick(self):
+        t=time.time()
+        if time.time()-self.last_task_check>=10:
+            with self.periodic_task_lock:
                 tasks = TaskSchedule.get_pending_tasks(exclude=self.active_periodic_tasks.keys())
-                self.periodic_task_lock.release()
-                last_task_check=time.time()
-                if tasks:
-                    for t in tasks:
-                        self.run_periodic_task(t)
-            if time.time()-last_crashinfo_check>=60:
-                self.collect_crashinfo()
-                last_crashinfo_check=time.time()
-                reset_queries() # Clear debug SQL log
-            if time.time()-last_mrtask_check>=1:
-                # Check Map/Reduce task status
-                self.process_mrtasks()
-                last_mrtask_check=time.time()
+            self.last_task_check=t
+            if tasks:
+                for task in tasks:
+                    self.run_periodic_task(task)
+        if t-self.last_crashinfo_check>=60:
+            self.collect_crashinfo()
+            self.last_crashinfo_check=time.time()
+        reset_queries() # Clear debug SQL log
+        if t-self.last_mrtask_check>=1:
+            # Check Map/Reduce task status
+            self.process_mrtasks()
+            self.last_mrtask_check=t
+        
     ##
     ## Write event.
     ## data is a list of (left,right)
@@ -422,9 +430,8 @@ class SAE(Daemon):
     def run_periodic_task(self,task):
         logging.debug(u"New task running: %s"%unicode(task))
         t=threading.Thread(name=task.periodic_name,target=self.periodic_wrapper,kwargs={"task":task})
-        self.periodic_task_lock.acquire()
-        self.active_periodic_tasks[task.id]=t
-        self.periodic_task_lock.release()
+        with self.periodic_task_lock:
+            self.active_periodic_tasks[task.id]=t
         t.start()
     
     def periodic_wrapper(self,task):
@@ -442,11 +449,11 @@ class SAE(Daemon):
             timeout=max(60,task.run_every/4)
         task.next_run=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
         task.save()
-        self.periodic_task_lock.acquire()
-        try:
-            del self.active_periodic_tasks[task.id]
-        finally:
-            self.periodic_task_lock.release()
+        with self.periodic_task_lock:
+            try:
+                del self.active_periodic_tasks[task.id]
+            except:
+                pass
         # Write task complete status event
         self.write_event([
             ("source","system"),
