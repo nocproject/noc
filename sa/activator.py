@@ -587,6 +587,7 @@ class Activator(Daemon,FSM):
             self.event_sources=set(response.sources)
             logging.debug("Setting event source filter to: %s"%str(self.event_sources))
             self.next_filter_update=time.time()+response.expire
+        logging.info("Requesting event source filter")
         r=EventFilterRequest()
         self.sae_stream.proxy.event_filter(r,event_filter_callback)
     ##
