@@ -55,10 +55,6 @@ class SNMPInterfaceProbe(SNMPProbe):
                 "fail"  : { "high" : 5}
             }
         },
-        "{{ifname}}_out_queue_length" :  {
-            "oid"  : "1.3.6.1.2.1.2.2.1.21.{{ifindex}}",
-            "type" : "gauge",
-        },
         "{{ifname}}_admin_status" :  {
             "oid"  : "1.3.6.1.2.1.2.2.1.7.{{ifindex}}",
             "type" : "gauge",
