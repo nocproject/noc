@@ -795,14 +795,12 @@ class SocketFactory(object):
             self.loop(1)
             t=time.time()
             if self.tick_callback and t-last_tick>=1:
-                self.tick_callback()
+                try:
+                    self.tick_callback()
+                except:
+                    error_report()
+                    logging.info("Restoring from tick() failure")
                 last_tick=t
             if t-last_stale>3:
                 self.close_stale()
                 last_stale=t
-    
-    ##
-    ## Return amount of active sockets which are descendants from sclass
-    ##
-    def count_subclass_sockets(self,sclass):
-        return len([s for s in self.sockets.values() if issubclass(s.__class__,sclass)])
