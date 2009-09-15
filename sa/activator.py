@@ -444,10 +444,10 @@ class Activator(Daemon,FSM):
     def tick(self):
         t=time.time()
         # Request filter updates
-        if self.get_state()=="ESTABLISHED" and self.next_filter_update and time.time()>self.next_filter_update:
+        if self.get_state()=="ESTABLISHED" and self.next_filter_update and t>self.next_filter_update:
             self.get_event_filter()
         # Check for pending crashinfos
-        if self.stand_alone_mode and self.next_crashinfo_check and time.time()>self.next_crashinfo_check and self.get_state()=="ESTABLISHED":
+        if self.stand_alone_mode  and self.get_state()=="ESTABLISHED" and self.next_crashinfo_check and t>self.next_crashinfo_check:
             self.check_crashinfo()
         # Perform delayed calls
         while not self.script_call_queue.empty():
@@ -585,6 +585,7 @@ class Activator(Daemon,FSM):
                 logging.error("get_event_filter error: %s"%error.text)
                 return
             self.event_sources=set(response.sources)
+            logging.debug("Setting event source filter to: %s"%str(self.event_sources))
             self.next_filter_update=time.time()+response.expire
         r=EventFilterRequest()
         self.sae_stream.proxy.event_filter(r,event_filter_callback)
