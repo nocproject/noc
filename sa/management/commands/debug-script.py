@@ -17,7 +17,7 @@ from noc.sa.script import script_registry,scheme_id
 from noc.sa.activator import Service
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
-import logging,sys,ConfigParser,Queue,time,cPickle
+import logging,sys,ConfigParser,Queue,time,cPickle,threading,signal,os
 from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory
 from optparse import OptionParser, make_option
@@ -35,8 +35,11 @@ class ActivatorStub(object):
         self.config.set("activator","max_pull_config","2")
         self.script_call_queue=Queue.Queue()
         self.ping_check_results=None
+        self.factory=SocketFactory(tick_callback=self.tick)
+        self.to_exit=False
     
     def tick(self):
+        logging.debug("Tick")
         while not self.script_call_queue.empty():
             try:
                 f,args,kwargs=self.script_call_queue.get_nowait()
@@ -44,6 +47,12 @@ class ActivatorStub(object):
                 break
             logging.debug("Calling delayed %s(*%s,**%s)"%(f,args,kwargs))
             apply(f,args,kwargs)
+        x=len(self.factory.sockets)==0
+        if x and self.to_exit:
+            logging.debug("EXIT")
+            os._exit(0)
+        elif x:
+            self.to_exit=True
         
     def on_script_exit(self,script):
         pass
@@ -57,19 +66,33 @@ class ActivatorStub(object):
     def request_call(self,f,*args,**kwargs):
         logging.debug("Requesting call: %s(*%s,**%s)"%(f,args,kwargs))
         self.script_call_queue.put((f,args,kwargs))
+    
+    def can_run_script(self):
+        return True
 
 class Command(BaseCommand):
     help="Debug SA Script"
     option_list=BaseCommand.option_list+(
         make_option("-c","--read-community",dest="snmp_ro"),
     )
-    def handle(self, *args, **options):
+    def run_script(self,service,request):
         def handle_callback(controller,response=None,error=None):
             if error:
                 logging.debug("Error: %s"%error.text)
             if response:
-                logging.debug("Config pulled")
+                logging.debug("Script completed")
                 logging.debug(response.config)
+        logging.debug("Running script thread")
+        controller=Controller()
+        tf=TransactionFactory()
+        controller.transaction=tf.begin()
+        service.script(controller=controller,request=request,done=handle_callback)
+    
+    def SIGINT(self,signo,frame):
+        logging.info("SIGINT")
+        os._exit(0)
+        
+    def handle(self, *args, **options):
         if len(args)<2:
             print "Usage: debug-script <script> <stream url> [key1=value1 key2=value2 ... ]"
             print "Where value is valid python expression"
@@ -90,9 +113,9 @@ class Command(BaseCommand):
             print "\n".join([x[0] for x in script_registry.choices])
             return
         logging.root.setLevel(logging.DEBUG)
+        signal.signal(signal.SIGINT,self.SIGINT)
         service=Service()
         service.activator=ActivatorStub()
-        service.activator.factory=SocketFactory(tick_callback=service.activator.tick)
         url=URL(args[1])
         r=ScriptRequest()
         r.script=script_name
@@ -120,9 +143,7 @@ class Command(BaseCommand):
                 a.key=k
                 a.value=cPickle.dumps(v)
         #
-        controller=Controller()
-        tf=TransactionFactory()
-        controller.transaction=tf.begin()
-        service.script(controller=controller,request=r,done=handle_callback)
-        service.activator.factory.run()
-        service.activator.factory.tick_callback()
+        t=threading.Thread(target=self.run_script,args=(service,r,))
+        t.start()
+        #
+        service.activator.factory.run(run_forever=True)
