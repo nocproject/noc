@@ -17,6 +17,7 @@ class ActivatorAdmin(admin.ModelAdmin):
     
 class TaskScheduleAdmin(admin.ModelAdmin):
     list_display=["periodic_name","is_enabled","run_every","next_run","run_now_link"]
+    search_fields=["periodic_name"]
 
 class AdministrativeDomainAdmin(admin.ModelAdmin):
     list_display=["name","description"]
