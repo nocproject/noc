@@ -5,8 +5,10 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+from __future__ import with_statement
 import socket,select,errno,time,logging,pty,os,signal,subprocess,errno,sys
 from errno import *
+from threading import RLock
 from noc.lib.debug import error_report
 
 try:
@@ -515,8 +517,10 @@ class UDPSocket(Socket):
     def handle_write(self):
         msg,addr=self.out_buffer.pop(0)
         self.socket.sendto(msg,addr)
+        self.update_status()
 
     def handle_read(self):
+        self.update_status()
         msg,transport_address=self.socket.recvfrom(8192)
         if msg=="":
             return
@@ -564,9 +568,9 @@ class PTYSocket(Socket):
         self.out_buffer=""
     
     def create_socket(self):
+        self.debug("EXECV(%s)"%str(self.argv))
         self.pid,fd=pty.fork()
         if self.pid==0:
-            self.debug("EXECV(%s)"%str(self.argv))
             os.execv(self.argv[0],self.argv)
         else:
             self.socket=FileWrapper(fd)
@@ -659,24 +663,27 @@ class SocketFactory(object):
         self.name_socket={} # name -> socket
         self.new_sockets=[] # list of (socket,name)
         self.tick_callback=tick_callback
+        self.register_lock=RLock() # Guard for register/unregister operations
     ##
     ## Attack socket to the new_sockets list
     ##
     def register_socket(self,socket,name=None):
         logging.debug("register_socket(%s,%s)"%(socket,name))
-        self.new_sockets+=[(socket,name)]
+        with self.register_lock:
+            self.new_sockets+=[(socket,name)]
     ##
     ## Remove socket from factory
     ##
     def unregister_socket(self,socket):
-        logging.debug("unregister_socket(%s)"%socket)
-        if socket not in self.socket_name: # Not in factory yet
-            return
-        del self.sockets[socket.socket.fileno()]
-        old_name=self.socket_name[socket]
-        del self.socket_name[socket]
-        if old_name:
-            del self.name_socket[old_name]
+        with self.register_lock:
+            logging.debug("unregister_socket(%s)"%socket)
+            if socket not in self.socket_name: # Not in factory yet
+                return
+            del self.sockets[socket.socket.fileno()]
+            old_name=self.socket_name[socket]
+            del self.socket_name[socket]
+            if old_name:
+                del self.name_socket[old_name]
     ##
     ## Safe call of socket's method
     ## Returns call status (True/False)
@@ -707,16 +714,17 @@ class SocketFactory(object):
             socket.debug("Initializing socket")
             if not self.guarded_socket_call(socket,socket.create_socket):
                 return
-        self.sockets[socket.socket.fileno()]=socket
-        if socket in self.socket_name:
-            # Socket was registred
-            old_name=self.socket_name[socket]
-            del self.socket_name[socket]
-            if old_name:
-                del self.name_socket[old_name]
-        self.socket_name[socket]=name
-        if name:
-            self.name_socket[name]=socket
+        with self.register_lock:
+            self.sockets[socket.socket.fileno()]=socket
+            if socket in self.socket_name:
+                # Socket was registred
+                old_name=self.socket_name[socket]
+                del self.socket_name[socket]
+                if old_name:
+                    del self.name_socket[old_name]
+            self.socket_name[socket]=name
+            if name:
+                self.name_socket[name]=socket
         
     def listen_tcp(self,address,port,socket_class,**kwargs):
         if not issubclass(socket_class,AcceptedTCPSocket):
@@ -731,32 +739,37 @@ class SocketFactory(object):
         return socket_class(self,address,port)
         
     def get_socket_by_name(self,name):
-        return self.name_socket[name]
+        with self.register_lock:
+            return self.name_socket[name]
         
     def get_name_by_socket(self,socket):
-        return self.socket_name[socket]
+        with self.register_lock:
+            return self.socket_name[socket]
     
     def __len__(self):
-        return len(self.sockets)
+        with self.register_lock:
+            return len(self.sockets)
         
     def close_stale(self):
-        for s in [s for s in self.sockets.values() if s.is_stale()]:
-            logging.debug("Closing stale socket %s"%s)
-            s.close()
-
+        with self.register_lock:
+            for s in [s for s in self.sockets.values() if s.is_stale()]:
+                logging.debug("Closing stale socket %s"%s)
+                s.close()
     ##
     ## Create pending sockets
     ##
     def create_pending_sockets(self):
-        while self.new_sockets:
-            socket,name=self.new_sockets.pop(0)
-            self.init_socket(socket,name)
+        with self.register_lock:
+            while self.new_sockets:
+                socket,name=self.new_sockets.pop(0)
+                self.init_socket(socket,name)
     
     def loop(self,timeout=1):
         self.create_pending_sockets()
         if self.sockets:
-            r=[f for f,s in self.sockets.items() if s.can_read()]
-            w=[f for f,s in self.sockets.items() if s.can_write()]
+            with self.register_lock:
+                r=[f for f,s in self.sockets.items() if s.can_read()]
+                w=[f for f,s in self.sockets.items() if s.can_write()]
             if r or w:
                 try:
                     r,w,x=select.select(r,w,[],timeout)
@@ -767,20 +780,22 @@ class SocketFactory(object):
                 if r or w:
                     # Write events processed before read events
                     # to catch connection refused causes
-                    for f in w:
-                        if f in self.sockets:
-                            s=self.sockets[f]
-                            self.guarded_socket_call(s,s.handle_write)
-                    for f in r:
-                        if f in self.sockets:
-                            s=self.sockets[f]
-                            self.guarded_socket_call(s,s.handle_read)
+                    with self.register_lock:
+                        for f in w:
+                            if f in self.sockets:
+                                s=self.sockets[f]
+                                self.guarded_socket_call(s,s.handle_write)
+                        for f in r:
+                            if f in self.sockets:
+                                s=self.sockets[f]
+                                self.guarded_socket_call(s,s.handle_read)
             else:
                 time.sleep(timeout)
         else:
             time.sleep(timeout)
     ##
     def run(self,run_forever=False):
+        logging.debug("Running socket factory")
         self.create_pending_sockets()
         if run_forever:
             cond=lambda:True
