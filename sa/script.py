@@ -205,6 +205,8 @@ class Script(threading.Thread):
         self.debug("Closing")
         if self.cli_provider:
             self.activator.request_call(self.cli_provider.close)
+        if self.snmp:
+            self.snmp.close()
         self.activator.on_script_exit(self)
         
     def execute(self,**kwargs):
@@ -645,17 +647,107 @@ class SNMPGetSocket(UDPSocket):
 ##
 ##
 ##
+class SNMPGetNextSocket(SNMPGetSocket):
+    TTL=5
+    ##
+    ## Returns string containing SNMP GET requests to self.oids
+    ##
+    def get_snmp_request(self):
+        self.provider.script.debug("%s SNMP GETNEXT %s"%(self.address,str(self.oid)))
+        p_mod=api.protoModules[api.protoVersion2c]
+        req_PDU =  p_mod.GetNextRequestPDU()
+        p_mod.apiPDU.setDefaults(req_PDU)
+        p_mod.apiPDU.setVarBinds(req_PDU,[(p_mod.ObjectIdentifier(self.oid_to_tuple(self.oid)),p_mod.Null())])
+        req_msg = p_mod.Message()
+        p_mod.apiMessage.setDefaults(req_msg)
+        p_mod.apiMessage.setCommunity(req_msg, self.provider.access_profile.snmp_ro)
+        p_mod.apiMessage.setPDU(req_msg, req_PDU)
+        self.req_PDU=req_PDU
+        self.req_msg=req_msg
+        return encoder.encode(req_msg)
+
+    def on_read(self,data,address,port):
+        p_mod=api.protoModules[api.protoVersion2c]
+        while data:
+            rsp_msg, data = decoder.decode(data, asn1Spec=p_mod.Message())
+            rsp_pdu = p_mod.apiMessage.getPDU(rsp_msg)
+            # Match response to request
+            if p_mod.apiPDU.getRequestID(self.req_PDU)==p_mod.apiPDU.getRequestID(rsp_pdu):
+                # Check for SNMP errors reported
+                errorStatus = p_mod.apiPDU.getErrorStatus(rsp_pdu)
+                if errorStatus and errorStatus != 2:
+                    raise errorStatus
+                # Format var-binds table
+                var_bind_table = p_mod.apiPDU.getVarBindTable(self.req_PDU, rsp_pdu)
+                # Report SNMP table
+                for table_row in var_bind_table:
+                    for name, val in table_row:
+                        if val is None:
+                            continue
+                        oid=name.prettyPrint()
+                        if not oid.startswith(self.oid):
+                            self.close()
+                            return
+                        self.provider.script.debug('%s SNMP GETNEXT REPLY: %s %s'%(self.address,oid,str(val)))
+                        self.provider.queue.put((oid,str(val)))
+                        self.got_result=True
+                # Stop on EOM
+                for oid, val in var_bind_table[-1]:
+                    if val is not None:
+                        break
+                    else:
+                        self.close()
+                        return
+                # Generate request for next row
+                p_mod.apiPDU.setVarBinds(self.req_PDU, map(lambda (x,y),n=p_mod.Null(): (x,n), var_bind_table[-1]))
+                p_mod.apiPDU.setRequestID(self.req_PDU, p_mod.getNextRequestID())
+                self.sendto(encoder.encode(self.req_msg),(self.address,161))
+##
+##
+##
 class SNMPProvider(object):
     TimeOutError=SocketTimeoutError
     def __init__(self,script):
         self.script=script
         self.access_profile=self.script.access_profile
         self.factory=script.activator.factory
-        self.queue=Queue.Queue()
+        self.queue=Queue.Queue(maxsize=1)
+        self.getnext_socket=None
     
     def get(self,oid):
-        SNMPGetSocket(self,oid)
-        r=self.queue.get(block=True)
-        if r is None:
-            raise self.TimeOutError()
+        s=SNMPGetSocket(self,oid)
+        try:
+            r=self.queue.get(block=True)
+            if r is None:
+                raise self.TimeOutError()
+        finally:
+            s.close()
         return r
+    ##
+    ## getnext generator.
+    ## USAGE:
+    ## for oid,v in self.getnext("xxxxx"):
+    ##      ....
+    ##
+    def getnext(self,oid):
+        if not self.getnext_socket:
+            self.getnext_socket=SNMPGetNextSocket(self,oid)
+        # Flush queue
+        while not self.queue.empty():
+            self.queue.get()
+        while True:
+            r=self.queue.get(block=True)
+            if r is None:
+                if self.getnext_socket.got_result: # Stop Iteration in case of success
+                    raise StopIteration
+                else: # Socket closed by Timeout
+                    raise self.TimeOutError()
+            else:
+                yield r
+    ##
+    ## Close all UDP sockets
+    ##
+    def close(self):
+        if self.getnext_socket:
+            self.getnext_socket.close()
+            del self.getnext_socket
