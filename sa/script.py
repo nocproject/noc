@@ -8,7 +8,7 @@
 from noc.lib.fsm import StreamFSM
 from noc.lib.ecma48 import strip_control_sequences
 from noc.lib.registry import Registry
-from noc.lib.nbsocket import PTYSocket
+from noc.lib.nbsocket import PTYSocket,UDPSocket,SocketTimeoutError
 from noc.lib.debug import format_frames,get_traceback_frames
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.sa.profiles import profile_registry
@@ -142,7 +142,7 @@ class Script(threading.Thread):
         self.cli_provider=None
         self.http=HTTPProvider(self.access_profile)
         if HAS_SNMP:
-            self.snmp=SNMPProvider(self.access_profile)
+            self.snmp=SNMPProvider(self)
         else:
             self.snmp=None
         self.status=False
@@ -584,55 +584,78 @@ class HTTPProvider(object):
 ##
 ##
 ##
+class SNMPGetSocket(UDPSocket):
+    TTL=3
+    def __init__(self,provider,oid):
+        super(SNMPGetSocket,self).__init__(provider.factory)
+        self.provider=provider
+        self.oid=oid
+        self.address=self.provider.access_profile.address
+        self.got_result=False
+        self.sendto(self.get_snmp_request(),(self.address,161))
+    ##
+    ## Convert oid from string to a list of integers
+    ##
+    def oid_to_tuple(self,oid):
+        return [int(x) for x in oid.split(".")]
+    ##
+    ## Returns string containing SNMP GET requests to self.oids
+    ##
+    def get_snmp_request(self):
+        self.provider.script.debug("%s SNMP GET %s"%(self.address,self.oid))
+        p_mod=api.protoModules[api.protoVersion2c]
+        req_PDU =  p_mod.GetRequestPDU()
+        p_mod.apiPDU.setDefaults(req_PDU)
+        p_mod.apiPDU.setVarBinds(req_PDU,[(self.oid_to_tuple(self.oid),p_mod.Null())])
+        req_msg = p_mod.Message()
+        p_mod.apiMessage.setDefaults(req_msg)
+        p_mod.apiMessage.setCommunity(req_msg, self.provider.access_profile.snmp_ro)
+        p_mod.apiMessage.setPDU(req_msg, req_PDU)
+        self.req_PDU=req_PDU
+        return encoder.encode(req_msg)
+    ##
+    ## Read and parse reply.
+    ## Call set_data for all returned values
+    ##
+    def on_read(self,data,address,port):
+        p_mod=api.protoModules[api.protoVersion2c]
+        while data:
+            rsp_msg, data = decoder.decode(data, asn1Spec=p_mod.Message())
+            rsp_pdu = p_mod.apiMessage.getPDU(rsp_msg)
+            if p_mod.apiPDU.getRequestID(self.req_PDU)==p_mod.apiPDU.getRequestID(rsp_pdu):
+                errorStatus = p_mod.apiPDU.getErrorStatus(rsp_pdu)
+                if errorStatus:
+                    self.provider.script.error("%s SNMP GET ERROR: %s"%(self.address,errorStatus.prettyPrint()))
+                    break
+                else:
+                    for oid, val in p_mod.apiPDU.getVarBinds(rsp_pdu):
+                        self.provider.script.debug('%s SNMP GET REPLY: %s %s'%(self.address,oid.prettyPrint(),val.prettyPrint()))
+                        self.got_result=True
+                        self.provider.queue.put(str(val))
+                        break
+        self.close()
+    ##
+    ##
+    ##
+    def on_close(self):
+        if not self.got_result:
+            self.provider.script.debug("SNMP Timeout")
+            self.provider.queue.put(None)
+        super(SNMPGetSocket,self).on_close()
+##
+##
+##
 class SNMPProvider(object):
-    TimeOutError=TimeOutError
-    def __init__(self,access_profile):
-        self.access_profile=access_profile
+    TimeOutError=SocketTimeoutError
+    def __init__(self,script):
+        self.script=script
+        self.access_profile=self.script.access_profile
+        self.factory=script.activator.factory
         self.queue=Queue.Queue()
     
-    def str_to_oid(self,s):
-        return tuple([int(x) for x in s.split(".")])
-        
     def get(self,oid):
-        self.run_get(oid)
-        return self.queue.get(block=True)
-    
-    def run_get(self,oid):
-        logging.debug("SNMP GET %s"%oid)
-        # Protocol version to use
-        protocol = api.protoModules[api.protoVersion2c]
-        # Build PDU
-        req_pdu =  protocol.GetRequestPDU()
-        protocol.apiPDU.setDefaults(req_pdu)
-        protocol.apiPDU.setVarBinds(req_pdu, ((self.str_to_oid(oid), protocol.Null()),))
-        # Build message
-        req = protocol.Message()
-        protocol.apiMessage.setDefaults(req)
-        protocol.apiMessage.setCommunity(req, self.access_profile.snmp_ro)
-        protocol.apiMessage.setPDU(req, req_pdu)
-        def timer_callback(timeNow, start_time=time.time()):
-            if timeNow - start_time > 3:
-                raise TimeOutError
-        def recv_callback(transportDispatcher, transportDomain, transportAddress, msg, req_pdu=req_pdu):
-            while msg:
-                rsp_msg, msg = decoder.decode(msg, asn1Spec=protocol.Message())
-                rspPDU = protocol.apiMessage.getPDU(rsp_msg)
-                # Match response to request
-                if protocol.apiPDU.getRequestID(req_pdu)==protocol.apiPDU.getRequestID(rspPDU):
-                    # Check for SNMP errors reported
-                    errorStatus = protocol.apiPDU.getErrorStatus(rspPDU)
-                    #if errorStatus:
-                    #    print errorStatus.prettyPrint()
-                    #else:
-                    for oid, val in protocol.apiPDU.getVarBinds(rspPDU):
-                        self.queue.put(str(val))
-                    transportDispatcher.jobFinished(1)
-            return msg
-        transportDispatcher = AsynsockDispatcher()
-        transportDispatcher.registerTransport(udp.domainName, udp.UdpSocketTransport().openClientMode())
-        transportDispatcher.registerRecvCbFun(recv_callback)
-        transportDispatcher.registerTimerCbFun(timer_callback)
-        transportDispatcher.sendMessage(encoder.encode(req), udp.domainName, (self.access_profile.address, 161))
-        transportDispatcher.jobStarted(1)
-        transportDispatcher.runDispatcher()
-        transportDispatcher.closeDispatcher()
+        SNMPGetSocket(self,oid)
+        r=self.queue.get(block=True)
+        if r is None:
+            raise self.TimeOutError()
+        return r
