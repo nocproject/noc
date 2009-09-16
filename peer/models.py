@@ -10,6 +10,7 @@ from noc.settings import config
 from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
+from noc.lib.fields import INETField
 from noc.sa.profiles import profile_registry
 from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
@@ -274,14 +275,20 @@ class PeeringPoint(models.Model):
         ifaddrs={}
         peers={}
         for p in self.peer_set.all():
-            ifaddrs[p.local_ip,p.masklen]=None
+            ifaddrs[p.local_ip]=None
             peers[p.remote_ip,p.remote_asn]=None
         s=[]
         s+=["inet-rtr: %s"%self.hostname]
         s+=["local-as: AS%d"%self.local_as.asn]
-        for ip,masklen in sorted(ifaddrs.keys(),lambda x,y:cmp(x[0],y[0])):
-            s+=["ifaddr: %s masklen %d"%(ip,masklen)]
+        for ip in sorted(ifaddrs.keys()):
+            if "/" in ip:
+                ip,masklen=ip.split("/")
+            else:
+                masklen="30"
+            s+=["ifaddr: %s masklen %s"%(ip,masklen)]
         for remote_ip,remote_as in sorted(peers.keys(),lambda x,y:cmp(x[0],y[0])):
+            if "/" in remote_ip:
+                remote_ip,masklen=remote_ip.split("/")
             s+=["peer: BGP4 %s asno(%s)"%(remote_ip,remote_as)]
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
@@ -302,7 +309,9 @@ class PeerGroup(models.Model):
         return self.name
     def __unicode__(self):
         return unicode(self.name)
-        
+##
+## BGP Peer
+##
 class Peer(models.Model):
     class Meta:
         verbose_name="Peer"
@@ -310,10 +319,9 @@ class Peer(models.Model):
     peer_group=models.ForeignKey(PeerGroup,verbose_name="Peer Group")
     peering_point=models.ForeignKey(PeeringPoint,verbose_name="Peering Point")
     local_asn=models.ForeignKey(AS,verbose_name="Local AS")
-    local_ip=models.IPAddressField("Local IP")
-    masklen=models.PositiveIntegerField("Masklen",default=30)
+    local_ip=INETField("Local IP")
     remote_asn=models.IntegerField("Remote AS")
-    remote_ip=models.IPAddressField("Remote IP")
+    remote_ip=INETField("Remote IP")
     import_filter=models.CharField("Import filter",max_length=64)
     local_pref=models.IntegerField("Local Pref",null=True,blank=True)
     export_filter=models.CharField("Export filter",max_length=64)
