@@ -26,6 +26,18 @@ class CIDRField(models.Field):
         # PostgreSQL exception
         return normalize_prefix(value)
 ##
+## INETField maps to PostgreSQL INET Field
+##
+class INETField(models.Field):
+    def db_type(self):
+        return "INET"
+    
+    def to_python(self,value):
+        return str(value)
+    
+    def get_db_prep_value(self,value):
+        return value
+##
 ## Binary Field maps to PostgreSQL BYTEA
 ##
 class BinaryField(models.Field):
