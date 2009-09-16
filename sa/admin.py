@@ -76,6 +76,8 @@ class ManagedObjectAdmin(admin.ModelAdmin):
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name in ["password","super_password"]:
             kwargs["widget"]=forms.widgets.PasswordInput
+            if "request" in kwargs: # For Django 1.1 compatibility
+                kwargs.pop("request",None)
             return db_field.formfield(**kwargs)
         return super(ManagedObjectAdmin,self).formfield_for_dbfield(db_field,**kwargs)
     ##
