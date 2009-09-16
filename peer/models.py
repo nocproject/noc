@@ -272,15 +272,15 @@ class PeeringPoint(models.Model):
     profile=property(_profile)
     #
     def _rpsl(self):
-        ifaddrs={}
+        ifaddrs=set()
         peers={}
         for p in self.peer_set.all():
-            ifaddrs[p.local_ip]=None
+            ifaddrs.add(p.local_ip)
             peers[p.remote_ip,p.remote_asn]=None
         s=[]
         s+=["inet-rtr: %s"%self.hostname]
         s+=["local-as: AS%d"%self.local_as.asn]
-        for ip in sorted(ifaddrs.keys()):
+        for ip in sorted(ifaddrs):
             if "/" in ip:
                 ip,masklen=ip.split("/")
             else:
