@@ -596,6 +596,14 @@ class SNMPGetSocket(UDPSocket):
         self.got_result=False
         self.sendto(self.get_snmp_request(),(self.address,161))
     ##
+    ## Build full community, appending suffix when necessary
+    ##
+    def get_community(self):
+        c=self.provider.access_profile.snmp_ro
+        if self.provider.community_suffix:
+            c+=self.provider.community_suffix
+        return c
+    ##
     ## Convert oid from string to a list of integers
     ##
     def oid_to_tuple(self,oid):
@@ -611,7 +619,7 @@ class SNMPGetSocket(UDPSocket):
         p_mod.apiPDU.setVarBinds(req_PDU,[(self.oid_to_tuple(self.oid),p_mod.Null())])
         req_msg = p_mod.Message()
         p_mod.apiMessage.setDefaults(req_msg)
-        p_mod.apiMessage.setCommunity(req_msg, self.provider.access_profile.snmp_ro)
+        p_mod.apiMessage.setCommunity(req_msg, self.get_community())
         p_mod.apiMessage.setPDU(req_msg, req_PDU)
         self.req_PDU=req_PDU
         return encoder.encode(req_msg)
@@ -660,7 +668,7 @@ class SNMPGetNextSocket(SNMPGetSocket):
         p_mod.apiPDU.setVarBinds(req_PDU,[(p_mod.ObjectIdentifier(self.oid_to_tuple(self.oid)),p_mod.Null())])
         req_msg = p_mod.Message()
         p_mod.apiMessage.setDefaults(req_msg)
-        p_mod.apiMessage.setCommunity(req_msg, self.provider.access_profile.snmp_ro)
+        p_mod.apiMessage.setCommunity(req_msg, self.get_community())
         p_mod.apiMessage.setPDU(req_msg, req_PDU)
         self.req_PDU=req_PDU
         self.req_msg=req_msg
@@ -713,8 +721,10 @@ class SNMPProvider(object):
         self.factory=script.activator.factory
         self.queue=Queue.Queue(maxsize=1)
         self.getnext_socket=None
+        self.community_suffix=None
     
-    def get(self,oid):
+    def get(self,oid,community_suffix=None):
+        self.community_suffix=community_suffix
         s=SNMPGetSocket(self,oid)
         try:
             r=self.queue.get(block=True)
@@ -729,9 +739,11 @@ class SNMPProvider(object):
     ## for oid,v in self.getnext("xxxxx"):
     ##      ....
     ##
-    def getnext(self,oid):
-        if not self.getnext_socket:
-            self.getnext_socket=SNMPGetNextSocket(self,oid)
+    def getnext(self,oid,community_suffix=None):
+        self.community_suffix=community_suffix
+        if self.getnext_socket:
+            self.getnext_socket.close()
+        self.getnext_socket=SNMPGetNextSocket(self,oid)
         # Flush queue
         while not self.queue.empty():
             self.queue.get()
