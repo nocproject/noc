@@ -50,10 +50,22 @@ class AllocateBlockForm(forms.Form):
     description=forms.CharField(label="description",required=True)
     asn=forms.ModelChoiceField(label="ASN",queryset=AS.objects.all(),required=True)
     tt=forms.IntegerField(label="TT #",required=False)
+    def __init__(self,data=None,initial=None,vrf=None):
+        super(AllocateBlockForm,self).__init__(data=data,initial=initial)
+        self.vrf=vrf
     def clean_prefix(self):
         if not is_cidr(self.cleaned_data["prefix"]):
             raise forms.ValidationError("Invalid prefix")
-        return normalize_prefix(self.cleaned_data["prefix"])
+        prefix=normalize_prefix(self.cleaned_data["prefix"])
+        # Check for duplocation
+        q=IPv4Block.objects.filter(prefix=prefix)
+        if self.vrf.vrf_group.unique_addresses:
+            q=q.filter(vrf__in=self.vrf.vrf_group.vrf_set.all())
+        else:
+            q=q.filter(vrf=self.vrf)
+        if q.count()>0:
+            raise forms.ValidationError("Block is already present")
+        return prefix
 
 def allocate_block(request,vrf_id,prefix=None):
     vrf=get_object_or_404(VRF,id=int(vrf_id))
@@ -71,7 +83,7 @@ def allocate_block(request,vrf_id,prefix=None):
         initial={}
         p=""
     if request.POST:
-        form=AllocateBlockForm(request.POST)
+        form=AllocateBlockForm(request.POST,vrf=vrf)
         if form.is_valid():
             if not IPv4BlockAccess.check_write_access(request.user,vrf,form.cleaned_data["prefix"]):
                 return HttpResponseForbidden("Permission denied")
@@ -113,6 +125,9 @@ class AssignAddressForm(forms.Form):
     ip=forms.CharField(label="IP",required=True)
     description=forms.CharField(label="Description",required=False)
     tt=forms.IntegerField(label="TT #",required=False)
+    def __init__(self,data=None,initial=None,vrf=None):
+        super(AssignAddressForm,self).__init__(data=data,initial=initial)
+        self.vrf=vrf
     def clean_fqdn(self):
         if not is_fqdn(self.cleaned_data["fqdn"]):
             raise forms.ValidationError("Invalid FQDN")
@@ -120,7 +135,16 @@ class AssignAddressForm(forms.Form):
     def clean_ip(self):
         if not is_ipv4(self.cleaned_data["ip"]):
             raise forms.ValidationError("Invalid IP Address")
-        return self.cleaned_data["ip"]
+        # Check for duplications
+        ip=self.cleaned_data["ip"]
+        q=IPv4Address.objects.filter(ip=ip)
+        if self.vrf.vrf_group.unique_addresses:
+            q=q.filter(vrf__in=self.vrf.vrf_group.vrf_set.all())
+        else:
+            q=q.filter(vrf=self.vrf)
+        if q.count()>0:
+            raise forms.ValidationError("IPv4 Address is already present")
+        return ip
 
 rx_url_cidr=re.compile(r"^.*/(\d+\.\d+\.\d+\.\d+/\d+)/$")
 
@@ -146,7 +170,7 @@ def assign_address(request,vrf_id,ip=None,new_ip=None):
         initial={}
         p=""
     if request.POST:
-        form=AssignAddressForm(request.POST)
+        form=AssignAddressForm(request.POST,vrf=vrf)
         if form.is_valid():
             assert is_ipv4(form.cleaned_data["ip"])
             assert is_fqdn(form.cleaned_data["fqdn"])
