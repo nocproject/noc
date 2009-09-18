@@ -37,23 +37,7 @@ class IPv4BlockAccessAdmin(admin.ModelAdmin):
     list_display=["user","vrf","prefix"]
     list_filter=["user","vrf"]
     search_fields=["user","prefix"]
-##
-## Admin for IPv4Block
-##
-class IPv4BlockAdmin(admin.ModelAdmin):
-    list_display=["prefix","vrf","description"]
-    list_filter=["vrf","asn"]
-    search_fields=["prefix","description"]
-##
-## Admin for IPv4Address
-##
-class IPv4AddressAdmin(admin.ModelAdmin):
-    list_display=["ip","fqdn","vrf","description"]
-    list_filter=["vrf"]
-    search_fields=["ip","fqdn","description"]
 
 admin.site.register(VRFGroup,VRFGroupAdmin)
 admin.site.register(VRF,VRFAdmin)
 admin.site.register(IPv4BlockAccess,IPv4BlockAccessAdmin)
-admin.site.register(IPv4Block,IPv4BlockAdmin)
-admin.site.register(IPv4Address,IPv4AddressAdmin)
