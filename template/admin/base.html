@@ -31,7 +31,7 @@
         {% block branding %}<img src="{{setup.logo_url}}" width="{{setup.logo_width}}" height="{{setup.logo_height}}" alt="logo" style="float: left; margin: 0px 4px 0px 4px"/><h1 ID="site-name">{{setup.installation_name}}</h1>{% endblock %}
         </div>
         {% if user.is_authenticated and user.is_staff %}
-        <div id="user-tools">{% trans 'Welcome,' %} <strong>{% firstof user.first_name user.username %}</strong>. {% block userlinks %}{% comment %}<a href="/static/doc/en/">{% trans 'Documentation' %}</a> / {%endcomment%}<a href="/admin/main/userprofile/">Profile</a> / <a href="/admin/password_change/">{% trans 'Change password' %}</a> / <a href="/admin/logout/">{% trans 'Log out' %}</a>.{% endblock %} <FORM METHOD="POST" ACTION="/main/search/"><INPUT TYPE="search" NAME="query"  PLACEHOLDER="Search..."/></SPAN></FORM></div>
+        <div id="user-tools">{% trans 'Welcome,' %} <strong>{% firstof user.first_name user.username %}</strong>. {% block userlinks %}{% comment %}<a href="/static/doc/en/">{% trans 'Documentation' %}</a> / {%endcomment%}<a href="/admin/main/userprofile/">Profile</a> / <a href="/admin/password_change/">{% trans 'Change password' %}</a> / <a href="/admin/logout/">{% trans 'Log out' %}</a>.{% endblock %} <FORM METHOD="POST" ACTION="/main/search/"><INPUT TYPE="search" NAME="query"  PLACEHOLDER="Search..."/></FORM></div>
         {% endif %}
         {% block nav-global %}{% endblock %}
     </div>
