@@ -318,7 +318,6 @@ def refbook_new(request,refbook_id):
         rbr.save()
         return HttpResponseRedirect("/main/refbook/%d/%d/"%(rb.id,rbr.id))
     return render(request,"main/refbook_new.html",{"rb":rb})
-
 ##
 ## Delete refbook record
 ##
@@ -330,15 +329,6 @@ def refbook_delete(request,refbook_id,record_id):
     rbd=get_object_or_404(RefBookData,ref_book=rb,id=int(record_id))
     rbd.delete()
     return HttpResponseRedirect("/main/refbook/%d/"%rb.id)
-##
-## Render SVG with vertical text
-##
-def svg_text_vertical(request):
-    if request.GET:
-        text=request.GET.get("text",u"")
-    else:
-        text=u""
-    return HttpResponse(vertical_text_svg(text),mimetype="image/svg+xml")
 ##
 ## Test Time Pattern
 ##
