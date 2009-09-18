@@ -4,9 +4,44 @@
 {% if refresh %}
 <meta http-equiv="Refresh" content="{{refresh}}" />
 {% endif %}
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.svg.css" />
+<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.svg.js"></SCRIPT>
 {% endblock %}
 {% block content %}
 <h1>{{report.title}}</h1>
+<script type="text/javascript">
+FW=8;
+FH=12;
+TP=2;
+function rotate_text() {
+    var baseline=0;
+    var x0=FH+TP;
+    // Determine baseline
+    $(".vtext").each(function(i){
+        var tl=$(this).html().length;
+        var bl=tl*FW+TP;
+        if(bl>baseline) {
+            baseline=bl;
+        }
+    });
+    // Draw vertical labels
+    $(".vtext").each(function(i){
+        var $t=$(this);
+        var $text=$t.html();
+        $t.html("");
+        $t.width(FH+2*TP);
+        $t.height(baseline+TP);
+        $t.svg(function(svg){
+            var g=svg.group(
+                    svg.group(svg.group({fontFamily: 'Verdana',fontSize:FH}),
+                        {transform:'translate('+x0+','+baseline+')'}),
+                            {transform:'rotate(-90)'});
+            svg.text(g,0,0,$text);
+        });
+    });
+}
+$(document).ready(rotate_text);
+</script>
 <DIV CLASS="module">
 {{data|safe}}
 </DIV>

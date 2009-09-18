@@ -7,7 +7,6 @@
 """
 from noc.lib.render import render
 from noc.lib.registry import Registry
-from noc.lib.svg import has_svg_support,vertical_text_inline
 from django.conf import settings
 from django.http import HttpResponse
 import cStringIO,csv
@@ -208,25 +207,17 @@ class Report(object):
 ## get_queryset must return a triple of (column-label,row-label,value)
 class MatrixReport(Report):
     def render(self):
-        def column_label_svg(s):
-            return vertical_text_inline(s)
-        def column_label_html(s):
-            return "<BR/>".join(s)
-        if has_svg_support(self.request):
-            column_label=column_label_svg
-        else:
-            column_label=column_label_html
         data={}
-        cl={}
-        rl={}
+        cl=set()
+        rl=set()
         for c,r,v in self.get_queryset():
             data[c,r]=v
-            cl[c]=None
-            rl[r]=None
-        cl=sorted(cl.keys())
-        rl=sorted(rl.keys())
+            cl.add(c)
+            rl.add(r)
+        cl=sorted(cl)
+        rl=sorted(rl)
         out="<TABLE SUMMARY='%s' BORDER='1'>"%self.title
-        out+="<TR><TH></TH>%s</TR>"%"".join(["<TH>%s</TH>"%column_label(c) for c in cl])
+        out+="<TR><TH></TH>%s</TR>"%"".join(["<TH><DIV CLASS='vtext'>%s</DIV></TH>"%c for c in cl])
         n=0
         for r in rl:
             out+="<TR CLASS='row%d'><TD><B>%s</B></TD>"%((n%2)+1,r)
