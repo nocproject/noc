@@ -179,7 +179,7 @@ def error_report():
         f.write(cPickle.dumps(c))
         f.close()
         if DEBUG_CTX_SET_UID: # Change crashinfo userid to directory's owner
-            os.chown(h,DEBUG_CTX_SET_UID,-1)
+            os.chown(p,DEBUG_CTX_SET_UID,-1)
 
 def frame_report(frame):
     now=datetime.datetime.now()
