@@ -237,7 +237,29 @@ def minimal_prefix(ip1,ip2):
         n1=network(ip1+suffix)+suffix
         if n1==network(ip2+suffix)+suffix:
             return n1
-
+##
+## Compare ip1 against ip2
+##
+def cmp_ip(ip1,ip2):
+    return cmp(address_to_int(ip1),address_to_int(ip2))
+##
+## Check ip is between f and t
+def in_range(ip,f,t):
+    print "in_range",ip,f,t,cmp_ip(f,ip)>=0 and cmp_ip(t,ip)<=0
+    return cmp_ip(f,ip)<=0 and cmp_ip(t,ip)>=0
+##
+##
+## Generator returing ip addresses in range
+##
+def generate_ips(ip1,ip2):
+    n1=address_to_int(ip1)
+    n2=address_to_int(ip2)
+    while True:
+        yield int_to_address(n1)
+        n1+=1
+        if n1>n2:
+            break
+##
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
