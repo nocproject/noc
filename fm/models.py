@@ -525,7 +525,7 @@ class Event(models.Model):
     class Meta:
         verbose_name="Event"
         verbose_name_plural="Events"
-        ordering=[("id")]
+        ordering=["id"]
     timestamp=models.DateTimeField("Timestamp")
     managed_object=models.ForeignKey(ManagedObject,verbose_name="Managed Object")
     event_priority=models.ForeignKey(EventPriority,verbose_name="Priority")
