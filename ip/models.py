@@ -5,7 +5,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import socket,struct
+import re
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -13,9 +13,10 @@ from noc.lib.validators import check_rd,check_cidr,is_cidr,is_ipv4
 from noc.lib.tt import tt_url
 from noc.peer.models import AS
 from noc.lib.fields import CIDRField
-from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast,address_to_int
+from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast,address_to_int,generate_ips,prefix_to_size
 from noc.main.menu import Menu
 from noc.main.search import SearchResult
+from noc.main.middleware import get_user
 ##
 ##
 ##
@@ -180,6 +181,18 @@ class IPv4Block(models.Model):
         return [IPv4Address.objects.get(id=i[0]) for i in c.fetchall()]
     addresses=property(_addresses)
     ##
+    ## Return number of allocated addresses
+    ##
+    def _address_count(self):
+        if self.has_children:
+            return []
+        from django.db import connection
+        c=connection.cursor()
+        c.execute("SELECT COUNT(*) FROM ip_ipv4address WHERE vrf_id=%s AND ip << %s::cidr",[self.vrf.id,self.prefix])
+        return c.fetchall()[0][0]
+    address_count=property(_address_count)
+        
+    ##
     ## Generator returning a nested ip addresses (including nested children)
     ##
     def _nested_addresses(self):
@@ -238,10 +251,29 @@ class IPv4Block(models.Model):
     def _broadcast(self):
         return broadcast(self.prefix)
     broadcast=property(_broadcast)
+    ##
+    ## Block size in IP addresses
+    ##
+    def _size(self):
+        return prefix_to_size(self.prefix)
+    size=property(_size)
     
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
+    ##
+    ## A list of block's ranges
+    ##
+    def _ranges(self):
+        if self.has_children:
+            return []
+        from django.db import connection
+        c=connection.cursor()
+        c.execute("SELECT id FROM ip_ipv4addressrange WHERE vrf_id=%s AND %s::cidr>>from_ip AND %s::cidr>>to_ip",
+            [self.vrf.id,self.prefix,self.prefix])
+        ids=[x[0] for x in c.fetchall()]
+        return IPv4AddressRange.objects.filter(id__in=ids)
+    ranges=property(_ranges)
     ##
     ## Search engine plugin
     ##
@@ -264,6 +296,166 @@ class IPv4Block(models.Model):
                     title="IPv4 Block, VRF=%s, %s"%(r.vrf,r.prefix),
                     text=r.description,
                     relevancy=relevancy)
+##
+## IPv4 Address Range
+##
+rx_var=re.compile(r"\{\{([^}]+)\}\}")
+class IPv4AddressRange(models.Model):
+    class Meta:
+        verbose_name="IPv4 Address Range"
+        verbose_name_plural="IPv4 Address Ranges"
+        unique_together=[("vrf","name")]
+    vrf=models.ForeignKey(VRF,verbose_name="VRF")
+    name=models.CharField("Name",max_length=64)
+    from_ip=models.IPAddressField("From IP")
+    to_ip=models.IPAddressField("To Address")
+    description=models.TextField("Description",null=True,blank=True)
+    is_locked=models.BooleanField("Range is locked",default=False) # Deny manual IPv4Address editing
+    fqdn_action=models.CharField("FQDN Action",max_length=1,choices=[("N","Do Nothing"),("G","Generate FQDN"),("D","Delegate Reverse zone")],default="N")
+    fqdn_action_parameter=models.CharField("FQDN Action Parameter",max_length=128,null=True,blank=True)
+    def __unicode__(self):
+        return u"%s (%s:%s-%s)"%(self.name,self.vrf.name,self.from_ip,self.to_ip)
+    ##
+    ## Find Matching range
+    ## Returns range object or None
+    ##
+    @classmethod
+    def get_range(cls,vrf,ip):
+        from django.db import connection
+        c=connection.cursor()
+        c.execute("SELECT id FROM ip_ipv4addressrange WHERE vrf_id=%s AND %s::inet BETWEEN from_ip AND to_ip",[vrf.id,ip])
+        r=c.fetchall()
+        if r:
+            return IPv4AddressRange.objects.get(id=r[0][0])
+        else:
+            return None
+    ##
+    ## Generator returning all ip addresses in range
+    ##
+    def _addresses(self):
+        for ip in generate_ips(self.from_ip,self.to_ip):
+            yield ip
+    addresses=property(_addresses)
+    ##
+    ## Check for range overlap
+    ## Returns a list of overlapping ranges
+    ##
+    @classmethod
+    def get_range_overlap(cls,vrf,from_ip,to_ip,instance=None):
+        from django.db import connection
+        c=connection.cursor()
+        SQL="""SELECT id FROM ip_ipv4addressrange WHERE vrf_id=%s AND from_ip<=%s::inet AND to_ip>=%s::inet """
+        P=[vrf.id,to_ip,from_ip]
+        if instance:
+            SQL+=" AND id!=%s"
+            P+=[instance.id]
+        c.execute(SQL,P)
+        return IPv4AddressRange.objects.filter(id__in=[x[0] for x in c.fetchall()])
+            
+    ##
+    ## Check for overlapping IPv4 blocks overlap
+    ## Returns a list of overlapping IPv4 Blocks
+    ##
+    @classmethod
+    def get_block_overlap(cls,vrf,from_ip,to_ip):
+        from django.db import connection
+        c=connection.cursor()
+        c.execute("""SELECT id FROM ip_ipv4block
+                WHERE vrf_id=%s
+                    AND (
+                        (prefix >> %s::inet AND NOT (prefix >> %s::inet))
+                        OR (prefix >> %s::inet AND NOT (prefix >> %s::inet))
+                        )""",
+            [vrf.id,from_ip,to_ip,to_ip,from_ip])
+        return IPv4Block.objects.filter(id__in=[x[0] for x in c.fetchall()])
+    ##
+    ## Check IP address falls into locked range
+    ##
+    @classmethod
+    def is_range_locked(cls,vrf,ip):
+        r=cls.get_range(vrf,ip)
+        if r:
+            return r.is_locked
+        else:
+            return False
+    ##
+    ## Generate reverse zone delegation for DNS provisioning
+    ##
+    
+    ##
+    ## Expand FQDN for ip
+    ##
+    ## Variables are:
+    ## {{ip1}},{{ip2}},{{ip2}},{{ip4}} - first, second, third and fourth octets (decimal)
+    ##
+    def expand_fqdn(self,ip):
+        if self.fqdn_action!="G" and not self.fqdn_action_parameter:
+            return None
+        ip1,ip2,ip3,ip4=ip.split(".")
+        vars={
+            "ip1" : ip1,
+            "ip2" : ip2,
+            "ip3" : ip3,
+            "ip4" : ip4,
+        }
+        return rx_var.sub(lambda x:vars.get(x.group(1),""),self.fqdn_action_parameter)
+    ##
+    ##
+    ##
+    def sync_fqdns(self):
+        if self.fqdn_action!="G":
+            return
+        # Generate IP addresses
+        user=get_user()
+        for ip in self.addresses:
+            try:
+                i=IPv4Address.objects.get(vrf=self.vrf,ip=ip)
+                i.fqdn=self.expand_fqdn(ip)
+                i.description="Generated by IP address range: %s"%self.name
+                i.modified_by=user
+                i.save()
+            except IPv4Address.DoesNotExist:
+                IPv4Address(vrf=self.vrf,
+                    fqdn=self.expand_fqdn(ip),
+                    ip=ip,
+                    description="Generated by IP address range: %s"%self.name,
+                    modified_by=user).save()
+    ##
+    ##
+    ##
+    def save(self,**kwargs):
+        # Check parameters
+        if self.is_locked==False and self.fqdn_action!="N":
+            raise ValueError("FQDN Action requires locked range")
+        if self.fqdn_action in ["G","D"] and not self.fqdn_action_parameter:
+            raise ValueError("FQDN Action Paratemer required")
+        # Sync generated addresses
+        is_new=self.id is None
+        if not is_new:
+            old=IPv4AddressRange.objects.get(id=self.id)
+        super(IPv4AddressRange,self).save(**kwargs)
+        if is_new:
+            if self.fqdn_action=="G":
+                # Generate FQDNs
+                self.sync_fqdns()
+        else:
+            if old.fqdn_action=="G" and self.fqdn_action!="G":
+                # Drop auto-generated IPs
+                for i in IPv4Address.get_addresses(self.vrf,self.from_ip,self.to_ip):
+                    i.delete()
+            elif old.fqdn_action!="G" and self.fqdn_action=="G":
+                # Generate FQDNs
+                self.sync_fqdns()
+            elif self.fqdn_action=="G":
+                if old.from_ip<self.from_ip:
+                    # Delete IP addresses that falls out of range
+                    for i in IPv4Address.get_addresses(self.vrf,old.from_ip,self.from_ip):
+                        i.delete()
+                if old.to_ip>self.to_ip:
+                    # Delete IP addresses that falls out of range
+                    for i in IPv4Address.get_addresses(self.vrf,self.to_ip,old.to_ip):
+                        i.delete()
+                self.sync_fqdns()
 ##
 ##
 ##
@@ -297,6 +489,16 @@ class IPv4Address(models.Model):
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
+    ##
+    ## All IPv4Address objects in range
+    ##
+    @classmethod
+    def get_addresses(self,vrf,from_ip,to_ip):
+        from django.db import connection
+        c=connection.cursor()
+        SQL="SELECT id FROM ip_ipv4address WHERE vrf_id=%s AND ip BETWEEN %s::inet AND %s::inet ORDER BY ip"
+        c.execute(SQL,[vrf.id,from_ip,to_ip])
+        return IPv4Address.objects.filter(id__in=[x[0] for x in c.fetchall()])
     ##
     ## Search engine
     ##
@@ -336,6 +538,7 @@ class AppMenu(Menu):
             ("VRF Groups",  "/admin/ip/vrfgroup/",        "ip.change_vrfgroup"),
             ("VRFs",        "/admin/ip/vrf/",             "ip.change_vrf"),
             ("Block Access","/admin/ip/ipv4blockaccess/", "ip.change_ipv4blockaccess"),
+            ("IPv4 Address Ranges","/admin/ip/ipv4addressrange/", "ip.change_ipv4addressrange"),
             ]
         )
     ]

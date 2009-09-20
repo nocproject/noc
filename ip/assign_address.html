@@ -8,10 +8,28 @@
 {%endblock%}
 {% block content %}
 <H1>Assign IPv4 address. VRF: {{vrf}} ({{vrf.rd}})</H1>
+<SCRIPT TYPE="text/javascript">
+    <!--
+    function confirm_delete(msg)
+    {
+        var agree=confirm(msg);
+        if (agree)
+            return true;
+        else
+            return false;
+    }
+    // -->
+</SCRIPT>
+
 <FORM METHOD="POST" ACTION="/ip/{{vrf.id}}{{p}}/assign_address/" >
-<TABLE>
-{{form.as_table}}
-</TABLE>
-<INPUT TYPE="submit"/>
+    <DIV>
+    <fieldset class="module aligned ">
+        <table>{{form.as_table}}</table>
+    </fieldset>
+    <div class="submit-row">
+        <INPUT TYPE="submit" VALUE="Save" CLASS="default"/>
+        <p class="deletelink-box"><a href="../revoke_address/" class="deletelink" ONCLICK="return confirm_delete('Delete Address?')">Delete</a></p>
+    </div>
+    </DIV>
 </FORM>
 {% endblock %}

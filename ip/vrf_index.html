@@ -12,7 +12,7 @@
 {% if can_allocate %}
     <ul class="object-tools">
         {% if prefix.has_children %}{%else%}
-        <li><A HREF="#" ONCLICK="toggle_free();" CLASS="changelink" id="free_ip_togger_button">Show Free</A></li>
+        <li><A HREF="#" ONCLICK="toggle_free();" CLASS="changelink" id="free_ip_toggle_button">Show Free</A></li>
         {% endif %}
         <li><A HREF="/ip/{{vrf.id}}/{{prefix}}/tools/" CLASS="changelink">Tools</A></li>
         <li><A HREF="/ip/{{vrf.id}}/allocate_block/" CLASS="addlink">Allocate new block</A></li>
@@ -53,7 +53,7 @@
     </TABLE>
 </DIV>
 
-{% if prefix.has_children %}
+{% if has_children %}
 {% else %}
 <STYLE>
 .freeip {
@@ -69,11 +69,11 @@ var _ft_shown=false;
 function toggle_free() {
     if(_ft_shown) {
         $(".freeip").each(function (i){this.style.display="none";});
-        $("#free_ip_togger_button").text("Show Free");
+        $("#free_ip_toggle_button").text("Show Free");
         _ft_shown=false;
     } else {
         $(".freeip").each(function (i){this.style.display="table-row";});
-        $("#free_ip_togger_button").text("Hide Free");
+        $("#free_ip_toggle_button").text("Hide Free");
         _ft_shown=true;
     }
 }
@@ -81,44 +81,56 @@ function toggle_free() {
 <DIV CLASS="module">
     <TABLE SUMMARY="Allocated addresses within {{prefix.prefix}}" WIDTH="100%">
         <THEAD>
-            <TR><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
+            <TR><TH STYLE="width: 10px"></TH><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH></TR>
         </THEAD>
-        {% for a in prefix.all_addresses %}
+        {% for c,a in all_addresses %}
             {% if a.ip %}
                 <TR class="{%cycle 'row1' 'row2'%}">
-                <TD>{{a.ip}}</TD>
+                <TD {%if c%}STYLE="background-color: {{c}}"{%endif%}></TD>
+                <TD>{% if can_allocate %}<A HREF="/ip/{{vrf.id}}/{{a.ip}}/assign_address/">{{a.ip}}</A>{%else%}{{a.ip}}{%endif%}</TD>
                 <TD>{{a.fqdn}}</TD>
                 <TD>{{a.description}}</TD>
                 <TD>{%if a.tt %}<A HREF="{{a.tt_url}}">#{{a.tt}}</A>{%endif%}</TD>
-                <TD>
-                    {% if can_allocate %}
-                    <A HREF="/ip/{{vrf.id}}/{{a.ip}}/assign_address/" CLASS="changelink">Change</A>
-                    <A HREF="/ip/{{vrf.id}}/{{a.ip}}/revoke_address/"
-                        CLASS="deletelink"  ONCLICK="return confirm_delete('Delete address?')">Delete</A>
-                    {% endif %}
-                </TD>
                 </TR>
             {% else %}
                 <TR CLASS="freeip">
-                <TD COLSPAN=2>{{a}}</TD>
+                <TD {%if c%}STYLE="background-color: {{c}}"{%endif%}></TD>
+                <TD COLSPAN=2>{% if can_allocate %}<A HREF="/ip/{{vrf.id}}/{{a}}/assign_address/new/">{{a}}</A>{%else%}{{a}}{% endif %}</TD>
                 <TD>Free</TD>
                 <TD></TD>
-                <TD><A HREF="/ip/{{vrf.id}}/{{a}}/assign_address/new/" CLASS="addlink">Assign Address</A></TD>
                 </TR>
             {% endif %}
         {% endfor %}
     </TABLE>
 </DIV>
+{% if ranges %}
+    <DIV CLASS="module">
+        <TABLE SUMMARY="Address Ranges" WIDTH="100%">
+            <CAPTION>Address Ranges</CAPTION>
+            <THEAD>
+                <TR><TH></TH><TH>Name</TH><TH>From IP</TH><TH>To IP</TH><TH>Locked</TH><TH>Description</TH></TR>
+            </THEAD>
+            {% for r in ranges %}
+            <TR class="{%cycle 'row1' 'row2'%}">
+                <TD STYLE="width: 10px; background-color: {{r.color}}"></TD>
+                <TD>{{r.name}}</TD>
+                <TD>{{r.from_ip}}</TD>
+                <TD>{{r.to_ip}}</TD>
+                <TD><img src="/media/img/admin/icon-{%if r.is_locked%}yes{%else%}no{%endif%}.gif"></TD>
+                <TD>{{r.description}}</TD>
+            </TR>
+            {% endfor %}
+        </TABLE>
+    </DIV>
+{% endif %}
 {% endif %}
 
 <DIV CLASS="module">
     <TABLE SUMMARY="Block info" WIDTH="100%">
         <CAPTION>{{prefix.prefix}} info</CAPTION>
-        <TR><TD STYLE="width: 10pt">net</TD><TD>{{prefix}}</TD></TR>
-        <TR><TD>Maintainers</TD><TD>{{prefix.maintainers|join:", "}}.</TD></TR>
-        <TR><TD>mask</TD><TD>{{prefix.netmask}}</TD></TR>
-        <TR><TD>broadcast</TD><TD>{{prefix.broadcast}}</TD></TR>
-        <TR><TD>wildcard</TD><TD>{{prefix.wildcard}}</TD></TR>
+        {% for k,v in block_info %}
+            <TR class="{%cycle 'row1' 'row2'%}"><TD STYLE="width: 10pt"><b>{{k}}</b></TD><TD>{{v}}</TD></TR>
+        {% endfor %}
     </TABLE>
 </DIV>
 {% endblock %}

@@ -13,6 +13,7 @@ from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 from noc.dns.generators import generator_registry
 from noc.lib.rpsl import rpsl_format
+from noc.lib.ip import generate_ips
 from noc.main.menu import Menu
 
 ##
@@ -156,6 +157,17 @@ class DNSZone(models.Model):
         # Add records from DNSZoneRecord
         zonerecords=self.dnszonerecord_set.all()
         if self.type=="R":
+            # Classles reverse zone delegation
+            # Range delegations
+            c.execute("SELECT from_ip,to_ip,fqdn_action_parameter FROM ip_ipv4addressrange WHERE from_ip << %s::cidr AND to_ip<<%s::cidr AND fqdn_action='D'",
+                [self.reverse_prefix,self.reverse_prefix])
+            for from_ip,to_ip,fqdn_action_params in c.fetchall():
+                nses=[ns.strip() for ns in fqdn_action_params.split(",")]
+                for ip in generate_ips(from_ip,to_ip):
+                    n=ip.split(".")[-1]
+                    for ns in nses:
+                        records+=[["%s/32"%n,"IN NS",ns]]
+                        records+=[[n,"CNAME","%s.%s/32"%(n,n)]]
             # Subnet delegation macro
             delegations={}
             for d in [r for r in zonerecords if "NS" in r.type.type and "/" in r.left]:
@@ -165,6 +177,7 @@ class DNSZone(models.Model):
                     delegations[l].append(r)
                 else:
                     delegations[l]=[r]
+            # Perform classless reverse zone delegation
             for d,nses in delegations.items():
                 try:
                     net,mask=[int(x) for x in l.split("/")]
@@ -181,7 +194,7 @@ class DNSZone(models.Model):
                     records+=[[";; Invalid network: %s"%d,"CNAME",d]]
                     continue
                 for i in range(net,net+(1<<(8-m))):
-                    records+=[["%d"%i,"CNAME","%d.%s"%(i,d)]]
+                    records+=[["%d"%i,"CNAME","%d.%s"%(i,d)]]                
             # Other records
             records+=[[x.left,x.type.type,x.right] for x in zonerecords\
                 if ("NS" in x.type.type and "/" not in x.left) or "NS" not in x.type.type]

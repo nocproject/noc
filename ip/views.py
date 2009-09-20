@@ -12,11 +12,12 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse,HttpResponseRedirect,HttpResponseForbidden
 from django import forms
 
-from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address
+from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address,IPv4AddressRange
 from noc.peer.models import AS
 from noc.lib.render import render,render_success,render_failure
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
-from noc.lib.ip import normalize_prefix,contains
+from noc.lib.ip import normalize_prefix,contains,in_range
+from noc.lib.colors import get_colors
 from noc.settings import config
 import csv,cStringIO,datetime,subprocess,re
 
@@ -40,8 +41,46 @@ def vrf_index(request,vrf_id,prefix="0.0.0.0/0"):
     prefixes=vrf.prefixes(prefix)
     can_allocate=IPv4BlockAccess.check_write_access(request.user,vrf,prefix)
     prefix=vrf.prefix(prefix)
+    has_children=prefix.has_children
+    total=prefix.size
+    block_info=[
+        ("Net",         prefix.prefix),
+        ("Maintainers", ", ".join([str(u) for u in prefix.maintainers])),
+        ("Netmask",     prefix.netmask),
+        ("Broadcast",   prefix.broadcast),
+        ("Wildcard",    prefix.wildcard),
+        ("Size",        total),
+    ]
+    ranges=None
+    all_addresses=None
+    if not has_children:
+        used=prefix.address_count
+        free=total-used
+        block_info+=[
+            ("Addresses Used",used),
+            ("Addresses Free",free),
+        ]
+        ranges=list(prefix.ranges)
+        colors=get_colors(len(ranges))
+        rc=[]
+        for r,c in zip(ranges,colors):
+            r.color=c
+            rc+=[(r.from_ip,r.to_ip,c)]
+        all_addresses=[]
+        for a in prefix.all_addresses:
+            try:
+                ip=a.ip
+            except:
+                ip=a
+            c=None
+            for from_ip,to_ip,cl in rc:
+                if in_range(ip,from_ip,to_ip):
+                    c=cl
+                    break
+            all_addresses+=[(c,a)]
     return render(request,"ip/vrf_index.html",{"vrf":vrf,"parents":parents,"prefixes":prefixes,"prefix":prefix,
-                        "can_allocate":can_allocate})
+                        "can_allocate":can_allocate,"block_info":block_info,"has_children":has_children,
+                        "ranges":ranges,"all_addresses":all_addresses})
 ##
 ## Allocate new block handler
 ##
@@ -135,6 +174,8 @@ class AssignAddressForm(forms.Form):
     def clean_ip(self):
         if not is_ipv4(self.cleaned_data["ip"]):
             raise forms.ValidationError("Invalid IP Address")
+        if IPv4AddressRange.is_range_locked(self.vrf,self.cleaned_data["ip"]):
+            raise forms.ValidationError("IP Address Range is locked")
         # Check for duplications
         ip=self.cleaned_data["ip"]
         q=IPv4Address.objects.filter(ip=ip)
