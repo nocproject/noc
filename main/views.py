@@ -17,7 +17,6 @@ from django.utils.cache import patch_response_headers
 from django import forms
 from django.views.generic import list_detail
 from noc.lib.render import render,render_success,render_failure,render_json
-from noc.lib.svg import vertical_text_svg
 from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
