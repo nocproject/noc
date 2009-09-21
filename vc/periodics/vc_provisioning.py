@@ -27,13 +27,17 @@ class Task(noc.sa.periodic.Task):
             vcs=[{"vlan_id":vc.l1,"name":vc.name} for vc in vc_domain.vc_set.all()]
             # Run Map/Reduce task
             for c in vc_domain.vcdomainprovisioningconfig_set.filter(is_enabled=True):
-                    task=ReduceTask.create_task(object_selector=c.selector,
-                        reduce_script="VlanProvisioningReport",
-                        reduce_script_params=c.id,
-                        map_script="sync_vlans",
-                        map_script_params={"vlans":vcs,"tagged_ports":c.tagged_ports_list},
-                        timeout=TIMEOUT)
-                    tasks+=[task]
+                if c.vc_filter:
+                    vc_list=[v for v in vcs if c.vc_filter.check(v["vlan_id"])]
+                else:
+                    vc_list=vcs[:]
+                task=ReduceTask.create_task(object_selector=c.selector,
+                    reduce_script="VlanProvisioningReport",
+                    reduce_script_params=c.id,
+                    map_script="sync_vlans",
+                    map_script_params={"vlans":vc_list,"tagged_ports":c.tagged_ports_list},
+                    timeout=TIMEOUT)
+                tasks+=[task]
         # Wait for tasks completion
         while tasks:
             time.sleep(CHECK_TIMEOUT)

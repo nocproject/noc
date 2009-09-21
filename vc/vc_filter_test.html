@@ -1,0 +1,29 @@
+{% extends "template/template.html" %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/admin/vc/">Vc</A> &rsaquo; 
+    <a href='/admin/vc/vcfilter/'>VC Filters</A> &rsaquo; {{vc_filter.name}} &rsaquo;
+</div>
+{% endblock %}
+
+{% block content %}
+<H1>Test VC Filter: {{vc_filter.name}}</H1>
+<FORM METHOD="POST">
+    <TABLE BORDER="0">
+    {{form.as_table}}
+    </TABLE>
+<INPUT TYPE="submit" VALUE="Test" />
+</FORM>
+
+{% if result %}
+<DIV CLASS="module">
+    <TABLE SUMMARY="Block info" WIDTH="100%">
+        <CAPTION>{{prefix.prefix}} info</CAPTION>
+        <THEAD>
+            <TR><TH STYLE="width: 40px">VC Id</TH><TH>Description</TH></TR>
+        </THEAD>
+        {% for v,d in result %}
+            <TR class="{%cycle 'row1' 'row2'%}"><TD>{{v}}</TD><TD>{{d}}</TD></TR>
+        {% endfor %}
+    </TABLE>
+</DIV>
+{% endif %}
+{%endblock%}
