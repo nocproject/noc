@@ -31,6 +31,8 @@ class Task(noc.sa.periodic.Task):
                     vc_list=[v for v in vcs if c.vc_filter.check(v["vlan_id"])]
                 else:
                     vc_list=vcs[:]
+                if not vc_list:
+                    continue # Refuse to drop all vlans on switches
                 task=ReduceTask.create_task(object_selector=c.selector,
                     reduce_script="VlanProvisioningReport",
                     reduce_script_params=c.id,
