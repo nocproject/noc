@@ -45,6 +45,57 @@ class VCDomain(models.Model):
     def __unicode__(self):
         return u"%s: %s"%(unicode(self.type),self.name)
 ##
+## VC Filter
+##
+rx_vc_filter=re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
+class VCFilter(models.Model):
+    class Meta:
+        verbose_name="VC Filter"
+        verbose_name_plural="VC Filters"
+        ordering=["name"]
+    name=models.CharField("Name",max_length=64,unique=True)
+    expression=models.CharField("Expression",max_length=256)
+    description=models.TextField("Description",null=True,blank=True)
+    def __unicode__(self):
+        return self.name
+    ##
+    ## Compile VC Filter expression
+    ##
+    @classmethod
+    def compile(self,expression):
+        if not rx_vc_filter.match(expression):
+            raise SyntaxError
+        r=[]
+        for x in expression.split(","):
+            x=x.strip()
+            if "-" in x:
+                f,t=[int(c.strip()) for c in x.split("-")]
+            else:
+                f=int(x)
+                t=f
+            if t<f:
+                raise SyntaxError
+            r+=[(f,t)]
+        return r
+    ##
+    ## Check filter matches VC
+    ##
+    def check(self,vc):
+        if not hasattr(self,"_compiled_expression"):
+            self._compiled_expression=VCFilter.compile(self.expression)
+        for f,t in self._compiled_expression:
+            if f<=vc<=t:
+                return True
+        return False
+    ##
+    ## Link to test filter
+    ##
+    def test_link(self):
+        return "<a href='/vc/vcfilter/%d/test/'>Test</a>"%self.id
+    test_link.short_description="Test VC Filter"
+    test_link.allow_tags=True
+
+##
 ## VCDomain Provisioning Parameters
 ##
 class VCDomainProvisioningConfig(models.Model):
@@ -55,6 +106,7 @@ class VCDomainProvisioningConfig(models.Model):
     vc_domain=models.ForeignKey(VCDomain,verbose_name="VC Domain")
     selector=models.ForeignKey(ManagedObjectSelector,verbose_name="Managed Object Selector")
     is_enabled=models.BooleanField("Is Enabled",default=True)
+    vc_filter=models.ForeignKey(VCFilter,verbose_name="VC Filter",null=True,blank=True)
     tagged_ports=models.CharField("Tagged Ports",max_length=256,null=True,blank=True)
     notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group",null=True,blank=True)    
     def __unicode__(self):
@@ -135,6 +187,7 @@ class AppMenu(Menu):
         ("Virtual Circuits", "/admin/vc/vc/", "vc.change_vc"),
         ("Setup",[
             ("VC Domains", "/admin/vc/vcdomain/", "vc.change_vcdomain"),
+            ("VC Filters", "/admin/vc/vcfilter/", "vc.change_vcfilter"),
             ("VC Types",   "/admin/vc/vctype/", "vc.change_vctype"),
         ])
     ]

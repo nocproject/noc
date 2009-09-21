@@ -8,10 +8,11 @@
 ##----------------------------------------------------------------------
 """
 """
+from django.shortcuts import get_object_or_404
 from django import forms
 from django.contrib.auth.decorators import permission_required
 from noc.lib.render import render,render_success
-from noc.vc.models import VCDomain,VC,VCType
+from noc.vc.models import VCDomain,VCFilter,VC,VCType
 from noc.sa.models import ManagedObject, profile_registry
 from noc.settings import config
 from xmlrpclib import ServerProxy, Error
@@ -20,6 +21,28 @@ from xmlrpclib import ServerProxy, Error
 ## Profiles having get_vlans script
 ##
 get_vlans_profiles=[p.name for p in profile_registry.classes.values() if "get_vlans" in p.scripts]
+##
+## Test VC Filter
+##
+class VCFilterTestForm(forms.Form):
+    vc_id=forms.IntegerField(label="VC Id",required=False)
+    vc_domain=forms.ModelChoiceField(label="OR VC Domain",queryset=VCDomain.objects,required=False)
+
+@permission_required("vc.add_vcfilter")
+def vc_filter_test(request,filter_id):
+    vc_filter=get_object_or_404(VCFilter,id=int(filter_id))
+    result=[]
+    if request.POST:
+        form=VCFilterTestForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data["vc_id"]:
+                vcs=[(form.cleaned_data["vc_id"],"Test")]
+            elif form.cleaned_data["vc_domain"]:
+                vcs=[(v.l1,v.name) for v in form.cleaned_data["vc_domain"].vc_set.order_by("l1")]
+            result=[v for v in vcs if vc_filter.check(v[0])]
+    else:
+        form=VCFilterTestForm()
+    return render(request,"vc/vc_filter_test.html",{"form":form,"vc_filter":vc_filter,"result":result})
 ##
 ## Import vlans from switches via SA
 ##
