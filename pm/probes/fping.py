@@ -23,7 +23,7 @@ class FPingProbeSocket(PopenProbeSocket):
     def on_close(self):
         for l in self.data.split("\n"):
             l=l.strip()
-            if ":" not in l:
+            if ":" not in l or "duplicate for" in l:
                 continue
             s,r=l.split(":")
             s=s.strip()
