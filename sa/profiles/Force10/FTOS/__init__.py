@@ -22,3 +22,13 @@ class Profile(noc.sa.profiles.Profile):
     command_save_config="write memory"
     pattern_prompt=r"^\S+?#"
     command_submit="\r"
+    
+    def generate_prefix_list(self,name,pl,strict=True):
+        suffix=""
+        if not strict:
+            suffix+=" le 32"
+        p="no ip prefix-list %s\n"%name
+        p+="ip prefix-list %s\n"%name
+        p+="\n".join(["    permit %s%s"%(x,suffix) for x in pl])
+        p+="\nexit\n"
+        return p
