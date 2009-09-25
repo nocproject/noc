@@ -265,6 +265,9 @@ class SNMPProbe(Probe):
             if self.interfaces and service not in self.ifindex: # IfIndexes are not resolved yet
                 continue
             self.sockets[service]=self.socket_class(self,service,self.oids[service].keys(),self.community)
+        # Exit when not ifindexes resolved yet
+        if len(self.sockets)==0:
+            self.exit()
     ##
     ## Force remaining sockets closing
     ##
