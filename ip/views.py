@@ -164,9 +164,10 @@ class AssignAddressForm(forms.Form):
     ip=forms.CharField(label="IP",required=True)
     description=forms.CharField(label="Description",required=False)
     tt=forms.IntegerField(label="TT #",required=False)
-    def __init__(self,data=None,initial=None,vrf=None):
+    def __init__(self,data=None,initial=None,vrf=None,address_id=None):
         super(AssignAddressForm,self).__init__(data=data,initial=initial)
         self.vrf=vrf
+        self.address_id=address_id
     def clean_fqdn(self):
         if not is_fqdn(self.cleaned_data["fqdn"]):
             raise forms.ValidationError("Invalid FQDN")
@@ -183,6 +184,8 @@ class AssignAddressForm(forms.Form):
             q=q.filter(vrf__in=self.vrf.vrf_group.vrf_set.all())
         else:
             q=q.filter(vrf=self.vrf)
+        if self.address_id:
+            q=q.exclude(id=self.address_id)
         if q.count()>0:
             raise forms.ValidationError("IPv4 Address is already present")
         return ip
@@ -192,9 +195,11 @@ rx_url_cidr=re.compile(r"^.*/(\d+\.\d+\.\d+\.\d+/\d+)/$")
 def assign_address(request,vrf_id,ip=None,new_ip=None):
     vrf=get_object_or_404(VRF,id=int(vrf_id))
     parents=[]
+    address_id=None
     if ip:
         assert is_ipv4(ip)
         address=get_object_or_404(IPv4Address,vrf=vrf,ip=ip)
+        address_id=address.id
         initial={
             "fqdn"        : address.fqdn,
             "ip"          : address.ip,
@@ -211,7 +216,7 @@ def assign_address(request,vrf_id,ip=None,new_ip=None):
         initial={}
         p=""
     if request.POST:
-        form=AssignAddressForm(request.POST,vrf=vrf)
+        form=AssignAddressForm(request.POST,vrf=vrf,address_id=address_id)
         if form.is_valid():
             assert is_ipv4(form.cleaned_data["ip"])
             assert is_fqdn(form.cleaned_data["fqdn"])
