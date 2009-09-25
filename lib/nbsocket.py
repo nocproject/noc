@@ -679,11 +679,9 @@ class SocketFactory(object):
             logging.debug("unregister_socket(%s)"%socket)
             if socket not in self.socket_name: # Not in factory yet
                 return
-            del self.sockets[socket.socket.fileno()]
-            old_name=self.socket_name[socket]
-            del self.socket_name[socket]
-            if old_name:
-                del self.name_socket[old_name]
+            self.sockets.pop(socket.socket.fileno(),None)
+            old_name=self.socket_name.pop(socket,None)
+            self.name_socket.pop(old_name,None)
     ##
     ## Safe call of socket's method
     ## Returns call status (True/False)
