@@ -245,7 +245,6 @@ def cmp_ip(ip1,ip2):
 ##
 ## Check ip is between f and t
 def in_range(ip,f,t):
-    print "in_range",ip,f,t,cmp_ip(f,ip)>=0 and cmp_ip(t,ip)<=0
     return cmp_ip(f,ip)<=0 and cmp_ip(t,ip)>=0
 ##
 ##
