@@ -81,8 +81,9 @@ class SNMPSocket(UDPSocket):
 ##
 class SNMPIfIndexSocket(SNMPSocket):
     TTL=60
-    def __init__(self,probe,service,community):
+    def __init__(self,probe,service,interfaces,community):
         self.oid_root="1.3.6.1.2.1.2.2.1.2"
+        self.interfaces=set(interfaces)
         self.ifindex=[]
         super(SNMPIfIndexSocket,self).__init__(probe,service,[],community)
     ##
@@ -126,7 +127,15 @@ class SNMPIfIndexSocket(SNMPSocket):
                         if not oid.startswith(self.oid_root):
                             self.close()
                             return
-                        self.ifindex+=[(oid.split(".")[-1],str(val))]
+                        ifname=str(val)
+                        ifindex=oid.split(".")[-1]
+                        if ifname in self.interfaces:
+                            self.interfaces.remove(ifname)
+                            self.ifindex+=[(ifindex,ifname)]
+                if not self.interfaces:
+                    # All intefaces are resolved
+                    self.close()
+                    return
                 # Stop on EOM
                 for oid, val in var_bind_table[-1]:
                     if val is not None:
@@ -138,11 +147,14 @@ class SNMPIfIndexSocket(SNMPSocket):
                 p_mod.apiPDU.setVarBinds(self.req_PDU, map(lambda (x,y),n=p_mod.Null(): (x,n), var_bind_table[-1]))
                 p_mod.apiPDU.setRequestID(self.req_PDU, p_mod.getNextRequestID())
                 self.sendto(encoder.encode(self.req_msg),(self.service,161))
-        return data
+        return
     ##
     ## Return ifindexes to the probe
     ##
     def on_close(self):
+        if self.interfaces:
+            # There are still unresolved interfaces
+            self.probe.error("Unable to resolve interfaces: %s"%", ".join(self.interfaces))
         self.probe.set_ifindex(self.service,self.ifindex)
 ##
 ## Configuration options
@@ -243,7 +255,7 @@ class SNMPProbe(Probe):
     ##
     def resolve_ifindexes(self):
         for s in self.services:
-            SNMPIfIndexSocket(self,s,self.community)
+            SNMPIfIndexSocket(self,s,self.interfaces,self.community)
     
     ##
     ## Start new check round
