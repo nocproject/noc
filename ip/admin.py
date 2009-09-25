@@ -11,7 +11,9 @@ from django.contrib import admin
 from django import forms
 from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address,IPv4AddressRange
 from noc.peer.models import AS
-from noc.lib.ip import cmp_ip
+from noc.lib.ip import cmp_ip,address_to_int,int_to_address,broadcast
+from noc.lib.validators import is_ipv4
+import re
 ##
 ## Admin for VRFGroup
 ##
@@ -42,17 +44,38 @@ class IPv4BlockAccessAdmin(admin.ModelAdmin):
 ##
 ##
 ##
+rx_range_op=re.compile(r"^([/+])(\d+)$")
+class IPv4RangeField(forms.Field):
+    def clean(self,value):
+        if not is_ipv4(value) and not rx_range_op.match(value):
+            raise ValidationError("Invalid  IPv4 Address")
+        return value
+
 class IPv4AddressRangeAdminForm(forms.ModelForm):
     class Meta:
         model=IPv4AddressRange
+    to_ip=IPv4RangeField()
     def clean(self):
         try:
             instance=self.instance
         except:
             instance=None
+        for k in ["vrf","from_ip","to_ip"]:
+            if k not in self.cleaned_data:
+                return self.cleaned_data
         vrf=self.cleaned_data["vrf"]
         from_ip=self.cleaned_data["from_ip"]
         to_ip=self.cleaned_data["to_ip"]
+        match=rx_range_op.match(to_ip)
+        if match:
+            # Process +d and /d forms
+            op=match.group(1)
+            v=int(match.group(2))
+            if op=="+":
+                to_ip=int_to_address(address_to_int(from_ip)+v-1)
+            elif op=="/":
+                to_ip=broadcast(from_ip+to_ip)
+            self.cleaned_data["to_ip"]=to_ip
         if cmp_ip(from_ip,to_ip)>0:
             raise forms.ValidationError("'To IP' must be not less than 'From IP'")
         # Check for lock status
@@ -68,8 +91,8 @@ class IPv4AddressRangeAdminForm(forms.ModelForm):
         bo=list(IPv4AddressRange.get_block_overlap(vrf,from_ip,to_ip)[:10])
         if bo:
             raise forms.ValidationError("Range overlaps with blocks %s"%",".join([unicode(r) for r in bo]))
-        return self.cleaned_data
-
+        return super(IPv4AddressRangeAdminForm,self).clean()
+        
 class IPv4AddressRangeAdmin(admin.ModelAdmin):
     form=IPv4AddressRangeAdminForm
     list_display=["name","vrf","from_ip","to_ip","is_locked","fqdn_action","fqdn_action_parameter"]
