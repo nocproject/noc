@@ -16,7 +16,7 @@ from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address,IPv
 from noc.peer.models import AS
 from noc.lib.render import render,render_success,render_failure
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
-from noc.lib.ip import normalize_prefix,contains,in_range
+from noc.lib.ip import normalize_prefix,contains,in_range,free_blocks
 from noc.lib.colors import get_colors
 from noc.settings import config
 import csv,cStringIO,datetime,subprocess,re
@@ -106,8 +106,12 @@ class AllocateBlockForm(forms.Form):
             raise forms.ValidationError("Block is already present")
         return prefix
 
+rx_referer_prefix=re.compile(r"^.+/(?P<prefix>\d+\.\d+\.\d+\.\d+/\d+)/$")
+
 def allocate_block(request,vrf_id,prefix=None):
     vrf=get_object_or_404(VRF,id=int(vrf_id))
+    suggestions=[]
+    parent=prefix
     if prefix:
         assert is_cidr(prefix)
         block=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
@@ -119,6 +123,17 @@ def allocate_block(request,vrf_id,prefix=None):
         }
         p="/"+prefix
     else:
+        match=rx_referer_prefix.match(request.META.get("HTTP_REFERER",""))
+        if match and is_cidr(match.group(1)):
+            # Suggest blocks
+            parent=match.group(1)
+            free=[(x.split("/")[0],int(x.split("/")[1])) for x in free_blocks(parent,[p.prefix for p in vrf.prefixes(top=parent)])]
+            free=sorted(free,lambda x,y: -cmp(x[1],y[1]))
+            for m in range(int(parent.split("/")[1])+1,31):
+                for fp,fm in free:
+                    if fm<=m:
+                        suggestions+=["%s/%d"%(fp,m)]
+                        break
         initial={}
         p=""
     if request.POST:
@@ -141,7 +156,7 @@ def allocate_block(request,vrf_id,prefix=None):
             return HttpResponseRedirect("/ip/%d/%s/"%(vrf.id,block.prefix))
     else:
         form=AllocateBlockForm(initial=initial)
-    return render(request,"ip/allocate_block.html",{"vrf":vrf,"form":form,"p":p})
+    return render(request,"ip/allocate_block.html",{"vrf":vrf,"form":form,"p":p,"suggestions":suggestions,"parent":parent})
 ##
 ## Deallocate block handler
 ##

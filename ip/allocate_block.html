@@ -1,4 +1,6 @@
 {% extends "template/template.html" %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/ip/">Address Space Management</a> &rsaquo; {%if parent%}<a href="/ip/{{vrf.id}}/{{parent}}/">{{parent}}</a> &rsaquo;{%endif%} Allocate Block &rsaquo;</div>
+{% endblock %}
 {% block content %}
 <H1>Allocate IPv4 block. VRF {{vrf.name}} ({{vrf.rd}})</H1>
 <FORM METHOD="POST" ACTION="/ip/{{vrf.id}}{{p}}/allocate_block/" >
@@ -7,4 +9,17 @@
 </TABLE>
 <INPUT TYPE="submit"/>
 </FORM>
+{% if suggestions %}
+<SCRIPT TYPE="text/javascript">
+function accept_suggestion(s) {
+    $("#id_prefix").val(s);
+}
+</SCRIPT>
+<H2>Suggested Free Blocks</H2>
+<TABLE BORDER="0">
+    {% for s in suggestions %}
+    <TR class="{%cycle 'row1' 'row2'%}"><TD><A HREF="#" ONCLICK="accept_suggestion('{{s}}');">{{s}}</A></TD></TR>
+    {% endfor %}
+</TABLE>
+{% endif %}
 {% endblock %}
