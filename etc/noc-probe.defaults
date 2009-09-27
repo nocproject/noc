@@ -10,7 +10,7 @@ loglevel = info
 logsize  = 0
 logfiles = 0
 pidfile  = /var/log/noc/noc-probe.pid
-heartbeat= false
+heartbeat= true
 
 [path]
 fping = /usr/bin/fping

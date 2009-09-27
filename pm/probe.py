@@ -37,6 +37,7 @@ class Probe(Daemon):
         self.collector_port=self.config.getint("activator","port")
         self.socket=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
         self.secret=self.config.get("activator","secret")
+        self.next_heartbeat=None
     ##
     ## Create probes from config file
     ##
@@ -76,6 +77,10 @@ class Probe(Daemon):
         # Send collected data
         if self.pm_data_queue or self.pm_result_queue:
             self.send_data()
+        # Heartbeat
+        if self.heartbeat_enable and (self.next_heartbeat is None or self.next_heartbeat<=t):
+            self.heartbeat()
+            self.next_heartbeat=t+3
     ##
     ## Register probe results
     ##
