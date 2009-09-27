@@ -649,3 +649,4 @@ class AppMenu(Menu):
 ##
 report_registry.register_all()
 populate_reports([(n,r.title) for n,r in report_registry.classes.items()])
+

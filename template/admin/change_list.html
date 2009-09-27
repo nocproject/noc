@@ -12,10 +12,19 @@
 {% block content %}
 <div id="content-main">
 {% block object-tools %}
-{% if has_add_permission %}
-<ul class="object-tools"><li><a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}</a></li></ul>
+<ul class="object-tools">
+{% if user.is_superuser %}
+<li><a href="csv/export/{% for key, value in cl.params.items %}{% if forloop.first %}?{% else %}&{% endif %}{{ key }}={{ value }}{% endfor %}" class="viewsitelink">CSV Export</a></li>
 {% endif %}
+{% if has_add_permission %}
+<li><a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}</a></li>
+{% endif %}
+</ul>
 {% endblock %}
+<div id="cl-extra-object-tools" style="display:none">{%block extra-object-tools%}{%endblock%}</div>
+<script type="text/javascript">
+$(".object-tools").html($("#cl-extra-object-tools").html()+$(".object-tools").html());
+</script>
 <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
 {% block search %}{% search_form cl %}{% endblock %}
 {% block date_hierarchy %}{% date_hierarchy cl %}{% endblock %}

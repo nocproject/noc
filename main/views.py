@@ -12,6 +12,7 @@ from __future__ import with_statement
 import django.contrib.auth
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseNotFound,HttpResponseForbidden,HttpResponse
+from django.db.models.loading import get_model
 from django.core.cache import cache
 from django.utils.cache import patch_response_headers
 from django import forms
@@ -21,7 +22,7 @@ from noc.main.report import report_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
 from noc.main.models import RefBook, RefBookData, TimePattern
-import os, types, ConfigParser, pwd, re, time, datetime
+import os, types, ConfigParser, pwd, re, time, datetime, csv
 
 ##
 ## Startup boilerplate
@@ -346,3 +347,30 @@ def time_pattern_test(request,time_pattern_id):
         s="%02d.%02d.%04d %02d:%02d:%02d"%(now.day,now.month,now.year,now.hour,now.minute,now.second)
         form=TimePatternTestForm(initial={"time":s})
     return render(request,"main/time_pattern_test.html",{"time_pattern":time_pattern,"form":form,"result":result})
+##
+## CSV Export
+##
+def csv_export_qs(qs,fields=None):
+    model=qs.model
+    response=HttpResponse(mimetype="text/csv")
+    # response["Content-Disposition"]="attachment;filename=%s.csv"%model.__name__
+    writer=csv.writer(response)
+    # Write headers
+    headers=fields if fields else [f.name for f in model._meta.fields]
+    writer.writerow(headers)
+    # Dump data
+    for obj in qs:
+        writer.writerow([unicode(getattr(obj,f)).encode("utf-8") for f in headers])
+    # Return CSV
+    return response
+
+def admin_list_csv_export(request,app_label,model_name,queryset=None,fields=None):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden()
+    if not queryset:
+        model=get_model(app_label,model_name)
+        queryset=model.objects.all()
+        filters=dict([(k,v) for k,v in request.GET.items() if k not in ("ot","o","p")])
+        #if filters:
+        #    queryset=queryset.filter(**filters)
+    return csv_export_qs(queryset, fields)
