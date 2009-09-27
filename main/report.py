@@ -70,7 +70,7 @@ class Column(object):
             return ""
         if self.csv_format:
             value=self.csv_format(value)
-        return value
+        return unicode(value).encode("utf-8")
 ##
 ## Boolean field rendered as checkmark
 ##
