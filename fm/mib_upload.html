@@ -1,4 +1,7 @@
 {% extends "template/template.html" %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/fm/">Fm</A> &rsaquo; <A HREF="/admin/fm/mib/">MIBs</A> &rsaquo; Upload MIB &rsaquo;</div>
+{% endblock %}
+
 {% block content %}
 <H1>Upload MIB</H1>
 <FORM METHOD="POST" ACTION="/fm/upload_mib/" enctype="multipart/form-data">
