@@ -370,7 +370,7 @@ def admin_list_csv_export(request,app_label,model_name,queryset=None,fields=None
     if not queryset:
         model=get_model(app_label,model_name)
         queryset=model.objects.all()
-        filters=dict([(k,v) for k,v in request.GET.items() if k not in ("ot","o","p")])
-        #if filters:
-        #    queryset=queryset.filter(**filters)
+        filters=dict([(k,v) for k,v in request.GET.items() if k not in ("ot","o","p","q")])
+        if filters:
+            queryset=queryset.filter(**filters)
     return csv_export_qs(queryset, fields)
