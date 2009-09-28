@@ -78,9 +78,10 @@ class Probe(Daemon):
         if self.pm_data_queue or self.pm_result_queue:
             self.send_data()
         # Heartbeat
+        t=time.time()
         if self.heartbeat_enable and (self.next_heartbeat is None or self.next_heartbeat<=t):
             self.heartbeat()
-            self.next_heartbeat=time.time()+3
+            self.next_heartbeat=t+3
     ##
     ## Register probe results
     ##
