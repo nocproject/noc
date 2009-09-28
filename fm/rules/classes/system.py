@@ -37,7 +37,7 @@ class InvalidEventSource(EventClass):
     subject_template="Invalid event source: {{ip}}"
     body_template="""Invalid event source {{ip}} at activator {{activator}}"""
     repeat_suppression=True
-    repeat_suppression_interval=9
+    repeat_suppression_interval=300
     class Vars:
         source=Var(required=True,repeat=True)
         type=Var(required=True,repeat=True)
