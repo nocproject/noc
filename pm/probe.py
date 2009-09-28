@@ -12,7 +12,7 @@ from noc.lib.nbsocket import SocketFactory
 from noc.lib.pmhash import pmhash
 from noc.pm.probes import probe_registry
 from noc.sa.protocols.pm_pb2 import *
-import logging,time,bisect,random,socket
+import logging,time,bisect,random,socket,time
 
 probe_registry.register_all()
 
@@ -80,7 +80,7 @@ class Probe(Daemon):
         # Heartbeat
         if self.heartbeat_enable and (self.next_heartbeat is None or self.next_heartbeat<=t):
             self.heartbeat()
-            self.next_heartbeat=t+3
+            self.next_heartbeat=time.time()+3
     ##
     ## Register probe results
     ##
