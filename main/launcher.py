@@ -182,8 +182,11 @@ class Launcher(Daemon):
                 # Fix crashinfo's permissions
                 for fn in [fn for fn in os.listdir(self.crashinfo_dir) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
                     path=os.path.join(self.crashinfo_dir,fn)
-                    if os.stat(path)[stat.ST_UID]==self.crashinfo_uid:
-                        continue # No need to fix
+                    try:
+                        if os.stat(path)[stat.ST_UID]==self.crashinfo_uid:
+                            continue # No need to fix
+                    except OSError:
+                        continue # stat() failed
                     try:
                         os.chown(path,self.crashinfo_uid,-1)
                         os.chmod(path,stat.S_IRUSR|stat.S_IWUSR)
