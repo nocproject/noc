@@ -42,6 +42,6 @@ class Force10_FTOS_ACL_Reject_SYSLOG_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^profile$",r"^Force10\.FTOS$"),
-        (r"^message$",r"%PACKETLOG-6-EGRESS_PKTLOG: L3 Deny.+IP Info: Proto=(?P<proto>\S+), SA=(?P<src_ip>\S+), DA=(?P<dst_ip>\S+), Len=\d+, srcPort=(?P<src_port>\d+), dstPort=(?P<dst_port>\d+)$"),
+        (r"^message$",r"%PACKETLOG-6-(?:IN|E)GRESS_PKTLOG: L3 Deny.+IP Info: Proto=(?P<proto>\S+), SA=(?P<src_ip>\S+), DA=(?P<dst_ip>\S+), Len=\d+, srcPort=(?P<src_port>\d+), dstPort=(?P<dst_port>\d+)$"),
         (r"^source$",r"^syslog$"),
     ]
