@@ -645,10 +645,17 @@ class EventArchivationRule(models.Model):
     class Meta:
         verbose_name="Event Archivation Rule"
         verbose_name_plural="Event Archivation Rules"
-    event_class=models.ForeignKey(EventClass,verbose_name="Event Class",unique=True)
+        unique_together=[("event_class","action")]
+    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
     ttl=models.IntegerField("Time To Live")
     ttl_measure=models.CharField("Measure",choices=[("s","Seconds"),("m","Minutes"),("h","Hours"),("d","Days")],default="h",max_length=1)
-    action=models.CharField("Action",choices=[("D","Drop")],default="D",max_length=1)
+    action=models.CharField("Action",choices=[("C","Close"),("D","Drop")],default="D",max_length=1)
+    def __unicode__(self):
+        return u"%s: %s"%(self.event_class.name,self.action)
+    ## Calculate ttl in seconds
+    def _ttl_seconds(self):
+        return self.ttl*{"s":1,"m":60,"h":3600,"d":86400}[self.ttl_measure]
+    ttl_seconds=property(_ttl_seconds)
 ##
 ## Application Menu
 ##
