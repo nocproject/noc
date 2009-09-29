@@ -31,7 +31,7 @@ class EventCollector(object):
                 "source"   : "system",
                 "component": "noc-activator",
                 "activator": self.activator.activator_name,
-                "collector": self.name,
+                "collector": self.collector_signature,
                 "type"     : "Invalid Event Source",
                 "ip"       : ip
             }
