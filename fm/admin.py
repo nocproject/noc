@@ -97,7 +97,7 @@ class EventCorrelationRuleAdmin(admin.ModelAdmin):
 ##
 class EventArchivationRuleAdmin(admin.ModelAdmin):
     list_display=["event_class","ttl","ttl_measure","action"]
-    list_filter=["action"]
+    list_filter=["action","event_class"]
 ##
 admin.site.register(MIB, MIBAdmin)
 admin.site.register(MIBData, MIBDataAdmin)
