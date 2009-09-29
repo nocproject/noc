@@ -47,6 +47,9 @@ class NotConnectedError(SocketError):
 class BrokenPipeError(SocketError):
     message="Broken pipe"
 
+class AccessError(SocketError):
+    message="Permission Denied"
+
 class SocketTimeoutError(SocketError):
     message="Socket Timeout"
 
@@ -78,6 +81,7 @@ SOCKET_ERRORS=[
     ("ECONNREFUSED",    ConnectionRefusedError),
     ("ENOTCONN",        NotConnectedError),
     ("EPIPE",           BrokenPipeError),
+    ("EACCES",          AccessError),
 ]
 
 SOCKET_GAIERROR=[
