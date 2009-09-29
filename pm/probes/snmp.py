@@ -240,7 +240,6 @@ class SNMPProbe(Probe):
                 del self.ifindex[service]
             except:
                 pass
-            loggi
             return
         ifindex_to_name={}
         name_to_ifindex={}
