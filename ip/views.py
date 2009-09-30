@@ -89,9 +89,10 @@ class AllocateBlockForm(forms.Form):
     description=forms.CharField(label="description",required=True)
     asn=forms.ModelChoiceField(label="ASN",queryset=AS.objects.all(),required=True)
     tt=forms.IntegerField(label="TT #",required=False)
-    def __init__(self,data=None,initial=None,vrf=None):
+    def __init__(self,data=None,initial=None,vrf=None,block_id=None):
         super(AllocateBlockForm,self).__init__(data=data,initial=initial)
         self.vrf=vrf
+        self.block_id=block_id
     def clean_prefix(self):
         if not is_cidr(self.cleaned_data["prefix"]):
             raise forms.ValidationError("Invalid prefix")
@@ -102,6 +103,8 @@ class AllocateBlockForm(forms.Form):
             q=q.filter(vrf__in=self.vrf.vrf_group.vrf_set.all())
         else:
             q=q.filter(vrf=self.vrf)
+        if self.block_id:
+            q=q.exclude(id=self.block_id)
         if q.count()>0:
             raise forms.ValidationError("Block is already present")
         return prefix
@@ -112,6 +115,7 @@ def allocate_block(request,vrf_id,prefix=None):
     vrf=get_object_or_404(VRF,id=int(vrf_id))
     suggestions=[]
     parent=prefix
+    block_id=None
     if prefix:
         assert is_cidr(prefix)
         block=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
@@ -122,6 +126,7 @@ def allocate_block(request,vrf_id,prefix=None):
             "tt"          : block.tt
         }
         p="/"+prefix
+        block_id=block.id
     else:
         match=rx_referer_prefix.match(request.META.get("HTTP_REFERER",""))
         if match and is_cidr(match.group(1)):
@@ -137,7 +142,7 @@ def allocate_block(request,vrf_id,prefix=None):
         initial={}
         p=""
     if request.POST:
-        form=AllocateBlockForm(request.POST,vrf=vrf)
+        form=AllocateBlockForm(request.POST,vrf=vrf,block_id=block_id)
         if form.is_valid():
             if not IPv4BlockAccess.check_write_access(request.user,vrf,form.cleaned_data["prefix"]):
                 return HttpResponseForbidden("Permission denied")
