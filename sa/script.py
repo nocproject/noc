@@ -138,6 +138,7 @@ class Script(threading.Thread):
         self.debug_name="script-%s-%s"%(p,self.name)
         super(Script,self).__init__(name=self.debug_name,kwargs=kwargs)
         self.activator=activator
+        self.servers=activator.servers
         self.profile=profile
         self.cli_provider=None
         self.http=HTTPProvider(self.access_profile)

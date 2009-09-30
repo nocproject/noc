@@ -14,7 +14,7 @@
 from django.core.management.base import BaseCommand
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,scheme_id
-from noc.sa.activator import Service
+from noc.sa.activator import Service,ServersHub
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
 import logging,sys,ConfigParser,Queue,time,cPickle,threading,signal,os
@@ -31,12 +31,13 @@ class ActivatorStub(object):
     def __init__(self):
         # Simple config stub
         self.config=ConfigParser.SafeConfigParser()
-        self.config.add_section("activator")
-        self.config.set("activator","max_pull_config","2")
+        self.config.read("etc/noc-activator.defaults")
+        self.config.read("etc/noc-activator.conf")
         self.script_call_queue=Queue.Queue()
         self.ping_check_results=None
         self.factory=SocketFactory(tick_callback=self.tick)
         self.to_exit=False
+        self.servers=ServersHub(self)
     
     def tick(self):
         logging.debug("Tick")
@@ -55,7 +56,8 @@ class ActivatorStub(object):
             self.to_exit=True
         
     def on_script_exit(self,script):
-        pass
+        if script.parent is None:
+            self.servers.close()
         
     def run_script(self,_script_name,access_profile,callback,**kwargs):
         pv,pos,sn=_script_name.split(".",2)
