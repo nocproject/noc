@@ -68,6 +68,9 @@ class NameNotKnownError(SocketError):
 class NoMemoryError(SocketError):
     message="Memory allocation failure"
 
+class BadFileError(SocketError):
+    message="Bad File Descriptor"
+
 ##
 ## Error name to Exception class mapping
 ## Used to populate SOCKET_ERROR_TO_EXCEP
@@ -82,6 +85,7 @@ SOCKET_ERRORS=[
     ("ENOTCONN",        NotConnectedError),
     ("EPIPE",           BrokenPipeError),
     ("EACCES",          AccessError),
+    ("EBADF",           BadFileError),
 ]
 
 SOCKET_GAIERROR=[
@@ -778,7 +782,11 @@ class SocketFactory(object):
                 except select.error,why:
                     if why[0]==EINTR:
                         return
-                    raise
+                    error_report()
+                    return
+                except:
+                    error_report()
+                    return
                 if r or w:
                     # Write events processed before read events
                     # to catch connection refused causes
