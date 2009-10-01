@@ -180,7 +180,7 @@ class ManagedObject(models.Model):
             if len(rr)==1: # Single clause
                 r+=rr
             else: # AND together
-                r+=["(%s AND %s)"%(r[0],r[1])]
+                r+=["(%s AND %s)"%(rr[0],rr[1])]
             p+=pp
         if not r: # No access
             return cls.objects.extra(where=["0=1"]) # Return empty queryset
