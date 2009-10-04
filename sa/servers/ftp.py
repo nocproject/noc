@@ -70,6 +70,7 @@ class FTPServerSocket(AcceptedTCPSocket):
         self.data_stream=None
         self.data_stream_callback=None
         self.context=None
+        self.current_type="A"
     ##
     ## <!> STUB
     ##
@@ -147,6 +148,15 @@ class FTPServerSocket(AcceptedTCPSocket):
                     return
                 self.data_stream.set_tranfer_response(150,"File OK. Ready to receive")
                 self.set_data_stream_callback(self.ds_stor)
+            elif cmd=="TYPE":
+                if args in ["A","L7"]:
+                    self.current_type="A"
+                    self.send_response(200,"Type set to %s"%args)
+                elif args in ["I","L8"]:
+                    self.current_type="I"
+                    self.send_response(200,"Type set to %s"%args)
+                else:
+                    self.send_response(504,"Unsupported type %s"%args)
             else:
                 self.send_response(502,"Command %s is not implemented"%cmd)
     ##
