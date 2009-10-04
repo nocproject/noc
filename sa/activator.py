@@ -8,13 +8,14 @@
 """
 """
 from __future__ import with_statement
-import os,logging,pty,signal,time,re,sys,signal,Queue,cPickle,tempfile,urllib,random
+import os,logging,pty,signal,time,re,sys,signal,Queue,cPickle,tempfile
 from errno import ECONNREFUSED
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,ScriptSocket
 from noc.sa.rpc import RPCSocket,file_hash,get_digest
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.protocols.pm_pb2 import *
+from noc.sa.servers import ServersHub
 from noc.lib.fileutils import safe_rewrite
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM,check_state
@@ -141,180 +142,6 @@ class ActivatorSSLSocket(RPCSocket,ConnectedTCPSSLSocket):
 
     def on_conn_refused(self):
         self.activator_event("refused")
-##
-## Servers
-##
-class HTTPServerSocket(AcceptedTCPSocket):
-    def __init__(self,factory,socket,server_hub):
-        super(HTTPServerSocket,self).__init__(factory,socket)
-        self.server_hub=server_hub
-        self.context=None
-        self.request=""
-        self.path=None
-        self.host=""
-        self.data_size=0
-    ##
-    ## <!> STUB
-    ##
-    @classmethod
-    def check_access(self,address):
-        return True
-    ##
-    def feed(self,data):
-        self.data_size-=len(data)
-        self.context.feed(data)
-    ##
-    ##
-    ##
-    def on_read(self,data):
-        logging.debug("HTTP Read: %s"%data)
-        if self.context is None:
-            # Parse request
-            self.request+=data
-            for s in ["\n\n","\r\n\r\n"]:
-                if s in self.request:
-                    req,data=self.request.split(s,1)
-                    l0,lo=req.split("\n",1)
-                    logging.debug(l0)
-                    r=l0.split(" ")
-                    if len(r)!=3 or r[0] not in ["PUT"]:
-                        logging.error("Invalid HTTP request")
-                        self.close()
-                        return
-                    address,port=self.socket.getpeername()
-                    self.path=urllib.unquote(r[1])
-                    try:
-                        self.context=self.server_hub.get_context("http",address,self.path)
-                    except KeyError:
-                        logging.error("Permission denied: %s %s"%(address,self.path))
-                        self.close()
-                        return
-                    for l in lo.split("\n"):
-                        l=l.strip()
-                        k,v=[x.strip() for x in l.split(":",1)]
-                        k=k.lower()
-                        if k=="content-length":
-                            self.data_size=int(v)
-                        elif k=="host":
-                            self.host=v
-                    break
-        else:
-            # Populate data
-            self.feed(data)
-            if self.data_size<=0:
-                # Return response on all data received
-                self.write("HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n")
-                self.close()
-
-class HTTPServer(ListenTCPSocket):
-    def __init__(self,factory,address,server_hub):
-        super(HTTPServer,self).__init__(factory,address,80,HTTPServerSocket,server_hub=server_hub)
-##
-##
-##
-class ServerContextManager(object):
-    CONTEXT_NAME=None
-    def __init__(self,server_hub):
-        self.server_hub=server_hub
-        self.address=None
-        self.path=None
-        self.data=[]
-    ##
-    ## Set request filter
-    ##
-    def prepare(self,address,path=None):
-        self.address=address
-        if path:
-            self.path=None
-        else:
-            self.path="/%s-%s-%d"%(str(id(self)),address,random.randint(0,0x7FFFFFFF))
-        return self.path
-    ##
-    ##
-    ##
-    def get_url(self,address,path=None):
-        path=self.prepare(address,path)
-        return "%s://%s%s"%(self.CONTEXT_NAME,self.server_hub.http_server_address,urllib.quote(path))
-    ##
-    ## Pupulate data
-    ##
-    def feed(self,data):
-        self.data+=[data]
-    ##
-    ## Return collected data
-    ##
-    def get_data(self):
-        return "".join(self.data)
-    ##
-    ## Register server context
-    ##
-    def __enter__(self):
-        self.server_hub.register_context(self.CONTEXT_NAME,self)
-        return self
-    ##
-    ## Unregister server context
-    ##
-    def __exit__(self,exc_type, exc_val, exc_tb):
-        self.server_hub.unregister_context(self.CONTEXT_NAME,self)
-##
-##
-##
-class HTTPServerContextManager(ServerContextManager):
-    CONTEXT_NAME="http"
-##
-## Server hub
-##
-class ServersHub(object):
-    def __init__(self,activator):
-        self.activator=activator
-        self.contexts={
-            "http" : set(),
-        }
-        self.http_server_address=self.activator.config.get("servers","listen_http")
-        self.http_server=HTTPServer(self.activator.factory,self.http_server_address,self) if self.http_server_address else None
-    ##
-    ## Register new context
-    ##
-    def register_context(self,context_name,context):
-        logging.debug("Register %s server context: %s"%(context_name,context))
-        self.contexts[context_name].add(context)
-    ##
-    ## Unregister context
-    ##
-    def unregister_context(self,context_name,context):
-        logging.debug("Unregister %s server context: %s"%(context_name,context))
-        self.contexts[context_name].remove(context)
-    ##
-    ##
-    ##
-    def get_context(self,context_name,address,path):
-        for c in self.contexts[context_name]:
-            if c.address==address and c.path==path:
-                return c
-        raise KeyError
-    
-    ##
-    ## Check IP address has access to context
-    ##
-    def check_address_access(self,context_name,address):
-        return len([c for c in self.contexts[context_name] if c.address==address])>0
-    ##
-    ## Check IP address has access to path
-    ##
-    def check_path_access(self,context_name,address,path):
-        return len([c for c in self.contexts[context_name] if c.address==address and c.path==path])>0
-    ##
-    ## Close all servers
-    ##
-    def close(self):
-        if self.http_server:
-            self.http_server.close()
-    ##
-    ## Return HTTP Server Context Manager
-    ##
-    def http(self):
-        return HTTPServerContextManager(self)
-
 ##
 ## External fping process.
 ## Runs fping, supplies a list of checked hosts
