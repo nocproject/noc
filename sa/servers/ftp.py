@@ -32,6 +32,9 @@ class FTPDataStreamSocket(AcceptedTCPSocket):
             l=len(self.data)
             self.debug("Transfer complete. %d bytes in %10.4f seconds. %10.2f bytes/sec"%(l,dt,float(l)/dt))
         self.server_socket.on_data_stream_close(self.data)
+    
+    def set_transfer_response(self,code,message):
+        self.server_socket.send_response(code,message)
 
 ##
 ## Listener for passive mode data transfer
@@ -54,7 +57,7 @@ class FTPDataStream(ListenTCPSocket):
         if self.transfer_response:
             self.server_socket.send_response(self.transfer_response[0],self.transfer_response[1])
     ##
-    def set_tranfer_response(self,code,message):
+    def set_transfer_response(self,code,message):
         self.transfer_response=(code,message)
 ##
 ## FTP Server
@@ -147,7 +150,7 @@ class FTPServerSocket(AcceptedTCPSocket):
                     self.error("Permission denied: %s %s"%(address,path))
                     self.send_response(554,"Permission denied")
                     return
-                self.data_stream.set_tranfer_response(150,"File OK. Ready to receive")
+                self.data_stream.set_transfer_response(150,"File OK. Ready to receive")
                 self.set_data_stream_callback(self.ds_stor)
             elif cmd=="TYPE":
                 if args in ["A","L7"]:
