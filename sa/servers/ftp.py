@@ -142,7 +142,7 @@ class FTPServerSocket(AcceptedTCPSocket):
                 address,port=self.socket.getpeername()
                 path=os.path.join(self.cwd,args.replace("//","/"))
                 try:
-                    self.context=self.server_hub.get_context("http",address,path)
+                    self.context=self.server_hub.get_context("ftp",address,path)
                 except KeyError:
                     self.error("Permission denied: %s %s"%(address,path))
                     self.send_response(554,"Permission denied")
