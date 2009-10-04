@@ -112,7 +112,7 @@ class ServersHub(object):
     ##
     def close(self):
         for context_name in self.contexts:
-            s=self.getattr("%s_server"%context_name)
+            s=getattr(self,"%s_server"%context_name)
             if s:
                 s.close()
     ##
