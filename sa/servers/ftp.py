@@ -140,6 +140,8 @@ class FTPServerSocket(AcceptedTCPSocket):
             elif cmd=="STOR":
                 address,port=self.socket.getpeername()
                 path=args
+                if not path.startswith("/"):
+                    path="/"+path
                 try:
                     self.context=self.server_hub.get_context("http",address,path)
                 except KeyError:
