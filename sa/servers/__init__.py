@@ -33,7 +33,7 @@ class ServerContextManager(object):
     ##
     def get_url(self,address,path=None):
         path=self.prepare(address,path)
-        return "%s://%s%s"%(self.context_name,self.server_hub.http_server_address,urllib.quote(path))
+        return "%s://%s%s"%(self.context_name,getattr(self.server_hub,"%s_server_address"%self.context_name),urllib.quote(path))
     ##
     ## Pupulate data
     ##
