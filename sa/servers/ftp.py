@@ -140,7 +140,7 @@ class FTPServerSocket(AcceptedTCPSocket):
                 self.send_response(229,"Entering extended passive mode (|||%d|)"%self.data_stream.get_port())
             elif cmd=="STOR":
                 address,port=self.socket.getpeername()
-                path=os.path.join(self.cwd,args)
+                path=os.path.join(self.cwd,args.replace("//","/"))
                 try:
                     self.context=self.server_hub.get_context("http",address,path)
                 except KeyError:
