@@ -71,6 +71,7 @@ class FTPServerSocket(AcceptedTCPSocket):
         self.data_stream_callback=None
         self.context=None
         self.current_type="A"
+        self.cwd="/"
     ##
     ## <!> STUB
     ##
@@ -139,9 +140,7 @@ class FTPServerSocket(AcceptedTCPSocket):
                 self.send_response(229,"Entering extended passive mode (|||%d|)"%self.data_stream.get_port())
             elif cmd=="STOR":
                 address,port=self.socket.getpeername()
-                path=args
-                if not path.startswith("/"):
-                    path="/"+path
+                path=os.path.join(self.cwd,args)
                 try:
                     self.context=self.server_hub.get_context("http",address,path)
                 except KeyError:
@@ -159,6 +158,9 @@ class FTPServerSocket(AcceptedTCPSocket):
                     self.send_response(200,"Type set to %s"%args)
                 else:
                     self.send_response(504,"Unsupported type %s"%args)
+            elif cmd=="CWD":
+                self.cwd=os.path.join(self.cwd,args)
+                self.send_response(250,"'%s' is the current directory"%self.cwd)
             else:
                 self.send_response(502,"Command %s is not implemented"%cmd)
     ##
