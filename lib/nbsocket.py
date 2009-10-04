@@ -268,6 +268,8 @@ class ListenTCPSocket(Socket):
         self.kwargs=kwargs
     
     def create_socket(self):
+        if self.socket: # Called twice
+            return
         self.socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,
             self.socket.getsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR) | 1)
