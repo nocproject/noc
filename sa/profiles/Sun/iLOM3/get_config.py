@@ -16,9 +16,9 @@ class Script(noc.sa.script.Script):
     implements=[IGetConfig]
     def execute(self):
         self.cli("cd /SP/config")
-        with self.servers.http() as http:
-            url=http.get_url(self.access_profile.address)
+        with self.servers.ftp() as ftp:
+            url=ftp.get_url(self.access_profile.address)
             self.cli("dump -destination %s"%url)
-            config=http.get_data()
+            config=ftp.get_data()
         self.cli("cd /")
         return self.cleaned_config(config)
