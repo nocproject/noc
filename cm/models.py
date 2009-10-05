@@ -241,6 +241,14 @@ class Object(models.Model):
                     text=text,
                     relevancy=1.0, # No weighted search yes
                     )
+    ##
+    ##
+    ##
+    def pull_now_link(self):
+        return "<A HREF='/cm/%s/%d/now/'>Get Now</A>"%(self.repo_name,self.id)
+    pull_now_link.short_description="Get Now"
+    pull_now_link.allow_tags=True
+
 ##
 ## Config
 ##

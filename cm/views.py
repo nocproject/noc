@@ -8,7 +8,7 @@
 from noc.cm.models import Object
 from django.shortcuts import get_object_or_404
 from noc.lib.render import render,render_plain_text
-import os,difflib
+import os,difflib,datetime
 from django.http import HttpResponseNotFound,HttpResponseRedirect,HttpResponseForbidden
 from django.utils.html import escape
 ##
@@ -71,3 +71,12 @@ def diff(request,repo,object_id,mode="u",r1=None,r2=None):
         return render(request,"cm/diff.html",{"o":o,"diff":diff,"r1":r1,"r2":r2,"mode":mode})
     else:
         return HttpResponseRedirect("/cm/view/config/%d/"%o.id)
+##
+## Get now
+##
+def pull_now(request,repo,object_id):
+    r=Object.get_object_class(repo)
+    c=get_object_or_404(r,id=int(object_id))
+    c.next_pull=datetime.datetime.now()
+    c.save()
+    return HttpResponseRedirect("/admin/cm/%s/"%repo)
