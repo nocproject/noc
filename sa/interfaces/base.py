@@ -28,6 +28,11 @@ class Parameter(object):
             default=self.clean(default)
         self.default=default
     ##
+    ## Returns ORParameter
+    ##
+    def __or__(self,other):
+        return ORParameter(self,other)
+    ##
     ## Perform input parameter normalization
     ##
     def clean(self,value):
@@ -42,6 +47,38 @@ class Parameter(object):
     ##
     def get_form_field(self):
         return forms.CharField(required=self.required,initial=self.default)
+##
+##
+##
+class ORParameter(Parameter):
+    """
+    >>> ORParameter(IntParameter(),IPParameter()).clean(10)
+    10
+    >>> ORParameter(IntParameter(),IPParameter()).clean("192.168.1.1")
+    '192.168.1.1'
+    >>> ORParameter(IntParameter(),IPParameter()).clean("xxx")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    >>> (IntParameter()|IPParameter()).clean(10)
+    10
+    >>> (IntParameter()|IPParameter()).clean("192.168.1.1")
+    '192.168.1.1'
+    >>> (IntParameter()|IPParameter()).clean("xxx")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    """
+    def __init__(self,left,right):
+        self.left=left
+        self.right=right
+    def clean(self,value):
+        try:
+            v=self.left.clean(value)
+            return v
+        except InterfaceTypeError:
+            pass
+        return self.right.clean(value)
 ##
 ##
 ##
