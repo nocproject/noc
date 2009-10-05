@@ -132,7 +132,7 @@ class FTPServerSocket(AcceptedTCPSocket):
             elif cmd=="QUIT":
                 self.close()
             elif cmd=="PWD":
-                self.send_response(200,"/")
+                self.send_response(257,"'%s' is the current directory"%self.cwd)
             elif cmd=="PASV":
                 self.create_data_stream()
                 p=self.data_stream.get_port()
