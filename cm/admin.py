@@ -20,7 +20,7 @@ class ObjectAdmin(admin.ModelAdmin):
     fields=["pull_every"]
 
 class ConfigAdmin(ObjectAdmin):
-    list_display=["repo_path","pull_every","last_modified","next_pull","view_link"]
+    list_display=["repo_path","pull_every","last_modified","next_pull","pull_now_link","view_link"]
     search_fields=["repo_path"]
     fields=["pull_every","next_pull"]
     object_class=Config
