@@ -8,7 +8,10 @@ class Migration:
     
     def forwards(self):
         db.create_unique('fm_eventarchivationrule', ['event_class_id', 'action'])
-        db.delete_unique('fm_eventarchivationrule', ['event_class_id'])
+        try:
+            db.delete_unique('fm_eventarchivationrule', ['event_class_id'])
+        except:
+            pass
     
     def backwards(self):
         db.delete_unique('fm_eventarchivationrule', ['event_class_id', 'action'])
