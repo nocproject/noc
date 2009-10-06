@@ -15,7 +15,7 @@ from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ,in_dir
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
-import os,datetime,stat,logging,random
+import os,datetime,stat,logging,random,types
 from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObject
 from noc.main.menu import Menu
 from noc.sa.protocols.sae_pb2 import *
@@ -276,7 +276,7 @@ class Config(Object):
                 timeout+=random.randint(-timeout/variation,timeout/variation) # Add jitter to avoid blocking by dead task
                 self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
                 self.save()
-                return            
+                return
             if self.pull_every:
                 self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=self.pull_every)
                 self.save()
@@ -330,6 +330,16 @@ class Config(Object):
         q&=(Q(administrative_domain__isnull=True)|Q(administrative_domain=self.managed_object.administrative_domain))
         q&=(Q(group__isnull=True)|Q(group__in=self.managed_object.groups.all))
         return set([n.notification_group for n in ObjectNotify.objects.filter(q)])
+
+    def write(self,data):
+        if type(data)==types.ListType:
+            # Convert list to plain text
+            r=[]
+            for d in sorted(data,lambda x,y:cmp(x["name"],y["name"])):
+                r+=["==[ %s ]========================================\n%s"%(d["name"],d["config"])]
+            data="\n".join(r)
+        super(Config,self).write(data)
+
 ##
 ## PrefixList
 ##

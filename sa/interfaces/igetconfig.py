@@ -8,4 +8,7 @@
 from base import *
 
 class IGetConfig(Interface):
-    returns=StringParameter()
+    returns=ListOfParameter(element=DictParameter(attrs={
+                "name"  : StringParameter(),
+                "config": StringParameter(),
+            })) | StringParameter()
