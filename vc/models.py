@@ -143,6 +143,13 @@ class VC(models.Model):
             s+=u"/%d"%self.l2
         return s
     ##
+    ##
+    ##
+    def blocks_list(self):
+        return ", ".join([p.prefix for p in self.ipv4block_set.order_by("prefix")])
+    blocks_list.short_description="Blocks"
+    blocks_list.allow_tags=False
+    ##
     ## Enforce additional checks
     ##
     def save(self):

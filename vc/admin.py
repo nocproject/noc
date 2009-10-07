@@ -33,7 +33,7 @@ class VCFilterAdmin(admin.ModelAdmin):
 ##
 ##
 class VCAdmin(admin.ModelAdmin):
-    list_display=["vc_domain","name","l1","l2","description"]
+    list_display=["vc_domain","name","l1","l2","description","blocks_list"]
     search_fields=["name","l1","l2","description"]
     list_filter=["vc_domain"]
 ##
