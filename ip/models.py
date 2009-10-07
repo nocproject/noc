@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from noc.lib.validators import check_rd,check_cidr,is_cidr,is_ipv4
 from noc.lib.tt import tt_url
 from noc.peer.models import AS
+from noc.vc.models import VC
 from noc.lib.fields import CIDRField
 from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast,address_to_int,generate_ips,prefix_to_size
 from noc.main.menu import Menu
@@ -109,6 +110,7 @@ class IPv4Block(models.Model):
     prefix=CIDRField("prefix")
     vrf=models.ForeignKey(VRF)
     asn=models.ForeignKey(AS)
+    vc=models.ForeignKey(VC,verbose_name="VC",null=True,blank=True)
     modified_by=models.ForeignKey(User,verbose_name="User")
     last_modified=models.DateTimeField("Last modified",auto_now=True,auto_now_add=True)
     tt=models.IntegerField("TT",blank=True,null=True)

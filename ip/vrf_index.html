@@ -128,8 +128,17 @@ function toggle_free() {
 <DIV CLASS="module">
     <TABLE SUMMARY="Block info" WIDTH="100%">
         <CAPTION>{{prefix.prefix}} info</CAPTION>
+        <TR class="row1">
+            <TD><b>VC</b></TD>
+            <TD>
+                {% if prefix.vc %}{{prefix.vc}}{% endif %}
+                {% if can_allocate %}
+                <a href="/ip/{{vrf.id}}/{{prefix}}/vc/bind/"><b>{%if prefix.vc%}Change{%else%}Bind{%endif%}...</b></a>
+                {% endif %}
+            </TD>
+        </TR>
         {% for k,v in block_info %}
-            <TR class="{%cycle 'row1' 'row2'%}"><TD STYLE="width: 10pt"><b>{{k}}</b></TD><TD>{{v}}</TD></TR>
+            <TR class="{%cycle 'row2' 'row1'%}"><TD STYLE="width: 10pt"><b>{{k}}</b></TD><TD>{{v}}</TD></TR>
         {% endfor %}
     </TABLE>
 </DIV>

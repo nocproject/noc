@@ -1,0 +1,19 @@
+{% extends "template/template.html" %}
+{% block title%}IP: {{prefix.prefix}}: Bind VC{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/ip/">ip</A> &rsaquo; 
+    <a href='/ip/{{prefix.vrf.id}}/'>VRF: {{prefix.vrf.name}}</A> &rsaquo;
+        {% for p in prefix.parents %}
+            <a href="/ip/{{prefix.vrf.id}}/{{p.prefix}}/" title="{{p.description}}">{{p.prefix}}</a> &rsaquo;
+        {% endfor %}
+        <a href='/ip/{{prefix.vrf.id}}/{{prefix.prefix}}/' title="{{prefix.description}}">{{prefix.prefix}}</a> &rsaquo;
+        Bind VC &rsaquo;
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Bind VC to Prefix {{prefix.prefix}}</h1>
+<form method="POST">
+    <table border="0">{{form.as_table}}</table>
+    <input type="submit" value="Bind"/>
+</form>
+{%endblock%}
