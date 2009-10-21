@@ -25,6 +25,6 @@ class Profile(noc.sa.profiles.Profile):
             p="        route-filter %s exact;"
         else:
             p="        route-filter %s orlonger;"
-        out=["term pass {","    from {"]+[p%x for x in pl]+["    }","    then next policy;"]
+        out=["term pass {","    from {"]+[p%x for x in pl]+["    }","    then next policy;","}"]
         out+=["term reject {","    then reject;","}"]
         return "\n".join(out)
