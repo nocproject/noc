@@ -3,7 +3,7 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import os,tempfile,hashlib,urllib2
+import os,tempfile,hashlib,urllib2,cStringIO,gzip
 from noc.lib.version import get_version
 ##
 ## Create new file filled with "text" safely
@@ -97,9 +97,13 @@ def in_dir(file,dir):
 ##
 ## urlopen wrapper
 ##
-def urlopen(url):
+def urlopen(url,auto_deflate=False):
     if url.startswith("http://") or url.startswith("https://"):
         r=urllib2.Request(url,headers={"User-Agent":"NOC/%s"%get_version()})
-        return urllib2.urlopen(r)
     else:
-        return urllib2.urlopen(url)
+        r=url
+    if auto_deflate and url.endswith(".gz"):
+        f=cStringIO.StringIO(urllib2.urlopen(r).read())
+        return gzip.GzipFile(fileobj=f)
+    else:
+        return urllib2.urlopen(r)
