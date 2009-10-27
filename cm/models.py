@@ -352,15 +352,16 @@ class PrefixList(Object):
     def build_prefix_lists(cls):
         from noc.peer.resolver import resolve_as_set_prefixes
         from noc.peer.tree import optimize_prefix_list
+        from noc.peer.models import PeeringPoint
         result=[]
         for pp in PeeringPoint.objects.all():
             profile=pp.profile
             for name,filter_exp in pp.generated_prefix_lists:
                 prefixes=resolve_as_set_prefixes(filter_exp)
-                strict=len(pl)<10
+                strict=len(prefixes)<10
                 if not strict:
                     prefixes=optimize_prefix_list(pl)
-                pl=profile.generated_prefix_lists(name,prefixes,strict)
+                pl=profile.generate_prefix_list(name,prefixes,strict)
                 result+=[(pp,name,pl)]
         return result
     @classmethod
