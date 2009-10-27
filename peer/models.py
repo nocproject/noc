@@ -15,6 +15,7 @@ from noc.sa.profiles import profile_registry
 from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
 from noc.main.menu import Menu
+from noc.lib.fileutils import urlopen
 import random
 
 class RIR(models.Model):
@@ -400,6 +401,149 @@ class Peer(models.Model):
             return self.peer_group.max_prefixes
         return 0
     effective_max_prefixes=property(_effective_max_prefixes)
+##
+## Whois Database
+##
+class WhoisDatabase(models.Model):
+    class Meta:
+        verbose_name="Whois Database"
+        verbose_name_plural="Whois Databases"
+    name=models.CharField("Name",unique=True,max_length=32)
+    def __unicode__(self):
+        return self.name
+    #
+    def parse(self,f,fields=None):
+        return getattr(self,"parse_%s"%self.name)(f,fields)
+    #
+    @classmethod
+    def parse_RIPE(self,f,fields=None):
+        obj={}
+        for l in f:
+            l=l.strip()
+            if l.startswith("#"):
+                continue
+            if l=="":
+                # New object
+                if obj:
+                    yield obj
+                    obj={}
+                continue
+            if "#" in l:
+                l,r=l.split("#",1)
+            if ":" in l:
+                k,v=[x.strip() for x in l.split(":",1)]
+                if fields and k not in fields:
+                    continue
+                if k in obj:
+                    obj[k]+=[v]
+                else:
+                    obj[k]=[v]
+        if obj:
+            yield obj
+##
+##
+##
+class WhoisLookup(models.Model):
+    class Meta:
+        unique_together=[("whois_database","url","key","value")]
+    whois_database=models.ForeignKey(WhoisDatabase,verbose_name="Whois Database")
+    url=models.CharField("URL",max_length=256)
+    direction=models.CharField("Direction",max_length=1,choices=[("F","Forward"),("R","Reverse")])
+    key=models.CharField("Key",max_length=32)
+    value=models.CharField("Value",max_length=32)
+    def __unicode__(self):
+        return u"(%s:%s:%s:%s)"%(self.whois_database.name,self.direction,self.key,self.value)
+    # method is key:value
+    #
+    @classmethod
+    def lookup(self,method,query):
+        key,value=method.split(":")
+        lookup_ids=[l.id for l in WhoisLookup.objects.filter(key=key,value=value)]
+        r=list(WhoisCache.objects.filter(lookup__in=lookup_ids,key=query))
+        if len(r)==0:
+            return set()
+        return set(r[0].value.split("|"))
+##
+##
+##
+class WhoisCache(models.Model):
+    class Meta:
+        verbose_name="Whois Cache"
+        verbose_name_plural="Whois Cache"
+        unique_together=[("lookup","key")]
+    lookup=models.ForeignKey(WhoisLookup,verbose_name="Whois Lookup")
+    key=models.CharField("Key",max_length=64)
+    value=models.TextField("Value")
+    ##
+    ## Fetch data into cache
+    ##
+    @classmethod
+    def update(cls):
+        WhoisCache.objects.all().delete()
+        lt={}
+        for wdb in WhoisDatabase.objects.all():
+            # Fetch
+            urls={}
+            for wl in wdb.whoislookup_set.all():
+                if wl.url not in urls:
+                    urls[wl.url]=[wl]
+                else:
+                    urls[wl.url]+=[wl]
+            #
+            for url in urls:
+                fields=set()
+                f_set=[]
+                r_set=[]
+                for wl in urls[url]:
+                    fields.add(wl.key)
+                    fields.add(wl.value)
+                    if wl.direction=="F":
+                        f_set+=[wl]
+                    else:
+                        r_set+=[wl]
+                # Fetch
+                f=urlopen(url,auto_deflate=True)
+                data=list(wdb.parse(f,fields))
+                f.close()
+                # Process forward lookups
+                for wl in f_set:
+                    key=wl.key
+                    value=wl.value
+                    for d in data:
+                        k=d[key][0]
+                        try:
+                            v=d[value]
+                        except KeyError:
+                            v=[]
+                        v=",".join(v)
+                        v="|".join([x.strip() for x in v.split(",")])
+                        wc=WhoisCache(lookup=wl,key=k,value=v)
+                        wc.save()
+                # Process reverse lookups
+                for wl in r_set:
+                    key=wl.key
+                    value=wl.value
+                    result={}
+                    for d in data:
+                        try:
+                            k=d[key]
+                        except KeyError:
+                            continue
+                        try:
+                            v=d[value][0]
+                        except KeyError:
+                            continue
+                        k=",".join(k)
+                        k="|".join([x.strip() for x in k.split(",")])
+                        for k in k.split("|"):
+                            try:
+                                result[k].add(v)
+                            except KeyError:
+                                result[k]=set([v])
+                    for key,value in result.items():
+                        wc=WhoisCache(lookup=wl,key=key,value="|".join(value))
+                        wc.save()
+
 ##
 ## Application Menu
 ##
