@@ -14,6 +14,6 @@ class Task(noc.sa.periodic.Task):
     description=""
     
     def execute(self):
-        from noc.cm.models import WhoisCache
+        from noc.peer.models import WhoisCache
         WhoisCache.update()
         return True
