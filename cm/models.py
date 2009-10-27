@@ -349,13 +349,27 @@ class PrefixList(Object):
         verbose_name_plural="Prefix Lists"
     repo_name="prefix-list"
     @classmethod
+    def build_prefix_lists(cls):
+        from noc.peer.resolver import resolve_as_set_prefixes
+        from noc.peer.tree import optimize_prefix_list
+        result=[]
+        for pp in PeeringPoint.objects.all():
+            profile=pp.profile
+            for name,filter_exp in pp.generated_prefix_lists:
+                prefixes=resolve_as_set_prefixes(filter_exp)
+                strict=len(pl)<10
+                if not strict:
+                    prefixes=optimize_prefix_list(pl)
+                pl=profile.generated_prefix_lists(name,prefixes,strict)
+                result+=[(pp,name,pl)]
+        return result
+    @classmethod
     def global_pull(cls):
-        from noc.peer.builder import build_prefix_lists
         objects={}
         for o in PrefixList.objects.all():
             objects[o.repo_path]=o
         logging.debug("PrefixList.global_pull(): building prefix lists")
-        for peering_point,pl_name,pl in build_prefix_lists():
+        for peering_point,pl_name,pl in PrefixList.build_prefix_lists():
             logging.debug("PrefixList.global_pull(): writing %s/%s (%d lines)"%(peering_point.hostname,pl_name,len(pl.split("\n"))))
             path=os.path.join(peering_point.hostname,pl_name)
             if path in objects:
