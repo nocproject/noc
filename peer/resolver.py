@@ -8,8 +8,10 @@
 """
 """
 from noc.peer.whois import Whois
+from noc.peer.tree import optimize_prefix_list
 from noc.lib.validators import is_asn,is_cidr
 from noc.lib.nbsocket import SocketFactory
+from noc.peer.models import WhoisLookup
 import logging
 
 class AS(object):
@@ -127,7 +129,7 @@ class Resolver(object):
             return ASSet(self,name)
         
     def schedule_whois(self,query,callback,fields=None):
-        logging.debug("Scheduliung whois query: %s"%query)
+        logging.debug("Scheduling whois query: %s"%query)
         self.whois_queue.append((query,callback,fields))
     #
     # Resolves a list of as-sets and returns a hash of
@@ -153,3 +155,35 @@ def resolve(as_sets):
     logging.basicConfig(level=logging.DEBUG)
     r=Resolver()
     return r.resolve(as_sets)
+
+##
+## Resolve as-sets from whois cache
+## Returns a set of ASes
+##
+def resolve_as_set(as_set,seen_as_sets=None):
+    if is_asn(as_set[2:]):
+        return set([as_set.upper()])
+    members=set()
+    if seen_as_sets is None:
+        seen=set([as_set])
+    else:
+        seen=seen_as_sets
+    for a in WhoisLookup.lookup("as-set:members",as_set):
+        if is_asn(a[2:]):
+            members.add(a.upper())
+        elif a not in seen:
+            seen.add(a)
+            members.update(resolve_as_set(a,seen))
+    return members
+##
+##
+##
+PL_THRESHOLD=10
+def resolve_as_set_prefixes(as_set,optimize=False):
+    prefixes=set()
+    for a in resolve_as_set(as_set):
+        prefixes.update(WhoisLookup.lookup("origin:route",a))
+    if optimize and len(prefixes)>PL_THRESHOLD:
+        return set(optimize_prefix_list(prefixes))
+    return prefixes
+    
