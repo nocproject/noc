@@ -360,7 +360,7 @@ class PrefixList(Object):
                 prefixes=resolve_as_set_prefixes(filter_exp)
                 strict=len(prefixes)<10
                 if not strict:
-                    prefixes=optimize_prefix_list(pl)
+                    prefixes=optimize_prefix_list(prefixes)
                 pl=profile.generate_prefix_list(name,prefixes,strict)
                 result+=[(pp,name,pl)]
         return result
