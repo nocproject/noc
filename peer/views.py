@@ -8,10 +8,10 @@
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,HttpResponseForbidden,HttpResponse
 from django import forms
-
 from noc.peer.models import Person,Maintainer,AS,ASSet,PeeringPoint
 from noc.lib.render import render,render_plain_text,render_json
 from noc.lib.validators import is_asn,is_as_set,is_ipv4,is_cidr,is_fqdn
+from noc.peer.resolver import resolve_as_set_prefixes
 import re
 
 def as_rpsl(request,asn):
@@ -41,6 +41,31 @@ def person_rpsl(request,person_id):
 def maintainer_rpsl(request,mnt_id):
     maintainer=get_object_or_404(Maintainer,id=int(mnt_id))
     return render_plain_text(maintainer.rpsl)
+##
+## Prefix List Builder
+##
+class PrefixListBuilderForm(forms.Form):
+    peering_point= forms.ModelChoiceField(queryset=PeeringPoint.objects.all())
+    name=forms.CharField()
+    as_set=forms.CharField()
+    
+    def clean_as_set(self):
+        as_set=self.cleaned_data["as_set"]
+        if not as_set.startswith("AS"):
+            raise forms.ValidationError("Invalid AS or as-set")
+        return as_set
+
+def prefix_list_builder(request):
+    pl=""
+    if request.POST:
+        form=PrefixListBuilderForm(request.POST)
+        if form.is_valid():
+            prefixes=resolve_as_set_prefixes(form.cleaned_data["as_set"],True)
+            pl=form.cleaned_data["peering_point"].profile.generate_prefix_list(form.cleaned_data["name"],prefixes,True)
+    else:
+        form=PrefixListBuilderForm()
+    return render(request,"peer/prefix_list.html",{"form":form,"prefix_list":pl})
+
 ##
 ## Looking glass
 ##

@@ -556,6 +556,7 @@ class AppMenu(Menu):
         ("Communities",   "/admin/peer/community/"    ,"peer.change_community"),
         ("Peering Points","/admin/peer/peeringpoint/" ,"peer.change_peeringpoint"),
         ("Peers",         "/admin/peer/peer/"         ,"peer.change_peer"),
+        ("Prefix List Builder", "/peer/builder/prefix_list/", "peer.change_peer"),
         ("Setup",[
             ("Peer Groups",     "/admin/peer/peergroup/"    , "peer.change_peergroup"),
             ("Community Types", "/admin/peer/communitytype/", "peer.change_communitytype"),
