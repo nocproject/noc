@@ -1,0 +1,19 @@
+{% extends "template/template.html" %}
+{% block title %}Prefix List Builder{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Peer &rsaquo; Prefix List Builder &rsaquo;
+</div>
+{% endblock %}
+
+{% block content %}
+<form method="POST">
+    <TABLE>
+        {{form.as_table}}
+    </TABLE>
+    <INPUT TYPE="submit" VALUE="Build">
+</form>
+{%if prefix_list %}
+<pre>
+{{prefix_list}}
+</pre>
+{% endif %}
+{%endblock%}

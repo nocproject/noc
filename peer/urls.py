@@ -9,7 +9,7 @@
 """
 from django.conf.urls.defaults import *
 from django.contrib.auth.decorators import login_required
-from noc.peer.views import as_rpsl,as_set_rpsl,as_dot,lg,lg_json,inet_rtr_rpsl,person_rpsl,maintainer_rpsl
+from noc.peer.views import as_rpsl,as_set_rpsl,as_dot,lg,lg_json,inet_rtr_rpsl,person_rpsl,maintainer_rpsl,prefix_list_builder
 
 urlpatterns = patterns ( "",
     (r"^AS/(?P<asn>\d+)/rpsl/",                   login_required(as_rpsl)),
@@ -20,4 +20,5 @@ urlpatterns = patterns ( "",
     (r"^maintainer/(?P<mnt_id>\d+)/rpsl/",        login_required(maintainer_rpsl)),
     (r"lg/(?P<task_id>\d+)/$",                    lg_json),
     (r"lg/",                                      lg),
+    (r"builder/prefix_list/$",                    login_required(prefix_list_builder)),
 )
