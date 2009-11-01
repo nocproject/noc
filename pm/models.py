@@ -26,6 +26,14 @@ class TimeSeries(models.Model):
         c=connection.cursor()
         c.execute("SELECT pm_timeseries_register(%s,%s,%s)",[name,timestamp,value])
         c.execute("COMMIT")
+    ##
+    def as_html(self):
+        return '<div id="nocts_%d" style="width: 600px; height: 400px"></div><script>$("#nocts_%d").nocchart({ajaxURL:"/pm/data/ts/%d/"});</script>'%(self.id,self.id,self.id)
+    ##
+    def view_link(self):
+        return "<a href='/pm/view/ts/%d/'>View</a>"%self.id
+    view_link.short_description="View"
+    view_link.allow_tags=True
 ##
 ## Time Series Data
 ##
@@ -50,7 +58,7 @@ class Chart(models.Model):
     def __unicode__(self):
         return self.name
     def as_html(self):
-        return '<div id="nocchart_%d" style="width: 600px; height: 400px"></div><script>$("#nocchart_%d").nocchart({ajaxURL:"/pm/data/%d/"});</script>'%(self.id,self.id,self.id)
+        return '<div id="nocchart_%d" style="width: 600px; height: 400px"></div><script>$("#nocchart_%d").nocchart({ajaxURL:"/pm/data/chart/%d/"});</script>'%(self.id,self.id,self.id)
 
 ##
 ## Application Menu
