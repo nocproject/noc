@@ -10,7 +10,7 @@ from django import forms
 from models import *
 ##
 class TimeSeriesAdmin(admin.ModelAdmin):
-    list_display=["name","is_enabled"]
+    list_display=["name","is_enabled","view_link"]
     search_fields=["name"]
 #
 class ChartAdmin(admin.ModelAdmin):
