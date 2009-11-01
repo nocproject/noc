@@ -328,14 +328,14 @@
     };
     //
     Chart.prototype.zoomUp = function() {
-        var center=(this.min_ts+this.max_ts)/2;
-        var leg=(this.max_ts-this.min_ts)/1.618/2;
+        var center=Math.round((this.min_ts+this.max_ts)/2);
+        var leg=Math.round((this.max_ts-this.min_ts)*1.618/2);
         this.load(center-leg,center+leg);
     };
     //
     Chart.prototype.zoomDown = function() {
-        var center=(this.min_ts+this.max_ts)/2;
-        var leg=(this.max_ts-this.min_ts)*1.618/2;
+        var center=Math.round((this.min_ts+this.max_ts)/2);
+        var leg=Math.round((this.max_ts-this.min_ts)/1.618/2);
         this.load(center-leg,center+leg);
     };
     //
