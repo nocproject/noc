@@ -7,7 +7,5 @@
 {% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/pm/">Performance Management</a> &rsaquo; {{chart.name}} &rsaquo; </div>{% endblock %}
 {% block content %}
 <h1>{{chart.name}}</h1>
-
-<div id="svgplot" style="width: 600px; height: 400px"></div>
-<script>$("#svgplot").nocchart({ajaxURL:"/pm/data/{{chart.id}}/"});</script>
+{{chart.as_html|safe}}
 {%endblock%}
