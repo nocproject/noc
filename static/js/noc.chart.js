@@ -88,11 +88,11 @@
     // Chart.legendColumnWidths
     Chart.prototype.legendColumnWidths = function() {
         var N=this.time_series.length;
-        for(lines=1;lines<N;lines++) {
+        for(var lines=1;lines<=N;lines++) {
             var columns=Math.ceil(N/lines);
             var widths=[];
             var total_width=0;
-            for(j=0;j<columns;j++) {
+            for(var j=0;j<columns;j++) {
                 var w=0;
                 for(k=j;k<N;k+=columns) {
                     var w1=this.time_series[k].length*this.options.fontWidth+3*this.options.textPadding+this.options.fontHeight;
