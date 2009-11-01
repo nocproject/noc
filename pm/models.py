@@ -49,6 +49,9 @@ class Chart(models.Model):
     time_series=models.ManyToManyField(TimeSeries,verbose_name="Time Series")
     def __unicode__(self):
         return self.name
+    def as_html(self):
+        return '<div id="nocchart_%d" style="width: 600px; height: 400px"></div><script>$("#nocchart_%d").nocchart({ajaxURL:"/pm/data/%d/"});</script>'%(self.id,self.id,self.id)
+
 ##
 ## Application Menu
 ##
