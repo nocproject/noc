@@ -347,7 +347,7 @@
         if(!this.outline) {
             return;
         }
-        this.outline.remove();
+        $(this.outline).remove();
         this.outline=null;
         var drag_x1=event.clientX-this.offset;
         var t0,t1;
@@ -367,10 +367,6 @@
             return
         };
         var drag_x1=event.clientX-this.offset;
-        if(!this.outline) {
-            this.outline=$(this.svg.rect(0,0,0,0,{fill: '#d0d0d0', stroke: '#e0e0e0', strokeWidth: 1, strokeDashArray: '2,2',opacity:"0.5"}));
-            this.outline.mouseup(this.eventClosure(this,"stopDrag"));
-        }
         var width,x;
         if(drag_x1>this.drag_x0) {
             x=this.drag_x0;
@@ -379,8 +375,12 @@
             x=drag_x1;
             width=this.drag_x0-drag_x1;
         }
-        var height=this.y1-this.y0;
-        this.outline.change({x:x,y:this.y0-height,width:width,height:height});
+        var height=this.y0-this.y1;
+        if(!this.outline) {
+            this.outline=this.svg.rect(0,0,0,0,{fill: '#d0d0d0', stroke: '#e0e0e0', strokeWidth: 1, strokeDashArray: '2,2',opacity:"0.5"});
+            $(this.outline).mouseup(this.eventClosure(this,"stopDrag"));
+        }
+        this.svg.change(this.outline,{x:x,y:this.y0-height,width:width,height:height});
     };
     // Default Values
     $.fn.nocchart.defaults = {
