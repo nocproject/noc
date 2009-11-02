@@ -361,6 +361,7 @@ class PrefixList(Object):
                 strict=len(prefixes)<10
                 if not strict:
                     prefixes=optimize_prefix_list(prefixes)
+                prefixes=sorted(prefixes)
                 pl=profile.generate_prefix_list(name,prefixes,strict)
                 result+=[(pp,name,pl)]
         return result
