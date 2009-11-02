@@ -562,5 +562,6 @@ class AppMenu(Menu):
             ("Community Types", "/admin/peer/communitytype/", "peer.change_communitytype"),
             ("RIRs",            "/admin/peer/rir/",           "peer.change_rir"),
             ("Persons",         "/admin/peer/person/",        "peer.change_person"),
+            ("Maintainers",     "/admin/peer/maintainer/"   ,"peer.change_maintainer"),
         ])
     ]
