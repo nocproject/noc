@@ -8,7 +8,9 @@ sa/trapcollector.py
 sa/syslogcollector.py
 sa/protocols/__init__.py
 sa/protocols/sae_pb2.py
+sa/protocols/pm_pb2.py
 sa/profiles/__init__.py
+sa/servers/
 sa/script.py
 lib/__init__.py
 lib/debug.py
