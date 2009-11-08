@@ -92,11 +92,13 @@ class AS(models.Model):
     class Meta:
         verbose_name="AS"
         verbose_name_plural="ASes"
-    maintainer=models.ForeignKey(Maintainer,verbose_name="Maintainer")
     asn=models.IntegerField("ASN",unique=True) # ,validator_list=[check_asn]
-    description=models.CharField("Description",max_length=64)
-    rpsl_header=models.TextField("RPSL Header",null=True,blank=True)
-    rpsl_footer=models.TextField("RPSL Footer",null=True,blank=True)
+    as_name=models.CharField("AS Name",max_length=64,null=True,blank=True) # as-name RPSL Field
+    description=models.CharField("Description",max_length=64) # RPSL descr field
+    maintainer=models.ForeignKey(Maintainer,verbose_name="Maintainer") # mnt-by
+    routes_maintainer=models.ForeignKey(Maintainer,verbose_name="Routes Maintainer",null=True,blank=True,related_name="routes_maintainer") # mnt-routes
+    rpsl_header=models.TextField("RPSL Header",null=True,blank=True) # Additional RPSL header
+    rpsl_footer=models.TextField("RPSL Footer",null=True,blank=True) # Additional RPSL footer
     def __str__(self):
         return "AS%d (%s)"%(self.asn,self.description)
     def __unicode__(self):
@@ -107,12 +109,17 @@ class AS(models.Model):
     def _rpsl(self):
         sep="remarks: %s"%("-"*72)
         s=[]
+        s+=["aut-num: AS%s"%self.asn]
+        if self.as_name:
+            s+=["as-name: %s"%self.as_name]
+        if self.description:
+            s+=["descr: %s"%x for x in self.description.split("\n")]
+        # Add additional headers
         if self.rpsl_header:
             s+=self.rpsl_header.split("\n")
-        s+=["aut-num: AS%s"%self.asn]
         # Find AS peers
         pg={} # Peer Group -> AS -> peering_point -> [(import, export, localpref)]
-        for peer in self.peer_set.all():
+        for peer in self.peer_set.filter(status="A"):
             if peer.peer_group not in pg:
                 pg[peer.peer_group]={}
             if peer.remote_asn not in pg[peer.peer_group]:
@@ -151,6 +158,11 @@ class AS(models.Model):
                             e_s+=" at %s"%pp.hostname
                         e_s+=" announce %s"%export_filter
                         s+=[e_s]
+        # Add maintainers
+        if self.maintainer:
+            s+=["mnt-by: %s"%self.maintainer.maintainer]
+        if self.routes_maintainer:
+            s+=["mnt-routes: %s"%self.routes_maintainer.maintainer]
         # Finalize RPSL
         if self.rpsl_footer:
             s+=[sep]
@@ -350,6 +362,7 @@ class Peer(models.Model):
     local_ip=INETField("Local IP")
     remote_asn=models.IntegerField("Remote AS")
     remote_ip=INETField("Remote IP")
+    status=models.CharField("Status",max_length=1,default="A",choices=[("P","Planned"),("A","Active"),("S","Shutdown")])
     import_filter=models.CharField("Import filter",max_length=64)
     local_pref=models.IntegerField("Local Pref",null=True,blank=True)
     export_filter=models.CharField("Export filter",max_length=64)
