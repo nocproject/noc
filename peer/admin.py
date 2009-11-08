@@ -20,7 +20,7 @@ class MaintainerAdmin(admin.ModelAdmin):
     list_filter=["rir"]
 
 class ASAdmin(admin.ModelAdmin):
-    list_display=["asn","description","maintainer","rpsl_link"]
+    list_display=["asn","as_name","description","maintainer","routes_maintainer","rpsl_link"]
     list_filter=["maintainer"]
     search_fields=["asn","description"]
     
@@ -45,9 +45,9 @@ class PeerGroupAdmin(admin.ModelAdmin):
     list_display=["name","description","communities"]
         
 class PeerAdmin(admin.ModelAdmin):
-    list_display=["peering_point","local_asn","remote_asn","admin_import_filter","admin_export_filter","local_ip","remote_ip","admin_tt_url","description","communities"]
+    list_display=["peering_point","local_asn","remote_asn","status","admin_import_filter","admin_export_filter","local_ip","remote_ip","admin_tt_url","description","communities"]
     search_fields=["remote_asn","description"]
-    list_filter=["peering_point"]
+    list_filter=["peering_point","status"]
 
 admin.site.register(RIR,RIRAdmin)
 admin.site.register(Person,PersonAdmin)
