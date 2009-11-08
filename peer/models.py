@@ -105,26 +105,53 @@ class AS(models.Model):
     def default_as(cls):
         return AS.objects.get(asn=0)
     def _rpsl(self):
-        sep="remark: %s"%("-"*72)
+        sep="remarks: %s"%("-"*72)
         s=[]
         if self.rpsl_header:
             s+=self.rpsl_header.split("\n")
         s+=["aut-num: AS%s"%self.asn]
-        groups={}
-        peers={}
+        # Find AS peers
+        pg={} # Peer Group -> AS -> peering_point -> [(import, export, localpref)]
         for peer in self.peer_set.all():
-            groups[peer.peer_group.id]=None
-        for pg in PeerGroup.objects.filter(id__in=groups.keys()):
-            if pg.description:
-                s+=[sep]
-                s+=["remark: -- %s"%x for x in pg.description.split("\n")]
-                s+=[sep]
-            for peer in self.peer_set.filter(peer_group__exact=pg):
-                rpsl=peer.rpsl
-                if rpsl in peers:
-                    continue
-                peers[rpsl]=None
-                s+=rpsl.split("\n")
+            if peer.peer_group not in pg:
+                pg[peer.peer_group]={}
+            if peer.remote_asn not in pg[peer.peer_group]:
+                pg[peer.peer_group][peer.remote_asn]={}
+            if peer.peering_point not in pg[peer.peer_group][peer.remote_asn]:
+                pg[peer.peer_group][peer.remote_asn][peer.peering_point]=[]
+            to_skip=False
+            for p_import,p_export,localpref in pg[peer.peer_group][peer.remote_asn][peer.peering_point]:
+                if peer.import_filter==p_import and peer.export_filter==p_export:
+                    to_skip=True
+                    break
+            if not to_skip:
+                pg[peer.peer_group][peer.remote_asn][peer.peering_point]+=[(peer.import_filter,peer.export_filter,peer.local_pref)]
+        # Build RPSL
+        inverse_pref=config.getboolean("peer","rpsl_inverse_pref_style")
+        for peer_group in pg:
+            s+=[sep]
+            s+=["remarks: -- %s"%x for x in peer_group.description.split("\n")]
+            s+=[sep]
+            for asn in sorted(pg[peer_group]):
+                add_at=len(pg[peer_group][asn])!=1
+                for pp in pg[peer_group][asn]:
+                    for import_filter,export_filter,localpref in pg[peer_group][asn][pp]:
+                        # Build import statement
+                        i_s="import: from AS%d"%asn
+                        if add_at:
+                            i_s+=" at %s"%pp.hostname
+                        if localpref:
+                            pref=(65535-localpref) if inverse_pref else localpref
+                            i_s+=" action pref=%d;"%pref
+                        i_s+=" accept %s"%import_filter
+                        s+=[i_s]
+                        # Build export statement
+                        e_s="export: to AS%d"%asn
+                        if add_at:
+                            e_s+=" at %s"%pp.hostname
+                        e_s+=" announce %s"%export_filter
+                        s+=[e_s]
+        # Finalize RPSL
         if self.rpsl_footer:
             s+=[sep]
             s+=self.rpsl_footer.split("\n")
@@ -380,6 +407,7 @@ class Peer(models.Model):
         c.sort()
         return " ".join(c)
     all_communities=property(_all_communities)
+    # <!> deprecated
     def _rpsl(self):
         s="import: from AS%d"%self.remote_asn
         s+=" at %s"%self.peering_point.hostname
