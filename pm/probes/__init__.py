@@ -40,10 +40,8 @@ PT_MAP={
     "counter" : PT_COUNTER
 }
 
-MAX_COUNTER={
-    32 : 4294967296.0,
-    64 : 18446744073709551616.0
-}
+MAX_COUNTER_32=4294967296.0,
+MAX_COUNTER_64=18446744073709551616.0
 ##
 ## Probe parameter
 ## Performs value cleaning and threshold checking
@@ -56,7 +54,6 @@ class Param(object):
         self.last_time=None
         self.last_value=None
         self.description=description
-        self.bits=32
         # Set parameter type
         if "type" in description:
             try:
@@ -101,7 +98,8 @@ class Param(object):
             else:
                 # Handle wrapping
                 self.probe.debug("Counter wrapping fixed")
-                v=(value+(MAX_COUNTER[self.bits]-self.last_value))/(t-self.last_time)
+                mc=MAX_COUNTER_64 if self.last_value>MAX_COUNTER_32 else MAX_COUNTER_32
+                v=(value+(mc-self.last_value))/(t-self.last_time)
             self.last_time=t
             self.last_value=value
             value=v
