@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 import noc.sa.script
 from noc.sa.interfaces import ICommands
 ##
