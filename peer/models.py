@@ -88,6 +88,18 @@ class Maintainer(models.Model):
     rpsl_link.short_description="RPSL"
     rpsl_link.allow_tags=True
 
+class Organisation(models.Model):
+    class Meta:
+        verbose_name="Organisation"
+        verbose_name_plural="Organisations"
+    organisation=models.CharField("Organisation",max_length=128,unique=True) # NIC Handle
+    org_name=models.CharField("Org. Name",max_length=128) # org-name:
+    org_type=models.CharField("Org. Type",max_length=64,choices=[("LIR","LIR")]) # org-type:
+    address=models.TextField("Address") # address: will be prepended automatically for each line
+    mnt_ref=models.ForeignKey(Maintainer,verbose_name="Mnt. Ref") # mnt-ref
+    def __unicode__(self):
+        return u"%s (%s)"%(self.organisation,self.org_name)
+
 class AS(models.Model):
     class Meta:
         verbose_name="AS"
@@ -95,10 +107,14 @@ class AS(models.Model):
     asn=models.IntegerField("ASN",unique=True) # ,validator_list=[check_asn]
     as_name=models.CharField("AS Name",max_length=64,null=True,blank=True) # as-name RPSL Field
     description=models.CharField("Description",max_length=64) # RPSL descr field
-    maintainer=models.ForeignKey(Maintainer,verbose_name="Maintainer") # mnt-by
-    routes_maintainer=models.ForeignKey(Maintainer,verbose_name="Routes Maintainer",null=True,blank=True,related_name="routes_maintainer") # mnt-routes
-    rpsl_header=models.TextField("RPSL Header",null=True,blank=True) # Additional RPSL header
-    rpsl_footer=models.TextField("RPSL Footer",null=True,blank=True) # Additional RPSL footer
+    organisation=models.ForeignKey(Organisation,verbose_name="Organisation")
+    administrative_contacts=models.ManyToManyField(Person,verbose_name="admin-c",related_name="as_administrative_contacts")
+    tech_contacts=models.ManyToManyField(Person,verbose_name="tech-c",related_name="as_tech_contacts")
+    maintainers=models.ManyToManyField(Maintainer,verbose_name="Maintainers",related_name="as_maintainers")
+    routes_maintainers=models.ManyToManyField(Maintainer,verbose_name="Routes Maintainers",related_name="as_route_maintainers")
+    header_remarks=models.TextField("Header Remarks",null=True,blank=True) # remarks: will be prepended automatically
+    footer_remarks=models.TextField("Footer Remarks",null=True,blank=True) # remarks: will be prepended automatically
+    rir=models.ForeignKey(RIR,verbose_name="RIR") # source:
     def __str__(self):
         return "AS%d (%s)"%(self.asn,self.description)
     def __unicode__(self):
@@ -114,9 +130,10 @@ class AS(models.Model):
             s+=["as-name: %s"%self.as_name]
         if self.description:
             s+=["descr: %s"%x for x in self.description.split("\n")]
-        # Add additional headers
-        if self.rpsl_header:
-            s+=self.rpsl_header.split("\n")
+        s+=["org: %s"%self.organisation.organisation]
+        # Add header remarks
+        if self.header_remarks:
+            s+=["remarks: %s"%x for x in self.header_remarks.split("\n")]
         # Find AS peers
         pg={} # Peer Group -> AS -> peering_point -> [(import, export, localpref)]
         for peer in self.peer_set.filter(status="A"):
@@ -158,15 +175,19 @@ class AS(models.Model):
                             e_s+=" at %s"%pp.hostname
                         e_s+=" announce %s"%export_filter
                         s+=[e_s]
+        # Add contacts
+        for c in self.administrative_contacts.order_by("nic_hdl"):
+            s+=["admin-c: %s"%c.nic_hdl]
+        for c in self.tech_contacts.order_by("nic_hdl"):
+            s+=["tech-c: %s"%c.nic_hdl]
         # Add maintainers
-        if self.maintainer:
-            s+=["mnt-by: %s"%self.maintainer.maintainer]
-        if self.routes_maintainer:
-            s+=["mnt-routes: %s"%self.routes_maintainer.maintainer]
-        # Finalize RPSL
-        if self.rpsl_footer:
-            s+=[sep]
-            s+=self.rpsl_footer.split("\n")
+        for m in self.maintainers.all():
+            s+=["mnt-by: %s"%m.maintainer]
+        for m in self.routes_maintainers.all():
+            s+=["mnt-routes: %s"%m.maintainer]
+        # Add footer remarks
+        if self.footer_remarks:
+            s+=["remarks: %s"%x for x in self.footer_remarks.split("\n")]
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
     
@@ -604,5 +625,6 @@ class AppMenu(Menu):
             ("RIRs",            "/admin/peer/rir/",           "peer.change_rir"),
             ("Persons",         "/admin/peer/person/",        "peer.change_person"),
             ("Maintainers",     "/admin/peer/maintainer/"   ,"peer.change_maintainer"),
+            ("Organisations",   "/admin/peer/organisation/"   ,"peer.change_organisation"),
         ])
     ]
