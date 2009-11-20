@@ -135,7 +135,7 @@ class AS(models.Model):
         if self.header_remarks:
             s+=["remarks: %s"%x for x in self.header_remarks.split("\n")]
         # Find AS peers
-        pg={} # Peer Group -> AS -> peering_point -> [(import, export, localpref)]
+        pg={} # Peer Group -> AS -> peering_point -> [(import, export, localpref, remark)]
         for peer in self.peer_set.filter(status="A"):
             if peer.peer_group not in pg:
                 pg[peer.peer_group]={}
@@ -144,12 +144,12 @@ class AS(models.Model):
             if peer.peering_point not in pg[peer.peer_group][peer.remote_asn]:
                 pg[peer.peer_group][peer.remote_asn][peer.peering_point]=[]
             to_skip=False
-            for p_import,p_export,localpref in pg[peer.peer_group][peer.remote_asn][peer.peering_point]:
+            for p_import,p_export,localpref,remark in pg[peer.peer_group][peer.remote_asn][peer.peering_point]:
                 if peer.import_filter==p_import and peer.export_filter==p_export:
                     to_skip=True
                     break
             if not to_skip:
-                pg[peer.peer_group][peer.remote_asn][peer.peering_point]+=[(peer.import_filter,peer.export_filter,peer.local_pref)]
+                pg[peer.peer_group][peer.remote_asn][peer.peering_point]+=[(peer.import_filter,peer.export_filter,peer.local_pref,peer.rpsl_remark)]
         # Build RPSL
         inverse_pref=config.getboolean("peer","rpsl_inverse_pref_style")
         for peer_group in pg:
@@ -159,7 +159,10 @@ class AS(models.Model):
             for asn in sorted(pg[peer_group]):
                 add_at=len(pg[peer_group][asn])!=1
                 for pp in pg[peer_group][asn]:
-                    for import_filter,export_filter,localpref in pg[peer_group][asn][pp]:
+                    for import_filter,export_filter,localpref,remark in pg[peer_group][asn][pp]:
+                        # Prepend import and export with remark when given
+                        if remark:
+                            s+=["remarks: # %s"%remark]
                         # Build import statement
                         i_s="import: from AS%d"%asn
                         if add_at:
@@ -388,6 +391,7 @@ class Peer(models.Model):
     local_pref=models.IntegerField("Local Pref",null=True,blank=True)
     export_filter=models.CharField("Export filter",max_length=64)
     description=models.CharField("Description",max_length=64,null=True,blank=True)
+    rpsl_remark=models.CharField("RPSL Remark",max_length=64,null=True,blank=True)           # Peer remark to be shown in RPSL
     tt=models.IntegerField("TT",blank=True,null=True)
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)   # In addition to PeerGroup.communities
                                                                                             # and PeeringPoint.communities
