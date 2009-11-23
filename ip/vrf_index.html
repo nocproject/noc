@@ -35,13 +35,14 @@
     <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}" WIDTH="100%">
         <caption>Allocated blocks within {{vrf.name}}::{{prefix.prefix}} ({{prefix.description}})</caption>
         <THEAD>
-            <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>TT</TH><TH></TH></TR>
+            <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>VC</TH><TH>TT</TH><TH></TH></TR>
         </THEAD>
         {%for p in prefixes %}
         <TR class="{%cycle 'row1' 'row2'%}">
             <TD><A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/">{{p.prefix}}</A></TD>
             <TD><A HREF="/ip/{{p.vrf.id}}/">{{p.vrf.name}}</A></TD>
             <TD>{{p.description}}</TD>
+            <TD>{% if p.vc %}{{p.vc}}{% endif %}</TD>
             <TD>{%if p.tt %}<A HREF="{{p.tt_url}}">#{{p.tt}}</A>{%endif%}</TD>
             <TD> 
                 <A HREF="/ip/{{p.vrf.id}}/{{p.prefix}}/allocate_block/" CLASS="changelink">Change</A>
