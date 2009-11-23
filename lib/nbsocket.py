@@ -71,6 +71,9 @@ class NoMemoryError(SocketError):
 class BadFileError(SocketError):
     message="Bad File Descriptor"
 
+class AddressInUse(SocketError):
+    message="Address already in use"
+
 ##
 ## Error name to Exception class mapping
 ## Used to populate SOCKET_ERROR_TO_EXCEP
@@ -86,6 +89,7 @@ SOCKET_ERRORS=[
     ("EPIPE",           BrokenPipeError),
     ("EACCES",          AccessError),
     ("EBADF",           BadFileError),
+    ("EADDRINUSE",      AddressInUse),
 ]
 
 SOCKET_GAIERROR=[
