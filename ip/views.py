@@ -45,7 +45,6 @@ def vrf_index(request,vrf_id,prefix="0.0.0.0/0"):
     total=prefix.size
     block_info=[
         ("Net",         prefix.prefix),
-        ("Maintainers", ", ".join([str(u) for u in prefix.maintainers])),
         ("Netmask",     prefix.netmask),
         ("Broadcast",   prefix.broadcast),
         ("Wildcard",    prefix.wildcard),
@@ -116,6 +115,7 @@ def allocate_block(request,vrf_id,prefix=None):
     suggestions=[]
     parent=prefix
     block_id=None
+    initial={}
     if prefix:
         assert is_cidr(prefix)
         block=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
@@ -130,7 +130,7 @@ def allocate_block(request,vrf_id,prefix=None):
     else:
         match=rx_referer_prefix.match(request.META.get("HTTP_REFERER",""))
         if match and is_cidr(match.group(1)):
-            # Suggest blocks
+            # Suggest blocks of different sizes
             parent=match.group(1)
             free=[(x.split("/")[0],int(x.split("/")[1])) for x in free_blocks(parent,[p.prefix for p in vrf.prefixes(top=parent)])]
             free=sorted(free,lambda x,y: -cmp(x[1],y[1]))
@@ -139,7 +139,11 @@ def allocate_block(request,vrf_id,prefix=None):
                     if fm<=m:
                         suggestions+=["%s/%d"%(fp,m)]
                         break
-        initial={}
+            # Fill initial prefix
+            prefix=parent.split("/")[0]
+            while prefix.endswith(".0"):
+                prefix=prefix[:-2]
+            initial["prefix"]=prefix
         p=""
     if request.POST:
         form=AllocateBlockForm(request.POST,vrf=vrf,block_id=block_id)

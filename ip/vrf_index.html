@@ -137,8 +137,12 @@ function toggle_free() {
                 {% endif %}
             </TD>
         </TR>
+        <TR class="row2">
+            <TD><b>Maintainers</b></TD>
+            <TD>{{prefix.maintainers|join:", "}} {%if can_allocate%}<a href="/admin/ip/ipv4blockaccess/add/?vrf={{vrf.id}}&prefix={{prefix}}"><b>Add...<b></a>{%endif%}</TD>
+        </TR>
         {% for k,v in block_info %}
-            <TR class="{%cycle 'row2' 'row1'%}"><TD STYLE="width: 10pt"><b>{{k}}</b></TD><TD>{{v}}</TD></TR>
+            <TR class="{%cycle 'row1' 'row2'%}"><TD STYLE="width: 10pt"><b>{{k}}</b></TD><TD>{{v}}</TD></TR>
         {% endfor %}
     </TABLE>
 </DIV>
