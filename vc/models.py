@@ -138,7 +138,7 @@ class VC(models.Model):
     description=models.CharField("Description",max_length=256,null=True,blank=True)
 
     def __unicode__(self):
-        s=u"%s %s %d"%(self.vc_domain,self.name,self.l1)
+        s=u"%s: %s: %d"%(self.vc_domain,self.name,self.l1)
         if self.l2:
             s+=u"/%d"%self.l2
         return s
