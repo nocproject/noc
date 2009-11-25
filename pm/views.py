@@ -44,7 +44,7 @@ def chart_data(request,chart_id):
             t0=t1-60
         range=[t0,t1]
     else:
-        range=[now-24*60,now]
+        range=[now-24*3600,now]
     r={
         "time_series": [ts.name for ts in time_series],
         "points"     : [[(d.timestamp,d.value) for d in ts.timeseriesdata_set.filter(timestamp__range=range).order_by("timestamp")] for ts in time_series],
