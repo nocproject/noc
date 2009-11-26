@@ -98,7 +98,7 @@ class Param(object):
             else:
                 # Handle wrapping
                 self.probe.debug("Counter wrapping fixed")
-                mc=MA   X_COUNTER_64 if self.last_value>MAX_COUNTER_32 else MAX_COUNTER_32
+                mc=MAX_COUNTER_64 if self.last_value>MAX_COUNTER_32 else MAX_COUNTER_32
                 v=(value+(mc-self.last_value))/(t-self.last_time)
             self.last_time=t
             self.last_value=value
