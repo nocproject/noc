@@ -10,7 +10,7 @@ import noc.sa.periodic
 class Task(noc.sa.periodic.Task):
     name="cm.dns_pull"
     description=""
-    
+    wait_for=["cm.dns_push"]
     def execute(self):
         from noc.cm.models import DNS
         DNS.global_pull()
