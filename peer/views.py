@@ -18,6 +18,15 @@ def as_rpsl(request,asn):
     assert is_asn(asn)
     asn=get_object_or_404(AS,asn=int(asn))
     return render_plain_text(asn.rpsl)
+##
+## Interactively update RIR's DB
+##
+def as_rpsl_update(request,asn):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("Super-User privileges required")
+    assert is_asn(asn)
+    asn=get_object_or_404(AS,asn=int(asn))
+    return render_plain_text(asn.update_rir_db())
     
 def as_dot(request,asn):
     assert is_asn(asn)
