@@ -21,6 +21,7 @@ class OrganisationAdmin(admin.ModelAdmin):
 class MaintainerAdmin(admin.ModelAdmin):
     list_display=["maintainer","description","rir","rpsl_link"]
     list_filter=["rir"]
+    filter_horizontal=["admins"]
 
 class ASAdmin(admin.ModelAdmin):
     list_display=["asn","as_name","description","organisation","rpsl_link"]
