@@ -12,7 +12,7 @@ import noc.sa.periodic
 class Task(noc.sa.periodic.Task):
     name="peer.update_whois_cache"
     description=""
-    
+    wait_for=["cm.prefix_list_pull"]
     def execute(self):
         from noc.peer.models import WhoisCache
         WhoisCache.update()
