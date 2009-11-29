@@ -16,8 +16,23 @@ from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
 from noc.main.menu import Menu
 from noc.lib.fileutils import urlopen
-import random
+from noc.lib.crypto import md5crypt
+import random,time,logging
 
+##
+## Exception classes
+##
+class RIRDBUpdateError(Exception): pass
+##
+try:
+    import ssl
+    # Use SSL-enabled version when possible
+    RIPE_SYNCUPDATES_URL="https://syncupdates.db.ripe.net"
+except ImportError:
+    RIPE_SYNCUPDATES_URL="http://syncupdates.db.ripe.net"
+##
+##
+##
 class RIR(models.Model):
     class Meta:
         verbose_name="RIR"
@@ -27,6 +42,20 @@ class RIR(models.Model):
     whois=models.CharField("whois",max_length=64,blank=True,null=True)
     def __unicode__(self):
         return self.name
+    # Update RIR's database API
+    def update_db(self,data):
+        rir="RIPE" if self.name=="RIPE NCC" else self.name
+        return getattr(self,"update_db_%s"%rir)(data)
+    # RIPE NCC Update API
+    def update_db_RIPE(self,data,maintainer):
+        data=[x for x in data.split("\n") if x] # Strip empty lines
+        if maintainer.password:
+            data+=["password: %s"%maintainer.password]
+        admin=maintainer.admins.all()[0]
+        T=time.localtime()
+        data+=["changed: %s %04d%02d%02d"%(admin.email,T[0],T[1],T[2])]
+        data+=["source: RIPE"]
+        data="\n".join(data)
 
 class Person(models.Model):
     class Meta:
@@ -66,7 +95,7 @@ class Maintainer(models.Model):
         verbose_name_plural="Maintainers"
     maintainer=models.CharField("mntner",max_length=64,unique=True)
     description=models.CharField("description",max_length=64)
-    auth=models.TextField("auth")
+    password=models.CharField("Password",max_length=64,null=True,blank=True)
     rir=models.ForeignKey(RIR,verbose_name="RIR")
     admins=models.ManyToManyField(Person,verbose_name="admin-c")
     extra=models.TextField("extra",blank=True,null=True)
@@ -76,7 +105,8 @@ class Maintainer(models.Model):
         s=[]
         s+=["mntner: %s"%self.maintainer]
         s+=["descr: %s"%self.description]
-        s+=["auth: %s"%x for x in self.auth.split("\n")]
+        if self.password:
+            s+=["auth: MD5-PW %s"%md5crypt(self.password)]
         s+=["admins: %s"%x.nic_hdl for x in self.admins.all()]
         s+=["mnt-by: %s"%self.maintainer]
         if self.extra:
@@ -542,6 +572,7 @@ class WhoisCache(models.Model):
     value=models.TextField("Value")
     ##
     ## Fetch data into cache
+    ## Returns boolean with update status
     ##
     @classmethod
     def update(cls):
@@ -568,7 +599,11 @@ class WhoisCache(models.Model):
                     else:
                         r_set+=[wl]
                 # Fetch
-                f=urlopen(url,auto_deflate=True)
+                try:
+                    f=urlopen(url,auto_deflate=True)
+                except:
+                    logging.error("peer.update_whois_cache: Cannot fetch URL %s"%url)
+                    return False
                 data=list(wdb.parse(f,fields))
                 f.close()
                 # Process forward lookups
@@ -609,6 +644,7 @@ class WhoisCache(models.Model):
                     for key,value in result.items():
                         wc=WhoisCache(lookup=wl,key=key,value="|".join(value))
                         wc.save()
+        return True
 
 ##
 ## Application Menu

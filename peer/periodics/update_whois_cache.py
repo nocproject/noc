@@ -15,5 +15,4 @@ class Task(noc.sa.periodic.Task):
     wait_for=["cm.prefix_list_pull"]
     def execute(self):
         from noc.peer.models import WhoisCache
-        WhoisCache.update()
-        return True
+        return WhoisCache.update()
