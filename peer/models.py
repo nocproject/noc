@@ -42,12 +42,12 @@ class RIR(models.Model):
     whois=models.CharField("whois",max_length=64,blank=True,null=True)
     def __unicode__(self):
         return self.name
-    # Update RIR's database API
-    def update_db(self,data):
+    # Update RIR's database API and returns report
+    def update_rir_db(self,data,maintainer=None):
         rir="RIPE" if self.name=="RIPE NCC" else self.name
-        return getattr(self,"update_db_%s"%rir)(data)
+        return getattr(self,"update_rir_db_%s"%rir)(data,maintainer)
     # RIPE NCC Update API
-    def update_db_RIPE(self,data,maintainer):
+    def update_rir_db_RIPE(self,data,maintainer):
         data=[x for x in data.split("\n") if x] # Strip empty lines
         if maintainer.password:
             data+=["password: %s"%maintainer.password]
@@ -56,6 +56,8 @@ class RIR(models.Model):
         data+=["changed: %s %04d%02d%02d"%(admin.email,T[0],T[1],T[2])]
         data+=["source: RIPE"]
         data="\n".join(data)
+        print data
+        return data
 
 class Person(models.Model):
     class Meta:
@@ -256,6 +258,9 @@ class AS(models.Model):
         s+=["}"]
         return "\n".join(s)
     dot=property(_dot)
+    ##
+    def update_rir_db(self):
+        return self.rir.update_rir_db(self.rpsl,self.maintainers.all()[0])
 
 class CommunityType(models.Model):
     class Meta:
