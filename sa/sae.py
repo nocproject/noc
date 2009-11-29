@@ -428,12 +428,24 @@ class SAE(Daemon):
     ## Periodic tasks
     ##
     def run_periodic_task(self,task):
+        # Check no wait_for task running
+        pc=task.periodic_class
+        if pc.wait_for:
+            with self.periodic_task_lock:
+                for t in self.active_periodic_tasks.values():
+                    if t.name in pc.wait_for:
+                        logging.info("Periodic task '%s' cannot be launched when '%s' is active"%(task.periodic_name,t.name))
+                        return
+        # Run task
         logging.debug(u"New task running: %s"%unicode(task))
         t=threading.Thread(name=task.periodic_name,target=self.periodic_wrapper,kwargs={"task":task})
         with self.periodic_task_lock:
             self.active_periodic_tasks[task.id]=t
         t.start()
-    
+    ##
+    ## Wrap periodic task handler and generate "periodic status"
+    ## events with completion status
+    ##
     def periodic_wrapper(self,task):
         logging.info(u"Executing %s"%unicode(task))
         cwd=os.getcwd()
@@ -461,12 +473,13 @@ class SAE(Daemon):
             ("task",  unicode(task)),
             ("status",{True:"success",False:"failure"}[status]),
         ])
-        #
+        # Current path may be implicitly changed by periodic. Restore old value
+        # to prevent further bugs
         new_cwd=os.getcwd()
         if cwd!=new_cwd:
             logging.error("CWD changed by periodic '%s' ('%s' -> '%s'). Restoring old cwd"%(unicode(task),cwd,new_cwd))
             os.chdir(cwd)
-        
+
     def on_stream_close(self,stream):
         self.streams.unregister(stream)
         

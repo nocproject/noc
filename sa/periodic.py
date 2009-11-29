@@ -33,6 +33,7 @@ class Task(object):
     __metaclass__ = TaskBase
     name=None
     description=""
+    wait_for=[] # A list of periodic task names which cannot be started concurrenctly
     def __init__(self,sae):
         self.sae=sae
     def execute(self):
