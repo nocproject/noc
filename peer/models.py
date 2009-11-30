@@ -56,7 +56,7 @@ class RIR(models.Model):
         data+=["changed: %s %04d%02d%02d"%(admin.email,T[0],T[1],T[2])]
         data+=["source: RIPE"]
         data="\n".join(data)
-        with urllib2.urlopen(url=RIPE_SYNCUPDATES_URL,data=urllib.urlquote({"DATA":data})) as f:
+        with urllib2.urlopen(url=RIPE_SYNCUPDATES_URL,data=urllib.urlencode({"DATA":data})) as f:
             return f.read()
         return data
 
