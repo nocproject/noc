@@ -17,7 +17,7 @@ from noc.sa.models import AdministrativeDomain
 from noc.main.menu import Menu
 from noc.lib.fileutils import urlopen
 from noc.lib.crypto import md5crypt
-import random,time,logging
+import random,time,logging,urllib,urllib2
 
 ##
 ## Exception classes
@@ -56,7 +56,8 @@ class RIR(models.Model):
         data+=["changed: %s %04d%02d%02d"%(admin.email,T[0],T[1],T[2])]
         data+=["source: RIPE"]
         data="\n".join(data)
-        print data
+        with urllib2.urlopen(url=RIPE_SYNCUPDATES_URL,data=urllib.urlquote({"DATA":data})) as f:
+            return f.read()
         return data
 
 class Person(models.Model):
