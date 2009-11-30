@@ -15,6 +15,7 @@ from noc.sa.profiles import profile_registry
 from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
 from noc.main.menu import Menu
+from noc.main.middleware import get_user
 from noc.lib.fileutils import urlopen
 from noc.lib.crypto import md5crypt
 import random,time,logging,urllib,urllib2
@@ -234,6 +235,16 @@ class AS(models.Model):
         return "<A HREF='/peer/AS/%d/rpsl/'>RPSL</A>"%self.asn
     rpsl_link.short_description="RPSL"
     rpsl_link.allow_tags=True
+    ##
+    ## Lint to update RIR's DB
+    ##
+    def update_rir_db_link(self):
+        u=get_user()
+        if not u or not u.is_superuser:
+            return ""
+        return "<A HREF='/peer/AS/%d/rpsl/update/'>Update %s DB</A>"%(self.asn,self.rir.name)
+    update_rir_db_link.short_description="Update RIR DB"
+    update_rir_db_link.allow_tags=True
     
     def _dot(self):
         s=["graph {"]
