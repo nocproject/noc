@@ -24,7 +24,7 @@ class MaintainerAdmin(admin.ModelAdmin):
     filter_horizontal=["admins"]
 
 class ASAdmin(admin.ModelAdmin):
-    list_display=["asn","as_name","description","organisation","rpsl_link"]
+    list_display=["asn","as_name","description","organisation","rpsl_link","update_rir_db_link"]
     search_fields=["asn","description"]
     filter_horizontal=["administrative_contacts","tech_contacts","maintainers","routes_maintainers"]
     
