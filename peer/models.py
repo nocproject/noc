@@ -56,8 +56,11 @@ class RIR(models.Model):
         data+=["changed: %s %04d%02d%02d"%(admin.email,T[0],T[1],T[2])]
         data+=["source: RIPE"]
         data="\n".join(data)
-        with urllib2.urlopen(url=RIPE_SYNCUPDATES_URL,data=urllib.urlencode({"DATA":data})) as f:
-            return f.read()
+        try:
+            f=urllib2.urlopen(url=RIPE_SYNCUPDATES_URL,data=urllib.urlencode({"DATA":data}))
+            data=f.read()
+        except urllib2.URLError,why:
+            data="Update failed: %s"%why
         return data
 
 class Person(models.Model):
