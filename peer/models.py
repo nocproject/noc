@@ -52,7 +52,7 @@ class RIR(models.Model):
         if maintainer.password:
             data+=["password: %s"%maintainer.password]
         admin=maintainer.admins.all()[0]
-        T=time.localtime()
+        T=time.gmtime()
         data+=["changed: %s %04d%02d%02d"%(admin.email,T[0],T[1],T[2])]
         data+=["source: RIPE"]
         data="\n".join(data)
