@@ -15,5 +15,5 @@ class Profile(noc.sa.profiles.Profile):
     name="HP.GbE2"
     supported_schemes=[TELNET,SSH]
     pattern_more="Press q to quit, any other key to continue"
-    pattern_prompt=r"^>> \S+# "
+    pattern_prompt=r"^>> [^#]+# "
     command_more=" "
