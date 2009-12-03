@@ -19,3 +19,4 @@ class Profile(noc.sa.profiles.Profile):
     command_more=" "
     command_leave_config="apply"
     command_save_config="save\ny\n"
+    config_volatile=["^/\* Configuration dump taken"]
