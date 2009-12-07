@@ -12,7 +12,7 @@
         // Iterate and draw all matched elements
         this.each(function(){
             $(this).svg({onLoad:function($svg){
-                (new Chart($svg,opts)).load(1251582540,1251582841); //<!>
+                (new Chart($svg,opts)).load(0,0);
             }});
         });
     };
