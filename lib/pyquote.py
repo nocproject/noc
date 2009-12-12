@@ -25,7 +25,10 @@ def bin_quote(s):
         if oc<32 or oc>126:
             return "\\x%02x"%oc
         return c
-    return "".join([qc(c) for c in s])
+    if s is None:
+        return ""
+    else:
+        return "".join([qc(c) for c in s])
     
 ##
 ## Decode ASCII-encoded string back to binary
