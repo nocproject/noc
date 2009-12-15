@@ -142,16 +142,33 @@ class DNSZone(models.Model):
             return p+"%02d"%(sn+1)
         return p+"00"
     next_serial=property(_next_serial)
-    
+    ##
+    ## Returns a list of zone's RR.
+    ## [(left,type,right)]
+    ##
     def _records(self):
+        ## Compare two RRs.
+        ## PTR records are compared as interger
+        ## other - as strings
+        def cmp_ptr(x,y):
+            x1,x2,x3=x
+            y1,y2,y3=y
+            if "PTR" in x2 and "PTR" in y2:
+                try:
+                    return cmp(int(x1),int(y1))
+                except ValueError:
+                    pass
+            return cmp(x1,y1)
         from django.db import connection
         c=connection.cursor()
         if self.type=="F":
             c.execute("SELECT hostname(fqdn),ip FROM %s WHERE domainname(fqdn)=%%s ORDER BY ip"%IPv4Address._meta.db_table, [self.name])
             records=[[r[0],"IN  A",r[1]] for r in c.fetchall()]
+            order_by=lambda x,y: cmp(x[0],y[0])
         elif self.type=="R":
             c.execute("SELECT ip,fqdn FROM %s WHERE ip::cidr << %%s ORDER BY ip"%IPv4Address._meta.db_table,[self.reverse_prefix])
             records=[[r[0].split(".")[3],"PTR",r[1]+"."] for r in c.fetchall()]
+            order_by=cmp_ptr
         else:
             raise Exception,"Invalid zone type"
         # Add records from DNSZoneRecord
@@ -229,7 +246,7 @@ class DNSZone(models.Model):
         for name,ip in in_zone_nses.items():
             records+=[[name,"IN A",ip]]
         #
-        return sorted(records,lambda x,y:cmp(x[0],y[0]))
+        return sorted(records,order_by)
     records=property(_records)
     
     def zonedata(self,ns):
