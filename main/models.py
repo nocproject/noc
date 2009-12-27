@@ -5,6 +5,7 @@
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 from django.db import models
 from django.contrib.auth.models import User
 from noc.main.report import report_registry
@@ -13,7 +14,7 @@ from noc.main.menu import Menu
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 import noc.main.search # Set up signal handlers
-import os,datetime,re,datetime
+import os,datetime,re,datetime,threading
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.main.search import SearchResult
 from django.contrib import databrowse
@@ -23,6 +24,7 @@ from noc.main.middleware import get_user
 from noc.settings import IS_WEB
 from noc.lib.timepattern import TimePattern as TP
 from noc.lib.timepattern import TimePatternList
+from noc.sa.interfaces.base import interface_registry
 
 ##
 ## Databrowse register hook to intersept model creation
@@ -188,6 +190,61 @@ class MIMEType(models.Model):
             return m.mime_type
         except MIMEType.DoesNotExist:
             return "application/octet-stream"
+##
+## pyRule
+##
+class PyRule(models.Model):
+    class Meta:
+        verbose_name="pyRule"
+        verbose_name_plural="pyRules"
+    name=models.CharField("Name",max_length=64,unique=True)
+    interface=models.CharField("Interface",max_length=64,choices=[(i,i) for i in interface_registry])
+    description=models.TextField("Description")
+    text=models.TextField("Text")
+    changed=models.DateTimeField("Changed",auto_now=True,auto_now_add=True)
+    # Compiled pyRules cache
+    compiled_pyrules={}
+    compiled_changed={}
+    compiled_lock=threading.Lock()
+    def __unicode__(self):
+        return self.name
+    # Returns an interface class
+    def _interface_class(self):
+        return interface_registry[self.interface]
+    interface_class=property(_interface_class)
+    ##
+    @classmethod
+    def compile_text(self,text):
+        d={}
+        exec text.replace("\r\n","\n") in d
+        if len(d)!=2: # Consider also __builtins__
+            raise SyntaxError,"One and only one symbol must be defined"
+        name=[x for x in d if x!="__builtins__"][0]
+        return d[name]
+    ##
+    ## Call pyRule
+    ##
+    def call(self,**kwargs):
+        t=datetime.datetime.now()
+        # Try to get compiled rule from cache
+        with self.compiled_lock:
+            requires_recompile=self.name not in self.compiled_changed or self.compiled_changed[self.name]<self.changed
+            if not requires_recompile:
+                f=self.compiled_pyrules[self.name]
+        # Recompile rule and place in cache when necessary
+        if requires_recompile:
+            f=self.compile_text(str(self.text))
+            with self.compiled_lock:
+                self.compiled_pyrules[self.name]=f
+                self.compiled_changed[self.name]=t
+        # Check interface
+        i=self.interface_class()
+        kwargs=i.clean(**kwargs)
+        # Evaluate pyRule
+        result=f(**kwargs)
+        # Check and result
+        return i.clean_result(result)
+        
 ##
 ## Search patters
 ##
@@ -633,6 +690,7 @@ class AppMenu(Menu):
             ("Languages","/admin/main/language/", "main.change_language"),
             ("MIME Types", "/admin/main/mimetype/", "main.change_mimetype"),
             ("Configs",    "/main/config/",  "is_superuser()"),
+            ("pyRules",    "/admin/main/pyrule/", "is_superuser()"),
             ("Reference Books", "/admin/main/refbook/", "main.change_refbook"),
             ("Time Patterns",   "/admin/main/timepattern/", "main.change_timepattern"),
             ("Notification Groups",   "/admin/main/notificationgroup/", "main.change_notificationgroup"),

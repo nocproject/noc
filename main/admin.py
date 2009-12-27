@@ -16,7 +16,7 @@ from noc.main.models import *
 ##
 class AuditTrailAdmin(admin.ModelAdmin):
     list_display=["user","timestamp","model","db_table","operation","subject"]
-    list_filter=["user"]    
+    list_filter=["user"]
 ##
 ## Admin for Language
 ##
@@ -30,6 +30,13 @@ class LanguageAdmin(admin.ModelAdmin):
 class MIMETypeAdmin(admin.ModelAdmin):
     list_display=["extension","mime_type"]
     search_fields=["extension","mime_type"]
+##
+## Admin for pyRules
+##
+class PyRuleAdmin(admin.ModelAdmin):
+    list_display=["name","interface"]
+    search_fields=["name"]
+
 ##
 class RefBookFieldAdmin(admin.TabularInline):
     extra=3
@@ -110,6 +117,7 @@ class SystemNotificationAdmin(admin.ModelAdmin):
 admin.site.register(AuditTrail, AuditTrailAdmin)
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(MIMEType, MIMETypeAdmin)
+admin.site.register(PyRule, PyRuleAdmin)
 admin.site.register(RefBook, RefBookAdmin)
 admin.site.register(TimePattern, TimePatternAdmin)
 admin.site.register(NotificationGroup, NotificationGroupAdmin)
