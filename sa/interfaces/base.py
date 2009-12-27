@@ -375,10 +375,19 @@ class MACAddressParameter(StringParameter):
                     v="0"+v
                 value+=v
         return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
+## Stub for interface registry
+interface_registry={}
+
+class InterfaceBase(type):
+    def __new__(cls,name,bases,attrs):
+        m=type.__new__(cls,name,bases,attrs)
+        interface_registry[name]=m
+        return m
 ##
 ##
 ##
 class Interface(object):
+    __metaclass__=InterfaceBase
     def clean(self,**kwargs):
         in_kwargs=kwargs.copy()
         out_kwargs={}
