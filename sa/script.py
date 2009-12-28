@@ -243,10 +243,10 @@ class Script(threading.Thread):
             self.debug("CLI Provider is ready")
         return self.cli_provider
         
-    def cli(self,cmd):
+    def cli(self,cmd,command_submit=None):
         self.debug("cli(%s)"%cmd)
         self.request_cli_provider()
-        self.cli_provider.submit(cmd)
+        self.cli_provider.submit(cmd,command_submit=self.profile.command_submit if command_submit is None else command_submit)
         data=self.cli_queue_get()
         if self.strip_echo and data.lstrip().startswith(cmd):
             data=self.strip_first_lines(data.lstrip())
@@ -384,9 +384,9 @@ class CLI(StreamFSM):
                 data=data.replace(rc,"")
         self.feed(data,cleanup=strip_control_sequences)
     
-    def submit(self,msg):
+    def submit(self,msg,command_submit=None):
         self.debug("submit(%s)"%repr(msg))
-        self.write(msg+self.profile.command_submit)
+        self.write(msg+(self.profile.command_submit if command_submit is None else command_submit))
     
     def on_START_enter(self):
         p=[
