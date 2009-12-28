@@ -679,7 +679,7 @@ class PrefixListCache(models.Model):
     changed=models.DateTimeField("Changed",auto_now=True,auto_now_add=True)
     pushed=models.DateTimeField("Pushed",blank=True,null=True)
     def __unicode__(self):
-        return u"%s/%s"%(self.peering_point.name,self.name)
+        return u"%s/%s"%(self.peering_point.hostname,self.name)
 
 ##
 ## Application Menu
