@@ -60,6 +60,17 @@ class TextArrayField(models.Field):
                 return unicode(s,"utf-8")
         return [to_unicode(x) for x in value]
 ##
+## INETArrayField maps to PostgreSQL INET[] type
+##
+class InetArrayField(models.Field):
+    __metaclass__ = models.SubfieldBase
+    def db_type(self):
+        return "INET[]"
+
+    def to_python(self,value):
+        return [str(x) for x in value]
+
+##
 ## Pickled object
 ##
 class PickledField(models.Field):
