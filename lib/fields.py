@@ -68,7 +68,11 @@ class InetArrayField(models.Field):
         return "INET[]"
 
     def to_python(self,value):
-        return [str(x) for x in value]
+        return value[1:-1].split(",")
+        
+    def get_db_prep_value(self,value):
+        return "{ "+", ".join(value)+" }"
+        
 
 ##
 ## Pickled object
