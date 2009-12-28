@@ -305,6 +305,47 @@ class IPParameter(StringParameter):
 ##
 ##
 ##
+class IPv4PrefixParameter(StringParameter):
+    """
+    >>> IPv4PrefixParameter().clean("192.168.0.0/16")
+    '192.168.0.0/16'
+    >>> IPParameter().clean("192.168.0.256")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    >>> IPParameter().clean("192.168.0.0/33")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    >>> IPParameter().clean("192.168.0.0/-5")
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError
+    """
+    def clean(self,value):
+        v=super(IPv4PrefixParameter,self).clean(value)
+        if "/" not in v:
+            raise InterfaceTypeError
+        n,m=v.split("/",1)
+        try:
+            m=int(m)
+        except:
+            raise InterfaceTypeError
+        if m<0 or m>32:
+            raise InterfaceTypeError
+        X=n.split(".")
+        if len(X)!=4:
+            raise InterfaceTypeError
+        try:
+            if len([x for x in X if 0<=int(x)<=255])!=4:
+                raise InterfaceTypeError
+        except:
+            raise InterfaceTypeError
+        return v
+    
+##
+##
+##
 class VLANIDParameter(IntParameter):
     """
     >>> VLANIDParameter().clean(10)
