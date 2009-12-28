@@ -17,7 +17,7 @@ class Script(noc.sa.script.Script):
     def execute(self,changed_prefix_lists):
         result=[]
         with self.configure():
-            for l in self.changed_prefix_lists:
+            for l in changed_prefix_lists:
                 name=l["name"]
                 prefix_list=l["prefix_list"]
                 strict=l["strict"]
@@ -25,7 +25,9 @@ class Script(noc.sa.script.Script):
                 pl=self.profile.generate_prefix_list(name,prefix_list,strict)
                 # Install new prefix list
                 self.cli("top")
-                self.cli("edit policy-options policy-statement %d"%name)
-                self.cli("load replace relative terminal\n%s\n0x04") # End with Ctrl+D
-                result+=[{"name":name,"status":True}]
+                self.cli("delete policy-options policy-statement %s"%name)
+                self.cli("edit policy-options policy-statement %s"%name)
+                self.cli("load merge relative terminal")
+                r=self.cli("%s\n"%pl,command_submit="\x04") # End with Ctrl+D
+                result+=[{"name":name,"status":"load complete" in r}]
         return result
