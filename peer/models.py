@@ -10,7 +10,7 @@ from noc.settings import config
 from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
-from noc.lib.fields import INETField
+from noc.lib.fields import INETField,InetArrayField
 from noc.sa.profiles import profile_registry
 from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
@@ -665,6 +665,21 @@ class WhoisCache(models.Model):
                         wc=WhoisCache(lookup=wl,key=key,value="|".join(value))
                         wc.save()
         return True
+##
+##
+##
+class PrefixListCache(models.Model):
+    class Meta:
+        verbose_name="Prefix List Cache"
+        verbose_name_plural="Prefix List Cache"
+    peering_point=models.ForeignKey(PeeringPoint,verbose_name="Peering Point")
+    name=models.CharField("Name",max_length=64)
+    data=InetArrayField("Data")
+    strict=models.BooleanField("Strict")
+    changed=models.DateTimeField("Changed",auto_now=True,auto_now_add=True)
+    pushed=models.DateTimeField("Pushed",blank=True,null=True)
+    def __unicode__(self):
+        return u"%s/%s"%(self.peering_point.name,self.name)
 
 ##
 ## Application Menu
