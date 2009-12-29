@@ -10,7 +10,7 @@ import logging
 ##
 ##
 class PrefixListProvisioningReport(ReduceScriptBase):
-    name="VlanProvisioningReport"
+    name="PrefixListProvisioningReport"
     @classmethod
     def execute(cls,task,**kwargs):
         for mt in task.maptask_set.all():
