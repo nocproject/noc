@@ -14,7 +14,12 @@ class PrefixListProvisioningReport(ReduceScriptBase):
     @classmethod
     def execute(cls,task,**kwargs):
         from noc.peer.models import PrefixListCache,PeeringPoint
-        pp=PeeringPoint.objects.get(id=task.script_params)
+        pp_id=task.script_params
+        try:
+            pp=PeeringPoint.objects.get(id=pp_id)
+        except PeeringPoint.DoesNotExist:
+            logging.error("Peering Point #%d is not found"%pp_id)
+            return
         for mt in task.maptask_set.all():
             status={True:[],False:[]}
             r=mt.script_result
