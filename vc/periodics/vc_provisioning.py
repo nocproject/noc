@@ -41,6 +41,6 @@ class Task(noc.sa.periodic.Task):
                     timeout=TIMEOUT)
                 tasks+=[task]
         # Wait for tasks completion
-        ReduceTask.wait_for_task(tasks)
+        ReduceTask.wait_for_tasks(tasks)
         return True
 
