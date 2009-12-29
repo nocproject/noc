@@ -6,20 +6,21 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.sa.scripts import ReduceScript as ReduceScriptBase
-import logging
+import logging,datetime
 ##
 ##
 class PrefixListProvisioningReport(ReduceScriptBase):
     name="PrefixListProvisioningReport"
     @classmethod
     def execute(cls,task,**kwargs):
+        from noc.peer.models import PrefixListCache,PeeringPoint
+        pp=PeeringPoint.objects.get(id=task.script_params)
         for mt in task.maptask_set.all():
             status={True:[],False:[]}
             r=mt.script_result
             if not r:
                 continue
             status[r["status"]]+=[r["name"]]
-        pp=PeeringPoint.objects.get(id=task.script_params)
         if pp.prefix_list_notification_group:
             r=["Provisioned prefix-lists at %s"%pp.hostname]
             if status[True]:
@@ -27,3 +28,12 @@ class PrefixListProvisioningReport(ReduceScriptBase):
             if status[False]:
                 r+=["Failed: %s"%", ".join(status[True])]
             pp.prefix_list_notification_group.notify(subject="Prefix-List provisioning report for %s"%pp.hostname,body="\n".join(r))
+        # Update PrefixListCache
+        now=datetime.datetime.now()
+        for name in status[True]:
+            try:
+                c=PrefixListCache.objects.get(peering_point=pp,name=name)
+                c.pushed=now
+                c.save()
+            except PrefixListCache.DoesNotExist:
+                continue
