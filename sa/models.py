@@ -447,16 +447,15 @@ class ReduceTask(models.Model):
     ##
     @classmethod
     def wait_for_tasks(cls,tasks):
-        tt=tasks.copy()
-        while tt:
+        while tasks:
             time.sleep(3)
-            nt=[]
+            rest=[]
             for t in tasks:
                 if t.complete:
                     t.get_result() # delete task and trigger reduce task
                 else:
-                    nt+=[t]
-                tt=nt
+                    rest+=[t]
+                tasks=rest
 ##
 ## Map Tasks
 ##
