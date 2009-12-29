@@ -41,14 +41,6 @@ class Task(noc.sa.periodic.Task):
                     timeout=TIMEOUT)
                 tasks+=[task]
         # Wait for tasks completion
-        while tasks:
-            time.sleep(CHECK_TIMEOUT)
-            nt=[]
-            for t in tasks:
-                if t.complete:
-                    t.get_result() # Trigger VlanProvisioningReport and delete task
-                else:
-                    nt+=[t]
-                tasks=nt
+        ReduceTask.wait_for_task(tasks)
         return True
 
