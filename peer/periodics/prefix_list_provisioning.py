@@ -43,7 +43,7 @@ class Task(noc.sa.periodic.Task):
                 reduce_script="PrefixListProvisioningReport",
                 reduce_script_params=None,
                 map_script="sync_prefix_lists",
-                map_script_params=[{"name":pl.name,"strict":pl.strict,"prefix_list":pl.data} for pl in prefix_lists[peering_point]],
+                map_script_params={"changed_prefix_lists":[{"name":pl.name,"strict":pl.strict,"prefix_list":pl.data} for pl in prefix_lists[peering_point]]},
                 timeout=TIMEOUT)
             tasks+=[task]
         # Wait for tasks completion
