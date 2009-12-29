@@ -41,7 +41,7 @@ class Task(noc.sa.periodic.Task):
             task=ReduceTask.create_task(
                 object_selector=[pp],
                 reduce_script="PrefixListProvisioningReport",
-                reduce_script_params=pp.id,
+                reduce_script_params=peering_point.id,
                 map_script="sync_prefix_lists",
                 map_script_params={"changed_prefix_lists":[{"name":pl.name,"strict":pl.strict,"prefix_list":pl.data} for pl in prefix_lists[peering_point]]},
                 timeout=TIMEOUT)
