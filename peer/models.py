@@ -12,6 +12,7 @@ from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
 from noc.lib.fields import INETField,InetArrayField
 from noc.sa.profiles import profile_registry
+from noc.main.models import NotificationGroup
 from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
 from noc.main.menu import Menu
@@ -343,6 +344,8 @@ class PeeringPoint(models.Model):
     router_id=models.IPAddressField("Router-ID",unique=True)
     profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
+    enable_prefix_list_provisioning=models.BooleanField("Enable Prefix-List Provisioning",default=False)
+    prefix_list_notification_group=models.ForeignKey(NotificationGroup,verbose_name="Prefix List Notification Group",null=True,blank=True)
     def __str__(self):
         if self.location:
             return "%s (%s)"%(self.hostname,self.location)
