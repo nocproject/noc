@@ -442,6 +442,21 @@ class ReduceTask(models.Model):
     ##
     def get_result(self):
         return reduce_script_registry[self.reduce_script].execute(self)
+    ##
+    ## Wait untill all task complete
+    ##
+    @classmethod
+    def wait_for_tasks(cls,tasks):
+        tt=tasks.copy()
+        while tt:
+            time.sleep(3)
+            nt=[]
+            for t in tasks:
+                if t.complete:
+                    t.get_result() # delete task and trigger reduce task
+                else:
+                    nt+=[t]
+                tt=nt
 ##
 ## Map Tasks
 ##
