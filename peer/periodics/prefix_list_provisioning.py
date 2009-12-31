@@ -25,6 +25,8 @@ class Task(noc.sa.periodic.Task):
         for pc in PrefixListCache.objects.filter(peering_point__enable_prefix_list_provisioning=True):
             if pc.pushed is not None and pc.pushed>pc.changed:
                 continue
+            if not pc.data:
+                continue
             if pc.peering_point not in prefix_lists:
                 prefix_lists[pc.peering_point]=[pc]
             else:
