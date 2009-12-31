@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 import noc.sa.script
 from noc.sa.interfaces import ISyncPrefixLists
 import re
@@ -27,7 +28,9 @@ class Script(noc.sa.script.Script):
                 self.cli("top")
                 self.cli("delete policy-options policy-statement %s"%name)
                 self.cli("edit policy-options policy-statement %s"%name)
-                self.cli("load merge relative terminal")
-                r=self.cli("%s\n"%pl,command_submit="\x04") # End with Ctrl+D
-                result+=[{"name":name,"status":"load complete" in r}]
+                with self.servers.ftp() as ftp:
+                    url=ftp.put_data(pl)
+                    r=self.cli("load merge relative %s"%url)
+                    result+=[{"name":name,"status":"load complete" in r}]
+                    ftp.release_data(url)
         return result
