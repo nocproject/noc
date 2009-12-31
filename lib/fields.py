@@ -70,6 +70,8 @@ class InetArrayField(models.Field):
     def to_python(self,value):
         if type(value)==types.ListType:
             return value
+        if value=="{}":
+            return []
         return value[1:-1].split(",")
         
     def get_db_prep_value(self,value):
