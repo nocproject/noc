@@ -18,6 +18,7 @@ class ServerContextManager(object):
         self.address=None
         self.path=None
         self.data=[]
+        self.dl_data={} # url -> data
     ##
     ## Set request filter
     ##
@@ -44,6 +45,21 @@ class ServerContextManager(object):
     ##
     def get_data(self):
         return "".join(self.data)
+    ##
+    ## Store temporary data
+    ## Returns url
+    ##
+    def put_data(self,data):
+        path="/%s-%d"%(str(id(self)),random.randint(0,0x7FFFFFFF))
+        url="%s://%s%s"%(self.context_name,getattr(self.server_hub,"%s_server_address"%self.context_name),urllib.quote(path))
+        self.dl_data[url]=data
+        return url
+    ##
+    ## Release temporary data
+    ##
+    def release_data(self,url):
+        if url in self.dl_data:
+            del self.dl_data[url]
     ##
     ## Register server context
     ##
