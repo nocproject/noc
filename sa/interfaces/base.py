@@ -33,10 +33,15 @@ class Parameter(object):
     def __or__(self,other):
         return ORParameter(self,other)
     ##
+    ##
+    ##
+    def raise_error(self,value):
+        raise InterfaceTypeError("%s: %s"%(self.__class__.__name__,repr(value)))
+    ##
     ## Perform input parameter normalization
     ##
     def clean(self,value):
-        raise InterfaceTypeError
+        self.raise_error(value)
     ##
     ## Perform input parameter normalization for form fields
     ##
@@ -59,7 +64,7 @@ class ORParameter(Parameter):
     >>> ORParameter(IntParameter(),IPParameter()).clean("xxx")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: IPParameter: 'xxx'
     >>> (IntParameter()|IPParameter()).clean(10)
     10
     >>> (IntParameter()|IPParameter()).clean("192.168.1.1")
@@ -67,7 +72,7 @@ class ORParameter(Parameter):
     >>> (IntParameter()|IPParameter()).clean("xxx")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: IPParameter: 'xxx'
     """
     def __init__(self,left,right):
         self.left=left
@@ -88,13 +93,13 @@ class NoneParameter(Parameter):
     >>> NoneParameter().clean("None")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: NoneParameter: 'None'
     """
     def __init__(self,required=True):
         super(NoneParameter,self).__init__(required=required)
     def clean(self,value):
         if value is not None:
-            raise InterfaceTypeError
+            self.raise_error(value)
         return value
 ##
 ##
@@ -112,7 +117,7 @@ class StringParameter(Parameter):
         try:
             return str(value)
         except:
-            raise InterfaceTypeError
+            self.raise_error(value)
 ##
 ##
 ##
@@ -127,7 +132,7 @@ class REStringParameter(StringParameter):
     >>> REStringParameter("ex+p").clean("ex")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: REStringParameter: 'ex'
     """
     def __init__(self,regexp,required=True,default=None):
         super(REStringParameter,self).__init__(required=required,default=default)
@@ -136,7 +141,7 @@ class REStringParameter(StringParameter):
     def clean(self,value):
         v=super(REStringParameter,self).clean(value)
         if not self.rx.search(v):
-            raise InterfaceTypeError
+            self.raise_error(value)
         return v
 ##
 ##
@@ -158,7 +163,7 @@ class BooleanParameter(Parameter):
     >>> BooleanParameter().clean([])
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: BooleanParameter: []
     """
     def clean(self,value):
         if type(value)==types.BooleanType:
@@ -167,7 +172,7 @@ class BooleanParameter(Parameter):
             return value!=0
         if type(value) in [types.StringType,types.UnicodeType]:
             return value.lower() in ["true","t","yes","y"]
-        raise InterfaceTypeError
+        self.raise_error(value)
 ##
 ##
 ##
@@ -180,15 +185,15 @@ class IntParameter(Parameter):
     >>> IntParameter().clean("not a number")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: IntParameter: 'not a number'
     >>> IntParameter(min_value=10).clean(5)
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: IntParameter: 5
     >>> IntParameter(max_value=7).clean(10)
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: IntParameter: 10
     """
     def __init__(self,required=True,default=None,min_value=None,max_value=None):
         super(IntParameter,self).__init__(required=required,default=default)
@@ -198,9 +203,9 @@ class IntParameter(Parameter):
         try:
             i=int(value)
         except:
-            raise InterfaceTypeError
+            self.raise_error(value)
         if (self.min_value is not None and i<self.min_value) or (self.max_value is not None and i>self.max_value):
-            raise InterfaceTypeError
+            self.raise_error(value)
         return i
 ##
 ##
@@ -210,17 +215,29 @@ class ListParameter(Parameter):
         try:
             return list(value)
         except:
-            raise InterfaceTypeError
+            self.raise_error(value)
     
     def form_clean(self,value):
         try:
             return self.clean(eval(value,{},{}))
         except:
-            raise InterfaceTypeError
+            self.raise_error(value)
 ##
 ##
 ##
 class ListOfParameter(ListParameter):
+    """
+    >>> ListOfParameter(element=IntParameter()).clean([1,2,3])
+    [1, 2, 3]
+    >>> ListOfParameter(element=IntParameter()).clean([1,2,"3"])
+    [1, 2, 3]
+    >>> ListOfParameter(element=IntParameter()).clean([1,2,"x"])
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: IntParameter: 'x'
+    >>> ListOfParameter(element=StringParameter()).clean([1,2,3,"x"])
+    ['1', '2', '3', 'x']
+    """
     def __init__(self,element,required=True,default=None):
         super(ListOfParameter,self).__init__(required=required,default=default)
         self.element=element
@@ -241,27 +258,29 @@ class DictParameter(Parameter):
     """
     >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":10,"s":"ten"})
     {'i': 10, 's': 'ten'}
-    >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":"10","s":"ten"})
-    {'i': 10, 's': 'ten'}
+    >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":"10","x":"ten"})
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: DictParameter: {'i': '10', 'x': 'ten'}
     """
     def __init__(self,required=True,default=None,attrs=None):
         super(DictParameter,self).__init__(required=required,default=default)
         self.attrs=attrs
     def clean(self,value):
         if type(value)!=types.DictType:
-            raise InterfaceTypeError
+            self.raise_error(value)
         if not self.attrs:
             return value
         in_value=value.copy()
         out_value={}
         for a_name,attr in self.attrs.items():
             if a_name not in in_value and attr.required:
-                raise InterfaceTypeError("Attribute '%s' required"%a_name)
+                self.raise_error(value)("Attribute '%s' required"%a_name)
             if a_name in in_value:
                 try:
                     out_value[a_name]=attr.clean(in_value[a_name])
                 except InterfaceTypeError:
-                    raise InterfaceTypeError("Invalid value for '%s'"%a_name)
+                    self.raise_error(value)("Invalid value for '%s'"%a_name)
                 del in_value[a_name]
         for k,v in in_value.items():
             out_value[k]=v
@@ -278,7 +297,7 @@ class DateTimeParameter(StringParameter):
             return datetime.datetime(year=datetime.MAXYEAR,month=1,day=1)
         if rx_datetime.match(value):
             return value
-        raise InterfaceTypeError
+        self.raise_error(value)
 ##
 ##
 ##
@@ -289,18 +308,18 @@ class IPParameter(StringParameter):
     >>> IPParameter().clean("192.168.0.256")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: IPParameter: '192.168.0.256'
     """
     def clean(self,value):
         v=super(IPParameter,self).clean(value)
         X=v.split(".")
         if len(X)!=4:
-            raise InterfaceTypeError
+            self.raise_error(value)
         try:
             if len([x for x in X if 0<=int(x)<=255])!=4:
-                raise InterfaceTypeError
+                self.raise_error(value)
         except:
-            raise InterfaceTypeError
+            self.raise_error(value)
         return v
 ##
 ##
@@ -312,35 +331,35 @@ class IPv4PrefixParameter(StringParameter):
     >>> IPParameter().clean("192.168.0.256")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: IPParameter: '192.168.0.256'
     >>> IPParameter().clean("192.168.0.0/33")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: IPParameter: '192.168.0.0/33'
     >>> IPParameter().clean("192.168.0.0/-5")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: IPParameter: '192.168.0.0/-5'
     """
     def clean(self,value):
         v=super(IPv4PrefixParameter,self).clean(value)
         if "/" not in v:
-            raise InterfaceTypeError
+            self.raise_error(value)
         n,m=v.split("/",1)
         try:
             m=int(m)
         except:
-            raise InterfaceTypeError
+            self.raise_error(value)
         if m<0 or m>32:
-            raise InterfaceTypeError
+            self.raise_error(value)
         X=n.split(".")
         if len(X)!=4:
-            raise InterfaceTypeError
+            self.raise_error(value)
         try:
             if len([x for x in X if 0<=int(x)<=255])!=4:
-                raise InterfaceTypeError
+                self.raise_error(value)
         except:
-            raise InterfaceTypeError
+            self.raise_error(value)
         return v
     
 ##
@@ -353,11 +372,11 @@ class VLANIDParameter(IntParameter):
     >>> VLANIDParameter().clean(5000)
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: VLANIDParameter: 5000
     >>> VLANIDParameter().clean(0)
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: VLANIDParameter: 0
     """
     def __init__(self,required=True,default=None):
         super(VLANIDParameter,self).__init__(required=required,default=default,min_value=1,max_value=4095)
@@ -378,7 +397,7 @@ class MACAddressParameter(StringParameter):
     >>> MACAddressParameter().clean("1234.5678.9abc.def0")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: MACAddressParameter: '1234.5678.9ABC.DEF0'
     >>> MACAddressParameter().clean("12:34:56:78:9A:BC")
     '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("12-34-56-78-9A-BC")
@@ -388,11 +407,11 @@ class MACAddressParameter(StringParameter):
     >>> MACAddressParameter().clean("12-34-56-78-9A-BC-DE")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: MACAddressParameter: '12:34:56:78:9A:BC:DE'
     >>> MACAddressParameter().clean("AB-CD-EF-GH-HJ-KL")
     Traceback (most recent call last):
         ...
-    InterfaceTypeError
+    InterfaceTypeError: MACAddressParameter: 'AB:CD:EF:GH:HJ:KL'
     """
     def clean(self,value):
         value=super(MACAddressParameter,self).clean(value)
@@ -408,7 +427,7 @@ class MACAddressParameter(StringParameter):
             value=value.replace("-",":")
             match=rx_mac_address_sixblock.match(value)
             if not match:
-                raise InterfaceTypeError
+                self.raise_error(value)
             value=""
             for i in range(1,7):
                 v=match.group(i)
@@ -440,8 +459,8 @@ class Interface(object):
             if n in in_kwargs:
                 try:
                     out_kwargs[n]=p.clean(in_kwargs[n])
-                except InterfaceTypeError:
-                    raise InterfaceTypeError("Invalid value for '%s'"%n)
+                except InterfaceTypeError,why:
+                    raise InterfaceTypeError("Invalid value for '%s': %s"%(n,why))
                 del in_kwargs[n]
         # Copy other parameters
         for k,v in in_kwargs.items():
