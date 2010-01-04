@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+from __future__ import with_statement
+import os,sys,csv,subprocess
+
+##
+## Main installer class
+##
+class Installer(object):
+    CONTRIB=os.path.join(os.path.dirname(sys.argv[0]),"..","..")
+    SRC=os.path.join(CONTRIB,"src")
+    LIB=os.path.join(CONTRIB,"lib")
+    BIN=os.path.join(CONTRIB,"bin")
+    SHARE=os.path.join(CONTRIB,"share")
+    SRC_VERSIONS=os.path.join(SRC,"VERSION.csv")
+    DST_VERSIONS=os.path.join(LIB,"VERSION.csv")
+    ENV=os.environ.copy()
+    ENV["PYTHONPATH"]= ":".join([LIB]+sys.path)
+    ##
+    ## Read CSV file and returns hash {row[0]->row[1]}
+    ##
+    def read_csv(self,path):
+        r={}
+        if not os.path.exists(path):
+            return r
+        with open(path) as f:
+            for row in csv.reader(f):
+                if row:
+                    r[row[0]]=row[1]
+        return r
+    ##
+    ## Syncronize contrib apps
+    ##
+    def sync(self):
+        print "Syncronizing contrib apps"
+        sv=[]
+        self.read_csv(self.SRC_VERSIONS)
+        with open(self.SRC_VERSIONS) as f:
+            for row in csv.reader(f):
+                if row:
+                    sv+=[row]
+        iv=self.read_csv(self.DST_VERSIONS)
+        update_iv=False
+        fail=False
+        for app,version in sv:
+            if app not in iv or iv[app]!=version:
+                print "Upgrading %s to version %s"%(app,version)
+                if hasattr(self,"install_%s"%app):
+                    r=getattr(self,"install_%s"%app)()
+                else:
+                    r=self.install(app)
+                if r:
+                    update_iv=True
+                    iv[app]=version
+                    print "%s: upgraded to version %s"%(app,version)
+                else:
+                    print "%s: failed to upgrade to version %s"%(app,version)
+                    fail=True
+                    break
+            else:
+                print "%s is in sync (version %s)"%(app,version)
+        # Write updated versions
+        if update_iv:
+            with open(self.DST_VERSIONS,"w") as f:
+                writer=csv.writer(f)
+                writer.writerows(iv.items())
+        return not fail
+    ##
+    ## Default installation
+    ##
+    def install(self,app):
+        return subprocess.call(["python","setup.py","install",
+            "--home=%s"%self.CONTRIB,
+            "--install-purelib=%s"%self.LIB,
+            "--install-platlib=%s"%self.LIB,
+            "--install-scripts=%s"%self.BIN,
+            "--install-data=%s"%self.SHARE
+        ],
+        cwd=os.path.join(self.SRC,app),
+        env=self.ENV)==0
+
+if __name__=="__main__":
+    r=Installer().sync()
+    sys.exit({True:0,False:1}[r])
