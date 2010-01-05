@@ -2,3 +2,4 @@ django,1.1.1
 south,0.6.2
 flup,1.0.2
 protobuf,2.2.0a
+pyasn1,0.0.9a
