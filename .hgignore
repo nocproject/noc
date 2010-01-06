@@ -13,4 +13,6 @@ etc/certs/*
 local/*
 static/doc/*
 contrib/lib/*
+contrib/bin/*
+contrib/share/*
 MANIFEST
