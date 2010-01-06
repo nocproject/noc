@@ -10,8 +10,9 @@
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
 <SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/menu.js"></SCRIPT>
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
 {% block extrastyle %}{% endblock %}
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}{% admin_media_prefix %}css/ie.css{% endblock %}" /><![endif]-->
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
 {% block extrahead %}{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 </head>
@@ -31,7 +32,27 @@
         {% block branding %}<img src="{{setup.logo_url}}" width="{{setup.logo_width}}" height="{{setup.logo_height}}" alt="logo" style="float: left; margin: 0px 4px 0px 4px"/><h1 ID="site-name">{{setup.installation_name}}</h1>{% endblock %}
         </div>
         {% if user.is_authenticated and user.is_staff %}
-        <div id="user-tools">{% trans 'Welcome,' %} <strong>{% firstof user.first_name user.username %}</strong>. {% block userlinks %}{% comment %}<a href="/static/doc/en/">{% trans 'Documentation' %}</a> / {%endcomment%}<a href="/admin/main/userprofile/">Profile</a> / <a href="/admin/password_change/">{% trans 'Change password' %}</a> / <a href="/admin/logout/">{% trans 'Log out' %}</a>.{% endblock %} <FORM METHOD="POST" ACTION="/main/search/"><INPUT TYPE="search" NAME="query"  PLACEHOLDER="Search..."/></FORM></div>
+        <div id="user-tools">
+            {% trans 'Welcome,' %}
+            <strong>{% firstof user.first_name user.username %}</strong>.
+            {% block userlinks %}
+                {% url admin:password_change as password_change_url %}
+                {% if password_change_url %}
+                    <a href="{{ password_change_url }}">
+                {% else %}
+                    <a href="{{ root_path }}password_change/">
+                {% endif %}
+                {% trans 'Change password' %}</a> /
+                {% url admin:logout as logout_url %}
+                {% if logout_url %}
+                    <a href="{{ logout_url }}">
+                {% else %}
+                    <a href="{{ root_path }}logout/">
+                {% endif %}
+                {% trans 'Log out' %}</a>
+            {% endblock %}
+            <FORM METHOD="POST" ACTION="/main/search/"><INPUT TYPE="search" NAME="query"  PLACEHOLDER="Search..."/></FORM>
+            </div>
         {% endif %}
         {% block nav-global %}{% endblock %}
     </div>
