@@ -69,7 +69,7 @@ class Installer(object):
     ##
     def install(self,app):
         return subprocess.call(["python","setup.py","install",
-            "--home=%s"%self.CONTRIB,
+            #"--prefix=%s"%self.CONTRIB,
             "--install-purelib=%s"%self.LIB,
             "--install-platlib=%s"%self.LIB,
             "--install-scripts=%s"%self.BIN,
