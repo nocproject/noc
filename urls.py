@@ -20,7 +20,7 @@ urlpatterns = patterns('',
     # 
      (r'^$',      include('noc.main.urls')),
      (r"^admin/(?P<app_label>[^/]+)/(?P<model_name>[^/]+)/csv/export/", "noc.main.views.admin_list_csv_export"),
-     (r'^admin/(.*)', admin.site.root),
+     (r'^admin/', include(admin.site.urls)),
      (r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name':'template/login.html'}),
      (r'^main/',  include('noc.main.urls')),
      (r'^sa/',  include('noc.sa.urls')),
