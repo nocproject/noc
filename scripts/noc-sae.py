@@ -6,9 +6,11 @@ import os,sys,getopt
 
 if __name__ == '__main__':
     d=os.path.dirname(sys.argv[0])
+    sys.path.insert(0,os.path.join(d,"..","contrib","lib"))
     sys.path.insert(0,os.path.join(d,"..",".."))
     sys.path.insert(0,os.path.join(d,".."))
     sys.path.insert(0,d)
+    print sys.path
     try:
         import settings
     except ImportError:
