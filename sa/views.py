@@ -216,12 +216,3 @@ def mr_task_result(request,task_id):
     result=task.get_result()
     task.delete()
     return render(request,"sa/mr_task_result.html",{"result":result})
-##
-## Reschedule task
-##
-@permission_required("sa.change_taskschedule")
-def run_now(request,task_id):
-    task=get_object_or_404(TaskSchedule,id=int(task_id))
-    task.next_run=datetime.datetime.now()
-    task.save()
-    return HttpResponseRedirect("/admin/sa/taskschedule/")
