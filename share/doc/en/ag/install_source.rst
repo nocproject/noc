@@ -51,55 +51,11 @@ Install::
 
     # easy_install psycopg2
 
-Django
-^^^^^^
-`Django <http://www.djangoproject.org/ Django>`_ is a Python-based web framework actively used by NOC.
-Version 1.0.2 or later required.
-
-Install::
-
-    # easy_install Django
-
-Verify Django's version::
-
-    # python
-    Python 2.5.4 (r254:67916, Feb 17 2009, 20:16:45) 
-    [GCC 4.3.3] on linux2 
-    Type "help", "copyright", "credits" or "license" for more information. 
-    >>> import django 
-    >>> django.VERSION 
-    (1, 0, 2, 'final', 0) 
-     >>>
-
-South
-^^^^^
-`South <http://south.aeracode.org/>`_ is an intillegent Django scheme migration tool.
-Version 0.4 or later required.
-
-Install::
-
-    # easy_install South
-
-protobuf
-^^^^^^^^
-`Protocol Buffers <http://code.google.com/p/protobuf/>`_ is compact Google's data interchange format,
-used for internal RPC between SAE and Activators.
-
-Install::
-    
-    # easy_install protobuf
-
 Sphinx
 ^^^^^^
 Python documentation tool required to rebuild online documentation. Install::
 
     # easy_install Sphinx
-
-flup
-^^^^
-Required to run NOC web daemon in FastCGI mode. Install::
-
-    # easy_install flup
 
 webserver
 ^^^^^^^^^
@@ -128,24 +84,6 @@ Mercurial
 Distributed version control system. Required to fetch updates from repository. Mercurial also is a default
 format of Configuration Management repository.
 
-pysnmp4
-^^^^^^^
-`pysnmp <http://pysnmp.sourceforge.net/>`_ is and pure-python implementation of SNMP v1/v2c/v3 protocol stack.
-pysnmp4 together with pyasn1 are required for Fault Management module.
-
-Install::
-
-    # easy_install pysnmp
-
-pyasn1
-^^^^^^
-`pyasn1 <http://pyasn1.sf.net/>`_ is a pure-Python implementation of ASN.1 types and codecs. pyasn1 together with
-pysnmp4 are required for Fault Management module.
-
-Install::
-
-    # easy_install pyasn1
-
 netifaces
 ^^^^^^^^^
 `netifaces <http://alastairs-place.net/netifaces/>`_ is a Python module to get interface IP addresses.
@@ -159,11 +97,6 @@ fping
 ^^^^^
 `fping <http://fping.sourceforge.net/>`_ is a tool to perform parralel ICMP host checking. fping is used by Fault Management module
 to check Managed Objects availability. Install fping according to your operation system's requirements.
-
-rsync
-^^^^^
-`rsync <http://samba.anu.edu.au/rsync/>`_ is an incremental file transfer tool widely used in DNS provisioning module. Install rsync
-fping according to your operation system's requirements.
 
 Getting NOC
 ===========

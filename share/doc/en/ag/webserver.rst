@@ -7,7 +7,7 @@ Common Considerations
 Common practice is to set up HTTP-server as frontend serving static files and
 routing all dynamic requests to the ``noc-fcgi`` daemon over FastCGI. Static content URLs:
 
-* ``/media/`` must be mapped to ``<django-root>/contrib/admin/media/`` directory
+* ``/media/`` must be mapped to ``/opt/noc/contrib/lib/django/contrib/admin/media/`` directory
 * ``/static/`` must be mapped to ``/opt/noc/static/``
 
 Lighttpd Setup
@@ -38,7 +38,7 @@ Set up lighttpd.conf::
     $HTTP["host"] == "yourdomain" {
         server.document-root        = "/opt/noc"
         alias.url=(
-            "/media/"  => "<django-root>/contrib/admin/media/",
+            "/media/"  => "/opt/noc/contrib/lib/django/contrib/admin/media/",
             "/static/" => "/opt/noc/static/",
         )
         url.rewrite-once=(
@@ -89,7 +89,7 @@ Set up nginx.conf::
                 fastcgi_intercept_errors off;
              }
             location /media {
-                root <django-root>/contrib/admin/;
+                root /opt/noc/contrib/lib/django/contrib/admin/media/;
                 }
             location /static {
                 root /opt/noc/;
@@ -107,7 +107,7 @@ Set up httpd.conf::
     <VirtualHost *:80>
         DocumentRoot    /opt/noc
         ServerName      yourdomain
-        Alias  /media <django root>/contrib/admin/media/
+        Alias  /media /opt/noc/contrib/lib/django/contrib/admin/media/
         RewriteEngine On
         RewriteRule ^/(media.*)$ /$1 [QSA,L,PT]
         RewriteRule ^/(static.*)$  /$1 [QSA,L,PT]
