@@ -11,14 +11,30 @@ from models import *
 from noc.lib.render import render
 from noc.lib.fileutils import in_dir
 from noc.settings import config
-import os
+import os,datetime
 
 class ActivatorAdmin(admin.ModelAdmin):
     list_display=["name","ip","is_active"]
     
 class TaskScheduleAdmin(admin.ModelAdmin):
-    list_display=["periodic_name","is_enabled","run_every","next_run","run_now_link"]
+    list_display=["periodic_name","is_enabled","run_every","next_run"]
     search_fields=["periodic_name"]
+    actions=["run_now"]
+    ##
+    ## Reschedule selected tasks
+    ##
+    def run_now(self,request,queryset):
+        updated=0
+        now=datetime.datetime.now()
+        for t in queryset:
+            t.next_run=now
+            t.save()
+            updated+=1
+        if updated==1:
+            message="1 task rescheduled"
+        else:
+            message="%d tasks rescheduled"%updated
+        self.message_user(request,message)
 
 class AdministrativeDomainAdmin(admin.ModelAdmin):
     list_display=["name","description"]

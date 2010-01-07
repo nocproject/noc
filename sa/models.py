@@ -276,17 +276,6 @@ class TaskSchedule(models.Model):
             TaskSchedule.objects.filter(next_run__lte=datetime.datetime.now(),is_enabled=True).exclude(id__in=exclude).order_by("-next_run")
         else:
             return TaskSchedule.objects.filter(next_run__lte=datetime.datetime.now(),is_enabled=True).order_by("-next_run")
-
-    ##
-    ## Link to relaunch task
-    ##
-    def run_now_link(self):
-        try:
-            return "<A HREF='/sa/task/%d/now/'>Run Now</A>"%(self.id)
-        except:
-            return ""
-    run_now_link.short_description="Run Now"
-    run_now_link.allow_tags=True
 ##
 ## Object Selector
 ##
