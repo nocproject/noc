@@ -10,7 +10,6 @@ if __name__ == '__main__':
     sys.path.insert(0,os.path.join(d,"..",".."))
     sys.path.insert(0,os.path.join(d,".."))
     sys.path.insert(0,d)
-    print sys.path
     try:
         import settings
     except ImportError:
