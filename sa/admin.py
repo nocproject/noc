@@ -9,6 +9,7 @@ from django.contrib import admin
 from django import forms
 from models import *
 from noc.lib.render import render
+from noc.lib.admin_actions import enable_selected,disable_selected
 from noc.lib.fileutils import in_dir
 from noc.settings import config
 import os,datetime
@@ -19,7 +20,7 @@ class ActivatorAdmin(admin.ModelAdmin):
 class TaskScheduleAdmin(admin.ModelAdmin):
     list_display=["periodic_name","is_enabled","run_every","next_run"]
     search_fields=["periodic_name"]
-    actions=["run_now"]
+    actions=["run_now",enable_selected,disable_selected]
     ##
     ## Reschedule selected tasks
     ##
