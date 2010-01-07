@@ -9,7 +9,20 @@
 """
 from django.contrib import admin
 from django import forms
+from django.core import serializers
+from django.http import HttpResponse
 from noc.main.models import *
+##
+## Global admin actions
+##
+##
+## Export selected objects as XML
+##
+def xml_export(modeladmin,request,queryset):
+    response=HttpResponse(mimetype="text/xml")
+    serializers.serialize('xml',queryset,stream=response)
+    return response
+xml_export.short_description="Export selected objects as XML"
 
 ##
 ##
@@ -111,6 +124,10 @@ class UserProfileAdmin(admin.ModelAdmin):
 ##
 class SystemNotificationAdmin(admin.ModelAdmin):
     list_display=["name","notification_group"]
+##
+## Register default actions
+##
+admin.site.add_action(xml_export)
 ##
 ## Register administrative interfaces
 ##
