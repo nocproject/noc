@@ -36,6 +36,7 @@
             {% trans 'Welcome,' %}
             <strong>{% firstof user.first_name user.username %}</strong>.
             {% block userlinks %}
+                <a href="/admin/main/userprofile/">Profile</a> /
                 {% url admin:password_change as password_change_url %}
                 {% if password_change_url %}
                     <a href="{{ password_change_url }}">
