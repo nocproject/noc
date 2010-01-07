@@ -8,6 +8,7 @@
 from django.contrib import admin
 from django import forms
 from models import *
+from noc.lib.render import render
 from noc.lib.fileutils import in_dir
 from noc.settings import config
 import os
@@ -109,8 +110,16 @@ class UserAccessAdmin(admin.ModelAdmin):
 ##
 ##
 class ManagedObjectSelectorAdmin(admin.ModelAdmin):
-    list_display=["name","is_enabled","test_link"]
+    list_display=["name","is_enabled"]
     list_filter=["is_enabled"]
+    actions=["test_selectors"]
+    ##
+    ## Test selected seletors
+    ##
+    def test_selectors(self,request,queryset):
+        r=[{"name":q.name,"objects":q.managed_objects} for q in queryset]
+        return render(request,"sa/test_selector.html",{"data":r})
+    test_selectors.short_description="Test Selectors"
 
 admin.site.register(Activator,            ActivatorAdmin)
 admin.site.register(AdministrativeDomain, AdministrativeDomainAdmin)

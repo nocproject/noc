@@ -161,19 +161,6 @@ def upload_managed_objects(request):
             else:
                 return render_success(request,"Managed Objects are Uploaded","%d managed objects uploaded/updated"%count)
     return HttpResponseRedirect("/sa/tools/")
-##
-## Test Managed Object Selector
-##
-@permission_required("sa.change_managedobjectselector")
-def test_selector(request,selector_id):
-    selector=get_object_or_404(ManagedObjectSelector,id=int(selector_id))
-    return list_detail.object_list(
-        request,
-        queryset=selector.managed_objects,
-        template_name="sa/test_selector.html",
-        extra_context={"selector":selector},
-        paginate_by=100,
-    )
 ## Script choices
 map_script_choices=[(x,x) for x in sorted(set([x.split(".")[2] for x in script_registry.classes.keys() if not x.startswith("Generic.")]))]
 ##

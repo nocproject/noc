@@ -358,16 +358,6 @@ class ManagedObjectSelector(models.Model):
         return r.exclude(profile_name="NOC")
     managed_objects=property(_managed_objects)
     ##
-    ## Link to the test
-    ##
-    def test_link(self):
-        try:
-            return "<A HREF='/sa/test_selector/%d/'>Test Selector</A>"%(self.id)
-        except:
-            return ""
-    test_link.short_description="Test Selector"
-    test_link.allow_tags=True
-    ##
     ## Check Managed Object matches selector
     ##
     def match(self,managed_object):
