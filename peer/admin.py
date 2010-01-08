@@ -9,34 +9,42 @@ from django.contrib import admin
 from noc.peer.models import RIR,Person,Maintainer,AS,ASSet,PeeringPoint,PeerGroup,Peer,CommunityType,Community,Organisation
 from noc.lib.render import render,render_plain_text
 
+##
+## Peer module admin actions
+##
+
+##
+## Generate RPSL for selected objects
+##
+def rpsl_for_selected(modeladmin,request,queryset):
+    return render_plain_text("\n\n".join([o.rpsl for o in queryset]))
+rpsl_for_selected.short_description="RPSL for selected objects"
+
 class RIRAdmin(admin.ModelAdmin): pass
 
 class PersonAdmin(admin.ModelAdmin):
-    list_display=["nic_hdl","person","rir","rpsl_link"]
+    list_display=["nic_hdl","person","rir"]
     list_filter=["rir"]
     search_fields=["nic_hdl","person"]
+    actions=[rpsl_for_selected]
 
 class OrganisationAdmin(admin.ModelAdmin):
     list_display=["organisation","org_name","org_type"]
 
 class MaintainerAdmin(admin.ModelAdmin):
-    list_display=["maintainer","description","rir","rpsl_link"]
+    list_display=["maintainer","description","rir"]
     list_filter=["rir"]
     filter_horizontal=["admins"]
+    actions=[rpsl_for_selected]
 
 class ASAdmin(admin.ModelAdmin):
     list_display=["asn","as_name","description","organisation"]
     search_fields=["asn","description"]
     filter_horizontal=["administrative_contacts","tech_contacts","maintainers","routes_maintainers"]
-    actions=["rpsl_for_selected","update_rir_db_for_selected"]
-    ##
-    ## Generate RPSL for selected ASses
-    ##
-    def rpsl_for_selected(self,request,queryset):
-        return render_plain_text("\n\n".join([a.rpsl for a in queryset]))
-    rpsl_for_selected.short_description="RPSL for selected objects"
+    actions=[rpsl_for_selected,"update_rir_db_for_selected"]
     ##
     ## Update RIR database for selected objects
+    ##
     def update_rir_db_for_selected(self,request,queryset):
         u=request.user
         if not u or not u.is_superuser or True:
@@ -57,13 +65,15 @@ class CommunityAdmin(admin.ModelAdmin):
     search_fields=["community","description"]
         
 class ASSetAdmin(admin.ModelAdmin):
-    list_display=["name","description","members","rpsl_link"]
+    list_display=["name","description","members"]
     search_fields=["name","description","members"]
+    actions=[rpsl_for_selected]
 
 class PeeringPointAdmin(admin.ModelAdmin):
-    list_display=["hostname","location","local_as","router_id","profile_name","communities","rpsl_link"]
+    list_display=["hostname","location","local_as","router_id","profile_name","communities"]
     list_filter=["profile_name"]
     search_fields=["hostname","router_id"]
+    actions=[rpsl_for_selected]
         
 class PeerGroupAdmin(admin.ModelAdmin):
     list_display=["name","description","communities"]

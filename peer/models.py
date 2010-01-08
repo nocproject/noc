@@ -92,10 +92,6 @@ class Person(models.Model):
             s+=[self.extra]
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
-    def rpsl_link(self):
-        return "<A HREF='/peer/person/%d/rpsl/'>RPSL</A>"%self.id
-    rpsl_link.short_description="RPSL"
-    rpsl_link.allow_tags=True
 
 class Maintainer(models.Model):
     class Meta:
@@ -121,10 +117,6 @@ class Maintainer(models.Model):
             s+=[self.extra]
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
-    def rpsl_link(self):
-        return "<A HREF='/peer/maintainer/%d/rpsl/'>RPSL</A>"%self.id
-    rpsl_link.short_description="RPSL"
-    rpsl_link.allow_tags=True
 
 class Organisation(models.Model):
     class Meta:
@@ -314,10 +306,6 @@ class ASSet(models.Model):
             s+=self.rpsl_footer.split("\n")
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
-    def rpsl_link(self):
-        return "<A HREF='/peer/AS-SET/%s/rpsl/'>RPSL</A>"%self.name
-    rpsl_link.short_description="RPSL"
-    rpsl_link.allow_tags=True
 
 class PeeringPoint(models.Model):
     class Meta:
@@ -394,10 +382,6 @@ class PeeringPoint(models.Model):
             s+=["peer: BGP4 %s asno(%s)"%(remote_ip,remote_as)]
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
-    def rpsl_link(self):
-        return "<A HREF='/peer/INET-RTR/%s/rpsl/'>RPSL</A>"%self.hostname
-    rpsl_link.short_description="RPSL"
-    rpsl_link.allow_tags=True
 
 class PeerGroup(models.Model):
     class Meta:
