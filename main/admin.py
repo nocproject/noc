@@ -10,7 +10,7 @@
 from django.contrib import admin
 from django import forms
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseRedirect
 from noc.main.models import *
 ##
 ## Global admin actions
@@ -84,6 +84,14 @@ class TimePatternAdmin(admin.ModelAdmin):
     list_display=["name","test_link"]
     search_fields=["name"]
     inlines=[TimePatternTermAdmin]
+    actions=["test_time_patterns"]
+    ##
+    ## Test Selected Time Patterns
+    ##
+    def test_time_patterns(self,request,queryset):
+        return HttpResponseRedirect("/main/time_pattern/test/%s/"%",".join([str(p.id) for p in queryset]))
+    test_time_patterns.short_description="Test Selected Time Patterns"
+    
 ##
 ## Notification Groups Admin
 ##

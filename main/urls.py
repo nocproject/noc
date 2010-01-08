@@ -31,5 +31,5 @@ urlpatterns = patterns ( None,
         (r"^refbook/(?P<refbook_id>\d+)/(?P<record_id>\d+)/$",         login_required(refbook_item)),
         (r"^refbook/(?P<refbook_id>\d+)/(?P<record_id>\d+)/edit/$",    login_required(refbook_edit)),
         (r"^refbook/(?P<refbook_id>\d+)/(?P<record_id>\d+)/delete/$",  login_required(refbook_delete)),
-        (r"^time_pattern/(?P<time_pattern_id>\d+)/test/$",             login_required(time_pattern_test)),
+        (r"^time_pattern/test/(?P<time_patterns>\d+(?:,\d+)*)/$",      login_required(test_time_patterns)),
 )
