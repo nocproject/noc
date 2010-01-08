@@ -1,0 +1,23 @@
+{% extends "template/template.html" %}
+{% block title%}Test Time Pattern: {{time_pattern.name}}{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href='/admin/main/'>Main</a> &rsaquo; <a href='/admin/main/timepattern/'>Time Patterns</a> &rsaquo; Test &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<h1>Test Time Patterns</h1>
+<form method="POST">
+    <table border="0">
+    {{form.as_table}}
+    </table>
+    <input type="submit" value="Test">
+</form>
+{% if result %}
+    <table border="0">
+        {% for r in result %}
+            <tr class="{%cycle 'row1' 'row2'%}">
+                <td>{{r.pattern.name}}</td>
+                <td><img src="/media/img/admin/icon-{%if r.result%}yes{%else%}no{%endif%}.gif"></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+{% endblock %}

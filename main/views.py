@@ -330,23 +330,24 @@ def refbook_delete(request,refbook_id,record_id):
     rbd.delete()
     return HttpResponseRedirect("/main/refbook/%d/"%rb.id)
 ##
-## Test Time Pattern
+## Test Time Patterns
 ##
-class TimePatternTestForm(forms.Form):
+class TestTimePatternsForm(forms.Form):
     time=forms.DateTimeField(input_formats=["%d.%m.%Y %H:%M:%S"])
     
-def time_pattern_test(request,time_pattern_id):
-    time_pattern=get_object_or_404(TimePattern,id=int(time_pattern_id))
-    result=None
+def test_time_patterns(request,time_patterns):
+    tp=[get_object_or_404(TimePattern,id=int(x)) for x in time_patterns.split(",")]
+    result=[]
     if request.POST:
-        form=TimePatternTestForm(request.POST)
+        form=TestTimePatternsForm(request.POST)
         if form.is_valid():
-            result=time_pattern.match(form.cleaned_data["time"])
+            t=form.cleaned_data["time"]
+            result=[{"pattern":p,"result":p.match(t)} for p in tp]
     else:
         now=datetime.datetime.now()
         s="%02d.%02d.%04d %02d:%02d:%02d"%(now.day,now.month,now.year,now.hour,now.minute,now.second)
-        form=TimePatternTestForm(initial={"time":s})
-    return render(request,"main/time_pattern_test.html",{"time_pattern":time_pattern,"form":form,"result":result})
+        form=TestTimePatternsForm(initial={"time":s})
+    return render(request,"main/test_time_patterns.html",{"form":form,"result":result})
 ##
 ## CSV Export
 ##
