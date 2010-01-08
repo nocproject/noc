@@ -18,24 +18,6 @@ def as_dot(request,asn):
     assert is_asn(asn)
     asn=get_object_or_404(AS,asn=int(asn))
     return render(request,"peer/as_dot.html",{"asn":asn})
-
-def as_set_rpsl(request,as_set):
-    assert is_as_set(as_set)
-    as_set=get_object_or_404(ASSet,name=as_set)
-    return render_plain_text(as_set.rpsl)
-    
-def inet_rtr_rpsl(request,router):
-    assert is_fqdn(router)
-    peering_point=get_object_or_404(PeeringPoint,hostname=router)
-    return render_plain_text(peering_point.rpsl)
-
-def person_rpsl(request,person_id):
-    person=get_object_or_404(Person,id=int(person_id))
-    return render_plain_text(person.rpsl)
-
-def maintainer_rpsl(request,mnt_id):
-    maintainer=get_object_or_404(Maintainer,id=int(mnt_id))
-    return render_plain_text(maintainer.rpsl)
 ##
 ## Prefix List Builder
 ##
