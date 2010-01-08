@@ -14,20 +14,6 @@ from noc.lib.validators import is_asn,is_as_set,is_ipv4,is_cidr,is_fqdn
 from noc.peer.resolver import resolve_as_set_prefixes
 import re
 
-def as_rpsl(request,asn):
-    assert is_asn(asn)
-    asn=get_object_or_404(AS,asn=int(asn))
-    return render_plain_text(asn.rpsl)
-##
-## Interactively update RIR's DB
-##
-def as_rpsl_update(request,asn):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden("Super-User privileges required")
-    assert is_asn(asn)
-    asn=get_object_or_404(AS,asn=int(asn))
-    return render_plain_text(asn.update_rir_db())
-    
 def as_dot(request,asn):
     assert is_asn(asn)
     asn=get_object_or_404(AS,asn=int(asn))

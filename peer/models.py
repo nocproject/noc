@@ -232,21 +232,6 @@ class AS(models.Model):
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
     
-    def rpsl_link(self):
-        return "<A HREF='/peer/AS/%d/rpsl/'>RPSL</A>"%self.asn
-    rpsl_link.short_description="RPSL"
-    rpsl_link.allow_tags=True
-    ##
-    ## Lint to update RIR's DB
-    ##
-    def update_rir_db_link(self):
-        u=get_user()
-        if not u or not u.is_superuser:
-            return ""
-        return "<A HREF='/peer/AS/%d/rpsl/update/'>Update %s DB</A>"%(self.asn,self.rir.name)
-    update_rir_db_link.short_description="Update RIR DB"
-    update_rir_db_link.allow_tags=True
-    
     def _dot(self):
         s=["graph {"]
         all_peers=Peer.objects.filter(local_asn__exact=self)
