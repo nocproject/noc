@@ -7,6 +7,7 @@
 """
 from django.contrib import admin
 from noc.peer.models import RIR,Person,Maintainer,AS,ASSet,PeeringPoint,PeerGroup,Peer,CommunityType,Community,Organisation
+from noc.lib.render import render,render_plain_text
 
 class RIRAdmin(admin.ModelAdmin): pass
 
@@ -24,9 +25,28 @@ class MaintainerAdmin(admin.ModelAdmin):
     filter_horizontal=["admins"]
 
 class ASAdmin(admin.ModelAdmin):
-    list_display=["asn","as_name","description","organisation","rpsl_link","update_rir_db_link"]
+    list_display=["asn","as_name","description","organisation"]
     search_fields=["asn","description"]
     filter_horizontal=["administrative_contacts","tech_contacts","maintainers","routes_maintainers"]
+    actions=["rpsl_for_selected","update_rir_db_for_selected"]
+    ##
+    ## Generate RPSL for selected ASses
+    ##
+    def rpsl_for_selected(self,request,queryset):
+        return render_plain_text("\n\n".join([a.rpsl for a in queryset]))
+    rpsl_for_selected.short_description="RPSL for selected objects"
+    ##
+    ## Update RIR database for selected objects
+    def update_rir_db_for_selected(self,request,queryset):
+        u=request.user
+        if not u or not u.is_superuser or True:
+            self.message_user(request,"Superuser priveleges required")
+            return
+        r=[]
+        for a in queryset:
+            r+=["AS%s %s:\n"%(a.asn,a.as_name)+a.update_rir_db()]
+        return render_plain_text("\n\n".join(r))
+    update_rir_db_for_selected.short_description="Update RIR DB for selected objects"
     
 class CommunityTypeAdmin(admin.ModelAdmin):
     list_display=["name"]
