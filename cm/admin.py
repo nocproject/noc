@@ -10,6 +10,7 @@ from django.contrib import admin
 from django import forms
 from noc.cm.models import ObjectNotify,Config,DNS,PrefixList,RPSL
 from noc.sa.profiles import profile_registry
+import datetime
 
 class ObjectNotifyAdmin(admin.ModelAdmin):
     list_display=["type","group","administrative_domain","notify_immediately","notify_delayed","notification_group"]
@@ -20,10 +21,11 @@ class ObjectAdmin(admin.ModelAdmin):
     fields=["pull_every"]
 
 class ConfigAdmin(ObjectAdmin):
-    list_display=["repo_path","pull_every","last_modified","next_pull","pull_now_link","view_link"]
+    list_display=["repo_path","pull_every","last_modified","next_pull","view_link"]
     search_fields=["repo_path"]
     fields=["pull_every","next_pull"]
     object_class=Config
+    actions=["get_now"]
     def has_change_permission(self,request,obj=None):
         if obj:
             return obj.has_access(request.user)
@@ -41,7 +43,20 @@ class ConfigAdmin(ObjectAdmin):
             admin.ModelAdmin.save_model(self,request,obj,form,change)
         else:
             raise "Permission denied"
-    
+    ##
+    ## Schedule selected objects to immediate pull
+    ##
+    def get_now(self,request,queryset):
+        count=0
+        now=datetime.datetime.now()
+        for o in queryset:
+            o.next_pull=now
+            o.save()
+            count+=1
+        if count==1:
+            self.message_user(request,"1 config scheduled to immediate fetch")
+        else:
+            self.message_user(request,"%d configs scheduled to immediate fetch"%count)
     
 class DNSAdmin(ObjectAdmin):
     list_display=["repo_path","last_modified","view_link"]
