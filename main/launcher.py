@@ -158,8 +158,28 @@ class Launcher(Daemon):
                 self.crashinfo_dir=os.path.dirname(self.config.get("main","logfile"))
         #
         atexit.register(self.at_exit)
-        
+    ##
+    ## Build contrib/lib if necessary
+    ##
+    def sync_contrib(self):
+        sync_dir=os.path.join(os.path.dirname(sys.argv[0]),"..","contrib","src","bin")
+        if os.path.exists(os.path.join(sync_dir,"sync")):
+            logging.info("Syncronizing contrib")
+            wd=os.getcwd()
+            os.chdir(sync_dir)
+            r=subprocess.call(["./sync"])
+            os.chdir(wd)
+            if r==0:
+                logging.info("contrib syncronized")
+            else:
+                logging.error("contrib syncronization failed")
+        else:
+            logging.info("Skipping contrib syncronization")
+    ##
+    ## Main Loop
+    ##
     def run(self):
+        self.sync_contrib()
         last_crashinfo_check=time.time()
         while True:
             for d in self.daemons:
