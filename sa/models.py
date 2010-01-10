@@ -16,7 +16,7 @@ from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.main.menu import Menu
 from noc.main.search import SearchResult
-from noc.lib.fields import PickledField
+from noc.lib.fields import PickledField,INETField
 
 profile_registry.register_all()
 periodic_registry.register_all()
@@ -86,7 +86,7 @@ class ManagedObject(models.Model):
     password=models.CharField("Password",max_length=32,blank=True,null=True)
     super_password=models.CharField("Super Password",max_length=32,blank=True,null=True)
     remote_path=models.CharField("Path",max_length=32,blank=True,null=True)
-    trap_source_ip=models.IPAddressField("Trap Source IP",null=True)
+    trap_source_ip=INETField("Trap Source IP",null=True,blank=True,default=None)
     trap_community=models.CharField("Trap Community",blank=True,null=True,max_length=64)
     snmp_ro=models.CharField("RO Community",blank=True,null=True,max_length=64)
     snmp_rw=models.CharField("RW Community",blank=True,null=True,max_length=64)
