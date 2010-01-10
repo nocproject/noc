@@ -36,6 +36,8 @@ class INETField(models.Field):
         return str(value)
     
     def get_db_prep_value(self,value):
+        if not value:
+            return None
         return value
 ##
 ## Binary Field maps to PostgreSQL BYTEA
