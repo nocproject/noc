@@ -70,13 +70,6 @@ libsmi
 `libsmi <http://www.ibr.cs.tu-bs.de/projects/libsmi/>`_ is a library and collection of tools to access SMI/SNMP MIB Information.
 Please install libsmi according to your operation system's requirements.
 
-python-creole
-^^^^^^^^^^^^^
-`python-creole <http://code.google.com/p/python-creole/>`_ is a Creole parser implemented in pure python. Required to render
-Creole articles in Knowledge Base. Install::
-
-    # easy_install python-creole
-
 Optional Packages
 -----------------
 Mercurial
