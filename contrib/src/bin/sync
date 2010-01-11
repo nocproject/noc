@@ -81,7 +81,7 @@ class Installer(object):
             "--install-purelib=%s"%self.LIB,
             "--install-platlib=%s"%self.LIB,
             "--install-scripts=%s"%self.BIN,
-            "--install-data=%s"%self.SHARE
+            "--install-data=%s"%self.LIB
         ],
         cwd=os.path.join(self.SRC,app),
         env=self.ENV)==0
