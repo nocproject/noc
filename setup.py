@@ -33,8 +33,20 @@ def get_manifest():
             # Rebuild MANIFEST file every time mercurial repo found
             proc=subprocess.Popen(["hg","locate"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             stdout,stderr=proc.communicate()
+            mf=stdout.splitlines()
+            if os.path.exists(".hgsub"):
+                with open(".hgsub") as sf:
+                    for l in sf:
+                        if "=" not in l:
+                            continue
+                        sr,r=l.split("=",1)
+                        sr=sr.strip()
+                        proc=subprocess.Popen(["hg","-R",sr,"locate"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                        stdout,stderr=proc.communicate()
+                        mf+=[sr+"/"+x for x in stdout.splitlines()]
+            mf+=["MANIFEST"]
             with open("MANIFEST","w") as f:
-                f.write(stdout+"MANIFEST\n")
+                f.write("\n".join(mf))
         with open("MANIFEST") as f:
             MANIFEST=[n for n in f.read().splitlines() if not n.startswith(".hg")]
     return MANIFEST
