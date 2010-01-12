@@ -367,6 +367,9 @@ class PeeringPoint(models.Model):
         for p in self.peer_set.all():
             ifaddrs.add(p.local_ip)
             peers[p.remote_ip,p.remote_asn]=None
+            if p.local_backup_ip and p.remote_backup_ip:
+                ifaddrs.add(p.local_backup_ip)
+                peers[p.remote_backup_ip,p.remote_asn]=None
         s=[]
         s+=["inet-rtr: %s"%self.hostname]
         s+=["local-as: AS%d"%self.local_as.asn]
@@ -406,8 +409,10 @@ class Peer(models.Model):
     peering_point=models.ForeignKey(PeeringPoint,verbose_name="Peering Point")
     local_asn=models.ForeignKey(AS,verbose_name="Local AS")
     local_ip=INETField("Local IP")
+    local_backup_ip=INETField("Local Backup IP",null=True,blank=True)
     remote_asn=models.IntegerField("Remote AS")
     remote_ip=INETField("Remote IP")
+    remote_backup_ip=INETField("Remote Backup IP",null=True,blank=True)
     status=models.CharField("Status",max_length=1,default="A",choices=[("P","Planned"),("A","Active"),("S","Shutdown")])
     import_filter=models.CharField("Import filter",max_length=64)
     local_pref=models.IntegerField("Local Pref",null=True,blank=True)
@@ -456,6 +461,20 @@ class Peer(models.Model):
         return "<BR/>".join(r)
     admin_export_filter.short_description="Export Filter"
     admin_export_filter.allow_tags=True
+    def admin_local_ip(self):
+        r=[self.local_ip]
+        if self.local_backup_ip:
+            r+=[self.local_backup_ip]
+        return "<BR/>".join(r)
+    admin_local_ip.short_description="Local Address"
+    admin_local_ip.allow_tags=True
+    def admin_remote_ip(self):
+        r=[self.remote_ip]
+        if self.remote_backup_ip:
+            r+=[self.remote_backup_ip]
+        return "<BR/>".join(r)
+    admin_remote_ip.short_description="Local Address"
+    admin_remote_ip.allow_tags=True
     def _all_communities(self):
         r={}
         for cl in [self.peering_point.communities,self.peer_group.communities,self.communities]:
