@@ -124,7 +124,7 @@ if apps:
 
 FORCE_SCRIPT_NAME=""
 
-SOUTH_AUTO_FREEZE_APP = False
+#SOUTH_AUTO_FREEZE_APP = False
 
 AUTH_PROFILE_MODULE="main.UserProfile"
 ##
