@@ -36,6 +36,7 @@ class TaskScheduleAdmin(admin.ModelAdmin):
         else:
             message="%d tasks rescheduled"%updated
         self.message_user(request,message)
+    run_now.short_description="Run selected tasks now"
 
 class AdministrativeDomainAdmin(admin.ModelAdmin):
     list_display=["name","description"]
