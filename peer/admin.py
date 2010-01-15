@@ -47,7 +47,7 @@ class ASAdmin(admin.ModelAdmin):
     ##
     def update_rir_db_for_selected(self,request,queryset):
         u=request.user
-        if not u or not u.is_superuser or True:
+        if not u or not u.is_superuser:
             self.message_user(request,"Superuser priveleges required")
             return
         r=[]
