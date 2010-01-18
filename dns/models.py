@@ -95,11 +95,11 @@ class DNSZoneProfile(models.Model):
 ##
 class ForwardZoneManager(models.Manager):
     def get_query_set(self):
-        return super(ReverseZoneManager,self).get_query_set().exclude(name__endswith=".in-addr.arpa")
+        return super(ForwardZoneManager,self).get_query_set().exclude(name__iendswith=".in-addr.arpa")
         
 class ReverseZoneManager(models.Manager):
     def get_query_set(self):
-        return super(ReverseZoneManager,self).get_query_set().filter(name__endswith=".in-addr.arpa")
+        return super(ReverseZoneManager,self).get_query_set().filter(name__iendswith=".in-addr.arpa")
 ##
 ##
 rx_rzone=re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
@@ -124,13 +124,13 @@ class DNSZone(models.Model):
     def __unicode__(self):
         return self.name
     def _type(self):
-        if self.name.endswith(".in-addr.arpa"):
+        if self.name.lower().endswith(".in-addr.arpa"):
             return "R"
         else:
             return "F"
     type=property(_type)
     def _reverse_prefix(self):
-        match=rx_rzone.match(self.name)
+        match=rx_rzone.match(self.name.lower())
         if match:
             return "%s.%s.%s.0/24"%(match.group(3),match.group(2),match.group(1))
     reverse_prefix=property(_reverse_prefix)
@@ -284,12 +284,12 @@ class DNSZone(models.Model):
         if self.type!="R":
             return ""
         # Do not generate RPSL for private reverse zones
-        if self.name.endswith(".10.in-addr.arpa"):
+        if self.name.lower().endswith(".10.in-addr.arpa"):
             return ""
-        n1,n2,n=self.name.split(".",2)
+        n1,n2,n=self.name.lower().split(".",2)
         if n>="16.172.in-addr.arpa" and n<="31.172.in-addr.arpa":
             return ""
-        n1,n=self.name.split(".",1)
+        n1,n=self.name.lower().split(".",1)
         if n=="168.192.in-addr.arpa":
             return ""
         s=["domain: %s"%self.name]+["nserver: %s"%ns for ns in self.ns_list]
