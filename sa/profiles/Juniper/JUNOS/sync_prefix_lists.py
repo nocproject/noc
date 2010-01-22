@@ -24,13 +24,10 @@ class Script(noc.sa.script.Script):
                 strict=l["strict"]
                 # Generate prefix list
                 pl=self.profile.generate_prefix_list(name,prefix_list,strict)
-                fn="/tmp/%s%s"%(name,str(random.random()))
                 # Install new prefix list
                 self.cli("top")
                 self.cli("delete policy-options policy-statement %s"%name)
-                self.cli("edit policy-options policy-statement %s"%name)
-                self.cli("run file copy /dev/stdin %s\n%s\n\x04"%(fn,pl))
-                self.cli("load merge relative %s"%fn)
-                self.cli("run file delete %s"%fn)
+                for l in pl.splitlines():
+                    self.cli(pl)
                 result+=[{"name":name,"status":True}]
         return result
