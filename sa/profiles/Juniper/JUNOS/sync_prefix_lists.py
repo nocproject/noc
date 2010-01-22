@@ -28,6 +28,6 @@ class Script(noc.sa.script.Script):
                 self.cli("top")
                 self.cli("delete policy-options policy-statement %s"%name)
                 for l in pl.splitlines():
-                    self.cli(pl)
+                    self.cli(l)
                 result+=[{"name":name,"status":True}]
         return result
