@@ -29,8 +29,8 @@ class Script(noc.sa.script.Script):
                 self.cli("top")
                 self.cli("delete policy-options policy-statement %s"%name)
                 self.cli("edit policy-options policy-statement %s"%name)
-                self.cli("file copy /dev/stdin %s\n%s\n\x04"%(fn,pl))
+                self.cli("run file copy /dev/stdin %s\n%s\n\x04"%(fn,pl))
                 self.cli("load merge relative %s"%fn)
-                self.cli("file delete %s"%fn)
+                self.cli("run file delete %s"%fn)
                 result+=[{"name":name,"status":True}]
         return result
