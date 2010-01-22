@@ -28,9 +28,6 @@ class Script(noc.sa.script.Script):
                 self.cli("top")
                 self.cli("delete policy-options policy-statement %s"%name)
                 self.cli("edit policy-options policy-statement %s"%name)
-                with self.servers.ftp() as ftp:
-                    url=ftp.put_data(pl)
-                    r=self.cli("load merge relative %s"%url)
-                    result+=[{"name":name,"status":"load complete" in r}]
-                    ftp.release_data(url)
+                self.cli(pl+"\x04")
+                result+=[{"name":name,"status":True}]
         return result
