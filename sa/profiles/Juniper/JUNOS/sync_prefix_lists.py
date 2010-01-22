@@ -10,7 +10,7 @@
 from __future__ import with_statement
 import noc.sa.script
 from noc.sa.interfaces import ISyncPrefixLists
-import re
+import re,random
 
 class Script(noc.sa.script.Script):
     name="Juniper.JUNOS.sync_prefix_lists"
@@ -24,11 +24,13 @@ class Script(noc.sa.script.Script):
                 strict=l["strict"]
                 # Generate prefix list
                 pl=self.profile.generate_prefix_list(name,prefix_list,strict)
+                fn="/tmp/%s%s"%(name,str(random.random()))
                 # Install new prefix list
                 self.cli("top")
                 self.cli("delete policy-options policy-statement %s"%name)
                 self.cli("edit policy-options policy-statement %s"%name)
-                self.cli("load merge relative terminal")
-                self.cli("%s\x04"%pl)
+                self.cli("file copy /dev/stdin %s\n%s\n\x04"%(fn,pl))
+                self.cli("load merge relative %s"%fn)
+                self.cli("file delete %s"%fn)
                 result+=[{"name":name,"status":True}]
         return result
