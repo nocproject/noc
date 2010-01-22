@@ -20,12 +20,13 @@ class PrefixListProvisioningReport(ReduceScriptBase):
         except PeeringPoint.DoesNotExist:
             logging.error("Peering Point #%d is not found"%pp_id)
             return
+        status={True:[],False:[]}
         for mt in task.maptask_set.all():
-            status={True:[],False:[]}
             r=mt.script_result
             if not r:
                 continue
-            status[r["status"]]+=[r["name"]]
+            for tr in r:
+                status[tr["status"]]+=[tr["name"]]
         if pp.prefix_list_notification_group:
             r=["Provisioned prefix-lists at %s"%pp.hostname]
             if status[True]:
