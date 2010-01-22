@@ -28,6 +28,6 @@ class Script(noc.sa.script.Script):
                 self.cli("top")
                 self.cli("delete policy-options policy-statement %s"%name)
                 self.cli("edit policy-options policy-statement %s"%name)
-                self.cli(pl+"\x04")
+                self.cli("load merge relative terminal\n%s\x04"%pl)
                 result+=[{"name":name,"status":True}]
         return result
