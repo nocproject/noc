@@ -52,7 +52,7 @@ class ServerContextManager(object):
         if path.startswith(self.context_name+"://"):
             return path
         else:
-            return "%s://%s%s"%self.context_name,getattr(self.server_hub,"%s_server_address"%self.context_name),urllib.quote(path))
+            return "%s://%s%s"%(self.context_name,getattr(self.server_hub,"%s_server_address"%self.context_name),urllib.quote(path))
     ##
     ## Store temporary data
     ## Returns url
