@@ -10,7 +10,7 @@
 from __future__ import with_statement
 import noc.sa.script
 from noc.sa.interfaces import ISyncPrefixLists
-import re,random
+import re
 
 class Script(noc.sa.script.Script):
     name="Juniper.JUNOS.sync_prefix_lists"
@@ -27,7 +27,10 @@ class Script(noc.sa.script.Script):
                 # Install new prefix list
                 self.cli("top")
                 self.cli("delete policy-options policy-statement %s"%name)
-                for l in pl.splitlines():
-                    self.cli(l)
-                result+=[{"name":name,"status":True}]
+                self.cli("edit policy-options policy-statement %s"%name)
+                with self.servers.ftp() as ftp:
+                    url=ftp.put_data(pl)
+                    r=self.cli("load merge relative %s"%url)
+                    result+=[{"name":name,"status":"load complete" in r}]
+                    ftp.release_data(url)
         return result
