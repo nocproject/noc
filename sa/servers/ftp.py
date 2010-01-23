@@ -17,7 +17,10 @@ class FTPDataStreamSocket(AcceptedTCPSocket):
         self.data_stream=data_stream
         self.server_socket=self.data_stream.server_socket
         self.data=""
+        self.fed_data=self.data_stream.fed_data
         super(FTPDataStreamSocket,self).__init__(factory,socket)
+        if self.data_stream.fed_data:
+            self.write(self.data_stream.fed_data)
     
     def on_connect(self):
         self.data_stream.on_stream_connect(self)
@@ -45,6 +48,7 @@ class FTPDataStream(ListenTCPSocket):
         self.create_socket()
         self.server_socket=server_socket
         self.transfer_response=None
+        self.fed_data=""
     ##
     ## Return listening port
     ##
@@ -59,6 +63,9 @@ class FTPDataStream(ListenTCPSocket):
     ##
     def set_transfer_response(self,code,message):
         self.transfer_response=(code,message)
+    ##
+    def feed_data(self,data):
+        self.fed_data+=data
 ##
 ## FTP Server
 ##
@@ -152,6 +159,16 @@ class FTPServerSocket(AcceptedTCPSocket):
                     return
                 self.data_stream.set_transfer_response(150,"File OK. Ready to receive")
                 self.set_data_stream_callback(self.ds_stor)
+            elif cmd=="RETR":
+                address,port=self.socket.getpeername()
+                path=os.path.join(self.cwd,args.replace("//","/"))
+                if not self.has_data(path):
+                    self.error("Permission denied: %s %s"%(address,path))
+                    self.send_response(554,"Permission denied")
+                    return
+                self.data_stream.feed_data(self.get_url_data(path))
+                self.data_stream.set_transfer_response(150,"File OK. Ready to transmit")
+                self.set_data_stream_callback(self.ds_send_226)
             elif cmd=="TYPE":
                 if args in ["A","L7"]:
                     self.current_type="A"
