@@ -46,12 +46,19 @@ class ServerContextManager(object):
     def get_data(self):
         return "".join(self.data)
     ##
+    ##
+    ##
+    def path_to_url(self,path):
+        if path.startswith(self.context_name+"://"):
+            return path
+        else:
+            return "%s://%s%s"%self.context_name,getattr(self.server_hub,"%s_server_address"%self.context_name),urllib.quote(path))
+    ##
     ## Store temporary data
     ## Returns url
     ##
     def put_data(self,data):
-        path="/%s-%d"%(str(id(self)),random.randint(0,0x7FFFFFFF))
-        url="%s://%s%s"%(self.context_name,getattr(self.server_hub,"%s_server_address"%self.context_name),urllib.quote(path))
+        url=self.path_to_url("/%s-%d"%(str(id(self)),random.randint(0,0x7FFFFFFF)))
         self.dl_data[url]=data
         return url
     ##
@@ -60,6 +67,18 @@ class ServerContextManager(object):
     def release_data(self,url):
         if url in self.dl_data:
             del self.dl_data[url]
+    ##
+    ## Check URL exists
+    ##
+    def has_data(self,url):
+        url=self.path_to_url(url)
+        return url in self.dl_data
+    ##
+    ## Get temporary data
+    ##
+    def get_url_data(self,url):
+        url=self.path_to_url(url)
+        return self.dl_data[url]
     ##
     ## Register server context
     ##
