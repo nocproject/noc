@@ -24,8 +24,9 @@ class Profile(noc.sa.profiles.Profile):
     
     def generate_prefix_list(self,name,pl,strict=True):
         if strict:
-            p="set policy-options policy-statement %s term pass from route-filter %%s exact"%name
+            p="        route-filter %s exact;"
         else:
-            p="set policy-options policy-statement %s term pass from route-filter %%s orlonger"%name
-        out=[p%x for x in pl]+["set policy-options policy-statement %s term reject then reject"%name]
+            p="        route-filter %s orlonger;"
+        out=["term pass {","    from {"]+[p%x for x in pl]+["    }","    then next policy;","}"]
+        out+=["term reject {","    then reject;","}"]
         return "\n".join(out)
