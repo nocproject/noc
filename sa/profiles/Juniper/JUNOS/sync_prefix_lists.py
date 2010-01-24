@@ -20,17 +20,13 @@ class Script(noc.sa.script.Script):
         with self.configure():
             for l in changed_prefix_lists:
                 name=l["name"]
-                prefix_list=l["prefix_list"]
-                strict=l["strict"]
                 # Generate prefix list
-                pl=self.profile.generate_prefix_list(name,prefix_list,strict)
+                pl=self.profile.generate_prefix_list(name,l["prefix_list"],l["strict"])
                 # Install new prefix list
                 self.cli("top")
                 self.cli("delete policy-options policy-statement %s"%name)
                 self.cli("edit policy-options policy-statement %s"%name)
-                with self.servers.ftp() as ftp:
-                    url=ftp.put_data(pl)
-                    r=self.cli("load merge relative %s"%url)
-                    result+=[{"name":name,"status":"load complete" in r}]
-                    ftp.release_data(url)
+                self.cli("load merge relative terminal")
+                r=self.cli(pl+"\x04")
+                result+=[{"name":name,"status":"load complete" in r}]
         return result
