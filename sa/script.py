@@ -304,6 +304,7 @@ class Script(threading.Thread):
     def leave_config(self):
         if self.profile.command_leave_config:
             self.cli(self.profile.command_leave_config)
+            self.cli("") # Guardian empty command to wait until configuration is finally written
     # Save current config
     def save_config(self,immediately=False):
         if immediately:
