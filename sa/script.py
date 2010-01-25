@@ -104,7 +104,10 @@ class ConfigurationContextManager(object):
     def __enter__(self):
         self.script.enter_config()
     def __exit__(self,exc_type, exc_val, exc_tb):
-        self.script.leave_config()
+        if exc_type is None:
+            self.script.leave_config()
+        else:
+            raise exc_type, exc_val
 ##
 ##
 ##
@@ -243,10 +246,10 @@ class Script(threading.Thread):
             self.debug("CLI Provider is ready")
         return self.cli_provider
         
-    def cli(self,cmd,command_submit=None):
+    def cli(self,cmd,command_submit=None,bulk_lines=None):
         self.debug("cli(%s)"%cmd)
         self.request_cli_provider()
-        self.cli_provider.submit(cmd,command_submit=self.profile.command_submit if command_submit is None else command_submit)
+        self.cli_provider.submit(cmd,command_submit=self.profile.command_submit if command_submit is None else command_submit,bulk_lines=bulk_lines)
         data=self.cli_queue_get()
         if self.strip_echo and data.lstrip().startswith(cmd):
             data=self.strip_first_lines(data.lstrip())
@@ -391,13 +394,14 @@ class CLI(StreamFSM):
     ## Feed pending submitted data
     ##
     def __flush_submitted_data(self):
-        if self.submitted_data: # Feed pending submit data
+        if self.submitted_data:
+            self.debug("%d lines to submit"%len(self.submitted_data))
             sd="\n".join(self.submitted_data[:self.submit_lines_limit])+"\n"
-            self.submitted_data=self.submit_lines_limit[self.submit_lines_limit:]
+            self.submitted_data=self.submitted_data[self.submit_lines_limit:]
             self.write(sd)
     
     def submit(self,msg,command_submit=None,bulk_lines=None):
-        self.debug("submit(%s)"%repr(msg))
+        self.debug("submit(%s,bulk_lines=%s)"%(repr(msg),bulk_lines))
         self.submit_lines_limit=bulk_lines
         if bulk_lines:
             self.submitted_data=msg.splitlines()
