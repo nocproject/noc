@@ -15,6 +15,7 @@ import re
 class Script(noc.sa.script.Script):
     name="Juniper.JUNOS.sync_prefix_lists"
     implements=[ISyncPrefixLists]
+    TIMEOUT=1800
     def execute(self,changed_prefix_lists):
         result=[]
         with self.configure():
@@ -27,6 +28,6 @@ class Script(noc.sa.script.Script):
                 self.cli("delete policy-options policy-statement %s"%name)
                 self.cli("edit policy-options policy-statement %s"%name)
                 self.cli("load merge relative terminal")
-                r=self.cli(pl+"\x04",bulk_lines=25)
+                r=self.cli(pl+"\x04",bulk_lines=10)
                 result+=[{"name":name,"status":"load complete" in r}]
         return result
