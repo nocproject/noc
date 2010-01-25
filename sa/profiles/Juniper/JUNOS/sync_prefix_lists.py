@@ -27,6 +27,6 @@ class Script(noc.sa.script.Script):
                 self.cli("delete policy-options policy-statement %s"%name)
                 self.cli("edit policy-options policy-statement %s"%name)
                 self.cli("load merge relative terminal")
-                r=self.cli(pl+"\x04")
+                r=self.cli(pl+"\x04",bulk_lines=25)
                 result+=[{"name":name,"status":"load complete" in r}]
         return result
