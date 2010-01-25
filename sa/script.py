@@ -375,7 +375,9 @@ class CLI(StreamFSM):
         self.queue=Queue.Queue()
         self.is_ready=False
         self.collected_data=""
-        self.prompt_patters=[x for x in [self.profile.pattern_more,self.profile.pattern_more_start,self.profile.pattern_more_end] if x]
+        self.submitted_data=[]
+        self.submit_lines_limit=None
+        self.prompt_patterns=[x for x in [self.profile.pattern_more,self.profile.pattern_more_start,self.profile.pattern_more_end] if x]
         StreamFSM.__init__(self)
     
     def on_read(self,data):
@@ -384,10 +386,24 @@ class CLI(StreamFSM):
             for rc in self.profile.rogue_chars:
                 data=data.replace(rc,"")
         self.feed(data,cleanup=strip_control_sequences)
+        self.__flush_submitted_data()
+    ##
+    ## Feed pending submitted data
+    ##
+    def __flush_submitted_data(self):
+        if self.submitted_data: # Feed pending submit data
+            sd="\n".join(self.submitted_data[:self.submit_lines_limit])+"\n"
+            self.submitted_data=self.submit_lines_limit[self.submit_lines_limit:]
+            self.write(sd)
     
-    def submit(self,msg,command_submit=None):
+    def submit(self,msg,command_submit=None,bulk_lines=None):
         self.debug("submit(%s)"%repr(msg))
-        self.write(msg+(self.profile.command_submit if command_submit is None else command_submit))
+        self.submit_lines_limit=bulk_lines
+        if bulk_lines:
+            self.submitted_data=msg.splitlines()
+            self.__flush_submitted_data()
+        else:
+            self.write(msg+(self.profile.command_submit if command_submit is None else command_submit))
     
     def on_START_enter(self):
         p=[
@@ -455,7 +471,7 @@ class CLI(StreamFSM):
         self.set_patterns(p)
         
     def on_PROMPT_match(self,data,match):
-        if match.re.pattern in self.prompt_patters:
+        if match.re.pattern in self.prompt_patterns:
             self.collected_data+=data
         elif match.re.pattern==self.profile.pattern_prompt:
             self.queue.put(self.collected_data+data)
