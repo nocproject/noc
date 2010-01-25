@@ -159,12 +159,21 @@ class DNSZone(models.Model):
                 except ValueError:
                     pass
             return cmp(x1,y1)
+        def cmp_fwd(x,y):
+            x1,x2,x3=x
+            y1,y2,y3=y
+            r=cmp(x1,y1)
+            if r==0:
+                r=cmp(x2,y2)
+            if r==0:
+                r=cmp(x3,y3)
+            return r
         from django.db import connection
         c=connection.cursor()
         if self.type=="F":
             c.execute("SELECT hostname(fqdn),ip FROM %s WHERE domainname(fqdn)=%%s ORDER BY ip"%IPv4Address._meta.db_table, [self.name])
             records=[[r[0],"IN  A",r[1]] for r in c.fetchall()]
-            order_by=lambda x,y: cmp(x[0],y[0])
+            order_by=cmp_fwd
         elif self.type=="R":
             c.execute("SELECT ip,fqdn FROM %s WHERE ip::cidr << %%s ORDER BY ip"%IPv4Address._meta.db_table,[self.reverse_prefix])
             records=[[r[0].split(".")[3],"PTR",r[1]+"."] for r in c.fetchall()]
