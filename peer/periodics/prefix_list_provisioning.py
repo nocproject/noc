@@ -9,7 +9,7 @@
 """
 import noc.sa.periodic
 import logging
-TIMEOUT=600
+TIMEOUT=2000
 
 class Task(noc.sa.periodic.Task):
     name="peer.prefix_list_provisioning"
