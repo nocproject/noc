@@ -2,13 +2,12 @@ VoiceFinder.AddPack
 ===================
 
 ====== ========================================
-Vendor `VoiceFinder <http://www.voicefinder.net/>`_
-OS     AddPack
+Vendor `AddPac <http://www.www.addpac.com/
+OS     APOS
 ====== ========================================
 
-VoiceFinder.AddPack profile supports VoiceFinder's media-gateway series
 
 Tested Equipment
 ----------------
-.. supported:: VoiceFinder.AddPack
+.. supported:: AddPac.APOS
 
