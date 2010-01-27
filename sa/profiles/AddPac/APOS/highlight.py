@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## VoiceFinder.AddPack highlight lexers
+## AddPac.APOS highlight lexers
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
@@ -11,7 +11,7 @@ from pygments.token import *
 ## Cisco IOS configuration lexer
 ##
 class ConfigLexer(RegexLexer):
-    name="VoiceFinder.AddPack"
+    name="AddPac.APOS"
     tokens={
         "root" : [
             (r"^!.*", Comment),
