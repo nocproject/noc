@@ -157,31 +157,31 @@ class Script(threading.Thread):
         self.kwargs=kwargs
         self.scripts=ScriptProxy(self)
         self.need_to_save=False
-        self.log_cli_session_path=None # Path to log CLI session
+        self.log_cli_sessions_path=None # Path to log CLI session
         if self.parent:
-            self.log_cli_sessions=self.parent.log_cli_sessions
+            self.log_cli_sessions_path=self.parent.log_cli_sessions_path
         elif self.activator.log_cli_sessions\
             and self.activator.log_cli_sessions_ip_re.search(self.access_profile.address)\
             and self.activator.log_cli_sessions_script_re.search(self.name):
-            self.log_cli_session_path=self.activator.log_cli_session_path
+            self.log_cli_sessions_path=self.activator.log_cli_sessions_path
             for k,v in [
                 ("ip",self.access_profile.address),
                 ("script",self.name),
                 ("ts",datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))]:
-                self.log_cli_session_path=self.log_cli_session_path.replace("{{%s}}"%k,v)
+                self.log_cli_sessions_path=self.log_cli_sessions_path.replace("{{%s}}"%k,v)
             self.cli_debug("IP: %s SCRIPT: %s"%(self.access_profile.address,self.name),"!")
     ##
     ##
     ##
     def cli_debug(self,msg,chars=None):
-        if not self.log_cli_session_path:
+        if not self.log_cli_sessions_path:
             return
         m=datetime.datetime.now().strftime("[%Y-%m-%d %H:%M:%S] ")
         if chars:
             m+=chars*50
         m+="\n"
         m+=msg+"\n"
-        with open(self.log_cli_session_path,"a") as f:
+        with open(self.log_cli_sessions_path,"a") as f:
             f.write(m)
     ##
     ## Checks script is stale and must be terminated
