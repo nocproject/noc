@@ -5,6 +5,7 @@
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 from noc.lib.fsm import StreamFSM
 from noc.lib.ecma48 import strip_control_sequences
 from noc.lib.registry import Registry
@@ -12,7 +13,7 @@ from noc.lib.nbsocket import PTYSocket,UDPSocket,SocketTimeoutError
 from noc.lib.debug import format_frames,get_traceback_frames
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.sa.profiles import profile_registry
-import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib,cPickle,sys,time
+import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib,cPickle,sys,time,datetime
 
 try:
     from pysnmp.carrier.asynsock.dispatch import AsynsockDispatcher
@@ -156,6 +157,32 @@ class Script(threading.Thread):
         self.kwargs=kwargs
         self.scripts=ScriptProxy(self)
         self.need_to_save=False
+        self.log_cli_session_path=None # Path to log CLI session
+        if self.parent:
+            self.log_cli_sessions=self.parent.log_cli_sessions
+        elif self.activator.log_cli_sessions\
+            and self.activator.log_cli_sessions_ip_re.search(self.access_profile.address)\
+            and self.activator.log_cli_sessions_script_re.search(self.name):
+            self.log_cli_session_path=self.activator.log_cli_session_path
+            for k,v in [
+                ("ip",self.access_profile.address),
+                ("script",self.name),
+                ("ts",datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))]:
+                self.log_cli_session_path=self.log_cli_session_path.replace("{{%s}}"%k,v)
+            self.cli_debug("IP: %s SCRIPT: %s"%(self.access_profile.address,self.name),"!")
+    ##
+    ##
+    ##
+    def cli_debug(self,msg,chars=None):
+        if not self.log_cli_session_path:
+            return
+        m=datetime.datetime.now().strftime("[%Y-%m-%d %H:%M:%S] ")
+        if chars:
+            m+=chars*50
+        m+="\n"
+        m+=msg+"\n"
+        with open(self.log_cli_session_path,"a") as f:
+            f.write(m)
     ##
     ## Checks script is stale and must be terminated
     ##
@@ -248,12 +275,14 @@ class Script(threading.Thread):
         
     def cli(self,cmd,command_submit=None,bulk_lines=None):
         self.debug("cli(%s)"%cmd)
+        self.cli_debug(cmd,">")
         self.request_cli_provider()
         self.cli_provider.submit(cmd,command_submit=self.profile.command_submit if command_submit is None else command_submit,bulk_lines=bulk_lines)
         data=self.cli_queue_get()
         if self.strip_echo and data.lstrip().startswith(cmd):
             data=self.strip_first_lines(data.lstrip())
         self.debug("cli() returns:\n---------\n%s\n---------"%repr(data))
+        self.cli_debug(data,"<")
         return data
     ##
     ## Clean up config from all unnecessary trash

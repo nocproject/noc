@@ -266,6 +266,12 @@ class Activator(Daemon,FSM):
         self.pm_result_queue=[]
         self.pm_data_secret=self.config.get("activator","pm_data_secret")
         self.servers=ServersHub(self)
+        # CLI debug logging
+        self.log_cli_sessions=self.config.getboolean("main","log_cli_sessions")
+        self.log_cli_sessions_path=self.config.get("main","log_cli_sessions_path")
+        self.log_cli_sessions_ip_re=re.compile(self.config.get("main","log_cli_sessions_ip_re"))
+        self.log_cli_sessions_script_re=re.compile(self.config.get("main","log_cli_sessions_script_re"))
+        
     ##
     ## IDLE state 
     ##

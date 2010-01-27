@@ -38,6 +38,7 @@ class ActivatorStub(object):
         self.factory=SocketFactory(tick_callback=self.tick)
         self.to_exit=False
         self.servers=ServersHub(self)
+        self.log_cli_sessions=None
     
     def tick(self):
         logging.debug("Tick")
