@@ -13,7 +13,7 @@ rx_sys=re.compile(r"System Description:\s+(?P<platform>.+?)$",re.MULTILINE|re.DO
 rx_ver=re.compile(r"SW version\s+(?P<version>\S+)",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
-    name="Alcatel.AOS.get_version"
+    name="Alcatel.OS62xx.get_version"
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show system")

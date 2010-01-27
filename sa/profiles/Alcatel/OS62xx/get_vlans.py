@@ -9,7 +9,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVlans
 
 class Script(noc.sa.script.Script):
-    name="Alcatel.AOS.get_vlans"
+    name="Alcatel.OS62xx.get_vlans"
     implements=[IGetVlans]
     def execute(self):
         vlans=self.cli("show vlan")

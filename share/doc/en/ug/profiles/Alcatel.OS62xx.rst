@@ -3,7 +3,7 @@ Alcatel.AOS
 
 ====== ==================================================
 Vendor `Alcatel Lucent <http://www.alcatel-lucent.com/>`_
-OS     AOS
+OS     OmniStack LS62xx
 ====== ==================================================
 
 Tested Equipment
