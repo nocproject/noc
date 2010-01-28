@@ -23,6 +23,9 @@ class Script(noc.sa.script.Script):
         result=[]
         for l in changed_prefix_lists:
             name=l["name"]
+            if len(l["prefix_list"])==0:
+                result+=[{"name":name,"status":False}]
+                self.error("Refusing to apply empty policy-option %s"%name)
             suffix="exact" if l["strict"] else "orlonger"
             # Retrieve prefix list
             pl=self.cli("show configuration policy-options policy-statement %s | display set | no-more"%name)
