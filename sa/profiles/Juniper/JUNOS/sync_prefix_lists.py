@@ -10,7 +10,7 @@
 from __future__ import with_statement
 import noc.sa.script
 from noc.sa.interfaces import ISyncPrefixLists
-import re,difflib
+import re
 
 rx_pl=re.compile(r"^set policy-options policy-statement \S+ term pass from route-filter (\S+) (\S+)$")
 
@@ -26,20 +26,17 @@ class Script(noc.sa.script.Script):
             suffix="exact" if l["strict"] else "orlonger"
             # Retrieve prefix list
             pl=self.cli("show configuration policy-options policy-statement %s | display set | no-more"%name)
-            applied_pl=[]
+            applied_pl=set()
             for ln in pl.splitlines():
                 match=rx_pl.match(ln)
                 if match:
-                    applied_pl+=["%s %s"%(match.group(1),match.group(2))]
-            # Compare prefix-lists and make the changeset
-            new_pl=["%s %s"%(x,suffix) for x in l["prefix_list"]]
-            for d in difflib.ndiff(sorted(applied_pl),sorted(new_pl)):
-                code=d[:2]
-                rest=d[2:]
-                if code=="- ": # To delete
-                    actions+=["delete policy-options policy-statement %s term pass from route-filter %s"%(name,rest)]
-                elif code=="+ ": # To create
-                    actions+=["set policy-options policy-statement %s term pass from route-filter %s"%(name,rest)]
+                    applied_pl.add("%s %s"%(match.group(1),match.group(2)))
+            # Build new prefix-list
+            new_pl=set(["%s %s"%(x,suffix) for x in l["prefix_list"]])
+            # Delete obsolete records
+            actions+=["delete policy-options policy-statement %s term pass from route-filter %s"%(name,x) for x in applied_pl.difference(new_pl)]
+            # Add new records
+            actions+=["set policy-options policy-statement %s term pass from route-filter %s"%(name,x) for x in new_pl.difference(applied_pl)]
             #
             result+=[{"name":name,"status":True}]
         # Apply changeset
