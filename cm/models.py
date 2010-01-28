@@ -391,7 +391,7 @@ class PrefixList(Object):
         # Remove unused cache entries
         for o in PrefixListCache.objects.all():
             n="%s/%s"%(o.peering_point.hostname,o.name)
-            if n not in o:
+            if n not in c_objects:
                 o.delete()
 ##
 ## DNS
