@@ -361,6 +361,7 @@ class PrefixList(Object):
         objects={}
         for o in PrefixList.objects.all():
             objects[o.repo_path]=o
+        c_objects=set() # peering_point/name
         logging.debug("PrefixList.global_pull(): building prefix lists")
         for peering_point,pl_name,pl,prefixes,strict in PrefixList.build_prefix_lists():
             logging.debug("PrefixList.global_pull(): writing %s/%s (%d lines)"%(peering_point.hostname,pl_name,len(pl.split("\n"))))
@@ -383,8 +384,15 @@ class PrefixList(Object):
             except PrefixListCache.DoesNotExist:
                 logging.debug("Updating cache for %s/%s"%(peering_point.hostname,pl_name))
                 PrefixListCache(peering_point=peering_point,name=pl_name,data=prefixes,strict=strict).save()
+            c_objects.add("%s/%s"%(peering_point.hostname,pl_name))
+        # Remove deleted prefix lists
         for o in objects.values():
             o.delete()
+        # Remove unused cache entries
+        for o in PrefixListCache.objects.all():
+            n="%s/%s"%(o.peering_point.hostname,o.name)
+            if n not in o:
+                o.delete()
 ##
 ## DNS
 ##
