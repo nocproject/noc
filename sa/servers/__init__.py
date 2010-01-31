@@ -100,6 +100,7 @@ class ServersHub(object):
         self.contexts={
             "http" : set(),
             "ftp"  : set(),
+            "tftp" : set(),
         }
         # Auto-load servers
         for context_name in self.contexts:
@@ -160,3 +161,9 @@ class ServersHub(object):
     ##
     def ftp(self):
         return ServerContextManager(self,"ftp")
+    ##
+    ## Return TFTP Server context manager
+    ##
+    def tftp(self):
+        return ServerContextManager(self,"tftp")
+    
