@@ -39,3 +39,4 @@ fping      =
 [servers]
 listen_http =
 listen_ftp =
+listen_tftp =
