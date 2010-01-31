@@ -44,34 +44,47 @@ class HTTPServerSocket(AcceptedTCPSocket):
                     l0,lo=req.split("\n",1)
                     self.debug(l0)
                     r=l0.split(" ")
-                    if len(r)!=3 or r[0] not in ["PUT"]:
+                    if len(r)!=3 or r[0] not in ["GET","PUT"]:
                         self.error("Invalid HTTP request")
                         self.close()
                         return
+                    method=r[0]
                     address,port=self.socket.getpeername()
                     self.path=urllib.unquote(r[1])
-                    try:
-                        self.context=self.server_hub.get_context("http",address,self.path)
-                    except KeyError:
-                        self.error("Permission denied: %s %s"%(address,self.path))
-                        self.close()
-                        return
-                    for l in lo.split("\n"):
-                        l=l.strip()
-                        k,v=[x.strip() for x in l.split(":",1)]
-                        k=k.lower()
-                        if k=="content-length":
-                            self.data_size=int(v)
-                        elif k=="host":
-                            self.host=v
+                    if method=="PUT":
+                        try:
+                            self.context=self.server_hub.get_context("http",address,self.path)
+                        except KeyError:
+                            self.error("Permission denied: %s %s"%(address,self.path))
+                            self.close()
+                            return
+                        for l in lo.split("\n"):
+                            l=l.strip()
+                            k,v=[x.strip() for x in l.split(":",1)]
+                            k=k.lower()
+                            if k=="content-length":
+                                self.data_size=int(v)
+                            elif k=="host":
+                                self.host=v
+                    elif method=="GET":
+                        if url in self.dl_data:
+                            self.send_response(200,"OK",self.dl_data[url],content_type="application/octet-stream")
+                        else:
+                            self.send_response(404,"Not Found")
                     break
-        else:
+        else: # Process PUT
             # Populate data
             self.feed(data)
             if self.data_size<=0:
                 # Return response on all data received
-                self.write("HTTP/1.1 201 Created\r\nContent-Length: 0\r\n\r\n")
-                self.close()
+                self.send_response(201,"Created")
+    
+    def send_response(code,message,data="",content_type=""):
+        headers=["HTTP/1.1 %d %s"%(code,message),"Content-Length: %d"%len(data)]
+        if content_type:
+            headers+=["Content-Type: %s"%content_type]
+        self.write("\r\n".join(headers)+"\r\n\r\n"+data)
+        self.close()
 
 class HTTPServer(ListenTCPSocket):
     def __init__(self,factory,address,server_hub):
