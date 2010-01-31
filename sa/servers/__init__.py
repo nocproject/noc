@@ -90,6 +90,8 @@ class ServerContextManager(object):
     ##
     def __exit__(self,exc_type, exc_val, exc_tb):
         self.server_hub.unregister_context(self.context_name,self)
+        if exc_type is not None:
+            raise exc_type, exc_val
 
 ##
 ## Server hub
