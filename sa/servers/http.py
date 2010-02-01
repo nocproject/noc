@@ -19,7 +19,7 @@ class HTTPServerSocket(AcceptedTCPSocket):
         self.request=""
         self.data=None
         self.path=None
-        self.address=None
+        self.remote_address=None
     ##
     ## <!> STUB
     ##
@@ -35,14 +35,15 @@ class HTTPServerSocket(AcceptedTCPSocket):
             if "\r\n\r\n" in self.request:
                 self.request,self.data=self.request.split("\r\n\r\n",1)
                 headers=self.request.splitlines()
-                method,self.path,proto=headers[0]
-                self.address,port=self.socket.getpeername()
-                getattr(self,"handle_%s"%method)(path)
+                method,self.path,proto=headers[0].split(" ")
+                self.remote_address,port=self.socket.getpeername()
+                self.info("HTTP %s '%s %s'"%(self.remote_address,method,self.path))
+                getattr(self,"handle_%s"%method)(self.path)
     ##
     ##
     ##
     def handle_GET(self,path):
-        context=self.server_hub.get_context("http",address,self.path)
+        context=self.server_hub.get_context("http",self.remote_address,self.path)
         try:
             self.send_response(200,"OK",context.get_url_data(path))
         except KeyError:
