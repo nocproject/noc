@@ -55,7 +55,7 @@ class HTTPServerSocket(AcceptedTCPSocket):
     def check_access(self,address):
         return True
     
-    def send_response(code,message,data="",content_type=""):
+    def send_response(self,code,message,data="",content_type=""):
         headers=["HTTP/1.1 %d %s"%(code,message),"Content-Length: %d"%len(data)]
         if content_type:
             headers+=["Content-Type: %s"%content_type]
