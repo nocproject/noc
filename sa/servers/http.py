@@ -43,8 +43,8 @@ class HTTPServerSocket(AcceptedTCPSocket):
     ##
     ##
     def handle_GET(self,path):
-        context=self.server_hub.get_context("http",self.remote_address,self.path)
         try:
+            context=self.server_hub.get_context("http",self.remote_address,self.path)
             self.send_response(200,"OK",context.get_url_data(path))
         except KeyError:
             self.send_response(404,"Not Found")
