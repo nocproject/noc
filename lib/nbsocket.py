@@ -215,6 +215,9 @@ class Socket(object):
     def debug(self,msg):
         logging.debug("[%s] %s"%(self.log_label(),msg))
     
+    def info(self,msg):
+        logging.info("[%s] %s"%(self.log_label(),msg))
+    
     def error(self,msg):
         logging.error("[%s] %s"%(self.log_label(),msg))
     
