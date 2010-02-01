@@ -56,6 +56,7 @@ class HTTPServerSocket(AcceptedTCPSocket):
         return True
     
     def send_response(self,code,message,data="",content_type=""):
+        self.info("HTTP %s: %d %s"%(self.remote_address,code,message))
         headers=["HTTP/1.1 %d %s"%(code,message),"Content-Length: %d"%len(data)]
         if content_type:
             headers+=["Content-Type: %s"%content_type]
