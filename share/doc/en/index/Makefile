@@ -3,7 +3,7 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build
+SPHINXBUILD   = ../../../../contrib/bin/sphinx-build
 PAPER         =
 TARGET        = ../../../../static/doc/en/
 
