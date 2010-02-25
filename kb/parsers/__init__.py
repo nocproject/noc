@@ -75,7 +75,7 @@ class Parser(object):
             link=link[11:]
             return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,link,text)
         else:
-            return u"a<href='%s'>%s</a>"%(link,text)
+            return u"<a href='%s'>%s</a>"%(link,text)
     ##
     ## Convert attachment ref
     ##
