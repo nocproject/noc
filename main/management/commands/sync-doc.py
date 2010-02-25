@@ -9,7 +9,7 @@
 """
 from __future__ import with_statement
 from django.core.management.base import BaseCommand
-import os,glob,subprocess,csv,cStringIO
+import os,glob,subprocess,csv,cStringIO,sys
 from noc.lib.fileutils import rewrite_when_differ
 
 ##
@@ -46,8 +46,8 @@ class Command(BaseCommand):
         # Find and build all makefiles
         for makefile in glob.glob("share/doc/index/Makefile")+glob.glob("share/doc/*/*/Makefile"):
             d,f=os.path.split(makefile)
-            env=None
+            env=os.environ.copy()
             if se_db_updated:
-                env=os.environ.copy()
                 env["OPTIONS"]="-a"
+            env["PYTHONPATH"]=":".join(sys.path)
             subprocess.call(["make","html"],cwd=d,env=env)
