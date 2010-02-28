@@ -1,20 +1,24 @@
 #!/usr/bin/env python
 ##----------------------------------------------------------------------
 ## Build contrib/lib
-## Usually called by noc-laucher
+## Called by post-update when necessary
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 from __future__ import with_statement
-import os,sys,csv,subprocess
-
+import os,sys,csv,subprocess,getopt
+##
+##
+d=os.path.dirname(sys.argv[0])
+if d:
+    os.chdir(d)
 ##
 ## Main installer class
 ##
 class Installer(object):
-    CONTRIB=os.path.join(os.path.dirname(sys.argv[0]),"..","..")
+    CONTRIB=os.path.join("..","..")
     SRC=os.path.join(CONTRIB,"src")
     LIB=os.path.join(CONTRIB,"lib")
     BIN=os.path.join(CONTRIB,"bin")
@@ -23,6 +27,9 @@ class Installer(object):
     DST_VERSIONS=os.path.join(LIB,"VERSION.csv")
     ENV=os.environ.copy()
     ENV["PYTHONPATH"]= ":".join([LIB]+sys.path)
+    ##
+    def __init__(self,check_only=False):
+        self.check_only=check_only
     ##
     ## Read CSV file and returns hash {row[0]->row[1]}
     ##
@@ -39,7 +46,8 @@ class Installer(object):
     ## Syncronize contrib apps
     ##
     def sync(self):
-        print "Syncronizing contrib apps"
+        if not self.check_only:
+            print "Syncronizing contrib apps"
         sv=[]
         self.read_csv(self.SRC_VERSIONS)
         with open(self.SRC_VERSIONS) as f:
@@ -51,6 +59,8 @@ class Installer(object):
         fail=False
         for app,version in sv:
             if app not in iv or iv[app]!=version:
+                if self.check_only: # Do nothing on version mismatch in check mode
+                    return False
                 print "Upgrading %s to version %s"%(app,version)
                 if hasattr(self,"install_%s"%app):
                     r=getattr(self,"install_%s"%app)()
@@ -64,8 +74,10 @@ class Installer(object):
                     print "%s: failed to upgrade to version %s"%(app,version)
                     fail=True
                     break
-            else:
+            elif not self.check_only:
                 print "%s is in sync (version %s)"%(app,version)
+        if self.check_only: # Return immediately in check mode
+            return True
         # Write updated versions
         if update_iv:
             with open(self.DST_VERSIONS,"w") as f:
@@ -87,5 +99,10 @@ class Installer(object):
         env=self.ENV)==0
 
 if __name__=="__main__":
-    r=Installer().sync()
+    check_only=False
+    optlist,optargs=getopt.getopt(sys.argv[1:],"c")
+    for k,v in optlist:
+        if k=="-c":
+            check_only=True
+    r=Installer(check_only=check_only).sync()
     sys.exit({True:0,False:1}[r])
