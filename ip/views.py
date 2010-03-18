@@ -52,7 +52,10 @@ def vrf_index(request,vrf_id,prefix="0.0.0.0/0"):
     ]
     ranges=None
     all_addresses=None
-    if not has_children:
+    if has_children:
+        orphaned_addresses=prefix.orphaned_addresses
+    else:
+        orphaned_addresses=None
         used=prefix.address_count
         free=total-used
         block_info+=[
@@ -79,7 +82,7 @@ def vrf_index(request,vrf_id,prefix="0.0.0.0/0"):
             all_addresses+=[(c,a)]
     return render(request,"ip/vrf_index.html",{"vrf":vrf,"parents":parents,"prefixes":prefixes,"prefix":prefix,
                         "can_allocate":can_allocate,"block_info":block_info,"has_children":has_children,
-                        "ranges":ranges,"all_addresses":all_addresses})
+                        "ranges":ranges,"all_addresses":all_addresses,"orphaned_addresses":orphaned_addresses})
 ##
 ## Allocate new block handler
 ##

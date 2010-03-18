@@ -55,6 +55,25 @@
 </DIV>
 
 {% if has_children %}
+{%if orphaned_addresses%}
+<DIV CLASS="module">
+    <TABLE SUMMARY="Orphaned addresses within {{prefix.prefix}}" WIDTH="100%">
+        <caption>Orphaned addresses within {{vrf.name}}::{{prefix.prefix}}</caption>
+        <THEAD>
+            <TR><TH STYLE="width: 10px"></TH><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH></TR>
+        </THEAD>
+        {% for a in orphaned_addresses %}
+        <TR class="{%cycle 'row1' 'row2'%}">
+        <TD {%if c%}STYLE="background-color: {{c}}"{%endif%}></TD>
+        <TD>{% if can_allocate %}<A HREF="/ip/{{vrf.id}}/{{a.ip}}/assign_address/">{{a.ip}}</A>{%else%}{{a.ip}}{%endif%}</TD>
+        <TD>{{a.fqdn}}</TD>
+        <TD>{{a.description}}</TD>
+        <TD>{%if a.tt %}<A HREF="{{a.tt_url}}">#{{a.tt}}</A>{%endif%}</TD>
+        </TR>
+        {% endfor %}
+    </TABLE>
+</DIV>
+{% endif %}
 {% else %}
 <STYLE>
 .freeip {

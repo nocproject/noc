@@ -183,6 +183,18 @@ class IPv4Block(models.Model):
         c.execute("SELECT COUNT(*) FROM ip_ipv4address WHERE vrf_id=%s AND ip << %s::cidr",[self.vrf.id,self.prefix])
         return c.fetchall()[0][0]
     address_count=property(_address_count)
+    ##
+    ## Return IP addresses not belonging to any subblocks
+    ##
+    def _orphaned_addresses(self):
+        children=self.children
+        if not children:
+            return []
+        x=" OR ".join(["(ip <<= '%s')"%c.prefix for c in children])
+        c=connection.cursor()
+        c.execute("SELECT id FROM %s WHERE vrf_id=%d AND ip <<= '%s' AND NOT (%s) ORDER BY ip"%(IPv4Address._meta.db_table,self.vrf.id,self.prefix,x))
+        return [IPv4Address.objects.get(id=i[0]) for i in c.fetchall()]
+    orphaned_addresses=property(_orphaned_addresses)
         
     ##
     ## Generator returning a nested ip addresses (including nested children)
