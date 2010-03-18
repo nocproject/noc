@@ -23,8 +23,9 @@ class VCS(noc.cm.vcs.VCS):
             if not l:
                 continue
             rev,date=l.split(" ")
-            d,r=date.split("-",1)
-            revs+=[noc.cm.vcs.Revision(rev,datetime.datetime.fromtimestamp(float(d)))]
+            if "-" in date:
+                date,r=date.split("-",1)
+            revs+=[noc.cm.vcs.Revision(rev,datetime.datetime.fromtimestamp(float(date)))]
         return revs
     def diff(self,path,rev1,rev2):
         return self.cmd_out(["diff","-r%s:%s"%(rev1.revision,rev2.revision),path])
