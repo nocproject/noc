@@ -6,7 +6,7 @@
 """
 """
 import re
-from django.db import models
+from django.db import models,connection
 from django.db.models import Q
 from django.contrib.auth.models import User
 from noc.lib.validators import check_rd,check_cidr,is_cidr,is_ipv4
@@ -63,14 +63,12 @@ class VRF(models.Model):
         
     def all_prefixes(self,top="0.0.0.0/0"):
         assert is_cidr(top)
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE vrf_id=%d and prefix<<='%s' order by prefix"%(IPv4Block._meta.db_table,self.id,top))
         return [IPv4Block.objects.get(id=x[0]) for x in c.fetchall()]
         
     def all_addresses(self,top="0.0.0.0/0"):
         assert is_cidr(top)
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE vrf_id=%d and ip<<='%s' order by ip"%(IPv4Address._meta.db_table,self.id,top))
         return [IPv4Address.objects.get(id=x[0]) for x in c.fetchall()]
@@ -91,7 +89,6 @@ class IPv4BlockAccess(models.Model):
     @classmethod
     def check_write_access(self,user,vrf,prefix):
         assert is_cidr(prefix)
-        from django.db import connection
         if user.is_superuser:
             return True
         c=connection.cursor()
@@ -120,7 +117,6 @@ class IPv4Block(models.Model):
     def __unicode__(self):
         return unicode(self.prefix)
     def _parent(self):
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE prefix >> '%s' AND vrf_id=%d ORDER BY masklen(prefix) DESC LIMIT 1"%(IPv4Block._meta.db_table,
                     self.prefix,self.vrf.id))
@@ -131,7 +127,6 @@ class IPv4Block(models.Model):
     parent=property(_parent)
 
     def _parents(self):
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE prefix >> '%s' AND vrf_id=%d ORDER BY masklen(prefix)"%(IPv4Block._meta.db_table,
                     self.prefix,self.vrf.id))
@@ -139,14 +134,12 @@ class IPv4Block(models.Model):
     parents=property(_parents)
 
     def _depth(self):
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT COUNT(*) FROM %s WHERE prefix >> '%s' AND vrf_id=%d"%(IPv4Block._meta.db_table,self.prefix,self.vrf.id))
         return c.fetchone()[0]
     depth=property(_depth)
 
     def _children(self):
-        from django.db import connection
         c=connection.cursor()
         if self.vrf.vrf_group.unique_addresses:
             vrfs="IN (%s)"%",".join([str(vrf.id) for vrf in self.vrf.vrf_group.vrf_set.all()])
@@ -162,7 +155,6 @@ class IPv4Block(models.Model):
     children=property(_children)
 
     def _has_children(self):
-        from django.db import connection
         c=connection.cursor()
         if self.vrf.vrf_group.unique_addresses:
             vrfs="IN (%s)"%",".join([str(vrf.id) for vrf in self.vrf.vrf_group.vrf_set.all()])
@@ -177,7 +169,6 @@ class IPv4Block(models.Model):
     def _addresses(self):
         if self.has_children:
             return []
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE vrf_id=%d AND ip <<= '%s' ORDER BY ip"%(IPv4Address._meta.db_table,self.vrf.id,self.prefix))
         return [IPv4Address.objects.get(id=i[0]) for i in c.fetchall()]
@@ -188,7 +179,6 @@ class IPv4Block(models.Model):
     def _address_count(self):
         if self.has_children:
             return []
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT COUNT(*) FROM ip_ipv4address WHERE vrf_id=%s AND ip << %s::cidr",[self.vrf.id,self.prefix])
         return c.fetchall()[0][0]
@@ -198,7 +188,6 @@ class IPv4Block(models.Model):
     ## Generator returning a nested ip addresses (including nested children)
     ##
     def _nested_addresses(self):
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE vrf_id=%d AND ip << '%s' ORDER BY ip"%(IPv4Address._meta.db_table,self.vrf.id,self.prefix))
         for row in c:
@@ -226,7 +215,6 @@ class IPv4Block(models.Model):
     ## Returns a list of responsible persons with write permissions
     ##
     def _maintainers(self):
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM auth_user WHERE is_active=True AND (is_superuser=True OR id IN (SELECT user_id FROM ip_ipv4blockaccess WHERE vrf_id=%s AND prefix>>=%s)) ORDER BY username",
             [self.vrf.id,self.prefix])
@@ -269,7 +257,6 @@ class IPv4Block(models.Model):
     def _ranges(self):
         if self.has_children:
             return []
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM ip_ipv4addressrange WHERE vrf_id=%s AND %s::cidr>>from_ip AND %s::cidr>>to_ip",
             [self.vrf.id,self.prefix,self.prefix])
@@ -323,7 +310,6 @@ class IPv4AddressRange(models.Model):
     ##
     @classmethod
     def get_range(cls,vrf,ip):
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM ip_ipv4addressrange WHERE vrf_id=%s AND %s::inet BETWEEN from_ip AND to_ip",[vrf.id,ip])
         r=c.fetchall()
@@ -344,7 +330,6 @@ class IPv4AddressRange(models.Model):
     ##
     @classmethod
     def get_range_overlap(cls,vrf,from_ip,to_ip,instance=None):
-        from django.db import connection
         c=connection.cursor()
         SQL="""SELECT id FROM ip_ipv4addressrange WHERE vrf_id=%s AND from_ip<=%s::inet AND to_ip>=%s::inet """
         P=[vrf.id,to_ip,from_ip]
@@ -360,7 +345,6 @@ class IPv4AddressRange(models.Model):
     ##
     @classmethod
     def get_block_overlap(cls,vrf,from_ip,to_ip):
-        from django.db import connection
         c=connection.cursor()
         c.execute("""SELECT id FROM ip_ipv4block
                 WHERE vrf_id=%s
@@ -482,7 +466,6 @@ class IPv4Address(models.Model):
         return self.ip
 
     def _parent(self):
-        from django.db import connection
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE vrf_id=%d AND '%s' << prefix ORDER BY masklen(prefix) DESC LIMIT 1"%(IPv4Block._meta.db_table,self.vrf.id,str(self.ip)))
         return IPv4Block.objects.get(id=c.fetchall()[0][0])
@@ -496,7 +479,6 @@ class IPv4Address(models.Model):
     ##
     @classmethod
     def get_addresses(self,vrf,from_ip,to_ip):
-        from django.db import connection
         c=connection.cursor()
         SQL="SELECT id FROM ip_ipv4address WHERE vrf_id=%s AND ip BETWEEN %s::inet AND %s::inet ORDER BY ip"
         c.execute(SQL,[vrf.id,from_ip,to_ip])
