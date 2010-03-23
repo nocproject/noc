@@ -53,7 +53,7 @@ class Notify(NotifyBase):
             try:
                 smtp.login(smtp_user,smtp_password)
             except smtplib.SMTPAuthenticationError,why:
-                self.error("SMTP Authentication error: %s",str(why))
+                self.error("SMTP Authentication error: %s"%str(why))
                 return False
         # Send mail
         try:
