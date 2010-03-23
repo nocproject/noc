@@ -38,7 +38,7 @@ class Notify(NotifyBase):
         try:
             smtp.connect(self.config.get(self.name,"smtp_server"),self.config.getint(self.name,"smtp_port"))
         except socket.error,why:
-            self.error("SMTP error: %s"%why[1])
+            self.error("SMTP error: %s"%str(why))
             return False
         smtp.ehlo(self.config.get(self.name,"helo_hostname"))
         # Enforce TLS when required
@@ -53,13 +53,13 @@ class Notify(NotifyBase):
             try:
                 smtp.login(smtp_user,smtp_password)
             except smtplib.SMTPAuthenticationError,why:
-                self.error("SMTP Authentication error: %s",why[1])
+                self.error("SMTP Authentication error: %s",str(why))
                 return False
         # Send mail
         try:
             smtp.sendmail(from_address,[params],message.as_string())
         except smtplib.SMTPSenderRefused,why:
-            self.error("Sender refused: %s"%why[1])
+            self.error("Sender refused: %s"%str(why))
             return False
         #
         return True
