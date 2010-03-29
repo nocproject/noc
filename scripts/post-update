@@ -1,13 +1,27 @@
 #!/bin/sh
 ##----------------------------------------------------------------------
 ## NOC post-update script
+## Execute after hg pull or after version upgrade
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 PREFIX=`dirname "$0"`/../
 cd $PREFIX
 
+# Refresh contrib/lib when necessary
+./contrib/src/bin/sync -c
+if [ $? -ne 0 ]; then
+    # Change user when necessary
+    if [ -w ./contrib/lib/ ]; then
+        echo "Changing to superuser to execute ./contrib/src/bin/sync"
+        sudo -s ./contrib/src/bin/sync
+    else
+        ./contrib/src/bin/sync
+    fi
+fi
+
+# Migrate database
 python manage.py syncdb
 python manage.py migrate
 python manage.py sync-refbooks
