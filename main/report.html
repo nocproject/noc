@@ -8,6 +8,8 @@
 <SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.svg.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.rotate_text.js"></SCRIPT>
 {% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/main/report/">Reports</A> &rsaquo; {{report.title}} &rsaquo;</div>
+{% endblock %}
 {% block content %}
 <h1>{{report.title}}</h1>
 <script type="text/javascript">
