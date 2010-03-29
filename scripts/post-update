@@ -17,7 +17,7 @@ if [ $? -ne 0 ]; then
         ./contrib/src/bin/sync
     else
         echo "Changing to superuser to execute ./contrib/src/bin/sync"
-        sudo -s ./contrib/src/bin/sync
+        sudo -s $PWD/contrib/src/bin/sync
     fi
 fi
 
