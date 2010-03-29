@@ -1,5 +1,7 @@
 {% extends "template/template.html" %}
 {% block title%}Reports{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Reports &rsaquo;</div>
+{% endblock %}
 {% block content %}
 <h1>Reports</h1>
     {% for module,reports in reports %}
