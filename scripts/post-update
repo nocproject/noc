@@ -14,10 +14,10 @@ cd $PREFIX
 if [ $? -ne 0 ]; then
     # Change user when necessary
     if [ -w ./contrib/lib/ ]; then
+        ./contrib/src/bin/sync
+    else
         echo "Changing to superuser to execute ./contrib/src/bin/sync"
         sudo -s ./contrib/src/bin/sync
-    else
-        ./contrib/src/bin/sync
     fi
 fi
 
