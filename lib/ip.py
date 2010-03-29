@@ -259,6 +259,75 @@ def generate_ips(ip1,ip2):
         if n1>n2:
             break
 ##
+## IPv4 Prefix Database
+## 
+class PrefixDB(object):
+    """
+    >>> db=PrefixDB()
+    >>> db.append_prefix("192.168.0.0/8","key0")
+    >>> db.append_prefix("192.168.1.0/24","key1")
+    >>> db.append_prefix("192.168.2.0/24","key2")
+    >>> db["10.0.0.0"]
+    Traceback (most recent call last):
+    ...
+    KeyError
+    >>> db["192.168.1.1"]
+    'key1'
+    >>> db["192.168.2.1"]
+    'key2'
+    >>> db["192.168.3.1"]
+    'key0'
+    """
+    def __init__(self,key=None):
+        self.key=key
+        self.children=[None,None]
+    ## Search for prefix
+    def __getitem__(self,key):
+        v=self.search(key)
+        if v is None:
+            raise KeyError
+        return v
+    ## Generator returning bits of IP address
+    @classmethod
+    def gen_prefix(cls,prefix):
+        ip,l=prefix.split("/")
+        l=int(l)
+        i=address_to_int(ip)
+        m=1L<<31
+        for n in range(31,31-l,-1):
+            yield (i&m)>>n
+            m>>=1
+    ## Append prefix to database
+    def append_prefix(self,prefix,key):
+        node=self
+        for n in self.gen_prefix(prefix):
+            c=node.children[n]
+            if c is None:
+                c=self.__class__(node.key)
+                node.children[n]=c
+            node=c
+        node.key=key
+    ## Search DB for prefix
+    ## And return assotiated key.
+    ## Return None when no prefix found
+    def search(self,prefix):
+        if "/" not in prefix:
+            prefix+="/32"
+        node=self
+        for n in self.gen_prefix(prefix):
+            c=node.children[n]
+            if c is None:
+                break
+            node=c
+        return node.key
+    ##
+    ## Load database.
+    ## data is an generator returning pairs (prefix,key)
+    ##
+    def load(self,data):
+        for prefix,key in data:
+            self.append_prefix(prefix,key)
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
