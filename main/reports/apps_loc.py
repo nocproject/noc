@@ -28,6 +28,8 @@ class Report(noc.main.report.Report):
             return len(d.split("\n"))
         r=[]
         for dirname in [d for d in os.listdir(".") if os.path.isdir(d) and not d.startswith(".")]:
+            if dirname in ["contrib","dist","build"]:
+                continue
             py_loc=0
             html_loc=0
             rst_loc=0
