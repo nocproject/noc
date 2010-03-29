@@ -131,3 +131,8 @@ AUTH_PROFILE_MODULE="main.UserProfile"
 ## Determine WEB process
 ##
 IS_WEB=(len(sys.argv)>=2 and sys.argv[0]=="manage.py" and sys.argv[1]=="runserver") or sys.argv[0].endswith("noc-fcgi.py")
+##
+## Coverage wrapper
+##
+TEST_RUNNER="noc.lib.test_runner.run_tests"
+COVERAGE_REPORT_PATH="local/coverage_report"
