@@ -14,23 +14,6 @@ import types
 ##
 MENU=[]
 ##
-## Populate MENU with reports
-##
-def populate_reports(reports):
-    # Enforce menu loading
-    for app in [x for x in noc.settings.INSTALLED_APPS if x.startswith("noc.")]:
-        __import__(app+".models",{},{},"AppMenu")
-    #
-    apps={}
-    for r,title in reports:
-        app,rest=r.split(".",1)
-        if app not in apps:
-            apps[app]=[]
-        apps[app].append((title,"/main/report/"+r+"/"))
-    for m in MENU:
-        if m["app"] in apps:
-            m["items"].append(("Reports",{"items":apps[m["app"]]}))
-##
 ## Menu metaclass
 ## Performs menu registration
 ##

@@ -9,7 +9,6 @@ from __future__ import with_statement
 from django.db import models
 from django.contrib.auth.models import User
 from noc.main.report import report_registry
-from noc.main.menu import populate_reports
 from noc.main.menu import Menu
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
@@ -681,6 +680,7 @@ class AppMenu(Menu):
     app="main"
     title="Main"
     items=[
+        ("Reports",        "/main/report/",           "is_logged_user()"),
         ("Audit Trail",    "/admin/main/audittrail/", "is_superuser()"),
         ("Reference Books", "/main/refbook/",          "is_logged_user()"),
         ("Browse Data",     "/main/databrowse/",       "is_superuser()"),
@@ -706,5 +706,3 @@ class AppMenu(Menu):
 ## Load and register reports
 ##
 report_registry.register_all()
-populate_reports([(n,r.title) for n,r in report_registry.classes.items()])
-
