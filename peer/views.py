@@ -39,7 +39,7 @@ def prefix_list_builder(request):
         if form.is_valid():
             prefixes=resolve_as_set_prefixes(form.cleaned_data["as_set"],True)
             prefixes=sorted(prefixes)
-            pl=form.cleaned_data["peering_point"].profile.generate_prefix_list(form.cleaned_data["name"],prefixes,True)
+            pl=form.cleaned_data["peering_point"].profile.generate_prefix_list(form.cleaned_data["name"],prefixes,False)
     else:
         form=PrefixListBuilderForm()
     return render(request,"peer/prefix_list.html",{"form":form,"prefix_list":pl})
