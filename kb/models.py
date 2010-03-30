@@ -315,13 +315,13 @@ class AppMenu(Menu):
     app="kb"
     title="Knowledge Base"
     items=[
-        ("Knowledge Base", "/kb/", "kb.change_kbentry"),
-        ("New from Template", "/kb/template/", "kb.change_kbentry"),
+        ("Knowledge Base", "/kb/", "is_logged_user()"),
+        ("New from Template", "/kb/template/", "is_logged_user()"),
         ("Setup",[
             ("Categories","/admin/kb/kbcategory/", "kb.change_kbcategory"),
             ("Entries",   "/admin/kb/kbentry/",    "kb.change_kbentry"),
             ("Global Bookmarks", "/admin/kb/kbglobalbookmark/", "kb.change_kbglobalbookmark"),
-            ("User Bookmarks",  "/admin/kb/kbuserbookmark/",    "kb.change_kbuserbookmark"),
+            ("User Bookmarks",  "/admin/kb/kbuserbookmark/",    "is_logged_user()"),
             ("Templates",   "/admin/kb/kbentrytemplate/",    "kb.change_kbentrytemplate"),
         ])
     ]
