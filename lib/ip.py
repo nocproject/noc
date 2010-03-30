@@ -5,14 +5,14 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import struct,socket
+import struct,socket,math
 ##
 ##
 ##
 def address_to_int(ip):
     """
     >>> address_to_int("192.168.0.1")
-    3232235521L
+    3232235521
     >>> address_to_int("10.0.0.0")
     167772160
     """
@@ -148,68 +148,112 @@ def bin_to_prefix(s):
     l=len(s)
     r<<=(32-l)
     return "%s/%d"%(int_to_address(r),l)
-
+##
+## Return prefix boundary - pair of ints
+## representing beginnng and the end of the prefix
+##
+def prefix_boundary(p):
+    """
+    >>> prefix_boundary("10.0.0.0/8")
+    (167772160L, 184549375L)
+    >>> prefix_boundary("10.0.0.0/32")
+    (167772160L, 167772160L)
+    >>> prefix_boundary("0.0.0.0/0")
+    (0L, 4294967295L)
+    """
+    n,m=p.split("/")
+    m=int(m)
+    a=address_to_int(n)
+    b=bits_to_int(m)
+    return (a&b,a|(0xFFFFFFFFL^b))
+##
+## Returns a longest netmask length possible,
+## when address still remains network address
+## a is an integer
+##
+def max_mask(a):
+    """
+    >>> max_mask(0)
+    0
+    >>> max_mask(address_to_int("255.255.255.255"))
+    32
+    >>> max_mask(address_to_int("1.1.1.0"))
+    24
+    >>> max_mask(address_to_int("1.1.0.0"))
+    16
+    >>> max_mask(address_to_int("1.1.1.128"))
+    25
+    >>> max_mask(address_to_int("1.1.1.252"))
+    30
+    """
+    if not a:
+        return 0
+    r=32
+    while a and (a&1==0):
+        r-=1
+        a>>=1
+    return r
+##
+## Generator returning a minimal
+## set of prefixes covering the
+## ip address range, given by ints
+##
+def cover_blocks(f,t):
+    """
+    >>> list(cover_blocks(address_to_int("192.168.0.0"),address_to_int("192.168.0.0")))
+    ['192.168.0.0/32']
+    >>> list(cover_blocks(address_to_int("192.168.0.0"),address_to_int("192.168.0.255")))
+    ['192.168.0.0/24']
+    >>> list(cover_blocks(address_to_int("192.168.0.0"),address_to_int("192.168.0.127")))
+    ['192.168.0.0/25']
+    >>> list(cover_blocks(address_to_int("0.0.0.0"),address_to_int("255.255.255.255")))
+    ['0.0.0.0/0']
+    >>> list(cover_blocks(address_to_int("192.168.0.5"),address_to_int("192.168.0.14")))
+    ['192.168.0.5/32', '192.168.0.6/31', '192.168.0.8/30', '192.168.0.12/31', '192.168.0.14/32']
+    """
+    while f<=t:
+        m=max(max_mask(f),32-int(math.log(t-f+1,2)))
+        yield int_to_address(f)+"/%d"%m
+        f+=1<<(32-m)
 ##
 ## Returns a list of free block in "prefix"
 ## Allocated should be sorted list
 ##
 def free_blocks(prefix,allocated):
-    def boundary(p):
-        n,m=p.split("/")
-        m=int(m)
-        a=address_to_int(n)
-        b=bits_to_int(m)
-        return (a&b,a|(0xFFFFFFFFL^b))
-    # Return a minimal list of prefixes coverting f and t addresses
-    def cover_blocks(f,t,b=[]):
-        def rank(i):
-            j=32
-            n=1
-            while (i&n)==0 and j:
-                j-=1
-                n=(n<<1)|1
-            return j
-        n=rank(f)
-        while True:
-            size=bits_to_size(n)
-            if t-f==size-1:
-                return b+[int_to_address(f)+"/%d"%n]
-            elif n==32 or t-f>size-1:
-                return cover_blocks(f+size,t,b+[int_to_address(f)+"/%d"%n])
-            n+=1
-    if not allocated:
-        # No allocations given. Return whole block
-        return [prefix]
-    used=[]
-    p0,p1=boundary(prefix)
+    """
+    >>> list(free_blocks("10.0.0.0/8",[]))
+    ['10.0.0.0/8']
+    >>> list(free_blocks("10.0.0.0/8",["10.0.0.0/8"]))
+    []
+    >>> list(free_blocks("192.168.0.0/20",["192.168.0.0/24"]))
+    ['192.168.1.0/24', '192.168.2.0/23', '192.168.4.0/22', '192.168.8.0/21']
+    >>> list(free_blocks("192.168.0.0/20",["192.168.15.0/24"]))
+    ['192.168.0.0/21', '192.168.8.0/22', '192.168.12.0/23', '192.168.14.0/24']
+    >>> list(free_blocks("192.168.0.0/20",["192.168.8.0/24"]))
+    ['192.168.0.0/21', '192.168.9.0/24', '192.168.10.0/23', '192.168.12.0/22']
+    >>> list(free_blocks("192.168.0.0/20",["192.168.6.0/23"]))
+    ['192.168.0.0/22', '192.168.4.0/23', '192.168.8.0/21']
+    >>> list(free_blocks("192.168.0.0/20",["192.168.6.0/24","192.168.7.0/24"]))
+    ['192.168.0.0/22', '192.168.4.0/23', '192.168.8.0/21']
+    >>> list(free_blocks("192.168.0.0/20",["192.168.0.0/24","192.168.6.0/24","192.168.7.0/24","192.168.15.0/24"]))
+    ['192.168.1.0/24', '192.168.2.0/23', '192.168.4.0/23', '192.168.8.0/22', '192.168.12.0/23', '192.168.14.0/24']
+    >>> list(free_blocks("192.168.0.0/22",["192.168.0.0/24","192.168.1.0/24","192.168.2.0/24","192.168.3.0/24"]))
+    []
+    """
+    p0,p1=prefix_boundary(prefix)
+    f0=p0
     for a in allocated:
-        a0,a1=boundary(a)
-        if a0<p0 or a1>p1:
-            continue
-        if used and a0-used[-1]==1:
-            # Merge adjanced allocations
-            used[-1]=a1
-        else:
-            used+=[a0,a1]
-    free=[]
-    while used:
-        u0=used.pop(0)
-        u1=used.pop(0)
-        free+=[u0-1,u1+1]
-    if p0<free[0]:
-        free.insert(0,p0)
-    else:
-        free.pop(0)
-    if p1>free[-1]:
-        free+=[p1]
-    else:
-        free.pop(-1)
-    r=[]
-    while free:
-        f=free.pop(0)
-        t=free.pop(0)
-        r+=cover_blocks(f,t)
-    return r
+        a0,a1=prefix_boundary(a)
+        if a0>f0:
+            # Free space found
+            # Return prefixes covering free space
+            for b in cover_blocks(f0,a0-1):
+                yield b
+        f0=a1+1
+    if f0<p1:
+        # Free space at the end found
+        for b in cover_blocks(f0,p1):
+            yield b
 ##
 ## Returns minimal prefix containing both IP addresses
 ##
