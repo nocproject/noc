@@ -16,8 +16,8 @@ if [ $? -ne 0 ]; then
     if [ -w ./contrib/lib/ ]; then
         ./contrib/src/bin/sync
     else
-        echo "Changing to superuser to execute ./contrib/src/bin/sync"
-        sudo -s $PWD/contrib/src/bin/sync
+        echo "Changing to superuser to execute '/usr/bin/env python $PWD/contrib/src/bin/sync'"
+        sudo -s "/usr/bin/env python $PWD/contrib/src/bin/sync"
     fi
 fi
 
