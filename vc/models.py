@@ -8,13 +8,14 @@
 ##----------------------------------------------------------------------
 """
 """
-from django.db import models
+from django.db import models,connection
 from django.db.models import Q
 from noc.main.menu import Menu
 from noc.main.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.sa.models import ManagedObjectSelector
 from noc.lib.validators import is_int
+from noc.lib.fields import CIDRField
 import re
 ##
 ## VC Type
@@ -42,8 +43,9 @@ class VCDomain(models.Model):
     description=models.TextField("Description",blank=True,null=True)
     type=models.ForeignKey(VCType,verbose_name="Type")
     enable_provisioning=models.BooleanField("Enable Provisioning",default=False)
+    enable_vc_bind_filter=models.BooleanField("Enable VC Bind filter",default=False)
     def __unicode__(self):
-        return u"%s: %s"%(unicode(self.type),self.name)
+        return u"%s: %s"%(self.name,unicode(self.type))
 ##
 ## VC Filter
 ##
@@ -94,6 +96,38 @@ class VCFilter(models.Model):
         return "<a href='/vc/vcfilter/%d/test/'>Test</a>"%self.id
     test_link.short_description="Test VC Filter"
     test_link.allow_tags=True
+##
+##
+##
+class VCBindFilter(models.Model):
+    class Meta:
+        verbose_name="VC Bind Filter"
+        verbose_name_plural="VC Bind Filters"
+    vc_domain=models.ForeignKey(VCDomain,verbose_name="VC Domain")
+    vrf=models.ForeignKey("ip.VRF",verbose_name="VRF")
+    prefix=CIDRField("prefix")
+    vc_filter=models.ForeignKey(VCFilter,verbose_name="VC Filter")
+    def __unicode__(self):
+        return "%s %s %s %s"%(self.vc_domain,self.vrf,self.prefix,self.vc_filter)
+    #
+    @classmethod
+    def get_choices(cls,prefix):
+        r=list(VC.objects.filter(vc_domain__in=[d.id for d in VCDomain.objects.filter(enable_vc_bind_filter=False)]))
+        for d in VCDomain.objects.filter(enable_vc_bind_filter=True):
+            cursor=connection.cursor()
+            cursor.execute("""SELECT DISTINCT vc_filter_id
+            FROM vc_vcbindfilter
+            WHERE vc_domain_id=%s
+                AND vrf_id=%s
+                AND prefix>>=%s::inet
+            """,[d.id,prefix.vrf.id,prefix.prefix])
+            filters=[VCFilter.objects.get(id=f_id) for f_id, in cursor.fetchall()]
+            for vc in d.vc_set.all():
+                for f in filters:
+                    if f.check(vc.l1):
+                        r+=[vc]
+        r=[(o.id,unicode(o)) for o in r]
+        return sorted(r,lambda x,y:cmp(x[1],y[1]))
 
 ##
 ## VCDomain Provisioning Parameters
@@ -138,9 +172,10 @@ class VC(models.Model):
     description=models.CharField("Description",max_length=256,null=True,blank=True)
 
     def __unicode__(self):
-        s=u"%s: %s: %d"%(self.vc_domain,self.name,self.l1)
+        s=u"%s %d"%(self.vc_domain,self.l1)
         if self.l2:
             s+=u"/%d"%self.l2
+        s+=u": %s"%self.name
         return s
     ##
     ##
@@ -195,6 +230,7 @@ class AppMenu(Menu):
         ("Setup",[
             ("VC Domains", "/admin/vc/vcdomain/", "vc.change_vcdomain"),
             ("VC Filters", "/admin/vc/vcfilter/", "vc.change_vcfilter"),
+            ("VC Bind Filters", "/admin/vc/vcbindfilter/", "vc.change_vcbindfilter"),
             ("VC Types",   "/admin/vc/vctype/", "vc.change_vctype"),
         ])
     ]

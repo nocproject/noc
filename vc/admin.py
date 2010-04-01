@@ -9,7 +9,7 @@
 """
 """
 from django.contrib import admin
-from noc.vc.models import VCDomain,VCFilter,VC,VCType,VCDomainProvisioningConfig
+from noc.vc.models import VCDomain,VCFilter,VCBindFilter,VC,VCType,VCDomainProvisioningConfig
 
 ##
 ## Admin form for VCDomain
@@ -19,9 +19,9 @@ class VCDomainProvisioningConfigAdmin(admin.TabularInline):
     extra=3
     
 class VCDomainAdmin(admin.ModelAdmin):
-    list_display=["name","type","enable_provisioning","description"]
+    list_display=["name","type","enable_provisioning","enable_vc_bind_filter","description"]
     search_fields=["name"]
-    list_filter=["type","enable_provisioning"]
+    list_filter=["type","enable_provisioning","enable_vc_bind_filter"]
     inlines=[VCDomainProvisioningConfigAdmin]
 ##
 ##
@@ -29,6 +29,11 @@ class VCDomainAdmin(admin.ModelAdmin):
 class VCFilterAdmin(admin.ModelAdmin):
     list_display=["name","expression","test_link"]
     search_fields=["name"]
+##
+##
+##
+class VCBindFilterAdmin(admin.ModelAdmin):
+    list_display=["vc_domain","vrf","prefix","vc_filter"]
 ##
 ##
 ##
@@ -42,5 +47,6 @@ class VCTypeAdmin(admin.ModelAdmin):
 
 admin.site.register(VCDomain,VCDomainAdmin)
 admin.site.register(VCFilter,VCFilterAdmin)
+admin.site.register(VCBindFilter,VCBindFilterAdmin)
 admin.site.register(VCType,VCTypeAdmin)
 admin.site.register(VC,VCAdmin)
