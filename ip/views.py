@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse,HttpResponseRedirect,HttpResponseForbidden
 from django import forms
 from noc.ip.models import VRFGroup,VRF,IPv4BlockAccess,IPv4Block,IPv4Address,IPv4AddressRange
-from noc.vc.models import VC
+from noc.vc.models import VC,VCBindFilter
 from noc.peer.models import AS
 from noc.lib.render import render,render_success,render_failure
 from noc.lib.validators import is_rd,is_cidr,is_int,is_ipv4,is_fqdn
@@ -441,21 +441,22 @@ def upload_axfr(request,vrf_id,prefix):
 ##
 ## Bind VC to Prefix
 ##
-class BindVCForm(forms.Form):
-    vc=forms.ModelChoiceField(label="VC",queryset=VC.objects.all(),required=True)
-    
 def bind_vc(request,vrf_id,prefix):
+    def get_bind_vc_form(prefix):
+        class BindVCForm(forms.Form):
+            vc=forms.ChoiceField(label="VC",choices=VCBindFilter.get_choices(prefix),required=True)
+        return BindVCForm
     vrf=get_object_or_404(VRF,id=int(vrf_id))
     p=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
     if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
         return HttpResponseForbidden("Permission denied")
     initial={"vc":p.vc}
     if request.POST:
-        form=BindVCForm(request.POST,initial=initial)
+        form=get_bind_vc_form(p)(request.POST,initial=initial)
         if form.is_valid():
-            p.vc=form.cleaned_data["vc"]
+            p.vc=get_object_or_404(VC,id=form.cleaned_data["vc"])
             p.save()
             return HttpResponseRedirect("/ip/%d/%s/"%(vrf.id,prefix))
     else:
-        form=BindVCForm(initial=initial)
+        form=get_bind_vc_form(p)(initial=initial)
     return render(request,"ip/bind_vc.html",{"form":form,"prefix":p})
