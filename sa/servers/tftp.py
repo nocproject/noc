@@ -12,7 +12,7 @@ import struct
 ##
 ## TFTP Server
 ##
-class TFTPServerSocket(ListenUDPSocket):
+class TFTPServer(ListenUDPSocket):
     # Opcodes
     RRQ=1
     WRQ=2
@@ -29,7 +29,7 @@ class TFTPServerSocket(ListenUDPSocket):
     ERR_AEXISTS=6    # File already exists.
     ERR_NOUSER=7     # No such user.
     def __init__(self,factory,address,server_hub):
-        super(TFTPServerSocket,self).__init__(factory,address,69)
+        super(TFTPServer,self).__init__(factory,address,69)
         self.active_transfers={} # (addres,port) -> url
     
     def on_read(self,data,address,port):
