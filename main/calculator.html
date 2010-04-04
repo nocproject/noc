@@ -1,0 +1,20 @@
+{% extends "template/template.html" %}
+{% block title%}{{title}}{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/main/calculator/">Calculators</A> &rsaquo; {{title}} &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<form method="POST">
+    <table border="0">
+    {{form.as_table}}
+    <tr><td colspan="2"><input type="submit" value="Calculate"/></td></tr>
+    </table>
+</form>
+{% if result %}
+<table border="0">
+    {% for k,v in result %}
+    <tr><td><b>{{k}}</b></td><td>{{v}}</td></tr>
+    {% endfor %}
+</table>
+{% endif %}
+{% endblock %}
+

@@ -9,6 +9,7 @@ from __future__ import with_statement
 from django.db import models
 from django.contrib.auth.models import User
 from noc.main.report import report_registry
+from noc.main.calculator import calculator_registry
 from noc.main.menu import Menu
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
@@ -90,6 +91,8 @@ if IS_WEB:
 ## Initialize download registry
 ##
 downloader_registry.register_all()
+##
+calculator_registry.register_all()
 ##
 ## Audit Trail
 ##
@@ -192,6 +195,8 @@ class MIMEType(models.Model):
 ##
 ## pyRule
 ##
+class NoPyRuleException(Exception): pass
+
 class PyRule(models.Model):
     class Meta:
         verbose_name="pyRule"
@@ -205,6 +210,7 @@ class PyRule(models.Model):
     compiled_pyrules={}
     compiled_changed={}
     compiled_lock=threading.Lock()
+    NoPyRule=NoPyRuleException
     def __unicode__(self):
         return self.name
     # Returns an interface class
@@ -223,7 +229,7 @@ class PyRule(models.Model):
     ##
     ## Call pyRule
     ##
-    def call(self,**kwargs):
+    def _call(self,**kwargs):
         t=datetime.datetime.now()
         # Try to get compiled rule from cache
         with self.compiled_lock:
@@ -243,7 +249,16 @@ class PyRule(models.Model):
         result=f(**kwargs)
         # Check and result
         return i.clean_result(result)
-        
+    ##
+    ## Call named PyRule
+    ##
+    @classmethod
+    def call(cls,py_rule_name,**kwargs):
+        try:
+            rule=PyRule.objects.get(name=py_rule_name)
+        except PyRule.DoesNotExist:
+            raise cls.NoPyRule
+        return rule._call(**kwargs)
 ##
 ## Search patters
 ##
@@ -681,6 +696,7 @@ class AppMenu(Menu):
     title="Main"
     items=[
         ("Reports",        "/main/report/",           "is_logged_user()"),
+        ("Calculators",    "/main/calculator/",       "is_logged_user()"),
         ("Audit Trail",    "/admin/main/audittrail/", "is_superuser()"),
         ("Reference Books", "/main/refbook/",          "is_logged_user()"),
         ("Browse Data",     "/main/databrowse/",       "is_superuser()"),
