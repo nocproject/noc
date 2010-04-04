@@ -1,0 +1,14 @@
+{% extends "template/template.html" %}
+{% block title%}Calculators{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Calculators &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<h1>Calculators</h1>
+<DIV CLASS="module">
+    {% for cn,title in calculators %}
+        <TR><TH SCOPE="row"><A HREF="/main/calculator/{{cn}}/">{{title}}</A></TH></TR>
+    {% endfor %}
+    </TABLE>
+</DIV>
+
+{% endblock %}

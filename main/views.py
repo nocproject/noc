@@ -19,6 +19,7 @@ from django import forms
 from django.views.generic import list_detail
 from noc.lib.render import render,render_success,render_failure,render_json
 from noc.main.report import report_registry
+from noc.main.calculator import calculator_registry
 from noc.main.menu import MENU
 from noc.main.search import search as search_engine
 from noc.main.models import RefBook, RefBookData, TimePattern
@@ -105,6 +106,20 @@ def report_index(request):
         v.sort(lambda x,y:cmp(x.title,y.title))
         out.append([k,v])
     return render(request,"main/report_index.html",{"reports":out})
+##
+##
+##
+def calculator(request,calculator):
+    try:
+        c=calculator_registry[calculator]()
+    except KeyError:
+        return HttpResponseNotFound("No calculator found")
+    return c.render(request)
+
+def calculator_index(request):
+    r=[(cn,c.title) for cn,c in calculator_registry.classes.items()]
+    r=sorted(r,lambda x,y: cmp(x[1],y[1]))
+    return render(request,"main/calculator_index.html",{"calculators":r})
 ##
 ## Success page
 ##
