@@ -165,7 +165,7 @@ class AS(models.Model):
         if self.header_remarks:
             s+=["remarks: %s"%x for x in self.header_remarks.split("\n")]
         # Find AS peers
-        pg={} # Peer Group -> AS -> peering_point -> [(import, export, localpref, remark)]
+        pg={} # Peer Group -> AS -> peering_point -> [(import, export, localpref, import_med, export_med, remark)]
         for peer in self.peer_set.filter(status="A"):
             if peer.peer_group not in pg:
                 pg[peer.peer_group]={}
@@ -174,12 +174,14 @@ class AS(models.Model):
             if peer.peering_point not in pg[peer.peer_group][peer.remote_asn]:
                 pg[peer.peer_group][peer.remote_asn][peer.peering_point]=[]
             to_skip=False
-            for p_import,p_export,localpref,remark in pg[peer.peer_group][peer.remote_asn][peer.peering_point]:
-                if peer.import_filter==p_import and peer.export_filter==p_export:
+            e_import_med=peer.effective_import_med
+            e_export_med=peer.effective_export_med
+            for p_import,p_export,localpref,import_med,export_med,remark in pg[peer.peer_group][peer.remote_asn][peer.peering_point]:
+                if peer.import_filter==p_import and peer.export_filter==p_export and e_import_med==import_med and e_export_med==export_med:
                     to_skip=True
                     break
             if not to_skip:
-                pg[peer.peer_group][peer.remote_asn][peer.peering_point]+=[(peer.import_filter,peer.export_filter,peer.local_pref,peer.rpsl_remark)]
+                pg[peer.peer_group][peer.remote_asn][peer.peering_point]+=[(peer.import_filter,peer.export_filter,peer.effective_local_pref,e_import_med,e_export_med,peer.rpsl_remark)]
         # Build RPSL
         inverse_pref=config.getboolean("peer","rpsl_inverse_pref_style")
         for peer_group in pg:
@@ -189,7 +191,7 @@ class AS(models.Model):
             for asn in sorted(pg[peer_group]):
                 add_at=len(pg[peer_group][asn])!=1
                 for pp in pg[peer_group][asn]:
-                    for import_filter,export_filter,localpref,remark in pg[peer_group][asn][pp]:
+                    for import_filter,export_filter,localpref,import_med,export_med,remark in pg[peer_group][asn][pp]:
                         # Prepend import and export with remark when given
                         if remark:
                             s+=["remarks: # %s"%remark]
@@ -197,15 +199,22 @@ class AS(models.Model):
                         i_s="import: from AS%d"%asn
                         if add_at:
                             i_s+=" at %s"%pp.hostname
+                        actions=[]
                         if localpref:
                             pref=(65535-localpref) if inverse_pref else localpref
-                            i_s+=" action pref=%d;"%pref
+                            actions+=["pref=%d;"%pref]
+                        if import_med:
+                            actions+=["med=%d;"%import_med]
+                        if actions:
+                            i_s+=" action "+" ".join(actions)
                         i_s+=" accept %s"%import_filter
                         s+=[i_s]
                         # Build export statement
                         e_s="export: to AS%d"%asn
                         if add_at:
                             e_s+=" at %s"%pp.hostname
+                        if export_med:
+                            e_s+=" action med=%d;"%export_med
                         e_s+=" announce %s"%export_filter
                         s+=[e_s]
         # Add contacts
@@ -394,6 +403,9 @@ class PeerGroup(models.Model):
     description=models.CharField("Description",max_length=64)
     communities=models.CharField("Import Communities",max_length=128,blank=True,null=True)
     max_prefixes=models.IntegerField("Max. Prefixes",default=100)
+    local_pref=models.IntegerField("Local Pref",null=True,blank=True)
+    import_med=models.IntegerField("Import MED",blank=True,null=True)
+    export_med=models.IntegerField("Export MED",blank=True,null=True)
     def __str__(self):
         return self.name
     def __unicode__(self):
@@ -415,7 +427,9 @@ class Peer(models.Model):
     remote_backup_ip=INETField("Remote Backup IP",null=True,blank=True)
     status=models.CharField("Status",max_length=1,default="A",choices=[("P","Planned"),("A","Active"),("S","Shutdown")])
     import_filter=models.CharField("Import filter",max_length=64)
-    local_pref=models.IntegerField("Local Pref",null=True,blank=True)
+    local_pref=models.IntegerField("Local Pref",null=True,blank=True) # Override PeerGroup.local_pref
+    import_med=models.IntegerField("Import MED",blank=True,null=True) # Override PeerGroup.import_med
+    export_med=models.IntegerField("Export MED",blank=True,null=True) # Override PeerGroup.export_med
     export_filter=models.CharField("Export filter",max_length=64)
     description=models.CharField("Description",max_length=64,null=True,blank=True)
     rpsl_remark=models.CharField("RPSL Remark",max_length=64,null=True,blank=True)           # Peer remark to be shown in RPSL
@@ -490,15 +504,29 @@ class Peer(models.Model):
     def _rpsl(self):
         s="import: from AS%d"%self.remote_asn
         s+=" at %s"%self.peering_point.hostname
-        if self.local_pref:
+        actions=[]
+        local_pref=self.effective_local_pref
+        if local_pref:
             # Select pref meaning
             if config.getboolean("peer","rpsl_inverse_pref_style"):
-                pref=65535-self.local_pref # RPSL style
+                pref=65535-local_pref # RPSL style
             else:
-                pref=self.local_pref                
-            s+=" action pref=%d;"%pref
+                pref=local_pref
+            actions+=["pref=%d;"%pref]
+        import_med=self.effective_import_med
+        if import_med:
+            actions+=["med=%d;"%import_med]
+        if actions:
+            s+=" action "+" ".join(actions)
         s+=" accept %s\n"%self.import_filter
-        s+="export: to AS%s at %s announce %s"%(self.remote_asn,self.peering_point.hostname,self.export_filter)
+        actions=[]
+        export_med=self.effective_export_med
+        if export_med:
+            actions+=["med=%d;"%export_med]
+        s+="export: to AS%s at %s"%(self.remote_asn,self.peering_point.hostname)
+        if actions:
+            s+=" action "+" ".join(actions)
+        " announce %s"%self.export_filter
         return s
     rpsl=property(_rpsl)
     def _effective_max_prefixes(self):
@@ -508,6 +536,30 @@ class Peer(models.Model):
             return self.peer_group.max_prefixes
         return 0
     effective_max_prefixes=property(_effective_max_prefixes)
+    ##
+    ## Effective localpref: Peer specific or PeerGroup inherited
+    ##
+    def _effective_local_pref(self):
+        if self.local_pref is not None:
+            return self.local_pref
+        return self.peer_group.local_pref
+    effective_local_pref=property(_effective_local_pref)
+    ##
+    ## Effective import med: Peer specific or PeerGroup inherited
+    ##
+    def _effective_import_med(self):
+        if self.import_med is not None:
+            return self.import_med
+        return self.peer_group.import_med
+    effective_import_med=property(_effective_import_med)
+    ##
+    ## Effective export med: Peer specific or PeerGroup inherited
+    ##
+    def _effective_export_med(self):
+        if self.export_med is not None:
+            return self.export_med
+        return self.peer_group.export_med
+    effective_export_med=property(_effective_export_med)
 ##
 ## Whois Database
 ##
