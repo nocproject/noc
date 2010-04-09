@@ -225,6 +225,33 @@ class ListParameter(Parameter):
 ##
 ##
 ##
+class InstanceOfParameter(Parameter):
+    """
+    >>> class C: pass
+    >>> class X: pass
+    >>> class CC(C): pass
+    >>> InstanceOfParameter(cls=C).clean(C()) and "Ok"
+    'Ok'
+    >>> InstanceOfParameter(cls=C).clean(CC()) and "Ok"
+    'Ok'
+    >>> InstanceOfParameter(cls=C).clean(1) and "Ok"
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: InstanceOfParameter: 1
+    """
+    def __init__(self,cls,required=True,default=None):
+        super(InstanceOfParameter,self).__init__(required=required,default=default)
+        self.cls=cls
+    def clean(self,value):
+        try:
+            if isinstance(value,self.cls):
+                return value
+        except:
+            pass
+        self.raise_error(value)
+##
+##
+##
 class ListOfParameter(ListParameter):
     """
     >>> ListOfParameter(element=IntParameter()).clean([1,2,3])
