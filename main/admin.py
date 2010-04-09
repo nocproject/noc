@@ -9,9 +9,13 @@
 """
 from django.contrib import admin
 from django import forms
+from django.forms.models import modelform_factory
 from django.core import serializers
 from django.http import HttpResponse,HttpResponseRedirect
+from django.contrib.contenttypes.models import ContentType
 from noc.main.models import *
+from noc.lib.render import render
+
 ##
 ## Global admin actions
 ##
@@ -23,6 +27,39 @@ def xml_export(modeladmin,request,queryset):
     serializers.serialize('xml',queryset,stream=response)
     return response
 xml_export.short_description="Export selected objects as XML"
+##
+## Bulk field change
+##
+def bulk_change(modeladmin,request,queryset):
+    model=modeladmin.model
+    form_class=modelform_factory(model)
+    for f in model._meta.fields:
+        if f.name not in form_class.base_fields:
+            continue
+        # Remove unique and auto fields
+        if f.unique or f.auto_created:
+            del form_class.base_fields[f.name]
+    context={
+        'add':    False,
+        'change': True,
+        'has_add_permission':    modeladmin.has_add_permission(request),
+        'has_change_permission': modeladmin.has_change_permission(request),
+        'has_delete_permission': modeladmin.has_delete_permission(request),
+        'has_file_field': False,
+        'has_absolute_url': hasattr(model, 'get_absolute_url'),
+        'ordered_objects': None,
+        'form_url': "",
+        'opts': model._meta,
+        'content_type_id': ContentType.objects.get_for_model(model).id,
+        'save_as': modeladmin.save_as,
+        'save_on_top': modeladmin.save_on_top,
+        'root_path': modeladmin.admin_site.root_path,
+        'is_popup' : False,
+        'adminform': form_class(),
+        'title': "Bulk Change",
+    }
+    return render(request,"main/bulk_change.html",context)
+bulk_change.short_description="Bulk field change"
 
 ##
 ##
@@ -46,7 +83,19 @@ class MIMETypeAdmin(admin.ModelAdmin):
 ##
 ## Admin for pyRules
 ##
+class PyRuleForm(forms.ModelForm):
+    class Meta:
+        model=PyRule
+    def clean_text(self):
+        text=self.cleaned_data["text"]
+        try:
+            PyRule.compile_text(text)
+        except SyntaxError,why:
+            raise forms.ValidationError("Syntax Error: "+str(why))
+        return text.replace("\r\n","\n")
+
 class PyRuleAdmin(admin.ModelAdmin):
+    form=PyRuleForm
     list_display=["name","interface"]
     search_fields=["name"]
 
@@ -135,6 +184,7 @@ class SystemNotificationAdmin(admin.ModelAdmin):
 ##
 ## Register default actions
 ##
+admin.site.add_action(bulk_change)
 admin.site.add_action(xml_export)
 ##
 ## Register administrative interfaces
