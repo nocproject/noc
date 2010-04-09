@@ -222,10 +222,12 @@ class PyRule(models.Model):
     def compile_text(self,text):
         d={}
         exec text.replace("\r\n","\n") in d
-        if len(d)!=2: # Consider also __builtins__
-            raise SyntaxError,"One and only one symbol must be defined"
-        name=[x for x in d if x!="__builtins__"][0]
-        return d[name]
+        if "rule" not in d:
+            raise SyntaxError,"No 'rule' symbol defined"
+        rule=d["rule"]
+        if not callable(rule):
+            raise SyntaxError,"'rule' is not callable"
+        return rule
     ##
     ## Call pyRule
     ##
