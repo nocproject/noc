@@ -126,8 +126,8 @@ class VCBindFilter(models.Model):
                 for f in filters:
                     if f.check(vc.l1):
                         r+=[vc]
-        r=[(o.id,unicode(o)) for o in r]
-        return sorted(r,lambda x,y:cmp(x[1],y[1]))
+        r=sorted(r,lambda x,y:cmp(x.l1,y.l1))
+        return [(o.id,unicode(o)) for o in r]
 
 ##
 ## VCDomain Provisioning Parameters
