@@ -29,7 +29,7 @@ def xml_export(modeladmin,request,queryset):
 xml_export.short_description="Export selected objects as XML"
 ##
 ## Bulk field change
-##
+## (Not working)
 def bulk_change(modeladmin,request,queryset):
     model=modeladmin.model
     form_class=modelform_factory(model)
@@ -57,9 +57,11 @@ def bulk_change(modeladmin,request,queryset):
         'is_popup' : False,
         'adminform': form_class(),
         'title': "Bulk Change",
+        'adminform': modeladmin.form,
     }
+    print dir(modeladmin)
     return render(request,"main/bulk_change.html",context)
-bulk_change.short_description="Bulk field change"
+#bulk_change.short_description="Bulk field change"
 
 ##
 ##
