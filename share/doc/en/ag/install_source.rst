@@ -51,19 +51,12 @@ Install::
 
     # easy_install psycopg2
 
-Sphinx
-^^^^^^
-Python documentation tool required to rebuild online documentation. Install::
-
-    # easy_install Sphinx
-
 webserver
 ^^^^^^^^^
 Any FastCGI-capable HTTP server supported. Commonly user choices are:
 * lighttpd
 * apache
 Please install webserver according to your operation system's requirements.
-
 
 libsmi
 ^^^^^^
@@ -75,7 +68,7 @@ Optional Packages
 Mercurial
 ^^^^^^^^^
 Distributed version control system. Required to fetch updates from repository. Mercurial also is a default
-format of Configuration Management repository.
+format of Configuration Management repository. Mercurial 1.3 or later required.
 
 netifaces
 ^^^^^^^^^
