@@ -77,5 +77,5 @@ function build_menu(menu_data) {
  * Request for menu
  */
 function menu() {
-    jQuery.getJSON("/main/menu/",build_menu)
+    jQuery.getJSON(MENU_JSON_URL,build_menu)
 }
