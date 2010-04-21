@@ -136,3 +136,5 @@ IS_WEB=(len(sys.argv)>=2 and sys.argv[0]=="manage.py" and sys.argv[1]=="runserve
 ##
 TEST_RUNNER="noc.lib.test_runner.run_tests"
 COVERAGE_REPORT_PATH="local/coverage_report"
+##
+LOGIN_URL="/main/auth/login/"
