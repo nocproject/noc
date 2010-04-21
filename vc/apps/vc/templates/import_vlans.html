@@ -1,0 +1,10 @@
+{% extends "template/template.html" %}
+{% block content %}
+<H1>Import VLANs from switch</H1>
+<FORM METHOD="POST">
+    <TABLE BORDER="0">
+    {{form.as_table}}
+    </TABLE>
+<INPUT TYPE="submit" VALUE="Import" />
+</FORM>
+{%endblock%}
