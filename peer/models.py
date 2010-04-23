@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Peer module models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -15,7 +17,6 @@ from noc.sa.profiles import profile_registry
 from noc.main.models import NotificationGroup
 from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
-from noc.main.menu import Menu
 from noc.main.middleware import get_user
 from noc.lib.fileutils import urlopen
 from noc.lib.crypto import md5crypt
@@ -709,7 +710,7 @@ class WhoisCache(models.Model):
                         wc.save()
         return True
 ##
-##
+## Prepared prefix list cache
 ##
 class PrefixListCache(models.Model):
     class Meta:
@@ -723,26 +724,3 @@ class PrefixListCache(models.Model):
     pushed=models.DateTimeField("Pushed",blank=True,null=True)
     def __unicode__(self):
         return u"%s/%s"%(self.peering_point.hostname,self.name)
-
-##
-## Application Menu
-##
-class AppMenu(Menu):
-    app="peer"
-    title="Peering Management"
-    items=[
-        ("ASes",          "/admin/peer/as/"           ,"peer.change_as"),
-        ("ASsets",        "/admin/peer/asset/"        ,"peer.change_asset"),
-        ("Communities",   "/admin/peer/community/"    ,"peer.change_community"),
-        ("Peering Points","/admin/peer/peeringpoint/" ,"peer.change_peeringpoint"),
-        ("Peers",         "/admin/peer/peer/"         ,"peer.change_peer"),
-        ("Prefix List Builder", "/peer/builder/prefix_list/", "peer.change_peer"),
-        ("Setup",[
-            ("Peer Groups",     "/admin/peer/peergroup/"    , "peer.change_peergroup"),
-            ("Community Types", "/admin/peer/communitytype/", "peer.change_communitytype"),
-            ("RIRs",            "/admin/peer/rir/",           "peer.change_rir"),
-            ("Persons",         "/admin/peer/person/",        "peer.change_person"),
-            ("Maintainers",     "/admin/peer/maintainer/"   ,"peer.change_maintainer"),
-            ("Organisations",   "/admin/peer/organisation/"   ,"peer.change_organisation"),
-        ])
-    ]
