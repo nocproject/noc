@@ -20,6 +20,11 @@ VIEWS_SKELETON="""# -*- coding: utf-8 -*-
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.lib.app import Application
+##
+##
+##
+class TheAppplication(Application):
+    pass
 """
 
 MODEL_VIEWS_SKELETON="""# -*- coding: utf-8 -*-
@@ -68,7 +73,7 @@ class Command(BaseCommand):
                     pass
             views=os.path.join(app_path,"views.py")
             if not os.path.exists(views):
-                if "model" in options:
+                if "model" in options and options["model"]:
                     v=MODEL_VIEWS_SKELETON%{"model":options["model"],"module":m}
                 else:
                     v=VIEWS_SKELETON
