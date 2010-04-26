@@ -1,0 +1,4 @@
+{% extends "admin/change_list.html" %}
+{% block extra-object-tools %}
+{% if user.is_superuser %}<li><a href="{{app.base_url}}tools/" class="viewsitelink">Tools</a></li>{% endif %}
+{% endblock %}
