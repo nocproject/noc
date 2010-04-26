@@ -49,7 +49,10 @@ class Menu(object):
     ##
     def add_item(self,title,full_url,access):
         self.items+=[(title,full_url,access)]
-
+##
+## ProxyNone
+##
+class ProxyNode: pass
 ##
 ## Application Site
 ## Registers applications, build menu and handles views
@@ -61,12 +64,25 @@ class Site(object):
         self.urlresolvers={} # (module,appp) -> RegexURLResolver
         self.menu=[]
         self.app_menu={} # Module -> menu
+        self.views=ProxyNode() # Named views proxy
     ##
     ## Returns URLConf
     ##
     def urls(self):
         return self.urlpatterns
     urls=property(urls)
+    ##
+    ## Register named application view
+    ##
+    def register_named_view(self,mod_ns,app_ns,name,view):
+        if mod_ns and app_ns and name:
+            if not hasattr(self.views,mod_ns):
+                setattr(self.views,mod_ns,ProxyNode())
+            n=getattr(self.views,mod_ns)
+            if not hasattr(n,app_ns):
+                setattr(n,app_ns,ProxyNode())
+            n=getattr(n,app_ns)
+            setattr(n,name,view)
     ##
     ## Register application view
     ##
@@ -94,6 +110,8 @@ class Site(object):
             self.urlresolvers[app.module,app.app]=ar
         # Install view
         ar+=[RegexURLPattern(view.url,self.site_view(app,view),name=url_name)]
+        # Register named view
+        self.register_named_view(mod_ns,app_ns,url_name,view)
         # Install Menu
         if hasattr(view,"menu"):
             # Construct full url to menu item
@@ -196,15 +214,25 @@ class Application(object):
         parts=cls.__module__.split(".")
         return "%s.%s"%(parts[1],parts[3])
     ##
+    ## Return application's base url
+    ##
+    def base_url(self):
+        return "/%s/%s/"%(self.module,self.app)
+    base_url=property(base_url)
+    ##
     ## Return path to named template
     ##
     def get_template_path(self,template):
-        return os.path.join(self.module,"apps",self.app,"templates",template)
+        return [
+            os.path.join(self.module,"apps",self.app,"templates",template),
+            os.path.join(self.module,"templates",template)
+        ]
     ##
     ## Render template within context
     ##
     def render(self,request,template,dict={}):
-        return render_to_response(self.get_template_path(template),dict,context_instance=RequestContext(request))
+        return render_to_response(self.get_template_path(template),dict,
+            context_instance=RequestContext(request,dict={"app":self}))
     ##
     ## Create plain text response
     ##
@@ -219,12 +247,12 @@ class Application(object):
     ## Render "success" page
     ##
     def render_success(self,request,subject=None,text=None):
-        return self.render(request,"main/success.html",{"subject":subject,"text":text})
+        print self.site.views.main.message.success(request,subject=subject,text=text)
     ##
     ## Render "failure" page
     ##
     def render_failure(self,request,subject=None,text=None):
-        return self.render(request,"main/failure.html",{"subject":subject,"text":text})
+        print self.site.views.main.message.failure(request,subject=subject,text=text)
     ##
     ## Render wait page
     ##
@@ -269,6 +297,12 @@ class Application(object):
     ## Permit superuser
     def permit_superuser(self,request):
         return request.user and request.user.is_superuser
+    # Permit if user has permission
+    @classmethod
+    def has_perm(cls,perm):
+        def inner(app,request):
+            return request.user.has_perm(perm)
+        return inner
     ##
     ## View
     ##
@@ -291,6 +325,8 @@ class ModelApplication(Application):
         super(ModelApplication,self).__init__(site)
         self.admin=self.model_admin(self.model, django_admin.site)
         self.admin.app=self
+        self.admin.change_form_template=self.get_template_path("change_form.html")+["admin/change_form.html"]
+        self.admin.change_list_template=self.get_template_path("change_list.html")+["admin/change_list.html"]
     ##
     def permit_add(self,request):
         return self.admin.has_add_permission(request)
