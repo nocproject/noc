@@ -1,0 +1,27 @@
+{% extends "template/template.html" %}
+{% block title%}Test Selectors{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/admin/sa/">Sa</a> &rsaquo;
+<a href="{{app.base_url}}">Managed Object Selectors</a> &rsaquo; Test Selectors &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<h1>Test Managed Objects selectors</h1>
+<table border="0">
+    <thead>
+        <tr><th>Id</th><th>Name</th><th>Profile</th><th>Address</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+    {% for r in data %}
+    <tr><td colspan="5"><b>{{r.name}}</b></td></tr>
+        {% for o in r.objects %}
+        <tr class="{%cycle 'row1' 'row2'%}">
+            <td><a href="/admin/sa/managedobject/{{o.id}}">{{o.id}}</a></td>
+            <td>{{o.name}}</td>
+            <td>{{o.profile_name}}</td>
+            <td>{{o.address}}</td>
+            <td>{{o.description}}</td>
+        </tr>
+        {% endfor %}
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
