@@ -220,6 +220,11 @@ class Application(object):
         return "/%s/%s/"%(self.module,self.app)
     base_url=property(base_url)
     ##
+    ## Send a message to user
+    ##
+    def message_user(self,request,message):
+        request.user.message_set.create(message=message)
+    ##
     ## Return path to named template
     ##
     def get_template_path(self,template):
