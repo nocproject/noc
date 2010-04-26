@@ -276,6 +276,17 @@ class TaskSchedule(models.Model):
             TaskSchedule.objects.filter(next_run__lte=datetime.datetime.now(),is_enabled=True).exclude(id__in=exclude).order_by("-next_run")
         else:
             return TaskSchedule.objects.filter(next_run__lte=datetime.datetime.now(),is_enabled=True).order_by("-next_run")
+    ##
+    ## Reschedule an execution of task after specified time
+    ##
+    @classmethod
+    def reschedule(cls,periodic_name,days=0,minutes=0,seconds=0):
+        try:
+            t=cls.objects.get(periodic_name=periodic_name)
+            t.next_run=datetime.datetime.now()+datetime.timedelta(days=days,minutes=minutes,seconds=seconds)
+            t.save()
+        except TaskSchedule.DoesNotExist:
+            pass
 ##
 ## Object Selector
 ##
