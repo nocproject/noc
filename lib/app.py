@@ -247,12 +247,12 @@ class Application(object):
     ## Render "success" page
     ##
     def render_success(self,request,subject=None,text=None):
-        print self.site.views.main.message.success(request,subject=subject,text=text)
+        return self.site.views.main.message.success(request,subject=subject,text=text)
     ##
     ## Render "failure" page
     ##
     def render_failure(self,request,subject=None,text=None):
-        print self.site.views.main.message.failure(request,subject=subject,text=text)
+        return self.site.views.main.message.failure(request,subject=subject,text=text)
     ##
     ## Render wait page
     ##
