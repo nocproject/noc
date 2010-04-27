@@ -12,7 +12,8 @@ from noc.fm.models import EventCategory
 ## EventCategory admin
 ##
 class EventCategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display=["name"]
+    search_fields=["name"]
 ##
 ## EventCategory application
 ##
