@@ -374,8 +374,8 @@ class EventClassificationRule(models.Model):
         verbose_name="Event Classification Rule"
         verbose_name_plural="Event Classification Rules"
         ordering=["preference"]
-    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
     name=models.CharField("Name",max_length=64)
+    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
     preference=models.IntegerField("Preference",1000)
     action=models.CharField("Action",max_length=1,choices=[("A","Make Active"),("C","Close"),("D","Drop")],default="A")
     is_builtin=models.BooleanField("Is Builtin",default=False)
@@ -408,6 +408,47 @@ class EventClassificationRule(models.Model):
         s+=["    ]",""]
         return "\n".join(s)
     python_code=property(_python_code)
+    ##
+    ## Return clone of existing rule
+    ##
+    def clone(self):
+        # Find suitable rule name
+        i=1
+        while True:
+            name=self.name+" copy #%d"%i
+            try:
+                EventClassificationRule.objects.get(name=name)
+            except EventClassificationRule.DoesNotExist:
+                break
+            i+=1
+        # Create cloned rule
+        new_rule=EventClassificationRule(
+            name=name,
+            event_class=self.event_class,
+            preference=self.preference,
+            is_builtin=False)
+        new_rule.save()
+        for r in self.eventclassificationre_set.all():
+            new_r=EventClassificationRE(rule=new_rule,left_re=r.left_re,right_re=r.right_re)
+            new_r.save()
+        return new_rule
+        ##
+        ## Return rule created from event
+        ##
+        @classmethod
+        def from_event(cls,event):
+            def re_q(s):
+                for qc in ["\\",".","+","*","[","]","(",")"]:
+                    s=s.replace(qc,"\\"+qc)
+                return s
+            rule=EventClassificationRule(event_class=event.event_class,
+                name="Rule #%d:%d"%(event.id,random.randint(0,100000)),
+                preference=1000)
+            rule.save()
+            for d in event.eventdata_set.filter(type__in=[">","R"]):
+                r=EventClassificationRE(rule=rule,left_re="^%s$"%re_q(d.key)[:254],right_re="^%s$"%re_q(d.value)[:254])
+                r.save()
+            return rule
 ##
 ## Regular expressions to match event vars
 ##
