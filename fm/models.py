@@ -447,6 +447,48 @@ class EventPostProcessingRule(models.Model):
     notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group",null=True,blank=True)
     def __unicode__(self):
         return self.name
+    ##
+    ## Return clone of existing rule
+    ##
+    def clone(self):
+        # Find clone name
+        i=1
+        while True:
+            name=self.name+" copy #%d"%i
+            try:
+                EventPostProcessingRule.objects.get(name=name)
+            except EventPostProcessingRule.DoesNotExist:
+                break
+            i+=1
+        # Create cloned rule
+        new_rule=EventPostProcessingRule(
+            name=name,
+            event_class=self.event_class,
+            preference=self.preference,
+            description=self.description,
+            change_priority=self.change_priority,
+            change_category=self.change_category,
+            action=self.action,
+            is_active=True)
+        new_rule.save()
+        # Copy RE
+        for r in self.eventpostprocessingre_set.all():
+            new_r=EventPostProcessingRE(rule=new_rule,var_re=r.var_re,value_re=r.value_re)
+            new_r.save()
+        return new_rule
+    ##
+    ## Return rule created from event
+    ##
+    @classmethod
+    def from_event(cls,event):
+        def re_q(s):
+            return s.replace("\\","\\\\").replace(".","\\.").replace("+","\\+").replace("*","\\*")
+        rule=EventPostProcessingRule(event_class=event.event_class,name="Rule #%d:%d"%(event.id,random.randint(0,100000)),preference=1000)
+        rule.save()
+        for d in event.eventdata_set.filter(type="V"):
+            r=EventPostProcessingRE(rule=rule,var_re="^%s$"%re_q(d.key)[:254],value_re="^%s$"%re_q(d.value)[:254])
+            r.save()
+        return rule
 ##
 ## Regular expressions to match event vars
 ##
