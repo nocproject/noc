@@ -1,0 +1,6 @@
+{% extends "admin/change_list.html" %}
+{% block extra-object-tools %}
+{% if has_add_permission %}
+<li><a href="/fm/reload_correlator_config/" class="viewsitelink">Refresh rules</a></li>
+{% endif %}
+{% endblock %}
