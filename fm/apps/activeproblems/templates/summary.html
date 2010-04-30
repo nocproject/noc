@@ -1,0 +1,17 @@
+{% extends "template/template.html" %}
+{% block extrahead %}
+<meta http-equiv="Refresh" content="60" />
+<link rel="stylesheet" type="text/css" href="/fm/event_list_css/" />
+{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/fm/">Fm</a> &rsaquo; Active Problems Sumamry &rsaquo;
+</div>
+{% endblock %}
+<{% block content %}
+<h1>Active Problems Summary</h1>
+<TABLE BORDER=1>
+    <TR><TH>Object</TH><TH>Event Class</TH><TH>Event Priority</TH><TH>Count</TH></TR>
+    {% for o_name,c_name,p_name,count in data %}
+    <TR CLASS="CSS_{{p_name|cut:" "}}"><TD>{{o_name}}</TD><TD>{{c_name}}</TD><TD>{{p_name}}</TD><TD>{{count}}</TD></TR>
+    {% endfor %}
+</TABLE>
+{%endblock%}
