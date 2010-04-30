@@ -26,16 +26,16 @@ class ReloadConfigAppplication(Application):
     ##
     def view_reload_classifer_config(self,request):
         self.reload_classifier_config()
-        return self.response_redirect_to_referrer()
+        return self.response_redirect_to_referrer(request)
     view_reload_classifer_config.url=r"^classifier/$"
     view_reload_classifer_config.url_name="classifier"
     view_reload_classifer_config.access=Application.has_perm("fm.add_eventclassificationrule")
     ##
-    ## Reload correlator config and redirecti back
+    ## Reload correlator config and redirect back
     ##
     def view_reload_correlator_config(self,request):
         self.reload_correlator_config()
-        return self.response_redirect_to_referrer()
+        return self.response_redirect_to_referrer(request)
     view_reload_correlator_config.url=r"^correlator/$"
     view_reload_correlator_config.url_name="correlator"
     view_reload_correlator_config.access=Application.has_perm("fm.add_eventcorrelationrule")
