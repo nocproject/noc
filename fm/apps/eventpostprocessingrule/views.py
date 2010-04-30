@@ -6,8 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.contrib import admin
+from django.shortcuts import get_object_or_404
 from noc.lib.app import ModelApplication
-from noc.fm.models import EventPostProcessingRule,EventPostProcessingRE
+from noc.fm.models import Event,EventPostProcessingRule,EventPostProcessingRE
 ##
 ## Inline for EventPostProcessingRuleAdmin
 ##
@@ -37,3 +38,25 @@ class EventPostProcessingRuleApplication(ModelApplication):
     model=EventPostProcessingRule
     model_admin=EventPostProcessingRuleAdmin
     menu="Setup | Post-Processing Rules"
+    ##
+    ## Clone existing rule
+    ##
+    def view_clone(self,request,object_id):
+        rule=get_object_or_404(EventPostProcessingRule,id=int(object_id))
+        new_rule=rule.clone()
+        self.message_user(request,"Rule cloned")
+        return self.response_redirect_to_object(new_rule)
+    view_clone.url=r"^(?P<object_id>\d+)/clone/"
+    view_clone.url_name="clone"
+    view_clone.access=ModelApplication.has_perm("fm.add_eventpostprocessingrule")
+    ##
+    ## Create rule from event
+    ##
+    def view_from_event(self,request,event_id):
+        event=get_object_or_404(Event,id=int(event_id))
+        rule=EventPostProcessingRule.from_event(event)
+        self.message_user(request,"Rule created from event")
+        return self.response_redirect_to_object(rule)
+    view_from_event.url=r"^from_event/(?P<event_id>\d+)/$"
+    view_from_event.url_name="from_event"
+    view_from_event.access=ModelApplication.has_perm("fm.add_eventpostprocessingrule")
