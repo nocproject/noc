@@ -15,6 +15,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.conf import settings
 from django.utils.http import urlquote
 from django.contrib import admin as django_admin
+from django.db import connection
 import logging,os,glob
 ##
 ## Application menu
@@ -182,6 +183,56 @@ class Site(object):
 ##
 site=Site()
 ##
+## Application ACL
+##
+class Access(object):
+    def check(self,request):
+        return False
+    
+    def __or__(self,r):
+        return OrAccess(self,r)
+    
+    def __and__(self,r):
+        return AndAccess(self,r)
+
+class LogicAccess(Access):
+    def __init__(self,l,r):
+        super(LogicAccess,self).__init__()
+        self.l=l
+        self.r=r
+
+class OrAccess(LogicAccess):
+    def check(self,request):
+        return self.l.check(request) or self.r.check(request)
+
+class AndAccess(object):
+    def check(self,request):
+        return self.l.check(request) and self.r.check(request)
+
+class PermitAccess(Access):
+    def check(self,request):
+        return True
+
+class DenyAccess(Access):
+    def check(self,request):
+        return False
+
+class PermitLoggedAccess(Access):
+    def check(self,request):
+        return request.user and request.user.is_authenticated()
+
+class PermitSuperuserAccess(Access):
+    def check(self,request):
+        return request.user and request.user.is_superuser
+
+class HasPermAccess(Access):
+    def __init__(self,perm):
+        super(HasPermAccess,self).__init__()
+        self.perm=perm
+    
+    def check(self,request):
+        return request.user.has_perm(self.perm)
+##
 ## Metaclass for Application.
 ## Register application class to site
 ##
@@ -241,8 +292,8 @@ class Application(object):
     ##
     ## Create plain text response
     ##
-    def render_plain_text(self,text):
-        return HttpResponse(text,mimetype="text/plain")
+    def render_plain_text(self,text,mimetype="text/plain"):
+        return HttpResponse(text,mimetype=mimetype)
     ##
     ## Create serialized JSON-encoded response
     ##
@@ -271,6 +322,13 @@ class Application(object):
     def response_redirect(self,url):
         return HttpResponseRedirect(url)
     ##
+    ## Redirect to referrer
+    ##
+    def response_redirect_to_referrer(self,request,back_url=None):
+        if back_url is None:
+            back_url=self.base_url
+        return self.response_redirect(request.META.get("HTTP_REFERER",back_url))
+    ##
     ## Render Forbidden response
     ##
     def response_forbidden(self,text=None):
@@ -286,7 +344,12 @@ class Application(object):
     def debug(self,message):
         logging.debug(message)
     ##
-    ## ACL helpers. Must be attached to
+    ## Returns cursor
+    ##
+    def cursor(self):
+        return connection.cursor()
+    ##
+    ## Shortcuts to Access class.
     ## view_*.access=
     ##
     
@@ -332,6 +395,11 @@ class ModelApplication(Application):
         self.admin.app=self
         self.admin.change_form_template=self.get_template_path("change_form.html")+["admin/change_form.html"]
         self.admin.change_list_template=self.get_template_path("change_list.html")+["admin/change_list.html"]
+    ##
+    ## Redirect to object
+    ##
+    def response_redirect_to_object(self,object):
+        return self.response_redirect("%s%d/"%(self.base_url,object.id))
     ##
     def permit_add(self,request):
         return self.admin.has_add_permission(request)
