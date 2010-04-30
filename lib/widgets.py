@@ -9,17 +9,17 @@
 """
 from django import forms
 from django.http import HttpResponse
-
 ##
 ## Autocomplete widget
 ##
 class AutoCompleteTextInput(forms.TextInput):
-    def __init__(self,lookup_url,*args,**kwargs):
+    def __init__(self,url_name,*args,**kwargs):
         super(AutoCompleteTextInput,self).__init__(*args,**kwargs)
-        self.lookup_url=lookup_url
+        self.lookup_url=url_name #reverse(url_name)
     def render(self,name,value=None,attrs=None):
+        from django.core.urlresolvers import reverse
         return "%s<script type=\"text/javascript\">$(\"#%s\").autocomplete(\"%s\",{minChars:3,mustMatch:1});</script>"%(
-            super(AutoCompleteTextInput,self).render(name,value,attrs),attrs["id"],self.lookup_url
+            super(AutoCompleteTextInput,self).render(name,value,attrs),attrs["id"],reverse(self.lookup_url)
         )
 ##
 ## Autocomplete lookup function:
