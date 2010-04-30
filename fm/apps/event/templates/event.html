@@ -1,0 +1,90 @@
+{% extends "template/template.html" %}
+{% block title%}Event #{{e.id}}{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/fm/">Fm</A> &rsaquo; <A HREF="/fm/">Events</A> &rsaquo; {{e.id}}</div>{% endblock %}
+{% block object-tools %}
+<ul class="object-tools">
+    {% ifequal e.status 'A' %}<LI><A HREF="{% url fm:event:close e.id %}" class="addlink">Close</A></LI>{% endifequal %}
+    {% ifequal e.status 'C' %}<LI><A HREF="{% url fm:event:open e.id %}" class="addlink">Open</A></LI>{% endifequal %}
+    <LI><A HREF="{% url fm:event:reclassify e.id %}" class="addlink">Re-Classify</A></LI>
+    <LI><A HREF="{% url fm:eventclassificationrule:from_event e.id %}"class="addlink">Create Rule</A></LI>
+    <LI><A HREF="{% url fm:eventpostprocessingrule:from_event e.id %}"class="addlink">Create Post-Processing Rule</A></LI>
+</ul>
+{% endblock %}
+{% block content %}
+<ul class="object-tools">
+    {% ifequal e.status 'A' %}<LI><A HREF="{% url fm:event:close e.id %}" class="addlink">Close</A></LI>{% endifequal %}
+    {% ifequal e.status 'C' %}<LI><A HREF="{% url fm:event:open e.id %}" class="addlink">Open</A></LI>{% endifequal %}
+    <LI><A HREF="{% url fm:event:reclassify e.id %}" class="addlink">Re-Classify</A></LI>
+    <LI><A HREF="{% url fm:eventclassificationrule:from_event e.id %}"class="addlink">Create Rule</A></LI>
+    <LI><A HREF="{% url fm:eventpostprocessingrule:from_event e.id %}"class="addlink">Create Post-Processing Rule</A></LI>
+</ul>
+<style type="text/css">
+.event_data_description {
+    display: none;
+}
+</style>
+<script type="text/javascript">
+var shown=false;
+
+function toggle() {
+    if(shown) {
+        $(".event_data_description").hide();
+        $("#toggle_link").text("Show Descriptions");
+        shown=false;
+    } else {
+        $(".event_data_description").show();
+        $("#toggle_link").text("Hide Descriptions");
+        shown=true;
+    }
+}
+</script>
+<h1>Event #{{e.id}}: {{e.subject}}</h1>
+<DIV CLASS="module">
+    <TABLE WIDTH="100%">
+        <CAPTION><A CLASS="section">Common</A></CAPTION>
+        <TR><TD STYLE="width: 200px"><B>Managed Object:</B></TD><TD>{{e.managed_object}}</TD></TR>
+        <TR><TD><B>Class:</B></TD><TD>{{e.event_class}}</TD></TR>
+        <TR><TD><B>Priority:</B></TD><TD>{{e.event_priority}}</TD></TR>
+        <TR><TD><B>Category:</B></TD><TD>{{e.event_category}}</TD></TR>
+        <TR><TD><B>Status:</B></TD><TD>{{e.status}}</TD></TR>
+        <TR><TD><B>Time:</B></TD><TD>{{e.timestamp}}</TD</TR>
+    </TABLE>
+</DIV>
+
+<DIV CLASS="module">
+    <TABLE WIDTH="100%">
+        <CAPTION><A CLASS="section">Subject: {{e.subject}}</A></CAPTION>
+        <TR><TD><PRE>{{e.body}}</PRE></TD></TR>
+    </TABLE>
+</DIV>
+
+<DIV CLASS="module">
+    <TABLE WIDTH="100%" ID="event_data">
+        <CAPTION><A CLASS="section">Event Data</A></CAPTION>
+        {% for ed in e.eventdata_set.all %}
+            <TR class="{%cycle 'row1' 'row2'%}"><TD>{{ed.type}}</TD><TD STYLE="width: 400px">{{ed.key}}</TD><TD>{{ed.value}}</TD><TD CLASS="event_data_description">{{ed.description}}</TD></TR>
+        {% endfor %}
+            <tr><td></td><td></td><td><b><a href="#" onclick="toggle();" id="toggle_link">Show Descriptions</a></b></td><td></td></tr>
+    </TABLE>
+</DIV>
+
+<DIV CLASS="module">
+<TABLE WIDTH="100%">
+    <CAPTION><A CLASS="section">Event History</A></CAPTION>
+    {% for l in e.eventlog_set.all %}
+        <TR class="{%cycle 'row1' 'row2'%}"><TD STYLE="width: 200px">{{l.timestamp}}</TD><TD>{{l.from_status}}</TD><TD>{{l.to_status}}</TD><TD>{{l.message}}</TD></TR>
+    {% endfor %}
+</TABLE>
+</DIV>
+
+{%if e.repeats %}
+<DIV CLASS="module">
+<TABLE WIDTH="100%">
+    <CAPTION><A CLASS="section">Previous occurences</A></CAPTION>
+    {% for r in e.eventrepeat_set.all %}
+        <TR class="{%cycle 'row1' 'row2'%}"><TD>{{r.timestamp}}</TD></TR>
+    {% endfor %}
+</TABLE>
+{% endif %}
+
+{%endblock%}
