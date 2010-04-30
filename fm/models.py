@@ -382,11 +382,6 @@ class EventClassificationRule(models.Model):
     
     def __unicode__(self):
         return self.name
-        
-    def python_link(self):
-        return "<A HREF='/fm/py_event_classification_rule/%d/'>Python</A>"%self.id
-    python_link.short_description="Python"
-    python_link.allow_tags=True
     ##
     ## Python representation of data structure
     ##
@@ -739,24 +734,3 @@ class EventArchivationRule(models.Model):
     def _ttl_seconds(self):
         return self.ttl*{"s":1,"m":60,"h":3600,"d":86400}[self.ttl_measure]
     ttl_seconds=property(_ttl_seconds)
-##
-## Application Menu
-##
-class AppMenu(Menu):
-    app="fm"
-    title="Fault Management"
-    items=[
-        ("Events", "/fm/", "fm.change_event"),
-        ("Active Problems", "/fm/active_problems_summary/", "fm.change_event"),
-        ("Setup", [
-            ("MIBs",                "/admin/fm/mib/",                     "fm.change_mib"),
-            ("MIB Data",            "/admin/fm/mibdata/",                 "fm.change_mibdata"),
-            ("Event Classes",       "/admin/fm/eventclass/",              "fm.change_eventclass"),
-            ("Event Categories",    "/admin/fm/eventcategory/",           "fm.change_eventcategory"),
-            ("Event Priorities",    "/admin/fm/eventpriority/",           "fm.change_eventpriority"),
-            ("Classification Rules","/admin/fm/eventclassificationrule/", "fm.change_eventclassificationrule"),
-            ("Post-Processing Rules", "/admin/fm/eventpostprocessingrule/", "fm.change_eventpostprocessingrule"),
-            ("Correlation Rules",   "/admin/fm/eventcorrelationrule/",    "fm.change_eventcorrelationrule"),
-            ("Archivation Rules",   "/admin/fm/eventarchivationrule/",    "fm.change_eventarchivationrule"),
-        ])
-    ]
