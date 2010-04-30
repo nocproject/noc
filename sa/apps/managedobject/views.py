@@ -245,3 +245,14 @@ class ManagedObjectApplication(ModelApplication):
         return self.response_redirect(self.base_url+"tools/")
     view_upload.url=r"^tools/upload/$"
     view_upload.access=ModelApplication.permit_superuser
+    ##
+    ## AJAX lookup
+    ##
+    def view_lookup(self,request):
+        def lookup_function(q):
+            for m in ManagedObject.objects.filter(name__istartswith=q):
+                yield m.name
+        return self.lookup(request,lookup_function)
+    view_lookup.url=r"^lookup/$"
+    view_lookup.url_name="lookup"
+    view_lookup.access=ModelApplication.permit
