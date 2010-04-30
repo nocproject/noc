@@ -349,6 +349,17 @@ class Application(object):
     def cursor(self):
         return connection.cursor()
     ##
+    ## AJAX lookup wrapper
+    ##
+    def lookup(self,request,func):
+        result=[]
+        if request.GET and "q" in request.GET:
+            q=request.GET["q"]
+            if len(q)>2: # Ignore requests shorter than 3 letters
+                result=list(func(q))
+        return self.render_plain_text("\n".join(result))
+    
+    ##
     ## Shortcuts to Access class.
     ## view_*.access=
     ##
