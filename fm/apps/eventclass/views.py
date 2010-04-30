@@ -24,6 +24,14 @@ class EventClassAdmin(admin.ModelAdmin):
     search_fields=["name"]
     list_filter=["is_builtin","category"]
     inlines=[EventClassVarAdmin]
+    actions=["view_python"]
+    ##
+    ## Display python code for selected objects
+    ##
+    def view_python(self,request,queryset):
+        code="\n\n".join([o.python_code for o in queryset])
+        return self.app.render_plain_text(code)
+    view_python.short_description="View Python Code for selected objects"
 ##
 ## EventClass application
 ##
