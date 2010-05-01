@@ -16,6 +16,7 @@ from django.conf import settings
 from django.utils.http import urlquote
 from django.contrib import admin as django_admin
 from django.db import connection
+from noc.settings import INSTALLED_APPS
 import logging,os,glob
 ##
 ## Application menu
@@ -176,8 +177,10 @@ class Site(object):
     ## Auto-load all application classes
     ##
     def autodiscover(self):
-        for f in glob.glob("*/apps/*/views.py"):
-            __import__(".".join(["noc"]+f[:-3].split(os.path.sep)),{},{},"*")
+        for app in [a for a in INSTALLED_APPS if a.startswith("noc.")]:
+            n,m=app.split(".")
+            for f in glob.glob("%s/apps/*/views.py"%m):
+                __import__(".".join(["noc"]+f[:-3].split(os.path.sep)),{},{},"*")
 ##
 ## Global application site instance
 ##
