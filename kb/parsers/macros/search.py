@@ -59,7 +59,7 @@ class Macro(MacroBase):
         if "title" in args:
             out+=["<tr><th>%s</th></tr>"%args["title"]]
         for a in q:
-            link="/kb/%d/"%a.id
+            link="/kb/view/%d/"%a.id
             out+=["<tr>"]
             for f in display_list:
                 if f=="id":
