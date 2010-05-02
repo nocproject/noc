@@ -1,0 +1,11 @@
+{% extends "template/template.html" %}
+{% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.svg.css" />
+<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.svg.js"></SCRIPT>
+<SCRIPT TYPE="text/javascript" SRC="/static/js/noc.chart.js"></SCRIPT>
+{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/pm/">Performance Management</a> &rsaquo; <A HREF='/admin/pm/timeseries/'>Time Series</a> &rsaquo; {{ts.name}} &rsaquo; </div>{% endblock %}
+{% block content %}
+<h1>{{ts.name}}</h1>
+{{ts.as_html|safe}}
+{%endblock%}
