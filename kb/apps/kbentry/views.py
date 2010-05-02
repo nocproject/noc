@@ -7,8 +7,10 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from django import forms
+from django.shortcuts import get_object_or_404
 from noc.lib.app import ModelApplication
-from noc.kb.models import KBEntry,KBEntryAttachment
+from noc.kb.models import KBEntry,KBEntryAttachment,KBEntryTemplate
+import re
 ##
 ## Inline Admin for Attachments
 ##
@@ -39,3 +41,40 @@ class KBEntryApplication(ModelApplication):
     model=KBEntry
     model_admin=KBEntryAdmin
     menu="Setup | Entries"
+    ##
+    rx_template_var=re.compile("{{([^}]+)}}",re.MULTILINE)
+    ##
+    ## Display the list of templates
+    ##
+    def view_template_index(self,request):
+        templates=KBEntryTemplate.objects.order_by("name")
+        return self.render(request,"template_index.html", {"templates":templates})
+    view_template_index.url=r"^from_template/$"
+    view_template_index.menu="New from Template"
+    view_template_index.access=ModelApplication.has_perm("kb.add_kbentry")
+    ##
+    ## Create new entry from template
+    ##
+    def view_from_template(self,request,template_id):
+        def expand(template,vars):
+            return self.rx_template_var.sub(lambda x:vars[x.group(1)],template)
+        template=get_object_or_404(KBEntryTemplate,id=int(template_id))
+        var_list=template.var_list
+        if var_list and not request.POST:
+            return self.render(request,"template_form.html", {"template":template,"vars":var_list})
+        subject=template.subject
+        body=template.body
+        if var_list and request.POST:
+            vars={}
+            for v in var_list:
+                vars[v]=request.POST.get(v,"(((UNDEFINED)))")
+            subject=expand(subject,vars)
+            body=expand(body,vars)
+        kbe=KBEntry(subject=subject,body=body,language=template.language,markup_language=template.markup_language)
+        kbe.save(user=request.user)
+        for c in template.categories.all():
+            kbe.categories.add(c)
+        return self.response_redirect_to_object(kbe)
+    view_from_template.url=r"^from_template/(?P<template_id>\d+)/$"
+    view_from_template.url_name="from_template"
+    view_from_template.access=ModelApplication.has_perm("kb.add_kbentry")

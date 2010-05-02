@@ -1,0 +1,17 @@
+{% extends "template/template.html" %}
+{% block title%}Knowledge Base: Create New from Template{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A> &rsaquo; <a href="/kb/template/">Create New from Template</a> &rsaquo; {{template.name}}</div>{% endblock %}
+{% block content %}
+<h1>Create new article from template {{template.name}}</h1>
+<form method="POST">
+    <table border="0">
+    {% for v in vars %}
+    <tr class="{%cycle 'row1' 'row2'%}">
+        <td><b>{{v}}</b></td>
+        <td><input type="text" name="{{v}}" /></td>
+    </tr>
+    {% endfor %}
+    <tr><td colspan="2"><input type="submit" value="Create"/></td></tr>
+    </table>
+</form>
+{% endblock %}
