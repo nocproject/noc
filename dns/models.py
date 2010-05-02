@@ -14,8 +14,6 @@ from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 from noc.dns.generators import generator_registry
 from noc.lib.rpsl import rpsl_format
 from noc.lib.ip import generate_ips
-from noc.main.menu import Menu
-
 ##
 ## register all generator classes
 ##
@@ -266,7 +264,7 @@ class DNSZone(models.Model):
     distribution_list=property(_distribution_list)
     
     def distribution(self):
-        return ", ".join(["<A HREF='/dns/%s/zone/%s/'>%s</A>"%(self.name,n.id,n.name) for n in self.distribution_list])
+        return ", ".join(["<A HREF='/dns/dnszone/%d/ns/%d/'>%s</A>"%(self.id,n.id,n.name) for n in self.distribution_list])
     distribution.short_description="Distribution"
     distribution.allow_tags=True
 
@@ -304,11 +302,6 @@ class DNSZone(models.Model):
         s=["domain: %s"%self.name]+["nserver: %s"%ns for ns in self.ns_list]
         return rpsl_format("\n".join(s))
     rpsl=property(_rpsl)
-    
-    def rpsl_link(self):
-        return "<A HREF='/dns/%s/zone/rpsl/'>RPSL</A>"%self.name
-    rpsl_link.short_description="RPSL"
-    rpsl_link.allow_tags=True
 ##
 ##
 ##
@@ -363,17 +356,3 @@ class DNSZoneRecord(models.Model):
         return "%s %s"%(self.zone.name," ".join([x for x in [self.left,self.type.type,self.right] if x is not None]))
     def __unicode__(self):
         return unicode(str(self))
-##
-## Application Menu
-##
-class AppMenu(Menu):
-    app="dns"
-    title="DNS"
-    items=[
-        ("Zones", "/admin/dns/dnszone/", "dns.change_dnszone"),
-        ("Setup",[
-            ("DNS Servers",      "/admin/dns/dnsserver/",         "dns.change_dnsserver"),
-            ("Zone Profiles",    "/admin/dns/dnszoneprofile/",    "dns.change_dnszoneprofile"),
-            ("Zone Record Types","/admin/dns/dnszonerecordtype/", "dns.change_dnszonerecordtype"),
-        ])
-    ]
