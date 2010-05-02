@@ -59,7 +59,7 @@ class Parser(object):
         if text is None:
             text=link
         if link.startswith("KB") and is_int(link[2:]):
-            return u"<a href='/kb/%s/'>%s</a>"%(link[2:],text)
+            return u"<a href='/kb/view/%s/'>%s</a>"%(link[2:],text)
         elif link.startswith("TT"):
             tt={"tt":link[2:]}
             tt_url=config.get("tt","url",tt)%tt
@@ -68,7 +68,7 @@ class Parser(object):
             if text==link:
                 text=link[7:]
             link=link[7:]
-            return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,link,text)
+            return u"<a href='/kb/view/%d/attachment/%s/'>%s</a>"%(kb_entry.id,link,text)
         elif link.startswith("attachment:"):
             if text==link:
                 text=link[11:]
@@ -87,5 +87,5 @@ class Parser(object):
             name=href[7:]
         elif href.startswith("attachment:"):
             href=href[11:]
-        return "/kb/%d/attachment/%s/"%(kb_entry.id,href)
+        return "/kb/view/%d/attachment/%s/"%(kb_entry.id,href)
 
