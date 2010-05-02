@@ -80,7 +80,7 @@ class DNSZoneApplication(ModelApplication):
     def view_tools(self,request):
         return self.render(request,"tools.html",{"zones_upload_form":ZonesUploadForm()})
     view_tools.url=r"^tools/$"
-    view_tools.name="tools"
+    view_tools.url_name="tools"
     view_tools.access=ModelApplication.has_perm("dns.change_dnszone")
     ##
     ## Upload zones
