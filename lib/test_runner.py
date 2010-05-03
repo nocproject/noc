@@ -5,41 +5,108 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import os
+import os,unittest,sys
 from django.test import simple
 from django.conf import settings
-
-try:
-    from coverage import coverage as Coverage
-except ImportError:
-    run_tests=simple.run_tests
-else:
-    coverage=Coverage()
-    
-    def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[]):
+from coverage import coverage as Coverage
+from django.test import _doctest as doctest
+from django.test.testcases import OutputChecker, DocTestRunner, TestCase
+##
+## Test module by importing it
+##
+class ImportTestCase(unittest.TestCase):
+    def __init__(self,module):
+        super(ImportTestCase,self).__init__()
+        self.module=module
+    def runTest(self):
+        __import__(self.module,{},{},"*")
+##
+## Generator returning NOC's modules
+##
+def get_modules():
+    for app in settings.INSTALLED_APPS:
+        if not app.startswith("noc."):
+            # Skip all contributed apps
+            continue
+        n,d=app.split(".")
+        yield d
+##
+## Return test modules from below path
+##
+def get_test_suite(path):
+    for root,dirs,files in os.walk(path):
+        for f in [f for f in files if f.endswith(".py")]:
+            yield ".".join(["noc"]+root.split(os.path.sep)+[f[:-3]])
+##
+## Build module list for Coverage
+## and application test suite
+##
+def get_tests():
+    modules=[]
+    suite=[]
+    # Add additional test libraries
+    for d in ["","lib"]:
+        p=os.path.join(d,"tests")
+        if os.path.isdir(p):
+            suite+=list(get_test_suite(p))
+    # Scan modules for tests
+    for d in get_modules():
+        # Add module's tests/
+        td=os.path.join(d,"tests")
+        if os.path.isdir(td):
+            suite+=list(get_test_suite(td))
         #
-        coverage.start()
-        test_results=simple.run_tests(test_labels,verbosity,interactive,extra_tests)
-        coverage.stop()
-        coverage_modules = []
-        for app in test_labels:
-            try:
-                module = __import__(app, globals(), locals(), [""])
-            except ImportError:
-                coverage_modules = None
-                break
-            if module:
-                base_path = os.path.join(os.path.split(module.__file__)[0],"")
-                for root, dirs, files in os.walk(base_path):
-                    for fname in files:
-                        path=os.path.join(root, fname)
-                        if fname.endswith(".py") and os.path.getsize(path) > 1:
-                            try:
-                                mname = os.path.join(app,path.replace(base_path,"")) 
-                                coverage_modules.append(mname)
-                            except ImportError:
-                                pass
-        # Coverage HTML Report
-        if coverage_modules or not test_labels:
-            coverage.html_report(coverage_modules, directory=settings.COVERAGE_REPORT_PATH)
-        return test_results
+        for root,dirs,files in os.walk(d):
+            if "migrations" in root or "tests" in root: # Skip migrations and tests
+                continue
+            modules+=[m for m in [os.path.join(root,f) for f in files if f.endswith(".py")] if os.path.getsize(m)>1]
+            parts=root.split(os.path.sep)
+            # Add all tests from applications's tests/
+            if len(parts)==4 and parts[1]=="apps" and parts[3]=="tests":
+                suit+=list(get_test_suite(root))
+            # Add all applications tests.py
+            if len(parts)==3 and parts[1]=="apps" and "tests.py" in files:
+                mn=".".join(["noc"]+parts+["tests"])
+                suite+=[mn]
+    ## Scan lib/ for tests
+    for root,dirs,files in os.walk("lib"):
+        if "tests" in root:
+            continue
+        modules+=[m for m in [os.path.join(root,f) for f in files if f.endswith(".py")] if os.path.getsize(m)>1]
+    # Build test suite
+    ts=[]
+    for m in suite:
+        ts+=unittest.defaultTestLoader.loadTestsFromModule(m)
+    return modules,ts
+##
+## "manage.py test" runner
+##
+def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[]):
+    modules,extra_tests=get_tests()
+    coverage=Coverage()
+    coverage.exclude(r"^\s*$")                # Exclude empty lines
+    coverage.exclude(r"^\s*#.*$")             # Exclude comment blocks
+    coverage.exclude(r"^\s*(import|from)\s")  # Exclude import statements
+    # Run tests
+    coverage.start()
+    # Add docstrings and module load tests
+    # Run inside Coverage context
+    doctestOutputChecker = OutputChecker()
+    for m in modules:
+        mn="noc."+m.replace(os.path.sep,".")[:-3]
+        if mn.endswith("__init__"):
+            mn=mn[:-9]
+        # Module load
+        extra_tests+=[ImportTestCase(mn)]
+        # Docstrings
+        try:
+            extra_tests+=doctest.DocTestSuite(mn,checker=doctestOutputChecker,runner=DocTestRunner)
+        except ValueError:
+            pass # No doctests in module
+    test_results=simple.run_tests(test_labels,verbosity,interactive,extra_tests)
+    coverage.stop()
+    # Coverage HTML Report
+    print "Writing Coverage report to %s"%settings.COVERAGE_REPORT_PATH
+    coverage.html_report(modules, directory=settings.COVERAGE_REPORT_PATH)
+    print "Done"
+    return test_results
