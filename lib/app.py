@@ -17,7 +17,7 @@ from django.utils.http import urlquote
 from django.contrib import admin as django_admin
 from django.db import connection
 from noc.settings import INSTALLED_APPS
-import logging,os,glob
+import logging,os,glob,types
 ##
 ## Application menu
 ## Populated by Site
@@ -56,6 +56,13 @@ class Menu(object):
 ##
 class ProxyNode: pass
 ##
+## URL Data Holder
+##
+class URL(object):
+    def __init__(self,url,name=None):
+        self.url=url
+        self.name=name
+##
 ## Application Site
 ## Registers applications, build menu and handles views
 ##
@@ -86,16 +93,30 @@ class Site(object):
             n=getattr(n,app_ns)
             setattr(n,name,view)
     ##
+    ## Generator returning view's URL objects
+    ##
+    def view_urls(self,view):
+        if isinstance(view.url,basestring): # view.url is string type
+            yield URL(view.url,name=getattr(view,"url_name",None))
+        elif isinstance(view.url,URL): # Explicit URL
+            yield view.url
+        elif isinstance(view.url,types.ListType) or isinstance(view.url,types.TupleType): # List type
+            for o in view.url:
+                if isinstance(o,basestring): # Given by string
+                    yield URL(o)
+                elif isinstance(o,URL):
+                    yield o
+                else:
+                    raise Exception("Invalid URL object: %s"%str(o))
+        else:
+            raise Exception("Invalid URL object: %s"%str(view.url))
+    ##
     ## Register application view
     ##
     def register_view(self,app,view):
         # Prepare namespaces
         mod_ns=app.module
         app_ns=app.app
-        try:
-            url_name=view.url_name
-        except AttributeError:
-            url_name=None
         # Install module URL resolver
         try:
             mr=self.urlresolvers[app.module,None]
@@ -111,9 +132,11 @@ class Site(object):
             mr+=[RegexURLResolver("^%s/"%app.app,ar,namespace=app_ns)]
             self.urlresolvers[app.module,app.app]=ar
         # Install view
-        ar+=[RegexURLPattern(view.url,self.site_view(app,view),name=url_name)]
-        # Register named view
-        self.register_named_view(mod_ns,app_ns,url_name,view)
+        sv=self.site_view(app,view)
+        for u in self.view_urls(view):
+            ar+=[RegexURLPattern(u.url,sv,name=u.name)]
+            # Register named view
+            self.register_named_view(mod_ns,app_ns,u.name,view)
         # Install Menu
         if hasattr(view,"menu"):
             # Construct full url to menu item
@@ -293,6 +316,11 @@ class Application(object):
         return render_to_response(self.get_template_path(template),dict,
             context_instance=RequestContext(request,dict={"app":self}))
     ##
+    ## Render arpitrary Content-Type response
+    ##
+    def render_response(self,data,content_type="text/plain"):
+        return HttpResponse(data,content_type=content_type)
+    ##
     ## Create plain text response
     ##
     def render_plain_text(self,text,mimetype="text/plain"):
@@ -430,12 +458,14 @@ class ModelApplication(Application):
     def view_changelist(self,request,extra_content=None):
         return self.admin.changelist_view(request,extra_content)
     view_changelist.url=r"^$"
+    view_changelist.url_name="changelist"
     view_changelist.access=permit_change
     view_changelist.menu=get_menu
     
     def view_add(self,request,form_url="",extra_content=None):
         return self.admin.add_view(request)
     view_add.url=r"^add/$"
+    view_add.url_name="add"
     view_add.access=permit_add
     
     def view_history(self,request,object_id,extra_content=None):
@@ -446,11 +476,13 @@ class ModelApplication(Application):
     def view_delete(self,request,object_id,extra_content=None):
         return self.admin.delete_view(request,object_id,extra_content)
     view_delete.url=r"^(\d+)/delete/$"
+    view_delete.url_name="delete"
     view_delete.access=permit_delete
     
     def view_change(self,request,object_id,extra_content=None):
         return self.admin.change_view(request,object_id,extra_content)
     view_change.url=r"^(\d+)/$"
+    view_change.url_name="change"
     view_change.access=permit_change
     
 ##
