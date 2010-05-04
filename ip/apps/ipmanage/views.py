@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django import forms
 from noc.lib.app import Application,URL
 from noc.ip.models import *
+from noc.vc.models import VC,VCBindFilter
 from noc.lib.colors import get_colors
 from noc.lib.validators import is_cidr,is_ipv4,is_fqdn
 from noc.lib.ip import normalize_prefix,contains,in_range,free_blocks
@@ -329,3 +330,30 @@ class IPManageAppplication(Application):
     view_revoke_address.url=r"^(?P<vrf_id>\d+)/(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/revoke_address/$"
     view_revoke_address.url_name="revoke_address"
     view_revoke_address.access=Application.has_perm("ip.change_ipv4block")
+    ##
+    ## Bind VC to Prefix
+    ##
+    def view_bind_vc(self,request,vrf_id,prefix):
+        def get_bind_vc_form(prefix):
+            class BindVCForm(forms.Form):
+                vc=forms.ChoiceField(label="VC",choices=VCBindFilter.get_choices(prefix),required=True)
+            return BindVCForm
+        vrf=get_object_or_404(VRF,id=int(vrf_id))
+        p=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
+        if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
+            return self.response_forbidden("Permission denied")
+        initial={"vc":p.vc}
+        if request.POST:
+            form=get_bind_vc_form(p)(request.POST,initial=initial)
+            if form.is_valid():
+                # Bind to vc
+                p.vc=get_object_or_404(VC,id=form.cleaned_data["vc"])
+                p.save()
+                self.message_user(request,"Prefix %s is succesfully bind to VC %s"%(prefix,str(p.vc)))
+                return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,prefix))
+        else:
+            form=get_bind_vc_form(p)(initial=initial)
+        return self.render(request,"bind_vc.html",{"form":form,"prefix":p})
+    view_bind_vc.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/bind_vc/$"
+    view_bind_vc.url_name="bind_vc"
+    view_bind_vc.access=Application.has_perm("ip.change_ipv4block")

@@ -165,7 +165,7 @@ function toggle_free() {
             <TD>
                 {% if prefix.vc %}{{prefix.vc}}{% endif %}
                 {% if can_allocate %}
-                <a href="/ip/{{vrf.id}}/{{prefix}}/vc/bind/"><b>{%if prefix.vc%}Change{%else%}Bind{%endif%}...</b></a>
+                <a href="{% url ip:ipmanage:bind_vc vrf.id prefix %}"><b>{%if prefix.vc%}Change{%else%}Bind{%endif%}...</b></a>
                 {% endif %}
             </TD>
         </TR>
