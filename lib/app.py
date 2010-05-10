@@ -5,19 +5,37 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+from __future__ import with_statement
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponse,HttpResponseRedirect,HttpResponseForbidden,HttpResponseNotFound
 from django.utils.simplejson.encoder import JSONEncoder
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import *
+from django.core import serializers
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.conf import settings
 from django.utils.http import urlquote
 from django.contrib import admin as django_admin
 from django.db import connection
-from noc.settings import INSTALLED_APPS
-import logging,os,glob,types
+from noc.settings import INSTALLED_APPS,config
+import logging,os,glob,types,re
+##
+## Setup Context Processor.
+## Used via TEMPLATE_CONTEXT_PROCESSORS variable in settings.py
+## Adds "setup" variable to context.
+## "setup" is a hash of
+##      "installation_name"
+##
+def setup_processor(request):
+    return {
+        "setup" : {
+            "installation_name" : config.get("customization","installation_name"),
+            "logo_url"          : config.get("customization","logo_url"),
+            "logo_width"        : config.get("customization","logo_width"),
+            "logo_height"       : config.get("customization","logo_height"),
+        }
+    }
 ##
 ## Application menu
 ## Populated by Site
@@ -204,6 +222,11 @@ class Site(object):
             n,m=app.split(".")
             for f in glob.glob("%s/apps/*/views.py"%m):
                 __import__(".".join(["noc"]+f[:-3].split(os.path.sep)),{},{},"*")
+    ##
+    ## Return application instance
+    ##
+    def application_by_class(self,app_class):
+        return self.apps[app_class.get_app_id()]
 ##
 ## Global application site instance
 ##
@@ -484,7 +507,6 @@ class ModelApplication(Application):
     view_change.url=r"^(\d+)/$"
     view_change.url_name="change"
     view_change.access=permit_change
-    
 ##
 ## Load all applications
 ##
