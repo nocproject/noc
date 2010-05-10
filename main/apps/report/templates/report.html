@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+{% block title%}{{report.title}}{% endblock %}
+{% block extrahead %}
+{% if refresh %}
+<meta http-equiv="Refresh" content="{{refresh}}" />
+{% endif %}
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.svg.css" />
+<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.svg.js"></SCRIPT>
+<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.rotate_text.js"></SCRIPT>
+{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/main/report/">Reports</A> &rsaquo; {{report.title}} &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<h1>{{report.title}}</h1>
+<script type="text/javascript">
+$(document).ready(function() {
+    $(".vtext").rotate_text();
+});
+</script>
+<DIV CLASS="module">
+{{data|safe}}
+</DIV>
+{% endblock %}

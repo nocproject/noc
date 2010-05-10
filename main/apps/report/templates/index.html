@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% block title%}Reports{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Reports &rsaquo;</div>
+{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+    {% for module,reports in reports %}
+        <DIV CLASS="module">
+            <TABLE SUMMARY="Reports available for {{module}} application" WIDTH="100%">
+            <CAPTION><A HREF="" CLASS="section">{{module}}</A></CAPTION>
+            {% for r in reports %}
+                <TR><TH SCOPE="row"><A HREF="{% url main:report:view r.name %}">{{r.title}}</A></TH></TR>
+            {% endfor %}
+            </TABLE>
+        </DIV>
+    {% endfor %}
+{% endblock %}
