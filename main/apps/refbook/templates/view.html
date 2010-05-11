@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %}
+{% block title%}{{rb.name}} | Reference Books{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="{% url main:refbook:index%}">Reference Books</a> &rsaquo; {{rb.name}} &rsaquo;</div>
+{% endblock %}
+{% block content %}
+{% if can_edit %}
+<ul class="object-tools">
+    <li><a href="{% url main:refbook:new rb.id%}" class="addlink">Add Record</a></li>
+</ul>
+{% endif %}
+
+<h1>{{rb.name}}</h1>
+<div class="module filtered" id="changelist">
+{% if rb.can_search %}
+<div id="toolbar">
+    <form id="changelist-search" action="{% url main:refbook:view rb.id %}" method="get">
+        <div>
+            <input type="hidden" name="page" value="{{page}}" />
+            <label for="searchbar"><img src="/media/img/admin/icon_searchbox.png" alt="Search" /></label>
+            <input type="text" size="40" name="query" value="{{query}}" id="searchbar" />
+            <input type="submit" value="Go" />
+        </div>
+    </form>
+</div>
+{% endif %}
+<table border="0">
+    <thead>
+    <tr>
+        {% for f in rb.refbookfield_set.all %}<th>{{f.name}}</th>{% endfor %}
+    </tr>
+    </thead>
+    {% for d in object_list %}
+    <tr class="{%cycle 'row1' 'row2'%}">
+        {% for c in d.value %}
+        <td><a href="{{d.id}}/">{{c}}</a></td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+</div>
+
+{% load paginator %}
+{% if is_paginated %}<div class="paginator">{% paginator %}</div>{% endif %}
+{% endblock %}
