@@ -1,0 +1,42 @@
+[
+    {
+        "pk": 3, 
+        "model": "main.refbook", 
+        "fields": {
+            "is_enabled": true, 
+            "last_updated": "2010-04-22 16:19:50", 
+            "name": "ISO 3166 Country Codes", 
+            "language": 38, 
+            "downloader": "CSV", 
+            "download_url": "http://update.nocproject.org/db/iso3166_1.csv", 
+            "is_builtin": true, 
+            "refresh_interval": 90, 
+            "next_update": "2010-07-21 16:19:50", 
+            "description": "ISO 3166 Country Codes"
+        }
+    },
+    {
+        "pk": 12, 
+        "model": "main.refbookfield", 
+        "fields": {
+            "description": null, 
+            "ref_book": 3, 
+            "search_method": "substring", 
+            "is_required": true, 
+            "order": 1, 
+            "name": "Country"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "main.refbookfield", 
+        "fields": {
+            "description": null, 
+            "ref_book": 3, 
+            "search_method": "substring", 
+            "is_required": true, 
+            "order": 2, 
+            "name": "Code"
+        }
+    }
+]
