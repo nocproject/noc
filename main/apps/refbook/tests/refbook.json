@@ -1,0 +1,2018 @@
+[
+    {
+        "pk": 3, 
+        "model": "main.refbook", 
+        "fields": {
+            "is_enabled": true, 
+            "last_updated": "2010-04-22 16:19:50", 
+            "name": "ISO 3166 Country Codes", 
+            "language": 38, 
+            "downloader": "CSV", 
+            "download_url": "http://update.nocproject.org/db/iso3166_1.csv", 
+            "is_builtin": false, 
+            "refresh_interval": 90, 
+            "next_update": "2010-07-21 16:19:50", 
+            "description": "ISO 3166 Country Codes"
+        }
+    },
+    {
+        "pk": 12, 
+        "model": "main.refbookfield", 
+        "fields": {
+            "description": null, 
+            "ref_book": 3, 
+            "search_method": "substring", 
+            "is_required": true, 
+            "order": 1, 
+            "name": "Country"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "main.refbookfield", 
+        "fields": {
+            "description": null, 
+            "ref_book": 3, 
+            "search_method": "substring", 
+            "is_required": true, 
+            "order": 2, 
+            "name": "Code"
+        }
+    },
+    {
+        "pk": 219663, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["AFGHANISTAN", "AF"]
+        }
+    }, 
+    {
+        "pk": 219417, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ALBANIA", "AL"]
+        }
+    }, 
+    {
+        "pk": 219418, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ALGERIA", "DZ"]
+        }
+    }, 
+    {
+        "pk": 219419, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["AMERICAN SAMOA", "AS"]
+        }
+    }, 
+    {
+        "pk": 219420, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ANDORRA", "AD"]
+        }
+    }, 
+    {
+        "pk": 219421, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ANGOLA", "AO"]
+        }
+    }, 
+    {
+        "pk": 219422, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ANGUILLA", "AI"]
+        }
+    }, 
+    {
+        "pk": 219423, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ANTARCTICA", "AQ"]
+        }
+    }, 
+    {
+        "pk": 219424, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ANTIGUA AND BARBUDA", "AG"]
+        }
+    }, 
+    {
+        "pk": 219425, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ARGENTINA", "AR"]
+        }
+    }, 
+    {
+        "pk": 219426, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ARMENIA", "AM"]
+        }
+    }, 
+    {
+        "pk": 219427, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ARUBA", "AW"]
+        }
+    }, 
+    {
+        "pk": 219428, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["AUSTRALIA", "AU"]
+        }
+    }, 
+    {
+        "pk": 219429, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["AUSTRIA", "AT"]
+        }
+    }, 
+    {
+        "pk": 219430, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["AZERBAIJAN", "AZ"]
+        }
+    }, 
+    {
+        "pk": 219431, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BAHAMAS", "BS"]
+        }
+    }, 
+    {
+        "pk": 219432, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BAHRAIN", "BH"]
+        }
+    }, 
+    {
+        "pk": 219433, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BANGLADESH", "BD"]
+        }
+    }, 
+    {
+        "pk": 219434, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BARBADOS", "BB"]
+        }
+    }, 
+    {
+        "pk": 219435, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BELARUS", "BY"]
+        }
+    }, 
+    {
+        "pk": 219436, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BELGIUM", "BE"]
+        }
+    }, 
+    {
+        "pk": 219437, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BELIZE", "BZ"]
+        }
+    }, 
+    {
+        "pk": 219438, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BENIN", "BJ"]
+        }
+    }, 
+    {
+        "pk": 219439, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BERMUDA", "BM"]
+        }
+    }, 
+    {
+        "pk": 219440, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BHUTAN", "BT"]
+        }
+    }, 
+    {
+        "pk": 219441, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BOLIVIA, PLURINATIONAL STATE OF", "BO"]
+        }
+    }, 
+    {
+        "pk": 219442, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BOSNIA AND HERZEGOVINA", "BA"]
+        }
+    }, 
+    {
+        "pk": 219443, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BOTSWANA", "BW"]
+        }
+    }, 
+    {
+        "pk": 219444, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BOUVET ISLAND", "BV"]
+        }
+    }, 
+    {
+        "pk": 219445, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BRAZIL", "BR"]
+        }
+    }, 
+    {
+        "pk": 219446, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BRITISH INDIAN OCEAN TERRITORY", "IO"]
+        }
+    }, 
+    {
+        "pk": 219447, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BRUNEI DARUSSALAM", "BN"]
+        }
+    }, 
+    {
+        "pk": 219448, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BULGARIA", "BG"]
+        }
+    }, 
+    {
+        "pk": 219449, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BURKINA FASO", "BF"]
+        }
+    }, 
+    {
+        "pk": 219450, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["BURUNDI", "BI"]
+        }
+    }, 
+    {
+        "pk": 219451, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CAMBODIA", "KH"]
+        }
+    }, 
+    {
+        "pk": 219452, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CAMEROON", "CM"]
+        }
+    }, 
+    {
+        "pk": 219453, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CANADA", "CA"]
+        }
+    }, 
+    {
+        "pk": 219454, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CAPE VERDE", "CV"]
+        }
+    }, 
+    {
+        "pk": 219455, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CAYMAN ISLANDS", "KY"]
+        }
+    }, 
+    {
+        "pk": 219456, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CENTRAL AFRICAN REPUBLIC", "CF"]
+        }
+    }, 
+    {
+        "pk": 219457, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CHAD", "TD"]
+        }
+    }, 
+    {
+        "pk": 219458, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CHILE", "CL"]
+        }
+    }, 
+    {
+        "pk": 219459, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CHINA", "CN"]
+        }
+    }, 
+    {
+        "pk": 219460, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CHRISTMAS ISLAND", "CX"]
+        }
+    }, 
+    {
+        "pk": 219461, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["COCOS (KEELING) ISLANDS", "CC"]
+        }
+    }, 
+    {
+        "pk": 219462, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["COLOMBIA", "CO"]
+        }
+    }, 
+    {
+        "pk": 219463, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["COMOROS", "KM"]
+        }
+    }, 
+    {
+        "pk": 219464, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CONGO", "CG"]
+        }
+    }, 
+    {
+        "pk": 219465, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CONGO, THE DEMOCRATIC REPUBLIC OF THE", "CD"]
+        }
+    }, 
+    {
+        "pk": 219466, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["COOK ISLANDS", "CK"]
+        }
+    }, 
+    {
+        "pk": 219467, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["COSTA RICA", "CR"]
+        }
+    }, 
+    {
+        "pk": 219469, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CROATIA", "HR"]
+        }
+    }, 
+    {
+        "pk": 219470, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CUBA", "CU"]
+        }
+    }, 
+    {
+        "pk": 219471, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CYPRUS", "CY"]
+        }
+    }, 
+    {
+        "pk": 219472, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["CZECH REPUBLIC", "CZ"]
+        }
+    }, 
+    {
+        "pk": 219468, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["C\\xd4TE D'IVOIRE", "CI"]
+        }
+    }, 
+    {
+        "pk": 219473, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["DENMARK", "DK"]
+        }
+    }, 
+    {
+        "pk": 219474, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["DJIBOUTI", "DJ"]
+        }
+    }, 
+    {
+        "pk": 219475, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["DOMINICA", "DM"]
+        }
+    }, 
+    {
+        "pk": 219476, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["DOMINICAN REPUBLIC", "DO"]
+        }
+    }, 
+    {
+        "pk": 219477, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ECUADOR", "EC"]
+        }
+    }, 
+    {
+        "pk": 219478, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["EGYPT", "EG"]
+        }
+    }, 
+    {
+        "pk": 219479, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["EL SALVADOR", "SV"]
+        }
+    }, 
+    {
+        "pk": 219480, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["EQUATORIAL GUINEA", "GQ"]
+        }
+    }, 
+    {
+        "pk": 219481, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ERITREA", "ER"]
+        }
+    }, 
+    {
+        "pk": 219482, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ESTONIA", "EE"]
+        }
+    }, 
+    {
+        "pk": 219483, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ETHIOPIA", "ET"]
+        }
+    }, 
+    {
+        "pk": 219484, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["FALKLAND ISLANDS (MALVINAS)", "FK"]
+        }
+    }, 
+    {
+        "pk": 219485, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["FAROE ISLANDS", "FO"]
+        }
+    }, 
+    {
+        "pk": 219486, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["FIJI", "FJ"]
+        }
+    }, 
+    {
+        "pk": 219487, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["FINLAND", "FI"]
+        }
+    }, 
+    {
+        "pk": 219488, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["FRANCE", "FR"]
+        }
+    }, 
+    {
+        "pk": 219489, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["FRENCH GUIANA", "GF"]
+        }
+    }, 
+    {
+        "pk": 219490, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["FRENCH POLYNESIA", "PF"]
+        }
+    }, 
+    {
+        "pk": 219491, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["FRENCH SOUTHERN TERRITORIES", "TF"]
+        }
+    }, 
+    {
+        "pk": 219492, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GABON", "GA"]
+        }
+    }, 
+    {
+        "pk": 219493, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GAMBIA", "GM"]
+        }
+    }, 
+    {
+        "pk": 219494, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GEORGIA", "GE"]
+        }
+    }, 
+    {
+        "pk": 219495, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GERMANY", "DE"]
+        }
+    }, 
+    {
+        "pk": 219496, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GHANA", "GH"]
+        }
+    }, 
+    {
+        "pk": 219497, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GIBRALTAR", "GI"]
+        }
+    }, 
+    {
+        "pk": 219498, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GREECE", "GR"]
+        }
+    }, 
+    {
+        "pk": 219499, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GREENLAND", "GL"]
+        }
+    }, 
+    {
+        "pk": 219500, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GRENADA", "GD"]
+        }
+    }, 
+    {
+        "pk": 219501, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GUADELOUPE", "GP"]
+        }
+    }, 
+    {
+        "pk": 219502, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GUAM", "GU"]
+        }
+    }, 
+    {
+        "pk": 219503, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GUATEMALA", "GT"]
+        }
+    }, 
+    {
+        "pk": 219504, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GUERNSEY", "GG"]
+        }
+    }, 
+    {
+        "pk": 219505, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GUINEA", "GN"]
+        }
+    }, 
+    {
+        "pk": 219506, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GUINEA-BISSAU", "GW"]
+        }
+    }, 
+    {
+        "pk": 219507, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["GUYANA", "GY"]
+        }
+    }, 
+    {
+        "pk": 219508, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["HAITI", "HT"]
+        }
+    }, 
+    {
+        "pk": 219509, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["HEARD ISLAND AND MCDONALD ISLANDS", "HM"]
+        }
+    }, 
+    {
+        "pk": 219510, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["HOLY SEE (VATICAN CITY STATE)", "VA"]
+        }
+    }, 
+    {
+        "pk": 219511, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["HONDURAS", "HN"]
+        }
+    }, 
+    {
+        "pk": 219512, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["HONG KONG", "HK"]
+        }
+    }, 
+    {
+        "pk": 219513, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["HUNGARY", "HU"]
+        }
+    }, 
+    {
+        "pk": 219514, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ICELAND", "IS"]
+        }
+    }, 
+    {
+        "pk": 219515, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["INDIA", "IN"]
+        }
+    }, 
+    {
+        "pk": 219516, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["INDONESIA", "ID"]
+        }
+    }, 
+    {
+        "pk": 219517, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["IRAN, ISLAMIC REPUBLIC OF", "IR"]
+        }
+    }, 
+    {
+        "pk": 219518, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["IRAQ", "IQ"]
+        }
+    }, 
+    {
+        "pk": 219519, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["IRELAND", "IE"]
+        }
+    }, 
+    {
+        "pk": 219520, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ISLE OF MAN", "IM"]
+        }
+    }, 
+    {
+        "pk": 219521, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ISRAEL", "IL"]
+        }
+    }, 
+    {
+        "pk": 219522, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ITALY", "IT"]
+        }
+    }, 
+    {
+        "pk": 219523, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["JAMAICA", "JM"]
+        }
+    }, 
+    {
+        "pk": 219524, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["JAPAN", "JP"]
+        }
+    }, 
+    {
+        "pk": 219525, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["JERSEY", "JE"]
+        }
+    }, 
+    {
+        "pk": 219526, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["JORDAN", "JO"]
+        }
+    }, 
+    {
+        "pk": 219527, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["KAZAKHSTAN", "KZ"]
+        }
+    }, 
+    {
+        "pk": 219528, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["KENYA", "KE"]
+        }
+    }, 
+    {
+        "pk": 219529, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["KIRIBATI", "KI"]
+        }
+    }, 
+    {
+        "pk": 219530, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF", "KP"]
+        }
+    }, 
+    {
+        "pk": 219531, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["KOREA, REPUBLIC OF", "KR"]
+        }
+    }, 
+    {
+        "pk": 219532, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["KUWAIT", "KW"]
+        }
+    }, 
+    {
+        "pk": 219533, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["KYRGYZSTAN", "KG"]
+        }
+    }, 
+    {
+        "pk": 219534, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["LAO PEOPLE'S DEMOCRATIC REPUBLIC", "LA"]
+        }
+    }, 
+    {
+        "pk": 219535, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["LATVIA", "LV"]
+        }
+    }, 
+    {
+        "pk": 219536, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["LEBANON", "LB"]
+        }
+    }, 
+    {
+        "pk": 219537, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["LESOTHO", "LS"]
+        }
+    }, 
+    {
+        "pk": 219538, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["LIBERIA", "LR"]
+        }
+    }, 
+    {
+        "pk": 219539, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["LIBYAN ARAB JAMAHIRIYA", "LY"]
+        }
+    }, 
+    {
+        "pk": 219540, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["LIECHTENSTEIN", "LI"]
+        }
+    }, 
+    {
+        "pk": 219541, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["LITHUANIA", "LT"]
+        }
+    }, 
+    {
+        "pk": 219542, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["LUXEMBOURG", "LU"]
+        }
+    }, 
+    {
+        "pk": 219543, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MACAO", "MO"]
+        }
+    }, 
+    {
+        "pk": 219544, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF", "MK"]
+        }
+    }, 
+    {
+        "pk": 219545, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MADAGASCAR", "MG"]
+        }
+    }, 
+    {
+        "pk": 219546, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MALAWI", "MW"]
+        }
+    }, 
+    {
+        "pk": 219547, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MALAYSIA", "MY"]
+        }
+    }, 
+    {
+        "pk": 219548, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MALDIVES", "MV"]
+        }
+    }, 
+    {
+        "pk": 219549, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MALI", "ML"]
+        }
+    }, 
+    {
+        "pk": 219550, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MALTA", "MT"]
+        }
+    }, 
+    {
+        "pk": 219551, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MARSHALL ISLANDS", "MH"]
+        }
+    }, 
+    {
+        "pk": 219552, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MARTINIQUE", "MQ"]
+        }
+    }, 
+    {
+        "pk": 219553, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MAURITANIA", "MR"]
+        }
+    }, 
+    {
+        "pk": 219554, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MAURITIUS", "MU"]
+        }
+    }, 
+    {
+        "pk": 219555, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MAYOTTE", "YT"]
+        }
+    }, 
+    {
+        "pk": 219556, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MEXICO", "MX"]
+        }
+    }, 
+    {
+        "pk": 219557, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MICRONESIA, FEDERATED STATES OF", "FM"]
+        }
+    }, 
+    {
+        "pk": 219558, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MOLDOVA, REPUBLIC OF", "MD"]
+        }
+    }, 
+    {
+        "pk": 219559, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MONACO", "MC"]
+        }
+    }, 
+    {
+        "pk": 219560, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MONGOLIA", "MN"]
+        }
+    }, 
+    {
+        "pk": 219561, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MONTENEGRO", "ME"]
+        }
+    }, 
+    {
+        "pk": 219562, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MONTSERRAT", "MS"]
+        }
+    }, 
+    {
+        "pk": 219563, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MOROCCO", "MA"]
+        }
+    }, 
+    {
+        "pk": 219564, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MOZAMBIQUE", "MZ"]
+        }
+    }, 
+    {
+        "pk": 219565, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["MYANMAR", "MM"]
+        }
+    }, 
+    {
+        "pk": 219566, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NAMIBIA", "NA"]
+        }
+    }, 
+    {
+        "pk": 219567, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NAURU", "NR"]
+        }
+    }, 
+    {
+        "pk": 219568, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NEPAL", "NP"]
+        }
+    }, 
+    {
+        "pk": 219569, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NETHERLANDS", "NL"]
+        }
+    }, 
+    {
+        "pk": 219570, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NETHERLANDS ANTILLES", "AN"]
+        }
+    }, 
+    {
+        "pk": 219571, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NEW CALEDONIA", "NC"]
+        }
+    }, 
+    {
+        "pk": 219572, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NEW ZEALAND", "NZ"]
+        }
+    }, 
+    {
+        "pk": 219573, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NICARAGUA", "NI"]
+        }
+    }, 
+    {
+        "pk": 219574, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NIGER", "NE"]
+        }
+    }, 
+    {
+        "pk": 219575, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NIGERIA", "NG"]
+        }
+    }, 
+    {
+        "pk": 219576, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NIUE", "NU"]
+        }
+    }, 
+    {
+        "pk": 219577, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NORFOLK ISLAND", "NF"]
+        }
+    }, 
+    {
+        "pk": 219578, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NORTHERN MARIANA ISLANDS", "MP"]
+        }
+    }, 
+    {
+        "pk": 219579, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["NORWAY", "NO"]
+        }
+    }, 
+    {
+        "pk": 219580, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["OMAN", "OM"]
+        }
+    }, 
+    {
+        "pk": 219581, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PAKISTAN", "PK"]
+        }
+    }, 
+    {
+        "pk": 219582, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PALAU", "PW"]
+        }
+    }, 
+    {
+        "pk": 219583, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PALESTINIAN TERRITORY, OCCUPIED", "PS"]
+        }
+    }, 
+    {
+        "pk": 219584, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PANAMA", "PA"]
+        }
+    }, 
+    {
+        "pk": 219585, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PAPUA NEW GUINEA", "PG"]
+        }
+    }, 
+    {
+        "pk": 219586, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PARAGUAY", "PY"]
+        }
+    }, 
+    {
+        "pk": 219587, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PERU", "PE"]
+        }
+    }, 
+    {
+        "pk": 219588, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PHILIPPINES", "PH"]
+        }
+    }, 
+    {
+        "pk": 219589, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PITCAIRN", "PN"]
+        }
+    }, 
+    {
+        "pk": 219590, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["POLAND", "PL"]
+        }
+    }, 
+    {
+        "pk": 219591, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PORTUGAL", "PT"]
+        }
+    }, 
+    {
+        "pk": 219592, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["PUERTO RICO", "PR"]
+        }
+    }, 
+    {
+        "pk": 219593, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["QATAR", "QA"]
+        }
+    }, 
+    {
+        "pk": 219595, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ROMANIA", "RO"]
+        }
+    }, 
+    {
+        "pk": 219596, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["RUSSIAN FEDERATION", "RU"]
+        }
+    }, 
+    {
+        "pk": 219597, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["RWANDA", "RW"]
+        }
+    }, 
+    {
+        "pk": 219594, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["R\\xc9UNION", "RE"]
+        }
+    }, 
+    {
+        "pk": 219598, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAINT BARTH\\xc9LEMY", "BL"]
+        }
+    }, 
+    {
+        "pk": 219599, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAINT HELENA", "SH"]
+        }
+    }, 
+    {
+        "pk": 219600, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAINT KITTS AND NEVIS", "KN"]
+        }
+    }, 
+    {
+        "pk": 219601, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAINT LUCIA", "LC"]
+        }
+    }, 
+    {
+        "pk": 219602, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAINT MARTIN", "MF"]
+        }
+    }, 
+    {
+        "pk": 219603, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAINT PIERRE AND MIQUELON", "PM"]
+        }
+    }, 
+    {
+        "pk": 219604, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAINT VINCENT AND THE GRENADINES", "VC"]
+        }
+    }, 
+    {
+        "pk": 219605, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAMOA", "WS"]
+        }
+    }, 
+    {
+        "pk": 219606, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAN MARINO", "SM"]
+        }
+    }, 
+    {
+        "pk": 219607, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAO TOME AND PRINCIPE", "ST"]
+        }
+    }, 
+    {
+        "pk": 219608, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SAUDI ARABIA", "SA"]
+        }
+    }, 
+    {
+        "pk": 219609, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SENEGAL", "SN"]
+        }
+    }, 
+    {
+        "pk": 219610, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SERBIA", "RS"]
+        }
+    }, 
+    {
+        "pk": 219611, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SEYCHELLES", "SC"]
+        }
+    }, 
+    {
+        "pk": 219612, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SIERRA LEONE", "SL"]
+        }
+    }, 
+    {
+        "pk": 219613, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SINGAPORE", "SG"]
+        }
+    }, 
+    {
+        "pk": 219614, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SLOVAKIA", "SK"]
+        }
+    }, 
+    {
+        "pk": 219615, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SLOVENIA", "SI"]
+        }
+    }, 
+    {
+        "pk": 219616, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SOLOMON ISLANDS", "SB"]
+        }
+    }, 
+    {
+        "pk": 219617, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SOMALIA", "SO"]
+        }
+    }, 
+    {
+        "pk": 219618, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SOUTH AFRICA", "ZA"]
+        }
+    }, 
+    {
+        "pk": 219619, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS", "GS"]
+        }
+    }, 
+    {
+        "pk": 219620, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SPAIN", "ES"]
+        }
+    }, 
+    {
+        "pk": 219621, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SRI LANKA", "LK"]
+        }
+    }, 
+    {
+        "pk": 219622, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SUDAN", "SD"]
+        }
+    }, 
+    {
+        "pk": 219623, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SURINAME", "SR"]
+        }
+    }, 
+    {
+        "pk": 219624, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SVALBARD AND JAN MAYEN", "SJ"]
+        }
+    }, 
+    {
+        "pk": 219625, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SWAZILAND", "SZ"]
+        }
+    }, 
+    {
+        "pk": 219626, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SWEDEN", "SE"]
+        }
+    }, 
+    {
+        "pk": 219627, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SWITZERLAND", "CH"]
+        }
+    }, 
+    {
+        "pk": 219628, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["SYRIAN ARAB REPUBLIC", "SY"]
+        }
+    }, 
+    {
+        "pk": 219629, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TAIWAN, PROVINCE OF CHINA", "TW"]
+        }
+    }, 
+    {
+        "pk": 219630, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TAJIKISTAN", "TJ"]
+        }
+    }, 
+    {
+        "pk": 219631, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TANZANIA, UNITED REPUBLIC OF", "TZ"]
+        }
+    }, 
+    {
+        "pk": 219632, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["THAILAND", "TH"]
+        }
+    }, 
+    {
+        "pk": 219633, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TIMOR-LESTE", "TL"]
+        }
+    }, 
+    {
+        "pk": 219634, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TOGO", "TG"]
+        }
+    }, 
+    {
+        "pk": 219635, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TOKELAU", "TK"]
+        }
+    }, 
+    {
+        "pk": 219636, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TONGA", "TO"]
+        }
+    }, 
+    {
+        "pk": 219637, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TRINIDAD AND TOBAGO", "TT"]
+        }
+    }, 
+    {
+        "pk": 219638, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TUNISIA", "TN"]
+        }
+    }, 
+    {
+        "pk": 219639, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TURKEY", "TR"]
+        }
+    }, 
+    {
+        "pk": 219640, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TURKMENISTAN", "TM"]
+        }
+    }, 
+    {
+        "pk": 219641, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TURKS AND CAICOS ISLANDS", "TC"]
+        }
+    }, 
+    {
+        "pk": 219642, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["TUVALU", "TV"]
+        }
+    }, 
+    {
+        "pk": 219643, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["UGANDA", "UG"]
+        }
+    }, 
+    {
+        "pk": 219644, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["UKRAINE", "UA"]
+        }
+    }, 
+    {
+        "pk": 219645, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["UNITED ARAB EMIRATES", "AE"]
+        }
+    }, 
+    {
+        "pk": 219646, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["UNITED KINGDOM", "GB"]
+        }
+    }, 
+    {
+        "pk": 219647, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["UNITED STATES", "US"]
+        }
+    }, 
+    {
+        "pk": 219648, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["UNITED STATES MINOR OUTLYING ISLANDS", "UM"]
+        }
+    }, 
+    {
+        "pk": 219649, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["URUGUAY", "UY"]
+        }
+    }, 
+    {
+        "pk": 219650, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["UZBEKISTAN", "UZ"]
+        }
+    }, 
+    {
+        "pk": 219651, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["VANUATU", "VU"]
+        }
+    }, 
+    {
+        "pk": 219652, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["VATICAN CITY STATE", "see HOLY SEE"]
+        }
+    }, 
+    {
+        "pk": 219653, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["VENEZUELA, BOLIVARIAN REPUBLIC OF", "VE"]
+        }
+    }, 
+    {
+        "pk": 219654, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["VIET NAM", "VN"]
+        }
+    }, 
+    {
+        "pk": 219655, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["VIRGIN ISLANDS, BRITISH", "VG"]
+        }
+    }, 
+    {
+        "pk": 219656, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["VIRGIN ISLANDS, U.S.", "VI"]
+        }
+    }, 
+    {
+        "pk": 219657, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["WALLIS AND FUTUNA", "WF"]
+        }
+    }, 
+    {
+        "pk": 219658, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["WESTERN SAHARA", "EH"]
+        }
+    }, 
+    {
+        "pk": 219659, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["YEMEN", "YE"]
+        }
+    }, 
+    {
+        "pk": 219660, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ZAMBIA", "ZM"]
+        }
+    }, 
+    {
+        "pk": 219661, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["ZIMBABWE", "ZW"]
+        }
+    }, 
+    {
+        "pk": 219416, 
+        "model": "main.refbookdata", 
+        "fields": {
+            "ref_book": 3, 
+            "value": ["\\xc5LAND ISLANDS", "AX"]
+        }
+    }
+]
