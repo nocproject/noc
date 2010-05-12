@@ -1,0 +1,139 @@
+[
+    {
+        "pk": 2, 
+        "model": "ip.vrf", 
+        "fields": {
+            "rd": "65000:1", 
+            "tt": null, 
+            "vrf_group": 1, 
+            "name": "VRF1", 
+            "description": ""
+        }
+    },
+    {
+        "pk": 3, 
+        "model": "ip.vrf", 
+        "fields": {
+            "rd": "65000:2", 
+            "tt": null, 
+            "vrf_group": 1, 
+            "name": "VRF2", 
+            "description": ""
+        }
+    },
+    {
+        "pk": 10, 
+        "model": "ip.ipv4block", 
+        "fields": {
+            "vc": null, 
+            "description": "Root", 
+            "tt": null, 
+            "prefix": "0.0.0.0/0", 
+            "vrf": 2, 
+            "asn": 1
+        }
+    },
+    {
+        "pk": 11, 
+        "model": "ip.ipv4block", 
+        "fields": {
+            "vc": null, 
+            "description": "Block 1", 
+            "tt": null, 
+            "prefix": "0.0.0.0/0", 
+            "vrf": 3, 
+            "asn": 1
+        }
+    },
+    {
+        "pk": 12, 
+        "model": "ip.ipv4block", 
+        "fields": {
+            "vc": null, 
+            "description": "Block 1", 
+            "tt": null, 
+            "prefix": "192.168.0.0/16", 
+            "vrf": 2, 
+            "asn": 1
+        }
+    },
+    {
+        "pk": 13, 
+        "model": "ip.ipv4block", 
+        "fields": {
+            "vc": null, 
+            "description": "Block 1", 
+            "tt": null, 
+            "prefix": "192.168.0.0/24", 
+            "vrf": 2, 
+            "asn": 1
+        }
+    },
+    {
+        "pk": 14, 
+        "model": "ip.ipv4block", 
+        "fields": {
+            "vc": null, 
+            "description": "Block 1", 
+            "tt": null, 
+            "prefix": "192.168.0.0/24", 
+            "vrf": 3, 
+            "asn": 1
+        }
+    },
+    {
+        "pk": 10, 
+        "model": "ip.ipv4address", 
+        "fields": {
+            "ip": "192.168.1.1", 
+            "description": "address #1", 
+            "tt": null, 
+            "vrf": 2, 
+            "fqdn": "h1.example.com"
+        }
+    },
+    {
+        "pk": 11, 
+        "model": "ip.ipv4address", 
+        "fields": {
+            "ip": "192.168.0.1", 
+            "description": "address #2", 
+            "tt": null, 
+            "vrf": 2, 
+            "fqdn": "h2.example.com"
+        }
+    },
+    {
+        "pk": 12, 
+        "model": "ip.ipv4address", 
+        "fields": {
+            "ip": "192.168.0.2", 
+            "description": "address #3", 
+            "tt": null, 
+            "vrf": 2, 
+            "fqdn": "h3.example.com"
+        }
+    },
+    {
+        "pk": 13, 
+        "model": "ip.ipv4address", 
+        "fields": {
+            "ip": "192.168.0.3", 
+            "description": "address #4", 
+            "tt": null, 
+            "vrf": 2, 
+            "fqdn": "h4.example.com"
+        }
+    },
+    {
+        "pk": 14, 
+        "model": "ip.ipv4address", 
+        "fields": {
+            "ip": "192.168.0.1", 
+            "description": "address #5", 
+            "tt": null, 
+            "vrf": 3, 
+            "fqdn": "h5.example.com"
+        }
+    }
+]
