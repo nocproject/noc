@@ -12,13 +12,13 @@ from django.http import HttpResponse,HttpResponseRedirect,HttpResponseForbidden,
 from django.utils.simplejson.encoder import JSONEncoder
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import *
-from django.core import serializers
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.conf import settings
 from django.utils.http import urlquote
 from django.contrib import admin as django_admin
 from django.db import connection
 from noc.settings import INSTALLED_APPS,config
+from noc.lib.debug import error_report
 import logging,os,glob,types,re
 ##
 ## Setup Context Processor.
@@ -92,6 +92,7 @@ class Site(object):
         self.menu=[]
         self.app_menu={} # Module -> menu
         self.views=ProxyNode() # Named views proxy
+        self.testing_mode=hasattr(settings,"NOC_TEST")
     ##
     ## Returns URLConf
     ##
@@ -192,11 +193,23 @@ class Site(object):
     ## Decorator for view
     ##
     def site_view(self,app,view):
+        # Render view
         def inner(request,*args,**kwargs):
             if not view.access(app,request):
                 return self.login(request)
             return view(request,*args,**kwargs)
-        return inner
+        # Render view in testing mode
+        def inner_test(request,*args,**kwargs):
+            try:
+                return inner(request,*args,**kwargs)
+            except:
+                print error_report()
+                raise
+        # Return actual handler
+        if self.testing_mode:
+            return inner_test
+        else:
+            return inner
     ##
     ## Register application class
     ## Fetche all view_* methods
@@ -227,6 +240,15 @@ class Site(object):
     ##
     def application_by_class(self,app_class):
         return self.apps[app_class.get_app_id()]
+    ##
+    ## Reverse URL
+    ##
+    rx_namespace=re.compile(r"^[a-z0-9_]+:[a-z0-9_]+:[a-z0-9_]+$",re.IGNORECASE)
+    def reverse(self,url,*args,**kwargs):
+        if self.rx_namespace.match(url):
+            return reverse(url,args=args,kwargs=kwargs)
+        else:
+            return url
 ##
 ## Global application site instance
 ##
@@ -320,6 +342,11 @@ class Application(object):
         return "/%s/%s/"%(self.module,self.app)
     base_url=property(base_url)
     ##
+    ## Reverse URL
+    ##
+    def reverse(self,url,*args,**kwargs):
+        return self.site.reverse(url,*args,**kwargs)
+    ##
     ## Send a message to user
     ##
     def message_user(self,request,message):
@@ -373,8 +400,8 @@ class Application(object):
     ##
     ## Redirect to URL
     ##
-    def response_redirect(self,url):
-        return HttpResponseRedirect(url)
+    def response_redirect(self,url,*args,**kwargs):
+        return HttpResponseRedirect(self.reverse(url,*args,**kwargs))
     ##
     ## Redirect to referrer
     ##
