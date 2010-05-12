@@ -10,13 +10,17 @@
 """
 from django.db import models,connection
 from django.db.models import Q
-from noc.main.menu import Menu
 from noc.main.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.sa.models import ManagedObjectSelector
 from noc.lib.validators import is_int
 from noc.lib.fields import CIDRField
 import re
+##
+## Exceptions
+##
+class InvalidLabelException(Exception): pass
+class MissedLabelException(Exception): pass
 ##
 ## VC Type
 ##
@@ -61,6 +65,12 @@ class VCFilter(models.Model):
     def __unicode__(self):
         return self.name
     ##
+    ## Check expression before save
+    ##
+    def save(self):
+        VCFilter.compile(self.expression)
+        super(VCFilter,self).save()
+    ##
     ## Compile VC Filter expression
     ##
     @classmethod
@@ -89,13 +99,6 @@ class VCFilter(models.Model):
             if f<=vc<=t:
                 return True
         return False
-    ##
-    ## Link to test filter
-    ##
-    def test_link(self):
-        return "<a href='/vc/vcfilter/%d/test/'>Test</a>"%self.id
-    test_link.short_description="Test VC Filter"
-    test_link.allow_tags=True
 ##
 ##
 ##
@@ -189,11 +192,11 @@ class VC(models.Model):
     ##
     def save(self):
         if self.l1<self.vc_domain.type.label1_min or self.l1>self.vc_domain.type.label1_max:
-            raise Exception("Invalid value for L1")
+            raise InvalidLabelException("Invalid value for L1")
         if self.vc_domain.type.min_labels>1 and not self.l2:
-            raise Exception("L2 required")
+            raise MissedLabelException("L2 required")
         if self.vc_domain.type.min_labels>1 and not (self.l2>=self.vc_domain.type.label2_min and self.l2<=self.vc_domain.type.label2_max):
-            raise Exception("Invalid value for L2")
+            raise InvalidLabelException("Invalid value for L2")
         # Format name
         if self.name:
             name=rx_vc_underline.sub("_",self.name)
@@ -219,18 +222,3 @@ class VC(models.Model):
                         title="VC: %s, Domain: %s, Label=%s"%(r.type,r.vc_domain.name,label),
                         text=r.description,
                         relevancy=1.0)
-##
-## Application Menu
-##
-class AppMenu(Menu):
-    app="vc"
-    title="Virtual Circuit Management"
-    items=[
-        ("Virtual Circuits", "/admin/vc/vc/", "vc.change_vc"),
-        ("Setup",[
-            ("VC Domains", "/admin/vc/vcdomain/", "vc.change_vcdomain"),
-            ("VC Filters", "/admin/vc/vcfilter/", "vc.change_vcfilter"),
-            ("VC Bind Filters", "/admin/vc/vcbindfilter/", "vc.change_vcbindfilter"),
-            ("VC Types",   "/admin/vc/vctype/", "vc.change_vctype"),
-        ])
-    ]
