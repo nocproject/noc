@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Settings for "main" module
+## timepattern Test
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-MODULE_NAME="Main"
+from noc.lib.test import ModelApplicationTestCase
+from django.utils import simplejson as json
+
+class timepatternTestCase(ModelApplicationTestCase):
+    pass

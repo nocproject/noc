@@ -28,3 +28,11 @@ class AuthApplication(Application):
     view_logout.url=r"^logout/$"
     view_logout.url_name="logout"
     view_logout.access=Application.permit_logged
+    ##
+    ## Change password
+    ##
+    def view_change_password(self,request):
+        pass
+    view_change_password.url=r"^change_password/$"
+    view_change_password.url_name="change_password"
+    view_change_password.access=Application.permit_logged

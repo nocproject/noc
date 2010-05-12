@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import Application
+from noc.lib.app import Application
 from noc.main.models import report_registry
 ##
 ## Report application

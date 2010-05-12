@@ -9,8 +9,6 @@ from __future__ import with_statement
 from django.db import models
 from django.contrib.auth.models import User
 from noc.main.report import report_registry
-from noc.main.calculator import calculator_registry
-from noc.main.menu import Menu
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 import noc.main.search # Set up signal handlers
@@ -91,8 +89,6 @@ if IS_WEB:
 ## Initialize download registry
 ##
 downloader_registry.register_all()
-##
-calculator_registry.register_all()
 ##
 ## Audit Trail
 ##
@@ -449,11 +445,6 @@ class TimePattern(models.Model):
     
     def __unicode__(self):
         return self.name
-    
-    def test_link(self):
-        return "<a href='/main/time_pattern/%d/test/'>Test</a>"%self.id
-    test_link.short_description="Test Time Pattern"
-    test_link.allow_tags=True
     ##
     ## Returns associated Time Pattern object
     ##
@@ -689,37 +680,6 @@ class UserProfileContact(models.Model):
     time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
     notification_method=models.CharField("Method",max_length=16,choices=USER_NOTIFICATION_METHOD_CHOICES)
     params=models.CharField("Params",max_length=256)
-
-##
-## Application Menu
-##
-class AppMenu(Menu):
-    app="main"
-    title="Main"
-    items=[
-        ("Reports",        "/main/report/",           "is_logged_user()"),
-        ("Calculators",    "/main/calculator/",       "is_logged_user()"),
-        ("Audit Trail",    "/admin/main/audittrail/", "is_superuser()"),
-        ("Reference Books", "/main/refbook/",          "is_logged_user()"),
-        ("Browse Data",     "/main/databrowse/",       "is_superuser()"),
-        ("Setup", [
-            ("Users",  "/admin/auth/user/",  "auth.change_user"),
-            ("Groups", "/admin/auth/group/", "auth.change_group"),
-            ("Languages","/admin/main/language/", "main.change_language"),
-            ("MIME Types", "/admin/main/mimetype/", "main.change_mimetype"),
-            ("Configs",    "/main/config/",  "is_superuser()"),
-            ("pyRules",    "/admin/main/pyrule/", "is_superuser()"),
-            ("Reference Books", "/admin/main/refbook/", "main.change_refbook"),
-            ("Time Patterns",   "/admin/main/timepattern/", "main.change_timepattern"),
-            ("Notification Groups",   "/admin/main/notificationgroup/", "main.change_notificationgroup"),
-            ("System Notifications",   "/admin/main/systemnotification/", "main.change_systemnotification"),
-            ("Pending Notifications", "/admin/main/notification/", "main.change_notification"),
-        ]),
-        ("Documentation", [
-            ("Administrator's Guide", "/static/doc/en/ag/html/index.html"),
-            ("User's Guide", "/static/doc/en/ug/html/index.html"),
-        ]),
-    ]
 ##
 ## Load and register reports
 ##

@@ -51,6 +51,32 @@ class %(model)sApplication(ModelApplication):
     menu="Setup | %(model)s"
 """
 
+APPLICATION_TEST_CASE="""# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## %(app)s Test
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+from noc.lib.test import ApplicationTestCase
+
+class %(app)sTestCase(ApplicationTestCase):
+    pass
+"""
+
+MODEL_APPLICATION_TEST_CASE="""# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## %(app)s Test
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+from noc.lib.test import ModelApplicationTestCase
+
+class %(app)sTestCase(ModelApplicationTestCase):
+    pass
+"""
+
 ##
 ## Initialize application skeleton
 ##
@@ -65,8 +91,12 @@ class Command(BaseCommand):
             m,a=app.split(".")
             app_path=os.path.join(m,"apps",a)
             template_path=os.path.join(app_path,"templates")
-            if not os.path.exists(app_path):
+            if not os.path.exists(template_path):
                 os.makedirs(template_path)
+            init=os.path.join(m,"apps","__init__.py")
+            if not os.path.exists(init):
+                with open(init,"w"):
+                    pass
             init=os.path.join(app_path,"__init__.py")
             if not os.path.exists(init):
                 with open(init,"w"):
@@ -79,3 +109,19 @@ class Command(BaseCommand):
                     v=VIEWS_SKELETON
                 with open(views,"w") as f:
                     f.write(v)
+            tests=os.path.join(app_path,"tests")
+            if not os.path.exists(tests):
+                os.makedirs(tests)
+            init=os.path.join(tests,"__init__.py")
+            if not os.path.exists(init):
+                with open(init,"w"):
+                    pass
+            app_test=os.path.join(tests,"test.py")
+            if not os.path.exists(app_test):
+                if "model" in options and options["model"]:
+                    v=MODEL_APPLICATION_TEST_CASE%{"app":a}
+                else:
+                    v=APPLICATION_TEST_CASE%{"app":a}
+                with open(app_test,"w") as f:
+                    f.write(v)
+                
