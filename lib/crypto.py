@@ -11,14 +11,26 @@ import random, hashlib
 ##
 salt_dict=list("./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 ##
-##
+## Generate random salt of given length
 ##
 def gen_salt(len):
+    """
+    >>> len(gen_salt(10))==10
+    True
+    """
     return "".join([random.choice(salt_dict) for x in range(len)])
 ##
+## MD5 password hash
 ##
-##
-def md5crypt(password, salt=None, magic="$1$"):
+def md5crypt(password,salt=None,magic="$1$"):
+    """
+    >>> md5crypt("test",salt="1234")
+    '$1$1234$InX9CGnHSFgHD3OZHTyt3.'
+    >>> md5crypt("test",salt="1234")
+    '$1$1234$InX9CGnHSFgHD3OZHTyt3.'
+    >>> md5crypt("test",salt="1234",magic="$5$")
+    '$5$1234$x29w4cwzSDnesjss/m2O1.'
+    """
     salt=salt if salt else gen_salt(8)
     # /* The password first, since that is what is most unknown */ /* Then our magic string */ /* Then the raw salt */
     m = hashlib.md5(password+magic+salt)

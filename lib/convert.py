@@ -30,8 +30,3 @@ def mw2dbm(v):
     10.0
     """
     return 10*math.log(v,10)
-    
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

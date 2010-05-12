@@ -18,6 +18,12 @@ hex_map=dict([("%02x"%i,chr(i)) for i in range(256)])
 ## Quote binary data to ASCII-string
 ##
 def bin_quote(s):
+    """
+    >>> bin_quote(None)
+    ''
+    >>> bin_quote("A")
+    'A'
+    """
     def qc(c):
         if c=="\\":
             return "\\\\"
@@ -39,9 +45,3 @@ def bin_unquote(s):
     []
     """
     return rx_unqoute.sub(lambda x:hex_map[x.group(1)], str(s).replace(r"\\","\\x5c"))
-##
-## Unit Test
-##
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

@@ -48,10 +48,18 @@ def bits_to_netmask(bits):
     '255.255.255.0'
     >>> bits_to_netmask(16)
     '255.255.0.0'
+    >>> bits_to_netmask(0)
+    '0.0.0.0'
+    >>> bits_to_netmask(32)
+    '255.255.255.255'
+    >>> bits_to_netmask(-1)
+    '255.255.255.255'
+    >>> bits_to_netmask(33)
+    '255.255.255.255'
     """
     try:
         bits=int(bits)
-        if bits<=0 or bits>32:
+        if bits<0 or bits>32:
             raise Exception
     except:
         return "255.255.255.255"
@@ -61,11 +69,27 @@ def bits_to_netmask(bits):
 ## Returns amount of addresses into prefix of "bits" length
 ##
 def bits_to_size(bits):
+    """
+    >>> bits_to_size(0)
+    4294967296L
+    >>> bits_to_size(32)
+    1L
+    >>> bits_to_size(24)
+    256L
+    """
     return 1L<<(32L-bits)
 ##
-##
+## Returns the size of prefix
 ##
 def prefix_to_size(prefix):
+    """
+    >>> prefix_to_size("10.0.0.0/32")
+    1L
+    >>> prefix_to_size("10.0.0.0/8")
+    16777216L
+    >>> prefix_to_size("10.0.0.0/24")
+    256L
+    """
     n,m=prefix.split("/")
     return bits_to_size(int(m))
 ##
@@ -100,6 +124,12 @@ def contains(prefix,address):
 ##
 ##
 def broadcast(prefix):
+    """
+    >>> broadcast("192.168.0.0/24")
+    '192.168.0.255'
+    >>> broadcast("192.168.0.0/32")
+    '192.168.0.0'
+    """
     n,m=prefix.split("/")
     m=int(m)
     return int_to_address(address_to_int(n)|(0xFFFFFFFFL^bits_to_int(m)))
@@ -107,6 +137,12 @@ def broadcast(prefix):
 ##
 ##
 def wildcard(prefix):
+    """
+    >>> wildcard("192.168.0.0/24")
+    '0.0.0.255'
+    >>> wildcard("192.168.0.0/32")
+    '0.0.0.0'
+    """
     n,m=prefix.split("/")
     m=int(m)
     return int_to_address(0xFFFFFFFFL^bits_to_int(m))
@@ -285,6 +321,14 @@ def minimal_prefix(ip1,ip2):
 ## Compare ip1 against ip2
 ##
 def cmp_ip(ip1,ip2):
+    """
+    >>> cmp_ip("192.168.0.1","192.168.0.1")
+    0
+    >>> cmp_ip("192.168.0.1","192.168.0.2")
+    -1
+    >>> cmp_ip("192.168.0.2","192.168.0.1")
+    1
+    """
     return cmp(address_to_int(ip1),address_to_int(ip2))
 ##
 ## Check ip is between f and t
@@ -371,7 +415,3 @@ class PrefixDB(object):
     def load(self,data):
         for prefix,key in data:
             self.append_prefix(prefix,key)
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
