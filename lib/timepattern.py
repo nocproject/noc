@@ -60,6 +60,12 @@ class TimePattern(object):
     False
     >>> TimePattern("fri-sun").match(datetime.datetime(year=2005,month=3,day=13))
     True
+    >>> TimePattern("zho")
+    Traceback (most recent call last):
+    ...
+    SyntaxError: Invalid expression 'zho'
+    >>> TimePattern(None).match(datetime.datetime(year=2005,month=3,day=13))
+    True
     """
     def __init__(self,pattern):
         self.code=compile(self.compile_to_python(pattern),"<string>","eval")
@@ -107,9 +113,3 @@ class TimePatternList(object):
             if not tp.match(d):
                 return False
         return True
-#
-# Tests
-#
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

@@ -18,6 +18,14 @@ except:
 ## Check value is valid integer
 ##
 def is_int(v):
+    """
+    >>> is_int(10)
+    True
+    >>> is_int("10")
+    True
+    >>> is_int("Ten")
+    False
+    """
     try:
         v=int(v)
     except:
