@@ -93,7 +93,7 @@ def strip_control_sequences(s):
     
     CR,LF and ESC survive from C0 set
     >>> repr(strip_control_sequences("".join([chr(i) for i in range(32)])))
-    "'\\\\x08\\\\t\\\\n\\\\r\\\\x1b'"
+    "'\\\\t\\\\n\\\\r'"
     
     C1 set stripped (ESC+[ survive)
     >>> strip_control_sequences("".join(["\x1b"+chr(i) for i in range(64,96)]))
@@ -146,7 +146,3 @@ def strip_control_sequences(s):
     s=rx_lf_spaces.sub("",s)
     # Remove escape sequences
     return rx_ecma.sub("",s)
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
