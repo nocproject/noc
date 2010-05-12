@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Settings for "main" module
+## message Test
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-MODULE_NAME="Main"
+from noc.lib.test import ApplicationTestCase
+from django.utils import simplejson as json
+
+class messageTestCase(ApplicationTestCase):
+    pass

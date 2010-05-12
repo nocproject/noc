@@ -5,10 +5,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.lib.render import render
+#from noc.lib.render import render
 from noc.lib.registry import Registry
 from django.conf import settings
-from django.http import HttpResponse
+from django.db import connection
 import cStringIO,csv
 
 #
@@ -127,13 +127,14 @@ class Report(object):
     __metaclass__=ReportBase
     name=None
     form_class=None # Or forms.form descendant
-    template="main/report.html"
+    template="report.html"
     title="Generic Report"
     requires_cursor=False
     columns=[]
     refresh=None # Time to refresh report (in seconds)
     
-    def __init__(self,request,query=None,format=None):
+    def __init__(self,application,request,query=None,format=None):
+        self.application=application
         self.request=request
         self.query=query
         self.format=format if format is not None else "html"
@@ -145,7 +146,6 @@ class Report(object):
         else:
             self.form=None
         if self.requires_cursor:
-            from django.db import connection
             self.cursor = connection.cursor()
         self.has_summary=len([c for c in self.columns if c.summary])>0
         if self.has_summary:
@@ -180,7 +180,7 @@ class Report(object):
             out+="</TR>"
         out+="</TABLE>"
         out+="<A HREF='?format=csv'><B>CSV Report</B></A>"
-        return render(self.request,self.template,{"report":self,"query":self.query,"data":out,"refresh":self.refresh})
+        return self.application.render(self.request,self.template,{"report":self,"query":self.query,"data":out,"refresh":self.refresh})
     
     def render_csv(self):
         out=cStringIO.StringIO()
@@ -188,7 +188,7 @@ class Report(object):
         writer.writerow([c.render_csv_header() for c in self.columns])
         for row in self.get_queryset():
             writer.writerow([c.render_csv_cell(v) for c,v in zip(self.columns,row)])
-        return HttpResponse(out.getvalue(),mimetype="text/csv")
+        return self.application.render_response(out.getvalue(),content_type="text/csv")
     
     def render(self):
         if self.format=="csv":
@@ -229,4 +229,4 @@ class MatrixReport(Report):
             out+="</TR>"
             n+=1
         out+="</TABLE>"
-        return render(self.request,self.template,{"report":self,"query":self.query,"data":out})
+        return self.application.render(self.request,self.template,{"report":self,"query":self.query,"data":out})

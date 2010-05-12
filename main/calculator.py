@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.render import render
+#from noc.lib.render import render
 from noc.lib.registry import Registry
 
 class CalculatorRegistry(Registry):

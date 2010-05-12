@@ -1,8 +1,8 @@
-{% extends "template/template.html" %}
+{% extends "admin/base.html" %}
 {% block title%}Search{% endblock %}
 {% block content %}
 <h1>Search</h1>
-<FORM METHOD="POST">
+<FORM METHOD="POST" ID="search">
     {{form}}
     <INPUT TYPE="submit" VALUE="search" />
 </FORM>
