@@ -87,8 +87,12 @@ class NOCTestCase(TestCase):
         MIDDLEWARE_CLASSES=settings.MIDDLEWARE_CLASSES[:]
         AUTHENTICATION_BACKENDS=settings.AUTHENTICATION_BACKENDS[:]
         RemoteUserMiddleware="django.contrib.auth.middleware.RemoteUserMiddleware"
+        TLSMiddleware="noc.main.middleware.TLSMiddleware"
         if RemoteUserMiddleware not in settings.MIDDLEWARE_CLASSES:
-            settings.MIDDLEWARE_CLASSES+=(RemoteUserMiddleware,)
+            # Install RemoteUserMiddleware before 'noc.main.middleware.TLSMiddleware'
+            settings.MIDDLEWARE_CLASSES=list(settings.MIDDLEWARE_CLASSES)
+            idx=settings.MIDDLEWARE_CLASSES.index(TLSMiddleware)
+            settings.MIDDLEWARE_CLASSES.insert(idx,RemoteUserMiddleware)
         auth_backends = list(settings.AUTHENTICATION_BACKENDS)
         try:
             index=auth_backends.index('django.contrib.auth.backends.ModelBackend')
@@ -130,7 +134,6 @@ class NOCTestCase(TestCase):
     ##
     def assertNotIn(self,obj,collection):
         self.failUnless(obj not in collection,"Object '%s' is in collection"%(repr(obj)))
-        
 ##
 ## Model Test Case
 ##
