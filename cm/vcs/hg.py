@@ -29,8 +29,12 @@ class VCS(noc.cm.vcs.VCS):
         return revs
     def diff(self,path,rev1,rev2):
         return self.cmd_out(["diff","-r%s:%s"%(rev1.revision,rev2.revision),path])
-    def get_revision(self,path,rev):
-        return self.cmd_out(["cat","-r%s"%rev.revision,path])
+    def get_revision(self,path,rev=None):
+        args=["cat"]
+        if rev is not None:
+            args+=["-r%s"%rev.revision]
+        args+=[path]
+        return self.cmd_out(args)
     def mv(self,f,t):
         self.cmd(["mv",f,t])
         self.commit(f,"mv")
