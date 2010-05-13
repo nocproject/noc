@@ -15,4 +15,5 @@ class IndexApplication(Application):
     def view_index(self,request):
         return self.render(request,"index.html")
     view_index.url=r"^$"
+    view_index.url_name="home"
     view_index.access=Application.permit_logged
