@@ -15,7 +15,6 @@ from noc.peer.models import AS
 from noc.vc.models import VC
 from noc.lib.fields import CIDRField
 from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast,address_to_int,generate_ips,prefix_to_size
-from noc.main.menu import Menu
 from noc.main.search import SearchResult
 from noc.main.middleware import get_user
 ##
@@ -28,8 +27,6 @@ class VRFGroup(models.Model):
     name=models.CharField("VRF Group",unique=True,max_length=64)
     unique_addresses=models.BooleanField("Unique addresses in group")
     description=models.CharField("Description",blank=True,null=True,max_length=128)
-    def __str__(self):
-        return self.name
     def __unicode__(self):
         return unicode(self.name)
 ##
@@ -44,14 +41,18 @@ class VRF(models.Model):
     rd=models.CharField("rd",unique=True,max_length=21) # validator_list=[check_rd],
     description=models.CharField("Description",blank=True,null=True,max_length=128)
     tt=models.IntegerField("TT",blank=True,null=True)
-    def __str__(self):
-        if self.rd=="0:0":
-            return "global"
-        return self.rd
     def __unicode__(self):
         if self.rd=="0:0":
             return u"global"
         return self.rd
+    
+    def save(self):
+        super(VRF,self).save()
+        # Create 0.0.0.0/0 prefix if does not exists
+        try:
+            IPv4Block.objects.get(vrf=self,prefix="0.0.0.0/0")
+        except IPv4Block.DoesNotExist:
+            IPv4Block(vrf=self,prefix="0.0.0.0/0",description="Root",asn=AS.default_as()).save()
         
     def prefix(self,top="0.0.0.0/0"):
         assert is_cidr(top)
@@ -84,8 +85,6 @@ class IPv4BlockAccess(models.Model):
     vrf=models.ForeignKey(VRF,verbose_name="VRF")
     prefix=CIDRField("prefix")
     tt=models.IntegerField("TT",blank=True,null=True)
-    def __str__(self):
-        return "%s: %s(%s)"%(self.user,self.prefix,self.vrf)
     @classmethod
     def check_write_access(self,user,vrf,prefix):
         assert is_cidr(prefix)
@@ -108,12 +107,8 @@ class IPv4Block(models.Model):
     vrf=models.ForeignKey(VRF)
     asn=models.ForeignKey(AS)
     vc=models.ForeignKey(VC,verbose_name="VC",null=True,blank=True)
-    modified_by=models.ForeignKey(User,verbose_name="User")
-    last_modified=models.DateTimeField("Last modified",auto_now=True,auto_now_add=True)
     tt=models.IntegerField("TT",blank=True,null=True)
     #allocated_till
-    def __str__(self):
-        return str(self.prefix)
     def __unicode__(self):
         return unicode(self.prefix)
     def _parent(self):
@@ -467,14 +462,9 @@ class IPv4Address(models.Model):
     fqdn=models.CharField("FQDN",max_length=64)
     ip=models.IPAddressField("IP")
     description=models.CharField("Description",blank=True,null=True,max_length=64)
-    modified_by=models.ForeignKey(User,verbose_name="User")
-    last_modified=models.DateTimeField("Last modified",auto_now=True,auto_now_add=True)
     tt=models.IntegerField("TT",blank=True,null=True)
     
     def __unicode__(self):
-        return self.ip
-
-    def __str__(self):
         return self.ip
 
     def _parent(self):
@@ -522,19 +512,3 @@ class IPv4Address(models.Model):
                     title="IPv4 Address, VRF=%s, %s (%s)"%(r.vrf,r.ip,r.fqdn),
                     text=r.description,
                     relevancy=relevancy)
-##
-## Application Menu
-##
-class AppMenu(Menu):
-    app="ip"
-    title="Address Space Management"
-    items=[
-        ("Assigned addresses", "/ip/", "ip.change_ipv4block"),
-        ("Setup",[
-            ("VRF Groups",  "/admin/ip/vrfgroup/",        "ip.change_vrfgroup"),
-            ("VRFs",        "/admin/ip/vrf/",             "ip.change_vrf"),
-            ("Block Access","/admin/ip/ipv4blockaccess/", "ip.change_ipv4blockaccess"),
-            ("IPv4 Address Ranges","/admin/ip/ipv4addressrange/", "ip.change_ipv4addressrange"),
-            ]
-        )
-    ]
