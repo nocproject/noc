@@ -5,7 +5,9 @@ from django.db import models
 from noc.pm.models import *
 
 class Migration:
-    
+    depends_on=(
+        ("main","0001_initial"),
+    )
     def forwards(self):
         # Adding model 'TimeSeries'
         db.create_table('pm_timeseries', (
