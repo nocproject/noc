@@ -14,7 +14,6 @@ from noc.sa.periodic import periodic_registry
 from noc.sa.scripts import reduce_script_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
-from noc.main.menu import Menu
 from noc.main.search import SearchResult
 from noc.lib.fields import PickledField,INETField
 
@@ -125,7 +124,11 @@ class ManagedObject(models.Model):
             l="<A HREF='/cm/view/config/%d/'>Config</A>"%(self.config.id)
         except:
             l=""
-        l+="<br/><A HREF='/sa/managedobject/%d/scripts/'>Scripts</A>"%(self.id)
+        try:
+            self.profile
+            l+="<br/><A HREF='/sa/managedobject/%d/scripts/'>Scripts</A>"%(self.id)
+        except:
+            pass
         return l
     action_links.short_description="Actions"
     action_links.allow_tags=True
@@ -466,21 +469,3 @@ class MapTask(models.Model):
             return u"%d: %s %s"%(self.id,self.managed_object,self.map_script)
         else:
             return u"New: %s %s"%(self.managed_object,self.map_script)
-##
-## Application Menu
-##
-class AppMenu(Menu):
-    app="sa"
-    title="Service Activation"
-    items=[
-        #("Managed Objects", "/admin/sa/managedobject/", "sa.change_managedobject"),
-        ("Map/Reduce Tasks","/sa/mr_task/",             "sa.add_reducetask"),
-        #("Task Schedules",  "/admin/sa/taskschedule/",  "sa.change_taskschedule"),
-        ("Setup", [
-            # ("Activators",             "/admin/sa/activator/"            , "sa.change_activator"),
-            #("Administrative Domains", "/admin/sa/administrativedomain/" , "sa.change_administrativedomain"),
-            #("Object Groups",          "/admin/sa/objectgroup/"          , "sa.change_objectgroup"),
-            #("User Access",            "/admin/sa/useraccess/"           , "sa.change_useraccess"),
-            #("Object Selectors",       "/admin/sa/managedobjectselector/", "sa.change_managedobjectselector"),
-        ])
-    ]
