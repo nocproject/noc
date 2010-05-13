@@ -9,9 +9,7 @@ from noc.lib.app import Application
 from noc.main.apps.calculator.calculators import calculator_registry
 ##
 ## Register all calculators
-print "ZZZZZ"
 calculator_registry.register_all()
-print calculator_registry.choices
 ##
 ## Calculator application
 ##
