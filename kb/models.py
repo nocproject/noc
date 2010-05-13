@@ -8,7 +8,6 @@
 from django.db import models
 from django.db.models import Q
 from noc.main.models import Language,database_storage
-from noc.main.menu import Menu
 from django.contrib.auth.models import User
 from noc.kb.parsers import parser_registry
 from noc.main.search import SearchResult
@@ -301,22 +300,3 @@ class KBEntryTemplate(models.Model):
         var_set.update(rx_template_var.findall(self.body))
         return sorted(var_set)
     var_list=property(_var_list)
-
-##
-## Application menu
-##
-class AppMenu(Menu):
-    app="kb"
-    title="Knowledge Base"
-    items=[
-        ("Knowledge Base", "/kb/", "is_logged_user()"),
-        ("New from Template", "/kb/template/", "is_logged_user()"),
-        ("Setup",[
-            ("Categories","/admin/kb/kbcategory/", "kb.change_kbcategory"),
-            ("Entries",   "/admin/kb/kbentry/",    "kb.change_kbentry"),
-            ("Global Bookmarks", "/admin/kb/kbglobalbookmark/", "kb.change_kbglobalbookmark"),
-            ("User Bookmarks",  "/admin/kb/kbuserbookmark/",    "is_logged_user()"),
-            ("Templates",   "/admin/kb/kbentrytemplate/",    "kb.change_kbentrytemplate"),
-        ])
-    ]
-
