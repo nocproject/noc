@@ -101,13 +101,5 @@ configuration management, DNS provisioning, peering management, RPSL and BGP fil
       provides=["noc"],
       requires=[
         "psycopg2 (>= 2.0.5)",
-        "Django (>= 1.0.2)",
-        "South (>= 0.4)",
-        "flup (>= 1.0)",
-        "protobuf (>= 2.0.3)",
-        "pysnmp (>= 4.1.7)",
-        "pyasn1 (>= 0.0.6)",
-        "Sphinx (>= 0.5)",
-#        "python-creole (>=0.1.0)",
       ],
      )
