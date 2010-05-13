@@ -10,3 +10,5 @@ docutils,0.6
 Pygments,1.2.2
 Jinja2,2.2.1
 Sphinx,0.6.4
+WebOb,0.9.8
+WebTest,1.2.1
