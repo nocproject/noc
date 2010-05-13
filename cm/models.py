@@ -17,7 +17,6 @@ from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging,random,types
 from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObject
-from noc.main.menu import Menu
 from noc.sa.protocols.sae_pb2 import *
 from noc.main.search import SearchResult
 from noc.main.models import NotificationGroup
@@ -92,6 +91,11 @@ class Object(models.Model):
     def _in_repo(self):
         return self.vcs.in_repo(self.repo_path)
     in_repo=property(_in_repo)
+    #
+    #
+    #
+    def status(self):
+        return {True:"Ready",False:"Waiting"}[self.in_repo]
     #
     # If "data" differs from object's content in the repository
     # Write "data" to file and commit
@@ -169,6 +173,12 @@ class Object(models.Model):
     def _verbose_name_plural(self):
         return self._meta.verbose_name_plural
     verbose_name_plural=property(_verbose_name_plural)
+    #
+    #
+    #
+    def verbose_name(self):
+        return self._meta.verbose_name
+    verbose_name=property(verbose_name)
     
     def get_notification_groups(self,immediately=False,delayed=False):
         q=Q(type=self.repo_name)
@@ -490,18 +500,3 @@ class RPSL(Object):
     
     @classmethod
     def global_push(cls): pass
-##
-## Application Menu
-##
-class AppMenu(Menu):
-    app="cm"
-    title="Configuration Management"
-    items=[
-        ("Config",      "/admin/cm/config/",     "cm.change_config"),
-        ("DNS Objects", "/admin/cm/dns/",        "cm.change_dns"),
-        ("Prefix Lists","/admin/cm/prefixlist/", "cm.change_prefixlist"),
-        ("RPSL Objects","/admin/cm/rpsl/",       "cm.change_rpsl"),
-        ("Setup",[
-            ("Object Notifies","/admin/cm/objectnotify/", "cm.change_objectnotify"),
-        ])
-    ]
