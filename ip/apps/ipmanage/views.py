@@ -33,9 +33,7 @@ class IPManageAppplication(Application):
     ##
     ## Display assigned addresses and blocks
     ##
-    def view_vrf_index(self,request,vrf_id,prefix=None):
-        if prefix is None:
-            prefix="0.0.0.0/0"
+    def view_vrf_index(self,request,vrf_id,prefix="0.0.0.0/0"):
         if not is_cidr(prefix):
             return self.response_not_found("Prefix '%s' is not found"%prefix)
         vrf_id=int(vrf_id)
@@ -86,7 +84,7 @@ class IPManageAppplication(Application):
         return self.render(request,"vrf_index.html",{"vrf":vrf,"parents":parents,"prefixes":prefixes,"prefix":prefix,
                             "can_allocate":can_allocate,"block_info":block_info,"has_children":has_children,
                             "ranges":ranges,"all_addresses":all_addresses,"orphaned_addresses":orphaned_addresses})
-    view_vrf_index.url=r"(?P<vrf_id>\d+)/(?:(?P<prefix>\S+)/)$"
+    view_vrf_index.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/$"
     view_vrf_index.url_name="vrf_index"
     view_vrf_index.access=Application.has_perm("ip.change_ipv4block")
     ##
