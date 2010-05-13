@@ -14,7 +14,7 @@
         {% if prefix.has_children %}{%else%}
         <li><A HREF="#" ONCLICK="toggle_free();" CLASS="changelink" id="free_ip_toggle_button">Show Free</A></li>
         {% endif %}
-        <li><A HREF="/ip/{{vrf.id}}/{{prefix}}/tools/" CLASS="changelink">Tools</A></li>
+        <li><A HREF="{% url ip:tools:index vrf.id prefix %}" CLASS="changelink">Tools</A></li>
         <li><A HREF="{% url ip:ipmanage:allocate_block vrf.id %}" CLASS="addlink">Allocate new block</A></li>
         <li><A HREF="{% url ip:ipmanage:assign_address vrf.id %}" CLASS="addlink">Assign address</A></li>
     </ul>
