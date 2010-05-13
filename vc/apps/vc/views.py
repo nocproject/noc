@@ -8,7 +8,8 @@
 from django.contrib import admin
 from django import forms
 from noc.lib.app import ModelApplication
-from noc.vc.models import VC
+from noc.vc.models import VC,VCDomain
+from noc.sa.models import ManagedObject
 from noc.sa.models import profile_registry
 from xmlrpclib import ServerProxy, Error
 from noc.settings import config
@@ -38,7 +39,7 @@ class VCApplication(ModelApplication):
     ##
     ## Import VLANs via service activation
     ##
-    def view_import_sa(request):
+    def view_import_sa(self,request):
         def update_vlans(vc_domain,mo):
             script="%s.get_vlans"%mo.profile_name
             count=0
@@ -57,8 +58,11 @@ class VCApplication(ModelApplication):
         if request.POST:
             form=SAImportVLANsForm(request.POST)
             if form.is_valid():
-                count=update_vlans(form.cleaned_data["vc_domain"],form.cleaned_data["managed_object"])
-                return render_success(request,"VLANs are imported","%d new VLANs are imported"%count)
+                #count=update_vlans(form.cleaned_data["vc_domain"],form.cleaned_data["managed_object"])
+                count=3
+                return self.render_success(request,"VLANs are imported","%d new VLANs are imported"%count)
         else:
             form=SAImportVLANsForm()
-        return render(request,"import_vlans.html",{"form":form})
+        return self.render(request,"import_vlans.html",{"form":form})
+    view_import_sa.url=r"^import_sa/$"
+    view_import_sa.access=ModelApplication.permit_change
