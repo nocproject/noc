@@ -72,7 +72,7 @@ TEMPLATE_CONTEXT_PROCESSORS= (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
-    'noc.lib.render.setup_processor',
+    'noc.lib.app.setup_processor',
     )
 #
 MIDDLEWARE_CLASSES = (
@@ -92,7 +92,7 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     "local",
     ".",
-    "template"
+    "templates"
 )
 
 CACHE_BACKEND = 'locmem:///'
@@ -136,5 +136,7 @@ IS_WEB=(len(sys.argv)>=2 and sys.argv[0]=="manage.py" and sys.argv[1]=="runserve
 ##
 TEST_RUNNER="noc.lib.test_runner.run_tests"
 COVERAGE_REPORT_PATH="local/coverage_report"
+SKIP_SOUTH_TESTS = True
+SOUTH_TESTS_MIGRATE = True
 ##
 LOGIN_URL="/main/auth/login/"
