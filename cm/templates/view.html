@@ -1,17 +1,17 @@
-{% extends "template/template.html" %}
+{% extends "admin/base.html" %}
 {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="/static/css/pygments.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/highlight.css" />
 {% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/admin/cm/">Cm</A> &rsaquo;
-    <A HREF="/admin/cm/{{o.module_name}}/">{{o.verbose_name_plural|capfirst}}</A> &rsaquo; {{o.repo_path}}</div>
+{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Cm &rsaquo;
+    <A HREF="{{app.base_url}}">{{o.verbose_name_plural|capfirst}}</A> &rsaquo; <A HREF="{{base_url}}">{{o.repo_path}}</A> &rsaquo;</div>
 {%endblock%}
 <{% block content %}
-<h1>Object: {{o.repo_path}}</h1>
+<h1>{{o.verbose_name}}: {{o.repo_path}}</h1>
 <DIV CLASS="module">
     <TABLE SUMMARY="Object info" WIDTH="100%">
         <CAPTION>Object info</CAPTION>
-        <TR><TD><b>ID</b></TD><TD>{{o.id}}</TD></TR>
+        <TR><TD WIDTH="100px"><b>ID</b></TD><TD>{{o.id}}</TD></TR>
         <TR><TD><b>Repo Path</b></TD><TD>{{o.repo_path}}</TD></TR>
         <TR><TD><b>Revision</b></TD><TD>{{r.revision}}</TD></TR>
         <TR><TD><b>Modified</b></TD><TD>{{r.date}}</TD></TR>
@@ -28,15 +28,15 @@
 <A HREF="text/">Plain Text</A>
 
 <DIV CLASS="module">
-    <FORM METHOD="POST" ACTION="/cm/view/{{o.repo_name}}/{{o.id}}/diff/">
+    <FORM METHOD="POST" ACTION="{{app.base_url}}{{o.id}}/diff/">
     <TABLE SUMMARY="Revisions" WIDTH="100%">
         <CAPTION>Revisions</CAPTION>
         {% for rev in o.revisions %}
-            <TR>
-                <TD><A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/{{rev.revision}}/">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
-                <TD>{{rev.date}}</TD>
-                <TD><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
-                <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>                
+            <TR class="{%cycle 'row1' 'row2'%}">
+                <TD WIDTH="50px"><A HREF="{{app.base_url}}{{o.id}}/{{rev.revision}}/">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
+                <TD WIDTH="200px">{{rev.date}}</TD>
+                <TD WIDTH="50px"><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
+                <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
             </TR>
         {% endfor %}
     </TABLE>
