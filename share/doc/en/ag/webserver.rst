@@ -108,7 +108,7 @@ Set up httpd.conf::
         RewriteRule ^/(media.*)$ /$1 [QSA,L,PT]
         RewriteRule ^/(static.*)$  /$1 [QSA,L,PT]
         RewriteCond %{REQUEST_FILENAME} !-f
-        RewriteRule ^/(.*)$ /mysite.fcgi/$1 [QSA,L]    
+        RewriteRule ^/(.*)$ /noc.fcgi/$1 [QSA,L]
         <Directory /opt/noc>
             Order allow,deny
             Allow from all
