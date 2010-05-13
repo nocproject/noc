@@ -38,23 +38,11 @@
             {% trans 'Welcome,' %}
             <strong>{% firstof user.first_name user.username %}</strong>.
             {% block userlinks %}
-                <a href="/admin/main/userprofile/">Profile</a> /
-                {% url admin:password_change as password_change_url %}
-                {% if password_change_url %}
-                    <a href="{{ password_change_url }}">
-                {% else %}
-                    <a href="{{ root_path }}password_change/">
-                {% endif %}
-                {% trans 'Change password' %}</a> /
-                {% url main:auth:logout as logout_url %}
-                {% if logout_url %}
-                    <a href="{{ logout_url }}">
-                {% else %}
-                    <a href="{{ root_path }}logout/">
-                {% endif %}
-                {% trans 'Log out' %}</a>
+                <a href="{% url main:userprofile:change %}">Profile</a> /
+                <a href="{% url main:auth:change_password %}">{% trans 'Change password' %}</a> /
+                <a href="{% url main:auth:logout %}">{% trans 'Log out' %}</a>
             {% endblock %}
-            <FORM METHOD="POST" ACTION="/main/search/"><INPUT TYPE="search" NAME="query"  PLACEHOLDER="Search..."/></FORM>
+            <FORM METHOD="POST" ACTION="{% url main:search:search %}"><INPUT TYPE="search" NAME="query"  PLACEHOLDER="Search..."/></FORM>
             </div>
         {% endif %}
         {% block nav-global %}{% endblock %}
