@@ -4,7 +4,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.db import models
-from noc.main.menu import Menu
 ##
 ## Time Series
 ##
@@ -47,7 +46,7 @@ class TimeSeriesData(models.Model):
     def __unicode__(self):
         return "%s@%s"%(self.time_series.name,str(self.timestamp))
 ##
-##
+## Chart: the group of timeseries
 ##
 class Chart(models.Model):
     class Meta:
@@ -59,17 +58,3 @@ class Chart(models.Model):
         return self.name
     def as_html(self):
         return '<div id="nocchart_%d" style="width: 600px; height: 400px"></div><script>$("#nocchart_%d").nocchart({ajaxURL:"/pm/view/chart/%d/data/"});</script>'%(self.id,self.id,self.id)
-
-##
-## Application Menu
-##
-class AppMenu(Menu):
-    app="pm"
-    title="Performance Management"
-    items=[
-        ("Charts", "/pm/", "pm.change_chart"),
-        ("Setup", [
-            ("Time Series", "/admin/pm/timeseries/", "pm.change_timeseries"),
-            ("Charts",      "/admin/pm/chart/",      "pm.change_chart"),
-        ])
-    ]
