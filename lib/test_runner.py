@@ -8,6 +8,7 @@
 import os,unittest,sys
 from django.test import simple
 from django.conf import settings
+from django.test.utils import setup_test_environment, teardown_test_environment
 from coverage import coverage as Coverage
 from django.test import _doctest as doctest
 from django.test.testcases import OutputChecker, DocTestRunner, TestCase
@@ -78,7 +79,7 @@ def get_tests(test_labels):
 ##
 ## "manage.py test" runner
 ##
-def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[]):
+def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=True,reuse_db=False):
     def match_test(m):
         if not test_labels:
             return True
@@ -88,20 +89,21 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[]):
         return False
     # Mark testing environment
     settings.NOC_TEST=True
+    suite=unittest.TestSuite()
     # Scan for tests
     print "Scanning for tests ...",
-    modules,suite=get_tests(test_labels)
-    print "... %d test cases found"%(len(modules)+len(suite))
+    modules,tsuite=get_tests(test_labels)
+    print "... %d test cases found"%(len(modules)+len(tsuite))
     print "Preparing test cases ..."
-    coverage=Coverage()
-    coverage.exclude(r"^\s*$")                # Exclude empty lines
-    coverage.exclude(r"^\s*#.*$")             # Exclude comment blocks
-    coverage.exclude(r"^\s*(import|from)\s")  # Exclude import statements
-    # Run tests
-    coverage.start()
+    if coverage:
+        coverage=Coverage()
+        coverage.exclude(r"^\s*$")                # Exclude empty lines
+        coverage.exclude(r"^\s*#.*$")             # Exclude comment blocks
+        coverage.exclude(r"^\s*(import|from)\s")  # Exclude import statements
+        # Run tests
+        coverage.start()
     # Add docstrings and module load tests
     # Run inside Coverage context
-    extra_tests=[]
     doctestOutputChecker = OutputChecker()
     for m in modules:
         mn="noc."+m.replace(os.path.sep,".")[:-3]
@@ -109,24 +111,45 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[]):
             mn=mn[:-9]
         if match_test(mn):
             # Module load
-            extra_tests+=[ImportTestCase(mn)]
+            suite.addTest(ImportTestCase(mn))
             # Docstrings
             try:
-                extra_tests+=[doctest.DocTestSuite(mn,checker=doctestOutputChecker,runner=DocTestRunner)]
+                suite.addTest(doctest.DocTestSuite(mn,checker=doctestOutputChecker,runner=DocTestRunner))
             except ValueError:
                 pass # No doctests in module
-    for m in suite:
+    for m in tsuite:
         if not match_test(m):
             continue
         mo=__import__(m,{},{},"*")
-        extra_tests+=[unittest.defaultTestLoader.loadTestsFromModule(mo)]
-    if verbosity>1:
-        print "Extra tests: ",extra_tests
+        suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(mo))
+    for test in extra_tests:
+        suite.addTest(test)
+    # Run tests
     print "Testing ..."
-    test_results=simple.run_tests([],verbosity,interactive,extra_tests)
-    coverage.stop()
-    # Coverage HTML Report
-    print "Writing Coverage report to %s"%settings.COVERAGE_REPORT_PATH
-    coverage.html_report(modules, directory=settings.COVERAGE_REPORT_PATH)
-    print "Done"
+    setup_test_environment()
+    settings.DEBUG = False
+    old_name = settings.DATABASE_NAME
+    from django.db import connection
+    try:
+        connection.cursor() # Raises operational error when no database exists
+        has_db=True
+    except:
+        has_db=False
+    # Create database when necessary
+    if not reuse_db or not has_db:
+        connection.creation.create_test_db(verbosity, autoclobber=not interactive)
+    # Run tests
+    result = unittest.TextTestRunner(verbosity=verbosity).run(suite)
+    # Drop database when necessary
+    if not reuse_db:
+        connection.creation.destroy_test_db(old_name, verbosity)
+    teardown_test_environment()
+
+    test_results=len(result.failures) + len(result.errors)
+    if coverage:
+        coverage.stop()
+        # Coverage HTML Report
+        print "Writing Coverage report to %s"%settings.COVERAGE_REPORT_PATH
+        coverage.html_report(modules, directory=settings.COVERAGE_REPORT_PATH)
+        print "Done"
     return test_results
