@@ -321,12 +321,14 @@ class ApplicationBase(type):
 ##
 class Application(object):
     __metaclass__=ApplicationBase
+    title="APPLICATION TITLE"
     ##
     def __init__(self,site):
         self.site=site
         parts=self.__class__.__module__.split(".")
         self.module=parts[1]
         self.app=parts[3]
+        self.module_title=__import__("noc.%s"%self.module,{},{},["MODULE_NAME"]).MODULE_NAME
         self.app_id="%s.%s"%(self.module,self.app)
     ##
     ## Return application id
@@ -394,9 +396,7 @@ class Application(object):
     ## Render wait page
     ##
     def render_wait(self,request,subject=None,text=None,url=None,timeout=5):
-        if url is None:
-            url=request.path
-        return self.render(request,"main/wait.html",{"subject":subject,"text":text,"timeout":timeout,"url":url})
+        return self.site.views.main.message.wait(request,subject=subject,text=text,timeout=timeout,url=url)
     ##
     ## Redirect to URL
     ##
@@ -485,6 +485,7 @@ class ModelApplication(Application):
         super(ModelApplication,self).__init__(site)
         self.admin=self.model_admin(self.model, django_admin.site)
         self.admin.app=self
+        self.title=self.model._meta.verbose_name_plural
         self.admin.change_form_template=self.get_template_path("change_form.html")+["admin/change_form.html"]
         self.admin.change_list_template=self.get_template_path("change_list.html")+["admin/change_list.html"]
     ##
@@ -521,6 +522,7 @@ class ModelApplication(Application):
     def view_history(self,request,object_id,extra_content=None):
         return self.admin.history_view(request,object_id,extra_content)
     view_history.url=r"^(\d+)/history/$"
+    view_history.url_name="history"
     view_history.access=permit_change
     
     def view_delete(self,request,object_id,extra_content=None):
