@@ -14,7 +14,7 @@ from noc.lib.database_storage import DatabaseStorage as DBS
 import noc.main.search # Set up signal handlers
 import os,datetime,re,datetime,threading
 from noc.main.refbooks.downloaders import downloader_registry
-from noc.main.search import SearchResult
+from noc.lib.search import SearchResult
 from django.contrib import databrowse
 from django.db.models.signals import class_prepared,pre_save,pre_delete
 from noc.lib.fields import TextArrayField

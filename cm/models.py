@@ -18,7 +18,7 @@ from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging,random,types
 from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObject
 from noc.sa.protocols.sae_pb2 import *
-from noc.main.search import SearchResult
+from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 
 profile_registry.register_all()

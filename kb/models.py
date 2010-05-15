@@ -10,7 +10,7 @@ from django.db.models import Q
 from noc.main.models import Language,database_storage
 from django.contrib.auth.models import User
 from noc.kb.parsers import parser_registry
-from noc.main.search import SearchResult
+from noc.lib.search import SearchResult
 from noc.lib.validators import is_int
 import difflib,re
 

@@ -15,7 +15,7 @@ from noc.peer.models import AS
 from noc.vc.models import VC
 from noc.lib.fields import CIDRField
 from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast,address_to_int,generate_ips,prefix_to_size
-from noc.main.search import SearchResult
+from noc.lib.search import SearchResult
 from noc.main.middleware import get_user
 ##
 ##
