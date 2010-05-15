@@ -1,6 +1,4 @@
-{% extends "admin/base.html" %}
-{% block title%}Knowledge Base{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/kb/">Knowledge Base</A></div>{% endblock %}
+{% extends "template.html" %}
 {% block content %}
 <ul class="object-tools">
     <LI><A HREF="{% url kb:kbentry:add %}" class="addlink">Add KB Entry</A></LI>
@@ -49,7 +47,7 @@
 <DIV ID="tabs-nav">
     {% for t,n in tabs %}
         <SPAN CLASS='{% ifequal tab t %}selected-tab{%else%}unselected-tab{%endifequal%}'>
-            <A HREF="{% url kb:index:index %}{{t}}/">{{n}}</A>
+            <A HREF="{% url kb:index:tab t %}">{{n}}</A>
         </SPAN>
     {% endfor %}
 </DIV>

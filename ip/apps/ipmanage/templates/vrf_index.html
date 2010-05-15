@@ -1,12 +1,9 @@
-{% extends "admin/base.html" %}
-{% block title%}IP: {{prefix.prefix}}{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; ip &rsaquo; 
-    <a href='{% url ip:ipmanage:vrf_index vrf.id "0.0.0.0/0"%}'>VRF: {{vrf.name}}</A> &rsaquo;
-        {% for p in parents %}
-            <a href="{% url ip:ipmanage:vrf_index vrf.id p.prefix %}" title="{{p.description}}">{{p.prefix}}</a> &rsaquo;
-        {% endfor %}
-        <a href='{% url ip:ipmanage:vrf_index vrf.id prefix.prefix %}' title="{{prefix.description}}">{{prefix.prefix}}</a> &rsaquo;
-</div>
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li><a href='{% url ip:ipmanage:vrf_index vrf.id "0.0.0.0/0"%}'>VRF: {{vrf.name}}</A></li>
+    {% for p in parents %}
+        <li><a href="{% url ip:ipmanage:vrf_index vrf.id p.prefix %}" title="{{p.description}}">{{p.prefix}}</a></li>
+    {% endfor %}
+    <li><a href='{% url ip:ipmanage:vrf_index vrf.id prefix.prefix %}' title="{{prefix.description}}">{{prefix.prefix}}</a></li>
 {% endblock %}
 {% block content %}
 {% if can_allocate %}
@@ -171,7 +168,7 @@ function toggle_free() {
         </TR>
         <TR class="row2">
             <TD><b>Maintainers</b></TD>
-            <TD>{{prefix.maintainers|join:", "}} {%if can_allocate%}<a href="/admin/ip/ipv4blockaccess/add/?vrf={{vrf.id}}&prefix={{prefix}}"><b>Add...<b></a>{%endif%}</TD>
+            <TD>{{prefix.maintainers|join:", "}} {%if can_allocate%}<a href="{% url ip:ipv4blockaccess:add %}?vrf={{vrf.id}}&prefix={{prefix}}"><b>Add...<b></a>{%endif%}</TD>
         </TR>
         {% for k,v in block_info %}
             <TR class="{%cycle 'row1' 'row2'%}"><TD STYLE="width: 10pt"><b>{{k}}</b></TD><TD>{{v}}</TD></TR>

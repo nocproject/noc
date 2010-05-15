@@ -3,9 +3,8 @@
 {% block object-tools %}
 {% if change %}{% if not is_popup %}
   <ul class="object-tools">
-      {% url fm:eventpostprocessingrule:clone object_id as clone_link %}
-      <li><a href="{{clone_link}}" class="historylink">Clone Rule</a></li>
-      <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+      <li><a href="{% url fm:eventpostprocessingrule:clone object_id %}" class="historylink">Clone Rule</a></li>
+      <li><a href="{% url fm:eventpostprocessingrule:history object_id %}" class="historylink">{% trans "History" %}</a></li>
   </ul>
 {% endif %}{% endif %}
 {% endblock %}

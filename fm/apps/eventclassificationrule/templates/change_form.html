@@ -4,7 +4,7 @@
 {% if change %}{% if not is_popup %}
   <ul class="object-tools">
       <li><a href="{% url fm:eventclassificationrule:clone object_id %}" class="historylink">Clone Rule</a></li>
-      <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+      <li><a href="{% url fm:eventclassificationrule:history object_id %}" class="historylink">{% trans "History" %}</a></li>
   </ul>
 {% endif %}{% endif %}
 {% endblock %}

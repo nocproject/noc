@@ -14,6 +14,7 @@ calculator_registry.register_all()
 ## Calculator application
 ##
 class CalculatorAppplication(Application):
+    title="Calculators"
     ##
     ## Calculator index
     ##
@@ -22,6 +23,7 @@ class CalculatorAppplication(Application):
         r=sorted(r,lambda x,y: cmp(x[1],y[1]))
         return self.render(request,"index.html",{"calculators":r})
     view_index.url=r"^$"
+    view_index.url_name="index"
     view_index.menu="Calculators"
     view_index.access=Application.permit
     ##
@@ -34,4 +36,5 @@ class CalculatorAppplication(Application):
             return self.response_not_found("No calculator found")
         return c.render(request)
     view_calculate.url=r"^(?P<calculator>\S+)/$"
+    view_calculate.url_name="calculate"
     view_calculate.access=Application.permit

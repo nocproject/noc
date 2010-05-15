@@ -12,6 +12,7 @@ from noc.kb.models import *
 ## Knowledge Base Index
 ##
 class IndexAppplication(Application):
+    title="Knowledge Base"
     TOP_ENTRIES=20
     ##
     ## Render index page
@@ -34,6 +35,23 @@ class IndexAppplication(Application):
     view_index.url_name="index"
     view_index.menu="Knowledge Base"
     view_index.access=Application.permit_logged
+    ##
+    ## Render named tab
+    ##
+    def view_tab(self,request,tab):
+        tabs={
+            "bookmarks" : self.view_index_bookmarks,
+            "categories": self.view_index_categories,
+            "latest"    : self.view_index_latest,
+            "popular"   : self.view_index_popular,
+            "all"       : self.view_index_all,
+        }
+        if tab not in tabs:
+            return self.response_not_found("Tab not found")
+        return tabs[tab](request)
+    view_tab.url=r"^(?P<tab>[^/]+)/$"
+    view_tab.url_name="tab"
+    view_tab.access=Application.permit_logged
     ##
     ## Bookmarks page
     ##

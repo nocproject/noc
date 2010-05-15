@@ -1,6 +1,5 @@
-{% extends "admin/base.html" %}
-{% block title%}Event #{{e.id}}{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/fm/">Fm</A> &rsaquo; <A HREF="/fm/">Events</A> &rsaquo; {{e.id}}</div>{% endblock %}
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>{{e.id}}</li>{% endblock %}
 {% block object-tools %}
 <ul class="object-tools">
     {% ifequal e.status 'A' %}<LI><A HREF="{% url fm:event:close e.id %}" class="addlink">Close</A></LI>{% endifequal %}

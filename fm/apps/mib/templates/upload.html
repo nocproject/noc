@@ -1,6 +1,5 @@
-{% extends "admin/base.html" %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/fm/">Fm</A> &rsaquo; <A HREF="{{app.base_url}}">MIBs</A> &rsaquo; Upload MIB &rsaquo;</div>
-{% endblock %}
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>Upload MIB</li>{% endblock %}
 
 {% block content %}
 <H1>Upload MIB</H1>

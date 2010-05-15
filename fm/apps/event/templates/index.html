@@ -1,4 +1,4 @@
-{% extends "admin/base.html" %}
+{% extends "template.html" %}
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% url fm:event:css %}" />
     <link type="text/css" rel="stylesheet" href="/static/css/jquery.autocomplete.css">
@@ -8,8 +8,6 @@
     <script type="text/javascript" src="/static/js/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/static/js/jquery.pager.js"></script>
 {% endblock %}
-{% block title %}Fault Management{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Fm &rsaquo; <A HREF="{{app.base_url}}">Events</A></div>{% endblock %}
 <{% block content %}
 <h1>Fault Management</h1>
 

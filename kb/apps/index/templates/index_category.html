@@ -1,9 +1,5 @@
-{% extends "admin/base.html" %}
-{% block title%}Knowledge Base{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; kb &rsaquo;
-    <a href="{% url kb:index:categories %}">Categories</a> &rsaquo; {{category.name}} &rsaquo;
-    </div>
-{% endblock %}
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li><a href="{% url kb:index:categories %}">Categories</a></li><li>{{category.name}}</li>{% endblock %}
 {% block content %}
 <ul class="object-tools">
     <LI><A HREF="{% url kb:kbentry:add %}" class="addlink">Add KB Entry</A></LI>

@@ -1,7 +1,5 @@
-{% extends "admin/base.html" %}
-{% block title%}Test Time Pattern: {{time_pattern.name}}{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Main &rsaquo; <a href='/main/timepattern/'>Time Patterns</a> &rsaquo; Test &rsaquo;</div>
-{% endblock %}
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>Test</li>{% endblock %}
 {% block content %}
 <h1>Test Time Patterns</h1>
 <form method="POST">

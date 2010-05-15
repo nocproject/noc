@@ -19,6 +19,7 @@ class ConfigApplication(Application):
     def view_index(self,request):
         return self.render(request,"index.html",{"configs":self.CONFIGS})
     view_index.url=r"^$"
+    view_index.url_name="index"
     view_index.access=Application.permit_superuser
     view_index.menu="Setup | Configs"
     ##
@@ -113,4 +114,5 @@ class ConfigApplication(Application):
             "read_only"   : read_only,
             "system_user" : system_user})
     view_config.url=r"^(?P<config>\S+)/$"
+    view_config.url_name="view"
     view_config.access=Application.permit_superuser

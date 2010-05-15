@@ -1,7 +1,5 @@
-{% extends "admin/base.html" %}
-{% block title%}Reference Books{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/main/refbook/">Reference Books</a> &rsaquo; <a href="/main/refbook/{{rb.id}}/">{{rb.name}}</a> &rsaquo;</div> </div>
-{% endblock %}
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>{{rb.name}}</li>{% endblock %}
 {% block content %}
 <h1>Edit record</h1>
 <form method="POST" id="edit-form">

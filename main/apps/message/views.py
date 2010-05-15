@@ -28,3 +28,17 @@ class MessageApplication(Application):
     view_failure.url=r"^failure/$"
     view_failure.url_name="failure"
     view_failure.access=Application.permit_logged
+    ##
+    ## Render wait page
+    ##
+    def view_wait(self,request,subject=None,text=None,timeout=5,url=None):
+        subject=request.GET.get("subject",subject)
+        text=request.GET.get("text",text)
+        timeout=int(request.GET.get("timeout",timeout))
+        url=request.GET.get("url",url)
+        if url is None:
+            url=request.path
+        return self.render(request,"wait.html",{"subject":subject,"text":text,"url":url,"timeout":timeout})
+    view_wait.url=r"^wait/$"
+    view_wait.url_name="wait"
+    view_wait.access=Application.permit_logged

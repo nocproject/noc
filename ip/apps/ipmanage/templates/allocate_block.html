@@ -1,6 +1,9 @@
-{% extends "admin/base.html" %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Address Space Management &rsaquo;
-    {%if parent%}<a href="{% url ip:ipmanage:vrf_index vrf.id parent %}">{{parent}}</a> &rsaquo;{%endif%} Allocate Block &rsaquo;</div>
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}
+    {%if parent%}
+        <li><a href="{% url ip:ipmanage:vrf_index vrf.id parent %}">{{parent}}</a></li>
+    {%endif%}
+    <li>Allocate Block &rsaquo;</li>
 {% endblock %}
 {% block content %}
 <H1>Allocate IPv4 block. VRF {{vrf.name}} ({{vrf.rd}})</H1>

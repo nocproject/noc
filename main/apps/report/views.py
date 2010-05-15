@@ -11,6 +11,7 @@ from noc.main.models import report_registry
 ## Report application
 ##
 class ReportAppplication(Application):
+    title="Reports"
     ##
     ## Render report index
     ##
