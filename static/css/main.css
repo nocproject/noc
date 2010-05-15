@@ -14,6 +14,21 @@ div.breadcrumbs {
     margin-left: 204px;
 }
 
+div.breadcrumbs ul, div.breadcrumbs ul li {
+    margin: 0;
+    padding: 0;
+    display: inline;
+    list-style: none;
+}
+
+div.breadcrumbs ul li:before {
+    content: "\00a0";
+}
+
+div.breadcrumbs ul li:after {
+    content: "\00a0\203a";
+}
+
 ul.messagelist {
     margin-left: 204px;
 }
