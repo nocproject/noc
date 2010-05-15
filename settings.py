@@ -28,6 +28,7 @@ DATABASE_USER     = config.get("database","user")
 DATABASE_PASSWORD = config.get("database","password")
 DATABASE_HOST     = config.get("database","host")
 DATABASE_PORT     = config.get("database","port")
+DATABASE_SUPPORTS_TRANSACTIONS = True
 
 TIME_ZONE = config.get("main","timezone")
 LANGUAGE_CODE = config.get("main","language_code")
