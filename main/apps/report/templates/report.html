@@ -1,15 +1,13 @@
-{% extends "admin/base.html" %}
-{% block title%}{{report.title}}{% endblock %}
+{% extends "template.html" %}
 {% block extrahead %}
 {% if refresh %}
-<meta http-equiv="Refresh" content="{{refresh}}" />
+    <meta http-equiv="Refresh" content="{{refresh}}" />
 {% endif %}
 <link rel="stylesheet" type="text/css" href="/static/css/jquery.svg.css" />
 <SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.svg.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.rotate_text.js"></SCRIPT>
 {% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/main/report/">Reports</A> &rsaquo; {{report.title}} &rsaquo;</div>
-{% endblock %}
+{% block breadcrumbs %}{{block.super}}<li>{{report.title}}</li>{% endblock %}
 {% block content %}
 <h1>{{report.title}}</h1>
 <script type="text/javascript">

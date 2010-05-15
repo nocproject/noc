@@ -1,9 +1,5 @@
-{% extends "admin/base.html" %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Vc &rsaquo; 
-    <a href='/vc/vcfilter/'>VC Filters</A> &rsaquo; Test &rsaquo;
-</div>
-{% endblock %}
-
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>Test</li>{% endblock %}
 {% block content %}
 <H1>Test VC Filters</H1>
 <FORM METHOD="POST">

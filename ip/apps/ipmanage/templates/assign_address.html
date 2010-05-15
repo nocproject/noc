@@ -1,10 +1,8 @@
-{% extends "admin/base.html" %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/ip/">ip</A> &rsaquo; 
-    <a href='/ip/{{vrf.id}}/'>VRF: {{vrf.name}}</A> &rsaquo;
-        {% for p in parents %}
-            <a href="/ip/{{vrf.id}}/{{p.prefix}}/" title="{{p.description}}">{{p.prefix}}</a> &rsaquo;
-        {% endfor %}
-</div>
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li><a href="{% url ip:ipmanage:vrf_index vrf.id '0.0.0.0/0' %}">VRF: {{vrf.name}}</A><li>
+{% for p in parents %}
+    <li><a href="{% url ip:ipmanage:vrf_index vrf.id p.prefix %}" title="{{p.description}}">{{p.prefix}}</a></li>
+{% endfor %}
 {%endblock%}
 {% block content %}
 <H1>Assign IPv4 address. VRF: {{vrf}} ({{vrf.rd}})</H1>
@@ -28,7 +26,7 @@
     </fieldset>
     <div class="submit-row">
         <INPUT TYPE="submit" VALUE="Save" CLASS="default"/>
-        <p class="deletelink-box"><a href="../revoke_address/" class="deletelink" ONCLICK="return confirm_delete('Delete Address?')">Delete</a></p>
+        <p class="deletelink-box"><a href="{% url ip:ipmanage:revoke_address vrf.id prefix %}" class="deletelink" ONCLICK="return confirm_delete('Delete Address?')">Delete</a></p>
     </div>
     </DIV>
 </FORM>

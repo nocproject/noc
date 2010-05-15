@@ -1,4 +1,4 @@
-{% extends "admin/base.html" %}
+{% extends "template.html" %}
 {% block content %}
 <H1>Managed Objects Tools</H1>
 <H2>Upload Managed Objects</H2>
@@ -7,7 +7,7 @@
         port,user,password,super_password,remote_path,
         trap_source_ip, trap_community, snmp_ro, snmp_rw, <b>repo_path</b> (Bold ones are mandatory)
     </P>
-    <FORM METHOD="POST" ACTION="{{app.base_url}}tools/upload/" enctype="multipart/form-data">
+    <FORM METHOD="POST" ACTION="{% url sa:managedobject:upload %}" enctype="multipart/form-data">
         <TABLE BORDER="0">
         {{upload_mo_form.as_table}}
         </TABLE>

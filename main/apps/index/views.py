@@ -9,6 +9,7 @@ import django.contrib.auth
 from noc.lib.app import Application
 
 class IndexApplication(Application):
+    title="Index"
     ##
     ## Display main index page
     ##

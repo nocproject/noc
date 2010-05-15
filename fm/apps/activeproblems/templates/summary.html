@@ -1,10 +1,7 @@
-{% extends "admin/base.html" %}
+{% extends "template.html" %}
 {% block extrahead %}
 <meta http-equiv="Refresh" content="60" />
-<link rel="stylesheet" type="text/css" href="/fm/event_list_css/" />
-{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="/fm/">Fm</a> &rsaquo; Active Problems Sumamry &rsaquo;
-</div>
+<link rel="stylesheet" type="text/css" href="{% url fm:event:css %}" />
 {% endblock %}
 <{% block content %}
 <h1>Active Problems Summary</h1>

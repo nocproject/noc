@@ -1,9 +1,8 @@
-{% extends "admin/base.html" %}
+{% extends "template.html" %}
 {% block title%}{{title}}{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/main/calculator/">Calculators</A> &rsaquo; {{title}} &rsaquo;</div>
-{% endblock %}
+{% block breadcrumbs %}{{block.super}}<li>{{title}}</li>{% endblock %}
 {% block content %}
-<form method="POST">
+<form method="POST" id="calculator-form">
     <table border="0">
     {{form.as_table}}
     <tr><td colspan="2"><input type="submit" value="Calculate"/></td></tr>

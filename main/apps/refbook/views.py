@@ -13,6 +13,7 @@ from noc.main.models import *
 ##
 ##
 class RefBookAppplication(Application):
+    title="Reference Books"
     ##
     ## Render list of refbooks
     ##

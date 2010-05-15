@@ -1,12 +1,10 @@
-{% extends "admin/base.html" %}
-{% block title%}IP: {{prefix.prefix}}: Bind VC{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/ip/">ip</A> &rsaquo; 
-    <a href='/ip/{{prefix.vrf.id}}/'>VRF: {{prefix.vrf.name}}</A> &rsaquo;
-        {% for p in prefix.parents %}
-            <a href="/ip/{{prefix.vrf.id}}/{{p.prefix}}/" title="{{p.description}}">{{p.prefix}}</a> &rsaquo;
-        {% endfor %}
-        <a href='/ip/{{prefix.vrf.id}}/{{prefix.prefix}}/' title="{{prefix.description}}">{{prefix.prefix}}</a> &rsaquo;
-        Bind VC &rsaquo;
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li><a href="{% url ip:ipmanage:vrf_index prefix.vrf.id '0.0.0.0/0' %}">VRF: {{prefix.vrf.name}}</A></li>
+    {% for p in prefix.parents %}
+        <li><a href="{% url ip:ipmanage:vrf_index prefix.vrf.id p.prefix %}" title="{{p.description}}">{{p.prefix}}</a></li>
+    {% endfor %}
+    <li><a href="{% url ip:ipmanage:vrf_index prefix.vrf.id prefix.prefix %}" title="{{prefix.description}}">{{prefix.prefix}}</a></li>
+    <li>Bind VC</li>
 </div>
 {% endblock %}
 

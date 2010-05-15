@@ -113,6 +113,7 @@ class ManagedObjectApplication(ModelApplication):
     def view_tools(self,request):
         return self.render(request,"tools.html",{"upload_mo_form":MOUploadForm()})
     view_tools.url=r"^tools/$"
+    view_tools.url_name="tools"
     view_tools.access=ModelApplication.permit_superuser
     ##
     ## Script index
@@ -125,6 +126,7 @@ class ManagedObjectApplication(ModelApplication):
         scripts=sorted([(p+"."+x,x) for x in profile_registry[p].scripts.keys()])
         return self.render(request,"scripts.html",{"object":o,"scripts":scripts})
     view_scripts.url=r"^(?P<object_id>\d+)/scripts/$"
+    view_scripts.url_name="scripts"
     view_scripts.access=ModelApplication.has_perm("sa.change_managedobject")
     ##
     ## Execute script
@@ -170,6 +172,7 @@ class ManagedObjectApplication(ModelApplication):
                 return self.render_failure(request,"Script Failed",why.faultString)
         return self.render(request,"script.html",{"object":o,"result":result,"script":script,"form":form})
     view_script.url=r"^(?P<object_id>\d+)/scripts/(?P<script>\S+)/$"
+    view_script.url_name="script"
     view_script.access=ModelApplication.has_perm("sa.change_managedobject")
     ##
     ## Upload managed objects
@@ -244,6 +247,7 @@ class ManagedObjectApplication(ModelApplication):
                     return self.render_success(request,"Managed Objects are Uploaded","%d managed objects uploaded/updated"%count)
         return self.response_redirect(self.base_url+"tools/")
     view_upload.url=r"^tools/upload/$"
+    view_upload.url_name="upload"
     view_upload.access=ModelApplication.permit_superuser
     ##
     ## AJAX lookup

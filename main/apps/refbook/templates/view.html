@@ -1,7 +1,5 @@
-{% extends "admin/base.html" %}
-{% block title%}{{rb.name}} | Reference Books{% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <a href="{% url main:refbook:index%}">Reference Books</a> &rsaquo; {{rb.name}} &rsaquo;</div>
-{% endblock %}
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>{{rb.name}}</li>{% endblock %}
 {% block content %}
 {% if can_edit %}
 <ul class="object-tools">
@@ -32,7 +30,7 @@
     {% for d in object_list %}
     <tr class="{%cycle 'row1' 'row2'%}">
         {% for c in d.value %}
-        <td><a href="{{d.id}}/">{{c}}</a></td>
+        <td><a href="{% url main:refbook:item rb.id d.id %}">{{c}}</a></td>
         {% endfor %}
     </tr>
     {% endfor %}

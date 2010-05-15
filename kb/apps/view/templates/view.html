@@ -1,4 +1,4 @@
-{% extends "admin/base.html" %}
+{% extends "template.html" %}
 {% block title%}Knowledge Base: KB{{e.id}}{% endblock %}
 {% block extrahead %}
     <link type="text/css" rel="stylesheet" href="/static/css/rack.css" />
@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/tablesorter.css" />
     <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></SCRIPT>
 {% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; kb &rsaquo; KB{{e.id}}</div>{% endblock %}
+{% block breadcrumbs %}{{block.super}}<li>KB{{e.id}}</li>{% endblock %}
 {% block content %}
 <ul class="object-tools">
     {% if has_bookmark %}

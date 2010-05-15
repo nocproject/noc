@@ -65,4 +65,5 @@ class VCApplication(ModelApplication):
             form=SAImportVLANsForm()
         return self.render(request,"import_vlans.html",{"form":form})
     view_import_sa.url=r"^import_sa/$"
+    view_import_sa.url_name="import_sa"
     view_import_sa.access=ModelApplication.permit_change

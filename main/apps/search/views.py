@@ -17,6 +17,7 @@ class SearchForm(forms.Form):
 ## Search engine application
 ##
 class SearchApplication(Application):
+    title="Search"
     ##
     ## Render success page
     ##

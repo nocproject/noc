@@ -1,13 +1,11 @@
-{% extends "admin/base.html" %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; Sa &rsaquo; <a href="{{app.base_url}}">Managed Objects</a> &rsaquo; {{object.name}} &rsaquo; Scripts &rsaquo;
-</div>
-{% endblock %}
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>{{object.name}}</li><li>Scripts</li>{% endblock %}
 <{% block content %}
 <h1>Scripts for {{object.name}} ({{object.profile_name}})</h1>
 <TABLE BORDER="1">
     <TR><TH>Scripts</TH></TR>
 {% for s in scripts %}
-    <TR class="{%cycle 'row1' 'row2'%}"><TD><A HREF="{{s.0}}/">{{s.1}}</A></TD></TR>
+    <TR class="{%cycle 'row1' 'row2'%}"><TD><A HREF="{% url sa:managedobject:script object.id s.0%}">{{s.1}}</A></TD></TR>
 {% endfor %}
 </TABLE>
 {%endblock%}
