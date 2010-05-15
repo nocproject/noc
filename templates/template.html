@@ -1,0 +1,3 @@
+{% extends "admin/base.html"%}
+{% block title%}{{app.title}}{% endblock %}
+{%block breadcrumbs %}{{block.super}}<li>{{app.module_title}}</li><li><a href="{{app.base_url}}">{{app.title}}</a></li>{%endblock%}

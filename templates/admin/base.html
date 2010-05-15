@@ -49,7 +49,9 @@
     </div>
     <div id="menu"></div>
     <!-- END Header -->
-    {% block breadcrumbs %}<div class="breadcrumbs"><a href="/">{% trans 'Home' %}</a>{% if title %} &rsaquo; {{ title }}{% endif %}</div>{% endblock %}
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs"><ul>{% block breadcrumbs %}<li><a href="{% url main:index:home %}">{% trans 'Home' %}</a></li>{% endblock %}</ul></div>
+    <!-- END Breadcrumbs -->
     {% endif %}
 
     {% if messages %}
