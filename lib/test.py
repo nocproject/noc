@@ -275,6 +275,7 @@ class ApplicationTestCase(NOCTestCase):
     ##
     ## Try to hit application index URL
     ##
+    rx_bc=re.compile(r"<!-- Breadcrumbs -->.+?APPLICATION TITLE.+?<!-- END Breadcrumbs -->",re.MULTILINE|re.DOTALL|re.UNICODE)
     def test_index(self):
         iv=None
         for v in self.get_views():
@@ -285,6 +286,8 @@ class ApplicationTestCase(NOCTestCase):
             return
         # Try to hit index page
         page=self.app.get(self.base_url,user=self.user)
+        # Check application name is set
+        assert not self.rx_bc.search(page.body),"Application title not set"
         # Try to hit all links on index page
         for l in self.get_links(page):
             ref_page=page.goto(l)
