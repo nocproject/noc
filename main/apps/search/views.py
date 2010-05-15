@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django import forms
 from noc.lib.app import Application
-from noc.main.search import search as search_engine
+from noc.lib.search import search as search_engine
 ##
 ## Simple search form
 ##

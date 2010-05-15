@@ -10,7 +10,7 @@
 """
 from django.db import models,connection
 from django.db.models import Q
-from noc.main.search import SearchResult
+from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.sa.models import ManagedObjectSelector
 from noc.lib.validators import is_int

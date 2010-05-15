@@ -14,7 +14,7 @@ from noc.sa.periodic import periodic_registry
 from noc.sa.scripts import reduce_script_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
-from noc.main.search import SearchResult
+from noc.lib.search import SearchResult
 from noc.lib.fields import PickledField,INETField
 
 profile_registry.register_all()
