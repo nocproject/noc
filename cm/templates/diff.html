@@ -1,10 +1,9 @@
-{% extends "admin/base.html" %}
+{% extends "template.html" %}
+{% load cmtags %}
 {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="/static/css/diff.css" />
 {% endblock %}
-{% block breadcrumbs %}<div class="breadcrumbs"><A HREF="/">Home</A> &rsaquo; <A HREF="/admin/cm/">Cm</A> &rsaquo;
-    <A HREF="/admin/cm/{{o.module_name}}/">{{o.verbose_name_plural|capfirst}}</A> &rsaquo; <A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/">{{o.repo_path}}</A> &rsaquo; Diff</div>
-{%endblock%}
+{% block breadcrumbs %}{{block.super}}<li>Diff</li>{%endblock%}
 {% block content %}
 <h1>Diff: {{o.handler_class_name}}::{{o.repo_path}}</h1>
 <DIV CLASS="module">
@@ -18,11 +17,11 @@
     </TABLE>
 </DIV>
 {%ifequal mode "2"%}
-<A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/diff/u/{{r1}}/{{r2}}/">Unified Diff</A>
+<A HREF="{% cm_url diff_rev 'u' r1 r2 %}">Unified Diff</A>
 <B>Two column mode</B>
 {%else%}
 <B>Unified Diff</B>
-<A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/diff/2/{{r1}}/{{r2}}/">Two column mode</A>
+<A HREF="{% cm_url diff_rev '2' r1 r2 %}">Two column mode</A>
 {%endifequal%}
 <DIV CLASS="module">
     <TABLE SUMMARY="Diff" WIDTH="100%">
@@ -32,12 +31,12 @@
 </DIV>
 
 <DIV CLASS="module">
-    <FORM METHOD="POST" ACTION="/cm/view/{{o.repo_name}}/{{o.id}}/diff/">
+    <FORM METHOD="POST" ACTION="{% cm_url diff o.id %}">
     <TABLE SUMMARY="Revisions" WIDTH="100%">
         <CAPTION>Revisions</CAPTION>
         {% for rev in o.revisions %}
             <TR>
-                <TD><A HREF="/cm/view/{{o.repo_name}}/{{o.id}}/{{rev.revision}}/">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
+                <TD><A HREF="{% cm_url view_revision o.id rev.revision %}">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
                 <TD>{{rev.date}}</TD>
                 <TD><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
                 <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>

@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.shortcuts import get_object_or_404
 from django.utils.html import escape
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,URL
 from noc.cm.models import Object
 import difflib
 ##
@@ -49,17 +49,29 @@ class RepoApplication(ModelApplication):
         content=o.get_revision(r)
         # Render content
         if format=="html":
-            content=self.render_content(content)
+            content=self.render_content(o,content)
             return self.render(request,"view.html",{"o":o,"r":r,"content":content}) # r????
         else:
             return self.render_plain_text(content)
-    view_change.url=r"^(?P<object_id>\d+)/(?:(?P<revision>\d+)/)?(?:(?P<format>text)/)?$"
+    view_change.url=[
+        URL(r"^(?P<object_id>\d+)/$"                  , name="view"),
+        URL(r"^(?P<object_id>\d+)/(?P<revision>\d+)/$", name="view_revision"),
+    ]
     view_change.access=ModelApplication.permit_change
-    view_change.url_name="view"
+    ##
+    ##
+    ##
+    def view_text(self,request,object_id,revision=None):
+        return self.view_change(request,object_id,revision,format="text")
+    view_text.url=[
+        URL(r"^(?P<object_id>\d+)/text/$"                   , name="view_text"),
+        URL(r"^(?P<object_id>\d+)/(?P<revision>\d+)/text/$" , name="view_text_revision"),
+    ]
+    view_text.access=ModelApplication.permit_change
     ##
     ## Render diff form
     ##
-    def view_diff(request,object_id,mode="u",r1=None,r2=None):
+    def view_diff(self,request,object_id,mode="u",r1=None,r2=None):
         o=get_object_or_404(Object.get_object_class(self.repo),id=int(object_id))
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
@@ -79,5 +91,8 @@ class RepoApplication(ModelApplication):
             return self.render(request,"diff.html",{"o":o,"diff":diff,"r1":r1,"r2":r2,"mode":mode})
         else:
             return self.response_redirect(self.base_url+str(o.id))
-    view_diff.url=r"^(?P<object_id>\d+)/diff/(?:(?P<mode>[u2])/(?P<r1>.+)/(?P<r2>.+)/)?$"
+    view_diff.url=[
+        URL(r"^(?P<object_id>\d+)/diff/$",                                        name="diff"),
+        URL(r"^(?P<object_id>\d+)/diff/(?P<mode>[u2])/(?P<r1>\d+)/(?P<r2>\d+)/$", name="diff_rev")
+    ]
     view_diff.access=ModelApplication.permit_change
