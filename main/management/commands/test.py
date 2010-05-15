@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.core.management.base import BaseCommand
+from django.core import management
+from south.management.commands.test import MigrateAndSyncCommand
 from optparse import make_option
 import sys
 ##
@@ -34,6 +36,10 @@ class Command(BaseCommand):
         reuse_db=options.get("reuse_db",False)
         test_runner = get_runner(settings)
         
+        # Install south migrations hook
+        management.get_commands()
+        management._commands['syncdb'] = MigrateAndSyncCommand()
+        # Run tests
         failures = test_runner(test_labels, verbosity=verbosity, interactive=interactive,coverage=coverage,reuse_db=reuse_db)
         if failures:
             sys.exit(failures)
