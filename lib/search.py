@@ -8,6 +8,8 @@
 """
 """
 from django.db.models.signals import class_prepared
+from noc.lib.app import site
+import types
 ##
 ## A hash of Model.search classmethods.
 ## Populated by "class_prepared" signal listener
@@ -34,7 +36,10 @@ class_prepared.connect(on_new_model)
 ##
 class SearchResult(object):
     def __init__(self,url,title,text,relevancy=1.0):
-        self.url=url
+        if type(url) in [types.TupleType,types.ListType]:
+            self.url=site.reverse(*url)
+        else:
+            self.url=url
         self.title=title
         self.text=text
         self.relevancy=relevancy
