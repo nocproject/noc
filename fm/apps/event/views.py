@@ -28,6 +28,7 @@ class EventSearchForm(forms.Form):
 ## Event Manager
 ##
 class EventAppplication(Application):
+    title="Events"
     ## Amount of events per page
     PAGE_SIZE=20
     ##

@@ -27,6 +27,7 @@ class PrefixListBuilderForm(forms.Form):
 ## Prefix List Builder Application
 ##
 class PrefixListBuilderAppplication(Application):
+    title="Prefix List Builder"
     ##
     ## Resolve prefix list
     ##

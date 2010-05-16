@@ -13,6 +13,7 @@ import time
 ## PM Viewer application
 ##
 class ViewAppplication(Application):
+    title="View"
     ##
     ## Chart index
     ##
