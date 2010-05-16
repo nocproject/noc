@@ -112,4 +112,5 @@ class DNSZoneApplication(ModelApplication):
                 return self.response_redirect(self.base_url)
         return self.response_redirect(self.base_url+"tools/")
     view_upload.url="^tools/upload/$"
+    view_upload.url_name="upload"
     view_upload.access=ModelApplication.has_perm("dns.change_dnszone")

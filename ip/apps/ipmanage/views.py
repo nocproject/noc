@@ -17,6 +17,7 @@ from noc.lib.ip import normalize_prefix,contains,in_range,free_blocks
 ## IP Address Space Management
 ##
 class IPManageAppplication(Application):
+    title="Assigned Addresses"
     ##
     ## Display VRF list
     ##

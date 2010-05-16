@@ -11,6 +11,7 @@ import ConfigParser,os,re,pwd
 ## Configuration editor
 ##
 class ConfigApplication(Application):
+    title="Configs"
     CONFIGS=["noc.conf","noc-launcher.conf","noc-fcgi.conf","noc-sae.conf","noc-activator.conf",
         "noc-classifier.conf","noc-correlator.conf","noc-notifier.conf"]
     ##
