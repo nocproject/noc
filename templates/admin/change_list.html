@@ -19,17 +19,11 @@
 {% block bodyclass %}change-list{% endblock %}
 
 {% if not is_popup %}
-  {% block breadcrumbs %}
-    <div class="breadcrumbs">
-      <a href="../../">
-        {% trans "Home" %}
-      </a>
-       &rsaquo; 
-         {{ app_label }}
-      &rsaquo; 
-      {{ cl.opts.verbose_name_plural|capfirst }}
-    </div>
-  {% endblock %}
+    {% block breadcrumbs %}
+    {{block.super}}
+    <li>{{app.module_title}}</li>
+    <li><a href="{{app.base_url}}">{{app.title}}</a></li>
+    {% endblock %}
 {% endif %}
 
 {% block coltype %}flex{% endblock %}
