@@ -17,7 +17,7 @@
 
 <H2>Upload allocated IP addresses via Zone Transfer</H2>
     <P>Upload list of allcated IP addresses from existing DNS servers via AXFR request</P>
-    <FORM METHOD="POST" ACTION="{% url ip:toos:upload_axfr vrf.if prefix %}">
+    <FORM METHOD="POST" ACTION="{% url ip:tools:upload_axfr vrf.id prefix %}">
         <TABLE BORDER="0">
             {{upload_ips_axfr_form.as_table}}
         </TABLE>
