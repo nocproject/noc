@@ -218,7 +218,8 @@ class VC(models.Model):
                         label="%d,%d"%(r.l1,r.l2)
                     else:
                         label="%d"%r.l1
-                    yield SearchResult(url="/admin/vc/vc/%d/"%r.id,
+                    yield SearchResult(
+                        url=("vc:vc:change",r.id),
                         title="VC: %s, Domain: %s, Label=%s"%(r.type,r.vc_domain.name,label),
                         text=r.description,
                         relevancy=1.0)

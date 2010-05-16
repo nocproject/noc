@@ -235,7 +235,7 @@ class Object(models.Model):
             data=o.data
             if query in o.repo_path: # If repo_path matches
                 yield SearchResult(
-                    url="/cm/view/%s/%d/"%(o.repo_name,o.id),
+                    url=("cm:%s:view"%o.repo_name,o.id),
                     title="CM: "+unicode(o),
                     text=unicode(o),
                     relevancy=1.0, # No weighted search yes
@@ -246,7 +246,7 @@ class Object(models.Model):
                 idx_e=min(len(data),idx+len(query)+100)
                 text=data[idx_s:idx_e]
                 yield SearchResult(
-                    url="/cm/view/%s/%d/"%(o.repo_name,o.id),
+                    url=("cm:%s:view"%o.repo_name,o.id),
                     title="CM: "+unicode(o),
                     text=text,
                     relevancy=1.0, # No weighted search yes

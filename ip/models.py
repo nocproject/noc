@@ -288,7 +288,8 @@ class IPv4Block(models.Model):
                         relevancy=float(len(search))/float(l)
                     else:
                         relevancy=0.0
-                yield SearchResult(url="/ip/%d/%s/"%(r.vrf.id,r.prefix),
+                yield SearchResult(
+                    url=("ip:ipmanage:vrf_index",r.vrf.id,r.prefix),
                     title="IPv4 Block, VRF=%s, %s"%(r.vrf,r.prefix),
                     text=r.description,
                     relevancy=relevancy)
@@ -508,7 +509,8 @@ class IPv4Address(models.Model):
                     else:
                         r_description=0.0
                     relevancy=max(r_fqdn,r_description)
-                yield SearchResult(url="/ip/%d/%s/assign_address/"%(r.vrf.id,r.ip),
+                yield SearchResult(
+                    url=("ip:ipmanage:change_address",r.vrf.id,r.ip),
                     title="IPv4 Address, VRF=%s, %s (%s)"%(r.vrf,r.ip,r.fqdn),
                     text=r.description,
                     relevancy=relevancy)

@@ -77,7 +77,8 @@ class KBEntry(models.Model):
                     text=r.body[idx-100:idx+len(query)+100]
                 except ValueError:
                     text=r.body[:100]
-                yield SearchResult(url="/kb/%d/"%r.id,
+                yield SearchResult(
+                    url=("kb:view:view",r.id),
                     title="KB%d: %s"%(r.id,r.subject),
                     text=text,
                     relevancy=1.0)
@@ -224,7 +225,8 @@ class KBEntryAttachment(models.Model):
         if user.has_perm("kb.change_kbentry"):
             q=Q(name__icontains=query)|Q(description__icontains=query)
             for r in KBEntryAttachment.objects.filter(q):
-                yield SearchResult(url="/kb/%d/"%r.kb_entry.id,
+                yield SearchResult(
+                    url=("kb:view:view",r.kb_entry.id),
                     title="KB%d: %s"%(r.kb_entry.id,r.kb_entry.subject),
                     text="Attachement: %s (%s)"%(r.name,r.description),
                     relevancy=1.0)
