@@ -8,6 +8,7 @@
 from noc.lib.app import Application
 
 class MessageApplication(Application):
+    title="Message"
     ##
     ## Render success page
     ##
