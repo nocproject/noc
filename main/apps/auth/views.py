@@ -8,6 +8,7 @@
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.views import login as django_login
+from django.contrib.auth.views import password_change
 from noc.lib.app import Application
 
 class AuthApplication(Application):
@@ -32,7 +33,9 @@ class AuthApplication(Application):
     ## Change password
     ##
     def view_change_password(self,request):
-        pass
+        return password_change(request,
+            template_name=self.get_template_path("password_change_form.html"),
+            post_change_redirect=self.reverse("main:message:success")+"?subject=Password%20changed")
     view_change_password.url=r"^change_password/$"
     view_change_password.url_name="change_password"
     view_change_password.access=Application.permit_logged
