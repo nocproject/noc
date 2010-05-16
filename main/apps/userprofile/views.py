@@ -26,6 +26,12 @@ class UserProfileAdmin(admin.ModelAdmin):
             "fields" : ("preferred_language",),
         }),
     )
+    ## Do not show "Delete button"
+    def has_delete_permission(self,request,obj=None):
+        return False
+    ##
+    def has_add_permission(self,request):
+        return False
 ##
 ## UserProfile application
 ##
@@ -35,7 +41,7 @@ class UserProfileApplication(ModelApplication):
     ##
     ## Edit profile
     ##
-    def view_change(self,request,extra_content=None):
+    def view_change(self,request,extra_context=None):
         def response_change(*args):
             self.message_user(request,"User Profile changed successfully")
             return self.response_redirect("")
@@ -47,7 +53,7 @@ class UserProfileApplication(ModelApplication):
             profile=UserProfile(user=user)
             profile.save()
         self.admin.response_change=response_change
-        return self.admin.change_view(request,str(profile.id),extra_content)
+        return self.admin.change_view(request,str(profile.id),self.get_context(extra_context))
     view_change.url=r"^$"
     view_change.url_name="change"
     view_change.access=ModelApplication.permit_logged
