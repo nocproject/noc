@@ -230,7 +230,7 @@ class ManagedObject(models.Model):
         for o in [o for o in cls.objects.filter(q) if o.has_access(user)]:
             relevancy=1.0
             yield SearchResult(
-                url="/admin/sa/managedobject/%d/"%o.id,
+                url=("sa:managedobject:change",o.id),
                 title="SA: "+unicode(o),
                 text=unicode(o),
                 relevancy=relevancy
