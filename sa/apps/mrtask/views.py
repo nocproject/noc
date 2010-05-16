@@ -41,6 +41,7 @@ class MRTaskForm(forms.Form):
 ## Map/Reduce tasks
 ##
 class MRTaskAppplication(Application):
+    title="Run Map/Reduce Task"
     ##
     ## Run new task
     ##
