@@ -505,34 +505,42 @@ class ModelApplication(Application):
 
     def get_menu(self):
         return self.menu
+    ##
+    ## Populate context
+    ##
+    def get_context(self,extra_context):
+        if extra_context is None:
+            extra_context={}
+        extra_context["app"]=self
+        return extra_context
         
-    def view_changelist(self,request,extra_content=None):
-        return self.admin.changelist_view(request,extra_content)
+    def view_changelist(self,request,extra_context=None):
+        return self.admin.changelist_view(request,self.get_context(extra_context))
     view_changelist.url=r"^$"
     view_changelist.url_name="changelist"
     view_changelist.access=permit_change
     view_changelist.menu=get_menu
     
-    def view_add(self,request,form_url="",extra_content=None):
+    def view_add(self,request,form_url="",extra_context=None):
         return self.admin.add_view(request)
     view_add.url=r"^add/$"
     view_add.url_name="add"
     view_add.access=permit_add
     
-    def view_history(self,request,object_id,extra_content=None):
-        return self.admin.history_view(request,object_id,extra_content)
+    def view_history(self,request,object_id,extra_context=None):
+        return self.admin.history_view(request,object_id,extra_context)
     view_history.url=r"^(\d+)/history/$"
     view_history.url_name="history"
     view_history.access=permit_change
     
-    def view_delete(self,request,object_id,extra_content=None):
-        return self.admin.delete_view(request,object_id,extra_content)
+    def view_delete(self,request,object_id,extra_context=None):
+        return self.admin.delete_view(request,object_id,self.get_context(extra_context))
     view_delete.url=r"^(\d+)/delete/$"
     view_delete.url_name="delete"
     view_delete.access=permit_delete
     
-    def view_change(self,request,object_id,extra_content=None):
-        return self.admin.change_view(request,object_id,extra_content)
+    def view_change(self,request,object_id,extra_context=None):
+        return self.admin.change_view(request,object_id,self.get_context(extra_context))
     view_change.url=r"^(\d+)/$"
     view_change.url_name="change"
     view_change.access=permit_change
