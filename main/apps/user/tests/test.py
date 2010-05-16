@@ -8,5 +8,5 @@
 from noc.lib.test import ModelApplicationTestCase
 from django.utils import simplejson as json
 
-class userTestCase(ModelApplicationTestCase):
+class UserTestCase(ModelApplicationTestCase):
     pass

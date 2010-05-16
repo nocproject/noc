@@ -9,7 +9,7 @@ from noc.lib.test import ApplicationTestCase
 
 class LoginTestCase(ApplicationTestCase):
     ##
-    def testLogin(self):
+    def test_login(self):
         # Login as unauthenticated user
         page=self.app.get("/")
         # We must receive 301 to /main/index
@@ -35,11 +35,21 @@ class LoginTestCase(ApplicationTestCase):
     ##
     ## Test click on logout
     ##
-    def testLogout(self):
+    def test_logout(self):
         # Get index page
         page=self.app.get("/",user=self.user).follow()
         # Click Logout
         page=page.click("Log out").follow().follow().follow()
         # We must be redirected to login page
         assert "this_is_the_login_form" in page
-        
+    ##
+    ## Try to change password
+    ##
+    def test_password_change(self):
+        #page=self.app.get("/main/index/",user=self.user)
+        cp_page=self.app.get("/main/auth/change_password/",user=self.user) #page.click("Change password")
+        form=cp_page.forms["change-password-form"]
+        form["old_password"]=self.user
+        form["new_password1"]=self.user
+        form["new_password2"]=self.user
+        form.submit()
