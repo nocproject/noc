@@ -171,7 +171,6 @@ class IPManageAppplication(Application):
                     block=IPv4Block(vrf=vrf,prefix=form.cleaned_data["prefix"],
                         description=form.cleaned_data["description"],
                         asn=form.cleaned_data["asn"],
-                        modified_by=request.user,
                         tt=form.cleaned_data["tt"])
                     status="created"
                 block.save()
@@ -246,6 +245,7 @@ class IPManageAppplication(Application):
         vrf=get_object_or_404(VRF,id=int(vrf_id))
         parents=[]
         address_id=None
+        can_delete=False
         if ip:
             assert is_ipv4(ip)
             address=get_object_or_404(IPv4Address,vrf=vrf,ip=ip)
@@ -258,6 +258,7 @@ class IPManageAppplication(Application):
             }
             p="/"+ip
             parents=list(address.parent.parents)+[address.parent]
+            can_delete=True
         elif new_ip:
             assert is_ipv4(new_ip)
             initial={"ip":new_ip}
@@ -268,8 +269,6 @@ class IPManageAppplication(Application):
         if request.POST:
             form=self.AssignAddressForm(request.POST,vrf=vrf,address_id=address_id)
             if form.is_valid():
-                assert is_ipv4(form.cleaned_data["ip"])
-                assert is_fqdn(form.cleaned_data["fqdn"])
                 if not IPv4BlockAccess.check_write_access(request.user,vrf,form.cleaned_data["ip"]+"/32"):
                     return self.response_forbidden("Permission denied")
                 if ip:
@@ -283,12 +282,11 @@ class IPManageAppplication(Application):
                     if IPv4Address.objects.filter(vrf=vrf,ip=form.cleaned_data["ip"]).count()>0:
                         return render_failure(request,"Duplicated IP address","Address %s is already present in VRF %s"%(form.cleaned_data["ip"],vrf.name))
                     address=IPv4Address(vrf=vrf,fqdn=form.cleaned_data["fqdn"],
-                        ip=form.cleaned_data["ip"],description=form.cleaned_data["description"],
-                        modified_by=request.user)
+                        ip=form.cleaned_data["ip"],description=form.cleaned_data["description"])
                     status="created"
                 address.save()
                 self.message_user(request,"IP Address %s in VRF %s %s successfully"%(form.cleaned_data["ip"],str(vrf),status))
-                return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,address.parent.prefix))
+                return self.response_redirect("ip:ipmanage:vrf_index",vrf.id,address.parent.prefix)
         else:
             if "ip" not in initial:
                 # Try to calculate ip address from referer
@@ -306,7 +304,8 @@ class IPManageAppplication(Application):
                         else:
                             initial["ip"]="NO FREE IP"
             form=self.AssignAddressForm(initial=initial)
-        return self.render(request,"assign_address.html",{"vrf":vrf,"form":form,"p":p,"parents":parents})
+        return self.render(request,"assign_address.html",{
+            "vrf":vrf,"form":form,"p":p,"parents":parents,"can_delete":can_delete,"ip":initial.get("ip",None)})
     view_assign_address.url=[
         URL(r"^(?P<vrf_id>\d+)/assign_address/$",name="assign_address"),
         URL(r"^(?P<vrf_id>\d+)/(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3})/assign_address/$",name="change_address"),
