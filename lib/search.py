@@ -8,8 +8,13 @@
 """
 """
 from django.db.models.signals import class_prepared
-from noc.lib.app import site
+from django.conf import settings
 import types
+##
+## Prevent recursive import
+##
+if settings.IS_WEB:
+    from noc.lib.app import site
 ##
 ## A hash of Model.search classmethods.
 ## Populated by "class_prepared" signal listener
