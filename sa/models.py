@@ -105,34 +105,6 @@ class ManagedObject(models.Model):
             self._cached_profile=profile_registry[self.profile_name]()
             return self._cached_profile
     profile=property(_profile)
-        
-    def config_link(self):
-        try:
-            return "<A HREF='/cm/view/config/%d/'>Config</A>"%(self.config.id)
-        except:
-            return ""
-    config_link.short_description="Config"
-    config_link.allow_tags=True
-    
-    def scripts_link(self):
-        return "<A HREF='/sa/managedobject/%d/scripts/'>Scripts</A>"%(self.id)
-    scripts_link.short_description="Scripts"
-    scripts_link.allow_tags=True
-    
-    def action_links(self):
-        try:
-            l="<A HREF='/cm/view/config/%d/'>Config</A>"%(self.config.id)
-        except:
-            l=""
-        try:
-            self.profile
-            l+="<br/><A HREF='/sa/managedobject/%d/scripts/'>Scripts</A>"%(self.id)
-        except:
-            pass
-        return l
-    action_links.short_description="Actions"
-    action_links.allow_tags=True
-        
     ##
     ## Access control
     ##

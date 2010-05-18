@@ -8,7 +8,7 @@
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from django import forms
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,site
 from noc.sa.models import ManagedObject,AdministrativeDomain,Activator,profile_registry,script_registry,scheme_choices
 from noc.settings import config
 from noc.lib.fileutils import in_dir
@@ -36,6 +36,24 @@ class ManagedObjectAdminForm(forms.ModelForm):
             raise forms.ValidationError("Repo path must be relative path inside repo")
         return os.path.normpath(self.cleaned_data["repo_path"])
 ##
+## Display managed object's actions
+##
+def action_links(obj):
+    r=[]
+    try:
+        r+=[("Config","cm:config:view",[obj.config.id])]
+    except:
+        pass
+    try:
+        obj.profile
+        r+=[("Scripts","sa:managedobject:scripts",[obj.id])]
+    except:
+        pass
+    return "<br/>".join(["<a href='%s'>%s</a>"%(site.reverse(view,*params),title) for title,view,params in r])
+action_links.short_description="Actions"
+action_links.allow_tags=True
+    
+##
 ## ManagedObject admin
 ##
 class ManagedObjectAdmin(admin.ModelAdmin):
@@ -60,7 +78,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("groups",)
         }),
     )
-    list_display=["name","is_managed","profile_name","address","administrative_domain","activator","is_configuration_managed","description","repo_path","action_links"]
+    list_display=["name","is_managed","profile_name","address","administrative_domain","activator","is_configuration_managed","description","repo_path",action_links]
     list_filter=["is_managed","is_configuration_managed","activator","administrative_domain","groups","profile_name"]
     search_fields=["name","address","repo_path","description"]
     object_class=ManagedObject
