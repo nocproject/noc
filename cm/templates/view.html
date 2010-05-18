@@ -1,6 +1,7 @@
 {% extends "template.html" %}
 {% load cmtags %}
 {% block extrahead %}
+<link rel="stylesheet" type="text/css" href="/media/css/changelists.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/pygments.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/highlight.css" />
 {% endblock %}
@@ -33,14 +34,16 @@
     <FORM METHOD="POST" ACTION="{% cm_url diff o.id %}">
     <TABLE SUMMARY="Revisions" WIDTH="100%">
         <CAPTION>Revisions</CAPTION>
+        <TBODY>
         {% for rev in o.revisions %}
-            <TR class="{%cycle 'row1' 'row2'%}">
-                <TD WIDTH="50px"><A HREF="{% cm_url view_revision o.id rev.revision %}">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
+            <TR class={% ifequal r.revisions rev.revisions %}"selected"{% else %}"{%cycle 'row1' 'row2'%}"{% endifequal %}>
+                <TD WIDTH="50px"><A HREF="{% cm_url view_revision o.id rev.revision %}">{{rev.revision}}</A></TD>
                 <TD WIDTH="200px">{{rev.date}}</TD>
                 <TD WIDTH="50px"><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
                 <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
             </TR>
         {% endfor %}
+        </TBODY>
     </TABLE>
     <INPUT TYPE="submit" VALUE="Diff">
     </FORM>
