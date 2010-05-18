@@ -4,7 +4,7 @@
 {% if change %}{% if not is_popup %}
   <ul class="object-tools">
       <li><a href="/static/doc/en/ug/html/kb.html#markup-syntaxes" class="viewsitelink">Markup Help</a></li>
-      <li><a href="{% url kb:kbentry:history %}" class="historylink">{% trans "History" %}</a></li>
+      <li><a href="{% url kb:kbentry:history object_id %}" class="historylink">{% trans "History" %}</a></li>
   </ul>
 {% endif %}{% endif %}
 {% endblock %}
