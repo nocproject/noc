@@ -13,6 +13,7 @@ from noc.main.models import MIMEType
 ## View application
 ##
 class ViewAppplication(Application):
+    title="View"
     ##
     ## KB Entry Preview
     ##
