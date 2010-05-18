@@ -79,6 +79,10 @@ ul.messagelist {
     height: 14px;
 }
 
+table tbody tr.selected {
+    background-color: #FFFFCC;
+}
+
 @media print {
     #menu {
         display: none;
