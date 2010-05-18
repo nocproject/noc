@@ -44,13 +44,13 @@ class RepoApplication(ModelApplication):
             except:
                 return self.response_not_found("Revision %s is not found"%revision)
         else:
-            r=None
+            r=o.current_revision
         # Get content
         content=o.get_revision(r)
         # Render content
         if format=="html":
             content=self.render_content(o,content)
-            return self.render(request,"view.html",{"o":o,"r":r,"content":content}) # r????
+            return self.render(request,"view.html",{"o":o,"r":r,"content":content})
         else:
             return self.render_plain_text(content)
     view_change.url=[

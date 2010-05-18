@@ -36,9 +36,9 @@
         <CAPTION>Revisions</CAPTION>
         <TBODY>
         {% for rev in o.revisions %}
-            <TR class={% ifequal r.revision rev.revisions %}"selected"{% else %}"{%cycle 'row1' 'row2'%}"{% endifequal %}>
+            <TR class={% ifequal r.revision rev.revision %}"selected"{% else %}"{%cycle 'row1' 'row2'%}"{% endifequal %}>
                 <TD WIDTH="50px"><A HREF="{% cm_url view_revision o.id rev.revision %}">{{rev.revision}}</A></TD>
-                <TD WIDTH="200px">{{rev.date}}</TD>
+                <TD WIDTH="200px"><A HREF="{% cm_url view_revision o.id rev.revision %}">{{rev.date}}</A></TD>
                 <TD WIDTH="50px"><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
                 <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
             </TR>
