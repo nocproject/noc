@@ -142,6 +142,10 @@ class Object(models.Model):
             if r.revision==rev:
                 return r
         raise Exception("Not found")
+    # Return object's current revision
+    def current_revision(self):
+        return self.vcs.get_current_revision(self.repo_path)
+    current_revision=property(current_revision)
     
     def diff(self,rev1,rev2):
         return self.vcs.diff(self.repo_path,rev1,rev2)
