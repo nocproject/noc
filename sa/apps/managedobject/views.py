@@ -11,6 +11,7 @@ from django import forms
 from noc.lib.app import ModelApplication
 from noc.sa.models import ManagedObject,AdministrativeDomain,Activator,profile_registry,script_registry,scheme_choices
 from noc.settings import config
+from noc.lib.fileutils import in_dir
 from xmlrpclib import ServerProxy, Error
 import pprint,types,socket,csv,os
 ##
