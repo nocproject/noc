@@ -95,7 +95,7 @@ class RepoApplication(ModelApplication):
                 diff=highlight(diff,DiffLexer(),NOCHtmlFormatter()) # Highlight diff
             return self.render(request,"diff.html",{"o":o,"diff":diff,"r1":r1,"r2":r2,"mode":mode})
         else:
-            return self.response_redirect(self.base_url+str(o.id))
+            return self.response_redirect_to_object(o)
     view_diff.url=[
         URL(r"^(?P<object_id>\d+)/diff/$",                                        name="diff"),
         URL(r"^(?P<object_id>\d+)/diff/(?P<mode>[u2])/(?P<r1>\d+)/(?P<r2>\d+)/$", name="diff_rev")
