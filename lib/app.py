@@ -410,6 +410,11 @@ class Application(object):
             back_url=self.base_url
         return self.response_redirect(request.META.get("HTTP_REFERER",back_url))
     ##
+    ## Redirect to object: {{base.url}}/{{object.id}}/
+    ##
+    def response_redirect_to_object(self,object):
+        return self.response_redirect("%s%d/"%(self.base_url,object.id))
+    ##
     ## Render Forbidden response
     ##
     def response_forbidden(self,text=None):
@@ -488,11 +493,6 @@ class ModelApplication(Application):
         self.title=self.model._meta.verbose_name_plural
         self.admin.change_form_template=self.get_template_path("change_form.html")+["admin/change_form.html"]
         self.admin.change_list_template=self.get_template_path("change_list.html")+["admin/change_list.html"]
-    ##
-    ## Redirect to object
-    ##
-    def response_redirect_to_object(self,object):
-        return self.response_redirect("%s%d/"%(self.base_url,object.id))
     ##
     def permit_add(self,request):
         return self.admin.has_add_permission(request)
