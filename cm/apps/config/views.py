@@ -8,6 +8,7 @@
 from django.contrib import admin
 from noc.cm.repoapp import RepoApplication
 from noc.cm.models import Config
+import datetime
 ##
 ## Config admin
 ##

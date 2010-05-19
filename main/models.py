@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from noc.main.report import report_registry
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
-import noc.main.search # Set up signal handlers
+import noc.lib.search # Set up signal handlers
 import os,datetime,re,datetime,threading
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.lib.search import SearchResult
