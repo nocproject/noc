@@ -28,7 +28,7 @@ class KBEntryAttachmentAdmin(admin.TabularInline):
 ## Admin for Entries
 ##
 class KBEntryAdmin(admin.ModelAdmin):
-    list_display=["id","subject","view_link"]
+    list_display=["id","subject"]
     search_fields=["id","subject"]
     inlines=[KBEntryAttachmentAdmin]
     def save_model(self, request, obj, form, change):

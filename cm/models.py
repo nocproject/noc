@@ -126,11 +126,6 @@ class Object(models.Model):
             self.vcs.rm(self.path)
         super(Object,self).delete()
 
-    def view_link(self):
-        return "<A HREF='/cm/view/%s/%d/'>View</A>"%(self.repo_name,self.id)
-    view_link.short_description="View"
-    view_link.allow_tags=True
-
     def _revisions(self):
         return self.vcs.log(self.repo_path)
     revisions=property(_revisions)
@@ -288,10 +283,6 @@ class Config(Object):
                 self.save()
             self.write(result)
         sae.script(self.managed_object,"%s.get_config"%self.managed_object.profile_name,pull_callback)
-    def scripts_link(self):
-        return "<A HREF='/sa/%d/scripts/'>Scripts</A>"%(self.id)
-    scripts_link.short_description="Scripts"
-    scripts_link.allow_tags=True
     ##
     ## Access control
     ##

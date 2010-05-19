@@ -55,11 +55,6 @@ class KBEntry(models.Model):
     def _html(self):
         return self.parser.to_html(self)
     html=property(_html)
-    #
-    def view_link(self):
-        return "<A HREF='/kb/%d/'>View</A>"%self.id
-    view_link.short_description="View"
-    view_link.allow_tags=True
     ##
     ## Search engine
     ##

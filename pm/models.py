@@ -28,11 +28,6 @@ class TimeSeries(models.Model):
     ##
     def as_html(self):
         return '<div id="nocts_%d" style="width: 600px; height: 400px"></div><script>$("#nocts_%d").nocchart({ajaxURL:"/pm/view/ts/%d/data/"});</script>'%(self.id,self.id,self.id)
-    ##
-    def view_link(self):
-        return "<a href='/pm/view/ts/%d/'>View</a>"%self.id
-    view_link.short_description="View"
-    view_link.allow_tags=True
 ##
 ## Time Series Data
 ##
