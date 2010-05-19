@@ -57,7 +57,7 @@ class MRTaskAppplication(Application):
                     map_script_params=form.cleaned_data["map_script_params"],
                     timeout=form.cleaned_data["timeout"]
                 )
-                return self.response_redirect(self.base_url+"%d/"%t.id)
+                return self.response_redirect_to_object(t)
         else:
             form=MRTaskForm(initial={"timeout":180})
         return self.render(request,"mr_task.html",{"form":form})
