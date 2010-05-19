@@ -1,13 +1,14 @@
-.diff {
-    border-width: 0px;
+table .diff {
+    border-style: none;
 }
 
-.diff td {
+table .diff td {
     padding: 1px 1px 1px 4px;
     margin: 0px;
 }
 
 .diff .diff_next {
+    border-bottom-style: none;
 }
 
 .diff .diff_header {
@@ -24,18 +25,18 @@
     color: #999;
 }
 
-.diff .diff_add {
+.diff_add {
     background-color: #CCCC00;
     border: 1px solid #999900;
 }
 
-.diff .diff_sub {
+.diff_sub {
     background-color: #EE0000;
     border: 1px solid #990000;
     color: #FFFFFF;
 }
 
-.diff .diff_chg {
+.diff_chg {
     background-color: #0000EE;
     border: 1px solid #000099;
     color: #FFFFFF;

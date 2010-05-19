@@ -9,6 +9,9 @@ from django.shortcuts import get_object_or_404
 from django.utils.html import escape
 from noc.lib.app import ModelApplication,URL
 from noc.cm.models import Object
+from noc.lib.highlight import NOCHtmlFormatter
+from pygments.lexers import DiffLexer
+from pygments import highlight
 import difflib
 ##
 ## Repository management application
@@ -86,8 +89,10 @@ class RepoApplication(ModelApplication):
                 d2=o.get_revision(rev2)
                 d=difflib.HtmlDiff()
                 diff=d.make_table(d1.splitlines(),d2.splitlines())
+                diff=diff.replace("rules=\"groups\"","rules=\"none\"",1) # Use no colgroup rules
             else:
                 diff=o.diff(rev1,rev2)
+                diff=highlight(diff,DiffLexer(),NOCHtmlFormatter()) # Highlight diff
             return self.render(request,"diff.html",{"o":o,"diff":diff,"r1":r1,"r2":r2,"mode":mode})
         else:
             return self.response_redirect(self.base_url+str(o.id))

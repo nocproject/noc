@@ -5,6 +5,7 @@
 <link rel="stylesheet" type="text/css" href="/static/css/pygments.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/highlight.css" />
 {% endblock %}
+{% block breadcrumbs %}{{block.super}}<li>{{o.repo_path}}</li>{% endblock %}
 <{% block content %}
 <h1>{{o.verbose_name}}: {{o.repo_path}}</h1>
 <DIV CLASS="module">
