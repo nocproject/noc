@@ -2,6 +2,8 @@
 {% load cmtags %}
 {% block extrahead %}
 <link rel="stylesheet" type="text/css" href="/static/css/diff.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/pygments.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/highlight.css" />
 {% endblock %}
 {% block breadcrumbs %}{{block.super}}<li>Diff</li>{%endblock%}
 {% block content %}
@@ -17,17 +19,23 @@
     </TABLE>
 </DIV>
 {%ifequal mode "2"%}
-<A HREF="{% cm_url diff_rev 'u' r1 r2 %}">Unified Diff</A>
+<A HREF="{% cm_url diff_rev o.id 'u' r1 r2 %}">Unified Diff</A>
 <B>Two column mode</B>
 {%else%}
 <B>Unified Diff</B>
-<A HREF="{% cm_url diff_rev '2' r1 r2 %}">Two column mode</A>
+<A HREF="{% cm_url diff_rev o.id '2' r1 r2 %}">Two column mode</A>
 {%endifequal%}
 <DIV CLASS="module">
     <TABLE SUMMARY="Diff" WIDTH="100%">
         <CAPTION>Diff</CAPTION>
-        <TR><TD>{%ifequal mode "2"%}{{diff|safe}}{%else%}<PRE>{{diff}}</PRE>{%endifequal%}</TD></TR>
+        <TR><TD>{{diff|safe}}</TD></TR>
     </TABLE>
+    {%ifequal mode "2"%}
+        <B>Legend:</B><BR/>
+        <SPAN class="diff_add">&nbsp;&nbsp;</SPAN> Added<br/>
+        <SPAN class="diff_sub">&nbsp;&nbsp;</SPAN> Removed<br/>
+        <SPAN class="diff_chg">&nbsp;&nbsp;</SPAN> Modified
+    {% endifequal %}
 </DIV>
 
 <DIV CLASS="module">
@@ -36,10 +44,10 @@
         <CAPTION>Revisions</CAPTION>
         {% for rev in o.revisions %}
             <TR>
-                <TD><A HREF="{% cm_url view_revision o.id rev.revision %}">{% ifequal r.revision rev.revision%}--&gt;{%endifequal%}{{rev.revision}}</A></TD>
-                <TD>{{rev.date}}</TD>
-                <TD><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
-                <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}"/></TD>
+                <TD><A HREF="{% cm_url view_revision o.id rev.revision %}">{{rev.revision}}</A></TD>
+                <TD><A HREF="{% cm_url view_revision o.id rev.revision %}">{{rev.date}}</a></TD>
+                <TD><INPUT TYPE="radio" NAME="r1" ID="r1{{rev.revision}}" VALUE="{{rev.revision}}" {% ifequal rev.revision r1 %}checked{%endifequal%}/></TD>
+                <TD><INPUT TYPE="radio" NAME="r2" ID="r2{{rev.revision}}" VALUE="{{rev.revision}}" {% ifequal rev.revision r2 %}checked{%endifequal%}/></TD>
             </TR>
         {% endfor %}
     </TABLE>
