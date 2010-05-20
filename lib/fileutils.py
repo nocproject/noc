@@ -82,7 +82,7 @@ def write_tempfile(text):
 ##         subprocess.Popen(["wc","-l",p])
 ##
 class temporary_file(object):
-    def __init__(self,text):
+    def __init__(self,text=""):
         self.text=text
     def __enter__(self):
         self.p=write_tempfile(self.text)
