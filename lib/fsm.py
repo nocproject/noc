@@ -19,7 +19,16 @@ def check_state(state):
         new_f.func_name = f.func_name
         return new_f
     return check_returns
-
+##
+class FSMEventError(Exception):
+    def __init__(self,state,event):
+        super(FSMEventError,self).__init__("Invalid event '%s' in state '%s'"%(event,state))
+        self.state=state
+        self.event=event
+class FSMStateError(Exception):
+    def __init__(self,state):
+        super(FSMStateError,self).__init__("Invalid state: '%s'"%state)
+        self.state=state
 ##
 ## Finite state machine class
 ##
@@ -56,7 +65,7 @@ class FSM(object):
             return
         self.debug("==> %s"%state)
         if state not in self.STATES:
-            raise Exception("Invalid state %s"%state)
+            raise FSMStateError(state)
         if self._current_state:
             self.call_state_handler(self._current_state,"exit")
         self._current_state=state
@@ -73,7 +82,7 @@ class FSM(object):
     def event(self,event):
         self.debug("event(%s)"%event)
         if event not in self.STATES[self._current_state]:
-            raise Exception("Invalid event '%s' in state '%s'"%(event,self._current_state))
+            raise FSMEventError(self._current_state,event)
         self.call_state_handler(self._current_state,event)
         self.set_state(self.STATES[self._current_state][event])
     ##
