@@ -152,6 +152,7 @@ class StreamFSM(FSM):
                     self.debug("match '%s'"%rx.pattern)
                     self.call_state_handler(self._current_state,"match",self.in_buffer[:match.start(0)],match)
                     self.in_buffer=self.in_buffer[match.end(0):]
+                    self.match=match
                     self.event(event) # Change state
                     break
             if not matched:
