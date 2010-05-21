@@ -19,8 +19,6 @@ class Profile(noc.sa.profiles.Profile):
     command_more=" "
     command_enter_config="configure"
     command_leave_config="commit and-quit"
-    pattern_lg_as_path_list=r"(?<=AS path: )(\d+(?: \d+)*)"
-    pattern_lg_best_path=r"^(\s+[+*].+?\s+Router ID: \S+)"
     
     def generate_prefix_list(self,name,pl,strict=True):
         if strict:
