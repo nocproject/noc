@@ -17,7 +17,6 @@ class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_dhcp_binding"
     implements=[IGetDHCPBinding]
     def execute(self):
-        self.cli("terminal length 0")
         data=self.cli("show ip dhcp binding")
         r=[]
         for l in data.split("\n"):

@@ -15,7 +15,6 @@ class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_dot11_associations"
     implements=[IGetDot11Associations]
     def execute(self):
-        self.cli("terminal length 0")
         assoc=self.cli("show dot11 associations")
         r=[]
         for l in assoc.split("\n"):

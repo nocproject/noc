@@ -28,7 +28,6 @@ class Script(noc.sa.script.Script):
                 }
             except self.snmp.TimeOutError:
                 pass
-        self.cli("terminal length 0")
         v=self.cli("show version")
         match=rx_ver.search(v)
         return {

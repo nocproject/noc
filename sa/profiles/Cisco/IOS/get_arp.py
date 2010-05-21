@@ -17,7 +17,6 @@ class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_arp"
     implements=[IGetARP]
     def execute(self):
-        self.cli("terminal length 0")
         s=self.cli("show arp")
         r=[]
         for l in s.split("\n"):
