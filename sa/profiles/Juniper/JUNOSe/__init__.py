@@ -19,7 +19,5 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^\S+?#"
     pattern_more=r"^ --More-- "
     command_more=" "
-    #pattern_lg_as_path_list=r"(?<=AS path: )(\d+(?: \d+)*)"
-    #pattern_lg_best_path=r"^(\s+[+*].+?\s+Router ID: \S+)"
     config_volatile=["^! Configuration script being generated on.*?^",r"^Please wait\.\.\."]
     rogue_chars=["\r","\x00","\x0d"]

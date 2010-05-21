@@ -17,7 +17,3 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^\s*\S*-> "
     pattern_more=r"^--- more ---"
     command_more=" "
-    #pattern_lg_as_path_list=r"(?<=AS path: )(\d+(?: \d+)*)"
-    #pattern_lg_best_path=r"^(\s+[+*].+?\s+Router ID: \S+)"
-    
-    
