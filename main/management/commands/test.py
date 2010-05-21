@@ -42,4 +42,4 @@ class Command(BaseCommand):
         # Run tests
         failures = test_runner(test_labels, verbosity=verbosity, interactive=interactive,coverage=coverage,reuse_db=reuse_db)
         if failures:
-            sys.exit(failures)
+            sys.exit(bool(failures))
