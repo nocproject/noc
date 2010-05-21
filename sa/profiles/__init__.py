@@ -92,27 +92,9 @@ class Profile(object):
     # before checking any regular expressions
     # (when Action.CLEAN_INPUT==True)
     rogue_chars=["\r"]
-    ##
-    ## Looking glass hilighting support
-    ##
-    
-    # match.group(1) contains AS list <!> Deprecated
-    pattern_lg_as_path_list=None
-    # match.group(1) containts Best Path <!> Deprecated
-    pattern_lg_best_path=None
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
     requires_netmask_conversion=False
-    
-    #
-    # AS Path hilighting
-    # Deprecated <!>
-    # 
-    def lg_as_path(self,m):
-        def whois_formatter(q):
-            return "<A HREF='http://www.db.ripe.net/whois?AS%s'>%s</A>"%(q,q)
-        as_list=m.group(1).split()
-        return " ".join([whois_formatter(x) for x in as_list])
     #
     # Converts ipv4 prefix to the format acceptable by router
     #
