@@ -365,7 +365,8 @@ class CLI(StreamFSM):
             "USERNAME"            : "USERNAME",
             "PASSWORD"            : "PASSWORD",
             "UNPRIVELEGED_PROMPT" : "UNPRIVELEGED_PROMPT",
-            "PROMPT"              : "PROMPT"
+            "PROMPT"              : "PROMPT",
+            "PAGER"               : "START",
         },
         "USERNAME":{
             "USERNAME"            : "FAILURE",
@@ -377,12 +378,14 @@ class CLI(StreamFSM):
             "USERNAME"            : "FAILURE",
             "PASSWORD"            : "FAILURE",
             "UNPRIVELEGED_PROMPT" : "UNPRIVELEGED_PROMPT",
-            "PROMPT"              : "PROMPT"
+            "PROMPT"              : "PROMPT",
+            "PAGER"               : "PASSWORD",
         },
         "SUPER_PASSWORD" : {
             "UNPRIVELEGED_PROMPT" : "FAILURE",
             "PASSWORD"            : "FAILURE",
             "PROMPT"              : "PROMPT",
+            "PAGER"               : "SUPER_PASSWORD"
         },
         "UNPRIVELEGED_PROMPT":{
             "PASSWORD"            : "SUPER_PASSWORD",
@@ -391,8 +394,6 @@ class CLI(StreamFSM):
         "PROMPT":{
             "PROMPT"      : "PROMPT",
             "PAGER"       : "PROMPT",
-            "PAGER_START" : "PROMPT",
-            "PAGER_END"   : "PROMPT",
             "CLOSE"       : "CLOSED",
         },
         "FAILURE":{
@@ -409,7 +410,15 @@ class CLI(StreamFSM):
         self.collected_data=""
         self.submitted_data=[]
         self.submit_lines_limit=None
-        self.prompt_patterns=[x for x in [self.profile.pattern_more,self.profile.pattern_more_start,self.profile.pattern_more_end] if x]
+        if isinstance(self.profile.pattern_more,basestring):
+            self.more_patterns=[self.profile.pattern_more]
+            self.more_commands=[self.profile.command_more]
+        else:
+            # .more_patterns is a list of (pattern,command)
+            self.more_patterns=[x[0] for x in self.profile.pattern_more]
+            self.more_commands=[x[1] for x in self.profile.pattern_more]
+        self.pager_patterns="|".join([r"(%s)"%p for p in self.more_patterns])
+        self.to_disable_pager=True if self.profile.command_disable_pager else False
         StreamFSM.__init__(self)
     
     def on_read(self,data):
@@ -437,19 +446,20 @@ class CLI(StreamFSM):
             self.__flush_submitted_data()
         else:
             self.write(msg+(self.profile.command_submit if command_submit is None else command_submit))
-    
+    ##
     def on_START_enter(self):
+        # username/password match
         p=[
             (self.profile.pattern_username,"USERNAME"),
             (self.profile.pattern_password,"PASSWORD"),
         ]
+        # Match unpriveleged prompt when given
         if self.profile.pattern_unpriveleged_prompt:
-            p+=[
-                (self.profile.pattern_unpriveleged_prompt,"UNPRIVELEGED_PROMPT"),
-            ]
-        p+=[
-            (self.profile.pattern_prompt,"PROMPT"),
-        ]
+            p+=[(self.profile.pattern_unpriveleged_prompt,"UNPRIVELEGED_PROMPT")]
+        # Match priveleged prompt when given
+        p+=[(self.profile.pattern_prompt,"PROMPT")]
+        # Match pager
+        p+=[(self.pager_patterns,"PAGER")]
         self.set_patterns(p)
     
     def on_USERNAME_enter(self):
@@ -462,27 +472,27 @@ class CLI(StreamFSM):
     def on_PASSWORD_enter(self):
         p=[(self.profile.pattern_prompt, "PROMPT")]
         if self.profile.pattern_unpriveleged_prompt:
-            p+=[
-                (self.profile.pattern_unpriveleged_prompt,"UNPRIVELEGED_PROMPT"),
-            ]
+            p+=[(self.profile.pattern_unpriveleged_prompt,"UNPRIVELEGED_PROMPT")]
         p+=[
             (self.profile.pattern_username, "USERNAME"),
             (self.profile.pattern_password, "PASSWORD")
             ]
+        p+=[(self.pager_patterns,"PAGER")]
         self.set_patterns(p)
         self.submit(self.access_profile.password)
         
     def on_UNPRIVELEGED_PROMPT_enter(self):
         self.set_patterns([
             (self.profile.pattern_prompt,   "PROMPT"),
-            (self.profile.pattern_password, "PASSWORD"),
+            (self.profile.pattern_password, "PASSWORD")
         ])
         self.submit(self.profile.command_super)
     
     def on_SUPER_PASSWORD_enter(self):
         self.set_patterns([
             (self.profile.pattern_prompt, "PROMPT"),
-            (self.profile.pattern_password, "PASSWORD")
+            (self.profile.pattern_password, "PASSWORD"),
+            (self.pager_patterns,"PAGER")
         ])
         sp=self.access_profile.super_password
         if not sp:
@@ -491,40 +501,35 @@ class CLI(StreamFSM):
         
     def on_PROMPT_enter(self):
         if not self.is_ready:
-            self.queue.put(None) # Signal provider passing into PROMPT state
-            self.is_ready=True
+            # Disable paging when necessary
+            if self.to_disable_pager:
+                self.debug("Disable paging")
+                self.to_disable_pager=False
+                self.submit(self.profile.command_disable_pager)
+            else:
+                self.queue.put(None) # Signal provider passing into PROMPT state
+                self.is_ready=True
         p=[
             (self.profile.pattern_prompt, "PROMPT"),
-            (self.profile.pattern_more,   "PAGER"),
+            (self.pager_patterns,         "PAGER"),
             ]
-        if self.profile.pattern_more_start:
-            p+=[(self.profile.pattern_more_start, "PAGER_START")]
-        if self.profile.pattern_more_end:
-            p+=[(self.profile.pattern_more_end, "PAGER_END")]
         self.set_patterns(p)
         
     def on_PROMPT_match(self,data,match):
-        if match.re.pattern in self.prompt_patterns:
+        if match.re.pattern in self.pager_patterns:
             self.collected_data+=data
         elif match.re.pattern==self.profile.pattern_prompt:
             self.queue.put(self.collected_data+data)
             self.collected_data=""
         
     def on_PROMPT_PAGER(self):
-        self.write(self.profile.command_more)
+        pg=self.match.group(0)
+        for p,c in zip(self.more_patterns,self.more_commands):
+            if re.match(p,pg):
+                self.write(c)
+                return
+        raise Exception("Unexpected pager pattern")
     
-    def on_PROMPT_PAGER_START(self):
-        if self.profile.command_more_start is None:
-            self.write(self.profile.command_more)
-        else:
-            self.write(self.profile.command_more_start)
-    
-    def on_PROMPT_PAGER_END(self):
-        if self.profile.command_more_end is None:
-            self.write(self.profile.command_more)
-        else:
-            self.write(self.profile.command_more_end)
-
     def on_FAILURE_enter(self):
         self.set_patterns([])
 
