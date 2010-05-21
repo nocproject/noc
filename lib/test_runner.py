@@ -5,13 +5,14 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import os,unittest,sys
+import os,unittest,sys,logging
 from django.test import simple
 from django.conf import settings
 from django.test.utils import setup_test_environment, teardown_test_environment
 from coverage import coverage as Coverage
 from django.test import _doctest as doctest
 from django.test.testcases import OutputChecker, DocTestRunner, TestCase
+from south.logger import get_logger
 ##
 ## Test module by importing it
 ##
@@ -31,6 +32,16 @@ def path_to_mod(path):
         path=path[:-8]
     return "noc."+path.replace(os.path.sep,".")
 ##
+## Convert module to path
+##
+def mod_to_path(mod):
+    if mod.startswith("noc."):
+        mod=mod[4:]
+    path=mod.replace(".",os.path.sep)
+    if os.path.isdir(path):
+        path=os.path.join(path,"__init__")
+    return path+".py"
+##
 ## Check module matches test_labels
 ##
 def match_test(test_labels,m):
@@ -44,10 +55,7 @@ def match_test(test_labels,m):
 ## Generator returning NOC's modules
 ##
 def get_modules():
-    for app in settings.INSTALLED_APPS:
-        if not app.startswith("noc."):
-            # Skip all contributed apps
-            continue
+    for app in [app for app in settings.INSTALLED_APPS if app.startswith("noc.")]:
         n,d=app.split(".")
         yield d
 ##
@@ -64,13 +72,19 @@ def get_test_suite(path):
 ## and application test suite
 ##
 def get_tests(test_labels):
-    modules=["urls.py","settings.py"]
+    modules=["urls","settings"]
     suite=[]
     # Add additional test libraries
     for d in ["","lib"]:
         p=os.path.join(d,"tests")
         if os.path.isdir(p):
             suite+=get_test_suite(p)
+    # Scal lib/ for modules
+    for root,dirs,files in os.walk("lib"):
+        parts=root.split(os.path.sep)
+        if "tests" in parts:
+            continue
+        modules+=[path_to_mod(p) for p in [os.path.join(root,f) for f in files if f.endswith(".py")] if os.path.getsize(p)>1]
     # Scan modules for tests
     for d in get_modules():
         # Add module's tests/
@@ -80,16 +94,17 @@ def get_tests(test_labels):
         # Walk for application's tests
         for root,dirs,files in os.walk(d):
             parts=root.split(os.path.sep)
-            if len(parts)<=2 or parts[1]!="apps":
+            # Skip migrations
+            if "migrations" in parts:
                 continue
             if "tests" not in parts:
                 # Add modules for import and docstring testings
                 modules+=[path_to_mod(p) for p in [os.path.join(root,f) for f in files if f.endswith(".py")] if os.path.getsize(p)>1]
             # Add all tests from applications's tests/
-            elif len(parts)==4 and parts[3]=="tests":
+            elif len(parts)==4 and parts[1]=="apps" and parts[3]=="tests":
                 suite+=get_test_suite(root)
             # Add all applications tests.py
-            elif len(parts)==3 and "tests.py" in files:
+            elif len(parts)==3 and parts[1]=="apps" and "tests.py" in files:
                 suite+=[".".join(["noc"]+parts+["tests"])]
     # Filter out
     modules=[m for m in modules if match_test(test_labels,m)]
@@ -99,13 +114,18 @@ def get_tests(test_labels):
 ## "manage.py test" runner
 ##
 def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=True,reuse_db=False):
+    # Set up logger
+    if verbosity>1:
+        get_logger().setLevel(logging.DEBUG)
+    else:
+        get_logger().setLevel(logging.INFO)
     # Mark testing environment
     settings.NOC_TEST=True
     suite=unittest.TestSuite()
     # Scan for tests
     print "Scanning for tests ...",
     modules,tsuite=get_tests(test_labels)
-    print "... %d test cases found"%(len(modules)+len(tsuite))
+    print "... %d test cases found"%(2*len(modules)+len(tsuite))
     print "Preparing test cases ..."
     if coverage:
         coverage=Coverage()
@@ -119,10 +139,10 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
     doctestOutputChecker = OutputChecker()
     for m in modules:
         # Module load
-        suite.addTest(ImportTestCase(mn))
+        suite.addTest(ImportTestCase(m))
         # Docstrings
         try:
-            suite.addTest(doctest.DocTestSuite(mn,checker=doctestOutputChecker,runner=DocTestRunner))
+            suite.addTest(doctest.DocTestSuite(m,checker=doctestOutputChecker,runner=DocTestRunner))
         except ValueError:
             pass # No doctests in module
     for m in tsuite:
@@ -159,6 +179,6 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
         coverage.stop()
         # Coverage HTML Report
         print "Writing Coverage report to %s"%settings.COVERAGE_REPORT_PATH
-        coverage.html_report(modules, directory=settings.COVERAGE_REPORT_PATH)
+        coverage.html_report([mod_to_path(m) for m in modules]  , directory=settings.COVERAGE_REPORT_PATH)
         print "Done"
     return test_results
