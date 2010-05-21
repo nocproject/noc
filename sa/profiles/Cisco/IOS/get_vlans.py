@@ -15,7 +15,6 @@ class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_vlans"
     implements=[IGetVlans]
     def execute(self):
-        self.cli("terminal length 0")
         vlans=self.cli("show vlan brief")
         r=[]
         for l in vlans.split("\n"):

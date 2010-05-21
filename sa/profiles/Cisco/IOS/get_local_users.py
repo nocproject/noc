@@ -17,7 +17,6 @@ class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_local_users"
     implements=[IGetLocalUsers]
     def execute(self):
-        self.cli("terminal length 0")
         data=self.cli("show running-config | include ^username")
         r=[]
         for l in data.split("\n"):
