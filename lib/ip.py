@@ -333,12 +333,26 @@ def cmp_ip(ip1,ip2):
 ##
 ## Check ip is between f and t
 def in_range(ip,f,t):
+    """
+    >>> in_range("192.168.0.1","192.168.1.0","192.168.1.255")
+    False
+    >>> in_range("192.168.1.1","192.168.1.0","192.168.1.255")
+    True
+    >>> in_range("192.168.2.1","192.168.1.0","192.168.1.255")
+    False
+    """
     return cmp_ip(f,ip)<=0 and cmp_ip(t,ip)>=0
 ##
 ##
 ## Generator returing ip addresses in range
 ##
 def generate_ips(ip1,ip2):
+    """
+    >>> list(generate_ips("192.168.0.0","192.168.0.0"))
+    ['192.168.0.0']
+    >>> list(generate_ips("192.168.0.0","192.168.0.3"))
+    ['192.168.0.0', '192.168.0.1', '192.168.0.2', '192.168.0.3']
+    """
     n1=address_to_int(ip1)
     n2=address_to_int(ip2)
     while True:
