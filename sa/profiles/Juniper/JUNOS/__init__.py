@@ -21,6 +21,12 @@ class Profile(noc.sa.profiles.Profile):
     command_leave_config="commit and-quit"
     
     def generate_prefix_list(self,name,pl,strict=True):
+        """
+        >>> Profile().generate_prefix_list("test",["192.168.0.0/24","192.168.1.0/24"])
+        'term pass {\\n    from {\\n        route-filter 192.168.0.0/24 exact;\\n        route-filter 192.168.1.0/24 exact;\\n    }\\n    then next policy;\\n}\\nterm reject {\\n    then reject;\\n}'
+        >>> Profile().generate_prefix_list("test",["192.168.0.0/24","192.168.1.0/24"],strict=False)
+        'term pass {\\n    from {\\n        route-filter 192.168.0.0/24 orlonger;\\n        route-filter 192.168.1.0/24 orlonger;\\n    }\\n    then next policy;\\n}\\nterm reject {\\n    then reject;\\n}'
+        """
         if strict:
             p="        route-filter %s exact;"
         else:
