@@ -11,6 +11,10 @@
 ## Emply strings and strings without ':' are silently dropped
 RPLS_IDENT=20
 def rpsl_format(rpsl,ident=None):
+    """
+    >>> rpsl_format("key1: value1\\nkey2: value2\\n\\nto drop\\n",7)
+    'key1:  value1\nkey2:  value2\n'
+    """
     if ident is None:
         ident=RPLS_IDENT
     out=[]
