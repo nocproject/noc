@@ -26,15 +26,28 @@ class ImportTestCase(unittest.TestCase):
 ## Convert path to module name
 ##
 def path_to_mod(path):
+    """
+    >>> path_to_mod("lib/test_runner.py")
+    'noc.lib.test_runner'
+    >>> path_to_mod("sa/profiles/__init__.py")
+    'noc.sa.profiles'
+    """
     if path.endswith(".py"):
         path=path[:-3]
-    if path.endswith("__init__"):
-        path=path[:-8]
-    return "noc."+path.replace(os.path.sep,".")
+    m="noc."+path.replace(os.path.sep,".")
+    if m.endswith(".__init__"):
+        m=m[:-9]
+    return m
 ##
 ## Convert module to path
 ##
 def mod_to_path(mod):
+    """
+    >>> mod_to_path("noc.lib.test_runner")
+    'lib/test_runner.py'
+    >>> mod_to_path("noc.sa.profiles")
+    'sa/profiles/__init__.py'
+    """
     if mod.startswith("noc."):
         mod=mod[4:]
     path=mod.replace(".",os.path.sep)
@@ -140,16 +153,18 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
     for m in modules:
         # Module load
         suite.addTest(ImportTestCase(m))
+        mt=["import"]
         # Docstrings
         try:
             suite.addTest(doctest.DocTestSuite(m,checker=doctestOutputChecker,runner=DocTestRunner))
-        except ValueError:
-            pass # No doctests in module
+            mt+=["doctest"]
+        except ValueError,why:
+            if "has not tests" in why[1]:
+                raise Exception("Doctest error in %s: %s"%(m,why[1]))
+        if verbosity>1:
+            print "adding tests for %s: %s"%(m,", ".join(mt))
     for m in tsuite:
         mo=__import__(m,{},{},"*")
-        import types
-        for name in dir(mo):
-            obj=getattr(mo,name)
         suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(mo))
     for test in extra_tests:
         suite.addTest(test)
