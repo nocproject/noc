@@ -25,6 +25,7 @@ class Migration:
         ))
         
         Organisation = db.mock_model(model_name='Organisation', db_table='peer_organisation', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        db.send_create_signal('peer', ['Organisation'])
         
         db.add_column("peer_as","rir",models.ForeignKey(RIR,null=True,blank=True))
         db.add_column("peer_as", "organisation", models.ForeignKey(Organisation,null=True,blank=True))
