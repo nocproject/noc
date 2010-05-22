@@ -7,6 +7,7 @@
 """
 from noc.lib.ip import bits_to_netmask
 from noc.lib.registry import Registry
+from noc.lib.ecma48 import strip_control_sequences
 import re
 ##
 ##
@@ -146,6 +147,13 @@ class Profile(object):
     # Strings are regexpes, compuled with re.DOTALL|re.MULTILINE
     #
     config_volatile=None
+    #
+    # Preprocessor to clean up and normalize input from device.
+    # Delete ASCII sequences by default.
+    # Can be overriden to achieve desired behavior
+    #
+    def cleaned_input(self,input):
+        return strip_control_sequences(input)
     #
     # Clean up config
     #
