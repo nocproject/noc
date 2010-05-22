@@ -7,7 +7,6 @@
 """
 from __future__ import with_statement
 from noc.lib.fsm import StreamFSM
-from noc.lib.ecma48 import strip_control_sequences
 from noc.lib.registry import Registry
 from noc.lib.nbsocket import PTYSocket,UDPSocket,SocketTimeoutError
 from noc.lib.debug import format_frames,get_traceback_frames
@@ -432,7 +431,7 @@ class CLI(StreamFSM):
         if self.profile.rogue_chars:
             for rc in self.profile.rogue_chars:
                 data=data.replace(rc,"")
-        self.feed(data,cleanup=strip_control_sequences)
+        self.feed(data,cleanup=self.profile.cleaned_input)
         self.__flush_submitted_data()
     ##
     ## Feed pending submitted data
