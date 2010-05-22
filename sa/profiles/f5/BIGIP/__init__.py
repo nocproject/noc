@@ -17,6 +17,9 @@ class Profile(noc.sa.profiles.Profile):
     pattern_username="^([Uu]sername|[Ll]ogin):"
     pattern_prompt="bp>"
     pattern_more=[
-            (r"^(/var/tmp/shell\.out\.\S+|:)","w1000000\n"),
+            (r"^(/var/tmp/shell\.out\.\S+|:)"," "),
             (r"^\(END\) ","q"),
             ]
+    def cleaned_input(self,input):
+        input=input.replace("\x1b[24;1H\x1b[K","\n")
+        return super(Profile,self).cleaned_input(input)
