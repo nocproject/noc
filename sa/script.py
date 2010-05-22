@@ -280,7 +280,13 @@ class Script(threading.Thread):
         self.cli_provider.submit(cmd,command_submit=self.profile.command_submit if command_submit is None else command_submit,bulk_lines=bulk_lines)
         data=self.cli_queue_get()
         if self.strip_echo and data.lstrip().startswith(cmd):
-            data=self.strip_first_lines(data.lstrip())
+            data=data.lstrip()
+            if data.startswith(cmd+"\n"):
+                # Remove first line
+                data=self.strip_first_lines(data.lstrip())
+            else:
+                # Some switches, like ProCurve do not send \n after the echo
+                data=data[len(cmd):]
         self.debug("cli() returns:\n---------\n%s\n---------"%repr(data))
         self.cli_debug(data,"<")
         return data
@@ -529,6 +535,8 @@ class CLI(StreamFSM):
                 self.write(c)
                 return
         raise Exception("Unexpected pager pattern")
+    on_START_PAGER=on_PROMPT_PAGER
+    on_PASSWORD_PAGER=on_PROMPT_PAGER
     
     def on_FAILURE_enter(self):
         self.set_patterns([])
