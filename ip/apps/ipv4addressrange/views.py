@@ -9,6 +9,8 @@ from django.contrib import admin
 from django import forms
 from noc.lib.app import ModelApplication
 from noc.ip.models import IPv4AddressRange
+from noc.lib.validators import is_ipv4
+from noc.lib.ip import cmp_ip
 import re
 
 rx_range_op=re.compile(r"^([/+])(\d+)$")
