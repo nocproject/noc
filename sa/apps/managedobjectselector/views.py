@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,HasPerm
 from noc.sa.models import ManagedObjectSelector
 ##
 ## ManagedObjectSelector admin
@@ -16,6 +16,8 @@ class ManagedObjectSelectorAdmin(admin.ModelAdmin):
     list_display=["name","is_enabled"]
     list_filter=["is_enabled"]
     actions=["test_selectors"]
+    search_fields=["name"]
+    filter_horizontal=["filter_groups","sources"]
     ##
     ## Test selected seletors
     ##
@@ -37,4 +39,4 @@ class ManagedObjectSelectorApplication(ModelApplication):
             for q in[get_object_or_404(ManagedObjectSelector,id=int(x)) for x in objects.split(",")]]
         return self.render(request,"test.html",{"data":r})
     view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
-    view_test.access=ModelApplication.has_perm("sa.change_managedobjectselector")
+    view_test.access=HasPerm("change")
