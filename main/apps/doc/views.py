@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app import Application
+from noc.lib.app import Application,Permit
 
 ##
 class DocApplication(Application):
@@ -17,7 +17,7 @@ class DocApplication(Application):
     view_ag.url=r"^ag/$"
     view_ag.url_name="ag"
     view_ag.menu="Documentation | Administrator's Guide"
-    view_ag.access=Application.permit
+    view_ag.access=Permit()
     ##
     ## Redirects to the User's Guide
     ##
@@ -26,6 +26,6 @@ class DocApplication(Application):
     view_ug.url=r"^ug/$"
     view_ug.url_name="ug"
     view_ug.menu="Documentation | User's Guide"
-    view_ug.access=Application.permit
+    view_ug.access=Permit()
 
     

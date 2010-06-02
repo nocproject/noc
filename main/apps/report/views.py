@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app import Application
+from noc.lib.app import Application,Permit
 from noc.main.models import report_registry
 ##
 ## Report application
@@ -33,7 +33,7 @@ class ReportAppplication(Application):
         return self.render(request,"index.html",{"reports":out})
     view_index.url=r"^$"
     view_index.menu="Reports"
-    view_index.access=Application.permit
+    view_index.access=Permit()
     ##
     ## Render report
     ##
@@ -50,5 +50,5 @@ class ReportAppplication(Application):
             return self.render(request,"form.html",{"report":report})
     view_report.url=r"^(?P<report>\S+)/$"
     view_report.url_name="view"
-    view_report.access=Application.permit
+    view_report.access=Permit()
 

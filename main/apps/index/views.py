@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import django.contrib.auth
-from noc.lib.app import Application
+from noc.lib.app import Application,PermitLogged
 
 class IndexApplication(Application):
     title="Index"
@@ -17,4 +17,4 @@ class IndexApplication(Application):
         return self.render(request,"index.html")
     view_index.url=r"^$"
     view_index.url_name="home"
-    view_index.access=Application.permit_logged
+    view_index.access=PermitLogged()

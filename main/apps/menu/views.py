@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.utils.cache import patch_response_headers
 from django.core.cache import cache
-from noc.lib.app import Application,site
+from noc.lib.app import Application,PermitLogged,site
 
 MENU_CACHE_TIME=600 # Should be settable from config
 ##
@@ -20,17 +20,11 @@ class MenuApplication(Application):
     def build_user_menu(self,request):
         m=[]
         for app_menu in site.menu:
-            items=[]
             # Build menu
-            for title,url,access in app_menu.items:
-                if access(request):
-                    items+=[(title,url)]
+            items=[(title,url) for title,url,access in app_menu.items if access(request.user)]
             # Build submenus
             for sm in app_menu.submenus:
-                si=[]
-                for title,url,access in sm.items:
-                    if access(request):
-                        si+=[(title,url)]
+                si=[(title,url) for title,url,access in sm.items if access(request.user)]
                 if si:
                     items+=[(sm.title,{"items":si})]
             if items:
@@ -50,4 +44,4 @@ class MenuApplication(Application):
         return response
     view_json.url=r"^json/$"
     view_json.url_name="json"
-    view_json.access=Application.permit_logged
+    view_json.access=PermitLogged()

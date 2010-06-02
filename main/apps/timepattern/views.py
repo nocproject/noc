@@ -8,7 +8,7 @@
 from django.contrib import admin
 from django import forms
 from django.shortcuts import get_object_or_404
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,HasPerm
 from noc.main.models import TimePattern,TimePatternTerm
 import datetime
 ##
@@ -69,5 +69,4 @@ class TimePatternApplication(ModelApplication):
             form=TestTimePatternsForm(initial={"time":s})
         return self.render(request,"test.html",{"form":form,"result":result})
     view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
-    view_test.access=ModelApplication.permit_change
-
+    view_test.access=HasPerm("change")
