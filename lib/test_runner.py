@@ -159,8 +159,8 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
             suite.addTest(doctest.DocTestSuite(m,checker=doctestOutputChecker,runner=DocTestRunner))
             mt+=["doctest"]
         except ValueError,why:
-            if "has not tests" in why[1]:
-                raise Exception("Doctest error in %s: %s"%(m,why[1]))
+            if "has no tests" not in why.args:
+                raise Exception("Doctest error in %s: %s"%(m,why.args))
         if verbosity>1:
             print "adding tests for %s: %s"%(m,", ".join(mt))
     for m in tsuite:
