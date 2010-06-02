@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.shortcuts import get_object_or_404
 from django import forms
-from noc.lib.app import Application,URL
+from noc.lib.app import Application,URL,HasPerm
 from noc.ip.models import *
 from noc.vc.models import VC,VCBindFilter
 from noc.lib.colors import get_colors
@@ -30,7 +30,7 @@ class IPManageAppplication(Application):
         return self.render(request,"index.html",{"groups":groups})
     view_index.url=r"^$"
     view_index.menu="Assigned Addresses"
-    view_index.access=Application.has_perm("ip.change_ipv4block")
+    view_index.access=HasPerm("view")
     ##
     ## Display assigned addresses and blocks
     ##
@@ -87,7 +87,7 @@ class IPManageAppplication(Application):
                             "ranges":ranges,"all_addresses":all_addresses,"orphaned_addresses":orphaned_addresses})
     view_vrf_index.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/$"
     view_vrf_index.url_name="vrf_index"
-    view_vrf_index.access=Application.has_perm("ip.change_ipv4block")
+    view_vrf_index.access=HasPerm("view")
     ##
     ## Allocate new block form
     ##
@@ -184,7 +184,7 @@ class IPManageAppplication(Application):
         URL(r"^(?P<vrf_id>\d+)/allocate_block/",name="allocate_block"),
         URL(r"^(?P<vrf_id>\d+)/(?P<prefix>\S+)/allocate_block/$",name="change_block")
         ]
-    view_allocate_block.access=Application.has_perm("ip.change_ipv4block")
+    view_allocate_block.access=HasPerm("allocate")
     ##
     ## Deallocate block handler
     ##
@@ -202,7 +202,7 @@ class IPManageAppplication(Application):
         return self.response_redirect("%s%d/%s/"%(self.base_url,vrf_id,parent))
     view_deallocate_block.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\S+)/deallocate_block/$"
     view_deallocate_block.url_name="deallocate_block"
-    view_deallocate_block.access=Application.has_perm("ip.change_ipv4block")
+    view_deallocate_block.access=HasPerm("deallocate")
     ##
     ##
     ## Assign new IP address form
@@ -311,7 +311,7 @@ class IPManageAppplication(Application):
         URL(r"^(?P<vrf_id>\d+)/(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3})/assign_address/$",name="change_address"),
         URL(r"^(?P<vrf_id>\d+)/(?P<new_ip>\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3})/assign_address/new/$",name="assign_new_address")
     ]
-    view_assign_address.access=Application.has_perm("ip.change_ipv4block")
+    view_assign_address.access=HasPerm("allocate")
     ##
     ## Deallocate ip address handler
     ##
@@ -327,7 +327,7 @@ class IPManageAppplication(Application):
         return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,address.parent.prefix))
     view_revoke_address.url=r"^(?P<vrf_id>\d+)/(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/revoke_address/$"
     view_revoke_address.url_name="revoke_address"
-    view_revoke_address.access=Application.has_perm("ip.change_ipv4block")
+    view_revoke_address.access=HasPerm("deallocate")
     ##
     ## Bind VC to Prefix
     ##
@@ -354,4 +354,4 @@ class IPManageAppplication(Application):
         return self.render(request,"bind_vc.html",{"form":form,"prefix":p})
     view_bind_vc.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/bind_vc/$"
     view_bind_vc.url_name="bind_vc"
-    view_bind_vc.access=Application.has_perm("ip.change_ipv4block")
+    view_bind_vc.access=HasPerm("bind_vc")
