@@ -13,10 +13,12 @@ function app_click(e) {
 function build_menu(menu_data) {
     // Extract application name
     var app=document.location.pathname;
-    if(app.substring(0,7)=="/admin/") {
+    if(app=="/main/index/") {
+        app=null;
+    } else if(app.substring(0,7)=="/admin/") {
         app=app.slice(6);
     }
-    if(app.substring(0,13)=="/main/report/") {
+    else if(app.substring(0,13)=="/main/report/") {
         app=app.slice(13);
         var idx=app.search("\\.");
         if(idx!=-1) {
