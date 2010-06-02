@@ -1,5 +1,5 @@
 django,1.1.1
-south,0.6.2
+south,0.7.1
 coverage,3.3.1
 flup,1.0.2
 protobuf,2.2.0a
