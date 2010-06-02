@@ -8,7 +8,7 @@
 from django.contrib import admin
 from django import forms
 from django.shortcuts import get_object_or_404
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,HasPerm
 from noc.kb.models import KBEntry,KBEntryAttachment,KBEntryTemplate
 import re
 ##
@@ -54,7 +54,7 @@ class KBEntryApplication(ModelApplication):
         return self.admin.change_view(request,object_id,self.get_context(extra_context))
     view_change.url=r"^(\d+)/$"
     view_change.url_name="change"
-    view_change.access=ModelApplication.permit_change
+    view_change.access=HasPerm("change")
     ##
     ## Display the list of templates
     ##
@@ -63,7 +63,7 @@ class KBEntryApplication(ModelApplication):
         return self.render(request,"template_index.html", {"templates":templates})
     view_template_index.url=r"^from_template/$"
     view_template_index.menu="New from Template"
-    view_template_index.access=ModelApplication.has_perm("kb.add_kbentry")
+    view_template_index.access=HasPerm("add")
     ##
     ## Create new entry from template
     ##
@@ -89,4 +89,4 @@ class KBEntryApplication(ModelApplication):
         return self.response_redirect_to_object(kbe)
     view_from_template.url=r"^from_template/(?P<template_id>\d+)/$"
     view_from_template.url_name="from_template"
-    view_from_template.access=ModelApplication.has_perm("kb.add_kbentry")
+    view_from_template.access=HasPerm("add")

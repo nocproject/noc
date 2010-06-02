@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.shortcuts import get_object_or_404
-from noc.lib.app import Application
+from noc.lib.app import Application,HasPerm
 from noc.kb.models import KBEntry,KBEntryAttachment
 from noc.main.models import MIMEType
 ##
@@ -23,7 +23,7 @@ class ViewAppplication(Application):
         return self.render(request,"view.html",{"e":e,"has_bookmark":e.is_bookmarked(request.user)})
     view_view.url=r"^(?P<kb_id>\d+)/$"
     view_view.url_name="view"
-    view_view.access=Application.has_perm("kb.change_kbentry")
+    view_view.access=HasPerm("view")
     ##
     ## Download attachment
     ##
@@ -33,7 +33,7 @@ class ViewAppplication(Application):
         return self.render_response(a.file.file.read(),content_type=MIMEType.get_mime_type(a.file.name))
     view_attachment.url=r"^(?P<kb_id>\d+)/attachment/(?P<name>.+)/$"
     view_attachment.url_name="attachment"
-    view_attachment.access=Application.has_perm("kb.change_kbentry")
+    view_attachment.access=HasPerm("view")
     ##
     ## Manipulate user bookmark
     ##     action is one of "set" or "unset"
@@ -48,4 +48,4 @@ class ViewAppplication(Application):
         return self.response_redirect_to_referrer(request)
     view_bookmark.url=r"(?P<kb_id>\d+)/bookmark/(?P<action>set|unset)/$"
     view_bookmark.url_name="bookmark"
-    view_bookmark.access=Application.has_perm("kb.change_kbentry")
+    view_bookmark.access=HasPerm("view")
