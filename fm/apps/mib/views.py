@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from django import forms
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,HasPerm
 from noc.lib.fileutils import temporary_file
 from noc.fm.models import MIB,MIBData,MIBRequiredException
 ##
@@ -57,4 +57,4 @@ class MIBApplication(ModelApplication):
         return self.render(request,"upload.html",{"form":form})
     view_upload.url=r"^upload/$"
     view_upload.url_name="upload"
-    view_upload.access=ModelApplication.has_perm("fm.add_mib")
+    view_upload.access=HasPerm("upload")

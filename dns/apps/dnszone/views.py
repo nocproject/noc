@@ -8,7 +8,7 @@
 from django import forms
 from django.shortcuts import get_object_or_404
 from django.contrib import admin
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,HasPerm
 from noc.dns.models import DNSZone,DNSZoneRecord,DNSServer,DNSZoneProfile
 from noc.sa.models import TaskSchedule
 from noc.lib.validators import is_fqdn
@@ -73,7 +73,7 @@ class DNSZoneApplication(ModelApplication):
         ns=get_object_or_404(DNSServer,id=int(ns_id))
         return self.render_plain_text(z.zonedata(ns))
     view_zone.url=r"^(?P<zone_id>\d+)/ns/(?P<ns_id>\d+)/$"
-    view_zone.access=ModelApplication.has_perm("dns.change_dnszone")
+    view_zone.access=HasPerm("change")
     ##
     ## Render tools page
     ##
@@ -81,7 +81,7 @@ class DNSZoneApplication(ModelApplication):
         return self.render(request,"tools.html",{"zones_upload_form":ZonesUploadForm()})
     view_tools.url=r"^tools/$"
     view_tools.url_name="tools"
-    view_tools.access=ModelApplication.has_perm("dns.change_dnszone")
+    view_tools.access=HasPerm("tools")
     ##
     ## Upload zones
     ##
@@ -113,4 +113,4 @@ class DNSZoneApplication(ModelApplication):
         return self.response_redirect(self.base_url+"tools/")
     view_upload.url="^tools/upload/$"
     view_upload.url_name="upload"
-    view_upload.access=ModelApplication.has_perm("dns.change_dnszone")
+    view_upload.access=HasPerm("tools")
