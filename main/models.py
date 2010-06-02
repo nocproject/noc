@@ -7,14 +7,12 @@
 """
 from __future__ import with_statement
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
 from noc.main.report import report_registry
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
-import noc.lib.search # Set up signal handlers
 import os,datetime,re,datetime,threading
 from noc.main.refbooks.downloaders import downloader_registry
-from noc.lib.search import SearchResult
 from django.contrib import databrowse
 from django.db.models.signals import class_prepared,pre_save,pre_delete
 from noc.lib.fields import TextArrayField
@@ -23,13 +21,25 @@ from noc.settings import IS_WEB
 from noc.lib.timepattern import TimePattern as TP
 from noc.lib.timepattern import TimePatternList
 from noc.sa.interfaces.base import interface_registry
-
 ##
-## Databrowse register hook to intersept model creation
+## A hash of Model.search classmethods.
+## Populated by "class_prepared" signal listener
+## Model.search is a generator taking parameters (user,query,limit)
+## And yielding a SearchResults (ordered by relevancy)
 ##
-def register_databrowse_model(sender,**kwargs):
+search_methods={}
+##
+## Register new search handler if model has .search classmethod
+##
+def on_new_model(sender,**kwargs):
+    if hasattr(sender,"search"):
+        search_methods[getattr(sender,"search")]=None
     databrowse.site.register(sender)
-class_prepared.connect(register_databrowse_model)
+##
+## Attach to the 'class_prepared' signal
+## and on_new_model on every new model
+##
+class_prepared.connect(on_new_model)
 ##
 ## Exclude tables from audit
 ##
@@ -120,6 +130,67 @@ class AuditTrail(models.Model):
             subject=str(instance),
             body=message
         ).save()
+##
+## Permissions
+## Populated by manage.py sync-perm
+##
+class Permission(models.Model):
+    class Meta:
+        verbose_name="Permission"
+        verbose_name_plural="Permissions"
+    name=models.CharField("Name",max_length=128,unique=True) # module:app:permission
+    users=models.ManyToManyField(User,related_name="noc_user_permissions")
+    groups=models.ManyToManyField(Group,related_name="noc_group_permissions")
+    def __unicode__(self):
+        return self.name
+    ##
+    ## Checks the user has permission directly or via group
+    ##
+    @classmethod
+    def has_perm(self,user,perm):
+        if not user.is_active:
+            return False
+        if user.is_superuser:
+            return True
+        p=Permission.objects.get(name=perm)
+        return bool(p.users.filter(id=user.id)) or bool(p.groups.filter(id__in=user.groups.all()))
+    ##
+    ## Return a set of user permissions
+    ##
+    @classmethod
+    def get_user_permissions(cls,user):
+        return set(user.noc_user_permissions.values_list("name",flat=True))
+    ##
+    ## Set user permissions to ``perm``. Perm must be set([])
+    ##
+    @classmethod
+    def set_user_permissions(cls,user,perms):
+        current=cls.get_user_permissions(user)
+        # Add new permissions
+        for p in perms-current:
+            Permission.objects.get(name=p).users.add(user)
+        # Revoke permissions
+        for p in current-perms:
+            Permission.objects.get(name=p).users.remove(user)
+    ##
+    ## Returns a set of group permissions
+    ##
+    @classmethod
+    def get_group_permissions(cls,group):
+        return set(group.noc_group_permissions.values_list("name",flat=True))
+    ##
+    ## Set group permissions
+    ##
+    @classmethod
+    def set_group_permissions(cls,group,perms):
+        current=cls.get_group_permissions(group)
+        # Add new permissions
+        for p in perms-current:
+            Permission.objects.get(name=p).groups.add(group)
+        # Revoke permissions
+        for p in current-perms:
+            Permission.objects.get(name=p).groups.remove(group)
+    
 ##
 ## Languages
 ##
@@ -683,4 +754,4 @@ class UserProfileContact(models.Model):
 ##
 ## Load and register reports
 ##
-report_registry.register_all()
+#report_registry.register_all()

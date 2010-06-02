@@ -19,6 +19,7 @@ from django.contrib import admin as django_admin
 from django.db import connection
 from noc.settings import INSTALLED_APPS,config
 from noc.lib.debug import error_report
+from noc.lib.access import *
 import logging,os,glob,types,re
 ##
 ## Setup Context Processor.
@@ -183,19 +184,17 @@ class Site(object):
     def login(self,request):
         return HttpResponseRedirect("%s?%s=%s"%(settings.LOGIN_URL,REDIRECT_FIELD_NAME,urlquote(request.get_full_path())))
     ##
-    ## Decorator for view.access
+    ## Curry application with access
     ##
     def site_access(self,app,view):
-        def inner(request):
-            return view.access(app,request)
-        return inner
+        return lambda user: view.access.check(app,user)
     ##
     ## Decorator for view
     ##
     def site_view(self,app,view):
         # Render view
         def inner(request,*args,**kwargs):
-            if not view.access(app,request):
+            if not request.user or not view.access.check(app,request.user):
                 return self.login(request)
             return view(request,*args,**kwargs)
         # Render view in testing mode
@@ -220,11 +219,11 @@ class Site(object):
         app_id=app_class.get_app_id()
         if app_id in self.apps:
             raise Exception("Application %s is already registered"%app_id)
+        # Initialize application
         app=app_class(self)
         self.apps[app_id]=app
         # Register application views
-        for n in [n for n in dir(app_class) if n.startswith("view_")]:
-            view=getattr(app,n)
+        for view in app.get_views():
             if hasattr(view,"url"):
                 self.register_view(app,view)
     ##
@@ -253,56 +252,6 @@ class Site(object):
 ## Global application site instance
 ##
 site=Site()
-##
-## Application ACL
-##
-class Access(object):
-    def check(self,request):
-        return False
-    
-    def __or__(self,r):
-        return OrAccess(self,r)
-    
-    def __and__(self,r):
-        return AndAccess(self,r)
-
-class LogicAccess(Access):
-    def __init__(self,l,r):
-        super(LogicAccess,self).__init__()
-        self.l=l
-        self.r=r
-
-class OrAccess(LogicAccess):
-    def check(self,request):
-        return self.l.check(request) or self.r.check(request)
-
-class AndAccess(object):
-    def check(self,request):
-        return self.l.check(request) and self.r.check(request)
-
-class PermitAccess(Access):
-    def check(self,request):
-        return True
-
-class DenyAccess(Access):
-    def check(self,request):
-        return False
-
-class PermitLoggedAccess(Access):
-    def check(self,request):
-        return request.user and request.user.is_authenticated()
-
-class PermitSuperuserAccess(Access):
-    def check(self,request):
-        return request.user and request.user.is_superuser
-
-class HasPermAccess(Access):
-    def __init__(self,perm):
-        super(HasPermAccess,self).__init__()
-        self.perm=perm
-    
-    def check(self,request):
-        return request.user.has_perm(self.perm)
 ##
 ## Metaclass for Application.
 ## Register application class to site
@@ -444,30 +393,21 @@ class Application(object):
             if len(q)>2: # Ignore requests shorter than 3 letters
                 result=list(func(q))
         return self.render_plain_text("\n".join(result))
-    
     ##
-    ## Shortcuts to Access class.
-    ## view_*.access=
+    ## Iterator returning application views
     ##
-    
-    ## Permit
-    def permit(self,request):
-        return True
-    ## Deny
-    def deny(self,request):
-        return False
-    ## Permit any logged user
-    def permit_logged(self,request):
-        return request.user and request.user.is_authenticated()
-    ## Permit superuser
-    def permit_superuser(self,request):
-        return request.user and request.user.is_superuser
-    # Permit if user has permission
-    @classmethod
-    def has_perm(cls,perm):
-        def inner(app,request):
-            return request.user.has_perm(perm)
-        return inner
+    def get_views(self):
+        for n in [v for v in dir(self) if v.startswith("view_")]:
+            yield getattr(self,n)
+    ##
+    ## Return a set of permissions, used by application
+    ##
+    def get_permissions(self):
+        p=set()
+        for view in self.get_views():
+            if isinstance(view.access,HasPerm):
+                p.add(view.access.get_permission(self))
+        return p
     ##
     ## View
     ##
@@ -491,18 +431,22 @@ class ModelApplication(Application):
         self.admin=self.model_admin(self.model, django_admin.site)
         self.admin.app=self
         self.title=self.model._meta.verbose_name_plural
+        # Set up template paths
         self.admin.change_form_template=self.get_template_path("change_form.html")+["admin/change_form.html"]
         self.admin.change_list_template=self.get_template_path("change_list.html")+["admin/change_list.html"]
-    ##
-    def permit_add(self,request):
-        return self.admin.has_add_permission(request)
+        # Set up permissions
+        self.admin.has_change_permission=lambda request,obj=None: self.view_changelist.access.check(self,request.user,obj)
+        self.admin.has_add_permission=lambda request,obj=None: self.view_add.access.check(self,request.user,obj)
+        self.admin.has_delete_permission=lambda request,obj=None: self.view_delete.access.check(self,request.user,obj)
+        ## Set up row-based access
+        self.admin.queryset=self.queryset
+    
+    def queryset(self,request):
+        if hasattr(self.model,"user_objects"):
+            return self.model.user_objects(request.user)
+        else:
+            return self.model.objects
         
-    def permit_change(self,request):
-        return self.admin.has_change_permission(request)
-        
-    def permit_delete(self,request):
-        return self.admin.has_delete_permission(request)
-
     def get_menu(self):
         return self.menu
     ##
@@ -513,37 +457,37 @@ class ModelApplication(Application):
             extra_context={}
         extra_context["app"]=self
         return extra_context
-        
+    
     def view_changelist(self,request,extra_context=None):
         return self.admin.changelist_view(request,self.get_context(extra_context))
     view_changelist.url=r"^$"
     view_changelist.url_name="changelist"
-    view_changelist.access=permit_change
+    view_changelist.access=HasPerm("change")
     view_changelist.menu=get_menu
     
     def view_add(self,request,form_url="",extra_context=None):
         return self.admin.add_view(request)
     view_add.url=r"^add/$"
     view_add.url_name="add"
-    view_add.access=permit_add
+    view_add.access=HasPerm("add")
     
     def view_history(self,request,object_id,extra_context=None):
         return self.admin.history_view(request,object_id,extra_context)
     view_history.url=r"^(\d+)/history/$"
     view_history.url_name="history"
-    view_history.access=permit_change
+    view_history.access=HasPerm("change")
     
     def view_delete(self,request,object_id,extra_context=None):
         return self.admin.delete_view(request,object_id,self.get_context(extra_context))
     view_delete.url=r"^(\d+)/delete/$"
     view_delete.url_name="delete"
-    view_delete.access=permit_delete
+    view_delete.access=HasPerm("delete")
     
     def view_change(self,request,object_id,extra_context=None):
         return self.admin.change_view(request,object_id,self.get_context(extra_context))
     view_change.url=r"^(\d+)/$"
     view_change.url_name="change"
-    view_change.access=permit_change
+    view_change.access=HasPerm("change")
 ##
 ## Load all applications
 ##
