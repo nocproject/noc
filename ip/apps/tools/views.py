@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django import forms
 from django.shortcuts import get_object_or_404
-from noc.lib.app import Application
+from noc.lib.app import Application,HasPerm
 from noc.lib.ip import contains
 from noc.ip.models import *
 from noc.lib.validators import is_cidr,is_ipv4,is_fqdn
@@ -16,6 +16,7 @@ import csv,cStringIO,datetime,subprocess
 ## IP Block tooks
 ##
 class ToolsAppplication(Application):
+    title="Tools"
     ##
     ## An index of tools available for block
     ##
@@ -30,7 +31,7 @@ class ToolsAppplication(Application):
             "upload_ips_axfr_form":self.AXFRForm()})
     view_index.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\d+\.\d+\.\d+\.\d+/\d+)/$"
     view_index.url_name="index"
-    view_index.access=Application.has_perm("ip.change_ipv4block")
+    view_index.access=HasPerm("view")
     ##
     ## Download block's allocated IPs in CSV format
     ## Columns are: ip,fqdn,description,tt
@@ -53,7 +54,7 @@ class ToolsAppplication(Application):
         return self.render_response(out.getvalue(),content_type="text/csv")
     view_download_ip.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\d+\.\d+\.\d+\.\d+/\d+)/download_ip/$"
     view_download_ip.url_name="download_ip"
-    view_download_ip.access=Application.has_perm("ip.change_ipv4block")
+    view_download_ip.access=HasPerm("view")
     ##
     ## IP Upload form
     ##
@@ -111,7 +112,7 @@ class ToolsAppplication(Application):
         return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,prefix))
     view_upload_ip.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\d+\.\d+\.\d+\.\d+/\d+)/upload_ip/$"
     view_upload_ip.url_name="upload_ip"
-    view_upload_ip.access=Application.has_perm("ip.change_ipv4block")
+    view_upload_ip.access=HasPerm("view")
     ##
     ## Zone import form
     ##
@@ -178,4 +179,4 @@ class ToolsAppplication(Application):
         return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,prefix))
     view_upload_axfr.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\d+\.\d+\.\d+\.\d+/\d+)/upload_axfr/$"
     view_upload_axfr.url_name="upload_axfr"
-    view_upload_axfr.access=Application.has_perm("ip.change_ipv4block")
+    view_upload_axfr.access=HasPerm("view")
