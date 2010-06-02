@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django import forms
 from django.shortcuts import get_object_or_404
-from noc.lib.app import Application
+from noc.lib.app import Application,HasPerm
 from noc.sa.models import script_registry,ReduceTask,ManagedObjectSelector,reduce_script_registry
 ##
 ## Available scripts
@@ -63,7 +63,7 @@ class MRTaskAppplication(Application):
         return self.render(request,"mr_task.html",{"form":form})
     view_run.url=r"^$"
     view_run.menu="Map/Reduce Tasks"
-    view_run.access=Application.has_perm("sa.add_reducetask")
+    view_run.access=HasPerm("run")
     ##
     ## Show task result
     ##
@@ -75,4 +75,4 @@ class MRTaskAppplication(Application):
         task.delete()
         return self.render(request,"mr_task_result.html",{"result":result})
     view_result.url=r"^(?P<task_id>\d+)/$"
-    view_result.access=Application.has_perm("sa.add_reducetask")
+    view_result.access=HasPerm("run")
