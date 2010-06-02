@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app import Application
+from noc.lib.app import Application,PermitLogged
 
 class MessageApplication(Application):
     title="Message"
@@ -18,7 +18,7 @@ class MessageApplication(Application):
         return self.render(request,"success.html",{"subject":subject,"text":text})
     view_success.url=r"^success/$"
     view_success.url_name="success"
-    view_success.access=Application.permit_logged
+    view_success.access=PermitLogged()
     ##
     ## Render failure page
     ##
@@ -28,7 +28,7 @@ class MessageApplication(Application):
         return self.render(request,"failure.html",{"subject":subject,"text":text})
     view_failure.url=r"^failure/$"
     view_failure.url_name="failure"
-    view_failure.access=Application.permit_logged
+    view_failure.access=PermitLogged()
     ##
     ## Render wait page
     ##
@@ -42,4 +42,4 @@ class MessageApplication(Application):
         return self.render(request,"wait.html",{"subject":subject,"text":text,"url":url,"timeout":timeout})
     view_wait.url=r"^wait/$"
     view_wait.url_name="wait"
-    view_wait.access=Application.permit_logged
+    view_wait.access=PermitLogged()

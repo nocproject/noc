@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.views.generic import list_detail
 from django.shortcuts import get_object_or_404
-from noc.lib.app import Application
+from noc.lib.app import Application,HasPerm
 from noc.main.models import *
 ##
 ##
@@ -23,7 +23,7 @@ class RefBookAppplication(Application):
     view_index.url=r"^$"
     view_index.url_name="index"
     view_index.menu="Reference Books"
-    view_index.access=Application.permit
+    view_index.access=HasPerm("view")
     ##
     ## Refbook preview
     ##
@@ -57,7 +57,7 @@ class RefBookAppplication(Application):
         )
     view_view.url=r"^(?P<refbook_id>\d+)/$"
     view_view.url_name="view"
-    view_view.access=Application.permit
+    view_view.access=HasPerm("view")
     ##
     ## Item preview
     ##
@@ -68,7 +68,7 @@ class RefBookAppplication(Application):
         return self.render(request,"item.html",{"rb":rb,"record":rbr,"can_edit":can_edit})
     view_item.url=r"^(?P<refbook_id>\d+)/(?P<record_id>\d+)/$"
     view_item.url_name="item"
-    view_item.access=Application.permit
+    view_item.access=HasPerm("view")
     ##
     ## Edit item
     ##
@@ -93,7 +93,7 @@ class RefBookAppplication(Application):
         return self.render(request,"edit.html",{"rb":rb,"record":rbr})
     view_edit.url=r"^(?P<refbook_id>\d+)/(?P<record_id>\d+)/edit/$"
     view_edit.url_name="edit"
-    view_edit.access=Application.has_perm("main.change_refbookdata")
+    view_edit.access=HasPerm("change")
     ##
     ## Delete refbook record
     ##
@@ -108,7 +108,7 @@ class RefBookAppplication(Application):
         return self.response_redirect("main:refbook:view",rb.id)
     view_delete.url=r"^(?P<refbook_id>\d+)/(?P<record_id>\d+)/delete/$"
     view_delete.url_name="delete"
-    view_delete.access=Application.has_perm("main.change_refbookdata")
+    view_delete.access=HasPerm("delete")
     ##
     ## Create refbook record
     ##
@@ -132,4 +132,4 @@ class RefBookAppplication(Application):
         return self.render(request,"new.html",{"rb":rb})
     view_new.url=r"^(?P<refbook_id>\d+)/new/$"
     view_new.url_name="new"
-    view_new.access=Application.has_perm("main.change_refbookdata")
+    view_new.access=HasPerm("add")

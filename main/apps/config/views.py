@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app import Application
+from noc.lib.app import Application,PermitSuperuser
 import ConfigParser,os,re,pwd
 ##
 ## Configuration editor
@@ -21,7 +21,7 @@ class ConfigApplication(Application):
         return self.render(request,"index.html",{"configs":self.CONFIGS})
     view_index.url=r"^$"
     view_index.url_name="index"
-    view_index.access=Application.permit_superuser
+    view_index.access=PermitSuperuser()
     view_index.menu="Setup | Configs"
     ##
     ## Display and edit config
@@ -116,4 +116,4 @@ class ConfigApplication(Application):
             "system_user" : system_user})
     view_config.url=r"^(?P<config>\S+)/$"
     view_config.url_name="view"
-    view_config.access=Application.permit_superuser
+    view_config.access=PermitSuperuser()

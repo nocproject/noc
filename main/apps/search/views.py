@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django import forms
-from noc.lib.app import Application
+from noc.lib.app import Application,PermitLogged
 from noc.lib.search import search as search_engine
 ##
 ## Simple search form
@@ -32,4 +32,4 @@ class SearchApplication(Application):
         return self.render(request,"search.html",{"form":form,"result":result})
     view_search.url=r"^$"
     view_search.url_name="search"
-    view_search.access=Application.permit_logged
+    view_search.access=PermitLogged()

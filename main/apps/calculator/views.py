@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app import Application
+from noc.lib.app import Application,Permit
 from noc.main.apps.calculator.calculators import calculator_registry
 ##
 ## Register all calculators
@@ -25,7 +25,7 @@ class CalculatorAppplication(Application):
     view_index.url=r"^$"
     view_index.url_name="index"
     view_index.menu="Calculators"
-    view_index.access=Application.permit
+    view_index.access=Permit()
     ##
     ## Calculator view
     ##
@@ -37,4 +37,4 @@ class CalculatorAppplication(Application):
         return c.render(request)
     view_calculate.url=r"^(?P<calculator>\S+)/$"
     view_calculate.url_name="calculate"
-    view_calculate.access=Application.permit
+    view_calculate.access=Permit()
