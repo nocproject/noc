@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.shortcuts import get_object_or_404
-from noc.lib.app import Application
+from noc.lib.app import Application,HasPerm
 from noc.pm.models import Chart,TimeSeries
 import time
 ##
@@ -22,7 +22,7 @@ class ViewAppplication(Application):
         return self.render(request,"index.html",{"charts":charts})
     view_index.url=r"^$"
     view_index.menu="Charts"
-    view_index.access=Application.has_perm("pm.change_chart")
+    view_index.access=HasPerm("view")
     ##
     ## Chart Preview
     ##
@@ -31,7 +31,7 @@ class ViewAppplication(Application):
         return self.render(request,"view_chart.html",{"chart":chart})
     view_chart.url=r"^chart/(?P<chart_id>\d+)/$"
     view_chart.url_name="chart"
-    view_chart.access=Application.has_perm("pm.change_chart")
+    view_chart.access=HasPerm("view")
     ##
     ## Time Series Preview
     ##
@@ -40,7 +40,7 @@ class ViewAppplication(Application):
         return self.render(request,"view_ts.html",{"ts":ts})
     view_ts.url=r"^ts/(?P<ts_id>\d+)/$"
     view_ts.url_name="ts"
-    view_ts.access=Application.has_perm("pm.change_chart")
+    view_ts.access=HasPerm("view")
     ##
     ## JSON-serialized chart data
     ##
@@ -77,7 +77,7 @@ class ViewAppplication(Application):
         return self.render_json(r)
     view_chart_data.url=r"chart/(?P<chart_id>\d+)/data/"
     view_chart_data.url_name="chart_data"
-    view_chart_data.access=Application.has_perm("pm.change_chart")
+    view_chart_data.access=HasPerm("view")
     ##
     ## JSON-serialized time series data
     ##
@@ -113,5 +113,5 @@ class ViewAppplication(Application):
         return self.render_json(r)
     view_ts_data.url=r"ts/(?P<ts_id>\d+)/data/"
     view_ts_data.url_name="ts_data"
-    view_ts_data.access=Application.has_perm("pm.change_chart")
+    view_ts_data.access=HasPerm("view")
     
