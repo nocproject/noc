@@ -8,7 +8,7 @@
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from django import forms
-from noc.lib.app import ModelApplication,site
+from noc.lib.app import ModelApplication,site,Permit,PermitSuperuser,HasPerm
 from noc.sa.models import ManagedObject,AdministrativeDomain,Activator,profile_registry,script_registry,scheme_choices
 from noc.settings import config
 from noc.lib.fileutils import in_dir
@@ -133,7 +133,7 @@ class ManagedObjectApplication(ModelApplication):
         return self.render(request,"tools.html",{"upload_mo_form":MOUploadForm()})
     view_tools.url=r"^tools/$"
     view_tools.url_name="tools"
-    view_tools.access=ModelApplication.permit_superuser
+    view_tools.access=PermitSuperuser()
     ##
     ## Script index
     ##
@@ -146,7 +146,7 @@ class ManagedObjectApplication(ModelApplication):
         return self.render(request,"scripts.html",{"object":o,"scripts":scripts})
     view_scripts.url=r"^(?P<object_id>\d+)/scripts/$"
     view_scripts.url_name="scripts"
-    view_scripts.access=ModelApplication.has_perm("sa.change_managedobject")
+    view_scripts.access=HasPerm("change")
     ##
     ## Execute script
     ##
@@ -192,7 +192,7 @@ class ManagedObjectApplication(ModelApplication):
         return self.render(request,"script.html",{"object":o,"result":result,"script":script,"form":form})
     view_script.url=r"^(?P<object_id>\d+)/scripts/(?P<script>\S+)/$"
     view_script.url_name="script"
-    view_script.access=ModelApplication.has_perm("sa.change_managedobject")
+    view_script.access=HasPerm("change")
     ##
     ## Upload managed objects
     ##
@@ -267,7 +267,7 @@ class ManagedObjectApplication(ModelApplication):
         return self.response_redirect(self.base_url+"tools/")
     view_upload.url=r"^tools/upload/$"
     view_upload.url_name="upload"
-    view_upload.access=ModelApplication.permit_superuser
+    view_upload.access=PermitSuperuser()
     ##
     ## AJAX lookup
     ##
@@ -278,4 +278,4 @@ class ManagedObjectApplication(ModelApplication):
         return self.lookup(request,lookup_function)
     view_lookup.url=r"^lookup/$"
     view_lookup.url_name="lookup"
-    view_lookup.access=ModelApplication.permit
+    view_lookup.access=Permit()
