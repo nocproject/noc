@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from django import forms
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,HasPerm
 from noc.vc.models import VC,VCDomain
 from noc.sa.models import ManagedObject
 from noc.sa.models import profile_registry
@@ -66,4 +66,4 @@ class VCApplication(ModelApplication):
         return self.render(request,"import_vlans.html",{"form":form})
     view_import_sa.url=r"^import_sa/$"
     view_import_sa.url_name="import_sa"
-    view_import_sa.access=ModelApplication.permit_change
+    view_import_sa.access=HasPerm("import")

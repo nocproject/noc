@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,HasPerm
 from noc.fm.models import EventClassificationRule,EventClassificationRE
 ##
 ## Inline for EventClassificationRE
@@ -48,7 +48,7 @@ class EventClassificationRuleApplication(ModelApplication):
         return self.response_redirect_to_object(new_rule)
     view_clone.url=r"^(?P<object_id>\d+)/clone/"
     view_clone.url_name="clone"
-    view_clone.access=ModelApplication.has_perm("fm.add_eventclassificationrule")
+    view_clone.access=HasPerm("add")
     ##
     ## Create rule from event
     ##
@@ -59,7 +59,7 @@ class EventClassificationRuleApplication(ModelApplication):
         return self.response_redirect_to_object(rule)
     view_from_event.url=r"^from_event/(?P<event_id>\d+)/$"
     view_from_event.url_name="from_event"
-    view_from_event.access=ModelApplication.has_perm("fm.add_eventclassificationrule")
+    view_from_event.access=HasPerm("add")
     ##
     ## Display classification rules sheet
     ##
@@ -67,4 +67,4 @@ class EventClassificationRuleApplication(ModelApplication):
         return self.render(request,"sheet.html",{"rules":EventClassificationRule.objects.order_by("preference")})
     view_sheet.url=r"^sheet/$"
     view_sheet.url_name="sheet"
-    view_sheet.access=ModelApplication.has_perm("fm.change_eventclassificationrule")
+    view_sheet.access=HasPerm("change")

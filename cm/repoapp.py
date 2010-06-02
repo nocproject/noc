@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.shortcuts import get_object_or_404
 from django.utils.html import escape
-from noc.lib.app import ModelApplication,URL
+from noc.lib.app import ModelApplication,URL,HasPerm
 from noc.cm.models import Object
 from noc.lib.highlight import NOCHtmlFormatter
 from pygments.lexers import DiffLexer
@@ -60,7 +60,7 @@ class RepoApplication(ModelApplication):
         URL(r"^(?P<object_id>\d+)/$"                  , name="view"),
         URL(r"^(?P<object_id>\d+)/(?P<revision>\d+)/$", name="view_revision"),
     ]
-    view_change.access=ModelApplication.permit_change
+    view_change.access=HasPerm("view")
     ##
     ##
     ##
@@ -70,7 +70,7 @@ class RepoApplication(ModelApplication):
         URL(r"^(?P<object_id>\d+)/text/$"                   , name="view_text"),
         URL(r"^(?P<object_id>\d+)/(?P<revision>\d+)/text/$" , name="view_text_revision"),
     ]
-    view_text.access=ModelApplication.permit_change
+    view_text.access=HasPerm("view")
     ##
     ## Render diff form
     ##
@@ -100,4 +100,4 @@ class RepoApplication(ModelApplication):
         URL(r"^(?P<object_id>\d+)/diff/$",                                        name="diff"),
         URL(r"^(?P<object_id>\d+)/diff/(?P<mode>[u2])/(?P<r1>\d+)/(?P<r2>\d+)/$", name="diff_rev")
     ]
-    view_diff.access=ModelApplication.permit_change
+    view_diff.access=HasPerm("view")

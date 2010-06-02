@@ -5,11 +5,12 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app import Application
+from noc.lib.app import Application,HasPerm
 ##
 ## Active Problems
 ##
 class ActiveProblemsAppplication(Application):
+    title="Active problems"
     ##
     ## Display summary page
     ##
@@ -27,6 +28,6 @@ class ActiveProblemsAppplication(Application):
         data=cursor.fetchall()
         return self.render(request,"summary.html",{"data":data})
     view_summary.url=r"^/"
-    view_summary.access=Application.has_perm("fm.change_event")
+    view_summary.access=HasPerm("view")
     view_summary.menu="Active Problems"
 

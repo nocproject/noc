@@ -8,7 +8,7 @@
 from django.contrib import admin
 from django import forms
 from django.shortcuts import get_object_or_404
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,HasPerm
 from noc.vc.models import VCFilter
 ##
 ## VCFilter admin
@@ -50,5 +50,5 @@ class VCFilterApplication(ModelApplication):
             form=TestVCFilterForm()
         return self.render(request,"test.html",{"form":form,"result":result})
     view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
-    view_test.access=ModelApplication.permit_change
+    view_test.access=HasPerm("change")
 

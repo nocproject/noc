@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django import forms
-from noc.lib.app import Application
+from noc.lib.app import Application,HasPerm
 from noc.peer.resolver import resolve_as_set_prefixes
 from noc.peer.models import PeeringPoint
 
@@ -43,5 +43,5 @@ class PrefixListBuilderAppplication(Application):
             form=PrefixListBuilderForm()
         return self.render(request,"builder.html",{"form":form,"prefix_list":pl})
     view_builder.url=r"^$"
-    view_builder.access=Application.has_perm("peer.change_peer")
     view_builder.menu="Prefix List Builder"
+    view_builder.access=HasPerm("view")

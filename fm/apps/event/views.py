@@ -8,7 +8,7 @@
 from django import forms
 from django.forms.widgets import HiddenInput
 from noc.lib.widgets import AutoCompleteTextInput,lookup
-from noc.lib.app import Application
+from noc.lib.app import Application,HasPerm
 from noc.fm.models import *
 from noc.sa.models import ManagedObject
 ##
@@ -43,7 +43,7 @@ class EventAppplication(Application):
         form=EventSearchForm(initial=initial)
         return self.render(request,"index.html",{"form":form})
     view_index.url=r"^$"
-    view_index.access=Application.has_perm("fm.change_event")
+    view_index.access=HasPerm("view")
     view_index.menu="Events"
     ##
     ## Display event colorification CSS
@@ -53,7 +53,7 @@ class EventAppplication(Application):
         return self.render_plain_text(text,mimetype="text/css")
     view_css.url=r"css/$"
     view_css.url_name="css"
-    view_css.access=Application.has_perm("fm.change_event")
+    view_css.access=HasPerm("view")
     ##
     ## Display event
     ##
@@ -62,7 +62,7 @@ class EventAppplication(Application):
         return self.render(request,"event.html",{"e":event})
     view_event.url=r"^(?P<event_id>\d+)/$"
     view_event.url_name="event"
-    view_event.access=Application.has_perm("fm.change_event")
+    view_event.access=HasPerm("view")
     ##
     ## Mark event as open
     ##
@@ -72,7 +72,7 @@ class EventAppplication(Application):
         return self.response_redirect_to_referer(self.base_url+"%d/"%event.id)
     view_open.url=r"^(?P<event_id>\d+)/open/$"
     view_open.url_name="open"
-    view_open.access=Application.has_perm("fm.change_event")
+    view_open.access=HasPerm("change")
     ##
     ## Mark event as closed
     ##
@@ -82,7 +82,7 @@ class EventAppplication(Application):
         return self.response_redirect_to_referer(self.base_url+"%d/"%event.id)
     view_close.url=r"^(?P<event_id>\d+)/close/$"
     view_close.url_name="close"
-    view_close.access=Application.has_perm("fm.change_event")
+    view_close.access=HasPerm("close")
     ##
     ## Begin event reclassification
     ##
@@ -92,7 +92,7 @@ class EventAppplication(Application):
         return self.response_redirect_to_referer(self.base_url+"%d/"%event.id)
     view_reclassify.url=r"^(?P<event_id>\d+)/reclassify/$"
     view_reclassify.url_name="reclassify"
-    view_reclassify.access=Application.has_perm("fm.change_event")
+    view_reclassify.access=HasPerm("reclassify")
     ##
     ## Retrieve JSON list of events
     ## Returns:
@@ -143,4 +143,4 @@ class EventAppplication(Application):
         })
     view_events.url=r"^events/$"
     view_events.url_name="events"
-    view_events.access=Application.has_perm("fm.change_event")
+    view_events.access=HasPerm("view")

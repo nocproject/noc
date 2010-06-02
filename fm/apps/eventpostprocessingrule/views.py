@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,HasPerm
 from noc.fm.models import Event,EventPostProcessingRule,EventPostProcessingRE
 ##
 ## Inline for EventPostProcessingRuleAdmin
@@ -48,7 +48,7 @@ class EventPostProcessingRuleApplication(ModelApplication):
         return self.response_redirect_to_object(new_rule)
     view_clone.url=r"^(?P<object_id>\d+)/clone/"
     view_clone.url_name="clone"
-    view_clone.access=ModelApplication.has_perm("fm.add_eventpostprocessingrule")
+    view_clone.access=HasPerm("add")
     ##
     ## Create rule from event
     ##
@@ -59,4 +59,4 @@ class EventPostProcessingRuleApplication(ModelApplication):
         return self.response_redirect_to_object(rule)
     view_from_event.url=r"^from_event/(?P<event_id>\d+)/$"
     view_from_event.url_name="from_event"
-    view_from_event.access=ModelApplication.has_perm("fm.add_eventpostprocessingrule")
+    view_from_event.access=HasPerm("add")
