@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.contrib import admin
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication,PermitLogged,Deny
 from noc.main.models import UserProfile,UserProfileContact
 
 
@@ -26,12 +26,6 @@ class UserProfileAdmin(admin.ModelAdmin):
             "fields" : ("preferred_language",),
         }),
     )
-    ## Do not show "Delete button"
-    def has_delete_permission(self,request,obj=None):
-        return False
-    ##
-    def has_add_permission(self,request):
-        return False
 ##
 ## UserProfile application
 ##
@@ -56,4 +50,15 @@ class UserProfileApplication(ModelApplication):
         return self.admin.change_view(request,str(profile.id),self.get_context(extra_context))
     view_change.url=r"^$"
     view_change.url_name="change"
-    view_change.access=ModelApplication.permit_logged
+    view_change.access=PermitLogged()
+    ##
+    ## Disable delete
+    ##
+    def has_delete_permission(self,request,obj=None):
+        return False
+    ##
+    ## Disable add
+    ##
+    def has_add_permission(self,request):
+        return False
+
