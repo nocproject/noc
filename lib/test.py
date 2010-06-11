@@ -7,6 +7,7 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+from __future__ import with_statement
 from django.test import TestCase
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler

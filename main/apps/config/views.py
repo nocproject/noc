@@ -5,6 +5,7 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+from __future__ import with_statement
 from noc.lib.app import Application,PermitSuperuser
 import ConfigParser,os,re,pwd
 ##
