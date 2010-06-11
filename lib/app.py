@@ -435,18 +435,34 @@ class ModelApplication(Application):
         self.admin.change_form_template=self.get_template_path("change_form.html")+["admin/change_form.html"]
         self.admin.change_list_template=self.get_template_path("change_list.html")+["admin/change_list.html"]
         # Set up permissions
-        self.admin.has_change_permission=lambda request,obj=None: self.view_changelist.access.check(self,request.user,obj)
-        self.admin.has_add_permission=lambda request,obj=None: self.view_add.access.check(self,request.user,obj)
-        self.admin.has_delete_permission=lambda request,obj=None: self.view_delete.access.check(self,request.user,obj)
+        self.granular_access=hasattr(self.model,"user_objects")
+        self.admin.has_change_permission=self.has_change_permission
+        self.admin.has_add_permission=self.has_add_permission
+        self.admin.has_delete_permission=self.has_delete_permission
         ## Set up row-based access
         self.admin.queryset=self.queryset
     
     def queryset(self,request):
-        if hasattr(self.model,"user_objects"):
+        if self.granular_access:
             return self.model.user_objects(request.user)
         else:
             return self.model.objects
-        
+    
+    def has_change_permission(self,request,obj=None):
+        r=self.view_changelist.access.check(self,request.user,obj)
+        if r and obj and self.granular_access:
+            return self.queryset(request).filter(id=obj.id).count()>0 # Check obj in queryset
+        return r
+    
+    def has_add_permission(self,request):
+        return self.view_add.access.check(self,request.user)
+    
+    def has_delete_permission(self,request,obj=None):
+        r=self.view_delete.access.check(self,request.user,obj)
+        if r and obj and self.granular_access:
+            return self.queryset(request).filter(id=obj.id).count()>0 # Check obj in queryset
+        return r
+
     def get_menu(self):
         return self.menu
     ##
