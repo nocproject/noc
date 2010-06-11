@@ -7,7 +7,7 @@
 """
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,Group
 import datetime,random,cPickle,time,types
 from noc.sa.profiles import profile_registry
 from noc.sa.periodic import periodic_registry
@@ -106,61 +106,23 @@ class ManagedObject(models.Model):
             return self._cached_profile
     profile=property(_profile)
     ##
-    ## Access control
+    ## queryset returning objects for user
     ##
-    def has_access(self,user):
-        if user.is_superuser:
-            return True
-        return user.useraccess_set.filter(
-                    (Q(administrative_domain__isnull=True)|Q(administrative_domain=self.administrative_domain))\
-                    &(Q(group__isnull=True)|Q(group__in=self.groups.all))
-                    ).count()>0
-
-    def can_change(self,user,administrative_domain,groups):
-        if user.is_superuser:
-            return True
-        if user.useraccess_set.filter(
-                (Q(administrative_domain__isnull=True)|Q(administrative_domain=self.administrative_domain))\
-                &Q(group__isnull=True)
-                ).count()>0:
-            return True
-        if groups:
-            for g in groups:
-                if user.useraccess_set.filter(
-                        (Q(administrative_domain__isnull=True)|Q(administrative_domain__isnull=self.administrative_domain))\
-                        &Q(group=g)
-                        ).count()==0:
-                    return False
-            return True
-        return False
-        
     @classmethod
-    def queryset(cls,user):
-        if user.is_superuser:
-            return cls.objects.all()
-        # Build query
-        r=[]
-        p=[]
-        for a in user.useraccess_set.all():
-            if a.administrative_domain is None and a.group is None: # Full access
-                return cls.objects.all()
-            rr=[]
-            pp=[]
-            if a.administrative_domain:
-                rr.append("(sa_managedobject.administrative_domain_id=%s)")
-                pp.append(a.administrative_domain.id)
-            if a.group:
-                rr.append("(sa_managedobject.id IN (SELECT managedobject_id FROM sa_managedobject_groups WHERE objectgroup_id=%s))")
-                pp.append(a.group.id)
-            if len(rr)==1: # Single clause
-                r+=rr
-            else: # AND together
-                r+=["(%s AND %s)"%(rr[0],rr[1])]
-            p+=pp
-        if not r: # No access
-            return cls.objects.extra(where=["0=1"]) # Return empty queryset
-        where=" OR ".join(r)
-        return cls.objects.extra(where=[where],params=p)
+    def user_objects(cls,user):
+        return cls.objects.filter(UserAccess.Q(user))
+    ##
+    ## Returns a list of users granted access to object
+    ##
+    def _granted_users(self):
+        return [u for u in User.objects.filter(is_active=True) if ManagedObject.objects.filter(UserAccess.Q(u)&Q(id=self.id)).count()>0]
+    granted_users=property(_granted_users)
+    ##
+    ## Returns a list of groups granted access to object
+    ##
+    def _granted_groups(self):
+        return [g for g in Group.objects.filter() if ManagedObject.objects.filter(GroupAccess.Q(g)&Q(id=self.id)).count()>0]
+    granted_groups=property(_granted_groups)
     ##
     ## Override model's save()
     ## Change related Config object as well
@@ -207,24 +169,6 @@ class ManagedObject(models.Model):
                 text=unicode(o),
                 relevancy=relevancy
             )
-
-##
-##
-##
-class UserAccess(models.Model):
-    class Meta:
-        verbose_name="User Access"
-        verbose_name_plural="User Access"
-    user=models.ForeignKey(User,verbose_name="User")
-    administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name="Administrative Domain",blank=True,null=True)
-    group=models.ForeignKey(ObjectGroup,verbose_name="Group",blank=True,null=True)
-    def __unicode__(self):
-        def q(o):
-            if o:
-                return o.name
-            else:
-                return "*"
-        return "(%s,%s,%s)"%(self.user.username,q(self.administrative_domain),q(self.group))
 ##
 ##
 ##
@@ -290,11 +234,11 @@ class ManagedObjectSelector(models.Model):
     def __unicode__(self):
         return self.name
     ##
-    ## Returns a queryset containing selected managed objects
+    ## Returns a Q object
     ##
-    def _managed_objects(self):
+    def _Q(self):
         # Apply restrictions
-        q=Q(is_managed=True)
+        q=Q(is_managed=True)&~Q(profile_name="NOC")
         if self.filter_id:
             q&=Q(id=self.filter_id)
         if self.filter_name:
@@ -315,11 +259,12 @@ class ManagedObjectSelector(models.Model):
             q&=Q(description__regex=self.filter_description)
         if self.filter_repo_path:
             q&=Q(repo_path__regex=self.filter_repo_path)
-        r=ManagedObject.objects.filter(q)
         # Restrict to groups when necessary
-        for g in self.filter_groups.all():
-            r=r.extra(where=["id IN (SELECT managedobject_id FROM sa_managedobject_groups WHERE objectgroup_id=%s)"],
-                params=[g.id])
+        g_ids=reduce(lambda x,y: x.union(y),
+            [set(g.managedobject_set.values_list("id",flat=True)) for g in self.filter_groups.all()],set())
+        if g_ids:
+            q&=Q(id__in=g_ids)
+        r=ManagedObject.objects.filter(q)
         # Restrict to sources
         if self.sources.count():
             sm=self.source_combine_method
@@ -327,16 +272,79 @@ class ManagedObjectSelector(models.Model):
                 if s.id==self.id: # Do not include self
                     continue
                 if sm=="A": # AND
-                    r&=s.managed_objects
+                    q&=s.q
                 else: # OR
-                    r|=s.managed_objects
-        return r.exclude(profile_name="NOC")
+                    q|=s.q
+        return q
+    Q=property(_Q)
+    ##
+    ## Returns queryset containing managed objects
+    ##
+    def _managed_objects(self):
+        return ManagedObject.objects.filter(self.Q)
     managed_objects=property(_managed_objects)
     ##
     ## Check Managed Object matches selector
     ##
     def match(self,managed_object):
         return self.managed_objects.filter(id=managed_object.id).count()>0
+##
+## Managed objects access for user
+##
+class UserAccess(models.Model):
+    class Meta:
+        verbose_name="User Access"
+        verbose_name_plural="User Access"
+    user=models.ForeignKey(User,verbose_name="User")
+    selector=models.ForeignKey(ManagedObjectSelector,verbose_name="Object Selector")
+    
+    def __unicode__(self):
+        return "(%s,%s)"%(self.user.username,self.selector.name)
+    ##
+    ## Return Q object for user access
+    ##
+    @classmethod
+    def Q(cls,user):
+        if user.is_superuser:
+            return Q() # All objects
+        # Build Q for user access
+        uq=[a.selector.Q for a in UserAccess.objects.filter(user=user)]
+        if uq:
+            q=uq.pop(0)
+            while uq:
+                q|=uq.pop(0)
+        else:
+            q=Q(id__in=[]) # False
+        # Enlarge with group access
+        for gq in [GroupAccess.Q(g) for g in user.groups.all()]:
+            q|=gq
+        return q
+##
+## Managed objects access for group
+##
+class GroupAccess(models.Model):
+    class Meta:
+        verbose_name="Group Access"
+        verbose_name_plural="Group Access"
+    group=models.ForeignKey(Group,verbose_name="Group")
+    selector=models.ForeignKey(ManagedObjectSelector,verbose_name="Object Selector")
+    
+    def __unicode__(self):
+        return "(%s,%s)"%(self.group.name,self.selector.name)
+    ##
+    ## Return Q object
+    ##
+    @classmethod
+    def Q(cls,group):
+        gq=[a.selector.Q for a in GroupAccess.objects.filter(group=group)]
+        if gq:
+            # Combine selectors
+            q=gq.pop(0)
+            while gq:
+                q|=gp.pop(0)
+            return q
+        else:
+            return Q(id__in=[]) # False
 ##
 ## Reduce Tasks
 ##

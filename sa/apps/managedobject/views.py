@@ -8,8 +8,10 @@
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from django import forms
+from django.db.models import Q
+from django.contrib.auth.models import User,Group
 from noc.lib.app import ModelApplication,site,Permit,PermitSuperuser,HasPerm
-from noc.sa.models import ManagedObject,AdministrativeDomain,Activator,profile_registry,script_registry,scheme_choices
+from noc.sa.models import ManagedObject,AdministrativeDomain,Activator,profile_registry,script_registry,scheme_choices,UserAccess,GroupAccess
 from noc.settings import config
 from noc.lib.fileutils import in_dir
 from xmlrpclib import ServerProxy, Error
@@ -82,6 +84,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
     list_filter=["is_managed","is_configuration_managed","activator","administrative_domain","groups","profile_name"]
     search_fields=["name","address","repo_path","description"]
     object_class=ManagedObject
+    actions=["test_access"]
     ##
     ## Dirty hack to display PasswordInput in admin form
     ##
@@ -112,13 +115,12 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             admin.ModelAdmin.save_model(self,request,obj,form,change)
         else:
             raise "Permission denied"
-##
-## Form for uploading managed objects
-##
-class MOUploadForm(forms.Form):
-    administrative_domain=forms.ModelChoiceField(queryset=AdministrativeDomain.objects)
-    activator=forms.ModelChoiceField(queryset=Activator.objects)
-    file=forms.FileField()
+    ##
+    ## Test object access
+    ##
+    def test_access(self,request,queryset):
+        return self.app.response_redirect("test/%s/"%",".join([str(p.id) for p in queryset]))
+    test_access.short_description="Test selected object access"
 ##
 ## ManagedObject application
 ##
@@ -127,10 +129,17 @@ class ManagedObjectApplication(ModelApplication):
     model_admin=ManagedObjectAdmin
     menu="Managed Objects"
     ##
+    ## Form for uploading managed objects
+    ##
+    class MOUploadForm(forms.Form):
+        administrative_domain=forms.ModelChoiceField(queryset=AdministrativeDomain.objects)
+        activator=forms.ModelChoiceField(queryset=Activator.objects)
+        file=forms.FileField()
+    ##
     ## Managed objects tools
     ##
     def view_tools(self,request):
-        return self.render(request,"tools.html",{"upload_mo_form":MOUploadForm()})
+        return self.render(request,"tools.html",{"upload_mo_form":self.MOUploadForm()})
     view_tools.url=r"^tools/$"
     view_tools.url_name="tools"
     view_tools.access=PermitSuperuser()
@@ -255,7 +264,7 @@ class ManagedObjectApplication(ModelApplication):
         if not request.user.is_superuser:
             return self.response_forbidden("Access Denied")
         if request.method=="POST":
-            form = MOUploadForm(request.POST, request.FILES)
+            form = self.MOUploadForm(request.POST, request.FILES)
             if form.is_valid():
                 administrative_domain=form.cleaned_data["administrative_domain"]
                 activator=form.cleaned_data["activator"]
@@ -279,3 +288,17 @@ class ManagedObjectApplication(ModelApplication):
     view_lookup.url=r"^lookup/$"
     view_lookup.url_name="lookup"
     view_lookup.access=Permit()
+    ##
+    ## Test managed objects access
+    ##
+    def view_test(self,request,objects):
+        r=[]
+        for mo in [ManagedObject.objects.get(id=int(x)) for x in objects.split(",")]:
+            r+=[{
+                "object" : mo,
+                "users"  : sorted([u.username for u in mo.granted_users]),
+                "groups" : sorted([g.name for g in mo.granted_groups]),
+                }]
+        return self.render(request,"test.html",{"data":r})
+    view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
+    view_test.access=HasPerm("change")

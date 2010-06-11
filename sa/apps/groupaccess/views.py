@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## UserAccess Manager
+## GroupAccess Manager
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from noc.lib.app import ModelApplication
-from noc.sa.models import UserAccess
+from noc.sa.models import GroupAccess
 ##
-## UserAccess admin
+## GroupAccess admin
 ##
-class UserAccessAdmin(admin.ModelAdmin):
-    list_display=["user","selector"]
-    list_filter=["user"]
+class GroupAccessAdmin(admin.ModelAdmin):
+    list_display=["group","selector"]
+    list_filter=["group"]
 ##
-## UserAccess application
+## GroupAccess application
 ##
-class UserAccessApplication(ModelApplication):
-    model=UserAccess
-    model_admin=UserAccessAdmin
-    menu="Setup | User Access"
+class GroupAccessApplication(ModelApplication):
+    model=GroupAccess
+    model_admin=GroupAccessAdmin
+    menu="Setup | Group Access"
