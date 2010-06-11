@@ -8,6 +8,8 @@
 from noc.main.models import Permission as DBPermission
 from django.db.models import Q
 ##
+class PermissionDenied(Exception): pass
+##
 ## Basic Permission class.
 ## Each permission must implement ``check`` method
 ## and additional queryset method
