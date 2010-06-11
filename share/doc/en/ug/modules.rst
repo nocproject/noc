@@ -59,6 +59,8 @@ Supported VC Types:
 * X.25 logical groups/logical channel
 
 System can automatically import existing VLANs from equipment.
+VLAN provisioning can automatically create or destroy VLANs on the switches
+as they are entered or deleted from database.
 
 peer
 ====
@@ -74,6 +76,8 @@ Peering management. Contains database of major peering objects:
 Generates valid RPSL representation for database objects.
 Generates optimized BGP filters. Provides integrated looking glass for debugging purposes.
 RPSL representation and prefix-lists are stored in cm repo to track changes.
+
+Module can push RPSL object to RIR database.
 
 ip
 ==
