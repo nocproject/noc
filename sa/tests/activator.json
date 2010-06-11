@@ -1,0 +1,25 @@
+[
+    {
+        "pk": 1, 
+        "model": "sa.activator", 
+        "fields": {
+            "is_active": true, 
+            "ip": "192.168.0.2", 
+            "to_ip": "192.168.0.2", 
+            "name": "A1", 
+            "auth": "xxxxxxxxxxx"
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "sa.activator", 
+        "fields": {
+            "is_active": true, 
+            "ip": "192.168.1.0", 
+            "to_ip": "192.168.1.255", 
+            "name": "A2", 
+            "auth": "xxxxxxxxxxx"
+        }
+    }
+    
+]
