@@ -112,6 +112,11 @@ class ManagedObject(models.Model):
     def user_objects(cls,user):
         return cls.objects.filter(UserAccess.Q(user))
     ##
+    ##
+    ##
+    def has_access(self,user):
+        return self.user_objects(user).filter(id=self.id).count()>0
+    ##
     ## Returns a list of users granted access to object
     ##
     def _granted_users(self):
