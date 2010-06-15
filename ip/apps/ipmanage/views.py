@@ -355,3 +355,11 @@ class IPManageAppplication(Application):
     view_bind_vc.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/bind_vc/$"
     view_bind_vc.url_name="bind_vc"
     view_bind_vc.access=HasPerm("bind_vc")
+    ##
+    ## Return a list of user access
+    ##
+    def user_access_list(self,user):
+        return ["%s: %s"%(a.vrf.name,a.prefix) for a in IPv4BlockAccess.objects.filter(user=user)]
+    ##
+    def user_access_change_url(self,user):
+        return self.site.reverse("ip:ipv4blockaccess:changelist",QUERY={"user__id__exact":user.id})

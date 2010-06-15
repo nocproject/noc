@@ -302,3 +302,16 @@ class ManagedObjectApplication(ModelApplication):
         return self.render(request,"test.html",{"data":r})
     view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
     view_test.access=HasPerm("change")
+    ##
+    def user_access_list(self,user):
+        return [s.selector.name for s in UserAccess.objects.filter(user=user)]
+    ##
+    def user_access_change_url(self,user):
+        return self.site.reverse("sa:useraccess:changelist",QUERY={"user__id__exact":user.id})
+    ##
+    def group_access_list(self,group):
+        return [s.selector.name for s in GroupAccess.objects.filter(group=group)]
+    ##
+    def group_access_change_url(self,group):
+        return self.site.reverse("sa:groupaccess:changelist",QUERY={"group__id__exact":group.id})
+
