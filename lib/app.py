@@ -20,7 +20,7 @@ from django.db import connection
 from noc.settings import INSTALLED_APPS,config
 from noc.lib.debug import error_report
 from noc.lib.access import *
-import logging,os,glob,types,re
+import logging,os,glob,types,re,urllib
 ##
 ## Setup Context Processor.
 ## Used via TEMPLATE_CONTEXT_PROCESSORS variable in settings.py
@@ -240,12 +240,19 @@ class Site(object):
     def application_by_class(self,app_class):
         return self.apps[app_class.get_app_id()]
     ##
-    ## Reverse URL
+    ## Reverse URL.
+    ## Use common django url reversing scheme
+    ## kwargs QUERY handled as query part
     ##
     rx_namespace=re.compile(r"^[a-z0-9_]+:[a-z0-9_]+:[a-z0-9_]+$",re.IGNORECASE)
     def reverse(self,url,*args,**kwargs):
         if self.rx_namespace.match(url):
-            return reverse(url,args=args,kwargs=kwargs)
+            kw=kwargs.copy()
+            query=""
+            if "QUERY" in kw:
+                query="?"+urllib.urlencode(kw["QUERY"])
+                del kw["QUERY"]
+            return reverse(url,args=args,kwargs=kw)+query
         else:
             return url
 ##
@@ -409,6 +416,26 @@ class Application(object):
                 p.add(view.access.get_permission(self))
         return p
     ##
+    ## Return a list of user access entries
+    ##
+    def user_access_list(self,user):
+        return []
+    ##
+    ## Return a list of group access entries
+    ##
+    def group_access_list(self,group):
+        return []
+    ##
+    ## Return an URL to change user access
+    ##
+    def user_access_change_url(self,user):
+        return None
+    ##
+    ## Return an URL to change group access
+    ##
+    def group_access_change_url(self,group):
+        return None
+    ##
     ## View
     ##
     #def view_test(self,request):
@@ -462,6 +489,31 @@ class ModelApplication(Application):
         if r and obj and self.granular_access:
             return self.queryset(request).filter(id=obj.id).count()>0 # Check obj in queryset
         return r
+    
+    def user_access_list(self,user):
+        if hasattr(self.model,"user_access_list"):
+            return self.model.user_access_list(user)
+        else:
+            return []
+
+    def group_access_list(self,group):
+        if hasattr(self.model,"group_access_list"):
+            return self.model.group_access_list(group)
+        else:
+            return []
+    
+    def user_access_change_url(self,user):
+        if hasattr(self.model,"user_access_change_url"):
+            return self.model.user_access_change_url(user)
+        else:
+            return None
+    
+    def group_access_change_url(self,group):
+        if hasattr(self.model,"group_access_change_url"):
+            return self.model.group_access_change_url(group)
+        else:
+            return []
+
 
     def get_menu(self):
         return self.menu
