@@ -12,6 +12,7 @@ from django.test.utils import setup_test_environment, teardown_test_environment
 from coverage import coverage as Coverage
 from django.test import _doctest as doctest
 from django.test.testcases import OutputChecker, DocTestRunner, TestCase
+from django.core import management
 from south.logger import get_logger
 ##
 ## Test module by importing it
@@ -182,6 +183,8 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
     # Create database when necessary
     if not reuse_db or not has_db:
         connection.creation.create_test_db(verbosity, autoclobber=not interactive)
+        # Call sync-perm to install permissions
+        management.call_command("sync-perm")
     # Run tests
     result = unittest.TextTestRunner(verbosity=verbosity).run(suite)
     # Drop database when necessary
