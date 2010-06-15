@@ -55,20 +55,25 @@ class AccessWidget(forms.Widget):
         apps=site.apps.keys()
         perms=Permission.objects.values_list("name",flat=True)
         current_perms=set()
+        mode=None
         if value:
             if value.startswith("user:"):
-                current_perms=Permission.get_user_permissions(User.objects.get(username=value[5:]))
+                user=User.objects.get(username=value[5:])
+                current_perms=Permission.get_user_permissions(user)
+                mode="user"
             elif value.startswith("group:"):
                 current_perms=Permission.get_group_permissions(Group.objects.get(name=value[6:]))
+                mode="group"
         for module in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
             mod=module[4:]
             m=__import__(module,{},{},"MODULE_NAME")
-            r+=["<tr><td colspan='2' class='module-name'>%s</td></tr>"%m.MODULE_NAME]
+            r+=["<tr><td colspan='3' class='module-name'>%s</td></tr>"%m.MODULE_NAME]
             for app in [app for app in apps if app.startswith(mod+".")]:
                 app_perms=[p for p in perms if p.startswith(app.replace(".",":")+":")]
+                a=site.apps[app]
                 if app_perms:
                     r+=["<tr>"]
-                    r+=["<td class='app-name'>%s<br/>(%s)</td>"%(site.apps[app].title,app)]
+                    r+=["<td class='app-name'>%s<br/>(%s)</td>"%(a.title,app)]
                     r+=["<td><ul class='permlist'>"]
                     for p in app_perms:
                         cb="<li><input type='checkbox' name='perm_%s'"%p
@@ -76,6 +81,23 @@ class AccessWidget(forms.Widget):
                             cb+=" checked"
                         cb+="/>"
                         r+=[cb,"<span class='perm-label'>%s</span>"%p.split(":")[-1],"</li>"]
-                    r+=["</ul></td></tr>"]
+                    r+=["</ul></td><td>"]
+                    # Granular access
+                    if mode=="user":
+                        user_acess=a.user_access_list(user)
+                        change_link=a.user_access_change_url(user)
+                        if user_acess:
+                            r+=["<br/>".join(sorted(user_acess))]
+                        if change_link:
+                            r+=["<br/><a href='%s'>Change...</a>"%change_link]
+                    elif mode=="group":
+                        r+=["group"]
+                        group_acess=a.group_access_list(group)
+                        change_link=a.group_access_change_url(group)
+                        if group_acess:
+                            r+=["<br/>".join(sorted(group_acess))]
+                        if change_link:
+                            r+=["<br/><a href='%s'>Change...</a>"%change_link]
+                    r+=["</td></tr>"]
         r+=["</table>"]
         return mark_safe("".join(r))
