@@ -62,7 +62,8 @@ class AccessWidget(forms.Widget):
                 current_perms=Permission.get_user_permissions(user)
                 mode="user"
             elif value.startswith("group:"):
-                current_perms=Permission.get_group_permissions(Group.objects.get(name=value[6:]))
+                group=Group.objects.get(name=value[6:])
+                current_perms=Permission.get_group_permissions(group)
                 mode="group"
         for module in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
             mod=module[4:]
@@ -91,7 +92,6 @@ class AccessWidget(forms.Widget):
                         if change_link:
                             r+=["<br/><a href='%s'>Change...</a>"%change_link]
                     elif mode=="group":
-                        r+=["group"]
                         group_acess=a.group_access_list(group)
                         change_link=a.group_access_change_url(group)
                         if group_acess:
