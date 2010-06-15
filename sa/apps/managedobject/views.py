@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from django import forms
 from django.db.models import Q
 from django.contrib.auth.models import User,Group
-from noc.lib.app import ModelApplication,site,Permit,PermitSuperuser,HasPerm
+from noc.lib.app import ModelApplication,site,Permit,PermitSuperuser,HasPerm,PermissionDenied
 from noc.sa.models import ManagedObject,AdministrativeDomain,Activator,profile_registry,script_registry,scheme_choices,UserAccess,GroupAccess
 from noc.settings import config
 from noc.lib.fileutils import in_dir
@@ -111,10 +111,10 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         return ManagedObject.queryset(request.user)
         
     def save_model(self, request, obj, form, change):
-        if obj.can_change(request.user,form.cleaned_data["administrative_domain"],form.cleaned_data["groups"]):
+        if obj.has_access(request.user):
             admin.ModelAdmin.save_model(self,request,obj,form,change)
         else:
-            raise "Permission denied"
+            raise PermissionDenied()
     ##
     ## Test object access
     ##
