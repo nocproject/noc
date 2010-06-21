@@ -70,7 +70,7 @@ class AccessWidget(forms.Widget):
             m=__import__(module,{},{},"MODULE_NAME")
             r+=["<tr><td colspan='3' class='module-name'>%s</td></tr>"%m.MODULE_NAME]
             for app in [app for app in apps if app.startswith(mod+".")]:
-                app_perms=[p for p in perms if p.startswith(app.replace(".",":")+":")]
+                app_perms=sorted([p for p in perms if p.startswith(app.replace(".",":")+":")])
                 a=site.apps[app]
                 if app_perms:
                     r+=["<tr>"]
@@ -85,17 +85,17 @@ class AccessWidget(forms.Widget):
                     r+=["</ul></td><td>"]
                     # Granular access
                     if mode=="user":
-                        user_acess=a.user_access_list(user)
+                        user_access=a.user_access_list(user)
                         change_link=a.user_access_change_url(user)
-                        if user_acess:
-                            r+=["<br/>".join(sorted(user_acess))]
+                        if user_access:
+                            r+=["<br/>".join(sorted(user_access))]
                         if change_link:
                             r+=["<br/><a href='%s'>Change...</a>"%change_link]
                     elif mode=="group":
-                        group_acess=a.group_access_list(group)
+                        group_access=a.group_access_list(group)
                         change_link=a.group_access_change_url(group)
-                        if group_acess:
-                            r+=["<br/>".join(sorted(group_acess))]
+                        if group_access:
+                            r+=["<br/>".join(sorted(group_access))]
                         if change_link:
                             r+=["<br/><a href='%s'>Change...</a>"%change_link]
                     r+=["</td></tr>"]
