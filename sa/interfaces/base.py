@@ -24,9 +24,9 @@ class InterfaceTypeError(Exception): pass
 class Parameter(object):
     def __init__(self,required=True,default=None):
         self.required=required
-        if default:
-            default=self.clean(default)
-        self.default=default
+        self.default=None
+        if default is not None:
+            self.default=self.clean(default)
     ##
     ## Returns ORParameter
     ##
@@ -112,8 +112,14 @@ class StringParameter(Parameter):
     '10'
     >>> StringParameter().clean(None)
     'None'
+    >>> StringParameter(default="test").clean("no test")
+    'no test'
+    >>> StringParameter(default="test").clean(None)
+    'test'
     """
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         try:
             return str(value)
         except:
@@ -133,12 +139,18 @@ class REStringParameter(StringParameter):
     Traceback (most recent call last):
         ...
     InterfaceTypeError: REStringParameter: 'ex'
+    >>> REStringParameter("ex+p",default="exxp").clean("regexp 1")
+    'regexp 1'
+    >>> REStringParameter("ex+p",default="exxp").clean(None)
+    'exxp'
     """
     def __init__(self,regexp,required=True,default=None):
+        self.rx=re.compile(regexp) # Compile before calling the constructor
         super(REStringParameter,self).__init__(required=required,default=default)
-        self.rx=re.compile(regexp)
 
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         v=super(REStringParameter,self).clean(value)
         if not self.rx.search(v):
             self.raise_error(value)
@@ -164,8 +176,14 @@ class BooleanParameter(Parameter):
     Traceback (most recent call last):
         ...
     InterfaceTypeError: BooleanParameter: []
+    >>> BooleanParameter(default=False).clean(None)
+    False
+    >>> BooleanParameter(default=True).clean(None)
+    True
     """
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         if type(value)==types.BooleanType:
             return value
         if type(value) in [types.IntType,types.LongType]:
@@ -194,12 +212,23 @@ class IntParameter(Parameter):
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IntParameter: 10
+    >>> IntParameter(max_value=10,default=7).clean(5)
+    5
+    >>> IntParameter(max_value=10,default=7).clean(None)
+    7
+    >>> IntParameter(max_value=10,default=15)
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IntParameter: 15
     """
     def __init__(self,required=True,default=None,min_value=None,max_value=None):
-        super(IntParameter,self).__init__(required=required,default=default)
         self.min_value=min_value
         self.max_value=max_value
+        super(IntParameter,self).__init__(required=required,default=default)
+        
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         try:
             i=int(value)
         except:
@@ -212,6 +241,8 @@ class IntParameter(Parameter):
 ##
 class ListParameter(Parameter):
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         try:
             return list(value)
         except:
@@ -243,6 +274,8 @@ class InstanceOfParameter(Parameter):
         super(InstanceOfParameter,self).__init__(required=required,default=default)
         self.cls=cls
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         try:
             if isinstance(value,self.cls):
                 return value
@@ -264,18 +297,30 @@ class ListOfParameter(ListParameter):
     InterfaceTypeError: IntParameter: 'x'
     >>> ListOfParameter(element=StringParameter()).clean([1,2,3,"x"])
     ['1', '2', '3', 'x']
+    >>> ListOfParameter(element=StringParameter(),default=[]).clean(None)
+    []
+    >>> ListOfParameter(element=StringParameter(),default=[1,2,3]).clean(None)
+    ['1', '2', '3']
     """
     def __init__(self,element,required=True,default=None):
-        super(ListOfParameter,self).__init__(required=required,default=default)
         self.element=element
+        super(ListOfParameter,self).__init__(required=required,default=default)
         
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         v=super(ListOfParameter,self).clean(value)
         return [self.element.clean(x) for x in v]
 ##
 ##
 ##
 class StringListParameter(ListOfParameter):
+    """
+    >>> StringListParameter().clean(["1","2","3"])
+    ['1', '2', '3']
+    >>> StringListParameter().clean(["1",2,"3"])
+    ['1', '2', '3']
+    """
     def __init__(self,required=True,default=None):
         super(StringListParameter,self).__init__(element=StringParameter(),required=required,default=default)
 ##
@@ -294,6 +339,8 @@ class DictParameter(Parameter):
         super(DictParameter,self).__init__(required=required,default=default)
         self.attrs=attrs
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         if type(value)!=types.DictType:
             self.raise_error(value)
         if not self.attrs:
@@ -318,6 +365,8 @@ class DictParameter(Parameter):
 rx_datetime=re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
 class DateTimeParameter(StringParameter):
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         if isinstance(value,datetime.datetime):
             return value.isoformat()
         if value.lower()=="infinite":
@@ -338,6 +387,8 @@ class IPParameter(StringParameter):
     InterfaceTypeError: IPParameter: '192.168.0.256'
     """
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         v=super(IPParameter,self).clean(value)
         X=v.split(".")
         if len(X)!=4:
@@ -369,6 +420,8 @@ class IPv4PrefixParameter(StringParameter):
     InterfaceTypeError: IPParameter: '192.168.0.0/-5'
     """
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         v=super(IPv4PrefixParameter,self).clean(value)
         if "/" not in v:
             self.raise_error(value)
@@ -441,6 +494,8 @@ class MACAddressParameter(StringParameter):
     InterfaceTypeError: MACAddressParameter: 'AB:CD:EF:GH:HJ:KL'
     """
     def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
         value=super(MACAddressParameter,self).clean(value)
         value=value.upper()
         match=rx_mac_address_cisco_media.match(value)
