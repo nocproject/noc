@@ -37,7 +37,7 @@ class TFTPServer(ListenUDPSocket):
         if len(data)<2:
             self.send_error(address,port,self.ERR_ILLEGAL,"Illegal TFTP operation")
             return
-        code=struct.unpack("!H",data[:2])
+        code=struct.unpack("!H",data[:2])[0]
         if code<self.RRQ or code>self.ERROR:
             self.send_error(address,port,self.ERR_ILLEGAL,"Illegal TFTP operation")
             return
