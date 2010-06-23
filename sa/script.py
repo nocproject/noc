@@ -12,6 +12,7 @@ from noc.lib.nbsocket import PTYSocket,UDPSocket,SocketTimeoutError
 from noc.lib.debug import format_frames,get_traceback_frames
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.sa.profiles import profile_registry
+from noc.settings import config
 import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib,cPickle,sys,time,datetime
 
 try:
@@ -551,7 +552,7 @@ class CLITelnetSocket(ScriptSocket,CLI,PTYSocket):
     TTL=30
     def __init__(self,factory,profile,access_profile):
         logging.debug("CLITelnetSocket connecting '%s'"%access_profile.address)
-        cmd_args=["/usr/bin/telnet",access_profile.address]
+        cmd_args=[config.get("path","telnet"),access_profile.address]
         if access_profile.port and access_profile.port!=23:
             cmd_args+=[str(access_profile.port)]
         CLI.__init__(self,profile,access_profile)
@@ -564,7 +565,7 @@ class CLISSHSocket(ScriptSocket,CLI,PTYSocket):
     TTL=30
     def __init__(self,factory,profile,access_profile):
         logging.debug("CLISSHSocket connecting '%s'"%access_profile.address)
-        cmd_args=["/usr/bin/ssh","-o","StrictHostKeyChecking no","-l",access_profile.user]
+        cmd_args=[config.get("path","ssh"),"-o","StrictHostKeyChecking no","-l",access_profile.user]
         if access_profile.port and access_profile.port!=22:
             cmd_args+=["-p",str(access_profile.port)]
         cmd_args+=[access_profile.address]
