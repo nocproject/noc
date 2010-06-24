@@ -20,6 +20,7 @@ from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObje
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
+from noc.lib.app import site
 
 profile_registry.register_all()
 vcs_registry.register_all()
@@ -336,6 +337,13 @@ class Config(Object):
                 r+=["==[ %s ]========================================\n%s"%(d["name"],d["config"])]
             data="\n".join(r)
         super(Config,self).write(data)
+    ##
+    ##
+    ##
+    def change_link(self):
+        return "<a href='%s'>Change</a>"%site.reverse("cm:config:change",self.id)
+    change_link.short_description="Change"
+    change_link.allow_tags=True
 
 ##
 ## PrefixList
