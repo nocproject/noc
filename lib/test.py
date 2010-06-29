@@ -10,6 +10,7 @@
 from __future__ import with_statement
 from django.test import TestCase
 from django.conf import settings
+from django.http import HttpResponseServerError
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.servers.basehttp import AdminMediaHandler
 from django.db import close_connection
@@ -31,12 +32,18 @@ class WSGIWrapper(object):
         finally:
             signals.request_finished.connect(close_connection)
 ##
+## Display traceback instead of 500 error
+##
+class WSGIExceptionHandler(WSGIHandler):
+    def handle_uncaught_exception(self,request,resolver,exc_info):
+        return HttpResponseServerError(self._get_traceback(exc_info))
+##
 ## WebTest application wrapper
 ## Add optional "user" keyword argument
 ##
 class NOCTestApp(TestApp):
     def __init__(self, extra_environ=None, relative_to=None):
-        app = WSGIWrapper(AdminMediaHandler(WSGIHandler()))
+        app = WSGIWrapper(AdminMediaHandler(WSGIExceptionHandler()))
         super(NOCTestApp,self).__init__(app,extra_environ,relative_to)
     ##
     ## Pass optional "user" argument to REMOTE_USER
