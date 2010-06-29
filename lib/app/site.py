@@ -6,12 +6,14 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.http import HttpResponseRedirect
+from django.utils.http import urlquote
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import *
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from noc.settings import INSTALLED_APPS
-import re,types,glob,os
+from noc.lib.debug import error_report
+import re,types,glob,os,urllib
 ##
 ## Application menu
 ## Populated by Site
@@ -178,7 +180,7 @@ class Site(object):
             try:
                 return inner(request,*args,**kwargs)
             except:
-                print error_report()
+                #print error_report()
                 raise
         # Return actual handler
         if self.testing_mode:
