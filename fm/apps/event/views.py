@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django import forms
+from django.shortcuts import get_object_or_404
 from django.forms.widgets import HiddenInput
 from noc.lib.widgets import AutoCompleteTextInput,lookup
 from noc.lib.app import Application,HasPerm
