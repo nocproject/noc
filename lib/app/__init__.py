@@ -28,7 +28,7 @@ from site import *
 from access import *
 from application import *
 from modelapplication import *
-from noc.settings import config
+from noc.settings import config,IS_WEB
 ##
 ## Setup Context Processor.
 ## Used via TEMPLATE_CONTEXT_PROCESSORS variable in settings.py
@@ -46,6 +46,7 @@ def setup_processor(request):
         }
     }
 ##
-## Load all applications
+## Load all web applications
 ##
-site.autodiscover()
+if IS_WEB:
+    site.autodiscover()
