@@ -69,7 +69,8 @@ class Application(object):
     def get_template_path(self,template):
         return [
             os.path.join(self.module,"apps",self.app,"templates",template),
-            os.path.join(self.module,"templates",template)
+            os.path.join(self.module,"templates",template),
+            os.path.join("templates",template)
         ]
     ##
     ## Render template within context
@@ -144,6 +145,13 @@ class Application(object):
     ##
     def cursor(self):
         return connection.cursor()
+    ##
+    ## Execute SQL query
+    ##
+    def execute(self,sql,args=[]):
+        cursor=self.cursor()
+        cursor.execute(sql,args)
+        return cursor.fetchall()
     ##
     ## AJAX lookup wrapper
     ##
