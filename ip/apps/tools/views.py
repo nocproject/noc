@@ -11,6 +11,7 @@ from noc.lib.app import Application,HasPerm
 from noc.lib.ip import contains
 from noc.ip.models import *
 from noc.lib.validators import is_cidr,is_ipv4,is_fqdn
+from noc.settings import config
 import csv,cStringIO,datetime,subprocess
 ##
 ## IP Block tooks
