@@ -23,3 +23,17 @@ class PortTrunkStatusChange(EventClass):
     class Vars:
         ifindex=Var(required=True,repeat=False)
         status=Var(required=True,repeat=False)
+##
+## Autonegotiation Failed
+##
+class AutonegatiationFailed(EventClass):
+    name     = "Autonegotiation Failed"
+    category = "NETWORK"
+    priority = "WARNING"
+    subject_template="Autonegotiation has been failed at port {{interface}}"
+    body_template="""Link speed and duplex mode negotiation had beed failed at port {{interface}}"""
+    repeat_suppression=True
+    repeat_suppression_interval=600
+    trigger=None
+    class Vars:
+        interface=Var(required=True,repeat=False)
