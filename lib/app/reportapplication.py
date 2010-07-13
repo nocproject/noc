@@ -19,11 +19,12 @@ class ReportApplication(Application):
     ##
     def __init__(self,site):
         super(ReportApplication,self).__init__(site)
+        site.reports+=[self]
     ##
     ## Return a list of supported formats
     ##
     def supported_formats(self):
-        return [f[7:] for f in dir(self) if f.startswith("render_")]
+        return [f[7:] for f in dir(self) if f.startswith("report_")]
     ##
     ## Return report results to render
     ## Overriden in subclasses
@@ -33,7 +34,7 @@ class ReportApplication(Application):
     ##
     ## Returns render report as HTML
     ##
-    def render_html(self,result,query):
+    def report_html(self,result,query):
         pass
     ##
     ## Render report
@@ -54,8 +55,7 @@ class ReportApplication(Application):
             if not query:
                 return self.render("report_form.html",{"form":form,"app":app})
         # Build result
-        data=self.get_data(**query)
-        rdata=getattr(self,"render_%s"%format)(data,query)
+        rdata=getattr(self,"report_%s"%format)(**query)
         # Render result
         if format=="html":
             return self.render(request,"report.html",{"data":rdata,"app":self})

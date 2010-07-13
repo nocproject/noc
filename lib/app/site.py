@@ -69,7 +69,7 @@ class Site(object):
         self.urlresolvers={} # (module,appp) -> RegexURLResolver
         self.menu=[]
         self.app_menu={} # Module -> menu
-        self.reports={}  # app_id -> title
+        self.reports=[]  # app_id -> title
         self.views=ProxyNode() # Named views proxy
         self.testing_mode=hasattr(settings,"NOC_TEST")
     ##
