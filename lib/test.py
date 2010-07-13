@@ -303,3 +303,10 @@ class ApplicationTestCase(NOCTestCase):
 ## ModelApplicationTestCase
 ##
 class ModelApplicationTestCase(ApplicationTestCase): pass
+##
+##
+##
+class ReportApplicationTestCase(ApplicationTestCase):
+    def test_report(self):
+        for format in self._application.supported_formats():
+            page=self.app.get(self._application.site.reverse(self._application.get_app_id().replace(".",":")+":view",format),user=self.user)
