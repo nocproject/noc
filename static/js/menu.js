@@ -17,13 +17,6 @@ function build_menu(menu_data) {
         app=null;
     } else if(app.substring(0,7)=="/admin/") {
         app=app.slice(6);
-    }
-    else if(app.substring(0,13)=="/main/report/") {
-        app=app.slice(13);
-        var idx=app.search("\\.");
-        if(idx!=-1) {
-            app=app.slice(0,idx)
-        }
     } else {
         app=app.slice(1);
         var idx=app.search("/");
