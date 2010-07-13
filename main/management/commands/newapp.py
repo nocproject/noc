@@ -51,6 +51,23 @@ class %(model)sApplication(ModelApplication):
     menu="Setup | %(model)s"
 """
 
+SIMPLE_REPORT_VIEWS_SKELETON="""# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## %(app)s Report
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+from noc.lib.app.simplereport import SimpleReport
+##
+##
+##
+class Report%(app)s(SimpleReport):
+    title="%(app)s"
+    def get_data(self,**kwargs):
+        return self.from_dataset(title=self.title,columns=[],data=[])
+"""
+
 APPLICATION_TEST_CASE="""# -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
 ## %(app)s Test
@@ -84,6 +101,7 @@ class Command(BaseCommand):
     help="Create application skeleton"
     option_list=BaseCommand.option_list+(
         make_option("--model","-m",dest="model",help="Create ModelApplication"),
+        make_option("--report","-r",dest="report",help="Create Report"),
     )
     def handle(self, *args, **options):
         for app in args:
@@ -105,6 +123,11 @@ class Command(BaseCommand):
             if not os.path.exists(views):
                 if "model" in options and options["model"]:
                     v=MODEL_VIEWS_SKELETON%{"model":options["model"],"module":m}
+                elif "report" in options and options["report"]:
+                    if options["report"]=="simple":
+                        v=SIMPLE_REPORT_VIEWS_SKELETON%{"app":a}
+                    else:
+                        raise Exception("Invalid report type")
                 else:
                     v=VIEWS_SKELETON
                 with open(views,"w") as f:
