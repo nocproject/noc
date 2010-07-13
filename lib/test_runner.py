@@ -14,6 +14,7 @@ from django.test import _doctest as doctest
 from django.test.testcases import OutputChecker, DocTestRunner, TestCase
 from django.core import management
 from south.logger import get_logger
+import types
 ##
 ## Test module by importing it
 ##
@@ -166,7 +167,14 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
             print "adding tests for %s: %s"%(m,", ".join(mt))
     for m in tsuite:
         mo=__import__(m,{},{},"*")
-        suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(mo))
+        #suite.addTest(unittest.defaultTestLoader.loadTestsFromModule(mo))
+        tests=[]
+        for name in dir(mo):
+            obj=getattr(mo,name)
+            if (isinstance(obj, (type, types.ClassType)) and issubclass(obj, TestCase)):
+                if obj.__module__!="noc.lib.test":
+                    tests.append(unittest.defaultTestLoader.loadTestsFromTestCase(obj))
+        suite.addTest(unittest.TestSuite(tests))
     for test in extra_tests:
         suite.addTest(test)
     # Run tests
