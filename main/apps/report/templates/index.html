@@ -1,14 +1,17 @@
 {% extends "template.html" %}
 {% block content %}
 <h1>Reports</h1>
-    {% for module,reports in reports %}
-        <DIV CLASS="module">
-            <TABLE SUMMARY="Reports available for {{module}} application" WIDTH="100%">
-            <CAPTION><A HREF="" CLASS="section">{{module}}</A></CAPTION>
-            {% for r in reports %}
-                <TR><TH SCOPE="row"><A HREF="{% url main:report:view r.name %}">{{r.title}}</A></TH></TR>
-            {% endfor %}
-            </TABLE>
-        </DIV>
+{% for m in modules %}
+<DIV CLASS="module">
+    <TABLE SUMMARY="{{m.title}}" WIDTH="100%">
+    <CAPTION>{{m.title}}</CAPTION>
+    {% for r in m.reports %}
+        <TR>
+            <TD WIDTH='300px'><a href="{{r.html}}">{{r.title}}</a></TD>
+            <TD>{%for f in r.formats%}<a href="{{f.1}}">{{f.0}}</a> {%endfor%}</TD>
+        </TR>
     {% endfor %}
+    </TABLE>
+</DIV>
+{% endfor %}
 {% endblock %}

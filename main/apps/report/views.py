@@ -6,7 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.lib.app import Application,Permit
-from noc.main.models import report_registry
 ##
 ## Report application
 ##
@@ -16,39 +15,23 @@ class ReportAppplication(Application):
     ## Render report index
     ##
     def view_index(self,request):
-        r={}
-        for cn,c in report_registry.classes.items():
-            m,n=cn.split(".",1)
-            if m not in r:
-                r[m]=[c]
+        # Find available reports
+        modules=[] # {title,reports}
+        for r in [r for r in self.site.reports if r.view_report.access.check(r,request.user)]:
+            if not modules or modules[-1]["title"]!=r.module_title:
+                modules+=[{"title":r.module_title,"reports":[r]}]
             else:
-                r[m].append(c)
-        out=[]
-        keys=r.keys()
-        keys.sort()
-        for k in keys:
-            v=r[k]
-            v.sort(lambda x,y:cmp(x.title,y.title))
-            out.append([k,v])
-        return self.render(request,"index.html",{"reports":out})
+                modules[-1]["reports"]+=[r]
+        # Sort reports
+        for m in modules:
+            reports=sorted(m["reports"],lambda x,y:cmp(x.title,y.title))
+            m["reports"]=[{
+                "title"  : r.title,
+                "html"   : self.site.reverse(r.app_id.replace(".",":")+":view","html"),
+                "formats": [(f,self.site.reverse(r.app_id.replace(".",":")+":view",f)) for f in r.supported_formats() if f!="html"]
+                } for r in reports]
+            
+        return self.render(request,"index.html",{"modules":modules})
     view_index.url=r"^$"
     view_index.menu="Reports"
     view_index.access=Permit()
-    ##
-    ## Render report
-    ##
-    def view_report(self,request,report):
-        try:
-            rc=report_registry[report]
-        except KeyError:
-            return self.response_not_found("No report found")
-        format=request.GET.get("format","html")
-        report=rc(self,request,request.POST,format=format)
-        if report.is_valid():
-            return report.render()
-        else:
-            return self.render(request,"form.html",{"report":report})
-    view_report.url=r"^(?P<report>\S+)/$"
-    view_report.url_name="view"
-    view_report.access=Permit()
-
