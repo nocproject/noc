@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from __future__ import with_statement
-from noc.lib.app.simplereport import SimpleReport
+from noc.lib.app.simplereport import *
 from noc.lib.version import get_version
 import os,sys,csv
 import django
@@ -28,6 +28,4 @@ class ReportSystemVersion(SimpleReport):
                 r=csv.reader(f)
                 for row in r:
                     versions+=[row]
-        return {
-            "data" : versions
-        }
+        return self.from_dataset(title=self.title,columns=["Component","Version"],data=versions)
