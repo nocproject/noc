@@ -140,10 +140,10 @@ class TextSection(ReportSection):
 ## List of (limit,divider,suffix)
 ##
 SIZE_DATA=[]
-l=1024.0
+l=decimal.Decimal(1024)
 for suffix in ["KB","MB","GB","TB","PB"]:
-    SIZE_DATA+=[(l*1024.0,l,suffix)]
-    l*=1024.0
+    SIZE_DATA+=[(l*1024,l,suffix)]
+    l*=1024
 ##
 ## Table column.
 ## Contains rules for formatting the cells
