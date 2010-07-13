@@ -214,7 +214,7 @@ class TableColumn(ReportNode):
     ## Render single cell
     ##
     def format_html(self,s):
-        return "<td%s>%s</td>"%(self.html_td_attrs(),self.quote(s))
+        return "<td%s>%s</td>"%(self.html_td_attrs(),self.quote(self.format_data(s)))
     ##
     ## Render totals
     ##
