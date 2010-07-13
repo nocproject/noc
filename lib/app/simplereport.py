@@ -9,7 +9,7 @@ from reportapplication import *
 import cStringIO,csv,datetime
 from noc import settings
 from django.utils.dateformat import DateFormat
-import decimal
+import decimal,types
 
 INDENT="    "
 ##
@@ -252,10 +252,39 @@ class TableColumn(ReportNode):
         limit,divider,suffix=SIZE_DATA[-1]
         return ("%8.2%s"%(f/divider,suffix)).strip()
     ##
+    ## Display pretty numeric
+    ##
+    def f_numeric(self,f):
+        if not f:
+            return "0"
+        if type(f)==types.FloatType:
+            f=str(f)
+        f=decimal.Decimal(f)
+        sign,digits,exp=f.as_tuple()
+        if exp:
+            r="."+"".join(map(str,digits[-exp:]))
+            if r==".0":
+                r=""
+            digits=digits[:exp]
+        else:
+            r=""
+        while digits:
+            r=" "+"".join(map(str,digits[-3:]))+r
+            digits=digits[:-3]
+        r=r.strip()
+        if sign:
+            r="-"+r
+        return r
+    ##
+    ## Display pretty-formatted integer
+    ##
+    def f_integer(self,f):
+        return self.f_numeric(int(f))
+    ##
     ## Returns a sum of not-null elements
     ##
     def ft_sum(self,l):
-        return reduce(lambda x,y:x+y,[decimal.Decimal(z) for z in l if z],0)
+        return reduce(lambda x,y:x+y,[decimal.Decimal(str(z)) for z in l if z],0)
 ##
 ## Section containing table
 ##
