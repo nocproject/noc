@@ -7,8 +7,8 @@
     <CAPTION>{{m.title}}</CAPTION>
     {% for r in m.reports %}
         <TR>
-            <TD WIDTH='300px'><a href="{{r.html}}">{{r.title}}</a></TD>
-            <TD>{%for f in r.formats%}<a href="{{f.1}}">{{f.0}}</a> {%endfor%}</TD>
+            <TH SCOPE="row"><a href="{{r.html}}">{{r.title}}</a></TH>
+            <TH SCOPE="row" WIDTH="200px">{%for f in r.formats%}<a href="{{f.1}}">{{f.0}}</a> {%endfor%}</TH>
         </TR>
     {% endfor %}
     </TABLE>
