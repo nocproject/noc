@@ -45,6 +45,10 @@ class VRF(models.Model):
         if self.rd=="0:0":
             return u"global"
         return self.rd
+        
+    @classmethod
+    def get_global(self):
+        return VRF.objects.get(rd="0:0")
     
     def save(self):
         super(VRF,self).save()
