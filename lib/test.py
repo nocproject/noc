@@ -54,7 +54,7 @@ class NOCTestApp(TestApp):
             extra_environ["REMOTE_USER"]=kwargs["user"]
             kwargs["extra_environ"]=extra_environ
             del kwargs["user"]
-        return method(url,**kwargs)
+        return method(url,params=kwargs)
     ##
     ## GET method
     ##
@@ -307,6 +307,17 @@ class ModelApplicationTestCase(ApplicationTestCase): pass
 ##
 ##
 class ReportApplicationTestCase(ApplicationTestCase):
+    posts=None # A list of dictionary to check parametrized reports
     def test_report(self):
         for format in self._application.supported_formats():
             page=self.app.get(self._application.site.reverse(self._application.get_app_id().replace(".",":")+":view",format),user=self.user)
+
+    def test_post(self):
+        if self.posts:
+            for format in self._application.supported_formats():
+                for p in self.posts:
+                    r=p.copy()
+                    page=self.app.post(self._application.site.reverse(self._application.get_app_id().replace(".",":")+":view",format),
+                        user=self.user,
+                        **p)
+                    print page
