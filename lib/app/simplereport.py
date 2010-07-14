@@ -357,6 +357,8 @@ class TableSection(ReportSection):
     ##
     def to_html(self):
         def render_subtotals():
+            if not current_section.data:
+                return []
             s=["<tr style='font-style:italic;background-color:#C0C0C0'>"]
             if self.enumerate:
                 s+=["<td></td>"]
