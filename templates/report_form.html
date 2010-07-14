@@ -1,0 +1,9 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>{{app.title}}</h1>
+<form action="" method="POST">
+<table border="0">
+    {{form.as_table}}
+</table>
+<input type="submit" value="Generate Report"/>
+{% endblock %}
