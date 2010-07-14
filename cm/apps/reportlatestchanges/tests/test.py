@@ -8,4 +8,8 @@
 from noc.lib.test import ReportApplicationTestCase
 
 class reportlatestchangesTestCase(ReportApplicationTestCase):
-    pass
+    posts=[
+        {"repo":"config","days":"7"},
+        {"repo":"dns","days":"7"},
+        {"repo":"prefix-list","days":"7"},
+    ]
