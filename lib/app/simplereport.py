@@ -23,7 +23,7 @@ class ReportNode(object):
     ## Return XML-quoted value
     ##
     def quote(self,s):
-        return str(s)
+        return str(s).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot").replace("'","&#39;")
     ##
     ## Return opening XML tag
     ##
@@ -145,6 +145,10 @@ for suffix in ["KB","MB","GB","TB","PB"]:
     SIZE_DATA+=[(l*1024,l,suffix)]
     l*=1024
 ##
+## Do not perform HTML quoting
+##
+class SafeString(str): pass
+##
 ## Table column.
 ## Contains rules for formatting the cells
 ##
@@ -214,7 +218,10 @@ class TableColumn(ReportNode):
     ## Render single cell
     ##
     def format_html(self,s):
-        return "<td%s>%s</td>"%(self.html_td_attrs(),self.quote(self.format_data(s)))
+        d=self.format_data(s)
+        if type(d)!=SafeString:
+            d=self.quote(d)
+        return "<td%s>%s</td>"%(self.html_td_attrs(),d)
     ##
     ## Render totals
     ##
@@ -275,6 +282,12 @@ class TableColumn(ReportNode):
         if sign:
             r="-"+r
         return r
+    ##
+    ## Display boolean field
+    ##
+    def f_bool(self,f):
+        t="yes" if f else "no"
+        return SafeString("<img title='%s' src='%simg/admin/icon-%s.gif' />"%(t,settings.ADMIN_MEDIA_PREFIX,t))
     ##
     ## Display pretty-formatted integer
     ##
