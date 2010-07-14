@@ -234,6 +234,17 @@ class TableColumn(ReportNode):
             total=""
         return "<td%s><b>%s</b></td>"%(self.html_td_attrs(),total)
     ##
+    ## Render subtotals
+    ##
+    def format_html_subtotal(self,d):
+        if self.total:
+            total=self.format_data(self.total(d))
+        elif self.total_label:
+            total=self.total_label
+        else:
+            total=""
+        return "<td%s><b>%s</b></td>"%(self.html_td_attrs(),total)
+    ##
     ## Display date according to settings
     ##
     def f_date(self,f):
@@ -299,6 +310,22 @@ class TableColumn(ReportNode):
     def ft_sum(self,l):
         return reduce(lambda x,y:x+y,[decimal.Decimal(str(z)) for z in l if z],0)
 ##
+## Delimiter row
+##
+class SectionRow(object):
+    def __init__(self,name,title=None,subtotal=True):
+        self.name=name
+        self.title=title if title else name
+        self.subtotal=subtotal
+        self.data={}
+        
+    def contribute_data(self,column,d):
+        if self.subtotal:
+            try:
+                self.data[column]+=[d]
+            except KeyError:
+                self.data[column]=[d]
+##
 ## Section containing table
 ##
 ##
@@ -329,6 +356,13 @@ class TableSection(ReportSection):
     ## Return HTML representation of table
     ##
     def to_html(self):
+        def render_subtotals():
+            s=["<tr style='font-style:italic;background-color:#C0C0C0'>"]
+            if self.enumerate:
+                s+=["<td></td>"]
+            s+=[c.format_html_subtotal(current_section.data[c]) for c in self.columns]
+            s+=["</tr>"]
+            return s
         s=["<table class='report-table' summary='%s'>"%self.quote(self.name)]
         # Render header
         s+=["<thead>"]
@@ -340,20 +374,33 @@ class TableSection(ReportSection):
         s+=["</thead>"]
         s+=["<tbody>"]
         # Render data
+        s_span=len(self.columns)
+        if self.enumerate:
+            s_span+=1
+        current_section=None
         if self.data:
-            if type(self.data)==type({}):
-                pass
-            else:
-                n=1
-                for row in self.data:
-                    s+=["<tr class='row%d'>"%(n%2+1)]
-                    if self.enumerate:
-                        s+=["<td align='right'>%d</td>"%n]
-                    n+=1
-                    for c,d in zip(self.columns,row):
-                        s+=[c.format_html(d)]
-                        c.contribute_data(d)
-                    s+=["</tr>"]
+            n=1
+            for row in self.data:
+                if type(row)==SectionRow:
+                    # Display section row
+                    if current_section and self.has_total and current_section.subtotal: # Display totals from previous sections
+                        s+=render_subtotals()
+                    s+=["<tr><td colspan=%d style='font-style:italic;background-color:#C0C0C0'>"%s_span,self.quote(row.title),"</td></tr>"]
+                    current_section=row
+                    continue
+                s+=["<tr class='row%d'>"%(n%2+1)]
+                if self.enumerate:
+                    s+=["<td align='right'>%d</td>"%n]
+                n+=1
+                for c,d in zip(self.columns,row):
+                    s+=[c.format_html(d)]
+                    c.contribute_data(d)
+                    if current_section:
+                        current_section.contribute_data(c,d)
+                s+=["</tr>"]
+            # Render las subtotal
+            if current_section and self.has_total and current_section.subtotal: # Display totals from previous sections
+                s+=render_subtotals()
         # Render totals
         if self.has_total:
             s+=["<tr>"]
@@ -376,17 +423,18 @@ class TableSection(ReportSection):
         else:
             writer.writerow([c.title for c in self.columns])
         if self.data:
-            if type(self.data)==type({}):
-                pass
+            if self.enumerate:
+                n=1
+                for row in self.data:
+                    if type(row)==SectionRow:
+                        continue
+                    writer.writerow([n]+list(row))
+                    n+=1
             else:
-                if self.enumerate:
-                    n=1
-                    for row in self.data:
-                        writer.writerow([n]+list(row))
-                        n+=1
-                else:
-                    for row in self.data:
-                        writer.writerow(row)
+                for row in self.data:
+                    if type(row)==SectionRow:
+                        continue
+                    writer.writerow(row)
         return f.getvalue()
 ##
 ##
