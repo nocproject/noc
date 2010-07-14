@@ -19,8 +19,11 @@ class Reportreportmissedp2p(SimpleReport):
             query="""
             SELECT b.prefix
             FROM ip_ipv4block b
-            WHERE vrf_id=%s
+            WHERE 
+                vrf_id=%s
+                AND masklen(prefix)=30
                 AND (SELECT COUNT(*) FROM ip_ipv4address WHERE vrf_id=%s AND ip<<b.prefix)=0
             ORDER BY prefix
             """,
-            params=[vrf_id,vrf_id])
+            params=[vrf_id,vrf_id],
+            enumerate=1)
