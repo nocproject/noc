@@ -23,7 +23,7 @@ class ReportNode(object):
     ## Return XML-quoted value
     ##
     def quote(self,s):
-        return str(s).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot").replace("'","&#39;")
+        return unicode(s).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot").replace("'","&#39;")
     ##
     ## Return opening XML tag
     ##
