@@ -382,7 +382,7 @@ class TableSection(ReportSection):
                 if self.enumerate:
                     n=1
                     for row in self.data:
-                        writer.writerow([n]+row)
+                        writer.writerow([n]+list(row))
                 else:
                     for row in self.data:
                         writer.writerow(row)
