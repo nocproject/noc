@@ -51,9 +51,11 @@ class ReportApplication(Application):
                 form=self.form(request.POST)
                 if form.is_valid():
                     query=form.cleaned_data
+            else:
+                form=self.form()
             # No POST or error - render form
             if not query:
-                return self.render("report_form.html",{"form":form,"app":app})
+                return self.render(request,"report_form.html",{"form":form,"app":self})
         # Build result
         rdata=getattr(self,"report_%s"%format)(**query)
         # Render result
