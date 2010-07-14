@@ -94,6 +94,19 @@ class %(app)sTestCase(ModelApplicationTestCase):
     pass
 """
 
+REPORT_APPLICATION_TEST_CASE="""# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## %(app)s Test
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+from noc.lib.test import ReportApplicationTestCase
+
+class %(app)sTestCase(ReportApplicationTestCase):
+    pass
+"""
+
 ##
 ## Initialize application skeleton
 ##
@@ -143,6 +156,8 @@ class Command(BaseCommand):
             if not os.path.exists(app_test):
                 if "model" in options and options["model"]:
                     v=MODEL_APPLICATION_TEST_CASE%{"app":a}
+                elif "report" in options and options["report"]:
+                    v=REPORT_APPLICATION_TEST_CASE%{"app":a}
                 else:
                     v=APPLICATION_TEST_CASE%{"app":a}
                 with open(app_test,"w") as f:
