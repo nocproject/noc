@@ -140,7 +140,11 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
     # Scan for tests
     print "Scanning for tests ...",
     modules,tsuite=get_tests(test_labels)
-    print "... %d test cases found"%(2*len(modules)+len(tsuite))
+    test_cases=2*len(modules)+len(tsuite)
+    print "... %d test cases found"%test_cases
+    if not test_cases:
+        print "... no tests found"
+        return 1
     print "Preparing test cases ..."
     if coverage:
         coverage=Coverage()
