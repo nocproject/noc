@@ -33,5 +33,6 @@ class ReportAppplication(Application):
             
         return self.render(request,"index.html",{"modules":modules})
     view_index.url=r"^$"
+    view_index.url_name="index"
     view_index.menu="Reports"
     view_index.access=Permit()

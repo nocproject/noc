@@ -1,3 +1,10 @@
 {% extends "admin/base.html"%}
 {% block title%}{{app.title}}{% endblock %}
-{%block breadcrumbs %}{{block.super}}<li>{{app.module_title}}</li><li><a href="{{app.base_url}}">{{app.title}}</a></li>{%endblock%}
+{%block breadcrumbs %}{{block.super}}<li>{{app.module_title}}</li>
+{% if is_report%}
+    <li><a href="{% url main:report:index%}">Reports</a></li>
+    <li><a href="{{app.base_url}}html/">{{app.title}}</a></li>
+{%else%}
+    <li><a href="{{app.base_url}}">{{app.title}}</a></li>
+{% endif %}
+{%endblock%}
