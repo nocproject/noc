@@ -58,15 +58,17 @@ class ReportSummary(SimpleReport):
         a_s=len(allocated)
         if a_s:
             avg_allocated_size=float(allocated_addresses)/float(a_s)
+            avg_allocated_bits=32-int(math.ceil(math.log(avg_allocated_size,2)))
         else:
             avg_allocated_size=0.0
+            avg_allocated_bits=0
         data=[
             ["Total addresses",     total_addresses],
             ["Allocated",           allocated_addresses],
             ["....in /30 networks", allocated_30_addresses],
             ["Free",                free_addresses],
             ["Avegage allocated block size", "%8.2f"%avg_allocated_size],
-            ["Average allocated network (bits)",32-int(math.ceil(math.log(avg_allocated_size,2)))]
+            ["Average allocated network (bits)",avg_allocated_bits]
         ]
         return self.from_dataset(title=self.title+" for "+prefix,
             columns=["",TableColumn("",format="numeric",align="right")],
