@@ -29,7 +29,7 @@ class FreeBlocksReport(SimpleReport):
     form=ReportForm
     def get_data(self,vrf,prefix,**kwargs):
         
-        return self.from_query(title=self.title,
+        return self.from_query(title=self.title+" in "+prefix,
             columns=["Free Block"],
             query="""SELECT prefix
                 FROM ip_ipv4block b
