@@ -451,6 +451,51 @@ class TableSection(ReportSection):
 ##
 ##
 ##
+class MatrixSection(ReportSection):
+    ##
+    ## Data is a list of (row,column,data)
+    ##
+    def __init__(self,name,data=[],enumerate=False):
+        super(ReportSection,self).__init__(name=name)
+        self.data=data
+        self.enumerate=enumerate
+    
+    def to_html(self):
+        # Build rows and columns
+        data={}
+        cl=set()
+        rl=set()
+        for r,c,d in self.data:
+            rl.add(r)
+            cl.add(c)
+            data[r,c]=d
+        cl=sorted(cl)
+        rl=sorted(rl)
+        # Render
+        s=["<table summary='%s' border='1'>"%self.quote(self.name)]
+        # Header row
+        s+=["<tr><th></th>"]
+        if self.enumerate:
+            s+=["<th></th>"]
+        s+=["<th><div class='vtext'>%s</div></th>"%c for c in cl]
+        # Data rows
+        n=0
+        for r in rl:
+            s+=["<tr class='row%d'>"%(n%2+1)]
+            if self.enumerate:
+                s+=["<td align='right'>%d</td>"%(n+1)]
+            s+=["<td><b>%s</b></td>"%self.quote(r)]
+            for c in cl:
+                try:
+                    s+=["<td>%s</td>"%self.quote(data[r,c])]
+                except KeyError:
+                    s+=["<td></td>"]
+            n+=1
+            s+=["</tr>"]
+        return "\n".join(s)
+##
+##
+##
 class SimpleReport(ReportApplication):
     ##
     ## Returns Report object
