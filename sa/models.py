@@ -293,6 +293,20 @@ class ManagedObjectSelector(models.Model):
     ##
     def match(self,managed_object):
         return self.managed_objects.filter(id=managed_object.id).count()>0
+    ##
+    ## Returns queryset containing managed objects supporting scripts
+    ##
+    def objects_with_scripts(self,scripts):
+        sp=set()
+        for p in profile_registry.classes:
+            skip=False
+            for s in scripts:
+                if s not in profile_registry[p].scripts:
+                    skip=True
+                    continue
+            if not skip:
+                sp.add(p)
+        return self.managed_objects.filter(profile_name__in=sp)
 ##
 ## Managed objects access for user
 ##
