@@ -28,7 +28,7 @@ class Reportreportallocated(SimpleReport):
     title="Allocated Blocks"
     form=ReportForm
     def get_data(self,vrf,prefix,**kwargs):
-        return self.from_query(title=self.title,
+        return self.from_query(title=self.title+" in "+prefix,
         columns=["Prefix","Description"],
         query="""SELECT prefix,description
             FROM ip_ipv4block b
