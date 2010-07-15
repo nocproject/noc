@@ -10,7 +10,10 @@ from noc.sa.models import *
 import os
 
 class Migration:
-    
+    depends_on = (
+        ('cm', '0009_access_and_notify'),
+        ('cm', '0010_trap_source_ip'),
+    )
     def forwards(self):
         def qget(map,key):
             if key is None:
