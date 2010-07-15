@@ -54,7 +54,7 @@ class NOCTestApp(TestApp):
             extra_environ["REMOTE_USER"]=kwargs["user"]
             kwargs["extra_environ"]=extra_environ
             del kwargs["user"]
-        return method(url,params=kwargs)
+        return method(url,**kwargs)
     ##
     ## GET method
     ##
@@ -319,5 +319,4 @@ class ReportApplicationTestCase(ApplicationTestCase):
                     r=p.copy()
                     page=self.app.post(self._application.site.reverse(self._application.get_app_id().replace(".",":")+":view",format),
                         user=self.user,
-                        **p)
-                    print page
+                        params=p)
