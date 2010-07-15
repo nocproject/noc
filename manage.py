@@ -2,6 +2,8 @@
 import os,sys,site
 # Adjust paths
 d=os.path.dirname(sys.argv[0])
+if not d:
+    d=os.getcwd()
 contrib=os.path.join(d,"contrib","lib")
 sys.path.insert(0,contrib)
 sys.path.insert(0,os.path.join(d,".."))
