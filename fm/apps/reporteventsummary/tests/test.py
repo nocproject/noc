@@ -9,8 +9,8 @@ from noc.lib.test import ReportApplicationTestCase
 
 class reporteventsummaryTestCase(ReportApplicationTestCase):
     posts=[
-        {"report_type","class"},
-        {"report_type","priority"},
-        {"report_type","object"},
-        {"report_type","profile"},
+        {"report_type":"class"},
+        {"report_type":"priority"},
+        {"report_type":"object"},
+        {"report_type":"profile"}
     ]
