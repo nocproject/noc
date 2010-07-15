@@ -305,10 +305,20 @@ class TableColumn(ReportNode):
     def f_integer(self,f):
         return self.f_numeric(int(f))
     ##
+    ##
+    ##
+    def f_percent(self,f):
+        return self.f_numeric(f)+"%"
+    ##
     ## Returns a sum of not-null elements
     ##
     def ft_sum(self,l):
         return reduce(lambda x,y:x+y,[decimal.Decimal(str(z)) for z in l if z],0)
+    ##
+    ## Returns a count of not-null elements
+    ##
+    def ft_count(self,l):
+        return len([x for x in l if x])
 ##
 ## Delimiter row
 ##
