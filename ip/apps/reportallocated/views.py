@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Allocated Blocks Report
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from noc.main.report import Column
-import noc.main.report
+from noc.lib.app.simplereport import SimpleReport
+from noc.lib.validators import is_cidr
 from noc.ip.models import VRF
-from lib.validators import is_cidr
 from django import forms
-
+##
+##
+##
 class ReportForm(forms.Form):
     vrf=forms.ModelChoiceField(label="VRF",queryset=VRF.objects)
     prefix=forms.CharField(label="Prefix",initial="0.0.0.0/0")
@@ -20,22 +21,19 @@ class ReportForm(forms.Form):
         if not is_cidr(prefix):
             raise forms.ValidationError("Invalid prefix")
         return prefix
-
-class Report(noc.main.report.Report):
-    name="ip.allocations"
+##
+##
+##
+class Reportreportallocated(SimpleReport):
     title="Allocated Blocks"
-    form_class=ReportForm
-    requires_cursor=True
-    columns=[Column("Block"),Column("Description")]
-    
-    def get_queryset(self):
-        vrf_id=self.form.cleaned_data["vrf"].id
-        prefix=self.form.cleaned_data["prefix"]
-        return self.execute("""
-            SELECT prefix,description
+    form=ReportForm
+    def get_data(self,vrf,prefix,**kwargs):
+        return self.from_query(title=self.title,
+        columns=["Prefix","Description"],
+        query="""SELECT prefix,description
             FROM ip_ipv4block b
             WHERE vrf_id=%s
                 AND prefix<<%s::cidr
                 AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix<<b.prefix)=0
-            ORDER BY prefix
-        """,[vrf_id,prefix,vrf_id])
+            ORDER BY prefix""",
+        params=[vrf.id,prefix,vrf.id])
