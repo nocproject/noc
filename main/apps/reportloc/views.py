@@ -18,6 +18,18 @@ class Reportreportloc(SimpleReport):
         def lines(path):
             with open(path) as f:
                 return len(f.read().split("\n"))
+        # Scan directory and return LoC data
+        def dir_loc(path):
+            py_loc=0
+            html_loc=0
+            for dirpath,dirnames,filenames in os.walk(path):
+                for f in filenames:
+                    path=os.path.join(dirpath,f)
+                    if f.endswith(".py"):
+                        py_loc+=lines(path)
+                    elif f.endswith(".html"):
+                        html_loc+=lines(path)
+            return py_loc,html_loc
         data=[]
         # Scan modules
         for m in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
@@ -26,22 +38,19 @@ class Reportreportloc(SimpleReport):
             data+=[SectionRow(module_name)]
             # Scan models
             py_loc=lines(os.path.join(m,"models.py"))
-            tests_loc=0
-            for dirpath,dirnames,filenames in os.walk(os.path.join(m,"tests")):
-                for f in [f for f in filenames if f.endswith(".py")]:
-                    tests_loc+=lines(os.path.join(dirpath,f))
+            tests_loc,x=dir_loc(os.path.join(m,"tests"))
             data+=[["Model","models.py",py_loc,0,tests_loc]]
+            # Scan Migrations
+            py_loc,html_loc=dir_loc(os.path.join(m,"migrations"))
+            data+=[["Migrations","",py_loc,html_loc,0]]
             # Scan Management
             for dirpath,dirnames,filenames in os.walk(os.path.join(m,"management","commands")):
                 for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
                     py_loc=lines(os.path.join(dirpath,f))
                     data+=[["Management",f[:-3],py_loc,0,0]]
             # Scan Templates
-            html_loc=0
-            for dirpath,dirnames,filenames in os.walk(os.path.join(m,"templates")):
-                for f in [f for f in filenames if f.endswith(".html")]:
-                    html_loc=lines(os.path.join(dirpath,f))
-            data+=[["Templates","",0,html_loc,0]]
+            py_loc,html_loc=dir_loc(os.path.join(m,"templates"))
+            data+=[["Templates","",py_loc,html_loc,0]]
             # Scan applications
             for app in [d for d in os.listdir(os.path.join(m,"apps")) if not d.startswith(".")]:
                 app_path=os.path.join(m,"apps",app)
@@ -67,15 +76,13 @@ class Reportreportloc(SimpleReport):
                         continue
                     pp=d.split(os.sep)
                     profile=".".join(pp[-2:])
-                    py_loc=0
-                    for dirpath,dirnames,filenames in os.walk(d):
-                        for f in [f for f in filenames if f.endswith(".py")]:
-                            py_loc+=lines(os.path.join(dirpath,f))
-                    data+=[["Profile",profile,py_loc,0,0]]
+                    py_loc,html_loc=dir_loc(d)
+                    data+=[["Profile",profile,py_loc,html_loc,0]]
             # Scan other
             py_loc=0
             for dirpath,dirnames,filenames in os.walk(m):
-                if os.sep+"tests" in dirpath or os.sep+"templates" in dirpath or os.sep+"apps" in dirpath or os.sep+"management" in dirpath:
+                if os.sep+"tests" in dirpath or os.sep+"templates" in dirpath or os.sep+"apps" in dirpath\
+                    or os.sep+"management" in dirpath or os.sep+"migrations" in dirpath:
                     continue
                 for f in [f for f in filenames if f.endswith(".py") if f!="models.py"]:
                     py_loc+=lines(os.path.join(dirpath,f))
@@ -83,7 +90,7 @@ class Reportreportloc(SimpleReport):
         return self.from_dataset(title=self.title,
             columns=[
                 "Type",
-                "Name",
+                TableColumn("Name",total_label="Total"),
                 TableColumn("Python",format="numeric",align="right",total="sum"),
                 TableColumn("HTML",format="numeric",align="right",total="sum"),
                 TableColumn("Tests",format="numeric",align="right",total="sum"),
