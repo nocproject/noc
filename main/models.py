@@ -8,7 +8,6 @@
 from __future__ import with_statement
 from django.db import models
 from django.contrib.auth.models import User,Group
-from noc.main.report import report_registry
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 import os,datetime,re,datetime,threading
@@ -751,7 +750,3 @@ class UserProfileContact(models.Model):
     time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
     notification_method=models.CharField("Method",max_length=16,choices=USER_NOTIFICATION_METHOD_CHOICES)
     params=models.CharField("Params",max_length=256)
-##
-## Load and register reports
-##
-#report_registry.register_all()
