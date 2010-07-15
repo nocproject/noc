@@ -55,12 +55,12 @@ class ReportApplication(Application):
                 form=self.form()
             # No POST or error - render form
             if not query:
-                return self.render(request,"report_form.html",{"form":form,"app":self})
+                return self.render(request,"report_form.html",{"form":form,"app":self,"is_report":True})
         # Build result
         rdata=getattr(self,"report_%s"%format)(**query)
         # Render result
         if format=="html":
-            return self.render(request,"report.html",{"data":rdata,"app":self})
+            return self.render(request,"report.html",{"data":rdata,"app":self,"is_report":True})
         else:
             return self.render_response(rdata,content_type=self.content_types[format])
     view_report.url=r"^(?P<format>\S+)/$"
