@@ -16,7 +16,7 @@ from django.contrib import databrowse
 from django.db.models.signals import class_prepared,pre_save,pre_delete
 from noc.lib.fields import TextArrayField
 from noc.main.middleware import get_user
-from noc.settings import IS_WEB
+from noc import settings
 from noc.lib.timepattern import TimePattern as TP
 from noc.lib.timepattern import TimePatternList
 from noc.sa.interfaces.base import interface_registry
@@ -61,7 +61,10 @@ def audit_trail_save(sender,instance,**kwargs):
     #
     if instance.id:
         # Update
-        old=sender.objects.get(id=instance.id)
+        try:
+            old=sender.objects.get(id=instance.id)
+        except sender.DoesNotExist: # Protection for correct test fixtures loading
+            return
         message=[]
         operation="M"
         for f in sender._meta.fields:
@@ -91,7 +94,7 @@ def audit_trail_delete(sender,instance,**kwargs):
 ##
 ## Set up audit trail handlers
 ##
-if IS_WEB:
+if settings.IS_WEB:
     pre_save.connect(audit_trail_save)
     pre_delete.connect(audit_trail_delete)
 ##
