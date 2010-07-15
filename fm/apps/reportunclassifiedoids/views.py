@@ -1,25 +1,19 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Unclassified OIDS Report
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from noc.main.report import Column,BooleanColumn
-import noc.main.report
-
-class Report(noc.main.report.Report):
-    name="fm.unclassified_trap_oids"
+from noc.lib.app.simplereport import SimpleReport,TableColumn
+from noc.fm.models import MIB
+##
+##
+##
+class ReportUnclassifiedOIDs(SimpleReport):
     title="Unclassified Trap OIDs"
-    requires_cursor=True
-    columns=[
-        Column("OID"),
-        Column("Name"),
-        Column("Count",align="RIGHT")]
-    
-    def get_queryset(self):
-        from noc.fm.models import MIB
-        return [(x[0],MIB.get_name(x[0]),x[1]) for x in self.execute("""
+    def get_data(self,**kwargs):
+        data=[(x[0],MIB.get_name(x[0]),x[1]) for x in self.execute("""
             SELECT ed.value,COUNT(*)
             FROM fm_eventdata ed JOIN fm_event e ON (e.id=ed.event_id)
             WHERE ed.key='1.3.6.1.6.3.1.1.4.1.0'
@@ -29,4 +23,6 @@ class Report(noc.main.report.Report):
                     )
             GROUP BY 1
             ORDER BY 2 DESC""")]
-
+        return self.from_dataset(title=self.title,
+            columns=["OID","Name",TableColumn("Count",format="numeric",align="right",total="sum")],
+            data=data)
