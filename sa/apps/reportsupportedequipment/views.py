@@ -24,9 +24,9 @@ class Reportreportsupportedequipment(SimpleReport):
                 TableColumn("Telnet",format="bool"),
                 TableColumn("SSH",format="bool"),
                 TableColumn("HTTP",format="bool"),
-                "Super Command",
+                TableColumn("VC Provisioning",format="bool"),
                 "Scripts"],
             data=[x.split(".")\
-                +[TELNET in c.supported_schemes,SSH in c.supported_schemes,HTTP in c.supported_schemes,c.command_super,
-                    get_profile_scripts(c)] for x,c in r],
+                +[TELNET in c.supported_schemes,SSH in c.supported_schemes,HTTP in c.supported_schemes,
+                    "sync_vlans" in c.scripts,get_profile_scripts(c)] for x,c in r],
             enumerate=True)
