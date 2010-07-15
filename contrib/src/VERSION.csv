@@ -6,7 +6,7 @@ protobuf,2.2.0a
 pyasn1,0.0.9a
 pysnmp,4.1.12a
 python-creole,0.2.4
-docutils,0.6
+docutils,0.7
 Pygments,1.2.2
 Jinja2,2.2.1
 Sphinx,0.6.4
