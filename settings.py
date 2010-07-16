@@ -88,7 +88,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
-    'noc.main.middleware.TLSMiddleware', # Thread local storage
+    'noc.lib.middleware.TLSMiddleware', # Thread local storage
 )
 
 ROOT_URLCONF = 'noc.urls'
