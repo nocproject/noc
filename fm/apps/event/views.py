@@ -70,7 +70,7 @@ class EventAppplication(Application):
     def view_open(self,request,event_id):
         event=get_object_or_404(Event,id=int(event_id))
         event.open_event("Event opened by '%s'"%request.user.username)
-        return self.response_redirect_to_referrer(self.base_url+"%d/"%event.id)
+        return self.response_redirect_to_referrer(request,self.base_url+"%d/"%event.id)
     view_open.url=r"^(?P<event_id>\d+)/open/$"
     view_open.url_name="open"
     view_open.access=HasPerm("change")
@@ -80,7 +80,7 @@ class EventAppplication(Application):
     def view_close(self,request,event_id):
         event=get_object_or_404(Event,id=int(event_id))
         event.close_event("Event closed by '%s'"%request.user.username)
-        return self.response_redirect_to_referrer(self.base_url+"%d/"%event.id)
+        return self.response_redirect_to_referrer(request,self.base_url+"%d/"%event.id)
     view_close.url=r"^(?P<event_id>\d+)/close/$"
     view_close.url_name="close"
     view_close.access=HasPerm("close")
@@ -90,7 +90,7 @@ class EventAppplication(Application):
     def view_reclassify(self,request,event_id):
         event=get_object_or_404(Event,id=int(event_id))
         event.reclassify_event("Reclassification requested by '%s'"%request.user.username)
-        return self.response_redirect_to_referrer(self.base_url+"%d/"%event.id)
+        return self.response_redirect_to_referrer(request,self.base_url+"%d/"%event.id)
     view_reclassify.url=r"^(?P<event_id>\d+)/reclassify/$"
     view_reclassify.url_name="reclassify"
     view_reclassify.access=HasPerm("reclassify")

@@ -3,7 +3,6 @@
     <link rel="stylesheet" type="text/css" href="{% url fm:event:css %}" />
     <link type="text/css" rel="stylesheet" href="/static/css/jquery.autocomplete.css">
     <link type="text/css" rel="stylesheet" href="/static/css/jquery.pager.css">
-    <script type="text/javascript" src="/static/js/jquery.js"></script>
     <script type="text/javascript" src="/static/js/jquery.form.js"></script>
     <script type="text/javascript" src="/static/js/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/static/js/jquery.pager.js"></script>
@@ -68,7 +67,7 @@ function change_status(obj,event_id,status) {
     show_cover();
     $(obj).closest('tr').find('td').andSelf().fadeTo('normal', 0);
     $.ajax({
-        url     : "/fm/"+event_id+"/"+status+"/",
+        url     : "/fm/event/"+event_id+"/"+status+"/",
         success : update_data
     });
     return false;
