@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.core.management.base import BaseCommand
 from django.core import management
-from south.management.commands.test import MigrateAndSyncCommand
+from south.management.commands import MigrateAndSyncCommand
 from optparse import make_option
 import sys
 ##

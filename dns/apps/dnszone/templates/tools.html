@@ -3,7 +3,7 @@
 <H1>DNS Zones Tools</H1>
 <H2>Upload Zones</H2>
     <P>Upload list of DNS Zones from a file. Each zone must be placed at separate line</P>
-    <FORM METHOD="POST" ACTION="{% url dns:dnszone:upload %}" enctype="multipart/form-data">
+    <FORM METHOD="POST" ACTION="{% url dns:dnszone:upload %}" enctype="multipart/form-data">{% csrf_token %}
         <TABLE BORDER="0">
         {{zones_upload_form.as_table}}
         </TABLE>

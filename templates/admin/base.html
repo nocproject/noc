@@ -5,14 +5,15 @@
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
 <link rel="stylesheet" type="text/css" href="/static/css/main.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/menu.css" />
-<META NAME="Copyright" CONTENT="2007, nocproject.org" />
+<META NAME="Copyright" CONTENT="2007-2010, nocproject.org" />
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
-<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.js"></SCRIPT>
+<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.js"></SCRIPT> <!-- TODO: Use Django's -->
 <SCRIPT TYPE="text/javascript" SRC="/static/js/menu.js"></SCRIPT>
 {% block extrastyle %}{% endblock %}
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}{% admin_media_prefix %}css/ie.css{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";</script>
 {% block extrahead %}{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 </head>
@@ -33,17 +34,17 @@
         <div id="branding">
         {% block branding %}<img src="{{setup.logo_url}}" width="{{setup.logo_width}}" height="{{setup.logo_height}}" alt="logo" style="float: left; margin: 0px 4px 0px 4px"/><h1 ID="site-name">{{setup.installation_name}}</h1>{% endblock %}
         </div>
-        {% if user.is_authenticated and user.is_staff %}
+        {% if user.is_active and user.is_staff %}
         <div id="user-tools">
             {% trans 'Welcome,' %}
-            <strong>{% firstof user.first_name user.username %}</strong>.
+            <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
             {% block userlinks %}
                 <a href="{% url main:userprofile:change %}">Profile</a> /
                 <a href="{% url main:auth:change_password %}">{% trans 'Change password' %}</a> /
                 <a href="{% url main:auth:logout %}">{% trans 'Log out' %}</a>
             {% endblock %}
             <FORM METHOD="POST" ACTION="{% url main:search:search %}"><INPUT TYPE="search" NAME="query"  PLACEHOLDER="Search..."/></FORM>
-            </div>
+        </div>
         {% endif %}
         {% block nav-global %}{% endblock %}
     </div>

@@ -1,7 +1,13 @@
-{% extends "admin/base.html" %}
-{% block title%}500. Server error{% endblock %}
+{% extends "template.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}<li>{% trans "Server error" %}</li>{% endblock %}
+
+{% block title %}{% trans 'Server error (500)' %}{% endblock %}
+
 {% block content %}
-<h1>500. Server error</h1>
-Unexpected error in program. Error reported to administrator and will be fixed soon.
-Sorry for inconvenience.
+
+<h1>{% trans 'Server Error <em>(500)</em>' %}</h1>
+<p>{% trans "There's been an error. It's been reported to the site administrators via e-mail and should be fixed shortly. Thanks for your patience." %}</p>
+
 {% endblock %}

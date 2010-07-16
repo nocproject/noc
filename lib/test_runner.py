@@ -14,7 +14,7 @@ from django.test import _doctest as doctest
 from django.test.testcases import OutputChecker, DocTestRunner, TestCase
 from django.core import management
 from south.logger import get_logger
-import types
+import types,unittest
 ##
 ## Test module by importing it
 ##
@@ -140,21 +140,21 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
     # Scan for tests
     print "Scanning for tests ...",
     modules,tsuite=get_tests(test_labels)
-    test_cases=2*len(modules)+len(tsuite)
-    print "... %d test cases found"%test_cases
+    test_cases=len(modules)+len(tsuite)
+    print "... %d test module(s) found"%test_cases
     if not test_cases:
         print "... no tests found"
         return 1
     print "Preparing test cases ..."
     if coverage:
+        # Initialize Coverage
         coverage=Coverage()
         coverage.exclude(r"^\s*$")                # Exclude empty lines
         coverage.exclude(r"^\s*#.*$")             # Exclude comment blocks
         coverage.exclude(r"^\s*(import|from)\s")  # Exclude import statements
-        # Run tests
         coverage.start()
     # Add docstrings and module load tests
-    # Run inside Coverage context
+    # Run inside Coverage context to cover loaded modules
     doctestOutputChecker = OutputChecker()
     for m in modules:
         # Module load
@@ -175,7 +175,7 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
         tests=[]
         for name in dir(mo):
             obj=getattr(mo,name)
-            if (isinstance(obj, (type, types.ClassType)) and issubclass(obj, TestCase)):
+            if isinstance(obj, (type, types.ClassType)) and issubclass(obj, unittest.TestCase):
                 if obj.__module__!="noc.lib.test":
                     tests.append(unittest.defaultTestLoader.loadTestsFromTestCase(obj))
         suite.addTest(unittest.TestSuite(tests))
@@ -185,8 +185,8 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
     print "Testing ..."
     setup_test_environment()
     settings.DEBUG = False
-    old_name = settings.DATABASE_NAME
-    from django.db import connection
+    from django.db import connection,connections
+    old_names=[ connections[alias].settings_dict["NAME"] for alias in connections ]
     try:
         connection.cursor() # Raises operational error when no database exists
         has_db=True
@@ -201,7 +201,8 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
     result = unittest.TextTestRunner(verbosity=verbosity).run(suite)
     # Drop database when necessary
     if not reuse_db:
-        connection.creation.destroy_test_db(old_name, verbosity)
+        for name in old_names:
+            connection.creation.destroy_test_db(name, verbosity)
     teardown_test_environment()
 
     test_results=len(result.failures) + len(result.errors)

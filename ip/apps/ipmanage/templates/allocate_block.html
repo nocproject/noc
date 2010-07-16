@@ -7,7 +7,7 @@
 {% endblock %}
 {% block content %}
 <H1>Allocate IPv4 block. VRF {{vrf.name}} ({{vrf.rd}})</H1>
-<FORM METHOD="POST" ACTION="">
+<FORM METHOD="POST" ACTION="">{% csrf_token %}
 <TABLE>
 {{form.as_table}}
 </TABLE>
