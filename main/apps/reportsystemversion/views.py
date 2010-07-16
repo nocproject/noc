@@ -18,9 +18,11 @@ class ReportSystemVersion(SimpleReport):
     def get_data(self,**kwargs):
         versions=[
             ["NOC"    ,    get_version()],
+            SectionRow("Host Software"),
             ["OS"     ,    " ".join(os.uname())],
             ["Python" ,    sys.version],
             ["PostgreSQL", self.execute("SELECT VERSION()")[0][0]],
+            SectionRow("Contributed Software (contrib/)"),
         ]
         cv_path=os.path.join("contrib","lib","VERSION.csv")
         if os.path.exists(cv_path):
