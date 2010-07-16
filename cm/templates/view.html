@@ -32,7 +32,7 @@
 {% endif %}
 
 <DIV CLASS="module">
-    <FORM METHOD="POST" ACTION="{% cm_url diff o.id %}">
+    <FORM METHOD="POST" ACTION="{% cm_url diff o.id %}">{% csrf_token %}
     <TABLE SUMMARY="Revisions" WIDTH="100%">
         <CAPTION>Revisions</CAPTION>
         <TBODY>

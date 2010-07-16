@@ -20,7 +20,7 @@
     // -->
 </SCRIPT>
 
-<FORM METHOD="POST" ACTION="" >
+<FORM METHOD="POST" ACTION="" >{% csrf_token %}
     <DIV>
     <fieldset class="module aligned ">
         <table>{{form.as_table}}</table>

@@ -11,7 +11,7 @@
 <div class="module filtered" id="changelist">
 {% if rb.can_search %}
 <div id="toolbar">
-    <form id="changelist-search" action="{% url main:refbook:view rb.id %}" method="get">
+    <form id="changelist-search" action="{% url main:refbook:view rb.id %}" method="get">{% csrf_token %}
         <div>
             <input type="hidden" name="page" value="{{page}}" />
             <label for="searchbar"><img src="/media/img/admin/icon_searchbox.png" alt="Search" /></label>

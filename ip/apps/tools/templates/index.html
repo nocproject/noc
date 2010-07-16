@@ -3,21 +3,21 @@
 <H1>VRF:{{vrf}} {{prefix}} tools</H1>
 <H2>Download allocated IP addresses</H2>
     <P>Download list of allocated IP addresses in CSV format (ip,fqdn,description,tt)</P>
-    <FORM METHOD="POST" ACTION="{% url ip:tools:download_ip vrf.id prefix %}" ID="download_ip">
+    <FORM METHOD="POST" ACTION="{% url ip:tools:download_ip vrf.id prefix %}" ID="download_ip">{% csrf_token %}
         <INPUT TYPE="submit" VALUE="Download IP Addresses" />
     </FORM>
 
 <H2>Upload allocated IP addresses</H2>
     <P>Upload list of allocated IP addresses in CSV format.
         Each CSV row must contain two to four columns (ip,fqnd,description,tt)</P>
-    <FORM METHOD="POST" ACTION="{% url ip:tools:upload_ip vrf.id prefix %}" enctype="multipart/form-data" ID="upload_ip">
+    <FORM METHOD="POST" ACTION="{% url ip:tools:upload_ip vrf.id prefix %}" enctype="multipart/form-data" ID="upload_ip">{% csrf_token %}
         {{upload_ips_form}}
         <INPUT TYPE="submit" VALUE="Upload IP Addresses" />
     </FORM>
 
 <H2>Upload allocated IP addresses via Zone Transfer</H2>
     <P>Upload list of allcated IP addresses from existing DNS servers via AXFR request</P>
-    <FORM METHOD="POST" ACTION="{% url ip:tools:upload_axfr vrf.id prefix %}">
+    <FORM METHOD="POST" ACTION="{% url ip:tools:upload_axfr vrf.id prefix %}">{% csrf_token %}
         <TABLE BORDER="0">
             {{upload_ips_axfr_form.as_table}}
         </TABLE>

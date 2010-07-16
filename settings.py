@@ -23,11 +23,17 @@ MANAGERS = ADMINS
 SERVER_EMAIL      = config.get("main","server_email")
 
 DATABASE_ENGINE   = config.get("database","engine")
-DATABASE_NAME     = config.get("database","name")
-DATABASE_USER     = config.get("database","user")
-DATABASE_PASSWORD = config.get("database","password")
-DATABASE_HOST     = config.get("database","host")
-DATABASE_PORT     = config.get("database","port")
+DATABASES={
+    "default" : {
+        "ENGINE"   : config.get("database","engine"),
+        "NAME"     : config.get("database","name"),
+        "USER"     : config.get("database","user"),
+        "PASSWORD" : config.get("database","password"),
+        "HOST"     : config.get("database","host"),
+        "PORT"     : config.get("database","port"),
+    }
+}
+
 DATABASE_SUPPORTS_TRANSACTIONS = True
 
 TIME_ZONE = config.get("main","timezone")

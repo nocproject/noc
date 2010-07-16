@@ -18,7 +18,7 @@ class TemplatesTestCase(TestCase):
     rx_html_script=re.compile(r"<script.+?</script>",re.MULTILINE|re.DOTALL|re.IGNORECASE) # Scripts
     rx_html_comment=re.compile(r"<!--.+?-->",re.MULTILINE|re.DOTALL|re.IGNORECASE) # Comments
     rx_a_href=re.compile(r"<a[^>]+href=(?P<q>['\"])(?P<href>.*?)(?P=q)",re.IGNORECASE) # A HREF=
-    rx_form=re.compile(r"<form[^>]+action=(?P<q>['\"])(?P<action>.*?)(?P=q)",re.IGNORECASE) # Form
+    rx_form=re.compile(r"<form[^>]+action=(?P<q>['\"])(?P<action>.*?)(?P=q)[^>]*>(?P<csrf_token>(?:\{%\s*csrf_token\s*%\})?)",re.IGNORECASE) # Form
     rx_exclude_hrefs=re.compile(r"^(/static|/media|#|\?|https?://)") # Exclude HREFS
     rx_valid_hrefs=re.compile(r"^({{.+}}|{%\s*([a-z]+_)?url.+%}|)(\?.+)?$")
     rx_breadcrumbs=re.compile(r"\{%\s*block\s+breadcrumbs\s*%\}(?P<breadcrumbs>.*?)\{%\s*endblock\s*%\}")
@@ -42,6 +42,9 @@ class TemplatesTestCase(TestCase):
         failures=[]
         for m in self.rx_form.finditer(data):
             action=m.group("action")
+            csrf_token=m.group("csrf_token")
+            if not csrf_token:
+                failures+=["Form without {% csrf_token %}"]
             if self.rx_exclude_hrefs.search(action):
                 continue
             if not self.rx_valid_hrefs.match(action):

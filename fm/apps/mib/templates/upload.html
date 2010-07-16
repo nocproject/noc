@@ -3,7 +3,7 @@
 
 {% block content %}
 <H1>Upload MIB</H1>
-<FORM METHOD="POST" ACTION="" enctype="multipart/form-data">
+<FORM METHOD="POST" ACTION="" enctype="multipart/form-data">{% csrf_token %}
     {{form}}
     <INPUT TYPE="submit" VALUE="Upload MIB" />
 </FORM>
