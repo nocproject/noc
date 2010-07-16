@@ -1,9 +1,5 @@
 {% extends "template.html" %}
 {% block breadcrumbs %}{{block.super}}<li><a href='{% url ip:ipmanage:vrf_index vrf.id "0.0.0.0/0"%}'>VRF: {{vrf.name}}</A></li>
-    {% for p in parents %}
-        <li><a href="{% url ip:ipmanage:vrf_index vrf.id p.prefix %}" title="{{p.description}}">{{p.prefix}}</a></li>
-    {% endfor %}
-    <li><a href='{% url ip:ipmanage:vrf_index vrf.id prefix.prefix %}' title="{{prefix.description}}">{{prefix.prefix}}</a></li>
 {% endblock %}
 {% block content %}
 {% if can_allocate %}
@@ -28,6 +24,32 @@
     }
     // -->
 </SCRIPT>
+<!-- Navigation -->
+<style>
+.ipnav, .ipnav li {
+    margin: 0;
+    padding: 0;
+    display: inline;
+    list-style: none;
+}
+
+.ipnav li:before {
+    content: "\00a0";
+}
+
+.ipnav li:after {
+    content: "\00a0\203a";
+}
+</style>
+<DIV CLASS="module">
+    <ul class="ipnav">
+    {% for p in parents %}
+        <li><a href="{% url ip:ipmanage:vrf_index vrf.id p.prefix %}" title="{{p.description}}">{{p.prefix}}</a></li>
+    {% endfor %}
+    <li><a href='{% url ip:ipmanage:vrf_index vrf.id prefix.prefix %}' title="{{prefix.description}}">{{prefix.prefix}}</a></li>
+    </ul>
+</DIV>
+<!-- Allocated blocks -->
 <DIV CLASS="module">
     <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}" WIDTH="100%">
         <caption>Allocated blocks within {{vrf.name}}::{{prefix.prefix}} ({{prefix.description}})</caption>
