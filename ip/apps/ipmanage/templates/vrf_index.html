@@ -1,4 +1,5 @@
 {% extends "template.html" %}
+{% load tags %}
 {% block breadcrumbs %}{{block.super}}<li><a href='{% url ip:ipmanage:vrf_index vrf.id "0.0.0.0/0"%}'>VRF: {{vrf.name}}</A></li>
 {% endblock %}
 {% block content %}
@@ -54,7 +55,7 @@
     <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}" WIDTH="100%">
         <caption>Allocated blocks within {{vrf.name}}::{{prefix.prefix}} ({{prefix.description}})</caption>
         <THEAD>
-            <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>VC</TH><TH>TT</TH><TH></TH></TR>
+            <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>VC</TH><TH>TT</TH><TH>Tags</TH><TH></TH></TR>
         </THEAD>
         {%for p in prefixes %}
         <TR class="{%cycle 'row1' 'row2'%}">
@@ -63,6 +64,7 @@
             <TD>{{p.description}}</TD>
             <TD>{% if p.vc %}{{p.vc}}{% endif %}</TD>
             <TD>{%if p.tt %}<A HREF="{{p.tt_url}}">#{{p.tt}}</A>{%endif%}</TD>
+            <TD>{% tags p %}</TD>
             <TD> 
                 <A HREF="{% url ip:ipmanage:change_block p.vrf.id p.prefix %}" CLASS="changelink">Change</A>
                 <A HREF="{% url ip:ipmanage:deallocate_block p.vrf_id p.prefix %}"
@@ -120,7 +122,7 @@ function toggle_free() {
 <DIV CLASS="module">
     <TABLE SUMMARY="Allocated addresses within {{prefix.prefix}}" WIDTH="100%">
         <THEAD>
-            <TR><TH STYLE="width: 10px"></TH><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH></TR>
+            <TR><TH STYLE="width: 10px"></TH><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH><TH>Tags</TH></TR>
         </THEAD>
         {% for c,a in all_addresses %}
             {% if a.ip %}
@@ -136,6 +138,7 @@ function toggle_free() {
                 <TD>{{a.fqdn}}</TD>
                 <TD>{{a.description}}</TD>
                 <TD>{%if a.tt %}<A HREF="{{a.tt_url}}">#{{a.tt}}</A>{%endif%}</TD>
+                <TD>{% tags a %}</TD>
                 </TR>
             {% else %}
                 <TR CLASS="freeip">
@@ -148,6 +151,7 @@ function toggle_free() {
                     {% endif %}
                 </TD>
                 <TD>Free</TD>
+                <TD></TD>
                 <TD></TD>
                 </TR>
             {% endif %}
@@ -179,6 +183,12 @@ function toggle_free() {
 <DIV CLASS="module">
     <TABLE SUMMARY="Block info" WIDTH="100%">
         <CAPTION>{{prefix.prefix}} info</CAPTION>
+        {% if prefix.tags %}
+        <TR class="row2">
+            <TD><B>Tags</B></TD>
+            <TD>{%tags prefix%}</TD>
+        </TR>
+        {% endif %}
         <TR class="row1">
             <TD><b>VC</b></TD>
             <TD>

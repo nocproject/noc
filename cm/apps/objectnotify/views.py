@@ -12,8 +12,8 @@ from noc.cm.models import ObjectNotify
 ## ObjectNotify admin
 ##
 class ObjectNotifyAdmin(admin.ModelAdmin):
-    list_display=["type","group","administrative_domain","notify_immediately","notify_delayed","notification_group"]
-    list_filter=["type","group","administrative_domain","notification_group"]
+    list_display=["type","administrative_domain","notify_immediately","notify_delayed","notification_group"]
+    list_filter=["type","administrative_domain","notification_group"]
 ##
 ## ObjectNotify application
 ##

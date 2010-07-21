@@ -42,4 +42,4 @@ class ASAdmin(admin.ModelAdmin):
 class ASApplication(ModelApplication):
     model=AS
     model_admin=ASAdmin
-    menu="Setup | ASes"
+    menu="ASes"

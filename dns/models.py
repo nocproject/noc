@@ -14,6 +14,8 @@ from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 from noc.dns.generators import generator_registry
 from noc.lib.rpsl import rpsl_format
 from noc.lib.ip import generate_ips
+from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.app.site import site
 ##
 ## register all generator classes
 ##
@@ -112,15 +114,18 @@ class DNSZone(models.Model):
     serial=models.CharField("Serial",max_length=10,default="0000000000")
     profile=models.ForeignKey(DNSZoneProfile,verbose_name="Profile")
     paid_till=models.DateField("Paid Till",null=True,blank=True)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     
     # Managers
     objects=models.Manager()
     forward_zones=ForwardZoneManager()
     reverse_zones=ReverseZoneManager()
-    def __str__(self):
-        return self.name
     def __unicode__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return site.reverse("dns:dnszone:change",self.id)
+    
     def _type(self):
         if self.name.lower().endswith(".in-addr.arpa"):
             return "R"
@@ -352,7 +357,10 @@ class DNSZoneRecord(models.Model):
     left=models.CharField("Left",max_length=32,blank=True,null=True)
     type=models.ForeignKey(DNSZoneRecordType,verbose_name="Type")
     right=models.CharField("Right",max_length=64) #,core=True)
-    def __str__(self):
-        return "%s %s"%(self.zone.name," ".join([x for x in [self.left,self.type.type,self.right] if x is not None]))
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     def __unicode__(self):
-        return unicode(str(self))
+        return u"%s %s"%(self.zone.name," ".join([x for x in [self.left,self.type.type,self.right] if x is not None]))
+
+    def get_absolute_url(self):
+        return site.reverse("dns:dnszone:change",self.zone.id)
+        

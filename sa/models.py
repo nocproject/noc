@@ -15,7 +15,9 @@ from noc.sa.scripts import reduce_script_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.lib.search import SearchResult
-from noc.lib.fields import PickledField,INETField
+from noc.lib.fields import PickledField,INETField,AutoCompleteTagsField
+from noc.lib.app.site import site
+from tagging.models import TaggedItem
 
 profile_registry.register_all()
 periodic_registry.register_all()
@@ -36,17 +38,6 @@ class AdministrativeDomain(models.Model):
 ##
 ##
 ##
-class ObjectGroup(models.Model):
-    class Meta:
-        verbose_name="Object Group"
-        verbose_name_plural="Object Groups"
-    name=models.CharField("Name",max_length=32,unique=True)
-    description=models.TextField("Description",null=True,blank=True)
-    def __unicode__(self):
-        return self.name
-##
-##
-##
 class Activator(models.Model):
     class Meta:
         verbose_name="Activator"
@@ -56,8 +47,12 @@ class Activator(models.Model):
     to_ip=models.IPAddressField("To IP")
     auth=models.CharField("Auth String",max_length=64)
     is_active=models.BooleanField("Is Active",default=True)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     def __unicode__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return self.reverse("sa:activator:change",self.id)
     ##
     ## Returns true if IP can belong to any activator
     ##
@@ -93,10 +88,14 @@ class ManagedObject(models.Model):
     is_configuration_managed=models.BooleanField("Is Configuration Managed?",default=True)
     repo_path=models.CharField("Repo Path",max_length=128,blank=True,null=True)
     #
-    groups=models.ManyToManyField(ObjectGroup,verbose_name="Groups",null=True,blank=True)
-    #
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
+    
     def __unicode__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return self.reverse("sa:managedobject:change",self.id)
+        
     # Returns object's profile
     def _profile(self):
         try:
@@ -230,9 +229,9 @@ class ManagedObjectSelector(models.Model):
     filter_activator=models.ForeignKey(Activator,verbose_name="Filter by Activator",null=True,blank=True)
     filter_user=models.CharField("Filter by User (REGEXP)",max_length=256,null=True,blank=True)
     filter_remote_path=models.CharField("Filter by Remote Path (REGEXP)",max_length=256,null=True,blank=True)
-    filter_groups=models.ManyToManyField(ObjectGroup,verbose_name="Filter by Groups",null=True,blank=True)
     filter_description=models.CharField("Filter by Description (REGEXP)",max_length=256,null=True,blank=True)
     filter_repo_path=models.CharField("Filter by Repo Path (REGEXP)",max_length=256,null=True,blank=True)
+    filter_tags=AutoCompleteTagsField("Filter By Tags",null=True,blank=True)
     source_combine_method=models.CharField("Source Combine Method",max_length=1,default="O",choices=[("A","AND"),("O","OR")])
     sources=models.ManyToManyField("ManagedObjectSelector",verbose_name="Sources",symmetrical=False,null=True,blank=True)
     
@@ -264,11 +263,11 @@ class ManagedObjectSelector(models.Model):
             q&=Q(description__regex=self.filter_description)
         if self.filter_repo_path:
             q&=Q(repo_path__regex=self.filter_repo_path)
-        # Restrict to groups when necessary
-        g_ids=reduce(lambda x,y: x.union(y),
-            [set(g.managedobject_set.values_list("id",flat=True)) for g in self.filter_groups.all()],set())
-        if g_ids:
-            q&=Q(id__in=g_ids)
+        # Restrict to tags when necessary
+        t_ids=TaggedItem.objects.get_intersection_by_model(ManagedObject,self.filter_tags).values_list("id",flat=True)
+        if t_ids:
+            q&=Q(id__in=t_ids)
+        # Apply filters
         r=ManagedObject.objects.filter(q)
         # Restrict to sources
         if self.sources.count():

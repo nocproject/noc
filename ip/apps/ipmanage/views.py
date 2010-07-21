@@ -13,6 +13,7 @@ from noc.vc.models import VC,VCBindFilter
 from noc.lib.colors import get_colors
 from noc.lib.validators import is_cidr,is_ipv4,is_fqdn
 from noc.lib.ip import normalize_prefix,contains,in_range,free_blocks
+from noc.lib.widgets import AutoCompleteTags
 ##
 ## IP Address Space Management
 ##
@@ -95,6 +96,7 @@ class IPManageAppplication(Application):
         prefix=forms.CharField(label="prefix",required=True)
         description=forms.CharField(label="description",required=True)
         asn=forms.ModelChoiceField(label="ASN",queryset=AS.objects.all(),required=True)
+        tags=forms.CharField(widget=AutoCompleteTags)
         tt=forms.IntegerField(label="TT #",required=False)
         def __init__(self,data=None,initial=None,vrf=None,block_id=None):
             forms.Form.__init__(self,data=data,initial=initial)
@@ -132,6 +134,7 @@ class IPManageAppplication(Application):
                 "prefix"      : block.prefix,
                 "description" : block.description,
                 "asn"         : block.asn.id,
+                "tags"        : block.tags,
                 "tt"          : block.tt
             }
             p="/"+prefix
@@ -165,12 +168,14 @@ class IPManageAppplication(Application):
                     block.prefix=form.cleaned_data["prefix"]
                     block.description=form.cleaned_data["description"]
                     block.asn=form.cleaned_data["asn"]
+                    block.tags=form.cleaned_data["tags"]
                     block.tt=form.cleaned_data["tt"]
                     status="changed"
                 else:
                     block=IPv4Block(vrf=vrf,prefix=form.cleaned_data["prefix"],
                         description=form.cleaned_data["description"],
                         asn=form.cleaned_data["asn"],
+                        tags=form.cleaned_data["tags"],
                         tt=form.cleaned_data["tt"])
                     status="created"
                 block.save()
@@ -211,6 +216,7 @@ class IPManageAppplication(Application):
         fqdn=forms.CharField(label="FQDN",required=True)
         ip=forms.CharField(label="IP",required=True)
         description=forms.CharField(label="Description",required=False)
+        tags=forms.CharField(widget=AutoCompleteTags)
         tt=forms.IntegerField(label="TT #",required=False)
         def __init__(self,data=None,initial=None,vrf=None,address_id=None):
             forms.Form.__init__(self,data=data,initial=initial)
@@ -254,6 +260,7 @@ class IPManageAppplication(Application):
                 "fqdn"        : address.fqdn,
                 "ip"          : address.ip,
                 "description" : address.description,
+                "tags"        : address.tags,
                 "tt"          : address.tt,
             }
             p="/"+ip
@@ -275,6 +282,7 @@ class IPManageAppplication(Application):
                     address.fqdn=form.cleaned_data["fqdn"]
                     address.ip=form.cleaned_data["ip"]
                     address.description=form.cleaned_data["description"]
+                    address.tags=form.cleaned_data["tags"]
                     address.tt=form.cleaned_data["tt"]
                     status="changed"
                 else:
@@ -282,7 +290,8 @@ class IPManageAppplication(Application):
                     if IPv4Address.objects.filter(vrf=vrf,ip=form.cleaned_data["ip"]).count()>0:
                         return render_failure(request,"Duplicated IP address","Address %s is already present in VRF %s"%(form.cleaned_data["ip"],vrf.name))
                     address=IPv4Address(vrf=vrf,fqdn=form.cleaned_data["fqdn"],
-                        ip=form.cleaned_data["ip"],description=form.cleaned_data["description"])
+                        ip=form.cleaned_data["ip"],description=form.cleaned_data["description"],
+                        tags=form.cleaned_data["tags"],tt=forms.cleaned_data["tt"])
                     status="created"
                 address.save()
                 self.message_user(request,"IP Address %s in VRF %s %s successfully"%(form.cleaned_data["ip"],str(vrf),status))

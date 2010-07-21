@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Import MoinMoin wiki data to NOC KB
 ## USAGE:
-## python manage.py convert-moin [--encoding=charset] [--language=lang] [--category=category] <path to moin data/ >
+## python manage.py convert-moin [--encoding=charset] [--language=lang] [--tags=<taglist>] <path to moin data/ >
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
@@ -15,7 +15,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction,reset_queries
 from django.contrib.auth.models import User
 from noc.main.models import Language,DatabaseStorage,database_storage
-from noc.kb.models import KBEntry,KBEntryAttachment,KBCategory
+from noc.kb.models import KBEntry,KBEntryAttachment
 from optparse import OptionParser, make_option
 import os,re,stat,datetime,sys,types,gc
 
@@ -29,7 +29,7 @@ class Command(BaseCommand):
     option_list=BaseCommand.option_list+(
         make_option("-e","--encoding",dest="encoding",default="utf-8"),
         make_option("-l","--language",dest="language",default="English"),
-        make_option("-c","--category",dest="category")
+        make_option("-t","--tags",dest="tags")
     )
     def handle(self, *args, **options):
         self.encoding=options["encoding"]
@@ -38,13 +38,7 @@ class Command(BaseCommand):
         self.user=User.objects.order_by("id")[0] # Get first created user as owner
         self.language=Language.objects.get(name=options["language"])
         # Find category
-        self.category=None
-        if options["category"]:
-            try:
-                self.category=KBCategory.objects.get(name=options["category"])
-            except KBCategory.DoesNotExist:
-                self.category=KBCategory(name=options["category"])
-                self.category.save()
+        self.tags=options["tags"]
         oc=len(gc.get_objects())
         for page in os.listdir(self.pages):
             self.convert_page(page)
@@ -98,8 +92,9 @@ class Command(BaseCommand):
             if kbe is None:
                 kbe=KBEntry(subject=name,body=body,language=self.language,markup_language="Creole")
                 kbe.save(user=self.user,timestamp=mtime) # Revision history will be populated automatically
-                if self.category:
-                    kbe.categories.add(self.category)
+                if self.tags:
+                    kbe.tags=self.tags
+                    kbe.save(user=self.user,timestamp=mtime)
             else:
                 kbe.body=body
                 kbe.save(user=self.user,timestamp=mtime) # Revision history will be populated automatically

@@ -1,4 +1,5 @@
 django,1.2.1
+django-tagging,0.3.1
 south,0.7.1
 coverage,3.3.1
 flup,1.0.2

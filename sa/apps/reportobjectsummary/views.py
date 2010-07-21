@@ -13,8 +13,8 @@ from django import forms
 report_types=[
             ("profile","By Profile"),
             ("domain","By Administrative Domain"),
-            ("group","By Group"),
             ("domain-profile","By Administrative Domain and Profile"),
+            ("tag","By Tags")
             ]
 class ReportForm(forms.Form):
     report_type=forms.ChoiceField(choices=report_types)
@@ -36,15 +36,6 @@ class ReportObjectsSummary(SimpleReport):
                 FROM sa_managedobject o JOIN sa_administrativedomain a ON (o.administrative_domain_id=a.id)
                 GROUP BY 1
                 ORDER BY 2 DESC"""
-        # By Group
-        elif report_type=="group":
-            columns=["Group"]
-            query="""SELECT g.name,COUNT(*)
-                    FROM sa_managedobject o
-                        JOIN sa_managedobject_groups og ON (o.id=og.managedobject_id)
-                        JOIN sa_objectgroup g ON (og.objectgroup_id=g.id)
-                    GROUP BY 1
-                    ORDER BY 2 DESC"""
         # By Profile and Administrative Domains
         elif report_type=="domain-profile":
             columns=["Administrative Domain","Profile"]
@@ -52,6 +43,17 @@ class ReportObjectsSummary(SimpleReport):
                     FROM sa_managedobject o JOIN sa_administrativedomain d ON (o.administrative_domain_id=d.id)
                     GROUP BY 1,2
                     """
+        # By tags
+        elif report_type=="tag":
+            columns=["Tag"]
+            query="""SELECT t.name,COUNT(*)
+                FROM tagging_tag t JOIN tagging_taggeditem ti ON (t.id=ti.tag_id)
+                    JOIN django_content_type c ON (ti.content_type_id=c.id)
+                WHERE c.app_label='sa'
+                    AND c.model='managedobject'
+                GROUP BY 1
+                ORDER BY 1 DESC
+            """
         else:
             raise Exception("Invalid report type: %s"%report_type)
         for r,t in report_types:

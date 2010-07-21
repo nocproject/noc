@@ -14,7 +14,8 @@ from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.sa.models import ManagedObjectSelector
 from noc.lib.validators import is_int
-from noc.lib.fields import CIDRField
+from noc.lib.fields import CIDRField,AutoCompleteTagsField
+from noc.lib.app.site import site
 import re
 ##
 ## Exceptions
@@ -173,6 +174,7 @@ class VC(models.Model):
     l1=models.IntegerField("Label 1")
     l2=models.IntegerField("Label 2",default=0)
     description=models.CharField("Description",max_length=256,null=True,blank=True)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
 
     def __unicode__(self):
         s=u"%s %d"%(self.vc_domain,self.l1)
@@ -180,6 +182,11 @@ class VC(models.Model):
             s+=u"/%d"%self.l2
         s+=u": %s"%self.name
         return s
+    ##
+    ##
+    ##
+    def get_absolute_url(self):
+        return site.reverse("vc:vc:change",self.id)
     ##
     ##
     ##

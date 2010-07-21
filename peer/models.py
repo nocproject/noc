@@ -12,14 +12,15 @@ from noc.settings import config
 from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url,admin_tt_url
 from noc.lib.rpsl import rpsl_format
-from noc.lib.fields import INETField,InetArrayField
+from noc.lib.fields import INETField,InetArrayField,AutoCompleteTagsField
 from noc.sa.profiles import profile_registry
 from noc.main.models import NotificationGroup
 from noc.cm.models import PrefixList
 from noc.sa.models import AdministrativeDomain
-from noc.main.middleware import get_user
+from noc.lib.middleware import get_user
 from noc.lib.fileutils import urlopen
 from noc.lib.crypto import md5crypt
+from noc.lib.app.site import site
 import random,time,logging,urllib,urllib2
 
 ##
@@ -146,10 +147,12 @@ class AS(models.Model):
     header_remarks=models.TextField("Header Remarks",null=True,blank=True) # remarks: will be prepended automatically
     footer_remarks=models.TextField("Footer Remarks",null=True,blank=True) # remarks: will be prepended automatically
     rir=models.ForeignKey(RIR,verbose_name="RIR") # source:
-    def __str__(self):
-        return "AS%d (%s)"%(self.asn,self.description)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     def __unicode__(self):
         return u"AS%d (%s)"%(self.asn,self.description)
+    def get_absolute_url(self):
+        return site.reverse("peer:as:change",self.id)
+    
     @classmethod
     def default_as(cls):
         return AS.objects.get(asn=0)
@@ -292,10 +295,11 @@ class ASSet(models.Model):
     members=models.TextField("Members",null=True,blank=True)
     rpsl_header=models.TextField("RPSL Header",null=True,blank=True)
     rpsl_footer=models.TextField("RPSL Footer",null=True,blank=True)
-    def __str__(self):
-        return self.name
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     def __unicode__(self):
-        return unicode(self.name)
+        return self.name
+    def get_absolute_url(self):
+        return site.reverse("peer:asset:change",self.id)
     def _member_list(self):
         if self.members is None:
             return []
@@ -440,10 +444,13 @@ class Peer(models.Model):
     max_prefixes=models.IntegerField("Max. Prefixes",default=100)
     import_filter_name=models.CharField("Import Filter Name",max_length=64,blank=True,null=True)
     export_filter_name=models.CharField("Export Filter Name",max_length=64,blank=True,null=True)
-    def __str__(self):
-        return "%s (%s@%s)"%(self.remote_asn,self.remote_ip,self.peering_point.hostname)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     def __unicode__(self):
-        return unicode(str(self))
+        return u"%s (%s@%s)"%(self.remote_asn,self.remote_ip,self.peering_point.hostname)
+
+    def get_absolute_url(self):
+        return site.reverse("peer:peer:change",self.id)
+
     def save(self):
         if self.import_filter_name is not None and not self.import_filter_name.strip():
             self.import_filter_name=None

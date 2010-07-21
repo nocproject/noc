@@ -26,8 +26,3 @@ def setup_processor(request):
             "logo_height"       : config.get("customization","logo_height"),
         }
     }
-##
-## Load all web applications
-##
-if IS_WEB:
-    site.autodiscover()

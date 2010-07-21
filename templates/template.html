@@ -1,5 +1,8 @@
 {% extends "admin/base.html"%}
 {% block title%}{{app.title}}{% endblock %}
+{% block extrahead %}{{block.super}}
+{% if form %}{{form.media}}{%endif%}
+{% endblock %}
 {%block breadcrumbs %}{{block.super}}<li>{{app.module_title}}</li>
 {% if is_report%}
     <li><a href="{% url main:report:index%}">Reports</a></li>

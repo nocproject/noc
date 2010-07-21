@@ -6,7 +6,7 @@
 """
 """
 from south.db import db
-from noc.sa.models import *
+from django.db import models
 import os
 
 class Migration:
@@ -50,6 +50,9 @@ class Migration:
         db.execute("ALTER TABLE cm_config ALTER managed_object_id SET NOT NULL")
         
         # Migrate ObjectNotify
+        ObjectGroup = db.mock_model(model_name='ObjectGroup', db_table='sa_objectgroup', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        AdministrativeDomain = db.mock_model(model_name='AdministrativeDomain', db_table='sa_administrativedomain', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        
         db.add_column("cm_objectnotify","administrative_domain",models.ForeignKey(AdministrativeDomain,verbose_name="Administrative Domain",blank=True,null=True))
         db.add_column("cm_objectnotify","group",models.ForeignKey(ObjectGroup,verbose_name="Group",blank=True,null=True))
         for id,category_id,location_id in db.execute("SELECT id,category_id,location_id FROM cm_objectnotify"):

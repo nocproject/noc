@@ -8,6 +8,7 @@
 from django.contrib import admin as django_admin
 from access import HasPerm
 from application import Application
+from noc.lib.widgets import tags_list
 ##
 ## Django's Model Admin Application Wrapper
 ##
@@ -19,6 +20,15 @@ class ModelApplication(Application):
     
     def __init__(self,site):
         super(ModelApplication,self).__init__(site)
+        ## Check the model has tags and add "tags" column
+        try:
+            self.model.tags
+            self.has_tags=True
+        except:
+            self.has_tags=False
+        if self.has_tags:
+            self.model_admin.list_display+=[self.display_tags]
+        #
         self.admin=self.model_admin(self.model, django_admin.site)
         self.admin.app=self
         self.title=self.model._meta.verbose_name_plural
@@ -32,6 +42,13 @@ class ModelApplication(Application):
         self.admin.has_delete_permission=self.has_delete_permission
         ## Set up row-based access
         self.admin.queryset=self.queryset
+    ##
+    ## Render neat tags list
+    ##
+    def display_tags(self,o):
+        return tags_list(o)
+    display_tags.short_description="Tags"
+    display_tags.allow_tags=True
     
     def queryset(self,request):
         if self.granular_access:

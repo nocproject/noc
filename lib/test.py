@@ -95,7 +95,7 @@ class NOCTestCase(TestCase):
         MIDDLEWARE_CLASSES=settings.MIDDLEWARE_CLASSES[:]
         AUTHENTICATION_BACKENDS=settings.AUTHENTICATION_BACKENDS[:]
         RemoteUserMiddleware="django.contrib.auth.middleware.RemoteUserMiddleware"
-        TLSMiddleware="noc.main.middleware.TLSMiddleware"
+        TLSMiddleware="noc.lib.middleware.TLSMiddleware"
         if RemoteUserMiddleware not in settings.MIDDLEWARE_CLASSES:
             # Install RemoteUserMiddleware before 'noc.main.middleware.TLSMiddleware'
             settings.MIDDLEWARE_CLASSES=list(settings.MIDDLEWARE_CLASSES)

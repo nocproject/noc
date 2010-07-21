@@ -84,8 +84,8 @@ class KBEntryApplication(ModelApplication):
             body=expand(body,vars)
         kbe=KBEntry(subject=subject,body=body,language=template.language,markup_language=template.markup_language)
         kbe.save(user=request.user)
-        for c in template.categories.all():
-            kbe.categories.add(c)
+        kbe.tags=template.tags
+        kbe.save(user=request.user)
         return self.response_redirect_to_object(kbe)
     view_from_template.url=r"^from_template/(?P<template_id>\d+)/$"
     view_from_template.url_name="from_template"
