@@ -102,18 +102,22 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         if obj:
             return obj.has_access(request.user)
         else:
-            return admin.ModelAdmin.has_delete_permission(self,request)
+            return admin.ModelAdmin.has_change_permission(self,request)
             
     def has_delete_permission(self,request,obj=None):
-        return self.has_change_permission(request,obj)
+        if obj:
+            return obj.has_access(request.user)
+        else:
+            return admin.ModelAdmin.has_delete_permission(self,request)
         
     def queryset(self,request):
         return ManagedObject.queryset(request.user)
         
     def save_model(self, request, obj, form, change):
-        if obj.has_access(request.user):
-            admin.ModelAdmin.save_model(self,request,obj,form,change)
-        else:
+        # Save before checking
+        admin.ModelAdmin.save_model(self,request,obj,form,change)
+        # Then check
+        if not obj.has_access(request.user):
             raise PermissionDenied()
     ##
     ## Test object access
