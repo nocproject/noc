@@ -22,7 +22,6 @@ class IndexAppplication(Application):
             "tab"    : tab,
             "entries": entries,
             "tabs"   : [("bookmarks", "Bookmarks"),
-                ("categories","Categories"),
                 ("latest",    "Last Changed"),
                 ("popular",   "Popular Articles"),
                 ("all",       "All Articles")]})
@@ -41,7 +40,6 @@ class IndexAppplication(Application):
     def view_tab(self,request,tab):
         tabs={
             "bookmarks" : self.view_index_bookmarks,
-            "categories": self.view_index_categories,
             "latest"    : self.view_index_latest,
             "popular"   : self.view_index_popular,
             "all"       : self.view_index_all,
@@ -61,14 +59,6 @@ class IndexAppplication(Application):
             +[b.kb_entry for b in KBUserBookmark.objects.filter(user=request.user)],"bookmarks")
     view_index_bookmarks.url=r"^bookmarks/$"
     view_index_bookmarks.access=PermitLogged()
-    ##
-    ## Categories page
-    ##
-    def view_index_categories(self,request):
-        return self.render_index(request,KBCategory.objects.order_by("name"),"categories")
-    view_index_categories.url=r"^categories/$"
-    view_index_categories.url_name="categories"
-    view_index_categories.access=PermitLogged()
     ##
     ## Last Modified page
     ##
@@ -90,12 +80,3 @@ class IndexAppplication(Application):
         return self.render_index(request,KBEntry.objects.order_by("-id"),"popular")
     view_index_all.url=r"^all/$"
     view_index_all.access=PermitLogged()
-    ##
-    ## Category Index
-    ##
-    def view_index_category(self,request,category_id):
-        category=get_object_or_404(KBCategory,id=int(category_id))
-        return self.render(request,"index_category.html",{"category":category,"entries":category.kbentry_set.order_by("id")})
-    view_index_category.url=r"^categories/(?P<category_id>\d+)/$"
-    view_index_category.url_name="category"
-    view_index_category.access=PermitLogged()

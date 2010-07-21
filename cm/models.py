@@ -16,11 +16,13 @@ from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ,in_dir
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging,random,types
-from noc.sa.models import Activator,AdministrativeDomain,ObjectGroup,ManagedObject
+from noc.sa.models import Activator,AdministrativeDomain,ManagedObject
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
-from noc.lib.app import site
+from noc.lib.app.site import site
+from noc.lib.fields import AutoCompleteTagsField
+from tagging.models import TaggedItem
 
 profile_registry.register_all()
 vcs_registry.register_all()
@@ -35,12 +37,16 @@ class ObjectNotify(models.Model):
         verbose_name_plural="Object Notifies"
     type=models.CharField("Type",max_length=16,choices=OBJECT_TYPE_CHOICES)
     administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name="Administrative Domain",blank=True,null=True)
-    group=models.ForeignKey(ObjectGroup,verbose_name="Group",blank=True,null=True)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     notify_immediately=models.BooleanField("Notify Immediately")
     notify_delayed=models.BooleanField("Notify Delayed")
     notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group")
     def __unicode__(self):
-        return "(%s,%s,%s,%s)"%(self.type,self.administrative_domain,self.group,self.notification_group)
+        return "(%s,%s,[%s],%s)"%(self.type,self.administrative_domain,self.tags,self.notification_group)
+    
+    def get_absolute_url(self):
+        return site.reverse("cm:objectnotify:change",self.id
+        )
 
 #
 class Object(models.Model):
@@ -294,30 +300,8 @@ class Config(Object):
     def queryset(cls,user):
         if user.is_superuser:
             return cls.objects.all()
-        # Build query
-        r=[]
-        p=[]
-        for a in user.useraccess_set.all():
-            if a.administrative_domain is None and a.group is None: # Full access
-                return cls.objects.all()
-            rr=[]
-            pp=[]
-            if a.administrative_domain:
-                rr.append("(sa_managedobject.administrative_domain_id=%s)")
-                pp.append(a.administrative_domain.id)
-            if a.group:
-                rr.append("(id IN (SELECT managedobject_id FROM sa_managedobject_groups WHERE objectgroup_id=%s))")
-                pp.append(a.group.id)
-            if len(rr)==1: # Single clause
-                r+=rr
-            else: # AND together
-                r+=["(%s AND %s)"%(rr[0],rr[1])]
-            p+=pp
-        if not r: # No access
-            return cls.objects.extra(where=["0=1"]) # Return empty queryset
-        where=" OR ".join(r)
-        where="(managed_object_id IN (SELECT id FROM sa_managedobject WHERE %s))"%where
-        return cls.objects.extra(where=[where],params=p)
+        else:
+            return cls.objects.filter(managed_object__in=ManagedObject.user_objects(user))
     
     def get_notification_groups(self,immediately=False,delayed=False):
         q=Q(type=self.repo_name)
@@ -326,7 +310,13 @@ class Config(Object):
         if delayed:
             q&=Q(notify_delayed=True)
         q&=(Q(administrative_domain__isnull=True)|Q(administrative_domain=self.managed_object.administrative_domain))
-        q&=(Q(group__isnull=True)|Q(group__in=self.managed_object.groups.all))
+        if self.managed_object.tags:
+            tagged=TaggedItem.objects.get_union_by_model(ObjectNotify,self.managed_object.tags).values_list("id",flat=True)
+            if tagged:
+                q&=(Q(tags__isnull=True)|Q(tags="")|Q(id__in=tagged))
+            else:
+                q&=(Q(tags__isnull=True)|Q(tags=""))
+        print q
         return set([n.notification_group for n in ObjectNotify.objects.filter(q)])
 
     def write(self,data):

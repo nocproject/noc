@@ -1,0 +1,16 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Items tagged as '{{tag.name}}'</h1>
+{% for t,il in items %}
+    <div class="module">
+        <table summary="{{t}}" width="100%">
+            <caption>{{t}}</caption>
+            {% for i in il %}
+                <tr class="{%cycle 'row1' 'row2'%}">
+                    <td><a href="{{i.get_absolute_url}}">{{i}}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endfor %}
+{% endblock %}

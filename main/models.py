@@ -15,11 +15,12 @@ from noc.main.refbooks.downloaders import downloader_registry
 from django.contrib import databrowse
 from django.db.models.signals import class_prepared,pre_save,pre_delete
 from noc.lib.fields import TextArrayField
-from noc.main.middleware import get_user
+from noc.lib.middleware import get_user
 from noc import settings
 from noc.lib.timepattern import TimePattern as TP
 from noc.lib.timepattern import TimePatternList
 from noc.sa.interfaces.base import interface_registry
+from noc.lib.app.site import site
 ##
 ## A hash of Model.search classmethods.
 ## Populated by "class_prepared" signal listener

@@ -8,6 +8,9 @@
 from django.db import models
 from lib.ip import normalize_prefix
 import types,cPickle
+from django.contrib.admin.widgets import AdminTextInputWidget
+from tagging.fields import TagField
+from south.modelsinspector import add_introspection_rules
 ##
 ## CIDRField maps to PostgreSQL CIDR
 ##
@@ -96,3 +99,16 @@ class PickledField(models.Field):
             return value
     def get_db_prep_value(self,value):
         return cPickle.dumps(value)
+##
+## Autocomplete tags fields
+##
+class AutoCompleteTagsField(TagField):
+    def formfield(self, **kwargs):
+        from noc.lib.widgets import AutoCompleteTags
+        defaults = {'widget': AutoCompleteTags}
+        defaults.update(kwargs)
+        if defaults['widget'] == AdminTextInputWidget:
+            defaults['widget']=AutoCompleteTags
+        return super(AutoCompleteTagsField,self).formfield(**defaults)
+##
+add_introspection_rules([],["^noc\.lib\.fields\."])

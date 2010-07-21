@@ -11,6 +11,6 @@ class reportobjectsummaryTestCase(ReportApplicationTestCase):
     posts=[
         {"report_type":"profile"},
         {"report_type":"domain"},
-        {"report_type":"group"},
+        {"report_type":"tag"},
         {"report_type":"domain-profile"},
     ]

@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app.simplereport import SimpleReport
+from noc.lib.app.simplereport import SimpleReport,TableColumn
 from noc.ip.models import VRF,IPv4Block
 from noc.lib.validators import is_cidr
 from django import forms
@@ -31,12 +31,12 @@ class ExpandedReport(SimpleReport):
     def get_data(self,vrf,prefix,**kwargs):
         def get_info(prefix,level=0):
             s="----"*level
-            data=[[s+prefix.prefix,unicode(prefix.vc) if prefix.vc else "",prefix.description]]
+            data=[[s+prefix.prefix,unicode(prefix.vc) if prefix.vc else "",prefix.description,prefix]]
             for c in prefix.children:
                 data+=get_info(c,level+1)
             return data
         root=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
         data=get_info(root)
         return self.from_dataset(title=self.title+" inside "+prefix,
-            columns=["Prefix","VC","Description"],
+            columns=["Prefix","VC","Description",TableColumn("Tags",format="tags")],
             data=data,enumerate=True)

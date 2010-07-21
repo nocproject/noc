@@ -1,0 +1,7 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Tags</h1>
+{% for t in tags %}
+<span style="font-size: {{t.font_size}}pt;"><a href="{% url main:tags:tag t.name %}">{{t.name}}</a></span>
+{% endfor %}
+{% endblock %}

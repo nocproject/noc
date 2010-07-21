@@ -163,6 +163,17 @@ class Application(object):
                 result=list(func(q))
         return self.render_plain_text("\n".join(result))
     ##
+    ## Ajax lookup wrapper, returns JSON list of hashes
+    ##
+    def lookup_json(self,request,func,id_field="id",name_field="name"):
+        result=[]
+        if request.GET and "q" in request.GET:
+            q=request.GET["q"]
+            for r in func(q):
+                result+=[{id_field:r,name_field:r}]
+        return self.render_json(result)
+        
+    ##
     ## Iterator returning application views
     ##
     def get_views(self):

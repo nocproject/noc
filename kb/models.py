@@ -12,23 +12,14 @@ from django.contrib.auth.models import User
 from noc.kb.parsers import parser_registry
 from noc.lib.search import SearchResult
 from noc.lib.validators import is_int
+from noc.lib.app.site import site
+from noc.lib.fields import AutoCompleteTagsField
 import difflib,re
 
 ##
 ## Register all wiki-syntax parsers
 ##
 parser_registry.register_all()
-##
-## KB Categories
-##
-class KBCategory(models.Model):
-    class Meta:
-        verbose_name="KB Category"
-        verbose_name_plural="KB Categories"
-        ordering=("name",)
-    name=models.CharField("Name",max_length=64,unique=True)
-    def __unicode__(self):
-        return self.name
 ##
 ## KB Entry
 ##
@@ -41,12 +32,15 @@ class KBEntry(models.Model):
     body=models.TextField("Body")
     language=models.ForeignKey(Language,verbose_name="Language",limit_choices_to={"is_active":True})
     markup_language=models.CharField("Markup Language",max_length="16",choices=parser_registry.choices)
-    categories=models.ManyToManyField(KBCategory,verbose_name="Categories",null=True,blank=True)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     def __unicode__(self):
         if self.id:
             return u"KB%d: %s"%(self.id,self.subject)
         else:
             return u"New: %s"%self.subject
+    ##
+    def get_absolute_url(self):
+        return site.reverse("kb:view:view",self.id)
     ## Wiki parser class
     def _parser(self):
         return parser_registry[self.markup_language]
@@ -286,9 +280,12 @@ class KBEntryTemplate(models.Model):
     body=models.TextField("Body")
     language=models.ForeignKey(Language,verbose_name="Language",limit_choices_to={"is_active":True})
     markup_language=models.CharField("Markup Language",max_length="16",choices=parser_registry.choices)
-    categories=models.ManyToManyField(KBCategory,verbose_name="Categories",null=True,blank=True)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     def __unicode__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return site.reverse("kb:kbentrytemplate:change",self.id)
     ##
     ## Returns template variables list
     ##

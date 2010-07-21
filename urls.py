@@ -7,9 +7,16 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.lib.app import site,patterns
+from noc.lib.app.site import site,patterns
 from django.conf.urls.defaults import handler404,handler500
 
+##
+## Discover all applications
+##
+site.autodiscover()
+##
+## Install URL handlers
+##
 urlpatterns=patterns("",
     ('^$',                     'django.views.generic.simple.redirect_to', {'url' : '/main/index/'}),
     (r"^jsi18n/$",             "django.views.i18n.javascript_catalog", {"packages":"django.conf"}),

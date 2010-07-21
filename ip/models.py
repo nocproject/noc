@@ -13,10 +13,11 @@ from noc.lib.validators import check_rd,check_cidr,is_cidr,is_ipv4
 from noc.lib.tt import tt_url
 from noc.peer.models import AS
 from noc.vc.models import VC
-from noc.lib.fields import CIDRField
+from noc.lib.fields import CIDRField,AutoCompleteTagsField
 from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast,address_to_int,generate_ips,prefix_to_size
 from noc.lib.search import SearchResult
-from noc.main.middleware import get_user
+from noc.lib.middleware import get_user
+from noc.lib.app import site
 ##
 ##
 ##
@@ -41,10 +42,14 @@ class VRF(models.Model):
     rd=models.CharField("rd",unique=True,max_length=21) # validator_list=[check_rd],
     description=models.CharField("Description",blank=True,null=True,max_length=128)
     tt=models.IntegerField("TT",blank=True,null=True)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     def __unicode__(self):
         if self.rd=="0:0":
             return u"global"
         return self.rd
+    
+    def get_absolute_url(self):
+        return site.reverse("ip:vrf:change",self.id)
         
     @classmethod
     def get_global(self):
@@ -111,10 +116,15 @@ class IPv4Block(models.Model):
     vrf=models.ForeignKey(VRF)
     asn=models.ForeignKey(AS)
     vc=models.ForeignKey(VC,verbose_name="VC",null=True,blank=True)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     tt=models.IntegerField("TT",blank=True,null=True)
     #allocated_till
     def __unicode__(self):
         return unicode(self.prefix)
+    
+    def get_absolute_url(self):
+        return site.reverse("ip:ipmanage:vrf_index",self.vrf.id,self.prefix)
+    
     def _parent(self):
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE prefix >> '%s' AND vrf_id=%d ORDER BY masklen(prefix) DESC LIMIT 1"%(IPv4Block._meta.db_table,
@@ -467,10 +477,14 @@ class IPv4Address(models.Model):
     fqdn=models.CharField("FQDN",max_length=64)
     ip=models.IPAddressField("IP")
     description=models.CharField("Description",blank=True,null=True,max_length=64)
+    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     tt=models.IntegerField("TT",blank=True,null=True)
     
     def __unicode__(self):
         return self.ip
+        
+    def get_absolute_url(self):
+        return site.reverse("ip:ipmanage:vrf_index",self.vrf.id,self.parent)
 
     def _parent(self):
         c=connection.cursor()

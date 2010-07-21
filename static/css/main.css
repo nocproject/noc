@@ -79,6 +79,30 @@ ul.messagelist {
     height: 14px;
 }
 
+ul.tags-list, ul.tags-list li {
+    padding: 0px;
+    margin: 0px;
+    font-size: 10px;
+    font-weight: bold;
+    display: inline;
+    list-style: none;
+    height: 16px;
+}
+
+ul.tags-list li {
+    margin: 2px;
+    padding: 2px 6px 2px 6px;
+    height: 14px;
+    background-color: #999;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    border-radius: 7px;
+}
+
+ul.tags-list li a:link, ul.tags-list li a:visited {
+    color: white;
+}
+
 table tbody tr.selected {
     background-color: #FFFFCC;
 }

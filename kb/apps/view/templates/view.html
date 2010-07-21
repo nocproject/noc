@@ -1,4 +1,5 @@
 {% extends "template.html" %}
+{% load tags %}
 {% block title%}Knowledge Base: KB{{e.id}}{% endblock %}
 {% block extrahead %}
     <link type="text/css" rel="stylesheet" href="/static/css/rack.css" />
@@ -35,13 +36,7 @@
     {% endfor %}
 </TABLE>
 {% endif %}
-{% if e.has_categories %}
-    {% for c in e.categories.all %}
-    <ul class="object-tags">
-        <li><a href="{% url kb:index:category c.id %}">{{c.name}}</a></li>
-    </ul>
-    {% endfor %}
-{% endif %}
+{% tags e %}
 <hr/>
 Posted at {{e.last_history.timestamp|date}} {{e.last_history.timestamp|time}} by {{e.last_history.user}}
 {% endblock %}

@@ -9,6 +9,7 @@ from reportapplication import *
 import cStringIO,csv,datetime
 from noc import settings
 from django.utils.dateformat import DateFormat
+from noc.lib.widgets import tags_list
 import decimal,types
 
 INDENT="    "
@@ -309,6 +310,14 @@ class TableColumn(ReportNode):
     ##
     def f_percent(self,f):
         return self.f_numeric(f)+"%"
+    ##
+    ## Display and object's tags
+    ##
+    def f_tags(self,f):
+        try:
+            return SafeString(tags_list(f))
+        except:
+            return ""
     ##
     ## Returns a sum of not-null elements
     ##
