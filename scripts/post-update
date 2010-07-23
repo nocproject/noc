@@ -6,25 +6,55 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+PROGNAME=`basename $0`
+function error_exit
+{
+    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo "Terminating" 1>&2
+    exit 1
+}
+
+function info
+{
+    echo $1 1>&2
+}
+
 PREFIX=`dirname "$0"`/../
-cd $PREFIX
+info "Jumping to '$PREFIX'"
+cd $PREFIX || error_exit "$LINENO: Cannot chdir to '$PREFIX'"
+info "Landing at '$PWD'"
 
 # Refresh contrib/lib when necessary
+info "Checking contrib/"
 ./contrib/src/bin/sync -c
 if [ $? -ne 0 ]; then
+    info "Contrib is out-of-date. Rebuilding"
     # Change user when necessary
     if [ -w ./contrib/lib/ ]; then
-        ./contrib/src/bin/sync
+        ./contrib/src/bin/sync || error_exit "$LINENO: contrib sync failed"
     else
-        echo "Changing to superuser to execute '$PWD/contrib/src/bin/sync'"
-        sudo $PWD/contrib/src/bin/sync
+        info "Changing to superuser to execute '$PWD/contrib/src/bin/sync'"
+        sudo $PWD/contrib/src/bin/sync || error_exit "$LINENO: contrib sync failed"
     fi
 fi
 
+# Syncronize database
+info "Syncronizing database"
+python manage.py syncdb || error_exit "$LINENO: syncdb failed"
 # Migrate database
-python manage.py syncdb
-python manage.py migrate
-python manage.py sync-perm
-python manage.py sync-refbooks
-python manage.py sync-rules
-python manage.py sync-doc
+info "Migrating database"
+python manage.py migrate || error_exit "$LINENO: migrate failed"
+# Set up permissions
+info "Setting up permissions"
+python manage.py sync-perm || error_exit "$LINENO: sync-perm failed"
+# Syncronize refbooks
+info "Syncronizing refbooks"
+python manage.py sync-refbooks || error_exit "$LINENO: sync-refbooks failed"
+# Syncronize FM rules
+info "Installing FM rules"
+python manage.py sync-rules || error_exit "$LINENO: sync-rules failed"
+# Build documentation
+info "Building documentation"
+python manage.py sync-doc || error_exit "$LINO: cannot build documentation"
+#
+info "$PROGNAME complete"
