@@ -20,7 +20,7 @@ except ImportError:
 from django.core.management import execute_manager
 
 if __name__ == "__main__":
-    if sys.argv[1] not in ["test"]:
+    if sys.argv[1] not in ["test","syncdb","migrate"]:
         # Initialize models
         os.environ["DJANGO_SETTINGS_MODULE"]="noc.settings"
         import noc.urls
