@@ -422,23 +422,23 @@ class EventClassificationRule(models.Model):
             new_r=EventClassificationRE(rule=new_rule,left_re=r.left_re,right_re=r.right_re)
             new_r.save()
         return new_rule
-        ##
-        ## Return rule created from event
-        ##
-        @classmethod
-        def from_event(cls,event):
-            def re_q(s):
-                for qc in ["\\",".","+","*","[","]","(",")"]:
-                    s=s.replace(qc,"\\"+qc)
-                return s
-            rule=EventClassificationRule(event_class=event.event_class,
-                name="Rule #%d:%d"%(event.id,random.randint(0,100000)),
-                preference=1000)
-            rule.save()
-            for d in event.eventdata_set.filter(type__in=[">","R"]):
-                r=EventClassificationRE(rule=rule,left_re="^%s$"%re_q(d.key)[:254],right_re="^%s$"%re_q(d.value)[:254])
-                r.save()
-            return rule
+    ##
+    ## Return rule created from event
+    ##
+    @classmethod
+    def from_event(cls,event):
+        def re_q(s):
+            for qc in ["\\",".","+","*","[","]","(",")"]:
+                s=s.replace(qc,"\\"+qc)
+            return s
+        rule=EventClassificationRule(event_class=event.event_class,
+            name="Rule #%d:%d"%(event.id,random.randint(0,100000)),
+            preference=1000)
+        rule.save()
+        for d in event.eventdata_set.filter(type__in=[">","R"]):
+            r=EventClassificationRE(rule=rule,left_re="^%s$"%re_q(d.key)[:254],right_re="^%s$"%re_q(d.value)[:254])
+            r.save()
+        return rule
 ##
 ## Regular expressions to match event vars
 ##
