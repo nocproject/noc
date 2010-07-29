@@ -8,7 +8,7 @@
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from noc.lib.app import ModelApplication,HasPerm
-from noc.fm.models import EventClassificationRule,EventClassificationRE
+from noc.fm.models import Event,EventClassificationRule,EventClassificationRE
 ##
 ## Inline for EventClassificationRE
 ##
