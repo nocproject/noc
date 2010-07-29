@@ -12,7 +12,7 @@ from noc.main.models import TimePattern,NotificationGroup
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
 from noc.fm.triggers import event_trigger_registry
-import imp,subprocess,tempfile,os,datetime,re
+import imp,subprocess,tempfile,os,datetime,re,random
 
 ##
 event_trigger_registry.register_all()
