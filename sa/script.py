@@ -431,7 +431,10 @@ class CLI(StreamFSM):
         self.debug("on_read: %s"%repr(data))
         if self.profile.rogue_chars:
             for rc in self.profile.rogue_chars:
-                data=data.replace(rc,"")
+                try:
+                    data=rc.sub("",data) # rc is compiled regular expression
+                except AttributeError:
+                    data=data.replace(rc,"") # rc is a string
         self.feed(data,cleanup=self.profile.cleaned_input)
         self.__flush_submitted_data()
     ##
