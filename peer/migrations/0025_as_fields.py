@@ -9,7 +9,7 @@ rx_remarks=re.compile(r"^remarks:\s*")
 
 class Migration:
     
-    def forwards(self, orm):
+    def forwards(self):
         RIR = db.mock_model(model_name='RIR', db_table='peer_rir', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         AS = db.mock_model(model_name='AS', db_table='peer_as', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         Person = db.mock_model(model_name='Person', db_table='peer_person', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
@@ -87,7 +87,7 @@ class Migration:
         db.execute("ALTER TABLE peer_as ALTER rir_id SET NOT NULL")
         db.execute("ALTER TABLE peer_as ALTER organisation_id SET NOT NULL")
     
-    def backwards(self, orm):
+    def backwards(self):
         # Dropping ManyToManyField 'AS.maintainers'
         db.delete_table('peer_as_maintainers')
         

@@ -6,7 +6,7 @@ from noc.main.models import *
 
 class Migration:
     
-    def forwards(self, orm):
+    def forwards(self):
         
         # Adding model 'PyRule'
         db.create_table('main_pyrule', (
@@ -18,18 +18,7 @@ class Migration:
             ('changed', models.DateTimeField("Changed", auto_now=True, auto_now_add=True)),
         ))
         db.send_create_signal('main', ['PyRule'])
-        
     
-    
-    def backwards(self, orm):
-        
+    def backwards(self):
         # Deleting model 'PyRule'
         db.delete_table('main_pyrule')
-        
-    
-    
-    models = {
-        
-    }
-    
-    

@@ -7,12 +7,13 @@ from noc.lib.fields import *
 
 class Migration:
     
-    def forwards(self, orm):
+    def forwards(self):
         
         # Adding model 'PrefixListCache'
+        PeeringPoint=db.mock_model(model_name="PeeringPoint",db_table="peer_peeringpoint")
         db.create_table('peer_prefixlistcache', (
             ('id', models.AutoField(primary_key=True)),
-            ('peering_point', models.ForeignKey(orm.PeeringPoint, verbose_name="Peering Point")),
+            ('peering_point', models.ForeignKey(PeeringPoint, verbose_name="Peering Point")),
             ('name', models.CharField("Name", max_length=64)),
             ('data', InetArrayField("Data")),
             ('strict', models.BooleanField("Strict")),
@@ -23,18 +24,6 @@ class Migration:
         
     
     
-    def backwards(self, orm):
-        
+    def backwards(self):
         # Deleting model 'PrefixListCache'
         db.delete_table('peer_prefixlistcache')
-        
-    
-    
-    models = {
-        'peer.peeringpoint': {
-            '_stub': True,
-            'id': ('models.AutoField', [], {'primary_key': 'True'})
-        }
-    }
-    
-    
