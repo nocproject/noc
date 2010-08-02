@@ -17,5 +17,5 @@ class Migration:
                     [s_id,group_id])
             i+=1
     
-    def backwards(self, orm):
+    def backwards(self):
         db.execute("DELETE FROM sa_managedobjectselector WHERE name LIKE 'NOC_UA_%'")

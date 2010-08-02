@@ -6,16 +6,11 @@ from noc.fm.models import *
 
 class Migration:
     
-    def forwards(self, orm):
+    def forwards(self):
         db.create_index("fm_event",["status"])
         db.create_index("fm_event",["timestamp"])
     
     
-    def backwards(self, orm):
+    def backwards(self):
         db.delete_index("fm_event",["status"])
         db.delete_index("fm_event",["timestamp"])
-    
-    models = {
-    }
-    
-    complete_apps = ['fm']
