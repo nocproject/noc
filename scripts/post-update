@@ -24,15 +24,15 @@ info "Landing at '$PWD'"
 
 # Refresh contrib/lib when necessary
 info "Checking contrib/"
-./contrib/src/bin/sync -c
+./scripts/sync-contrib -c
 if [ $? -ne 0 ]; then
     info "Contrib is out-of-date. Rebuilding"
     # Change user when necessary
     if [ -w ./contrib/lib/ ]; then
-        ./contrib/src/bin/sync || error_exit "$LINENO: contrib sync failed"
+        ./scripts/sync-contrib || error_exit "$LINENO: contrib sync failed"
     else
         info "Changing to superuser to execute '$PWD/contrib/src/bin/sync'"
-        sudo $PWD/contrib/src/bin/sync || error_exit "$LINENO: contrib sync failed"
+        sudo $PWD/scripts/sync-contrib || error_exit "$LINENO: contrib sync failed"
     fi
 fi
 
