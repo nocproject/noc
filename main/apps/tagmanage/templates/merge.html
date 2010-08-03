@@ -1,0 +1,17 @@
+{% extends "template.html" %}
+{% block content %}
+<H1>Merge Tags</H1>
+Merge tags:
+<ul>
+    {% for t in tags %}
+    <li>{{t.name}}</li>
+    {% endfor %}
+</ul>
+into
+<form method="post">
+    <table border="0">
+        {{form.as_table}}
+    </table>
+    <input type="submit" value="Merge">
+</form>
+{% endblock %}
