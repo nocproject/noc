@@ -44,7 +44,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         se_db_updated=self.update_se_db()
         # Find and build all makefiles
-        for makefile in glob.glob("share/doc/index/Makefile")+glob.glob("share/doc/*/*/Makefile"):
+        for makefile in glob.glob("share/docs/*/*/Makefile"):
             d,f=os.path.split(makefile)
             env=os.environ.copy()
             if se_db_updated:
