@@ -10,7 +10,6 @@
 from __future__ import with_statement
 import os,sys,csv,subprocess,getopt
 ##
-##
 d=os.path.dirname(sys.argv[0])
 if d:
     os.chdir(d)
@@ -18,7 +17,7 @@ if d:
 ## Main installer class
 ##
 class Installer(object):
-    CONTRIB=os.path.join("..","..")
+    CONTRIB=os.path.abspath(os.path.join("..","contrib"))
     SRC=os.path.join(CONTRIB,"src")
     LIB=os.path.join(CONTRIB,"lib")
     BIN=os.path.join(CONTRIB,"bin")
