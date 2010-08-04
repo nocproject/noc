@@ -148,3 +148,5 @@ SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True
 ##
 LOGIN_URL="/main/auth/login/"
+## Do not enforce lowercase tags
+FORCE_LOWERCASE_TAGS=False
