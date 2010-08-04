@@ -291,7 +291,7 @@ class IPManageAppplication(Application):
                         return render_failure(request,"Duplicated IP address","Address %s is already present in VRF %s"%(form.cleaned_data["ip"],vrf.name))
                     address=IPv4Address(vrf=vrf,fqdn=form.cleaned_data["fqdn"],
                         ip=form.cleaned_data["ip"],description=form.cleaned_data["description"],
-                        tags=form.cleaned_data["tags"],tt=forms.cleaned_data["tt"])
+                        tags=form.cleaned_data["tags"],tt=form.cleaned_data["tt"])
                     status="created"
                 address.save()
                 self.message_user(request,"IP Address %s in VRF %s %s successfully"%(form.cleaned_data["ip"],str(vrf),status))
