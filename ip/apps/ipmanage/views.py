@@ -96,7 +96,7 @@ class IPManageAppplication(Application):
         prefix=forms.CharField(label="prefix",required=True)
         description=forms.CharField(label="description",required=True)
         asn=forms.ModelChoiceField(label="ASN",queryset=AS.objects.all(),required=True)
-        tags=forms.CharField(widget=AutoCompleteTags)
+        tags=forms.CharField(widget=AutoCompleteTags,required=False)
         tt=forms.IntegerField(label="TT #",required=False)
         def __init__(self,data=None,initial=None,vrf=None,block_id=None):
             forms.Form.__init__(self,data=data,initial=initial)
@@ -216,7 +216,7 @@ class IPManageAppplication(Application):
         fqdn=forms.CharField(label="FQDN",required=True)
         ip=forms.CharField(label="IP",required=True)
         description=forms.CharField(label="Description",required=False)
-        tags=forms.CharField(widget=AutoCompleteTags)
+        tags=forms.CharField(widget=AutoCompleteTags,required=False)
         tt=forms.IntegerField(label="TT #",required=False)
         def __init__(self,data=None,initial=None,vrf=None,address_id=None):
             forms.Form.__init__(self,data=data,initial=initial)
