@@ -52,11 +52,14 @@ class ConfigApplication(Application):
         ##
         ## Search for available online help
         ##
-        help_path="static/doc/en/ug/html/_sources/configuration.txt"
+        help_path="static/doc/en/nocbook/html/_sources/configuration.txt"
         help_prefix=config.replace(".","-")
-        help_href="/static/doc/en/ug/html/configuration.html#%s"
-        with open(help_path) as f:
-            help=f.read()
+        help_href="/static/doc/en/nocbook/html/configuration.html#%s"
+        if os.path.exists(help_path):
+            with open(help_path) as f:
+                help=f.read()
+        else:
+            help=""
         rx=re.compile(r"^\.\. _(%s.*?):"%help_prefix,re.MULTILINE)
         help=[x.replace("_","-") for x in rx.findall(help)]
         ##
