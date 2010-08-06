@@ -8,14 +8,9 @@
 from noc.lib.test import ApplicationTestCase
 
 class DocTestCase(ApplicationTestCase):
-    ## Test User's Guide
-    def testUG(self):
-        page=self.app.get("/main/doc/ug/",user=self.user)
-        self.assertEqual(page.status_int,302)
-        page=page.follow()
-    ## Test Administrator's Guide
-    def testAG(self):
-        page=self.app.get("/main/doc/ag/",user=self.user)
+    ## Test NOC Book
+    def test_nocbook(self):
+        page=self.app.get("/main/doc/nocbook/",user=self.user)
         self.assertEqual(page.status_int,302)
         page=page.follow()
 
