@@ -12,11 +12,11 @@ class DocApplication(Application):
     ##
     ## Redirects to the Noc Book
     ##
-    def view_(self,request):
+    def view_nocbook(self,request):
         return self.response_redirect("/static/doc/en/nocbook/html/index.html")
-    view_ag.url=r"^nocbook/$"
-    view_ag.url_name="nocbook"
-    view_ag.menu="Documentation | NOC Book"
-    view_ag.access=Permit()
+    view_nocbook.url=r"^nocbook/$"
+    view_nocbook.url_name="nocbook"
+    view_nocbook.menu="Documentation | NOC Book"
+    view_nocbook.access=Permit()
 
     
