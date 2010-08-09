@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-08-09 10:47+0400\n"
+"POT-Creation-Date: 2010-08-09 11:05+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Dmitry Volodin <dvolodin7@gmail.com>\n"
 "Language-Team: LANGUAGE <translation@nocproject.org>\n"
@@ -106,7 +106,7 @@ msgstr[1] ""
 msgid "Enter a new password for the user <strong>%(username)s</strong>."
 msgstr ""
 
-#: main/apps/user/templates/change_password.html:30
+#: main/apps/user/templates/change_password.html:30 sa/models.py:81
 msgid "Password"
 msgstr ""
 
@@ -116,6 +116,286 @@ msgstr ""
 
 #: main/apps/user/templates/change_password.html:37
 msgid "Enter the same password as above, for verification."
+msgstr ""
+
+#: sa/models.py:33 sa/models.py:72
+msgid "Administrative Domain"
+msgstr ""
+
+#: sa/models.py:34
+msgid "Administrative Domains"
+msgstr ""
+
+#: sa/models.py:35 sa/models.py:46 sa/models.py:70 sa/models.py:222
+msgid "Name"
+msgstr ""
+
+#: sa/models.py:36 sa/models.py:75 sa/models.py:223
+msgid "Description"
+msgstr ""
+
+#: sa/models.py:44 sa/models.py:73
+msgid "Activator"
+msgstr ""
+
+#: sa/models.py:45
+msgid "Activators"
+msgstr ""
+
+#: sa/models.py:47
+msgid "From IP"
+msgstr ""
+
+#: sa/models.py:48
+msgid "To IP"
+msgstr ""
+
+#: sa/models.py:49
+msgid "Auth String"
+msgstr ""
+
+#: sa/models.py:50
+msgid "Is Active"
+msgstr ""
+
+#: sa/models.py:51 sa/models.py:92
+msgid "Tags"
+msgstr ""
+
+#: sa/models.py:68 sa/models.py:459
+msgid "Managed Object"
+msgstr ""
+
+#: sa/models.py:69
+msgid "Managed Objects"
+msgstr ""
+
+#: sa/models.py:71
+msgid "Is Managed?"
+msgstr ""
+
+#: sa/models.py:74
+msgid "Profile"
+msgstr ""
+
+#: sa/models.py:77
+msgid "Scheme"
+msgstr ""
+
+#: sa/models.py:78
+msgid "Address"
+msgstr ""
+
+#: sa/models.py:79
+msgid "Port"
+msgstr ""
+
+#: sa/models.py:80 sa/models.py:317
+msgid "User"
+msgstr ""
+
+#: sa/models.py:82
+msgid "Super Password"
+msgstr ""
+
+#: sa/models.py:83
+msgid "Path"
+msgstr ""
+
+#: sa/models.py:84
+msgid "Trap Source IP"
+msgstr ""
+
+#: sa/models.py:85
+msgid "Trap Community"
+msgstr ""
+
+#: sa/models.py:86
+msgid "RO Community"
+msgstr ""
+
+#: sa/models.py:87
+msgid "RW Community"
+msgstr ""
+
+#: sa/models.py:89
+msgid "Is Configuration Managed?"
+msgstr ""
+
+#: sa/models.py:90
+msgid "Repo Path"
+msgstr ""
+
+#: sa/models.py:181
+msgid "Periodic Task"
+msgstr ""
+
+#: sa/models.py:182
+msgid "Enabled?"
+msgstr ""
+
+#: sa/models.py:183
+msgid "Run Every (secs)"
+msgstr ""
+
+#: sa/models.py:184
+msgid "Retries"
+msgstr ""
+
+#: sa/models.py:185
+msgid "Retry Delay (secs)"
+msgstr ""
+
+#: sa/models.py:186
+msgid "Timeout (secs)"
+msgstr ""
+
+#: sa/models.py:187
+msgid "Next Run"
+msgstr ""
+
+#: sa/models.py:188 sa/models.py:463
+msgid "Retries Left"
+msgstr ""
+
+#: sa/models.py:219
+msgid "Managed Object Selector"
+msgstr ""
+
+#: sa/models.py:220
+msgid "Managed Object Selectors"
+msgstr ""
+
+#: sa/models.py:224
+msgid "Is Enabled"
+msgstr ""
+
+#: sa/models.py:225
+msgid "Filter by ID"
+msgstr ""
+
+#: sa/models.py:226
+msgid "Filter by Name (REGEXP)"
+msgstr ""
+
+#: sa/models.py:227
+msgid "Filter by Profile"
+msgstr ""
+
+#: sa/models.py:228
+msgid "Filter by Address (REGEXP)"
+msgstr ""
+
+#: sa/models.py:229
+msgid "Filter by Administrative Domain"
+msgstr ""
+
+#: sa/models.py:230
+msgid "Filter by Activator"
+msgstr ""
+
+#: sa/models.py:231
+msgid "Filter by User (REGEXP)"
+msgstr ""
+
+#: sa/models.py:232
+msgid "Filter by Remote Path (REGEXP)"
+msgstr ""
+
+#: sa/models.py:233
+msgid "Filter by Description (REGEXP)"
+msgstr ""
+
+#: sa/models.py:234
+msgid "Filter by Repo Path (REGEXP)"
+msgstr ""
+
+#: sa/models.py:235
+msgid "Filter By Tags"
+msgstr ""
+
+#: sa/models.py:236
+msgid "Source Combine Method"
+msgstr ""
+
+#: sa/models.py:237
+msgid "Sources"
+msgstr ""
+
+#: sa/models.py:315 sa/models.py:316
+msgid "User Access"
+msgstr ""
+
+#: sa/models.py:318 sa/models.py:349
+msgid "Object Selector"
+msgstr ""
+
+#: sa/models.py:346 sa/models.py:347
+msgid "Group Access"
+msgstr ""
+
+#: sa/models.py:348
+msgid "Group"
+msgstr ""
+
+#: sa/models.py:372
+msgid "Map/Reduce Task"
+msgstr ""
+
+#: sa/models.py:373
+msgid "Map/Reduce Tasks"
+msgstr ""
+
+#: sa/models.py:374
+msgid "Start Time"
+msgstr ""
+
+#: sa/models.py:375
+msgid "Stop Time"
+msgstr ""
+
+#: sa/models.py:376 sa/models.py:460
+msgid "Script"
+msgstr ""
+
+#: sa/models.py:377 sa/models.py:461
+msgid "Params"
+msgstr ""
+
+#: sa/models.py:456 sa/models.py:457
+msgid "Map/Reduce Task Data"
+msgstr ""
+
+#: sa/models.py:458
+msgid "Task"
+msgstr ""
+
+#: sa/models.py:462
+msgid "Next Try"
+msgstr ""
+
+#: sa/models.py:464
+msgid "Status"
+msgstr ""
+
+#: sa/models.py:464
+msgid "Wait"
+msgstr ""
+
+#: sa/models.py:464
+msgid "Running"
+msgstr ""
+
+#: sa/models.py:464
+msgid "Complete"
+msgstr ""
+
+#: sa/models.py:464
+msgid "Failed"
+msgstr ""
+
+#: sa/models.py:465
+msgid "Result"
 msgstr ""
 
 #: templates/404.html:4 templates/404.html.py:8

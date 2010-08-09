@@ -18,6 +18,7 @@ from noc.lib.search import SearchResult
 from noc.lib.fields import PickledField,INETField,AutoCompleteTagsField
 from noc.lib.app.site import site
 from tagging.models import TaggedItem
+from django.utils.translation import ugettext_lazy as _
 
 profile_registry.register_all()
 periodic_registry.register_all()
@@ -29,10 +30,10 @@ scheme_choices=[(TELNET,"telnet"),(SSH,"ssh"),(HTTP,"http")]
 ##
 class AdministrativeDomain(models.Model):
     class Meta:
-        verbose_name="Administrative Domain"
-        verbose_name_plural="Administrative Domains"
-    name=models.CharField("Name",max_length=32,unique=True)
-    description=models.TextField("Description",null=True,blank=True)
+        verbose_name=_("Administrative Domain")
+        verbose_name_plural=_("Administrative Domains")
+    name=models.CharField(_("Name"),max_length=32,unique=True)
+    description=models.TextField(_("Description"),null=True,blank=True)
     def __unicode__(self):
         return self.name
 ##
@@ -40,14 +41,14 @@ class AdministrativeDomain(models.Model):
 ##
 class Activator(models.Model):
     class Meta:
-        verbose_name="Activator"
-        verbose_name_plural="Activators"
-    name=models.CharField("Name",max_length=32,unique=True)
-    ip=models.IPAddressField("From IP")
-    to_ip=models.IPAddressField("To IP")
-    auth=models.CharField("Auth String",max_length=64)
-    is_active=models.BooleanField("Is Active",default=True)
-    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
+        verbose_name=_("Activator")
+        verbose_name_plural=_("Activators")
+    name=models.CharField(_("Name"),max_length=32,unique=True)
+    ip=models.IPAddressField(_("From IP"))
+    to_ip=models.IPAddressField(_("To IP"))
+    auth=models.CharField(_("Auth String"),max_length=64)
+    is_active=models.BooleanField(_("Is Active"),default=True)
+    tags=AutoCompleteTagsField(_("Tags"),null=True,blank=True)
     def __unicode__(self):
         return self.name
     
@@ -64,31 +65,31 @@ class Activator(models.Model):
 ##
 class ManagedObject(models.Model):
     class Meta:
-        verbose_name="Managed Object"
-        verbose_name_plural="Managed Objects"
-    name=models.CharField("Name",max_length=64,unique=True)
-    is_managed=models.BooleanField("Is Managed?",default=True)
-    administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name="Administrative Domain")
-    activator=models.ForeignKey(Activator,verbose_name="Activator")
-    profile_name=models.CharField("Profile",max_length=128,choices=profile_registry.choices)
-    description=models.CharField("Description",max_length=256,null=True,blank=True)
+        verbose_name=_("Managed Object")
+        verbose_name_plural=_("Managed Objects")
+    name=models.CharField(_("Name"),max_length=64,unique=True)
+    is_managed=models.BooleanField(_("Is Managed?"),default=True)
+    administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name=_("Administrative Domain"))
+    activator=models.ForeignKey(Activator,verbose_name=_("Activator"))
+    profile_name=models.CharField(_("Profile"),max_length=128,choices=profile_registry.choices)
+    description=models.CharField(_("Description"),max_length=256,null=True,blank=True)
     # Access
-    scheme=models.IntegerField("Scheme",choices=scheme_choices)
-    address=models.CharField("Address",max_length=64)
-    port=models.PositiveIntegerField("Port",blank=True,null=True)
-    user=models.CharField("User",max_length=32,blank=True,null=True)
-    password=models.CharField("Password",max_length=32,blank=True,null=True)
-    super_password=models.CharField("Super Password",max_length=32,blank=True,null=True)
-    remote_path=models.CharField("Path",max_length=32,blank=True,null=True)
-    trap_source_ip=INETField("Trap Source IP",null=True,blank=True,default=None)
-    trap_community=models.CharField("Trap Community",blank=True,null=True,max_length=64)
-    snmp_ro=models.CharField("RO Community",blank=True,null=True,max_length=64)
-    snmp_rw=models.CharField("RW Community",blank=True,null=True,max_length=64)
+    scheme=models.IntegerField(_("Scheme"),choices=scheme_choices)
+    address=models.CharField(_("Address"),max_length=64)
+    port=models.PositiveIntegerField(_("Port"),blank=True,null=True)
+    user=models.CharField(_("User"),max_length=32,blank=True,null=True)
+    password=models.CharField(_("Password"),max_length=32,blank=True,null=True)
+    super_password=models.CharField(_("Super Password"),max_length=32,blank=True,null=True)
+    remote_path=models.CharField(_("Path"),max_length=32,blank=True,null=True)
+    trap_source_ip=INETField(_("Trap Source IP"),null=True,blank=True,default=None)
+    trap_community=models.CharField(_("Trap Community"),blank=True,null=True,max_length=64)
+    snmp_ro=models.CharField(_("RO Community"),blank=True,null=True,max_length=64)
+    snmp_rw=models.CharField(_("RW Community"),blank=True,null=True,max_length=64)
     # CM
-    is_configuration_managed=models.BooleanField("Is Configuration Managed?",default=True)
-    repo_path=models.CharField("Repo Path",max_length=128,blank=True,null=True)
+    is_configuration_managed=models.BooleanField(_("Is Configuration Managed?"),default=True)
+    repo_path=models.CharField(_("Repo Path"),max_length=128,blank=True,null=True)
     #
-    tags=AutoCompleteTagsField("Tags",null=True,blank=True)
+    tags=AutoCompleteTagsField(_("Tags"),null=True,blank=True)
     
     def __unicode__(self):
         return self.name
@@ -177,14 +178,14 @@ class ManagedObject(models.Model):
 ##
 ##
 class TaskSchedule(models.Model):
-    periodic_name=models.CharField("Periodic Task",max_length=64,choices=periodic_registry.choices)
-    is_enabled=models.BooleanField("Enabled?",default=False)
-    run_every=models.PositiveIntegerField("Run Every (secs)",default=86400)
-    retries=models.PositiveIntegerField("Retries",default=1)
-    retry_delay=models.PositiveIntegerField("Retry Delay (secs)",default=60)
-    timeout=models.PositiveIntegerField("Timeout (secs)",default=300)
-    next_run=models.DateTimeField("Next Run",auto_now_add=True)
-    retries_left=models.PositiveIntegerField("Retries Left",default=1)
+    periodic_name=models.CharField(_("Periodic Task"),max_length=64,choices=periodic_registry.choices)
+    is_enabled=models.BooleanField(_("Enabled?"),default=False)
+    run_every=models.PositiveIntegerField(_("Run Every (secs)"),default=86400)
+    retries=models.PositiveIntegerField(_("Retries"),default=1)
+    retry_delay=models.PositiveIntegerField(_("Retry Delay (secs)"),default=60)
+    timeout=models.PositiveIntegerField(_("Timeout (secs)"),default=300)
+    next_run=models.DateTimeField(_("Next Run"),auto_now_add=True)
+    retries_left=models.PositiveIntegerField(_("Retries Left"),default=1)
 
     def __unicode__(self):
         return self.periodic_name
@@ -215,25 +216,25 @@ class TaskSchedule(models.Model):
 ##
 class ManagedObjectSelector(models.Model):
     class Meta:
-        verbose_name="Managed Object Selector"
-        verbose_name_plural="Managed Object Selectors"
+        verbose_name=_("Managed Object Selector")
+        verbose_name_plural=_("Managed Object Selectors")
         ordering=["name"]
-    name=models.CharField("Name",max_length=64,unique=True)
-    description=models.TextField("Description",blank=True,null=True)
-    is_enabled=models.BooleanField("Is Enabled",default=True)
-    filter_id=models.IntegerField("Filter by ID",null=True,blank=True)
-    filter_name=models.CharField("Filter by Name (REGEXP)",max_length=256,null=True,blank=True)
-    filter_profile=models.CharField("Filter by Profile",max_length=64,null=True,blank=True,choices=profile_registry.choices)
-    filter_address=models.CharField("Filter by Address (REGEXP)",max_length=256,null=True,blank=True)
-    filter_administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name="Filter by Administrative Domain",null=True,blank=True)
-    filter_activator=models.ForeignKey(Activator,verbose_name="Filter by Activator",null=True,blank=True)
-    filter_user=models.CharField("Filter by User (REGEXP)",max_length=256,null=True,blank=True)
-    filter_remote_path=models.CharField("Filter by Remote Path (REGEXP)",max_length=256,null=True,blank=True)
-    filter_description=models.CharField("Filter by Description (REGEXP)",max_length=256,null=True,blank=True)
-    filter_repo_path=models.CharField("Filter by Repo Path (REGEXP)",max_length=256,null=True,blank=True)
-    filter_tags=AutoCompleteTagsField("Filter By Tags",null=True,blank=True)
-    source_combine_method=models.CharField("Source Combine Method",max_length=1,default="O",choices=[("A","AND"),("O","OR")])
-    sources=models.ManyToManyField("ManagedObjectSelector",verbose_name="Sources",symmetrical=False,null=True,blank=True)
+    name=models.CharField(_("Name"),max_length=64,unique=True)
+    description=models.TextField(_("Description"),blank=True,null=True)
+    is_enabled=models.BooleanField(_("Is Enabled"),default=True)
+    filter_id=models.IntegerField(_("Filter by ID"),null=True,blank=True)
+    filter_name=models.CharField(_("Filter by Name (REGEXP)"),max_length=256,null=True,blank=True)
+    filter_profile=models.CharField(_("Filter by Profile"),max_length=64,null=True,blank=True,choices=profile_registry.choices)
+    filter_address=models.CharField(_("Filter by Address (REGEXP)"),max_length=256,null=True,blank=True)
+    filter_administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name=_("Filter by Administrative Domain"),null=True,blank=True)
+    filter_activator=models.ForeignKey(Activator,verbose_name=_("Filter by Activator"),null=True,blank=True)
+    filter_user=models.CharField(_("Filter by User (REGEXP)"),max_length=256,null=True,blank=True)
+    filter_remote_path=models.CharField(_("Filter by Remote Path (REGEXP)"),max_length=256,null=True,blank=True)
+    filter_description=models.CharField(_("Filter by Description (REGEXP)"),max_length=256,null=True,blank=True)
+    filter_repo_path=models.CharField(_("Filter by Repo Path (REGEXP)"),max_length=256,null=True,blank=True)
+    filter_tags=AutoCompleteTagsField(_("Filter By Tags"),null=True,blank=True)
+    source_combine_method=models.CharField(_("Source Combine Method"),max_length=1,default="O",choices=[("A","AND"),("O","OR")])
+    sources=models.ManyToManyField("ManagedObjectSelector",verbose_name=_("Sources"),symmetrical=False,null=True,blank=True)
     
     def __unicode__(self):
         return self.name
@@ -311,13 +312,13 @@ class ManagedObjectSelector(models.Model):
 ##
 class UserAccess(models.Model):
     class Meta:
-        verbose_name="User Access"
-        verbose_name_plural="User Access"
-    user=models.ForeignKey(User,verbose_name="User")
-    selector=models.ForeignKey(ManagedObjectSelector,verbose_name="Object Selector")
+        verbose_name=_("User Access")
+        verbose_name_plural=_("User Access")
+    user=models.ForeignKey(User,verbose_name=_("User"))
+    selector=models.ForeignKey(ManagedObjectSelector,verbose_name=_("Object Selector"))
     
     def __unicode__(self):
-        return "(%s,%s)"%(self.user.username,self.selector.name)
+        return u"(%s,%s)"%(self.user.username,self.selector.name)
     ##
     ## Return Q object for user access
     ##
@@ -342,13 +343,13 @@ class UserAccess(models.Model):
 ##
 class GroupAccess(models.Model):
     class Meta:
-        verbose_name="Group Access"
-        verbose_name_plural="Group Access"
-    group=models.ForeignKey(Group,verbose_name="Group")
-    selector=models.ForeignKey(ManagedObjectSelector,verbose_name="Object Selector")
+        verbose_name=_("Group Access")
+        verbose_name_plural=_("Group Access")
+    group=models.ForeignKey(Group,verbose_name=_("Group"))
+    selector=models.ForeignKey(ManagedObjectSelector,verbose_name=_("Object Selector"))
     
     def __unicode__(self):
-        return "(%s,%s)"%(self.group.name,self.selector.name)
+        return u"(%s,%s)"%(self.group.name,self.selector.name)
     ##
     ## Return Q object
     ##
@@ -368,12 +369,12 @@ class GroupAccess(models.Model):
 ##
 class ReduceTask(models.Model):
     class Meta:
-        verbose_name="Map/Reduce Task"
-        verbose_name_plural="Map/Reduce Tasks"
-    start_time=models.DateTimeField("Start Time")
-    stop_time=models.DateTimeField("Stop Time")
-    reduce_script=models.CharField("Script",max_length=256,choices=reduce_script_registry.choices)
-    script_params=PickledField("Params",null=True,blank=True)
+        verbose_name=_("Map/Reduce Task")
+        verbose_name_plural=_("Map/Reduce Tasks")
+    start_time=models.DateTimeField(_("Start Time"))
+    stop_time=models.DateTimeField(_("Stop Time"))
+    reduce_script=models.CharField(_("Script"),max_length=256,choices=reduce_script_registry.choices)
+    script_params=PickledField(_("Params"),null=True,blank=True)
     
     def __unicode__(self):
         if self.id:
@@ -452,16 +453,16 @@ class ReduceTask(models.Model):
 ##
 class MapTask(models.Model):
     class Meta:
-        verbose_name="Map/Reduce Task Data"
-        verbose_name="Map/Reduce Task Data"
-    task=models.ForeignKey(ReduceTask,verbose_name="Task")
-    managed_object=models.ForeignKey(ManagedObject,verbose_name="Managed Object")
-    map_script=models.CharField("Script",max_length=256)
-    script_params=PickledField("Params",null=True,blank=True)
-    next_try=models.DateTimeField("Next Try")
-    retries_left=models.IntegerField("Retries Left",default=1)
-    status=models.CharField("Status",max_length=1,choices=[("W","Wait"),("R","Running"),("C","Complete"),("F","Failed")],default="W")
-    script_result=PickledField("Result",null=True,blank=True)
+        verbose_name=_("Map/Reduce Task Data")
+        verbose_name=_("Map/Reduce Task Data")
+    task=models.ForeignKey(ReduceTask,verbose_name=_("Task"))
+    managed_object=models.ForeignKey(ManagedObject,verbose_name=_("Managed Object"))
+    map_script=models.CharField(_("Script"),max_length=256)
+    script_params=PickledField(_("Params"),null=True,blank=True)
+    next_try=models.DateTimeField(_("Next Try"))
+    retries_left=models.IntegerField(_("Retries Left"),default=1)
+    status=models.CharField(_("Status"),max_length=1,choices=[("W",_("Wait")),("R",_("Running")),("C",_("Complete")),("F",_("Failed"))],default="W")
+    script_result=PickledField(_("Result"),null=True,blank=True)
     def __unicode__(self):
         if self.id:
             return u"%d: %s %s"%(self.id,self.managed_object,self.map_script)
