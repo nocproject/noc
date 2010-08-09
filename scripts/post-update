@@ -45,6 +45,9 @@ python manage.py migrate || error_exit "$LINENO: migrate failed"
 # Set up permissions
 info "Setting up permissions"
 python manage.py sync-perm || error_exit "$LINENO: sync-perm failed"
+# Syncronize pyRules
+info "Syncronizing pyRules"
+python manage.py sync-pyrules || error_exit "$LINENO: sync-pyrules failed"
 # Syncronize refbooks
 info "Syncronizing refbooks"
 python manage.py sync-refbooks || error_exit "$LINENO: sync-refbooks failed"
