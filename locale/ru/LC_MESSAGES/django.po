@@ -1,0 +1,197 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-08-09 10:47+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Dmitry Volodin <dvolodin7@gmail.com>\n"
+"Language-Team: LANGUAGE <translation@nocproject.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: fm/apps/eventclassificationrule/templates/change_form.html:7
+#: fm/apps/eventpostprocessingrule/templates/change_form.html:7
+#: kb/apps/kbentry/templates/change_form.html:7
+#: templates/admin/change_form.html:28
+msgid "History"
+msgstr ""
+
+#: main/apps/auth/templates/login.html:22
+msgid "Username:"
+msgstr ""
+
+#: main/apps/auth/templates/login.html:25
+msgid "Password:"
+msgstr ""
+
+#: main/apps/auth/templates/login.html:29
+msgid "Log in"
+msgstr ""
+
+#: main/apps/auth/templates/password_change_form.html:3
+#: main/apps/auth/templates/password_change_form.html:4
+#: main/apps/auth/templates/password_change_form.html:7
+msgid "Password change"
+msgstr ""
+
+#: main/apps/auth/templates/password_change_form.html:9
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+
+#: main/apps/auth/templates/password_change_form.html:15
+msgid "Change my password"
+msgstr ""
+
+#: main/apps/group/views.py:43 main/apps/user/views.py:50
+msgid "Access"
+msgstr ""
+
+#: main/apps/user/views.py:22
+msgid "Username"
+msgstr ""
+
+#: main/apps/user/views.py:23
+msgid ""
+"Required. 30 characters or fewer. Alphanumeric characters only (letters, "
+"digits and underscores)."
+msgstr ""
+
+#: main/apps/user/views.py:24
+msgid "This value must contain only letters, numbers and underscores."
+msgstr ""
+
+#: main/apps/user/views.py:47
+msgid "Personal info"
+msgstr ""
+
+#: main/apps/user/views.py:48
+msgid "User category"
+msgstr ""
+
+#: main/apps/user/views.py:49
+msgid "Groups"
+msgstr ""
+
+#: main/apps/user/views.py:51
+msgid "Important dates"
+msgstr ""
+
+#: main/apps/user/templates/change_password.html:9
+#: main/apps/user/templates/change_password.html:43
+#: templates/admin/base.html:42
+msgid "Change password"
+msgstr ""
+
+#: main/apps/user/templates/change_password.html:19
+#: templates/admin/change_form.html:39 templates/admin/change_list.html:67
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+
+#: main/apps/user/templates/change_password.html:23
+#, python-format
+msgid "Enter a new password for the user <strong>%(username)s</strong>."
+msgstr ""
+
+#: main/apps/user/templates/change_password.html:30
+msgid "Password"
+msgstr ""
+
+#: main/apps/user/templates/change_password.html:36
+msgid "Password (again)"
+msgstr ""
+
+#: main/apps/user/templates/change_password.html:37
+msgid "Enter the same password as above, for verification."
+msgstr ""
+
+#: templates/404.html:4 templates/404.html.py:8
+msgid "Page not found"
+msgstr ""
+
+#: templates/404.html:10
+msgid "We're sorry, but the requested page could not be found."
+msgstr ""
+
+#: templates/500.html:4
+msgid "Server error"
+msgstr ""
+
+#: templates/500.html:6
+msgid "Server error (500)"
+msgstr ""
+
+#: templates/500.html:10
+msgid "Server Error <em>(500)</em>"
+msgstr ""
+
+#: templates/500.html:11
+msgid ""
+"There's been an error. It's been reported to the site administrators via e-"
+"mail and should be fixed shortly. Thanks for your patience."
+msgstr ""
+
+#: templates/admin/base.html:38
+msgid "Welcome,"
+msgstr ""
+
+#: templates/admin/base.html:43
+msgid "Log out"
+msgstr ""
+
+#: templates/admin/base.html:53 templates/admin/change_list.html:138
+msgid "Home"
+msgstr ""
+
+#: templates/admin/change_form.html:21
+msgid "Add"
+msgstr ""
+
+#: templates/admin/change_form.html:29
+msgid "View on site"
+msgstr ""
+
+#: templates/admin/change_list.html:55 templates/admin/change_list.html:150
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: templates/admin/change_list.html:78
+msgid "Filter"
+msgstr ""
+
+#: templates/admin/delete_confirmation.html:8
+msgid "Delete"
+msgstr ""
+
+#: templates/admin/delete_confirmation.html:13
+#, python-format
+msgid ""
+"Deleting the %(object_name)s '%(escaped_object)s' would result in deleting "
+"related objects, but your account doesn't have permission to delete the "
+"following types of objects:"
+msgstr ""
+
+#: templates/admin/delete_confirmation.html:20
+#, python-format
+msgid ""
+"Are you sure you want to delete the %(object_name)s \"%(escaped_object)s\"? "
+"All of the following related items will be deleted:"
+msgstr ""
+
+#: templates/admin/delete_confirmation.html:25
+msgid "Yes, I'm sure"
+msgstr ""
