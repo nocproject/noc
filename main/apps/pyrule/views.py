@@ -25,7 +25,8 @@ class PyRuleForm(forms.ModelForm):
 
 class PyRuleAdmin(admin.ModelAdmin):
     form=PyRuleForm
-    list_display=["name","interface"]
+    list_display=["name","interface","is_builtin"]
+    list_filter=["is_builtin"]
     search_fields=["name"]
 ##
 ## PyRule application
