@@ -275,6 +275,7 @@ class PyRule(models.Model):
     interface=models.CharField("Interface",max_length=64,choices=[(i,i) for i in interface_registry])
     description=models.TextField("Description")
     text=models.TextField("Text")
+    is_builtin=models.BooleanField("Is Builtin",default=False)
     changed=models.DateTimeField("Changed",auto_now=True,auto_now_add=True)
     # Compiled pyRules cache
     compiled_pyrules={}
@@ -283,6 +284,10 @@ class PyRule(models.Model):
     NoPyRule=NoPyRuleException
     def __unicode__(self):
         return self.name
+    # Check syntax
+    def save(self,**kwargs):
+        self.compile_text(self.text)
+        super(PyRule,self).save(**kwargs)
     # Returns an interface class
     def _interface_class(self):
         return interface_registry[self.interface]
@@ -290,13 +295,23 @@ class PyRule(models.Model):
     ##
     @classmethod
     def compile_text(self,text):
-        d={}
+        # Built-in pyRule decorator
+        def pyrule(f):
+            f.is_pyrule=True
+            return f
+        # Inject @pyrule decorator into namespace
+        d={"pyrule":pyrule}
+        # Compile text
         exec text.replace("\r\n","\n") in d
-        if "rule" not in d:
-            raise SyntaxError,"No 'rule' symbol defined"
-        rule=d["rule"]
+        # Find marked pyrule
+        rules=[r for r in d.values() if hasattr(r,"is_pyrule") and r.is_pyrule]
+        if len(rules)<1:
+            raise SyntaxError("No @pyrule decorated symbol found")
+        if len(rules)!=1:
+            raise SyntaxError("More than one @pyrule deorated symbols found")
+        rule=rules[0]
         if not callable(rule):
-            raise SyntaxError,"'rule' is not callable"
+            raise SyntaxError("Rule is not callable")
         return rule
     ##
     ## Call pyRule
