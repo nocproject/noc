@@ -1,0 +1,2 @@
+#!/bin/sh
+python manage.py makemessages -a -i 'contrib/*' -i 'static/*' -i 'local/*' -i 'share/*'
