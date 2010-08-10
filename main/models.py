@@ -319,7 +319,7 @@ class PyRule(models.Model):
     ##
     ## Call pyRule
     ##
-    def _call(self,**kwargs):
+    def __call__(self,**kwargs):
         t=datetime.datetime.now()
         # Try to get compiled rule from cache
         with self.compiled_lock:
@@ -348,7 +348,7 @@ class PyRule(models.Model):
             rule=PyRule.objects.get(name=py_rule_name)
         except PyRule.DoesNotExist:
             raise cls.NoPyRule
-        return rule._call(**kwargs)
+        return rule(**kwargs)
 ##
 ## Search patters
 ##
