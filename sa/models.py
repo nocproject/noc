@@ -9,9 +9,9 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User,Group
 import datetime,random,cPickle,time,types
+from noc.main.models import PyRule
 from noc.sa.profiles import profile_registry
 from noc.sa.periodic import periodic_registry
-from noc.sa.scripts import reduce_script_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.lib.search import SearchResult
@@ -19,11 +19,11 @@ from noc.lib.fields import PickledField,INETField,AutoCompleteTagsField
 from noc.lib.app.site import site
 from tagging.models import TaggedItem
 from django.utils.translation import ugettext_lazy as _
+import re
 
 profile_registry.register_all()
 periodic_registry.register_all()
 script_registry.register_all()
-reduce_script_registry.register_all()
 scheme_choices=[(TELNET,"telnet"),(SSH,"ssh"),(HTTP,"http")]
 ##
 ##
@@ -367,20 +367,34 @@ class GroupAccess(models.Model):
 ##
 ## Reduce Tasks
 ##
+rx_pyrule=re.compile(r"^pyrule:(?P<name>\S+)$")
 class ReduceTask(models.Model):
     class Meta:
         verbose_name=_("Map/Reduce Task")
         verbose_name_plural=_("Map/Reduce Tasks")
     start_time=models.DateTimeField(_("Start Time"))
     stop_time=models.DateTimeField(_("Stop Time"))
-    reduce_script=models.CharField(_("Script"),max_length=256,choices=reduce_script_registry.choices)
+    script=models.TextField(_("Script"))
     script_params=PickledField(_("Params"),null=True,blank=True)
     
     def __unicode__(self):
         if self.id:
-            return u"%d: %s"%(self.id,self.reduce_script)
+            return u"%d"%(self.id)
         else:
-            return u"New: %s"%(self.reduce_script)
+            return u"New: %s"%id(self)
+    ##
+    ##
+    ##
+    def save(self,**kwargs):
+        match=rx_pyrule.match(self.script)
+        if match:
+            # Reference to existing pyrule
+            r=PyRule.objects.get(name=match.group("name"),interface="IReduceTask")
+            self.script=r.text
+        # Check syntax
+        PyRule.compile_text(self.script)
+        # Save
+        super(ReduceTask,self).save(**kwargs)
     ##
     ## Check all map tasks are completed
     ##
@@ -397,7 +411,7 @@ class ReduceTask(models.Model):
         r_task=ReduceTask(
             start_time=start_time,
             stop_time=start_time+datetime.timedelta(seconds=timeout),
-            reduce_script=reduce_script,
+            script=reduce_script,
             script_params=reduce_script_params,
         )
         r_task.save()
@@ -433,7 +447,7 @@ class ReduceTask(models.Model):
     ## Perform reduce script and execute result
     ##
     def get_result(self):
-        return reduce_script_registry[self.reduce_script].execute(self)
+        return PyRule.compile_text(self.script)(self,**self.script_params)
     ##
     ## Wait untill all task complete
     ##
