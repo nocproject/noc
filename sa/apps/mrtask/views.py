@@ -8,17 +8,19 @@
 from django import forms
 from django.shortcuts import get_object_or_404
 from noc.lib.app import Application,HasPerm
-from noc.sa.models import script_registry,ReduceTask,ManagedObjectSelector,reduce_script_registry
+from noc.sa.models import ReduceTask,ManagedObjectSelector
 ##
 ## Available scripts
 ##
-map_script_choices=[(x,x) for x in sorted(set([x.split(".")[2] for x in script_registry.classes.keys() if not x.startswith("Generic.")]))]
+script_registry=[]
+reduce_script_registry=[]
+map_script_choices=[] #[(x,x) for x in sorted(set([x.split(".")[2] for x in script_registry.classes.keys() if not x.startswith("Generic.")]))]
 ##
 ## Map/Reduce Task Form
 ##
 class MRTaskForm(forms.Form):
     selector=forms.ModelChoiceField(queryset=ManagedObjectSelector.objects)
-    reduce_script=forms.ChoiceField(choices=reduce_script_registry.choices)
+    reduce_script=forms.ChoiceField(choices=reduce_script_registry)
     reduce_script_params=forms.CharField(required=False)
     map_script=forms.ChoiceField(choices=map_script_choices)
     map_script_params=forms.CharField(required=False)
