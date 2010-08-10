@@ -10,4 +10,4 @@
 from base import *
 
 class IEvent(Interface):
-    task=InstanceOfParameter("Event")
+    event=InstanceOfParameter("Event")
