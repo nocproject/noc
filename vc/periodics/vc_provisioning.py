@@ -34,8 +34,8 @@ class Task(noc.sa.periodic.Task):
                 if not vc_list:
                     continue # Refuse to drop all vlans on switches
                 task=ReduceTask.create_task(object_selector=c.selector,
-                    reduce_script="VlanProvisioningReport",
-                    reduce_script_params=c.id,
+                    reduce_script="pyrule:vc_provisioning",
+                    reduce_script_params={"config":c},
                     map_script="sync_vlans",
                     map_script_params={"vlans":vc_list,"tagged_ports":c.tagged_ports_list},
                     timeout=TIMEOUT)
