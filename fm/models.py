@@ -306,7 +306,8 @@ class EventClass(models.Model):
     last_modified=models.DateTimeField("last_modified",auto_now=True)
     repeat_suppression=models.BooleanField("Repeat Suppression",default=False)
     repeat_suppression_interval=models.IntegerField("Repeat Suppression interval (secs)",default=3600)
-    rule=models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True)
+    rule=models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True,
+        limit_choices_to={"interface":"IEvent"})
     is_builtin=models.BooleanField("Is Builtin",default=False)
     
     def __unicode__(self):
@@ -464,7 +465,8 @@ class EventPostProcessingRule(models.Model):
     change_category=models.ForeignKey(EventCategory,verbose_name="Change Category to",blank=True,null=True)
     action=models.CharField("Action",max_length=1,choices=[("A","Make Active"),("C","Close"),("D","Drop")],default="A")
     notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group",null=True,blank=True)
-    rule=models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True)
+    rule=models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True,
+        limit_choices_to={"interface":"IEvent"})
     def __unicode__(self):
         return self.name
     ##
