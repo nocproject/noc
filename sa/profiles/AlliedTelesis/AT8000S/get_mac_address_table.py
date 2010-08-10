@@ -12,7 +12,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetMACAddressTable
 import re
 
-rx_line=re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+(?P<interfaces>[ge]\d+)\s+(?P<type>\w+)$")
+rx_line=re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+(?P<interfaces>(?:\d/)?[ge]\d+)\s+(?P<type>\w+)$")
 
 class Script(noc.sa.script.Script):
     name="AlliedTelesis.AT8000S.get_mac_address_table"

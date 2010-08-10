@@ -3,7 +3,7 @@
 ## Vendor: Allied Telesis
 ## OS:     AT8000S
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## coded by azhur
 ## See LICENSE for details
 ##----------------------------------------------------------------------
@@ -16,12 +16,15 @@ class Profile(noc.sa.profiles.Profile):
     name="AlliedTelesis.AT8000S"
     supported_schemes=[TELNET,SSH]
     pattern_username="User Name:"
-    pattern_more="^More: <space>,  Quit: q, One line: <return>"
-    command_more=" "
     pattern_unpriveleged_prompt=r"^\S+?>"
     pattern_prompt=r"^\S+?#"
+    pattern_more=[
+        (r"^More: <space>,  Quit: q, One line: <return>"," "),
+        (r"^.*?\[Yes/press any key for no\]\.*"),
+        ]
     command_super="enable"
     command_enter_config="configure"
-    command_leave_config="exit"
+    command_leave_config="end"
     command_save_config="copy running-config startup-config"
-    config_volatile=["^(?P<day>3[01]|[0-2]{0,1}\d)-(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(?P<year>\d{4}) (?P<time>\d\d:\d\d:\d\d) %\W*"]
+    command_disable_pager="terminal datadump"
+    config_volatile=[r"^\s*(?P<day>3[01]|[0-2]{0,1}\d)-(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(?P<year>\d{4}) (?P<time>\d\d:\d\d:\d\d) %\W*"]
