@@ -11,14 +11,11 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.vc.models import VCDomainProvisioningConfig
-
 @pyrule
-def vc_provisioning(cls,task,config_id):
-    cfg=VCDomainProvisioningConfig.objects.get(id=task.script_params)
+def vc_provisioning(task,config):
     created={}
     removed={}
-    for mt in task.maptask_set.all():
+    for mt in task.maptask_set.filter(status="C"):
         r=mt.script_result
         if not r:
             continue
@@ -32,7 +29,7 @@ def vc_provisioning(cls,task,config_id):
                 removed[vlan]=[mt.managed_object.name]
             else:
                 removed[vlan]+=[mt.managed_object.name]
-    notification_group=cfg.notification_group
+    notification_group=config.notification_group
     if notification_group and (created or removed):
         r=[]
         if created:
@@ -43,5 +40,5 @@ def vc_provisioning(cls,task,config_id):
             r+=["Removed VLANs"]
             for vlan in sorted(removed.keys()):
                 r+=["    %d: %s"%(vlan,", ".join([n for n in sorted(removed[vlan])]))]
-        notification_group.notify(subject="VLAN Provisioning Report for Domain '%s'"%cfg.vc_domain.name,
+        notification_group.notify(subject="VLAN Provisioning Report for Domain '%s'"%config.vc_domain.name,
             body="\n".join(r))
