@@ -266,6 +266,7 @@ class MIMEType(models.Model):
 ## pyRule
 ##
 class NoPyRuleException(Exception): pass
+rx_coding=re.compile(r"^#\s*-\*-\s*coding:\s*\S+\s*-\*-\s*$",re.MULTILINE)
 
 class PyRule(models.Model):
     class Meta:
@@ -286,7 +287,7 @@ class PyRule(models.Model):
         return self.name
     # Check syntax
     def save(self,**kwargs):
-        self.compile_text(self.text)
+        self.compile_text(unicode(self.text))
         super(PyRule,self).save(**kwargs)
     # Returns an interface class
     def _interface_class(self):
@@ -301,8 +302,10 @@ class PyRule(models.Model):
             return f
         # Inject @pyrule decorator into namespace
         d={"pyrule":pyrule}
+        # Remove coding declarations and \r
+        text=rx_coding.sub("",text.replace("\r\n","\n"))
         # Compile text
-        exec text.replace("\r\n","\n") in d
+        exec text in d
         # Find marked pyrule
         rules=[r for r in d.values() if hasattr(r,"is_pyrule") and r.is_pyrule]
         if len(rules)<1:
