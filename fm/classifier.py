@@ -154,7 +154,7 @@ class Classifier(Daemon):
         logging.info("%d rules are loaded"%len(self.rules))
         logging.info("Compiling templates")
         self.templates=dict([(ec.id,(Template(ec.subject_template),Template(ec.body_template))) for ec in EventClass.objects.all()])
-        logging.info("%d templates are compiled"%len(self.templates)*2)
+        logging.info("%d templates are compiled"%len(self.templates))
         logging.info("Loading post-process rules")
         self.post_process={}
         n=0
@@ -196,23 +196,7 @@ class Classifier(Daemon):
                 return # Event is suppressed, no further processing
             event_category=event_class.category
             event_priority=event_class.default_priority
-            # Find post-processing rule
-            post_process=self.find_post_processing_rule(event,vars)
-            if post_process:
-                # Notify if necessary
-                if post_process.rule.notification_group:
-                    post_process.rule.notification_group.notify(subject=event.subject,body=event.body)
-                if post_process.rule.action=="D": # Drop event if required by post_process_rule
-                    self.drop_event(event)
-                    return
-                if post_process.rule.change_category:
-                    event_category=post_process.rule.change_category # Set up priority and category from rule
-                if post_process.rule.change_priority:
-                    event_priority=post_process.rule.change_priority
-                status=post_process.rule.action
             event.log("CLASSIFICATION RULE: %s"%rule.name,to_status=status)
-            if post_process:
-                event.log("POST-PROCESS RULE: %s"%post_process.name,from_status=status,to_status=status)
         else:
             # Set event class to DEFAULT when no matching rule found
             event_class=EventClass.objects.get(name="DEFAULT")
@@ -251,10 +235,32 @@ class Classifier(Daemon):
             EventData(event=event,key=k,value=bin_quote(v),type="R").save()
         for k,v in vars.items():
             EventData(event=event,key=k,value=bin_quote(v),type="V").save()
-        # Finally run event class rule when defined
+        # Run event class rule when defined
         if event.event_class.rule:
             logging.debug("Executing pyRule %s(%d)"%(event.event_class.rule,event.id))
             event.event_class.rule(event=event)
+            # Check event is deleted in rule
+            try:
+                Event.objects.get(id=event.id)
+            except Event.DoesNotExist:
+                return
+        # Find post-processing rule
+        post_process=self.find_post_processing_rule(event,vars)
+        if post_process:
+            # Notify if necessary
+            if post_process.rule.notification_group:
+                post_process.rule.notification_group.notify(subject=event.subject,body=event.body)
+            if post_process.rule.action=="D": # Drop event if required by post_process_rule
+                self.drop_event(event)
+                return
+            if post_process.rule.change_category:
+                event_category=post_process.rule.change_category # Set up priority and category from rule
+            if post_process.rule.change_priority:
+                event_priority=post_process.rule.change_priority
+            if post_process.rule.rule:
+                post_process.rule.rule(event=event)
+            status=post_process.rule.action
+            event.log("POST-PROCESSING RULE: %s"%post_process.name,from_status=status,to_status=status)
     ##
     ## Return event source
     ##
