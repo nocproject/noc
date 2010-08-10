@@ -614,9 +614,10 @@ class SAE(Daemon):
                     variation=10
                     timeout=random.randint(-timeout/variation,timeout/variation)
                     next_try=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
-                    if next_try<mt.task.stop_time: # Check we're still in task time
+                    if mt.retries_left and next_try<mt.task.stop_time: # Check we're still in task time and have retries left
                         logging.debug("Retry task: %d"%mt_id)
                         mt.next_try=next_try
+                        mt.retries_left-=1
                         mt.status="W"
                         mt.save()
                         return
