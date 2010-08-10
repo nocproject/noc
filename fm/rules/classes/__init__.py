@@ -113,7 +113,8 @@ class EventClass(object):
             ec.body_template=cls.body_template
             ec.repeat_suppression=cls.repeat_suppression
             ec.repeat_suppression_interval=cls.repeat_suppression_interval
-            ec.rule=rule
+            if rule and not ec.rule:
+                ec.rule=rule
             ec.is_builtin=True
             print "UPDATE CLASS %s"%cls.name
         except noc.fm.models.EventClass.DoesNotExist:
