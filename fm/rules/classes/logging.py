@@ -20,7 +20,6 @@ class LoggingStarted(EventClass):
     body_template="""Logging started: {{host}}:{{port}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         host=Var(required=True,repeat=False)
         port=Var(required=True,repeat=False)
@@ -39,7 +38,6 @@ class LoggedCommand(EventClass):
 ---"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         command=Var(required=True,repeat=False)
         user=Var(required=True,repeat=False)

@@ -19,7 +19,6 @@ class RADIUSAlive(EventClass):
     body_template="""Radius server responding: {{ip}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         ip=Var(required=True,repeat=False)
 ##
@@ -33,6 +32,5 @@ class RADIUSDead(EventClass):
     body_template="""Radius server not responding: {{ip}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         ip=Var(required=True,repeat=False)

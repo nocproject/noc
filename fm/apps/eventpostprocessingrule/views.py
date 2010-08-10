@@ -24,10 +24,10 @@ class EventPostProcessingRuleAdmin(admin.ModelAdmin):
             "fields": ("name","event_class","preference","is_active","description","time_pattern","managed_object_selector")}
         ),
         ("Action",{
-            "fields": ("action","change_priority","change_category","notification_group")
+            "fields": ("action","change_priority","change_category","notification_group","rule")
         }),
     )
-    list_display=["name","event_class","preference","is_active","action","change_priority","change_category"]
+    list_display=["name","event_class","preference","is_active","action","change_priority","change_category","rule"]
     search_fields=["name"]
     list_filter=["is_active","event_class"]
     inlines=[EventPostProcessingREAdmin]

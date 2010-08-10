@@ -7,9 +7,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.fm.models import EventCategory,EventPriority,EventClassVar,event_trigger_registry
+from noc.fm.models import EventCategory,EventPriority,EventClassVar
 import noc.fm.models
-import re
+from noc.main.models import PyRule
+import re,sys
 
 rx_var=re.compile("{{([^}]+)}}")
 ##
@@ -87,16 +88,22 @@ class EventClass(object):
     body_template=""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
+    rule=None
     class Vars: pass
     ##
     ## Syncronize class with database
     ##
     @classmethod
     def sync(cls):
-        # Check trigger
-        if cls.trigger and cls.trigger not in event_trigger_registry.classes:
-            raise "Invalid event trigger: %s"%cls.trigger
+        # Check rule
+        if cls.rule:
+            try:
+                rule=PyRule.objects.get(name=cls.rule)
+            except PyRule.DoesNotExist:
+                print "pyRule '%s' not found. exiting..."%cls.rule
+                sys.exit(1)
+        else:
+            rule=None
         # Create/update event class
         try:
             ec=noc.fm.models.EventClass.objects.get(name=cls.name)
@@ -106,7 +113,7 @@ class EventClass(object):
             ec.body_template=cls.body_template
             ec.repeat_suppression=cls.repeat_suppression
             ec.repeat_suppression_interval=cls.repeat_suppression_interval
-            ec.trigger=cls.trigger
+            ec.rule=rule
             ec.is_builtin=True
             print "UPDATE CLASS %s"%cls.name
         except noc.fm.models.EventClass.DoesNotExist:
@@ -118,7 +125,7 @@ class EventClass(object):
                 body_template=cls.body_template,
                 repeat_suppression=cls.repeat_suppression,
                 repeat_suppression_interval=cls.repeat_suppression_interval,
-                trigger=cls.trigger,
+                rule=rule,
                 is_builtin=True)
             print "CREATE CLASS %s"%cls.name
         ec.save()

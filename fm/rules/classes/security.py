@@ -21,7 +21,6 @@ Packets count: {{count}}
 Direction: {{src_ip}}:{{src_port}} -> {{dst_ip}}:{{dst_port}}"""
     repeat_suppression=True
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         acl_name=Var(required=False,repeat=False)
         count=Var(required=False,repeat=False)
@@ -44,7 +43,6 @@ Packets count: {{count}}
 Direction: {{src_ip}}:{{src_port}} -> {{dst_ip}}:{{dst_port}}"""
     repeat_suppression=True
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         acl_name=Var(required=False,repeat=False)
         count=Var(required=False,repeat=False)
@@ -68,7 +66,6 @@ IP: {{ip}}
 """
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         user=Var(required=True,repeat=False)
         ip=Var(required=True,repeat=False)
@@ -86,7 +83,6 @@ User: {{user}}
 Ip: {{ip}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         user=Var(required=True,repeat=False)
         ip=Var(required=True,repeat=False)
@@ -104,7 +100,6 @@ User: {{user}}
 IP: {{ip}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         user=Var(required=True,repeat=False)
         ip=Var(required=True,repeat=False)

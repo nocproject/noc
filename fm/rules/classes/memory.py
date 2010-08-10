@@ -19,4 +19,3 @@ class MemoryAllocationError(EventClass):
     body_template="""Memory allocation error"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None

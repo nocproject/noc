@@ -19,7 +19,6 @@ class LBPoolMemberDown(EventClass):
     body_template="""Pool member {{node}}:{{port}} marked as DOWN"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         node=Var(required=True,repeat=False)
         port=Var(required=True,repeat=False)
@@ -34,7 +33,6 @@ class LBPoolMemberUp(EventClass):
     body_template="""Pool member {{node}}:{{port}} is up again"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         node=Var(required=True,repeat=False)
         port=Var(required=True,repeat=False)

@@ -23,7 +23,6 @@ Service: {{service}}
 Result: OK"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         probe_name=Var(required=True,repeat=False)
         probe_type=Var(required=True,repeat=False)
@@ -44,7 +43,6 @@ Service: {{service}}
 Result: OK"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         probe_name=Var(required=True,repeat=False)
         probe_type=Var(required=True,repeat=False)
@@ -65,7 +63,6 @@ Result: WARNING
 Message: {{message}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         probe_name=Var(required=True,repeat=False)
         probe_type=Var(required=True,repeat=False)
@@ -86,7 +83,6 @@ Result: FAIL
 Message: {{message}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         probe_name=Var(required=True,repeat=False)
         probe_type=Var(required=True,repeat=False)

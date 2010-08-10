@@ -19,7 +19,6 @@ class PortTrunkStatusChange(EventClass):
     body_template="""Port {{ifindex}} changed trunk status to {{status}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         ifindex=Var(required=True,repeat=False)
         status=Var(required=True,repeat=False)
@@ -34,6 +33,5 @@ class AutonegatiationFailed(EventClass):
     body_template="""Link speed and duplex mode negotiation had beed failed at port {{interface}}"""
     repeat_suppression=True
     repeat_suppression_interval=600
-    trigger=None
     class Vars:
         interface=Var(required=True,repeat=False)

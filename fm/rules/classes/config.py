@@ -20,7 +20,7 @@ class ConfigChanged(EventClass):
     body_template="""Equipment configuration changed"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger="on_config_changed"
+    rule="refresh_config"
     class Vars:
         user=Var(required=False)
 ##
@@ -34,4 +34,3 @@ class ConfigSynced(EventClass):
     body_template="""Config has been synced"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None

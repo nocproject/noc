@@ -19,6 +19,5 @@ class DHCPDAddressConflict(EventClass):
     body_template="""DHCPD detects address conflict: {{ip}}"""
     repeat_suppression=True
     repeat_suppression_interval=600
-    trigger=None
     class Vars:
         ip=Var(required=True,repeat=False)
