@@ -269,15 +269,32 @@ class InstanceOfParameter(Parameter):
     Traceback (most recent call last):
     ...
     InterfaceTypeError: InstanceOfParameter: 1
+    >>> InstanceOfParameter(cls="C").clean(C()) and "Ok"
+    'Ok'
+    >>> InstanceOfParameter(cls="C").clean(1) and "Ok"
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: InstanceOfParameter: 1
     """
     def __init__(self,cls,required=True,default=None):
         super(InstanceOfParameter,self).__init__(required=required,default=default)
         self.cls=cls
+        if isinstance(cls,basestring):
+            self.is_valid=self.is_valid_classname
+        else:
+            self.is_valid=self.is_valid_instance
+    
+    def is_valid_instance(self,value):
+        return isinstance(value,self.cls)
+    
+    def is_valid_classname(self,value):
+        return hasattr(value,"__class__") and value.__class__.__name__==self.cls
+        
     def clean(self,value):
         if value is None and self.default is not None:
             return self.default
         try:
-            if isinstance(value,self.cls):
+            if self.is_valid(value):
                 return value
         except:
             pass
