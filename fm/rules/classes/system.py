@@ -97,7 +97,6 @@ class PeriodicSuccess(EventClass):
     body_template="""Task {{task}} completed successfully"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         task=Var(required=True,repeat=False)
 ##
@@ -111,6 +110,5 @@ class PeriodicFailed(EventClass):
     body_template="""Periodic task {{task}} failed!"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         task=Var(required=True,repeat=False)

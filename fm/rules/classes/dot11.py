@@ -76,7 +76,6 @@ class CCMPReplay(EventClass):
     body_template="""AES-CCMP TSC replay was indicated on a frame. A replay of the AES-CCMP TSC in a received packet almost indicates an active attack."""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         mac=Var(required=True,repeat=False)
 ##
@@ -90,7 +89,6 @@ class WDSAuthenticationTimeout(EventClass):
     body_template="""AP Timed out authenticating to the WDS"""
     repeat_suppression=False
     repeat_suppression_interval=0
-    trigger=None
 ##
 ## Rogue AP Detected
 ##
@@ -103,7 +101,6 @@ class RogueAPDetected(EventClass):
 Rogue AP SSID is: {{ssid}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         mac=Var(required=True,repeat=False)
         ap=Var(required=False,repeat=False)
@@ -120,7 +117,6 @@ class RogueAPRemoved(EventClass):
     body_template="""Roque AP {{mac}} has left {{ap}} area"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         ap=Var(required=True,repeat=False)
         mac=Var(required=True,repeat=False)

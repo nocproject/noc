@@ -251,8 +251,10 @@ class Classifier(Daemon):
             EventData(event=event,key=k,value=bin_quote(v),type="R").save()
         for k,v in vars.items():
             EventData(event=event,key=k,value=bin_quote(v),type="V").save()
-        # Finally run event class trigger
-        event.event_class.run_trigger(event)
+        # Finally run event class rule when defined
+        if event.event_class.rule:
+            logging.debug("Executing pyRule %s(%d)"%(event.event_class.rule,event.id))
+            event.event_class.rule(event=event)
     ##
     ## Return event source
     ##

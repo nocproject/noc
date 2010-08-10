@@ -20,6 +20,5 @@ class BadDNSQuery(EventClass):
     body_template="""Bad DNS Query from: {{ip}}"""
     repeat_suppression=True
     repeat_suppression_interval=600
-    trigger=None
     class Vars:
         ip=Var(required=True,repeat=True)

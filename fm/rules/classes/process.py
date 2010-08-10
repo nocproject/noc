@@ -20,7 +20,6 @@ class ProcessTraceback(EventClass):
 PID: {{pid}}"""
     repeat_suppression=False
     repeat_suppression_interval=3600
-    trigger=None
     class Vars:
         pid=Var(required=False,repeat=False)
         process=Var(required=False,repeat=False)

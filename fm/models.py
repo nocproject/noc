@@ -8,14 +8,11 @@
 from __future__ import with_statement
 from django.db import models
 from noc.sa.models import ManagedObject,ManagedObjectSelector
-from noc.main.models import TimePattern,NotificationGroup
+from noc.main.models import TimePattern,NotificationGroup,PyRule
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
-from noc.fm.triggers import event_trigger_registry
 import imp,subprocess,tempfile,os,datetime,re,random
 
-##
-event_trigger_registry.register_all()
 ##
 ## Python quote helper
 ##
@@ -309,18 +306,11 @@ class EventClass(models.Model):
     last_modified=models.DateTimeField("last_modified",auto_now=True)
     repeat_suppression=models.BooleanField("Repeat Suppression",default=False)
     repeat_suppression_interval=models.IntegerField("Repeat Suppression interval (secs)",default=3600)
-    trigger=models.CharField("Trigger",max_length=64,null=True,blank=True,choices=event_trigger_registry.choices)
+    rule=models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True)
     is_builtin=models.BooleanField("Is Builtin",default=False)
     
     def __unicode__(self):
         return self.name
-    
-    ##
-    ## Run trigger if defined
-    ##
-    def run_trigger(self,event):
-        if self.trigger and self.trigger in event_trigger_registry.classes:
-            event_trigger_registry.classes[self.trigger]().handle(event)
     ##
     ## Python representation of data structure
     ##
@@ -334,10 +324,8 @@ class EventClass(models.Model):
         s+=["    body_template=\"\"\"%s\"\"\""%self.body_template]
         s+=["    repeat_suppression=%s"%self.repeat_suppression]
         s+=["    repeat_suppression_interval=%d"%self.repeat_suppression_interval]
-        if self.trigger:
-            s+=["    trigger=\"%s\""%self.trigger]
-        else:
-            s+=["    trigger=None"]
+        if self.rule:
+            s+=["    rule=\"%s\""%self.rule.name]
         vars=list(self.eventclassvar_set.all())
         if vars:
             s+=["    class Vars:"]
@@ -476,6 +464,7 @@ class EventPostProcessingRule(models.Model):
     change_category=models.ForeignKey(EventCategory,verbose_name="Change Category to",blank=True,null=True)
     action=models.CharField("Action",max_length=1,choices=[("A","Make Active"),("C","Close"),("D","Drop")],default="A")
     notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group",null=True,blank=True)
+    rule=models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True)
     def __unicode__(self):
         return self.name
     ##
