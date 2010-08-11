@@ -534,7 +534,7 @@ class CLI(StreamFSM):
     def on_PROMPT_PAGER(self):
         pg=self.match.group(0)
         for p,c in zip(self.more_patterns,self.more_commands):
-            if re.match(p,pg):
+            if re.search(p,pg,re.DOTALL|re.MULTILINE):
                 self.write(c)
                 return
         raise Exception("Unexpected pager pattern")
