@@ -91,8 +91,8 @@ class PickledField(models.Field):
     def db_type(self):
         return "TEXT"
     def to_python(self,value):
-        if not value:
-            return None
+        #if not value:
+        #    return None
         try:
             return cPickle.loads(str(value))
         except:
