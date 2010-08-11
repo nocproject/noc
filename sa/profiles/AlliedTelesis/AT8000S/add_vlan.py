@@ -15,14 +15,14 @@ from noc.sa.interfaces import IAddVlan
 class Script(noc.sa.script.Script):
     name="AlliedTelesis.AT8000S.add_vlan"
     implements=[IAddVlan]
-    def execute(self,vlan_id,vlan_name,tagged_ports):
+    def execute(self,vlan_id,name,tagged_ports):
         with self.configure():
             if not self.scripts.has_vlan(vlan_id=vlan_id):
                 self.cli("vlan database")
                 self.cli("vlan %d"%vlan_id)
                 self.cli("exit")
                 self.cli("interface vlan %d"%vlan_id)
-                self.cli("name %s"%vlan_name)
+                self.cli("name %s"%name)
                 self.cli("exit")
             for p in tagged_ports:
                 self.cli("interface ethernet %s"%p)

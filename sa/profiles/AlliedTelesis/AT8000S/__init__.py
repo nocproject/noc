@@ -20,7 +20,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^\S+?#"
     pattern_more=[
         (r"^More: <space>,  Quit: q, One line: <return>"," "),
-        (r"^.*?\[Yes/press any key for no\]\.*"),
+        (r"^.*?\[Yes/press any key for no\]\.*","Y"),
         ]
     command_super="enable"
     command_enter_config="configure"
