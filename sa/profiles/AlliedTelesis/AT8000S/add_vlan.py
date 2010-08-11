@@ -16,8 +16,9 @@ class Script(noc.sa.script.Script):
     name="AlliedTelesis.AT8000S.add_vlan"
     implements=[IAddVlan]
     def execute(self,vlan_id,name,tagged_ports):
+        has_vlan=self.scripts.has_vlan(vlan_id=vlan_id)
         with self.configure():
-            if not self.scripts.has_vlan(vlan_id=vlan_id):
+            if not has_vlan:
                 self.cli("vlan database")
                 self.cli("vlan %d"%vlan_id)
                 self.cli("exit")
