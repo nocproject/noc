@@ -12,7 +12,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"^SW version\s+v?(?P<version>[\w.]+)\s",re.MULTILINE|re.DOTALL)
+rx_ver=re.compile(r"^\s*(?:\w*\s+){1,2}\s*(?P<version>v?[\d.]+)\s",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="AlliedTelesis.AT8000S.get_version"
