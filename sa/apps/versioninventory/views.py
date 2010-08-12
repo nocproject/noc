@@ -42,5 +42,4 @@ class VersionInventoryApplication(SAApplication):
     menu="Tasks | Version Inventory"
     reduce_task=reduce
     map_task="get_version"
-    timeout=1
-    
+    timeout=60
