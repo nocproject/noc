@@ -1,0 +1,21 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Test notification groups</h1>
+<div class="module">
+    <form method="POST">
+        <table width="100%">
+            <caption>Compose test message...</caption>
+            {{form.as_table}}
+            <tr><td colspan="2"><input type="submit" value="Send"/></td></tr>
+        </table>
+    </form>
+</div>
+<div class="module">
+    <table width="100%">
+        <caption>...to be sent to following notification groups.</caption>
+        {% for g in groups %}
+            <tr class="{%cycle 'row1' 'row2'%}"><td><a href="{% url main:notificationgroup:change g.id %}">{{g.name}}</td></tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}
