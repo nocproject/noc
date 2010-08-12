@@ -60,6 +60,9 @@ def mod_to_path(mod):
 ## Check module matches test_labels
 ##
 def match_test(test_labels,m):
+    if m.startswith("noc.main.pyrules."):
+        # Exclude built-in pyrules
+        return False
     if not test_labels:
         return True
     for l in test_labels:
