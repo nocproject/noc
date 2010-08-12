@@ -406,7 +406,7 @@ class TableSection(ReportSection):
                     # Display section row
                     if current_section and self.has_total and current_section.subtotal: # Display totals from previous sections
                         s+=render_subtotals()
-                    s+=["<tr><td colspan=%d style='font-style:italic;background-color:#C0C0C0'>"%s_span,self.quote(row.title),"</td></tr>"]
+                    s+=["<tr><td colspan=%d style='margin: 0;padding: 2px 5px 3px 5px;font-size: 11px;text-align:left;font-weight:bold;background: #7CA0C7 url(/media/img/admin/default-bg.gif) top left repeat-x;color:white;'>"%s_span,self.quote(row.title),"</td></tr>"]
                     current_section=row
                     continue
                 s+=["<tr class='row%d'>"%(n%2+1)]
