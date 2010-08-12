@@ -1,0 +1,9 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>{{app.title}}</h1>
+<table border='0'>
+{% for s in selectors %}
+    <tr><td><a href="selector/{{s.id}}/">{{s.name}}</a></td><td>{{description}}</td></tr>
+{% endfor %}
+</table>
+{% endblock %}

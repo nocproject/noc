@@ -1,0 +1,36 @@
+{% extends "template.html" %}
+{% block content %}
+<script type="text/javascript">
+var _t=false;
+
+function toggle() {
+    $(".sa-app-obj").each(function(){this.checked=_t;});
+    _t=!_t;
+}
+</script>
+<h1>{{app.title}}</h1>
+<form method="POST" id="form">
+    <div class="module">
+        <table width="100%">
+            <caption>Task parameters</caption>
+            <tr>
+                <td>
+                    <input type="submit" value="run"/><br/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="module">
+        <table width="100%">
+            <caption>Selected Objects: <input type="checkbox" checked onclick="toggle();" /></caption>
+            <tr>
+                <td>
+                    {% for o in objects %}
+                        <input type="checkbox" checked name="OBJ:{{o.id}}" class="sa-app-obj" /> {{o.name}}
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+{% endblock %}
