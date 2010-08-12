@@ -19,7 +19,7 @@ from noc.lib.fields import PickledField,INETField,AutoCompleteTagsField
 from noc.lib.app.site import site
 from tagging.models import TaggedItem
 from django.utils.translation import ugettext_lazy as _
-import re
+import marshal,base64
 
 profile_registry.register_all()
 periodic_registry.register_all()
@@ -367,7 +367,6 @@ class GroupAccess(models.Model):
 ##
 ## Reduce Tasks
 ##
-rx_pyrule=re.compile(r"^pyrule:(?P<name>\S+)$")
 class ReduceTask(models.Model):
     class Meta:
         verbose_name=_("Map/Reduce Task")
@@ -376,6 +375,8 @@ class ReduceTask(models.Model):
     stop_time=models.DateTimeField(_("Stop Time"))
     script=models.TextField(_("Script"))
     script_params=PickledField(_("Params"),null=True,blank=True)
+    
+    class NotReady(Exception): pass
     
     def __unicode__(self):
         if self.id:
@@ -386,10 +387,15 @@ class ReduceTask(models.Model):
     ##
     ##
     def save(self,**kwargs):
-        match=rx_pyrule.match(self.script)
-        if match:
+        if callable(self.script):
+            # Make bootstrap from callable
+            self.script="import marshal,base64\n"\
+            "@pyrule\n"\
+            "def rule(*args,**kwargs): pass\n"\
+            "rule.func_code=marshal.loads(base64.decodestring('%s'))\n"%(base64.encodestring(marshal.dumps(self.script.func_code)).replace("\n","\\n"))
+        elif self.script.startswith("pyrule:"):
             # Reference to existing pyrule
-            r=PyRule.objects.get(name=match.group("name"),interface="IReduceTask")
+            r=PyRule.objects.get(name=self.script[7:],interface="IReduceTask")
             self.script=r.text
         # Check syntax
         PyRule.compile_text(self.script)
@@ -412,14 +418,16 @@ class ReduceTask(models.Model):
             start_time=start_time,
             stop_time=start_time+datetime.timedelta(seconds=timeout),
             script=reduce_script,
-            script_params=reduce_script_params,
+            script_params=reduce_script_params if reduce_script_params else {},
         )
         r_task.save()
         prepend_profile=len(map_script.split("."))!=3
         if type(object_selector)==types.ListType:
             objects=object_selector
-        else:
+        elif isinstance(object_selector,ManagedObjectSelector):
             objects=object_selector.managed_objects
+        else:
+            objects=list(object_selector)
         for o in objects:
             # Prepend profile name when necessary
             if prepend_profile:
@@ -446,8 +454,22 @@ class ReduceTask(models.Model):
     ##
     ## Perform reduce script and execute result
     ##
-    def get_result(self):
+    def reduce(self):
         return PyRule.compile_text(self.script)(self,**self.script_params)
+    ##
+    ## Get task result
+    ##
+    def get_result(self,block=True):
+        while True:
+            if self.complete:
+                result=self.reduce()
+                self.delete()
+                return result
+            else:
+                if block:
+                    time.sleep(3)
+                else:
+                    raise ReduceTask.NotReady
     ##
     ## Wait untill all task complete
     ##
@@ -458,7 +480,8 @@ class ReduceTask(models.Model):
             rest=[]
             for t in tasks:
                 if t.complete:
-                    t.get_result() # delete task and trigger reduce task
+                    t.reduce() # delete task and trigger reduce task
+                    t.delete()
                 else:
                     rest+=[t]
                 tasks=rest
