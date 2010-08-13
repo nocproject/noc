@@ -724,15 +724,23 @@ class SNMPGetSocket(UDPSocket):
 ##
 class SNMPGetNextSocket(SNMPGetSocket):
     TTL=5
+    
+    def __init__(self,provider,oid,bulk=False):
+        self.bulk=bulk
+        super(SNMPGetNextSocket,self).__init__(provider,oid)
     ##
     ## Returns string containing SNMP GET requests to self.oids
     ##
     def get_snmp_request(self):
-        self.provider.script.debug("%s SNMP GETNEXT %s"%(self.address,str(self.oid)))
+        self.provider.script.debug("%s SNMP %s %s"%(self.address,"GETBULK" if self.bulk else "GETNEXT",str(self.oid)))
         p_mod=api.protoModules[api.protoVersion2c]
-        req_PDU =  p_mod.GetNextRequestPDU()
-        p_mod.apiPDU.setDefaults(req_PDU)
-        p_mod.apiPDU.setVarBinds(req_PDU,[(p_mod.ObjectIdentifier(self.oid_to_tuple(self.oid)),p_mod.Null())])
+        req_PDU =  p_mod.GetBulkRequestPDU() if self.bulk else p_mod.GetNextRequestPDU()
+        self.api_pdu=p_mod.apiBulkPDU if self.bulk else p_mod.apiPDU
+        self.api_pdu.setDefaults(req_PDU)
+        if self.bulk:
+            self.api_pdu.setNonRepeaters(req_PDU,0)   # <!>
+            self.api_pdu.setMaxRepetitions(req_PDU,20)# <!>
+        self.api_pdu.setVarBinds(req_PDU,[(p_mod.ObjectIdentifier(self.oid_to_tuple(self.oid)),p_mod.Null())])
         req_msg = p_mod.Message()
         p_mod.apiMessage.setDefaults(req_msg)
         p_mod.apiMessage.setCommunity(req_msg, self.get_community())
@@ -744,16 +752,17 @@ class SNMPGetNextSocket(SNMPGetSocket):
     def on_read(self,data,address,port):
         p_mod=api.protoModules[api.protoVersion2c]
         while data:
+            self.provider.script.debug("SNMP PDU RECEIVED")
             rsp_msg, data = decoder.decode(data, asn1Spec=p_mod.Message())
             rsp_pdu = p_mod.apiMessage.getPDU(rsp_msg)
             # Match response to request
-            if p_mod.apiPDU.getRequestID(self.req_PDU)==p_mod.apiPDU.getRequestID(rsp_pdu):
+            if self.api_pdu.getRequestID(self.req_PDU)==p_mod.apiPDU.getRequestID(rsp_pdu):
                 # Check for SNMP errors reported
-                errorStatus = p_mod.apiPDU.getErrorStatus(rsp_pdu)
+                errorStatus = self.api_pdu.getErrorStatus(rsp_pdu)
                 if errorStatus and errorStatus != 2:
                     raise errorStatus
                 # Format var-binds table
-                var_bind_table = p_mod.apiPDU.getVarBindTable(self.req_PDU, rsp_pdu)
+                var_bind_table = self.api_pdu.getVarBindTable(self.req_PDU, rsp_pdu)
                 # Report SNMP table
                 for table_row in var_bind_table:
                     for name, val in table_row:
@@ -762,8 +771,12 @@ class SNMPGetNextSocket(SNMPGetSocket):
                         oid=name.prettyPrint()
                         if not oid.startswith(self.oid):
                             self.close()
+                            self.provider.queue.put(None)
                             return
-                        self.provider.script.debug('%s SNMP GETNEXT REPLY: %s %s'%(self.address,oid,str(val)))
+                        if self.bulk:
+                            self.provider.script.debug("SNMP BULK DATA: %s %s"%(oid,str(val)))
+                        else:
+                            self.provider.script.debug('%s SNMP GETNEXT REPLY: %s %s'%(self.address,oid,str(val)))
                         self.provider.queue.put((oid,str(val)))
                         self.got_result=True
                 # Stop on EOM
@@ -773,9 +786,8 @@ class SNMPGetNextSocket(SNMPGetSocket):
                     else:
                         self.close()
                         return
-                # Generate request for next row
-                p_mod.apiPDU.setVarBinds(self.req_PDU, map(lambda (x,y),n=p_mod.Null(): (x,n), var_bind_table[-1]))
-                p_mod.apiPDU.setRequestID(self.req_PDU, p_mod.getNextRequestID())
+                self.api_pdu.setVarBinds(self.req_PDU, map(lambda (x,y),n=p_mod.Null(): (x,n), var_bind_table[-1]))
+                self.api_pdu.setRequestID(self.req_PDU, p_mod.getNextRequestID())
                 self.sendto(encoder.encode(self.req_msg),(self.address,161))
 ##
 ##
@@ -806,11 +818,11 @@ class SNMPProvider(object):
     ## for oid,v in self.getnext("xxxxx"):
     ##      ....
     ##
-    def getnext(self,oid,community_suffix=None):
+    def getnext(self,oid,community_suffix=None,bulk=False):
         self.community_suffix=community_suffix
         if self.getnext_socket:
             self.getnext_socket.close()
-        self.getnext_socket=SNMPGetNextSocket(self,oid)
+        self.getnext_socket=SNMPGetNextSocket(self,oid,bulk)
         # Flush queue
         while not self.queue.empty():
             self.queue.get()
