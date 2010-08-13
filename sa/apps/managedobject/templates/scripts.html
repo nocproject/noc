@@ -2,10 +2,12 @@
 {% block breadcrumbs %}{{block.super}}<li>{{object.name}}</li><li>Scripts</li>{% endblock %}
 <{% block content %}
 <h1>Scripts for {{object.name}} ({{object.profile_name}})</h1>
-<TABLE BORDER="1">
-    <TR><TH>Scripts</TH></TR>
-{% for s in scripts %}
-    <TR class="{%cycle 'row1' 'row2'%}"><TD><A HREF="{% url sa:managedobject:script object.id s.0%}">{{s.1}}</A></TD></TR>
-{% endfor %}
-</TABLE>
+<div class="module">
+    <table width="100%">
+        <caption>Select script</caption>
+        {% for s in scripts %}
+            <TR class="{%cycle 'row1' 'row2'%}"><TD><A HREF="{% url sa:managedobject:script object.id s.0%}">{{s.1}}</A></TD></TR>
+        {% endfor %}
+    </table>
+</div>
 {%endblock%}

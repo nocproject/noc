@@ -11,10 +11,9 @@ from django import forms
 from django.db.models import Q
 from django.contrib.auth.models import User,Group
 from noc.lib.app import ModelApplication,site,Permit,PermitSuperuser,HasPerm,PermissionDenied
-from noc.sa.models import ManagedObject,AdministrativeDomain,Activator,profile_registry,script_registry,scheme_choices,UserAccess,GroupAccess
+from noc.sa.models import *
 from noc.settings import config
 from noc.lib.fileutils import in_dir
-from xmlrpclib import ServerProxy, Error
 import pprint,types,socket,csv,os
 ##
 ## Validating form for managed object
@@ -54,7 +53,14 @@ def action_links(obj):
     return "<br/>".join(["<a href='%s'>%s</a>"%(site.reverse(view,*params),title) for title,view,params in r])
 action_links.short_description="Actions"
 action_links.allow_tags=True
-    
+##
+## Reduce task for script results
+##
+def script_reduce(task):
+    mt=task.maptask_set.all()[0]
+    if mt.status!="C":
+        return "Task failed!!!"
+    return mt.script_result
 ##
 ## ManagedObject admin
 ##
@@ -164,19 +170,16 @@ class ManagedObjectApplication(ModelApplication):
     ## Execute script
     ##
     def view_script(self,request,object_id,script):
-        def get_result(script,object_id,**kwargs):
-            server=ServerProxy("http://%s:%d"%(config.get("xmlrpc","server"),config.getint("xmlrpc","port")))
-            try:
-                result=server.script(script,object_id,kwargs)
-            except socket.error,why:
-                raise Exception("XML-RPC socket error: "+why[1])
-            if type(result) not in [types.StringType,types.UnicodeType]:
-                result=pprint.pformat(result)
-            return result
-
+        # Run map/reduce task
+        def run_task(**kwargs):
+            task=ReduceTask.create_task([o],script_reduce,{},script,kwargs,60)
+            return self.response_redirect("sa:managedobject:scriptresult",object_id,script,task.id)
+        #
         o=get_object_or_404(ManagedObject,id=int(object_id))
+        # Check user has access to object
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
+        # Check script exists
         try:
             scr=script_registry[script]
         except:
@@ -184,28 +187,40 @@ class ManagedObjectApplication(ModelApplication):
         form=None
         result=None
         if scr.implements and scr.implements[0].requires_input():
+            # Script requires additional parameters
             if request.POST:
                 form=scr.implements[0].get_form(request.POST) #<<<?>>> need to combine interfaces
                 if form.is_valid():
-                    data={}
-                    for k,v in form.cleaned_data.items():
-                        if v:
-                            data[k]=v
-                    try:
-                        result=get_result(script,object_id,**data)
-                    except Exception,why:
-                        return self.render_failure(request,"Script Failed",why)
+                    return run_task(**form.cleaned_data)
             else:
                 form=scr.implements[0].get_form()
         else:
-            try:
-                result=get_result(script,object_id)
-            except Exception,why:
-                return self.render_failure(request,"Script Failed",why.faultString)
-        return self.render(request,"script.html",{"object":o,"result":result,"script":script,"form":form})
-    view_script.url=r"^(?P<object_id>\d+)/scripts/(?P<script>\S+)/$"
+            # Run scripts without parameters
+            return run_task()
+        return self.render(request,"script_form.html",{"object":o,"script":script,"form":form})
+    view_script.url=r"^(?P<object_id>\d+)/scripts/(?P<script>[^/]+)/$"
     view_script.url_name="script"
     view_script.access=HasPerm("change")
+    ##
+    ## Wait for script completion and show results
+    ##
+    def view_scriptresult(self,request,object_id,script,task_id):
+        object=get_object_or_404(ManagedObject,id=int(object_id))
+        task=get_object_or_404(ReduceTask,id=int(task_id))
+        # Check script exists
+        try:
+            scr=script_registry[script]
+        except:
+            return self.response_not_found("No script found")
+        # Wait for task completion
+        try:
+            result=task.get_result(block=False)
+        except ReduceTask.NotReady:
+            return self.render_wait(request,subject="Script %s"%script,text="Processing scirpt. Please wait ...")
+        return self.render(request,"script_result.html",{"object":object,"script":script,"result":pprint.pformat(result)})
+    view_scriptresult.url=r"^(?P<object_id>\d+)/scripts/(?P<script>[^/]+)/(?P<task_id>\d+)/$"
+    view_scriptresult.url_name="scriptresult"
+    view_scriptresult.access=HasPerm("change")
     ##
     ## Upload managed objects
     ##
