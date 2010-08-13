@@ -28,6 +28,7 @@ class Controller(object): pass
 ## Activator emulation
 ##
 class ActivatorStub(object):
+    WAIT_TICKS=3
     def __init__(self):
         # Simple config stub
         self.config=ConfigParser.SafeConfigParser()
@@ -36,9 +37,9 @@ class ActivatorStub(object):
         self.script_call_queue=Queue.Queue()
         self.ping_check_results=None
         self.factory=SocketFactory(tick_callback=self.tick)
-        self.to_exit=False
         self.servers=ServersHub(self)
         self.log_cli_sessions=None
+        self.wait_ticks=self.WAIT_TICKS
     
     def tick(self):
         logging.debug("Tick")
@@ -49,12 +50,14 @@ class ActivatorStub(object):
                 break
             logging.debug("Calling delayed %s(*%s,**%s)"%(f,args,kwargs))
             apply(f,args,kwargs)
-        x=len(self.factory.sockets)==0
-        if x and self.to_exit:
-            logging.debug("EXIT")
-            os._exit(0)
-        elif x:
-            self.to_exit=True
+        if len(self.factory.sockets)==0:
+            self.wait_ticks-=1
+            if self.wait_ticks==0:
+                logging.debug("EXIT")
+                os._exit(0)
+            logging.debug("%d TICKS TO EXIT"%self.wait_ticks)
+        else:
+            self.wait_ticks=self.WAIT_TICKS
         
     def on_script_exit(self,script):
         if script.parent is None:
