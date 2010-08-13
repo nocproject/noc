@@ -421,7 +421,11 @@ class ReduceTask(models.Model):
             script_params=reduce_script_params if reduce_script_params else {},
         )
         r_task.save()
-        prepend_profile=len(map_script.split("."))!=3
+        s=map_script.split(".")
+        if len(s)==3:
+            map_script=s[-1]
+        elif len(s)!=1:
+            raise Exception("Invalid map script")
         if type(object_selector)==types.ListType:
             objects=object_selector
         elif isinstance(object_selector,ManagedObjectSelector):
@@ -429,18 +433,13 @@ class ReduceTask(models.Model):
         else:
             objects=list(object_selector)
         for o in objects:
-            # Prepend profile name when necessary
-            if prepend_profile:
-                ms="%s.%s"%(o.profile_name,map_script)
-            else:
-                ms=map_script
+            # Build full map script name
+            ms="%s.%s"%(o.profile_name,map_script)
             #
             status="W"
             # Check script is present
-            if not ms.startswith(o.profile_name+".")\
-                or map_script not in profile_registry[o.profile_name].scripts:
-                    # No such script
-                    status="F"
+            if map_script not in o.profile.scripts:
+                status="F"
             #
             MapTask(
                 task=r_task,
