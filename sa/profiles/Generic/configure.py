@@ -14,7 +14,7 @@ from noc.sa.interfaces import ICommands
 ## Enter a configuration mode and execute a list of CLI commands. return a list of results
 ##
 class Script(noc.sa.script.Script):
-    name="Generic.commands"
+    name="Generic.configure"
     implements=[ICommands]
     requires=[]
     def execute(self,commands):
