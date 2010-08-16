@@ -505,16 +505,16 @@ class SAE(Daemon):
             r+=[(a.name,s)]
         return r
     
-    def script(self,object,name,callback,**kwargs):
+    def script(self,object,script_name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
             if error:
-                logging.error("script(%s,**%s) failed: %s"%(name,kwargs,error.text))
+                logging.error("script(%s,**%s) failed: %s"%(script_name,kwargs,error.text))
                 callback(error=error)
                 return
             result=response.result
             result=cPickle.loads(str(result)) # De-serialize
             callback(result=result)
-        logging.info("script %s(%s)"%(name,object))
+        logging.info("script %s(%s)"%(script_name,object))
         try:
             stream=self.get_activator_stream(object.activator.name)
         except:
@@ -525,7 +525,7 @@ class SAE(Daemon):
             callback(error=e)
             return
         r=ScriptRequest()
-        r.script=name
+        r.script=script_name
         r.access_profile.profile           = object.profile_name
         r.access_profile.scheme            = object.scheme
         r.access_profile.address           = object.address
