@@ -25,7 +25,7 @@ def reduce_commands(task,commands):
 ##
 ##
 ##
-class RunCoomadsAppplication(SAApplication):
+class RunCommandsAppplication(SAApplication):
     title="Run commands"
     menu="Tasks | Run Commands"
     reduce_task=reduce_commands
