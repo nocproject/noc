@@ -23,6 +23,19 @@ class SAApplication(Application):
     def get_menu(self):
         return self.menu
     ##
+    ## Return reduce script parameters
+    ## from cleaned form data.
+    ## By default - all parameters starting with reduce_ 
+    ##
+    def clean_reduce(self,data):
+        return dict([(k[7:],v) for k,v in data.items() if k.startswith("reduce_")])
+    ##
+    ## Return map scrip t parameters from cleaned form data.
+    ## By default - all parameters starting with map_
+    ##
+    def clean_map(self,data):
+        return dict([(k[4:],v) for k,v in data.items() if k.startswith("map_")])
+    ##
     ## Display a list of selectors
     ##
     def view_index(self,request):
@@ -37,22 +50,36 @@ class SAApplication(Application):
     ##
     def view_form(self,request,selector_id):
         selector=get_object_or_404(ManagedObjectSelector,id=int(selector_id))
+        form=None
         if request.POST:
-            # Fetch selected objects
-            objects=ManagedObject.objects.filter(id__in=[int(n[4:]) for n in request.POST.keys() if n.startswith("OBJ:")])
-            task=ReduceTask.create_task(
-                object_selector=objects,
-                reduce_script=self.reduce_task,
-                reduce_script_params={},
-                map_script=self.map_task,
-                map_script_params={},
-                timeout=self.timeout
-            )
-            return self.response_redirect("../../task/%d/"%task.id)
+            # Check form if applicable
+            if self.form:
+                form=self.form(request.POST)
+            if not form or form.is_valid():
+                # Prepare parameters
+                if form:
+                    reduce_script_params=self.clean_reduce(form.cleaned_data)
+                    map_script_params=self.clean_map(form.cleaned_data)
+                else:
+                    reduce_script_params={}
+                    map_script_params={}
+                # Fetch selected objects
+                objects=ManagedObject.objects.filter(id__in=[int(n[4:]) for n in request.POST.keys() if n.startswith("OBJ:")])
+                task=ReduceTask.create_task(
+                    object_selector=objects,
+                    reduce_script=self.reduce_task,
+                    reduce_script_params=reduce_script_params,
+                    map_script=self.map_task,
+                    map_script_params=map_script_params,
+                    timeout=self.timeout
+                )
+                return self.response_redirect("../../task/%d/"%task.id)
         else:
-            pass
+            if self.form:
+                # Display empty form if applicable
+                form=self.form()
         objects=selector.objects_with_scripts([self.map_task])
-        return self.render(request,"sa_app_form.html",{"objects":objects})
+        return self.render(request,"sa_app_form.html",{"objects":objects,"form":form})
     view_form.url=r"^selector/(?P<selector_id>\d+)/$"
     view_form.url_name="form"
     view_form.access=HasPerm("run")
