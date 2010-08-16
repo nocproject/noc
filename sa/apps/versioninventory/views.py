@@ -13,6 +13,7 @@ def reduce(task):
     from noc.lib.app.simplereport import Report,TableSection,SectionRow
     # Fetch data
     ad={}
+    summary={}
     for mt in task.maptask_set.all():
         adn=mt.managed_object.administrative_domain.name
         if adn not in ad:
@@ -21,6 +22,10 @@ def reduce(task):
         if mt.status=="C":
             # Completed tasks
             ad[adn]+=[(mt.managed_object.name,r["vendor"],r["platform"],r["version"])]
+            if (r["vendor"],r["platform"]) in summary:
+                summary[(r["vendor"],r["platform"])]+=1
+            else:
+                summary[(r["vendor"],r["platform"])]=1
         else:
             # Failed tasks
             ad[adn]+=[(mt.managed_object.name,"-","-","-")]
@@ -31,7 +36,12 @@ def reduce(task):
         data+=sorted(ad[adn],lambda x,y:cmp(x[0],y[0]))
     # Build report
     report=Report()
-    t=TableSection(name="result",columns=["Object","Vendor","Plaform","Version"],data=data,enumerate=True   )
+    # Object versions
+    t=TableSection(name="result",columns=["Object","Vendor","Plaform","Version"],data=data,enumerate=True)
+    report.append_section(t)
+    # Version summary
+    summary=sorted([(vp[0],vp[1],c) for vp,c in summary.items()],lambda x,y:-cmp(x[2],y[2]))
+    t=TableSection(name="summary",columns=["Vendor","Platform","Count"],data=summary,enumerate=True)
     report.append_section(t)
     return report
 ##
