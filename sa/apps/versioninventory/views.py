@@ -22,10 +22,10 @@ def reduce(task):
         if mt.status=="C":
             # Completed tasks
             ad[adn]+=[(mt.managed_object.name,r["vendor"],r["platform"],r["version"])]
-            if (r["vendor"],r["platform"]) in summary:
-                summary[(r["vendor"],r["platform"])]+=1
+            if (r["vendor"],r["platform"],r["version"]) in summary:
+                summary[(r["vendor"],r["platform"],r["version"])]+=1
             else:
-                summary[(r["vendor"],r["platform"])]=1
+                summary[(r["vendor"],r["platform"],r["version"])]=1
         else:
             # Failed tasks
             ad[adn]+=[(mt.managed_object.name,"-","-","-")]
@@ -40,8 +40,8 @@ def reduce(task):
     t=TableSection(name="result",columns=["Object","Vendor","Plaform","Version"],data=data,enumerate=True)
     report.append_section(t)
     # Version summary
-    summary=sorted([(vp[0],vp[1],c) for vp,c in summary.items()],lambda x,y:-cmp(x[2],y[2]))
-    t=TableSection(name="summary",columns=["Vendor","Platform","Count"],data=summary,enumerate=True)
+    summary=sorted([(vp[0],vp[1],vp[2],c) for vp,c in summary.items()],lambda x,y:-cmp(x[3],y[3]))
+    t=TableSection(name="summary",columns=["Vendor","Platform","Version","Count"],data=summary,enumerate=True)
     report.append_section(t)
     return report
 ##
