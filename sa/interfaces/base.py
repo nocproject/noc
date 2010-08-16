@@ -554,7 +554,10 @@ class Interface(object):
             if n=="returns":
                 continue
             if n not in in_kwargs and p.required:
-                raise InterfaceTypeError("Parameter '%s' required"%n)
+                if p.default is not None:
+                    out_kwargs[n]=p.default
+                else:
+                    raise InterfaceTypeError("Parameter '%s' required"%n)
             if n in in_kwargs:
                 try:
                     out_kwargs[n]=p.clean(in_kwargs[n])
