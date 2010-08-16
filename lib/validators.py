@@ -32,14 +32,22 @@ def is_int(v):
         return False
     return True
 ##
-## Check value is valid 2-byte autonomous system number
+## Check value is valid 2-byte or 4-byte autonomous system number
 ##
 def is_asn(v):
+    """
+    >>> is_asn(100)
+    True
+    >>> is_asn(100000)
+    True
+    >>> is_asn(-1)
+    False
+    """
     try:
-        v=int(v)
+        v=long(v)
+        return v>0
     except:
         return False
-    return 0<=v<=65535
 ##
 ## Check value is valid IPv4 address
 ##
