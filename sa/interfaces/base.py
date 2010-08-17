@@ -559,10 +559,11 @@ class Interface(object):
                 else:
                     raise InterfaceTypeError("Parameter '%s' required"%n)
             if n in in_kwargs:
-                try:
-                    out_kwargs[n]=p.clean(in_kwargs[n])
-                except InterfaceTypeError,why:
-                    raise InterfaceTypeError("Invalid value for '%s': %s"%(n,why))
+                if not (in_kwargs[n] is None and not p.required):
+                    try:
+                        out_kwargs[n]=p.clean(in_kwargs[n])
+                    except InterfaceTypeError,why:
+                        raise InterfaceTypeError("Invalid value for '%s': %s"%(n,why))
                 del in_kwargs[n]
         # Copy other parameters
         for k,v in in_kwargs.items():
@@ -585,7 +586,7 @@ class Interface(object):
             def clean_field_wrapper(form,name,param):
                 data=form.cleaned_data[name]
                 if not param.required and not data:
-                    return data
+                    return None
                 try:
                     return param.form_clean(data)
                 except InterfaceTypeError:
