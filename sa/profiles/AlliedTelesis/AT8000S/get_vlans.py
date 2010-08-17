@@ -26,7 +26,7 @@ class Script(noc.sa.script.Script):
                 for oid,v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.2.1.3",bulk=True): # dot1qVlanFdbId
                     oids[oid.split(".")[-1]]=v
                 # Get VLAN names
-                result=[{"vlan_id":1,"name":"default"}]
+                result=[{"vlan_id":1,"name":"1"}]
                 for oid,v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1.1",bulk=True): # dot1qVlanStaticName
                     o=oid.split(".")[-1]
                     result+=[{"vlan_id":int(oids[o]),"name":v.strip()}]
