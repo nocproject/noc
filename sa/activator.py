@@ -412,11 +412,11 @@ class Activator(Daemon,FSM):
     ##
     ## Script support
     ##
-    def run_script(self,name,access_profile,callback,**kwargs):
-        logging.info("Script %s(%s)"%(name,access_profile.address))
-        pv,pos,sn=name.split(".",2)
+    def run_script(self,script_name,access_profile,callback,**kwargs):
+        logging.info("Script %s(%s)"%(script_name,access_profile.address))
+        pv,pos,sn=script_name.split(".",2)
         profile=profile_registry["%s.%s"%(pv,pos)]()        
-        script=script_registry[name](profile,self,access_profile,**kwargs)
+        script=script_registry[script_name](profile,self,access_profile,**kwargs)
         with self.script_lock:
             self.script_threads[script]=callback
             logging.info("%d script threads"%(len(self.script_threads)))
