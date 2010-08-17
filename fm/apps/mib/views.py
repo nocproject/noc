@@ -49,9 +49,9 @@ class MIBApplication(ModelApplication):
                     try:
                         mib=MIB.load(path)
                     except MIBRequiredException,x:
-                        self.message_user(request,"Failed to upload MIB","%s requires %s"%(x.mib,x.requires_mib))
+                        self.message_user(request,"Failed to upload MIB, %s requires %s"%(x.mib,x.requires_mib))
                         return self.response_redirect(self.base_url)
-                self.message_user(requires,"%s uploaded"%(mib))
+                self.message_user(request,"%s uploaded"%(mib))
                 return self.response_redirect_to_object(mib)
         else:
             form=MIBUploadForm()
