@@ -3,8 +3,12 @@
 
 {% block content %}
 <H1>Upload MIB</H1>
-<FORM METHOD="POST" ACTION="" enctype="multipart/form-data">{% csrf_token %}
-    {{form}}
-    <INPUT TYPE="submit" VALUE="Upload MIB" />
-</FORM>
+<div class="module">
+    <FORM METHOD="POST" ACTION="" enctype="multipart/form-data">{% csrf_token %}
+        <table width="100%">
+            {{form.as_table}}
+        </table>
+        <INPUT TYPE="submit" VALUE="Upload MIB" />
+    </FORM>
+</div>
 {% endblock %}
