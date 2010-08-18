@@ -46,7 +46,12 @@ class Parameter(object):
     ## Perform input parameter normalization for form fields
     ##
     def form_clean(self,value):
-        return self.clean(value)
+        if not value and not self.required:
+            return self.default if self.default else None
+        try:
+            return self.clean(value)
+        except InterfaceTypeError,why:
+            raise forms.ValidationError(why)
     ##
     ## Returns an form field object
     ##
