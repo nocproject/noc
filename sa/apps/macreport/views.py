@@ -12,7 +12,7 @@ from noc.vc.models import VCDomain
 ##
 ##
 ##
-def reduce_fibreport(task,vc_domain=None):
+def reduce_macreport(task,vc_domain=None):
     def vc_name(vlan_id):
         if vc_domain:
             try:
@@ -64,7 +64,7 @@ def reduce_fibreport(task,vc_domain=None):
     r+=["</tbody>","</table>"]
     r+=["<br/>"]
     # Vlan MAC summary
-    mac_count=reduce(lambda x,y:x+y,vlan_macs.values())
+    mac_count=reduce(lambda x,y:x+y,vlan_macs.values(),0)
     r+=["<br/>"]
     r+=["<b>MAC Summary</b>"]
     r+=["<table border='0'>"]
@@ -86,7 +86,7 @@ def reduce_fibreport(task,vc_domain=None):
 class MACReportAppplication(SAApplication):
     title="MAC Report"
     menu="Tasks | MAC Report"
-    reduce_task=reduce_fibreport
+    reduce_task=reduce_macreport
     map_task="get_mac_address_table"
     class MACReportForm(forms.Form):
         vlan=forms.IntegerField(required=False)
