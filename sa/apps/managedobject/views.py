@@ -217,7 +217,12 @@ class ManagedObjectApplication(ModelApplication):
             result=task.get_result(block=False)
         except ReduceTask.NotReady:
             return self.render_wait(request,subject="Script %s"%script,text="Processing scirpt. Please wait ...")
-        return self.render(request,"script_result.html",{"object":object,"script":script,"result":pprint.pformat(result)})
+        # Format result
+        if isinstance(result,basestring):
+            pass # Do not convert strings
+        else:
+            result=pprint.pformat(result)
+        return self.render(request,"script_result.html",{"object":object,"script":script,"result":result})
     view_scriptresult.url=r"^(?P<object_id>\d+)/scripts/(?P<script>[^/]+)/(?P<task_id>\d+)/$"
     view_scriptresult.url_name="scriptresult"
     view_scriptresult.access=HasPerm("change")
