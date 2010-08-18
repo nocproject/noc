@@ -15,7 +15,7 @@ from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ,in_dir
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
-import os,datetime,stat,logging,random,types
+import os,datetime,stat,logging,random,types,time
 from noc.sa.models import Activator,AdministrativeDomain,ManagedObject
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.search import SearchResult
