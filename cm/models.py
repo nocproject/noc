@@ -276,22 +276,31 @@ class Config(Object):
     
     def pull(self,sae):
         def pull_callback(result=None,error=None):
+            dt=int(time.time()-t0)
             if error:
                 if error.code==ERR_OVERLOAD:
                     timeout=config.getint("cm","timeout_overload")
+                    status="ERR_OVERLOAD"
                 elif error.code==ERR_DOWN:
                     timeout=config.getint("cm","timeout_down")
+                    status="ERR_DOWN"
                 else:
                     timeout=config.getint("cm","timeout_error")
+                    status="ERR_TIMEOUT"
                 variation=config.getint("cm","timeout_variation")
                 timeout+=random.randint(-timeout/variation,timeout/variation) # Add jitter to avoid blocking by dead task
                 self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
                 self.save()
+                logging.info("Config.pull(): object_id=%d, object_name=%s, status=%s, time_elapsed=%d, timeout=%d"%(
+                    self.managed_object.id,self.managed_object.name,status,dt,timeout))
                 return
             if self.pull_every:
                 self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=self.pull_every)
                 self.save()
+                logging.info("Config.pull(): object_id=%d, object_name=%s, status=%s, time_elapsed=%d, timeout=%d"%(
+                    self.managed_object.id,self.managed_object.name,"OK",dt,self.pull_every))
             self.write(result)
+        t0=time.time()
         sae.script(self.managed_object,"%s.get_config"%self.managed_object.profile_name,pull_callback)
     ##
     ## Access control
