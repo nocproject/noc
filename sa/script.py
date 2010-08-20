@@ -43,6 +43,8 @@ class ScriptProxy(object):
         self._parent=parent
     def __getattr__(self,name):
         return ScriptCallProxy(self._parent,self._parent.profile.scripts[name])
+    def has_script(self,name):
+        return self._parent.profile.scripts.has_key(name)
 
 class ScriptCallProxy(object):
     def __init__(self,parent,script):
