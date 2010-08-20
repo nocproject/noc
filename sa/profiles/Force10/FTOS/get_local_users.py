@@ -17,7 +17,7 @@ class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_local_users"
     implements=[IGetLocalUsers]
     def execute(self):
-        data=self.cli("show running-config | no-more | grep ^username")
+        data=self.cli("show running-config | grep ^username")
         r=[]
         for l in data.split("\n"):
             match=rx_line.match(l.strip())
