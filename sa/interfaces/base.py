@@ -196,6 +196,10 @@ class BooleanParameter(Parameter):
         if type(value) in [types.StringType,types.UnicodeType]:
             return value.lower() in ["true","t","yes","y"]
         self.raise_error(value)
+    ##
+    def get_form_field(self):
+        return forms.BooleanField(required=self.required,initial=self.default)
+    
 ##
 ##
 ##
