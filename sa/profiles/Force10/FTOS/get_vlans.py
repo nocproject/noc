@@ -31,4 +31,4 @@ class Script(noc.sa.script.Script):
             except self.snmp.TimeOutError:
                 # SNMP failed, continue with CLI
                 pass
-        return [{"vlan_id":x[0],"name":x[1]} for x in parse_table(self.cli("show vlan brief | no-more"))]
+        return [{"vlan_id":x[0],"name":x[1]} for x in parse_table(self.cli("show vlan brief"))]

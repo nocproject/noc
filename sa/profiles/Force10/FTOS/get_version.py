@@ -17,7 +17,7 @@ class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_version"
     implements=[IGetVersion]
     def execute(self):
-        v=self.cli("show version | no-more")
+        v=self.cli("show version")
         match=rx_ver.search(v)
         return {
             "vendor"    : "Force10",
