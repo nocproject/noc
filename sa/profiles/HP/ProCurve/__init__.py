@@ -20,6 +20,7 @@ class Profile(noc.sa.profiles.Profile):
         ("Press any key to continue","\n"),
         ("-- MORE --, next page: Space, next line: Enter, quit: Control-C"," ")
         ]
+    command_disable_pager="terminal length 1000"
     command_enter_config="configure"
     command_leave_config="exit"
     command_save_config="write memory\n"
