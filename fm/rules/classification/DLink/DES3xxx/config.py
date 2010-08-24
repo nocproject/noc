@@ -19,6 +19,6 @@ class DLink_DES3xxx_Config_Changed_SYSLOG_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^source$", r"^syslog$"),
-        (r"^profile$",r"^DLink\.DES3xxx$"),
+        (r"^profile$",r"^DLink\.D[EG]S3xxx$"),
         (r"^message$",r"INFO: Configuration"),
     ]
