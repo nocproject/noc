@@ -60,11 +60,3 @@ class EventClassificationRuleApplication(ModelApplication):
     view_from_event.url=r"^from_event/(?P<event_id>\d+)/$"
     view_from_event.url_name="from_event"
     view_from_event.access=HasPerm("add")
-    ##
-    ## Display classification rules sheet
-    ##
-    def view_sheet(self,request):
-        return self.render(request,"sheet.html",{"rules":EventClassificationRule.objects.order_by("preference")})
-    view_sheet.url=r"^sheet/$"
-    view_sheet.url_name="sheet"
-    view_sheet.access=HasPerm("change")
