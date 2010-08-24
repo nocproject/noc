@@ -15,7 +15,7 @@ class Reportreportsupportedequipment(SimpleReport):
     title="Supported Equipment"
     def get_data(self,**kwargs):
         def get_profile_scripts(p):
-            return ", ".join(p.scripts.keys())
+            return ", ".join(sorted(p.scripts.keys()))
         r=sorted([x for x in profile_registry.classes.items()],lambda x,y:cmp(x[0],y[0]))
         return self.from_dataset(title=self.title,
             columns=[
