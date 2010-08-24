@@ -19,5 +19,6 @@ class Profile(noc.sa.profiles.Profile):
     pattern_password="[Pp]ass[Ww]ord:"
     pattern_more="CTRL\+C.+?a All"
     pattern_prompt=r"^\S+?#"
+    command_disable_pager="disable clipaging"
     command_more="a"
     config_volatile=["^%.*?$"]
