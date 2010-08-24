@@ -492,6 +492,7 @@ class VLANIDParameter(IntParameter):
 rx_mac_address_cisco=re.compile("^[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{4}$")
 rx_mac_address_cisco_media=re.compile("^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
 rx_mac_address_sixblock=re.compile("^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$")
+rx_mac_address_hp=re.compile("^[0-9A-F]{6}-[0-9A-F]{6}$")
 class MACAddressParameter(StringParameter):
     """
     >>> MACAddressParameter().clean("1234.5678.9ABC")
@@ -510,6 +511,8 @@ class MACAddressParameter(StringParameter):
     '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("0:13:46:50:87:5")
     '00:13:46:50:87:05'
+    >>> MACAddressParameter().clean("123456-789abc")
+    '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("12-34-56-78-9A-BC-DE")
     Traceback (most recent call last):
         ...
@@ -532,16 +535,20 @@ class MACAddressParameter(StringParameter):
         if match:
             value=value.replace(".","")
         else:
-            value=value.replace("-",":")
-            match=rx_mac_address_sixblock.match(value)
-            if not match:
-                self.raise_error(value)
-            value=""
-            for i in range(1,7):
-                v=match.group(i)
-                if len(v)==1:
-                    v="0"+v
-                value+=v
+            match=rx_mac_address_hp.match(value)
+            if match:
+                value=value.replace("-","")
+            else:
+                value=value.replace("-",":")
+                match=rx_mac_address_sixblock.match(value)
+                if not match:
+                    self.raise_error(value)
+                value=""
+                for i in range(1,7):
+                    v=match.group(i)
+                    if len(v)==1:
+                        v="0"+v
+                    value+=v
         return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
 ## Stub for interface registry
 interface_registry={}
