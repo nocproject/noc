@@ -18,3 +18,4 @@ class Profile(noc.sa.profiles.Profile):
     pattern_username="User Name:"
     pattern_more="^More: .*?$"
     command_more=" "
+    command_disable_pager="terminal datadump"
