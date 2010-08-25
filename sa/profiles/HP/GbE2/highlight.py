@@ -14,7 +14,7 @@ class ConfigLexer(RegexLexer):
     name="HP.GbE2"
     tokens={
         "root" : [
-            (r"/\*", Comment),
+            (r"/\*.*?$", Comment),
             (r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(/\d{1,2})?", Number), # IPv4 Address/Prefix
             (r"^/\S*", Keyword),
             (r"\d+", Number),
