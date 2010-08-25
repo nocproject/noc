@@ -327,6 +327,11 @@ class Script(threading.Thread):
                 result[int(x)]=None
         return sorted(result.keys())
     ##
+    ## Convert a 6-octet string to MAC address
+    ##
+    def hexstring_to_mac(self,s):
+        return ":".join(["%02X"%ord(x) for x in s])
+    ##
     ## Cancel script
     ##
     def cancel_script(self):
