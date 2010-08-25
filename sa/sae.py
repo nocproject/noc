@@ -614,10 +614,14 @@ class SAE(Daemon):
                     variation=10
                     timeout=random.randint(-timeout/variation,timeout/variation)
                     next_try=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
+                    if error.code==ERR_OVERLOAD:
+                        next_retries=mt.retries_left
+                    else:
+                        next_retries=mt.retries_left-1
                     if mt.retries_left and next_try<mt.task.stop_time: # Check we're still in task time and have retries left
                         logging.debug("Retry task: %d"%mt_id)
                         mt.next_try=next_try
-                        mt.retries_left-=1
+                        mt.retries_left=next_retries
                         mt.status="W"
                         mt.save()
                         return
