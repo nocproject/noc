@@ -11,7 +11,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"\n\n(?P<platform>\S+) .+Software Version (?P<version>\S+)",re.MULTILINE|re.DOTALL)
+rx_ver=re.compile(r"(?P<platform>\S+) L2/L3 Ethernet Blade Switch.+Software Version (?P<version>\S+)",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="HP.GbE2.get_version"
