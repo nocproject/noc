@@ -23,6 +23,7 @@ class Profile(noc.sa.profiles.Profile):
     command_save_config="write memory"
     pattern_prompt=r"^\S+?#"
     command_submit="\r"
+    convert_interface_name=noc.sa.profiles.Profile.convert_interface_name_cisco
     
     def generate_prefix_list(self,name,pl,strict=True):
         suffix=""
