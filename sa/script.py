@@ -208,12 +208,12 @@ class Script(threading.Thread):
         self.debug("Guarded run")
         # Enforce interface type checking
         for i in self.implements:
-            self.kwargs=i.clean(**self.kwargs)
+            self.kwargs=i.script_clean_input(self.profile,**self.kwargs)
         # Calling script body
         result=self.execute(**self.kwargs)
         # Enforce interface result checking
         for i in self.implements:
-            result=i.clean_result(result)
+            result=i.script_clean_result(self.profile,result)
         self.debug("Script returns with result: %s"%result)
         return result
         
@@ -757,6 +757,7 @@ class SNMPGetNextSocket(SNMPGetSocket):
         return encoder.encode(req_msg)
 
     def on_read(self,data,address,port):
+        self.update_status()
         p_mod=api.protoModules[api.protoVersion2c]
         while data:
             self.provider.script.debug("SNMP PDU RECEIVED")
@@ -842,6 +843,26 @@ class SNMPProvider(object):
                     raise self.TimeOutError()
             else:
                 yield r
+    ##
+    ## getnext wrapper
+    ## returns a hash of {index,value}
+    ##
+    def get_table(self,oid,community_suffix=None,bulk=False):
+        r={}
+        for o,v in self.getnext(oid,community_suffix=community_suffix,bulk=bulk):
+            r[int(o.split(".")[-1])]=v
+        return r
+    ##
+    ## Generator returning a rows of two snmp tables joined by index
+    ##
+    def join_tables(self,oid1,oid2,community_suffix=None,bulk=False):
+        t1=self.get_table(oid1,community_suffix=community_suffix,bulk=bulk)
+        t2=self.get_table(oid2,community_suffix=community_suffix,bulk=bulk)
+        for k1,v1 in t1.items():
+            try:
+                yield (v1,t2[k1])
+            except KeyError:
+                pass
     ##
     ## Close all UDP sockets
     ##

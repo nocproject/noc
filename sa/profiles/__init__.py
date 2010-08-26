@@ -8,6 +8,7 @@
 from noc.lib.ip import bits_to_netmask
 from noc.lib.registry import Registry
 from noc.lib.ecma48 import strip_control_sequences
+from noc.sa.interfaces import InterfaceTypeError
 import re
 ##
 ##
@@ -127,7 +128,31 @@ class Profile(object):
     # Can be changed in derived classes
     #
     convert_mac=convert_mac_to_colon
-    
+    #
+    # Interface name normalization
+    #
+    # Dumb translation
+    def convert_interface_name(self,s):
+        return s
+    # Cisco-like translation
+    rx_cisco_interface_name=re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(\.\d+)?)?)$",re.IGNORECASE)
+    def convert_interface_name_cisco(self,s):
+        """
+        >>> Profile().convert_interface_name_cisco("Gi0")
+        'Gi 0'
+        >>> Profile().convert_interface_name_cisco("GigabitEthernet0")
+        'Gi 0'
+        >>> Profile().convert_interface_name_cisco("Gi 0")
+        'Gi 0'
+        >>> Profile().convert_interface_name_cisco("tengigabitethernet 1/0/1")
+        'Te 1/0/1'
+        >>> Profile().convert_interface_name_cisco("tengigabitethernet 1/0/1.5")
+        'Te 1/0/1.5'
+        """
+        match=self.rx_cisco_interface_name.match(s)
+        if not match:
+            raise InterfaceTypeError("Invalid interface '%s'"%s)
+        return "%s %s"%(match.group("type").capitalize(),match.group("number"))
     #
     # Configuration generators
     #
