@@ -214,6 +214,7 @@ class Classifier(Daemon):
             c_vars=dict([(x[0],str(eval(x[1],f_vars,eval_globals))) for x in rule.expressions]) # Evaluate all expressions
             f_vars.update(c_vars) # Update var dicts
             vars.update(c_vars)
+        f_vars["event"]=event # Finally add "event" variable
         subject_template,body_template=self.templates[event_class.id]
         context=Context(f_vars)
         subject=subject_template.render(context)
@@ -249,7 +250,11 @@ class Classifier(Daemon):
         if post_process:
             # Notify if necessary
             if post_process.rule.notification_group:
-                post_process.rule.notification_group.notify(subject=event.subject,body=event.body)
+                # Add object name and address to the rest of message
+                message=event.body+"\n\nObject: %s (%s,%s)\n"%(event.managed_object.name,event.managed_object.profile_name,event.managed_object.address)
+                # Add object name to subject
+                subject="[%s] %s"%(event.managed_object.name,event.subject)
+                post_process.rule.notification_group.notify(subject=subject,body=message)
             if post_process.rule.action=="D": # Drop event if required by post_process_rule
                 self.drop_event(event)
                 return
