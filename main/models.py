@@ -692,6 +692,8 @@ class Notification(models.Model):
     link=models.CharField("Link",max_length=256,null=True,blank=True)
     next_try=models.DateTimeField("Next Try",null=True,blank=True)
     actual_till=models.DateTimeField("Actual Till",null=True,blank=True)
+    def __unicode__(self):
+        return self.subject
 ##
 ## System Notification
 ##
