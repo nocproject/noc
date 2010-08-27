@@ -411,8 +411,14 @@ class ReduceTask(models.Model):
     ##
     ## Create map/reduce tasks
     ##
+    ## object_selector must be either of ManagedObjectSelector instance or of list type
+    ## map_script can be string or list.
+    ## If map string is a list, map_string_params may be a list too, or it will be replicated for
+    ## each kind of map task
+    ##
     @classmethod
     def create_task(self,object_selector,reduce_script,reduce_script_params,map_script,map_script_params,timeout):
+        # Create reduce task
         start_time=datetime.datetime.now()
         r_task=ReduceTask(
             start_time=start_time,
@@ -421,34 +427,53 @@ class ReduceTask(models.Model):
             script_params=reduce_script_params if reduce_script_params else {},
         )
         r_task.save()
-        s=map_script.split(".")
-        if len(s)==3:
-            map_script=s[-1]
-        elif len(s)!=1:
-            raise Exception("Invalid map script")
+        # Normalize map scripts to a list
+        if type(map_script) in [types.ListType,types.TupleType]:
+            # list of map scripts
+            map_script_list=map_script
+            if type(map_script_params) in [types.ListType,types.TupleType]:
+                if len(map_script_params)!=len(map_script):
+                    raise Exception("Mismatched parameter list size")
+                map_script_params_list=map_script_params
+            else:
+                # Expand to list
+                map_script_params_list=[map_script_params]*len(map_script_list)
+        else:
+            # Single map script
+            map_script_list=[map_script]
+            map_script_params_list=[map_script_params]
+        # Normalize a name of map scripts and join with parameters
+        msp=[]
+        for ms,p in zip(map_script_list,map_script_params_list):
+            s=ms.split(".")
+            if len(s)==3:
+                ms=s[-1]
+            elif len(s)!=1:
+                raise Exception("Invalid map script: '%s'"%ms)
+            msp+=[(ms,p)]
+        # Convert object_selector to a list of objects
         if type(object_selector)==types.ListType:
             objects=object_selector
         elif isinstance(object_selector,ManagedObjectSelector):
             objects=object_selector.managed_objects
         else:
             objects=list(object_selector)
+        # Run map task for each object
         for o in objects:
-            # Build full map script name
-            ms="%s.%s"%(o.profile_name,map_script)
-            #
-            status="W"
-            # Check script is present
-            if map_script not in o.profile.scripts:
-                status="F"
-            #
-            MapTask(
-                task=r_task,
-                managed_object=o,
-                map_script=ms,
-                script_params=map_script_params,
-                next_try=start_time,
-                status=status
-            ).save()
+            for ms,p in msp:
+                # Set status to "F" if script not found
+                status="W" if ms in o.profile.scripts else "F"
+                # Build full map script name
+                msn="%s.%s"%(o.profile_name,ms)
+                #
+                MapTask(
+                    task=r_task,
+                    managed_object=o,
+                    map_script=msn,
+                    script_params=p,
+                    next_try=start_time,
+                    status=status
+                ).save()
         return r_task
     ##
     ## Perform reduce script and execute result
