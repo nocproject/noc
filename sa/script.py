@@ -668,6 +668,7 @@ class SNMPGetSocket(UDPSocket):
         self.oid=oid
         self.address=self.provider.access_profile.address
         self.got_result=False
+        self.is_failed=False
         self.sendto(self.get_snmp_request(),(self.address,161))
     ##
     ## Build full community, appending suffix when necessary
@@ -725,7 +726,18 @@ class SNMPGetSocket(UDPSocket):
         if not self.got_result:
             self.provider.script.debug("SNMP Timeout")
             self.provider.queue.put(None)
+        elif self.is_failed:
+            self.provider.script.debug("Stale SNMP Operation")
+            self.provider.queue.put(None)
         super(SNMPGetSocket,self).on_close()
+    ##
+    ## Raise timeout error when in stale
+    ##
+    def is_stale(self):
+        r=super(SNMPGetSocket,self).is_stale()
+        if r:
+            self.is_failed=True
+        return r
 ##
 ##
 ##
@@ -837,7 +849,9 @@ class SNMPProvider(object):
         while True:
             r=self.queue.get(block=True)
             if r is None:
-                if self.getnext_socket.got_result: # Stop Iteration in case of success
+                if self.getnext_socket.is_failed:  # Stale socket killed
+                    raise self.TimeOutError()
+                elif self.getnext_socket.got_result: # Stop Iteration in case of success
                     raise StopIteration
                 else: # Socket closed by Timeout
                     raise self.TimeOutError()
