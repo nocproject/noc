@@ -10,6 +10,7 @@ from django import forms
 from django.shortcuts import get_object_or_404
 from noc.sa.models import *
 from simplereport import *
+import types
 ##
 ##
 ##
@@ -78,7 +79,10 @@ class SAApplication(Application):
             if self.form:
                 # Display empty form if applicable
                 form=self.form()
-        objects=selector.objects_with_scripts([self.map_task])
+        if type(self.map_task) in [types.ListType,types.TupleType]:
+            objects=selector.objects_with_scripts(self.map_task)
+        else:
+            objects=selector.objects_with_scripts([self.map_task])
         return self.render(request,"sa_app_form.html",{"objects":objects,"form":form})
     view_form.url=r"^selector/(?P<selector_id>\d+)/$"
     view_form.url_name="form"
