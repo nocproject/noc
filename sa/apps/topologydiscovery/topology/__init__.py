@@ -80,7 +80,7 @@ class TopologyDiscovery(object):
     def dot(self):
         def q_interface(s):
             return s.replace(" ","").replace("/","")
-        r=["graph {"]+["node [shape=Mrecord]"]+["rankdir=RL;"]
+        r=["graph {"]+["node [shape=Mrecord]"]+["rankdir=RL;"]+["graph [ splines = false ]"]
         for o in self.objects:
             r+=["\"%s\" [label=\"%s|%s|%s\"];"%(o.id,o.name,o.profile_name,"|".join(["<%s> %s"%(q_interface(i),i.replace(" ","\\ ")) for i in sorted(self.object_interfaces.get(o,[]))]))]
         for o1,i1,o2,i2 in self.links:
