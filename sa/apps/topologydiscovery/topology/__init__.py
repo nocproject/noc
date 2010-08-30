@@ -6,12 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from mac import MACTopology
+from lldp import LLDPTopology
 
 class TopologyDiscovery(object):
     ##
     ## data is a list of (managed_object,IGetTopologyData)
     ##
-    def __init__(self,data,mac=True,per_vlan_mac=False):
+    def __init__(self,data,mac=True,per_vlan_mac=False,lldp=True):
         #
         self.links=[] # (object,interface,object_interface)
         self.links_methods={} # (o,i,o,i) -> method
@@ -48,6 +49,11 @@ class TopologyDiscovery(object):
                 for R in t.discover():
                     self.add_link(R,"mac")
                 t.dot("mac")
+        # LLDP Topology discovery
+        if lldp:
+            t=LLDPTopology(data)
+            for R in t.discover():
+                self.add_link(R,"lldp")
     ##
     ## Add discovered link
     ##
@@ -72,10 +78,12 @@ class TopologyDiscovery(object):
     ## Render graphviz DOT with topology
     ##
     def dot(self):
+        def q_interface(s):
+            return s.replace(" ","").replace("/","")
         r=["graph {"]+["node [shape=Mrecord]"]+["rankdir=RL;"]
         for o in self.objects:
-            r+=["\"%s\" [label=\"%s|%s|%s\"];"%(o.id,o.name,o.profile_name,"|".join(["<%s> %s"%(i.replace(" ",""),i.replace(" ","\\ ")) for i in sorted(self.object_interfaces.get(o,[]))]))]
+            r+=["\"%s\" [label=\"%s|%s|%s\"];"%(o.id,o.name,o.profile_name,"|".join(["<%s> %s"%(q_interface(i),i.replace(" ","\\ ")) for i in sorted(self.object_interfaces.get(o,[]))]))]
         for o1,i1,o2,i2 in self.links:
-            r+=["%s:%s -- %s:%s;"%(o1.id,i1.replace(" ",""),o2.id,i2.replace(" ",""))]
+            r+=["%s:%s -- %s:%s;"%(o1.id,q_interface(i1),o2.id,q_interface(i2))]
         r+=["}"]
         return "\n".join(r)
