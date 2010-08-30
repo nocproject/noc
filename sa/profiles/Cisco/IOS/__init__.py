@@ -24,6 +24,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^\S+?#"
     requires_netmask_conversion=True
     convert_mac=noc.sa.profiles.Profile.convert_mac_to_cisco
+    convert_interface_name=noc.sa.profiles.Profile.convert_interface_name_cisco
     config_volatile=["^ntp clock-period .*?^"]
     
     def generate_prefix_list(self,name,pl,strict=True):
