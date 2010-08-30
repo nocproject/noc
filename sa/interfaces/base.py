@@ -91,6 +91,7 @@ class ORParameter(Parameter):
     InterfaceTypeError: IPParameter: 'xxx'
     """
     def __init__(self,left,right):
+        super(ORParameter,self).__init__()
         self.left=left
         self.right=right
         
