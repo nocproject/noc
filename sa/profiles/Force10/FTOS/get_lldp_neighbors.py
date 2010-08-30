@@ -58,13 +58,12 @@ class Script(noc.sa.script.Script):
                 n["remote_port"]=match.group("port").strip()
                 # Get remote system name
                 match=rx_remote_system_name.search(ns)
-                if not match:
-                    continue
-                n["remote_system_name"]=match.group("name")
+                if match:
+                    n["remote_system_name"]=match.group("name")
                 # Get capabilities
+                caps=0
                 match=rx_remote_capabilities.search(ns)
                 if match:
-                    caps=0
                     for c in match.group("capabilities").split():
                         caps|={
                             "other"     : 1,
@@ -76,7 +75,7 @@ class Script(noc.sa.script.Script):
                             "docsis"    : 64,
                             "station"   : 128
                         }[c.lower()]
-                    n["remote_capabilities"]=caps
+                n["remote_capabilities"]=caps
                 sr["neighbors"]+=[n]
             r+=[sr]
         return r
