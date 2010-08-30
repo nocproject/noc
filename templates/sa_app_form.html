@@ -8,6 +8,17 @@ function toggle() {
     _t=!_t;
 }
 </script>
+<style>
+.sa-object-list, .sa-object-list LI {
+    list-style: none;
+    display: inline;
+}
+
+.sa-object-list LI {
+    float: left;
+    width: 200px;
+}
+</style>
 <h1>{{app.title}}</h1>
 <form method="POST" id="form">
     <div class="module">
@@ -22,9 +33,11 @@ function toggle() {
             <caption>Selected Objects: <input type="checkbox" checked onclick="toggle();" /></caption>
             <tr>
                 <td>
-                    {% for o in objects %}
-                        <input type="checkbox" checked name="OBJ:{{o.id}}" class="sa-app-obj" /> {{o.name}}
-                    {% endfor %}
+                    <ul class="sa-object-list">
+                        {% for o in objects %}
+                            <li><input type="checkbox" checked name="OBJ:{{o.id}}" class="sa-app-obj" /> {{o.name}}</li>
+                        {% endfor %}
+                    </ul>
                 </td>
             </tr>
         </table>
