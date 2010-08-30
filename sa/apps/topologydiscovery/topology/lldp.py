@@ -17,11 +17,20 @@ class LLDPTopology(Topology):
     ## Perform LLDP topology discovery
     ##
     def discover(self):
-        # Build chassis id -> object mapping
         chassis_id={} # id->object
+        local_id={} # object -> local -> interface name
+        # Build mappings
         for o,d in self.data:
+            # chassis id mapping
             if "chassis_id" in d and d["chassis_id"]:
                 chassis_id[d["chassis_id"]]=o
+            # local interface id mapping
+            if d["has_lldp"]:
+                for i in d["lldp_neighbors"]:
+                    if "local_interface_id" in i:
+                        if o not in local_id:
+                            local_id[o]={}
+                        local_id[o][i["local_interface_id"]]=i["local_interface"]
         # Get links from LLDP data
         for o,d in self.data:
             if d["has_lldp"]:
@@ -31,5 +40,9 @@ class LLDPTopology(Topology):
                         rc_id=n["remote_chassis_id"]
                         if rc_id in chassis_id:
                             ro=chassis_id[rc_id] # Resolve to managed object
-                            yield (o,local_interface,ro,ro.profile.convert_interface_name(n["remote_port"]))
-        
+                            if n["remote_port_subtype"]==5: # interfaceName(5)
+                                yield (o,local_interface,ro,ro.profile.convert_interface_name(n["remote_port"]))
+                            elif n["remote_port_subtype"]==7: # local(7)
+                                # Try to resolve local interface id
+                                if ro in local_id and int(n["remote_port"]) in local_id[ro]:
+                                    yield (o,local_interface,ro,local_id[ro][int(n["remote_port"])])
