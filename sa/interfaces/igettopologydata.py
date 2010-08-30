@@ -8,18 +8,24 @@
 """
 """
 from base import *
+from igetmacaddresstable import IGetMACAddressTable
+from igetlldpneighbors import IGetLLDPNeighbors
 
 class IGetTopologyData(Interface):
-    get_mac=BooleanParameter(required=False,default=False) # Get MAC address table
+    get_mac=BooleanParameter(required=False,default=False)  # Get MAC address table
+    get_lldp=BooleanParameter(required=False,default=False) # Get LLDP neighbor information
     
     returns=DictParameter(attrs={
         # Set to true if "mac" is not empty
-        "has_mac" : BooleanParameter(required=False,default=False),
+        "has_mac"    : BooleanParameter(required=False,default=False),
         # Mac address table.
         # Returned only if get_mac is True
-        "mac"     : ListOfParameter(element=DictParameter(attrs={"vlan_id"    : VLANIDParameter(),
-                                                             "mac"        : MACAddressParameter(),
-                                                             "interfaces" : StringListParameter(),
-                                                             "type"       : StringParameter(), # choices=["D","S"]
-                                                             })),
+        "mac"        : IGetMACAddressTable.returns,
+        # Set to true if "lldp_neighbors" is not empty
+        "has_lldp"   : BooleanParameter(required=False,default=False),
+        # Chassis ID, returned only if get_lldp is set
+        "chassis_id" : MACAddressParameter(required=False),
+        # LLDP neighbors
+        # Returned only if get_lldp is set
+        "lldp_neighbors" : IGetLLDPNeighbors.returns,
     })
