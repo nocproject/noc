@@ -83,7 +83,7 @@ class SAApplication(Application):
             objects=selector.objects_with_scripts(self.map_task)
         else:
             objects=selector.objects_with_scripts([self.map_task])
-        return self.render(request,"sa_app_form.html",{"objects":objects,"form":form})
+        return self.render(request,"sa_app_form.html",{"objects": sorted(objects,lambda x,y: cmp(x.name,y.name)),"form":form})
     view_form.url=r"^selector/(?P<selector_id>\d+)/$"
     view_form.url_name="form"
     view_form.access=HasPerm("run")
