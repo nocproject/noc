@@ -11,6 +11,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetLLDPNeighbors
 import re
 
+rx_localport=re.compile(r"^\s*(.+?)\s*\|\s*local\s+(\d+)\s+.+?$",re.MULTILINE|re.DOTALL)
 rx_split=re.compile(r"^\s*----.+?\n",re.MULTILINE|re.DOTALL)
 rx_line=re.compile(r"^\s*(?P<port>\S+)\s*|",re.MULTILINE|re.DOTALL)
 rx_chassis_id=re.compile(r"^\s*ChassisId\s*:\s*(.{17})",re.MULTILINE|re.DOTALL|re.IGNORECASE)
@@ -23,6 +24,12 @@ class Script(noc.sa.script.Script):
     implements=[IGetLLDPNeighbors]
     def execute(self):
         r=[]
+        # HP.ProCurve advertises local(7) port sub-type, so local_interface_id parameter required
+        # Collect data
+        local_port_ids={} # name -> id
+        for port,local_id in rx_localport.findall(self.cli("show lldp info local-device")):
+            local_port_ids[port]=int(local_id)
+        # Get neighbors
         v=self.cli("show lldp info remote-device")
         for l in rx_split.split(v)[1].splitlines():
             l=l.strip()
@@ -33,6 +40,9 @@ class Script(noc.sa.script.Script):
                 continue
             local_interface=match.group("port")
             i={"local_interface":local_interface,"neighbors":[]}
+            # Add locally assigned port id, if exists
+            if local_interface in local_port_ids:
+                i["local_interface_id"]=local_port_ids[local_interface]
             v=self.cli("show lldp info remote-device %s"%local_interface)
             # Get chassis id
             match=rx_chassis_id.search(v)
