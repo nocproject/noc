@@ -13,7 +13,7 @@ from noc.sa.models import ManagedObjectSelector
 ## ManagedObjectSelector admin
 ##
 class ManagedObjectSelectorAdmin(admin.ModelAdmin):
-    list_display=["name","is_enabled"]
+    list_display=["name","is_enabled","description"]
     list_filter=["is_enabled"]
     actions=["test_selectors"]
     search_fields=["name"]

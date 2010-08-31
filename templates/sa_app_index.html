@@ -1,9 +1,12 @@
 {% extends "template.html" %}
 {% block content %}
 <h1>{{app.title}}</h1>
-<table border='0'>
-{% for s in selectors %}
-    <tr><td><a href="selector/{{s.id}}/">{{s.name}}</a></td><td>{{description}}</td></tr>
-{% endfor %}
-</table>
+<div class="module">
+    <table width="100%">
+        <caption>Choose selector...</caption>
+        {% for s in selectors %}
+            <tr><td style="width: 200px"><a href="selector/{{s.id}}/">{{s.name}}</a></td><td>{{s.description}}</td></tr>
+        {% endfor %}
+    </table>
+</div>
 {% endblock %}
