@@ -1,6 +1,10 @@
 {% extends "template.html" %}
 {% block extrahead %}
 <meta http-equiv="Refresh" content="{{timeout}}; {{url}}" />
+{% if progress >= 0 %}
+    <link href="/static/css/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <script src="/static/js/jquery-ui.min.js"></script>
+{% endif %}
 {% endblock %}
 {% block title%}Processing: {{subject}}{% endblock %}
 {% block content %}
@@ -10,4 +14,12 @@
 {%else%}
 Processing, Please wait!
 {%endif%}
+{% if progress >= 0 %}
+    <script>
+    $(document).ready(function() {
+        $("#progressbar").progressbar({ value: {{progress}} });
+      });
+    </script>
+    <div id="progressbar"></div>
+{% endif %}
 {% endblock %}

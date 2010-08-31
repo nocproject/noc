@@ -96,7 +96,10 @@ class SAApplication(Application):
             result=task.get_result(block=False)
         except ReduceTask.NotReady:
             # Task not ready, refresh
-            return self.render_wait(request,subject="Task",text="Processing task. Please wait ...")
+            total_tasks=task.maptask_set.count()
+            complete_task=task.maptask_set.filter(status="C").count()
+            progress=float(complete_task)*100.0/float(total_tasks)
+            return self.render_wait(request,subject="Task",text="Processing task. Please wait ...",progress=progress)
         if isinstance(result,Report):
             # Convert report instance to HTML
             result=result.to_html()

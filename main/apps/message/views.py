@@ -32,14 +32,15 @@ class MessageApplication(Application):
     ##
     ## Render wait page
     ##
-    def view_wait(self,request,subject=None,text=None,timeout=5,url=None):
+    def view_wait(self,request,subject=None,text=None,timeout=5,url=None,progress=None):
         subject=request.GET.get("subject",subject)
         text=request.GET.get("text",text)
         timeout=int(request.GET.get("timeout",timeout))
         url=request.GET.get("url",url)
         if url is None:
             url=request.path
-        return self.render(request,"wait.html",{"subject":subject,"text":text,"url":url,"timeout":timeout})
+        return self.render(request,"wait.html",{"subject":subject,"text":text,"url":url,"timeout":timeout,
+            "progress": int(progress) if progress is not None else None})
     view_wait.url=r"^wait/$"
     view_wait.url_name="wait"
     view_wait.access=PermitLogged()
