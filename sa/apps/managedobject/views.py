@@ -54,6 +54,18 @@ def action_links(obj):
 action_links.short_description="Actions"
 action_links.allow_tags=True
 ##
+## Display object status
+##
+def object_status(o):
+    s=[]
+    if o.is_managed:
+        s+=["Managed"]
+    if o.is_configuration_managed:
+        s+=["Configuration"]
+    return "<br/>".join(s)
+object_status.short_description="Status"
+object_status.allow_tags=True
+##
 ## Reduce task for script results
 ##
 def script_reduce(task):
@@ -86,7 +98,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("tags",)
         }),
     )
-    list_display=["name","is_managed","profile_name","address","administrative_domain","activator","is_configuration_managed","description","repo_path",action_links]
+    list_display=["name",object_status,"profile_name","address","administrative_domain","activator","description","repo_path",action_links]
     list_filter=["is_managed","is_configuration_managed","activator","administrative_domain","profile_name"]
     search_fields=["name","address","repo_path","description"]
     object_class=ManagedObject
