@@ -106,8 +106,8 @@ class Application(object):
     ##
     ## Render wait page
     ##
-    def render_wait(self,request,subject=None,text=None,url=None,timeout=5):
-        return self.site.views.main.message.wait(request,subject=subject,text=text,timeout=timeout,url=url)
+    def render_wait(self,request,subject=None,text=None,url=None,timeout=5,progress=None):
+        return self.site.views.main.message.wait(request,subject=subject,text=text,timeout=timeout,url=url,progress=progress)
     ##
     ## Redirect to URL
     ##
