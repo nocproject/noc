@@ -10,6 +10,7 @@
 from base import *
 from igetmacaddresstable import IGetMACAddressTable
 from igetlldpneighbors import IGetLLDPNeighbors
+from igetportchannel import IGetPortchannel
 
 class IGetTopologyData(Interface):
     get_mac=BooleanParameter(required=False,default=False)  # Get MAC address table
@@ -28,4 +29,6 @@ class IGetTopologyData(Interface):
         # LLDP neighbors
         # Returned only if get_lldp is set
         "lldp_neighbors" : IGetLLDPNeighbors.returns,
+        # Portchannels
+        "portchannels"   : IGetPortchannel.returns,
     })
