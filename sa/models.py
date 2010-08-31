@@ -272,14 +272,16 @@ class ManagedObjectSelector(models.Model):
         r=ManagedObject.objects.filter(q)
         # Restrict to sources
         if self.sources.count():
-            sm=self.source_combine_method
-            for s in self.sources.all():
-                if s.id==self.id: # Do not include self
-                    continue
-                if sm=="A": # AND
-                    q&=s.q
-                else: # OR
-                    q|=s.q
+            if self.source_combine_method=="A":
+                # AND
+                for s in self.sources.all():
+                    q&=s.Q
+            else:
+                # OR
+                ql=list(self.sources.all())
+                q=ql.pop(0).Q
+                for qo in ql:
+                    q|=qo.Q
         return q
     Q=property(_Q)
     ##
