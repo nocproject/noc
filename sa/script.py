@@ -744,8 +744,10 @@ class SNMPGetSocket(UDPSocket):
 class SNMPGetNextSocket(SNMPGetSocket):
     TTL=5
     
-    def __init__(self,provider,oid,bulk=False):
+    def __init__(self,provider,oid,bulk=False,min_index=None,max_index=None):
         self.bulk=bulk
+        self.min_index=min_index
+        self.max_index=max_index
         super(SNMPGetNextSocket,self).__init__(provider,oid)
     ##
     ## Returns string containing SNMP GET requests to self.oids
@@ -793,6 +795,17 @@ class SNMPGetNextSocket(SNMPGetSocket):
                             self.close()
                             self.provider.queue.put(None)
                             return
+                        # Check index range if given
+                        if self.min_index is not None or self.max_index is not None:
+                            index=int(oid.split(".")[-1])
+                            if self.min_index is not None and index<self.min_index:
+                                # Skip values below min_index
+                                continue
+                            if self.max_index and index>self.max_index:
+                                # Finish processing
+                                self.close()
+                                self.provider.queue.put(None)
+                                return
                         if self.bulk:
                             self.provider.script.debug("SNMP BULK DATA: %s %s"%(oid,str(val)))
                         else:
@@ -838,11 +851,11 @@ class SNMPProvider(object):
     ## for oid,v in self.getnext("xxxxx"):
     ##      ....
     ##
-    def getnext(self,oid,community_suffix=None,bulk=False):
+    def getnext(self,oid,community_suffix=None,bulk=False,min_index=None,max_index=None):
         self.community_suffix=community_suffix
         if self.getnext_socket:
             self.getnext_socket.close()
-        self.getnext_socket=SNMPGetNextSocket(self,oid,bulk)
+        self.getnext_socket=SNMPGetNextSocket(self,oid,bulk=bulk,min_index=min_index,max_index=max_index)
         # Flush queue
         while not self.queue.empty():
             self.queue.get()
