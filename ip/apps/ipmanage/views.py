@@ -12,7 +12,7 @@ from noc.ip.models import *
 from noc.vc.models import VC,VCBindFilter
 from noc.lib.colors import get_colors
 from noc.lib.validators import is_cidr,is_ipv4,is_fqdn
-from noc.lib.ip import normalize_prefix,contains,in_range,free_blocks
+from noc.lib.ip import normalize_prefix,contains,in_range,free_blocks,prefix_to_size
 from noc.lib.widgets import AutoCompleteTags
 ##
 ## IP Address Space Management
@@ -54,6 +54,7 @@ class IPManageAppplication(Application):
             ("Size",        total),
         ]
         ranges=None
+        range_colors=None
         all_addresses=None
         if has_children:
             orphaned_addresses=prefix.orphaned_addresses
@@ -65,27 +66,26 @@ class IPManageAppplication(Application):
                 ("Addresses Used",used),
                 ("Addresses Free",free),
             ]
+            # Prepare range colors
             ranges=list(prefix.ranges)
-            colors=get_colors(len(ranges))
-            rc=[]
-            for r,c in zip(ranges,colors):
-                r.color=c
-                rc+=[(r.from_ip,r.to_ip,c)]
+            range_colors=zip(ranges,get_colors(len(ranges)))
+            # Bind addresses to ranges
             all_addresses=[]
             for a in prefix.all_addresses:
                 try:
                     ip=a.ip
                 except:
                     ip=a
-                c=None
-                for from_ip,to_ip,cl in rc:
-                    if in_range(ip,from_ip,to_ip):
-                        c=cl
+                ar=None
+                for r in ranges:
+                    if in_range(ip,r.from_ip,r.to_ip):
+                        ar=r
                         break
-                all_addresses+=[(c,a)]
+                all_addresses+=[(ar,a)]
         return self.render(request,"vrf_index.html",{"vrf":vrf,"parents":parents,"prefixes":prefixes,"prefix":prefix,
                             "can_allocate":can_allocate,"block_info":block_info,"has_children":has_children,
-                            "ranges":ranges,"all_addresses":all_addresses,"orphaned_addresses":orphaned_addresses})
+                            "ranges":ranges,"range_colors":range_colors,"all_addresses":all_addresses,
+                            "orphaned_addresses":orphaned_addresses})
     view_vrf_index.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/$"
     view_vrf_index.url_name="vrf_index"
     view_vrf_index.access=HasPerm("view")
@@ -150,7 +150,8 @@ class IPManageAppplication(Application):
                 for m in range(int(parent.split("/")[1])+1,31):
                     for fp,fm in free:
                         if fm<=m:
-                            suggestions+=["%s/%d"%(fp,m)]
+                            p="%s/%d"%(fp,m)
+                            suggestions+=[(p,prefix_to_size(p))]
                             break
                 # Fill initial prefix
                 prefix=parent.split("/")[0]

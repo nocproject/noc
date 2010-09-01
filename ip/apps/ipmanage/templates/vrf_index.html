@@ -5,9 +5,6 @@
 {% block content %}
 {% if can_allocate %}
     <ul class="object-tools">
-        {% if prefix.has_children %}{%else%}
-        <li><A HREF="#" ONCLICK="toggle_free();" CLASS="changelink" id="free_ip_toggle_button">Show Free</A></li>
-        {% endif %}
         <li><A HREF="{% url ip:tools:index vrf.id prefix %}" CLASS="changelink">Tools</A></li>
         <li><A HREF="{% url ip:ipmanage:allocate_block vrf.id %}" CLASS="addlink">Allocate new block</A></li>
         <li><A HREF="{% url ip:ipmanage:assign_address vrf.id %}" CLASS="addlink">Assign address</A></li>
@@ -41,51 +38,78 @@
 .ipnav li:after {
     content: "\00a0\203a";
 }
+
+.freeip {
+    font-style: italic;
+    background-color: #CCCCCC;
+    display: none;
+}
+
+/* Column widths */
+th[class=ip] {
+    width: 7em;
+}
+
+th[class=range] {
+    width: 1em;
+}
+
+th[class=fqdn] {
+    width: 17em;
+}
+
+th[class=tt] {
+    width: 5em;
+}
+/* Range colors */
+{% for r,c in range_colors %}
+    td[class=r{{r.id}}] {
+        background-color: {{c}};
+    }
+{% endfor %}
 </style>
 <DIV CLASS="module">
     <ul class="ipnav">
+        <li><a href="{% url ip:ipmanage:vrf_index prefix.vrf.id '0.0.0.0/0' %}>">VRF {{vrf.name}}</a></li>
     {% for p in parents %}
         <li><a href="{% url ip:ipmanage:vrf_index vrf.id p.prefix %}" title="{{p.description}}">{{p.prefix}}</a></li>
     {% endfor %}
     <li><a href='{% url ip:ipmanage:vrf_index vrf.id prefix.prefix %}' title="{{prefix.description}}">{{prefix.prefix}}</a></li>
     </ul>
 </DIV>
+<h1>VRF {{vrf.name}}: {{prefix.prefix}} ({{prefix.description}})</h1>
 <!-- Allocated blocks -->
-<DIV CLASS="module">
-    <TABLE SUMMARY="Allocated blocks within {{prefix.prefix}}" WIDTH="100%">
-        <caption>Allocated blocks within {{vrf.name}}::{{prefix.prefix}} ({{prefix.description}})</caption>
-        <THEAD>
-            <TR><TH>Prefix</TH><TH>VRF</TH><TH>Description</TH><TH>VC</TH><TH>TT</TH><TH>Tags</TH><TH></TH></TR>
-        </THEAD>
-        {%for p in prefixes %}
-        <TR class="{%cycle 'row1' 'row2'%}">
-            <TD><A HREF="{% url ip:ipmanage:vrf_index p.vrf_id p.prefix %}">{{p.prefix}}</A></TD>
-            <TD><A HREF="{% url ip:ipmanage:vrf_index p.vrf_id '0.0.0.0/0' %}">{{p.vrf.name}}</A></TD>
-            <TD>{{p.description}}</TD>
-            <TD>{% if p.vc %}{{p.vc}}{% endif %}</TD>
-            <TD>{%if p.tt %}<A HREF="{{p.tt_url}}">#{{p.tt}}</A>{%endif%}</TD>
-            <TD>{% tags p %}</TD>
-            <TD> 
-                <A HREF="{% url ip:ipmanage:change_block p.vrf.id p.prefix %}" CLASS="changelink">Change</A>
-                <A HREF="{% url ip:ipmanage:deallocate_block p.vrf_id p.prefix %}"
-                    CLASS="deletelink" ONCLICK="return confirm_delete('Deallocate block?')">Delete</A>
-            </TD>
-        </TR>
-        {%endfor%}
-    </TABLE>
-</DIV>
-
+{% if prefixes %}
+    <DIV CLASS="module">
+        <TABLE SUMMARY="Allocated blocks" WIDTH="100%">
+            <caption>Allocated blocks</caption>
+            <THEAD>
+                <TR><TH class="ip">Prefix</TH><TH class="ip">VRF</TH><TH>Description</TH><TH>VC</TH><TH class="tt">TT</TH><TH>Tags</TH></TR>
+            </THEAD>
+            {%for p in prefixes %}
+            <TR class="{%cycle 'row1' 'row2'%}">
+                <TD><A HREF="{% url ip:ipmanage:vrf_index p.vrf_id p.prefix %}">{{p.prefix}}</A></TD>
+                <TD><A HREF="{% url ip:ipmanage:vrf_index p.vrf_id '0.0.0.0/0' %}">{{p.vrf.name}}</A></TD>
+                <TD>{{p.description}}</TD>
+                <TD>{% if p.vc %}{{p.vc}}{% endif %}</TD>
+                <TD>{%if p.tt %}<A HREF="{{p.tt_url}}">#{{p.tt}}</A>{%endif%}</TD>
+                <TD>{% tags p %}</TD>
+            </TR>
+            {%endfor%}
+        </TABLE>
+    </DIV>
+{% endif %}
 {% if has_children %}
+<!-- orphaned addresses -->
 {%if orphaned_addresses%}
 <DIV CLASS="module">
-    <TABLE SUMMARY="Orphaned addresses within {{prefix.prefix}}" WIDTH="100%">
-        <caption>Orphaned addresses within {{vrf.name}}::{{prefix.prefix}}</caption>
+    <TABLE SUMMARY="Orphaned addresses" WIDTH="100%">
+        <caption>Orphaned addresses</caption>
         <THEAD>
-            <TR><TH STYLE="width: 10px"></TH><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH></TR>
+            <TR><TH class="ip">IP</TH><TH class="fqdn">FQDN</TH><TH>Description</TH><TH class="tt">TT</TH></TR>
         </THEAD>
         {% for a in orphaned_addresses %}
         <TR class="{%cycle 'row1' 'row2'%}">
-        <TD {%if c%}STYLE="background-color: {{c}}"{%endif%}></TD>
         <TD>{% if can_allocate %}<A HREF="{% url ip:ipmanage:change_address vrf.id a.ip %}">{{a.ip}}</A>{%else%}{{a.ip}}{%endif%}</TD>
         <TD>{{a.fqdn}}</TD>
         <TD>{{a.description}}</TD>
@@ -96,38 +120,32 @@
 </DIV>
 {% endif %}
 {% else %}
-<STYLE>
-.freeip {
-    font-style: italic;
-    background-color: #CCCCCC;
-    display: none;
-}
-</STYLE>
-
+<!-- Assigned addresses -->
 <SCRIPT TYPE="text/javascript">
 var _ft_shown=false;
 
 function toggle_free() {
     if(_ft_shown) {
         $(".freeip").each(function (i){this.style.display="none";});
-        $("#free_ip_toggle_button").text("Show Free");
+        $("#free_ip_toggle_button").text("Show Free Addresses");
         _ft_shown=false;
     } else {
         $(".freeip").each(function (i){this.style.display="table-row";});
-        $("#free_ip_toggle_button").text("Hide Free");
+        $("#free_ip_toggle_button").text("Hide Free Addresses");
         _ft_shown=true;
     }
 }
 </SCRIPT>
 <DIV CLASS="module">
-    <TABLE SUMMARY="Allocated addresses within {{prefix.prefix}}" WIDTH="100%">
+    <TABLE SUMMARY="Assigned addresses" WIDTH="100%">
+        <caption>Assigned addresses <A HREF="#" ONCLICK="toggle_free();" style="float: right" id="free_ip_toggle_button">Show Free Addresses</A></caption>
         <THEAD>
-            <TR><TH STYLE="width: 10px"></TH><TH>IP</TH><TH>FQDN</TH><TH>Description</TH><TH>TT</TH><TH>Tags</TH></TR>
+            <TR><TH class="range"></TH><TH class="ip">IP</TH><TH class="fqdn">FQDN</TH><TH>Description</TH><TH class="tt">TT</TH><TH>Tags</TH></TR>
         </THEAD>
-        {% for c,a in all_addresses %}
+        {% for r,a in all_addresses %}
             {% if a.ip %}
                 <TR class="{%cycle 'row1' 'row2'%}">
-                <TD {%if c%}STYLE="background-color: {{c}}"{%endif%}></TD>
+                <TD {%if r%}class="r{{r.id}}"{%endif%}></TD>
                 <TD>
                     {% if can_allocate %}
                         <A HREF="{% url ip:ipmanage:change_address vrf.id a.ip %}">{{a.ip}}</A>
@@ -163,11 +181,11 @@ function toggle_free() {
         <TABLE SUMMARY="Address Ranges" WIDTH="100%">
             <CAPTION>Address Ranges</CAPTION>
             <THEAD>
-                <TR><TH></TH><TH>Name</TH><TH>From IP</TH><TH>To IP</TH><TH>Locked</TH><TH>Description</TH></TR>
+                <TR><TH class="range"></TH><TH>Name</TH><TH>From IP</TH><TH>To IP</TH><TH>Locked</TH><TH>Description</TH></TR>
             </THEAD>
             {% for r in ranges %}
             <TR class="{%cycle 'row1' 'row2'%}">
-                <TD STYLE="width: 10px; background-color: {{r.color}}"></TD>
+                <TD class="r{{r.id}}"></TD>
                 <TD>{{r.name}}</TD>
                 <TD>{{r.from_ip}}</TD>
                 <TD>{{r.to_ip}}</TD>
@@ -207,4 +225,11 @@ function toggle_free() {
         {% endfor %}
     </TABLE>
 </DIV>
+
+<div class="submit-row">
+    <A HREF="{% url ip:ipmanage:change_block prefix.vrf.id prefix.prefix %}" CLASS="changelink">Change</A>
+    <A HREF="{% url ip:ipmanage:deallocate_block prefix.vrf_id prefix.prefix %}"
+        CLASS="deletelink" ONCLICK="return confirm_delete('Deallocate block {{prefix.prefix}} ({{prefix.description}})?')">Delete</A>
+</div>
+
 {% endblock %}

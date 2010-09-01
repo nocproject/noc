@@ -20,10 +20,10 @@
     // -->
 </SCRIPT>
 
+<div class="module">
 <FORM METHOD="POST" ACTION="" >{% csrf_token %}
-    <DIV>
     <fieldset class="module aligned ">
-        <table>{{form.as_table}}</table>
+        <table width="100%">{{form.as_table}}</table>
     </fieldset>
     <div class="submit-row">
         <INPUT TYPE="submit" VALUE="Save" CLASS="default"/>
@@ -31,6 +31,7 @@
             <p class="deletelink-box"><a href="{% url ip:ipmanage:revoke_address vrf.id ip %}" class="deletelink" ONCLICK="return confirm_delete('Delete Address?')">Delete</a></p>
         {% endif %}
     </div>
-    </DIV>
+    
 </FORM>
+</div>
 {% endblock %}
