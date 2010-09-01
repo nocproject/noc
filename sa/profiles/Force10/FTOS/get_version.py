@@ -50,6 +50,8 @@ class Script(noc.sa.script.Script):
                 version=match.group("version")
                 # Get platform from F10-CHASSIS-MIB::chType
                 v=self.snmp.get("1.3.6.1.4.1.6027.3.1.1.1.1.0") # F10-CHASSIS-MIB::chType
+                if v=="": # F10-CHASSIS-MIB seems to be unsupported on C-series
+                    raise self.snmp.TimeOutError # Fallback to CLI
                 platform=F10_CHASSIS[int(v)]
                 return {
                     "vendor"    : "Force10",
