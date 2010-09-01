@@ -149,8 +149,13 @@ message EventFilterRequest {
 }
 
 message EventFilterResponse {
+    message EventIgnoreRuleItem {
+        required string left_re  = 1;
+        required string right_re = 2;
+    }
     required int32  expire  = 1;
     repeated string sources = 2;
+    repeated EventIgnoreRuleItem ignore_rules = 3;
 }
 
 message EventRequest {

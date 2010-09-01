@@ -6,10 +6,19 @@ from google.protobuf import reflection
 from google.protobuf import service
 from google.protobuf import service_reflection
 from google.protobuf import descriptor_pb2
+# @@protoc_insertion_point(imports)
+
+
+DESCRIPTOR = descriptor.FileDescriptor(
+  name='sae.proto',
+  package='sae',
+  serialized_pb='\n\tsae.proto\x12\x03sae\"p\n\x07Message\x12\n\n\x02id\x18\x01 \x02(\r\x12\x1d\n\x07request\x18\x02 \x01(\x0b\x32\x0c.sae.Request\x12\x1f\n\x08response\x18\x03 \x01(\x0b\x32\r.sae.Response\x12\x19\n\x05\x65rror\x18\x04 \x01(\x0b\x32\n.sae.Error\"5\n\x07Request\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x1a\n\x12serialized_request\x18\x02 \x02(\x0c\"\'\n\x08Response\x12\x1b\n\x13serialized_response\x18\x01 \x01(\x0c\"3\n\x05\x45rror\x12\x1c\n\x04\x63ode\x18\x01 \x02(\x0e\x32\x0e.sae.ErrorCode\x12\x0c\n\x04text\x18\x02 \x01(\t\"\xca\x01\n\rAccessProfile\x12\x0f\n\x07profile\x18\x01 \x02(\t\x12!\n\x06scheme\x18\x02 \x02(\x0e\x32\x11.sae.AccessScheme\x12\x0f\n\x07\x61\x64\x64ress\x18\x03 \x02(\t\x12\x0c\n\x04port\x18\x04 \x01(\r\x12\x0c\n\x04user\x18\x05 \x01(\t\x12\x10\n\x08password\x18\x06 \x01(\t\x12\x16\n\x0esuper_password\x18\x07 \x01(\t\x12\x0c\n\x04path\x18\x08 \x01(\t\x12\x0f\n\x07snmp_ro\x18\t \x01(\t\x12\x0f\n\x07snmp_rw\x18\n \x01(\t\"\r\n\x0bPingRequest\"\x0e\n\x0cPingResponse\"\x1f\n\x0fRegisterRequest\x12\x0c\n\x04name\x18\x01 \x02(\t\"!\n\x10RegisterResponse\x12\r\n\x05nonce\x18\x01 \x02(\t\"+\n\x0b\x41uthRequest\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0e\n\x06\x64igest\x18\x02 \x02(\t\"\x0e\n\x0c\x41uthResponse\"\x9a\x01\n\rScriptRequest\x12*\n\x0e\x61\x63\x63\x65ss_profile\x18\x01 \x02(\x0b\x32\x12.sae.AccessProfile\x12\x0e\n\x06script\x18\x02 \x02(\t\x12(\n\x06kwargs\x18\x03 \x03(\x0b\x32\x18.sae.ScriptRequest.KWArg\x1a#\n\x05KWArg\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\" \n\x0eScriptResponse\x12\x0e\n\x06result\x18\x01 \x02(\t\"*\n\x0c\x46ileChecksum\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04hash\x18\x02 \x02(\t\"\x11\n\x0fManifestRequest\"4\n\x10ManifestResponse\x12 \n\x05\x66iles\x18\x01 \x03(\x0b\x32\x11.sae.FileChecksum\"\'\n\x16SoftwareUpgradeRequest\x12\r\n\x05names\x18\x01 \x03(\t\"&\n\x08\x46ileCode\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04\x63ode\x18\x02 \x02(\t\"7\n\x17SoftwareUpgradeResponse\x12\x1c\n\x05\x63odes\x18\x01 \x03(\x0b\x32\r.sae.FileCode\"\x14\n\x12\x45ventFilterRequest\"\xb4\x01\n\x13\x45ventFilterResponse\x12\x0e\n\x06\x65xpire\x18\x01 \x02(\x05\x12\x0f\n\x07sources\x18\x02 \x03(\t\x12\x42\n\x0cignore_rules\x18\x03 \x03(\x0b\x32,.sae.EventFilterResponse.EventIgnoreRuleItem\x1a\x38\n\x13\x45ventIgnoreRuleItem\x12\x0f\n\x07left_re\x18\x01 \x02(\t\x12\x10\n\x08right_re\x18\x02 \x02(\t\"\x89\x01\n\x0c\x45ventRequest\x12\x11\n\ttimestamp\x18\x01 \x02(\x05\x12\n\n\x02ip\x18\x02 \x02(\t\x12-\n\x04\x62ody\x18\x03 \x03(\x0b\x32\x1f.sae.EventRequest.EventBodyItem\x1a+\n\rEventBodyItem\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\"\x0f\n\rEventResponse\"%\n\x10PingCheckRequest\x12\x11\n\taddresses\x18\x01 \x03(\t\";\n\x11PingCheckResponse\x12\x11\n\treachable\x18\x01 \x03(\t\x12\x13\n\x0bunreachable\x18\x02 \x03(\t\"\x80\x03\n\rPMDataRequest\x12+\n\x06result\x18\x01 \x03(\x0b\x32\x1b.sae.PMDataRequest.PMResult\x12\'\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\x19.sae.PMDataRequest.PMData\x1a\x98\x01\n\x08PMResult\x12\x12\n\nprobe_name\x18\x01 \x02(\t\x12\x12\n\nprobe_type\x18\x02 \x02(\t\x12\x11\n\ttimestamp\x18\x03 \x02(\x05\x12\x0f\n\x07service\x18\x04 \x02(\t\x12/\n\x06result\x18\x05 \x02(\x0e\x32\x1f.sae.PMDataRequest.PMResultCode\x12\x0f\n\x07message\x18\x06 \x02(\t\x1aI\n\x06PMData\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x11\n\ttimestamp\x18\x02 \x02(\x05\x12\x0f\n\x07is_null\x18\x03 \x02(\x08\x12\r\n\x05value\x18\x04 \x02(\x01\"3\n\x0cPMResultCode\x12\t\n\x05PR_OK\x10\x00\x12\x0b\n\x07PR_WARN\x10\x01\x12\x0b\n\x07PR_FAIL\x10\x02\"\x10\n\x0ePMDataResponse*\xad\x03\n\tErrorCode\x12\n\n\x06\x45RR_OK\x10\x00\x12\x10\n\x0c\x45RR_INTERNAL\x10\x01\x12\x16\n\x12\x45RR_INVALID_METHOD\x10\x02\x12\x1b\n\x17\x45RR_INVALID_TRANSACTION\x10\x03\x12\x1a\n\x16\x45RR_TRANSACTION_EXISTS\x10\x04\x12\x19\n\x15\x45RR_UNKNOWN_ACTIVATOR\x10\x05\x12\x17\n\x13\x45RR_INVALID_PROFILE\x10\x06\x12\x16\n\x12\x45RR_INVALID_SCHEME\x10\x07\x12\x1c\n\x18\x45RR_UNKNOWN_EVENT_SOURCE\x10\x08\x12\x13\n\x0f\x45RR_AUTH_FAILED\x10\t\x12\x15\n\x11\x45RR_AUTH_REQUIRED\x10\n\x12\x17\n\x13\x45RR_INVALID_UPGRADE\x10\x0b\x12\x10\n\x0c\x45RR_OVERLOAD\x10\x0c\x12\x16\n\x12\x45RR_INVALID_SCRIPT\x10\r\x12\x18\n\x14\x45RR_SCRIPT_EXCEPTION\x10\x0e\x12\x1f\n\x1b\x45RR_ACTIVATOR_NOT_AVAILABLE\x10\x0f\x12\x0c\n\x08\x45RR_DOWN\x10\x10\x12\x0f\n\x0b\x45RR_TIMEOUT\x10\x11*-\n\x0c\x41\x63\x63\x65ssScheme\x12\n\n\x06TELNET\x10\x00\x12\x07\n\x03SSH\x10\x01\x12\x08\n\x04HTTP\x10\x02\x32\xbe\x04\n\nSAEService\x12+\n\x04ping\x12\x10.sae.PingRequest\x1a\x11.sae.PingResponse\x12\x37\n\x08register\x12\x14.sae.RegisterRequest\x1a\x15.sae.RegisterResponse\x12+\n\x04\x61uth\x12\x10.sae.AuthRequest\x1a\x11.sae.AuthResponse\x12\x37\n\x08manifest\x12\x14.sae.ManifestRequest\x1a\x15.sae.ManifestResponse\x12M\n\x10software_upgrade\x12\x1b.sae.SoftwareUpgradeRequest\x1a\x1c.sae.SoftwareUpgradeResponse\x12\x31\n\x06script\x12\x12.sae.ScriptRequest\x1a\x13.sae.ScriptResponse\x12\x41\n\x0c\x65vent_filter\x12\x17.sae.EventFilterRequest\x1a\x18.sae.EventFilterResponse\x12.\n\x05\x65vent\x12\x11.sae.EventRequest\x1a\x12.sae.EventResponse\x12;\n\nping_check\x12\x15.sae.PingCheckRequest\x1a\x16.sae.PingCheckResponse\x12\x32\n\x07pm_data\x12\x12.sae.PMDataRequest\x1a\x13.sae.PMDataResponse')
+
 _ERRORCODE = descriptor.EnumDescriptor(
   name='ErrorCode',
   full_name='sae.ErrorCode',
-  filename='ErrorCode',
+  filename=None,
+  file=DESCRIPTOR,
   values=[
     descriptor.EnumValueDescriptor(
       name='ERR_OK', index=0, number=0,
@@ -84,14 +93,18 @@ _ERRORCODE = descriptor.EnumDescriptor(
       options=None,
       type=None),
   ],
+  containing_type=None,
   options=None,
+  serialized_start=1960,
+  serialized_end=2389,
 )
 
 
 _ACCESSSCHEME = descriptor.EnumDescriptor(
   name='AccessScheme',
   full_name='sae.AccessScheme',
-  filename='AccessScheme',
+  filename=None,
+  file=DESCRIPTOR,
   values=[
     descriptor.EnumValueDescriptor(
       name='TELNET', index=0, number=0,
@@ -106,7 +119,10 @@ _ACCESSSCHEME = descriptor.EnumDescriptor(
       options=None,
       type=None),
   ],
+  containing_type=None,
   options=None,
+  serialized_start=2391,
+  serialized_end=2436,
 )
 
 
@@ -136,7 +152,8 @@ HTTP = 2
 _PMDATAREQUEST_PMRESULTCODE = descriptor.EnumDescriptor(
   name='PMResultCode',
   full_name='sae.PMDataRequest.PMResultCode',
-  filename='PMResultCode',
+  filename=None,
+  file=DESCRIPTOR,
   values=[
     descriptor.EnumValueDescriptor(
       name='PR_OK', index=0, number=0,
@@ -151,876 +168,1106 @@ _PMDATAREQUEST_PMRESULTCODE = descriptor.EnumDescriptor(
       options=None,
       type=None),
   ],
+  containing_type=None,
   options=None,
+  serialized_start=1888,
+  serialized_end=1939,
 )
 
 
 _MESSAGE = descriptor.Descriptor(
   name='Message',
   full_name='sae.Message',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='id', full_name='sae.Message.id', index=0,
       number=1, type=13, cpp_type=3, label=2,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='request', full_name='sae.Message.request', index=1,
       number=2, type=11, cpp_type=10, label=1,
-      default_value=None,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='response', full_name='sae.Message.response', index=2,
       number=3, type=11, cpp_type=10, label=1,
-      default_value=None,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='error', full_name='sae.Message.error', index=3,
       number=4, type=11, cpp_type=10, label=1,
-      default_value=None,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=18,
+  serialized_end=130,
+)
 
 
 _REQUEST = descriptor.Descriptor(
   name='Request',
   full_name='sae.Request',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='method', full_name='sae.Request.method', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='serialized_request', full_name='sae.Request.serialized_request', index=1,
       number=2, type=12, cpp_type=9, label=2,
-      default_value="",
+      has_default_value=False, default_value="",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=132,
+  serialized_end=185,
+)
 
 
 _RESPONSE = descriptor.Descriptor(
   name='Response',
   full_name='sae.Response',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='serialized_response', full_name='sae.Response.serialized_response', index=0,
       number=1, type=12, cpp_type=9, label=1,
-      default_value="",
+      has_default_value=False, default_value="",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=187,
+  serialized_end=226,
+)
 
 
 _ERROR = descriptor.Descriptor(
   name='Error',
   full_name='sae.Error',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='code', full_name='sae.Error.code', index=0,
       number=1, type=14, cpp_type=8, label=2,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='text', full_name='sae.Error.text', index=1,
       number=2, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=228,
+  serialized_end=279,
+)
 
 
 _ACCESSPROFILE = descriptor.Descriptor(
   name='AccessProfile',
   full_name='sae.AccessProfile',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='profile', full_name='sae.AccessProfile.profile', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='scheme', full_name='sae.AccessProfile.scheme', index=1,
       number=2, type=14, cpp_type=8, label=2,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='address', full_name='sae.AccessProfile.address', index=2,
       number=3, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='port', full_name='sae.AccessProfile.port', index=3,
       number=4, type=13, cpp_type=3, label=1,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='user', full_name='sae.AccessProfile.user', index=4,
       number=5, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='password', full_name='sae.AccessProfile.password', index=5,
       number=6, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='super_password', full_name='sae.AccessProfile.super_password', index=6,
       number=7, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='path', full_name='sae.AccessProfile.path', index=7,
       number=8, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='snmp_ro', full_name='sae.AccessProfile.snmp_ro', index=8,
       number=9, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='snmp_rw', full_name='sae.AccessProfile.snmp_rw', index=9,
       number=10, type=9, cpp_type=9, label=1,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=282,
+  serialized_end=484,
+)
 
 
 _PINGREQUEST = descriptor.Descriptor(
   name='PingRequest',
   full_name='sae.PingRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=486,
+  serialized_end=499,
+)
 
 
 _PINGRESPONSE = descriptor.Descriptor(
   name='PingResponse',
   full_name='sae.PingResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=501,
+  serialized_end=515,
+)
 
 
 _REGISTERREQUEST = descriptor.Descriptor(
   name='RegisterRequest',
   full_name='sae.RegisterRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='name', full_name='sae.RegisterRequest.name', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=517,
+  serialized_end=548,
+)
 
 
 _REGISTERRESPONSE = descriptor.Descriptor(
   name='RegisterResponse',
   full_name='sae.RegisterResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='nonce', full_name='sae.RegisterResponse.nonce', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=550,
+  serialized_end=583,
+)
 
 
 _AUTHREQUEST = descriptor.Descriptor(
   name='AuthRequest',
   full_name='sae.AuthRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='name', full_name='sae.AuthRequest.name', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='digest', full_name='sae.AuthRequest.digest', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=585,
+  serialized_end=628,
+)
 
 
 _AUTHRESPONSE = descriptor.Descriptor(
   name='AuthResponse',
   full_name='sae.AuthResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=630,
+  serialized_end=644,
+)
 
 
 _SCRIPTREQUEST_KWARG = descriptor.Descriptor(
   name='KWArg',
   full_name='sae.ScriptRequest.KWArg',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='key', full_name='sae.ScriptRequest.KWArg.key', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='value', full_name='sae.ScriptRequest.KWArg.value', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=766,
+  serialized_end=801,
+)
 
 _SCRIPTREQUEST = descriptor.Descriptor(
   name='ScriptRequest',
   full_name='sae.ScriptRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='access_profile', full_name='sae.ScriptRequest.access_profile', index=0,
       number=1, type=11, cpp_type=10, label=2,
-      default_value=None,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='script', full_name='sae.ScriptRequest.script', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='kwargs', full_name='sae.ScriptRequest.kwargs', index=2,
       number=3, type=11, cpp_type=10, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[_SCRIPTREQUEST_KWARG, ],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=647,
+  serialized_end=801,
+)
 
 
 _SCRIPTRESPONSE = descriptor.Descriptor(
   name='ScriptResponse',
   full_name='sae.ScriptResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='result', full_name='sae.ScriptResponse.result', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=803,
+  serialized_end=835,
+)
 
 
 _FILECHECKSUM = descriptor.Descriptor(
   name='FileChecksum',
   full_name='sae.FileChecksum',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='name', full_name='sae.FileChecksum.name', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='hash', full_name='sae.FileChecksum.hash', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=837,
+  serialized_end=879,
+)
 
 
 _MANIFESTREQUEST = descriptor.Descriptor(
   name='ManifestRequest',
   full_name='sae.ManifestRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=881,
+  serialized_end=898,
+)
 
 
 _MANIFESTRESPONSE = descriptor.Descriptor(
   name='ManifestResponse',
   full_name='sae.ManifestResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='files', full_name='sae.ManifestResponse.files', index=0,
       number=1, type=11, cpp_type=10, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=900,
+  serialized_end=952,
+)
 
 
 _SOFTWAREUPGRADEREQUEST = descriptor.Descriptor(
   name='SoftwareUpgradeRequest',
   full_name='sae.SoftwareUpgradeRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='names', full_name='sae.SoftwareUpgradeRequest.names', index=0,
       number=1, type=9, cpp_type=9, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=954,
+  serialized_end=993,
+)
 
 
 _FILECODE = descriptor.Descriptor(
   name='FileCode',
   full_name='sae.FileCode',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='name', full_name='sae.FileCode.name', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='code', full_name='sae.FileCode.code', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=995,
+  serialized_end=1033,
+)
 
 
 _SOFTWAREUPGRADERESPONSE = descriptor.Descriptor(
   name='SoftwareUpgradeResponse',
   full_name='sae.SoftwareUpgradeResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='codes', full_name='sae.SoftwareUpgradeResponse.codes', index=0,
       number=1, type=11, cpp_type=10, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1035,
+  serialized_end=1090,
+)
 
 
 _EVENTFILTERREQUEST = descriptor.Descriptor(
   name='EventFilterRequest',
   full_name='sae.EventFilterRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1092,
+  serialized_end=1112,
+)
 
+
+_EVENTFILTERRESPONSE_EVENTIGNORERULEITEM = descriptor.Descriptor(
+  name='EventIgnoreRuleItem',
+  full_name='sae.EventFilterResponse.EventIgnoreRuleItem',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='left_re', full_name='sae.EventFilterResponse.EventIgnoreRuleItem.left_re', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='right_re', full_name='sae.EventFilterResponse.EventIgnoreRuleItem.right_re', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1239,
+  serialized_end=1295,
+)
 
 _EVENTFILTERRESPONSE = descriptor.Descriptor(
   name='EventFilterResponse',
   full_name='sae.EventFilterResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='expire', full_name='sae.EventFilterResponse.expire', index=0,
       number=1, type=5, cpp_type=1, label=2,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='sources', full_name='sae.EventFilterResponse.sources', index=1,
       number=2, type=9, cpp_type=9, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='ignore_rules', full_name='sae.EventFilterResponse.ignore_rules', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[_EVENTFILTERRESPONSE_EVENTIGNORERULEITEM, ],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1115,
+  serialized_end=1295,
+)
 
 
 _EVENTREQUEST_EVENTBODYITEM = descriptor.Descriptor(
   name='EventBodyItem',
   full_name='sae.EventRequest.EventBodyItem',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='key', full_name='sae.EventRequest.EventBodyItem.key', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='value', full_name='sae.EventRequest.EventBodyItem.value', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1392,
+  serialized_end=1435,
+)
 
 _EVENTREQUEST = descriptor.Descriptor(
   name='EventRequest',
   full_name='sae.EventRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='timestamp', full_name='sae.EventRequest.timestamp', index=0,
       number=1, type=5, cpp_type=1, label=2,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='ip', full_name='sae.EventRequest.ip', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='body', full_name='sae.EventRequest.body', index=2,
       number=3, type=11, cpp_type=10, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[_EVENTREQUEST_EVENTBODYITEM, ],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1298,
+  serialized_end=1435,
+)
 
 
 _EVENTRESPONSE = descriptor.Descriptor(
   name='EventResponse',
   full_name='sae.EventResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1437,
+  serialized_end=1452,
+)
 
 
 _PINGCHECKREQUEST = descriptor.Descriptor(
   name='PingCheckRequest',
   full_name='sae.PingCheckRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='addresses', full_name='sae.PingCheckRequest.addresses', index=0,
       number=1, type=9, cpp_type=9, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1454,
+  serialized_end=1491,
+)
 
 
 _PINGCHECKRESPONSE = descriptor.Descriptor(
   name='PingCheckResponse',
   full_name='sae.PingCheckResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='reachable', full_name='sae.PingCheckResponse.reachable', index=0,
       number=1, type=9, cpp_type=9, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='unreachable', full_name='sae.PingCheckResponse.unreachable', index=1,
       number=2, type=9, cpp_type=9, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1493,
+  serialized_end=1552,
+)
 
 
 _PMDATAREQUEST_PMRESULT = descriptor.Descriptor(
   name='PMResult',
   full_name='sae.PMDataRequest.PMResult',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='probe_name', full_name='sae.PMDataRequest.PMResult.probe_name', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='probe_type', full_name='sae.PMDataRequest.PMResult.probe_type', index=1,
       number=2, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='timestamp', full_name='sae.PMDataRequest.PMResult.timestamp', index=2,
       number=3, type=5, cpp_type=1, label=2,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='service', full_name='sae.PMDataRequest.PMResult.service', index=3,
       number=4, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='result', full_name='sae.PMDataRequest.PMResult.result', index=4,
       number=5, type=14, cpp_type=8, label=2,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='message', full_name='sae.PMDataRequest.PMResult.message', index=5,
       number=6, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1659,
+  serialized_end=1811,
+)
 
 _PMDATAREQUEST_PMDATA = descriptor.Descriptor(
   name='PMData',
   full_name='sae.PMDataRequest.PMData',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='name', full_name='sae.PMDataRequest.PMData.name', index=0,
       number=1, type=9, cpp_type=9, label=2,
-      default_value=unicode("", "utf-8"),
+      has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='timestamp', full_name='sae.PMDataRequest.PMData.timestamp', index=1,
       number=2, type=5, cpp_type=1, label=2,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='is_null', full_name='sae.PMDataRequest.PMData.is_null', index=2,
       number=3, type=8, cpp_type=7, label=2,
-      default_value=False,
+      has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='value', full_name='sae.PMDataRequest.PMData.value', index=3,
       number=4, type=1, cpp_type=5, label=2,
-      default_value=0,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1813,
+  serialized_end=1886,
+)
 
 _PMDATAREQUEST = descriptor.Descriptor(
   name='PMDataRequest',
   full_name='sae.PMDataRequest',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
       name='result', full_name='sae.PMDataRequest.result', index=0,
       number=1, type=11, cpp_type=10, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
       name='data', full_name='sae.PMDataRequest.data', index=1,
       number=2, type=11, cpp_type=10, label=3,
-      default_value=[],
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[_PMDATAREQUEST_PMRESULT, _PMDATAREQUEST_PMDATA, ],
   enum_types=[
     _PMDATAREQUEST_PMRESULTCODE,
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1555,
+  serialized_end=1939,
+)
 
 
 _PMDATARESPONSE = descriptor.Descriptor(
   name='PMDataResponse',
   full_name='sae.PMDataResponse',
-  filename='sae.proto',
+  filename=None,
+  file=DESCRIPTOR,
   containing_type=None,
   fields=[
   ],
   extensions=[
   ],
-  nested_types=[],  # TODO(robinson): Implement.
+  nested_types=[],
   enum_types=[
   ],
-  options=None)
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1941,
+  serialized_end=1957,
+)
 
 
 _MESSAGE.fields_by_name['request'].message_type = _REQUEST
@@ -1028,58 +1275,87 @@ _MESSAGE.fields_by_name['response'].message_type = _RESPONSE
 _MESSAGE.fields_by_name['error'].message_type = _ERROR
 _ERROR.fields_by_name['code'].enum_type = _ERRORCODE
 _ACCESSPROFILE.fields_by_name['scheme'].enum_type = _ACCESSSCHEME
+_SCRIPTREQUEST_KWARG.containing_type = _SCRIPTREQUEST;
 _SCRIPTREQUEST.fields_by_name['access_profile'].message_type = _ACCESSPROFILE
 _SCRIPTREQUEST.fields_by_name['kwargs'].message_type = _SCRIPTREQUEST_KWARG
 _MANIFESTRESPONSE.fields_by_name['files'].message_type = _FILECHECKSUM
 _SOFTWAREUPGRADERESPONSE.fields_by_name['codes'].message_type = _FILECODE
+_EVENTFILTERRESPONSE_EVENTIGNORERULEITEM.containing_type = _EVENTFILTERRESPONSE;
+_EVENTFILTERRESPONSE.fields_by_name['ignore_rules'].message_type = _EVENTFILTERRESPONSE_EVENTIGNORERULEITEM
+_EVENTREQUEST_EVENTBODYITEM.containing_type = _EVENTREQUEST;
 _EVENTREQUEST.fields_by_name['body'].message_type = _EVENTREQUEST_EVENTBODYITEM
 _PMDATAREQUEST_PMRESULT.fields_by_name['result'].enum_type = _PMDATAREQUEST_PMRESULTCODE
+_PMDATAREQUEST_PMRESULT.containing_type = _PMDATAREQUEST;
+_PMDATAREQUEST_PMDATA.containing_type = _PMDATAREQUEST;
 _PMDATAREQUEST.fields_by_name['result'].message_type = _PMDATAREQUEST_PMRESULT
 _PMDATAREQUEST.fields_by_name['data'].message_type = _PMDATAREQUEST_PMDATA
+_PMDATAREQUEST_PMRESULTCODE.containing_type = _PMDATAREQUEST;
 
 class Message(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _MESSAGE
+  
+  # @@protoc_insertion_point(class_scope:sae.Message)
 
 class Request(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _REQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.Request)
 
 class Response(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _RESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.Response)
 
 class Error(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _ERROR
+  
+  # @@protoc_insertion_point(class_scope:sae.Error)
 
 class AccessProfile(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _ACCESSPROFILE
+  
+  # @@protoc_insertion_point(class_scope:sae.AccessProfile)
 
 class PingRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _PINGREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.PingRequest)
 
 class PingResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _PINGRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.PingResponse)
 
 class RegisterRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _REGISTERREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.RegisterRequest)
 
 class RegisterResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _REGISTERRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.RegisterResponse)
 
 class AuthRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _AUTHREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.AuthRequest)
 
 class AuthResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _AUTHRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.AuthResponse)
 
 class ScriptRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1087,43 +1363,71 @@ class ScriptRequest(message.Message):
   class KWArg(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
     DESCRIPTOR = _SCRIPTREQUEST_KWARG
+    
+    # @@protoc_insertion_point(class_scope:sae.ScriptRequest.KWArg)
   DESCRIPTOR = _SCRIPTREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.ScriptRequest)
 
 class ScriptResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _SCRIPTRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.ScriptResponse)
 
 class FileChecksum(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _FILECHECKSUM
+  
+  # @@protoc_insertion_point(class_scope:sae.FileChecksum)
 
 class ManifestRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _MANIFESTREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.ManifestRequest)
 
 class ManifestResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _MANIFESTRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.ManifestResponse)
 
 class SoftwareUpgradeRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _SOFTWAREUPGRADEREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.SoftwareUpgradeRequest)
 
 class FileCode(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _FILECODE
+  
+  # @@protoc_insertion_point(class_scope:sae.FileCode)
 
 class SoftwareUpgradeResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _SOFTWAREUPGRADERESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.SoftwareUpgradeResponse)
 
 class EventFilterRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _EVENTFILTERREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.EventFilterRequest)
 
 class EventFilterResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class EventIgnoreRuleItem(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _EVENTFILTERRESPONSE_EVENTIGNORERULEITEM
+    
+    # @@protoc_insertion_point(class_scope:sae.EventFilterResponse.EventIgnoreRuleItem)
   DESCRIPTOR = _EVENTFILTERRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.EventFilterResponse)
 
 class EventRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1131,19 +1435,29 @@ class EventRequest(message.Message):
   class EventBodyItem(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
     DESCRIPTOR = _EVENTREQUEST_EVENTBODYITEM
+    
+    # @@protoc_insertion_point(class_scope:sae.EventRequest.EventBodyItem)
   DESCRIPTOR = _EVENTREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.EventRequest)
 
 class EventResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _EVENTRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.EventResponse)
 
 class PingCheckRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _PINGCHECKREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.PingCheckRequest)
 
 class PingCheckResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _PINGCHECKRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.PingCheckResponse)
 
 class PMDataRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1151,22 +1465,33 @@ class PMDataRequest(message.Message):
   class PMResult(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
     DESCRIPTOR = _PMDATAREQUEST_PMRESULT
+    
+    # @@protoc_insertion_point(class_scope:sae.PMDataRequest.PMResult)
   
   class PMData(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
     DESCRIPTOR = _PMDATAREQUEST_PMDATA
+    
+    # @@protoc_insertion_point(class_scope:sae.PMDataRequest.PMData)
   DESCRIPTOR = _PMDATAREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.PMDataRequest)
 
 class PMDataResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _PMDATARESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.PMDataResponse)
 
 
 _SAESERVICE = descriptor.ServiceDescriptor(
   name='SAEService',
   full_name='sae.SAEService',
+  file=DESCRIPTOR,
   index=0,
   options=None,
+  serialized_start=2439,
+  serialized_end=3013,
   methods=[
   descriptor.MethodDescriptor(
     name='ping',
@@ -1267,3 +1592,4 @@ class SAEService_Stub(SAEService):
   __metaclass__ = service_reflection.GeneratedServiceStubType
   DESCRIPTOR = _SAESERVICE
 
+# @@protoc_insertion_point(module_scope)

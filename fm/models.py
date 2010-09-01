@@ -716,3 +716,18 @@ class EventArchivationRule(models.Model):
     def _ttl_seconds(self):
         return self.ttl*{"s":1,"m":60,"h":3600,"d":86400}[self.ttl_measure]
     ttl_seconds=property(_ttl_seconds)
+##
+##
+##
+class IgnoreEventRules(models.Model):
+    class Meta:
+        verbose_name="Ignore Event Rule"
+        verbose_name_plural="Ignore Event Rules"
+        unique_together=[("left_re","right_re")]
+    name=models.CharField("Name",max_length=64,unique=True)
+    left_re=models.CharField("Left RE",max_length=256)
+    right_re=models.CharField("Right Re",max_length=256)
+    is_active=models.BooleanField("Is Active",default=True)
+    description=models.TextField("Description",null=True,blank=True)
+    def __unicode__(self):
+        return "%s (%s,%s)"%(self.name,self.left_re,self.right_re)
