@@ -35,7 +35,7 @@ class ManagedObjectSelectorApplication(ModelApplication):
     ## Test Selectors
     ##
     def view_test(self,request,objects):
-        r=[{"name":q.name,"objects":q.managed_objects}
+        r=[{"name":q.name,"objects":sorted(q.managed_objects,lambda x,y:cmp(x.name,y.name))}
             for q in[get_object_or_404(ManagedObjectSelector,id=int(x)) for x in objects.split(",")]]
         return self.render(request,"test.html",{"data":r})
     view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
