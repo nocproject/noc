@@ -638,8 +638,8 @@ class Activator(Daemon,FSM):
         r.ip=ip
         for k,v in body.items():
             # Check ignore rules
-            for l,r in self.ignore_event_rules:
-                if l.search(k) or r.search(v):
+            for lr,rr in self.ignore_event_rules:
+                if lr.search(k) or rr.search(v):
                     return # Ignore event
             # Populate event request
             i=r.body.add()
