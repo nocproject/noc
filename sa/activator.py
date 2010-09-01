@@ -247,6 +247,7 @@ class Activator(Daemon,FSM):
         self.ping_check_results={} # address -> last ping check result
         self.sae_stream=None
         self.event_sources=set()
+        self.ignore_event_rules=[] # [(left_re,right_re)]
         self.trap_collectors=[]   # List of SNMP Trap collectors
         self.syslog_collectors=[] # List of SYSLOG collectors
         self.pm_data_collectors=[] # List of PM Data collectors
@@ -593,6 +594,7 @@ class Activator(Daemon,FSM):
                 logging.error("get_event_filter error: %s"%error.text)
                 return
             self.event_sources=set(response.sources)
+            self.compile_ignore_event_rules(response.ignore_rules)
             logging.debug("Setting event source filter to: %s"%str(self.event_sources))
             self.next_filter_update=time.time()+response.expire
         logging.info("Requesting event source filter")
@@ -635,6 +637,11 @@ class Activator(Daemon,FSM):
         r.timestamp=timestamp
         r.ip=ip
         for k,v in body.items():
+            # Check ignore rules
+            for l,r in self.ignore_event_rules:
+                if l.search(k) or r.search(v):
+                    return # Ignore event
+            # Populate event request
             i=r.body.add()
             i.key=str(k)
             i.value=str(v)
@@ -674,6 +681,17 @@ class Activator(Daemon,FSM):
             d.value=value
         self.pm_data_queue=[]
         self.sae_stream.proxy.pm_data(r,pm_data_callback)
+    ##
+    ## Compile new ignore event checker
+    ##
+    def compile_ignore_event_rules(self,rules):
+        self.ignore_event_rules=[]
+        for r in rules:
+            try:
+                logging.debug("Adding ignore rule: %s | %s"%(r.left_re,r.right_re))
+                self.ignore_event_rules+=[(re.compile(r.left_re,re.IGNORECASE),re.compile(r.right_re,re.IGNORECASE))]
+            except Exception,why:
+                logging.error("Failed to compile ignore event rule: %s,%s. skipping"%(l,r))
     ##
     ## Cancel stale scripts
     ##

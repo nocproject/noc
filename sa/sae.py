@@ -9,7 +9,7 @@
 """
 from __future__ import with_statement
 from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask, periodic_registry
-from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory
+from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory,IgnoreEventRules
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
 from noc.pm.models import TimeSeries
 import logging,time,threading,datetime,os,random,xmlrpclib,cPickle
@@ -106,7 +106,9 @@ class Service(SAEService):
             u.name=n
             u.code=read_file(n)
         done(controller,response=r)
-        
+    ##
+    ## Retrieve event filters
+    ##
     def event_filter(self,controller,request,done):
         if not controller.stream.is_authenticated:
             e=Error()
@@ -117,8 +119,14 @@ class Service(SAEService):
         activator=self.get_controller_activator(controller)
         r=EventFilterResponse()
         r.expire=self.sae.config.getint("sae","refresh_event_filter")
+        # Build source filter
         for c in ManagedObject.objects.filter(activator=activator,trap_source_ip__isnull=False):
             r.sources.append(c.trap_source_ip)
+        # Build event filter
+        for ir in IgnoreEventRules.objects.filter(is_active=True):
+            i=r.ignore_rules.add()
+            i.left_re=ir.left_re
+            i.right_re=ir.right_re
         done(controller,response=r)
         
     def event(self,controller,request,done):
