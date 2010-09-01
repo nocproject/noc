@@ -7,25 +7,36 @@
 {% endblock %}
 {% block content %}
 <H1>Allocate IPv4 block. VRF {{vrf.name}} ({{vrf.rd}})</H1>
-<div id="content-main">
-<FORM METHOD="POST" ACTION="">{% csrf_token %}
-<TABLE>
-{{form.as_table}}
-</TABLE>
-<INPUT TYPE="submit"/>
-</FORM>
-{% if suggestions %}
-<SCRIPT TYPE="text/javascript">
-function accept_suggestion(s) {
-    $("#id_prefix").val(s);
-}
-</SCRIPT>
-<H2>Suggested Free Blocks</H2>
-<TABLE BORDER="0">
-    {% for s in suggestions %}
-    <TR class="{%cycle 'row1' 'row2'%}"><TD><A HREF="#" ONCLICK="accept_suggestion('{{s}}');">{{s}}</A></TD></TR>
-    {% endfor %}
-</TABLE>
-{% endif %}
+<div class="module">
+    <FORM METHOD="POST" ACTION="">{% csrf_token %}
+            <fieldset class="module aligned ">
+                <TABLE WIDTH="100%">{{form.as_table}}</TABLE>
+            </fieldset>
+        <div class="submit-row">
+            <INPUT TYPE="submit" VALUE="Allocate"/>
+        </div>
+    </FORM>
 </div>
+{% if suggestions %}
+    <div class="module">
+        <SCRIPT TYPE="text/javascript">
+        function accept_suggestion(s) {
+            $("#id_prefix").val(s);
+        }
+        </SCRIPT>
+
+        <table width="100%">
+            <caption>Suggested Free Blocks</caption>
+            <thead>
+                <tr><th style="width: 9em">Free Block</th><th>Size</th></tr>
+            </thead>
+            {% for b,s in suggestions %}
+            <TR class="{%cycle 'row1' 'row2'%}">
+                <TD><A HREF="#" ONCLICK="accept_suggestion('{{b}}');">{{b}}</A></TD>
+                <td>{{s}}</td>
+            </TR>
+            {% endfor %}
+        </TABLE>
+    </div>
+{% endif %}
 {% endblock %}
