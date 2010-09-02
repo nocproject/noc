@@ -362,6 +362,12 @@ class Script(threading.Thread):
         self.need_to_save=True
         if self.parent:
             self.parent.schedule_to_save()
+    
+    def motd(self):
+        if not self.cli_provider:
+            self.request_cli_provider()
+        return self.cli_provider.motd
+    motd=property(motd)
 
 ##
 ##
@@ -423,6 +429,7 @@ class CLI(StreamFSM):
         self.collected_data=""
         self.submitted_data=[]
         self.submit_lines_limit=None
+        self.motd="" # Message of the day storage
         if isinstance(self.profile.pattern_more,basestring):
             self.more_patterns=[self.profile.pattern_more]
             self.more_commands=[self.profile.command_more]
@@ -479,6 +486,7 @@ class CLI(StreamFSM):
         self.set_patterns(p)
     
     def on_USERNAME_enter(self):
+        self.motd="" # Reset MoTD
         self.set_patterns([
             (self.profile.pattern_password, "PASSWORD"),
             (self.profile.pattern_prompt,   "PROMPT"),
@@ -486,6 +494,7 @@ class CLI(StreamFSM):
         self.submit(self.access_profile.user)
         
     def on_PASSWORD_enter(self):
+        self.motd="" # Reset MoTD
         p=[(self.profile.pattern_prompt, "PROMPT")]
         if self.profile.pattern_unpriveleged_prompt:
             p+=[(self.profile.pattern_unpriveleged_prompt,"UNPRIVELEGED_PROMPT")]
@@ -551,6 +560,10 @@ class CLI(StreamFSM):
     def on_FAILURE_enter(self):
         self.set_patterns([])
 
+    def on_START_match(self,data,match):
+        self.motd+=data
+    on_USERNAME_match=on_START_match
+    on_PASSWORD_match=on_START_match
 ##
 ##
 ##
