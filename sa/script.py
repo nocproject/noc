@@ -575,7 +575,7 @@ class CLISSHSocket(ScriptSocket,CLI,PTYSocket):
     TTL=30
     def __init__(self,factory,profile,access_profile):
         logging.debug("CLISSHSocket connecting '%s'"%access_profile.address)
-        cmd_args=[config.get("path","ssh"),"-o","StrictHostKeyChecking=no","-l",access_profile.user]
+        cmd_args=[config.get("path","ssh"),"-o","StrictHostKeyChecking=no","-o","UserKnownHostsFile=/dev/null","-l",access_profile.user]
         if access_profile.port and access_profile.port!=22:
             cmd_args+=["-p",str(access_profile.port)]
         cmd_args+=[access_profile.address]
