@@ -19,7 +19,7 @@ from noc.lib.fields import PickledField,INETField,AutoCompleteTagsField
 from noc.lib.app.site import site
 from tagging.models import TaggedItem
 from django.utils.translation import ugettext_lazy as _
-import marshal,base64
+import marshal,base64,csv
 
 profile_registry.register_all()
 periodic_registry.register_all()
@@ -174,6 +174,105 @@ class ManagedObject(models.Model):
                 text=unicode(o),
                 relevancy=relevancy
             )
+    ##
+    ## Import from CSV file
+    ## returns (count,message)
+    ## count - amount of imported records or None in case of failure
+    ## message - an error message or None
+    ##
+    @classmethod
+    def from_csv(cls,file,**default_fields):
+        # fetch acceptable field names
+        fields={}
+        required_fields=set()
+        for f in cls._meta.fields:
+            if f.name=="id": # Skip primary key
+                continue
+            fields[f.name]=f
+            if not f.null and f.default==models.fields.NOT_PROVIDED:
+                required_fields.add(f.name)
+        #
+        count=0 # Imported items count
+        reader=csv.reader(file)
+        rows=list(reader)
+        if len(rows)<=1: # Empty file
+            return 0,""
+        # First row is a field names
+        header=rows.pop(0)
+        # Check field names
+        for c in header:
+            if c not in fields:
+                return None,"Invalid field '%s'. Field must be one of: %s"%(c,", ".join(fields))
+        # Check all required fields are present
+        for c in required_fields:
+            if c not in header and c not in default_fields:
+                return None,"Required field '%s' missed."%c
+        # Check rows
+        l_header=len(header)
+        SCHEME=dict([(x[1],x[0]) for x in scheme_choices])
+        for row in rows:
+            if l_header!=len(row):
+                return None,"Invalid row at line %d: %s"%(count+1,str(row))
+            vars=dict(zip(header,row)) # Convert row to hash: field->value
+            try:
+                o=ManagedObject.objects.get(name=vars["name"]) # Find existing object
+            except ManagedObject.DoesNotExist:
+                o=ManagedObject(name=vars["name"])# Or create new
+            
+            for k,v in vars.items():
+                if k=="name": # "name" is already processed
+                    continue
+                # Override default fields
+                if k in default_fields:
+                    v=default_fields[k]
+                # Check profile
+                if k=="profile_name" and v not in profile_registry.classes:
+                    return None,"Invalid profile '%s' at line %d"%(v,count+1)
+                if not v: # Skip empty fields
+                    continue
+                # Convert port to integer
+                if k=="port":
+                    try:
+                        v=int(v)
+                    except:
+                        return None,"Invalid port: %s at line %d"%(v,count+1)
+                # Check scheme
+                if k=="scheme":
+                    try:
+                        v=SCHEME[v]
+                    except KeyError:
+                        return None,"Invalid access scheme %s at line %d"%(v,count+1)
+                # Look up administrative domain for id or for name
+                if k=="administrative_domain":
+                    try:
+                        filter={"id":int(v)}
+                    except:
+                        filter={"name":v}
+                    try:
+                        v=AdministrativeDomain.objects.get(**filter)
+                    except AdministrativeDomain.DoesNotExist:
+                        return None,"Administrative domain '%s' is not found"%v
+                # Look up activator for id or name
+                if k=="activator":
+                    try:
+                        filter={"id":int(v)}
+                    except:
+                        filter={"name":v}
+                    try:
+                        v=Activator.objects.get(**filter)
+                    except Activator.DoesNotExist:
+                        return None,"Activator '%s' is not found"%v
+                # Set is_configuration_managed if repo_path given
+                if k=="repo_path": 
+                    o.is_configuration_managed=True
+                setattr(o,k,v) # Finally set attribute
+            try:
+                o.save() # Perform SQL statement
+            except Exception,why:
+                return None,why
+            count+=1
+        # Return success
+        return count,None
 ##
 ##
 ##
