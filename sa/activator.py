@@ -639,7 +639,7 @@ class Activator(Daemon,FSM):
         for k,v in body.items():
             # Check ignore rules
             for lr,rr in self.ignore_event_rules:
-                if lr.search(k) or rr.search(v):
+                if lr.search(k) and rr.search(v):
                     return # Ignore event
             # Populate event request
             i=r.body.add()
