@@ -45,6 +45,7 @@ enum ErrorCode {
     ERR_ACTIVATOR_NOT_AVAILABLE =15; // Activator not available now
     ERR_DOWN                =16; // Host is down
     ERR_TIMEOUT             =17; // Script timed out
+    ERR_ACTIVATOR_LOST      =18; // Connection to activator lost during transaction
 }
 
 //

@@ -53,8 +53,8 @@ class Transaction(object):
             self.callback(self,response,error)
         self.factory.delete_transaction(self.id)
         
-    def rollback(self):
-        self.factory.delete_transaction(self.id)
+    def rollback(self,error):
+        self.commit(error=error)
 ##
 ## Transaction storage
 ##
@@ -91,6 +91,11 @@ class TransactionFactory(object):
         
     def delete_transaction(self,id):
         del self.transactions[id]
+    
+    def rollback_all_transactions(self,error):
+        logging.debug("Rolling back all active transactions")
+        for t in self.transactions.values():
+            t.rollback(error)
 ##
 ## Stream is a <len><data><len><data>..... sequence
 ## Where len is an 32 bit integer in network order

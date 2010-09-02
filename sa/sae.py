@@ -190,6 +190,14 @@ class SAESocket(RPCSocket,AcceptedTCPSocket):
     @classmethod
     def check_access(cls,address):
         return Activator.check_ip_access(address)
+    
+    def close(self):
+        # Rollback all active transactions
+        e=Error()
+        e.code=ERR_ACTIVATOR_LOST
+        e.text="Connection with activator lost"
+        self.transactions.rollback_all_transactions(e) # Close all active transactions
+        super(AcceptedTCPSocket,self).close()
 ##
 ## SSL version of SAE socket
 ##
@@ -203,6 +211,14 @@ class SAESSLSocket(RPCSocket,AcceptedTCPSSLSocket):
     @classmethod
     def check_access(cls,address):
         return Activator.check_ip_access(address)
+
+    def close(self):
+        # Rollback all active transactions
+        e=Error()
+        e.code=ERR_ACTIVATOR_LOST
+        e.text="Connection with activator lost"
+        self.transactions.rollback_all_transactions(e) # Close all active transactions
+        super(AcceptedTCPSSLSocket,self).close()
     
 ##
 ## XML-RPC support
