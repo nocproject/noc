@@ -13,6 +13,7 @@ import re
 
 rx_ver=re.compile(r"^Image stamp:\s+\S+\n[^\n]+?\n\s*(?P<version>\S+)\n\s+\S+\nBoot Image:\s+\S+\n$",re.MULTILINE|re.DOTALL)
 rx_snmp_ver=re.compile(r"^ProCurve\s+\S+\s+(?P<platform>\S+).*?,\s+revision\s+(?P<version>\S+),.+$")
+rx_motd=re.compile(r"ProCurve\s+\S+\s+(?P<platform>\S+)",re.IGNORECASE|re.MULTILINE)
 
 class Script(noc.sa.script.Script):
     name="HP.ProCurve.get_version"
@@ -29,11 +30,16 @@ class Script(noc.sa.script.Script):
                 }
             except self.snmp.TimeOutError:
                 pass
-        
+        # ProCurve does not returns platform via CLI,
+        # While still displays it in message of the day
+        # Try to fetch platform
+        match=rx_motd.search(self.motd)
+        platform=match.group("platform") if match else "ProCurve"
+        # Get version
         v=self.cli("show version")
         match=rx_ver.search(v)
         return {
             "vendor"    : "HP",
-            "platform"  : "ProCurve",
+            "platform"  : platform,
             "version"   : match.group("version"),
         }
