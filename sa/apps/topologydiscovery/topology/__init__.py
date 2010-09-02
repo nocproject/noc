@@ -160,7 +160,7 @@ class TopologyDiscovery(object):
             for ld in l.details:
                 o1set.remove(l2.i1)
                 o2set.remove(l2.i2)
-            Link(o1,o1set.pop(),o2,o2set.pop(),l)
+            Link(self,l.o1,o1set.pop(),l.o2,o2set.pop(),l)
         # Remove fully resolved portchannels
         self.links=[l for l in self.links if not l.is_portchannel or l.unresolved_link_count()]
         # Rename partially resolved portchannels
