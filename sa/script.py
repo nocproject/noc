@@ -10,6 +10,7 @@ from noc.lib.fsm import StreamFSM
 from noc.lib.registry import Registry
 from noc.lib.nbsocket import PTYSocket,UDPSocket,SocketTimeoutError
 from noc.lib.debug import format_frames,get_traceback_frames
+from noc.lib.text import replace_re_group
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.sa.profiles import profile_registry
 from noc.settings import config
@@ -159,6 +160,7 @@ class Script(threading.Thread):
         self.kwargs=kwargs
         self.scripts=ScriptProxy(self)
         self.need_to_save=False
+        self.to_disable_pager=not self.parent and self.profile.command_disable_pager
         self.log_cli_sessions_path=None # Path to log CLI session
         if self.parent:
             self.log_cli_sessions_path=self.parent.log_cli_sessions_path
@@ -273,13 +275,21 @@ class Script(threading.Thread):
             self.cli_provider=s_class(self.activator.factory,self.profile,self.access_profile)
             self.cli_queue_get()
             self.debug("CLI Provider is ready")
+            # Disable pager when necessary
+            if self.to_disable_pager:
+                self.debug("Disable paging")
+                self.to_disable_pager=False
+                self.cli(self.profile.command_disable_pager)
         return self.cli_provider
         
     def cli(self,cmd,command_submit=None,bulk_lines=None):
+        #
         self.debug("cli(%s)"%cmd)
         self.cli_debug(cmd,">")
         self.request_cli_provider()
-        self.cli_provider.submit(cmd,command_submit=self.profile.command_submit if command_submit is None else command_submit,bulk_lines=bulk_lines)
+        # Submit command
+        command_submit=self.profile.command_submit if command_submit is None else command_submit
+        self.cli_provider.submit(cmd,command_submit=command_submit,bulk_lines=bulk_lines)
         data=self.cli_queue_get()
         if self.strip_echo and data.lstrip().startswith(cmd):
             data=data.lstrip()
@@ -289,7 +299,7 @@ class Script(threading.Thread):
             else:
                 # Some switches, like ProCurve do not send \n after the echo
                 data=data[len(cmd):]
-        self.debug("cli() returns:\n---------\n%s\n---------"%repr(data))
+        self.debug("cli(%s) returns:\n---------\n%s\n---------"%(cmd,repr(data)))
         self.cli_debug(data,"<")
         return data
     ##
@@ -430,6 +440,7 @@ class CLI(StreamFSM):
         self.submitted_data=[]
         self.submit_lines_limit=None
         self.motd="" # Message of the day storage
+        self.pattern_prompt=None # Set when entering PROMPT state
         if isinstance(self.profile.pattern_more,basestring):
             self.more_patterns=[self.profile.pattern_more]
             self.more_commands=[self.profile.command_more]
@@ -438,7 +449,6 @@ class CLI(StreamFSM):
             self.more_patterns=[x[0] for x in self.profile.pattern_more]
             self.more_commands=[x[1] for x in self.profile.pattern_more]
         self.pager_patterns="|".join([r"(%s)"%p for p in self.more_patterns])
-        self.to_disable_pager=True if self.profile.command_disable_pager else False
         StreamFSM.__init__(self)
     
     def on_read(self,data):
@@ -525,25 +535,27 @@ class CLI(StreamFSM):
         self.submit(sp)
         
     def on_PROMPT_enter(self):
+        self.debug("on_PROMPT_enter")
         if not self.is_ready:
-            # Disable paging when necessary
-            if self.to_disable_pager:
-                self.debug("Disable paging")
-                self.to_disable_pager=False
-                self.submit(self.profile.command_disable_pager)
-            else:
-                self.queue.put(None) # Signal provider passing into PROMPT state
-                self.is_ready=True
+            self.pattern_prompt=self.profile.pattern_prompt
+            # Refine prompt pattern when necessary
+            for k,v in self.match.groupdict().items():
+                v=re.escape(v)
+                self.pattern_prompt=replace_re_group(self.pattern_prompt,"(?P<%s>"%k,v)
+                self.pattern_prompt=replace_re_group(self.pattern_prompt,"(?P=%s"%k,v)
+            self.debug("Using prompt pattern: %s"%self.pattern_prompt)
+            self.queue.put(None) # Signal provider passing into PROMPT state
+            self.is_ready=True
         p=[
-            (self.profile.pattern_prompt, "PROMPT"),
-            (self.pager_patterns,         "PAGER"),
+            (self.pattern_prompt, "PROMPT"),
+            (self.pager_patterns, "PAGER"),
             ]
         self.set_patterns(p)
         
     def on_PROMPT_match(self,data,match):
         if match.re.pattern in self.pager_patterns:
             self.collected_data+=data
-        elif match.re.pattern==self.profile.pattern_prompt:
+        elif match.re.pattern==self.pattern_prompt:
             self.queue.put(self.collected_data+data)
             self.collected_data=""
         
