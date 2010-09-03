@@ -118,3 +118,43 @@ def list_to_ranges(s):
     if last_start is not None:
         r+=[f()]
     return ",".join(r)
+##
+## Replace regular expression group with pattern
+##
+def replace_re_group(expr,group,pattern):
+    """
+    >>> replace_re_group("nothing","(?P<groupname>","groupvalue")
+    'nothing'
+    >>> replace_re_group("the (?P<groupname>simple) test","(?P<groupname>","groupvalue")
+    'the groupvalue test'
+    >>> replace_re_group("the (?P<groupname> nested (test)>)","(?P<groupname>","groupvalue")
+    'the groupvalue'
+    """
+    r=""
+    lg=len(group)
+    while expr:
+        idx=expr.find(group)
+        if idx==-1:
+            return r+expr # No more groups found
+        r+=expr[:idx]
+        expr=expr[idx+lg:]
+        level=1 # Level of parenthesis nesting
+        while expr:
+            c=expr[0]
+            expr=expr[1:]
+            if c=="\\":
+                # Skip quoted character
+                expr=expr[1:]
+                continue
+            elif c=="(":
+                # Increase nesting level
+                level+=1
+                continue
+            elif c==")":
+                # Decrease nesting level
+                level-=1
+                if level==0:
+                    # Replace with pattern and search for next
+                    r+=pattern
+                    break
+    return r+expr
