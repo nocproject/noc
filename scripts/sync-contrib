@@ -96,6 +96,15 @@ class Installer(object):
         ],
         cwd=os.path.join(self.SRC,app),
         env=self.ENV)==0
+    ##
+    ## Install protobuf
+    ##
+    def install_protobuf(self):
+        # Remove contrib/lib/google left from 2.2.0a
+        import shutil
+        shutil.rmtree(os.path.join(self.LIB,"google"),ignore_errors=True)
+        # Install
+        return self.install("protobuf")
 
 if __name__=="__main__":
     check_only=False
