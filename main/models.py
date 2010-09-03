@@ -422,6 +422,7 @@ class RefBook(models.Model):
     ##
     @classmethod
     def search(cls,user,search,limit):
+        from noc.lib.search import SearchResult # Must be inside method to prevent import loops
         for b in RefBook.objects.filter(is_enabled=True):
             field_names=[f.name for f in b.refbookfield_set.order_by("order")]
             for f in b.refbookfield_set.filter(search_method__isnull=False):
