@@ -3,6 +3,7 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+from __future__ import with_statement
 import os,tempfile,hashlib,urllib2,cStringIO,gzip
 from noc.lib.version import get_version
 ##
@@ -49,11 +50,9 @@ def rewrite_when_differ(path,content):
 ## Return None when file does not exists
 ##
 def read_file(path):
-    if os.path.exists(path):
-        f=open(path,"r")
-        data=f.read()
-        f.close()
-        return data
+    if os.path.isfile(path) and os.access(path,os.R_OK):
+        with open(path,"r") as f:
+            return f.read()
     else:
         return None
 ##
