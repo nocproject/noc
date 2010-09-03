@@ -14,7 +14,7 @@ from noc.sa.protocols.sae_pb2 import TELNET,SSH
 class Profile(noc.sa.profiles.Profile):
     name="Force10.FTOS"
     supported_schemes=[TELNET,SSH]
-    pattern_more="^ --More--"
+    pattern_more="^ ?--More--"
     pattern_unpriveleged_prompt=r"^\S+?>"
     command_disable_pager="terminal length 0"
     command_super="enable"
