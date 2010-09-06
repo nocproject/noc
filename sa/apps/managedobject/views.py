@@ -151,21 +151,6 @@ class ManagedObjectApplication(ModelApplication):
     model_admin=ManagedObjectAdmin
     menu="Managed Objects"
     ##
-    ## Form for uploading managed objects
-    ##
-    class MOUploadForm(forms.Form):
-        administrative_domain=forms.ModelChoiceField(queryset=AdministrativeDomain.objects)
-        activator=forms.ModelChoiceField(queryset=Activator.objects)
-        file=forms.FileField()
-    ##
-    ## Managed objects tools
-    ##
-    def view_tools(self,request):
-        return self.render(request,"tools.html",{"upload_mo_form":self.MOUploadForm()})
-    view_tools.url=r"^tools/$"
-    view_tools.url_name="tools"
-    view_tools.access=PermitSuperuser()
-    ##
     ## Script index
     ##
     def view_scripts(self,request,object_id):
@@ -238,29 +223,6 @@ class ManagedObjectApplication(ModelApplication):
     view_scriptresult.url=r"^(?P<object_id>\d+)/scripts/(?P<script>[^/]+)/(?P<task_id>\d+)/$"
     view_scriptresult.url_name="scriptresult"
     view_scriptresult.access=HasPerm("change")
-    ##
-    ## Upload managed objects
-    ##
-    def view_upload(self,request):
-        # Process request
-        if not request.user.is_superuser:
-            return self.response_forbidden("Access Denied")
-        if request.method=="POST":
-            form = self.MOUploadForm(request.POST, request.FILES)
-            if form.is_valid():
-                administrative_domain=form.cleaned_data["administrative_domain"]
-                activator=form.cleaned_data["activator"]
-                count,error=ManagedObject.from_csv(request.FILES['file'],administrative_domain=administrative_domain.id,activator=activator.id)
-                if count is None:
-                    msg="Failed to upload objects: %s"%s
-                else:
-                    msg="%d managed objects are uploaded/updated"%count
-                self.message_user(request,msg)
-                return self.response_redirect("sa:managedobject:changelist")
-        return self.response_redirect(self.base_url+"tools/")
-    view_upload.url=r"^tools/upload/$"
-    view_upload.url_name="upload"
-    view_upload.access=PermitSuperuser()
     ##
     ## AJAX lookup
     ##

@@ -1,0 +1,36 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Import data from CSV file</h1>
+<div class="module">
+    <table width="100%">
+        <caption>Available fields for model &quot;{{model}}&quot;</caption>
+        <tr>
+            <td>Data must be placed in CSV file, each record in single line.
+            First line of the file must be header, containing column name.
+            </td>
+        </tr>
+        <tr><td>
+            <table>
+                <tr><th>Name</th><th>Required</th><th>References</th></tr>
+                {% for name,required,rel in fields %}
+                <tr class="{%cycle 'row1' 'row2'%}"     >
+                    <td>{{name}}</td>
+                    <td><img src="/media/img/admin/icon-{%if required %}yes{%else%}no{%endif%}.gif"></td>
+                    <td>{{rel}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </td></tr>
+    </table>
+</div>
+
+<div class="module">
+    <table width="100%">
+        <caption>Upload CSV file</caption>
+        <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+            {{form.as_table}}
+            <tr><td><input type="submit" value="Upload" /></td></tr>
+        </form>
+    </table>
+</div>
+{% endblock%}
