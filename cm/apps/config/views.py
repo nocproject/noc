@@ -33,6 +33,14 @@ class ConfigAdmin(admin.ModelAdmin):
             self.message_user(request,"1 config scheduled to immediate fetch")
         else:
             self.message_user(request,"%d configs scheduled to immediate fetch"%count)
+    ##
+    ## Delele "delete_selected"
+    ##
+    def get_actions(self,request):
+        actions=super(ConfigAdmin,self).get_actions(request)
+        if "delete_selected" in actions:
+            del actions["delete_selected"]
+        return actions
 ##
 ## Config application
 ##
