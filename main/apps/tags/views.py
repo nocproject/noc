@@ -29,6 +29,7 @@ class TagsAppplication(Application):
             t=TagWrapper()
             t.name=tag
             t.count=count
+            t.font_size=1
             tags+=[t]
         tags=calculate_cloud(tags,steps=6)
         for t in tags:
