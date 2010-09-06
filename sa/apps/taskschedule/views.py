@@ -16,6 +16,7 @@ class TaskScheduleAdmin(admin.ModelAdmin):
     list_display=["periodic_name","is_enabled","run_every","next_run"]
     search_fields=["periodic_name"]
     actions=["run_now"]
+    list_editable=["is_enabled","run_every"]
     ##
     ## Reschedule selected tasks
     ##
