@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Backup database and repo to main.backupdir
+## Backup database, repo and configs to main.backupdir
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 import noc.sa.periodic
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
 import os,subprocess,datetime,re
 import logging
 
-rx_backup=re.compile(r"^noc-(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})-\d{2}-\d{2}.(?:dump|tar\.gz)$")
+rx_backup=re.compile(r"^noc-(?:(?:etc|repo|db)-)(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})-\d{2}-\d{2}.(?:dump|tar\.gz)$")
 
 class Task(noc.sa.periodic.Task):
     name="main.backup"
@@ -56,7 +57,21 @@ class Task(noc.sa.periodic.Task):
             os.unlink(path)
         except:
             pass
-            
+    ##
+    ## Create archive and append files
+    ##
+    def tar(self,archive,files,cwd=None):
+        if not files:
+            return
+        tar_cmd=[config.get("path","tar"),"cf","-"]+files
+        gzip_cmd=[config.get("path","gzip")]
+        logging.debug(("cd %s"%cwd if cwd else "")+" ".join(tar_cmd)+" | "+" ".join(gzip_cmd))
+        with open(archive,"w") as f:
+            p1=subprocess.Popen(tar_cmd,cwd=cwd,stdout=subprocess.PIPE)
+            p2=subprocess.Popen(gzip_cmd,stdin=p1.stdout,stdout=f)
+    ##
+    ## Backup
+    ##
     def execute(self):
         def pgpass_quote(s):
             return s.replace("\\","\\\\").replace(":","\\:")
@@ -66,7 +81,7 @@ class Task(noc.sa.periodic.Task):
         # Build backup path
         now=datetime.datetime.now()
         pgpass=["*","*","*","*",""] # host,port,database,user,password
-        out="noc-%04d-%02d-%02d-%02d-%02d.dump"%(now.year,now.month,now.day,now.hour,now.minute)
+        out="noc-db-%04d-%02d-%02d-%02d-%02d.dump"%(now.year,now.month,now.day,now.hour,now.minute)
         out=os.path.join(config.get("path","backup_dir"),out)
         # Build pg_dump command and options
         cmd=[config.get("path","pg_dump"),"-Fc"]
@@ -101,13 +116,16 @@ class Task(noc.sa.periodic.Task):
         # Back up repo
         #
         repo_root=config.get("cm","repo")
-        repo_out="noc-%04d-%02d-%02d-%02d-%02d.tar.gz"%(now.year,now.month,now.day,now.hour,now.minute)
+        repo_out="noc-repo-%04d-%02d-%02d-%02d-%02d.tar.gz"%(now.year,now.month,now.day,now.hour,now.minute)
         repo_out=os.path.join(config.get("path","backup_dir"),repo_out)
         logging.info("main.backup: dumping repo into %s"%repo_out)
-        tar_cmd=[config.get("path","tar"),"cf","-"]+[f for f in os.listdir(repo_root) if not f.startswith(".")]
-        gzip_cmd=[config.get("path","gzip")]
-        f=open(repo_out,"w")
-        p1=subprocess.Popen(tar_cmd,cwd=repo_root,stdout=subprocess.PIPE)
-        p2=subprocess.Popen(gzip_cmd,stdin=p1.stdout,stdout=f)
-        f.close()
+        self.tar(repo_out,[f for f in os.listdir(repo_root) if not f.startswith(".")],cwd=repo_root)
+        #
+        # Back up etc/
+        #
+        etc_out="noc-etc-%04d-%02d-%02d-%02d-%02d.tar.gz"%(now.year,now.month,now.day,now.hour,now.minute)
+        etc_out=os.path.join(config.get("path","backup_dir"),etc_out)
+        logging.info("main.backup: dumping etc/ into %s"%etc_out)
+        self.tar(etc_out,[os.path.join("etc",f) for f in os.listdir("etc") if f.endswith(".conf") and not f.startswith(".")])
+        #
         return True
