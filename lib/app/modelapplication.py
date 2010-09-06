@@ -108,6 +108,11 @@ class ModelApplication(Application):
         extra_context["app"]=self
         return extra_context
     ##
+    ## Model content type
+    ##
+    def content_type(self):
+        return "%s.%s"%(self.model._meta.app_label,self.model._meta.object_name.lower())
+    ##
     ## Changelist
     ##
     def view_changelist(self,request,extra_context=None):

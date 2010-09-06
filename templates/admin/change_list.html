@@ -50,6 +50,13 @@
     {% block object-tools %}
       {% if has_add_permission %}
         <ul class="object-tools">
+          {% if user.is_superuser %}
+            {% if app.content_type %}
+            <li>
+              <a href="{% url main:csv:import app.content_type %}" class="viewsitelink">Import</a>
+            </li>
+            {% endif %}
+          {% endif %}
           <li>
             <a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">
               {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
