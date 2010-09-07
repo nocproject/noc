@@ -1,7 +1,7 @@
 .. kb:
 
 Knowledge Base
-==============
+**************
 
 .. toctree::
     :maxdepth: 2

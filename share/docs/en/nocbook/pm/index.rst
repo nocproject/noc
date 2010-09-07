@@ -1,7 +1,7 @@
 .. pm:
 
-Performanve Management
-==========================
+Performance Management
+**********************
 
 .. toctree::
     :maxdepth: 2

@@ -1,8 +1,5 @@
-**************
-Knowledge Base
-**************
 Overview
-========
+********
 Knowledge base (KB) is a special kind of database to share knowledge between
 the staff. Basic element of knowledge base is an **article**. Article is a
 free-form text message (possible) containing some pieces of knowledge to be shared:
@@ -149,11 +146,11 @@ search
 ------
 *search* macro renders a list of articles satisfying given criteria. Format::
 
-    search [category=cat1,...,catN] [language=lang] [limit=N] [order_by=field] [display_list=field1,...,fieldN] [title=s]
+    search [tag=cat1,...,tagN] [language=lang] [limit=N] [order_by=field] [display_list=field1,...,fieldN] [title=s]
 
 Where:
 
-* category=cat1,...,catN - Restrict articles to those having categories cat1 and cat2 and ... catN set
+* tag=tag1,...,tagN - Restrict articles to those having tags tag1 and tag2 and ... tagN set
 * language=lang - Restrict articles to those having language *lang* set. Additional restriction to *category*
 * limit=N - limit list to first *N* items found
 * order_by=field - Order list by field. Field is one of id, subject. Prepend field name with minus (-) to apply descending order
@@ -255,40 +252,6 @@ Example::
 
 CSV article will be rendered as HTML Table.
 
-Forms
-=====
-Knowledge Base
---------------
-Permissions
-^^^^^^^^^^^
-======= ========================================
-add     kb | KB Entry | Can add KBEntry
-change  kb | KB Entry | Can change KBEntry
-delete  kb | KB Entry | Can delete KBEntry
-======= ========================================
-
-Setup
-=====
-Categories
-----------
-Permissions
-^^^^^^^^^^^
-======= =========================================
-add     kb | KB Category | Can add KBCategory
-change  kb | KB Category | Can change KBCategory
-delete  kb | KB Category | Can delete KBCategory
-======= =========================================
-
-Entries
--------
-Permissions
-^^^^^^^^^^^
-======= ========================================
-add     kb | KB Entry | Can add KBEntry
-change  kb | KB Entry | Can change KBEntry
-delete  kb | KB Entry | Can delete KBEntry
-======= ========================================
-
 Convert from other wiki/kb engines
 ==================================
 
@@ -301,13 +264,13 @@ Run converter tool::
 
     # su - noc
     $ cd /opt/noc
-    $ python manage.py convert-moin [--encoding=encoding] [--language=language] [--category=category] <path to data>
+    $ python manage.py convert-moin [--encoding=encoding] [--language=language] [--tag=tag] <path to data>
 
 where:
 
 * encoding - MoinMoin wiki encoding (utf-8 by default).
 * language - Language to be set on imported articles (English by default)
-* category - Category to include imported articles into (Do not set articles category by default)
+* tag - Mark all imported articles with tag
 * path to data - full path to MoinMoin data directory
 
 Ensure **data** directory and files below are accessible from user **noc**.

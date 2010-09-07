@@ -3,7 +3,7 @@
 
 General
 =======
- * site_settings.py replaced with etc/noc.ini configuration file
+* site_settings.py replaced with etc/noc.ini configuration file
 * daemons reload config on SIGHUP
    
 Main

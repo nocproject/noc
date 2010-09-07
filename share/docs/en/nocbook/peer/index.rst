@@ -1,7 +1,7 @@
 .. peer:
 
 Peering Management
-==================
+******************
 
 .. toctree::
     :maxdepth: 2

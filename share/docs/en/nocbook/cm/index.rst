@@ -1,7 +1,7 @@
 .. cm:
 
 Configuration Management
-==========================
+************************
 
 .. toctree::
     :maxdepth: 2

@@ -1,15 +1,15 @@
 Updating
-========
+********
 
 Updating from Mercurial repo
-----------------------------
+============================
 Fetch updates::
     
     # cd /opt/noc
     # hg pull -u
     
 Updating from source
---------------------
+====================
 Fetch and unpack new version::
 
     # wget http://......
