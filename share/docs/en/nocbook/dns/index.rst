@@ -1,7 +1,7 @@
 .. dns:
 
 DNS Management
-==============
+**************
 
 .. toctree::
     :maxdepth: 2

@@ -1,10 +1,10 @@
 .. _install_testing:
 
 Testing
-=======
+*******
 
 Running test suite
-------------------
+==================
 
 Once installed you can run NOC's test suite cycle to ensure installation and set up performed correctly.
 PostgreSQL user ``noc`` must have permission to create database ``test_noc`` in order to run tests.
@@ -15,7 +15,7 @@ When all prerequisites met run::
     $ python manage.py test
 
 Built-in webserver
-------------------
+==================
 You can quickly test web interface by running built-in webserver::
 
     # su - noc

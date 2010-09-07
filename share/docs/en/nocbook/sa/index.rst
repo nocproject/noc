@@ -1,7 +1,7 @@
 .. sa:
 
 Service Activation
-==================
+******************
 
 .. toctree::
     :maxdepth: 2

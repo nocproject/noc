@@ -1,7 +1,7 @@
 .. fm:
 
 Fault Management
-================
+****************
 
 .. toctree::
     :maxdepth: 2

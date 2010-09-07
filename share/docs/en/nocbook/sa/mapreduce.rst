@@ -1,12 +1,14 @@
-Map/Reduce Scripts
-==================
-Map/Reduce scripts is a way of parallel execution of scripts on large number of equipment with final validation
+Map/Reduce Tasks
+****************
+Overview
+========
+Map/Reduce tasks is a way of parallel execution of scripts on large number of equipment with final validation
 and processing of the result.
 
-Map/Reduce scripts are combined from the three entries: Object Selectors, Map Scripts and Reduce Scripts
+Map/Reduce tasks are combined from the three entries: Object Selectors, Map Scripts and Reduce Scripts
 
 Object Selectors
-----------------
+================
 Object selectors are like preserved queries returning a list of managed objects. Object selector can filter managed objects using
 given criteria. Object selectors can use result of other selectors, allowing to combine them together to reach any required granularity.
 
@@ -23,24 +25,12 @@ For example:
 * Access switches in areas A and B
 
 Map Scripts
------------
+===========
 Map Scripts are the common Service Activation scripts which are executed in parallel on all managed objects determined by selector.
 The results of Map Scripts are returned to the Reduce Script. Some Map Scripts can fail, Some may not be executed at all. This is
 normal situation. This is a task of Reduce script to process failure condition properly.
 
 Reduce Scripts
---------------
+==============
 Reduce Scripts are to process the results of all Map Scripts at once. The common result of Reduce Script is an report, though
 it is possible even to start a new Map/Reduce task.
-
-Examples
---------
-
-Version inventory
-^^^^^^^^^^^^^^^^^
-Selector: all objects, reduce script: MatrixReport, map script: get_version
-
-Parallel command execution
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-Selector: all Cisco 7600, reduce script: ResultReport, map script: commands,
-map script parameters: {"commands":["show version","show module"]}

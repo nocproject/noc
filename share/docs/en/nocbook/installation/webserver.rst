@@ -1,10 +1,10 @@
 .. _webserver:
 
 Setting Up Webserver
-====================
+********************
 
 Common Considerations
----------------------
+=====================
 Common practice is to set up HTTP-server as frontend serving static files and
 routing all dynamic requests to the ``noc-fcgi`` daemon over FastCGI. Static content URLs:
 
@@ -12,7 +12,7 @@ routing all dynamic requests to the ``noc-fcgi`` daemon over FastCGI. Static con
 * ``/static/`` must be mapped to ``/opt/noc/static/``
 
 Lighttpd Setup
---------------
+==============
 
 Set up lighttpd.conf::
 
@@ -51,7 +51,7 @@ Set up lighttpd.conf::
     }
 
 Nginx setup
------------
+===========
 Set up nginx.conf::
 
     worker_processes  1;
@@ -96,7 +96,7 @@ Set up nginx.conf::
     }
 
 Apache Setup
-------------
+============
 Set up httpd.conf::
 
     FastCGIExternalServer /opt/noc/noc.fcgi -socket /tmp/noc.fcgi

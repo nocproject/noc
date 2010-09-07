@@ -1,7 +1,7 @@
 .. ip:
 
 Address Space Management
-========================
+************************
 
 .. toctree::
     :maxdepth: 2

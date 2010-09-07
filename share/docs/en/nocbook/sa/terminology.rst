@@ -1,5 +1,5 @@
 Terminology
-============
+***********
 
 * Managed Object - A piece of equipment or service, operated by Service Activation
 * Profile - A representations of equipment class containing equipment capabilities and behavior specifics. (See SupportedEquipment for a list of profiles)

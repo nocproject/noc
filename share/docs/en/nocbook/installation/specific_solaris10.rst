@@ -1,8 +1,8 @@
 Solaris10-specific instructions
-===============================
+*******************************
 
 SMF
----
+===
 All major NOC processes can be run via SMF framework.
 Manifests can be found at share/sunos/manifest/.
 

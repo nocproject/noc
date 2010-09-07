@@ -1,7 +1,7 @@
-.. _timepattern:
+.. _apps_main_timepattern:
 
 Time Patterns
-=============
+*************
 Time patterns are the flexible way to identify time intervals. Time Pattern *matches* time interval
 when it returns True for every moment of time belonging to interval and returns False for every other moment.
 

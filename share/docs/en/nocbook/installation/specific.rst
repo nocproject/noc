@@ -1,5 +1,5 @@
 OS Specific Instructions
-========================
+************************
 
 .. toctree::
     :maxdepth: 2

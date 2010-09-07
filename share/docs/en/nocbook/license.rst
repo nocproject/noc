@@ -1,7 +1,7 @@
 .. _LICENSE:
 
 License
-=======
+*******
 
 Copyright (C) 2007-2010, The NOC Project
 All rights reserved.

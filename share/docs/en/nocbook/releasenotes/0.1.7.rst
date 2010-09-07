@@ -13,7 +13,7 @@ Migration
 Main
 ====
 * [path]/dig option in etc/noc.conf
-* Autodetection of paths in etc/*.conf files in post-install script
+* Autodetection of paths in `etc/*.conf` files in post-install script
 * Integrated online documentation (Administrator's and User's Guides)
 
 Service Activation
