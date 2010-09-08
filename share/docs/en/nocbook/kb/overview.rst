@@ -102,7 +102,11 @@ Example (Creole)::
         
         <rack id="Rack 02" height="44U">
             <allocation id="UPS" position="1" height="5U" reserved="1" />
-            <allocation id="MX480" position="6" height="6U" />
+            <allocation id="MX480" position="6" height="6U" >
+                <slot id="re0" model="RE2000" />
+                <slot id="re1" model="RE2000" />
+                <slot id="0" model="DPCE 4x 10GE R" />
+            </allocation>
         </rack>
     </rackset>
     <</rack>>
@@ -141,6 +145,23 @@ Attributes:
  * position - bottom position in the rack. Lowest position of the rack is 1.
  * height - height in the units. May have "U" letter at the end.
  * reserved (optional) - 0 (default) - equipment present in rack, 1 - equipment is planned for placement
+ * model - equipment model
+ * hostname - hostname
+ * description - description
+ * assetno - Asset #
+
+slot
+^^^^
+Slot within allocation to hold blade servers, linecards, etc.
+
+Attributes:
+
+* id - slot id
+* model - equipment model
+* hostname - hostname
+* description - description
+* assetno - Asset #
+
 
 search
 ------
