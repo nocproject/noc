@@ -26,7 +26,7 @@ sys.path.append(os.path.abspath('../../ext'))
 extensions = ["supported"]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['../../../sphinx/templates']
+#templates_path = ['../../../sphinx/templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
