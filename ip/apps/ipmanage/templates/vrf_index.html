@@ -68,7 +68,7 @@ th[class=tt] {
     }
 {% endfor %}
 </style>
-<DIV CLASS="module">
+<DIV CLASS="module" style="height: 24px">
     <ul class="ipnav">
         <li><a href="{% url ip:ipmanage:vrf_index prefix.vrf.id '0.0.0.0/0' %}>">VRF {{vrf.name}}</a></li>
     {% for p in parents %}
@@ -76,6 +76,11 @@ th[class=tt] {
     {% endfor %}
     <li><a href='{% url ip:ipmanage:vrf_index vrf.id prefix.prefix %}' title="{{prefix.description}}">{{prefix.prefix}}</a></li>
     </ul>
+    <span style="float: right">
+        <form method="POST" action="{% url ip:ipmanage:quickjump prefix.vrf.id %}">
+            <input type="search" name="jump" placeholder="Quick jump ..."/>
+        </form>
+    </span>
 </DIV>
 <h1>VRF {{vrf.name}}: {{prefix.prefix}} ({{prefix.description}})</h1>
 <!-- Allocated blocks -->
