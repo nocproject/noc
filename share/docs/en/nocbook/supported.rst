@@ -1,5 +1,7 @@
+.. _supported:
+
 Appendix 1: Supported Equipment
-===============================
+*******************************
 
 .. toctree::
     :glob:
