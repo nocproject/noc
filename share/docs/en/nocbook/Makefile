@@ -5,7 +5,7 @@
 SPHINXOPTS    =
 SPHINXBUILD   = ../../../../contrib/bin/sphinx-build
 PAPER         =
-TARGET        = ../../../../static/doc/en/nocbook/
+TARGET        = ../../../../static/doc/en/nocbook
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
