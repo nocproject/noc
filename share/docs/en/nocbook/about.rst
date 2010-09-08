@@ -27,7 +27,7 @@ Key Features
 Open Source
 -----------
 
-NOC is Open Source product distributed under the terms of BSD [[LICENSE]]. You are free to use
+NOC is Open Source product distributed under the terms of BSD :ref:`LICENSE`. You are free to use
 and modify NOC according to your needs without any restriction, though your feedback is
 always welcome.
 
@@ -91,7 +91,7 @@ DNS Management
 Service Activation
 ------------------
 
-* Interacts with [[SupportedEquipment|wide range of equipment]]
+* Interacts with :ref:`wide range of equipment <supported>`
 * Flexible framework to quickly write additional equipment support (Sometime less then 2 minutes)
 * Service activation application framework
 * Collect SNMP traps and syslog messages from objects
@@ -160,7 +160,7 @@ Knowledge Base
 Features requested
 ------------------
 
-See the "list of requested features":http://redmine.nocproject.org/projects/noc/issues?query_id=1
+See the `list of requested features <http://redmine.nocproject.org/projects/noc/issues?query_id=1>`_
 
 A Brief History
 ===============
