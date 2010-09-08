@@ -82,6 +82,13 @@ class VRF(models.Model):
         c=connection.cursor()
         c.execute("SELECT id FROM %s WHERE vrf_id=%d and ip<<='%s' order by ip"%(IPv4Address._meta.db_table,self.id,top))
         return [IPv4Address.objects.get(id=x[0]) for x in c.fetchall()]
+    ##
+    ## Find longest ipv4 block holding address
+    ##
+    def find_ipv4block(self,address):
+        c=connection.cursor()
+        c.execute("SELECT id FROM %s WHERE vrf_id=%d AND '%s' << prefix ORDER BY masklen(prefix) DESC LIMIT 1"%(IPv4Block._meta.db_table,self.id,address))
+        return IPv4Block.objects.get(id=c.fetchall()[0][0])
 ##
 ##
 ##

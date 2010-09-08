@@ -90,6 +90,33 @@ class IPManageAppplication(Application):
     view_vrf_index.url_name="vrf_index"
     view_vrf_index.access=HasPerm("view")
     ##
+    ## Quick jump to most suitable block
+    ##
+    class QuickJumpForm(forms.Form):
+        jump=forms.RegexField(regex=r"^\d+(\.\d+){0,3}$")
+    def view_quickjump(self,request,vrf_id):
+        vrf=get_object_or_404(VRF,id=vrf_id)
+        if request.POST:
+            form=self.QuickJumpForm(request.POST)
+            if form.is_valid():
+                parts=form.cleaned_data["jump"].split(".")
+                # Fill missed octets with '0'
+                if len(parts)<4:
+                    parts+=["0"]*(4-len(parts))
+                ip=".".join(parts)
+                # Check address
+                if not is_ipv4(ip):
+                    self.message_user(request,"Invalid address %s"%ip)
+                    return self.response_redirect_to_referrer(request)
+                # Find covering block
+                b=vrf.find_ipv4block(ip)
+                self.message_user(request,"Redirected to %s"%b.prefix)
+                return self.response_redirect("ip:ipmanage:vrf_index",vrf.id,b.prefix)
+        return self.response_redirect_to_referrer(request)
+    view_quickjump.url=r"(?P<vrf_id>\d+)/quickqump/"
+    view_quickjump.url_name="quickjump"
+    view_quickjump.access=HasPerm("view")
+    ##
     ## Allocate new block form
     ##
     class AllocateBlockForm(forms.Form):
