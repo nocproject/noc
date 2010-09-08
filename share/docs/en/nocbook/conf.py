@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# NOC: Administrator's Guide documentation build configuration file, created by
+# NOC Book documentation build configuration file, created by
 # sphinx-quickstart on Sat Mar  7 11:21:03 2009.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -38,7 +38,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'The Book of NOC'
+project = u'NOC Book'
 copyright = u'2007-2010, nocproject.org'
 
 # The version info for the project you're documenting, acts as replacement for

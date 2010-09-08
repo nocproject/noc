@@ -93,9 +93,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     {{ metatags }}
     {%- if builder != 'htmlhelp' %}
-      {%- set titlesuffix = " &mdash; " + docstitle|e %}
+      {%- set titlesuffix = docstitle|e %}
     {%- endif %}
-    <title>{{ title|striptags }}{{ titlesuffix }}</title>
+    <title>{{ titlesuffix }}</title>
     {%- if builder == 'web' %}
     <link rel="stylesheet" href="{{ pathto('index') }}?do=stylesheet{%
       if in_admin_panel %}&admin=yes{% endif %}" type="text/css" />
@@ -103,8 +103,8 @@
     <link rel="alternate" type="{{ type|e(true) }}" title="{{ title|e(true) }}" href="{{ link|e(true) }}" />
     {%- endfor %}
     {%- else %}
-    <link rel="stylesheet" href="/static/css/sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="/static/css/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     {%- endif %}
     {%- if builder != 'htmlhelp' %}
     <script type="text/javascript">
