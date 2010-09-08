@@ -137,7 +137,7 @@ class Rack(object):
 ## Rendered to HTML by Rack.render_html
 ##
 class Allocation(object):
-    def __init__(self,rack,id,position,height,reserved=False,model="",asset_no="",hostname="",description=""):
+    def __init__(self,rack,id,position,height,reserved=False,model="",asset_no="",hostname="",description="",href=""):
         self.rack=rack
         self.id=id
         self.position=position
@@ -147,6 +147,7 @@ class Allocation(object):
         self.asset_no=asset_no
         self.hostname=hostname
         self.description=description
+        self.href=href
         self.rack.allocations.append(self)
         self.slots=[]
     
@@ -169,6 +170,8 @@ class Allocation(object):
             r+=["#%s"%self.asset_no]
         if self.description:
             r+=["<i>%s</i>"%f(self.description)]
+        if self.href:
+            r+=["<a href='%s'>Link...</a>"%self.href]
         if self.slots:
             rr=["<table border='1'>"]
             for s in self.slots:
@@ -182,7 +185,7 @@ class Allocation(object):
 ##
 ##
 class Slot(object):
-    def __init__(self,allocation,id=None,model="",hostname="",description="",reserved=False,asset_no=None):
+    def __init__(self,allocation,id=None,model="",hostname="",description="",reserved=False,asset_no=None,href=""):
         self.allocation=allocation
         self.id=id
         self.model=model
@@ -190,6 +193,7 @@ class Slot(object):
         self.description=description
         self.reserved=reserved
         self.asset_no=asset_no
+        self.href=href
         self.allocation.slots.append(self)
     
     def to_html(self):
@@ -204,14 +208,16 @@ class Slot(object):
             r+=["#%s"%self.asset_no]
         if self.description:
             r+=["<i>%s</i>"%f(self.description)]
+        if self.href:
+            r+=["<a href='%s'>Link...</a>"%self.href]
         return "<br/>".join(r)
 ##
 ## Expat parser to render simple XML grammar
 ## Tag hirrarchy:
 ##     rackset attrs: id
 ##       `-> rack attrs: id, height
-##              `-> allocation attrs: id, position, height, reserved, model, hostname, description, assetno
-##                    `-> slot attrs: id, model, hostname, description, reserved, assetno
+##              `-> allocation attrs: id, position, height, reserved, model, hostname, description, assetno, href
+##                    `-> slot attrs: id, model, hostname, description, reserved, assetno, href
 ##
 class XMLParser(object):
     def __init__(self,text):
@@ -248,6 +254,7 @@ class XMLParser(object):
                 model=attrs.get("model",""),
                 hostname=attrs.get("hostname",""),
                 asset_no=attrs.get("assetno",""),
+                href=attrs.get("href",""),
                 description=attrs.get("description","")
                 )
         elif name=="slot":
@@ -257,6 +264,7 @@ class XMLParser(object):
                 hostname=attrs.get("hostname",""),
                 description=attrs.get("description",""),
                 asset_no=attrs.get("assetno",""),
+                href=attrs.get("href",""),
                 reserved=int(attrs.get("reserved",0)))
     def end_element(self,name): pass
     def char_data(self,name): pass
