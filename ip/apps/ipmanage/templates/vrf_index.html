@@ -5,6 +5,7 @@
 {% block content %}
 {% if can_allocate %}
     <ul class="object-tools">
+        <li><a href="{% url ip:ipmanage:toggle_bookmark vrf.id prefix.prefix %}" classs="changelink">{% if has_bookmark %}Remove{% else %}Set{% endif %} Bookmark</a></li>
         <li><A HREF="{% url ip:tools:index vrf.id prefix %}" CLASS="changelink">Tools</A></li>
         <li><A HREF="{% url ip:ipmanage:allocate_block vrf.id %}" CLASS="addlink">Allocate new block</A></li>
         <li><A HREF="{% url ip:ipmanage:assign_address vrf.id %}" CLASS="addlink">Assign address</A></li>
@@ -20,29 +21,45 @@
         else
             return false;
     }
+    
+    function on_mynetworks(n)
+    {
+        document.location="../../"+n.options[n.selectedIndex].value+"/";
+    }
     // -->
 </SCRIPT>
 <!-- Navigation -->
 <style>
-.ipnav, .ipnav li {
-    margin: 0;
-    padding: 0;
-    display: inline;
-    list-style: none;
-}
+    .parents, .parents li {
+        margin: 0px;
+        padding: 0px;
+        display: inline;
+        list-style: none;
+    }
 
-.ipnav li:before {
-    content: "\00a0";
-}
+    .parents li:before {
+        content: "\00a0";
+    }
 
-.ipnav li:after {
-    content: "\00a0\203a";
-}
+    .parents li:after {
+        content: "\00a0\203a";
+    }
 
 .freeip {
     font-style: italic;
     background-color: #CCCCCC;
     display: none;
+}
+
+td[class=nav-label] {
+    font-weight: bold;
+    vertical-align: center;
+    width: 80px;
+}
+
+td[class=nav-form] {
+    vertical-align: center;
+    width: 120px;
 }
 
 /* Column widths */
@@ -61,6 +78,7 @@ th[class=fqdn] {
 th[class=tt] {
     width: 5em;
 }
+
 /* Range colors */
 {% for r,c in range_colors %}
     td[class=r{{r.id}}] {
@@ -68,21 +86,46 @@ th[class=tt] {
     }
 {% endfor %}
 </style>
-<DIV CLASS="module" style="height: 24px">
-    <ul class="ipnav">
-        <li><a href="{% url ip:ipmanage:vrf_index prefix.vrf.id '0.0.0.0/0' %}>">VRF {{vrf.name}}</a></li>
-    {% for p in parents %}
-        <li><a href="{% url ip:ipmanage:vrf_index vrf.id p.prefix %}" title="{{p.description}}">{{p.prefix}}</a></li>
-    {% endfor %}
-    <li><a href='{% url ip:ipmanage:vrf_index vrf.id prefix.prefix %}' title="{{prefix.description}}">{{prefix.prefix}}</a></li>
-    </ul>
-    <span style="float: right">
-        <form method="POST" action="{% url ip:ipmanage:quickjump prefix.vrf.id %}">
-            <input type="search" name="jump" placeholder="Quick jump ..."/>
-        </form>
-    </span>
-</DIV>
-<h1>VRF {{vrf.name}}: {{prefix.prefix}} ({{prefix.description}})</h1>
+<!-- Navigation -->
+<div class="module">
+    <table width="100%">
+        <caption>Navigation</caption>
+        <tr>
+            <td>
+                <a href="{% url ip:ipmanage:vrf_index prefix.vrf.id '0.0.0.0/0' %}>">VRF {{vrf.name}}</a> &#x203a;
+                {% for p in parents %}
+                    <a href="{% url ip:ipmanage:vrf_index vrf.id p.prefix %}" title="{{p.description}}">{{p.prefix}}</a> &#x203a;
+                {% endfor %}
+                <a href='{% url ip:ipmanage:vrf_index vrf.id prefix.prefix %}' title="{{prefix.description}}">{{prefix.prefix}}</a>
+            </td>
+            <td class="nav-label">
+                Quick Jump:
+            </td>
+            <td class="nav-form">
+                <form method="POST" action="{% url ip:ipmanage:quickjump prefix.vrf.id %}">
+                    <input type="search" name="jump" placeholder="Quick Jump..." />
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size: 18px; font-weight: bold; color: #666;vertical-align: bottom;">{{prefix.prefix}} ({{prefix.description}})</td>
+            <td class="nav-label">
+                My Networks:
+            </td>
+            <td class="nav-form">
+                <form>
+                    <select onchange="return on_mynetworks(this);">
+                        <option>---</option>
+                        {% for n in my_networks %}
+                        <option value="{{n.prefix}}">{{n.prefix}} {{n.description}}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+
 <!-- Allocated blocks -->
 {% if prefixes %}
     <DIV CLASS="module">
@@ -165,7 +208,7 @@ function toggle_free() {
                 </TR>
             {% else %}
                 <TR CLASS="freeip">
-                <TD {%if c%}STYLE="background-color: {{c}}"{%endif%}></TD>
+                <TD {%if r%}class="r{{r.id}}"{%endif%}></TD>
                 <TD COLSPAN=2>
                     {% if can_allocate %}
                         <A HREF="{% url ip:ipmanage:assign_new_address vrf.id a %}">{{a}}</A>

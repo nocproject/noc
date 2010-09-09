@@ -314,6 +314,26 @@ class IPv4Block(models.Model):
                     title="IPv4 Block, VRF=%s, %s"%(r.vrf,r.prefix),
                     text=r.description,
                     relevancy=relevancy)
+    ##
+    ## Check user has bookmark on prefix
+    ##
+    def has_bookmark(self,user):
+        return IPv4BlockBookmark.has_bookmark(user,self)
+    ##
+    ## Set bookmark for user
+    ##
+    def set_bookmark(self,user):
+        IPv4BlockBookmark.set_bookmark(user,self)
+    ##
+    ## Remove bookmark for user
+    ##
+    def set_bookmark(self,user):
+        IPv4BlockBookmark.set_bookmark(user,self)
+    ##
+    ## Toggle bookmark for user
+    ##
+    def toggle_bookmark(self,user):
+        IPv4BlockBookmark.toggle_bookmark(user,self)
 ##
 ## IPv4 Address Range
 ##
@@ -539,3 +559,49 @@ class IPv4Address(models.Model):
                     title="IPv4 Address, VRF=%s, %s (%s)"%(r.vrf,r.ip,r.fqdn),
                     text=r.description,
                     relevancy=relevancy)
+##
+## User Bl
+##
+class IPv4BlockBookmark(models.Model):
+    class Meta:
+        verbose_name="IPv4 Block Bookmark"
+        verbose_name="IPv4 Block Bookmarks"
+        unique_together=[("user","prefix")]
+    user=models.ForeignKey(User,verbose_name="User")
+    prefix=models.ForeignKey(IPv4Block,verbose_name="Prefix")
+    def __unicode__(self):
+        return u"Bookmark %s for %s"%(self.prefix.prefix,self.user.username)
+    ##
+    ## Check the prefix is bookmarked
+    ##
+    @classmethod
+    def has_bookmark(cls,user,prefix):
+        return cls.objects.filter(user=user,prefix=prefix).count()>0
+    ##
+    ## Get a list of user bookmarks
+    ##
+    @classmethod
+    def user_bookmarks(cls,user,vrf):
+        return [b.prefix for b in cls.objects.filter(user=user,prefix__vrf=vrf)]
+    ##
+    ## Set bookmark
+    ##
+    @classmethod
+    def set_bookmark(cls,user,prefix):
+        if not cls.has_bookmark(user,prefix):
+            cls(user=user,prefix=prefix).save()
+    ##
+    ## Remove bookmarks
+    ##
+    @classmethod
+    def remove_bookmark(cls,user,prefix):
+        cls.objects.filter(user=user,prefix=prefix).delete()
+    ##
+    ## Toggle bookmark
+    ##
+    @classmethod
+    def toggle_bookmark(cls,user,prefix):
+        if cls.has_bookmark(user,prefix):
+            cls.remove_bookmark(user,prefix)
+        else:
+            cls.set_bookmark(user,prefix)
