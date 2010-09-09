@@ -85,7 +85,9 @@ class IPManageAppplication(Application):
         return self.render(request,"vrf_index.html",{"vrf":vrf,"parents":parents,"prefixes":prefixes,"prefix":prefix,
                             "can_allocate":can_allocate,"block_info":block_info,"has_children":has_children,
                             "ranges":ranges,"range_colors":range_colors,"all_addresses":all_addresses,
-                            "orphaned_addresses":orphaned_addresses})
+                            "orphaned_addresses":orphaned_addresses,
+                            "has_bookmark":prefix.has_bookmark(request.user),
+                            "my_networks":IPv4BlockBookmark.user_bookmarks(request.user,vrf)})
     view_vrf_index.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/$"
     view_vrf_index.url_name="vrf_index"
     view_vrf_index.access=HasPerm("view")
@@ -392,6 +394,18 @@ class IPManageAppplication(Application):
     view_bind_vc.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/bind_vc/$"
     view_bind_vc.url_name="bind_vc"
     view_bind_vc.access=HasPerm("bind_vc")
+    ##
+    ## Toggle bookmark
+    ##
+    def view_toogle_bookmark(self,request,vrf_id,prefix):
+        vrf=get_object_or_404(VRF,id=int(vrf_id))
+        p=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
+        p.toggle_bookmark(request.user)
+        self.message_user(request,"Bookmark %s on %s"%({True:"set",False:"removed"}[p.has_bookmark(request.user)],prefix))
+        return self.response_redirect("ip:ipmanage:vrf_index",vrf_id,prefix)
+    view_toogle_bookmark.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/toggle_bookmark/$"
+    view_toogle_bookmark.url_name="toggle_bookmark"
+    view_toogle_bookmark.access=HasPerm("view")
     ##
     ## Return a list of user access
     ##
