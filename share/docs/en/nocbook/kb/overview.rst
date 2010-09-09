@@ -149,6 +149,7 @@ Attributes:
  * hostname - hostname
  * description - description
  * assetno - Asset #
+ * serial - Serial number
  * href - external link URL
 
 slot
@@ -162,6 +163,7 @@ Attributes:
 * hostname - hostname
 * description - description
 * assetno - Asset #
+* serial - Serial number
 * href - external link URL
 
 search
