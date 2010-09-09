@@ -7,13 +7,14 @@
 ##----------------------------------------------------------------------
 from noc.kb.parsers.macros import Macro as MacroBase
 from django.db.models import Q
+from tagging.models import Tag,TaggedItem
 ##
 ## "search" macro
 ## USAGE:
 ## <<search [criteria] [order_by] [limit] [title]>>
 ## WHERE:
 ##     criteria:
-##         category=cat1,...,catN
+##         tags=tag1,...,tagN
 ##         language=lang
 ##     order_by - one of "subject","-subject","id","-id"
 ##     limit
@@ -26,15 +27,26 @@ class Macro(MacroBase):
     def handle(cls,args,text):
         from noc.kb.models import KBEntry
         # Build search criteria
-        if "category" in args:
-            q=Q()
-            for cn in args["category"].split(","):
-                cn=cn.strip()
-                q&=Q(categories__name=cn)
-        else:
-            q=Q()
+        q=Q()
+        if "tags" in args:
+            for tn in args["tags"].split(","):
+                tn=tn.strip()
+                if not tn:
+                    continue
+                # Find tag
+                try:
+                    t=Tag.objects.get(name=tn)
+                except Tag.DoesNotExist:
+                    t=None # No tag found
+                # Restrict queryset
+                if t:
+                    q&=Q(id__in=[i.id for i in TaggedItem.objects.get_by_model(KBEntry.objects,t)])
+                else:
+                    q&=KBEntry.objects.none()
+        print "<"
         if "language" in args:
             q&=Q(language__name=args["language"])
+        print ">"*72
         q=KBEntry.objects.filter(q) # Flatten to query
         # Apply ordering
         if "order_by" in args:
