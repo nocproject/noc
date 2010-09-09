@@ -15,6 +15,14 @@ from noc.main.models import MIMEType
 class ViewAppplication(Application):
     title="View"
     ##
+    ## Index page must redirect to index application
+    ##
+    def view_index(self,request):
+        return self.response_redirect("kb:index:index")
+    view_index.url=r"^$"
+    view_index.url_name="index"
+    view_index.access=HasPerm("view")
+    ##
     ## KB Entry Preview
     ##
     def view_view(self,request,kb_id):
