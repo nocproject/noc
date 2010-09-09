@@ -43,10 +43,8 @@ class Macro(MacroBase):
                     q&=Q(id__in=[i.id for i in TaggedItem.objects.get_by_model(KBEntry.objects,t)])
                 else:
                     q&=KBEntry.objects.none()
-        print "<"
         if "language" in args:
             q&=Q(language__name=args["language"])
-        print ">"*72
         q=KBEntry.objects.filter(q) # Flatten to query
         # Apply ordering
         if "order_by" in args:
