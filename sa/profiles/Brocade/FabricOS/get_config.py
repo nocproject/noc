@@ -15,5 +15,5 @@ class Script(noc.sa.script.Script):
     implements=[IGetConfig]
     def execute(self):
         config=self.cli("configshow")
-        #config=self.strip_first_lines(config,4)
+        config=self.strip_first_lines(config,1)
         return self.cleaned_config(config)
