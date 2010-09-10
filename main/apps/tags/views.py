@@ -9,6 +9,7 @@ from noc.lib.app import Application,PermitLogged
 from tagging.models import Tag
 from tagging.utils import calculate_cloud
 from django.shortcuts import get_object_or_404
+import math
 
 class TagWrapper: pass
 ##
@@ -20,20 +21,24 @@ class TagsAppplication(Application):
     ## Tags cloud
     ##
     def view_index(self,request):
-        tags=[]
-        for tag,count in self.execute("""SELECT t.name,COUNT(*)
+        MIN_FONT=6
+        MAX_FONT=36
+        # Get tags and counts
+        tags=[r for r in self.execute("""
+            SELECT t.name,COUNT(*)
             FROM tagging_tag t JOIN tagging_taggeditem i ON (t.id=i.tag_id)
             GROUP BY 1
-            ORDER BY 1
-            """):
-            t=TagWrapper()
-            t.name=tag
-            t.count=count
-            t.font_size=1
-            tags+=[t]
-        tags=calculate_cloud(tags,steps=6)
-        for t in tags:
-            t.font_size*=8
+            ORDER BY 1""")]
+        # Get min and max count
+        counts=[r[1] for r in tags]
+        min_count=min(counts)
+        max_count=max(counts)
+        if min_count==max_count:
+            # Set minimal font size if all tags of equal power
+            tags=[(r[0],MIN_FONT) for r in tags]
+        else:
+            s=float(MAX_FONT-MIN_FONT)/math.log(max_count)
+            tags=[(r[0],int(MIN_FONT+s*math.log(r[1]))) for r in tags]
         return self.render(request,"index.html",{"tags":tags})
     view_index.url=r"^$"
     view_index.url_name="index"
@@ -46,6 +51,8 @@ class TagsAppplication(Application):
         t=get_object_or_404(Tag,name=tag)
         items={} # Type -> itemlist
         for i in t.items.all():
+            if i.object is None:
+                continue
             itype=i.object.__class__._meta.verbose_name_plural
             if itype in items:
                 items[itype]+=[i.object]
