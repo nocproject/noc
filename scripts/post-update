@@ -7,13 +7,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 PROGNAME=`basename $0`
-error_exit () {
+error_exit ( ) {
     echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
     echo "Terminating" 1>&2
     exit 1
 }
 
-info () {
+info ( ) {
     echo $1 1>&2
 }
 
