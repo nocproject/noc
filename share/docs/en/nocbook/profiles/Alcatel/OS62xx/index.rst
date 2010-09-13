@@ -1,4 +1,4 @@
-.. _Alcatel.OS62xx
+.. _Alcatel.OS62xx:
 
 Alcatel.OS62xx
 ==============
