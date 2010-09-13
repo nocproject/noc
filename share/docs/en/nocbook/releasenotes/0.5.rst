@@ -108,8 +108,7 @@ Improved navigation
 
 All Allocated Blocks Application
 --------------------------------
-* New "All Allocated Blocks" report introduced. All allocated blocks shown in collapsed tree for
-overall analysis
+* New "All Allocated Blocks" report introduced. All allocated blocks shown in collapsed tree for overall analysis
 
 Improved Navigation
 -------------------
