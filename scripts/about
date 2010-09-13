@@ -36,6 +36,7 @@ def about():
         ["OS"     ,    " ".join(os.uname())],
         ["Python" ,    sys.version],
         ["PostgreSQL", pg_version],
+        ["Python Path", ":".join(sys.path)]
     ]
     cv_path=os.path.join("contrib","lib","VERSION.csv")
     if os.path.exists(cv_path):

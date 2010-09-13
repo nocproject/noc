@@ -30,4 +30,7 @@ class ReportSystemVersion(SimpleReport):
                 r=csv.reader(f)
                 for row in r:
                     versions+=[row]
+        versions+=[SectionRow("Python Path")]
+        for p in sys.path:
+            versions+=[("",p)]
         return self.from_dataset(title=self.title,columns=["Component","Version"],data=versions)
