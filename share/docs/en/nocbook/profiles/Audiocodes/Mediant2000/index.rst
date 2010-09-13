@@ -1,3 +1,5 @@
+.. _Audiocodes.Mediant2000:
+
 Audiocodes.Mediant2000
 ======================
 

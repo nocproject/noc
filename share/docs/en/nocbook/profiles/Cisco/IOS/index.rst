@@ -1,3 +1,5 @@
+.. _Cisco.IOS:
+
 Cisco.IOS
 =========
 

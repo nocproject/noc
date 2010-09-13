@@ -1,16 +1,17 @@
-.. _Cisco.NXOS:
+.. _Cisco.CatOS:
 
-Cisco.NXOS
-==========
+Cisco.CatOS
+===========
 
 ====== ========================================
 Vendor `Cisco Systems <http://www.cisco.com/>`_
-OS     NX-OS
+OS     CatOS
 ====== ========================================
 
-Cisco.NXOS profile supports Cisco Nexus 7000 family of the ethernet switches
+Cisco.CatOS profile supports Cisco's CatOS-based
+products
 
 Tested Equipment
 ----------------
-.. supported:: Cisco.NXOS
+.. supported:: Cisco.CatOS
 

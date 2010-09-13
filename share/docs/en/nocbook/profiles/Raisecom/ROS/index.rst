@@ -1,3 +1,5 @@
+.. _Raisecom.ROS:
+
 Raisecom.ROS
 ============
 

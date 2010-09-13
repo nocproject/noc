@@ -1,3 +1,5 @@
+.. _DLink.DES3xxx:
+
 DLink.DES3xxx
 =============
 

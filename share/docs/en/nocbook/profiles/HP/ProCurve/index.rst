@@ -1,3 +1,5 @@
+.. _HP.ProCurve:
+
 HP.ProCurve
 ===========
 

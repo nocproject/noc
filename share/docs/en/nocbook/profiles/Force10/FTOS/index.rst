@@ -1,3 +1,5 @@
+.. _Force10.FTOS:
+
 Force10.FTOS
 ============
 

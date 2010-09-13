@@ -1,3 +1,5 @@
+.. _Huawei.VRP:
+
 Huawei.VRP
 ==========
 

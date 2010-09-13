@@ -1,5 +1,7 @@
+.. _Zyxel.ZyNOS:
+
 Zyxel.ZyNOS
-=================
+===========
 
 ====== ================================
 Vendor `ZyXEL <http://www.zyxel.com/>`_

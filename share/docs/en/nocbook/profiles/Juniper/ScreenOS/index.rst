@@ -1,3 +1,5 @@
+.. _Juniper.ScreenOS:
+
 Juniper.ScreenOS
 ================
 

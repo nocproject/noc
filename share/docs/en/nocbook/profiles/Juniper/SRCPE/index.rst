@@ -1,3 +1,5 @@
+.. _Juniper.SRCPE:
+
 Juniper.SRCPE
 =============
 

@@ -1,3 +1,5 @@
+.. _Sun.iLOM3:
+
 Sun.iLOM3
 =========
 
