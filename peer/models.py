@@ -626,7 +626,7 @@ class WhoisLookup(models.Model):
     def lookup(self,method,query):
         key,value=method.split(":")
         lookup_ids=[l.id for l in WhoisLookup.objects.filter(key=key,value=value)]
-        r=list(WhoisCache.objects.filter(lookup__in=lookup_ids,key=query))
+        r=list(WhoisCache.objects.filter(lookup__in=lookup_ids,key=query.upper()))
         if len(r)==0:
             return set()
         return set(r[0].value.split("|"))
@@ -642,6 +642,12 @@ class WhoisCache(models.Model):
     key=models.CharField("Key",max_length=64)
     value=models.TextField("Value")
     ##
+    ## Convert key to upper case
+    ##
+    def save(self,**kwargs):
+        self.key=self.key.upper()
+        super(WhoisCache,self).save(**kwargs)
+    ##
     ## Fetch data into cache
     ## Returns boolean with update status
     ##
@@ -653,10 +659,10 @@ class WhoisCache(models.Model):
             # Fetch
             urls={}
             for wl in wdb.whoislookup_set.all():
-                if wl.url not in urls:
-                    urls[wl.url]=[wl]
-                else:
+                try:
                     urls[wl.url]+=[wl]
+                except KeyError:
+                    urls[wl.url]=[wl]
             #
             for url in urls:
                 fields=set()
@@ -678,20 +684,24 @@ class WhoisCache(models.Model):
                 data=list(wdb.parse(f,fields))
                 f.close()
                 # Process forward lookups
+                keys=set()
                 for wl in f_set:
                     key=wl.key
                     value=wl.value
                     for d in data:
-                        k=d[key][0]
+                        k=d[key][0].upper()
+                        if k in keys:
+                            continue
                         try:
                             v=d[value]
                         except KeyError:
                             v=[]
                         v=",".join(v)
                         v="|".join([x.strip() for x in v.split(",")])
-                        wc=WhoisCache(lookup=wl,key=k,value=v)
-                        wc.save()
+                        WhoisCache(lookup=wl,key=k,value=v).save()
+                        keys.add(k)
                 # Process reverse lookups
+                keys=set()
                 for wl in r_set:
                     key=wl.key
                     value=wl.value
@@ -713,8 +723,11 @@ class WhoisCache(models.Model):
                             except KeyError:
                                 result[k]=set([v])
                     for key,value in result.items():
-                        wc=WhoisCache(lookup=wl,key=key,value="|".join(value))
-                        wc.save()
+                        key=key.upper()
+                        if key in keys:
+                            continue
+                        WhoisCache(lookup=wl,key=key,value="|".join(value)).save()
+                        keys.add(key)
         return True
 ##
 ## Prepared prefix list cache
