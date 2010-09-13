@@ -1,3 +1,5 @@
+.. _MikroTik.RouterOS:
+
 MikroTik.RouterOS
 =================
 

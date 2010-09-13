@@ -1,5 +1,7 @@
-Cisco.ASA
-=========
+.. _Raritan.DominionSX:
+
+Raritan.DominionSX
+==================
 
 ====== ========================================
 Vendor `Raritan <http://www.raritan.com/>`_

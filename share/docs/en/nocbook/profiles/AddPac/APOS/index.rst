@@ -1,5 +1,7 @@
-VoiceFinder.AddPack
-===================
+.. _AddPack.APOS:
+
+AddPack.APOS
+============
 
 ====== =======================================
 Vendor `AddPac <http://www.www.addpac.com/>`_

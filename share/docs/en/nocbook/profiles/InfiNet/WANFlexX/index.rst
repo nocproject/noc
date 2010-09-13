@@ -1,3 +1,5 @@
+.. _InfiNet.WANFlexX:
+
 InfiNet.WANFlexX
 ================
 

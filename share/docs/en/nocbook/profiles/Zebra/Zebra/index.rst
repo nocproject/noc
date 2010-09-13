@@ -1,3 +1,5 @@
+.. _Zebra.Zebra:
+
 Zebra.Zebra
 =================
 

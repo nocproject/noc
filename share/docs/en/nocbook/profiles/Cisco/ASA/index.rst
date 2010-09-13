@@ -1,3 +1,5 @@
+.. _Cisco.ASA:
+
 Cisco.ASA
 =========
 

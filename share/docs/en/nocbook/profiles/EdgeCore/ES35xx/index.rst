@@ -1,3 +1,5 @@
+.. _EdgeCode.ES35xx:
+
 EdgeCore.ES35xx
 ===============
 

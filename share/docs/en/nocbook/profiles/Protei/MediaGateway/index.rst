@@ -1,3 +1,5 @@
+.. _Protei.MediaGateway:
+
 Protei.MediaGateway
 ===================
 

@@ -1,3 +1,5 @@
+.. _Cisco.FWSM:
+
 Cisco.FWSM
 ==========
 

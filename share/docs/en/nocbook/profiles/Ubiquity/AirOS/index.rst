@@ -1,3 +1,5 @@
+.. _Ubiquiti.AirOS:
+
 Ubiquiti.AirOS
 ==============
 

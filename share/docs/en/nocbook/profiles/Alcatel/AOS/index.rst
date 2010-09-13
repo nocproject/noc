@@ -1,3 +1,5 @@
+.. _Alcatel.AOS:
+
 Alcatel.AOS
 ===========
 

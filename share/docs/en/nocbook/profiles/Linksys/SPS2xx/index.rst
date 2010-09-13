@@ -1,3 +1,5 @@
+.. _Linksys.SPS2xx:
+
 Linksys.SPS2xx
 ==============
 

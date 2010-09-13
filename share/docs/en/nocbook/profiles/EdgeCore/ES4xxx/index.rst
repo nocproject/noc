@@ -1,3 +1,5 @@
+.. _EdgeCore.ES4xxx:
+
 EdgeCore.ES4xxx
 ===============
 

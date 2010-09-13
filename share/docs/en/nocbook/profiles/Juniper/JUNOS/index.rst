@@ -1,3 +1,5 @@
+.. _Juniper.JUNOS:
+
 Juniper.JUNOS
 =============
 
