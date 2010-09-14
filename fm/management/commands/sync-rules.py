@@ -8,7 +8,7 @@
 """
 """
 from __future__ import with_statement
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand,CommandError
 from django.db import transaction
 from noc.fm.rules.classes import EventClass
 from noc.fm.rules.classification import ClassificationRule
@@ -121,4 +121,4 @@ class Command(BaseCommand):
                     except MIBRequiredException,x:
                         new_mibs[mib_name]=x.requires_mib
             if len(new_mibs)==l_new_mibs: # No new MIBs loaded
-                raise Exception("Following builtin MIBs cannot be loaded: %s"%" ".join(new_mibs.keys()))
+                raise CommandError("Following builtin MIBs cannot be loaded: %s"%" ".join(new_mibs.keys()))
