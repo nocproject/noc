@@ -77,7 +77,7 @@ class ORParameter(Parameter):
     10
     >>> ORParameter(IntParameter(),IPParameter()).clean("192.168.1.1")
     '192.168.1.1'
-    >>> ORParameter(IntParameter(),IPParameter()).clean("xxx")
+    >>> ORParameter(IntParameter(),IPParameter()).clean("xxx") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IPParameter: 'xxx'
@@ -85,7 +85,7 @@ class ORParameter(Parameter):
     10
     >>> (IntParameter()|IPParameter()).clean("192.168.1.1")
     '192.168.1.1'
-    >>> (IntParameter()|IPParameter()).clean("xxx")
+    >>> (IntParameter()|IPParameter()).clean("xxx") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IPParameter: 'xxx'
@@ -118,7 +118,7 @@ class ORParameter(Parameter):
 class NoneParameter(Parameter):
     """
     >>> NoneParameter().clean(None)
-    >>> NoneParameter().clean("None")
+    >>> NoneParameter().clean("None") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: NoneParameter: 'None'
@@ -163,7 +163,7 @@ class REStringParameter(StringParameter):
     'exxp'
     >>> REStringParameter("ex+p").clean("regexp 1")
     'regexp 1'
-    >>> REStringParameter("ex+p").clean("ex")
+    >>> REStringParameter("ex+p").clean("ex") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: REStringParameter: 'ex'
@@ -200,10 +200,10 @@ class BooleanParameter(Parameter):
     True
     >>> BooleanParameter().clean(0)
     False
-    >>> BooleanParameter().clean([])
+    >>> BooleanParameter().clean([]) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
-        ...
-    InterfaceTypeError: BooleanParameter: []
+    ...
+    InterfaceTypeError: BooleanParameter: [].
     >>> BooleanParameter(default=False).clean(None)
     False
     >>> BooleanParameter(default=True).clean(None)
@@ -232,15 +232,15 @@ class IntParameter(Parameter):
     1
     >>> IntParameter().clean("1")
     1
-    >>> IntParameter().clean("not a number")
+    >>> IntParameter().clean("not a number") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IntParameter: 'not a number'
-    >>> IntParameter(min_value=10).clean(5)
+    >>> IntParameter(min_value=10).clean(5) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IntParameter: 5
-    >>> IntParameter(max_value=7).clean(10)
+    >>> IntParameter(max_value=7).clean(10) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IntParameter: 10
@@ -248,7 +248,7 @@ class IntParameter(Parameter):
     5
     >>> IntParameter(max_value=10,default=7).clean(None)
     7
-    >>> IntParameter(max_value=10,default=15)
+    >>> IntParameter(max_value=10,default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IntParameter: 15
@@ -297,13 +297,13 @@ class InstanceOfParameter(Parameter):
     'Ok'
     >>> InstanceOfParameter(cls=C).clean(CC()) and "Ok"
     'Ok'
-    >>> InstanceOfParameter(cls=C).clean(1) and "Ok"
+    >>> InstanceOfParameter(cls=C).clean(1) and "Ok" #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
     InterfaceTypeError: InstanceOfParameter: 1
     >>> InstanceOfParameter(cls="C").clean(C()) and "Ok"
     'Ok'
-    >>> InstanceOfParameter(cls="C").clean(1) and "Ok"
+    >>> InstanceOfParameter(cls="C").clean(1) and "Ok" #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
     InterfaceTypeError: InstanceOfParameter: 1
@@ -340,7 +340,7 @@ class ListOfParameter(ListParameter):
     [1, 2, 3]
     >>> ListOfParameter(element=IntParameter()).clean([1,2,"3"])
     [1, 2, 3]
-    >>> ListOfParameter(element=IntParameter()).clean([1,2,"x"])
+    >>> ListOfParameter(element=IntParameter()).clean([1,2,"x"]) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
     InterfaceTypeError: IntParameter: 'x'
@@ -392,7 +392,7 @@ class DictParameter(Parameter):
     """
     >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":10,"s":"ten"})
     {'i': 10, 's': 'ten'}
-    >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":"10","x":"ten"})
+    >>> DictParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean({"i":"10","x":"ten"}) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: DictParameter: {'i': '10', 'x': 'ten'}
@@ -488,7 +488,7 @@ class IPParameter(StringParameter):
     """
     >>> IPParameter().clean("192.168.0.1")
     '192.168.0.1'
-    >>> IPParameter().clean("192.168.0.256")
+    >>> IPParameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IPParameter: '192.168.0.256'
@@ -513,15 +513,15 @@ class IPv4PrefixParameter(StringParameter):
     """
     >>> IPv4PrefixParameter().clean("192.168.0.0/16")
     '192.168.0.0/16'
-    >>> IPParameter().clean("192.168.0.256")
+    >>> IPParameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IPParameter: '192.168.0.256'
-    >>> IPParameter().clean("192.168.0.0/33")
+    >>> IPParameter().clean("192.168.0.0/33") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IPParameter: '192.168.0.0/33'
-    >>> IPParameter().clean("192.168.0.0/-5")
+    >>> IPParameter().clean("192.168.0.0/-5") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IPParameter: '192.168.0.0/-5'
@@ -556,11 +556,11 @@ class VLANIDParameter(IntParameter):
     """
     >>> VLANIDParameter().clean(10)
     10
-    >>> VLANIDParameter().clean(5000)
+    >>> VLANIDParameter().clean(5000) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: VLANIDParameter: 5000
-    >>> VLANIDParameter().clean(0)
+    >>> VLANIDParameter().clean(0) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: VLANIDParameter: 0
@@ -570,7 +570,7 @@ class VLANIDParameter(IntParameter):
 ##
 ##
 ##
-rx_mac_address_cisco=re.compile("^[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{4}$")
+rx_mac_address_cisco=re.compile(r"^[0-9A-F]{4}(?P<sep>[.\-])[0-9A-F]{4}(?P=sep)[0-9A-F]{4}$")
 rx_mac_address_cisco_media=re.compile("^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
 rx_mac_address_sixblock=re.compile("^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$")
 rx_mac_address_hp=re.compile("^[0-9A-F]{6}-[0-9A-F]{6}$")
@@ -582,7 +582,7 @@ class MACAddressParameter(StringParameter):
     '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("0112.3456.789a.bc")
     '12:34:56:78:9A:BC'
-    >>> MACAddressParameter().clean("1234.5678.9abc.def0")
+    >>> MACAddressParameter().clean("1234.5678.9abc.def0") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: MACAddressParameter: '1234.5678.9ABC.DEF0'
@@ -594,14 +594,16 @@ class MACAddressParameter(StringParameter):
     '00:13:46:50:87:05'
     >>> MACAddressParameter().clean("123456-789abc")
     '12:34:56:78:9A:BC'
-    >>> MACAddressParameter().clean("12-34-56-78-9A-BC-DE")
+    >>> MACAddressParameter().clean("12-34-56-78-9A-BC-DE") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: MACAddressParameter: '12:34:56:78:9A:BC:DE'
-    >>> MACAddressParameter().clean("AB-CD-EF-GH-HJ-KL")
+    >>> MACAddressParameter().clean("AB-CD-EF-GH-HJ-KL") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: MACAddressParameter: 'AB:CD:EF:GH:HJ:KL'
+    >>> MACAddressParameter().clean("aabb-ccdd-eeff")
+    'AA:BB:CC:DD:EE:FF'
     """
     def clean(self,value):
         if value is None and self.default is not None:
@@ -614,7 +616,7 @@ class MACAddressParameter(StringParameter):
             return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
         match=rx_mac_address_cisco.match(value)
         if match:
-            value=value.replace(".","")
+            value=value.replace(".","").replace("-","")
         else:
             match=rx_mac_address_hp.match(value)
             if match:
