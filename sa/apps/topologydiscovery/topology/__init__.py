@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 from mac import MACTopology
 from lldp import LLDPTopology
+import re
 
 class Link(object):
     def __init__(self,topology,o1,i1,o2,i2,portchannel_link=None):
@@ -184,11 +185,13 @@ class TopologyDiscovery(object):
             l.add_interface(l.o1,l.i1)
             l.add_interface(l.o2,l.i2)
     ##
+    rx_interface=re.compile(r"[/:,\-.]")
+    ##
     ## Render graphviz DOT with topology
     ##
     def dot(self):
         def q_interface(s):
-            return s.replace(" ","").replace("/","").replace(":","").replace(",","")
+            return self.rx_interface.sub("_",s.replace(" ",""))
         def q_name(i):
             return i.replace(" ","\\ ")
         r=["graph {"]+["node [shape=Mrecord]"]+["rankdir=RL;"]+["graph [ splines = false ]"]
