@@ -8,7 +8,7 @@
 """
 """
 from __future__ import with_statement
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand,CommandError
 import os,glob,subprocess,csv,cStringIO,sys
 from noc.lib.fileutils import rewrite_when_differ
 
@@ -17,6 +17,7 @@ from noc.lib.fileutils import rewrite_when_differ
 ##
 class Command(BaseCommand):
     help="Syncronize online documentation"
+    
     ##
     ## Rebuild supported equipment database.
     ## Returns true if database was updated
@@ -42,12 +43,31 @@ class Command(BaseCommand):
         return rewrite_when_differ(db_path,out.getvalue())
         
     def handle(self, *args, **options):
+        # Prepare paths
+        sphinx_build=os.path.abspath(os.path.join("contrib","bin","sphinx-build"))
+        if not os.path.exists(sphinx_build):
+            raise CommandError("%s not found. Please rebuild contrib/"%sphinx_build)
+        #
         se_db_updated=self.update_se_db()
-        # Find and build all makefiles
-        for makefile in glob.glob("share/docs/*/*/Makefile"):
-            d,f=os.path.split(makefile)
-            env=os.environ.copy()
-            if se_db_updated:
-                env["OPTIONS"]="-a"
-            env["PYTHONPATH"]=":".join(sys.path)
-            subprocess.call(["make","html"],cwd=d,env=env)
+        # Prepare options
+        opts=[]
+        if se_db_updated:
+            opts+=["-a"]
+        # Prepare environment
+        env=os.environ.copy()
+        env["PYTHONPATH"]=":".join(sys.path)
+        # Rebuild all documentation
+        for conf in glob.glob("share/docs/*/*/conf.py"):
+            d,f=os.path.split(conf)
+            dn=d.split(os.sep)
+            target=os.path.abspath(os.path.join(d,"..","..","..","..","static","doc",dn[-2],dn[-1]))
+            doctrees=os.path.join(target,"doctrees")
+            html=os.path.join(target,"html")
+            for p in [doctrees,html]:
+                if not os.path.isdir(p):
+                    try:
+                        os.makedirs(p)
+                    except OSError:
+                        raise CommandError("Unable to create directory: %s"%p)
+            cmd=[sphinx_build]+opts+["-b","html","-d",doctrees,"-D","latex_paper_size=a4",".",html]
+            subprocess.call(cmd,cwd=d,env=env)
