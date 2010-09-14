@@ -35,7 +35,9 @@ if [ $? -ne 0 ]; then
         sudo $PWD/scripts/sync-contrib || error_exit "$LINENO: contrib sync failed"
     fi
 fi
-
+# Check configuration files
+info "Checking configuration files"
+python manage.py check-conf || error_exit "$LINENO: configuration check failed"
 # Syncronize database
 info "Syncronizing database"
 python manage.py syncdb || error_exit "$LINENO: syncdb failed"
