@@ -29,16 +29,19 @@ class TagsAppplication(Application):
             FROM tagging_tag t JOIN tagging_taggeditem i ON (t.id=i.tag_id)
             GROUP BY 1
             ORDER BY 1""")]
-        # Get min and max count
-        counts=[r[1] for r in tags]
-        min_count=min(counts)
-        max_count=max(counts)
-        if min_count==max_count:
-            # Set minimal font size if all tags of equal power
-            tags=[(r[0],MIN_FONT) for r in tags]
-        else:
-            s=float(MAX_FONT-MIN_FONT)/math.log(max_count)
-            tags=[(r[0],int(MIN_FONT+s*math.log(r[1]))) for r in tags]
+        # Build cloud
+        if tags:
+            # Get min and max count
+            counts=[r[1] for r in tags]
+            min_count=min(counts)
+            max_count=max(counts)
+            # Calculate font size
+            if min_count==max_count:
+                # Set minimal font size if all tags of equal power
+                tags=[(r[0],MIN_FONT) for r in tags]
+            else:
+                s=float(MAX_FONT-MIN_FONT)/math.log(max_count)
+                tags=[(r[0],int(MIN_FONT+s*math.log(r[1]))) for r in tags]
         return self.render(request,"index.html",{"tags":tags})
     view_index.url=r"^$"
     view_index.url_name="index"
