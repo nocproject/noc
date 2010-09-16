@@ -17,12 +17,4 @@ class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_arp"
     implements=[IGetARP]
     def execute(self):
-        s=self.cli("show arp")
-        r=[]
-        for l in s.split("\n"):
-            match=rx_line.match(l.strip())
-            if not match:
-                continue
-            mac=match.group("mac")
-            r.append({"ip":match.group("ip"),"mac":match.group("mac"),"interface":match.group("interface")})
-        return r
+        return self.cli("show arp",list_re=rx_line)
