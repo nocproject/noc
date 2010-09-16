@@ -281,8 +281,12 @@ class Script(threading.Thread):
                 self.to_disable_pager=False
                 self.cli(self.profile.command_disable_pager)
         return self.cli_provider
-        
-    def cli(self,cmd,command_submit=None,bulk_lines=None):
+    ##
+    ## Execute CLI command and return a result
+    ## if list_re is None, return a string
+    ## if list_re is regular expression object, return a list of dicts (group name -> value), one dict per matched line
+    ##
+    def cli(self,cmd,command_submit=None,bulk_lines=None,list_re=None):
         #
         self.debug("cli(%s)"%cmd)
         self.cli_debug(cmd,">")
@@ -299,6 +303,14 @@ class Script(threading.Thread):
             else:
                 # Some switches, like ProCurve do not send \n after the echo
                 data=data[len(cmd):]
+        # Convert to list when required
+        if list_re:
+            r=[]
+            for l in data.splitlines():
+                match=list_re.match(l.strip())
+                if match:
+                    r+=[match.groupdict()]
+            data=r
         self.debug("cli(%s) returns:\n---------\n%s\n---------"%(cmd,repr(data)))
         self.cli_debug(data,"<")
         return data
