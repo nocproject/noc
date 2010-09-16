@@ -17,6 +17,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^(({master}\n)?\S+>)|(({master})?\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
     pattern_more=r"^---\(more.*?\)---"
     command_more=" "
+    command_disable_pager="set cli screen-length 0"
     command_enter_config="configure"
     command_leave_config="commit and-quit"
     
