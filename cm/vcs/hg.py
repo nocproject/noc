@@ -49,3 +49,21 @@ class VCS(noc.cm.vcs.VCS):
         self.cmd(["mv",f,t])
         self.commit(f,"mv")
         self.commit(t,"mv")
+    def annotate(self,path):
+        revs={} # id -> revision
+        data=[]
+        for l in self.cmd_out(["annotate",path]).splitlines():
+            r,t=l.split(": ",1)
+            try:
+                r=revs[r]
+            except KeyError:
+                # Find revision info
+                date=self.cmd_out(["log","--template","{date}","-r",r]).strip()
+                if "-" in date:
+                    date,x=date.split("-",1)
+                rev=noc.cm.vcs.Revision(r,datetime.datetime.fromtimestamp(float(date)))
+                revs[r]=rev
+                r=rev
+            data+=[(r,t)]
+        return data
+                
