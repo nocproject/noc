@@ -91,7 +91,10 @@ class VCS(object):
     def diff(self,path,rev1,rev2):
         raise Exception("Not supported")
     # Returns revision of the file
-    def get_revision(self,path,revision):
+    def get_revision(self,path,revision=None):
+        raise Exception("Not supported")
+    # Annotatea file. Retuns a list of (revision,line)
+    def annotate(self,path):
         raise Exception("Not supported")
     # Returns current revision
     def get_current_revision(self,path):

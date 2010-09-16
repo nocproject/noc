@@ -154,6 +154,9 @@ class Object(models.Model):
         
     def get_revision(self,rev):
         return self.vcs.get_revision(self.repo_path,rev)
+    
+    def annotate(self):
+        return self.vcs.annotate(self.repo_path)
         
     @classmethod
     def get_object_class(self,repo):
