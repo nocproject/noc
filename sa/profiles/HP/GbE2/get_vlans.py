@@ -17,15 +17,6 @@ class Script(noc.sa.script.Script):
     name="HP.GbE2.get_vlans"
     implements=[IGetVlans]
     def execute(self):
-        vlans=self.cli("/i/l2/vlan")
-        r=[]
-        for l in vlans.split("\n"):
-            match=rx_vlan_line.match(l.strip())
-            if match:
-                name=match.group("name")
-                vlan_id=int(match.group("vlan_id"))
-                if vlan_id not in [4095]:
-                    r.append({"vlan_id": vlan_id,
-                              "name"   : name})
+        r=self.cli("/i/l2/vlan",list_re=rx_vlan_line)
         self.cli("/")
         return r
