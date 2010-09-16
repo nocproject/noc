@@ -7,6 +7,16 @@
 {% endblock %}
 {% block breadcrumbs %}{{block.super}}<li>{{o.repo_path}}</li>{% endblock %}
 <{% block content %}
+<ul class="object-tools">
+    {% if annotate %}
+    <li><a href="{% cm_url view o.id %}">View</a></li>
+    {% endif %}
+    {% if content %}
+    <li><a href="{% cm_url annotate o.id %}">Annotate</a></li>
+    {% endif %}
+    <li><a href="{% if r.revision %}{% cm_url view_text_revision o.id r.revision %}{% else %}{% cm_url view_text o.id %}{% endif %}">Plain Text</a></li>
+</ul>
+
 <h1>{{o.verbose_name}}: {{o.repo_path}}</h1>
 <DIV CLASS="module">
     <TABLE SUMMARY="Object info" WIDTH="100%">
@@ -18,18 +28,44 @@
         <TR><TD><b>Categories</b></TD><TD>{% for c in o.categories.all %} {{c}} {% endfor %}</TD></TR>
     </TABLE>
 </DIV>
+{% if annotate %}
+<style>
+.a-rev {
+    text-align: right;
+    width: 30px;
+}
 
+.a-date {
+    text-align: right;
+    width: 135px;
+}
+
+.a-text {
+    white-space: pre;
+    font-family: monospace;
+}
+
+</style>
+{% endif %}
 <DIV CLASS="module">
     <TABLE SUMMARY="Content" WIDTH="100%">
         <CAPTION>Content</CAPTION>
-        <TR><TD>{{content|safe}}</TD></TR>
+        <TR><TD>{% if content %}{{content|safe}}{% endif %}{% if annotate %}
+            <table border="1" width="100%">
+                <thead>
+                    <tr><th>Rev</th><th>Date</th><th>Text</th></tr>
+                </thead>
+            {% for ar,l in annotate %}
+                <tr>
+                    <td class="a-rev"><a href="{% cm_url view_revision o.id ar.revision %}">{{ar.revision}}</a></td>
+                    <td class="a-date"><a href="{% cm_url view_revision o.id ar.revision %}">{{ar.date}}</a></td>
+                    <td class="a-text">{{l}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        {%endif%}</TD></TR>
     </TABLE>
 </DIV>
-{% if r.revision %}
-<A HREF="{% cm_url view_text_revision o.id r.revision %}">Plain Text</A>
-{% else %}
-<A HREF="{% cm_url view_text o.id %}">Plain Text</A>
-{% endif %}
 
 <DIV CLASS="module">
     <FORM METHOD="POST" ACTION="{% cm_url diff o.id %}">{% csrf_token %}
