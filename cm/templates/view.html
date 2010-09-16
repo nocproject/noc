@@ -31,13 +31,27 @@
 {% if annotate %}
 <style>
 .a-rev {
-    text-align: right;
     width: 30px;
+    margin: 0 4pt 0 0;
+    padding: 1px 3px 1px 0;
+    text-align: right;
+    -webkit-user-select: none;
+    border-right: 1px solid #d7d7d7;
+    border-bottom: 1px solid #998;
+    background: #eee;
+    color: #999;
 }
 
 .a-date {
-    text-align: right;
     width: 135px;
+    margin: 0 4pt 0 0;
+    padding: 1px 3px 1px 0;
+    text-align: right;
+    -webkit-user-select: none;
+    border-right: 1px solid #d7d7d7;
+    border-bottom: 1px solid #998;
+    background: #eee;
+    color: #999;
 }
 
 .a-text {
@@ -55,8 +69,8 @@
                 <thead>
                     <tr><th>Rev</th><th>Date</th><th>Text</th></tr>
                 </thead>
-            {% for ar,l in annotate %}
-                <tr>
+            {% for s,ar,l in annotate %}
+                <tr class="{{s}}">
                     <td class="a-rev"><a href="{% cm_url view_revision o.id ar.revision %}">{{ar.revision}}</a></td>
                     <td class="a-date"><a href="{% cm_url view_revision o.id ar.revision %}">{{ar.date}}</a></td>
                     <td class="a-text">{{l}}</td>
