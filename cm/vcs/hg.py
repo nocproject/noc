@@ -54,6 +54,7 @@ class VCS(noc.cm.vcs.VCS):
         data=[]
         for l in self.cmd_out(["annotate",path]).splitlines():
             r,t=l.split(": ",1)
+            r=r.strip()
             try:
                 r=revs[r]
             except KeyError:
