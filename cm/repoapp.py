@@ -101,3 +101,14 @@ class RepoApplication(ModelApplication):
         URL(r"^(?P<object_id>\d+)/diff/(?P<mode>[u2])/(?P<r1>\d+)/(?P<r2>\d+)/$", name="diff_rev")
     ]
     view_diff.access=HasPerm("view")
+    ##
+    ##
+    ##
+    def view_annotate(self,request,object_id):
+        o=get_object_or_404(Object.get_object_class(self.repo),id=int(object_id))
+        if not o.has_access(request.user):
+            return self.response_forbidden("Access denied")
+        return self.render(request,"view.html",{"o":o,"annotate":o.annotate(),"r":o.current_revision})
+    view_annotate.url=r"^(?P<object_id>\d+)/annotate/$"
+    view_annotate.url_name="annotate"
+    view_annotate.access=HasPerm("view")
