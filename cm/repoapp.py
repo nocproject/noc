@@ -108,7 +108,16 @@ class RepoApplication(ModelApplication):
         o=get_object_or_404(Object.get_object_class(self.repo),id=int(object_id))
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        return self.render(request,"view.html",{"o":o,"annotate":o.annotate(),"r":o.current_revision})
+        # Build annotate styles
+        last_revision=None
+        n=-1
+        annotate=[]
+        for r,t in o.annotate():
+            if r.revision!=last_revision:
+                n+=1
+                last_revision=r.revision
+            annotate+=[("row%d"%(n%2),r,t)]
+        return self.render(request,"view.html",{"o":o,"annotate":annotate,"r":o.current_revision})
     view_annotate.url=r"^(?P<object_id>\d+)/annotate/$"
     view_annotate.url_name="annotate"
     view_annotate.access=HasPerm("view")
