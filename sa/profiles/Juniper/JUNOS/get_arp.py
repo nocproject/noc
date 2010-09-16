@@ -11,19 +11,10 @@ import noc.sa.script
 from noc.sa.interfaces import IGetARP
 import re
 
-rx_line=re.compile(r"^(?P<mac>[0-9a-f]\S+)\s+(?P<ip>\S+)\s+\S+\s+(?P<interface>\S+)\s+\S+")
+rx_line=re.compile(r"^(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2})\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<interface>\S+)")
 
 class Script(noc.sa.script.Script):
     name="Juniper.JUNOS.get_arp"
     implements=[IGetARP]
     def execute(self):
-        self.cli("set cli screen-length 0")
-        s=self.cli("show arp")
-        r=[]
-        for l in s.split("\n"):
-            match=rx_line.match(l.strip())
-            if not match:
-                continue
-            mac=match.group("mac")
-            r.append({"ip":match.group("ip"),"mac":match.group("mac"),"interface":match.group("interface")})
-        return r
+        return self.cli("show arp no-resolve",list_re=rx_line)
