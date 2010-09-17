@@ -1,6 +1,7 @@
 <fieldset class="module aligned">
     {% for field in form %}
-        <div class="form-row">
+        <div class="form-row{% if field.errors %} errors{% endif %}">
+            {{field.errors}}
             <div>
                 {% if field.is_checkbox %}
                     {{ field }}{{ field.label_tag }}
