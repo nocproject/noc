@@ -11,6 +11,7 @@ import types,cPickle
 from django.contrib.admin.widgets import AdminTextInputWidget
 from tagging.fields import TagField
 from south.modelsinspector import add_introspection_rules
+from noc.sa.interfaces.base import MACAddressParameter
 ##
 ## CIDRField maps to PostgreSQL CIDR
 ##
@@ -42,6 +43,20 @@ class INETField(models.Field):
         if not value:
             return None
         return value
+##
+## MACField maps to the PostgreSQL MACADDR field
+##
+class MACField(models.Field):
+    def db_type(self):
+        return "MACADDR"
+    
+    def to_python(self,value):
+        return value.upper()
+    
+    def get_db_prep_value(self,value):
+        if not value:
+            return None
+        return MACAddressParameter().clean(value)
 ##
 ## Binary Field maps to PostgreSQL BYTEA
 ##
@@ -81,8 +96,6 @@ class InetArrayField(models.Field):
         
     def get_db_prep_value(self,value):
         return "{ "+", ".join(value)+" }"
-        
-
 ##
 ## Pickled object
 ##
