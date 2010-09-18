@@ -14,18 +14,29 @@ from django.utils.safestring import mark_safe
 from tagging.models import Tag
 from django.utils.simplejson.encoder import JSONEncoder
 from noc.lib.app.site import site
-
+from django.utils.html import escape
 ##
 ## Autocomplete widget
 ##
-class AutoCompleteTextInput(forms.TextInput):
+class AutoCompleteTextInput(Input):
+    input_type="text"
+    class Media:
+        css={
+            "all": ["/static/css/jquery.autocomplete.css"]
+        }
+        js=["/media/js/jquery.js","/static/js/jquery.autocomplete.js"]
     def __init__(self,url_name,*args,**kwargs):
         super(AutoCompleteTextInput,self).__init__(*args,**kwargs)
         self.lookup_url=url_name #reverse(url_name)
     def render(self,name,value=None,attrs=None):
-        return "%s<script type=\"text/javascript\">$(\"#%s\").autocomplete(\"%s\",{minChars:3,mustMatch:1});</script>"%(
-            super(AutoCompleteTextInput,self).render(name,value,attrs),attrs["id"],site.reverse(self.lookup_url)
-        )
+        html=super(AutoCompleteTextInput,self).render(name,value,attrs)
+        set_value="$(\"#%s\").val(\"%s\");"%(attrs["id"],escape(value)) if value else ""
+        js="""<script type=\"text/javascript\">
+        $(\"#%s\").autocomplete(\"%s\",{minChars:3,mustMatch:1});
+        %s
+        </script>"
+        """%(attrs["id"],site.reverse(self.lookup_url),set_value)
+        return mark_safe("\n".join([html,js]))
 ##
 ## Autocomplete Tags
 ##
