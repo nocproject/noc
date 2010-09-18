@@ -32,6 +32,10 @@ class NOCBoundField(forms.forms.BoundField):
 ## Form wrapper returning NOCBoundField items
 ##
 class NOCForm(forms.Form):
+    class Media:
+        css={
+            "all" : ["/media/css/forms.css"],
+        }
     def __iter__(self):
         for name,field in self.fields.items():
             yield NOCBoundField(self,field,name)
