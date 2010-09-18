@@ -47,10 +47,13 @@ class INETField(models.Field):
 ## MACField maps to the PostgreSQL MACADDR field
 ##
 class MACField(models.Field):
+    __metaclass__=models.SubfieldBase
     def db_type(self):
         return "MACADDR"
     
     def to_python(self,value):
+        if value is None:
+            return None
         return value.upper()
     
     def get_db_prep_value(self,value):
