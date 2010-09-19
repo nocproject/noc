@@ -10,7 +10,6 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.sa.scripts import ReduceScript as ReduceScriptBase
 import pprint
 ##
 ## Returns a table of: managed object, status, pretty-printed result
