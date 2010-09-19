@@ -11,7 +11,6 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.sa.scripts import ReduceScript as ReduceScriptBase
 import types
 @pyrule
 def matrix_report(task):
