@@ -50,6 +50,7 @@ def action_links(obj):
         r+=[("Scripts","sa:managedobject:scripts",[obj.id])]
     except:
         pass
+    r+=[("Addresses","sa:managedobject:addresses",[obj.id])]
     return "<br/>".join(["<a href='%s'>%s</a>"%(site.reverse(view,*params),title) for title,view,params in r])
 action_links.short_description="Actions"
 action_links.allow_tags=True
@@ -248,6 +249,15 @@ class ManagedObjectApplication(ModelApplication):
         return self.render(request,"test.html",{"data":r})
     view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
     view_test.access=HasPerm("change")
+    ##
+    ## Display all managed object's addresses
+    ##
+    def view_addresses(self,request,object_id):
+        o=get_object_or_404(ManagedObject,id=int(object_id))
+        return self.render(request,"addresses.html",{"addresses":o.ipv4address_set.all(),"object":o})
+    view_addresses.url=r"(?P<object_id>\d+)/addresses/"
+    view_addresses.url_name="addresses"
+    view_addresses.access=HasPerm("change")
     ##
     def user_access_list(self,user):
         return [s.selector.name for s in UserAccess.objects.filter(user=user)]
