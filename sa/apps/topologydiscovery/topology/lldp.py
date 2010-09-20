@@ -42,7 +42,9 @@ class LLDPTopology(Topology):
                             ro=chassis_id[rc_id] # Resolve to managed object
                             if n["remote_port_subtype"]==5: # interfaceName(5)
                                 yield (o,local_interface,ro,ro.profile.convert_interface_name(n["remote_port"]))
-                            elif n["remote_port_subtype"]==7: # local(7)
-                                # Try to resolve local interface id
-                                if ro in local_id and int(n["remote_port"]) in local_id[ro]:
-                                    yield (o,local_interface,ro,local_id[ro][int(n["remote_port"])])
+                            elif n["remote_port_subtype"] in (3,4,7): # macAddress(3) or networkAddress(4) or local(7)
+                                rp=n["remote_port"]
+                                if n["remote_port_subtype"]==7: # local(7)
+                                    rp=int(rp)
+                                if ro in local_id and rp in local_id[ro]:
+                                    yield (o,local_interface,ro,local_id[ro][rp])

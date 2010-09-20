@@ -10,10 +10,6 @@ from django import forms
 from noc.sa.interfaces import VLANIDParameter,MACAddressParameter
 from noc.vc.models import VCDomain
 ##
-## Topolod
-##
-
-##
 ##
 ##
 def reduce_topology(task,mac=True,per_vlan_mac=False,lldp=False):
@@ -34,7 +30,7 @@ class TopologyDiscoveryAppplication(SAApplication):
     menu="Tasks | Topology Discovery"
     reduce_task=reduce_topology
     map_task="get_topology_data"
-    class TopologyDiscoveryForm(forms.Form):
+    class TopologyDiscoveryForm(SAApplication.Form):
         mac=forms.BooleanField(label="MAC Address Discovery",initial=True,required=False)
         per_vlan_mac=forms.BooleanField(label="Per-VLAN MAC Discovery",initial=False,required=False)
         lldp=forms.BooleanField(label="LLDP Neighbor Discovery",initial=True,required=False)
