@@ -18,7 +18,7 @@ class NOCBoundField(forms.forms.BoundField):
         
     def label_tag(self,contents=None,attrs=None):
         if not contents:
-            contents=force_unicode(escape(self.field.label)) + (u":" if not self.is_checkbox else u"")
+            contents=force_unicode(escape(self.field.label if self.field.label else self.name)) + (u":" if not self.is_checkbox else u"")
         classes=[]
         if self.is_checkbox:
             classes+=[u"vCheckboxLabel"]
