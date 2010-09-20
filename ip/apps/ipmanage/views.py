@@ -26,6 +26,11 @@ class IPManageAppplication(Application):
     ## Display VRF list
     ##
     def view_index(self,request):
+        # Check only one active VRF exists
+        if VRF.objects.count()==1:
+            vrf=VRF.objects.all()[0]
+            return self.response_redirect("ip:ipmanage:vrf_index",vrf.id,"0.0.0.0/0")
+        #
         groups=[]
         for vg in VRFGroup.objects.all():
             vrfs=vg.vrf_set.all()
