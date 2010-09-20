@@ -75,10 +75,17 @@ th[class=fqdn] {
     width: 17em;
 }
 
+th[class=mac] {
+    width: 7em;
+}
+
 th[class=tt] {
     width: 5em;
 }
 
+th[class=gw] {
+    width: 1em;
+}
 /* Range colors */
 {% for r,c in range_colors %}
     td[class=r{{r.id}}] {
@@ -102,7 +109,7 @@ th[class=tt] {
                 Quick Jump:
             </td>
             <td class="nav-form">
-                <form method="POST" action="{% url ip:ipmanage:quickjump prefix.vrf.id %}">
+                <form method="POST" action="{% url ip:ipmanage:quickjump prefix.vrf.id %}">{% csrf_token %}
                     <input type="search" name="jump" placeholder="Quick Jump..." />
                 </form>
             </td>
@@ -188,7 +195,17 @@ function toggle_free() {
     <TABLE SUMMARY="Assigned addresses" WIDTH="100%">
         <caption>Assigned addresses <A HREF="#" ONCLICK="toggle_free();" style="float: right" id="free_ip_toggle_button">Show Free Addresses</A></caption>
         <THEAD>
-            <TR><TH class="range"></TH><TH class="ip">IP</TH><TH class="fqdn">FQDN</TH><TH>Description</TH><TH class="tt">TT</TH><TH>Tags</TH></TR>
+            <TR>
+                <TH class="range"></TH>
+                <TH class="ip">IP</TH>
+                <TH class="fqdn">FQDN</TH>
+                <TH class="mac">MAC</TH>
+                <TH class="managed-object">Managed Object</TH>
+                <TH class="gw">GW</TH>
+                <TH>Description</TH>
+                <TH class="tt">TT</TH>
+                <TH>Tags</TH>
+            </TR>
         </THEAD>
         {% for r,a in all_addresses %}
             {% if a.ip %}
@@ -202,6 +219,9 @@ function toggle_free() {
                     {%endif%}
                 </TD>
                 <TD>{{a.fqdn}}</TD>
+                <TD>{% if a.mac %}{{a.mac}}{% endif %}</TD>
+                <TD>{% if a.managed_object %}{{a.managed_object.name}}{% endif %}</TD>
+                <TD>{% if a.managed_object and a.managed_object.is_router %}<img src="/media/img/admin/icon-yes.gif" title="yes" />{% endif %}</TD>
                 <TD>{{a.description}}</TD>
                 <TD>{%if a.tt %}<A HREF="{{a.tt_url}}">#{{a.tt}}</A>{%endif%}</TD>
                 <TD>{% tags a %}</TD>
@@ -209,16 +229,14 @@ function toggle_free() {
             {% else %}
                 <TR CLASS="freeip">
                 <TD {%if r%}class="r{{r.id}}"{%endif%}></TD>
-                <TD COLSPAN=2>
+                <TD COLSPAN="4">
                     {% if can_allocate %}
                         <A HREF="{% url ip:ipmanage:assign_new_address vrf.id a %}">{{a}}</A>
                     {%else%}
                         {{a}}
                     {% endif %}
                 </TD>
-                <TD>Free</TD>
-                <TD></TD>
-                <TD></TD>
+                <TD COLSPAN="4">Free</TD>
                 </TR>
             {% endif %}
         {% endfor %}

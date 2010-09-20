@@ -7,16 +7,20 @@
 {% endblock %}
 {% block content %}
 <H1>Allocate IPv4 block. VRF {{vrf.name}} ({{vrf.rd}})</H1>
-<div class="module">
-    <FORM METHOD="POST" ACTION="">{% csrf_token %}
-            <fieldset class="module aligned ">
-                <TABLE WIDTH="100%">{{form.as_table}}</TABLE>
-            </fieldset>
-        <div class="submit-row">
-            <INPUT TYPE="submit" VALUE="Allocate"/>
+
+<div id="content-main">
+    <FORM METHOD="POST" ACTION="" >{% csrf_token %}
+        <div>
+            {% include "includes/noc_fieldset.html" %}
+            <div class="submit-row" >
+                <input type="submit" value="Save" class="default" name="_save" />
+                <input type="submit" value="Save and add another" name="_addanother"  />
+                <input type="submit" value="Save and continue editing" name="_continue" />
+            </div>
         </div>
     </FORM>
 </div>
+
 {% if suggestions %}
     <div class="module">
         <SCRIPT TYPE="text/javascript">
