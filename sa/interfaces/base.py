@@ -89,13 +89,25 @@ class ORParameter(Parameter):
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IPParameter: 'xxx'
+    >>> (IntParameter()|IPParameter()).clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IPParameter: None.
+    >>> (IntParameter(required=False)|IPParameter(required=False)).clean(None)
+    >>> (IntParameter(required=False)|IPParameter()).clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IPParameter: None.
     """
     def __init__(self,left,right):
         super(ORParameter,self).__init__()
         self.left=left
         self.right=right
+        self.required=self.left.required or self.right.required
         
     def clean(self,value):
+        if value is None and self.required==False:
+            return None
         try:
             return self.left.clean(value)
         except InterfaceTypeError:
