@@ -11,6 +11,7 @@ import re,types,datetime
 
 try:
     from django import forms
+    from noc.lib.forms import NOCForm
 except ImportError:
     # No django. Interface.get_form() is meaningless
     pass
@@ -66,8 +67,8 @@ class Parameter(object):
     ##
     ## Returns an form field object
     ##
-    def get_form_field(self):
-        return forms.CharField(required=self.required,initial=self.default)
+    def get_form_field(self,label=None):
+        return forms.CharField(required=self.required,initial=self.default,label=label)
 ##
 ##
 ##
@@ -232,8 +233,8 @@ class BooleanParameter(Parameter):
             return value.lower() in ["true","t","yes","y"]
         self.raise_error(value)
     ##
-    def get_form_field(self):
-        return forms.BooleanField(required=self.required,initial=self.default)
+    def get_form_field(self,label=None):
+        return forms.BooleanField(required=self.required,initial=self.default,label=label)
     
 ##
 ##
@@ -739,9 +740,9 @@ class Interface(object):
                 except InterfaceTypeError:
                     raise forms.ValidationError("Invalid value")
             return lambda: clean_field_wrapper(form,name,param)
-        f=forms.Form(data)
+        f=NOCForm(data)
         for n,p in self.gen_parameters():
-            f.fields[n]=p.get_form_field()
+            f.fields[n]=p.get_form_field(n)
             setattr(f,"clean_%s"%n,get_clean_field_wrapper(f,n,p))
         return f
 ##

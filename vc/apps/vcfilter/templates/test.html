@@ -2,12 +2,14 @@
 {% block breadcrumbs %}{{block.super}}<li>Test</li>{% endblock %}
 {% block content %}
 <H1>Test VC Filters</H1>
-<FORM METHOD="POST">
-    <TABLE BORDER="0">
-    {{form.as_table}}
-    </TABLE>
-<INPUT TYPE="submit" VALUE="Test" />
-</FORM>
+<div>
+    <FORM METHOD="POST">
+        {% include "includes/noc_fieldset.html" %}
+        <div class="submit-row" >
+            <input type="submit" value="Test" class="default"/>
+        </div>
+    </FORM>
+</div>
 
 {% if result %}
 <DIV CLASS="module">

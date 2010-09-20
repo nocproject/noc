@@ -12,19 +12,7 @@ from noc.lib.widgets import AutoCompleteTextInput,lookup
 from noc.lib.app import Application,HasPerm
 from noc.fm.models import *
 from noc.sa.models import ManagedObject
-##
-## Event search form
-##
-class EventSearchForm(forms.Form):
-    page=forms.IntegerField(required=False,min_value=0,widget=HiddenInput)
-    from_time=forms.DateTimeField(required=False,input_formats=["%d.%m.%Y %H:%M:%S"])
-    to_time=forms.DateTimeField(required=False,input_formats=["%d.%m.%Y %H:%M:%S"])
-    managed_object=forms.CharField(required=False,widget=AutoCompleteTextInput("sa:managedobject:lookup"))
-    event_category=forms.ModelChoiceField(required=False,queryset=EventCategory.objects.all())
-    event_class=forms.ModelChoiceField(required=False,queryset=EventClass.objects.all())
-    status=forms.ChoiceField(required=False,choices=[("","---------")]+EVENT_STATUS_CHOICES)
-    event_priority=forms.ModelChoiceField(required=False,queryset=EventPriority.objects.all())
-    subject=forms.CharField(required=False)
+from django.utils.dateformat import DateFormat
 ##
 ## Event Manager
 ##
@@ -32,6 +20,19 @@ class EventAppplication(Application):
     title="Events"
     ## Amount of events per page
     PAGE_SIZE=20
+    ##
+    ## Event search form
+    ##
+    class EventSearchForm(Application.Form):
+        page=forms.IntegerField(required=False,min_value=0,widget=HiddenInput)
+        from_time=forms.DateTimeField(required=False,input_formats=["%d.%m.%Y %H:%M:%S"])
+        to_time=forms.DateTimeField(required=False,input_formats=["%d.%m.%Y %H:%M:%S"])
+        managed_object=forms.CharField(required=False,widget=AutoCompleteTextInput("sa:managedobject:lookup"))
+        event_category=forms.ModelChoiceField(required=False,queryset=EventCategory.objects.all())
+        event_class=forms.ModelChoiceField(required=False,queryset=EventClass.objects.all())
+        status=forms.ChoiceField(required=False,choices=[("","---------")]+EVENT_STATUS_CHOICES)
+        event_priority=forms.ModelChoiceField(required=False,queryset=EventPriority.objects.all())
+        subject=forms.CharField(required=False)
     ##
     ## Display event list
     ##
@@ -41,7 +42,7 @@ class EventAppplication(Application):
             initial["event_priority"]=EventPriority.objects.get(name="WARNING").id
         except EventPriority.DoesNotExist:
             pass
-        form=EventSearchForm(initial=initial)
+        form=self.EventSearchForm(initial=initial)
         return self.render(request,"index.html",{"form":form})
     view_index.url=r"^$"
     view_index.access=HasPerm("view")
@@ -104,10 +105,11 @@ class EventAppplication(Application):
     ##    events: [list of events]
     ##
     def view_events(self,request):
+        datetime_format=self.config.get("main","datetime_format")
         events=Event.objects
         page=0
         if request.GET:
-            form=EventSearchForm(request.GET)
+            form=self.EventSearchForm(request.GET)
             if form.is_valid():
                 ## Apply additional restriction
                 if form.cleaned_data["page"]:
@@ -138,8 +140,9 @@ class EventAppplication(Application):
             "count" : count,
             "page"  : page,
             "pages" : count/self.PAGE_SIZE+(1 if count%self.PAGE_SIZE else 0),
-            "events": [[e.event_priority.css_style_name,e.id,e.managed_object.name,str(e.timestamp),e.status,\
-                        e.event_category.name,e.event_class.name,e.event_priority.name,e.subject]\
+            "events": [[e.event_priority.css_style_name,e.id,e.managed_object.name,DateFormat(e.timestamp).format(datetime_format),
+                        e.status,
+                        e.event_category.name,e.event_class.name,e.event_priority.name,e.subject]
                         for e in events.order_by("-timestamp")[self.PAGE_SIZE*page:self.PAGE_SIZE*(page+1)]]
         })
     view_events.url=r"^events/$"

@@ -1,147 +1,56 @@
 {% extends "template.html" %}
 {% block extrahead %}
     <link rel="stylesheet" type="text/css" href="{% url fm:event:css %}" />
-    <link type="text/css" rel="stylesheet" href="/static/css/jquery.autocomplete.css">
     <link type="text/css" rel="stylesheet" href="/static/css/jquery.pager.css">
+    <link type="text/css" rel="stylesheet" href="/static/apps/fm/event/css/index.css">
     <script type="text/javascript" src="/static/js/jquery.form.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.autocomplete.js"></script>
     <script type="text/javascript" src="/static/js/jquery.pager.js"></script>
+    <script type="text/javascript" src="/static/apps/fm/event/js/index.js"></script>
 {% endblock %}
 <{% block content %}
+<ul class="object-tools">
+    <li><a href="#" id="toggle_panel_link" onclick="toggle_panel();">Hide Filter</a></li>
+</ul>
 <h1>Fault Management</h1>
-
+<div id="form_panel">
+    <form id="form">
+        {% include "includes/noc_fieldset.html" %}
+        <div class="submit-row">
+            <INPUT TYPE="submit" VALUE="Filter" class="default"/>
+        </div>
+    </form>
+</div>
 <script type="text/javascript">
-function show_result(data) {
-    var tb=$("#events_table TBODY");
-    tb.empty();
-    $.each(data["events"],function(i,r){
-        var event_id,status;
-        var $tr=$(document.createElement("tr"));
-        $tr.addClass(r[0]);
-        tb.append($tr);
-        $.each(r, function(j,d) {
-            if(j>0) {
-                var $td=$(document.createElement("td"));
-                $tr.append($td);
-                if(j==1) {
-                    event_id=d;
-                    $td.html("<A HREF='"+d+"/'>"+d+"</A>"); // Link to event
-                } else if (j==4) {
-                    status=d;
-                    $td.text({U:"Unclassified",A:"Active",C:"Closed"}[status]);
-                } else {
-                    $td.text(d);
-                }
-            }
+    $(document).ready(function(){
+        $("#form").ajaxForm({
+            dataType: "json",
+            beforeSubmit : show_cover,
+            success : show_result,
+            url     : "{% url fm:event:events %}"
         });
-        var $td=$(document.createElement("td"));
-        $tr.append($td);
-        var td_link="";
-        if(status=="C") {
-            td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"open\"); return false;'>[Open]</a>";
-        } else if (status=="A") {
-            td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"close\"); return false;'>[Close]</a>";
-        }
-        if(td_link) {
-            td_link+="<br/><a href='#' onclick='change_status(this,"+event_id+",\"reclassify\"); return false;'>[Reclassify]</a>";
-        }
-        $td.html(td_link);
+        window.setTimeout(update_data, 200);
     });
-    // Set up pager
-    $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
-    $("#events_count").text(data["count"]);
-    $("#cover").hide();
-}
-
-var timeout_submit;
-
-function update_data() {
-    $("#form").submit();
-    if(timeout_submit) {
-        window.clearTimeout(timeout_submit);
-    }
-    timeout_submit=window.setTimeout(update_data,60000);
-}
-
-function change_status(obj,event_id,status) {
-    show_cover();
-    $(obj).closest('tr').find('td').andSelf().fadeTo('normal', 0);
-    $.ajax({
-        url     : "/fm/event/"+event_id+"/"+status+"/",
-        success : update_data
-    });
-    return false;
-}
-
-function toggle_panel() {
-    var fp=$("#form_panel");
-    fp.toggle();
-    if(fp.is(":hidden")) {
-        $("#toggle_panel_link").text("[Show filter]");
-    } else {
-        $("#toggle_panel_link").text("[Hide filter]");
-    }
-    return false;
-}
-
-function show_cover() {
-    var t=$("#events_table");
-    if ($("#cover").is(':hidden')) {
-        $("#cover").css({
-            width: t.width(),
-            height: t.height(),
-            background: "#cccccc",
-            position: "absolute",
-            top: t.position().top,
-            left: t.position().left,
-            opacity: 0.5
-        }).show();
-    }
-}
-
-function pager_click(number) {
-    $("#id_page").val(number);
-    update_data();
-}
-
-$(document).ready(function(){
-    $("#form").ajaxForm({
-        dataType: "json",
-        beforeSubmit : show_cover,
-        success : show_result,
-        url     : "{% url fm:event:events %}"
-    });
-    window.setTimeout(update_data, 200);
-});
-
 </script>
-
-<DIV ID="form_panel">
-    <FORM ID="form">
-        <TABLE BORDER="0">
-        {{form.as_table}}
-        </TABLE>
-        <INPUT TYPE="submit" VALUE="Filter" />
-    </FORM>
-</DIV>
-<DIV>Events: <SPAN ID="events_count"></SPAN> <A HREF="#" ID="toggle_panel_link" ONCLICK="toggle_panel();">[Hide filter]</A></DIV>
-<TABLE BORDER='0' ID="events_table">
-    <THEAD>
-        <TR>
-            <TH>#</TH>
-            <TH>Object</TH>
-            <TH>Time</TH>
-            <TH>Status</TH>
-            <TH>Category</TH>
-            <TH>Class</TH>
-            <TH>Priority</TH>
-            <TH>Subject</TH>
-            <TH>Action</TH>
-        </TR>
-    </THEAD>
-    <TBODY>
-    </TBODY>
-</TABLE>
+<div class="module">
+    <TABLE BORDER='0' width="100%" ID="events_table">
+        <caption>Events: <span id="events_count"></span></caption>
+        <THEAD>
+            <TR>
+                <TH class="event-id">#</TH>
+                <TH class="event-object">Object</TH>
+                <TH class="event-time">Time</TH>
+                <TH class="event-status">Status</TH>
+                <TH class="event-category">Category</TH>
+                <TH class="event-class">Class</TH>
+                <TH class="event-priority">Priority</TH>
+                <TH>Subject</TH>
+                <TH class="event-action">Action</TH>
+            </TR>
+        </THEAD>
+        <TBODY>
+        </TBODY>
+    </TABLE>
+</div>
 <DIV ID="pager"></DIV>
 <DIV ID="cover"></DIV>
 {%endblock%}
