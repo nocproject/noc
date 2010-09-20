@@ -27,10 +27,13 @@ class Script(noc.sa.script.Script):
         for l in vlans.splitlines():
             match=rx_line.match(l.strip())
             if match:
+                interfaces=match.group("interfaces")
+                if interfaces.lower() in ("router","switch"):
+                    continue
                 r.append({
                     "vlan_id"   : match.group("vlan_id"),
                     "mac"       : match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
+                    "interfaces": [interfaces],
                     "type"      : {"dynamic":"D","static":"S"}[match.group("type").lower()],
                 })
         return r
