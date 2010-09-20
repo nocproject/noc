@@ -12,6 +12,7 @@ from django.utils.simplejson.encoder import JSONEncoder
 from django.db import connection
 from access import HasPerm
 from site import site
+from noc.lib.forms import NOCForm
 import logging,os
 ##
 ## Metaclass for Application.
@@ -32,6 +33,8 @@ class ApplicationBase(type):
 class Application(object):
     __metaclass__=ApplicationBase
     title="APPLICATION TITLE"
+    ##
+    Form=NOCForm # Shortcut for form class
     ##
     def __init__(self,site):
         self.site=site
