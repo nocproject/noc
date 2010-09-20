@@ -13,7 +13,10 @@ from noc.vc.models import VC,VCBindFilter
 from noc.lib.colors import get_colors
 from noc.lib.validators import is_cidr,is_ipv4,is_fqdn
 from noc.lib.ip import normalize_prefix,contains,in_range,free_blocks,prefix_to_size
-from noc.lib.widgets import AutoCompleteTags
+from noc.lib.widgets import AutoCompleteTags,AutoCompleteTextInput
+from noc.lib.forms import NOCForm
+from noc.sa.interfaces.base import MACAddressParameter,InterfaceTypeError
+from noc.sa.models import ManagedObject
 ##
 ## IP Address Space Management
 ##
@@ -121,14 +124,14 @@ class IPManageAppplication(Application):
     ##
     ## Allocate new block form
     ##
-    class AllocateBlockForm(forms.Form):
-        prefix=forms.CharField(label="prefix",required=True)
-        description=forms.CharField(label="description",required=True)
+    class AllocateBlockForm(NOCForm):
+        prefix=forms.CharField(label="Prefix",required=True)
+        description=forms.CharField(label="Description",required=True)
         asn=forms.ModelChoiceField(label="ASN",queryset=AS.objects.all(),required=True)
         tags=forms.CharField(widget=AutoCompleteTags,required=False)
         tt=forms.IntegerField(label="TT #",required=False)
         def __init__(self,data=None,initial=None,vrf=None,block_id=None):
-            forms.Form.__init__(self,data=data,initial=initial)
+            NOCForm.__init__(self,data=data,initial=initial)
             self.vrf=vrf
             self.block_id=block_id
         def clean_prefix(self):
@@ -210,6 +213,12 @@ class IPManageAppplication(Application):
                     status="created"
                 block.save()
                 self.message_user(request,"Block '%s' in VRF '%s' %s successfully"%(block.prefix,str(vrf),status))
+                # Redirect depenging on submit button pressed
+                if "_continue" in request.POST:
+                    return self.response_redirect("ip:ipmanage:change_block",vrf.id,block.prefix)
+                if "_addanother" in request.POST:
+                    return self.response_redirect("ip:ipmanage:allocate_block",vrf.id)
+                
                 return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,block.prefix))
         else:
             # Display form
@@ -242,14 +251,18 @@ class IPManageAppplication(Application):
     ##
     ## Assign new IP address form
     ##
-    class AssignAddressForm(forms.Form):
+    class AssignAddressForm(NOCForm):
         fqdn=forms.CharField(label="FQDN",required=True)
         ip=forms.CharField(label="IP",required=True)
+        mac=forms.CharField(label="MAC",required=False)
+        auto_update_mac=forms.BooleanField(label="Auto Update MAC",required=False)
+        managed_object=forms.CharField(label="Managed Object",required=False,widget=AutoCompleteTextInput("sa:managedobject:lookup"))
         description=forms.CharField(label="Description",required=False)
-        tags=forms.CharField(widget=AutoCompleteTags,required=False)
+        tags=forms.CharField(label="Tags",widget=AutoCompleteTags,required=False)
         tt=forms.IntegerField(label="TT #",required=False)
         def __init__(self,data=None,initial=None,vrf=None,address_id=None):
-            forms.Form.__init__(self,data=data,initial=initial)
+            NOCForm.__init__(self,data=data,initial=initial)
+            #forms.Form.__init__(self,data=data,initial=initial)
             self.vrf=vrf
             self.address_id=address_id
         def clean_fqdn(self):
@@ -273,6 +286,13 @@ class IPManageAppplication(Application):
             if q.count()>0:
                 raise forms.ValidationError("IPv4 Address is already present")
             return ip
+        def clean_mac(self):
+            if not self.cleaned_data["mac"]:
+                return ""
+            try:
+                return MACAddressParameter().clean(self.cleaned_data["mac"])
+            except InterfaceTypeError:
+                raise forms.ValidationError("Invalid MAC address")
     ##
     ## Assign IP address
     ##
@@ -287,12 +307,16 @@ class IPManageAppplication(Application):
             address=get_object_or_404(IPv4Address,vrf=vrf,ip=ip)
             address_id=address.id
             initial={
-                "fqdn"        : address.fqdn,
-                "ip"          : address.ip,
-                "description" : address.description,
-                "tags"        : address.tags,
-                "tt"          : address.tt,
+                "fqdn"            : address.fqdn,
+                "ip"              : address.ip,
+                "mac"             : address.mac,
+                "auto_update_mac" : address.auto_update_mac,
+                "description"     : address.description,
+                "tags"            : address.tags,
+                "tt"              : address.tt,
             }
+            if address.managed_object:
+                initial["managed_object"]=address.managed_object.name
             p="/"+ip
             parents=list(address.parent.parents)+[address.parent]
             can_delete=True
@@ -308,9 +332,15 @@ class IPManageAppplication(Application):
             if form.is_valid():
                 if not IPv4BlockAccess.check_write_access(request.user,vrf,form.cleaned_data["ip"]+"/32"):
                     return self.response_forbidden("Permission denied")
+                managed_object=None
+                if "managed_object" in form.cleaned_data and form.cleaned_data["managed_object"]:
+                    managed_object=get_object_or_404(ManagedObject,name=form.cleaned_data["managed_object"])
                 if ip:
                     address.fqdn=form.cleaned_data["fqdn"]
                     address.ip=form.cleaned_data["ip"]
+                    address.mac=form.cleaned_data["mac"]
+                    address.auto_update_mac="auto_update_mac" in form.cleaned_data and form.cleaned_data["auto_update_mac"]
+                    address.managed_object=managed_object
                     address.description=form.cleaned_data["description"]
                     address.tags=form.cleaned_data["tags"]
                     address.tt=form.cleaned_data["tt"]
@@ -320,11 +350,18 @@ class IPManageAppplication(Application):
                     if IPv4Address.objects.filter(vrf=vrf,ip=form.cleaned_data["ip"]).count()>0:
                         return render_failure(request,"Duplicated IP address","Address %s is already present in VRF %s"%(form.cleaned_data["ip"],vrf.name))
                     address=IPv4Address(vrf=vrf,fqdn=form.cleaned_data["fqdn"],
-                        ip=form.cleaned_data["ip"],description=form.cleaned_data["description"],
+                        ip=form.cleaned_data["ip"],mac=form.cleaned_data["mac"],
+                        auto_update_mac="auto_update_mac" in form.cleaned_data and form.cleaned_data["auto_update_mac"],
+                        managed_object=managed_object,description=form.cleaned_data["description"],
                         tags=form.cleaned_data["tags"],tt=form.cleaned_data["tt"])
                     status="created"
                 address.save()
                 self.message_user(request,"IP Address %s in VRF %s %s successfully"%(form.cleaned_data["ip"],str(vrf),status))
+                # Redirect depenging on submit button pressed
+                if "_continue" in request.POST:
+                    return self.response_redirect("ip:ipmanage:change_address",vrf.id,address.ip)
+                if "_addanother" in request.POST:
+                    return self.response_redirect("ip:ipmanage:assign_address",vrf.id)
                 return self.response_redirect("ip:ipmanage:vrf_index",vrf.id,address.parent.prefix)
         else:
             if "ip" not in initial:

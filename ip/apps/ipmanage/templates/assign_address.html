@@ -19,19 +19,19 @@
     }
     // -->
 </SCRIPT>
-
-<div class="module">
-<FORM METHOD="POST" ACTION="" >{% csrf_token %}
-    <fieldset class="module aligned ">
-        <table width="100%">{{form.as_table}}</table>
-    </fieldset>
-    <div class="submit-row">
-        <INPUT TYPE="submit" VALUE="Save" CLASS="default"/>
-        {% if can_delete %}
-            <p class="deletelink-box"><a href="{% url ip:ipmanage:revoke_address vrf.id ip %}" class="deletelink" ONCLICK="return confirm_delete('Delete Address?')">Delete</a></p>
-        {% endif %}
-    </div>
-    
-</FORM>
+<div id="content-main">
+    <FORM METHOD="POST" ACTION="" >{% csrf_token %}
+        <div>
+            {% include "includes/noc_fieldset.html" %}
+            <div class="submit-row" >
+                <input type="submit" value="Save" class="default" name="_save" />
+                {% if can_delete %}
+                <p class="deletelink-box"><a href="{% url ip:ipmanage:revoke_address vrf.id ip %}" class="deletelink" onclick="return confirm_delete('Delete address?');">Delete</a></p>
+                {% endif %}
+                <input type="submit" value="Save and add another" name="_addanother"  />
+                <input type="submit" value="Save and continue editing" name="_continue" />
+            </div>
+        </div>
+    </FORM>
 </div>
 {% endblock %}
