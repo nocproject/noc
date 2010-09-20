@@ -1,23 +1,27 @@
 {{form.media}}
 <fieldset class="module aligned">
     {% for field in form %}
-        <div class="form-row{% if field.errors %} errors{% endif %}">
-            {{field.errors}}
-            <div>
-                {% if field.is_checkbox %}
-                    {{ field }}{{ field.label_tag }}
-                {% else %}
-                    {{ field.label_tag }}
-                    {% if field.is_readonly %}
-                        <p>{{ field.contents }}</p>
+        {% if field.is_hidden %}
+            {{field}}
+        {% else %}
+            <div class="form-row{% if field.errors %} errors{% endif %}">
+                {{field.errors}}
+                <div>
+                    {% if field.is_checkbox %}
+                        {{ field }}{{ field.label_tag }}
                     {% else %}
-                        {{ field }}
+                        {{ field.label_tag }}
+                        {% if field.is_readonly %}
+                            <p>{{ field.contents }}</p>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
                     {% endif %}
-                {% endif %}
-                {% if field.help_text %}
-                    <p class="help">{{ field.help_text|safe }}</p>
-                {% endif %}
+                    {% if field.help_text %}
+                        <p class="help">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
             </div>
-        </div>
+        {% endif %}
     {% endfor %}
 </fieldset>
