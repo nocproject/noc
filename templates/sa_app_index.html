@@ -5,7 +5,7 @@
     <table width="100%">
         <caption>Choose selector...</caption>
         {% for s in selectors %}
-            <tr><td style="width: 200px"><a href="selector/{{s.id}}/">{{s.name}}</a></td><td>{{s.description}}</td></tr>
+            <tr class="{%cycle 'row1' 'row2'%}"><td style="width: 200px"><a href="selector/{{s.id}}/">{{s.name}}</a></td><td>{{s.description}}</td></tr>
         {% endfor %}
     </table>
 </div>

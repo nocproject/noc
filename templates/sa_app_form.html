@@ -21,13 +21,11 @@ function toggle() {
 </style>
 <h1>{{app.title}}</h1>
 <form method="POST" id="form">
-    <div class="module">
-        <table width="100%">
-            <caption>Task parameters</caption>
-            {% if form %}{{form.as_table}}{% endif %}
-        </table>
-        <input type="submit" value="run"/><br/>
+    <div>
+        {% if form %}{% include "includes/noc_fieldset.html" %}{% endif %}
+        <input type="submit" value="run"/>
     </div>
+
     <div class="module">
         <table width="100%">
             <caption>Selected Objects: <input type="checkbox" checked onclick="toggle();" /></caption>
