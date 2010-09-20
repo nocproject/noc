@@ -13,6 +13,7 @@ from django.db import connection
 from access import HasPerm
 from site import site
 from noc.lib.forms import NOCForm
+from noc import settings
 import logging,os
 ##
 ## Metaclass for Application.
@@ -35,6 +36,7 @@ class Application(object):
     title="APPLICATION TITLE"
     ##
     Form=NOCForm # Shortcut for form class
+    config=settings.config
     ##
     def __init__(self,site):
         self.site=site
