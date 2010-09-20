@@ -77,6 +77,6 @@ class IndexAppplication(Application):
     ## All page
     ##
     def view_index_all(self,request):
-        return self.render_index(request,KBEntry.objects.order_by("-id"),"popular")
+        return self.render_index(request,KBEntry.objects.order_by("-id"),"all")
     view_index_all.url=r"^all/$"
     view_index_all.access=PermitLogged()
