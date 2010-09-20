@@ -13,7 +13,9 @@ from noc.lib.validators import check_rd,check_cidr,is_cidr,is_ipv4
 from noc.lib.tt import tt_url
 from noc.peer.models import AS
 from noc.vc.models import VC
-from noc.lib.fields import CIDRField,AutoCompleteTagsField
+from noc.sa.models import ManagedObject
+from noc.sa.interfaces.base import MACAddressParameter,InterfaceTypeError
+from noc.lib.fields import CIDRField,MACField,AutoCompleteTagsField
 from noc.lib.ip import int_to_address,bits_to_int,wildcard,broadcast,address_to_int,generate_ips,prefix_to_size
 from noc.lib.search import SearchResult
 from noc.lib.middleware import get_user
@@ -501,8 +503,11 @@ class IPv4Address(models.Model):
         verbose_name_plural="IPv4 Addresses"
         ordering=["ip"]
     vrf=models.ForeignKey(VRF,verbose_name="VRF")
-    fqdn=models.CharField("FQDN",max_length=64)
     ip=models.IPAddressField("IP")
+    fqdn=models.CharField("FQDN",max_length=64)
+    mac=MACField("MAC",null=True,blank=True)
+    auto_update_mac=models.BooleanField("Auto Update MAC",default=False)
+    managed_object=models.ForeignKey(ManagedObject,null=True,blank=True)
     description=models.CharField("Description",blank=True,null=True,max_length=64)
     tags=AutoCompleteTagsField("Tags",null=True,blank=True)
     tt=models.IntegerField("TT",blank=True,null=True)
@@ -538,8 +543,16 @@ class IPv4Address(models.Model):
     def search(cls,user,search,limit):
         if user.has_perm("ip.change_ipv4address"):
             q=Q(fqdn__icontains=search)|Q(description__icontains=search)
+            # Search for IP addresses if search criteria is IP
             if is_ipv4(search):
                 q|=Q(ip=search)
+            # Search for MAC if search criteria is MAC
+            try:
+                MACAddressParameter().clean(search)
+                q|=Q(mac=search)
+            except InterfaceTypeError:
+                pass
+            #
             for r in IPv4Address.objects.filter(q):
                 if search==r.ip:
                     relevancy=1.0
@@ -556,7 +569,7 @@ class IPv4Address(models.Model):
                     relevancy=max(r_fqdn,r_description)
                 yield SearchResult(
                     url=("ip:ipmanage:change_address",r.vrf.id,r.ip),
-                    title="IPv4 Address, VRF=%s, %s (%s)"%(r.vrf,r.ip,r.fqdn),
+                    title="IPv4 Address, VRF=%s, %s (%s), MAC: %s"%(r.vrf,r.ip,r.fqdn,r.mac),
                     text=r.description,
                     relevancy=relevancy)
 ##
