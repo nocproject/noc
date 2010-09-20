@@ -2,11 +2,15 @@
 {% block content %}
 <H1>DNS Zones Tools</H1>
 <H2>Upload Zones</H2>
-    <P>Upload list of DNS Zones from a file. Each zone must be placed at separate line</P>
-    <FORM METHOD="POST" ACTION="{% url dns:dnszone:upload %}" enctype="multipart/form-data">{% csrf_token %}
-        <TABLE BORDER="0">
-        {{zones_upload_form.as_table}}
-        </TABLE>
-        <INPUT TYPE="submit" VALUE="Upload Zones" />
-    </FORM>
+    <div>
+        <FORM METHOD="POST" ACTION="{% url dns:dnszone:upload %}" enctype="multipart/form-data">{% csrf_token %}
+            <div class="description">Upload list of DNS Zones from a file. Each zone must be placed at separate line</div>
+            {% with zones_upload_form as form %}
+                {% include "includes/noc_fieldset.html" %}
+            {% endwith %}
+            <div class="submit-row">
+                <INPUT TYPE="submit" VALUE="Upload Zones" class="default"/>
+            </div>
+        </FORM>
+    </div>
 {% endblock%}

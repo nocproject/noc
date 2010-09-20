@@ -1,0 +1,31 @@
+th[class="event-id"] {
+    width: 5em;
+}
+
+th[class="event-object"] {
+    width: 12em;
+}
+
+th[class="event-time"] {
+    width: 4em;
+}
+
+th[class="event-status"] {
+    width: 3em;
+}
+
+th[class="event-category"] {
+    width: 4em;
+}
+
+th[class="event-class"] {
+    width: 10em;
+}
+
+th[class="event-priority"] {
+    width: 4em;
+}
+
+th[class="event-action"] {
+    width: 6em;
+}

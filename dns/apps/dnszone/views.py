@@ -53,12 +53,6 @@ class DNSZoneAdmin(admin.ModelAdmin):
         return self.app.render_plain_text("\n\n".join([o.rpsl for o in queryset]))
     rpsl_for_selected.short_description="RPSL for selected objects"
 ##
-## Zone upload form
-##
-class ZonesUploadForm(forms.Form):
-    profile=forms.ModelChoiceField(queryset=DNSZoneProfile.objects)
-    file=forms.FileField()
-##
 ## DNSZone application
 ##
 class DNSZoneApplication(ModelApplication):
@@ -75,10 +69,16 @@ class DNSZoneApplication(ModelApplication):
     view_zone.url=r"^(?P<zone_id>\d+)/ns/(?P<ns_id>\d+)/$"
     view_zone.access=HasPerm("change")
     ##
+    ## Zone upload form
+    ##
+    class ZonesUploadForm(ModelApplication.Form):
+        profile=forms.ModelChoiceField(label="Zone Profile",queryset=DNSZoneProfile.objects)
+        file=forms.FileField(label="File")
+    ##
     ## Render tools page
     ##
     def view_tools(self,request):
-        return self.render(request,"tools.html",{"zones_upload_form":ZonesUploadForm()})
+        return self.render(request,"tools.html",{"zones_upload_form":self.ZonesUploadForm()})
     view_tools.url=r"^tools/$"
     view_tools.url_name="tools"
     view_tools.access=HasPerm("tools")

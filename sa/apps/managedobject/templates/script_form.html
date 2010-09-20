@@ -2,13 +2,13 @@
 {% block breadcrumbs %}{{block.super}}<li>{{object.name}}</li><li><a href="{% url sa:managedobject:scripts object.id %}">Scripts</a></li><li>{{script}}</li>
 {%endblock%}
 <{% block content %}
-<h1>Run script {{script}} on {{object.name}} ({{object.profile_name}})<h1>
-<div class="module">
+<h1>Run script {{script}} on {{object.name}} ({{object.profile_name}})</h1>
+<div>
     <form method="POST">
-        <table width="100%">
-            {{form.as_table}}
-        </table>
-        <input type="submit" value="Run" />
+        {% include "includes/noc_fieldset.html" %}
+        <div class="submit-row" >
+            <input type="submit" value="Run" class="default"/>
+        </div>
     </form>
 </div>
 {%endblock%}

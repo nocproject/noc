@@ -24,11 +24,6 @@ class VCFilterAdmin(admin.ModelAdmin):
         return self.app.response_redirect("test/%s/"%",".join([str(p.id) for p in queryset]))
     test.short_description="Test selected VC Filters"
 ##
-## Test Time Patterns Form
-##    
-class TestVCFilterForm(forms.Form):
-    vc=forms.IntegerField()
-##
 ## VCFilter application
 ##
 class VCFilterApplication(ModelApplication):
@@ -36,18 +31,23 @@ class VCFilterApplication(ModelApplication):
     model_admin=VCFilterAdmin
     menu="Setup | VC Filters"
     ##
+    ## Test VC Filter Form
+    ##    
+    class TestVCFilterForm(ModelApplication.Form):
+        vc=forms.IntegerField(label="VC ID")
+    ##
     ## Test Selected Time Patterns
     ##
     def view_test(self,request,objects):
         vcf=[get_object_or_404(VCFilter,id=int(x)) for x in objects.split(",")]
         result=[]
         if request.POST:
-            form=TestVCFilterForm(request.POST)
+            form=self.TestVCFilterForm(request.POST)
             if form.is_valid():
                 vc=form.cleaned_data["vc"]
                 result=[{"vcfilter":f,"result":f.check(vc)} for f in vcf]
         else:
-            form=TestVCFilterForm()
+            form=self.TestVCFilterForm()
         return self.render(request,"test.html",{"form":form,"result":result})
     view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
     view_test.access=HasPerm("change")
