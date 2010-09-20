@@ -1,0 +1,20 @@
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>{{object.name}}</li><li>Scripts</li>{% endblock %}
+<{% block content %}
+<h1>{{object.name}} ({{object.profile_name}}) addresses</h1>
+<div class="module">
+    <table width="100%">
+        <caption>Addresses</caption>
+        <thead>
+            <tr><th>IP</th><th>FQDN</th><th>MAC</th></tr>
+        </thead>
+        {% for a in addresses %}
+            <TR class="{%cycle 'row1' 'row2'%}">
+                <TD>{{a.ip}}</TD>
+                <TD>{{a.fqdn}}</TD>
+                <TD>{% if a.mac %}{{a.mac}}{%endif%}</TD>
+            </TR>
+        {% endfor %}
+    </table>
+</div>
+{%endblock%}
