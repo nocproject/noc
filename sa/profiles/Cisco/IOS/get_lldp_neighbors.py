@@ -38,11 +38,13 @@ class Script(noc.sa.script.Script):
             # Get capability
             cap=0
             for c in match.group("capability").split(","):
-                cap|={
-                    "O" : 1, "P" : 2, "B" : 4,
-                    "W" : 8, "R" : 16, "T" : 32,
-                    "C" : 64, "S" : 128
-                }[c]
+                c=c.strip()
+                if c:
+                    cap|={
+                        "O" : 1, "P" : 2, "B" : 4,
+                        "W" : 8, "R" : 16, "T" : 32,
+                        "C" : 64, "S" : 128
+                    }[c]
             n["remote_capabilities"]=cap
             # Get neighbor detail
             v=self.cli("show lldp neighbors %s detail"%local_if)
