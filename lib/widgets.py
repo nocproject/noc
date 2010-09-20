@@ -24,7 +24,7 @@ class AutoCompleteTextInput(Input):
         css={
             "all": ["/static/css/jquery.autocomplete.css"]
         }
-        js=["/media/js/jquery.js","/static/js/jquery.autocomplete.js"]
+        js=["/static/js/jquery.autocomplete.js"]
     def __init__(self,url_name,*args,**kwargs):
         super(AutoCompleteTextInput,self).__init__(*args,**kwargs)
         self.lookup_url=url_name #reverse(url_name)
@@ -46,7 +46,7 @@ class AutoCompleteTags(Input):
         css={
             "all": ["/static/css/jquery.tokeninput.css"]
         }
-        js=["/media/js/jquery.js","/static/js/jquery.tokeninput.js"]
+        js=["/static/js/jquery.tokeninput.js"]
     def render(self,name,value=None,attrs=None):
         initial=[]
         if value:
