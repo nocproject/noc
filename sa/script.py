@@ -36,6 +36,7 @@ scheme_id={
 }
 ##
 class TimeOutError(Exception): pass
+class LoginError(Exception): pass
 ##
 ##
 ##
@@ -130,6 +131,8 @@ class Script(threading.Thread):
     SSH=scheme_id["ssh"]
     HTTP=scheme_id["http"]
     TIMEOUT=120 # 2min by default
+    #
+    LoginError=LoginError
 
     def __init__(self,profile,activator,access_profile,parent=None,**kwargs):
         self.start_time=time.time()
@@ -156,6 +159,7 @@ class Script(threading.Thread):
         self.status=False
         self.result=None
         self.error_traceback=None
+        self.login_error=None
         self.strip_echo=True
         self.kwargs=kwargs
         self.scripts=ScriptProxy(self)
@@ -231,6 +235,9 @@ class Script(threading.Thread):
                 self.cli(self.profile.command_save_config)
         except TimeOutError:
             self.error("Timed out")
+        except self.LoginError,why:
+            self.login_error=why.args[0]
+            self.error("Login failed: %s"%self.login_error)
         except:
             t,v,tb=sys.exc_info()
             r=[str(t),str(v)]
@@ -295,6 +302,9 @@ class Script(threading.Thread):
         command_submit=self.profile.command_submit if command_submit is None else command_submit
         self.cli_provider.submit(cmd,command_submit=command_submit,bulk_lines=bulk_lines)
         data=self.cli_queue_get()
+        if isinstance(data,Exception):
+            # Exception captured
+            raise data
         if self.strip_echo and data.lstrip().startswith(cmd):
             data=data.lstrip()
             if data.startswith(cmd+"\n"):
@@ -583,6 +593,9 @@ class CLI(StreamFSM):
     
     def on_FAILURE_enter(self):
         self.set_patterns([])
+        if not self.is_ready:
+            self.queue.put(None)
+        self.queue.put(Script.LoginError(self.motd))
 
     def on_START_match(self,data,match):
         self.motd+=data

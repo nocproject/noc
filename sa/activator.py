@@ -42,6 +42,9 @@ class Service(SAEService):
                 if script.to_cancel: # Timeout
                     e.code=ERR_TIMEOUT
                     e.text="Timed out"
+                elif script.login_error is not None:
+                    e.code=ERR_LOGIN_FAILED
+                    e.text=script.login_error
                 else:
                     e.code=ERR_SCRIPT_EXCEPTION
                     e.text=script.error_traceback
