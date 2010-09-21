@@ -18,7 +18,7 @@ def reduce_commands(task,commands):
         if mt.status=="C":
             result="\n".join(["<div class='cmd'>%s</div><br/><pre>%s</pre><br/>"%(c,sr) for c,sr in zip(commands,mt.script_result)])
         else:
-            result=""
+            result="<pre>%s</pre>"%str(mt.script_result)
         r+=["<tr>","<td>",mt.managed_object.name,"</td>","<td>",mt.status,"</td>","<td>",result,"</td>","</tr>"]
     r+=["</table>"]
     return "".join(r)
