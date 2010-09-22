@@ -340,10 +340,23 @@ class ActivatorStub(object):
         pass
     
     def cli(self,cmd):
-        for c in self.test.cli:
-            if c["command"]==cmd:
-                return c["result"]
-        raise Exception("Command not found in canned session: %s"%cmd)
+        try:
+            return self.test.cli[cmd]
+        except KeyError:
+            raise Exception("Command not found in canned session: %s"%cmd)
+    
+    def snmp_get(self,oid):
+        try:
+            return self.test.snmp_get[oid]
+        except KeyError:
+            raise Exception("SNMP oid not found in canned session: %s"%oid)
+    
+    def snmp_getnext(self,oid):
+        try:
+            return self.test.snmp_getnext[oid]
+        except KeyError:
+            raise Exception("SNMP oid not found in canned session: %s"%oid)
+        
 
 class ScriptTestCase(unittest.TestCase):
     script=None
@@ -353,8 +366,8 @@ class ScriptTestCase(unittest.TestCase):
     input={}
     result=None
     cli=None
-    snmp_get=None
-    snmp_getnext=None
+    snmp_get={}
+    snmp_getnext={}
     
     def test_script(self):
         p=self.script.split(".")

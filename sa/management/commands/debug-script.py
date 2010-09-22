@@ -29,16 +29,22 @@ class Controller(object): pass
 ##
 class SessionCan(object):
     def __init__(self,script_name,input={}):
-        self.cli=[]
+        self.cli={} # Command -> result
         self.input=input
         self.result=None
         self.script_name=script_name
+        self.snmp_get={}
+        self.snmp_getnext={}
     ## Store data
-    def save_interaction(self,provider,args,data):
+    def save_interaction(self,provider,cmd,data):
         if provider=="cli":
-            a=args.copy()
-            a["result"]=data
-            self.cli+=[a]
+            self.cli[cmd]=data
+    ##
+    def save_snmp_get(self,oid,result):
+        self.snmp_get[oid]=result
+    ##
+    def save_snmp_getnext(self,oid,result):
+        self.snmp_getnext[oid]=result
     ## Save final result
     def save_result(self,result):
         self.result=result
@@ -63,17 +69,19 @@ class %(test_name)s_Test(ScriptTestCase):
     input=%(input)s
     result=%(result)s
     cli=%(cli)s
-    snmp_get=None
-    snmp_getnext=None
+    snmp_get=%(snmp_get)s
+    snmp_getnext=%(snmp_getnext)s
         """%{
-            "test_name" : self.script_name.replace(".","_"),
-            "script": self.script_name,
-            "vendor": vendor,
-            "year"  : datetime.datetime.now().year,
-            "date"  : date,
-            "input" : pprint.pformat(self.input),
-            "result": pprint.pformat(self.result),
-            "cli"   : pprint.pformat(self.cli),
+            "test_name"    : self.script_name.replace(".","_"),
+            "script"       : self.script_name,
+            "vendor"       : vendor,
+            "year"         : datetime.datetime.now().year,
+            "date"         : date,
+            "input"        : pprint.pformat(self.input),
+            "result"       : pprint.pformat(self.result),
+            "cli"          : pprint.pformat(self.cli),
+            "snmp_get"     : pprint.pformat(self.snmp_get),
+            "snmp_getnext" : pprint.pformat(self.snmp_getnext),
         }
         with open(output,"w") as f:
             f.write(s)
@@ -143,13 +151,19 @@ class ActivatorStub(object):
     ##
     ## Handler to accept canned input
     ##
-    def save_interaction(self,provider,args,data):
-        self.session_can.save_interaction(provider,args,data)
+    def save_interaction(self,provider,cmd,data):
+        self.session_can.save_interaction(provider,cmd,data)
     ##
     ## Handler to save final result
     ##
     def save_result(self,result):
         self.session_can.save_result(result)
+    ##
+    def save_snmp_get(self,oid,result):
+        self.session_can.save_snmp_get(oid,result)
+    ##
+    def save_snmp_getnext(self,oid,result):
+        self.session_can.save_snmp_getnext(oid,result)
 
 class Command(BaseCommand):
     help="Debug SA Script"
