@@ -254,6 +254,8 @@ class Activator(Daemon,FSM):
         self.trap_collectors=[]   # List of SNMP Trap collectors
         self.syslog_collectors=[] # List of SYSLOG collectors
         self.pm_data_collectors=[] # List of PM Data collectors
+        self.to_save_output=False # Do not save canned result
+        self.use_canned_session=False # Do not use canned session
         logging.info("Loading profile classes")
         profile_registry.register_all() # Should be performed from ESTABLISHED state
         script_registry.register_all()
