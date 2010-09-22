@@ -17,6 +17,7 @@ from django.db import close_connection
 from django.core import signals,serializers
 from noc.lib.app import Application,site
 from webtest import TestApp
+import unittest
 import os,types,re
 ##
 ## Prevent closing database connection after each request
@@ -320,3 +321,56 @@ class ReportApplicationTestCase(ApplicationTestCase):
                     page=self.app.post(self._application.site.reverse(self._application.get_app_id().replace(".",":")+":view",format),
                         user=self.user,
                         params=p)
+##
+##
+##
+from noc.sa.models import script_registry,profile_registry
+from noc.sa.protocols.sae_pb2 import *
+import cPickle
+class ActivatorStub(object):
+    def __init__(self,test):
+        self.to_save_output=None
+        self.servers=None
+        self.factory=None
+        self.log_cli_sessions=None
+        self.test=test
+        self.use_canned_session=True
+    
+    def on_script_exit(self,script):
+        pass
+    
+    def cli(self,cmd):
+        for c in self.test.cli:
+            if c["command"]==cmd:
+                return c["result"]
+        raise Exception("Command not found in canned session: %s"%cmd)
+
+class ScriptTestCase(unittest.TestCase):
+    script=None
+    vendor=None
+    platform=None
+    version=None
+    input={}
+    result=None
+    cli=None
+    snmp_get=None
+    snmp_getnext=None
+    
+    def test_script(self):
+        p=self.script.split(".")
+        profile=profile_registry[".".join(p[:2])]
+        # Prepare access profile
+        a=AccessProfile()
+        a.profile=profile.name
+        a.profile=profile.name
+        if self.snmp_get or self.snmp_getnext:
+            a.snmp_ro="public"
+        # Run script.
+        script=script_registry[self.script](profile,ActivatorStub(self),a,**self.input)
+        script.run()
+        # Parse script result
+        if script.result:
+            result=cPickle.loads(script.result)
+            self.assertEquals(result,self.result)
+        else:
+            self.assertEquals(script.error_traceback,None)

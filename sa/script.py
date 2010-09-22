@@ -229,7 +229,8 @@ class Script(threading.Thread):
     def run(self):
         self.debug("Running")
         try:
-            self.result=self.serialize_result(self.guarded_run())
+            result=self.guarded_run()
+            self.result=self.serialize_result(result)
             if self.parent is None and self.need_to_save and self.profile.command_save_config:
                 self.debug("Saving config")
                 self.cli(self.profile.command_save_config)
@@ -249,6 +250,8 @@ class Script(threading.Thread):
             self.activator.request_call(self.cli_provider.close)
         if self.snmp:
             self.snmp.close()
+        if self.activator.to_save_output:
+            self.activator.save_result(result)
         self.activator.on_script_exit(self)
         
     def execute(self,**kwargs):
@@ -297,11 +300,17 @@ class Script(threading.Thread):
         #
         self.debug("cli(%s)"%cmd)
         self.cli_debug(cmd,">")
-        self.request_cli_provider()
         # Submit command
         command_submit=self.profile.command_submit if command_submit is None else command_submit
-        self.cli_provider.submit(cmd,command_submit=command_submit,bulk_lines=bulk_lines)
-        data=self.cli_queue_get()
+        if self.activator.use_canned_session:
+            data=self.activator.cli(cmd)
+        else:
+            self.request_cli_provider()
+            self.cli_provider.submit(cmd,command_submit=command_submit,bulk_lines=bulk_lines)
+            data=self.cli_queue_get()
+        # Save canned output if requested
+        if self.activator.to_save_output:
+            self.activator.save_interaction("cli",{"command":cmd},data)
         if isinstance(data,Exception):
             # Exception captured
             raise data

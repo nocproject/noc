@@ -97,7 +97,7 @@ def get_tests(test_labels):
         p=os.path.join(d,"tests")
         if os.path.isdir(p):
             suite+=get_test_suite(p)
-    # Scal lib/ for modules
+    # Scan lib/ for modules
     for root,dirs,files in os.walk("lib"):
         parts=root.split(os.path.sep)
         if "tests" in parts:
@@ -124,6 +124,9 @@ def get_tests(test_labels):
             # Add all applications tests.py
             elif len(parts)==3 and parts[1]=="apps" and "tests.py" in files:
                 suite+=[".".join(["noc"]+parts+["tests"])]
+            # Add all profile scripts tests
+            elif len(parts)==5 and parts[:2]==["sa","profiles"] and parts[4]=="tests":
+                suite+=get_test_suite(root)
     # Filter out
     modules=[m for m in modules if match_test(test_labels,m)]
     suite=[m for m in suite if match_test(test_labels,m)]
