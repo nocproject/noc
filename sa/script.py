@@ -310,7 +310,7 @@ class Script(threading.Thread):
             data=self.cli_queue_get()
         # Save canned output if requested
         if self.activator.to_save_output:
-            self.activator.save_interaction("cli",{"command":cmd},data)
+            self.activator.save_interaction("cli",cmd,data)
         if isinstance(data,Exception):
             # Exception captured
             raise data
@@ -893,16 +893,26 @@ class SNMPProvider(object):
         self.queue=Queue.Queue(maxsize=1)
         self.getnext_socket=None
         self.community_suffix=None
+        self.to_save_output=self.script.activator.to_save_output
     
     def get(self,oid,community_suffix=None):
+        if self.script.activator.use_canned_session:
+            r=self.script.activator.snmp_get(oid)
+            if r is None:
+                raise self.TimeOutError()
+            return r
         self.community_suffix=community_suffix
         s=SNMPGetSocket(self,oid)
         try:
             r=self.queue.get(block=True)
             if r is None:
+                if self.script.activator.to_save_output:
+                    self.script.activator.save_snmp_get(oid,None)
                 raise self.TimeOutError()
         finally:
             s.close()
+        if self.to_save_output:
+            self.script.activator.save_snmp_get(oid,r)
         return r
     ##
     ## getnext generator.
@@ -911,6 +921,15 @@ class SNMPProvider(object):
     ##      ....
     ##
     def getnext(self,oid,community_suffix=None,bulk=False,min_index=None,max_index=None):
+        if self.script.activator.use_canned_session:
+            r=self.script.activator.snmp_getnext(oid)
+            if r is None:
+                raise self.TimeOutError()
+            for l in r:
+                yield l
+            raise StopIteration
+        if self.to_save_output:
+            out=[]
         self.community_suffix=community_suffix
         if self.getnext_socket:
             self.getnext_socket.close()
@@ -922,12 +941,20 @@ class SNMPProvider(object):
             r=self.queue.get(block=True)
             if r is None:
                 if self.getnext_socket.is_failed:  # Stale socket killed
+                    if self.to_save_output:
+                        self.script.activator.save_snmp_getnext(oid,None)
                     raise self.TimeOutError()
                 elif self.getnext_socket.got_result: # Stop Iteration in case of success
+                    if self.to_save_output:
+                        self.script.activator.save_snmp_getnext(oid,out)
                     raise StopIteration
                 else: # Socket closed by Timeout
+                    if self.to_save_output:
+                        self.script.activator.save_snmp_getnext(oid,None)
                     raise self.TimeOutError()
             else:
+                if self.script.activator.to_save_output:
+                    out+=[r]
                 yield r
     ##
     ## getnext wrapper
