@@ -356,6 +356,9 @@ class ActivatorStub(object):
             return self.test.snmp_getnext[oid]
         except KeyError:
             raise Exception("SNMP oid not found in canned session: %s"%oid)
+    
+    def get_motd(self):
+        return self.test.motd
         
 
 class ScriptTestCase(unittest.TestCase):
@@ -365,6 +368,7 @@ class ScriptTestCase(unittest.TestCase):
     version=None
     input={}
     result=None
+    motd=""
     cli=None
     snmp_get={}
     snmp_getnext={}

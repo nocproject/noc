@@ -32,6 +32,7 @@ class SessionCan(object):
         self.cli={} # Command -> result
         self.input=input
         self.result=None
+        self.motd=""
         self.script_name=script_name
         self.snmp_get={}
         self.snmp_getnext={}
@@ -46,8 +47,9 @@ class SessionCan(object):
     def save_snmp_getnext(self,oid,result):
         self.snmp_getnext[oid]=result
     ## Save final result
-    def save_result(self,result):
+    def save_result(self,result,motd=""):
         self.result=result
+        self.motd=motd
     ## Dump canned data
     def dump(self,output):
         vendor,profile,script=self.script_name.split(".")
@@ -68,6 +70,7 @@ class %(test_name)s_Test(ScriptTestCase):
     version='<<<INSERT YOUR VERSION HERE>>>'
     input=%(input)s
     result=%(result)s
+    motd=%(motd)s
     cli=%(cli)s
     snmp_get=%(snmp_get)s
     snmp_getnext=%(snmp_getnext)s
@@ -82,6 +85,7 @@ class %(test_name)s_Test(ScriptTestCase):
             "cli"          : pprint.pformat(self.cli),
             "snmp_get"     : pprint.pformat(self.snmp_get),
             "snmp_getnext" : pprint.pformat(self.snmp_getnext),
+            "motd"         : pprint.pformat(self.motd),
         }
         with open(output,"w") as f:
             f.write(s)
@@ -156,8 +160,8 @@ class ActivatorStub(object):
     ##
     ## Handler to save final result
     ##
-    def save_result(self,result):
-        self.session_can.save_result(result)
+    def save_result(self,result,motd=""):
+        self.session_can.save_result(result,motd)
     ##
     def save_snmp_get(self,oid,result):
         self.session_can.save_snmp_get(oid,result)

@@ -246,12 +246,12 @@ class Script(threading.Thread):
             self.error_traceback="\n".join(r)
             self.debug("Script traceback:\n%s"%self.error_traceback)
         self.debug("Closing")
+        if self.activator.to_save_output:
+            self.activator.save_result(result,self.motd)
         if self.cli_provider:
             self.activator.request_call(self.cli_provider.close)
         if self.snmp:
             self.snmp.close()
-        if self.activator.to_save_output:
-            self.activator.save_result(result)
         self.activator.on_script_exit(self)
         
     def execute(self,**kwargs):
@@ -405,6 +405,8 @@ class Script(threading.Thread):
             self.parent.schedule_to_save()
     
     def motd(self):
+        if self.activator.use_canned_session:
+            return self.activator.get_motd()
         if not self.cli_provider:
             self.request_cli_provider()
         return self.cli_provider.motd
