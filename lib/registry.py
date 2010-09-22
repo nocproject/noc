@@ -44,8 +44,11 @@ class Registry(object):
                 if not os.path.isdir(pd):
                     continue
                 for dirpath,dirnames,filenames in os.walk(pd):
+                    parts=dirpath.split(os.sep)
+                    if "tests" in parts:
+                        continue
                     if l:
-                        mb="noc.local.%s."%app[4:]+".".join(dirpath.split(os.sep)[2:])
+                        mb="noc.local.%s."%app[4:]+".".join(parts[2:])
                         # Create missed __init__.py for local/
                         c=dirpath.split(os.sep)
                         for i in range(1,len(c)+1):
