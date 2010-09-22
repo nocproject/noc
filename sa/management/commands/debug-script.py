@@ -93,7 +93,7 @@ class %(test_name)s_Test(ScriptTestCase):
 ## Activator emulation
 ##
 class ActivatorStub(object):
-    WAIT_TICKS=3
+    WAIT_TICKS=4
     def __init__(self,request,output=None):
         # Simple config stub
         self.config=ConfigParser.SafeConfigParser()
