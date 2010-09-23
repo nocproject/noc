@@ -20,6 +20,7 @@ class SAApplication(Application):
     reduce_task=None # Reduce task pyRule
     form=None        # Map task parameters
     timeout=60       # Reduce task timeout
+    objects=None     # Pre-selected objects
     ##
     def get_menu(self):
         return self.menu
@@ -40,6 +41,18 @@ class SAApplication(Application):
     ## Display a list of selectors
     ##
     def view_index(self,request):
+        if self.objects and self.form is None:
+            # Start task immediately
+            task=ReduceTask.create_task(
+                object_selector=self.objects,
+                reduce_script=self.reduce_task,
+                reduce_script_params=self.clean_reduce({}),
+                map_script=self.map_task,
+                map_script_params=self.clean_map({}),
+                timeout=self.timeout
+            )
+            return self.response_redirect("task/%d/"%task.id)
+        # Display selectors and form
         selectors=ManagedObjectSelector.objects.filter(is_enabled=True).order_by("name")
         return self.render(request,"sa_app_index.html",{"selectors":selectors})
     view_index.url=r"^$"
