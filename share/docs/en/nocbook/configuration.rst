@@ -384,24 +384,6 @@ string description
 %(tt)s Expanded to the trouble ticket id
 ====== =================================
 
-.. _noc-conf-xmlrpc:
-
-xmlrpc section
-++++++++++++++
-XML-RPC server is a part of SAE. *xmlrpc* section describes *client* settings used to connect SAE via XML-RPC.
-
-.. _noc-conf-xmlrpc-server:
-
-server
-^^^^^^
-IP address of the SAE
-
-.. _noc-conf-xmlrpc-port:
-
-port
-^^^^
-Port used by XML-RPC interface
-
 .. _noc-conf-backup:
 
 [backup] section
@@ -817,24 +799,6 @@ Listen for activator SSL connections at address
 ssl_port
 ^^^^^^^^
 Listen for activator SSL connections at port
-
-.. _noc-sae-conf-xmlrpc:
-
-xmlrpc section
-++++++++++++++
-SAE XML-RPC server settings.
-
-.. _noc-sae-conf-xmlrpc-listen:
-
-listen
-^^^^^^
-IP address to listen to XML-RPC connects
-
-.. _noc-sae-conf-xmlrpc-port:
-
-port
-^^^^
-Port to listen to XML-RPC requests
 
 .. _noc-activator-conf:
 

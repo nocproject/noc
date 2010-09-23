@@ -19,7 +19,3 @@ ssl_listen =
 ssl_port   = 19703
 ssl_cert   = etc/certs/sae.pem
 refresh_event_filter = 600
-
-[xmlrpc]
-listen = 127.0.0.1
-port   = 19702

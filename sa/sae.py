@@ -8,11 +8,11 @@
 """
 """
 from __future__ import with_statement
-from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask, periodic_registry
+from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask, periodic_registry, script_registry, profile_registry
 from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory,IgnoreEventRules
 from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
 from noc.pm.models import TimeSeries
-import logging,time,threading,datetime,os,random,xmlrpclib,cPickle
+import logging,time,threading,datetime,os,random,cPickle
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
@@ -219,69 +219,6 @@ class SAESSLSocket(RPCSocket,AcceptedTCPSSLSocket):
         e.text="Connection with activator lost"
         self.transactions.rollback_all_transactions(e) # Close all active transactions
         super(AcceptedTCPSSLSocket,self).close()
-    
-##
-## XML-RPC support
-##
-
-##
-## Service
-##
-class XMLRPCService(object):
-    def __init__(self,sae):
-        self._sae=sae
-        
-    def _call_xmlrpc_method(self,done,method,*args):
-        getattr(self,method)(done,*args)
-        
-    def listMethods(self,done):
-        done([m for m in dir(self) if not m.startswith("_") and callable(getattr(self,m))])
-    
-    def script(self,done,name,object_id,kwargs):
-        logging.info("XML-RPC.script %s(object_id=%d)"%(name,int(object_id)))
-        object=ManagedObject.objects.get(id=int(object_id))
-        self._sae.script(object,name,done,**kwargs)
-    
-    def activator_status(self,done):
-        logging.info("XML-RPC.activator_status")
-        done(self._sae.get_activator_status())
-
-##
-## PDU Parsing
-##
-class XMLRPCProtocol(Protocol):
-    def parse_pdu(self):
-        r=[]
-        while True:
-            idx=self.in_buffer.find("</methodCall>")
-            if idx==-1:
-                break
-            r.append(self.in_buffer[:idx+13])
-            self.in_buffer=self.in_buffer[idx+13:]
-        return r
-##
-## N.B. Socket and XML-RPC HTTP server
-##
-class XMLRPCSocket(AcceptedTCPSocket):
-    protocol_class=XMLRPCProtocol
-    def __init__(self,factory,socket):
-        AcceptedTCPSocket.__init__(self,factory,socket)
-        
-    def on_read(self,data):
-        def on_read_callback(result=None,error=None):
-            if error:
-                body=xmlrpclib.dumps(xmlrpclib.Fault(error.code,error.text),methodresponse=True)
-            else:
-                body=xmlrpclib.dumps((result,),methodresponse=True)
-            response="HTTP/1.1 200 OK\r\nContent-Type: text/xml\r\nContent-Length: %d\r\nServer: nocproject.org\r\n\r\n"%len(body)+body
-            self.write(response)
-            self.close(flush=True)
-        headers,data=data.split("\r\n\r\n")
-        params,methodname=xmlrpclib.loads(data,use_datetime=True)
-        self.debug("XMLRPC Call: %s(*%s)"%(methodname,params))
-        self.factory.sae.xmlrpc_service._call_xmlrpc_method(on_read_callback,methodname,*params)
-
-
 ##
 ## SAE Supervisor
 ##
@@ -294,14 +231,11 @@ class SAE(Daemon):
         self.service=Service()
         self.service.sae=self
         #
-        self.xmlrpc_service=XMLRPCService(self)
-        #
         self.factory=SocketFactory(tick_callback=self.tick)
         self.factory.sae=self
         #
         self.sae_listener=None
         self.sae_ssl_listener=None
-        self.xmlrpc_listener=None
         # Periodic tasks
         self.active_periodic_tasks={}
         self.periodic_task_lock=threading.Lock()
@@ -313,7 +247,13 @@ class SAE(Daemon):
         self.last_task_check=t
         self.last_crashinfo_check=t
         self.last_mrtask_check=t
-        
+        # Activator interface implementation
+        self.servers=None
+        self.to_save_output=False
+        self.use_canned_session=False
+        self.log_cli_sessions=False
+        self.script_threads={}
+        self.script_lock=threading.Lock()
     ##
     ## Create missed Task Schedules
     ##
@@ -367,15 +307,6 @@ class SAE(Daemon):
             if self.sae_ssl_listener is None:
                 logging.info("Starting SAE SSL listener at %s:%d"%(sae_ssl_listen,sae_ssl_port))
                 self.sae_ssl_listener=self.factory.listen_tcp(sae_ssl_listen,sae_ssl_port,SAESSLSocket,cert=sae_ssl_cert)
-        # XML-RPC listener
-        xmlrpc_listen=self.config.get("xmlrpc","listen")
-        xmlrpc_port=self.config.getint("xmlrpc","port")
-        if self.xmlrpc_listener and (self.xmlrpc_listener.address!=xmlrpc_listen or self.xmlrpc_listen.port!=xmlrpc_port):
-            self.xmlrpc_listener.close()
-            self.xmlrpc_listener=None
-        if self.xmlrpc_listener is None:
-            logging.info("Starting XML-RPC listener at %s:%d"%(xmlrpc_listen,xmlrpc_port))
-            self.xmlrpc_listener=self.factory.listen_tcp(xmlrpc_listen,xmlrpc_port,XMLRPCSocket)
     ##
     ## Run SAE event loop
     ##
@@ -411,7 +342,7 @@ class SAE(Daemon):
     ##
     def write_event(self,data,timestamp=None,managed_object=None):
         if managed_object is None:
-            managed_object=ManagedObject.objects.get(name="ROOT")
+            managed_object=ManagedObject.objects.get(name="SAE")
         if timestamp is None:
             timestamp=datetime.datetime.now()
         e=Event(
@@ -515,19 +446,6 @@ class SAE(Daemon):
             return self.factory.get_socket_by_name(name)
         except KeyError:
             raise Exception("Activator not available: %s"%name)
-    ##
-    ## Returns activator status
-    ##
-    def get_activator_status(self):
-        r=[]
-        for a in Activator.objects.all():
-            try:
-                self.get_activator_stream(a.name)
-                s=True
-            except:
-                s=False
-            r+=[(a.name,s)]
-        return r
     
     def script(self,object,script_name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
@@ -539,15 +457,17 @@ class SAE(Daemon):
             result=cPickle.loads(str(result)) # De-serialize
             callback(result=result)
         logging.info("script %s(%s)"%(script_name,object))
-        try:
-            stream=self.get_activator_stream(object.activator.name)
-        except:
-            e=Error()
-            e.code=ERR_ACTIVATOR_NOT_AVAILABLE
-            e.text="Activator '%s' not available"%object.activator.name
-            logging.error(e.text)
-            callback(error=e)
-            return
+        if object.profile_name!="NOC.SAE":
+            # Validate activator is present
+            try:
+                stream=self.get_activator_stream(object.activator.name)
+            except:
+                e=Error()
+                e.code=ERR_ACTIVATOR_NOT_AVAILABLE
+                e.text="Activator '%s' not available"%object.activator.name
+                logging.error(e.text)
+                callback(error=e)
+                return
         r=ScriptRequest()
         r.script=script_name
         r.access_profile.profile           = object.profile_name
@@ -571,7 +491,10 @@ class SAE(Daemon):
             a=r.kwargs.add()
             a.key=str(k)
             a.value=cPickle.dumps(v)
-        stream.proxy.script(r,script_callback)
+        if object.profile_name=="NOC.SAE":
+            self.run_sae_script(r,script_callback)
+        else:
+            stream.proxy.script(r,script_callback)
     ##
     ## Send a list of addresses to activator
     ## and generate fault events for unreachable ones
@@ -672,6 +595,36 @@ class SAE(Daemon):
             mt.status="R"
             mt.save()
             exec_script(mt)
+    ##
+    ##
+    ##
+    def run_sae_script(self,request,callback):
+        kwargs={}
+        for a in request.kwargs:
+            kwargs[str(a.key)]=cPickle.loads(str(a.value))
+        script=script_registry[request.script](profile_registry[request.access_profile.profile],self,request.access_profile,**kwargs)
+        script.sae=self
+        with self.script_lock:
+            self.script_threads[script]=callback
+            logging.info("%d script threads"%(len(self.script_threads)))
+        script.start()
+    ##
+    ##
+    ##
+    def on_script_exit(self,script):
+        logging.info("Script %s(%s) completed"%(script.name,script.access_profile.address))
+        with self.script_lock:
+            cb=self.script_threads.pop(script)
+            logging.info("%d script threads left"%(len(self.script_threads)))
+        if script.result:
+            r=ScriptResponse()
+            r.result=script.result
+            cb(None,response=r)
+        else:
+            e=Error()
+            e.code=ERR_SCRIPT_EXCEPTION
+            e.text=script.error_traceback
+            cb(None,error=e)
     ##
     ## Called after config reloaded by SIGHUP.
     ##
