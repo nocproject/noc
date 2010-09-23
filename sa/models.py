@@ -460,12 +460,14 @@ class ReduceTask(models.Model):
                 raise Exception("Invalid map script: '%s'"%ms)
             msp+=[(ms,p)]
         # Convert object_selector to a list of objects
-        if type(object_selector)==types.ListType:
+        if type(object_selector) in (types.ListType,types.TupleType):
             objects=object_selector
         elif isinstance(object_selector,ManagedObjectSelector):
             objects=object_selector.managed_objects
         else:
             objects=list(object_selector)
+        # Resolve strings to managed objects, if returned by selector
+        objects=[ManagedObject.objects.get(name=x) if isinstance(x,basestring) else x for x in objects]
         # Run map task for each object
         for o in objects:
             for ms,p in msp:
