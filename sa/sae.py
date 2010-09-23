@@ -668,6 +668,7 @@ class SAE(Daemon):
             if mt.task.stop_time<t: # Task timeout
                 mt.status="F"
                 mt.save()
+                continue
             mt.status="R"
             mt.save()
             exec_script(mt)
