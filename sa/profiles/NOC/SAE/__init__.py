@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## reportactivatorstatus Test
+## Vendor: NOC
+## OS:     SAE
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ReportApplicationTestCase
+"""
+"""
+import noc.sa.profiles
 
-class reportactivatorstatusTestCase(ReportApplicationTestCase):
-    pass
+class Profile(noc.sa.profiles.Profile):
+    name="NOC.SAE"
