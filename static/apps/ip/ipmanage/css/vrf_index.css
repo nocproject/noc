@@ -32,6 +32,10 @@ td[class=nav-form] {
 
 /* Column widths */
 th[class=ip] {
+    widths: 1em;
+}
+
+th[class=ip] {
     width: 7em;
 }
 

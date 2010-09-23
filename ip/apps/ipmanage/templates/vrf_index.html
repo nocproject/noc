@@ -8,6 +8,7 @@
 {% block content %}
 {% if can_allocate %}
     <ul class="object-tools">
+        {% if can_ping %}<li><a href="#" onclick="toggle_pingtest();" id="pingtest">Start Ping</a></li>{%endif%}
         <li><a href="{% url ip:ipmanage:toggle_bookmark vrf.id prefix.prefix %}" classs="changelink">{% if has_bookmark %}Remove{% else %}Set{% endif %} Bookmark</a></li>
         <li><A HREF="{% url ip:tools:index vrf.id prefix %}" CLASS="changelink">Tools</A></li>
         <li><A HREF="{% url ip:ipmanage:allocate_block vrf.id %}" CLASS="addlink">Allocate new block</A></li>
@@ -137,6 +138,60 @@ function toggle_free() {
         _ft_shown=true;
     }
 }
+
+{% if can_ping %}
+var _in_pingtest=false;
+var _ping_task_id=0;
+
+function toggle_pingtest() {
+    if(_in_pingtest) {
+        $("#pingtest").text("Start Ping");
+    } else {
+        $("#pingtest").text("Stop Ping");
+    }
+    _in_pingtest=!_in_pingtest;
+    if(_in_pingtest) {
+        run_pingtest();
+    }
+}
+
+function display_ping_result(result) {
+    var src;
+    var ip;
+    $(".s_img").each(function(i){
+        ip=$(this).attr("id").substring(2);
+        if ((ip in result) && result[ip])
+            src="/media/img/admin/icon-yes.gif";
+        else
+            src="/media/img/admin/icon-no.gif";
+        $(this).attr("src",src);
+    })
+}
+
+function check_ping_task() {
+    if(!_in_pingtest) 
+        return;
+    $.get("{% url ip:ipmanage:ping_check vrf.id prefix %}"+_ping_task_id+"/",function(data,status,request) {
+        if(data==null) {
+            if(_in_pingtest)
+                setTimeout(check_ping_task,5000);
+        } else {
+            _ping_task_id=0;
+            display_ping_result(data);
+            if(_in_pingtest)
+                setTimeout(run_pingtest,60000);
+        }
+    });
+}
+
+function run_pingtest() {
+    $.get("{% url ip:ipmanage:ping_check vrf.id prefix %}",function(data,status,request){
+        _ping_task_id=data;
+        $.get("{% url ip:ipmanage:ping_check vrf.id prefix %}"+_ping_task_id+"/",check_ping_task);
+    });
+}
+{% endif %}
+
 </SCRIPT>
 <DIV CLASS="module">
     <TABLE SUMMARY="Assigned addresses" WIDTH="100%">
@@ -144,6 +199,7 @@ function toggle_free() {
         <THEAD>
             <TR>
                 <TH class="range"></TH>
+                <TH class="status">Up</TH>
                 <TH class="ip">IP</TH>
                 <TH class="fqdn">FQDN</TH>
                 <TH class="mac">MAC</TH>
@@ -158,6 +214,7 @@ function toggle_free() {
             {% if a.ip %}
                 <TR class="{%cycle 'row1' 'row2'%}">
                 <TD {%if r%}class="r{{r.id}}"{%endif%}></TD>
+                <TD><img id="s_{{a.ip}}" class="s_img"/></TD>
                 <TD>
                     {% if can_allocate %}
                         <A HREF="{% url ip:ipmanage:change_address vrf.id a.ip %}">{{a.ip}}</A>
@@ -176,6 +233,7 @@ function toggle_free() {
             {% else %}
                 <TR CLASS="freeip">
                 <TD {%if r%}class="r{{r.id}}"{%endif%}></TD>
+                <TD></TD>
                 <TD COLSPAN="4">
                     {% if can_allocate %}
                         <A HREF="{% url ip:ipmanage:assign_new_address vrf.id a %}">{{a}}</A>
@@ -231,7 +289,7 @@ function toggle_free() {
         </TR>
         <TR class="row2">
             <TD><b>Maintainers</b></TD>
-            <TD>{{prefix.maintainers|join:", "}} {%if can_allocate%}<a href="{% url ip:ipv4blockaccess:add %}?vrf={{vrf.id}}&prefix={{prefix}}"><b>Add...<b></a>{%endif%}</TD>
+            <TD>{{prefix.maintainers|join:", "}} {%if can_allocate%}<a href="{% url ip:ipv4blockaccess:add %}?vrf={{vrf.id}}&prefix={{prefix}}"><b>Add...</b></a>{%endif%}</TD>
         </TR>
         {% for k,v in block_info %}
             <TR class="{%cycle 'row1' 'row2'%}"><TD STYLE="width: 10pt"><b>{{k}}</b></TD><TD>{{v}}</TD></TR>

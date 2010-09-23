@@ -16,7 +16,7 @@ from noc.lib.ip import normalize_prefix,contains,in_range,free_blocks,prefix_to_
 from noc.lib.widgets import AutoCompleteTags,AutoCompleteTextInput
 from noc.lib.forms import NOCForm
 from noc.sa.interfaces.base import MACAddressParameter,InterfaceTypeError
-from noc.sa.models import ManagedObject
+from noc.sa.models import ManagedObject,ReduceTask
 ##
 ## IP Address Space Management
 ##
@@ -64,6 +64,7 @@ class IPManageAppplication(Application):
         ranges=None
         range_colors=None
         all_addresses=None
+        can_ping=False
         if has_children:
             orphaned_addresses=prefix.orphaned_addresses
         else:
@@ -82,6 +83,8 @@ class IPManageAppplication(Application):
             for a in prefix.all_addresses:
                 try:
                     ip=a.ip
+                    if a.managed_object:
+                        can_ping=True
                 except:
                     ip=a
                 ar=None
@@ -94,7 +97,7 @@ class IPManageAppplication(Application):
                             "can_allocate":can_allocate,"block_info":block_info,"has_children":has_children,
                             "ranges":ranges,"range_colors":range_colors,"all_addresses":all_addresses,
                             "orphaned_addresses":orphaned_addresses,
-                            "has_bookmark":prefix.has_bookmark(request.user),
+                            "has_bookmark":prefix.has_bookmark(request.user),"can_ping":can_ping,
                             "my_networks":IPv4BlockBookmark.user_bookmarks(request.user,vrf)})
     view_vrf_index.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/$"
     view_vrf_index.url_name="vrf_index"
@@ -448,6 +451,42 @@ class IPManageAppplication(Application):
     view_toogle_bookmark.url=r"(?P<vrf_id>\d+)/(?P<prefix>\S+)/toggle_bookmark/$"
     view_toogle_bookmark.url_name="toggle_bookmark"
     view_toogle_bookmark.access=HasPerm("view")
+    ##
+    ## AJAX handler to run ping_task
+    ##
+    def view_ping_check(self,request,vrf_id,prefix):
+        vrf=get_object_or_404(VRF,id=int(vrf_id))
+        p=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
+        # Detect managed objects in block
+        addresses=p.addresses
+        r=[a for a in addresses if a.managed_object]
+        if not r:
+            return self.render_json(None)
+        activator_name=r[0].managed_object.activator.name
+        t=ReduceTask.create_task(["SAE"],"pyrule:get_single_result",{},
+            "ping_check",{"activator_name":activator_name,"addresses":[a.ip for a in addresses]},60)
+        return self.render_json(t.id)
+    view_ping_check.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\S+)/ping_check/$"
+    view_ping_check.url_name="ping_check"
+    view_ping_check.access=HasPerm("view")
+    ##
+    ## Ping check task result
+    ##
+    def view_ping_check_task(self,request,vrf_id,prefix,task_id):
+        vrf=get_object_or_404(VRF,id=int(vrf_id))
+        p=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
+        task=get_object_or_404(ReduceTask,id=int(task_id))
+        try:
+            result=task.get_result(block=False)
+        except ReduceTask.NotReady:
+            return self.render_json(None) # Waiting
+        r={}
+        for s in result:
+            r[s["ip"]]=s["status"]
+        return self.render_json(r)
+    view_ping_check_task.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\S+)/ping_check/(?P<task_id>\d+)/$"
+    view_ping_check_task.url_name="ping_check_task"
+    view_ping_check_task.access=HasPerm("view")
     ##
     ## Return a list of user access
     ##
