@@ -58,4 +58,4 @@ class Command(BaseCommand):
             root=args[0]
         else:
             root=None
-        self.display(self.get_tests())
+        self.display(self.get_tests(root))
