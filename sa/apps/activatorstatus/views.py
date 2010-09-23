@@ -6,7 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.lib.app.saapplication import SAApplication
-from noc.sa.models import ManagedObject
 ##
 def reduce_status(task):
     from noc.lib.app.simplereport import Report,TableSection,TableColumn
@@ -27,4 +26,4 @@ class ActivatorStatusApplication(SAApplication):
     reduce_task=reduce_status
     map_task="get_activator_status"
     timeout=10
-    objects=[ManagedObject.objects.get(name="SAE")]
+    objects=["SAE"]
