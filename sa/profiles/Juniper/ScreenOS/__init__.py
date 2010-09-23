@@ -17,3 +17,4 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^\s*\S*-> "
     pattern_more=r"^--- more ---"
     command_more=" "
+    command_disable_pager="set console page 0"
