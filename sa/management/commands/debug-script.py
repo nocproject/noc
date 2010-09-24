@@ -22,6 +22,7 @@ import logging,sys,ConfigParser,Queue,time,cPickle,threading,signal,os,datetime,
 from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory
 from optparse import OptionParser, make_option
+from noc.lib.validators import is_int
 
 class Controller(object): pass
 ##
@@ -52,6 +53,19 @@ class SessionCan(object):
         self.motd=motd
     ## Dump canned data
     def dump(self,output):
+        def format_stringdict(d):
+            def lrepr(s):
+                return repr(s)[1:-1]
+            out=["{"]
+            for k,v in d.items():
+                lines=v.splitlines()
+                if len(lines)<4:
+                    out+=["%s:  %s,"%(repr(k),repr(v))]
+                else:
+                    out+=["## %s"%repr(k)]
+                    out+=["%s: \"\"\"%s"%(repr(k),lrepr(lines[0]))]+[lrepr(l) for l in lines[1:-1]]+["%s\"\"\","%lrepr(lines[-1])]
+            out+=["}"]
+            return "\n".join(out)
         vendor,profile,script=self.script_name.split(".")
         date=str(datetime.datetime.now()).split(".")[0]
         s="""# -*- coding: utf-8 -*-
@@ -74,7 +88,7 @@ class %(test_name)s_Test(ScriptTestCase):
     cli=%(cli)s
     snmp_get=%(snmp_get)s
     snmp_getnext=%(snmp_getnext)s
-        """%{
+"""%{
             "test_name"    : self.script_name.replace(".","_"),
             "script"       : self.script_name,
             "vendor"       : vendor,
@@ -82,7 +96,7 @@ class %(test_name)s_Test(ScriptTestCase):
             "date"         : date,
             "input"        : pprint.pformat(self.input),
             "result"       : pprint.pformat(self.result),
-            "cli"          : pprint.pformat(self.cli),
+            "cli"          : format_stringdict(self.cli),
             "snmp_get"     : pprint.pformat(self.snmp_get),
             "snmp_getnext" : pprint.pformat(self.snmp_getnext),
             "motd"         : pprint.pformat(self.motd),
@@ -191,10 +205,56 @@ class Command(BaseCommand):
     def SIGINT(self,signo,frame):
         logging.info("SIGINT")
         os._exit(0)
+    
+    def set_access_profile_url(self,access_profile,url):
+        url=URL(url)
+        access_profile.scheme         = scheme_id[url.scheme]
+        access_profile.address        = url.host
+        if url.port:
+            access_profile.port       = url.port
+        access_profile.user           = url.user
+        if "\x00" in url.password: # Check the password really the pair of password/enable password
+            p,s=url.password.split("\x00",1)
+            access_profile.password   = p
+            access_profile.super_password = s
+        else:
+            access_profile.password   = url.password
+        access_profile.path           = url.path
+        return True
+    
+    def set_access_profile_name(self,access_profile,name):
+        from noc.sa.models import ManagedObject
+        from django.db.models import Q
+        
+        if is_int(name):
+            q=Q(id=int(name))|Q(name=name)
+        else:
+            q=Q(name=name)
+        try:
+            o=ManagedObject.objects.get(q)
+        except ManagedObject.DoesNotExist:
+            return False
+        access_profile.scheme = o.scheme
+        access_profile.address= o.address
+        if o.port:
+            access_profile.port = o.port
+        access_profile.user = o.user
+        access_profile.password = o.password
+        if o.super_password:
+            access_profile.super_password=o.super_password
+        if o.remote_path:
+            access_profile.path=o.remote_path
+        return True
+    
+    def set_access_profile(self,access_profile,arg):
+        if "://" in arg:
+            return self.set_access_profile_url(access_profile,arg)
+        else:
+            return self.set_access_profile_name(access_profile,arg)
         
     def handle(self, *args, **options):
         if len(args)<2:
-            print "Usage: debug-script <script> <stream url> [key1=value1 key2=value2 ... ]"
+            print "Usage: debug-script <script> (<stream url>|<object id>|<object_name>) [key1=value1 key2=value2 ... ]"
             print "Where value is valid python expression"
             return
         script_name=args[0]
@@ -215,22 +275,12 @@ class Command(BaseCommand):
         logging.root.setLevel(logging.DEBUG)
         signal.signal(signal.SIGINT,self.SIGINT)
         service=Service()
-        url=URL(args[1])
         r=ScriptRequest()
         r.script=script_name
         r.access_profile.profile        = profile_name
-        r.access_profile.scheme         = scheme_id[url.scheme]
-        r.access_profile.address        = url.host
-        if url.port:
-            r.access_profile.port       = url.port
-        r.access_profile.user           = url.user
-        if "\x00" in url.password: # Check the password really the pair of password/enable password
-            p,s=url.password.split("\x00",1)
-            r.access_profile.password   = p
-            r.access_profile.super_password = s
-        else:
-            r.access_profile.password   = url.password
-        r.access_profile.path           = url.path
+        if not self.set_access_profile(r.access_profile,args[1]):
+            print "Invalid object name or url"
+            return
         if options["snmp_ro"]:
             r.access_profile.snmp_ro=options["snmp_ro"]
         # Parse script args
