@@ -43,20 +43,26 @@ def install_can(path,platform,version):
 
 def usage():
     print "USAGE:"
-    print "%s -p <platform> -v <version> path1 .. pathN"%sys.argv[0]
+    print "%s -p <platform> -v <version> [-r ] path1 .. pathN"%sys.argv[0]
     sys.exit(0)
 
 if __name__=="__main__":
     import sys,getopt
     platform=None
     version=None
-    optlist,optarg=getopt.getopt(sys.argv[1:],"p:v:")
+    to_remove=False
+    optlist,optarg=getopt.getopt(sys.argv[1:],"p:v:r")
     for k,v in optlist:
         if k=="-p":
             platform=v
         elif k=="-v":
             version=v
+        elif k=="-r":
+            to_remove=True
     if platform is None or version is None:
         usage()
     for p in optarg:
         install_can(p,platform,version)
+        if to_remove:
+            print "Removing %s"%p
+            os.unlink(p)
