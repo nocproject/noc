@@ -14,7 +14,7 @@ import os,datetime,re,datetime,threading
 from noc.main.refbooks.downloaders import downloader_registry
 from django.contrib import databrowse
 from django.db.models.signals import class_prepared,pre_save,pre_delete
-from noc.lib.fields import TextArrayField
+from noc.lib.fields import TextArrayField,PickledField
 from noc.lib.middleware import get_user
 from noc import settings
 from noc.lib.timepattern import TimePattern as TP
@@ -125,12 +125,16 @@ class AuditTrail(models.Model):
         user=get_user() # Retrieve user from thread local storage
         if not user or not user.is_authenticated():
             return # No user initialized, no audit trail
+        subject=str(instance)
+        if len(subject)>127:
+            # Narrow subject
+            subject=subject[:62]+" .. "+subject[-62:]
         AuditTrail(
             user=user,
             model=sender.__name__,
             db_table=sender._meta.db_table,
             operation=operation,
-            subject=str(instance),
+            subject=subject,
             body=message
         ).save()
 ##
@@ -775,3 +779,35 @@ class UserProfileContact(models.Model):
     time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
     notification_method=models.CharField("Method",max_length=16,choices=USER_NOTIFICATION_METHOD_CHOICES)
     params=models.CharField("Params",max_length=256)
+##
+## Quarantine for automatical changes
+##
+class ChangesQuarantine(models.Model):
+    class Meta:
+        verbose_name="Changes Quarantine"
+        verbose_name_plural="Changes Quarantine"
+    # Quarantine types. name -> view_url
+    quarantine_types={
+    }
+    #
+    timestamp=models.DateTimeField("Timestamp",auto_now_add=True)
+    changes_type=models.CharField("Type",choices=[(x,x) for x in quarantine_types],max_length=64)
+    subject=models.CharField("Subject",max_length=256)
+    data=PickledField("Data")
+    def __unicode__(self):
+        return u"%s: %s: %s"%(self.timestamp,self.changes_type,self.subject)
+##
+## Processing rules for changes quarantine
+##
+class ChangesQuarantineRule(models.Model):
+    class Meta:
+        verbose_name="Changes Quarantine Rule"
+        verbose_name="Changes Quarantine Rules"
+    name=models.CharField("Name",max_length=64,unique=True)
+    is_active=models.BooleanField("Is Active",default=True)
+    changes_type=models.CharField("Type",choices=[(x,x) for x in ChangesQuarantine.quarantine_types],max_length=64)
+    subject_re=models.CharField("Subject",max_length=256)
+    action=models.CharField("Action",max_length=1,choices=[("I","Ignore"),("A","Accept"),("Q","Quarantine")])
+    description=models.TextField("Description",null=True,blank=True)
+    def __unicode__(self):
+        return self.name
