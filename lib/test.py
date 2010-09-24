@@ -379,15 +379,15 @@ class ScriptTestCase(unittest.TestCase):
         # Prepare access profile
         a=AccessProfile()
         a.profile=profile.name
-        a.profile=profile.name
         if self.snmp_get or self.snmp_getnext:
             a.snmp_ro="public"
         # Run script.
-        script=script_registry[self.script](profile,ActivatorStub(self),a,**self.input)
+        script=script_registry[self.script](profile(),ActivatorStub(self),a,**self.input)
         script.run()
         # Parse script result
         if script.result:
             result=cPickle.loads(script.result)
             self.assertEquals(result,self.result)
         else:
+            print script.error_traceback
             self.assertEquals(script.error_traceback,None)
