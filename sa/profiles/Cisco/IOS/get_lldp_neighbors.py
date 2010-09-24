@@ -14,7 +14,7 @@ from noc.lib.validators import is_int,is_ipv4
 import re
 
 rx_summary_split=re.compile(r"^Device ID.+?\n",re.MULTILINE|re.IGNORECASE)
-rx_s_line=re.compile(r"^\S+\s+(?P<local_if>\S+)\s+\d+\s+(?P<capability>\S*)\s+(?P<remote_if>.+)$")
+rx_s_line=re.compile(r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[0-9/\.]*)\s+\d+\s+(?P<capability>\S*)\s+(?P<remote_if>.+)$")
 rx_chassis_id=re.compile(r"^Chassis id:\s*(?P<id>\S+)",re.MULTILINE|re.IGNORECASE)
 rx_system=re.compile(r"^System Name:\s*(?P<name>\S+)",re.MULTILINE|re.IGNORECASE)
 rx_mac=re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
