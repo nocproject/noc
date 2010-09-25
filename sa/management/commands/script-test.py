@@ -9,16 +9,12 @@
 """
 from django.core.management.base import BaseCommand
 from noc.lib.test import ScriptTestCase
-import os,types
+import os,types,sys
 
 class Command(BaseCommand):
     help="Dump script tests data"
-    def get_tests(self,root=None):
-        p=os.path.join("sa","profiles")
-        if root:
-            for n in root.split("."):
-                p=os.path.join(p,n)
-        for dirpath,dirnames,files in os.walk(p):
+    def get_tests(self,filter):
+        for dirpath,dirnames,files in os.walk(os.path.join("sa","profiles")):
             parts=dirpath.split(os.sep)
             if parts[-1]=="tests":
                 for f in [f for f in files if f.endswith(".py") and not f.startswith(".") and f!="__init__.py"]:
@@ -27,7 +23,8 @@ class Command(BaseCommand):
                     for n in dir(m):
                         o=getattr(m,n)
                         if type(o)==types.TypeType and issubclass(o,ScriptTestCase) and o!=ScriptTestCase:
-                            yield o
+                            if len([x for x,y in zip(o.script.split("."),filter) if x==y or y is None])==3:
+                                yield o
     
     def display(self,tests):
         r={} # Profile -> script -> platform -> version
@@ -54,8 +51,14 @@ class Command(BaseCommand):
                     print "            "+", ".join([(v+" [S]" if snmp else v) for v,snmp in versions])
             
     def handle(self, *args, **options):
+        filter=[None,None,None]
         if len(args)>0:
-            root=args[0]
-        else:
-            root=None
-        self.display(self.get_tests(root))
+            filter=args[0].split(".")
+            l=len(filter)
+            if l>3:
+                print "Invalid filter"
+                sys.exit(1)
+            if l<3:
+                filter+=[None]*(3-l)
+            filter=[(x if x!="*" else None) for x in filter]
+        self.display(self.get_tests(filter))
