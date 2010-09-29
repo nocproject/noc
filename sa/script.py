@@ -37,6 +37,7 @@ scheme_id={
 ##
 class TimeOutError(Exception): pass
 class LoginError(Exception): pass
+class CLISyntaxError(Exception): pass
 ##
 ##
 ##
@@ -133,6 +134,7 @@ class Script(threading.Thread):
     TIMEOUT=120 # 2min by default
     #
     LoginError=LoginError
+    CLISyntaxError=CLISyntaxError
 
     def __init__(self,profile,activator,access_profile,parent=None,**kwargs):
         self.start_time=time.time()
@@ -228,6 +230,7 @@ class Script(threading.Thread):
         
     def run(self):
         self.debug("Running")
+        result=None
         try:
             result=self.guarded_run()
             self.result=self.serialize_result(result)
@@ -246,7 +249,7 @@ class Script(threading.Thread):
             self.error_traceback="\n".join(r)
             self.debug("Script traceback:\n%s"%self.error_traceback)
         self.debug("Closing")
-        if self.activator.to_save_output:
+        if self.activator.to_save_output and result:
             self.activator.save_result(result,self.motd)
         if self.cli_provider:
             self.activator.request_call(self.cli_provider.close)
@@ -314,6 +317,10 @@ class Script(threading.Thread):
         if isinstance(data,Exception):
             # Exception captured
             raise data
+        # Check for syntax error
+        if self.profile.pattern_syntax_error and re.search(self.profile.pattern_syntax_error,data):
+            raise self.CLISyntaxError()
+        # Echo cancelation
         if self.strip_echo and data.lstrip().startswith(cmd):
             data=data.lstrip()
             if data.startswith(cmd+"\n"):
