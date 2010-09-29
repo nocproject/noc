@@ -10,7 +10,7 @@
 from django.db import models
 from noc.settings import config
 from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
-from noc.lib.tt import tt_url,admin_tt_url
+from noc.lib.tt import tt_url
 from noc.lib.rpsl import rpsl_format
 from noc.lib.fields import INETField,InetArrayField,AutoCompleteTagsField
 from noc.sa.profiles import profile_registry
@@ -461,42 +461,6 @@ class Peer(models.Model):
     def _tt_url(self):
         return tt_url(self)
     tt_url=property(_tt_url)
-    def admin_tt_url(self):
-        return admin_tt_url(self)
-    admin_tt_url.short_description="TT"
-    admin_tt_url.allow_tags=True
-    def admin_import_filter(self):
-        r=[]
-        if self.import_filter:
-            r.append(self.import_filter)
-        if self.import_filter_name:
-            r.append("(%s)"%self.import_filter_name)
-        return "<BR/>".join(r)
-    admin_import_filter.short_description="Import Filter"
-    admin_import_filter.allow_tags=True
-    def admin_export_filter(self):
-        r=[]
-        if self.export_filter:
-            r.append(self.export_filter)
-        if self.export_filter_name:
-            r.append("(%s)"%self.export_filter_name)
-        return "<BR/>".join(r)
-    admin_export_filter.short_description="Export Filter"
-    admin_export_filter.allow_tags=True
-    def admin_local_ip(self):
-        r=[self.local_ip]
-        if self.local_backup_ip:
-            r+=[self.local_backup_ip]
-        return "<BR/>".join(r)
-    admin_local_ip.short_description="Local Address"
-    admin_local_ip.allow_tags=True
-    def admin_remote_ip(self):
-        r=[self.remote_ip]
-        if self.remote_backup_ip:
-            r+=[self.remote_backup_ip]
-        return "<BR/>".join(r)
-    admin_remote_ip.short_description="Local Address"
-    admin_remote_ip.allow_tags=True
     def _all_communities(self):
         r={}
         for cl in [self.peering_point.communities,self.peer_group.communities,self.communities]:

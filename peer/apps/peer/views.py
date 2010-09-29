@@ -8,6 +8,7 @@
 from django.contrib import admin
 from noc.lib.app import ModelApplication
 from noc.peer.models import Peer
+from noc.lib.tt import admin_tt_url
 ##
 ## Peer admin
 ##
@@ -47,6 +48,57 @@ class PeerAdmin(admin.ModelAdmin):
     def mark_as_shutdown(self,request,queryset):
         return self.set_peer_status(request,queryset,"S","shutdown")
     mark_as_shutdown.short_description="Mark as shutdown"
+    ##
+    ##
+    ##
+    def admin_tt_url(self,obj):
+        return admin_tt_url(obj)
+    admin_tt_url.short_description="TT"
+    admin_tt_url.allow_tags=True
+    ##
+    ##
+    ##
+    def admin_import_filter(self,obj):
+        r=[]
+        if obj.import_filter:
+            r+=[obj.import_filter]
+        if obj.import_filter_name:
+            r+=["(%s)"%obj.import_filter_name]
+        return "<BR/>".join(r)
+    admin_import_filter.short_description="Import Filter"
+    admin_import_filter.allow_tags=True
+    ##
+    ##
+    ##
+    def admin_export_filter(self,obj):
+        r=[]
+        if obj.export_filter:
+            r+=[obj.export_filter]
+        if obj.export_filter_name:
+            r+=["(%s)"%obj.export_filter_name]
+        return "<BR/>".join(r)
+    admin_export_filter.short_description="Export Filter"
+    admin_export_filter.allow_tags=True
+    ##
+    ##
+    ##
+    def admin_local_ip(self,obj):
+        r=[obj.local_ip]
+        if obj.local_backup_ip:
+            r+=[obj.local_backup_ip]
+        return "<BR/>".join(r)
+    admin_local_ip.short_description="Local Address"
+    admin_local_ip.allow_tags=True
+    ##
+    ##
+    ##
+    def admin_remote_ip(self,obj):
+        r=[obj.remote_ip]
+        if obj.remote_backup_ip:
+            r+=[obj.remote_backup_ip]
+        return "<BR/>".join(r)
+    admin_remote_ip.short_description="Remote Address"
+    admin_remote_ip.allow_tags=True
 ##
 ## Peer application
 ##
