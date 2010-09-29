@@ -16,6 +16,7 @@ class Profile(noc.sa.profiles.Profile):
     supported_schemes=[TELNET,SSH]
     pattern_more="^ --More--"
     pattern_unpriveleged_prompt=r"^\S+?>"
+    pattern_syntax_error=r"% Invalid input detected at"
     command_disable_pager="terminal length 0"
     command_super="enable"
     command_enter_config="configure terminal"
