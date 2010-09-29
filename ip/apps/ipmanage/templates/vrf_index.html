@@ -214,7 +214,7 @@ function run_pingtest() {
             {% if a.ip %}
                 <TR class="{%cycle 'row1' 'row2'%}">
                 <TD {%if r%}class="r{{r.id}}"{%endif%}></TD>
-                <TD><img id="s_{{a.ip}}" class="s_img"/></TD>
+                <TD><img id="s_{{a.ip}}" class="s_img" src="/static/img/blank_1x1.png"/></TD>
                 <TD>
                     {% if can_allocate %}
                         <A HREF="{% url ip:ipmanage:change_address vrf.id a.ip %}">{{a.ip}}</A>
