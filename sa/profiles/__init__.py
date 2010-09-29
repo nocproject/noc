@@ -66,6 +66,9 @@ class Profile(object):
     # If pattern_more is a list of (pattern,command)
     # send appropriative command
     pattern_more="^---MORE---"
+    # Regular expression to catch the syntax errors in cli output.
+    # If CLI output matches pattern_syntax_error, then CLISyntaxError exception raised
+    pattern_syntax_error=None
     # Sequence to be send to list forward pager
     # If pattern_more is string and is matched
     command_more="\n"
