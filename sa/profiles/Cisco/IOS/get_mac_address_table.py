@@ -22,18 +22,28 @@ class Script(noc.sa.script.Script):
             cmd+=" interface %s"%interface
         if vlan is not None:
             cmd+=" vlan %s"%vlan
-        vlans=self.cli(cmd)
+        try:
+            macs=self.cli(cmd)
+        except self.CLISyntaxError:
+            cmd=cmd.replace("mac address-table","mac-address-table")
+            macs=self.cli(cmd)
         r=[]
-        for l in vlans.splitlines():
+        for l in macs.splitlines():
+            if l.startswith("Multicast Entries"):
+                break # Additional section on 4500
             match=rx_line.match(l.strip())
             if match:
-                interfaces=match.group("interfaces")
-                if interfaces.lower() in ("router","switch"):
+                mac=match.group("mac")
+                if mac.startswith("3333."):
+                    continue # Static entries
+                interfaces=[i.strip() for i in match.group("interfaces").split(",")]
+                interfaces=[i for i in interfaces if i.lower() not in ("router","switch","stby-switch")]
+                if not interfaces:
                     continue
                 r.append({
                     "vlan_id"   : match.group("vlan_id"),
-                    "mac"       : match.group("mac"),
-                    "interfaces": [interfaces],
+                    "mac"       : mac,
+                    "interfaces": interfaces,
                     "type"      : {"dynamic":"D","static":"S"}[match.group("type").lower()],
                 })
         return r
