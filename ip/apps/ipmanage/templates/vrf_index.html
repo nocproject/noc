@@ -233,7 +233,7 @@ function run_pingtest() {
             {% else %}
                 <TR CLASS="freeip">
                 <TD {%if r%}class="r{{r.id}}"{%endif%}></TD>
-                <TD></TD>
+                <TD><img id="s_{{a.ip}}" class="s_img" src="/static/img/blank_1x1.png"/></TD>
                 <TD COLSPAN="4">
                     {% if can_allocate %}
                         <A HREF="{% url ip:ipmanage:assign_new_address vrf.id a %}">{{a}}</A>
