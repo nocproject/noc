@@ -72,7 +72,7 @@ def get_ecma_re():
 ##
 ## Backspace pattern
 ##
-rx_bs=re.compile("[^\x08]\x08")
+rx_bs=re.compile("(^\x08)|([^\x08]\x08)|(\x08 )")
 ##
 ## \r<spaces>\r should be cut
 ##
@@ -130,6 +130,10 @@ def strip_control_sequences(s):
     Triple backspace
     >>> strip_control_sequences('123\x08\x08\x084')
     '4'
+    
+    Backspaces followed with spaces
+    >>> strip_control_sequences('\x08 \x08\x08 \x08\x08 \x08\x08 test')
+    'test'
     
     ASCII mess
     >>> strip_control_sequences('\x1b[2J\x1b[?7l\x1b[3;23r\x1b[?6l\x1b[24;27H\x1b[?25h\x1b[24;27H\x1b[?6l\x1b[1;24r\x1b[?7l\x1b[2J\x1b[24;27H\x1b[1;24r\x1b[24;27H\x1b[2J\x1b[?7l\x1b[1;24r\x1b[?6l\x1b[24;1H\x1b[1;24r\x1b[24;1H\x1b[24;1H\x1b[2K\x1b[24;1H\x1b[?25h\x1b[24;1H\x1b[24;1Hswitch# \x1b[24;1H\x1b[24;13H\x1b[24;1H\x1b[?25h\x1b[24;13H')
