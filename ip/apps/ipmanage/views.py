@@ -463,8 +463,11 @@ class IPManageAppplication(Application):
         if not r:
             return self.render_json(None)
         activator_name=r[0].managed_object.activator.name
+        addresses=list(generate_ips(p.network,p.broadcast))
+        if len(addresses)>2:
+            addresses=addresses[1:-1]
         t=ReduceTask.create_task(["SAE"],"pyrule:get_single_result",{},
-            "ping_check",{"activator_name":activator_name,"addresses":[a.ip for a in addresses]},60)
+            "ping_check",{"activator_name":activator_name,"addresses":addresses},60)
         return self.render_json(t.id)
     view_ping_check.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\S+)/ping_check/$"
     view_ping_check.url_name="ping_check"
