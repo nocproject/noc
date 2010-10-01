@@ -104,7 +104,7 @@ class TopologyDiscovery(object):
                         self.add_link(R,"MAC%d"%vlan)
             else:
                 # Perform discovery for common tree
-                t=MACTopology([(o,r["mac"]) for o,r in data])
+                t=MACTopology(data)
                 for R in t.discover():
                     self.add_link(R,"MAC")
                 t.dot("mac")

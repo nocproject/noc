@@ -17,7 +17,10 @@ class Counter(object):
     ## Return a counter value
     ##
     def __getitem__(self,key):
-        return self.data[key]
+        try:
+            return self.data[key]
+        except KeyError:
+            return 0
     ##
     ## Increment key counter per 1
     ##
@@ -138,6 +141,9 @@ class Object(Node):
     def __init__(self,topology,managed_object):
         self.managed_object=managed_object
         super(Object,self).__init__(topology,managed_object.name+"\\n"+managed_object.profile_name)
+    
+    def interfaces(self):
+        return set([i for o,i in self.connections])
 ##
 ## Basic topology class
 ## Containing nodes and connections
