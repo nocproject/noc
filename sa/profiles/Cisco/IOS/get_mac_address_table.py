@@ -37,7 +37,7 @@ class Script(noc.sa.script.Script):
                 if mac.startswith("3333."):
                     continue # Static entries
                 interfaces=[i.strip() for i in match.group("interfaces").split(",")]
-                interfaces=[i for i in interfaces if i.lower() not in ("router","switch","stby-switch","yes","no")]
+                interfaces=[i for i in interfaces if i.lower() not in ("router","switch","stby-switch","yes","no","-")]
                 if not interfaces:
                     continue
                 r.append({
