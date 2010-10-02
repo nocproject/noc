@@ -16,11 +16,13 @@ class Script(noc.sa.script.Script):
     name="Generic.get_topology_data"
     implements=[IGetTopologyData]
     requires=[]
-    def execute(self,get_mac=False,get_lldp=False):
+    def execute(self,get_mac=False,get_arp=False,get_lldp=False):
         print get_mac
         data={
             "has_mac" : False,
             "mac"     : [],
+            "has_arp" : False,
+            "arp"     : [],
             "has_lldp": False,
             "lldp_neighbors" : [],
             "portchannels"   : [],
@@ -31,6 +33,12 @@ class Script(noc.sa.script.Script):
             if mac_data:
                 data["has_mac"]=True
                 data["mac"]=mac_data
+            # Get ARP cache
+            if get_arp and self.scripts.has_script("get_arp"):
+                arp_data=self.scripts.get_arp()
+                if arp_data:
+                    data["has_arp"]=True
+                    data["arp"]=arp_data
         # get lldp neighbors
         if get_lldp:
             if self.scripts.has_script("get_chassis_id"):

@@ -9,11 +9,13 @@
 """
 from base import *
 from igetmacaddresstable import IGetMACAddressTable
+from igetarp import IGetARP
 from igetlldpneighbors import IGetLLDPNeighbors
 from igetportchannel import IGetPortchannel
 
 class IGetTopologyData(Interface):
     get_mac=BooleanParameter(required=False,default=False)  # Get MAC address table
+    get_arp=BooleanParameter(required=False,default=False)  # Get ARP cache
     get_lldp=BooleanParameter(required=False,default=False) # Get LLDP neighbor information
     
     returns=DictParameter(attrs={
@@ -22,6 +24,11 @@ class IGetTopologyData(Interface):
         # Mac address table.
         # Returned only if get_mac is True
         "mac"        : IGetMACAddressTable.returns,
+        # Set to true if "arp" is not empy
+        "has_arp"    : BooleanParameter(required=False,default=False),
+        # ARP Cache
+        # Returned only if get_arp is True
+        "arp"        : IGetARP.returns,
         # Set to true if "lldp_neighbors" is not empty
         "has_lldp"   : BooleanParameter(required=False,default=False),
         # Chassis ID, returned only if get_lldp is set
