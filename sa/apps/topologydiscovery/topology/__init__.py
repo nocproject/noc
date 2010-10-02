@@ -60,7 +60,7 @@ class TopologyDiscovery(object):
     ##
     ## data is a list of (managed_object,IGetTopologyData)
     ##
-    def __init__(self,data,mac=True,per_vlan_mac=False,lldp=True):
+    def __init__(self,data,mac=True,per_vlan_mac=False,arp=True,lldp=True):
         #
         self.links=[] # List of Link
         self.object_links={} # object->link
