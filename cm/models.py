@@ -346,7 +346,7 @@ class Config(Object):
     ##
     ##
     def change_link(self):
-        return "<a href='%s'>Change</a>"%site.reverse("cm:config:change",self.id)
+        return "<a href='%s' class='changelink'>Change</a>"%site.reverse("cm:config:change",self.id)
     change_link.short_description="Change"
     change_link.allow_tags=True
 
