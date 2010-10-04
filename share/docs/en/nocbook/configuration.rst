@@ -185,6 +185,119 @@ port
 ^^^^
 Database port, if not default
 
+.. _noc-conf-authentication:
+
+authentication section
+++++++++++++++++++++++
+
+.. _noc-conf-authentication-method:
+
+method
+^^^^^^
+User authentication method. Must be one of:
+
+* *local* - Use NOC's database to authenticate the users
+* *ldap* - Use LDAP server to authenticate users (python-ldap library required)
+
+*local* set by default
+
+.. _noc-conf-authentication-ldap_server:
+
+ldap_server
+^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+An URL of LDAP server. If your LDAP server requires to directly specify
+partitions (Like and Apache DS), place partition DN into path::
+
+    ldap://ldap.example.com/o=partition
+
+.. _noc-conf-authentication-ldap_bind_method:
+
+ldap_bind_method
+^^^^^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+LDAP bind method. Possible values are:
+
+* *simple* - use simple user/password authentication
+
+.. _noc-conf-authentication-ldap_bind_dn:
+
+ldap_bind_dn
+^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+Technical DN to lookup user information. Bind as anonymous user if not set
+
+.. _noc-conf-authentication-ldap_bind_password:
+
+ldap_bind_password
+^^^^^^^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+Password for technical user. See :ref:noc-conf-authentication-ldap_bind_dn for details.
+Leave empty for anonymous bind.
+
+.. _noc-conf-authentication-ldap_users_base:
+
+ldap_users_base
+^^^^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+Base DN to search for users
+
+.. _noc-conf-authentication-ldap_users_filter:
+
+ldap_users_filter
+^^^^^^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+LDAP Filter expression to find the user. *%%(username)s* string
+will be substituted with properly quoted username
+
+.. _noc-conf-authentication-ldap_groups_base:
+
+ldap_groups_base
+^^^^^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+Base DN to search for groups
+
+.. _noc-conf-authentication-ldap_required_group:
+
+ldap_required_group
+^^^^^^^^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+Group DN. If set, disable user if not in the group.
+
+.. _noc-conf-authentication-ldap_required_filter:
+
+ldap_required_filter
+^^^^^^^^^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+LDAP Filter expression to check the user. *%%(user_dn)s* string
+will be substituted with user's DN
+
+.. _noc-conf-authentication-ldap_superuser_group:
+
+ldap_superuser_group
+^^^^^^^^^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+Group DN. If set, grant superuser permissions if user in the group.
+
+.. _noc-conf-authentication-ldap_superuser_filter:
+
+ldap_superuser_filter
+^^^^^^^^^^^^^^^^^^^^^
+Applicable only for *ldap* authentication method.
+
+LDAP Filter expression to check the user. *%%(user_dn)s* string
+will be substituted with user's DN
+
 .. _noc-conf-customization:
 
 customization section
