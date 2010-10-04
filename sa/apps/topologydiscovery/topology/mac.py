@@ -17,7 +17,7 @@ else:
     ##
     ## Pure-python replacement for Python 2.5
     ##
-    def combinations(s):
+    def combinations(s,n=None):
         ss=s[:]
         while ss:
             c=ss.pop(0)
