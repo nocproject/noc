@@ -4,8 +4,7 @@
 import ConfigParser,sys
 
 config=ConfigParser.SafeConfigParser()
-config.read("etc/noc.defaults")
-config.read("etc/noc.conf")
+config.read(["etc/noc.defaults","etc/noc.conf"])
 
 DEBUG = config.get("main","debug")
 TEMPLATE_DEBUG = DEBUG
@@ -45,6 +44,22 @@ MONTH_DAY_FORMAT = config.get("main","month_day_format")
 YEAR_MONTH_FORMAT= config.get("main","year_month_format")
 DATETIME_FORMAT  = config.get("main","datetime_format")
 
+# Process authentication settings
+AUTH_METHOD = config.get("authentication","method")
+
+if AUTH_METHOD=="ldap":
+    # Process LDAP-specific settings
+    AUTH_LDAP_SERVER          = config.get("authentication","ldap_server")
+    AUTH_LDAP_BIND_METHOD     = config.get("authentication","ldap_bind_method")
+    AUTH_LDAP_BIND_DN         = config.get("authentication","ldap_bind_dn")
+    AUTH_LDAP_BIND_PASSWORD   = config.get("authentication","ldap_bind_password")
+    AUTH_LDAP_USERS_BASE      = config.get("authentication","ldap_users_base")
+    AUTH_LDAP_USERS_FILTER    = config.get("authentication","ldap_users_filter")
+    AUTH_LDAP_REQUIRED_GROUP  = config.get("authentication","ldap_required_group")
+    AUTH_LDAP_REQUIRED_FILTER = config.get("authentication","ldap_required_filter")
+    AUTH_LDAP_SUPERUSER_GROUP = config.get("authentication","ldap_superuser_group")
+    AUTH_LDAP_SUPERUSER_FILTER= config.get("authentication","ldap_superuser_filter")
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -67,6 +82,15 @@ ADMIN_MEDIA_PREFIX = '/media/'
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = config.get("main","secret_key")
 
+# Set up authentication backends
+if AUTH_METHOD=="local":
+    AUTHENTICATION_BACKENDS= (
+        'django.contrib.auth.backends.ModelBackend',
+    )
+elif AUTH_METHOD=="ldap":
+    AUTHENTICATION_BACKENDS= (
+        'noc.main.auth.backends.ldapbackend.NOCLDAPBackend',
+    )
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',

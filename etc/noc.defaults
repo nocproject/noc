@@ -54,6 +54,48 @@ host     =
 port     =
 
 #
+# NOC User Authentication
+#
+[authentication]
+#
+# Authentication method. Must be one of:
+# local - use NOC's database to authenticate users
+# ldap - use LDAP server to authenticate users (python-ldap library required)
+#
+method = local
+
+# LDAP server URI (Applicable only for "ldap" method)
+# If your LDAP server supports partitions (i.e Apache DS),
+# specify suffix in the URI: ldap://ldap.exaple.com/suffix
+ldap_server = ldap://ldap.example.com/
+# LDAP bind method:
+#     simple - authenticate user against userPassword
+ldap_bind_method = simple
+# technical DN to lookup user and group information
+# leave empty for anonymous bind
+ldap_bind_dn =
+# Password for technical DN
+ldap_bind_password = 
+# Users search base
+ldap_users_base = ou=Users,ou=nocproject,ou=org
+# Filter to search users by username
+# %%(username)s will be substituted with original user name
+ldap_users_filter = (&(objectClass=inetOrgPerson)(uid=%%(username)s))
+# Groups search base
+ldap_groups_base = ou=Groups,ou=nocproject,ou=org
+# Additionaly check user in group, before permitting to log in
+# Set user.is_active flag to false when user is not in a group
+ldap_required_group = 
+# Filter to search user in required group
+# %%(user_dn)s will be expanded with user DN
+ldap_required_filter = (uniqueMember=%%(user_dn)s)
+# Grant superuser permissions if user in group
+ldap_superuser_group =
+# Filter to search user in superusers group
+# %%(user_dn)s will be expanded with user DN
+ldap_superuser_filter = (uniqueMember=%%(user_dn)s)
+
+#
 # Site customization
 #
 [customization]
