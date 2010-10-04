@@ -9,6 +9,22 @@ from __future__ import with_statement
 from base import *
 import types,pprint,itertools
 
+## Set up itertools
+if hasattr(itertools,"combinations"):
+    # Python 2.6 or later
+    combinations=itertools.combinations
+else:
+    ##
+    ## Pure-python replacement for Python 2.5
+    ##
+    def combinations(s):
+        ss=s[:]
+        while ss:
+            c=ss.pop(0)
+            for cc in ss:
+                yield (c,cc)
+    
+
 class Cloud(Node):
     dot_shape="circle"
     c=itertools.count()
@@ -250,7 +266,7 @@ class MACTopology(Topology):
     def build_skeleton_paths(self):
         # Find minimal set of skeleton paths
         # Such as no path closed within another
-        for o1,o2 in itertools.combinations(self.all_objects(),2):
+        for o1,o2 in combinations(self.all_objects(),2):
             # Check o1 knows about o2 and vise versa
             if self.fib.lookup(o1,o2) is None or self.fib.lookup(o2,o1) is None:
                 continue
