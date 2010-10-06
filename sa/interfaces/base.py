@@ -347,6 +347,67 @@ class InstanceOfParameter(Parameter):
 ##
 ##
 ##
+class SubclassOfParameter(Parameter):
+    """
+    >>> class C: pass
+    >>> class C1(C): pass
+    >>> class C2(C1): pass
+    >>> class C3(C1): pass
+    >>> SubclassOfParameter(cls=C).clean(C2) and "Ok"
+    'Ok'
+    >>> SubclassOfParameter(cls=C).clean(1) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: SubclassOfParameter: 1
+    >>> SubclassOfParameter(cls="C").clean(C2) and "Ok"
+    'Ok'
+    >>> SubclassOfParameter(cls=C).clean(1) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: SubclassOfParameter: 1
+    >>> SubclassOfParameter(cls=C2).clean(C3) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: SubclassOfParameter: <class base.C3>
+    """
+    def __init__(self,cls,required=True,default=None):
+        super(SubclassOfParameter,self).__init__(required=required,default=default)
+        self.cls=cls
+        if isinstance(cls,basestring):
+            self.is_valid=self.is_valid_classname
+        else:
+            self.is_valid=self.is_valid_class
+    
+    def is_valid_classname(self,value):
+        def check_name(c,name):
+            # Check class name
+            if c.__name__==name:
+                return True
+            # Check base classes name
+            for bc in c.__bases__:
+                if check_name(bc,name):
+                    return True
+            #
+            return False
+        
+        return check_name(value,self.cls)
+    
+    def is_valid_class(self,value):
+        return issubclass(value,self.cls)
+    
+    def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
+        try:
+            if self.is_valid(value):
+                return value
+        except:
+            pass
+        self.raise_error(value)
+        
+##
+##
+##
 class ListOfParameter(ListParameter):
     """
     >>> ListOfParameter(element=IntParameter()).clean([1,2,3])
