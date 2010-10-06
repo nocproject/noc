@@ -336,8 +336,11 @@ class InstanceOfParameter(Parameter):
         return hasattr(value,"__class__") and value.__class__.__name__==self.cls
         
     def clean(self,value):
-        if value is None and self.default is not None:
-            return self.default
+        if value is None:
+            if self.default is not None:
+                return self.default
+            if not self.required:
+                return None
         try:
             if self.is_valid(value):
                 return value
@@ -369,6 +372,7 @@ class SubclassOfParameter(Parameter):
     Traceback (most recent call last):
     ...
     InterfaceTypeError: SubclassOfParameter: <class base.C3>
+    >>> SubclassOfParameter(cls="C",required=False).clean(None)
     """
     def __init__(self,cls,required=True,default=None):
         super(SubclassOfParameter,self).__init__(required=required,default=default)
@@ -396,8 +400,11 @@ class SubclassOfParameter(Parameter):
         return issubclass(value,self.cls)
     
     def clean(self,value):
-        if value is None and self.default is not None:
-            return self.default
+        if value is None:
+            if self.default is not None:
+                return self.default
+            if not self.required:
+                return None
         try:
             if self.is_valid(value):
                 return value
