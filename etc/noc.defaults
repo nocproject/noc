@@ -61,8 +61,15 @@ port     =
 # Authentication method. Must be one of:
 # local - use NOC's database to authenticate users
 # ldap - use LDAP server to authenticate users (python-ldap library required)
-#
+# http - use HTTP's REMOTE_USER for authentication
+# pyrule - use custom pyRule for authentication
+
 method = local
+#
+# pyRule, returning login form class.
+# Empty to use default auth_form_user_password
+#
+form_pyrule = 
 
 # LDAP server URI (Applicable only for "ldap" method)
 # If your LDAP server supports partitions (i.e Apache DS),
@@ -79,21 +86,21 @@ ldap_bind_password =
 # Users search base
 ldap_users_base = ou=Users,ou=nocproject,ou=org
 # Filter to search users by username
-# %%(username)s will be substituted with original user name
-ldap_users_filter = (&(objectClass=inetOrgPerson)(uid=%%(username)s))
+ldap_users_filter = (&(objectClass=inetOrgPerson)(uid={{user}}))
 # Groups search base
 ldap_groups_base = ou=Groups,ou=nocproject,ou=org
 # Additionaly check user in group, before permitting to log in
 # Set user.is_active flag to false when user is not in a group
 ldap_required_group = 
 # Filter to search user in required group
-# %%(user_dn)s will be expanded with user DN
-ldap_required_filter = (uniqueMember=%%(user_dn)s)
+ldap_required_filter = (|(uniqueMember={{dn}})(member={{user}}))
 # Grant superuser permissions if user in group
 ldap_superuser_group =
 # Filter to search user in superusers group
-# %%(user_dn)s will be expanded with user DN
-ldap_superuser_filter = (uniqueMember=%%(user_dn)s)
+ldap_superuser_filter = (|(uniqueMember={{dn}})(member={{user}}))
+
+# Authentication pyrule (for pyrule method)
+pyrule_authentication =
 
 #
 # Site customization

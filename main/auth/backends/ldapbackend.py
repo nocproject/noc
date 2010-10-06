@@ -7,11 +7,10 @@
 ##----------------------------------------------------------------------
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
+from django.template import Context, Template
 import settings,logging,types
 ## python-ldap library required
 import ldap
-
-logging.info("Initializing LDAP authentication backend")
 
 ##
 ## LDAP Authentication backend
@@ -35,6 +34,11 @@ class NOCLDAPBackend(ModelBackend):
             a[k]=unicode(v,"utf-8")
         return a
     ##
+    ## Expand template with context
+    ##
+    def expand_template(self,template,context):
+        return Template(template).render(Context(context))
+    ##
     ## Bind client
     ##
     def ldap_bind(self,client,username=None,password=None):
@@ -53,9 +57,20 @@ class NOCLDAPBackend(ModelBackend):
     ##
     ## Get username and password and return a user
     ##
-    def authenticate(self,username=None,password=None):
+    def authenticate(self,username=None,password=None,**kwargs):
         is_active=True     # User activity flag
         is_superuser=False # Superuser flag
+        # Prepare template context
+        context={
+            "username" : self.q(username),
+            "user"     : self.q(username)
+        }
+        if "@" in username:
+            u,d=username.split("@",1)
+            context["user"]         = self.q(u)
+            context["domain"]       = self.q(d)
+            context["domain_parts"] = [self.q(p) for p in d.split(".")]
+            
         try:
             # Prepare LDAP client
             client=ldap.initialize(settings.AUTH_LDAP_SERVER)
@@ -65,9 +80,10 @@ class NOCLDAPBackend(ModelBackend):
                 settings.AUTH_LDAP_BIND_PASSWORD if settings.AUTH_LDAP_BIND_PASSWORD else None
                 )
             # Search for user
-            filter=settings.AUTH_LDAP_USERS_FILTER%{"username":self.q(username)}
-            logging.debug("LDAP Search: filter: %s, base: %s"%(filter,settings.AUTH_LDAP_USERS_BASE))
-            ul=client.search_s(settings.AUTH_LDAP_USERS_BASE,ldap.SCOPE_SUBTREE,filter,["sn","givenname","mail"])
+            base=self.expand_template(settings.AUTH_LDAP_USERS_BASE,context)
+            filter=self.expand_template(settings.AUTH_LDAP_USERS_FILTER,context)
+            logging.debug("LDAP Search: filter: %s, base: %s"%(filter,base))
+            ul=client.search_s(base,ldap.SCOPE_SUBTREE,filter,["sn","givenname","mail"])
             if len(ul)==0:
                 # No user found
                 logging.error("LDAP user lookup error. User '%s' is not found"%username)
@@ -78,22 +94,26 @@ class NOCLDAPBackend(ModelBackend):
                 return None
             dn,attrs=ul[0]
             logging.debug("LDAP search returned: %s, %s"%(str(dn),str(attrs)))
+            # Populate context with DN
+            context["dn"]=dn
             # Try to authenticate
             client=ldap.initialize(settings.AUTH_LDAP_SERVER)
             self.ldap_bind(client,dn,password)
             # Check user is in required group
             if settings.AUTH_LDAP_REQUIRED_GROUP:
-                filter=settings.AUTH_LDAP_REQUIRED_FILTER%{"user_dn":dn}
-                logging.debug("LDAP checking user '%s' in group '%s'. filter=%s"%(dn,settings.AUTH_LDAP_REQUIRED_GROUP,filter))
-                ug=client.search_s(settings.AUTH_LDAP_REQUIRED_GROUP,ldap.SCOPE_BASE,filter,["uniqueMember"])
+                base=self.expand_template(settings.AUTH_LDAP_REQUIRED_GROUP,context)
+                filter=self.expand_template(settings.AUTH_LDAP_REQUIRED_FILTER,context)
+                logging.debug("LDAP checking user '%s' in group '%s'. filter: %s"%(dn,base,filter))
+                ug=client.search_s(base,ldap.SCOPE_BASE,filter,[])
                 is_active=len(ug)>0
                 if not is_active:
                     logging.debug("Disabling user '%s'"%username)
             # Check user is superuser
             if settings.AUTH_LDAP_SUPERUSER_GROUP:
-                filter=settings.AUTH_LDAP_SUPERUSER_FILTER%{"user_dn":dn}
-                logging.debug("LDAP checking user '%s' in group '%s'. filter=%s"%(dn,settings.AUTH_LDAP_SUPERUSER_GROUP,filter))
-                ug=client.search_s(settings.AUTH_LDAP_SUPERUSER_GROUP,ldap.SCOPE_BASE,filter,["uniqueMember"])
+                base=self.expand_template(settings.AUTH_LDAP_SUPERUSER_GROUP,context)
+                filter=self.expand_template(settings.AUTH_LDAP_SUPERUSER_FILTER,context)
+                logging.debug("LDAP checking user '%s' in group '%s'. filter: %s"%(dn,base,filter))
+                ug=client.search_s(base,ldap.SCOPE_BASE,filter,[])
                 is_superuser=len(ug)>0
                 if is_superuser:
                     logging.debug("Granting superuser access to '%s'"%username)
@@ -103,15 +123,10 @@ class NOCLDAPBackend(ModelBackend):
         logging.debug("LDAP user '%s' authenticated. User is %s"%(username,{True:"active",False:"disabled"}[is_active]))
         attrs=self.search_to_unicode(attrs)
         # Successfull bind
-        try:
-            user=User.objects.get(username=username)
-            user.set_password(password)
-        except User.DoesNotExist:
-            # Create user if does not exists
-            if "mail" not in attrs:
-                attrs["mail"]="invalid.mail@example.com"
-            logging.debug("Creating user '%s'"%username)
-            user=User.objects.create_user(username,attrs["mail"],password)
+        user,created=User.objects.get_or_create(username=username)
+        user.set_password(password)
+        if created:
+            logging.debug("Created user '%s'"%username)
         # Update user data and credentials
         if "givenName" in attrs:
             user.first_name=attrs["givenName"]

@@ -1,61 +1,66 @@
-html {
-    margin: 0;
-    padding: 0;
-    background: #FFFFFF;
-    text-align: left;
-    height: 100%;
-    font:12px/1.4em Verdana,sans-serif;
-}
-
 body {
     margin: 0;
     padding: 0;
-    background: #F0F0F0;
-    margin: 0px auto;
-    padding: 0px;
+    font-size: 12px;
+    font-family: "Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+    color: #333;
+    background-color: #C4C2BE;
+}
+
+.login {
     width: 300px;
-    height: 150px;
-    margin-top: 200px;
-    font:12px/1.4em Verdana,sans-serif;
+    background-color: #fff;
+    border: 1px solid #999;
 }
 
-#footer {
-    position: relative;
+.banner {
+    height: 24px;
+    background-color: #417690;
+    color: #F4F379;
+    font-size: 18px;
     padding: 4px;
-    border: 0px;
-    text-align: center;
-    clear: both;
 }
 
-#caption {
-    color: red;
-    text-align: center;
-    font: 30px Verdana,sans-serif;
-    padding: 0px;
-    margin: 0px;
-}
-
-#error {
+.submit {
     padding: 4px;
-    color: red;
+}
+
+ul.errorlist {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.errorlist li {
+    font-size: 12px !important;
+    display: block;
+    padding: 4px 5px 4px 25px;
+    margin: 0 0 3px 0;
+    border: 1px solid red;
+    color: white;
+    background: red url(/media/img/admin/icon_alert.gif) 5px .3em no-repeat;
+}
+
+input[type=submit] {
+    background: white url(/media/img/admin/nav-bg.gif) bottom repeat-x;
+    padding: 3px 5px;
+    color: black;
+    border: 1px solid #bbb;
+    border-color: #ddd #aaa #aaa #ddd;
+    font-weight: bold;
+    color: black;
     text-align: center;
 }
 
-LABEL {
-    color: red;
-    padding-left: 8px;
+.buttons {
+    text-align: center;
 }
 
-#content {
-    margin-left: 0px;
-    min-height:  0px;
+.copyright {
+    text-align: center;
+    padding: 4px;
 }
 
-#menu {
-    display: none;
-}
-
-#container {
-    min-width: 308px;
-    width: 308px;
+a:link, a:visited {
+    color: #5b80b2;
+    text-decoration: none;
 }
