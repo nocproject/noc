@@ -46,6 +46,7 @@ DATETIME_FORMAT  = config.get("main","datetime_format")
 
 # Process authentication settings
 AUTH_METHOD = config.get("authentication","method")
+AUTH_FORM_PYRULE = config.get("authentication","form_pyrule")
 
 if AUTH_METHOD=="ldap":
     # Process LDAP-specific settings
@@ -59,6 +60,9 @@ if AUTH_METHOD=="ldap":
     AUTH_LDAP_REQUIRED_FILTER = config.get("authentication","ldap_required_filter")
     AUTH_LDAP_SUPERUSER_GROUP = config.get("authentication","ldap_superuser_group")
     AUTH_LDAP_SUPERUSER_FILTER= config.get("authentication","ldap_superuser_filter")
+elif AUTH_METHOD=="pyrule":
+    # Process pyRule-specific settings
+    AUTH_PYRULE_AUTHENTICATION = config.get("authentication","pyrule_authentication")
 
 SITE_ID = 1
 
@@ -84,13 +88,14 @@ SECRET_KEY = config.get("main","secret_key")
 
 # Set up authentication backends
 if AUTH_METHOD=="local":
-    AUTHENTICATION_BACKENDS= (
-        'django.contrib.auth.backends.ModelBackend',
-    )
+    AUTHENTICATION_BACKENDS= ('noc.main.auth.backends.localbackend.NOCLocalBackend',)
+elif AUTH_METHOD=="http":
+    AUTHENTICATION_BACKENDS= ('noc.main.auth.backends.httpbackend.NOCHTTPBackend',)
 elif AUTH_METHOD=="ldap":
-    AUTHENTICATION_BACKENDS= (
-        'noc.main.auth.backends.ldapbackend.NOCLDAPBackend',
-    )
+    AUTHENTICATION_BACKENDS= ('noc.main.auth.backends.ldapbackend.NOCLDAPBackend',)
+elif AUTH_METHOD=="pyrule":
+    AUTHENTICATION_BACKENDS= ('noc.main.auth.backends.pyrulebackend.NOCPyRuleBackend',)
+    
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
@@ -114,6 +119,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
     'noc.lib.middleware.TLSMiddleware', # Thread local storage
 )
+if AUTH_METHOD=="http":
+    MIDDLEWARE_CLASSES=MIDDLEWARE_CLASSES+('django.contrib.auth.middleware.RemoteUserMiddleware',)
 
 ROOT_URLCONF = 'noc.urls'
 
