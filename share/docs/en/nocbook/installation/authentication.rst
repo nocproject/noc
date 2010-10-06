@@ -11,6 +11,15 @@ Local Authentication
 Local authentication method stores all user credentials directly in NOC database. Local
 authentication is the simplest method and require no additional configuration
 
+HTTP Authentication
+===================
+HTTP Authentication rely on REMOTE_USER variable, delegating all details of authentication process
+to the HTTP-server. You can use any authentication method, supported by webserver. To set up
+HTTP authentication change [authentication] settings of etc/noc.conf to::
+
+    method = http
+
+
 LDAP Authentication
 ===================
 LDAP authentication allows to authenticate users against enterprise LDAP or Active Directory database.
@@ -66,14 +75,23 @@ There is three search filters available
 * *ldap_required_filter* - Search for user DN in *ldap_required_group*
 * *ldap_superuser_filter* - Search for user DN in *ldap_superuser_group*
 
-*ldap_users_filter* accepts *%%(username)s* macro, which will be expanded with quoted user name.
+LDAP search bases and filters can hold any valid Django template to customize the search process according to your needs.
+Refer to "The template layer" part of Django's documentation for template syntax and filters available.
 
-*ldap_required_filter* and *ldap_superuser_filter* accept *%%(user_dn)s* macro, which will be replaced with users' DN
+Following variables can be used in templates. All variables are properly quoted and can be used in filters directly:
+
+============ ==========================================================================
+username     User name, as entered into login box
+user         Left part from @ symbol (if found), or username
+domain       Right part from @ symbol (if found), or not defined
+domain_parts A list of domain parts (i.e ['nocproject','org'] for nocproject.org)
+dn           user's DN, resolved against Users tree
+============ ==========================================================================
 
 Examples::
 
-    ldap_users_filter = (&(objectClass=inetOrgPerson)(uid=%%(username)s))
-    ldap_required_filter = (uniqueMember=%%(user_dn)s)
-    ldap_superuser_filter = (uniqueMember=%%(user_dn)s)
-
+    ldap_required_filter = (|(uniqueMember={{dn}})(member={{user}}))
+    ldap_users_filter = (&(objectClass=inetOrgPerson)(uid={{user}}))
+    ldap_users_base = ou=Users{% for p in domain_parts %},ou={{p}}{% endfor %}
+    ldap_users_base = ou={{p.0}},ou=Users,ou=nocproject,ou=org
 

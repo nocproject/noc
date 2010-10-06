@@ -8,6 +8,8 @@
 from django import forms
 from django.utils.encoding import force_unicode
 from django.utils.html import escape
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import authenticate
 ##
 ## Bound field with django-admin like label-tag
 ##
@@ -39,3 +41,38 @@ class NOCForm(forms.Form):
     def __iter__(self):
         for name,field in self.fields.items():
             yield NOCBoundField(self,field,name)
+##
+## Login form base class
+##
+class NOCAuthenticationForm(NOCForm):
+    def __init__(self,request=None,*args,**kwargs):
+        self.user_cache=request
+        self.request=None
+        super(NOCForm,self).__init__(*args,**kwargs)
+    
+    def clean(self):
+        # Check all required fields present, then try to authenticate
+        passed=True
+        for n,f in self.fields.items():
+            if f.required and n not in self.cleaned_data or not self.cleaned_data[n]:
+                passed=False
+                break
+        # Try to authenticate
+        if passed:
+            self.user_cache=authenticate(**self.cleaned_data)
+            if self.user_cache is None:
+                # Authentication failed
+                raise forms.ValidationError(_("Authentication failed"))
+            if not self.user_cache.is_active:
+                # Disabled user
+                raise forms.ValidationError(_("This account is inactive"))
+        
+        # Check cookies is working
+        if self.request:
+            if not self.request.session.test_cookie_worked():
+                raise forms.ValidationError(_("Your Web browser doesn't appear to have cookies enabled. Cookies are required for logging in."))
+        return self.cleaned_data
+    
+    def get_user(self):
+        return self.user_cache
+    
