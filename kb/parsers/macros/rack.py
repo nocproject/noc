@@ -7,6 +7,17 @@
 ##----------------------------------------------------------------------
 from noc.kb.parsers.macros import Macro as MacroBase
 import xml.parsers.expat
+import re
+from django.utils.html import escape
+
+rx_link=re.compile(r"^(.*)\|(https?://.+)$")
+
+def unroll_link(s):
+    match=rx_link.match(s)
+    if match:
+        return "<a href='%s'>%s</a>"%(match.group(2),escape(match.group(1)).replace(r"\n","<br/>"))
+    else:
+        return s
 ##
 ## RackSet representation
 ##
@@ -91,14 +102,14 @@ class RackSet(object):
         rack_labels=["<tr>"]
         for r in self.racks:
             if r.id:
-                rack_labels+=["<td colspan='2' class='racklabel'>%s</td>"%r.id]
+                rack_labels+=["<td colspan='2' class='racklabel'>%s</td>"%escape(r.id)]
             else:
                 rack_labels+=["<td colspan='2' class='racklabel'></td>"]
         rack_labels+=["</tr>"]
         # Render the matrix
         out=["<table class='rackset'>"]
         if self.id:
-            out+=["<caption>%s</caption>"%self.id]
+            out+=["<caption>%s</caption>"%escape(self.id)]
         if self.label in ["both","top"]:
             out+=rack_labels
         for i in range(self.height,0,-1):
@@ -158,21 +169,19 @@ class Allocation(object):
     ## Render allocation's cell
     ##
     def to_html(self):
-        def f(s):
-             return s.replace("\\n","<br/>")
         r=[]
         if self.id:
-            r+=["<b>%s</b>"%f(self.id)]
+            r+=["<b>%s</b>"%unroll_link(self.id)]
         if self.hostname:
-            r+=["<u>%s</u>"%self.hostname]
+            r+=["<u>%s</u>"%unroll_link(self.hostname)]
         if self.model:
-            r+=[f(self.model)]
+            r+=[unroll_link(self.model)]
         if self.serial:
-            r+=["S/N: %s"%self.serial]
+            r+=["S/N: %s"%unroll_link(self.serial)]
         if self.asset_no:
-            r+=["#%s"%self.asset_no]
+            r+=["#%s"%unroll_link(self.asset_no)]
         if self.description:
-            r+=["<i>%s</i>"%f(self.description)]
+            r+=["<i>%s</i>"%unroll_link(self.description)]
         if self.href:
             r+=["<a href='%s'>Link...</a>"%self.href]
         if self.slots:
@@ -201,19 +210,17 @@ class Slot(object):
         self.allocation.slots.append(self)
     
     def to_html(self):
-        def f(s):
-             return s.replace("\\n","<br/>")
         r=[]
         if self.hostname:
-            r+=["<u>%s</u>"%self.hostname]
+            r+=["<u>%s</u>"%unroll_link(self.hostname)]
         if self.model:
-            r+=[f(self.model)]
+            r+=[unroll_link(self.model)]
         if self.serial:
-            r+=["S/N: %s"%self.serial]
+            r+=["S/N: %s"%unroll_link(self.serial)]
         if self.asset_no:
-            r+=["#%s"%self.asset_no]
+            r+=["#%s"%unroll_link(self.asset_no)]
         if self.description:
-            r+=["<i>%s</i>"%f(self.description)]
+            r+=["<i>%s</i>"%unroll_link(self.description)]
         if self.href:
             r+=["<a href='%s'>Link...</a>"%self.href]
         return "<br/>".join(r)
