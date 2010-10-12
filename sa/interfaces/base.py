@@ -157,14 +157,27 @@ class StringParameter(Parameter):
     'no test'
     >>> StringParameter(default="test").clean(None)
     'test'
+    >>> StringParameter(choices=["1","2"]).clean("1")
+    '1'
+    >>> StringParameter(choices=["1","2"]).clean("3") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: StringParameter: '3'.
     """
+    def __init__(self,required=True,default=None,choices=None):
+        self.choices=choices
+        super(StringParameter,self).__init__(required=required,default=default)
+        
     def clean(self,value):
         if value is None and self.default is not None:
             return self.default
         try:
-            return str(value)
+            value=str(value)
         except:
             self.raise_error(value)
+        if self.choices and value not in self.choices:
+            self.raise_error(value)
+        return value
 ##
 ##
 ##
