@@ -19,7 +19,7 @@ class DLink_DES35xx_Link_Down_SYSLOG_Rule(ClassificationRule):
     patterns=[
         (r"^source$",r"^syslog$"),
         (r"^profile$",r"^DLink\.D[EG]S3xxx$"),
-        (r"^message$",r"INFO: Port (?P<interface>\S+) link down"),
+        (r"^message$",r"Port (?P<interface>\S+) link down"),
     ]
 
 ##
@@ -32,5 +32,5 @@ class DLink_DES35xx_Link_Up_SYSLOG_Rule(ClassificationRule):
     patterns=[
         (r"^profile$",r"^DLink\.D[EG]S3xxx$"),
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"INFO: Port (?P<interface>\S+) link up"),
+        (r"^message$",r"Port (?P<interface>\S+) link up"),
     ]

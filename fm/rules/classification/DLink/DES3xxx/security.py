@@ -17,7 +17,7 @@ class DLink_DES3xxx_Login_Success_SYSLOG_Rule(ClassificationRule):
     patterns=[
         (r"^profile$",r"^DLink\.D[EG]S3xxx$"),
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"Successful login through \S+ \(Username: (?P<user>\S+), IP: (?P<ip>\S+), MAC: \S+\)"),
+        (r"^message$",r"Successful login through \S+ \(Username: (?P<user>\S+)(?:, IP: (?P<ip>\S+))?(?:, MAC: \S+)?\)"),
     ]
 
 ##
@@ -29,7 +29,7 @@ class DLink_DES3xxx_Logout_SYSLOG_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^profile$",r"^DLink\.D[EG]S3xxx$"),
-        (r"^message$",r"Logout through \S+ \(Username: (?P<user>\S+), IP: (?P<ip>\S+), MAC: \S+\)"),
+        (r"^message$",r"Logout through \S+ \(Username: (?P<user>\S+)(?:, IP: (?P<ip>\S+))?(?:, MAC: \S+)?\)"),
         (r"^source$",r"^syslog$"),
     ]
 
@@ -42,7 +42,7 @@ class DLink_DES3xxx_Login_Failed_SYSLOG_Rule(ClassificationRule):
     preference=1000
     patterns=[
         (r"^source$",r"^syslog$"),
-        (r"^message$",r"Login failed through \S+ \(Username: (?P<user>\S+), IP: (?P<ip>\S+), MAC: \S+\)"),
+        (r"^message$",r"Login failed through \S+ \(Username: (?P<user>\S+)(?:, IP: (?P<ip>\S+))?(?:, MAC: \S+)?\)"),
         (r"^profile$",r"^DLink\.D[EG]S3xxx$"),
     ]
 
@@ -55,7 +55,7 @@ class DLink_DES3xxx_Session_timed_out_SYSLOG_Rule(ClassificationRule):
     preference=1000
     action=CLOSE_EVENT
     patterns=[
-        (r"^message$",r"\S+ session timed out \(Username: (?P<user>\S+), IP: (?P<ip>\S+), MAC: \S+\)"),
+        (r"^message$",r"\S+ session timed out \(Username: (?P<user>\S+)(?:, IP: (?P<ip>\S+))?(?:, MAC: \S+)?\)"),
         (r"^source$",r"^syslog$"),
         (r"^profile$",r"^DLink\.D[EG]S3xxx$"),
     ]

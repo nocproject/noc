@@ -20,5 +20,5 @@ class DLink_DES3xxx_Config_Changed_SYSLOG_Rule(ClassificationRule):
     patterns=[
         (r"^source$", r"^syslog$"),
         (r"^profile$",r"^DLink\.D[EG]S3xxx$"),
-        (r"^message$",r"INFO: Configuration"),
+        (r"^message$",r"Configuration"),
     ]
