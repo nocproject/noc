@@ -11,20 +11,21 @@
 <DIV CLASS="module">
     <TABLE SUMMARY="Object info" WIDTH="100%">
         <CAPTION>Object info</CAPTION>
-        <TR><TD><b>ID</b></TD><TD>{{o.id}}</TD></TR>
+        <TR><TD WIDTH="100px"><b>ID</b></TD><TD>{{o.id}}</TD></TR>
         <TR><TD><b>Repo Path</b></TD><TD>{{o.repo_path}}</TD></TR>
         <TR><TD><b>From Revision</b></TD><TD>{{r1}}</TD></TR>
         <TR><TD><b>To Revision</b></TD><TD>{{r2}}</TD></TR>
         <TR><TD><b>Categories</b></TD><TD>{% for c in o.categories.all %} {{c}} {% endfor %}</TD></TR>
+        <TR><TD><b>Preview Mode</b></TD><TD>
+            <form>
+                <select onchange="location = this.options[this.selectedIndex].value;">
+                    <option value="{% cm_url diff_rev o.id 'u' r1 r2 %}" {%ifequal mode "u"%} selected{% endifequal %}>Unified Diff</option>
+                    <option value="{% cm_url diff_rev o.id '2' r1 r2 %}" {%ifequal mode "2"%} selected{% endifequal %}>Side-by-side</option>
+                </select>
+            </form>
+        </TD></TR>
     </TABLE>
 </DIV>
-{%ifequal mode "2"%}
-<A HREF="{% cm_url diff_rev o.id 'u' r1 r2 %}">Unified Diff</A>
-<B>Two column mode</B>
-{%else%}
-<B>Unified Diff</B>
-<A HREF="{% cm_url diff_rev o.id '2' r1 r2 %}">Two column mode</A>
-{%endifequal%}
 <DIV CLASS="module">
     <TABLE SUMMARY="Diff" WIDTH="100%">
         <CAPTION>Diff</CAPTION>
