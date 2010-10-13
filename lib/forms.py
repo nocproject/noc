@@ -38,9 +38,18 @@ class NOCForm(forms.Form):
         css={
             "all" : ["/media/css/forms.css"],
         }
+    def __init__(self,*args,**kwargs):
+        super(NOCForm,self).__init__(*args,**kwargs)
+        self.disabled_fields=set()
+    
+    def disable_field(self,name):
+        self.disabled_fields.add(name)
+    
     def __iter__(self):
         for name,field in self.fields.items():
-            yield NOCBoundField(self,field,name)
+            if name not in self.disabled_fields:
+                yield NOCBoundField(self,field,name)
+    
 ##
 ## Login form base class
 ##
