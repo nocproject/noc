@@ -12,7 +12,7 @@ from noc.main.models import Notification
 ## Notification admin
 ##
 class NotificationAdmin(admin.ModelAdmin):
-    display_list=["timestamp","notification_method","notification_params","subject","next_try"]
+    list_display=["timestamp","notification_method","notification_params","subject","next_try"]
 ##
 ## Notification application
 ##
