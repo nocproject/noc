@@ -11,12 +11,14 @@ from base import *
 from igetmacaddresstable import IGetMACAddressTable
 from igetarp import IGetARP
 from igetlldpneighbors import IGetLLDPNeighbors
+from igetspanningtree import IGetSpanningTree
 from igetportchannel import IGetPortchannel
 
 class IGetTopologyData(Interface):
     get_mac=BooleanParameter(required=False,default=False)  # Get MAC address table
     get_arp=BooleanParameter(required=False,default=False)  # Get ARP cache
     get_lldp=BooleanParameter(required=False,default=False) # Get LLDP neighbor information
+    get_stp=BooleanParameter(required=False,default=False)  # Get STP information
     
     returns=DictParameter(attrs={
         # Set to true if "mac" is not empty
@@ -36,6 +38,10 @@ class IGetTopologyData(Interface):
         # LLDP neighbors
         # Returned only if get_lldp is set
         "lldp_neighbors" : IGetLLDPNeighbors.returns,
+        # Set to true if "stp" is not empty
+        "has_stp"    : BooleanParameter(required=False,default=False),
+        # STP Protocol data
+        "stp"        : IGetSpanningTree.returns | NoneParameter(),
         # Portchannels
         "portchannels"   : IGetPortchannel.returns,
     })
