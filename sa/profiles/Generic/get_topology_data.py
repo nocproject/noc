@@ -16,7 +16,7 @@ class Script(noc.sa.script.Script):
     name="Generic.get_topology_data"
     implements=[IGetTopologyData]
     requires=[]
-    def execute(self,get_mac=False,get_arp=False,get_lldp=False):
+    def execute(self,get_mac=False,get_arp=False,get_lldp=False,get_stp=False):
         print get_mac
         data={
             "has_mac" : False,
@@ -25,6 +25,8 @@ class Script(noc.sa.script.Script):
             "arp"     : [],
             "has_lldp": False,
             "lldp_neighbors" : [],
+            "has_stp" : False,
+            "stp"     : None,
             "portchannels"   : [],
         }
         # get mac addresses
@@ -48,6 +50,12 @@ class Script(noc.sa.script.Script):
                 if lldp_neighbors:
                     data["has_lldp"]=True
                     data["lldp_neighbors"]=lldp_neighbors
+        # Get STP data
+        if get_stp:
+            if self.scripts.has_script("get_spanning_tree"):
+                stp=self.scripts.get_spanning_tree()
+                data["has_stp"]=True
+                data["stp"]=stp
         # get portchannels
         if self.scripts.has_script("get_portchannel"):
             data["portchannels"]=self.scripts.get_portchannel()

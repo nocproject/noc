@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 from mac import MACTopology
 from lldp import LLDPTopology
+from stp import STPTopology
 import re
 
 class Link(object):
@@ -60,7 +61,7 @@ class TopologyDiscovery(object):
     ##
     ## data is a list of (managed_object,IGetTopologyData)
     ##
-    def __init__(self,data,mac=True,per_vlan_mac=False,arp=True,lldp=True):
+    def __init__(self,data,mac=True,per_vlan_mac=False,arp=True,lldp=True,stp=True):
         #
         self.links=[] # List of Link
         self.object_links={} # object->link
@@ -113,6 +114,11 @@ class TopologyDiscovery(object):
             t=LLDPTopology(data)
             for R in t.discover():
                 self.add_link(R,"LLDP")
+        # STP Topology discovery
+        if stp:
+            t=STPTopology(data)
+            for R in t.discover():
+                self.add_link(R,"STP")
         # Finally collapse all refined portchannels
         self.collapse_refined_portchannels()
     ##
