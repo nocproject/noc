@@ -118,6 +118,40 @@ def list_to_ranges(s):
     if last_start is not None:
         r+=[f()]
     return ",".join(r)
+    
+##
+## Convert range string to a list of integers
+##
+rx_range=re.compile(r"^(\d+)\s*-\s*(\d+)$")
+def ranges_to_list(s):
+    """
+    >>> ranges_to_list("1")
+    [1]
+    >>> ranges_to_list("1, 2")
+    [1, 2]
+    >>> ranges_to_list("1, 10-12")
+    [1, 10, 11, 12]
+    >>> ranges_to_list("1, 10-12, 15, 17-19")
+    [1, 10, 11, 12, 15, 17, 18, 19]
+    """
+    r=[]
+    for p in s.split(","):
+        p=p.strip()
+        try:
+            r+=[int(p)]
+            continue
+        except:
+            pass
+        match=rx_range.match(p)
+        if not match:
+            raise SyntaxError
+        f,t=[int(x) for x in match.groups()]
+        if f>=t:
+            raise SyntaxError
+        for i in range(f,t+1):
+            r+=[i]
+    return sorted(r)
+
 ##
 ## Replace regular expression group with pattern
 ##
