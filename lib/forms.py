@@ -57,7 +57,7 @@ class NOCAuthenticationForm(NOCForm):
     def __init__(self,request=None,*args,**kwargs):
         self.user_cache=request
         self.request=None
-        super(NOCForm,self).__init__(*args,**kwargs)
+        super(NOCAuthenticationForm,self).__init__(*args,**kwargs)
     
     def clean(self):
         # Check all required fields present, then try to authenticate
