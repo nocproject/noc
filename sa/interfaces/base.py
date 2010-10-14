@@ -8,6 +8,7 @@
 """
 """
 import re,types,datetime
+from noc.lib.text import list_to_ranges,ranges_to_list,list_to_ranges
 
 try:
     from django import forms
@@ -661,6 +662,34 @@ class VLANIDParameter(IntParameter):
     """
     def __init__(self,required=True,default=None):
         super(VLANIDParameter,self).__init__(required=required,default=default,min_value=1,max_value=4095)
+
+##
+##
+##
+class VLANIDListParameter(ListOfParameter):
+    """
+    >>> VLANIDListParameter().clean(["1","2","3"])
+    [1, 2, 3]
+    >>> VLANIDListParameter().clean([1,2,3])
+    [1, 2, 3]
+    """
+    def __init__(self,required=True,default=None):
+        super(VLANIDListParameter,self).__init__(element=VLANIDParameter(),required=required,default=default)
+
+##
+##
+##
+class VLANIDMapParameter(StringParameter):
+    def clean(self,value):
+        """
+        >>> VLANIDMapParameter().clean("1,2,5-10")
+        '1-2,5-10'
+        """
+        vp=VLANIDParameter()
+        try:
+            return list_to_ranges([vp.clean(v) for v in ranges_to_list(value)])
+        except SyntaxError:
+            self.raise_error(value)
 ##
 ##
 ##
