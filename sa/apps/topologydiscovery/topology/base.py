@@ -53,6 +53,7 @@ class Node(object):
     ##
     ##
     def __repr__(self):
+        return self.name
         return "<%s %s>"%(self.__class__.__name__,self.name)
     ##
     ## Debugging dump
@@ -140,7 +141,7 @@ class Object(Node):
     dot_shape="box"
     def __init__(self,topology,managed_object):
         self.managed_object=managed_object
-        super(Object,self).__init__(topology,managed_object.name+"\\n"+managed_object.profile_name)
+        super(Object,self).__init__(topology,managed_object.name) #+"\\n"+managed_object.profile_name)
     
     def interfaces(self):
         return set([i for o,i in self.connections])
