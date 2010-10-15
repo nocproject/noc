@@ -70,7 +70,6 @@ class Script(noc.sa.script.Script):
                     interfaces[instance_id]=[]
                 interface=self.profile.convert_interface_name(match.group("interface"))
                 settings=ports[instance_id].get(interface,"").lower()
-                print interface,settings
                 interfaces[instance_id]+=[{
                     "interface" : interface,
                     "status"    : {"forwarding":"FWD","blocked":"BLK","disabled":"DIS"}[match.group("status")],
