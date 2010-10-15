@@ -22,7 +22,7 @@ class Profile(noc.sa.profiles.Profile):
     command_enter_config="configure terminal"
     command_leave_config="exit"
     command_save_config="copy running-config startup-config\n"
-    pattern_prompt=r"^\S+?#"
+    pattern_prompt=r"^(?P<hostname>\S+?)#"
     requires_netmask_conversion=True
     convert_mac=noc.sa.profiles.Profile.convert_mac_to_cisco
     convert_interface_name=noc.sa.profiles.Profile.convert_interface_name_cisco
