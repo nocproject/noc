@@ -7,13 +7,16 @@
 """
 from django.core.management.base import BaseCommand,CommandError
 from django.db import transaction
-from noc.fm.models import MIB
+from noc.fm.models import MIB,MIBRequiredException
 
 class Command(BaseCommand):
     help="Import MIB into database"
     def handle(self, *args, **options):
         transaction.enter_transaction_management()
         for a in args:
-            MIB.load(a)
+            try:
+                MIB.load(a)
+            except MIBRequiredException, why:
+                raise CommandError(why)
         transaction.commit()
         transaction.leave_transaction_management()
