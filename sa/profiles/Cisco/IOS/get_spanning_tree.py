@@ -39,12 +39,12 @@ class Script(noc.sa.script.Script):
     ##
     ## PVST+/rapid-PVST+ Parsing
     ##
-    rx_pvst_bridge=re.compile(r"Bridge Identifier has priority (?P<bridge_priority>\d+)(?:, sysid \d+)?, address (?P<bridge_id>\S+).*"
+    rx_pvst_bridge=re.compile(r"Bridge Identifier has priority (?P<bridge_priority>\d+)(?:, sysid \d+)?, address (?P<bridge_id>\S+).*?"
         r"(Current root has priority (?P<root_priority>\d+), address (?P<root_id>\S+)|We are the root of the spanning tree)",re.MULTILINE|re.IGNORECASE|re.DOTALL)
     rx_pvst_interfaces=re.compile(
-            r"Port \d+ \((?P<interface>\S+)\) of VLAN(?P<instance_id>\d+) is \S+.+"
-            r"Port path cost 2, Port priority (?P<priority>\d+), Port Identifier (?P<port_id>\S+)\..+"
-            r"Designated bridge has priority (?P<designated_bridge_priority>\d+), address (?P<designated_bridge_id>\S+).+"
+            r"Port \d+ \((?P<interface>\S+)\) of VLAN(?P<instance_id>\d+) is \S+.+?"
+            r"Port path cost 2, Port priority (?P<priority>\d+), Port Identifier (?P<port_id>\S+)\..+?"
+            r"Designated bridge has priority (?P<designated_bridge_priority>\d+), address (?P<designated_bridge_id>\S+).+?"
             r"Designated port id is (?P<designated_port_id>\S+), designated path cost (?P<cost>\d+)",re.DOTALL|re.IGNORECASE|re.MULTILINE)
     def process_pvst(self,cli_stp,proto):
         # Save port attributes
@@ -162,3 +162,4 @@ class Script(noc.sa.script.Script):
             return self.process_pvst(v,proto="rapid-PVST+")
         elif "Spanning tree enabled protocol mstp" in v:
             return self.process_mstp(v)
+    
