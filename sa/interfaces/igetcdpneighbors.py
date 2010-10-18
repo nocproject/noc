@@ -11,10 +11,10 @@ from base import *
 ##
 class IGetCDPNeighbors(Interface):
     returns=DictParameter(attrs={
-        # Local device id
+        # Local device id: FQDN or serial number
         "device_id" : StringParameter(),
         "neighbors" : ListOfParameter(element=DictParameter(attrs={
-            # Remote device id
+            # Remote device id: FQDN or serial number
             "device_id"       : StringParameter(),
             # Local interface
             "local_interface" : InterfaceNameParameter(),
