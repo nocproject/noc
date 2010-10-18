@@ -10,7 +10,7 @@ from noc.sa.interfaces import IGetVersion
 import re
 
 rx_ver=re.compile(r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (?P<platform>.+?) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),",re.MULTILINE|re.DOTALL)
-rx_snmp_ver=re.compile(r"^Cisco (?:IOS|Internetwork Operating System) Software, (?P<platform>.+?) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),")
+rx_snmp_ver=re.compile(r"(?P<platform>\S+) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),")
 
 class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_version"
