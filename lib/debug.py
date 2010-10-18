@@ -144,7 +144,9 @@ def format_frames(frames):
     r=[]
     r+=["START OF TRACEBACK"]
     r+=["-"*72]
-    for f in frames:
+    fr=frames[:]
+    fr.reverse()
+    for f in fr:
         r+=["File: %s (Line: %d)"%(f["filename"],f["lineno"])]
         r+=["Function: %s"%(f["function"])]
         r+=[format_source(f["pre_context_lineno"],f["pre_context"])]
