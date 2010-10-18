@@ -139,7 +139,7 @@ class StreamFSM(FSM):
         self.patterns=[(re.compile(x,re.DOTALL|re.MULTILINE),y) for x,y in patterns]
         
     def feed(self,data,cleanup=None):
-        self.debug("feed: %s"%repr(data))
+        #self.debug("feed: %s"%repr(data))
         self.in_buffer+=data
         if cleanup:
             self.in_buffer=cleanup(self.in_buffer)
