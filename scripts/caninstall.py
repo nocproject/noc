@@ -11,10 +11,17 @@ import csv,os,re
 
 rx_script=re.compile(r"^\s+script=\"(?P<script>.+?)\"",re.MULTILINE)
 rx_q=re.compile(r"[^0-9a-zA-Z_]")
+rx_platform=re.compile(r"platform='([^']+)'")
+rx_version=re.compile(r"version='([^']+)'")
 
 def install_can(path,platform,version):
     with open(path) as f:
         data=f.read()
+    # Try to get platform and version if not defined
+    if platform is None:
+        platform=rx_platform.search(data).group(1)
+    if version is None:
+        version=rx_version.search(data).group(1)
     # Get script name
     match=rx_script.search(data)
     script=match.group("script")
@@ -59,8 +66,8 @@ if __name__=="__main__":
             version=v
         elif k=="-r":
             to_remove=True
-    if platform is None or version is None:
-        usage()
+    #if platform is None or version is None:
+    #    usage()
     for p in optarg:
         install_can(p,platform,version)
         if to_remove:
