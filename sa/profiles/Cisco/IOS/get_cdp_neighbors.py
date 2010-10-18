@@ -15,17 +15,26 @@ class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_cdp_neighbors"
     implements=[IGetCDPNeighbors]
     
-    rx_hostname=re.compile(r"^(?P<hostname>\S+) uptime is ",re.MULTILINE)
+    rx_hostname=re.compile(r"^hostname\s+(?P<hostname>\S+)",re.MULTILINE)
+    rx_domain_name=re.compile(r"^ip domain-name\s+(?P<domain>\S+)",re.MULTILINE)
+    
     rx_entry=re.compile(r"Device ID: (?P<device_id>\S+).+?"
         r"Interface: (?P<local_interface>\S+),\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     def execute(self):
-        # Get hostname as device_id
-        v=self.cli("show version")
+        # Get device id
+        # @todo: Find more clean way
+        v=self.cli("show running-config | include ^(hostname|ip domain-name)")
+        device_id=[]
         match=self.rx_hostname.search(v)
-        device_id=match.group("hostname")
+        if match:
+            device_id+=[match.group("hostname")]
+        match=self.rx_domain_name.search(v)
+        if match:
+            device_id+=[match.group("domain")]
+        device_id=".".join(device_id)
         # Get neighbors
         neighbors=[]
-        for match in self.rx_entry.finditer(self.cli("show cdp entry *")):
+        for match in self.rx_entry.finditer(self.cli("show cdp neighbors detail")):
             neighbors+=[{
                 "device_id"        : match.group("device_id"),
                 "local_interface"  : match.group("local_interface"),
