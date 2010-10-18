@@ -20,6 +20,7 @@ class Command(BaseCommand):
         make_option("-p","--pvst",dest="pvst",action="store_true"),
         make_option("-a","--arp",dest="arp",action="store_true"),
         make_option("-l","--lldp",dest="lldp",action="store_true"),
+        make_option("-c","--cdp",dest="cdp",action="store_true"),
         make_option("-s","--stp",dest="stp",action="store_true")
     )
     def _usage(self):
@@ -29,7 +30,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with open(args[0]) as f:
             data=cPickle.load(f)
-        td=TopologyDiscovery(data=data,mac=options["mac"],per_vlan_mac=options["pvst"],arp=options["arp"],lldp=options["lldp"],stp=options["stp"])
+        td=TopologyDiscovery(data=data,mac=options["mac"],per_vlan_mac=options["pvst"],arp=options["arp"],
+            lldp=options["lldp"],cdp=options["cdp"],stp=options["stp"])
         print "Writting topology into /tmp/topo.dot"
         with open("/tmp/topo.dot","w") as f:
             f.write(td.dot())
