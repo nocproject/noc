@@ -17,7 +17,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_unpriveleged_prompt=r"^\S+?>"
     command_super="enable"
     pattern_prompt=r"^\S+?#"
-    pattern_more="^\s--More--\s.*?$"
+    pattern_more=r"(?P<sep>-{2,3})More(?=sep)"
     command_more=" "
     config_volatile=["\x08+"]
     rogue_chars=["\r"]
