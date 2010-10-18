@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 from mac import MACTopology
 from lldp import LLDPTopology
+from cdp import CDPTopology
 from stp import STPTopology
 import re
 
@@ -61,7 +62,7 @@ class TopologyDiscovery(object):
     ##
     ## data is a list of (managed_object,IGetTopologyData)
     ##
-    def __init__(self,data,mac=True,per_vlan_mac=False,arp=True,lldp=True,stp=True):
+    def __init__(self,data,mac=True,per_vlan_mac=False,arp=True,lldp=True,stp=True,cdp=False):
         #
         self.links=[] # List of Link
         self.object_links={} # object->link
@@ -114,6 +115,11 @@ class TopologyDiscovery(object):
             t=LLDPTopology(data)
             for R in t.discover():
                 self.add_link(R,"LLDP")
+        # CDP Topology discovery
+        if cdp:
+            t=CDPTopology(data)
+            for R in t.discover():
+                self.add_link(R,"CDP")
         # STP Topology discovery
         if stp:
             t=STPTopology(data)
