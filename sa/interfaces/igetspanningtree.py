@@ -57,7 +57,7 @@ class IGetSpanningTree(Interface):
                 # Interface status
                 "status"    : StringParameter(choices=["FWD","DIS","BLK"]),
                 # Interface role
-                "role"      : StringParameter(choices=["ROOT","DESG","DIS"]),
+                "role"      : StringParameter(choices=["ROOT","DESG","ALTN","BACK","DIS"]),
                 # Local port id
                 "port_id"   : StringParameter(),
                 # Port priority
