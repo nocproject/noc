@@ -15,9 +15,8 @@ import re
 class Profile(noc.sa.profiles.Profile):
     name="EdgeCore.ES35xx"
     supported_schemes=[TELNET,SSH]
-    pattern_unpriveleged_prompt=r"^\S+?>"
-    pattern_prompt=r"^\S+?#"
-    pattern_more="^---More---.*?$"
+    pattern_unpriveleged_prompt=r"^(?P<hostname>[^\n]+)>"
+    pattern_prompt=r"^(?P<hostname>[^\n]+)#"
+    pattern_more=r"(?P<sep>-{2,3})More(?=sep)"
     command_more=" "
-    rogue_chars=["\r",re.compile(r" *\x08+")]
 
