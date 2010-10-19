@@ -43,7 +43,7 @@ class STPTopology(Topology):
                 bridge_id=I["bridge_id"]
                 for i in I["interfaces"]:
                     # Inspect only root ports
-                    if i["role"] not in ("ROOT","ALTN"):
+                    if i["role"] not in ("root","alternate"): # @todo: master?
                         continue
                     i1=i["interface"]
                     db=i["designated_bridge_id"]

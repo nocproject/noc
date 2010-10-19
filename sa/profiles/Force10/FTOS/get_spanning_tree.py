@@ -54,14 +54,13 @@ class Script(noc.sa.script.Script):
             ri["bridge_priority"]=match.group("bridge_priority")
             # Process interfaces
             s1,s2,s3=v.split("\n\nInterface")
-            for interface,port_id,priority,cost,status,cost2,desg_bridge,desg_port_id in parse_table(s2):
+            for interface,port_id,priority,_,state,_,desg_bridge,desg_port_id in parse_table(s2):
                 desg_bridge_priority,desg_bridge_id=desg_bridge.split()
                 i={
                     "interface" : interface,
-                    "status"    : status,
                     "port_id"   : port_id,
+                    "state"     : {"dis":"disabled","???":"discarding","??":"learning","fwd":"forwarding"}[state.lower()], #@todo: refine states
                     "priority"  : priority,
-                    "cost"      : cost,
                     "designated_bridge_id"       : desg_bridge_id,
                     "designated_bridge_priority" : desg_bridge_priority,
                     "designated_port_id"         : desg_port_id,
@@ -69,8 +68,16 @@ class Script(noc.sa.script.Script):
                 ri["interfaces"]+=[i]
             for i,s in zip(ri["interfaces"],parse_table(s3)):
                 interface,role,port_id,priority,cost,status,cost2,link_type,edge,boundary=s
-                i["role"]={"root":"ROOT","desg":"DESG","dis":"DIS"}[role.lower()]
-                i["link_type"]=link_type
+                i["role"]={
+                    "dis"  : "disabled",
+                    "?"    : "alternate",
+                    "??"   : "backup",
+                    "root" : "root",
+                    "desg" : "designated",
+                    "???"  : "master",
+                    "????" : "nonstp",
+                    "_"    : "unknown"}[role.lower()] #@todo: refine roles
+                i["point_to_point"]="P2P" in link_type.upper()
                 i["edge"]=True if edge.lower().startswith("y") else False
             # Append instance to result
             r["instances"]+=[ri]
