@@ -30,10 +30,24 @@ class Script(noc.sa.script.Script):
                 interface=self.profile.convert_interface_name(R[0])
                 settings=R[-1]
                 ports[instance_id][interface]={
-                    "link_type": "P2P",
-                    "edge"     : "edge" in settings.lower(),
-                    "role"     : {"desg":"DESG","root":"ROOT"}[R[1].lower()],
-                    "status"   : R[2].upper(),
+                    "point_to_point" : True, # @todo: detect P2P properly
+                    "edge"           : "edge" in settings.lower(),
+                    "role"           : {
+                                        "dis"  : "disabled",
+                                        "?"    : "alternate",
+                                        "??"   : "backup",
+                                        "root" : "root",
+                                        "desg" : "designated",
+                                        "???"  : "master",
+                                        "????" : "nonstp",
+                                        "_"    : "unknown"
+                                        }[R[1].lower()], # @todo: refine roles
+                    "state"          : {
+                                        "dis":"disabled",
+                                        "???":"discarding",
+                                        "??":"learning",
+                                        "fwd":"forwarding"
+                                       }[R[2].lower()], # @todo: refine states
                     }
         return ports
     ##
@@ -74,16 +88,15 @@ class Script(noc.sa.script.Script):
                 port_attrs=ports[instance_id][interface]
                 interfaces[instance_id]+=[{
                     "interface" : interface,
-                    "status"    : port_attrs["status"],
                     "port_id"   : match.group("port_id"),
+                    "state"     : port_attrs["state"],
+                    "role"      : port_attrs["role"],
                     "priority"  : match.group("priority"),
-                    "cost"      : match.group("cost"),
                     "designated_bridge_id"       : match.group("designated_bridge_id"),
                     "designated_bridge_priority" : match.group("designated_bridge_priority"),
                     "designated_port_id"         : match.group("designated_port_id"),
-                    "role"      : port_attrs["role"],
-                    "link_type" : port_attrs["link_type"],
-                    "edge"      : port_attrs["edge"],
+                    "point_to_point" : port_attrs["point_to_point"],
+                    "edge"           : port_attrs["edge"],
                 }]
             r["instances"][-1]["interfaces"]=interfaces
         for I in r["instances"]:
@@ -139,16 +152,15 @@ class Script(noc.sa.script.Script):
                 port_attrs=ports[instance_id][interface]
                 interfaces[instance_id]+=[{
                     "interface" : interface,
-                    "status"    : port_attrs["status"],
                     "port_id"   : match.group("port_id"),
+                    "state"     : port_attrs["state"],
+                    "role"      : port_attrs["role"],
                     "priority"  : match.group("priority"),
-                    "cost"      : match.group("cost"),
                     "designated_bridge_id"       : match.group("designated_bridge_id"),
                     "designated_bridge_priority" : match.group("designated_bridge_priority"),
                     "designated_port_id"         : match.group("designated_port_id"),
-                    "role"      : port_attrs["role"],
-                    "link_type" : port_attrs["link_type"],
-                    "edge"      : port_attrs["edge"],
+                    "point_to_point" : port_attrs["point_to_point"],
+                    "edge"           : port_attrs["edge"],
                 }]
         for I in r["instances"]:
             I["interfaces"]=interfaces[I["id"]]

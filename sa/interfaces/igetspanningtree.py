@@ -54,26 +54,24 @@ class IGetSpanningTree(Interface):
             "interfaces" : ListOfParameter(element=DictParameter(attrs={
                 # Interface name
                 "interface" : InterfaceNameParameter(),
-                # Interface status
-                "status"    : StringParameter(choices=["FWD","DIS","BLK"]),
-                # Interface role
-                "role"      : StringParameter(choices=["ROOT","DESG","ALTN","BACK","DIS"]),
                 # Local port id
                 "port_id"   : StringParameter(),
+                # Interface state
+                "state"     : StringParameter(choices=["disabled","discarding","learning","forwarding","unknown"]),
+                # Interface role
+                "role"      : StringParameter(choices=["disabled","alternate","backup","root","designated","master","nonstp","unknown"]),
                 # Port priority
                 "priority"  : IntParameter(),
-                # Port cost
-                "cost"      : IntParameter(),
                 # Designated bridge ID
                 "designated_bridge_id" : MACAddressParameter(),
                 # Designated bridge priority
                 "designated_bridge_priority" : IntParameter(),
                 # Designated port id
                 "designated_port_id" : StringParameter(),
-                # Link Type
-                "link_type" : StringParameter(choices=["P2P"]),
+                # P2P indicator
+                "point_to_point"     : BooleanParameter(),
                 # MSTP EdgePort
-                "edge"      : BooleanParameter(),
+                "edge"              : BooleanParameter(),
             }))
         })),
     })
