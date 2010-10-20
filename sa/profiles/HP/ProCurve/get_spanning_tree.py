@@ -151,10 +151,10 @@ class Script(noc.sa.script.Script):
         for instance_id,port_id in v:
             instance_ports[instance_id][port_id]["state"]={ #@todo: refine states
                 "1" : "disabled",
-                "?" : "discarding",
-                "??":"learning",
+                "2" : "discarding",
+                "??": "learning",
                 "5" : "forwarding",
-                "_" :"unknown"
+                "_" : "unknown"
             }[v[instance_id,port_id]]
         # Port role
         v=self.mib_walk("hpicfBridgeMSTPortRole")
@@ -162,12 +162,12 @@ class Script(noc.sa.script.Script):
             instance_ports[instance_id][port_id]["role"]={ #@todo: refine roles
                 "1" : "disabled",
                 "?" : "alternate",
-                "??":"backup",
+                "5" : "backup",
                 "2" : "root",
                 "3" : "designated",
                 "_" : "master",
-                "__":"nonstp",
-                "!!":"unknown"
+                "__": "nonstp",
+                "!!": "unknown"
             }[v[instance_id,port_id]]
         # Designated bridge
         v=self.mib_walk("hpicfBridgeMSTPortDesignatedBridge")
