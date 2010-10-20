@@ -35,7 +35,7 @@ class Script(noc.sa.script.Script):
                     "role"           : {
                                         "dis"  : "disabled",
                                         "?"    : "alternate",
-                                        "??"   : "backup",
+                                        "back" : "backup",
                                         "root" : "root",
                                         "desg" : "designated",
                                         "???"  : "master",
@@ -43,10 +43,10 @@ class Script(noc.sa.script.Script):
                                         "_"    : "unknown"
                                         }[R[1].lower()], # @todo: refine roles
                     "state"          : {
-                                        "dis":"disabled",
-                                        "???":"discarding",
-                                        "??":"learning",
-                                        "fwd":"forwarding"
+                                        "dis" : "disabled",
+                                        "blk" : "discarding",
+                                        "??"  : "learning",
+                                        "fwd" : "forwarding"
                                        }[R[2].lower()], # @todo: refine states
                     }
         return ports

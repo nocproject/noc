@@ -59,7 +59,7 @@ class Script(noc.sa.script.Script):
                 i={
                     "interface" : interface,
                     "port_id"   : port_id,
-                    "state"     : {"dis":"disabled","???":"discarding","??":"learning","fwd":"forwarding"}[state.lower()], #@todo: refine states
+                    "state"     : {"dis":"disabled","blk":"discarding","??":"learning","fwd":"forwarding"}[state.lower()], #@todo: refine states
                     "priority"  : priority,
                     "designated_bridge_id"       : desg_bridge_id,
                     "designated_bridge_priority" : desg_bridge_priority,
@@ -69,14 +69,14 @@ class Script(noc.sa.script.Script):
             for i,s in zip(ri["interfaces"],parse_table(s3)):
                 interface,role,port_id,priority,cost,status,cost2,link_type,edge,boundary=s
                 i["role"]={
-                    "dis"  : "disabled",
-                    "?"    : "alternate",
-                    "??"   : "backup",
-                    "root" : "root",
-                    "desg" : "designated",
-                    "???"  : "master",
-                    "????" : "nonstp",
-                    "_"    : "unknown"}[role.lower()] #@todo: refine roles
+                    "dis"    : "disabled",
+                    "?"      : "alternate",
+                    "backup" : "backup",
+                    "root"   : "root",
+                    "desg"   : "designated",
+                    "???"    : "master",
+                    "????"   : "nonstp",
+                    "_"      : "unknown"}[role.lower()] #@todo: refine roles
                 i["point_to_point"]="P2P" in link_type.upper()
                 i["edge"]=True if edge.lower().startswith("y") else False
             # Append instance to result
