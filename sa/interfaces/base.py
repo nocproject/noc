@@ -506,7 +506,7 @@ class DictParameter(Parameter):
         out_value={}
         for a_name,attr in self.attrs.items():
             if a_name not in in_value and attr.required:
-                self.raise_error(value,"Attribute '%s' is required"%a_name)
+                self.raise_error(value,"Attribute '%s' is required in %s"%(a_name,in_value))
             if a_name in in_value:
                 try:
                     out_value[a_name]=attr.clean(in_value[a_name])
@@ -554,8 +554,8 @@ class DictParameter(Parameter):
             if a_name in in_value:
                 try:
                     out_value[a_name]=attr.script_clean_result(profile,in_value[a_name])
-                except InterfaceTypeError:
-                    self.raise_error(value,"Invalid value for '%s'"%a_name)
+                except InterfaceTypeError,why:
+                    self.raise_error(value,"Invalid value for '%s': %s"%(a_name,str(why)))
                 del in_value[a_name]
         for k,v in in_value.items():
             out_value[k]=v
