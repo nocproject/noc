@@ -19,9 +19,9 @@ from widgets import AccessWidget
 ##
 ##
 class UserChangeForm(forms.ModelForm):
-    username = forms.RegexField(label=_("Username"), max_length=30, regex=r'^\w+$',
-        help_text = _("Required. 30 characters or fewer. Alphanumeric characters only (letters, digits and underscores)."),
-        error_message = _("This value must contain only letters, numbers and underscores."))
+    username = forms.RegexField(label=_("Username"), max_length=75, regex=r"^[\w.@+-]+$",
+        help_text = _("Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"),
+        error_message = _("This value must contain only letters, digits and @/./+/-/_."))
     noc_user_permissions=forms.CharField(label="User Access",widget=AccessWidget,required=False)
     class Meta:
         model = User

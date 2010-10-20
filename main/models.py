@@ -8,6 +8,7 @@
 from __future__ import with_statement
 from django.db import models
 from django.contrib.auth.models import User,Group
+from django.core.validators import MaxLengthValidator
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 import os,datetime,re,datetime,threading
@@ -811,3 +812,8 @@ class ChangesQuarantineRule(models.Model):
     description=models.TextField("Description",null=True,blank=True)
     def __unicode__(self):
         return self.name
+##
+## Monkeypatch to change User.username.max_length
+##
+User._meta.get_field("username").max_length=User._meta.get_field("email").max_length
+User._meta.get_field("username").validators=[MaxLengthValidator(User._meta.get_field("username").max_length)]
