@@ -61,6 +61,9 @@ class DaemonData(object):
                     os.seteuid(self.uid)
                     # Set up EGG Cache to prevent permissions problem in python 2.6
                     os.environ["PYTHON_EGG_CACHE"]="/tmp/.egg-cache%d"%self.uid
+                    # Adjust HOME and USER environment variables
+                    os.environ["USER"]=self.user
+                    os.environ["HOME"]=pwd.getpwuid(self.uid).pw_dir
                 os.execv(sys.executable,[sys.executable,"./scripts/%s.py"%self.name,"launch"])
             except OSError, e:
                 logging.error("%s: OS Error: %s(%s)"%(self.name,e.strerror,e.errno))
