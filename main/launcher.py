@@ -162,13 +162,10 @@ class Launcher(Daemon):
     ## Build contrib/lib if necessary
     ##
     def sync_contrib(self):
-        sync_dir=os.path.join(os.path.dirname(sys.argv[0]),"..","contrib","src","bin")
-        if os.path.exists(os.path.join(sync_dir,"sync")):
+        sync=os.path.join("scripts","sync-contrib")
+        if os.path.exists(sync):
             logging.info("Syncronizing contrib")
-            wd=os.getcwd()
-            os.chdir(sync_dir)
-            r=subprocess.call(["./sync"])
-            os.chdir(wd)
+            r=subprocess.call([sync])
             if r==0:
                 logging.info("contrib syncronized")
             else:
