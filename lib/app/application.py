@@ -222,3 +222,14 @@ class Application(object):
     #view_test.url_name="test"
     #view_test.access=permit
     #view_test.menu="Test"
+##
+## @view decorator
+##
+def view(url,access,url_name=None,menu=None):
+    def decorate(f):
+        f.url=url
+        f.url_name=url_name
+        f.access=access
+        f.menu=menu
+        return f
+    return decorate
