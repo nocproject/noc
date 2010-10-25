@@ -10,6 +10,7 @@ from django.http import HttpResponse,HttpResponseRedirect,HttpResponseForbidden,
 from django.shortcuts import render_to_response
 from django.utils.simplejson.encoder import JSONEncoder
 from django.db import connection
+from django.shortcuts import get_object_or_404
 from access import HasPerm
 from site import site
 from noc.lib.forms import NOCForm
@@ -77,6 +78,12 @@ class Application(object):
             os.path.join(self.module,"templates",template),
             os.path.join("templates",template)
         ]
+    ##
+    ## Shortcut to get_object_or_404
+    ##
+    def get_object_or_404(self,*args,**kwargs):
+        return get_object_or_404(*args,**kwargs)
+    
     ##
     ## Render template within context
     ##
