@@ -68,7 +68,7 @@ class Application(object):
     ## Send a message to user
     ##
     def message_user(self,request,message):
-        request.user.message_set.create(message=message)
+        request.user.message_set.create(message=unicode(message))
     ##
     ## Return path to named template
     ##
@@ -87,8 +87,8 @@ class Application(object):
     ##
     ## Render template within context
     ##
-    def render(self,request,template,dict={}):
-        return render_to_response(self.get_template_path(template),dict,
+    def render(self,request,template,dict={},**kwargs):
+        return render_to_response(self.get_template_path(template),dict if dict else kwargs,
             context_instance=RequestContext(request,dict={"app":self}))
     ##
     ## Render arpitrary Content-Type response
