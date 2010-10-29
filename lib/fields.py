@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.db import models
-from lib.ip import normalize_prefix
+from lib.ip import IP
 import types,cPickle
 from django.contrib.admin.widgets import AdminTextInputWidget
 from tagging.fields import TagField
@@ -28,7 +28,9 @@ class CIDRField(models.Field):
     def get_db_prep_value(self,value):
         # Convert value to pure network address to prevent
         # PostgreSQL exception
-        return normalize_prefix(value)
+        return IP.prefix(value).first.prefix
+    
+
 ##
 ## INETField maps to PostgreSQL INET Field
 ##
