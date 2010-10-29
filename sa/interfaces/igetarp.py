@@ -11,7 +11,7 @@ from base import *
 
 class IGetARP(Interface):
     returns=ListOfParameter(element=DictParameter(attrs={
-            "ip"         : IPParameter(),
+            "ip"         : IPv4Parameter(),
             "mac"        : MACAddressParameter(required=False), # NONE for incomplete entries
             "interface"  : StringParameter(required=False),     # NONE for incomplete entries
             }))
