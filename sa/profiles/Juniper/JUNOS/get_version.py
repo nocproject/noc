@@ -20,6 +20,8 @@ class Script(noc.sa.script.Script):
             try:
                 v=self.snmp.get("1.3.6.1.2.1.1.1.0") # sysDescr.0
                 match=rx_snmp_ver.search(v)
+                if match is None:
+                    raise self.snmp.TimeOutError()
                 return {
                     "vendor"    : "Juniper",
                     "platform"  : match.group("platform"),
