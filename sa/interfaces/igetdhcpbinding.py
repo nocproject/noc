@@ -11,7 +11,7 @@ from base import *
 
 class IGetDHCPBinding(Interface):
     returns=ListOfParameter(element=DictParameter(attrs={
-        "ip"         : IPParameter(),
+        "ip"         : IPv4Parameter(),
         "mac"        : MACAddressParameter(),
         "expiration" : DateTimeParameter(),
         "type"       : StringParameter(), # Choices=["A","M"]

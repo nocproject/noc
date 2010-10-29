@@ -7,8 +7,14 @@
 ##----------------------------------------------------------------------
 """
 """
-import re,types,datetime
+## Python modukes
+import re
+import types
+import datetime
+## NOC Modules
 from noc.lib.text import list_to_ranges,ranges_to_list,list_to_ranges
+from noc.lib.ip import IPv6
+from noc.lib.validators import *
 
 try:
     from django import forms
@@ -75,31 +81,31 @@ class Parameter(object):
 ##
 class ORParameter(Parameter):
     """
-    >>> ORParameter(IntParameter(),IPParameter()).clean(10)
+    >>> ORParameter(IntParameter(),IPv4Parameter()).clean(10)
     10
-    >>> ORParameter(IntParameter(),IPParameter()).clean("192.168.1.1")
+    >>> ORParameter(IntParameter(),IPv4Parameter()).clean("192.168.1.1")
     '192.168.1.1'
-    >>> ORParameter(IntParameter(),IPParameter()).clean("xxx") #doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> ORParameter(IntParameter(),IPv4Parameter()).clean("xxx") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPParameter: 'xxx'
-    >>> (IntParameter()|IPParameter()).clean(10)
+    InterfaceTypeError: IPv4Parameter: 'xxx'
+    >>> (IntParameter()|IPv4Parameter()).clean(10)
     10
-    >>> (IntParameter()|IPParameter()).clean("192.168.1.1")
+    >>> (IntParameter()|IPv4Parameter()).clean("192.168.1.1")
     '192.168.1.1'
-    >>> (IntParameter()|IPParameter()).clean("xxx") #doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> (IntParameter()|IPv4Parameter()).clean("xxx") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPParameter: 'xxx'
-    >>> (IntParameter()|IPParameter()).clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    InterfaceTypeError: IPv4Parameter: 'xxx'
+    >>> (IntParameter()|IPv4Parameter()).clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPParameter: None.
-    >>> (IntParameter(required=False)|IPParameter(required=False)).clean(None)
-    >>> (IntParameter(required=False)|IPParameter()).clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    InterfaceTypeError: IPv4Parameter: None.
+    >>> (IntParameter(required=False)|IPv4Parameter(required=False)).clean(None)
+    >>> (IntParameter(required=False)|IPv4Parameter()).clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPParameter: None.
+    InterfaceTypeError: IPv4Parameter: None.
     """
     def __init__(self,left,right):
         super(ORParameter,self).__init__()
@@ -579,19 +585,19 @@ class DateTimeParameter(StringParameter):
 ##
 ##
 ##
-class IPParameter(StringParameter):
+class IPv4Parameter(StringParameter):
     """
-    >>> IPParameter().clean("192.168.0.1")
+    >>> IPv4Parameter().clean("192.168.0.1")
     '192.168.0.1'
-    >>> IPParameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> IPv4Parameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPParameter: '192.168.0.256'
+    InterfaceTypeError: IPvParameter: '192.168.0.256'
     """
     def clean(self,value):
         if value is None and self.default is not None:
             return self.default
-        v=super(IPParameter,self).clean(value)
+        v=super(IPv4Parameter,self).clean(value)
         X=v.split(".")
         if len(X)!=4:
             self.raise_error(value)
@@ -608,18 +614,18 @@ class IPv4PrefixParameter(StringParameter):
     """
     >>> IPv4PrefixParameter().clean("192.168.0.0/16")
     '192.168.0.0/16'
-    >>> IPParameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> IPv4PrefixParameter().clean("192.168.0.256") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPParameter: '192.168.0.256'
-    >>> IPParameter().clean("192.168.0.0/33") #doctest: +IGNORE_EXCEPTION_DETAIL
+    InterfaceTypeError: IPv4PrefixParameter: '192.168.0.256'
+    >>> IPv4PrefixParameter().clean("192.168.0.0/33") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPParameter: '192.168.0.0/33'
-    >>> IPParameter().clean("192.168.0.0/-5") #doctest: +IGNORE_EXCEPTION_DETAIL
+    InterfaceTypeError: IPv4PrefixParameter: '192.168.0.0/33'
+    >>> IPv4PrefixParameter().clean("192.168.0.0/-5") #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
-    InterfaceTypeError: IPParameter: '192.168.0.0/-5'
+    InterfaceTypeError: IPv4PrefixParameter: '192.168.0.0/-5'
     """
     def clean(self,value):
         if value is None and self.default is not None:
@@ -644,6 +650,59 @@ class IPv4PrefixParameter(StringParameter):
             self.raise_error(value)
         return v
     
+
+##
+## IPv6 Parameter
+##
+class IPv6Parameter(StringParameter):
+    """
+    >>> IPv6Parameter().clean("::")
+    '::'
+    >>> IPv6Parameter().clean("::1")
+    '::1'
+    >>> IPv6Parameter().clean("2001:db8::1")
+    '2001:db8::1'
+    >>> IPv6Parameter().clean("2001:db8::")
+    '2001:db8::'
+    >>> IPv6Parameter().clean("::ffff:192.168.0.1")
+    '::ffff:192.168.0.1'
+    >>> IPv6Parameter().clean('g::')  #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: IPv6Parameter: 'g::'.
+    >>> IPv6Parameter().clean("0:00:0:0:0::1")
+    '::1'
+    >>> IPv6Parameter().clean("::ffff:c0a8:1")
+    '::ffff:192.168.0.1'
+    >>> IPv6Parameter().clean("2001:db8:0:7:0:0:0:1")
+    '2001:db8:0:7::1'
+    """
+    def clean(self,value):
+        if value is None and self.default is not None:
+            return self.default
+        v=super(IPv6Parameter,self).clean(value)
+        if not is_ipv6(v):
+            self.raise_error(value)
+        return IPv6(v).normalized.address
+    
+
+##
+## IPv4/IPv6 parameter
+##
+class IPParameter(StringParameter):
+    def clean(self,value):
+        """
+        >>> IPParameter().clean("192.168.0.1")
+        '192.168.0.1'
+        >>> IPParameter().clean("::")
+        '::'
+        """
+        if ":" in value:
+            return IPv6Parameter().clean(value)
+        else:
+            return IPv4Parameter().clean(value)
+    
+
 ##
 ##
 ##
