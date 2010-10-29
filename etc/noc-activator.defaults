@@ -35,6 +35,7 @@ ssl_port = 19703
 
 [path]
 fping      =
+fping6     =
 
 [servers]
 listen_http =
