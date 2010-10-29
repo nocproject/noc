@@ -442,7 +442,28 @@ class Activator(Daemon,FSM):
     ##
     ##
     def ping_check(self,addresses,callback):
-        fping_probe_socket=FPingProbeSocket(self.factory,self.config.get("path","fping"),addresses,callback)
+        def cb(afi,afi_left,result,unreachable):
+            result+=unreachable
+            afi_left.remove(afi)
+            if not afi_left:
+                callback(result)
+        
+        ipv4_addresses=[a for a in addresses if ":" not in a]
+        ipv6_addresses=[a for a in addresses if ":" in a]
+        fping6=self.config.get("path","fping6")
+        
+        result=[]
+        afi_left=set()
+        #
+        if ipv4_addresses:
+            afi_left.add("4")
+        if fping6 and ipv6_addresses:
+            afi_left.add("6")
+        # Launch probes
+        if ipv4_addresses:
+            FPingProbeSocket(self.factory,self.config.get("path","fping"),ipv4_addresses,lambda x: cb("4",afi_left,result,x))
+        if fping6 and ipv6_addresses:
+            FPingProbeSocket(self.factory,fping6,ipv6_addresses,lambda x: cb("6",afi_left,result,x))
     ##
     ##
     ##

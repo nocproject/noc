@@ -1058,6 +1058,14 @@ Path to the *fping* utility. *fping* used to perform host reachability detection
 *fping* binary must be eighter suid root, or operation system's security options
 must be altered to allow generate and receive ICMP packets by *noc* user.
 
+.. _noc-activator-conf-path-fping6:
+
+fping6
+^^^^^^
+Path to the *fping6* utility. *fping6* used to perform IPv6 host reachability detection during ping_check.
+*fping6* binary must be eighter suid root, or operation system's security options
+must be altered to allow generate and receive ICMPv6 packets by *noc* user.
+
 .. _noc-classifier-conf:
 
 noc-classifier.conf
