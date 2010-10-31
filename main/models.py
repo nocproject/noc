@@ -15,7 +15,7 @@ import os,datetime,re,datetime,threading
 from noc.main.refbooks.downloaders import downloader_registry
 from django.contrib import databrowse
 from django.db.models.signals import class_prepared,pre_save,pre_delete
-from noc.lib.fields import TextArrayField,PickledField
+from noc.lib.fields import TextArrayField,PickledField,ColorField
 from noc.lib.middleware import get_user
 from noc import settings
 from noc.lib.timepattern import TimePattern as TP
@@ -199,6 +199,55 @@ class Permission(models.Model):
         for p in current-perms:
             Permission.objects.get(name=p).groups.remove(group)
     
+##
+## CSS Styles
+##
+class Style(models.Model):
+    class Meta:
+        verbose_name="Style"
+        verbose_name_plural="Styles"
+    
+    name=models.CharField("Name",max_length=64,unique=True)
+    font_color=ColorField("Font Color",default=0)
+    background_color=ColorField("Background Color",default=0xffffff)
+    bold=models.BooleanField("Bold",default=False)
+    italic=models.BooleanField("Italic",default=False)
+    underlined=models.BooleanField("Underlined",default=False)
+    is_active=models.BooleanField("Is Active",default=True)
+    description=models.TextField("Description",null=True,blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    
+    ##
+    ## CSS class name
+    ##
+    @property
+    def css_class_name(self):
+        return u"noc-color-%d"%self.id
+    
+    ##
+    ##
+    ##
+    @property
+    def style(self):
+        s=u"color: %s; background-color: %s;"%(self.font_color,self.background_color)
+        if self.bold:
+            s+=u" font-weight: bold;"
+        if self.italic:
+            s+=u" font-style: italic;"
+        if self.underlined:
+            s+=u" text-decoration: underline;"
+        return s
+    
+    ##
+    ## CSS style
+    ##
+    @property
+    def css(self):
+        return u".%s { %s }\n"%(self.css_class_name,self.style)
+    
+
 ##
 ## Languages
 ##
