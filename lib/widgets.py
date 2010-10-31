@@ -15,6 +15,25 @@ from tagging.models import Tag
 from django.utils.simplejson.encoder import JSONEncoder
 from noc.lib.app.site import site
 from django.utils.html import escape
+
+##
+##
+##
+class ColorPickerWidget(forms.TextInput):
+    class Media:
+        css={
+            "all" : ["/static/css/jquery.colorPicker.css"]
+        }
+        js=["/static/js/jquery.colorPicker.js"]
+    
+    def render(self, name, value, attrs=None):
+        r=super(ColorPickerWidget,self).render(name,value,attrs)
+        return r+mark_safe(u"""
+        <script type="text/javascript">
+            $("#id_%s").colorPicker();
+        </script>
+        """%name)
+
 ##
 ## Autocomplete widget
 ##
