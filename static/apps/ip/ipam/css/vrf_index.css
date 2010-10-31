@@ -32,7 +32,7 @@ td[class=nav-form] {
 
 /* Column widths */
 th[class=status] {
-    widths: 1em;
+    width: 1em;
 }
 
 th[class=ip] {

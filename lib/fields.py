@@ -12,6 +12,7 @@ from django.contrib.admin.widgets import AdminTextInputWidget
 from tagging.fields import TagField
 from south.modelsinspector import add_introspection_rules
 from noc.sa.interfaces.base import MACAddressParameter
+from noc.lib.widgets import ColorPickerWidget
 ##
 ## CIDRField maps to PostgreSQL CIDR
 ##
@@ -128,5 +129,35 @@ class AutoCompleteTagsField(TagField):
         if defaults['widget'] == AdminTextInputWidget:
             defaults['widget']=AutoCompleteTags
         return super(AutoCompleteTagsField,self).formfield(**defaults)
+    
+
+##
+## Color field
+##
+class ColorField(models.Field):
+    __metaclass__ = models.SubfieldBase
+    default_validators=[]
+    
+    def db_type(self):
+        return "INTEGER"
+    
+    def __init__(self,*args,**kwargs):
+        super(ColorField,self).__init__(*args,**kwargs)
+    
+    def to_python(self,value):
+        if isinstance(value,basestring):
+            return value
+        return u"#%06x"%value
+    
+    def get_db_prep_value(self,value):
+        if value.startswith("#"):
+            value=value[1:]
+        return int(value,16)
+    
+    def formfield(self,**kwargs):
+        kwargs["widget"]=ColorPickerWidget
+        return super(ColorField, self).formfield(**kwargs)
+    
+
 ##
 add_introspection_rules([],["^noc\.lib\.fields\."])
