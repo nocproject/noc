@@ -298,6 +298,14 @@ class IPv4(IP):
             return False
         m=((1L<<self.mask)-1L)<<(32L-self.mask)
         return (self.d&m)==(other.d&m)
+    
+    ##
+    ## Returns new IPv4 instance in normalized minimal possible form
+    ##
+    @property
+    def normalized(self):
+        return self._to_prefix(self.d&((1L<<self.mask)-1L)<<(32L-self.mask),self.mask)
+    
 
 ##
 ## IPv6 prefix
@@ -549,6 +557,14 @@ class IPv6(IP):
     @property
     def normalized(self):
         return self._to_prefix(self.d0,self.d1,self.d2,self.d3,self.mask)
+    
+    #
+    # Returns PTR value for IPv6 reverse zone
+    #
+    def ptr(self,origin_len):
+        r=list("".join(["%08x"%self.d0,"%08x"%self.d1,"%08x"%self.d2,"%08x"%self.d3]))[origin_len:]
+        r.reverse()
+        return ".".join(r)
     
 
 ##
@@ -868,22 +884,3 @@ def cmp_ip(ip1,ip2):
     """
     return cmp(address_to_int(ip1),address_to_int(ip2))
 
-##
-##
-## Generator returing ip addresses in range
-##
-def generate_ips(ip1,ip2):
-    """
-    >>> list(generate_ips("192.168.0.0","192.168.0.0"))
-    ['192.168.0.0']
-    >>> list(generate_ips("192.168.0.0","192.168.0.3"))
-    ['192.168.0.0', '192.168.0.1', '192.168.0.2', '192.168.0.3']
-    """
-    n1=address_to_int(ip1)
-    n2=address_to_int(ip2)
-    while True:
-        yield int_to_address(n1)
-        n1+=1
-        if n1>n2:
-            break
-    

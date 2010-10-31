@@ -193,6 +193,10 @@ class IPv4TestCase(TestCase):
         self.assertEquals([repr(x) for x in IPv4("192.168.0.0/24").area_spot(["192.168.0.1","192.168.0.2","192.168.0.128"],dist=2,sep=True)],
             ['<IPv4 192.168.0.1/32>', '<IPv4 192.168.0.2/32>', '<IPv4 192.168.0.3/32>', '<IPv4 192.168.0.4/32>', "None",
             '<IPv4 192.168.0.126/32>','<IPv4 192.168.0.127/32>', '<IPv4 192.168.0.128/32>', '<IPv4 192.168.0.129/32>', '<IPv4 192.168.0.130/32>'])
+    
+    def test_normalized(self):
+        self.assertEquals(repr(IPv4("192.168.0.1/24").normalized), '<IPv4 192.168.0.0/24>')
+        self.assertEquals(repr(IPv4("239.12.5.15/4").normalized), '<IPv4 224.0.0.0/4>')
 
 ##
 ## IPv6 Prefix unittests
@@ -343,3 +347,8 @@ class IPv6TestCase(TestCase):
         self.assertEquals(repr(IPv6("2001:db8:0:7:0:0:0:1").normalized), "<IPv6 2001:db8:0:7::1/128>")
         self.assertEquals(repr(IPv6("::ffff:c0a8:1").normalized), "<IPv6 ::ffff:192.168.0.1/128>")
     
+    def test_ptr(self):
+        self.assertEquals(IPv6("2001:db8::1").ptr(0), "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2")
+        self.assertEquals(IPv6("2001:db8::1").ptr(8), "1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0")
+    
+
