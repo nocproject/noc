@@ -2,34 +2,40 @@
 ##----------------------------------------------------------------------
 ## Global Search
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+# Django Modules
+from django.utils.translation import ugettext_lazy as _
 from django import forms
-from noc.lib.app import Application,PermitLogged
+# NOC Modules
+from noc.lib.forms import NOCForm
+from noc.lib.app import Application,PermitLogged,view
 from noc.lib.search import search as search_engine
-##
-## Simple search form
-##
-class SearchForm(forms.Form):
-    query=forms.CharField()
+
 ##
 ## Search engine application
 ##
 class SearchApplication(Application):
     title="Search"
     ##
+    ## Simple search form
+    ##
+    class SearchForm(NOCForm):
+        query=forms.CharField(label=_("Query"))
+    
+    ##
     ## Render success page
     ##
+    @view(url=r"^$", url_name="search", access=PermitLogged())
     def view_search(self,request):
         result=[]
         if request.POST:
-            form=SearchForm(request.POST)
+            form=self.SearchForm(request.POST)
             if form.is_valid():
                 result=search_engine(request.user,form.cleaned_data["query"])
         else:
-            form=SearchForm()
+            form=self.SearchForm()
         return self.render(request,"search.html",{"form":form,"result":result})
-    view_search.url=r"^$"
-    view_search.url_name="search"
-    view_search.access=PermitLogged()
+    
