@@ -12,6 +12,10 @@ from __future__ import with_statement
 ## Return NOC version
 ##
 def get_version():
+    """
+    >>> len(get_version())>0
+    True
+    """
     with open("VERSION") as f:
         v=f.read().split("\n")[0].strip()
     try:
