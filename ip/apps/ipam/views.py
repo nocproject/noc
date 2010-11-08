@@ -211,17 +211,14 @@ class IPAMAppplication(Application):
             # Assign slots to addresses
             c=[None]*max_slots
             rrs=rs[:]
-            if rrs:
-                cr=rrs.pop(0)
-            else:
-                cr=None
+            cr=rrs.pop(0) if rrs else None
             for a in addresses:
                 address=IP.prefix(a.address)
-                if cr and address==cr[0]:
+                while cr and address>=cr[0]:
                     c=cr[2]
                     if rrs:
                         cr=rrs.pop(0)
-                a.slots=c[:]
+                a.slots=c
         # Address spot
         if can_add_address:
             c=[None]*max_slots
