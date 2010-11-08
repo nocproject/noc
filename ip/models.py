@@ -735,6 +735,12 @@ class PrefixBookmark(models.Model):
     ## Returns a prefixes bookmarked by user
     ##
     @classmethod
-    def user_bookmarks(cls,user):
-        return sorted([b.prefix for b in cls.objects.filter(user=user)],key=attrgetter("prefix"))
+    def user_bookmarks(cls,user,vrf=None,afi=None):
+        q=Q(user=user)
+        if vrf:
+            if afi:
+                q&=Q(prefix__vrf=vrf,prefix__afi=afi)
+            else:
+                q&=Q(prefix__vrf=vrf)
+        return sorted([b.prefix for b in cls.objects.filter(q)],key=attrgetter("prefix"))
     
