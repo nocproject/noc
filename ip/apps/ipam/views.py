@@ -101,6 +101,10 @@ class IPAMAppplication(Application):
         for vg in VRFGroup.objects.all().order_by("name"):
             vrfs=list(vg.vrf_set.filter(is_active=True).filter(q).order_by("name"))
             if len(vrfs):
+                # Set up bookmarks
+                for v in vrfs:
+                    v.bookmarks=PrefixBookmark.user_bookmarks(request.user,vrf=v)
+                # Add to groups
                 groups+=[(vg,vrfs)]
         return self.render(request,"index.html",{"groups":groups,"query":query})
     
@@ -155,7 +159,7 @@ class IPAMAppplication(Application):
         can_add_address=can_change and len(prefixes)==0
         # Bookmarks
         has_bookmark=prefix.has_bookmark(user)
-        bookmarks=PrefixBookmark.user_bookmarks(user)
+        bookmarks=PrefixBookmark.user_bookmarks(user,vrf=vrf,afi=afi)
         # Ranges
         ranges=[]
         rs=[]
@@ -437,7 +441,7 @@ class IPAMAppplication(Application):
         if not PrefixAccess.user_can_change(request.user,vrf,afi,prefix):
             return self.response_forbidden()
         prefix=self.get_object_or_404(Prefix,vrf=vrf,afi=afi,prefix=prefix)
-        can_bind_vc=Permission.has_perm(user,"ip:ipam:bind_vc")
+        can_bind_vc=Permission.has_perm(request.user,"ip:ipam:bind_vc")
         form_class=get_form_class()
         if request.POST:
             # Save prefix
