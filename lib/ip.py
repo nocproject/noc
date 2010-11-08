@@ -80,7 +80,7 @@ class IP(object):
     ##
     ## Generator returning continuing set of addresses
     ##
-    def iter_address(self,count=None,until=None):
+    def iter_address(self,count=None,until=None,filter=None):
         if until and isinstance(until,basestring):
             until=self.__class__(until)
         if until:
@@ -88,7 +88,8 @@ class IP(object):
         n=0
         a=self
         while True:
-            yield a
+            if filter is None or filter(a):
+                yield a
             a+=1
             n+=1
             if (count and n>=count) or (until and a==until):
@@ -121,29 +122,45 @@ class IP(object):
     def area_spot(self,addresses,dist,sep=False):
         if not addresses:
             return []
-        spot=set()
         spot_size=2*dist+1
+        s_first=self.first.set_mask()
+        s_last=self.last.set_mask()
+        # Return all addresses except network and broadcast
+        # for IPv4, when a dist is larger than network size
         if self.afi=="4" and dist>=self.size:
-            return list((self.first+1).iter_address(until=self.last-1))
+            return list((s_first+1).iter_address(until=s_last-1))
+        # Left only addresses remaining in prefix and convert them to
+        # IP instances
+        addresses=set([a for a in [IP.prefix(a) if isinstance(a,basestring) else a for a in addresses] if self.contains(a)])
+        addresses=sorted(addresses)
+        # Fill the spot
+        spot=[]
+        last=None
+        last_touched=None
         for a in addresses:
-            if isinstance(a,basestring):
-                a=IP.prefix(a)
-            if not self.contains(a):
-                continue
-            for sa in (a-dist).iter_address(count=spot_size):
-                if sa not in spot and self.contains(sa):
-                    spot.add(sa)
-        spot=sorted(spot)
-        if sep:
-            s0=spot.pop(0)
-            s=[s0]
-            while spot:
-                s1=spot.pop(0)
-                if s1!=(s0+1):
-                    s+=[None]
-                s+=[s1]
-                s0=s1
-            spot=s
+            # Fill spot around the first address
+            if last is None:
+                last_touched=min(a+dist,s_last)
+                spot=list(max(a-dist,s_first).iter_address(until=last_touched))
+            else:
+                d=a-last
+                if d<=dist:
+                    # No gap, fill d addresses from last touched
+                    lt=min(last_touched+d,s_last)
+                    spot+=list((last_touched+1).iter_address(until=lt))
+                else:
+                    # Gap, insert separator if needed
+                    if sep:
+                        spot+=[None]
+                    # Fill spot around address
+                    lt=min(a+dist,s_last)
+                    spot+=list((a-dist).iter_address(until=lt))
+                last_touched=lt
+            # Exit if last address touched
+            if last_touched==s_last:
+                break
+            last=a
+        # Return result
         if self.afi=="4":
             # Remove network and broadcast address
             return [a for a in spot if a is None or a.address not in (self.first.address,self.last.address)]
@@ -305,6 +322,13 @@ class IPv4(IP):
     @property
     def normalized(self):
         return self._to_prefix(self.d&((1L<<self.mask)-1L)<<(32L-self.mask),self.mask)
+    
+    ##
+    ## Returns new IPv4 instance with new mask value.
+    ## If mask not set, returns with /32
+    ##
+    def set_mask(self,mask=None):
+        return self._to_prefix(self.d,32 if mask is None else mask)
     
 
 ##
@@ -558,11 +582,25 @@ class IPv6(IP):
     def normalized(self):
         return self._to_prefix(self.d0,self.d1,self.d2,self.d3,self.mask)
     
+    ##
+    ## Returns new IPv4 instance with new mask value.
+    ## If mask not set, returns with /128
+    ##
+    def set_mask(self,mask=None):
+        return self._to_prefix(self.d0,self.d1,self.d2,self.d3,128 if mask is None else mask)
+    
+    #
+    # Returns 32 hexadecimal digits
+    #
+    @property
+    def digits(self):
+        return list("".join(["%08x"%self.d0,"%08x"%self.d1,"%08x"%self.d2,"%08x"%self.d3]))
+    
     #
     # Returns PTR value for IPv6 reverse zone
     #
     def ptr(self,origin_len):
-        r=list("".join(["%08x"%self.d0,"%08x"%self.d1,"%08x"%self.d2,"%08x"%self.d3]))[origin_len:]
+        r=self.digits[origin_len:]
         r.reverse()
         return ".".join(r)
     
@@ -627,260 +665,4 @@ class PrefixDB(object):
         for bits in walk_tree(c,root_bits):
             yield root.__class__.from_bits(bits)
     
-
-##
-## @todo: Refactor below
-##
-
-import struct,socket,math
-
-##
-##
-##
-def address_to_int(ip):
-    """
-    >>> address_to_int("192.168.0.1")
-    3232235521
-    >>> address_to_int("10.0.0.0")
-    167772160
-    """
-    return struct.unpack("!L",socket.inet_aton(ip))[0]
-##
-##
-##
-def int_to_address(i):
-    """
-    >>> int_to_address(3232235521L)
-    '192.168.0.1'
-    >>> int_to_address(167772160)
-    '10.0.0.0'
-    """
-    return socket.inet_ntoa(struct.pack("!L",i))
-##
-## Converts bits to an integer
-##
-def bits_to_int(bits):
-    """
-    >>> int_to_address(bits_to_int(24))
-    '255.255.255.0'
-    >>> int_to_address(bits_to_int(16))
-    '255.255.0.0'
-    """
-    return ((1L<<bits)-1L)<<(32L-bits)
-##
-## Converts bits to netmask
-##
-def bits_to_netmask(bits):
-    """
-    >>> bits_to_netmask(24)
-    '255.255.255.0'
-    >>> bits_to_netmask(16)
-    '255.255.0.0'
-    >>> bits_to_netmask(0)
-    '0.0.0.0'
-    >>> bits_to_netmask(32)
-    '255.255.255.255'
-    >>> bits_to_netmask(-1)
-    '255.255.255.255'
-    >>> bits_to_netmask(33)
-    '255.255.255.255'
-    """
-    try:
-        bits=int(bits)
-        if bits<0 or bits>32:
-            raise Exception
-    except:
-        return "255.255.255.255"
-    return int_to_address(bits_to_int(bits))
-
-##
-## Returns amount of addresses into prefix of "bits" length
-##
-def bits_to_size(bits):
-    """
-    >>> bits_to_size(0)
-    4294967296L
-    >>> bits_to_size(32)
-    1L
-    >>> bits_to_size(24)
-    256L
-    """
-    return 1L<<(32L-bits)
-##
-## Returns the size of prefix
-##
-def prefix_to_size(prefix):
-    """
-    >>> prefix_to_size("10.0.0.0/32")
-    1L
-    >>> prefix_to_size("10.0.0.0/8")
-    16777216L
-    >>> prefix_to_size("10.0.0.0/24")
-    256L
-    """
-    n,m=prefix.split("/")
-    return bits_to_size(int(m))
-##
-##
-##
-def network(prefix):
-    n,m=prefix.split("/")
-    m=int(m)
-    return int_to_address(address_to_int(n)&bits_to_int(m))
-##
-## Convert arbitrary ip/bits pair to strict network/bits
-##
-def normalize_prefix(prefix):
-    n,m=prefix.split("/")
-    m=int(m)
-    return "%s/%d"%(int_to_address(address_to_int(n)&bits_to_int(m)),m)
-##
-## Check wrether address is in prefix
-##
-def contains(prefix,address):
-    """
-    >>> contains("10.0.0.0/8","192.168.0.1")
-    False
-    >>> contains("10.0.0.0/8","10.10.12.5")
-    True
-    >>> contains("10.0.0.0/16","10.10.12.5")
-    False
-    """
-    n,m=prefix.split("/")
-    return network(prefix)==network(address+"/%d"%int(m))
-##
-##
-##
-def broadcast(prefix):
-    """
-    >>> broadcast("192.168.0.0/24")
-    '192.168.0.255'
-    >>> broadcast("192.168.0.0/32")
-    '192.168.0.0'
-    """
-    n,m=prefix.split("/")
-    m=int(m)
-    return int_to_address(address_to_int(n)|(0xFFFFFFFFL^bits_to_int(m)))
-##
-##
-##
-def wildcard(prefix):
-    """
-    >>> wildcard("192.168.0.0/24")
-    '0.0.0.255'
-    >>> wildcard("192.168.0.0/32")
-    '0.0.0.0'
-    """
-    n,m=prefix.split("/")
-    m=int(m)
-    return int_to_address(0xFFFFFFFFL^bits_to_int(m))
-
-##
-##
-##
-def prefix_to_bin(prefix):
-    """ 
-    Convert prefix to a list of bits
-    >>> prefix_to_bin("4.0.0.0/8")
-    [0, 0, 0, 0, 0, 1, 0, 0]
-    >>> prefix_to_bin("192.168.254.19/32")
-    [1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1]
-    """
-    ip,l=prefix.split("/")
-    l=int(l)
-    i=address_to_int(ip)
-    r=[]
-    i=i>>(32-l)
-    for j in range(l):
-        r=[int(i&1)]+r
-        i>>=1
-    return r
-##
-##
-##
-def bin_to_prefix(s):
-    """
-    Convert list of bits to prefix
-    >>> bin_to_prefix([0, 0, 0, 0, 0, 1, 0, 0])
-    '4.0.0.0/8'
-    >>> bin_to_prefix([1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1])
-    '192.168.254.19/32'
-    """
-    r=0L
-    for c in s:
-        r=(r<<1)|c
-    l=len(s)
-    r<<=(32-l)
-    return "%s/%d"%(int_to_address(r),l)
-##
-## Return prefix boundary - pair of ints
-## representing beginnng and the end of the prefix
-##
-def prefix_boundary(p):
-    """
-    >>> prefix_boundary("10.0.0.0/8")
-    (167772160L, 184549375L)
-    >>> prefix_boundary("10.0.0.0/32")
-    (167772160L, 167772160L)
-    >>> prefix_boundary("0.0.0.0/0")
-    (0L, 4294967295L)
-    """
-    n,m=p.split("/")
-    m=int(m)
-    a=address_to_int(n)
-    b=bits_to_int(m)
-    return (a&b,a|(0xFFFFFFFFL^b))
-
-##
-## Returns a list of free block in "prefix"
-## Allocated should be sorted list
-##
-def free_blocks(prefix,allocated):
-    """
-    >>> list(free_blocks("10.0.0.0/8",[]))
-    ['10.0.0.0/8']
-    >>> list(free_blocks("10.0.0.0/8",["10.0.0.0/8"]))
-    []
-    >>> list(free_blocks("192.168.0.0/20",["192.168.0.0/24"]))
-    ['192.168.1.0/24', '192.168.2.0/23', '192.168.4.0/22', '192.168.8.0/21']
-    >>> list(free_blocks("192.168.0.0/20",["192.168.15.0/24"]))
-    ['192.168.0.0/21', '192.168.8.0/22', '192.168.12.0/23', '192.168.14.0/24']
-    >>> list(free_blocks("192.168.0.0/20",["192.168.8.0/24"]))
-    ['192.168.0.0/21', '192.168.9.0/24', '192.168.10.0/23', '192.168.12.0/22']
-    >>> list(free_blocks("192.168.0.0/20",["192.168.6.0/23"]))
-    ['192.168.0.0/22', '192.168.4.0/23', '192.168.8.0/21']
-    >>> list(free_blocks("192.168.0.0/20",["192.168.6.0/24","192.168.7.0/24"]))
-    ['192.168.0.0/22', '192.168.4.0/23', '192.168.8.0/21']
-    >>> list(free_blocks("192.168.0.0/20",["192.168.0.0/24","192.168.6.0/24","192.168.7.0/24","192.168.15.0/24"]))
-    ['192.168.1.0/24', '192.168.2.0/23', '192.168.4.0/23', '192.168.8.0/22', '192.168.12.0/23', '192.168.14.0/24']
-    >>> list(free_blocks("192.168.0.0/22",["192.168.0.0/24","192.168.1.0/24","192.168.2.0/24","192.168.3.0/24"]))
-    []
-    """
-    p0,p1=prefix_boundary(prefix)
-    f0=p0
-    for a in allocated:
-        a0,a1=prefix_boundary(a)
-        if a0>f0:
-            # Free space found
-            # Return prefixes covering free space
-            for b in cover_blocks(f0,a0-1):
-                yield b
-        f0=a1+1
-    if f0<p1:
-        # Free space at the end found
-        for b in cover_blocks(f0,p1):
-            yield b
-##
-## Compare ip1 against ip2
-##
-def cmp_ip(ip1,ip2):
-    """
-    >>> cmp_ip("192.168.0.1","192.168.0.1")
-    0
-    >>> cmp_ip("192.168.0.1","192.168.0.2")
-    -1
-    >>> cmp_ip("192.168.0.2","192.168.0.1")
-    1
-    """
-    return cmp(address_to_int(ip1),address_to_int(ip2))
 
