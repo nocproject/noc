@@ -178,7 +178,7 @@ class ManagedObject(models.Model):
     ## Returns True if Managed Object presents in more than one networks
     ##
     def is_router(self):
-        return self.ipv4address_set.count()>1
+        return self.address_set.count()>1
     is_router=property(is_router)
 ##
 ##
@@ -368,7 +368,7 @@ class GroupAccess(models.Model):
             # Combine selectors
             q=gq.pop(0)
             while gq:
-                q|=gp.pop(0)
+                q|=gq.pop(0)
             return q
         else:
             return Q(id__in=[]) # False

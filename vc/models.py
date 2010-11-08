@@ -109,29 +109,42 @@ class VCBindFilter(models.Model):
         verbose_name_plural="VC Bind Filters"
     vc_domain=models.ForeignKey(VCDomain,verbose_name="VC Domain")
     vrf=models.ForeignKey("ip.VRF",verbose_name="VRF")
-    prefix=CIDRField("prefix")
+    afi=models.CharField("Address Family",max_length=1,choices=[("4","IPv4"),("6","IPv6")],default="4")
+    prefix=CIDRField("Prefix")
     vc_filter=models.ForeignKey(VCFilter,verbose_name="VC Filter")
     def __unicode__(self):
         return "%s %s %s %s"%(self.vc_domain,self.vrf,self.prefix,self.vc_filter)
-    #
+    
+    ##
+    ## Returns queryset with all suitable VCs
+    ##
     @classmethod
-    def get_choices(cls,prefix):
-        r=list(VC.objects.filter(vc_domain__in=[d.id for d in VCDomain.objects.filter(enable_vc_bind_filter=False)]))
-        for d in VCDomain.objects.filter(enable_vc_bind_filter=True):
-            cursor=connection.cursor()
-            cursor.execute("""SELECT DISTINCT vc_filter_id
-            FROM vc_vcbindfilter
-            WHERE vc_domain_id=%s
-                AND vrf_id=%s
-                AND prefix>>=%s::inet
-            """,[d.id,prefix.vrf.id,prefix.prefix])
-            filters=[VCFilter.objects.get(id=f_id) for f_id, in cursor.fetchall()]
-            for vc in d.vc_set.all():
-                for f in filters:
-                    if f.check(vc.l1):
-                        r+=[vc]
-        r=sorted(r,lambda x,y:cmp(x.l1,y.l1))
-        return [(o.id,unicode(o)) for o in r]
+    def get_vcs(cls,vrf,afi,prefix):
+        if hasattr(prefix,"prefix"):
+            prefix=prefix.prefix
+        c=connection.cursor()
+        c.execute("""
+            SELECT v.id,v.l1,vf.id
+            FROM
+                vc_vcdomain d JOIN vc_vcbindfilter f ON (d.id=f.vc_domain_id)
+                JOIN vc_vcfilter vf ON (f.vc_filter_id=vf.id)
+                JOIN vc_vc v ON (v.vc_domain_id=d.id)
+            WHERE
+                    f.vrf_id=%s
+                AND f.afi=%s
+                AND f.prefix>>=%s
+        """,[vrf.id,afi,prefix])
+        vcs=set() # vc.id
+        F={}      # id -> filter
+        for vc_id,l1,vf_id in c.fetchall():
+            try:
+                f=F[vf_id]
+            except KeyError:
+                f=VCFilter.objects.get(id=vf_id)
+                F[vf_id]=f
+            if f.check(l1):
+                vcs.add(vc_id)
+        return VC.objects.filter(id__in=vcs).order_by("l1")
 
 ##
 ## VCDomain Provisioning Parameters
@@ -187,13 +200,6 @@ class VC(models.Model):
     ##
     def get_absolute_url(self):
         return site.reverse("vc:vc:change",self.id)
-    ##
-    ##
-    ##
-    def blocks_list(self):
-        return ", ".join([p.prefix for p in self.ipv4block_set.order_by("prefix")])
-    blocks_list.short_description="Blocks"
-    blocks_list.allow_tags=False
     ##
     ## Enforce additional checks
     ##
