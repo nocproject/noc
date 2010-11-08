@@ -353,15 +353,15 @@ class Prefix(models.Model):
     @classmethod
     def search(cls,user,query,limit):
         q=Q(description__icontains=query)
-        if is_ipv4_prefix:
+        if is_ipv4_prefix(query):
             q|=Q(afi="4",prefix=query)
-        elif is_ipv6_prefix:
+        elif is_ipv6_prefix(query):
             q|=Q(afi="6",prefix=query)
         for o in cls.objects.filter(q):
             if query==o.prefix:
                 relevancy=1.0
             elif query in description:
-                relevancy=float(len(search))/float(len(o.description))
+                relevancy=float(len(query))/float(len(o.description))
             else:
                 relevancy=0
             yield SearchResult(
@@ -468,9 +468,9 @@ class Address(models.Model):
             if query==o.address:
                 relevancy=1.0
             elif query in o.fqdn:
-                relevancy=float(len(search))/float(len(o.fqdn))
+                relevancy=float(len(query))/float(len(o.fqdn))
             elif query in o.description:
-                relevancy=float(len(search))/float(len(o.description))
+                relevancy=float(len(query))/float(len(o.description))
             else:
                 relevancy=0
             yield SearchResult(
