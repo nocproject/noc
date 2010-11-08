@@ -31,6 +31,7 @@ from noc.sa.models import ReduceTask
 #
 class IPAMAppplication(Application):
     title="Assigned Addresses"
+    extra_permissions=["bind_vc"]
     
     ADDRESS_SPOT_DIST=8   # Area around used address to show in free spot
     MAX_IPv4_NET_SIZE=256 # Cover whole IPv4 prefix with spot if size below
@@ -419,7 +420,8 @@ class IPAMAppplication(Application):
             class EditPrefixForm(NOCForm):
                 asn         = forms.ModelChoiceField(label=_("ASN"),queryset=AS.objects.order_by("asn"),
                                 help_text=_("AS Number"))
-                vc          = forms.ModelChoiceField(label=_("VC"),queryset=VCBindFilter.get_vcs(vrf,afi,prefix),required=False,
+                if can_bind_vc:
+                    vc      = forms.ModelChoiceField(label=_("VC"),queryset=VCBindFilter.get_vcs(vrf,afi,prefix),required=False,
                                 help_text=_("VC Related with prefix. Adjust VC Bind Filters if you cannot see required VC"))
                 description = forms.CharField(label=_("Description"),widget=forms.Textarea,required=False)
                 tags        = forms.CharField(label=_("Tags"),widget=AutoCompleteTags,required=False)
@@ -438,12 +440,15 @@ class IPAMAppplication(Application):
         if not PrefixAccess.user_can_change(request.user,vrf,afi,prefix):
             return self.response_forbidden()
         prefix=self.get_object_or_404(Prefix,vrf=vrf,afi=afi,prefix=prefix)
+        can_bind_vc=Permission.has_perm(user,"ip:ipam:bind_vc")
         form_class=get_form_class()
         if request.POST:
             # Save prefix
             form=form_class(request.POST)
             if form.is_valid():
                 for k,v in form.cleaned_data.items():
+                    if not can_bind_vc and k=="vc":
+                        continue
                     setattr(prefix,k,v)
                 prefix.save()
                 self.message_user(request,_("Prefix %(prefix)s has been changed")%{"prefix":prefix})
