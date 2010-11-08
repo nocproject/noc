@@ -354,8 +354,8 @@ class TableSection(ReportSection):
         super(ReportSection,self).__init__(name=name)
         self.columns=[]
         for c in columns:
-            if isinstance(c,basestring):
-                self.columns+=[TableColumn(c)]
+            if isinstance(c,basestring) or hasattr(c,"__unicode__"):
+                self.columns+=[TableColumn(unicode(c))]
             else:
                 self.columns+=[c]
         self.data=data
