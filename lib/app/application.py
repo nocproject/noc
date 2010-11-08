@@ -35,6 +35,7 @@ class ApplicationBase(type):
 class Application(object):
     __metaclass__=ApplicationBase
     title="APPLICATION TITLE"
+    extra_permissions=[] # List of additional permissions, not related with views
     ##
     Form=NOCForm # Shortcut for form class
     config=settings.config
@@ -196,9 +197,13 @@ class Application(object):
     ##
     def get_permissions(self):
         p=set()
+        # View permissions from HasPerm
         for view in self.get_views():
             if isinstance(view.access,HasPerm):
                 p.add(view.access.get_permission(self))
+        # extra_permissions
+        for e in self.extra_permissions:
+            p.add(HasPerm(e).get_permission(self))
         return p
     ##
     ## Return a list of user access entries
