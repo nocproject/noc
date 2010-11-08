@@ -58,3 +58,15 @@ th[class=tt] {
 th[class=gw] {
     width: 1em;
 }
+
+#ranges th[class=legend] {
+    width: 1em;
+}
+
+#ranges th[class=name] {
+    width: 17em;
+}
+
+#ranges th[class=address] {
+    width: 7em;
+}
