@@ -1,21 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Models for DNS module
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import re,os,time,subprocess
+# Python modules
+import re
+import os
+import time
+import subprocess
+# Django modules
 from django.db import models
+# NOC Modules
 from noc.settings import config
-from noc.ip.models import IPv4Address
+from noc.ip.models import Address, AddressRange
 from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ,rewrite_when_differ,safe_rewrite
 from noc.dns.generators import generator_registry
 from noc.lib.rpsl import rpsl_format
-from noc.lib.ip import generate_ips
 from noc.lib.fields import AutoCompleteTagsField
 from noc.lib.app.site import site
+from noc.lib.ip import *
 ##
 ## register all generator classes
 ##
@@ -27,6 +35,7 @@ class DNSServer(models.Model):
     class Meta:
         verbose_name="DNS Server"
         verbose_name_plural="DNS Servers"
+    
     name=models.CharField("Name",max_length=64,unique=True)
     generator_name=models.CharField("Generator",max_length=32,choices=generator_registry.choices)
     ip=models.IPAddressField("IP",null=True,blank=True)
@@ -36,11 +45,13 @@ class DNSServer(models.Model):
         help_text="Script for zone provisioning")
     autozones_path=models.CharField("Autozones path",max_length=256,blank=True,null=True,
         default="autozones",help_text="Prefix for autozones in config files")
+    
     def __unicode__(self):
         if self.location:
             return "%s (%s)"%(self.name,self.location)
         else:
             return self.name
+    
     # Expands variables if any
     def expand_vars(self,str):
         return str%{
@@ -58,10 +69,12 @@ class DNSServer(models.Model):
             cmd=self.expand_vars(self.provisioning)
             retcode=subprocess.call(cmd,shell=True,cwd=os.path.join(config.get("cm","repo"),"dns"),env=env)
             return retcode==0
-            
-    def _generator_class(self):
+    
+    @property
+    def generator_class(self):
         return generator_registry[self.generator_name]
-    generator_class=property(_generator_class)
+    
+
 ##
 ##
 ##
@@ -69,6 +82,7 @@ class DNSZoneProfile(models.Model):
     class Meta:
         verbose_name="DNS Zone Profile"
         verbose_name_plural="DNS Zone Profiles"
+    
     name=models.CharField("Name",max_length=32,unique=True)
     masters=models.ManyToManyField(DNSServer,verbose_name="Masters",related_name="masters",blank=True)
     slaves=models.ManyToManyField(DNSServer,verbose_name="Slaves",related_name="slaves",blank=True)
@@ -79,16 +93,17 @@ class DNSZoneProfile(models.Model):
     zone_expire=models.IntegerField("Expire",default=86400)
     zone_ttl=models.IntegerField("TTL",default=3600)
     description=models.TextField("Description",blank=True,null=True)
-
+    
     def __str__(self):
         return self.name
-
+    
     def __unicode__(self):
         return self.name
-
-    def _authoritative_servers(self):
+    
+    @property
+    def authoritative_servers(self):
         return list(self.masters.all())+list(self.slaves.all())
-    authoritative_servers=property(_authoritative_servers)
+    
 
 ##
 ## Managers for DNSZone
@@ -96,18 +111,21 @@ class DNSZoneProfile(models.Model):
 class ForwardZoneManager(models.Manager):
     def get_query_set(self):
         return super(ForwardZoneManager,self).get_query_set().exclude(name__iendswith=".in-addr.arpa")
-        
+    
+
 class ReverseZoneManager(models.Manager):
     def get_query_set(self):
         return super(ReverseZoneManager,self).get_query_set().filter(name__iendswith=".in-addr.arpa")
+    
+
 ##
 ##
-rx_rzone=re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
 class DNSZone(models.Model):
     class Meta:
         verbose_name="DNS Zone"
         verbose_name_plural="DNS Zones"
         ordering=["name"]
+    
     name=models.CharField("Domain",max_length=64,unique=True)
     description=models.CharField("Description",null=True,blank=True,max_length=64)
     is_auto_generated=models.BooleanField("Auto generated?")
@@ -126,30 +144,56 @@ class DNSZone(models.Model):
     def get_absolute_url(self):
         return site.reverse("dns:dnszone:change",self.id)
     
-    def _type(self):
-        if self.name.lower().endswith(".in-addr.arpa"):
-            return "R"
+    @property
+    def type(self):
+        nl=self.name.lower()
+        if nl.endswith(".in-addr.arpa"):
+            return "R4" # IPv4 reverse
+        elif nl.endswith(".ip6.int"):
+            return "R6" # IPv6 reverse
         else:
-            return "F"
-    type=property(_type)
-    def _reverse_prefix(self):
-        match=rx_rzone.match(self.name.lower())
-        if match:
-            return "%s.%s.%s.0/24"%(match.group(3),match.group(2),match.group(1))
-    reverse_prefix=property(_reverse_prefix)
-    def _next_serial(self):
+            return "F"  # Forward
+    
+    rx_rzone=re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
+    @property
+    def reverse_prefix(self):
+        if self.type=="R4":
+            # Get IPv4 prefix covering reverse zone
+            match=self.rx_rzone.match(self.name.lower())
+            if match:
+                return "%s.%s.%s.0/24"%(match.group(3),match.group(2),match.group(1))
+        elif self.type=="R6":
+            # Get IPv6 prefix covering reverse zone
+            p=self.name.lower()[:-8].split(".")
+            p.reverse()
+            l=len(p)
+            if l%4:
+                p+=["0"]*(4-l%4)
+            r=""
+            for i,c in enumerate(p):
+                if i and i%4==0:
+                    r+=":"
+                r+=c
+            if l!=32:
+                r+="::"
+            return IPv6(r+"/%d"%(l*4)).normalized.prefix
+            
+    
+    @property
+    def next_serial(self):
         T=time.gmtime()
         p="%04d%02d%02d"%(T[0],T[1],T[2])
         sn=int(self.serial[-2:])
         if self.serial.startswith(p):
             return p+"%02d"%(sn+1)
         return p+"00"
-    next_serial=property(_next_serial)
+    
     ##
     ## Returns a list of zone's RR.
     ## [(left,type,right)]
     ##
-    def _records(self):
+    @property
+    def records(self):
         ## Compare two RRs.
         ## PTR records are compared as interger
         ## other - as strings
@@ -171,32 +215,77 @@ class DNSZone(models.Model):
             if r==0:
                 r=cmp(x3,y3)
             return r
-        from django.db import connection
-        c=connection.cursor()
+        
+        records=[]
         if self.type=="F":
-            c.execute("SELECT hostname(fqdn),ip FROM %s WHERE domainname(fqdn)=%%s ORDER BY ip"%IPv4Address._meta.db_table, [self.name])
-            records=[[r[0],"IN  A",r[1]] for r in c.fetchall()]
+            # Populate forward zone from IPAM
+            records=[
+                    (
+                        a.fqdn.split(".")[0],
+                        "IN  A" if a.afi=="4" else "IN  AAAA",
+                        a.address
+                    )
+                    for a in Address.objects.raw("""
+                        SELECT id,address,afi,fqdn
+                        FROM   %s
+                        WHERE  domainname(fqdn)=%%s
+                        ORDER BY address
+                        """%Address._meta.db_table,[self.name])]
             order_by=cmp_fwd
-        elif self.type=="R":
-            c.execute("SELECT ip,fqdn FROM %s WHERE ip::cidr << %%s ORDER BY ip"%IPv4Address._meta.db_table,[self.reverse_prefix])
-            records=[[r[0].split(".")[3],"PTR",r[1]+"."] for r in c.fetchall()]
+        elif self.type=="R4":
+            # Populate IPv4 reverse zone from IPAM
+            records=[
+                (
+                    a.address.split(".")[3],
+                    "PTR",
+                    a.fqdn+"."
+                )
+                for a in Address.objects.raw("""
+                    SELECT id,address,afi,fqdn
+                    FROM %s
+                    WHERE
+                            address << %%s
+                        AND afi='4'
+                """%Address._meta.db_table,[self.reverse_prefix])
+                ]
             order_by=cmp_ptr
+        elif self.type=="R6":
+            # Populate IPv6 reverse zone from IPAM
+            origin_length=(len(self.name)-8+1)//2
+            records=[
+                (   
+                    IPv6(a.address).ptr(origin_length),
+                    "PTR",
+                    a.fqdn+"."
+                )
+                for a in Address.objects.raw("""
+                    SELECT id,address,afi,fqdn
+                    FROM %s
+                    WHERE
+                            address << %%s
+                        AND afi='6'
+                """%Address._meta.db_table,[self.reverse_prefix])]
+            order_by=cmp_fwd
         else:
             raise Exception,"Invalid zone type"
         # Add records from DNSZoneRecord
         zonerecords=self.dnszonerecord_set.all()
-        if self.type=="R":
+        if self.type=="R4":
             # Classles reverse zone delegation
             # Range delegations
-            c.execute("SELECT from_ip,to_ip,fqdn_action_parameter FROM ip_ipv4addressrange WHERE from_ip << %s::cidr AND to_ip<<%s::cidr AND fqdn_action='D'",
-                [self.reverse_prefix,self.reverse_prefix])
-            for from_ip,to_ip,fqdn_action_params in c.fetchall():
-                nses=[ns.strip() for ns in fqdn_action_params.split(",")]
-                for ip in generate_ips(from_ip,to_ip):
-                    n=ip.split(".")[-1]
+            for r in AddressRange.objects.raw("""
+                SELECT * FROM
+                ip_addressrange
+                WHERE
+                        from_address<<%s
+                    AND to_address<<%s
+                    AND action='D'""",[self.reverse_prefix,self.reverse_prefix]):
+                nses=[ns.strip() for ns in r.reverse_nses.split(",")]
+                for a in r.addresses:
+                    n=a.address.split(".")[-1]
+                    records+=[[n,"CNAME","%s.%s/32"%(n,n)]]
                     for ns in nses:
                         records+=[["%s/32"%n,"IN NS",ns]]
-                        records+=[[n,"CNAME","%s.%s/32"%(n,n)]]
             # Subnet delegation macro
             delegations={}
             for d in [r for r in zonerecords if "NS" in r.type.type and "/" in r.left]:
@@ -259,7 +348,6 @@ class DNSZone(models.Model):
             records+=[[name,"IN A",ip]]
         #
         return sorted(records,order_by)
-    records=property(_records)
     
     def zonedata(self,ns):
         return ns.generator_class().get_zone(self)
