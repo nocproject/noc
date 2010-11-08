@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## ipv4blockaccess Test
+## prefixaccess Test
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.lib.test import ModelApplicationTestCase
-from django.utils import simplejson as json
 
-class ipv4blockaccessTestCase(ModelApplicationTestCase):
+class prefixaccessTestCase(ModelApplicationTestCase):
     pass
