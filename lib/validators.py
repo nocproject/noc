@@ -85,6 +85,8 @@ def is_ipv6(v):
     True
     >>> is_ipv6("2001:db8::")
     True
+    >>> is_ipv6("2001:db8:0000:0000:6232:6400::")
+    True
     >>> is_ipv6("::ffff:192.168.0.1")
     True
     >>> is_ipv6("::ffff:192.168.0.256")
@@ -113,7 +115,10 @@ def is_ipv6(v):
         parts=parts[:-1]+["%02x%02x"%(p[0],p[1]),"%02x%02x"%(p[2],p[3])]
     if len(parts)>8:
         return False
-    if len(parts)<8:
+    if len(parts)==8:
+        # Replace empty parts with "0"
+        parts=[p if p else "0" for p in parts]
+    else:
         # Expand ::
         try:
             i=parts.index("")
