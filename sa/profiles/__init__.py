@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Profile base class
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-from noc.lib.ip import bits_to_netmask
+# Python Modules
+import re
+# NOC Modules
 from noc.lib.registry import Registry
 from noc.lib.ecma48 import strip_control_sequences
 from noc.sa.interfaces import InterfaceTypeError
-import re
+from noc.lib.ip import *
+
 ##
 ##
 ##
@@ -101,13 +106,12 @@ class Profile(object):
     # or netmask should be converted to traditional formats
     requires_netmask_conversion=False
     #
-    # Converts ipv4 prefix to the format acceptable by router
+    # Converts ip prefix to the format acceptable by router
     #
     def convert_prefix(self,prefix):
         if "/" in prefix and self.requires_netmask_conversion:
-            net,mask=prefix.split("/")
-            mask=bits_to_netmask(mask)
-            return "%s %s"%(net,mask)
+            p=IPv4(prefix)
+            return "%s %s"%(prefix.address,prefix.netmask.address)
         return prefix
     #
     # Leave 00:11:22:33:44:55 style MAC-address untouched
