@@ -12,11 +12,18 @@ from noc.lib.app import ModelApplication,HasPerm
 from noc.vc.models import VC,VCDomain
 from noc.sa.models import ManagedObject,ReduceTask
 from noc.sa.models import profile_registry
+
+##
+## VC Blocks
+##
+def vc_prefixes(obj):
+    return ", ".join([p.prefix for p in obj.prefix_set.order_by("vrf__name","afi","prefix")])
+vc_prefixes.short_description="Prefixes"
 ##
 ## VC admin
 ##
 class VCAdmin(admin.ModelAdmin):
-    list_display=["vc_domain","name","l1","l2","description","blocks_list"]
+    list_display=["vc_domain","name","l1","l2","description",vc_prefixes]
     search_fields=["name","l1","l2","description"]
     list_filter=["vc_domain"]
 ##

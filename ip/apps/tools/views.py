@@ -5,14 +5,23 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+# Python Modules
+import csv
+import cStringIO
+import datetime
+import subprocess
+# Django Modules
+from django.utils.translation import ugettext_lazy as _
 from django import forms
-from django.shortcuts import get_object_or_404
-from noc.lib.app import Application,HasPerm
-from noc.lib.ip import contains
+# NOC Modules
+from noc.lib.app import Application,HasPerm,view
+from noc.lib.ip import *
 from noc.ip.models import *
-from noc.lib.validators import is_cidr,is_ipv4,is_fqdn
+from noc.lib.validators import *
+from noc.lib.forms import *
 from noc.settings import config
-import csv,cStringIO,datetime,subprocess
+
 ##
 ## IP Block tooks
 ##
@@ -21,111 +30,60 @@ class ToolsAppplication(Application):
     ##
     ## An index of tools available for block
     ##
-    def view_index(self,request,vrf_id,prefix):
-        assert is_cidr(prefix),"IPv4 Prefix Required"
-        vrf_id=int(vrf_id)
-        vrf=get_object_or_404(VRF,id=vrf_id)
-        if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
-            return self.response_forbidden("Permission denied")
-        return self.render(request,"index.html",{"vrf":vrf,"prefix":prefix,
-            "upload_ips_form":self.IPUploadForm(),
-            "upload_ips_axfr_form":self.AXFRForm()})
-    view_index.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\d+\.\d+\.\d+\.\d+/\d+)/$"
-    view_index.url_name="index"
-    view_index.access=HasPerm("view")
+    @view(  url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+?/\d+)/$",
+            url_name="index",
+            access=HasPerm("view"))
+    def view_index(self,request,vrf_id,afi,prefix):
+        vrf=self.get_object_or_404(VRF,id=int(vrf_id))
+        prefix=self.get_object_or_404(Prefix,vrf=vrf,afi=afi,prefix=prefix)
+        if not prefix.can_change(request.user):
+            return self.response_forbidden(_("Permission denined"))
+        return self.render(request,"index.html",vrf=vrf,afi=afi,prefix=prefix,
+            upload_ips_axfr_form=self.AXFRForm())
+    
     ##
     ## Download block's allocated IPs in CSV format
     ## Columns are: ip,fqdn,description,tt
     ##
-    def view_download_ip(self,request,vrf_id,prefix):
+    @view(  url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/download_ip/$",
+            url_name="download_ip",
+            access=HasPerm("view"))
+    def view_download_ip(self,request,vrf_id,afi,prefix):
         def to_utf8(x):
             if x:
                 return x.encode("utf8")
             else:
                 return ""
-        assert is_cidr(prefix),"IPv4 Prefix Required"
-        vrf=get_object_or_404(VRF,id=int(vrf_id))
-        if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
-            return self.response_forbidden("Permission denied")
-        block=get_object_or_404(IPv4Block,vrf=vrf,prefix=prefix)
+        
+        vrf=self.get_object_or_404(VRF,id=int(vrf_id))
+        prefix=self.get_object_or_404(Prefix,vrf=vrf,afi=afi,prefix=prefix)
+        if not prefix.can_change(request.user):
+            return self.response_forbidden(_("Permission denined"))
         out=cStringIO.StringIO()
         writer=csv.writer(out)
-        for a in block.nested_addresses:
-            writer.writerow([a.ip,a.fqdn,to_utf8(a.description),a.tt])
+        writer.writerow(["address","fqdn","description","tt","tags"])
+        for a in prefix.address_set.order_by("address"):
+            writer.writerow([a.address,a.fqdn,to_utf8(a.description),a.tt,a.tags])
         return self.render_response(out.getvalue(),content_type="text/csv")
-    view_download_ip.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\d+\.\d+\.\d+\.\d+/\d+)/download_ip/$"
-    view_download_ip.url_name="download_ip"
-    view_download_ip.access=HasPerm("view")
-    ##
-    ## IP Upload form
-    ##
-    class IPUploadForm(forms.Form):
-        file=forms.FileField()
-    ##
-    ## Upload allocated IPs in CSV format
-    ## CSV should contain two to four columns rows (ip,fqdn, description, tt)
-    ##
-    def view_upload_ip(self,request,vrf_id,prefix):
-        def upload_csv(file):
-            count=0
-            reader=csv.reader(file)
-            for row in reader:
-                if len(row)<2:
-                    continue
-                if not is_ipv4(row[0]) or not is_fqdn(row[1]):
-                    continue
-                # Leave only addresses residing into "prefix"
-                # To prevent uploading to not-owned blocks
-                if not contains(prefix,row[0]):
-                    continue
-                changed=False
-                try:
-                    a=IPv4Address.objects.get(vrf=vrf,ip=row[0])
-                except IPv4Address.DoesNotExist:
-                    a=IPv4Address(vrf=vrf,ip=row[0])
-                    changed=True
-                if a.fqdn!=row[1]:
-                    a.fqdn=row[1]
-                    changed=True
-                if len(row)>=3 and row[2]:
-                    a.description=row[2]
-                    changed=True
-                if len(row)>=4 and row[3]:
-                    a.tt=row[3]
-                    changed=True
-                if changed:
-                    a.modified_by=request.user
-                    a.last_modified=datetime.datetime.now()
-                    a.save()
-                    count+=1
-            return count
-        assert is_cidr(prefix)
-        vrf_id=int(vrf_id)
-        vrf=get_object_or_404(VRF,id=vrf_id)
-        if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
-            return self.response_forbidden("Permission denied")
-        if request.method=="POST":
-            form = self.IPUploadForm(request.POST, request.FILES)
-            if form.is_valid():
-                count=upload_csv(request.FILES['file'])
-                self.message_user(request,"%d IP addresses uploaded from CSV"%count)
-                return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,prefix))
-        return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,prefix))
-    view_upload_ip.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\d+\.\d+\.\d+\.\d+/\d+)/upload_ip/$"
-    view_upload_ip.url_name="upload_ip"
-    view_upload_ip.access=HasPerm("view")
+    
     ##
     ## Zone import form
     ##
-    class AXFRForm(forms.Form):
-        ns=forms.CharField()
-        zone=forms.CharField()
-        source_address=forms.IPAddressField(required=False)
+    class AXFRForm(NOCForm):
+        ns=forms.CharField(label=_("NS"),help_text=_("Name server IP address. NS must have zone transfer enabled for NOC host"))
+        zone=forms.CharField(label=_("Zone"),help_text=_("DNS Zone name to transfer"))
+        source_address=forms.IPAddressField(label=_("Source Address"),required=False,
+                        help_text=_("Source address to issue zone transfer"))
+    
     ##
     ## Import via zone transfer
     ##
-    def view_upload_axfr(self,request,vrf_id,prefix):
+    @view(  url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/upload_axfr/$",
+        url_name="upload_axfr",
+        access=HasPerm("view"))
+    def view_upload_axfr(self,request,vrf_id,afi,prefix):
         def upload_axfr(data):
+            p=IP.prefix(prefix.prefix)
             count=0
             for row in data:
                 row=row.strip()
@@ -135,6 +93,7 @@ class ToolsAppplication(Application):
                 if len(row)!=5 or row[2]!="IN" or row[3]!="PTR":
                     continue
                 if row[3]=="PTR":
+                    # @todo: IPv6
                     x=row[0].split(".")
                     ip="%s.%s.%s.%s"%(x[3],x[2],x[1],x[0])
                     fqdn=row[4]
@@ -142,28 +101,21 @@ class ToolsAppplication(Application):
                         fqdn=fqdn[:-1]
                 # Leave only addresses residing into "prefix"
                 # To prevent uploading to not-owned blocks
-                if not contains(prefix,ip):
+                if p.contains(IPv4(ip)):
                     continue
-                changed=False
-                try:
-                    a=IPv4Address.objects.get(vrf=vrf,ip=ip)
-                except IPv4Address.DoesNotExist:
-                    a=IPv4Address(vrf=vrf,ip=ip)
-                    changed=True
+                a,changed=Address.get_or_create(Address,vrf=vrf,afi=afi,address=ip)
                 if a.fqdn!=fqdn:
                     a.fqdn=fqdn
                     changed=True
                 if changed:
-                    a.modified_by=request.user
-                    a.last_modified=datetime.datetime.now()
                     a.save()
                     count+=1
             return count
-        assert is_cidr(prefix)
-        vrf_id=int(vrf_id)
-        vrf=get_object_or_404(VRF,id=vrf_id)
-        if not IPv4BlockAccess.check_write_access(request.user,vrf,prefix):
-            return self.response_forbidden("Permission denied")
+        
+        vrf=self.get_object_or_404(VRF,id=int(vrf_id))
+        prefix=self.get_object_or_404(Prefix,vrf=vrf,afi=afi,prefix=prefix)
+        if not prefix.can_change(request.user):
+            return self.response_forbidden(_("Permission denined"))
         if request.POST:
             form=self.AXFRForm(request.POST)
             if form.is_valid():
@@ -175,9 +127,9 @@ class ToolsAppplication(Application):
                 data=pipe.read()
                 pipe.close()
                 count=upload_axfr(data.split("\n"))
-                self.message_user(request,"%d IP addresses uploaded via zone transfer"%count)
-                return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,prefix))
-        return self.response_redirect("%s%d/%s/"%(self.base_url,vrf.id,prefix))
-    view_upload_axfr.url=r"^(?P<vrf_id>\d+)/(?P<prefix>\d+\.\d+\.\d+\.\d+/\d+)/upload_axfr/$"
-    view_upload_axfr.url_name="upload_axfr"
-    view_upload_axfr.access=HasPerm("view")
+                self.message_user(request,_("%(count)s IP addresses uploaded via zone transfer")%{"count":count})
+                return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,prefix.prefix)
+        else:
+            form=self.AXFRForm()
+        return self.render(request,"index.html",vrf=vrf,afi=afi,prefix=prefix,
+            upload_ips_axfr_form=form)

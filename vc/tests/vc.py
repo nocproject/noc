@@ -39,7 +39,7 @@ class VCTestCase(ModelTestCase):
     ## Test VC Object properties
     ##
     def object_test(self,o):
-        o.blocks_list()
+        pass
     ##
     ## Test search
     ##
@@ -77,7 +77,6 @@ class VCTestCase(ModelTestCase):
             vc3=VC(vc_domain=d,name="VC3",l1=vct.label1_min,l2=l2)
             vc3.save()
             unicode(vc3)
-            vc3.blocks_list
             vc3.delete()
             # Test L2
             if vct.min_labels>1:

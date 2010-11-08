@@ -5,13 +5,17 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Django Modules
+from django.utils.translation import ugettext_lazy as _
+## NOC Modules
 from noc.lib.app.simplereport import SimpleReport,TableColumn
 from noc.ip.models import VRF
 ##
 ##
 ##
 class Reportreportmissedreverse(SimpleReport):
-    title="Missed Reverse Zones"
+    title=_("Missed Reverse Zones")
     def get_data(self,**kwargs):
         def reverse_format(p):
             n,m=p.split("/")

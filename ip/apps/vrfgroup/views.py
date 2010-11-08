@@ -12,8 +12,8 @@ from noc.ip.models import VRFGroup
 ## VRFGroup admin
 ##
 class VRFGroupAdmin(admin.ModelAdmin):
-    list_display=["name","unique_addresses","description"]
-    search_fields=["name"]
+    list_display=["name","address_constraint","description"]
+    search_fields=["name","description"]
 ##
 ## VRFGroup application
 ##
