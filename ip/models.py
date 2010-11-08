@@ -536,7 +536,7 @@ class PrefixAccess(models.Model):
                         AND afi=%%s
                         AND user_id=%%s
                         AND can_view=TRUE
-                 """%PrefixAccess._meta.db_table,[str(prefix),vrf.id,self.afi,user.id])
+                 """%PrefixAccess._meta.db_table,[str(prefix),vrf.id,afi,user.id])
         return c.fetchall()[0][0]>0
     
     ##
@@ -550,12 +550,13 @@ class PrefixAccess(models.Model):
         c=connection.cursor()
         c.execute("""SELECT COUNT(*)
                      FROM %s
-                     WHERE prefix >>= '%%s'
+                     WHERE prefix >>= %%s
                         AND vrf_id=%%s
                         AND afi=%%s
                         AND user_id=%%s
                         AND can_change=TRUE
-                 """%PrefixAccess._meta.db_table,[str(prefix),vrf.id,self.afi,user.id])
+                 """%PrefixAccess._meta.db_table,[str(prefix),vrf.id,afi,user.id])
+        return c.fetchall()[0][0]>0
     
 
 ##
