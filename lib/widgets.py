@@ -7,14 +7,15 @@
 ##----------------------------------------------------------------------
 """
 """
+## Django modules
 from django import forms
 from django.forms.widgets import Input
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
-from tagging.models import Tag
 from django.utils.simplejson.encoder import JSONEncoder
-from noc.lib.app.site import site
 from django.utils.html import escape
+## Third-party modules
+from tagging.models import Tag
 
 ##
 ##
@@ -109,9 +110,13 @@ def lookup(request,func):
         if len(q)>2: # Ignore requests shorter than 3 letters
             result=list(func(q))
     return HttpResponse("\n".join(result), mimetype='text/plain')
+
 ##
 ## Render tag list for an object
 ##
 def tags_list(o):
     s=["<ul class='tags-list'>"]+["<li><a href='%s'>%s</a></li>"%(site.reverse("main:tags:tag",t.name),t.name) for t in Tag.objects.get_for_object(o)]+["</ul>"]
     return "".join(s)
+
+## Load at the end to prevent circular dependencies
+from noc.lib.app.site import site
