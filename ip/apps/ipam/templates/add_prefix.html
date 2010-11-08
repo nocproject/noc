@@ -1,0 +1,41 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Add IPv{{afi}} Prefix</h1>
+<div id="content-main">
+    <form method="POST" action="" >{% csrf_token %}
+        <div>
+            {% include "includes/noc_fieldset.html" %}
+            <div class="submit-row" >
+                <input type="submit" value="Save" class="default" name="_save" />
+                <input type="submit" value="Save and add another" name="_addanother"  />
+                <input type="submit" value="Save and continue editing" name="_continue" />
+            </div>
+        </div>
+    </form>
+</div>
+{% if suggestions %}
+<script type="text/javascript">
+function accept_suggestion(s)
+{
+    $("#id_prefix").val(s);
+}
+</script>
+<div class="module">
+    <table width="100%">
+        <caption>Click to select free block</caption>
+        <thead>
+            <tr><th style="width: 60px">Free Block</th>{% ifequal afi "4" %}<th style="width: 60px">Size</th>{% endifequal %}<th></th></tr>
+        </thead>
+        {% for p in suggestions %}
+        <tr>
+            <td><a onclick="accept_suggestion('{{p.0}}');" href="#">{{p.0}}</a></td>
+            {% ifequal afi "4" %}
+                <td align='right'>{{p.1}}</td>
+            {% endifequal %}
+            <td></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "template.html" %}
+{% load tags %}
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="/media/css/changelists.css" />
+{% endblock %}
+{% block content %}
+<h1>Select VRF</h1>
+<style>
+th[class=vrf] {
+    width: 150px;
+}
+
+th[class="addresses"] {
+    width: 50px;
+}
+
+th[class=rd] {
+    width: 50px;
+}
+
+</style>
+<div class="module filtered" id="changelist">
+    <div id="toolbar">
+        <form id="changelist-search" action="" method="get">{% csrf_token %}
+            <div><!-- DIV needed for valid HTML -->
+                <label for="searchbar"><img src="/media/img/admin/icon_searchbox.png" alt="Search" /></label>
+                <input type="text" size="40" name="q" value="{{query}}" id="searchbar" />
+                <input type="submit" value="Search" />
+            </div>
+        </form>
+    </div>
+    <script type="text/javascript">document.getElementById("searchbar").focus();</script>
+</div>
+{% for g in groups %}
+    <DIV CLASS="module">
+        <TABLE SUMMARY="VRFs in {{g}} group" WIDTH="100%">
+            <CAPTION><A HREF="" CLASS="section">{{g.0.name}}</A></CAPTION>
+            <thead>
+                <tr>
+                    <th class="vrf">VRF</th>
+                    <th class="rd">RD</th>
+                    <th class="addresses">IPv4</th>
+                    <th class="addresses">IPv6</th>
+                    <th class="description">Description</th>
+                    <th class="tags">Tags</th>
+                </tr>
+            </thead>
+            {% for vrf in g.1 %}
+                <TR class="{%cycle 'row1' 'row2'%}">
+                    <TD>{{vrf.name}}</TD>
+                    <TD>{{vrf.rd}}</TD>
+                    <TD>{% if vrf.afi_ipv4 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '4' '0.0.0.0/0' %}">View</a>{% endif %}</TD>
+                    <TD>{% if vrf.afi_ipv6 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '6' '::/0' %}">View</a>{% endif %}</TD>
+                    <TD>{{vrf.description}}</TD>
+                    <TD>{%tags vrf%}</TD>
+                </TR>
+            {%endfor%}
+        </TABLE>
+    </DIV>
+{%endfor%}
+{%endblock%}

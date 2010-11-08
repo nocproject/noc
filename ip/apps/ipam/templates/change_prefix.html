@@ -1,0 +1,15 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Change IPv{{afi}} Prefix: {{prefix}}</h1>
+<div id="content-main">
+    <form method="POST" action="" >{% csrf_token %}
+        <div>
+            {% include "includes/noc_fieldset.html" %}
+            
+            <div class="submit-row" >
+                <input type="submit" value="Save" class="default" name="_save" />
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
