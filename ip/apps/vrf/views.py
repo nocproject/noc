@@ -12,9 +12,9 @@ from noc.ip.models import VRF
 ## VRF admin
 ##
 class VRFAdmin(admin.ModelAdmin):
-    list_display=["rd","name","vrf_group","description"]
-    search_fields=["name","rd"]
-    list_filter=["vrf_group"]
+    list_display=["rd","name","vrf_group","afi_ipv4","afi_ipv6","description"]
+    search_fields=["name","rd","description"]
+    list_filter=["afi_ipv4","afi_ipv6","vrf_group"]
 ##
 ## VRF application
 ##

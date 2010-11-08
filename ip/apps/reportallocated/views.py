@@ -5,35 +5,45 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app.simplereport import SimpleReport
-from noc.lib.validators import is_cidr
-from noc.ip.models import VRF
+
+# Django Modules
+from django.utils.translation import ugettext_lazy as _
 from django import forms
+# NOC Modules
+from noc.lib.app.simplereport import SimpleReport
+from noc.lib.validators import *
+from noc.ip.models import VRF, Prefix
 ##
-##
+## Report form
 ##
 class ReportForm(forms.Form):
-    vrf=forms.ModelChoiceField(label="VRF",queryset=VRF.objects)
-    prefix=forms.CharField(label="Prefix",initial="0.0.0.0/0")
+    vrf=forms.ModelChoiceField(label=_("VRF"),queryset=VRF.objects.filter(is_active=True).order_by("name"))
+    afi=forms.ChoiceField(label=_("Address Family"),choices=[("4",_("IPv4")),("6",_("IPv6"))])
+    prefix=forms.CharField(label=_("Prefix"))
     
     def clean_prefix(self):
+        vrf=self.cleaned_data["vrf"]
+        afi=self.cleaned_data["afi"]
         prefix=self.cleaned_data.get("prefix","").strip()
-        if not is_cidr(prefix):
-            raise forms.ValidationError("Invalid prefix")
-        return prefix
+        if afi=="4":
+            check_ipv4_prefix(prefix)
+        elif afi=="6":
+            check_ipv6_prefix(prefix)
+        try:
+            return Prefix.objects.get(vrf=vrf,afi=afi,prefix=prefix)
+        except Prefix.DoesNotExist:
+            raise ValidationError(_("Prefix not found"))
+    
+
 ##
 ##
 ##
 class Reportreportallocated(SimpleReport):
-    title="Allocated Blocks"
+    title=_("Allocated Blocks")
     form=ReportForm
-    def get_data(self,vrf,prefix,**kwargs):
-        return self.from_query(title=self.title+" in "+prefix,
-        columns=["Prefix","Description"],
-        query="""SELECT prefix,description
-            FROM ip_ipv4block b
-            WHERE vrf_id=%s
-                AND prefix<<%s::cidr
-                AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix<<b.prefix)=0
-            ORDER BY prefix""",
-        params=[vrf.id,prefix,vrf.id])
+    def get_data(self,vrf,afi,prefix,**kwargs):
+        return self.from_dataset(title=_("Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s"%{"vrf":vrf.name,"afi":afi,"prefix":prefix.prefix}),
+            columns=["Prefix","Description"],
+            data=[(p.prefix,p.description) for p in prefix.children_set.order_by("prefix")])
+    
+

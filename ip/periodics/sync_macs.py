@@ -8,19 +8,17 @@
 """
 """
 import noc.sa.periodic
-from noc.lib.ip import address_to_int
 import bisect
 
 def sync_macs_reduce(task,addresses):
     from noc.main.models import SystemNotification
-    m=dict([(a.ip,a) for a in addresses])
+    m=dict([(a.address,a) for a in addresses])
     inserted=[]
     updated=[]
     ip_macs={}
     # Syncronize MACs
     for mt in task.maptask_set.filter(status="C"):
-        r=mt.script_result
-        for arp in r:
+        for arp in mt.script_result:
             ip=arp["ip"]
             mac=arp["mac"]
             if ip in m:
@@ -55,40 +53,35 @@ def sync_macs_reduce(task,addresses):
                     s+=["        %s: %s"%(o.name,m)]
         SystemNotification.notify("ip.sync_macs",subject="MAC Syncronization Report",body="\n".join(s))
 
+
 class Task(noc.sa.periodic.Task):
     name="ip.sync_macs"
     description=""
     TIMEOUT=60
     
     def execute(self):
-        def add_block(b,blocks):
-            blocks+=[(b.vrf.id,b,address_to_int(b.network),address_to_int(b.broadcast))]
+        from noc.sa.models import ReduceTask,ManagedObject
+        from noc.ip.models import Address
         
-        def find_block(ip):
-            n_ip=address_to_int(ip.ip)
-            vrf_id=ip.vrf.id
-            for b_vrf_id,block,b_from,b_to in blocks:
-                if b_vrf_id==vrf_id and n_ip>=b_from and n_ip<=b_to:
-                    return block
-        
-        from noc.sa.models import ReduceTask
-        from noc.ip.models import IPv4Block,IPv4Address
-        # Find all managed objects near addresses
-        blocks=[] # (vrf,block,from_ip,to_ip)
-        objects=set()
-        addresses=[]
-        for ip in IPv4Address.objects.filter(auto_update_mac=True):
-            addresses+=[ip]
-            n_ip=address_to_int(ip.ip)
-            # Try to find covering block
-            b=find_block(ip)
-            if not b:
-                b=ip.parent
-                add_block(b,blocks)
-                # Find managed objects in the block
-                objects.update(set([a.managed_object for a in b.addresses if a.managed_object is not None]))
+        # Get a list of managed objects to fetch ARP cache
+        objects=list(ManagedObject.objects.raw("""
+            SELECT DISTINCT a.managed_object_id AS id
+            FROM   ip_address a JOIN ip_prefix p ON (a.prefix_id=p.id)
+            WHERE
+                a.managed_object_id IS NOT NULL
+                AND EXISTS (SELECT id FROM ip_address ma WHERE ma.afi='4' AND ma.auto_update_mac AND ma.prefix_id=p.id)
+        """))
+        # Get a list of addresses to syncronize
+        addresses=list(Address.objects.raw("""
+            SELECT a.id,a.address,a.mac
+            FROM   ip_address a JOIN ip_prefix p ON (a.prefix_id=p.id)
+            WHERE
+                    a.auto_update_mac
+                AND a.afi='4'
+                AND EXISTS (SELECT id FROM ip_address oa WHERE oa.prefix_id=p.id AND oa.managed_object_id IS NOT NULL)
+        """))
         # Get ARP cache
-        task=ReduceTask.create_task(object_selector=list(objects),
+        task=ReduceTask.create_task(object_selector=objects,
             reduce_script=sync_macs_reduce,
             reduce_script_params={"addresses":addresses},
             map_script="get_arp",
@@ -97,3 +90,4 @@ class Task(noc.sa.periodic.Task):
         # Wait for tasks completion
         ReduceTask.wait_for_tasks([task])
         return True
+    

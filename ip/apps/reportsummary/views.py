@@ -5,71 +5,72 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app.simplereport import SimpleReport,TableColumn
-from noc.ip.models import VRF
-from noc.lib.validators import is_cidr
-from lib.ip import free_blocks,bits_to_size,prefix_to_size
-from django import forms
+
+# Python Modules
 import math
+# Django Modules
+from django.utils.translation import ugettext_lazy as _
+from django import forms
+# NOC Modules
+from noc.lib.app.simplereport import SimpleReport,TableColumn
+from noc.ip.models import VRF, Prefix
+from noc.lib.validators import *
+from noc.lib.ip import *
+
 ##
-##
+## Report Form
 ##
 class ReportForm(forms.Form):
-    vrf=forms.ModelChoiceField(label="VRF",queryset=VRF.objects)
-    prefix=forms.CharField(label="Prefix",initial="0.0.0.0/0")
+    vrf=forms.ModelChoiceField(label=_("VRF"),queryset=VRF.objects.filter(is_active=True).order_by("name"))
+    afi=forms.ChoiceField(label=_("Address Family"),choices=[("4",_("IPv4"))])
+    prefix=forms.CharField(label=_("Prefix"))
     
     def clean_prefix(self):
+        vrf=self.cleaned_data["vrf"]
+        afi=self.cleaned_data["afi"]
         prefix=self.cleaned_data.get("prefix","").strip()
-        if not is_cidr(prefix):
-            raise forms.ValidationError("Invalid prefix")
-        return prefix
+        if afi=="4":
+            check_ipv4_prefix(prefix)
+        elif afi=="6":
+            check_ipv6_prefix(prefix)
+        try:
+            return Prefix.objects.get(vrf=vrf,afi=afi,prefix=prefix)
+        except Prefix.DoesNotExist:
+            raise ValidationError(_("Prefix not found"))
+    
+
 ##
 ##
 ##
 class ReportSummary(SimpleReport):
     title="Block Summary"
     form=ReportForm
-    def get_data(self,vrf,prefix,**kwargs):
-        allocated=self.execute("""
-            SELECT prefix
-            FROM ip_ipv4block b
-            WHERE vrf_id=%s
-                AND prefix<<%s::cidr
-                AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix<<b.prefix)=0
-            ORDER BY prefix
-            """,[vrf.id,prefix,vrf.id])
-        allocated=[a[0] for a in allocated]
-        allocated_30=self.execute("""
-            SELECT prefix
-            FROM ip_ipv4block b
-            WHERE vrf_id=%s
-                AND prefix<<%s::cidr
-                AND masklen(prefix)=30
-                AND (SELECT COUNT(*) FROM ip_ipv4block bb WHERE vrf_id=%s AND bb.prefix<<b.prefix)=0
-            ORDER BY prefix
-            """,[vrf.id,prefix,vrf.id])
-        allocated_30=[a[0] for a in allocated_30]
-        free=free_blocks(prefix,allocated)
-        m,n=prefix.split("/")
-        total_addresses=bits_to_size(int(n))
-        allocated_addresses=sum([prefix_to_size(x) for x in allocated])
-        allocated_30_addresses=sum([prefix_to_size(x) for x in allocated_30])
-        free_addresses=sum([prefix_to_size(x) for x in free])
-        a_s=len(allocated)
-        if a_s:
-            avg_allocated_size=float(allocated_addresses)/float(a_s)
-            avg_allocated_bits=32-int(math.ceil(math.log(avg_allocated_size,2)))
-        else:
-            avg_allocated_size=0.0
-            avg_allocated_bits=0
-        data=[
-            ["Total addresses",     total_addresses],
-            ["Allocated",           allocated_addresses],
-            ["....in /30 networks", allocated_30_addresses],
-            ["Free",                free_addresses],
-            ["Avegage allocated block size", "%8.2f"%avg_allocated_size],
-            ["Average allocated network (bits)",avg_allocated_bits]
-        ]
-        return self.from_dataset(title=self.title+" for "+prefix,
-            columns=["",TableColumn("",format="numeric",align="right")],
-            data=data)
+    def get_data(self,vrf,afi,prefix,**kwargs):
+        p=IP.prefix(prefix.prefix)
+        allocated=[IP.prefix(a.prefix) for a in prefix.children_set.all()]
+        if afi=="4":
+            allocated_30=[a for a in allocated if a.mask==30]
+        free=list(p.iter_free(allocated))
+        if afi=="4":
+            allocated_size=sum([a.size for a in allocated])
+            allocated_30_size=sum([a.size for a in allocated_30])
+            free_size=sum([a.size for a in free])
+            total=p.size
+            data=[
+                ("Allocated addresses",allocated_size,float(allocated_size)*100/float(total)),
+                (".... in /30",allocated_30_size,float(allocated_30_size)*100/float(total)),
+                ("Free addresses",free_size,float(free_size)*100/float(total)),
+                ("Total addresses",total,1.0)
+            ]
+            a_s=len(allocated)
+            if a_s:
+                avg_allocated_size=allocated_size/a_s
+                avg_allocated_mask=32-int(math.ceil(math.log(avg_allocated_size,2)))
+                data+=[
+                    ("Average allocated block",avg_allocated_size,""),
+                    ("Average allocated mask",avg_allocated_mask,"")
+                ]
+            return self.from_dataset(title=_("Summary for VRF %(vrf)s (IPv(afi)s): %(prefix)s")%{"vrf":vrf.name,"afi":afi,"prefix":p.prefix},
+                columns=["",TableColumn(_("Size"),format="numeric",align="right"),TableColumn(_("%"),format="percent",align="right")],
+                data=data)
+

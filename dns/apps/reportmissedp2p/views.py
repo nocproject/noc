@@ -5,25 +5,31 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+# Django Modules
+from django.utils.translation import ugettext_lazy as _
+# NOC Modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.ip.models import VRF
 ##
 ##
 ##
 class Reportreportmissedp2p(SimpleReport):
-    title="Missed Link Addresses"
+    title=_("Missed Link Addresses")
     def get_data(self,**kwargs):
         vrf_id=VRF.get_global().id
         return self.from_query(title=self.title,
-            columns=["Prefix"],
+            columns=[_("Prefix")],
             query="""
-            SELECT b.prefix
-            FROM ip_ipv4block b
+            SELECT prefix
+            FROM   ip_prefix p
             WHERE 
                 vrf_id=%s
+                AND afi='4'
                 AND masklen(prefix)=30
-                AND (SELECT COUNT(*) FROM ip_ipv4address WHERE vrf_id=%s AND ip<<b.prefix)=0
+                AND NOT EXISTS (SELECT * FROM ip_address WHERE vrf_id=%s AND afi='4' AND prefix=p.prefix)
             ORDER BY prefix
             """,
             params=[vrf_id,vrf_id],
-            enumerate=1)
+            enumerate=True)
+    

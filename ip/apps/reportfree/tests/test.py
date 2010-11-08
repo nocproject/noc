@@ -8,4 +8,4 @@
 from noc.lib.test import ReportApplicationTestCase
 
 class reportfreeTestCase(ReportApplicationTestCase):
-    posts=[{"vrf":1,"prefix":"0.0.0.0/0"}]
+    posts=[{"vrf":1,"prefix":"0.0.0.0/0","afi":"4"}]
