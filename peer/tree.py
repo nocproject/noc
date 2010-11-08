@@ -9,13 +9,17 @@
 ## the prefix will be directed left from current node.
 ## The set bit means right direction.
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-from noc.lib.ip import prefix_to_bin,bin_to_prefix
-
+# NOC modules
+from noc.lib.ip import *
+##
+## Optimizing prefix tree
+## @todo: merge with PrefixDB
+##
 class Node(object):
     def __init__(self,parent=None,prefix=[]):
         self.parent=parent
@@ -62,27 +66,28 @@ class Node(object):
         if not self.children[d]:
             self.children[d]=Node(self,self.prefix+[d])
         self.children[d].append_binary_prefix(prefix)
-        
+    
     def append_prefix(self,prefix):
-        self.append_binary_prefix(prefix_to_bin(prefix))
-        
+        self.append_binary_prefix(list(IP.prefix(prefix).iter_bits()))
+    
     #
     # Extract remaining prefixes into list r
     #
     def extract_prefixes(self,r):
         if self.is_final:
-            r.append(bin_to_prefix(self.prefix))
+            r.append(IPv4.from_bits(self.prefix).prefix)
         [c.extract_prefixes(r) for c in self.children if c is not None]
         return r
-        
+    
     def release(self):
         self.parent=None
         self.release_children()
-        
+    
     def release_children(self):
         [c.release() for c in self.children if c is not None]
         self.children=[None,None]
         self.is_final=True
+    
 
 def optimize_prefix_list(prefix_list):
     """
