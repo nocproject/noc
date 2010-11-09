@@ -870,6 +870,10 @@ class ChangesQuarantineRule(models.Model):
 ##
 ## Triggers
 ##
+def model_choices():
+    for m in models.get_models():
+        yield (m._meta.db_table,m._meta.db_table)
+    
 class DBTrigger(models.Model):
     class Meta:
         verbose_name="Database Trigger"
@@ -877,8 +881,7 @@ class DBTrigger(models.Model):
         ordering=("model","order")
     
     name=models.CharField("Name",max_length=64,unique=True)
-    model=models.CharField("Model",max_length=128,
-                    choices=[(m._meta.db_table,m._meta.db_table) for m in models.get_models()])
+    model=models.CharField("Model",max_length=128,choices=model_choices())
     is_active=models.BooleanField("Is Active",default=True)
     order=models.IntegerField("Order",default=100)
     description=models.TextField("Description",null=True,blank=True)
@@ -959,6 +962,12 @@ class DBTrigger(models.Model):
         if m in cls._post_delete_triggers:
             for t in cls._post_delete_triggers[m]:
                 t(model=kwargs["sender"],instance=kwargs["instance"])
+    ##
+    ## Called when all models are initialized
+    ##
+    @classmethod
+    def x(cls):
+        self._meta.get_field_by_name("model")[0].choices=[(m._meta.db_table,m._meta.db_table) for m in models.get_models()]
 
 ##
 ## Install triggers
