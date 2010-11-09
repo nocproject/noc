@@ -591,7 +591,7 @@ class IPAMAppplication(Application):
                         a0=p0.next()
                         if IP.prefix(prefix.prefix).contains(a0):
                             a0=a0.address
-                            if afi=="6" or (afi=="4" and a0!=p.last.address):
+                            if afi=="6" or (afi=="4" and a0!=p0.last.address):
                                 initial["address"]=a0
                     if not initial:
                         self.message_user(request,_("No free addresses"))
