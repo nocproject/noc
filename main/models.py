@@ -1,23 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
+## Python Modules
 from __future__ import with_statement
+import os
+import datetime
+import re
+import threading
+## Django Modules
 from django.db import models
 from django.contrib.auth.models import User,Group
 from django.core.validators import MaxLengthValidator
+from django.contrib import databrowse
+from django.db.models.signals import class_prepared,pre_save, pre_delete, post_save, post_delete
+## NOC Modules
+from noc import settings
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
-import os,datetime,re,datetime,threading
 from noc.main.refbooks.downloaders import downloader_registry
-from django.contrib import databrowse
-from django.db.models.signals import class_prepared,pre_save,pre_delete
 from noc.lib.fields import TextArrayField,PickledField,ColorField
 from noc.lib.middleware import get_user
-from noc import settings
 from noc.lib.timepattern import TimePattern as TP
 from noc.lib.timepattern import TimePatternList
 from noc.sa.interfaces.base import interface_registry
@@ -861,6 +867,113 @@ class ChangesQuarantineRule(models.Model):
     description=models.TextField("Description",null=True,blank=True)
     def __unicode__(self):
         return self.name
+##
+## Triggers
+##
+class DBTrigger(models.Model):
+    class Meta:
+        verbose_name="Database Trigger"
+        verbose_name_plural="Database Triggers"
+        ordering=("model","order")
+    
+    name=models.CharField("Name",max_length=64,unique=True)
+    model=models.CharField("Model",max_length=128,
+                    choices=[(m._meta.db_table,m._meta.db_table) for m in models.get_models()])
+    is_active=models.BooleanField("Is Active",default=True)
+    order=models.IntegerField("Order",default=100)
+    description=models.TextField("Description",null=True,blank=True)
+    pre_save_rule=models.ForeignKey(PyRule,verbose_name="Pre-Save Rule",
+                    related_name="dbtrigger_presave_set", limit_choices_to={"interface":"IDBPreSave"},blank=True,null=True)
+    post_save_rule=models.ForeignKey(PyRule,verbose_name="Post-Save Rule",
+                    related_name="dbtrigger_postsave_set", limit_choices_to={"interface":"IDBPostSave"},blank=True,null=True)
+    pre_delete_rule=models.ForeignKey(PyRule,verbose_name="Pre-Delete Rule",
+                    related_name="dbtrigger_predelete_set", limit_choices_to={"interface":"IDBPreDelete"},blank=True,null=True)
+    post_delete_rule=models.ForeignKey(PyRule,verbose_name="Post-Delete Rule",
+                    related_name="dbtrigger_postdelete_set", limit_choices_to={"interface":"IDBPostDelete"},blank=True,null=True)
+    ## State cache
+    _pre_save_triggers={}    # model.meta.db_table -> [rules]
+    _post_save_triggers={}   # model.meta.db_table -> [rules]
+    _pre_delete_triggers={}  # model.meta.db_table -> [rules]
+    _post_delete_triggers={} # model.meta.db_table -> [rules]
+    
+    def __unicode__(self):
+        return "%s: %s"%(self.model,self.name)
+    
+    ##
+    ## Refresh triggers cache
+    ##
+    @classmethod
+    def refresh_cache(cls,*args,**kwargs):
+        # Clear cache
+        cls._pre_save_triggers={}
+        cls._post_save_triggers={}
+        cls._pre_delete_triggers={}
+        cls._post_delete_triggers={}
+        # Add all active triggers
+        for t in cls.objects.filter(is_active=True).order_by("order"):
+            for r in ["pre_save","post_save","pre_delete","post_delete"]:
+                c=getattr(cls,"_%s_triggers"%r)
+                rule=getattr(t,"%s_rule"%r)
+                if rule:
+                    try:
+                        c[t.model]+=[rule]
+                    except KeyError:
+                        c[t.model]=[rule]
+    
+    ##
+    ## Dispatcher for pre-save
+    ##
+    @classmethod
+    def pre_save_dispatch(cls,**kwargs):
+        m=kwargs["sender"]._meta.db_table
+        if m in cls._pre_save_triggers:
+            for t in cls._pre_save_triggers[m]:
+                t(model=kwargs["sender"],instance=kwargs["instance"])
+    
+    ##
+    ## Dispatcher for post-save
+    ##
+    @classmethod
+    def post_save_dispatch(cls,**kwargs):
+        m=kwargs["sender"]._meta.db_table
+        if m in cls._post_save_triggers:
+            for t in cls._post_save_triggers[m]:
+                t(model=kwargs["sender"],instance=kwargs["instance"],created=kwargs["created"])
+    
+    ##
+    ## Dispatcher for pre-delete
+    ##
+    @classmethod
+    def pre_delete_dispatch(cls,**kwargs):
+        m=kwargs["sender"]._meta.db_table
+        if m in cls._pre_delete_triggers:
+            for t in cls._pre_delete_triggers[m]:
+                t(model=kwargs["sender"],instance=kwargs["instance"])
+    
+    ##
+    ## Dispatcher for post-delete
+    ##
+    @classmethod
+    def post_delete_dispatch(cls,**kwargs):
+        m=kwargs["sender"]._meta.db_table
+        if m in cls._post_delete_triggers:
+            for t in cls._post_delete_triggers[m]:
+                t(model=kwargs["sender"],instance=kwargs["instance"])
+
+##
+## Install triggers
+##
+if settings.IS_WEB:
+    DBTrigger.refresh_cache() # Load existing triggers
+    # Trigger cache syncronization
+    post_save.connect(DBTrigger.refresh_cache, sender=DBTrigger)
+    post_delete.connect(DBTrigger.refresh_cache, sender=DBTrigger)
+    # Install signal hooks
+    pre_save.connect(DBTrigger.pre_save_dispatch)
+    post_save.connect(DBTrigger.post_save_dispatch)
+    pre_delete.connect(DBTrigger.pre_delete_dispatch)
+    post_delete.connect(DBTrigger.post_delete_dispatch)
+
 ##
 ## Monkeypatch to change User.username.max_length
 ##
