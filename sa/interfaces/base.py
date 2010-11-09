@@ -49,7 +49,7 @@ class Parameter(object):
     ## Perform input parameter normalization
     ##
     def clean(self,value):
-        self.raise_error(value)
+        return value
     ##
     ## Clean up script input parameters.
     ## Call .clean() by default
