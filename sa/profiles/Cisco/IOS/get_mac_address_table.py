@@ -10,6 +10,7 @@ from noc.sa.interfaces import IGetMACAddressTable
 import re
 
 rx_line=re.compile(r"^(?:\*\s+)?(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?:\S+\s+){0,2}(?P<interfaces>.*)$")
+rx_line2=re.compile(r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>.*)$") # Catalyst 3500XL
 
 class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_mac_address_table"
@@ -31,7 +32,10 @@ class Script(noc.sa.script.Script):
         for l in macs.splitlines():
             if l.startswith("Multicast Entries"):
                 break # Additional section on 4500
-            match=rx_line.match(l.strip())
+            l=l.strip()
+            match=rx_line.match(l)
+            if not match:
+                match=rx_line2.match(l) # 3500XL variant
             if match:
                 mac=match.group("mac")
                 if mac.startswith("3333."):
