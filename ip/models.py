@@ -360,7 +360,7 @@ class Prefix(models.Model):
         for o in cls.objects.filter(q):
             if query==o.prefix:
                 relevancy=1.0
-            elif query in description:
+            elif query in o.description:
                 relevancy=float(len(query))/float(len(o.description))
             else:
                 relevancy=0
