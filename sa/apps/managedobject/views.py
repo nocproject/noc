@@ -214,7 +214,7 @@ class ManagedObjectApplication(ModelApplication):
         try:
             result=task.get_result(block=False)
         except ReduceTask.NotReady:
-            return self.render_wait(request,subject="Script %s"%script,text="Processing scirpt. Please wait ...")
+            return self.render_wait(request,subject="Script %s"%script,text="Processing script. Please wait ...")
         # Format result
         if isinstance(result,basestring):
             pass # Do not convert strings
