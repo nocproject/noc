@@ -77,7 +77,7 @@ class Object(models.Model):
         mv=None
         if self._get_pk_val():
             old=self.__class__.objects.get(pk=self._get_pk_val())
-            if old.repo_path!=self.repo_path:
+            if old.repo_path!=self.repo_path and old.repo_path!=".":
                 mv=(old.repo_path,self.repo_path)
         models.Model.save(self,*args,**kwargs)
         vcs=self.vcs
