@@ -99,7 +99,8 @@ class FIB(object):
         if not s:
             print "FIB: Empty"
             return
-        print "FIB size",s,"of",ms,"(%5.2f%%)"%(float(s*100)/float(ms))
+        if ms:
+            print "FIB size",s,"of",ms,"(%5.2f%%)"%(float(s*100)/float(ms))
         n_interfaces=0
         for i in self.interfaces.values():
             n_interfaces+=len(i)
