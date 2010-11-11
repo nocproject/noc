@@ -97,9 +97,10 @@ class IPAMAppplication(Application):
         else:
             q=Q()
         # Display groupped VRFs
+        q_afi=Q(afi_ipv4=True)|Q(afi_ipv6=True)
         groups=[]
         for vg in VRFGroup.objects.all().order_by("name"):
-            vrfs=list(vg.vrf_set.filter(is_active=True).filter(q).order_by("name"))
+            vrfs=list(vg.vrf_set.filter(is_active=True).filter(q_afi).filter(q).order_by("name"))
             if len(vrfs):
                 # Set up bookmarks
                 for v in vrfs:
