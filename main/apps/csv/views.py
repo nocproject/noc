@@ -5,13 +5,17 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app import Application,HasPerm
-from noc.lib.csvutils import csv_export,csv_import,get_model_fields
+
+## Django modules
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django import forms
 from django.contrib import admin
 from django.http import HttpResponse
+from django.db import transaction
+## NOC modules
+from noc.lib.app import Application,HasPerm
+from noc.lib.csvutils import csv_export,csv_import,get_model_fields
 ##
 ##
 ##
@@ -33,6 +37,9 @@ class CSVApplication(Application):
             form=self.ImportForm(request.POST, request.FILES)
             if form.is_valid():
                 count,error=csv_import(m,request.FILES['file'])
+                if error:
+                    # Rollback current transaction to be able to send message
+                    transaction.rollback()
                 if count is None:
                     self.message_user(request,"Error imporing data: %s"%error)
                 else:
