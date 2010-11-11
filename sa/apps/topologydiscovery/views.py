@@ -26,7 +26,7 @@ def reduce_topology(task,mac=True,per_vlan_mac=False,arp=True,lldp=False,cdp=Fal
     td=TopologyDiscovery(data=data,mac=mac,per_vlan_mac=per_vlan_mac,arp=arp,lldp=lldp,cdp=cdp,stp=stp)
     out+=["Writting topology into /tmp/topo.dot"]
     with open("/tmp/topo.dot","w") as f:
-        f.write(td.dot())
+        f.write(unicode(td.dot()).encode("utf-8"))
     return "<br/>".join(out)
 
 ##
