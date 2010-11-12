@@ -450,7 +450,7 @@ class SAE(Daemon):
     def script(self,object,script_name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
             if error:
-                logging.error("script(%s,**%s) failed: %s"%(script_name,kwargs,error.text))
+                logging.error("script(%s,%s,**%s) failed: %s"%(script_name,object,kwargs,error.text))
                 callback(error=error)
                 return
             result=response.result
