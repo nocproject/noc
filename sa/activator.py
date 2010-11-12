@@ -421,18 +421,18 @@ class Activator(Daemon,FSM):
     def run_script(self,script_name,access_profile,callback,**kwargs):
         logging.info("Script %s(%s)"%(script_name,access_profile.address))
         pv,pos,sn=script_name.split(".",2)
-        profile=profile_registry["%s.%s"%(pv,pos)]()        
+        profile=profile_registry["%s.%s"%(pv,pos)]()
         script=script_registry[script_name](profile,self,access_profile,**kwargs)
         with self.script_lock:
             self.script_threads[script]=callback
-            logging.info("%d script threads"%(len(self.script_threads)))
+            logging.info("%d script threads (%d max)"%(len(self.script_threads),self.max_script_threads))
         script.start()
-
+    
     def on_script_exit(self,script):
         logging.info("Script %s(%s) completed"%(script.name,script.access_profile.address))
         with self.script_lock:
             cb=self.script_threads.pop(script)
-            logging.info("%d script threads left"%(len(self.script_threads)))
+            logging.info("%d script threads left (%d max)"%(len(self.script_threads),self.max_script_threads))
         cb(script)
         
     def request_call(self,f,*args,**kwargs):
@@ -726,10 +726,10 @@ class Activator(Daemon,FSM):
         to_cancel=[st for st in self.script_threads.keys() if st.is_stale()]
         for script in to_cancel:
             logging.info("Canceling stale script %s(%s)"%(script.name,script.access_profile.address))
-            st.cancel_script()
-        
+            script.cancel_script()
+    
     # Signal handlers
-
+    
     # SIGUSR1 returns process info
     def SIGUSR1(self,signo,frame):
         s=[
