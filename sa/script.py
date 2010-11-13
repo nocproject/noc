@@ -422,6 +422,9 @@ class Script(threading.Thread):
         if not self.is_cancelable:
             self.error("Cannot cancel non-cancelable scipt")
             return
+        if not self.isAlive():
+            self.error("Trying to kill already dead thread")
+            return self.activator.on_script_exit(self)
         # Raise CancelledError in script's thread
         r=ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.ident), ctypes.py_object(CancelledError))
         if r==1:
