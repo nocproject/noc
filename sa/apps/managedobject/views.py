@@ -254,7 +254,7 @@ class ManagedObjectApplication(ModelApplication):
     ##
     def view_addresses(self,request,object_id):
         o=get_object_or_404(ManagedObject,id=int(object_id))
-        return self.render(request,"addresses.html",{"addresses":o.ipv4address_set.all(),"object":o})
+        return self.render(request,"addresses.html",{"addresses":o.address_set.order_by("address"),"object":o})
     view_addresses.url=r"(?P<object_id>\d+)/addresses/"
     view_addresses.url_name="addresses"
     view_addresses.access=HasPerm("change")
