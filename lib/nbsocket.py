@@ -580,6 +580,7 @@ class FileWrapper(object):
 ##
 class PTYSocket(Socket):
     def __init__(self,factory,argv):
+        self.pid=None
         super(PTYSocket,self).__init__(factory)
         self.argv=argv
         self.out_buffer=""
@@ -592,7 +593,7 @@ class PTYSocket(Socket):
         else:
             self.socket=FileWrapper(fd)
             super(PTYSocket,self).create_socket()
-            
+    
     def handle_read(self):
         try:
             data=self.socket.read(8192)
@@ -622,6 +623,8 @@ class PTYSocket(Socket):
     
     def close(self):
         Socket.close(self)
+        if self.pid is None:
+            return
         try:
             pid,status=os.waitpid(self.pid,os.WNOHANG)
         except os.error:
