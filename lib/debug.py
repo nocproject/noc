@@ -183,9 +183,12 @@ def error_report():
         if DEBUG_CTX_SET_UID: # Change crashinfo userid to directory's owner
             os.chown(p,DEBUG_CTX_SET_UID,-1)
 
-def frame_report(frame):
+def frame_report(frame,caption=None):
     now=datetime.datetime.now()
-    r=["EXECUTION FRAME REPORT (%s)"%str(now)]
+    r=[]
+    if caption:
+        r+=[caption]
+    r+=["EXECUTION FRAME REPORT (%s)"%str(now)]
     r+=["Working directory: %s"%os.getcwd()]
     r+=[format_frames(get_execution_frames(frame))]
     logging.error("\n".join(r))
