@@ -50,7 +50,7 @@ class Service(SAEService):
                     e.text=script.login_error
                 else:
                     e.code=ERR_SCRIPT_EXCEPTION
-                    e.text=script.error_traceback
+                    e.text=script.error_traceback if script.error_traceback else "Mysterious death"
                 done(controller,error=e)
         try:
             profile=profile_registry[request.access_profile.profile]
