@@ -47,7 +47,7 @@ class EventCollector(object):
                     "collector": self.collector_signature,
                     "type"     : "Invalid Event Source",
                     "ip"       : s
-                    }),"",body)
+                    },"",body)
             self.invalid_sources=set()
             self.invalid_sources_flush=t
         return r
