@@ -420,19 +420,22 @@ class Script(threading.Thread):
     def cancel_script(self):
         # Can cancel only inside guarded_run
         if not self.is_cancelable:
+            self.error("Cannot cancel non-cancelable scipt")
             return
         # Raise CancelledError in script's thread
         r=ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.ident), ctypes.py_object(CancelledError))
         if r==1:
+            self.debug("Cancel event sent")
             # Remote exception raised.
             if self.cli_provider:
                 # Awake script thread if waiting for CLI
+                self.cli_provider.queue.put(None)
                 self.cli_provider.queue.put(None)
         elif r>1:
             # Failed to raise exception
             # Revert back thread state
             ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.ident), None)
-            logging.error("Failed to cancel script")
+            self.error("Failed to cancel script")
     
     ##
     ## Debugging helper to hang the script
