@@ -5,17 +5,23 @@
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
 from __future__ import with_statement
-from noc.lib.fsm import StreamFSM
-from noc.lib.registry import Registry
-from noc.lib.nbsocket import PTYSocket,UDPSocket,SocketTimeoutError
-from noc.lib.debug import format_frames,get_traceback_frames
-from noc.lib.text import replace_re_group
-from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
-from noc.sa.profiles import profile_registry
-from noc.settings import config
-import logging,re,threading,Queue,urllib,httplib,random,base64,hashlib,cPickle,sys,time,datetime
-
+import sys
+import time
+import datetime
+import logging
+import re
+import threading
+import Queue
+import urllib
+import httplib
+import random
+import base64
+import hashlib
+import cPickle
+import ctypes
+## Third-party modules
 try:
     from pysnmp.carrier.asynsock.dispatch import AsynsockDispatcher
     from pysnmp.carrier.asynsock.dgram import udp
@@ -24,6 +30,17 @@ try:
     HAS_SNMP=True
 except ImportError:
     HAS_SNMP=False
+
+## NOC Modules
+from noc.lib.fsm import StreamFSM
+from noc.lib.registry import Registry
+from noc.lib.nbsocket import PTYSocket,UDPSocket,SocketTimeoutError
+from noc.lib.debug import format_frames,get_traceback_frames
+from noc.lib.text import replace_re_group
+from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
+from noc.sa.profiles import profile_registry
+from noc.settings import config
+
 
 
 ##
@@ -117,6 +134,20 @@ class ConfigurationContextManager(object):
 ##
 ##
 ##
+class CancellableContextManager(object):
+    def __init__(self,script):
+        self.script=script
+    
+    def __enter__(self):
+        self.script.is_cancelable=True
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.is_cancelable=False
+        if exc_type is not None:
+            raise exc_type, exc_val
+##
+##
+##
 class Script(threading.Thread):
     __metaclass__=ScriptBase
     name=None
@@ -138,7 +169,6 @@ class Script(threading.Thread):
 
     def __init__(self,profile,activator,access_profile,parent=None,**kwargs):
         self.start_time=time.time()
-        self.to_cancel=False
         self.parent=parent
         self.access_profile=access_profile
         if self.access_profile.address:
@@ -168,6 +198,10 @@ class Script(threading.Thread):
         self.need_to_save=False
         self.to_disable_pager=not self.parent and self.profile.command_disable_pager
         self.log_cli_sessions_path=None # Path to log CLI session
+        self.is_cancelable=False # Can script be cancelled
+        self.e_timeout=False # Script terminated with timeout
+        self.e_cancel=False # Scrcipt cancelled
+        
         if self.parent:
             self.log_cli_sessions_path=self.parent.log_cli_sessions_path
         elif self.activator.log_cli_sessions\
@@ -232,13 +266,18 @@ class Script(threading.Thread):
         self.debug("Running")
         result=None
         try:
-            result=self.guarded_run()
+            with self.cancelable():
+                result=self.guarded_run()
             self.result=self.serialize_result(result)
             if self.parent is None and self.need_to_save and self.profile.command_save_config:
                 self.debug("Saving config")
                 self.cli(self.profile.command_save_config)
         except TimeOutError:
             self.error("Timed out")
+            self.e_timeout=True
+        except CancelledError:
+            self.error("Cancelled")
+            self.e_cancel=True
         except self.LoginError,why:
             self.login_error=why.args[0]
             self.error("Login failed: %s"%self.login_error)
@@ -268,11 +307,7 @@ class Script(threading.Thread):
             try:
                 return self.cli_provider.queue.get(block=True,timeout=1)
             except Queue.Empty:
-                if self.to_cancel:
-                    self.error("Canceled")
-                    raise TimeOutError()
-                else:
-                    continue
+                pass
     
     def request_cli_provider(self):
         if self.parent:
@@ -383,12 +418,39 @@ class Script(threading.Thread):
     ## Cancel script
     ##
     def cancel_script(self):
-        self.to_cancel=True
-        
+        # Can cancel only inside guarded_run
+        if not self.is_cancelable:
+            return
+        # Raise CancelledError in script's thread
+        r=ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.ident), ctypes.py_object(CancelledError))
+        if r==1:
+            # Remote exception raised.
+            if self.cli_provider:
+                # Awake script thread if waiting for CLI
+                self.cli_provider.queue.put(None)
+        elif r>1:
+            # Failed to raise exception
+            # Revert back thread state
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.ident), None)
+            logging.error("Failed to cancel script")
+    
+    ##
+    ## Debugging helper to hang the script
+    ##
+    def hang(self):
+        logging.debug("Hanging script")
+        e=threading.Event()
+        while True:
+            e.wait(1)
+    
     ## Returns configuration context
     def configure(self):
         return ConfigurationContextManager(self)
-        
+    
+    ## Return cancelable context
+    def cancelable(self):
+        return CancellableContextManager(self)
+    
     # Enter configuration mote
     def enter_config(self):
         if self.profile.command_enter_config:
@@ -423,6 +485,7 @@ class Script(threading.Thread):
 ##
 ##
 class TimeOutError(Exception): pass
+class CancelledError(Exception): pass
 ##
 ##
 ##
