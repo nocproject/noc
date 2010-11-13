@@ -40,14 +40,14 @@ class EventCollector(object):
             self.error("Invalid event sources in last %d seconds: %s"%(self.INVALID_EVENT_SOURCE_DELAY,", ".join(self.invalid_sources)))
             for s in self.invalid_sources:
                 # Generate "Invalid event source" Event
-                self.process_event({
+                self.process_event(t,"",{
                     "source"   : "system",
                     "component": "noc-activator",
                     "activator": self.activator.activator_name,
                     "collector": self.collector_signature,
                     "type"     : "Invalid Event Source",
                     "ip"       : s
-                    },"",body)
+                    })
             self.invalid_sources=set()
             self.invalid_sources_flush=t
         return r
