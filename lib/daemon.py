@@ -285,7 +285,19 @@ class Daemon(object):
     ## Dump current execution frame trace on SIGUSR2
     ##
     def SIGUSR2(self,signo,frame):
-        frame_report(frame)
+        frames=sys._current_frames().items()
+        if len(frames)==1:
+            # Single thread
+            frame_report(frame)
+        else:
+            # Multi-threaded
+            import threading
+            for tid,frame in frames:
+                if tid in threading._active:
+                    caption="Thread: name=%s id=%s"%(threading._active[tid].getName(),tid)
+                else:
+                    caption="Unknown thread: id=%s"%tid
+                frame_report(frame,caption)
     ##
     ## Reload config on SIGHUP
     ##
