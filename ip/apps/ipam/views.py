@@ -223,6 +223,8 @@ class IPAMAppplication(Application):
                     c=cr[2]
                     if rrs:
                         cr=rrs.pop(0)
+                    else:
+                        break
                 a.slots=c
         # Address spot
         if can_add_address:
