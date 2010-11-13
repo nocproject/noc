@@ -39,9 +39,12 @@ class Service(SAEService):
                 done(controller,response=c)
             else:
                 e=Error()
-                if script.to_cancel: # Timeout
+                if script.e_timeout:
                     e.code=ERR_TIMEOUT
                     e.text="Timed out"
+                elif script.e_cancel:
+                    e.code=ERR_CANCELLED
+                    e.text="Cancelled"
                 elif script.login_error is not None:
                     e.code=ERR_LOGIN_FAILED
                     e.text=script.login_error
@@ -429,7 +432,15 @@ class Activator(Daemon,FSM):
         script.start()
     
     def on_script_exit(self,script):
-        logging.info("Script %s(%s) completed"%(script.name,script.access_profile.address))
+        if script.e_timeout:
+            s="is timed out"
+        elif script.e_cancel:
+            s="is cancelled"
+        elif script.login_error:
+            s="cannot log in"
+        else:
+            s="is completed"
+        logging.info("Script %s(%s) %s"%(script.name,script.access_profile.address,s))
         with self.script_lock:
             cb=self.script_threads.pop(script)
             logging.info("%d script threads left (%d max)"%(len(self.script_threads),self.max_script_threads))

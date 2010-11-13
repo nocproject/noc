@@ -47,6 +47,7 @@ enum ErrorCode {
     ERR_TIMEOUT             =17; // Script timed out
     ERR_ACTIVATOR_LOST      =18; // Connection to activator lost during transaction
     ERR_LOGIN_FAILED        =19; // Failed to log in
+    ERR_CANCELLED           =20; // Script cancelled
 }
 
 //
