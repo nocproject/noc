@@ -18,8 +18,8 @@ class Reportreportduplicatedfqdns(SimpleReport):
             columns=["FQDN","N","Addresses"],
             query="""
             SELECT fqdn,COUNT(*),
-                array_to_string(ARRAY(SELECT ip FROM ip_ipv4address WHERE fqdn=a.fqdn AND vrf_id=%s ORDER BY ip),', ')
-            FROM ip_ipv4address a
+                array_to_string(ARRAY(SELECT address FROM ip_address WHERE fqdn=a.fqdn AND vrf_id=%s ORDER BY address),', ')
+            FROM ip_address a
             WHERE vrf_id=%s
             GROUP BY 1
             HAVING COUNT(*)>1
