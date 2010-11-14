@@ -96,7 +96,7 @@ class VCTestCase(ModelTestCase):
                 vc6=VC(vc_domain=d,name="VC4",l1=l1,l2=vct.label2_min if vct.label2_min else vct.label2_max)
                 vc6.save()
                 unicode(vc6)
-                vc6.blocks_list
+                vc6.prefix_set.all()
                 vc6.delete()
             # Clean up domain
             d.delete()
