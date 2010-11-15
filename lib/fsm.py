@@ -126,9 +126,12 @@ class FSM(object):
 ## StreamFSM also changes state on input stream conditions
 ##
 class StreamFSM(FSM):
-    def __init__(self):
+    def __init__(self,async_throttle=None):
         self.patterns=[]
         self.in_buffer=""
+        self.async_throttle=async_throttle # Limit to throttle synchronous check
+        self.feed_count=0 # Number of feeds from last state transition
+        self.cleanup=None
         super(StreamFSM,self).__init__()
         
     def debug(self,msg):
@@ -137,18 +140,20 @@ class StreamFSM(FSM):
     def set_patterns(self,patterns):
         self.debug("set_patterns(%s)"%repr(patterns))
         self.patterns=[(re.compile(x,re.DOTALL|re.MULTILINE),y) for x,y in patterns]
-        
-    def feed(self,data,cleanup=None):
-        #self.debug("feed: %s"%repr(data))
-        self.in_buffer+=data
-        if cleanup:
-            self.in_buffer=cleanup(self.in_buffer)
+    
+    def in_async_check(self):
+        return self.async_throttle is not None and self.feed_count>=self.async_throttle
+    
+    def check_fsm(self):
+        if self.cleanup:
+            self.in_buffer=self.cleanup(self.in_buffer)
         while self.in_buffer and self.patterns:
             matched=False
             for rx,event in self.patterns:
                 match=rx.search(self.in_buffer)
                 if match:
                     matched=True
+                    self.feed_count=0 # Reset counter on event
                     self.debug("match '%s'"%rx.pattern)
                     self.call_state_handler(self._current_state,"match",self.in_buffer[:match.start(0)],match)
                     self.in_buffer=self.in_buffer[match.end(0):]
@@ -157,3 +162,15 @@ class StreamFSM(FSM):
                     break
             if not matched:
                 break
+    
+    def feed(self,data,cleanup=None):
+        self.in_buffer+=data
+        self.feed_count+=1
+        self.cleanup=cleanup
+        if not self.in_async_check():
+            self.check_fsm()
+    
+    def async_check_fsm(self):
+        if self.in_async_check():
+            self.debug("Asynchronous check")
+            self.check_fsm()
