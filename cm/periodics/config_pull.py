@@ -23,7 +23,7 @@ def reduce_config_pull(task):
     import logging
     
     from noc.settings import config
-    from noc.sa.protocols.sae_pb2 import *
+    from noc.sa.protocols.sae_pb2 import ERR_OVERLOAD, ERR_DOWN
     ## Process task results
     for mt in task.maptask_set.all():
         c=mt.managed_object.config # Config object
