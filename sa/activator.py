@@ -54,7 +54,7 @@ class Service(SAEService):
                 done(controller,error=e)
         try:
             profile=profile_registry[request.access_profile.profile]
-        except:
+        except KeyError:
             e=Error()
             e.code=ERR_INVALID_PROFILE
             e.text="Invalid profile '%s'"%request.access_profile.profile
@@ -62,7 +62,7 @@ class Service(SAEService):
             return
         try:
             script_class=script_registry[request.script]
-        except:
+        except KeyError:
             e=Error()
             e.code=ERR_INVALID_SCRIPT
             e.text="Invalid script '%s'"%request.script
@@ -188,7 +188,7 @@ class PMCollectorSocket(ListenUDPSocket):
         msg=PMMessage()
         try:
             msg.ParseFromString(data)
-        except:
+        except: # @todo: specify exact type of exception
             return
         # Check hash
         if pmhash(address,self.activator.pm_data_secret,[d.timestamp for d in msg.result]+[d.timestamp for d in msg.data])!=msg.checksum:
@@ -499,7 +499,7 @@ class Activator(Daemon,FSM):
         while not self.script_call_queue.empty():
             try:
                 f,args,kwargs=self.script_call_queue.get_nowait()
-            except:
+            except Queue.Empty:
                 break
             logging.debug("Calling delayed %s(*%s,**%s)"%(f,args,kwargs))
             apply(f,args,kwargs)
@@ -727,7 +727,7 @@ class Activator(Daemon,FSM):
             try:
                 logging.debug("Adding ignore rule: %s | %s"%(r.left_re,r.right_re))
                 self.ignore_event_rules+=[(re.compile(r.left_re,re.IGNORECASE),re.compile(r.right_re,re.IGNORECASE))]
-            except Exception,why:
+            except re.error,why:
                 logging.error("Failed to compile ignore event rule: %s,%s. skipping"%(l,r))
     ##
     ## Cancel stale scripts
@@ -756,7 +756,7 @@ class Activator(Daemon,FSM):
         while True:
             try:
                 pid,status=os.waitpid(-1,os.WNOHANG)
-            except:
+            except OSError:
                 break
             if pid:
                 logging.debug("Zombie pid=%d is hunted and mercilessly killed"%pid)
