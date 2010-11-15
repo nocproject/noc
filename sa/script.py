@@ -558,7 +558,7 @@ class CLI(StreamFSM):
             self.more_patterns=[x[0] for x in self.profile.pattern_more]
             self.more_commands=[x[1] for x in self.profile.pattern_more]
         self.pager_patterns="|".join([r"(%s)"%p for p in self.more_patterns])
-        StreamFSM.__init__(self)
+        super(CLI,self).__init__(async_throttle=32)
     
     def on_read(self,data):
         self.debug("on_read: %s"%repr(data))
@@ -705,6 +705,11 @@ class CLITelnetSocket(ScriptSocket,CLI,PTYSocket):
         CLI.__init__(self,profile,access_profile)
         PTYSocket.__init__(self,factory,cmd_args)
         ScriptSocket.__init__(self)
+    
+    def is_stale(self):
+        self.async_check_fsm()
+        return PTYSocket.is_stale(self)
+
 ##
 ##
 ##
@@ -723,6 +728,10 @@ class CLISSHSocket(ScriptSocket,CLI,PTYSocket):
         CLI.__init__(self,profile,access_profile)
         PTYSocket.__init__(self,factory,cmd_args)
         ScriptSocket.__init__(self)
+    
+    def is_stale(self):
+        self.async_check_fsm()
+        return PTYSocket.is_stale(self)
 ##
 ##
 ##
