@@ -573,7 +573,7 @@ class SAE(Daemon):
                         mt.save()
                         return
                 mt.status="F"
-                mt.script_result=error.text
+                mt.script_result=dict(code=error.code,text=error.text)
             else:
                 mt.status="C"
                 mt.script_result=result
