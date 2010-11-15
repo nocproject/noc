@@ -17,7 +17,6 @@ from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
 import os,datetime,stat,logging,random,types,time
 from noc.sa.models import Activator,AdministrativeDomain,ManagedObject
-from noc.sa.protocols.sae_pb2 import *
 from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
@@ -277,34 +276,6 @@ class Config(Object):
         return profile_registry[self.profile_name]()
     profile=property(_profile)
     
-    def pull(self,sae):
-        def pull_callback(result=None,error=None):
-            dt=int(time.time()-t0)
-            if error:
-                if error.code==ERR_OVERLOAD:
-                    timeout=config.getint("cm","timeout_overload")
-                    status="ERR_OVERLOAD"
-                elif error.code==ERR_DOWN:
-                    timeout=config.getint("cm","timeout_down")
-                    status="ERR_DOWN"
-                else:
-                    timeout=config.getint("cm","timeout_error")
-                    status="ERR_TIMEOUT"
-                variation=config.getint("cm","timeout_variation")
-                timeout+=random.randint(-timeout/variation,timeout/variation) # Add jitter to avoid blocking by dead task
-                self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
-                self.save()
-                logging.info("Config.pull(): object_id=%d, object_name=%s, status=%s, time_elapsed=%d, timeout=%d"%(
-                    self.managed_object.id,self.managed_object.name,status,dt,timeout))
-                return
-            if self.pull_every:
-                self.next_pull=datetime.datetime.now()+datetime.timedelta(seconds=self.pull_every)
-                self.save()
-                logging.info("Config.pull(): object_id=%d, object_name=%s, status=%s, time_elapsed=%d, timeout=%d"%(
-                    self.managed_object.id,self.managed_object.name,"OK",dt,self.pull_every))
-            self.write(result)
-        t0=time.time()
-        sae.script(self.managed_object,"%s.get_config"%self.managed_object.profile_name,pull_callback)
     ##
     ## Access control
     ##
@@ -331,7 +302,6 @@ class Config(Object):
                 q&=(Q(tags__isnull=True)|Q(tags="")|Q(id__in=tagged))
             else:
                 q&=(Q(tags__isnull=True)|Q(tags=""))
-        print q
         return set([n.notification_group for n in ObjectNotify.objects.filter(q)])
 
     def write(self,data):
