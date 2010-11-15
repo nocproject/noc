@@ -123,7 +123,7 @@ class CompressedInt32Protocol(Protocol):
                 try:
                     pdu=zlib.decompress(self.in_buffer[4:4+l])
                     r+=[pdu]
-                except:
+                except zlib.error:
                     logging.error("Failed to decompress PDU")
                 self.in_buffer=self.in_buffer[4+l:]
             else:
