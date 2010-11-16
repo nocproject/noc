@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DGS3xxx.get_config
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -14,11 +14,11 @@ class Script(noc.sa.script.Script):
     name="DLink.DGS3xxx.get_config"
     implements=[IGetConfig]
     def execute(self):
-        self.cli("disable clipaging")
         v=self.scripts.get_version()
-        if "3612" in v["platform"]:
+        p=v["platform"]
+        if "3612" in p or "3627" in p or "3650" in p:
             config=self.cli("show config active")
-        elif "3100" in v["platform"]:
+        elif "3100" in p:
             config=self.cli("show configuration running")
         else:
             config=self.cli("show config current_config")
