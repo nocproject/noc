@@ -57,7 +57,9 @@ AUDIT_TRAIL_EXCLUDE=set([
     "main_audittrail",
     "kb_kbentryhistory",
     "kb_kbentrypreviewlog",
-    "fm_eventlog"
+    "fm_eventlog",
+    "sa_maptask",
+    "sa_reducetask",
 ])
 ##
 ## Audit trail for INSERT and UPDATE operations
