@@ -14,6 +14,7 @@ from noc.main.models import AuditTrail
 class AuditTrailAdmin(admin.ModelAdmin):
     list_display=["user","timestamp","model","db_table","operation","subject"]
     list_filter=["user"]
+    search_fields=["subject","body"]
 ##
 ## AuditTrail application
 ##
