@@ -208,7 +208,15 @@ class IPv4TestCase(TestCase):
     def test_set_mask(self):
         self.assertEquals(repr(IPv4("192.168.0.5/24").set_mask()), '<IPv4 192.168.0.5/32>')
         self.assertEquals(repr(IPv4("192.168.0.5/24").set_mask(25)), '<IPv4 192.168.0.5/25>')
-        
+    
+    def test_netmask(self):
+        self.assertEquals(repr(IPv4("192.168.0.0/24").netmask), '<IPv4 255.255.255.0/32>')
+        self.assertEquals(repr(IPv4("192.168.0.0/30").netmask), '<IPv4 255.255.255.252/32>')
+    
+    def test_wildcard(self):
+        self.assertEquals(repr(IPv4("192.168.0.0/24").wildcard), '<IPv4 0.0.0.255/32>')
+        self.assertEquals(repr(IPv4("192.168.0.0/30").wildcard), '<IPv4 0.0.0.3/32>')
+    
 
 ##
 ## IPv6 Prefix unittests
