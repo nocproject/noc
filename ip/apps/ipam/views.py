@@ -14,7 +14,7 @@ from django.db.models import Q
 from django import forms
 from django.utils.simplejson.encoder import JSONEncoder
 # NOC modules
-from noc.lib.app import Application,view,URL,HasPerm
+from noc.lib.app import Application, view, URL, HasPerm
 from noc.lib.validators import *
 from noc.lib.ip import *
 from noc.lib.ip import *
@@ -24,7 +24,7 @@ from noc.lib.colors import *
 from noc.sa.interfaces import MACAddressParameter
 from noc.ip.models import *
 from noc.main.models import Permission, Style
-from noc.vc.models import VC,VCBindFilter
+from noc.vc.models import VC, VCBindFilter
 from noc.sa.models import ReduceTask
 #
 #
@@ -559,6 +559,11 @@ class IPAMAppplication(Application):
             # Create address
             form=form_class(request.POST)
             if form.is_valid():
+                # Check not in locked range
+                if AddressRange.address_is_locked(vrf,afi,form.cleaned_data["address"]):
+                    self.message_user(request, _("Address %(address)s is in the locked range")%{"address":form.cleaned_data["address"]})
+                    return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,prefix.prefix)
+                # Create address
                 a=Address(vrf=vrf,afi=afi,address=form.cleaned_data["address"],fqdn=form.cleaned_data["fqdn"],
                     mac=form.cleaned_data["mac"],auto_update_mac=form.cleaned_data["auto_update_mac"],
                     managed_object=form.cleaned_data["managed_object"] if form.cleaned_data["managed_object"] else None,
@@ -622,6 +627,11 @@ class IPAMAppplication(Application):
         if request.POST:
             form=form_class(request.POST)
             if form.is_valid():
+                # Check not in locked range
+                if AddressRange.address_is_locked(vrf,afi,form.cleaned_data["address"]):
+                    self.message_user(request, _("Address %(address)s is in the locked range")%{"address":form.cleaned_data["address"]})
+                    return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,prefix.prefix)
+                # Modify
                 managed_object=None
                 if "managed_object" in form.cleaned_data and form.cleaned_data["managed_object"]:
                     managed_object=self.get_object_or_404(ManagedObject,name=form.cleaned_data["managed_object"])
@@ -668,6 +678,10 @@ class IPAMAppplication(Application):
         address=self.get_object_or_404(Address,vrf=vrf,afi=afi,address=address)
         if not PrefixAccess.user_can_change(request.user,vrf,afi,address.address):
             return self.response_forbidden()
+        # Check not in locked range
+        if AddressRange.address_is_locked(vrf,afi,address.address):
+            self.message_user(request, _("Address %(address)s is in the locked range")%{"address":address.address})
+            return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,address.prefix.prefix)
         # Delete
         prefix=address.prefix
         address.delete()
