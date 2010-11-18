@@ -68,6 +68,7 @@ class AddressRangeAdmin(admin.ModelAdmin):
     form=AddressRangeAdminForm
     list_display=["name","is_active","vrf","afi","from_address","to_address","is_locked","action"]
     list_filter=["is_active","vrf","afi","action","is_locked"]
+    search_fields=["name","description"]
 
 ##
 ## AddressRange application
