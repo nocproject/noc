@@ -701,6 +701,7 @@ class AddressRange(models.Model):
             WHERE
                     vrf_id=%(vrf)s
                 AND afi=%(afi)s
+                AND is_active
                 AND (
                         from_address BETWEEN %(from_address)s AND %(to_address)s
                     OR  to_address BETWEEN %(from_address)s AND %(to_address)s
@@ -708,14 +709,21 @@ class AddressRange(models.Model):
                     OR  %(to_address)s BETWEEN from_address AND to_address
                 )
         """,{"vrf":vrf.id,"afi":afi,"from_address":from_address,"to_address":to_address})
+    
     ##
-    ## 
+    ## Returns a queryset with overlapped ranges
     ##
     @property
     def overlapping_ranges(self):
         return self.get_overlapping_ranges(self.vrf,self.afi,self.from_address,self.to_address)
     
-
+    ##
+    ## Check wrether address is locked by any range
+    ##
+    @classmethod
+    def address_is_locked(cls,vrf,afi,address):
+        return AddressRange.objects.filter(vrf=vrf,afi=afi,is_locked=True,is_active=True,from_address__lte=address,to_address__gte=address).exists()
+    
 ##
 ## User Bookmarks
 ##
