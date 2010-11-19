@@ -25,6 +25,7 @@ class UserChangeForm(forms.ModelForm):
     noc_user_permissions=forms.CharField(label="User Access",widget=AccessWidget,required=False)
     class Meta:
         model = User
+    
     def __init__(self,*args,**kwargs):
         super(UserChangeForm,self).__init__(*args,**kwargs)
         if "instance" in kwargs:
@@ -32,12 +33,16 @@ class UserChangeForm(forms.ModelForm):
         self.new_perms=set()
         if args:
             self.new_perms=set([p[5:] for p in args[0] if p.startswith("perm_")])
+    
     def save(self,commit=True):
         model=super(UserChangeForm,self).save(commit)
+        model.is_staff=True
         if not model.id:
             model.save()
         Permission.set_user_permissions(model,self.new_perms)
         return model
+    
+
 ##
 ##
 ##
