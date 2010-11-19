@@ -64,6 +64,9 @@ def csv_export(model,queryset=None):
 ## returns (record_count,error_message)
 ## record count must be None, if error_message set
 ##
+IGNORED_REQUIRED={
+    "ip_address" : set(["prefix"]),
+}
 def csv_import(model,f):
     reader=csv.reader(f)
     # Process model fields
@@ -80,11 +83,12 @@ def csv_import(model,f):
     # find boolean fields
     booleans=set([f.name for f in model._meta.fields if isinstance(f,models.BooleanField)])
     # Search for foreign keys and required fields
+    ir=IGNORED_REQUIRED.get(model._meta.db_table,set())
     for name,required,rel,rname in get_model_fields(model):
         field_names.add(name)
         if rel:
             fk[name]=(rel,rname)
-        if required:
+        if required and not name in ir:
             required_fields.add(name)
     # Read and validate header
     header=reader.next()
