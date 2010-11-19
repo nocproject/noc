@@ -41,8 +41,6 @@ from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
 from noc.sa.profiles import profile_registry
 from noc.settings import config
 
-
-
 ##
 ##
 ##
@@ -51,10 +49,17 @@ scheme_id={
     "ssh"    : SSH,
     "http"   : HTTP,
 }
-##
+## Operation timed out
 class TimeOutError(Exception): pass
+## Login Failed
 class LoginError(Exception): pass
+## CLI reports syntax error
 class CLISyntaxError(Exception): pass
+## Feature is not supported on current platform/software/feature set
+class NotSupportedError(Exception): pass
+## Commands returns result that cannot be parsed
+class UnexpectedResultError(Exception): pass
+
 ##
 ##
 ##
@@ -166,7 +171,9 @@ class Script(threading.Thread):
     #
     LoginError=LoginError
     CLISyntaxError=CLISyntaxError
-
+    NotSupportedError=NotSupportedError
+    UnexpectedResultError=UnexpectedResultError
+    
     def __init__(self,profile,activator,access_profile,parent=None,**kwargs):
         self.start_time=time.time()
         self.parent=parent
@@ -486,6 +493,35 @@ class Script(threading.Thread):
             self.request_cli_provider()
         return self.cli_provider.motd
     motd=property(motd)
+    
+    ##
+    ## Match s against regular expression rx using re.search
+    ## Raise UnexpectedResultError if regular expression is not matched.
+    ## Returns match object.
+    ## rx can be string or compiled regular expression
+    ##
+    def re_search(self, rx, s, flags=0):
+        if isinstance(rx,basestring):
+            rx=re.compile(rx,flags)
+        match=rx.search(s)
+        if match is None:
+            raise self.UnexpectedResultError()
+        return match
+    
+    ##
+    ## Match s against regular expression rx using re.match
+    ## Raise UnexpectedResultError if regular expression is not matched.
+    ## Returns match object.
+    ## rx can be string or compiled regular expression
+    ##
+    def re_match(self, rx, s, flags=0):
+        if isinstance(rx,basestring):
+            rx=re.compile(rx,flags)
+        match=rx.match(s)
+        if match is None:
+            raise self.UnexpectedResultError()
+        return match
+    
 
 ##
 ##
