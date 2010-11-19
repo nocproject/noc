@@ -2,20 +2,19 @@
 ##----------------------------------------------------------------------
 ## HP.ProCurve.get_vlans
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+## NOC modules
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVlans
-import re
+from noc.lib.text import parse_table
 
-#rx_vlan_sep=re.compile(r"^.+?\n\s*-{4,}\s+-{4,}\s+\+\s+-{4,}\s+-{4,}\s+-{4,}\n(.+)$",re.MULTILINE|re.DOTALL)
-rx_vlan_line=re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<name>[^|]+?)\s+\|")
-
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name="HP.ProCurve.get_vlans"
     implements=[IGetVlans]
     def execute(self):
-        return self.cli("show vlans",list_re=rx_vlan_line)
+        v=self.cli("show vlans")
+        return [{"vlan_id": int(row[0]), "name": row[1]} for row in parse_table(v)]
