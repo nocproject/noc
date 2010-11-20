@@ -14,6 +14,7 @@ rx_snmp_ver=re.compile(r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?JUNOS\s+(?
 
 class Script(noc.sa.script.Script):
     name="Juniper.JUNOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:

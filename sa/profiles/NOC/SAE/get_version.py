@@ -13,6 +13,7 @@ from noc.lib.version import get_version
 
 class Script(noc.sa.script.Script):
     name="NOC.SAE.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         return {

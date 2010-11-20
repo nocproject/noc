@@ -15,6 +15,7 @@ rx_version=re.compile("\.v(?P<version>[^@]+)@")
 
 class Script(noc.sa.script.Script):
     name="Ubiquiti.AirOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         ps1=self.cli("echo $PS1|sed 's/#/@/'") # Replace # with @ to prevent prompt matching

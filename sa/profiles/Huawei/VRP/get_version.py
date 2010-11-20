@@ -13,6 +13,7 @@ rx_ver=re.compile(r"^VRP.+Software, Version (?P<version>[^ ,]+),? .*?Quidway (?P
 
 class Script(noc.sa.script.Script):
     name="Huawei.VRP.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("display version")

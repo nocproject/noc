@@ -15,6 +15,7 @@ rx_chassis_id=re.compile(r"Ethernet Address\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.
 
 class Script(noc.sa.script.Script):
     name="Zyxel.ZyNOS.get_chassis_id"
+    cache=True
     implements=[IGetChassisID]
     def execute(self):
         v=self.cli("show system-information")

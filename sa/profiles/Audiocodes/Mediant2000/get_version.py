@@ -15,6 +15,7 @@ rx_html_ver=re.compile(r"Version ID:\s+(?P<version>\S+)",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="Audiocodes.Mediant2000.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         if self.access_profile.scheme in [self.TELNET,self.SSH]:

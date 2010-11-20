@@ -18,7 +18,9 @@ from noc.sa.interfaces import IGetVersion
 ##
 class Script(NOCScript):
     name="HP.ProCurve.get_version"
+    cache=True
     implements=[IGetVersion]
+    cache=True
     
     rx_ver=re.compile(r"ProCurve\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,\s*revision\s+(?P<version>\S+),",re.IGNORECASE)
     def execute(self):

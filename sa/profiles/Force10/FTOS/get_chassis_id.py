@@ -16,6 +16,7 @@ rx_system_id=re.compile(r"Stack MAC\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILIN
 
 class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_chassis_id"
+    cache=True
     implements=[IGetChassisID]
     def execute(self):
         platform=self.scripts.get_version()["platform"]

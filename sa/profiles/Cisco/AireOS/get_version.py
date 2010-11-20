@@ -16,6 +16,7 @@ rx_inv=re.compile("^PID:\s+(?P<platform>\S+)",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="Cisco.AireOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show sysinfo")

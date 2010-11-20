@@ -15,6 +15,7 @@ rx_ver=re.compile(r'FWSM Firewall Version (?P<version>\S+).*Hardware:\s+(?P<plat
 
 class Script(noc.sa.script.Script):
     name="Cisco.FWSM.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         self.cli("terminal pager 0")

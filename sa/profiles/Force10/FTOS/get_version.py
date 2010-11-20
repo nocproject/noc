@@ -40,6 +40,7 @@ rx_snmp_ver=re.compile(r"^Force10 Application Software Version:\s*(?P<version>\S
 
 class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:

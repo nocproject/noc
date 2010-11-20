@@ -16,6 +16,7 @@ rx_version=re.compile(r"^\S+\s+Software,\s+Version\s+\S+:\s+(?P<version>\S+)",re
 
 class Script(noc.sa.script.Script):
     name="Cisco.CatOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show version")

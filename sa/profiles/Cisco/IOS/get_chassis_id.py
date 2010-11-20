@@ -16,6 +16,7 @@ rx_cat6000=re.compile(r"chassis MAC addresses:.+from\s+(?P<id>\S+)\s+to",re.IGNO
 
 class Script(noc.sa.script.Script):
     name="Cisco.IOS.get_chassis_id"
+    cache=True
     implements=[IGetChassisID]
     def execute(self):
         v=self.scripts.get_version()["version"]

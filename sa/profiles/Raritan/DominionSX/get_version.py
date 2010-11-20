@@ -15,6 +15,7 @@ rx_ver=re.compile(r"Firmware Version : (?P<version>\S+)",re.MULTILINE)
 
 class Script(noc.sa.script.Script):
     name="Raritan.DominionSX.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show version")

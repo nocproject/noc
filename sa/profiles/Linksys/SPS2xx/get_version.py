@@ -16,6 +16,7 @@ rx_ver=re.compile(r"SW version\s+(?P<version>\S+)", re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
     name="Linksys.SPS2xx.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show system")

@@ -15,6 +15,7 @@ rx_ver=re.compile("BIG-IP Version (?P<version>.+?)$",re.MULTILINE)
 
 class Script(noc.sa.script.Script):
     name="f5.BIGIP.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("version")

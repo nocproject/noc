@@ -15,6 +15,7 @@ rx_ver=re.compile(r"^(?P<platform>.+?)\s+WANFleX\s+(?P<version>\S+)",re.MULTILIN
 
 class Script(noc.sa.script.Script):
     name="InfiNet.WANFlexX.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("system version")

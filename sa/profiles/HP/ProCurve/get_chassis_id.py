@@ -15,6 +15,7 @@ rx_mac=re.compile(r"([0-9a-f]{6}-[0-9a-f]{6})",re.IGNORECASE|re.MULTILINE|re.DOT
 
 class Script(noc.sa.script.Script):
     name="HP.ProCurve.get_chassis_id"
+    cache=True
     implements=[IGetChassisID]
     def execute(self):
         v=self.cli("show management")

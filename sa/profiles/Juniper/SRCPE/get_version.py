@@ -13,6 +13,7 @@ rx_ver=re.compile(r"Product Name\s+(?P<platform>\S+).+Software version\[(?P<vers
 
 class Script(noc.sa.script.Script):
     name="Juniper.SRCPE.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show version information")

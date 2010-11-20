@@ -14,6 +14,7 @@ rx_html_ver=re.compile(r"Firmware Version\s+\S+\s+(?P<version>\S+)")
 
 class Script(noc.sa.script.Script):
     name="ZTE.ZXDSL531.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         if self.access_profile.scheme==self.TELNET:

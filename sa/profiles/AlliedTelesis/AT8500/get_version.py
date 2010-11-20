@@ -15,6 +15,7 @@ rx_ver=re.compile(r"^Model Name ...... (?P<platform>AT[/\w-]+).+^Application ...
 
 class Script(noc.sa.script.Script):
     name="AlliedTelesis.AT8500.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:

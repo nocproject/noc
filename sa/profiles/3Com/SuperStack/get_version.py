@@ -15,7 +15,8 @@ rx_version=re.compile(r"Operational Version\s+(?P<version>\S+)",re.MULTILINE|re.
 rx_platform=re.compile(r"\-+3Com\s(?P<platform>[A-Za-z\d\s]+)\-+.*",re.MULTILINE|re.DOTALL)
 
 class Script(noc.sa.script.Script):
-    name="3Com.SuperStack.get_version" 
+    name="3Com.SuperStack.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         p=self.motd

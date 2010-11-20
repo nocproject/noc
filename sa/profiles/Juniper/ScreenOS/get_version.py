@@ -13,6 +13,7 @@ rx=re.compile(r"Product Name:\s+(?P<platform>\S+)$.+Software Version:\s+(?P<vers
 
 class Script(noc.sa.script.Script):
     name="Juniper.ScreenOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("get system")

@@ -15,6 +15,7 @@ rx_mac=re.compile(r"MAC Address[^:]*?:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE
 
 class Script(noc.sa.script.Script):
     name="EdgeCore.ES35xx.get_chassis_id"
+    cache=True
     implements=[IGetChassisID]
     def execute(self):
         v=self.cli("show system")
