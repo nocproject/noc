@@ -13,6 +13,7 @@ rx_ver=re.compile(r"ProductCode (?P<version>\S+) build.*Hardware type: (?P<platf
 
 class Script(noc.sa.script.Script):
     name="Protei.MediaGateway.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("_version full")

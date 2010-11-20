@@ -15,6 +15,7 @@ rx_ver=re.compile(r"^Version:\s+(?P<version>\S+)",re.MULTILINE)
 
 class Script(noc.sa.script.Script):
     name="Vyatta.Vyatta.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show version")

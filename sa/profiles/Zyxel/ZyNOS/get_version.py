@@ -16,6 +16,7 @@ rx_version=re.compile(r"ZyNOS F/W Version\s+V?(?P<version>\S+)",re.MULTILINE|re.
 
 class Script(noc.sa.script.Script):
     name="Zyxel.ZyNOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show system-information")

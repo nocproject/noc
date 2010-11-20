@@ -15,6 +15,7 @@ rx_ver=re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE)
 
 class Script(noc.sa.script.Script):
     name="DLink.DGS3xxx.get_chassis_id" 
+    cache=True
     implements=[IGetChassisID]
     def execute(self):
         v=self.cli("show switch")

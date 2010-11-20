@@ -15,6 +15,7 @@ rx_ver=re.compile(r"(?P<platform>\S+) System software Revision (?P<version>\S+)"
 
 class Script(noc.sa.script.Script):
     name="AddPac.APOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show version")

@@ -15,6 +15,7 @@ rx_ver=re.compile(r"Device Type\s+:\s+(?P<platform>\S+).+Firmware Version\s+:\s+
 
 class Script(noc.sa.script.Script):
     name="DLink.DGS3xxx.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         self.cli("disable clipaging")

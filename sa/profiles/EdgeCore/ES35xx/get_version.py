@@ -14,6 +14,7 @@ rx_ver=re.compile(r"Operation code version\s+(?P<version>\S+)",re.MULTILINE|re.D
 
 class Script(noc.sa.script.Script):
     name="EdgeCore.ES35xx.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show system")

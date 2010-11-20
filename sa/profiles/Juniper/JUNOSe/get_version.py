@@ -13,6 +13,7 @@ rx=re.compile(r"Juniper\s+(?P<platform>.+?)$.+Version\s+(?P<version>.+?)\s*\[",r
 
 class Script(noc.sa.script.Script):
     name="Juniper.JUNOSe.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         self.cli("terminal length 0")

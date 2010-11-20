@@ -15,6 +15,7 @@ rx_ver=re.compile(r"version=(?P<version>\S+)")
 
 class Script(noc.sa.script.Script):
     name="HP.iLO2.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show /map1/firmware1/ version")

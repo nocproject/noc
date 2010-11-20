@@ -15,6 +15,7 @@ rx_ver=re.compile(r"^(?P<platform>.+?) version (?P<version>.+?)\s+",re.MULTILINE
 
 class Script(noc.sa.script.Script):
     name="Zyxel.ZyNOSv2.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("version")

@@ -15,6 +15,7 @@ rx_snmp_platform=re.compile(r"^Nexus\d+ (?P<platform>C\d+) .+Chassis$")
 
 class Script(noc.sa.script.Script):
     name="Cisco.NXOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:

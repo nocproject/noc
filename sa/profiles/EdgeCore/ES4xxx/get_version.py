@@ -16,6 +16,7 @@ rx_ver=re.compile(r"SoftWare Package Version.*?_(?P<version>\d.+?)$",re.MULTILIN
 
 class Script(noc.sa.script.Script):
     name="EdgeCore.ES4xxx.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show version 1")

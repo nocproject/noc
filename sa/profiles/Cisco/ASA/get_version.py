@@ -17,6 +17,7 @@ rx_ver=re.compile(r'Cisco (?:Adaptive|PIX) Security Appliance Software Version (
 
 class Script(noc.sa.script.Script):
     name="Cisco.ASA.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         self.cli("terminal pager 0")

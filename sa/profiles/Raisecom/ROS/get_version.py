@@ -15,6 +15,7 @@ rx_ver=re.compile(r"^Product name:\s+(?P<platform>\S+).*ROS  Version ROS_(?P<ver
 
 class Script(noc.sa.script.Script):
     name="Raisecom.ROS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show version")

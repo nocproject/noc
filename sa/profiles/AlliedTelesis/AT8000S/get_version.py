@@ -16,6 +16,7 @@ rx_ver=re.compile(r"^\s*(?:\w*\s+){1,2}\s*(?P<version>v?[\d.]+)\s",re.MULTILINE|
 
 class Script(noc.sa.script.Script):
     name="AlliedTelesis.AT8000S.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:

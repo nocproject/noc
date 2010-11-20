@@ -16,6 +16,7 @@ rx_ver=re.compile(r"System.*?Description:\s+(?P<version>.+?)\s.*$",re.MULTILINE|
 
 class Script(noc.sa.script.Script):
     name="Alcatel.AOS.get_version"
+    cache=True
     implements=[IGetVersion]
     def execute(self):
         v=self.cli("show ni")
