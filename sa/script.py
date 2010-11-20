@@ -157,6 +157,10 @@ class Script(threading.Thread):
     __metaclass__=ScriptBase
     name=None
     description=None
+    # Enable call cache
+    # If True, script result will be cached and reused
+    # during lifetime of parent script
+    cache=False
     # Interfaces list. Each element of list must be Interface subclass
     implements=[]
     # Scripts required by generic script.
@@ -197,6 +201,7 @@ class Script(threading.Thread):
             self.snmp=None
         self.status=False
         self.result=None
+        self.call_cache={} # Suitable only when self.parent is None. Cached results for scripts marked with "cache"
         self.error_traceback=None
         self.login_error=None
         self.strip_echo=True
@@ -252,17 +257,54 @@ class Script(threading.Thread):
     
     def error(self,msg):
         logging.error("[%s] %s"%(self.debug_name,msg))
-        
+    
+    ##
+    ## Return root script
+    ##
+    @property
+    def root(self):
+        if self.parent:
+            return self.parent.root
+        else:
+            return self
+    
+    ##
+    ## Get cached result or raise KeyError
+    ##
+    def get_cache(self,key1,key2):
+        s=self.root
+        return s.call_cache[repr(key1)][repr(key2)]
+    
+    ##
+    ## Set cacked result
+    ##
+    def set_cache(self,key1,key2,value):
+        key1=repr(key1)
+        key2=repr(key2)
+        s=self.root
+        if key1 not in self.call_cache:
+            self.call_cache[key1]={}
+        self.call_cache[key2]=value
+    
     def guarded_run(self):
         self.debug("Guarded run")
         # Enforce interface type checking
         for i in self.implements:
             self.kwargs=i.script_clean_input(self.profile,**self.kwargs)
+        # Use cached result when available
+        if self.cache and self.parent is not None:
+            try:
+                return self.get_cache(self.name,self.kwargs)
+            except KeyError:
+                pass
         # Calling script body
         result=self.execute(**self.kwargs)
         # Enforce interface result checking
         for i in self.implements:
             result=i.script_clean_result(self.profile,result)
+        # Cache result when required
+        if self.cache and self.parent is not None:
+            self.set_cache(self.name,self.kwargs,result)
         self.debug("Script returns with result: %s"%result)
         return result
         
