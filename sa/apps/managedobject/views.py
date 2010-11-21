@@ -72,7 +72,7 @@ object_status.allow_tags=True
 def script_reduce(task):
     mt=task.maptask_set.all()[0]
     if mt.status!="C":
-        return "Task failed: "+str(mt.script_result)
+        return "Task failed: "+str(mt.script_result["text"])
     return mt.script_result
 ##
 ## ManagedObject admin
