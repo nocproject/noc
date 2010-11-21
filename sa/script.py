@@ -137,7 +137,7 @@ class ConfigurationContextManager(object):
         else:
             raise exc_type, exc_val
 ##
-##
+## Mark cancelable part of script
 ##
 class CancellableContextManager(object):
     def __init__(self,script):
@@ -150,6 +150,23 @@ class CancellableContextManager(object):
         self.is_cancelable=False
         if exc_type is not None:
             raise exc_type, exc_val
+    
+
+##
+## Silently ignore specific exceptions
+##
+class IgnoredExceptionsContextManager(object):
+    def __init__(self, iterable):
+        self.exceptions=set(iterable)
+    
+    def __enter__(self):
+        pass
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type and exc_type not in self.exceptions:
+            raise exc_type, exc_val
+    
+
 ##
 ##
 ##
@@ -505,6 +522,10 @@ class Script(threading.Thread):
     ## Return cancelable context
     def cancelable(self):
         return CancellableContextManager(self)
+    
+    ## Return ignorable exceptions context
+    def ignored_exceptions(self, iterable):
+        return IgnoredExceptionsContextManager(iterable)
     
     # Enter configuration mote
     def enter_config(self):
