@@ -421,7 +421,7 @@ class DNS(Object):
                 o=DNS.objects.get(repo_path=path)
                 o.write(z.zonedata(ns))
         for ns in DNSServer.objects.all():
-            logging.debug("DNSHandler.global_pull: Includes for %s rebuilded"%ns.name)
+            logging.debug("DNSHandler.global_pull: Includes for %s rebuilt"%ns.name)
             g=ns.generator_class()
             path=os.path.join(ns.name,"autozones.conf")
             try:
