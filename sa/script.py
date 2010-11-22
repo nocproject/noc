@@ -148,8 +148,6 @@ class CancellableContextManager(object):
     
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.is_cancelable=False
-        if exc_type is not None:
-            raise exc_type, exc_val
     
 
 ##
@@ -163,8 +161,8 @@ class IgnoredExceptionsContextManager(object):
         pass
     
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type and exc_type not in self.exceptions:
-            raise exc_type, exc_val
+        if exc_type and exc_type in self.exceptions:
+            return True # Supress exception
     
 
 ##
@@ -194,6 +192,8 @@ class Script(threading.Thread):
     CLISyntaxError=CLISyntaxError
     NotSupportedError=NotSupportedError
     UnexpectedResultError=UnexpectedResultError
+    #
+    _execute_chain=[]
     
     def __init__(self,profile,activator,access_profile,parent=None,**kwargs):
         self.start_time=time.time()
@@ -243,6 +243,55 @@ class Script(threading.Thread):
                 ("ts",datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))]:
                 self.log_cli_sessions_path=self.log_cli_sessions_path.replace("{{%s}}"%k,v)
             self.cli_debug("IP: %s SCRIPT: %s"%(self.access_profile.address,self.name),"!")
+    
+    ##
+    ## execute method decorator
+    ##
+    @classmethod
+    def match(cls, *args, **kwargs):
+        def decorate(f):
+            # Append to the execute chain
+            cls._execute_chain+=[(x, f)]
+            return f
+        
+        # Compile check function
+        c=[]
+        if args:
+            c+=args
+        for k,v in kwargs.items():
+            # Split to field name and lookup operator
+            if "__" in k:
+                f,o=k.split("__")
+            else:
+                f=k
+                o="exact"
+            # Check field name
+            if f not in ("vendor", "platform", "version", "image"):
+                raise Exception("Invalid field '%s'"%f)
+            # Compile lookup functions
+            if o=="exact":
+                c+=[lambda x,f=f,v=v: x[f]==v]
+            elif o=="iexact":
+                c+=[lambda x,f=f,v=v: x[f].lower()==v.lower()]
+            elif o=="startswith":
+                c+=[lambda x,f=f,v=v: x[f].startswith(v)]
+            elif o=="istartswith":
+                c+=[lambda x,f=f,v=v: x[f].lower().startswith(v.lower())]
+            elif o=="endswith":
+                c+=[lambda x,f=f,v=v: x[f].endswith(v)]
+            elif o=="iendswith":
+                c+=[lambda x,f=f,v=v: x[f].lower().endswith(v.lower())]
+            elif o=="contains":
+                c+=[lambda x,f=f,v=v: v in x[f]]
+            elif o=="icontains":
+                c+=[lambda x,f=f,v=v: v.lower() in x[f].lower()]
+            else:
+                raise Exception("Invalid lookup operation: %s"%o)
+        # Combine expressions into single lambda
+        x=reduce(lambda x,y: lambda v,x=x,y=y: x(v) and y(v), c, lambda x: True)
+        # Return decorated function
+        return decorate
+    
     ##
     ##
     ##
@@ -361,9 +410,22 @@ class Script(threading.Thread):
         if self.snmp:
             self.snmp.close()
         self.activator.on_script_exit(self)
-        
+    
+    ##
+    ## Default script behavior:
+    ## Pass through _execute_chain and call appropriative handler
+    ##
     def execute(self,**kwargs):
-        return None
+        if self._execute_chain and not self.name.endswith(".get_version"):
+            # Get version information
+            v=self.scripts.get_version()
+            # Find and execute proper handler
+            for c,f in self._execute_chain:
+                if c(v):
+                    return f(self, **kwargs)
+            # Raise error 
+            raise NotSupportedError()
+    
     ##
     ## Request CLI provider's queue
     ## Handle cancel condition
