@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Huawei.VRP.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVlans
 
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name="Huawei.VRP.get_vlans"
     implements=[IGetVlans]
     def execute(self):
         self.cli("undo terminal logging")
-        vlans=self.cli("display vlan").split("\n")
-        vlans=vlans[1].replace("(default)","")
+        v=self.cli("display vlan")
+        vlans=", ".join(v.splitlines()[1:])
+        vlans=vlans.replace("(default)","")
         return [{"vlan_id":int(x)} for x in self.expand_rangelist(vlans)]
+    
