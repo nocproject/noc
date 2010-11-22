@@ -285,6 +285,12 @@ class Script(threading.Thread):
                 c+=[lambda x,f=f,v=v: v in x[f]]
             elif o=="icontains":
                 c+=[lambda x,f=f,v=v: v.lower() in x[f].lower()]
+            elif o=="in":
+                c+=[lambda x,f=f,v=v: x[f] in v]
+            elif o=="regex":
+                c+=[lambda x,f=f,v=re.compile(v): v.search(x[f]) is not None]
+            elif o=="iregex":
+                c+=[lambda x,f=f,v=re.compile(v, re.IGNORECASE): v.search(x[f]) is not None]
             else:
                 raise Exception("Invalid lookup operation: %s"%o)
         # Combine expressions into single lambda
