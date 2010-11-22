@@ -34,3 +34,19 @@ class Profile(noc.sa.profiles.Profile):
         p+="\n".join(["    permit %s%s"%(x,suffix) for x in pl])
         p+="\nexit\n"
         return p
+
+##
+## Platform matching helpers
+##
+
+## S-series
+def SSeries(v):
+    return v["platform"].startswith("S")
+
+## C-series
+def CSeries(v):
+    return v["platform"].startswith("C")
+
+## E-series
+def ESeries(v):
+    return v["platform"].startswith("E")

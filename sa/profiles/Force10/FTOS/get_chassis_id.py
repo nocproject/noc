@@ -2,30 +2,43 @@
 ##----------------------------------------------------------------------
 ## Force10.FTOS.get_chassis_id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetChassisID
+## python modules
 import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetChassisID
+from noc.sa.profiles.Force10.FTOS import SSeries
 
-rx_chassis_id=re.compile(r"Chassis MAC\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE)
-rx_system_id=re.compile(r"Stack MAC\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE)
-
-class Script(noc.sa.script.Script):
+##
+## Force10.FTOS.get_chassis_id script
+##
+class Script(NOCScript):
     name="Force10.FTOS.get_chassis_id"
     cache=True
     implements=[IGetChassisID]
-    def execute(self):
-        platform=self.scripts.get_version()["platform"]
-        if platform[0]=="S":
-            # S-series
-            v=self.cli("show system brief")
-            match=rx_system_id.search(v)
-        else:
-            # E/C-series
-            v=self.cli("show chassis brief")
-            match=rx_chassis_id.search(v)
+    
+    ##
+    ## S-Series
+    ##
+    rx_system_id=re.compile(r"Stack MAC\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE)
+    @NOCScript.match(SSeries)
+    def execute_s(self):
+        v=self.cli("show system brief")
+        match=self.re_search(self.rx_system_id, v)
         return match.group("id")
+    
+    ##
+    ## C/E-series
+    ##
+    rx_chassis_id=re.compile(r"Chassis MAC\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE)
+    @NOCScript.match()
+    def execute_other(self):
+        v=self.cli("show chassis brief")
+        match=self.re_search(self.rx_chassis_id, v)
+        return match.group("id")
+    
