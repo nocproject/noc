@@ -54,7 +54,7 @@ class AutoCompleteTextInput(Input):
         js="""<script type=\"text/javascript\">
         $(\"#%s\").autocomplete(\"%s\",{minChars:3,mustMatch:1});
         %s
-        </script>"
+        </script>
         """%(attrs["id"],site.reverse(self.lookup_url),set_value)
         return mark_safe("\n".join([html,js]))
 ##
