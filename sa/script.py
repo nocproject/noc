@@ -114,9 +114,13 @@ script_registry=ScriptRegistry()
 ##
 ##
 ##
+_execute_chain=[]
 class ScriptBase(type):
     def __new__(cls,name,bases,attrs):
+        global _execute_chain
         m=type.__new__(cls,name,bases,attrs)
+        m._execute_chain=_execute_chain
+        _execute_chain=[]
         m.implements=[c() for c in m.implements]
         script_registry.register(m.name,m)
         if m.name and not m.name.startswith("Generic."):
@@ -250,8 +254,9 @@ class Script(threading.Thread):
     @classmethod
     def match(cls, *args, **kwargs):
         def decorate(f):
+            global _execute_chain
             # Append to the execute chain
-            cls._execute_chain+=[(x, f)]
+            _execute_chain+=[(x, f)]
             return f
         
         # Compile check function
@@ -291,6 +296,17 @@ class Script(threading.Thread):
                 c+=[lambda x,f=f,v=re.compile(v): v.search(x[f]) is not None]
             elif o=="iregex":
                 c+=[lambda x,f=f,v=re.compile(v, re.IGNORECASE): v.search(x[f]) is not None]
+            elif f=="version":
+                if o=="lt": # <
+                    c+=[lambda x,f=v,v=v,p=self.profile: p.cmp_version(x[v],v)<0 ]
+                elif o=="lte": # <=
+                    c+=[lambda x,f=v,v=v,p=self.profile: p.cmp_version(x[v],v)<=0 ]
+                elif o=="gt": # >
+                    c+=[lambda x,f=v,v=v,p=self.profile: p.cmp_version(x[v],v)>0 ]
+                elif o=="gte": # >=
+                    c+=[lambda x,f=v,v=v,p=self.profile: p.cmp_version(x[v],v)>=0 ]
+                else:
+                    raise Exception("Invalid lookup operation: %s"%o)
             else:
                 raise Exception("Invalid lookup operation: %s"%o)
         # Combine expressions into single lambda
