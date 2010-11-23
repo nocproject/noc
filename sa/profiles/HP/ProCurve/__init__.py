@@ -25,4 +25,22 @@ class Profile(noc.sa.profiles.Profile):
     command_enter_config="configure"
     command_leave_config="exit"
     command_save_config="write memory\n"
-        
+    
+    ##
+    ## Compare versions
+    ##
+    ## Version format is <letter>.<major>.<minor>
+    ##
+    @classmethod
+    def cmp_version(cls,v1,v2):
+        l1,mj1,mn1=v1.split(".")
+        l2,mj2,mn2=v2.split(".")
+        if l1!=l2:
+            # Different letters
+            return None
+        r=cmp(int(mj1),int(mj2))
+        if r!=0:
+            return r
+        return cmp(int(mn1),int(mn2))
+    
+
