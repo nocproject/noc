@@ -196,6 +196,20 @@ class Profile(object):
                 rx=re.compile(r,re.DOTALL|re.MULTILINE)
                 cfg=rx.sub("",cfg)
         return unicode(cfg,"utf8","ignore").encode("utf8") # Prevent serialization errors
+    
+    #
+    # Compare two versions.
+    # Must return:
+    #    <0 , if v1<v2
+    #     0 , if v1==v2
+    #    >0 , if v1>v2
+    #  None , if v1 and v2 cannot be compared
+    #
+    # Default implementation compares versions as strings, which is surely not what you want
+    #
+    def cmp_version(self,v1,v2):
+        return cmp(v1,v2)
+    
     #
     # Highligh config
     # Try to include profile's highlight module and use its ConfigLexer
