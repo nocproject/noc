@@ -205,10 +205,24 @@ class Profile(object):
     #    >0 , if v1>v2
     #  None , if v1 and v2 cannot be compared
     #
-    # Default implementation compares versions as strings, which is surely not what you want
+    # Default implementation compares a versions in format
+    # N1. .. .NM
     #
+    @classmethod
     def cmp_version(self,v1,v2):
-        return cmp(v1,v2)
+        n1=[int(x) for x in v1.split(".")]
+        n2=[int(x) for x in v2.split(".")]
+        l1=len(n1)
+        l2=len(n2)
+        if l1>l2:
+            n2+=[None]*(l1-l2)
+        elif l1<l2:
+            n1+=[None]*(l2-l1)
+        for c1,c2 in zip(n1,n2):
+            r=cmp(c1,c2)
+            if r!=0:
+                return r
+        return 0
     
     #
     # Highligh config
