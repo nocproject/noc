@@ -71,6 +71,8 @@ class Script(NOCScript):
             match=self.rx_cap.search(v)
             if match:
                 for c in match.group(1).strip().split(", "):
+                    if not c:
+                        continue
                     caps|={
                         "other"     : 1,
                         "repeater"  : 2,
