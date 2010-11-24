@@ -14,4 +14,5 @@ class Script(noc.sa.script.Script):
     def execute(self):
         self.cli("disable clipaging")
         config=self.cli("show config current_config")
+        config=self.strip_first_lines(config,1)
         return self.cleaned_config(config)

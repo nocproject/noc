@@ -18,7 +18,9 @@ class Script(NOCScript):
     ##
     @NOCScript.match(platform__regex=r"(3612|3627|3650)")
     def execute_config_active(self):
-        return self.cleaned_config(self.cli("show config active"))
+        config=self.cli("show config active")
+        config=self.strip_first_lines(config,1)
+        return self.cleaned_config(config)
     
     ##
     ## DGS-3100-24, DGS-3100-24P, DGS-3100-24TG, DGS-3100-49, DGS-3100-48P
