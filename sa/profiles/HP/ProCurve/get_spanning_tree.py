@@ -180,8 +180,12 @@ class Script(noc.sa.script.Script):
         # Designated port
         v=self.mib_walk("hpicfBridgeMSTPortDesignatedPort")
         for instance_id,port_id in v:
-            pr,p=v[instance_id,port_id].split(" ")
-            instance_ports[instance_id][port_id]["designated_port_id"]="%d.%d"%(int(pr,16),int(p,16))
+            x=v[instance_id,port_id]
+            if " " in x:
+                pr,p=x.split(" ")
+                instance_ports[instance_id][port_id]["designated_port_id"]="%d.%d"%(int(pr,16),int(p,16))
+            else:
+                instance_ports[instance_id][port_id]["designated_port_id"]="%d.%d"%(ord(x[0]),ord(x[1]))
         # Fill missed designated bridge ids
         for instance_id in instance_ports:
             for port_id in instance_ports[instance_id]:
