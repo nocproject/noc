@@ -24,7 +24,8 @@ class Script(NOCScript):
     rx_localport=re.compile(r"^\s*(\S+)\s*\|\s*local\s+(\d+)\s+.+?$",re.MULTILINE)
     rx_split=re.compile(r"^\s*----.+?\n",re.MULTILINE|re.DOTALL)
     rx_line=re.compile(r"^\s*(?P<port>\S+)\s*|",re.MULTILINE|re.DOTALL)
-    rx_chassis_id=re.compile(r"^\s*ChassisId\s*:\s*(.{17})",re.MULTILINE|re.DOTALL|re.IGNORECASE)
+    #rx_chassis_id=re.compile(r"^\s*ChassisId\s*:\s*(.{17})",re.MULTILINE|re.DOTALL|re.IGNORECASE)
+    rx_chassis_id=re.compile(r"ChassisType\s*:\s*(\S+).+?ChassisId\s*:\s*([a-zA-Z0-9\.\- ]+)",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     rx_port_id=re.compile(r"^\s*PortId\s*:\s*(.+?)\s*$",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     rx_sys_name=re.compile(r"^\s*SysName\s*:\s*(.+?)\s*$",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     rx_cap=re.compile(r"^\s*System Capabilities Enabled\s*:(.*?)$",re.MULTILINE|re.IGNORECASE)
@@ -54,9 +55,16 @@ class Script(NOCScript):
             match=self.rx_chassis_id.search(v)
             if not match:
                 continue
-            remote_chassis_id=match.group(1).replace(" ","")
-            remote_chassis_id="%s-%s"%(remote_chassis_id[:6],remote_chassis_id[6:]) # Convert to HP-style mac
-            n={"remote_chassis_id":remote_chassis_id,"remote_port_subtype":5,"remote_chassis_id_subtype":4}
+            remote_chassis_id_subtype={
+                "mac-address" : 4,
+                "local"       : 7, # @todo: check
+            }[match.group(1)]
+            remote_chassis_id=match.group(2).strip().replace(" ","")
+            if remote_chassis_id_subtype==4:
+                remote_chassis_id="%s-%s"%(remote_chassis_id[:6],remote_chassis_id[6:]) # Convert to HP-style mac
+            else:
+                remote_chassis_id=remote_chassis_id.strip()
+            n={"remote_chassis_id":remote_chassis_id,"remote_port_subtype":5,"remote_chassis_id_subtype":remote_chassis_id_subtype}
             # Get remote port
             match=self.rx_port_id.search(v)
             if not match:
