@@ -27,7 +27,7 @@ class Script(NOCScript):
     rx_chassis_id=re.compile(r"^\s*ChassisId\s*:\s*(.{17})",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     rx_port_id=re.compile(r"^\s*PortId\s*:\s*(.+?)\s*$",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     rx_sys_name=re.compile(r"^\s*SysName\s*:\s*(.+?)\s*$",re.MULTILINE|re.DOTALL|re.IGNORECASE)
-    rx_cap=re.compile(r"^\s*System Capabilities Enabled\s*:\s*(.*?)\s*$",re.IGNORECASE)
+    rx_cap=re.compile(r"^\s*System Capabilities Enabled\s*:(.*?)$",re.MULTILINE|re.IGNORECASE)
     def execute(self):
         r=[]
         # HP.ProCurve advertises local(7) port sub-type, so local_interface_id parameter required
@@ -70,7 +70,7 @@ class Script(NOCScript):
             caps=0
             match=self.rx_cap.search(v)
             if match:
-                for c in match.group(1).split(", "):
+                for c in match.group(1).strip().split(", "):
                     caps|={
                         "other"     : 1,
                         "repeater"  : 2,
