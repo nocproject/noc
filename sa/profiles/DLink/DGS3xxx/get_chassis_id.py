@@ -5,20 +5,24 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-""" 
-""" 
-import noc.sa.script
-from noc.sa.interfaces import IGetChassisID
+"""
+"""
+## Python modules
 import re
-
-rx_ver=re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE)
-
-class Script(noc.sa.script.Script):
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetChassisID
+##
+## DLink.DGS3xxx.get_chassis_id
+##
+class Script(NOCScript):
     name="DLink.DGS3xxx.get_chassis_id" 
     cache=True
+    
+    rx_ver=re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE)
     implements=[IGetChassisID]
     def execute(self):
         v=self.cli("show switch")
-        match=rx_ver.search(v)
+        match=self.re_search(self.rx_ver, v)
         return match.group("id")
     
