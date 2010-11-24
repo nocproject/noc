@@ -203,6 +203,7 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
         connection.creation.create_test_db(verbosity, autoclobber=not interactive)
         # Call sync-perm to install permissions
         management.call_command("sync-perm")
+        management.call_command("sync-pyrules")
     # Run tests
     result = unittest.TextTestRunner(verbosity=verbosity).run(suite)
     # Drop database when necessary
