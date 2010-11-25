@@ -17,5 +17,10 @@ class Profile(noc.sa.profiles.Profile):
     pattern_username="Login:"
     pattern_password="Password:"
     pattern_prompt=r"^Select menu option.*:"
+    pattern_more=[
+        (r"Escape character is '\^\]'\.", "\r"),
+        (r"Enter <CR> for more or 'q' to quit--:", "\r"),
+        ]
     pattern_more=[(r"Escape character is '\^\]'\.", "\n")]
     command_submit="\r"
+    convert_mac=noc.sa.profiles.Profile.convert_mac_to_dashed
