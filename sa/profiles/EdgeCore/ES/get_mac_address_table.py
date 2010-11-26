@@ -19,7 +19,7 @@ class Script(NOCScript):
     name="EdgeCore.ES.get_mac_address_table"
     implements=[IGetMACAddressTable]
     
-    rx_line1=re.compile(r"^(?P<interface>\S+)\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$", re.MULTILINE)
+    rx_line1=re.compile(r"^\s*(?P<interface>Eth\s*\S+)\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$", re.MULTILINE)
     rx_line2=re.compile(r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?:\S+)\s+(?P<interface>.+)$", re.MULTILINE)
     def execute(self,interface=None,vlan=None,mac=None):
         cmd="show mac-address-table"
