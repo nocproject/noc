@@ -669,6 +669,16 @@ class Script(threading.Thread):
             raise self.UnexpectedResultError()
         return match
     
+    ##
+    ## Find first matching regular expression
+    ## or raise Unexpected result error
+    ##
+    def find_re(self, iter, s):
+        for r in iter:
+            if r.search(s):
+                return r
+        raise self.UnexpectedResultError()
+    
 
 ##
 ##
