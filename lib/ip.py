@@ -128,7 +128,8 @@ class IP(object):
         # Return all addresses except network and broadcast
         # for IPv4, when a dist is larger than network size
         if self.afi=="4" and dist>=self.size:
-            return list((s_first+1).iter_address(until=s_last-1))
+            d=0 if s_first.address in addresses else 1
+            return list((s_first+d).iter_address(until=s_last-1))
         # Left only addresses remaining in prefix and convert them to
         # IP instances
         addresses=set([a for a in [IP.prefix(a) if isinstance(a,basestring) else a for a in addresses] if self.contains(a)])
