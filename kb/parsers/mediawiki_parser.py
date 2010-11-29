@@ -8,7 +8,8 @@
 import noc.kb.parsers
 
 class Parser(noc.kb.parsers.Parser):
-    name="MediaWiki" 
+    name="MediaWiki"
+    css=["mediawiki/shared.css", "mediawiki/main.css"]
     @classmethod
     def to_html(cls,kb_entry):
         from mwlib.dummydb import DummyDB
