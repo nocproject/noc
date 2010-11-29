@@ -36,6 +36,7 @@ class ParserBase(type):
 class Parser(object):
     __metaclass__=ParserBase
     name=None
+    css=[] # A list of additional CSSs
     ##
     ## Convert wiki syntax to HTML
     ##
@@ -84,7 +85,7 @@ class Parser(object):
         if href.startswith("http"):
             return href
         elif href.startswith("attach:"):
-            name=href[7:]
+            href=href[7:]
         elif href.startswith("attachment:"):
             href=href[11:]
         return "/kb/view/%d/attachment/%s/"%(kb_entry.id,href)
