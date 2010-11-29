@@ -687,6 +687,45 @@ class IPv6Parameter(StringParameter):
     
 
 ##
+##
+##
+class IPv6PrefixParameter(StringParameter):
+    """
+    >>> IPv6PrefixParameter().clean("::/128")
+    '::/128'
+    >>> IPv6PrefixParameter().clean("2001:db8::/32")
+    '2001:db8::/32'
+    >>> IPv6PrefixParameter().clean("2001:db8::/129") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: IPv6PrefixParameter: '2001:db8::/129'
+    >>> IPv6PrefixParameter().clean("2001:db8::/g") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: IPv6PrefixParameter: '2001:db8::/g'
+    >>> IPv6PrefixParameter().clean("2001:db8::") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: IPv6PrefixParameter: '2001:db8::'
+    """
+    def clean(self, value):
+        if value is None and self.default is not None:
+            return self.default
+        v=super(IPv6PrefixParameter,self).clean(value)
+        if "/" not in v:
+            self.raise_error(value)
+        n,m=v.split("/",1)
+        try:
+            m=int(m)
+        except:
+            self.raise_error(value)
+        if m<0 or m>128:
+            self.raise_error(value)
+        n=IPv6Parameter().clean(n)
+        return "%s/%d"%(n,m)
+    
+
+##
 ## IPv4/IPv6 parameter
 ##
 class IPParameter(StringParameter):
