@@ -1,26 +1,39 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Models for "sa" module
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
+import marshal
+import base64
+import datetime
+import random
+import cPickle
+import time
+import types
+## Django modules
+from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User,Group
-import datetime,random,cPickle,time,types
+## Third-party modules
+from tagging.models import TaggedItem
+## NOC modules
 from noc.main.models import PyRule
 from noc.sa.profiles import profile_registry
 from noc.sa.periodic import periodic_registry
 from noc.sa.script import script_registry
-from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
+from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.search import SearchResult
-from noc.lib.fields import PickledField,INETField,AutoCompleteTagsField
+from noc.lib.fields import PickledField, INETField, AutoCompleteTagsField
 from noc.lib.app.site import site
-from tagging.models import TaggedItem
-from django.utils.translation import ugettext_lazy as _
-import marshal,base64,csv
-
+##
+## Register objects
+##
 profile_registry.register_all()
 periodic_registry.register_all()
 script_registry.register_all()
@@ -36,6 +49,8 @@ class AdministrativeDomain(models.Model):
     description=models.TextField(_("Description"),null=True,blank=True)
     def __unicode__(self):
         return self.name
+    
+
 ##
 ##
 ##
@@ -60,13 +75,16 @@ class Activator(models.Model):
     @classmethod
     def check_ip_access(self,ip):
         return Activator.objects.filter(ip__gte=ip,to_ip__lte=ip).count()>0
+    
+
 ##
-##
+## Managed Object
 ##
 class ManagedObject(models.Model):
     class Meta:
         verbose_name=_("Managed Object")
         verbose_name_plural=_("Managed Objects")
+    
     name=models.CharField(_("Name"),max_length=64,unique=True)
     is_managed=models.BooleanField(_("Is Managed?"),default=True)
     administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name=_("Administrative Domain"))
@@ -98,36 +116,41 @@ class ManagedObject(models.Model):
         return self.reverse("sa:managedobject:change",self.id)
         
     # Returns object's profile
-    def _profile(self):
+    @property
+    def profile(self):
         try:
             return self._cached_profile
         except AttributeError:
             self._cached_profile=profile_registry[self.profile_name]()
             return self._cached_profile
-    profile=property(_profile)
+    
     ##
     ## queryset returning objects for user
     ##
     @classmethod
     def user_objects(cls,user):
         return cls.objects.filter(UserAccess.Q(user))
+    
     ##
     ##
     ##
     def has_access(self,user):
         return self.user_objects(user).filter(id=self.id).count()>0
+    
     ##
     ## Returns a list of users granted access to object
     ##
-    def _granted_users(self):
+    @property
+    def granted_users(self):
         return [u for u in User.objects.filter(is_active=True) if ManagedObject.objects.filter(UserAccess.Q(u)&Q(id=self.id)).count()>0]
-    granted_users=property(_granted_users)
+    
     ##
     ## Returns a list of groups granted access to object
     ##
-    def _granted_groups(self):
+    @property
+    def granted_groups(self):
         return [g for g in Group.objects.filter() if ManagedObject.objects.filter(GroupAccess.Q(g)&Q(id=self.id)).count()>0]
-    granted_groups=property(_granted_groups)
+    
     ##
     ## Override model's save()
     ## Change related Config object as well
@@ -152,6 +175,9 @@ class ManagedObject(models.Model):
                 config.pull_every=None
             config.save()
     
+    ##
+    ## Delete appropriative config
+    ##
     def delete(self):
         try:
             config=self.config
@@ -160,6 +186,7 @@ class ManagedObject(models.Model):
         if config:
             config.delete()
         super(ManagedObject,self).delete()
+    
     ##
     ## Search engine
     ##
@@ -174,12 +201,32 @@ class ManagedObject(models.Model):
                 text=unicode(o),
                 relevancy=relevancy
             )
+    
     ##
     ## Returns True if Managed Object presents in more than one networks
     ##
+    @property
     def is_router(self):
         return self.address_set.count()>1
-    is_router=property(is_router)
+    
+
+##
+## Managed Object's attributes
+##
+class ManagedObjectAttribute(models.Model):
+    class Meta:
+        verbose_name=_("Managed Object Attribute")
+        verbose_name_plural=_("Managed Object Attributes")
+        unique_together=[("managed_object","key")]
+    
+    managed_object=models.ForeignKey(ManagedObject, verbose_name=_("Managed Object"))
+    key=models.CharField(_("Key"),max_length=64)
+    value=models.CharField(_("Value"),max_length=4096, blank=True, null=True)
+    
+    def __unicode__(self):
+        return u"%s: %s"%(self.managed_object,self.key)
+    
+
 ##
 ##
 ##
@@ -192,14 +239,14 @@ class TaskSchedule(models.Model):
     timeout=models.PositiveIntegerField(_("Timeout (secs)"),default=300)
     next_run=models.DateTimeField(_("Next Run"),auto_now_add=True)
     retries_left=models.PositiveIntegerField(_("Retries Left"),default=1)
-
+    
     def __unicode__(self):
         return self.periodic_name
-
-    def _periodic_class(self):
+    
+    @property
+    def periodic_class(self):
         return periodic_registry[self.periodic_name]
-    periodic_class=property(_periodic_class)
-
+    
     @classmethod
     def get_pending_tasks(cls,exclude=None):
         if exclude:
@@ -217,6 +264,8 @@ class TaskSchedule(models.Model):
             t.save()
         except TaskSchedule.DoesNotExist:
             pass
+    
+
 ##
 ## Object Selector
 ##
@@ -315,6 +364,8 @@ class ManagedObjectSelector(models.Model):
             if not skip:
                 sp.add(p)
         return self.managed_objects.filter(profile_name__in=sp)
+    
+
 ##
 ## Managed objects access for user
 ##
@@ -346,6 +397,8 @@ class UserAccess(models.Model):
         for gq in [GroupAccess.Q(g) for g in user.groups.all()]:
             q|=gq
         return q
+    
+
 ##
 ## Managed objects access for group
 ##
@@ -372,6 +425,8 @@ class GroupAccess(models.Model):
             return q
         else:
             return Q(id__in=[]) # False
+    
+
 ##
 ## Reduce Tasks
 ##
@@ -519,6 +574,8 @@ class ReduceTask(models.Model):
                 else:
                     rest+=[t]
                 tasks=rest
+    
+
 ##
 ## Map Tasks
 ##
@@ -539,3 +596,4 @@ class MapTask(models.Model):
             return u"%d: %s %s"%(self.id,self.managed_object,self.map_script)
         else:
             return u"New: %s %s"%(self.managed_object,self.map_script)
+    
