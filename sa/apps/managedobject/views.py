@@ -5,16 +5,21 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Python modules
+import pprint
+import os
+## Django modules
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from django import forms
 from django.db.models import Q
 from django.contrib.auth.models import User,Group
-from noc.lib.app import ModelApplication,site,Permit,PermitSuperuser,HasPerm,PermissionDenied
+## NOC modules
+from noc.lib.app import ModelApplication, site, Permit, PermitSuperuser, HasPerm, PermissionDenied
 from noc.sa.models import *
 from noc.settings import config
 from noc.lib.fileutils import in_dir
-import pprint,types,socket,csv,os
 ##
 ## Validating form for managed object
 ##
@@ -51,9 +56,11 @@ def action_links(obj):
     except:
         pass
     r+=[("Addresses","sa:managedobject:addresses",[obj.id])]
-    return "<br/>".join(["<a href='%s'>%s</a>"%(site.reverse(view,*params),title) for title,view,params in r])
+    s=["<select onchange='document.location=this.options[this.selectedIndex].value;'>","<option>---</option>"]+["<option value='%s'>%s</option>"%(site.reverse(view,*params),title) for title, view, params in r]+["</select>"]
+    return "".join(s)
 action_links.short_description="Actions"
 action_links.allow_tags=True
+
 ##
 ## Display object status
 ##
@@ -74,11 +81,28 @@ def script_reduce(task):
     if mt.status!="C":
         return "Task failed: "+str(mt.script_result["text"])
     return mt.script_result
+
+##
+## Attributes inline form
+##
+class ManagedObjectAttributeInlineForm(forms.ModelForm):
+    class Meta:
+        model=ManagedObjectAttribute
+    
+##
+## Attributes inline
+##
+class ManagedObjectAttributeInline(admin.TabularInline):
+    form=ManagedObjectAttributeInlineForm
+    model=ManagedObjectAttribute
+    extra=3
+
 ##
 ## ManagedObject admin
 ##
 class ManagedObjectAdmin(admin.ModelAdmin):
     form=ManagedObjectAdminForm
+    inlines=[ManagedObjectAttributeInline]
     fieldsets=(
         (None,{
             "fields": ("name","is_managed","administrative_domain","activator","profile_name","description")
