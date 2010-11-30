@@ -16,7 +16,7 @@ from django import forms
 from django.db.models import Q
 from django.contrib.auth.models import User,Group
 ## NOC modules
-from noc.lib.app import ModelApplication, site, Permit, PermitSuperuser, HasPerm, PermissionDenied
+from noc.lib.app import ModelApplication, site, Permit, PermitSuperuser, HasPerm, PermissionDenied, view
 from noc.sa.models import *
 from noc.settings import config
 from noc.lib.fileutils import in_dir
@@ -282,6 +282,17 @@ class ManagedObjectApplication(ModelApplication):
     view_addresses.url=r"(?P<object_id>\d+)/addresses/"
     view_addresses.url_name="addresses"
     view_addresses.access=HasPerm("change")
+    
+    ##
+    ## Display all attributes
+    ##
+    @view(  url=r"(?P<object_id>\d+)/attributes/",
+            url_name="attributes",
+            access=HasPerm("change"))
+    def view_attributes(self,request,object_id):
+        o=get_object_or_404(ManagedObject,id=int(object_id))
+        return self.render(request,"attributes.html",{"attributes":o.managedobjectattribute_set.order_by("key"),"object":o})
+    
     ##
     def user_access_list(self,user):
         return [s.selector.name for s in UserAccess.objects.filter(user=user)]

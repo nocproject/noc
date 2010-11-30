@@ -209,6 +209,51 @@ class ManagedObject(models.Model):
     def is_router(self):
         return self.address_set.count()>1
     
+    ##
+    ## Return attribute as string
+    ##
+    def get_attr(self, name, default=None):
+        try:
+            return self.managedobjectattribute_set.get(key=name).value
+        except ManagedObjectAttribute.DoesNotExist:
+            return default
+    
+    ##
+    ## Return attribute as bool
+    ##
+    def get_attr_bool(self, name, default=False):
+        v=self.get_attr(name)
+        if v is None:
+            return default
+        if v.lower() in ["t","true","y","yes","1"]:
+            return True
+        else:
+            return False
+    
+    ##
+    ## Return attribute as integer
+    ##
+    def get_attr_int(self, name, default=0):
+        v=self.get_attr(name)
+        if v is None:
+            return default
+        try:
+            return int(v)
+        except:
+            return default
+    
+    ##
+    ## Set attribute
+    ##
+    def set_attr(self, name, value):
+        value=unicode(value)
+        try:
+            v=self.managedobjectattribute_set.get(key=name)
+            v.value=value
+        except ManagedObjectAttribute.DoesNotExist:
+            v=ManagedObjectAttribute(managed_object=self, key=name, value=value)
+        v.save()
+    
 
 ##
 ## Managed Object's attributes
