@@ -13,11 +13,11 @@ class EdgeCore_ES_get_vlans_Test(ScriptTestCase):
     platform='ES4612'
     version='1.0.6.5'
     input={}
-    result=[{'name': 'Static', 'vlan_id': 1},
-        {'name': 'Static', 'vlan_id': 20},
-        {'name': 'Static', 'vlan_id': 69},
-        {'name': 'Static', 'vlan_id': 1100},
-        {'name': 'Static', 'vlan_id': 2108}]
+    result=[{'name': 'DefaultVlan', 'vlan_id': 1},
+            {'name': 'Blackhole', 'vlan_id': 20},
+            {'name': 'Managment', 'vlan_id': 69},
+            {'name': 'iptv_uriki', 'vlan_id': 1100},
+            {'name': 'KPD_NNNNlink4', 'vlan_id': 2108}]
     motd=''
     cli={
 ## 'show version'
