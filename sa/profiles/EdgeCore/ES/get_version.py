@@ -55,7 +55,7 @@ class Script(NOCScript):
             else:
                 raise self.NotSupportedError(platform)
         elif "3510" in platform:
-            pass
+            platform="ES3510"
         elif platform.lower()=="8 sfp ports + 4 gigabit combo ports l2/l3/l4 managed standalone switch":
             platform="ES4612"
         else:
