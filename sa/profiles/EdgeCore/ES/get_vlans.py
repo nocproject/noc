@@ -23,10 +23,19 @@ class Script(NOCScript):
     ## ES4626 = Cisco Style
     ##
     rx_vlan_line_4626=re.compile(r"^\s*(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+", re.IGNORECASE|re.MULTILINE)
-    @NOCScript.match(platform__regex="4626|4612")
+    @NOCScript.match(platform__contains="4626")
     def execute_4626(self):
         vlans=self.cli("show vlan")
         return [{"vlan_id": int(match.group("vlan_id")) ,"name": match.group("name")} for match in self.rx_vlan_line_4626.finditer(vlans)]
+    
+    ##
+    ## ES4612
+    ##
+    rx_vlan_line_4612=re.compile(r"^\s*(?P<vlan_id>\d{1,4})\s+\S+\s+(?P<name>\S+)\s+", re.IGNORECASE|re.MULTILINE)
+    @NOCScript.match(platform__contains="4612")
+    def execute_4612(self):
+        vlans=self.cli("show vlan")
+        return [{"vlan_id": int(match.group("vlan_id")) ,"name": match.group("name")} for match in self.rx_vlan_line_4612.finditer(vlans)]
     
     ##
     ## Other
