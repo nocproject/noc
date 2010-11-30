@@ -47,15 +47,16 @@ class ManagedObjectAdminForm(forms.ModelForm):
 def action_links(obj):
     r=[]
     try:
-        r+=[("Config","cm:config:view",[obj.config.id])]
+        r+=[("Config", "cm:config:view", [obj.config.id])]
     except:
         pass
     try:
         obj.profile
-        r+=[("Scripts","sa:managedobject:scripts",[obj.id])]
+        r+=[("Scripts", "sa:managedobject:scripts", [obj.id])]
     except:
         pass
-    r+=[("Addresses","sa:managedobject:addresses",[obj.id])]
+    r+=[("Addresses", "sa:managedobject:addresses", [obj.id])]
+    r+=[("Attributes", "sa:managedobject:attributes", [obj.id])]
     s=["<select onchange='document.location=this.options[this.selectedIndex].value;'>","<option>---</option>"]+["<option value='%s'>%s</option>"%(site.reverse(view,*params),title) for title, view, params in r]+["</select>"]
     return "".join(s)
 action_links.short_description="Actions"
