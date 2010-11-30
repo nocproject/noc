@@ -76,7 +76,11 @@ class Parser(object):
             link=link[11:]
             return u"<a href='/kb/%d/attachment/%s/'>%s</a>"%(kb_entry.id,link,text)
         else:
-            return u"<a href='%s'>%s</a>"%(link,text)
+            try:
+                le=kb_entry.__class__.objects.get(subject=link)
+                return u"<a href='/kb/view/%s/'>%s</a>"%(le.id,text)
+            except kb_entry.__class__.DoesNotExist:
+                return u"<a href='%s'>%s</a>"%(link,text)
     ##
     ## Convert attachment ref
     ##
