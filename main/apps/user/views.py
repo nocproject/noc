@@ -37,8 +37,8 @@ class UserChangeForm(forms.ModelForm):
     def save(self,commit=True):
         model=super(UserChangeForm,self).save(commit)
         model.is_staff=True
-        if not model.id:
-            model.save()
+        #if not model.id:
+        model.save()
         Permission.set_user_permissions(model,self.new_perms)
         return model
     
