@@ -17,6 +17,7 @@ from noc.sa.interfaces import IGetInterfaces
 ##
 ## @todo: VRF support
 ## @todo: IPv6
+## @todo: ISIS
 ## @todo: secondary addresses
 ## @todo: isis, ospf, bgp, rip
 ## @todo: ip unnumbered
@@ -65,9 +66,11 @@ class Script(noc.sa.script.Script):
                 "type"         : ift,
             }
             # Get description
+            description=None
             match=self.rx_int_alias.search(s)
             if match:
-                iface["description"]=match.group("alias")
+                description=match.group("alias")
+                iface["description"]=description
             # Get MAC
             match=self.rx_int_mac.search(s)
             if match:
@@ -104,10 +107,12 @@ class Script(noc.sa.script.Script):
                         sub["untagged_vlan"]=u
                     if t:
                         sub["tagged_vlans"]=t
-                subinterfaces+=[sub]
+                if sub.get("is_ipv4") or sub.get("is_ipv6") or sub.get("is_iso") or sub.get("is_mpls") or sub.get("is_bridge"):
+                    subinterfaces+=[sub]
             # Append to interfaces
             iface["subinterfaces"]=subinterfaces
-            interfaces+=[iface]
+            if subinterfaces or "aggregated_interface" in iface:
+                interfaces+=[iface]
         # Get interfaces
         return [{"interfaces" : interfaces}]
     
