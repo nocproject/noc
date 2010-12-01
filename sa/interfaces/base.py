@@ -512,7 +512,10 @@ class DictParameter(Parameter):
         out_value={}
         for a_name,attr in self.attrs.items():
             if a_name not in in_value and attr.required:
-                self.raise_error(value,"Attribute '%s' is required in %s"%(a_name,in_value))
+                if attr.default:
+                    out_value[a_name]=attr.default
+                else:
+                    self.raise_error(value,"Attribute '%s' is required in %s"%(a_name,in_value))
             if a_name in in_value:
                 try:
                     out_value[a_name]=attr.clean(in_value[a_name])
