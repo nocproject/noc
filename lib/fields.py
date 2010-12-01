@@ -13,6 +13,7 @@ from tagging.fields import TagField
 from south.modelsinspector import add_introspection_rules
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.widgets import ColorPickerWidget
+from noc.lib.text import ranges_to_list, list_to_ranges
 ##
 ## CIDRField maps to PostgreSQL CIDR
 ##
@@ -84,6 +85,8 @@ class TextArrayField(models.Field):
                 return s
             else:
                 return unicode(s,"utf-8")
+        if value is None:
+            return None
         return [to_unicode(x) for x in value]
 ##
 ## INETArrayField maps to PostgreSQL INET[] type
@@ -96,12 +99,59 @@ class InetArrayField(models.Field):
     def to_python(self,value):
         if type(value)==types.ListType:
             return value
-        if value=="{}":
+        elif value=="{}":
             return []
+        elif value is None:
+            return None
         return value[1:-1].split(",")
         
     def get_db_prep_value(self,value):
+        if value is None:
+            return None
         return "{ "+", ".join(value)+" }"
+
+##
+## IntArrayField maps to PostgreSQL INT[] type
+##
+class IntArrayField(models.Field):
+    __metaclass__ = models.SubfieldBase
+    def db_type(self):
+        return "INT[]"
+
+    def to_python(self,value):
+        if type(value)==types.ListType:
+            return value
+        elif value=="{}":
+            return []
+        elif value is None:
+            return None
+        return [int(x) for x in value[1:-1].split(",")]
+        
+    def get_db_prep_value(self,value):
+        if value is None:
+            return None
+        return "{ "+", ".join([str(x) for x in value])+" }"
+
+##
+## A set of integer. Compactly encoded with ranges
+##
+class IntMapField(models.Field):
+    __metaclass__ = models.SubfieldBase
+    def db_type(self):
+        return "TEXT"
+    
+    def to_python(self,value):
+        if not value:
+            return set()
+        if isinstance(value, basestring):
+            return set(ranges_to_list(value))
+        else:
+            return value
+    
+    def get_db_prep_value(self,value):
+        return list_to_ranges(sorted(value))
+    
+
 ##
 ## Pickled object
 ##
