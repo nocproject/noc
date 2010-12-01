@@ -30,7 +30,7 @@ class Command(BaseCommand):
         left=set(PyRule.objects.filter(is_builtin=True).values_list("name",flat=True))
         p=os.path.join("main","pyrules")
         for fn in os.listdir(p):
-            if not fn.endswith(".py") or fn=="__init__.py":
+            if not fn.endswith(".py") or fn=="__init__.py" or fn.startswith("."):
                 continue
             with open(os.path.join(p,fn)) as f:
                 data=f.read()
