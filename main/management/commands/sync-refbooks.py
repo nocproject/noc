@@ -30,7 +30,7 @@ class Command(BaseCommand):
         classes={}
         for dirpath,dirnames,filenames in os.walk(d):
             mb="noc.main."+".".join(dirpath.split(os.sep)[1:])+"."
-            for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py"]:
+            for f in [f for f in filenames if f.endswith(".py") and f!="__init__.py" and not f.startswith(".")]:
                 m=__import__(mb+f[:-3],{},{},"*")
                 for ec_name in dir(m):
                     ec=getattr(m,ec_name)
