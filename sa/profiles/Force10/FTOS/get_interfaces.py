@@ -54,7 +54,7 @@ class Script(noc.sa.script.Script):
             ifname=self.profile.convert_interface_name(match.group("interface"))
             try:
                 ift={"gi": "physical", "te": "physical", "fa": "physical",
-                    "vl": "SVI", "po": "aggregated", "lo": "loopback"}[ifname.lower()[:2]]
+                    "vl": "SVI", "po": "aggregated", "lo": "loopback", "ma": "management"}[ifname.lower()[:2]]
             except KeyError:
                 raise self.UnexpectedResultError("Cannot determine interface type for: '%s'"%ifname)
             admin_status=match.group("admin_status").lower()=="up"

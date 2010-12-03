@@ -18,7 +18,7 @@ class IGetInterfaces(Interface):
             "type"                : StringParameter(choices=["ip", "bridge", "VRF", "VPLS", "VLL"], default="ip"),
             "interfaces"          : ListOfParameter(element=DictParameter(attrs={
                     "name"  : InterfaceNameParameter(),
-                    "type"  : StringParameter(choices=["physical", "SVI", "aggregated", "loopback"]),
+                    "type"  : StringParameter(choices=["physical", "SVI", "aggregated", "loopback", "management"]),
                     "admin_status"         : BooleanParameter(default=False),
                     "oper_status"          : BooleanParameter(default=False),
                     "aggregated_interface" : InterfaceNameParameter(required=False), # Not empty for portchannel members
