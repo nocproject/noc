@@ -13,6 +13,7 @@ import datetime
 import logging
 import re
 import threading
+import thread
 import Queue
 import urllib
 import httplib
@@ -234,6 +235,7 @@ class Script(threading.Thread):
         self.is_cancelable=False # Can script be cancelled
         self.e_timeout=False # Script terminated with timeout
         self.e_cancel=False # Scrcipt cancelled
+        self._thread_id=None # Python 2.5 compatibility
         
         if self.parent:
             self.log_cli_sessions_path=self.parent.log_cli_sessions_path
@@ -386,6 +388,7 @@ class Script(threading.Thread):
             except KeyError:
                 pass
         # Calling script body
+        self._thread_id=thread.get_ident()
         result=self.execute(**self.kwargs)
         # Enforce interface result checking
         for i in self.implements:
@@ -575,8 +578,11 @@ class Script(threading.Thread):
         if not self.isAlive():
             self.error("Trying to kill already dead thread")
             return self.activator.on_script_exit(self)
+        if not self._thread_id:
+            self.error("Cannot cancel the script without thread_id")
+            return
         # Raise CancelledError in script's thread
-        r=ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.ident), ctypes.py_object(CancelledError))
+        r=ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self._thread_id), ctypes.py_object(CancelledError))
         if r==1:
             self.debug("Cancel event sent")
             # Remote exception raised.
