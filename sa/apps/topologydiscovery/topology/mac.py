@@ -18,9 +18,12 @@ else:
     ## Pure-python replacement for Python 2.5
     ##
     def combinations(s,n=None):
-        ss=s[:]
+        try:
+            ss=s.copy()
+        except AttributeError:
+            ss=s[:]
         while ss:
-            c=ss.pop(0)
+            c=ss.pop()
             for cc in ss:
                 yield (c,cc)
     
