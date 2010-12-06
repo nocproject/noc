@@ -461,6 +461,11 @@ class Script(threading.Thread):
                 return self.cli_provider.queue.get(block=True,timeout=1)
             except Queue.Empty:
                 pass
+            except thread.error:
+                # Bug in python's Queue module:
+                # Sometimes, tries to release unacquired lock
+                time.sleep(1)
+        
     
     def request_cli_provider(self):
         if self.parent:
