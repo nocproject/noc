@@ -2,15 +2,23 @@
 ##----------------------------------------------------------------------
 ## SimpleReport implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from reportapplication import *
-import cStringIO,csv,datetime
-from noc import settings
+
+## Python modules
+import cStringIO
+import csv
+import datetime
+import decimal
+import types
+import pprint
+## Django modules
 from django.utils.dateformat import DateFormat
+## NOC modules
+from reportapplication import *
+from noc import settings
 from noc.lib.widgets import tags_list
-import decimal,types
 
 INDENT="    "
 ##
@@ -20,11 +28,13 @@ class ReportNode(object):
     tag=None
     def __init__(self,name=None):
         self.name=name
+    
     ##
     ## Return XML-quoted value
     ##
     def quote(self,s):
         return unicode(s).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;").replace("\"","&quot;").replace("'","&#39;")
+    
     ##
     ## Return opening XML tag
     ##
@@ -35,32 +45,39 @@ class ReportNode(object):
                 s+=" %s='%s'"%(k,self.quote(v))
         s+=">"
         return s
+    
     ##
     ## Return closing XML tag
     ##
     def format_closing_xml_tag(self):
         return "</%s>"%self.tag
+    
     ##
     ## Indent block of code
     ##
     def indent(self,s,n=1):
         i=INDENT*n
         return i+s.replace("\n","\n"+i)
+    
     ##
     ## Return XML presentation of Node
     ##
     def to_xml(self):
         return ""
+    
     ##
     ## Return HTML presentation of Node
     ##
     def to_html(self):
         return ""
+    
     ##
     ## Return CSV presentation of Node
     ##
     def to_csv(self):
         return ""
+    
+
 ##
 ## Report root node
 ##
@@ -72,6 +89,7 @@ class Report(ReportNode):
     
     def append_section(self,s):
         self.sections+=[s]
+    
     ##
     ## Return XML code for report
     ##
@@ -82,16 +100,20 @@ class Report(ReportNode):
         s+=[self.indent("</sections>")]
         s+=[self.format_closing_xml_tag()]
         return "\n".join(s)
+    
     ##
     ## Return HTML code for report
     ##
     def to_html(self):
         return "\n".join([s.to_html() for s in self.sections])
+    
     ##
     ## Return CSV for report
     ##
     def to_csv(self):
         return "\n".join([x for x in [s.to_csv() for s in self.sections] if x])
+    
+
 ##
 ## Abstract class for report sections
 ##
@@ -107,9 +129,11 @@ class TextSection(ReportSection):
         super(ReportSection,self).__init__(name=name)
         self.title=title
         self.text=text # Either string o list of strings
+    
     ##
     ## Returns a list of paragraphs
     ##
+    @property
     def paragraphs(self):
         if not self.text:
             return []
@@ -117,7 +141,7 @@ class TextSection(ReportSection):
             return [self.text]
         else:
             return self.text
-    paragraphs=property(paragraphs)
+    
     ##
     ## Return XML presentation of text section
     ##
@@ -126,6 +150,7 @@ class TextSection(ReportSection):
         s+=[self.indent("<par>%s</par>"%self.quote(p)) for p in self.paragraphs]
         s+=[self.format_closing_xml_tag()]
         return "\n".join(s)
+    
     ##
     ## Return HTML presentation of text section
     ##
@@ -135,6 +160,7 @@ class TextSection(ReportSection):
             s+=["<h2>%s</h2>"%self.quote(self.title)]
         s+=["<p>%s</p>"%self.quote(p) for p in self.paragraphs]
         return "\n".join(s)
+    
 
 ##
 ## Precomputed size multipliers
@@ -170,23 +196,27 @@ class TableColumn(ReportNode):
         self.total_label=total_label
         self.total_data=[]
         self.subtotal_data=[]
+    
     ##
     ## Check column has total
     ##
+    @property
     def has_total(self):
         return self.total
-    has_total=property(has_total)
+    
     ##
     ## Reset sub-totals
     ##
     def start_section(self):
         self.subtotal_data=[]
+    
     ##
     ## Contribute data to totals
     ##
     def contribute_data(self,s):
         if self.total:
             self.total_data+=[s]
+    
     ##
     ## Return formatted cell
     ##
@@ -197,11 +227,13 @@ class TableColumn(ReportNode):
             return s
         else:
             return self.format(s)
+    
     ##
     ## Return XML representation of column
     ##
     def to_xml(self):
         return self.format_opening_xml_tag(name=self.name,align=self.align)+self.quote(self.title)+self.format_closing_xml_tag()
+    
     ##
     ## Return quoted HTML TD attributes
     ##
@@ -215,6 +247,7 @@ class TableColumn(ReportNode):
             elif self.align&self.H_ALIGN_MASK==self.ALIGN_CENTER:
                 attrs["align"]="center"
         return " "+" ".join(["%s='%s'"%(k,self.quote(v)) for k,v in attrs.items()])
+    
     ##
     ## Render single cell
     ##
@@ -223,6 +256,7 @@ class TableColumn(ReportNode):
         if type(d)!=SafeString:
             d=self.quote(d)
         return "<td%s>%s</td>"%(self.html_td_attrs(),d)
+    
     ##
     ## Render totals
     ##
@@ -234,6 +268,7 @@ class TableColumn(ReportNode):
         else:
             total=""
         return "<td%s><b>%s</b></td>"%(self.html_td_attrs(),total)
+    
     ##
     ## Render subtotals
     ##
@@ -245,21 +280,25 @@ class TableColumn(ReportNode):
         else:
             total=""
         return "<td%s><b>%s</b></td>"%(self.html_td_attrs(),total)
+    
     ##
     ## Display date according to settings
     ##
     def f_date(self,f):
         return DateFormat(f).format(settings.DATE_FORMAT)
+    
     ##
     ## Display time according to settings
     ##
     def f_time(self,f):
         return DateFormat(f).format(settings.TIME_FORMAT)
+    
     ##
     ## Display date and time according to settings
     ##
     def f_datetime(self,f):
         return DateFormat(f).format(settings.DATETIME_FORMAT)
+    
     ##
     ## Display pretty size
     ##
@@ -270,6 +309,7 @@ class TableColumn(ReportNode):
                 return ("%8.2f%s"%(f/divider,suffix)).strip()
         limit,divider,suffix=SIZE_DATA[-1]
         return ("%8.2%s"%(f/divider,suffix)).strip()
+    
     ##
     ## Display pretty numeric
     ##
@@ -294,22 +334,32 @@ class TableColumn(ReportNode):
         if sign:
             r="-"+r
         return r
+    
     ##
     ## Display boolean field
     ##
     def f_bool(self,f):
         t="yes" if f else "no"
         return SafeString("<img title='%s' src='%simg/admin/icon-%s.gif' />"%(t,settings.ADMIN_MEDIA_PREFIX,t))
+    
     ##
     ## Display pretty-formatted integer
     ##
     def f_integer(self,f):
         return self.f_numeric(int(f))
+    
     ##
-    ##
+    ## Display numeric with % sign
     ##
     def f_percent(self,f):
         return self.f_numeric(f)+"%"
+    
+    ##
+    ## Returns a pretty-printed object
+    ##
+    def f_pprint(self, l):
+        return SafeString("<pre>%s</pre>"%pprint.pformat(l))
+    
     ##
     ## Display and object's tags
     ##
@@ -318,16 +368,20 @@ class TableColumn(ReportNode):
             return SafeString(tags_list(f))
         except:
             return ""
+    
     ##
     ## Returns a sum of not-null elements
     ##
     def ft_sum(self,l):
         return reduce(lambda x,y:x+y,[decimal.Decimal(str(z)) for z in l if z],0)
+    
     ##
     ## Returns a count of not-null elements
     ##
     def ft_count(self,l):
         return len([x for x in l if x])
+    
+
 ##
 ## Delimiter row
 ##
@@ -337,13 +391,15 @@ class SectionRow(object):
         self.title=title if title else name
         self.subtotal=subtotal
         self.data={}
-        
+    
     def contribute_data(self,column,d):
         if self.subtotal:
             try:
                 self.data[column]+=[d]
             except KeyError:
                 self.data[column]=[d]
+    
+
 ##
 ## Section containing table
 ##
@@ -361,6 +417,7 @@ class TableSection(ReportSection):
         self.data=data
         self.enumerate=enumerate
         self.has_total=reduce(lambda x,y: x or y,[c.has_total for c in self.columns],False) # Check wrether table has totals
+    
     ##
     ## Return XML representation of table
     ##
@@ -371,6 +428,7 @@ class TableSection(ReportSection):
         s+=[self.indent("</columns>")]
         s+=[self.format_closing_xml_tag()]
         return "\n".join(s)
+    
     ##
     ## Return HTML representation of table
     ##
@@ -433,6 +491,7 @@ class TableSection(ReportSection):
         s+=["</tbody>"]
         s+=["</table>"]
         return "\n".join(s)
+    
     ##
     ## Return CSV representation of table
     ##
@@ -457,6 +516,8 @@ class TableSection(ReportSection):
                         continue
                     writer.writerow(row)
         return f.getvalue()
+    
+
 ##
 ##
 ##
@@ -502,6 +563,7 @@ class MatrixSection(ReportSection):
             n+=1
             s+=["</tr>"]
         return "\n".join(s)
+    
 ##
 ##
 ##
@@ -511,16 +573,19 @@ class SimpleReport(ReportApplication):
     ##
     def get_data(self,**kwargs):
         return Report()
+    
     ##
     ## Render HTML
     ##
     def report_html(self,**kwargs):
         return self.get_data(**kwargs).to_html()
+    
     ##
     ## Render CSV
     ##
     def report_csv(self,**kwargs):
         return self.get_data(**kwargs).to_csv()
+    
     ##
     ## Shortcut to generate Report from dataset
     ##
@@ -529,8 +594,10 @@ class SimpleReport(ReportApplication):
         r.append_section(TextSection(title=title))
         r.append_section(TableSection(columns=columns,data=data,enumerate=enumerate))
         return r
+    
     ##
     ## Shortcut to generate Report from SQL query
     ##
     def from_query(self,title,columns,query,params=[],enumerate=False):
         return self.from_dataset(title=title,columns=columns,data=self.execute(query,params),enumerate=enumerate)
+    
