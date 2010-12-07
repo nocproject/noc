@@ -590,6 +590,7 @@ class SAE(Daemon):
         for mt in MapTask.objects.filter(status="W",next_try__lte=t):
             if mt.task.stop_time<t: # Task timeout
                 mt.status="F"
+                mt.script_result=dict(code=ERR_TIMEOUT, text="Timed out")
                 mt.save()
                 continue
             mt.status="R"
