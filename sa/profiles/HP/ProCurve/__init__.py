@@ -22,6 +22,7 @@ class Profile(noc.sa.profiles.Profile):
         ]
     pattern_syntax_error=r"Invalid input: "
     command_disable_pager="terminal length 1000"
+    command_super="enable"
     command_enter_config="configure"
     command_leave_config="exit"
     command_save_config="write memory\n"
