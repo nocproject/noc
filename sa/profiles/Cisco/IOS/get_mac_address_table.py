@@ -27,7 +27,11 @@ class Script(noc.sa.script.Script):
             macs=self.cli(cmd)
         except self.CLISyntaxError:
             cmd=cmd.replace("mac address-table","mac-address-table")
-            macs=self.cli(cmd)
+            try:
+                macs=self.cli(cmd)
+            except self.CLISyntaxError:
+                # Not supported at all
+                raise self.NotSupportedError()
         r=[]
         for l in macs.splitlines():
             if l.startswith("Multicast Entries"):
