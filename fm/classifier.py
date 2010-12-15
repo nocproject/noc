@@ -11,7 +11,7 @@ from noc.lib.daemon import Daemon
 from noc.lib.pyquote import bin_quote,bin_unquote
 from noc.lib.validators import is_ipv4
 from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat,EventPostProcessingRule
-from django.db import transaction,reset_queries
+from django.db import transaction,reset_queries,connection
 from django.template import Template, Context
 import re,logging,time,datetime
 
@@ -172,7 +172,7 @@ class Classifier(Daemon):
     ## 3. Drop event if required by rule
     ## 4. Set event class of the matched rule or DEFAULT
     ## 
-    def classify_event(self,event):
+    def classify_event(self,event,cursor):
         # Extract received event properties
         props=[(x.key,bin_unquote(x.value)) for x in event.eventdata_set.filter(type=">")]
         # Resolve additional event properties
@@ -221,25 +221,14 @@ class Classifier(Daemon):
         if len(subject)>255: # Too long subject must be truncated
             subject=subject[:250]+" ..."
         body=body_template.render(context)
-        # Set up event
-        event.event_class=event_class
-        event.event_category=event_category
-        event.event_priority=event_priority
-        event.status=status
-        event.subject=subject
-        event.body=body
-        event.save()
-        # Write event vars
-        event.eventdata_set.filter(type__in=["R","V"]).delete() # Delete old "R" and "V" vars
-        # Write vars
-        for k,v in resolved.items():
-            EventData(event=event,key=k,value=bin_quote(v),type="R").save()
-        for k,v in vars.items():
-            EventData(event=event,key=k,value=bin_quote(v),type="V").save()
+        # Write event
+        cursor.execute("SELECT classify_event(%s, %s, %s, %s, %s, %s, %s, %s)",
+            (event.id, event_class.id, event_category.id, event_priority.id, status, subject, body,
+            [["R", k, bin_quote(v)] for k, v in resolved.items()]+[["R", k, bin_quote(v)] for k, v in vars.items()]))
         # Run event class rule when defined
         if event.event_class.rule:
             logging.debug("Executing pyRule %s(%d)"%(event.event_class.rule,event.id))
-            event.event_class.rule(event=event)
+            event.event_class.rule(event=Event.objects.get(id=event.id))
             # Check event is deleted in rule
             try:
                 Event.objects.get(id=event.id)
@@ -364,11 +353,12 @@ class Classifier(Daemon):
         CHUNK=1000 # Maximum amount of events to proceed at once
         INTERVAL=10
         transaction.enter_transaction_management()
+        cursor=connection.cursor()
         while True:
             n=0
             t0=time.time()
             for e in Event.objects.filter(status="U").order_by("-id")[:CHUNK]:
-                self.classify_event(e)
+                self.classify_event(e, cursor)
                 transaction.commit()
                 reset_queries() # Free queries log
                 n+=1
