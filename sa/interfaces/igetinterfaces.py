@@ -15,6 +15,7 @@ class IGetInterfaces(Interface):
     returns=ListOfParameter(element=DictParameter(attrs={
             # Name of the forwarding instance
             "forwarding_instance" : StringParameter(default="default"),
+            "virtual_router"      : StringParameter(required=False),
             "type"                : StringParameter(choices=["ip", "bridge", "VRF", "VPLS", "VLL"], default="ip"),
             "interfaces"          : ListOfParameter(element=DictParameter(attrs={
                     "name"  : InterfaceNameParameter(),
