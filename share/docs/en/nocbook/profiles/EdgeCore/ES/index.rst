@@ -1,16 +1,15 @@
-.. _EdgeCode.ES35xx:
+.. _EdgeCode.ES
 
-EdgeCore.ES35xx
-===============
+EdgeCore.ES
+===========
 
 ====== ========================================
 Vendor `Edge-corE <http://www.edge-core.com/>`_
-OS     ES35xx
 ====== ========================================
 
-EdgeCore.ES35xx profile supports various Edge-corE L2 ethernet switches
+EdgeCore.ES profile supports various Edge-corE's family of L2/L3 ethernet switches
 
 Tested Equipment
 ----------------
-.. supported:: EdgeCore.ES35xx
+.. supported:: EdgeCore.ES
 
