@@ -154,7 +154,11 @@ def format_frames(frames):
         r+=[format_source(f["lineno"]+1,f["post_context"])]
         r+=["Variables:"]
         for n,v in f["vars"]:
-            r+=["%20s = %s"%(n,repr(v))]
+            try:
+                v=repr(v)
+            except:
+                v="repr() failed"
+            r+=["%20s = %s"%(n,v)]
         r+=["-"*72]
     r+=["END OF TRACEBACK"]
     return "\n".join(r)
