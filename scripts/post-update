@@ -31,7 +31,7 @@ if [ $? -ne 0 ]; then
     if [ -w ./contrib/lib/ ]; then
         ./scripts/sync-contrib || error_exit "$LINENO: contrib sync failed"
     else
-        info "Changing to superuser to execute '$PWD/contrib/src/bin/sync'"
+        info "Changing to superuser to execute '$PWD/scripts/sync-contrib'"
         sudo $PWD/scripts/sync-contrib || error_exit "$LINENO: contrib sync failed"
     fi
 fi
