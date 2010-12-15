@@ -89,6 +89,29 @@ class TextArrayField(models.Field):
             return None
         return [to_unicode(x) for x in value]
 ##
+## Two-dimensioned text array field maps to PostgreSQL TEXT[][]
+##
+class TextArray2Field(models.Field):
+    __metaclass__ = models.SubfieldBase
+    
+    def db_type(self):
+        return "TEXT[][]"
+
+    def to_python(self,value):
+        def to_unicode(s):
+            if type(s)==types.UnicodeType:
+                return s
+            else:
+                try:
+                    return unicode(s.replace("\\\\","\\"),"utf-8")
+                except UnicodeDecodeError:
+                    return s
+        if value is None:
+            return None
+        return [[to_unicode(y) for y in x] for x in value]
+    
+
+##
 ## INETArrayField maps to PostgreSQL INET[] type
 ##
 class InetArrayField(models.Field):
@@ -131,6 +154,29 @@ class IntArrayField(models.Field):
         if value is None:
             return None
         return "{ "+", ".join([str(x) for x in value])+" }"
+
+##
+##
+##
+class DateTimeArrayField(models.Field):
+    __metaclass__ = models.SubfieldBase
+    def db_type(self):
+        return "TIMESTAMP[]"
+    
+    def to_python(self,value):
+        if type(value)==types.ListType:
+            return value
+        elif value=="{}":
+            return []
+        elif value is None:
+            return None
+        return [x for x in value[1:-1].split(",")] # @todo: fix
+    
+    def get_db_prep_value(self,value):
+        if value is None:
+            return None
+        return "{ "+", ".join([str(x) for x in value])+" }"
+    
 
 ##
 ## A set of integer. Compactly encoded with ranges
