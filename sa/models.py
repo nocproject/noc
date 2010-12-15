@@ -27,7 +27,7 @@ from noc.main.models import PyRule
 from noc.sa.profiles import profile_registry
 from noc.sa.periodic import periodic_registry
 from noc.sa.script import script_registry
-from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
+from noc.sa.protocols.sae_pb2 import *
 from noc.lib.search import SearchResult
 from noc.lib.fields import PickledField, INETField, AutoCompleteTagsField
 from noc.lib.app.site import site
@@ -576,14 +576,17 @@ class ReduceTask(models.Model):
                 # Build full map script name
                 msn="%s.%s"%(o.profile_name,ms)
                 #
-                MapTask(
+                m=MapTask(
                     task=r_task,
                     managed_object=o,
                     map_script=msn,
                     script_params=p,
                     next_try=start_time,
                     status=status
-                ).save()
+                )
+                if status=="F":
+                    m.script_result=dict(code=ERR_INVALID_SCRIPT, text="Invalid script %s"%msn)
+                m.save()
         return r_task
     ##
     ## Perform reduce script and execute result
