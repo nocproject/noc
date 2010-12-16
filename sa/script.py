@@ -204,6 +204,11 @@ class Script(threading.Thread):
         self.start_time=time.time()
         self.parent=parent
         self.access_profile=access_profile
+        self.attrs={}
+        for a in access_profile.attrs:
+            self.attrs[a.key]=a.value
+        import logging
+        logging.debug(repr(self.attrs))
         if self.access_profile.address:
             p=self.access_profile.address
         elif self.access_profile.path:
@@ -298,6 +303,8 @@ class Script(threading.Thread):
                 c+=[lambda x,f=f,v=re.compile(v): v.search(x[f]) is not None]
             elif o=="iregex":
                 c+=[lambda x,f=f,v=re.compile(v, re.IGNORECASE): v.search(x[f]) is not None]
+            elif o=="isempty": # Empty string or null
+                c+=[lambda x,f=f,v=v: not x[f] if v else x[f]]
             elif f=="version":
                 if o=="lt": # <
                     c+=[lambda x,f=v,v=v,p=self.profile: p.cmp_version(x[v],v)<0 ]
