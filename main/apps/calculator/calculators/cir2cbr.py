@@ -56,6 +56,8 @@ class CalculatorForm(forms.Form):
 class Calculator(CalculatorBase):
     name="CIR2CBR"
     title=_("CIR/CAR(bps) to Burst-rate")
+    description=_("Recommended way for policy-map values calculating is: normal-burst-bytes=bits-per-second*Tc/8."
+            "Recommended way for rate-limit values calculating is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal")
     form_class=CalculatorForm
     ## Templates
     template_ios_policy="policy-map shape-%(value)d\n"\

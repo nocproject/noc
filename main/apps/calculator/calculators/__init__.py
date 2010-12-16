@@ -30,6 +30,7 @@ class Calculator(object):
     __metaclass__=CalculatorBase
     name=None
     title=None
+    description=None
     form_class=None
     template="calculator.html"
     def __init__(self,app):
@@ -43,7 +44,7 @@ class Calculator(object):
                 result=self.calculate(**form.cleaned_data)
         else:
             form=self.form_class()
-        return self.app.render(request,self.template,{"form":form,"title":self.title,"result":result})
+        return self.app.render(request,self.template, form=form, title=self.title, result=result, description=self.description)
     ##
     ## Returns a list of pairs or None
     ##
