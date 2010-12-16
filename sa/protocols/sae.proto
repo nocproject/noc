@@ -60,6 +60,10 @@ enum AccessScheme {
 }
 
 message AccessProfile {
+    message KWArg {
+        required string key = 1;
+        required string value = 2;
+    }
     required string       profile        = 1;
     required AccessScheme scheme         = 2;
     required string       address        = 3;
@@ -70,6 +74,7 @@ message AccessProfile {
     optional string       path           = 8;
     optional string       snmp_ro        = 9;
     optional string       snmp_rw        =10;
+    repeated KWArg        attrs          =11;
 }
 //
 // Ping server

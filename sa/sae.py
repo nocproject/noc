@@ -487,6 +487,11 @@ class SAE(Daemon):
             r.access_profile.snmp_ro       = object.snmp_ro
         if object.snmp_rw:
             r.access_profile.snmp_rw       = object.snmp_rw
+        attrs=[(a.key,a.value) for a in object.managedobjectattribute_set.all()]
+        for k,v in attrs:
+            a=r.access_profile.attrs.add()
+            a.key=str(k)
+            a.value=v
         for k,v in kwargs.items():
             a=r.kwargs.add()
             a.key=str(k)
