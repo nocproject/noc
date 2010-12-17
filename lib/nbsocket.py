@@ -449,7 +449,11 @@ class ConnectedTCPSocket(TCPSocket):
         if self.local_address:
             self.socket.bind((self.local_address,0))
         e=self.socket.connect_ex((self.address,self.port))
-        if e not in (0, EISCONN,EINPROGRESS, EALREADY, EWOULDBLOCK):
+        if e in (ETIMEDOUT, ECONNREFUSED):
+            self.on_conn_refused()
+            self.close()
+            return
+        elif e not in (0, EISCONN,EINPROGRESS, EALREADY, EWOULDBLOCK):
             raise socket.error, (e, errorcode[e])
         super(ConnectedTCPSocket,self).create_socket()
         
