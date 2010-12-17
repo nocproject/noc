@@ -18,7 +18,7 @@ from noc.sa.interfaces import IGetPortchannel
 class Script(NOCScript):
     name="DLink.DGS3xxx.get_portchannel"
     implements=[IGetPortchannel]
-    rx_trunk=re.compile(r"Group ID\s+:\s+(?P<trunk>\d+).+?Type\s+:\s+(?P<type>\S+).+?Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+).+?Flooding Port\s+:\s+[\d+|.]",re.MULTILINE|re.DOTALL)
+    rx_trunk=re.compile(r"Group ID\s+:\s+(?P<trunk>\d+).+?Type\s+:\s+(?P<type>\S+).+?Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+)",re.MULTILINE|re.DOTALL)
     def execute(self):
         r=[]
         t=self.cli("show link_aggregation")
