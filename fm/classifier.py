@@ -240,7 +240,7 @@ class Classifier(Daemon):
             # Notify if necessary
             if post_process.rule.notification_group:
                 # Add object name and address to the rest of message
-                message=event.body+"\n\nObject: %s (%s,%s)\n"%(event.managed_object.name,event.managed_object.profile_name,event.managed_object.address)
+                message=(event.body if event.body else "")+"\n\nObject: %s (%s,%s)\n"%(event.managed_object.name,event.managed_object.profile_name,event.managed_object.address)
                 # Add object name to subject
                 subject="[%s] %s"%(event.managed_object.name,event.subject)
                 post_process.rule.notification_group.notify(subject=subject,body=message)
