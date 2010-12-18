@@ -225,6 +225,11 @@ class Classifier(Daemon):
         cursor.execute("SELECT classify_event(%s, %s, %s, %s, %s, %s, %s, %s)",
             (event.id, event_class.id, event_category.id, event_priority.id, status, subject, body,
             [["R", k, bin_quote(v)] for k, v in resolved.items()]+[["R", k, bin_quote(v)] for k, v in vars.items()]))
+        # Find post-processing rule
+        post_process=self.find_post_processing_rule(event,vars)
+        # Refetch event when necessary
+        if event.event_class.rule or post_process:
+            event=Event.objects.get(id=event.id)
         # Run event class rule when defined
         if event.event_class.rule:
             logging.debug("Executing pyRule %s(%d)"%(event.event_class.rule,event.id))
@@ -234,13 +239,12 @@ class Classifier(Daemon):
                 Event.objects.get(id=event.id)
             except Event.DoesNotExist:
                 return
-        # Find post-processing rule
-        post_process=self.find_post_processing_rule(event,vars)
+        # Post-processing
         if post_process:
             # Notify if necessary
             if post_process.rule.notification_group:
                 # Add object name and address to the rest of message
-                message=(event.body if event.body else "")+"\n\nObject: %s (%s,%s)\n"%(event.managed_object.name,event.managed_object.profile_name,event.managed_object.address)
+                message=event.body+"\n\nObject: %s (%s,%s)\n"%(event.managed_object.name,event.managed_object.profile_name,event.managed_object.address)
                 # Add object name to subject
                 subject="[%s] %s"%(event.managed_object.name,event.subject)
                 post_process.rule.notification_group.notify(subject=subject,body=message)
