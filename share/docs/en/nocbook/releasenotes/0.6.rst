@@ -1,5 +1,5 @@
-0.6
-*******************
+0.6 (20-DEC-2010)
+*****************
 
 WARNING
 =======
@@ -144,6 +144,10 @@ Fault Management
 Delayed "Invalid Event Source" messages
 ---------------------------------------
 "Invalid Event Source" messages are generated only once per minute per IP
+
+Activatior Speedups
+-------------------
+Due to database interation optimization, 0.6 release got up to 50% performance gain to noc-activator
 
 Knowledge Base
 ==============
