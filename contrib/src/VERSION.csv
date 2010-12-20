@@ -1,0 +1,15 @@
+django,1.2.3
+django-tagging,0.3.1
+south,0.7.1
+coverage,3.3.1
+flup,1.0.2
+protobuf,2.3.0
+pyasn1,0.0.9a
+pysnmp,4.1.12a
+python-creole,0.2.4
+docutils,0.7
+Pygments,1.2.2
+Jinja2,2.2.1
+Sphinx,0.6.4
+WebOb,0.9.8
+WebTest,1.2.1
