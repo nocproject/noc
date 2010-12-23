@@ -24,4 +24,6 @@ class Profile(noc.sa.profiles.Profile):
     config_volatile=["\x08+"]
     rogue_chars=["\r"]
     command_submit="\r"
+    convert_mac=noc.sa.profiles.Profile.convert_mac_to_dashed
+
 
