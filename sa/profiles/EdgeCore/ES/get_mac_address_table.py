@@ -19,19 +19,26 @@ class Script(NOCScript):
     name="EdgeCore.ES.get_mac_address_table"
     implements=[IGetMACAddressTable]
     
-    rx_line1=re.compile(r"^\s*(?P<interface>Eth\s*\S+)\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$", re.MULTILINE)
-    rx_line2=re.compile(r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?:\S+)\s+(?P<interface>.+)$", re.MULTILINE)
+# ES3526 mac-address-table
+    rx_line1=re.compile(r"^\s*(?P<interface>Eth\s*\d+/\s*\S+)\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$", re.MULTILINE)
+# ES3526 mac-address-table vlan <vlan_id>
+    rx_line2=re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>Eth\s*\d+/\s*\S+)\s+(?P<type>\S+)$", re.MULTILINE)
+# ES3526 mac-address-table address <mac>
+    rx_line3=re.compile(r"^\s*(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interface>Eth\s*\d+/\s*\S+)\s+(?P<type>\S+)$", re.MULTILINE)
+# ES4626 mac-address-table
+    rx_line4=re.compile(r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?:\S+)\s+(?P<interface>.+)$", re.MULTILINE)
+
     def execute(self,interface=None,vlan=None,mac=None):
         cmd="show mac-address-table"
         if mac is not None:
-            cmd+=" address %s"%mac
+            cmd+=" address %s"%self.profile.convert_mac(mac)
         if interface is not None:
             cmd+=" interface %s"%interface
         if vlan is not None:
             cmd+=" vlan %s"%vlan
         macs=self.cli(cmd)
         r=[]
-        rx=self.find_re([self.rx_line1, self.rx_line2], macs)
+        rx=self.find_re([self.rx_line1, self.rx_line2, self.rx_line3, self.rx_line4], macs)
         for match in rx.finditer(macs):
             v=match.groupdict()
             r+=[{
