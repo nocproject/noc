@@ -19,7 +19,7 @@ class Script(noc.sa.script.Script):
     def execute(self):
         self.cli("disable clipaging")
         data=self.cli("show switch")
-        match=rx_ver.search(data)
+        match=self.rx_ver.search(data)
         return {
             "vendor"    : "DLink",
             "platform"  : match.group("platform"),
