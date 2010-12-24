@@ -40,7 +40,7 @@ class Script(NOCScript):
     ##
     ## Other
     ##
-    rx_vlan_line_3526=re.compile(r"^VLAN ID:\s+?(?P<vlan_id>\d{1,4})\n.*?Name:\s+(?P<name>\S*?)\n", re.IGNORECASE|re.DOTALL|re.MULTILINE)
+    rx_vlan_line_3526=re.compile(r"^VLAN ID\s*?:\s+?(?P<vlan_id>\d{1,4})\n.*?Name\s*?:\s+(?P<name>\S*?)\n", re.IGNORECASE|re.DOTALL|re.MULTILINE)
     @NOCScript.match()
     def execute_3526(self):
         vlans=self.cli("show vlan")
