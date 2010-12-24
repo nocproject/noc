@@ -29,12 +29,9 @@ class Script(noc.sa.script.Script):
         for l in macs.split("\n"):
             match=self.rx_line.match(l.strip())
             if match:
-		# Temporary workaround. Need edit MACAddressParameter class
-		value = match.group("mac")
-		mac = "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
                 r.append({
                     "vlan_id"   : match.group("vlan_id"),
-                    "mac"       : mac,
+                    "mac"       : match.group("mac"),
                     "interfaces": [match.group("interfaces")],
                     "type"      : "D"
                 })
