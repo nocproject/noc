@@ -798,6 +798,7 @@ rx_mac_address_cisco=re.compile(r"^[0-9A-F]{4}(?P<sep>[.\-])[0-9A-F]{4}(?P=sep)[
 rx_mac_address_cisco_media=re.compile("^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
 rx_mac_address_sixblock=re.compile("^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$")
 rx_mac_address_hp=re.compile("^[0-9A-F]{6}-[0-9A-F]{6}$")
+rx_mac_address_solid=re.compile(r"^[0-9a-f]{12}$", re.IGNORECASE)
 class MACAddressParameter(StringParameter):
     """
     >>> MACAddressParameter().clean("1234.5678.9ABC")
@@ -828,12 +829,19 @@ class MACAddressParameter(StringParameter):
     InterfaceTypeError: MACAddressParameter: 'AB:CD:EF:GH:HJ:KL'
     >>> MACAddressParameter().clean("aabb-ccdd-eeff")
     'AA:BB:CC:DD:EE:FF'
+    >>> MACAddressParameter().clean("aabbccddeeff")
+    'AA:BB:CC:DD:EE:FF'
+    >>> MACAddressParameter().clean("AABBCCDDEEFF")
+    'AA:BB:CC:DD:EE:FF'
     """
     def clean(self,value):
         if value is None and self.default is not None:
             return self.default
         value=super(MACAddressParameter,self).clean(value)
         value=value.upper()
+        match=rx_mac_address_solid.match(value)
+        if match:
+            return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
         match=rx_mac_address_cisco_media.match(value)
         if match:
             value=value.replace(".","")[2:]
