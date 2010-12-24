@@ -1,0 +1,62 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## DLink.DES2108.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+""" 
+""" 
+import noc.sa.script
+from noc.sa.interfaces import IGetMACAddressTable
+from noc.sa.interfaces.base import MACAddressParameter
+import re
+
+class Script(noc.sa.script.Script):
+    name="DLink.DES2108.get_mac_address_table"
+    implements=[IGetMACAddressTable]
+    rx_line=re.compile(r"^\d+\s+(?P<interfaces>\S+)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)$")
+    def execute(self,interface=None,vlan=None,mac=None):
+        cmd="show fdb port "
+        if interface is not None:
+            cmd+="%s"%interface
+    	    macs=self.cli(cmd)
+	else:
+	    macs=""
+	    for i in ["1", "2", "3", "4", "5", "6", "7", "8"]:
+		macs+=self.cli(cmd+"%s"%i)
+        r=[]
+        for l in macs.split("\n"):
+            match=self.rx_line.match(l.strip())
+            if match:
+		# Temporary workaround. Need edit MACAddressParameter class
+		value = match.group("mac")
+		mac = "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
+                r.append({
+                    "vlan_id"   : match.group("vlan_id"),
+                    "mac"       : mac,
+                    "interfaces": [match.group("interfaces")],
+                    "type"      : "D"
+                })
+	# Static MAC address table
+        macs=self.cli("show smac")
+        for l in macs.split("\n"):
+            match=self.rx_line.match(l.strip())
+            if match:
+		iface = match.group("interfaces")
+		if interface is not None:
+		    if interface == iface:
+            		r.append({
+                	    "vlan_id"   : match.group("vlan_id"),
+                	    "mac"       : match.group("mac"),
+                	    "interfaces": [iface],
+                	    "type"      : "S"
+            		})
+		else:
+            	    r.append({
+                	"vlan_id"   : match.group("vlan_id"),
+                	"mac"       : match.group("mac"),
+                	"interfaces": [iface],
+                	"type"      : "S"
+            	    })
+        return r
