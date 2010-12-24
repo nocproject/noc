@@ -29,14 +29,15 @@ class Script(NOCScript):
         return [{"vlan_id": int(match.group("vlan_id")) ,"name": match.group("name")} for match in self.rx_vlan_line_4626.finditer(vlans)]
     
     ##
-    ## ES4612
+    ## ES4612 or 3526S
     ##
     rx_vlan_line_4612=re.compile(r"^\s*(?P<vlan_id>\d{1,4})\s+\S+\s+(?P<name>\S+)\s+", re.IGNORECASE|re.MULTILINE)
     @NOCScript.match(platform__contains="4612")
+    @NOCScript.match(platform__contains="3526S")
     def execute_4612(self):
         vlans=self.cli("show vlan")
         return [{"vlan_id": int(match.group("vlan_id")) ,"name": match.group("name")} for match in self.rx_vlan_line_4612.finditer(vlans)]
-    
+
     ##
     ## Other
     ##
