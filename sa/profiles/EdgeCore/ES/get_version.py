@@ -58,7 +58,7 @@ class Script(NOCScript):
             platform="ES3510"
         elif "3552M" in platform:
             platform="ES3552M"
-        elif "3528" in platform:
+        elif "3528" in platform or "ES3526S" in platform:
             pass
         elif platform.lower()=="8 sfp ports + 4 gigabit combo ports l2/l3/l4 managed standalone switch":
             platform="ES4612"
