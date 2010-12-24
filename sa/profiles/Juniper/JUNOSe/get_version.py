@@ -1,26 +1,32 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
+## Juniper.JUNOSe.get_version
+##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+## Python modules
 import re
-
-rx=re.compile(r"Juniper\s+(?P<platform>.+?)$.+Version\s+(?P<version>.+?)\s*\[",re.MULTILINE|re.DOTALL)
-
-class Script(noc.sa.script.Script):
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+##
+## Juniper.JUNOSe.get_version
+##
+class Script(NOCScript):
     name="Juniper.JUNOSe.get_version"
     cache=True
     implements=[IGetVersion]
+    
+    rx_ver=re.compile(r"Juniper\s+(Edge Routing Switch )?(?P<platform>.+?)$.+Version\s+(?P<version>.+?)\s*\[",re.MULTILINE|re.DOTALL)
     def execute(self):
-        self.cli("terminal length 0")
         v=self.cli("show version")
-        match=rx.search(v.replace(":",""))
+        match=self.re_search(self.rx_ver, v.replace(":", ""))
         return {
             "vendor"    : "Juniper",
             "platform"  : match.group("platform"),
             "version"   : match.group("version"),
         }
+    
