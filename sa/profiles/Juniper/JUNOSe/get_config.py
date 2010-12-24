@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Juniper.JUNOSe.get_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+## NOC modules
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
-
-class Script(noc.sa.script.Script):
+## Juniper.JUNOSe.get_config
+class Script(NOCScript):
     name="Juniper.JUNOSe.get_config"
     implements=[IGetConfig]
     def execute(self):
-        self.cli("terminal length 0")
-        config=self.cli("show configuration")
+        config=self.cli("show running-configuration")
         return self.cleaned_config(config)
+    
