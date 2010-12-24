@@ -19,5 +19,6 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^\S+?#"
     pattern_more=r"^ --More-- "
     command_more=" "
+    pattern_syntax_error=r"% Invalid input detected at"
     config_volatile=["^! Configuration script being generated on.*?^",r"^Please wait\.\.\."]
     rogue_chars=["\r","\x00","\x0d"]
