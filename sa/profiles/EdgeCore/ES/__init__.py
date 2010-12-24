@@ -25,5 +25,6 @@ class Profile(noc.sa.profiles.Profile):
     rogue_chars=["\r"]
     command_submit="\r"
     convert_mac=noc.sa.profiles.Profile.convert_mac_to_dashed
-
-
+    
+    def convert_interface_name(self, s):
+	return s.replace("/ ","/")
