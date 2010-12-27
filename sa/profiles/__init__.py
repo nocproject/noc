@@ -198,6 +198,9 @@ class Profile(object):
         return unicode(cfg,"utf8","ignore").encode("utf8") # Prevent serialization errors
     
     #
+    # Compare two lists
+    #
+    #
     # Compare two versions.
     # Must return:
     #    <0 , if v1<v2
@@ -210,19 +213,7 @@ class Profile(object):
     #
     @classmethod
     def cmp_version(self,v1,v2):
-        n1=[int(x) for x in v1.split(".")]
-        n2=[int(x) for x in v2.split(".")]
-        l1=len(n1)
-        l2=len(n2)
-        if l1>l2:
-            n2+=[None]*(l1-l2)
-        elif l1<l2:
-            n1+=[None]*(l2-l1)
-        for c1,c2 in zip(n1,n2):
-            r=cmp(c1,c2)
-            if r!=0:
-                return r
-        return 0
+        return cmp([int(x) for x in v1.split(".")], [int(x) for x in v2.split(".")])
     
     #
     # Highligh config
