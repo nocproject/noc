@@ -9,6 +9,7 @@
 ##----------------------------------------------------------------------
 """
 """
+import re
 import noc.sa.profiles
 from noc.sa.protocols.sae_pb2 import TELNET,SSH
 
@@ -23,3 +24,12 @@ class Profile(noc.sa.profiles.Profile):
     command_more="a"
     command_exit="logout"
     config_volatile=["^%.*?$"]
+    ##
+    ## Version comparison
+    ## Version format:
+    ## <major>.<minor><sep><patch>
+    ##
+    rx_ver=re.compile(r"\d+")
+    def cmp_version(self, x, y):
+        return cmp([int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)])
+    
