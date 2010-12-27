@@ -265,11 +265,10 @@ class Script(threading.Thread):
             # Append to the execute chain
             _execute_chain+=[(x, f)]
             return f
-        
         # Compile check function
         c=[]
         if args:
-            c+=args
+            c+=[lambda self,x:f(x) for f in args]
         for k,v in kwargs.items():
             # Split to field name and lookup operator
             if "__" in k:
@@ -282,44 +281,45 @@ class Script(threading.Thread):
                 raise Exception("Invalid field '%s'"%f)
             # Compile lookup functions
             if o=="exact":
-                c+=[lambda x,f=f,v=v: x[f]==v]
+                c+=[lambda self,x,f=f,v=v: x[f]==v]
             elif o=="iexact":
-                c+=[lambda x,f=f,v=v: x[f].lower()==v.lower()]
+                c+=[lambda self,x,f=f,v=v: x[f].lower()==v.lower()]
             elif o=="startswith":
-                c+=[lambda x,f=f,v=v: x[f].startswith(v)]
+                c+=[lambda self,x,f=f,v=v: x[f].startswith(v)]
             elif o=="istartswith":
-                c+=[lambda x,f=f,v=v: x[f].lower().startswith(v.lower())]
+                c+=[lambda self,x,f=f,v=v: x[f].lower().startswith(v.lower())]
             elif o=="endswith":
-                c+=[lambda x,f=f,v=v: x[f].endswith(v)]
+                c+=[lambda self,x,f=f,v=v: x[f].endswith(v)]
             elif o=="iendswith":
-                c+=[lambda x,f=f,v=v: x[f].lower().endswith(v.lower())]
+                c+=[lambda self,x,f=f,v=v: x[f].lower().endswith(v.lower())]
             elif o=="contains":
-                c+=[lambda x,f=f,v=v: v in x[f]]
+                c+=[lambda self,x,f=f,v=v: v in x[f]]
             elif o=="icontains":
-                c+=[lambda x,f=f,v=v: v.lower() in x[f].lower()]
+                c+=[lambda self,x,f=f,v=v: v.lower() in x[f].lower()]
             elif o=="in":
-                c+=[lambda x,f=f,v=v: x[f] in v]
+                c+=[lambda self,x,f=f,v=v: x[f] in v]
             elif o=="regex":
-                c+=[lambda x,f=f,v=re.compile(v): v.search(x[f]) is not None]
+                c+=[lambda self,x,f=f,v=re.compile(v): v.search(x[f]) is not None]
             elif o=="iregex":
-                c+=[lambda x,f=f,v=re.compile(v, re.IGNORECASE): v.search(x[f]) is not None]
+                c+=[lambda self,x,f=f,v=re.compile(v, re.IGNORECASE): v.search(x[f]) is not None]
             elif o=="isempty": # Empty string or null
-                c+=[lambda x,f=f,v=v: not x[f] if v else x[f]]
+                c+=[lambda self,x,f=f,v=v: not x[f] if v else x[f]]
             elif f=="version":
                 if o=="lt": # <
-                    c+=[lambda x,f=v,v=v,p=self.profile: p.cmp_version(x[v],v)<0 ]
+                    c+=[lambda self,x,f=v,v=v: self.profile.cmp_version(x[v],v)<0 ]
                 elif o=="lte": # <=
-                    c+=[lambda x,f=v,v=v,p=self.profile: p.cmp_version(x[v],v)<=0 ]
+                    c+=[lambda self,x,f=v,v=v: self.profile.cmp_version(x[v],v)<=0 ]
                 elif o=="gt": # >
-                    c+=[lambda x,f=v,v=v,p=self.profile: p.cmp_version(x[v],v)>0 ]
+                    c+=[lambda self,x,f=v,v=v: self.profile.cmp_version(x[v],v)>0 ]
                 elif o=="gte": # >=
-                    c+=[lambda x,f=v,v=v,p=self.profile: p.cmp_version(x[v],v)>=0 ]
+                    c+=[lambda self,x,f=v,v=v: self.profile.cmp_version(x[v],v)>=0 ]
                 else:
                     raise Exception("Invalid lookup operation: %s"%o)
             else:
                 raise Exception("Invalid lookup operation: %s"%o)
         # Combine expressions into single lambda
-        x=reduce(lambda x,y: lambda v,x=x,y=y: x(v) and y(v), c, lambda x: True)
+        x=reduce(lambda x,y: lambda self,v,x=x,y=y: x(self,v) and y(self,v), c, lambda self,x: True)
+        x.require_self=True
         # Return decorated function
         return decorate
     
@@ -452,8 +452,8 @@ class Script(threading.Thread):
             # Get version information
             v=self.scripts.get_version()
             # Find and execute proper handler
-            for c,f in self._execute_chain:
-                if c(v):
+            for c, f in self._execute_chain:
+                if c(self, v):
                     return f(self, **kwargs)
             # Raise error 
             raise NotSupportedError()
