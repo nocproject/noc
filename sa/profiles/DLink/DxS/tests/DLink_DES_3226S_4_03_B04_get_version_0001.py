@@ -10,8 +10,8 @@ from noc.lib.test import ScriptTestCase
 class DLink_DxS_get_version_Test(ScriptTestCase):
     script="DLink.DxS.get_version"
     vendor="DLink"
-    platform='<<<INSERT YOUR PLATFORM HERE>>>'
-    version='<<<INSERT YOUR VERSION HERE>>>'
+    platform='DES-3226S'
+    version='4.03-B04'
     input={}
     result={'platform': 'DES-3226S', 'vendor': 'DLink', 'version': '4.03-B04'}
     motd='******\n\n'

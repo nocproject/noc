@@ -10,8 +10,8 @@ from noc.lib.test import ScriptTestCase
 class DLink_DxS_get_mac_address_table_Test(ScriptTestCase):
     script="DLink.DxS.get_mac_address_table"
     vendor="DLink"
-    platform='<<<INSERT YOUR PLATFORM HERE>>>'
-    version='<<<INSERT YOUR VERSION HERE>>>'
+    platform='DGS-3100-24TG'
+    version='3.00.43'
     input={}
     result=[{'interfaces': ['1:7'],
   'mac': '00:1E:58:99:31:5E',
