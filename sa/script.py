@@ -256,16 +256,11 @@ class Script(threading.Thread):
             self.cli_debug("IP: %s SCRIPT: %s"%(self.access_profile.address,self.name),"!")
     
     ##
-    ## execute method decorator
+    ## Compile arguments into version check function
+    ## Returns callable acception self and version hash arguments
     ##
     @classmethod
-    def match(cls, *args, **kwargs):
-        def decorate(f):
-            global _execute_chain
-            # Append to the execute chain
-            _execute_chain+=[(x, f)]
-            return f
-        # Compile check function
+    def compile_match_filter(cls, *args, **kwargs):
         c=[]
         if args:
             c+=[lambda self,x:f(x) for f in args]
@@ -318,10 +313,28 @@ class Script(threading.Thread):
             else:
                 raise Exception("Invalid lookup operation: %s"%o)
         # Combine expressions into single lambda
-        x=reduce(lambda x,y: lambda self,v,x=x,y=y: x(self,v) and y(self,v), c, lambda self,x: True)
-        x.require_self=True
+        return reduce(lambda x,y: lambda self,v,x=x,y=y: x(self,v) and y(self,v), c, lambda self,x: True)
+    
+    ##
+    ## execute method decorator
+    ##
+    @classmethod
+    def match(cls, *args, **kwargs):
+        def decorate(f):
+            global _execute_chain
+            # Append to the execute chain
+            _execute_chain+=[(x, f)]
+            return f
+        # Compile check function
+        x=cls.compile_match_filter(*args, **kwargs)
         # Return decorated function
         return decorate
+    
+    ##
+    ## inline version for Script.match
+    ##
+    def match_version(self, *args, **kwargs):
+        return self.compile_match_filter(*args, **kwargs)(self, self.scripts.get_version())
     
     ##
     ##
