@@ -10,8 +10,8 @@ from noc.lib.test import ScriptTestCase
 class DLink_DES2108_get_mac_address_table_Test(ScriptTestCase):
     script="DLink.DES2108.get_mac_address_table"
     vendor="DLink"
-    platform='<<<INSERT YOUR PLATFORM HERE>>>'
-    version='<<<INSERT YOUR VERSION HERE>>>'
+    platform='DES-2108'
+    version='5.02.T05'
     input={}
     result=[{'interfaces': ['1'], 'mac': '00:01:6C:D8:2A:EB', 'type': 'D', 'vlan_id': 1},
  {'interfaces': ['1'], 'mac': '00:02:44:9D:2D:11', 'type': 'D', 'vlan_id': 1},

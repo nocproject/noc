@@ -10,8 +10,8 @@ from noc.lib.test import ScriptTestCase
 class DLink_DES2108_get_version_Test(ScriptTestCase):
     script="DLink.DES2108.get_version"
     vendor="DLink"
-    platform='<<<INSERT YOUR PLATFORM HERE>>>'
-    version='<<<INSERT YOUR VERSION HERE>>>'
+    platform='DES-2108'
+    version='5.02.T05'
     input={}
     result={'platform': 'DES-2108', 'vendor': 'DLink', 'version': '5.02.T05'}
     motd=' \n'
