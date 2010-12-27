@@ -20,7 +20,22 @@ class Profile(noc.sa.profiles.Profile):
     command_disable_pager="set cli screen-length 0"
     command_enter_config="configure"
     command_leave_config="commit and-quit"
+    ##
+    ## version comparison
+    ## version format:
+    ## <major>.<minor>R<h>.<l>
+    ##
+    def cmp_version(self, x, y):
+        def c(v):
+            v=v.upper()
+            l, r=v.split("R")
+            return [int(x) for x in l.split(".")]+[int(x) for x in r.split(".")]
+        
+        return cmp(c(x), c(y))
     
+    ##
+    ## prefix-list generator
+    ##
     def generate_prefix_list(self,name,pl,strict=True):
         """
         >>> Profile().generate_prefix_list("test",["192.168.0.0/24","192.168.1.0/24"])
