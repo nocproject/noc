@@ -7,21 +7,26 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+## Python modules
 import re
-
-rx_ver=re.compile(r"^Version:\s+(?P<version>\S+)",re.MULTILINE)
-
-class Script(noc.sa.script.Script):
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+##
+## Vyatta.Vyatta.get_version
+##
+class Script(NOCScript):
     name="Vyatta.Vyatta.get_version"
     cache=True
     implements=[IGetVersion]
+    
+    rx_ver=re.compile(r"^Version:\s+(?P<version>\S+)",re.MULTILINE)
     def execute(self):
         v=self.cli("show version")
-        match=rx_ver.search(v)
+        match=self.re_search(self.rx_ver, v)
         return {
             "vendor"    : "Vyatta",
             "platform"  : "VC",
             "version"   : match.group("version"),
         }
+    
