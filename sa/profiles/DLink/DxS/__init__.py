@@ -23,6 +23,7 @@ class Profile(noc.sa.profiles.Profile):
     command_disable_pager="disable clipaging"
     command_more="a"
     command_exit="logout"
+    command_save_config="save"
     config_volatile=["^%.*?$"]
     ##
     ## Version comparison
@@ -32,4 +33,11 @@ class Profile(noc.sa.profiles.Profile):
     rx_ver=re.compile(r"\d+")
     def cmp_version(self, x, y):
         return cmp([int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)])
-    
+
+## DGS-3100-series
+def DGS3100(v):
+    return v["platform"].startswith("DGS-3100")
+
+## DGS-3600-series
+def DGS3600(v):
+    return "DGS-3610" not in v["platform"] and v["platform"].startswith("DGS-36")
