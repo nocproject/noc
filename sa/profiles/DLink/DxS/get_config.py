@@ -46,6 +46,13 @@ class Script(NOCScript):
         raise self.NotSupportedError()
 
     ##
+    ## DES-3326, DES-3326S, DES-3326SR, DES-3350SR, DES-3350TG, DES-3352SR
+    ##
+    @NOCScript.match(platform__regex=r"DES-33(26|50|52)")
+    def execute_not_supported(self):
+        raise self.NotSupportedError()
+
+    ##
     ## Other
     ##
     @NOCScript.match()
