@@ -20,11 +20,11 @@ class Script(noc.sa.script.Script):
         cmd="show fdb port "
         if interface is not None:
             cmd+="%s"%interface
-    	    macs=self.cli(cmd)
-	else:
-	    macs=""
-	    for i in ["1", "2", "3", "4", "5", "6", "7", "8"]:
-		macs+=self.cli(cmd+"%s"%i)
+            macs=self.cli(cmd)
+        else:
+            macs=""
+            for i in ["1", "2", "3", "4", "5", "6", "7", "8"]:
+                macs+=self.cli(cmd+"%s"%i)
         r=[]
         for l in macs.split("\n"):
             match=self.rx_line.match(l.strip())
@@ -35,25 +35,25 @@ class Script(noc.sa.script.Script):
                     "interfaces": [match.group("interfaces")],
                     "type"      : "D"
                 })
-	# Static MAC address table
+        # Static MAC address table
         macs=self.cli("show smac")
         for l in macs.split("\n"):
             match=self.rx_line.match(l.strip())
             if match:
-		iface = match.group("interfaces")
-		if interface is not None:
-		    if interface == iface:
-            		r.append({
-                	    "vlan_id"   : match.group("vlan_id"),
-                	    "mac"       : match.group("mac"),
-                	    "interfaces": [iface],
-                	    "type"      : "S"
-            		})
-		else:
-            	    r.append({
-                	"vlan_id"   : match.group("vlan_id"),
-                	"mac"       : match.group("mac"),
-                	"interfaces": [iface],
-                	"type"      : "S"
-            	    })
+                iface = match.group("interfaces")
+                if interface is not None:
+                    if interface == iface:
+                        r.append({
+                            "vlan_id"   : match.group("vlan_id"),
+                            "mac"       : match.group("mac"),
+                            "interfaces": [iface],
+                            "type"      : "S"
+                        })
+                else:
+                    r.append({
+                        "vlan_id"   : match.group("vlan_id"),
+                        "mac"       : match.group("mac"),
+                        "interfaces": [iface],
+                        "type"      : "S"
+                    })
         return r

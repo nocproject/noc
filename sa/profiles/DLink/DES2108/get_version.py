@@ -18,7 +18,7 @@ class Script(noc.sa.script.Script):
     rx_ver=re.compile(r"Product Name:(?P<platform>\S+).+Firmware Version:(?P<version>\S+)",re.MULTILINE|re.DOTALL)
     def execute(self):
         data=self.cli("show switch")
-	match=self.re_search(self.rx_ver, data)
+        match=self.re_search(self.rx_ver, data)
         return {
             "vendor"    : "DLink",
             "platform"  : match.group("platform"),

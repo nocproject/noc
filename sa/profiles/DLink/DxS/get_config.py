@@ -23,14 +23,14 @@ class Script(NOCScript):
         config=self.cli("show config active")
         config=self.strip_first_lines(config,1)
         return self.cleaned_config(config)
-    
+
     ##
     ## DGS-3100-24, DGS-3100-24P, DGS-3100-24TG, DGS-3100-49, DGS-3100-48P
     ##
     @NOCScript.match(DGS3100)
     def execute_configuration_running(self):
         return self.cleaned_config(self.cli("show configuration running"))
-    
+
     ##
     ## DGS-3024, DGS-3048
     ##
