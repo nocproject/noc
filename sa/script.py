@@ -743,13 +743,22 @@ class CLI(StreamFSM):
             "PROMPT"              : "PROMPT",
             "PAGER"               : "PASSWORD",
         },
+        "SUPER_USERNAME" : {
+            "USERNAME"            : "FAILURE",
+            "UNPRIVELEGED_PROMPT" : "FAILURE",
+            "PASSWORD"            : "SUPER_PASSWORD",
+            "PROMPT"              : "PROMPT",
+            "PAGER"               : "SUPER_USERNAME"
+        },
         "SUPER_PASSWORD" : {
             "UNPRIVELEGED_PROMPT" : "FAILURE",
+            "USERNAME"            : "FAILURE",
             "PASSWORD"            : "FAILURE",
             "PROMPT"              : "PROMPT",
             "PAGER"               : "SUPER_PASSWORD"
         },
         "UNPRIVELEGED_PROMPT":{
+            "USERNAME"            : "SUPER_USERNAME",
             "PASSWORD"            : "SUPER_PASSWORD",
             "PROMPT"              : "PROMPT",
         },
@@ -851,10 +860,20 @@ class CLI(StreamFSM):
         
     def on_UNPRIVELEGED_PROMPT_enter(self):
         self.set_patterns([
+            (self.profile.pattern_username, "USERNAME"),
             (self.profile.pattern_prompt,   "PROMPT"),
             (self.profile.pattern_password, "PASSWORD")
         ])
         self.submit(self.profile.command_super)
+    
+    def on_SUPER_USERNAME_enter(self):
+        self.set_patterns([
+            (self.profile.pattern_username, "USERNAME"),
+            (self.profile.pattern_prompt, "PROMPT"),
+            (self.profile.pattern_password, "PASSWORD"),
+            (self.pager_patterns,"PAGER")
+        ])
+        self.submit(self.access_profile.user)
     
     def on_SUPER_PASSWORD_enter(self):
         self.set_patterns([
