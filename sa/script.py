@@ -261,9 +261,7 @@ class Script(threading.Thread):
     ##
     @classmethod
     def compile_match_filter(cls, *args, **kwargs):
-        c=[]
-        if args:
-            c+=[lambda self,x:f(x) for f in args]
+        c=[lambda self, x, g=f: g(x) for f in args]
         for k,v in kwargs.items():
             # Split to field name and lookup operator
             if "__" in k:
@@ -301,13 +299,13 @@ class Script(threading.Thread):
                 c+=[lambda self,x,f=f,v=v: not x[f] if v else x[f]]
             elif f=="version":
                 if o=="lt": # <
-                    c+=[lambda self,x,f=v,v=v: self.profile.cmp_version(x[v],v)<0 ]
+                    c+=[lambda self,x,v=v: self.profile.cmp_version(x["version"],v)<0 ]
                 elif o=="lte": # <=
-                    c+=[lambda self,x,f=v,v=v: self.profile.cmp_version(x[v],v)<=0 ]
+                    c+=[lambda self,x,v=v: self.profile.cmp_version(x["version"],v)<=0 ]
                 elif o=="gt": # >
-                    c+=[lambda self,x,f=v,v=v: self.profile.cmp_version(x[v],v)>0 ]
+                    c+=[lambda self,x,v=v: self.profile.cmp_version(x["version"],v)>0 ]
                 elif o=="gte": # >=
-                    c+=[lambda self,x,f=v,v=v: self.profile.cmp_version(x[v],v)>=0 ]
+                    c+=[lambda self,x,v=v: self.profile.cmp_version(x["version"],v)>=0 ]
                 else:
                     raise Exception("Invalid lookup operation: %s"%o)
             else:
@@ -394,7 +392,7 @@ class Script(threading.Thread):
         s=self.root
         if key1 not in self.call_cache:
             self.call_cache[key1]={}
-        self.call_cache[key2]=value
+        self.call_cache[key1][key2]=value
     
     def guarded_run(self):
         self.debug("Guarded run")
