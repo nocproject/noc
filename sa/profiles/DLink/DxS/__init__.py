@@ -19,7 +19,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_username="([Uu]ser ?[Nn]ame|[Ll]ogin):"
     pattern_password="[Pp]ass[Ww]ord:"
     pattern_more="CTRL\+C.+?a All"
-    pattern_prompt=r"^\S+?#(?!#)"
+    pattern_prompt=r"^(?P<hostname>\S+(:\S+)*)#"
     command_disable_pager="disable clipaging"
     command_more="a"
     command_exit="logout"
