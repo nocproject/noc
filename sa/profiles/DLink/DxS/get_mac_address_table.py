@@ -23,10 +23,7 @@ class Script(NOCScript):
         if interface is not None:
             cmd+=" port %s"%interface
         if vlan is not None:
-            # Will be work in future releases
-            #if self.match_version(DGS3600, version__gte="2.52"):
-            v=self.scripts.get_version()
-            if DGS3600(v) and self.profile.cmp_version(v["version"],"2.52")>0:
+            if self.match_version(DGS3600, version__gte="2.52"):
                 cmd+=" vlanid %d"%vlan
             else:
                 for v in self.scripts.get_vlans():
