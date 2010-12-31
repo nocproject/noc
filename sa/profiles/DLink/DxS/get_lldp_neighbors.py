@@ -115,7 +115,7 @@ class Script(NOCScript):
                     caps += 16
                 if remote_capabilities.find("Telephone") != -1:
                     caps += 32
-                if remote_capabilities.find("DOCSIS Cable Device") != 1:
+                if remote_capabilities.find("DOCSIS Cable Device") != -1:
                     caps += 64
                 if remote_capabilities.find("Station Only") != -1:
                     caps += 128
