@@ -10,8 +10,8 @@ from noc.lib.test import ScriptTestCase
 class DLink_DxS_get_lldp_neighbors_Test(ScriptTestCase):
     script="DLink.DxS.get_lldp_neighbors"
     vendor="DLink"
-    platform='<<<INSERT YOUR PLATFORM HERE>>>'
-    version='<<<INSERT YOUR VERSION HERE>>>'
+    platform='DES-3010G'
+    version='4.30.B23'
     input={}
     result=[{'local_interface': '8',
   'neighbors': [{'remote_capabilities': 128,
