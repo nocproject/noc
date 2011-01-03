@@ -224,7 +224,7 @@ class Classifier(Daemon):
         # Write event
         cursor.execute("SELECT classify_event(%s, %s, %s, %s, %s, %s, %s, %s)",
             (event.id, event_class.id, event_category.id, event_priority.id, status, subject, body,
-            [["R", k, bin_quote(v)] for k, v in resolved.items()]+[["R", k, bin_quote(v)] for k, v in vars.items()]))
+            [["R", k, bin_quote(v)] for k, v in resolved.items()]+[["V", k, bin_quote(v)] for k, v in vars.items()]))
         # Find post-processing rule
         post_process=self.find_post_processing_rule(event,vars)
         # Refetch event when necessary
