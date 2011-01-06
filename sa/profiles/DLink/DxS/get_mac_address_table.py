@@ -9,8 +9,9 @@
 """ 
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetMACAddressTable
-from noc.sa.profiles.DLink.DxS import DGS3600
 from noc.sa.profiles.DLink.DxS import DGS3100
+from noc.sa.profiles.DLink.DxS import DGS3400
+from noc.sa.profiles.DLink.DxS import DGS3600
 import re
 
 class Script(NOCScript):
@@ -24,9 +25,11 @@ class Script(NOCScript):
         if interface is not None:
             cmd+=" port %s"%interface
         if vlan is not None:
-            if self.match_version(DGS3600, version__gte="2.52"):
+            if self.match_version(DGS3100, version__gte="3.60.30"):
                 cmd+=" vlanid %d"%vlan
-            elif self.match_version(DGS3100, version__gte="3.60.30"):
+            elif self.match_version(DGS3400, version__gte="2.70"):
+                cmd+=" vlanid %d"%vlan
+            elif self.match_version(DGS3600, version__gte="2.52"):
                 cmd+=" vlanid %d"%vlan
             else:
                 for v in self.scripts.get_vlans():
