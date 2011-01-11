@@ -23,8 +23,8 @@ rx_id=re.compile(r"^(?P<port_id>\S+)",re.MULTILINE)
 rx_re_ent=re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",re.MULTILINE)
 rx_line1=re.compile(r"\s*Entity\s+\d+")
 rx_remote_chassis_id_subtype=re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE)
-rx_remote_chassis_id=re.compile(r"Chassis ID\s+: (?P<id>\S+)",re.MULTILINE)
-rx_remote_port_id_subtype=re.compile(r"Port ID Subtype\s+: (?P<subtype>\S+)",re.MULTILINE)
+rx_remote_chassis_id=re.compile(r"Chassis ID\s+: (?P<id>.+)",re.MULTILINE)
+rx_remote_port_id_subtype=re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE)
 rx_remote_port_id=re.compile(r"Port ID\s+: (?P<port>.+)",re.MULTILINE)
 rx_remote_system_name=re.compile(r"System Name\s+: (?P<name>.+)",re.MULTILINE)
 rx_remote_capabilities=re.compile(r"System Capabilities\s+: (?P<capabilities>.+)",re.MULTILINE)
@@ -52,6 +52,7 @@ class Script(NOCScript):
             # For each neighbor
             for s1 in rx_line1.split(s)[1:]:
                 n={}
+
                 # remote_chassis_id_subtype
                 match=rx_remote_chassis_id_subtype.search(s1)
                 if not match:
@@ -60,8 +61,23 @@ class Script(NOCScript):
                     continue
                 remote_chassis_id_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
-                if remote_chassis_id_subtype == "MAC Address":
+                # 0 is reserved
+                if remote_chassis_id_subtype == "Chassis Component":
+                    n["remote_chassis_id_subtype"] = 1
+                elif remote_chassis_id_subtype == "Interface Alias":
+                    n["remote_chassis_id_subtype"] = 2
+                elif remote_chassis_id_subtype == "Port Component":
+                    n["remote_chassis_id_subtype"] = 3
+                elif remote_chassis_id_subtype == "MAC Address":
                     n["remote_chassis_id_subtype"] = 4
+                elif remote_chassis_id_subtype == "Network Address":
+                    n["remote_chassis_id_subtype"] = 5
+                elif remote_chassis_id_subtype == "Interface Name":
+                    n["remote_chassis_id_subtype"] = 6
+                elif remote_chassis_id_subtype == "Local":
+                    n["remote_chassis_id_subtype"] = 7
+                # 8-255 are reserved
+
                 # remote_chassis_id
                 match=rx_remote_chassis_id.search(s1)
                 if not match:
@@ -69,6 +85,7 @@ class Script(NOCScript):
                     print "\n\n\n\n\nremote_chassis_id\n\n\n\n\n"
                     continue
                 n["remote_chassis_id"] = match.group("id").strip()
+
                 # remote_port_subtype
                 match=rx_remote_port_id_subtype.search(s1)
                 if not match:
@@ -77,10 +94,23 @@ class Script(NOCScript):
                     continue
                 remote_port_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
-                if remote_port_subtype == "Interface Name":
+                # 0 is reserved
+                if remote_port_subtype == "Interface Alias":
+                    n["remote_port_subtype"] = 1
+                elif remote_port_subtype == "Port Component":
+                    n["remote_port_subtype"] = 2
+                elif remote_port_subtype == "MAC Address":
+                    n["remote_port_subtype"] = 3
+                elif remote_port_subtype == "Network Address":
+                    n["remote_port_subtype"] = 4
+                elif remote_port_subtype == "Interface Name":
                     n["remote_port_subtype"] = 5
+                elif remote_port_subtype == "Agent Circuit ID":
+                    n["remote_port_subtype"] = 6
                 elif remote_port_subtype == "Local":
                     n["remote_port_subtype"] = 7
+                # 8-255 are reserved
+
                 # remote_port
                 match=rx_remote_port_id.search(s1)
                 if not match:
@@ -88,12 +118,14 @@ class Script(NOCScript):
                     print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
                     continue
                 n["remote_port"] = match.group("port").strip()
+
                 # remote_system_name
                 match=rx_remote_system_name.search(s1)
                 if match:
                     remote_system_name = match.group("name").strip()
                     if remote_system_name != "":
                         n["remote_system_name"] = remote_system_name
+
                 # remote_capabilities
                 match=rx_remote_capabilities.search(s1)
                 if not match:
@@ -119,7 +151,9 @@ class Script(NOCScript):
                     caps += 64
                 if remote_capabilities.find("Station Only") != -1:
                     caps += 128
+                # 8-15 bits are reserved
                 n["remote_capabilities"] = caps
+
                 i["neighbors"]+=[n]
             r+=[i]
         return r
