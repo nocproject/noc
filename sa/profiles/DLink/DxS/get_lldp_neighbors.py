@@ -20,14 +20,14 @@ import re
 
 rx_line=re.compile(r"\s*Port ID :\s+",re.MULTILINE)
 rx_id=re.compile(r"^(?P<port_id>\S+)",re.MULTILINE)
-rx_re_ent=re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",re.MULTILINE)
+rx_re_ent=re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",re.MULTILINE|re.IGNORECASE)
 rx_line1=re.compile(r"\s*Entity\s+\d+")
-rx_remote_chassis_id_subtype=re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE)
-rx_remote_chassis_id=re.compile(r"Chassis ID\s+: (?P<id>.+)",re.MULTILINE)
-rx_remote_port_id_subtype=re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE)
-rx_remote_port_id=re.compile(r"Port ID\s+: (?P<port>.+)",re.MULTILINE)
-rx_remote_system_name=re.compile(r"System Name\s+: (?P<name>.+)",re.MULTILINE)
-rx_remote_capabilities=re.compile(r"System Capabilities\s+: (?P<capabilities>.+)",re.MULTILINE)
+rx_remote_chassis_id_subtype=re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
+rx_remote_chassis_id=re.compile(r"Chassis ID\s+: (?P<id>.+)",re.MULTILINE|re.IGNORECASE)
+rx_remote_port_id_subtype=re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
+rx_remote_port_id=re.compile(r"Port ID\s+: (?P<port>.+)",re.MULTILINE|re.IGNORECASE)
+rx_remote_system_name=re.compile(r"System Name\s+: (?P<name>.+)",re.MULTILINE|re.IGNORECASE)
+rx_remote_capabilities=re.compile(r"System Capabilities\s+: (?P<capabilities>.+)",re.MULTILINE|re.IGNORECASE)
 
 class Script(NOCScript):
     name="DLink.DxS.get_lldp_neighbors"
