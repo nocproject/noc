@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## DLink.DxS.get_version
+## DLink.DES2108.get_version
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
