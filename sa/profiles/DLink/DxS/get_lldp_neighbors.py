@@ -19,7 +19,7 @@ from noc.lib.validators import is_int,is_ipv4
 from noc.sa.profiles.DLink.DxS import DGS3100
 import re
 
-rx_line=re.compile(r"Port ID :\s+",re.MULTILINE) # Don't work on DGS-3100 Series
+rx_line=re.compile(r"\n\nPort ID\s+:\s+",re.MULTILINE) # Don't work on DGS-3100 Series
 rx_id=re.compile(r"^(?P<port_id>\S+)",re.MULTILINE)
 rx_re_ent=re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",re.MULTILINE|re.IGNORECASE)
 rx_line1=re.compile(r"\s*Entity\s+\d+")
@@ -35,7 +35,9 @@ class Script(NOCScript):
     implements=[IGetLLDPNeighbors]
     def execute(self):
         r=[]
-        v=self.cli("show lldp remote_ports mode normal")
+        # Use one instance for perfomance
+        dgs3100 = self.match_version(DGS3100)
+        v="\n"+self.cli("show lldp remote_ports mode normal")
         # For each interface
         for s in rx_line.split(v)[1:]:
             match=rx_id.search(s)
@@ -43,14 +45,14 @@ class Script(NOCScript):
                 continue
             port_id = match.group("port_id")
             # DGS-3100 Series show only active ports
-            #if not self.match(DGS3100):
-            match=rx_re_ent.search(s)
-            if not match:
-                continue
-            re_ent = int(match.group("re_ent"))
-            if re_ent == 0:
-                # Remote Entities Count : 0
-                continue
+            if not dgs3100:
+                match=rx_re_ent.search(s)
+                if not match:
+                    continue
+                re_ent = int(match.group("re_ent"))
+                if re_ent == 0:
+                    # Remote Entities Count : 0
+                    continue
             i={"local_interface":port_id, "neighbors":[]}
             # For each neighbor
             for s1 in rx_line1.split(s)[1:]:
