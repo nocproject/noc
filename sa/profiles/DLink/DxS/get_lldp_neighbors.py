@@ -16,16 +16,17 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int,is_ipv4
+from noc.sa.profiles.DLink.DxS import DGS3100
 import re
 
-rx_line=re.compile(r"\s*Port ID :\s+",re.MULTILINE)
+rx_line=re.compile(r"Port ID :\s+",re.MULTILINE) # Don't work on DGS-3100 Series
 rx_id=re.compile(r"^(?P<port_id>\S+)",re.MULTILINE)
 rx_re_ent=re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",re.MULTILINE|re.IGNORECASE)
 rx_line1=re.compile(r"\s*Entity\s+\d+")
 rx_remote_chassis_id_subtype=re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
 rx_remote_chassis_id=re.compile(r"Chassis ID\s+: (?P<id>.+)",re.MULTILINE|re.IGNORECASE)
 rx_remote_port_id_subtype=re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
-rx_remote_port_id=re.compile(r"Port ID\s+: (?P<port>.+)",re.MULTILINE|re.IGNORECASE)
+rx_remote_port_id=re.compile(r"Port ID\s+: (.*[:/])*(?P<port>.+)",re.MULTILINE|re.IGNORECASE)
 rx_remote_system_name=re.compile(r"System Name\s+: (?P<name>.+)",re.MULTILINE|re.IGNORECASE)
 rx_remote_capabilities=re.compile(r"System Capabilities\s+: (?P<capabilities>.+)",re.MULTILINE|re.IGNORECASE)
 
@@ -34,13 +35,15 @@ class Script(NOCScript):
     implements=[IGetLLDPNeighbors]
     def execute(self):
         r=[]
-        v=self.cli("show lldp remote_ports")
+        v=self.cli("show lldp remote_ports mode normal")
         # For each interface
         for s in rx_line.split(v)[1:]:
             match=rx_id.search(s)
             if not match:
                 continue
             port_id = match.group("port_id")
+            # DGS-3100 Series show only active ports
+            #if not self.match(DGS3100):
             match=rx_re_ent.search(s)
             if not match:
                 continue
@@ -69,6 +72,10 @@ class Script(NOCScript):
                 elif remote_chassis_id_subtype == "Port Component":
                     n["remote_chassis_id_subtype"] = 3
                 elif remote_chassis_id_subtype == "MAC Address":
+                    n["remote_chassis_id_subtype"] = 4
+                elif remote_chassis_id_subtype == "MACADDRESS": # DES-3526
+                    n["remote_chassis_id_subtype"] = 4
+                elif remote_chassis_id_subtype == "macAddress": # DGS-3100
                     n["remote_chassis_id_subtype"] = 4
                 elif remote_chassis_id_subtype == "Network Address":
                     n["remote_chassis_id_subtype"] = 5
@@ -108,6 +115,8 @@ class Script(NOCScript):
                 elif remote_port_subtype == "Agent Circuit ID":
                     n["remote_port_subtype"] = 6
                 elif remote_port_subtype == "Local":
+                    n["remote_port_subtype"] = 7
+                elif remote_port_subtype == "LOCAL": # DES-3526
                     n["remote_port_subtype"] = 7
                 # 8-255 are reserved
 
