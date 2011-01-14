@@ -19,6 +19,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^[<#]\S+?[>#]"
     command_more=" "
     config_volatile=["^%.*?$"]
+    command_disable_pager="screen-length 0 temporary"
 
     def generate_prefix_list(self,name,pl,strict=True):
         p="ip ip-prefix %s permit %%s"%name
