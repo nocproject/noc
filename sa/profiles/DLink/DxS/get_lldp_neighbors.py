@@ -19,7 +19,7 @@ from noc.lib.validators import is_int,is_ipv4
 from noc.sa.profiles.DLink.DxS import DGS3100
 import re
 
-rx_line=re.compile(r"\n\nPort ID\s+:\s+",re.MULTILINE) # Don't work on DGS-3100 Series
+rx_line=re.compile(r"\n\nPort ID\s+:\s+",re.MULTILINE)
 rx_id=re.compile(r"^(?P<port_id>\S+)",re.MULTILINE)
 rx_re_ent=re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",re.MULTILINE|re.IGNORECASE)
 rx_line1=re.compile(r"\s*Entity\s+\d+")
@@ -46,12 +46,11 @@ class Script(NOCScript):
             port_id = match.group("port_id")
             # DGS-3100 Series show only active ports
             if not dgs3100:
-                match=rx_re_ent.search(s)
+                match = rx_re_ent.search(s)
                 if not match:
                     continue
-                re_ent = int(match.group("re_ent"))
-                if re_ent == 0:
-                    # Remote Entities Count : 0
+                # Remote Entities Count : 0
+                if match.group("re_ent") == "0":
                     continue
             i={"local_interface":port_id, "neighbors":[]}
             # For each neighbor
@@ -75,15 +74,13 @@ class Script(NOCScript):
                     n["remote_chassis_id_subtype"] = 3
                 elif remote_chassis_id_subtype == "MAC Address":
                     n["remote_chassis_id_subtype"] = 4
-                elif remote_chassis_id_subtype == "MACADDRESS": # DES-3526
-                    n["remote_chassis_id_subtype"] = 4
-                elif remote_chassis_id_subtype == "macAddress": # DGS-3100
+                elif remote_chassis_id_subtype.lower() == "macaddress":
                     n["remote_chassis_id_subtype"] = 4
                 elif remote_chassis_id_subtype == "Network Address":
                     n["remote_chassis_id_subtype"] = 5
                 elif remote_chassis_id_subtype == "Interface Name":
                     n["remote_chassis_id_subtype"] = 6
-                elif remote_chassis_id_subtype == "Local":
+                elif remote_chassis_id_subtype.lower() == "local":
                     n["remote_chassis_id_subtype"] = 7
                 # 8-255 are reserved
 
@@ -116,9 +113,7 @@ class Script(NOCScript):
                     n["remote_port_subtype"] = 5
                 elif remote_port_subtype == "Agent Circuit ID":
                     n["remote_port_subtype"] = 6
-                elif remote_port_subtype == "Local":
-                    n["remote_port_subtype"] = 7
-                elif remote_port_subtype == "LOCAL": # DES-3526
+                elif remote_port_subtype.lower() == "local":
                     n["remote_port_subtype"] = 7
                 # 8-255 are reserved
 
