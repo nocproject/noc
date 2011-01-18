@@ -134,7 +134,7 @@ class AuditTrail(models.Model):
         user=get_user() # Retrieve user from thread local storage
         if not user or not user.is_authenticated():
             return # No user initialized, no audit trail
-        subject=str(instance)
+        subject=unicode(instance)
         if len(subject)>127:
             # Narrow subject
             subject=subject[:62]+" .. "+subject[-62:]
