@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Configuration Management models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -66,10 +68,10 @@ class Object(models.Model):
     def __unicode__(self):
         return "%s/%s"%(self.repo_name,self.repo_path)
     
-    def _vcs(self):
+    @property
+    def vcs(self):
         return vcs_registry.get(self.repo)
-    vcs=property(_vcs)
-        
+    
     def save(self,*args,**kwargs):
         if self.repo_path and not in_dir(self.path,self.repo):
             raise Exception("Attempting to write outside of repo")
@@ -82,26 +84,28 @@ class Object(models.Model):
         vcs=self.vcs
         if mv is not None and vcs.in_repo(mv[0]):
             vcs.mv(mv[0],mv[1])
-        
-    def _repo(self):
+    
+    @property
+    def repo(self):
         return os.path.join(config.get("cm","repo"),self.repo_name)
-    repo=property(_repo)
-
-    def _path(self):
+    
+    @property
+    def path(self):
         return os.path.join(self.repo,self.repo_path)
-    path=property(_path)
     
     #
     # Check object in repository
     #
-    def _in_repo(self):
+    @property
+    def in_repo(self):
         return self.vcs.in_repo(self.repo_path)
-    in_repo=property(_in_repo)
+    
     #
     #
     #
     def status(self):
         return {True:"Ready",False:"Waiting"}[self.in_repo]
+    
     #
     # If "data" differs from object's content in the repository
     # Write "data" to file and commit
@@ -121,20 +125,25 @@ class Object(models.Model):
             self.on_object_changed()
         self.last_pull=now
         self.save()
+    
     # Returns object's content
     # Or None if no content yet
-    def _data(self):
+    @property
+    def data(self):
         return read_file(self.path)
-    data=property(_data)
+    
     #
     def delete(self):
         if os.path.exists(self.repo_path):
             self.vcs.rm(self.path)
         super(Object,self).delete()
-
-    def _revisions(self):
+    
+    ##
+    ## List of revisions
+    ##
+    @property
+    def revisions(self):
         return self.vcs.log(self.repo_path)
-    revisions=property(_revisions)
     
     # Finds revision of the object and returns Revision
     def find_revision(self,rev):
@@ -143,20 +152,21 @@ class Object(models.Model):
             if r.revision==rev:
                 return r
         raise Exception("Not found")
+    
     # Return object's current revision
+    @property
     def current_revision(self):
         return self.vcs.get_current_revision(self.repo_path)
-    current_revision=property(current_revision)
     
     def diff(self,rev1,rev2):
         return self.vcs.diff(self.repo_path,rev1,rev2)
-        
+    
     def get_revision(self,rev):
         return self.vcs.get_revision(self.repo_path,rev)
     
     def annotate(self):
         return self.vcs.annotate(self.repo_path)
-        
+    
     @classmethod
     def get_object_class(self,repo):
         if repo=="config":
@@ -172,21 +182,23 @@ class Object(models.Model):
     #
     # Shortcut to object._meta.model_name
     #
-    def _module_name(self):
+    @property
+    def module_name(self):
         return self._meta.module_name
-    module_name=property(_module_name)
+
     #
     # Shortcut to object._meta.verbose_name_plural
     #
-    def _verbose_name_plural(self):
+    @property
+    def verbose_name_plural(self):
         return self._meta.verbose_name_plural
-    verbose_name_plural=property(_verbose_name_plural)
+    
     #
     #
     #
+    @property
     def verbose_name(self):
         return self._meta.verbose_name
-    verbose_name=property(verbose_name)
     
     def get_notification_groups(self,immediately=False,delayed=False):
         q=Q(type=self.repo_name)
@@ -213,6 +225,7 @@ class Object(models.Model):
             message+="Object changes follows:\n---------------------------\n%s\n-----------------------\n"%self.diff(revs[1],revs[0])
             link=None
         NotificationGroup.group_notify(groups=notification_groups,subject=subject,body=message,link=link)
+    
     ##
     ##
     def push(self): pass
@@ -311,9 +324,22 @@ class Config(Object):
             for d in sorted(data,lambda x,y:cmp(x["name"],y["name"])):
                 r+=["==[ %s ]========================================\n%s"%(d["name"],d["config"])]
             data="\n".join(r)
+        # Pass data through config filter, if given
+        if self.managed_object.config_filter_rule:
+            data=self.managed_object.config_filter_rule(managed_object=self.managed_object, config=data)
+        # Pass data through the validation filter, if given
+        if self.managed_object.config_validation_rule:
+            warnings=self.managed_object.config_validation_rule(managed_object=self.managed_object, config=config)
+            if warnings:
+                # There are some warnings. Notify responsible persons
+                NotificationGroup.group_notify(groups=self.get_notification_groups(immediately=True),
+                    subject="NOC: Warnings in '%s' config"%str(self),
+                    body="Following warnings have been found in the '%s' config:\n\n%s\n"%(str(self), "\n".join(warnings)))
+        # Save to the repo
         super(Config,self).write(data)
+    
     ##
-    ##
+    ## @todo: remove
     ##
     def change_link(self):
         return "<a href='%s' class='changelink'>Change</a>"%site.reverse("cm:config:change",self.id)

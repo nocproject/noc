@@ -120,6 +120,9 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         ("CM",{
             "fields": ("is_configuration_managed","repo_path")
         }),
+        ("Rules",{
+            "fields": ("config_filter_rule", "config_validation_rule")
+        }),
         ("Tags", {
             "fields": ("tags",)
         }),
