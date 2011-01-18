@@ -440,11 +440,15 @@ class Script(threading.Thread):
             self.login_error=why.args[0]
             self.error("Login failed: %s"%self.login_error)
         except:
-            t,v,tb=sys.exc_info()
-            r=[str(t),str(v)]
-            r+=[format_frames(get_traceback_frames(tb))]
-            self.error_traceback="\n".join(r)
-            self.debug("Script traceback:\n%s"%self.error_traceback)
+            if self.e_cancel:
+                # Race condition caught. Handle CancelledError
+                self.error("Cancelled")
+            else:
+                t,v,tb=sys.exc_info()
+                r=[str(t),str(v)]
+                r+=[format_frames(get_traceback_frames(tb))]
+                self.error_traceback="\n".join(r)
+                self.debug("Script traceback:\n%s"%self.error_traceback)
         self.debug("Closing")
         if self.activator.to_save_output and result:
             self.activator.save_result(result,self.motd)
@@ -605,6 +609,7 @@ class Script(threading.Thread):
             self.error("Cannot cancel the script without thread_id")
             return
         # Raise CancelledError in script's thread
+        self.e_cancel=True
         r=ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self._thread_id), ctypes.py_object(CancelledError))
         if r==1:
             self.debug("Cancel event sent")
