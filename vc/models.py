@@ -113,7 +113,7 @@ class VCBindFilter(models.Model):
     prefix=CIDRField("Prefix")
     vc_filter=models.ForeignKey(VCFilter,verbose_name="VC Filter")
     def __unicode__(self):
-        return "%s %s %s %s"%(self.vc_domain,self.vrf,self.prefix,self.vc_filter)
+        return u"%s %s %s %s"%(self.vc_domain,self.vrf,self.prefix,self.vc_filter)
     
     ##
     ## Returns queryset with all suitable VCs
