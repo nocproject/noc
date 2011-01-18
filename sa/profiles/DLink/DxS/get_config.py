@@ -46,9 +46,9 @@ class Script(NOCScript):
         raise self.NotSupportedError()
 
     ##
-    ## DES-3226, DES-3226L, DES-3226S
+    ## DES-3226, DES-3226L, DES-3226S, DES-3250TG
     ##
-    @NOCScript.match(platform__regex=r"DES-3226")
+    @NOCScript.match(platform__regex=r"DES-32(26|50)")
     def execute_not_supported(self):
         raise self.NotSupportedError()
 
@@ -67,4 +67,3 @@ class Script(NOCScript):
         config=self.cli("show config current_config")
         config=self.strip_first_lines(config,1)
         return self.cleaned_config(config)
-
