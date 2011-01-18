@@ -335,7 +335,7 @@ class PyRule(models.Model):
         verbose_name="pyRule"
         verbose_name_plural="pyRules"
     name=models.CharField("Name",max_length=64,unique=True)
-    interface=models.CharField("Interface",max_length=64,choices=[(i,i) for i in interface_registry])
+    interface=models.CharField("Interface",max_length=64,choices=[(i,i) for i in sorted(interface_registry)])
     description=models.TextField("Description")
     text=models.TextField("Text")
     is_builtin=models.BooleanField("Is Builtin",default=False)
