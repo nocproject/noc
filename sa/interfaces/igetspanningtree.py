@@ -18,7 +18,7 @@ class IGetSpanningTree(Interface):
         #    MSTP        - IEEE 802.1Q-2003 Multiple Spanning Tree Protocol
         #    PVST+       - Per-Vlan Spanning Tree Plus - Cisco extension to STP
         #    rapid-PVST+ - Rapind Per-Vlan Spanning Tree Plus - Cisco extension to RSTP
-        "mode"      : StringParameter(choices=["STP","RSTP","MSTP","PVST+","rapid-PVST+"]),
+        "mode"      : StringParameter(choices=["None", "STP", "RSTP", "MSTP", "PVST+", "rapid-PVST+"]),
         #
         "configuration" : DictParameter(attrs={
             # MSTP-specific configuration
