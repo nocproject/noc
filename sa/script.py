@@ -384,26 +384,29 @@ class Script(threading.Thread):
         return s.call_cache[repr(key1)][repr(key2)]
     
     ##
-    ## Set cacked result
+    ## Set cached result
     ##
     def set_cache(self,key1,key2,value):
         key1=repr(key1)
         key2=repr(key2)
         s=self.root
-        if key1 not in self.call_cache:
-            self.call_cache[key1]={}
-        self.call_cache[key1][key2]=value
+        if key1 not in s.call_cache:
+            s.call_cache[key1]={}
+        s.call_cache[key1][key2]=value
     
     def guarded_run(self):
-        self.debug("Guarded run")
         # Enforce interface type checking
         for i in self.implements:
             self.kwargs=i.script_clean_input(self.profile,**self.kwargs)
+        self.debug("Running script: %s (%s)"%(self.name, self.kwargs))
         # Use cached result when available
         if self.cache and self.parent is not None:
             try:
-                return self.get_cache(self.name,self.kwargs)
+                result=self.get_cache(self.name,self.kwargs)
+                self.debug("Script returns with cached result: %s"%result)
+                return result
             except KeyError:
+                self.debug("Not in call cache: %s, %s"%(self.name,self.kwargs))
                 pass
         # Calling script body
         self._thread_id=thread.get_ident()
@@ -413,6 +416,7 @@ class Script(threading.Thread):
             result=i.script_clean_result(self.profile,result)
         # Cache result when required
         if self.cache and self.parent is not None:
+            self.debug("Write to call cache: %s, %s, %s"%(self.name,self.kwargs,result))
             self.set_cache(self.name,self.kwargs,result)
         self.debug("Script returns with result: %s"%result)
         return result
