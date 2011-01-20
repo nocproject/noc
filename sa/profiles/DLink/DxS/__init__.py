@@ -34,6 +34,10 @@ class Profile(noc.sa.profiles.Profile):
     def cmp_version(self, x, y):
         return cmp([int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)])
 
+## DES-3200-series
+def DES3200(v):
+    return v["platform"].startswith("DES-3200")
+
 ## DGS-3100-series
 def DGS3100(v):
     return v["platform"].startswith("DGS-3100")
