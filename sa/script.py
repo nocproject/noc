@@ -604,7 +604,7 @@ class Script(threading.Thread):
             return
         if not self.isAlive():
             self.error("Trying to kill already dead thread")
-            return self.activator.on_script_exit(self)
+            return
         if not self._thread_id:
             self.error("Cannot cancel the script without thread_id")
             return

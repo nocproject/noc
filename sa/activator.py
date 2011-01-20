@@ -734,7 +734,7 @@ class Activator(Daemon,FSM):
     ##
     @check_state("ESTABLISHED")
     def cancel_stale_scripts(self):
-        to_cancel=[st for st in self.script_threads.keys() if st.is_stale()]
+        to_cancel=[st for st in self.script_threads.keys() if st.is_stale() and not st.e_cancel]
         for script in to_cancel:
             logging.info("Canceling stale script %s(%s)"%(script.name,script.access_profile.address))
             script.cancel_script()
