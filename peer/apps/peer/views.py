@@ -2,17 +2,88 @@
 ##----------------------------------------------------------------------
 ## Peer Manager
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Django modules
 from django.contrib import admin
+from django import forms
+## NOC modules
 from noc.lib.app import ModelApplication
 from noc.peer.models import Peer
 from noc.lib.tt import admin_tt_url
+from noc.lib.validators import *
+from noc.lib.ip import IP
+##
+## Peer form validation
+##
+class PeerAdminForm(forms.ModelForm):
+    class Meta:
+        model=Peer
+    ##
+    ## Clean "Remote ASN" field
+    ##
+    def clean_remote_asn(self):
+        return check_asn(self.cleaned_data["remote_asn"])
+    
+    ##
+    ## Clean addresses
+    ##
+    def clean_local_ip(self):
+        return check_prefix(self.cleaned_data["local_ip"])
+    
+    def clean_remote_ip(self):
+        return check_prefix(self.cleaned_data["remote_ip"])
+    
+    def clean_local_backup_ip(self):
+        if "local_backup_ip" not in self.cleaned_data or not self.cleaned_data["local_backup_ip"]:
+            return ""
+        return check_prefix(self.cleaned_data["local_backup_ip"])
+    
+    def clean_remote_backup_ip(self):
+        if "remote_backup_ip" not in self.cleaned_data or not self.cleaned_data["remote_backup_ip"]:
+            return ""
+        return check_prefix(self.cleaned_data["remote_backup_ip"])
+    
+    def clean(self):
+        data=self.cleaned_data
+        ## Check no or both backup addresses given
+        has_local_backup="local_backup_ip" in data and data["local_backup_ip"]
+        has_remote_backup="remote_backup_ip" in data and data["remote_backup_ip"]
+        if has_local_backup and not has_remote_backup:
+            self._errors["remote_backup_ip"]=self.error_class(["One of backup addresses given. Set peer address"])
+        if not has_local_backup and has_remote_backup:
+            self._errors["local_backup_ip"]=self.error_class(["One of backup addresses given. Set peer address"])
+        ## Check all link addresses belongs to one AFI
+        if len(set([IP.prefix(data[x]).afi for x in ["local_ip", "remote_ip", "local_backup_ip", "remote_backup_ip"] if x in data and data[x]]))>1:
+            raise forms.ValidationError("All neighboring addresses must have same address family")
+        return data
 ##
 ## Peer admin
 ##
 class PeerAdmin(admin.ModelAdmin):
+    form=PeerAdminForm
+    fieldsets=[
+        ("Peering", {
+            "fields" : ["peering_point", "peer_group", "local_asn", "remote_asn", "status"]
+        }),
+        ("Link Addresses", {
+            "fields": ["local_ip", "local_backup_ip", "remote_ip", "remote_backup_ip"]
+        }),
+        ("Description", {
+            "fields" : ["description", "rpsl_remark"]
+        }),
+        ("Filters and Limits", {
+            "fields": ["import_filter", "export_filter", "import_filter_name", "export_filter_name", "max_prefixes", "communities"]
+        }),
+        ("Preferences", {
+            "fields": ["local_pref", "import_med", "export_med"]
+        }),
+        ("Tags", {
+            "fields": ["tt", "tags"]
+        })
+    ]
     list_display=["peering_point","peer_group","local_asn","remote_asn","status","admin_import_filter","admin_export_filter","admin_local_ip","admin_remote_ip","admin_tt_url","description","communities"]
     search_fields=["remote_asn","description","local_ip","local_backup_ip","remote_ip","remote_backup_ip"]
     list_filter=["peering_point","peer_group","status"]
