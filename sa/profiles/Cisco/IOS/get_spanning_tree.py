@@ -175,6 +175,6 @@ class Script(noc.sa.script.Script):
         elif "Spanning tree enabled protocol mstp" in v:
             return self.process_mstp(v)
         elif "No spanning tree instance exists" in v or "No spanning tree instances exist" in v:
-            return {"mode": None, "instances": []}
+            return {"mode": "None", "instances": []}
         
     
