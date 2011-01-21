@@ -71,7 +71,7 @@ class Script(noc.sa.script.Script):
             if self.scripts.has_script("get_spanning_tree"):
                 with self.ignored_exceptions(x_list):
                     stp=self.scripts.get_spanning_tree()
-                    data["has_stp"]=True
+                    data["has_stp"]=stp["mode"]!="None"
                     data["stp"]=stp
         # get portchannels
         if self.scripts.has_script("get_portchannel"):
