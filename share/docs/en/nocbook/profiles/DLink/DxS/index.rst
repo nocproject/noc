@@ -32,7 +32,6 @@ Partially supported series (not tested)
 ---------------------------------------
 ======== =====================================================================
 DES-1210 DES-1210-28, DES-1210-52
-DES-1228 DES-1228, DES-1228P, DES-1228/ME
 DES-6300 DES-6300
 DES-6500 DES-6500
 DGS-30xx DGS-3024, DGS-3048
@@ -42,6 +41,7 @@ DGS-3212 DGS-3212SR
 DGS-33xx DGS-3324SR, DGS-3324SRi
 DXS-33xx DXS-3325GSR, DXS-3350SR
 DWS-xxxx DWS-3024, DWS-3024L, DWS-3026, DWS-4026
+1228-ME  DES-1228/ME
 ======== =====================================================================
 
 Not supported series
@@ -50,6 +50,7 @@ Not supported series
 DES-1100 DES-1100-16, DES-1100-24
 DES-1218 DES-1218, DES-1218F, DES-1218R
 DES-1226 DES-1226, DES-1226F, DES-1226G, DES-1226R
+DES-1228 DES-1228, DES-1228P
 DES-211x DES-2110, DES-2112, DES-2118
 DES-6000 DES-6000
 DES-7000 DES-7000, DES-7206, DES-7206DC, DES-7210, DES-7210DC
