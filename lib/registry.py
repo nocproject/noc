@@ -25,7 +25,7 @@ class Registry(object):
     def register(self,name,module):
         if name is None:
             return
-        logging.info("%s: Register %s"%(self.name,name))
+        logging.debug("%s: Register %s"%(self.name,name))
         self.classes[name]=module
     #
     # Should be called at the top of the models.py
