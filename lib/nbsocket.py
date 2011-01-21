@@ -157,8 +157,8 @@ class Socket(object):
         self.socket=socket
         self.start_time=time.time()
         self.last_read=self.start_time+100
-        self.factory.register_socket(self)
         self.name=None
+        self.factory.register_socket(self)
     ##
     ## Performs actual socket creation
     ##
@@ -706,6 +706,8 @@ class SocketFactory(object):
             self.sockets.pop(socket.socket.fileno(),None)
             old_name=self.socket_name.pop(socket,None)
             self.name_socket.pop(old_name,None)
+            if socket in self.new_sockets:
+                self.new_sockets.remove(socket)
     ##
     ## Safe call of socket's method
     ## Returns call status (True/False)
@@ -736,6 +738,10 @@ class SocketFactory(object):
             socket.debug("Initializing socket")
             if not self.guarded_socket_call(socket,socket.create_socket):
                 return
+        if socket.socket is None:
+            # Race condition raised. Socket is unregistered since last socket.create_socket call.
+            # Silently ignore and exit
+            return
         with self.register_lock:
             self.sockets[socket.socket.fileno()]=socket
             if socket in self.socket_name:
