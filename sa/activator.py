@@ -45,6 +45,9 @@ class Service(SAEService):
                 elif script.e_cancel:
                     e.code=ERR_CANCELLED
                     e.text="Cancelled"
+                elif script.e_not_supported:
+                    e.code=ERR_NOT_SUPPORTED
+                    e.text="Feature is not supported on this platform"
                 elif script.login_error is not None:
                     e.code=ERR_LOGIN_FAILED
                     e.text=script.login_error

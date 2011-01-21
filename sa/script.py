@@ -240,6 +240,7 @@ class Script(threading.Thread):
         self.is_cancelable=False # Can script be cancelled
         self.e_timeout=False # Script terminated with timeout
         self.e_cancel=False # Scrcipt cancelled
+        self.e_not_supported=False # NotSupportedError risen
         self._thread_id=None # Python 2.5 compatibility
         
         if self.parent:
@@ -440,6 +441,8 @@ class Script(threading.Thread):
         except CancelledError:
             self.error("Cancelled")
             self.e_cancel=True
+        except self.NotSupportedError:
+            self.e_not_supported=True
         except self.LoginError,why:
             self.login_error=why.args[0]
             self.error("Login failed: %s"%self.login_error)
