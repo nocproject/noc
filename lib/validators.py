@@ -373,12 +373,14 @@ def generic_validator(check,error_message):
     def inner_validator(value,*args,**kwargs):
         if not check(value):
             raise ValidationError(error_message)
+        return value
     return inner_validator
 
 ##
 ## Validators
 ##
 check_asn = generic_validator(is_asn,"Invalid ASN")
+check_prefix = generic_validator(is_prefix, "Invalid prefix")
 check_ipv4 = generic_validator(is_ipv4,"Invalid IPv4")
 check_ipv6 = generic_validator(is_ipv6,"Invalid IPv6")
 check_ipv4_prefix = generic_validator(is_ipv4_prefix,"Invalid IPv4 prefix")
