@@ -591,7 +591,12 @@ class PTYSocket(Socket):
     
     def create_socket(self):
         self.debug("EXECV(%s)"%str(self.argv))
-        self.pid,fd=pty.fork()
+        try:
+            self.pid,fd=pty.fork()
+        except OSError:
+            self.debug("Cannot get PTY. Closing")
+            self.close()
+            return
         if self.pid==0:
             os.execv(self.argv[0],self.argv)
         else:
