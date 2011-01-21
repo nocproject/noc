@@ -34,3 +34,8 @@ class Profile(noc.sa.profiles.Profile):
             p+=" le 32"
         return "no ip prefix-list %s\n"%name+"\n".join([p%x for x in pl])
     
+##
+## uBR series selector
+##
+def uBR(v):
+    return "BC" in v["version"]
