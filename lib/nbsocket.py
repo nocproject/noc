@@ -446,6 +446,7 @@ class ConnectedTCPSocket(TCPSocket):
     
     def create_socket(self):
         self.socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        super(ConnectedTCPSocket,self).create_socket()
         if self.local_address:
             self.socket.bind((self.local_address,0))
         e=self.socket.connect_ex((self.address,self.port))
@@ -455,7 +456,6 @@ class ConnectedTCPSocket(TCPSocket):
             return
         elif e not in (0, EISCONN,EINPROGRESS, EALREADY, EWOULDBLOCK):
             raise socket.error, (e, errorcode[e])
-        super(ConnectedTCPSocket,self).create_socket()
         
     def handle_read(self):
         if not self.is_connected:
