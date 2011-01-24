@@ -233,6 +233,6 @@ class VC(models.Model):
                         label="%d"%r.l1
                     yield SearchResult(
                         url=("vc:vc:change",r.id),
-                        title="VC: %s, Domain: %s, Label=%s"%(r.type,r.vc_domain.name,label),
+                        title="VC: %s"%unicode(r),
                         text=r.description,
                         relevancy=1.0)
