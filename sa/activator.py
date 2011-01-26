@@ -97,7 +97,7 @@ class Service(SAEService):
         kwargs={}
         for a in request.kwargs:
             kwargs[str(a.key)]=cPickle.loads(str(a.value))
-        self.activator.run_script(request.script,request.access_profile,script_callback,**kwargs)
+        self.activator.run_script(request.script,request.access_profile,script_callback,request.timeout,**kwargs)
     
     def ping_check(self,controller,request,done):
         def ping_check_callback(unreachable):
@@ -424,11 +424,14 @@ class Activator(Daemon,FSM):
     ##
     ## Script support
     ##
-    def run_script(self,script_name,access_profile,callback,**kwargs):
-        logging.info("Script %s(%s)"%(script_name,access_profile.address))
+    def run_script(self,script_name,access_profile,callback,timeout,**kwargs):
         pv,pos,sn=script_name.split(".",2)
         profile=profile_registry["%s.%s"%(pv,pos)]()
-        script=script_registry[script_name](profile,self,access_profile,**kwargs)
+        script_class=script_registry[script_name]
+        if not timeout:
+            timeout=script_class.TIMEOUT
+        script=script_class(profile,self,access_profile,timeout,**kwargs)
+        logging.info("Script %s(%s). Timeout set to %s"%(script_name,access_profile.address,timeout))
         with self.script_lock:
             self.script_threads[script]=callback
             logging.info("%d script threads (%d max)"%(len(self.script_threads),self.max_script_threads))

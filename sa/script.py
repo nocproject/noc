@@ -200,11 +200,12 @@ class Script(threading.Thread):
     #
     _execute_chain=[]
     
-    def __init__(self,profile,activator,access_profile,parent=None,**kwargs):
+    def __init__(self,profile,activator,access_profile,timeout=0,parent=None,**kwargs):
         self.start_time=time.time()
         self.parent=parent
         self.access_profile=access_profile
         self.attrs={}
+        self._timeout=timeout if timeout else self.TIMEOUT
         for a in access_profile.attrs:
             self.attrs[a.key]=a.value
         import logging
@@ -352,7 +353,7 @@ class Script(threading.Thread):
     ## Checks script is stale and must be terminated
     ##
     def is_stale(self):
-        return time.time()-self.start_time > self.TIMEOUT
+        return time.time()-self.start_time > self._timeout
     
     @classmethod
     def implements_interface(cls,interface):
