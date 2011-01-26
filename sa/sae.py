@@ -2,26 +2,35 @@
 ##----------------------------------------------------------------------
 ## Service Activation Engine Daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
 from __future__ import with_statement
+import os
+import time
+import datetime
+import threading
+import logging
+import random
+import cPickle
+## Django modules
+from django.db import reset_queries
+## NOC modules
 from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask, periodic_registry, script_registry, profile_registry
-from noc.fm.models import Event,EventData,EventPriority,EventClass,EventCategory,IgnoreEventRules
-from noc.sa.rpc import RPCSocket,file_hash,get_digest,get_nonce
+from noc.fm.models import Event, EventData, EventPriority, EventClass, EventCategory, IgnoreEventRules
+from noc.sa.rpc import RPCSocket, file_hash, get_digest, get_nonce
 from noc.pm.models import TimeSeries
-import logging,time,threading,datetime,os,random,cPickle
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
-from noc.lib.debug import error_report,DEBUG_CTX_CRASH_PREFIX
-from noc.lib.nbsocket import ListenTCPSocket,AcceptedTCPSocket,AcceptedTCPSSLSocket,SocketFactory,Protocol,HAS_SSL
-from django.db import reset_queries
+from noc.lib.debug import error_report, DEBUG_CTX_CRASH_PREFIX
+from noc.lib.nbsocket import ListenTCPSocket, AcceptedTCPSocket, AcceptedTCPSSLSocket, SocketFactory, Protocol, HAS_SSL
 
 ##
-## Additions to MANIFEST-ACTIVATOR file
+## Additions to MANIFEST-ACTIVATfOR file
 ##
 ACTIVATOR_MANIFEST=[
     "sa/profiles/",
@@ -405,7 +414,7 @@ class SAE(Daemon):
         logging.info(u"Executing %s"%unicode(task))
         cwd=os.getcwd()
         try:
-            status=task.periodic_class(self).execute()
+            status=task.periodic_class(sae=self, timeout=task.timeout).execute()
         except:
             error_report()
             status=False
