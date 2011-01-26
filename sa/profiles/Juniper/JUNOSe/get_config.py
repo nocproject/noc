@@ -15,6 +15,9 @@ class Script(NOCScript):
     name="Juniper.JUNOSe.get_config"
     implements=[IGetConfig]
     def execute(self):
-        config=self.cli("show running-configuration")
+        try:
+            config=self.cli("show running-configuration")
+        except self.CLISyntaxError:
+            config=self.cli("show configuration")
         return self.cleaned_config(config)
     
