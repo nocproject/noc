@@ -39,7 +39,7 @@ class TimeSeriesData(models.Model):
     timestamp=models.IntegerField("Timestamp",db_index=True)
     value=models.FloatField("Value",null=True,blank=True)
     def __unicode__(self):
-        return "%s@%s"%(self.time_series.name,str(self.timestamp))
+        return u"%s@%s"%(self.time_series.name,str(self.timestamp))
 ##
 ## Chart: the group of timeseries
 ##

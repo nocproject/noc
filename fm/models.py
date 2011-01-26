@@ -216,7 +216,7 @@ class MIBData(models.Model):
     description= models.TextField("Description",blank=True,null=True)
 
     def __unicode__(self):
-        return "%s:%s = %s"%(self.mib.name,self.name,self.oid)
+        return u"%s:%s = %s"%(self.mib.name,self.name,self.oid)
 ##
 ## MIB Dependency
 ##
@@ -229,7 +229,7 @@ class MIBDependency(models.Model):
     requires_mib=models.ForeignKey(MIB,verbose_name="Requires MIB",related_name="requiredbymib_set")
     
     def __unicode__(self):
-        return "%s requires %s"%(self.mib.name,self.requires_mib.name)
+        return u"%s requires %s"%(self.mib.name,self.requires_mib.name)
     ##
     ## Return graphviz dot with MIB dependencies
     ##
@@ -348,7 +348,7 @@ class EventClassVar(models.Model):
     required=models.BooleanField("Required",default=True)
     repeat_suppression=models.BooleanField("Repeat Suppression",default=False) # Used for repeat supression
     def __unicode__(self):
-        return "%s: %s"%(self.event_class,self.name)
+        return u"%s: %s"%(self.event_class,self.name)
 ##
 ## Classification rule.
 ## Used by Correlator process for assigning event class to unclassified events
@@ -738,4 +738,4 @@ class IgnoreEventRules(models.Model):
     is_active=models.BooleanField("Is Active",default=True)
     description=models.TextField("Description",null=True,blank=True)
     def __unicode__(self):
-        return "%s (%s,%s)"%(self.name,self.left_re,self.right_re)
+        return u"%s (%s,%s)"%(self.name,self.left_re,self.right_re)

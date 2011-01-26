@@ -80,7 +80,7 @@ class Person(models.Model):
     rir=models.ForeignKey(RIR,verbose_name="RIR")
     extra=models.TextField("extra",blank=True,null=True)
     def __unicode__(self):
-        return "%s (%s)"%(self.nic_hdl,self.person)
+        return u"%s (%s)"%(self.nic_hdl,self.person)
     def _rpsl(self):
         s=[]
         s+=["person: %s"%self.person]
