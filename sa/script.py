@@ -858,10 +858,11 @@ class CLI(StreamFSM):
         
     def on_PASSWORD_enter(self):
         self.motd="" # Reset MoTD
-        p=[(self.profile.pattern_prompt, "PROMPT")]
+        p=[]
         if self.profile.pattern_unpriveleged_prompt:
             p+=[(self.profile.pattern_unpriveleged_prompt,"UNPRIVELEGED_PROMPT")]
         p+=[
+            (self.profile.pattern_prompt,   "PROMPT"),
             (self.profile.pattern_username, "USERNAME"),
             (self.profile.pattern_password, "PASSWORD")
             ]
@@ -880,7 +881,7 @@ class CLI(StreamFSM):
     def on_SUPER_USERNAME_enter(self):
         self.set_patterns([
             (self.profile.pattern_username, "USERNAME"),
-            (self.profile.pattern_prompt, "PROMPT"),
+            (self.profile.pattern_prompt,   "PROMPT"),
             (self.profile.pattern_password, "PASSWORD"),
             (self.pager_patterns,"PAGER")
         ])
