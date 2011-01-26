@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Periodic Task base class
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import datetime,os
+## Python modules
+import os
+import datetime
+## NOC modules
 from noc.lib.registry import Registry
 
 ##
@@ -34,8 +39,10 @@ class Task(object):
     name=None
     description=""
     wait_for=[] # A list of periodic task names which cannot be started concurrenctly
-    def __init__(self,sae):
+    def __init__(self, sae, timeout):
         self.sae=sae
+        self.timeout=timeout
+    
     def execute(self):
         return True
-        
+    
