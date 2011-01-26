@@ -364,6 +364,7 @@ def generic_validator(check,error_message):
     """
     >>> v=generic_validator(is_int,"invalid int")
     >>> v(6)
+    6
     >>> v("g")
     Traceback (most recent call last):
     ...
