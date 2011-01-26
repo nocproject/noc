@@ -61,6 +61,10 @@ DGS-3324 DGS-3324SR, DGS-3324SRi
 DGS-3610 DGS-3610-26, DGS-3610-26G
 ======== =====================================================================
 
+Notes
+-----
+On platform DGS-30xx, DES-1210, DES-32xx and DES-33xx configuration stored in binary format, and script 'get_config' don't work
+
 Tested Equipment
 ----------------
 .. supported:: DLink.DxS
