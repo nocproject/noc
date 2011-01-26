@@ -48,7 +48,7 @@ class DNSServer(models.Model):
     
     def __unicode__(self):
         if self.location:
-            return "%s (%s)"%(self.name,self.location)
+            return u"%s (%s)"%(self.name,self.location)
         else:
             return self.name
     

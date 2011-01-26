@@ -623,7 +623,7 @@ class TimePatternTerm(models.Model):
     term=models.CharField("Term",max_length=256)
     
     def __unicode__(self):
-        return "%s: %s"%(self.time_pattern.name,self.term)
+        return u"%s: %s"%(self.time_pattern.name,self.term)
     ##
     ## Checks Time Pattern syntax. Raises SyntaxError in case of error
     ##
@@ -721,7 +721,7 @@ class NotificationGroupUser(models.Model):
     user=models.ForeignKey(User,verbose_name="User")
     
     def __unicode__(self):
-        return "%s: %s: %s"%(self.notification_group.name,self.time_pattern.name,self.user.username)
+        return u"%s: %s: %s"%(self.notification_group.name,self.time_pattern.name,self.user.username)
 ##
 ## Other Notification Group Items
 ##
@@ -739,7 +739,7 @@ class NotificationGroupOther(models.Model):
     params=models.CharField("Params",max_length=256)
     
     def __unicode__(self):
-        return "%s: %s: %s: %s"%(self.notification_group.name,self.time_pattern.name,self.notification_method,self.params)
+        return u"%s: %s: %s: %s"%(self.notification_group.name,self.time_pattern.name,self.notification_method,self.params)
 ##
 ##
 ##
@@ -902,7 +902,7 @@ class DBTrigger(models.Model):
     _post_delete_triggers={} # model.meta.db_table -> [rules]
     
     def __unicode__(self):
-        return "%s: %s"%(self.model,self.name)
+        return u"%s: %s"%(self.model,self.name)
     
     ##
     ## Refresh triggers cache
