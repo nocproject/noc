@@ -74,7 +74,7 @@ class Task(noc.sa.periodic.Task):
         q=  Q(managed_object__is_configuration_managed=True, pull_every__isnull=False)\
             &(Q(next_pull__lt=datetime.datetime.now())|Q(next_pull__isnull=True))
         objects=[o.managed_object for o in Config.objects.filter(q).order_by("next_pull")]
-        task=ReduceTask.create_task(objects,reduce_config_pull,{},"get_config",{},180)
+        task=ReduceTask.create_task(objects, reduce_config_pull, {}, "get_config", {}, self.timeout-3) #@todo: smarter timeout calculation
         return task.get_result(block=True)
     
 
