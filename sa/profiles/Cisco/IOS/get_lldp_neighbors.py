@@ -2,43 +2,50 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_lldp_neighbors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int,is_ipv4
-import re
-
-rx_summary_split=re.compile(r"^Device ID.+?\n",re.MULTILINE|re.IGNORECASE)
-rx_s_line=re.compile(r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[0-9/\.]*)\s+\d+\s+(?P<capability>\S*)\s+(?P<remote_if>.+)$")
-rx_chassis_id=re.compile(r"^Chassis id:\s*(?P<id>\S+)",re.MULTILINE|re.IGNORECASE)
-rx_system=re.compile(r"^System Name:\s*(?P<name>\S+)",re.MULTILINE|re.IGNORECASE)
-rx_mac=re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
-
-class Script(noc.sa.script.Script):
+##
+## Cisco.IOS.get_lldp_neighbors
+##
+class Script(NOCScript):
     name="Cisco.IOS.get_lldp_neighbors"
     implements=[IGetLLDPNeighbors]
+    
+    rx_summary_split=re.compile(r"^Device ID.+?\n",re.MULTILINE|re.IGNORECASE)
+    rx_s_line=re.compile(r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[0-9/\.]*)\s+\d+\s+(?P<capability>\S*)\s+(?P<remote_if>.+)$")
+    rx_chassis_id=re.compile(r"^Chassis id:\s*(?P<id>\S+)",re.MULTILINE|re.IGNORECASE)
+    rx_system=re.compile(r"^System Name:\s*(?P<name>\S+)",re.MULTILINE|re.IGNORECASE)
+    rx_mac=re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
     def execute(self):
         r=[]
-        v=self.cli("show lldp neighbors")
-        v=rx_summary_split.split(v)[1]
+        try:
+            v=self.cli("show lldp neighbors")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
+        v=self.rx_summary_split.split(v)[1]
         for l in v.splitlines():
             l=l.strip()
             if not l:
                 break
-            match=rx_s_line.match(l)
+            match=self.rx_s_line.match(l)
             if not match:
-                raise Exception("Invalid input: '%s'"%l)
+                raise self.UnexpectedResultError()
             local_if=match.group("local_if")
             i={"local_interface":local_if, "neighbors": []}
             # Build neighbor data
             remote_port=match.group("remote_if")
             remote_port_subtype=5
-            if rx_mac.match(remote_port):
+            if self.rx_mac.match(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port=MACAddressParameter().clean(remote_port)
@@ -64,11 +71,11 @@ class Script(noc.sa.script.Script):
             # Get neighbor detail
             v=self.cli("show lldp neighbors %s detail"%local_if)
             # Get remote chassis id
-            match=rx_chassis_id.search(v)
+            match=self.rx_chassis_id.search(v)
             if not match:
                 continue
             n["remote_chassis_id"]=match.group("id")
-            match=rx_system.search(v)
+            match=self.rx_system.search(v)
             if match:
                 n["remote_system_name"]=match.group("name")
             i["neighbors"]+=[n]
