@@ -142,26 +142,26 @@ def format_frames(frames):
             lineno+=1
         return "\n".join(r)
     r=[]
-    r+=["START OF TRACEBACK"]
-    r+=["-"*72]
+    r+=[u"START OF TRACEBACK"]
+    r+=[u"-"*72]
     fr=frames[:]
     fr.reverse()
     for f in fr:
-        r+=["File: %s (Line: %d)"%(f["filename"],f["lineno"])]
-        r+=["Function: %s"%(f["function"])]
+        r+=[u"File: %s (Line: %d)"%(f["filename"],f["lineno"])]
+        r+=[u"Function: %s"%(f["function"])]
         r+=[format_source(f["pre_context_lineno"],f["pre_context"])]
-        r+=["%5d ==> %s"%(f["lineno"],f["context_line"])]
+        r+=[u"%5d ==> %s"%(f["lineno"],f["context_line"])]
         r+=[format_source(f["lineno"]+1,f["post_context"])]
-        r+=["Variables:"]
+        r+=[u"Variables:"]
         for n,v in f["vars"]:
             try:
-                v=repr(v)
+                v=unicode(repr(v), "utf-8")
             except:
-                v="repr() failed"
-            r+=["%20s = %s"%(n,v)]
-        r+=["-"*72]
-    r+=["END OF TRACEBACK"]
-    return "\n".join(r)
+                v=u"repr() failed"
+            r+=[u"%20s = %s"%(n,v)]
+        r+=[u"-"*72]
+    r+=[u"END OF TRACEBACK"]
+    return u"\n".join(r)
 
 def error_report():
     t,v,tb=sys.exc_info()
