@@ -576,8 +576,12 @@ class ReduceTask(models.Model):
         # Run map task for each object
         for o in objects:
             for ms,p in msp:
-                # Set status to "F" if script not found
-                status="W" if ms in o.profile.scripts else "F"
+                try:
+                    # Set status to "F" if script not found
+                    status="W" if ms in o.profile.scripts else "F"
+                except KeyError:
+                    # Invalid profile
+                    continue
                 # Build full map script name
                 msn="%s.%s"%(o.profile_name,ms)
                 #
