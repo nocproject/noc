@@ -11,10 +11,10 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IPing
 import re
 
-rx_result=re.compile(r"^\s*Packets: Sent =\s*(?P<count>\d+), Received =\s*(?P<success>\d+), Lost =\s*\d+",re.MULTILINE|re.DOTALL|re.IGNORECASE)
 class Script(NOCScript):
     name="DLink.DxS.ping"
     implements=[IPing]
+    rx_result=re.compile(r"^\s*Packets: Sent =\s*(?P<count>\d+), Received =\s*(?P<success>\d+), Lost =\s*\d+",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     def execute(self,address,count=None,source_address=None,size=None,df=None):
         cmd="ping %s"%address
         if count:
@@ -28,7 +28,7 @@ class Script(NOCScript):
         #    cmd+=" size %d"%int(size)
         #if df:
         #    cmd+=" df-bit"
-        match=rx_result.search(self.cli(cmd))
+        match=self.rx_result.search(self.cli(cmd))
         if not match:
             raise self.NotSupportedError()
         return {

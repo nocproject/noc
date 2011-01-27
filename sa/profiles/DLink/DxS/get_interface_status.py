@@ -11,11 +11,10 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaceStatus
 import re
 
-rx_interface_status=re.compile(r"^\s*(?P<interface>\S+)\s+(?P<type>FE|GE|10GE|Fiber)\s+Link (?P<status>Up|Down)\s+(?P<test>\S+)\s+.*$",re.IGNORECASE)
-
 class Script(NOCScript):
     name="DLink.DxS.get_interface_status"
     implements=[IGetInterfaceStatus]
+    rx_line=re.compile(r"^\s*(?P<interface>\S+)\s+(?P<type>FE|GE|10GE|Fiber)\s+Link (?P<status>Up|Down)\s+(?P<test>\S+)\s+.*$",re.IGNORECASE|re.MULTILINE)
     def execute(self,interface=None):
         # Not tested. Must be identical in different vendors
         if self.snmp and self.access_profile.snmp_ro:
@@ -28,17 +27,17 @@ class Script(NOCScript):
             except self.snmp.TimeOutError:
                 pass
         # Fallback to CLI
-        r=[]
-        if interface:
-            cmd="cable_diag ports %s"%interface
-        else:
-            cmd="cable_diag ports all"
+        if interface is None:
+            interface = "all"
+        try:
+            s=self.cli("cable_diag ports %s"%interface)
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
 
-        for l in self.cli(cmd).splitlines():
-            match=rx_interface_status.match(l)
-            if match:
-                r+=[{
-                    "interface" : match.group("interface"),
-                    "status"    : match.group("status").lower() == "up"
-                    }]
+        r=[]
+        for match in self.rx_line.finditer(s):
+            r+=[{
+                "interface" : match.group("interface"),
+                "status"    : match.group("status").lower() == "up"
+                }]
         return r

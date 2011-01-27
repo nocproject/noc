@@ -4,7 +4,7 @@
 ## OS:     DxS
 ## Compatible:
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -20,6 +20,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_password="[Pp]ass[Ww]ord:"
     pattern_more="CTRL\+C.+?a All"
     pattern_unpriveleged_prompt=r"^\S+:(3|6|user|operator)#"
+    pattern_syntax_error=r"(Available commands|Next possible completions):"
     command_super="enable admin"
     pattern_prompt=r"^(?P<hostname>\S+(:\S+)*)#"
     command_disable_pager="disable clipaging"

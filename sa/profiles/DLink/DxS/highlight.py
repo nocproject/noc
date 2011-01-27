@@ -2,14 +2,12 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS highlight lexers
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from pygments.lexer import RegexLexer,bygroups,include
 from pygments.token import *
-##
-## DLink.DGS3xxx configuration lexer
-##
+
 class ConfigLexer(RegexLexer):
     name="DLink.DxS" 
     tokens={
