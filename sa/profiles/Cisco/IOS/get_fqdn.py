@@ -20,9 +20,9 @@ class Script(noc.sa.script.Script):
     implements=[IGetFQDN]
     
     rx_hostname=re.compile(r"^hostname\s+(?P<hostname>\S+)",re.MULTILINE)
-    rx_domain_name=re.compile(r"^ip domain-name\s+(?P<domain>\S+)",re.MULTILINE)
+    rx_domain_name=re.compile(r"^ip domain[ \-]name\s+(?P<domain>\S+)",re.MULTILINE)
     def execute(self):
-        v=self.cli("show running-config | include ^(hostname|ip domain-name)")
+        v=self.cli("show running-config | include ^(hostname|ip domain.name)")
         fqdn=[]
         match=self.rx_hostname.search(v)
         if match:
