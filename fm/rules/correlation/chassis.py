@@ -1,5 +1,5 @@
 from noc.fm.rules.correlation import *
-from noc.fm.rules.classes.dot11 import *
+from noc.fm.rules.classes.chassis import *
 ##
 ## Fan Failed/Recovered
 ##
