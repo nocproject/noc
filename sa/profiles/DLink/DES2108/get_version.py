@@ -2,23 +2,22 @@
 ##----------------------------------------------------------------------
 ## DLink.DES2108.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVersion
 import re
 
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name="DLink.DES2108.get_version"
     cache=True
     implements=[IGetVersion]
     rx_ver=re.compile(r"Product Name:(?P<platform>\S+).+Firmware Version:(?P<version>\S+)",re.MULTILINE|re.DOTALL)
     def execute(self):
-        data=self.cli("show switch")
-        match=self.re_search(self.rx_ver, data)
+        match=self.re_search(self.rx_ver, self.cli("show switch"))
         return {
             "vendor"    : "DLink",
             "platform"  : match.group("platform"),
