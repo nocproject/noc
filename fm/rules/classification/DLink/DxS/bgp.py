@@ -18,7 +18,19 @@ class DLink_DxS_BGP_Established_SYSLOG_Rule(ClassificationRule):
     event_class=BGPEstablished
     preference=1000
     patterns=[
-        (r"^message$",r"\[BGP\(\d+\):\] BGP connection is successfully established Peer:\<(?P<neighbor_ip>\S+)\>."),
+        (r"^message$",r"\[BGP\(\d+\):\] BGP connection is successfully established (\()?Peer:\<(?P<neighbor_ip>\S+)\>(\))?."),
+        (r"^source$", r"^syslog$"),
+        (r"^profile$",r"^DLink\.DxS$"),
+    ]
+##
+## DLink.DxS BGP Closed SYSLOG
+##
+class DLink_DxS_BGP_Closed_SYSLOG_Rule(ClassificationRule):
+    name="DLink.DxS BGP Closed SYSLOG"
+    event_class=BGPNeighborShutdown
+    preference=1000
+    patterns=[
+        (r"^message$",r"\[BGP\(\d+\):\] BGP connection is normally closed (\()?Peer:\<(?P<neighbor_ip>\S+)\>(\))?."),
         (r"^source$", r"^syslog$"),
         (r"^profile$",r"^DLink\.DxS$"),
     ]
