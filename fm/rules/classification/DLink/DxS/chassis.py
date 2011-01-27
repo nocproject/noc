@@ -13,7 +13,7 @@ from noc.fm.rules.classes.chassis import *
 ##
 ## DLink.DxS Cold Start  SYSLOG
 ##
-class DLink_DxS_BGP_Established_SYSLOG_Rule(ClassificationRule):
+class DLink_DxS_Cold_Start_SYSLOG_Rule(ClassificationRule):
     name="DLink.DxS Cold Start SYSLOG"
     event_class=SystemColdStart
     preference=1000
