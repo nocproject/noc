@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """ 
@@ -19,34 +19,39 @@ from noc.lib.validators import is_int,is_ipv4
 from noc.sa.profiles.DLink.DxS import DGS3100
 import re
 
-rx_line=re.compile(r"\n\nPort ID\s+:\s+",re.MULTILINE)
-rx_id=re.compile(r"^(?P<port_id>\S+)",re.MULTILINE)
-rx_re_ent=re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",re.MULTILINE|re.IGNORECASE)
-rx_line1=re.compile(r"\s*Entity\s+\d+")
-rx_remote_chassis_id_subtype=re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
-rx_remote_chassis_id=re.compile(r"Chassis ID\s+: (?P<id>.+)",re.MULTILINE|re.IGNORECASE)
-rx_remote_port_id_subtype=re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
-rx_remote_port_id=re.compile(r"Port ID\s+: (.*[:/])*(?P<port>.+)",re.MULTILINE|re.IGNORECASE)
-rx_remote_system_name=re.compile(r"System Name\s+: (?P<name>.+)",re.MULTILINE|re.IGNORECASE)
-rx_remote_capabilities=re.compile(r"System Capabilities\s+: (?P<capabilities>.+)",re.MULTILINE|re.IGNORECASE)
-
 class Script(NOCScript):
     name="DLink.DxS.get_lldp_neighbors"
     implements=[IGetLLDPNeighbors]
+
+    rx_line=re.compile(r"\n\nPort ID\s+:\s+",re.MULTILINE)
+    rx_id=re.compile(r"^(?P<port_id>\S+)",re.MULTILINE)
+    rx_re_ent=re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",re.MULTILINE|re.IGNORECASE)
+    rx_line1=re.compile(r"\s*Entity\s+\d+")
+    rx_remote_chassis_id_subtype=re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
+    rx_remote_chassis_id=re.compile(r"Chassis ID\s+: (?P<id>.+)",re.MULTILINE|re.IGNORECASE)
+    rx_remote_port_id_subtype=re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
+    rx_remote_port_id=re.compile(r"Port ID\s+: (.*[:/])*(?P<port>.+)",re.MULTILINE|re.IGNORECASE)
+    rx_remote_system_name=re.compile(r"System Name\s+: (?P<name>.+)",re.MULTILINE|re.IGNORECASE)
+    rx_remote_capabilities=re.compile(r"System Capabilities\s+: (?P<capabilities>.+)",re.MULTILINE|re.IGNORECASE)
+
     def execute(self):
         r=[]
         # Use one instance for perfomance
         dgs3100 = self.match_version(DGS3100)
-        v="\n"+self.cli("show lldp remote_ports mode normal")
+        try:
+            v=self.cli("show lldp remote_ports mode normal")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
+        v="\n"+v
         # For each interface
-        for s in rx_line.split(v)[1:]:
-            match=rx_id.search(s)
+        for s in self.rx_line.split(v)[1:]:
+            match=self.rx_id.search(s)
             if not match:
                 continue
             port_id = match.group("port_id")
             # DGS-3100 Series show only active ports
             if not dgs3100:
-                match = rx_re_ent.search(s)
+                match = self.rx_re_ent.search(s)
                 if not match:
                     continue
                 # Remote Entities Count : 0
@@ -54,11 +59,11 @@ class Script(NOCScript):
                     continue
             i={"local_interface":port_id, "neighbors":[]}
             # For each neighbor
-            for s1 in rx_line1.split(s)[1:]:
+            for s1 in self.rx_line1.split(s)[1:]:
                 n={}
 
                 # remote_chassis_id_subtype
-                match=rx_remote_chassis_id_subtype.search(s1)
+                match=self.rx_remote_chassis_id_subtype.search(s1)
                 if not match:
                     # Debug string
                     print "\n\n\n\n\nremote_chassis_id_subtype\n\n\n\n\n"
@@ -85,7 +90,7 @@ class Script(NOCScript):
                 # 8-255 are reserved
 
                 # remote_chassis_id
-                match=rx_remote_chassis_id.search(s1)
+                match=self.rx_remote_chassis_id.search(s1)
                 if not match:
                     # Debug string
                     print "\n\n\n\n\nremote_chassis_id\n\n\n\n\n"
@@ -93,7 +98,7 @@ class Script(NOCScript):
                 n["remote_chassis_id"] = match.group("id").strip()
 
                 # remote_port_subtype
-                match=rx_remote_port_id_subtype.search(s1)
+                match=self.rx_remote_port_id_subtype.search(s1)
                 if not match:
                     # Debug string
                     print "\n\n\n\n\nremote_port_id_subtype\n\n\n\n\n"
@@ -118,7 +123,7 @@ class Script(NOCScript):
                 # 8-255 are reserved
 
                 # remote_port
-                match=rx_remote_port_id.search(s1)
+                match=self.rx_remote_port_id.search(s1)
                 if not match:
                     # Debug string
                     print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
@@ -126,14 +131,14 @@ class Script(NOCScript):
                 n["remote_port"] = match.group("port").strip()
 
                 # remote_system_name
-                match=rx_remote_system_name.search(s1)
+                match=self.rx_remote_system_name.search(s1)
                 if match:
                     remote_system_name = match.group("name").strip()
                     if remote_system_name != "":
                         n["remote_system_name"] = remote_system_name
 
                 # remote_capabilities
-                match=rx_remote_capabilities.search(s1)
+                match=self.rx_remote_capabilities.search(s1)
                 if not match:
                     # Debug string
                     print "\n\n\n\n\nremote_capabilities\n\n\n\n\n"

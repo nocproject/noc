@@ -36,9 +36,8 @@ class Script(NOCScript):
                     if v["vlan_id"]==vlan:
                         cmd+=" vlan %s"%v["name"]
                         break
-        macs=self.cli(cmd)
         r=[]
-        for match in self.rx_line.finditer(macs):
+        for match in self.rx_line.finditer(self.cli(cmd)):
             r+=[{
                 "vlan_id"   : match.group("vlan_id"),
                 "mac"       : match.group("mac"),
