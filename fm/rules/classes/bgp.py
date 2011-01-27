@@ -57,3 +57,15 @@ class BGPMaxPrefixesWarning(EventClass):
         neighbor_ip=Var(required=True)
         prefixes=Var(required=True)
         max_prefixes=Var(required=True)
+##
+## BGP neighbor shutdown
+##
+class BGPNeighborShutdown(EventClass):
+    name = "BGP Neighbor Shutdown"
+    category = "NETWORK"
+    priority = "WARNING"
+    subject_template = "BGP neighbor shutdown: {{neighbor_ip}}"
+    body_template = """Neighbor {{neighbor_ip}} has been shutdown"""
+    class Vars:
+        neighbor_ip=Var(required=True)
+    
