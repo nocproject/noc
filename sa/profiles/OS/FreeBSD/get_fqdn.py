@@ -14,12 +14,10 @@ import re
 class Script(NOCScript):
     name="OS.FreeBSD.get_fqdn"
     implements=[IGetFQDN]
-
-    rx_hostname=re.compile(r"^(?P<hostname>\S+)",re.MULTILINE)
+    rx_hostname=re.compile(r"^(?P<hostname>\S+)")
     def execute(self):
-        v=self.cli("/bin/hostname")
         fqdn=[]
-        match=self.rx_hostname.search(v)
+        match=self.rx_hostname.search(self.cli("/bin/hostname"))
         if match:
             fqdn+=[match.group("hostname")]
         return fqdn
