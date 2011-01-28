@@ -126,7 +126,8 @@ class Organisation(models.Model):
         verbose_name_plural="Organisations"
     organisation=models.CharField("Organisation",max_length=128,unique=True) # NIC Handle
     org_name=models.CharField("Org. Name",max_length=128) # org-name:
-    org_type=models.CharField("Org. Type",max_length=64,choices=[("LIR","LIR")]) # org-type:
+    org_type=models.CharField("Org. Type", max_length=64,
+        choices=[(x,x) for x in ("IANA", "RIR", "NIR", "LIR", "OTHER")]) # org-type:
     address=models.TextField("Address") # address: will be prepended automatically for each line
     mnt_ref=models.ForeignKey(Maintainer,verbose_name="Mnt. Ref") # mnt-ref
     def __unicode__(self):
