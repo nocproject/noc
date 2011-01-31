@@ -352,19 +352,20 @@ class DNSZone(models.Model):
     def zonedata(self,ns):
         return ns.generator_class().get_zone(self)
     
-    def _distribution_list(self):
+    @property
+    def distribution_list(self):
         return self.profile.masters.filter(provisioning__isnull=False)
-    distribution_list=property(_distribution_list)
     
     def distribution(self):
         return ", ".join(["<A HREF='/dns/dnszone/%d/ns/%d/'>%s</A>"%(self.id,n.id,n.name) for n in self.distribution_list])
     distribution.short_description="Distribution"
     distribution.allow_tags=True
-
-    def _children(self):
+    
+    @property
+    def children(self):
         l=len(self.name)
         return [z for z in DNSZone.objects.filter(name__iendswith="."+self.name) if "." not in z.name[:-l-1]]
-    children=property(_children)
+    
     ##
     ## Add missed "." to the end of NS name in case of FQDN
     ##
@@ -375,12 +376,13 @@ class DNSZone(models.Model):
             return name+"."
         else:
             return name
-        
-    def _ns_list(self):
-        return sorted([self.get_ns_name(ns) for ns in self.profile.authoritative_servers])
-    ns_list=property(_ns_list)
     
-    def _rpsl(self):
+    @property
+    def ns_list(self):
+        return sorted([self.get_ns_name(ns) for ns in self.profile.authoritative_servers])
+    
+    @property
+    def rpsl(self):
         if self.type!="R":
             return ""
         # Do not generate RPSL for private reverse zones
@@ -394,7 +396,7 @@ class DNSZone(models.Model):
             return ""
         s=["domain: %s"%self.name]+["nserver: %s"%ns for ns in self.ns_list]
         return rpsl_format("\n".join(s))
-    rpsl=property(_rpsl)
+
 ##
 ##
 ##
