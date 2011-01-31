@@ -573,6 +573,19 @@ class DictParameter(Parameter):
 ##
 ##
 ##
+class DictListParameter(ListOfParameter):
+    """
+    >>> DictListParameter().clean([{"1": 2},{"2":3, "4":1}])
+    [{'1': 2}, {'2': 3, '4': 1}]
+    >>> DictListParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean([{"i":10,"s":"ten"},{"i":"5","s":"five"}])
+    [{'i': 10, 's': 'ten'}, {'i': 5, 's': 'five'}]
+    """
+    def __init__(self,required=True,default=None,attrs=None):
+        super(DictListParameter,self).__init__(element=DictParameter(attrs=attrs),required=required,default=default)
+
+##
+##
+##
 rx_datetime=re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
 class DateTimeParameter(StringParameter):
     def clean(self,value):
