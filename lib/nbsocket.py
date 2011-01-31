@@ -585,9 +585,9 @@ class FileWrapper(object):
 class PTYSocket(Socket):
     def __init__(self,factory,argv):
         self.pid=None
-        super(PTYSocket,self).__init__(factory)
         self.argv=argv
         self.out_buffer=""
+        super(PTYSocket,self).__init__(factory)
     
     def create_socket(self):
         self.debug("EXECV(%s)"%str(self.argv))
