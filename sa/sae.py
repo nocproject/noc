@@ -344,7 +344,7 @@ class SAE(Daemon):
             # Check Map/Reduce task status
             self.process_mrtasks()
             self.last_mrtask_check=t
-        
+    
     ##
     ## Write event.
     ## data is a list of (left,right)
@@ -411,14 +411,14 @@ class SAE(Daemon):
     ## events with completion status
     ##
     def periodic_wrapper(self,task):
-        logging.info(u"Executing %s"%unicode(task))
+        logging.info(u"Periodic task=%s status=running"%unicode(task))
         cwd=os.getcwd()
         try:
             status=task.periodic_class(sae=self, timeout=task.timeout).execute()
         except:
             error_report()
             status=False
-        logging.info(u"Task %s is terminated with '%s'"%(unicode(task),status))
+        logging.info(u"Periodic task=%s status=%s"%(unicode(task),"completed" if status else "failed"))
         if status:
             timeout=task.run_every
         else:
@@ -551,19 +551,34 @@ class SAE(Daemon):
         for a in addresses:
             r.addresses.append(a)
         stream.proxy.ping_check(r,ping_check_callback)
+
+    ##
+    ## Map/Reduce task logging
+    ##
+    def log_mrt(self, level, task, status, args=None, **kwargs):
+        r=[u"MRT task=%d/%d object=%s(%s) script=%s status=%s"%(task.task.id, task.id, task.managed_object.name,
+            task.managed_object.address, task.map_script, status)]
+        if args:
+            a=repr(args)
+            if level<=logging.INFO and len(args)>45:
+                a=a[:20]+u" ... "+a[-20:]
+            r+=[u"args=%s"%a]
+        if kwargs:
+            for k in kwargs:
+                r+=[u"%s=%s"%(k, kwargs[k])]
+        logging.log(level, u" ".join(r))
+        
     ##
     ## Process Map/Reduce tasks
     ##
     def process_mrtasks(self):
         def map_callback(mt_id,result=None,error=None):
-            logging.debug("Map task completed: %d"%mt_id)
             try:
                 mt=MapTask.objects.get(id=mt_id)
             except MapTask.DoesNotExist:
                 logging.error("Map task %d suddently disappeared",mt_id)
                 return
             if error:
-                logging.error("Map Task error: %s"%error.text)
                 # Process non-fatal reasons
                 TIMEOUTS={
                     ERR_ACTIVATOR_NOT_AVAILABLE: 10,
@@ -580,7 +595,7 @@ class SAE(Daemon):
                     else:
                         next_retries=mt.retries_left-1
                     if mt.retries_left and next_try<mt.task.stop_time: # Check we're still in task time and have retries left
-                        logging.debug("Retry task: %d"%mt_id)
+                        self.log_mrt(logging.INFO, task=mt, status="retry")
                         mt.next_try=next_try
                         mt.retries_left=next_retries
                         mt.status="W"
@@ -588,15 +603,18 @@ class SAE(Daemon):
                         return
                 mt.status="F"
                 mt.script_result=dict(code=error.code,text=error.text)
+                self.log_mrt(logging.INFO, task=mt, status="failed", code=error.code, error=error.text)
             else:
                 mt.status="C"
                 mt.script_result=result
+                self.log_mrt(logging.INFO, task=mt, status="completed")
             mt.save()
         # Additional stack frame to store mt_id in a closure
         def exec_script(mt):
             kwargs={}
             if mt.script_params:
                 kwargs=mt.script_params
+            self.log_mrt(logging.INFO, task=mt, status="running", args=kwargs)
             self.script(mt.managed_object,mt.map_script,
                     lambda result=None,error=None: map_callback(mt.id,result,error),
                     **kwargs)
@@ -606,6 +624,7 @@ class SAE(Daemon):
                 mt.status="F"
                 mt.script_result=dict(code=ERR_TIMEOUT, text="Timed out")
                 mt.save()
+                self.log_mrt(logging.INFO, task=mt, status="failed", msg="timed out")
                 continue
             mt.status="R"
             mt.save()
