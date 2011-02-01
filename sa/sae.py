@@ -560,7 +560,7 @@ class SAE(Daemon):
             task.managed_object.address, task.map_script, status)]
         if args:
             a=repr(args)
-            if level<=logging.INFO and len(args)>45:
+            if level<=logging.INFO and len(a)>45:
                 a=a[:20]+u" ... "+a[-20:]
             r+=[u"args=%s"%a]
         if kwargs:
