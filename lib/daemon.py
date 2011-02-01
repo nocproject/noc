@@ -97,11 +97,11 @@ class Daemon(object):
                     maxBytes=self.config.getint("main","logsize"),
                     backupCount=self.config.getint("main","logfiles")
                 )
-                rf_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s',None))
+                rf_handler.setFormatter(logging.Formatter('%(asctime)s %(message)s',None))
                 logging.root.addHandler(rf_handler)
             self.pidfile=self.config.get("main","pidfile")
         else:
-            logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(levelname)s %(message)s')
+            logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(message)s')
     ##
     ## Called after config reloaded by SIGHUP.
     ##
