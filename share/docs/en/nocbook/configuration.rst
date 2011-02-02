@@ -187,8 +187,8 @@ Database port, if not default
 
 .. _noc-conf-authentication:
 
-authentication section
-++++++++++++++++++++++
+[authentication] section
+++++++++++++++++++++++++
 
 .. _noc-conf-authentication-method:
 
@@ -236,7 +236,7 @@ ldap_bind_password
 ^^^^^^^^^^^^^^^^^^
 Applicable only for *ldap* authentication method.
 
-Password for technical user. See :ref:noc-conf-authentication-ldap_bind_dn for details.
+Password for technical user. See :ref:`noc-conf-authentication-ldap_bind_dn` for details.
 Leave empty for anonymous bind.
 
 .. _noc-conf-authentication-ldap_users_base:
@@ -253,7 +253,7 @@ ldap_users_filter
 ^^^^^^^^^^^^^^^^^
 Applicable only for *ldap* authentication method.
 
-LDAP Filter expression to find the user. *%%(username)s* string
+LDAP Filter expression to find the user. *{{username}}* string
 will be substituted with properly quoted username
 
 .. _noc-conf-authentication-ldap_groups_base:
@@ -278,7 +278,7 @@ ldap_required_filter
 ^^^^^^^^^^^^^^^^^^^^
 Applicable only for *ldap* authentication method.
 
-LDAP Filter expression to check the user. *%%(user_dn)s* string
+LDAP Filter expression to check the user. *{{user_dn}}* string
 will be substituted with user's DN
 
 .. _noc-conf-authentication-ldap_superuser_group:
@@ -295,13 +295,13 @@ ldap_superuser_filter
 ^^^^^^^^^^^^^^^^^^^^^
 Applicable only for *ldap* authentication method.
 
-LDAP Filter expression to check the user. *%%(user_dn)s* string
+LDAP Filter expression to check the user. *{{user_dn}}* string
 will be substituted with user's DN
 
 .. _noc-conf-customization:
 
-customization section
-+++++++++++++++++++++
+[customization] section
++++++++++++++++++++++++
 
 .. _noc-conf-customization-installation_name:
 
@@ -329,8 +329,8 @@ A width of the logo in pixels
 
 .. _noc-conf-path:
 
-path section
-++++++++++++
+[path] section
+++++++++++++++
 
 .. _noc-conf-path-backup_dir:
 
@@ -401,8 +401,8 @@ A path to GnuPG binary.
 
 .. _noc-conf-cm:
 
-cm section
-++++++++++
+[cm] section
+++++++++++++
 This section describes configuration management settings
 
 .. _noc-conf-cm-repo:
@@ -482,8 +482,8 @@ Start to issue domain expiration warnings from *warn_before_expired_days* day be
 
 .. _noc-conf-tt:
 
-tt section
-++++++++++
+[tt] section
+++++++++++++
 Trouble-ticketing system integration.
 
 .. _noc-conf-tt-url:
