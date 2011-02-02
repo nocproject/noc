@@ -1,4 +1,4 @@
-.. _EdgeCode.ES
+.. _EdgeCode.ES:
 
 EdgeCore.ES
 ===========
