@@ -37,6 +37,7 @@ class TopologyDiscoveryAppplication(SAApplication):
     menu="Tasks | Topology Discovery"
     reduce_task=reduce_topology
     map_task="get_topology_data"
+    timeout=600
     class TopologyDiscoveryForm(SAApplication.Form):
         mac         = forms.BooleanField(label="MAC Address Discovery",  initial=True, required=False)
         per_vlan_mac= forms.BooleanField(label="Per-VLAN MAC Discovery", initial=False,required=False)
