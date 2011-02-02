@@ -390,6 +390,8 @@ class MACTopology(Topology):
     ##
     def get_links(self):
         objects=set(self.fib.interfaces)
+        if len(objects)<2:
+            raise StopIteration
         candidates=[]
         for o1,o2 in combinations(objects,2):
             i1=self.fib.lookup(o1,o2)
