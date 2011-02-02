@@ -21,7 +21,7 @@ class Script(NOCScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         r=[]
-        for math in self.rx_line.findall(data.lower()):
+        for match in self.rx_line.finditer(data.lower()):
             d=match.group("expire")
             if d=="infinite":
                 expire=d
