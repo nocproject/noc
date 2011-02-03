@@ -15,8 +15,16 @@ class Script(NOCScript):
     name="EdgeCore.ES.get_arp" 
     implements=[IGetARP]
 
+    rx_line_4612=re.compile(r"(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)\s+\S+\s+(?P<interface>\d+)$", re.IGNORECASE|re.DOTALL|re.MULTILINE)
+    @NOCScript.match(platform__contains="4612")
+    def execute_4612(self):
+#	return self.cli("show arp",list_re=self.rx_line_4612)
+	arp=self.cli("show arp")
+	return [{"ip": match.group("ip") ,"mac": match.group("mac") ,"interface": "Vlan " + match.group("interface")} for match in self.rx_line_4612.finditer(arp)]
+
     rx_line=re.compile(r"^(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)\s+(?P<interface>\S+)\s+", re.IGNORECASE|re.DOTALL|re.MULTILINE)
-    def execute(self):
+    @NOCScript.match()
+    def execute_other(self):
         try:
 	    return self.cli("show arp",list_re=self.rx_line)
         except self.CLISyntaxError:
