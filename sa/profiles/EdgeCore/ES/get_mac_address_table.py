@@ -20,11 +20,11 @@ class Script(NOCScript):
     implements=[IGetMACAddressTable]
     
 # ES3526 mac-address-table
-    rx_line1=re.compile(r"^\s*(?P<interface>Eth\s*\d+/\s*\S+)\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
+    rx_line1=re.compile(r"^\s*(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
 # ES3526 mac-address-table vlan <vlan_id>
-    rx_line2=re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>Eth\s*\d+/\s*\S+)\s+(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
+    rx_line2=re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
 # ES3526 mac-address-table address <mac>
-    rx_line3=re.compile(r"^\s*(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interface>Eth\s*\d+/\s*\S+)\s+(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
+    rx_line3=re.compile(r"^\s*(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
 # ES4626 mac-address-table
     rx_line4=re.compile(r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?:\S+)\s+(?P<interface>.+)$", re.MULTILINE)
 
