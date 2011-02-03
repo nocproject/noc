@@ -36,8 +36,11 @@ class NOCLDAPBackend(ModelBackend):
     ##
     ## Expand template with context
     ##
-    def expand_template(self,template,context):
-        return Template(template).render(Context(context))
+    def expand_template(self, template, context):
+        r=Template(template).render(Context(context))
+        logging.debug("LDAP: Expanding template: '%s' -> '%s'"%(template, r))
+        return r
+    
     ##
     ## Bind client
     ##
