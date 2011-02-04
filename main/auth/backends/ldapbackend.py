@@ -61,6 +61,7 @@ class NOCLDAPBackend(ModelBackend):
     ## Get username and password and return a user
     ##
     def authenticate(self,username=None,password=None,**kwargs):
+        logging.debug("LDAP authenticatation: username=%s"%username)
         is_active=True     # User activity flag
         is_superuser=False # Superuser flag
         # Prepare template context
