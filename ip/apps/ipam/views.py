@@ -298,7 +298,7 @@ class IPAMAppplication(Application):
         if request.POST:
             form=self.QuickJumpForm(request.POST)
             if form.is_valid():
-                prefix=form.cleaned_data["jump"]
+                prefix=form.cleaned_data["jump"].strip()
                 # Interpolate prefix
                 if afi=="4":
                     prefix=interpolate_ipv4(prefix)
