@@ -345,7 +345,12 @@ class TCPSocket(Socket):
             super(TCPSocket,self).close()
         
     def handle_write(self):
-        sent=self.socket.send(self.out_buffer)
+        try:
+            sent=self.socket.send(self.out_buffer)
+        except socket.error, why:
+            self.error("Socket error: %s"%repr(why))
+            self.close()
+            return
         self.out_buffer=self.out_buffer[sent:]
         if self.in_shutdown and len(self.out_buffer)==0:
             self.close()
