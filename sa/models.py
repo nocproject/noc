@@ -531,15 +531,6 @@ class ReduceTask(models.Model):
     ##
     @classmethod
     def create_task(self,object_selector,reduce_script,reduce_script_params,map_script,map_script_params,timeout):
-        # Create reduce task
-        start_time=datetime.datetime.now()
-        r_task=ReduceTask(
-            start_time=start_time,
-            stop_time=start_time+datetime.timedelta(seconds=timeout),
-            script=reduce_script,
-            script_params=reduce_script_params if reduce_script_params else {},
-        )
-        r_task.save()
         # Normalize map scripts to a list
         if type(map_script) in [types.ListType,types.TupleType]:
             # list of map scripts
@@ -573,15 +564,30 @@ class ReduceTask(models.Model):
             objects=list(object_selector)
         # Resolve strings to managed objects, if returned by selector
         objects=[ManagedObject.objects.get(name=x) if isinstance(x,basestring) else x for x in objects]
+        # Auto-detect reduce task timeout, if not set
+        if not timeout:
+            timeout=0
+            for o in objects:
+                for ms, p in msp:
+                    if ms not in o.profile.scripts:
+                        continue
+                    s=o.profile.scripts[ms]
+                    timeout=max(timeout, s.TIMEOUT)
+            timeout+=3 # Add guard time
+        # Create reduce task
+        start_time=datetime.datetime.now()
+        r_task=ReduceTask(
+            start_time=start_time,
+            stop_time=start_time+datetime.timedelta(seconds=timeout),
+            script=reduce_script,
+            script_params=reduce_script_params if reduce_script_params else {},
+        )
+        r_task.save()
         # Run map task for each object
         for o in objects:
             for ms,p in msp:
-                try:
-                    # Set status to "F" if script not found
-                    status="W" if ms in o.profile.scripts else "F"
-                except KeyError:
-                    # Invalid profile
-                    continue
+                # Set status to "F" if script not found
+                status="W" if ms in o.profile.scripts else "F"
                 # Build full map script name
                 msn="%s.%s"%(o.profile_name,ms)
                 #
