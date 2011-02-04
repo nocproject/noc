@@ -198,7 +198,7 @@ class ManagedObjectApplication(ModelApplication):
     def view_script(self,request,object_id,script):
         # Run map/reduce task
         def run_task(**kwargs):
-            task=ReduceTask.create_task([o],script_reduce,{},script,kwargs,60)
+            task=ReduceTask.create_task([o],script_reduce,{},script,kwargs,None)
             return self.response_redirect("sa:managedobject:scriptresult",object_id,script,task.id)
         #
         o=get_object_or_404(ManagedObject,id=int(object_id))
