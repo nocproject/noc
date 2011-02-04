@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os,sys,site
+import os,sys,site,logging
 # Adjust paths
 d=os.path.dirname(sys.argv[0])
 if not d:
@@ -24,5 +24,9 @@ if __name__ == "__main__":
         # Initialize models
         os.environ["DJANGO_SETTINGS_MODULE"]="noc.settings"
         import noc.urls
+    if len(sys.argv)>1 and sys.argv[1]=="runserver":
+        # Set loglevel to DEBUG
+        logging.root.setLevel(logging.DEBUG)
+        logging.debug("ZZZ")
     # Execute command
     execute_manager(settings)
