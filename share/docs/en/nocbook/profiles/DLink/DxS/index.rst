@@ -13,6 +13,7 @@ DLink.DxS profile supports various DLink switches
 Supported platform series
 -------------------------
 ======== =====================================================================
+1228-ME  DES-1228/ME
 DES-30xx DES-3010F, DES-3010FL, DES-3010G, DES-3016, DES-3018, DES-3026
 DES-3028 DES-3028, DES-3028G, DES-3028P, DES-3052, DES-3052P
 DES-3200 DES-3200-10, DES-3200-18, DES-3200-26, DES-3200-28, DES-3200-28F
@@ -31,7 +32,7 @@ DGS-36xx DGS-3612, DGS-3612G, DGS-3627, DGS-3627G, DGS-3650
 Partially supported series (not tested)
 ---------------------------------------
 ======== =====================================================================
-DES-1210 DES-1210-28, DES-1210-52
+DES-1210 DES-1210-28, DES-1210-28/ME, DES-1210-52
 DES-6300 DES-6300
 DES-6500 DES-6500
 DGS-30xx DGS-3024, DGS-3048
@@ -40,8 +41,6 @@ DGS-32xx DGS-3204, DGS-3208
 DGS-3212 DGS-3212SR
 DGS-33xx DGS-3324SR, DGS-3324SRi
 DXS-33xx DXS-3325GSR, DXS-3350SR
-DWS-xxxx DWS-3024, DWS-3024L, DWS-3026, DWS-4026
-1228-ME  DES-1228/ME
 ======== =====================================================================
 
 Not supported series
@@ -59,6 +58,7 @@ DGS-12xx DGS-1216T/GE, DGS-1224T/GE, DGS-1224TP/GE, DGS-1248T/GE
 DGS-3224 DGS-3224SR, DGS-3224TG, DGS-3224-TGR
 DGS-3324 DGS-3324SR, DGS-3324SRi
 DGS-3610 DGS-3610-26, DGS-3610-26G
+DWS-xxxx DWS-3024, DWS-3024L, DWS-3026, DWS-4026
 ======== =====================================================================
 
 Notes
