@@ -489,9 +489,19 @@ class IPAMAppplication(Application):
         parent=prefix.parent
         if not parent:
             return self.render_forbidden("Cannot delete root prefix")
-        prefix.delete()
-        self.message_user(request,_("Prefix %(prefix)s was successfully deleted")%{"prefix":prefix.prefix})
-        return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,parent.prefix)
+        if request.POST:
+            if "scope" in request.POST and request.POST["scope"][0] in ("p", "r"):
+                if  request.POST["scope"]=="p":
+                    # Delete prefix only
+                    prefix.delete()
+                    self.message_user(request,_("Prefix %(prefix)s has been successfully deleted")%{"prefix":prefix.prefix})
+                else:
+                    # Delete recursive prefixes
+                    prefix.delete_recursive()
+                    self.message_user(request,_("Prefix %(prefix)s and all descendans have been successfully deleted")%{"prefix":prefix.prefix})
+                return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,parent.prefix)
+        # Display form
+        return self.render(request,"delete_prefix.html", prefix=prefix)
     
     ##
     ## Return address edit/change form

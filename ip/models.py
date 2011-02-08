@@ -240,6 +240,42 @@ class Prefix(models.Model):
         super(Prefix,self).delete(*args,**kwargs)
     
     ##
+    ## Delete prefix and all descendancies
+    ##
+    def delete_recursive(self):
+        c=connection.cursor()
+        # Delete nested addresses
+        c.execute("""
+            DELETE FROM %s
+            WHERE
+                    prefix_id IN
+                        (
+                        SELECT id
+                        FROM %s
+                        WHERE
+                                vrf_id=%%s
+                            AND afi=%%s
+                            AND prefix <<= %%s
+                        )"""%(Address._meta.db_table, Prefix._meta.db_table),
+                        [self.vrf.id, self.afi, self.prefix])
+        # Delete nested prefixes
+        c.execute("""
+            DELETE FROM %s
+            WHERE
+                    vrf_id=%%s
+                AND afi=%%s
+                AND prefix <<= %%s
+        """%Prefix._meta.db_table,[self.vrf.id, self.afi, self.prefix])
+        # Delete permissions
+        c.execute("""
+            DELETE FROM %s
+            WHERE
+                    vrf_id=%%s
+                AND afi=%%s
+                AND prefix=%%s
+        """%PrefixAccess._meta.db_table, [self.vrf.id, self.afi, self.prefix])
+    
+    ##
     ## List of persons having write access
     ##
     @property
