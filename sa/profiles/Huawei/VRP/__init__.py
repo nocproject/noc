@@ -11,6 +11,7 @@
 """
 import noc.sa.profiles
 from noc.sa.protocols.sae_pb2 import TELNET,SSH
+import re
 
 class Profile(noc.sa.profiles.Profile):
     name="Huawei.VRP"
@@ -26,3 +27,14 @@ class Profile(noc.sa.profiles.Profile):
         if not strict:
             p+=" le 32"
         return "undo ip ip-prefix %s\n"%name+"\n".join([p%x.replace("/"," ") for x in pl])
+
+    rx_interface_name=re.compile(r"^(?P<type>[A-Z]+E)(?P<number>[\d/]+)$")
+    def convert_interface_name(self,s):
+        """
+        >>> Profile().convert_interface_name("GE2/0/0")
+        'GigabitEthernet2/0/0'
+        """
+        match=self.rx_interface_name.match(s)
+        if not match:
+	    return s
+    	return "%s%s"%({"GE": "GigabitEthernet"}[match.group("type")],match.group("number"))
