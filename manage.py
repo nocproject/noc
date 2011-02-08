@@ -27,6 +27,5 @@ if __name__ == "__main__":
     if len(sys.argv)>1 and sys.argv[1]=="runserver":
         # Set loglevel to DEBUG
         logging.root.setLevel(logging.DEBUG)
-        logging.debug("ZZZ")
     # Execute command
     execute_manager(settings)
