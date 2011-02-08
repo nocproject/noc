@@ -14,7 +14,8 @@ from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from django import forms
 from django.db.models import Q
-from django.contrib.auth.models import User,Group
+from django.contrib.auth.models import User, Group
+from django.utils.safestring import SafeString
 ## NOC modules
 from noc.lib.app import ModelApplication, site, Permit, PermitSuperuser, HasPerm, PermissionDenied, view
 from noc.sa.models import *
@@ -68,12 +69,28 @@ action_links.allow_tags=True
 def object_status(o):
     s=[]
     if o.is_managed:
-        s+=["Managed"]
+        s+=["<img src='/static/img/managed.png' title='Is Managed' />"]
     if o.is_configuration_managed:
-        s+=["Configuration"]
-    return "<br/>".join(s)
-object_status.short_description="Status"
+        s+=["<img src='/static/img/configuration.png' title='Configuration Managed' />"]
+    return " ".join(s)
+object_status.short_description=u"Status"
 object_status.allow_tags=True
+
+##
+## Administrative domain/activator
+##
+def domain_activator(o):
+    return u"%s/<br/>%s"%(o.administrative_domain.name, o.activator.name)
+domain_activator.short_description=SafeString("Adm. Domain/<br/>Activator")
+domain_activator.allow_tags=True
+##
+## Generic returning safe headers
+##
+def safe_header(name, header):
+    f=lambda o: getattr(o, name)
+    f.short_description=SafeString(header)
+    return f
+
 ##
 ## Reduce task for script results
 ##
@@ -127,7 +144,9 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("tags",)
         }),
     )
-    list_display=["name",object_status,"profile_name","address","administrative_domain","activator","description","repo_path",action_links]
+    list_display=["name", object_status, "profile_name", "address",
+                domain_activator,
+                "description", "repo_path", action_links]
     list_filter=["is_managed","is_configuration_managed","activator","administrative_domain","profile_name"]
     search_fields=["name","address","repo_path","description"]
     object_class=ManagedObject
