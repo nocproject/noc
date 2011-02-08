@@ -111,9 +111,30 @@ function on_mynetworks(n)
 <!-- end of empty block message -->
 <!-- prefixes -->
 {% if prefixes %}
+    <style>
+    .free-prefix {
+        background-color: #ccc;
+        font-style: italic;
+    }
+    </style>
+    <script type="text/javascript">
+    p_free_shown=false;
+    function toggle_free_prefixes() {
+        if(p_free_shown) {
+            $(".free-prefix").hide();
+            $("#toggle-free-prefixes-link").text("Show free prefixes");
+            p_free_shown=false;
+        } else {
+            $(".free-prefix").show();
+            $("#toggle-free-prefixes-link").text("Hide free prefixes");
+            p_free_shown=true;
+        }
+        return false;
+    }
+    </script>
     <div class="module">
         <table width="100%">
-            <caption>Allocated Prefixes</caption>
+            <caption>Allocated Prefixes <a style="float:right" onclick="toggle_free_prefixes()" href="#" id="toggle-free-prefixes-link">Show free prefixes<a/></caption>
             <thead>
                 <tr>
                     <th class="ip">Prefix</th>
@@ -123,14 +144,28 @@ function on_mynetworks(n)
                     <th>Tags</th>
                 </tr>
             </thead>
-            {% for p in prefixes %}
-                <tr class="{% if p.style %}{{p.style.css_class_name}}{% else %}{% cycle 'row1' 'row2' %}{% endif %}">
-                    <td><a href="{% url ip:ipam:vrf_index p.vrf.id p.afi p.prefix %}">{{p.prefix}}</a></td>
-                    <td>{% if p.vc %}{{p.vc}}{% endif %}</td>
-                    <td>{{p.short_description}}</td>
-                    <td>{% if p.tt %}{{p.tt}}{% endif %}</td>
-                    <td>{% tags p %}</td>
-                </tr>
+            <tr style="display:none" id="at-p-start"></tr>
+            {% for f, pp, p  in l_prefixes %}
+                {% if f %}
+                    <tr class="{% if p.style %}{{p.style.css_class_name}}{% else %}{% cycle 'row1' 'row2' %}{% endif %}">
+                        <td><a href="{% url ip:ipam:vrf_index p.vrf.id p.afi p.prefix %}">{{p.prefix}}</a></td>
+                        <td>{% if p.vc %}{{p.vc}}{% endif %}</td>
+                        <td>{{p.short_description}}</td>
+                        <td>{% if p.tt %}{{p.tt}}{% endif %}</td>
+                        <td>{% tags p %}</td>
+                    </tr>
+                {% else %}
+                    <tr class='free-prefix' style='display:none'>
+                        <td>
+                            {% if can_add_prefix %}
+                                <a href="add_prefix/?prefix={{pp.prefix}}">{{pp}}</a>
+                            {% else %}
+                                {{pp}}
+                            {% endif %}
+                        </td>
+                        <td colspan="4">Free...</td>
+                    </tr>
+                {% endif %}
             {% endfor %}
         </table>
     </div>

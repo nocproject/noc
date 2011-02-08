@@ -132,6 +132,17 @@ class IPAMAppplication(Application):
         long_description=prefix.description if prefix.description!=short_description else None
         # List of nested prefixes
         prefixes=list(prefix.children_set.order_by("prefix"))
+        # Get permissions
+        user=request.user
+        can_view=prefix.can_view(user)
+        can_change=prefix.can_change(user)
+        can_bind_vc=can_change and Permission.has_perm(user,"ip:ipam:bind_vc")
+        can_change_maintainers=user.is_superuser
+        can_add_prefix=can_change
+        can_add_address=can_change and len(prefixes)==0
+        # Add free prefixes
+        free_prefixes=list(IP.prefix(prefix.prefix).iter_free([p.prefix for p in prefixes]))
+        l_prefixes=sorted([(True, IP.prefix(p.prefix), p) for p in prefixes]+[(False, p) for p in free_prefixes], lambda x,y: cmp(x[1], y[1]))
         # List of nested addresses
         addresses=list(prefix.address_set.order_by("address"))
         # Prepare block info
@@ -150,14 +161,6 @@ class IPAMAppplication(Application):
             if afi=="4":
                 free=prefix.size-len(addresses)
                 prefix_info+=[("Free addresses",free-2 if free>=2 else free)]
-        # Get permissions
-        user=request.user
-        can_view=prefix.can_view(user)
-        can_change=prefix.can_change(user)
-        can_bind_vc=can_change and Permission.has_perm(user,"ip:ipam:bind_vc")
-        can_change_maintainers=user.is_superuser
-        can_add_prefix=can_change
-        can_add_address=can_change and len(prefixes)==0
         # Bookmarks
         has_bookmark=prefix.has_bookmark(user)
         bookmarks=PrefixBookmark.user_bookmarks(user,vrf=vrf,afi=afi)
@@ -262,7 +265,7 @@ class IPAMAppplication(Application):
             prefixes=prefixes,addresses=addresses,prefix_info=prefix_info,display_empty_message=not addresses and not prefixes,
             can_view=can_view,can_change=can_change,can_bind_vc=can_bind_vc,can_change_maintainers=can_change_maintainers,
             can_add_prefix=can_add_prefix,can_add_address=can_add_address,has_bookmark=has_bookmark,bookmarks=bookmarks,
-            spot=spot,can_ping=can_ping,styles=styles,ranges=ranges,max_slots=max_slots)
+            spot=spot,can_ping=can_ping,styles=styles,ranges=ranges,max_slots=max_slots,l_prefixes=l_prefixes)
     
     ##
     ## Quickjump to closest suitable block
@@ -395,7 +398,13 @@ class IPAMAppplication(Application):
                     return self.response_redirect("ip:ipam:add_prefix",vrf.id,afi)
                 return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,p.prefix)
         else:
-            initial={"prefix":self.get_common_prefix_part(afi,parent),"asn":parent.asn.id}
+            initial={"asn":parent.asn.id}
+            if request.GET and "prefix" in request.GET:
+                # Prefix set via querystring
+                initial["prefix"]=request.GET["prefix"]
+            else:
+                # Display beginning of prefix
+                initial={"prefix":self.get_common_prefix_part(afi,parent),"asn":parent.asn.id}
             form=form_class(initial=initial)
         # Suggest blocks of different sizes
         suggestions=[]
