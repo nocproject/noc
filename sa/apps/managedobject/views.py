@@ -69,9 +69,17 @@ action_links.allow_tags=True
 def object_status(o):
     s=[]
     if o.is_managed:
-        s+=["<img src='/static/img/managed.png' title='Is Managed' />"]
+        try:
+            o.profile
+            s+=["<a href='%d/scripts/'><img src='/static/img/managed.png' title='Is Managed' /></a>"%o.id]
+        except:
+            s+=["<img src='/static/img/managed.png' title='Is Managed' />"]
     if o.is_configuration_managed:
-        s+=["<img src='/static/img/configuration.png' title='Configuration Managed' />"]
+        try:
+            s+=["<a href='/cm/config/%d/'><img src='/static/img/configuration.png' title='Configuration Managed' /></a>"%o.config.id]
+        except:
+            s+=["<img src='/static/img/configuration.png' title='Configuration Managed' />"]
+
     return " ".join(s)
 object_status.short_description=u"Status"
 object_status.allow_tags=True
