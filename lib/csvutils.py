@@ -74,6 +74,7 @@ def csv_import(model,f):
     required_fields=set()
     fk={} # Foreign keys: name->(model,field)
     booleans=set() # Boolean fields:
+    integers=set() # Integer fields
     # Try to find index field
     index_field="id"
     for f in model._meta.fields:
@@ -82,6 +83,7 @@ def csv_import(model,f):
             break
     # find boolean fields
     booleans=set([f.name for f in model._meta.fields if isinstance(f,models.BooleanField)])
+    integers=set([f.name for f in model._meta.fields if isinstance(f,models.IntegerField)])
     # Search for foreign keys and required fields
     ir=IGNORED_REQUIRED.get(model._meta.db_table,set())
     for name,required,rel,rname in get_model_fields(model):
@@ -145,11 +147,16 @@ def csv_import(model,f):
             if k in booleans:
                 # Convert boolean
                 v=v.lower() in ["t","true","yes","y"]
+            elif k in integers:
+                try:
+                    v=int(v)
+                except:
+                    raise Exception("Invalid integer: %s"%v)
             setattr(o,k,v)
         # Save
         try:
             o.save()
             count+=1
         except Exception,why:
-            return None,"Failed to save line %d: %s"%(count,str(why))
+            return None,"Failed to save line %d: %s. %s"%(count, str(why), repr(vars))
     return count-1,None
