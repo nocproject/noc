@@ -42,7 +42,8 @@ ACTIVATOR_MANIFEST=[
 ##
 class Service(SAEService):
     def get_controller_activator(self,controller):
-        return Activator.objects.get(name=self.sae.factory.get_name_by_socket(controller.stream))
+        return Activator.objects.get(name=controller.stream.pool_name)
+    
     ##
     ## RPC interfaces
     ##
@@ -54,10 +55,7 @@ class Service(SAEService):
             activator=Activator.objects.get(name=request.name)
         except Activator.DoesNotExist:
             logging.error("Unknown activator '%s'"%request.name)
-            e=Error()
-            e.code=ERR_UNKNOWN_ACTIVATOR
-            e.text="Unknown activator '%s'"%request.name
-            done(controller,error=e)
+            done(controller, error=Error(code=ERR_UNKNOWN_ACTIVATOR, text="Unknown activator '%s'"%request.name))
             return
         logging.info("Requesting digest for activator '%s'"%request.name)
         r=RegisterResponse()
@@ -70,46 +68,31 @@ class Service(SAEService):
             activator=Activator.objects.get(name=request.name)
         except Activator.DoesNotExist:
             logging.error("Unknown activator '%s'"%request.name)
-            e=Error()
-            e.code=ERR_UNKNOWN_ACTIVATOR
-            e.text="Unknown activator '%s'"%request.name
-            done(controller,error=e)
+            done(controller, error=Error(code=ERR_UNKNOWN_ACTIVATOR, text="Unknown activator '%s'"%request.name))
             return
         logging.info("Authenticating activator '%s'"%request.name)
         if controller.stream.nonce is None or get_digest(request.name,activator.auth,controller.stream.nonce)!=request.digest:
-            e=Error()
-            e.code=ERR_AUTH_FAILED
-            e.text="Authencication failed for activator '%s'"%request.name
-            done(controller,error=e)
+            done(controller, error=Error(code=ERR_AUTH_FAILED, text="Authencication failed for activator '%s'"%request.name))
             return
         r=AuthResponse()
-        controller.stream.set_name(request.name)
         controller.stream.is_authenticated=True
+        self.sae.join_activator_pool(request.name, controller.stream)
         done(controller,response=r)
         
     def manifest(self,controller,request,done):
         if not controller.stream.is_authenticated:
-            e=Error()
-            e.code=ERR_AUTH_REQUIRED
-            e.text="Authentication required"
-            done(controller,error=e)
+            done(controller, error=Error(code=ERR_AUTH_REQUIRED, text="Authentication required"))
             return
         done(controller,response=self.sae.activator_manifest)
         
     def software_upgrade(self,controller,request,done):
         if not controller.stream.is_authenticated:
-            e=Error()
-            e.code=ERR_AUTH_REQUIRED
-            e.text="Authentication required"
-            done(controller,error=e)
+            done(controller,error=Error(code=ERR_AUTH_REQUIRED, text="Authentication required"))
             return
         r=SoftwareUpgradeResponse()
         for n in request.names:
             if n not in self.sae.activator_manifest_files:
-                e=Error()
-                e.code=ERR_INVALID_UPGRADE
-                e.text="Invalid file requested for upgrade: %s"%n
-                done(controller,error=e)
+                done(controller, error=Error(code=ERR_INVALID_UPGRADE, text="Invalid file requested for upgrade: %s"%n))
                 return
             u=r.codes.add()
             u.name=n
@@ -120,10 +103,7 @@ class Service(SAEService):
     ##
     def event_filter(self,controller,request,done):
         if not controller.stream.is_authenticated:
-            e=Error()
-            e.code=ERR_AUTH_REQUIRED
-            e.text="Authentication required"
-            done(controller,error=e)
+            done(controller, error=Error(code=ERR_AUTH_REQUIRED, text="Authentication required"))
             return
         activator=self.get_controller_activator(controller)
         r=EventFilterResponse()
@@ -149,10 +129,7 @@ class Service(SAEService):
         try:
             mo=ManagedObject.objects.get(activator=activator,trap_source_ip=request.ip) if request.ip else None
         except ManagedObject.DoesNotExist:
-            e=Error()
-            e.code=ERR_UNKNOWN_EVENT_SOURCE
-            e.text="Unknown event source '%s'"%request.ip
-            done(controller,error=e)
+            done(controller, error=Error(code=ERR_UNKNOWN_EVENT_SOURCE, text="Unknown event source '%s'"%request.ip))
             return
         self.sae.write_event(
             data=[(b.key,b.value) for b in request.body],
@@ -165,10 +142,7 @@ class Service(SAEService):
     ##
     def pm_data(self,controller,request,done):
         if not controller.stream.is_authenticated:
-            e=Error()
-            e.code=ERR_AUTH_REQUIRED
-            e.text="Authentication required"
-            done(controller,error=e)
+            done(controller, error=Error(code=ERR_AUTH_REQUIRED, text="Authentication required"))
             return
         for d in request.result:
             timestamp=datetime.datetime.fromtimestamp(d.timestamp)
@@ -189,12 +163,13 @@ class Service(SAEService):
 ##
 ## AcceptedTCPSocket with RPC Protocol
 ##
-class SAESocket(RPCSocket,AcceptedTCPSocket):
+class SAESocket(RPCSocket, AcceptedTCPSocket):
     def __init__(self,factory,socket):
         AcceptedTCPSocket.__init__(self,factory,socket)
         RPCSocket.__init__(self,factory.sae.service)
         self.nonce=None
-        self.is_authenticated=True
+        self.is_authenticated=False
+        self.pool_name=None
         
     @classmethod
     def check_access(cls,address):
@@ -202,15 +177,20 @@ class SAESocket(RPCSocket,AcceptedTCPSocket):
     
     def close(self):
         # Rollback all active transactions
-        e=Error()
-        e.code=ERR_ACTIVATOR_LOST
-        e.text="Connection with activator lost"
+        e=Error(code=ERR_ACTIVATOR_LOST, text="Connection with activator lost")
         self.transactions.rollback_all_transactions(e) # Close all active transactions
         super(AcceptedTCPSocket,self).close()
+    
+    def set_pool_name(self, name):
+        self.pool_name=name
+    
+    def on_close(self):
+        if self.is_authenticated:
+            self.factory.sae.leave_activator_pool(self.pool_name, self)
 ##
 ## SSL version of SAE socket
 ##
-class SAESSLSocket(RPCSocket,AcceptedTCPSSLSocket):
+class SAESSLSocket(RPCSocket, AcceptedTCPSSLSocket):
     def __init__(self,factory,socket,cert):
         AcceptedTCPSSLSocket.__init__(self,factory,socket,cert)
         RPCSocket.__init__(self,factory.sae.service)
@@ -223,9 +203,7 @@ class SAESSLSocket(RPCSocket,AcceptedTCPSSLSocket):
 
     def close(self):
         # Rollback all active transactions
-        e=Error()
-        e.code=ERR_ACTIVATOR_LOST
-        e.text="Connection with activator lost"
+        e=Error(code=ERR_ACTIVATOR_LOST, text="Connection with activator lost")
         self.transactions.rollback_all_transactions(e) # Close all active transactions
         super(AcceptedTCPSSLSocket,self).close()
 ##
@@ -242,6 +220,7 @@ class SAE(Daemon):
         #
         self.factory=SocketFactory(tick_callback=self.tick)
         self.factory.sae=self
+        self.activators={} # pool name -> list of activators
         #
         self.sae_listener=None
         self.sae_ssl_listener=None
@@ -316,6 +295,33 @@ class SAE(Daemon):
             if self.sae_ssl_listener is None:
                 logging.info("Starting SAE SSL listener at %s:%d"%(sae_ssl_listen,sae_ssl_port))
                 self.sae_ssl_listener=self.factory.listen_tcp(sae_ssl_listen,sae_ssl_port,SAESSLSocket,cert=sae_ssl_cert)
+    
+    ##
+    ## Add registered activator to pool
+    ##
+    def join_activator_pool(self, name, stream):
+        stream.set_pool_name(name)
+        if name not in self.activators:
+            self.activators[name]=set()
+        logging.info("%s is joining activator pool '%s'"%(repr(stream), name))
+        self.activators[name].add(stream)
+    
+    ##
+    ## Remove activator from pool
+    ##
+    def leave_activator_pool(self, name, stream):
+        if name in self.activators and stream in self.activators[name]:
+            logging.info("%s is leaving activator pool '%s'"%(repr(stream), name))
+            self.activators[name].remove(stream)
+    
+    ##
+    ## Returns pool information
+    ##
+    def get_pool_info(self, name):
+        if name not in self.activators:
+            return {"status": False, "members": 0}
+        return {"status": True, "members": len(self.activators[name])}
+    
     ##
     ## Run SAE event loop
     ##
@@ -446,15 +452,17 @@ class SAE(Daemon):
 
     def on_stream_close(self,stream):
         self.streams.unregister(stream)
-        
-    def register_activator(self,name,stream):
-        self.streams.register(stream,name)
-        
-    def get_activator_stream(self,name):
-        try:
-            return self.factory.get_socket_by_name(name)
-        except KeyError:
-            raise Exception("Activator not available: %s"%name)
+    
+    ##
+    ## Select activator for task
+    ##
+    def get_activator_stream(self, name):
+        if name not in self.activators:
+            raise Exception("Activator pool '%s' is not available"%name)
+        a=self.activators[name]
+        if len(a)==0:
+            raise Exception("No activators in pool '%s' available"%name)
+        return random.choice(list(a)) # @todo: smarter selection
     
     def script(self,object,script_name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
@@ -470,10 +478,8 @@ class SAE(Daemon):
             # Validate activator is present
             try:
                 stream=self.get_activator_stream(object.activator.name)
-            except:
-                e=Error()
-                e.code=ERR_ACTIVATOR_NOT_AVAILABLE
-                e.text="Activator '%s' not available"%object.activator.name
+            except Exception, why:
+                e=Error(code=ERR_ACTIVATOR_NOT_AVAILABLE, text=why)
                 logging.error(e.text)
                 callback(error=e)
                 return
