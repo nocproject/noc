@@ -17,13 +17,10 @@ class Script(noc.sa.script.Script):
         from noc.sa.models import Activator
         r=[]
         for a in Activator.objects.filter(is_active=True):
-            try:
-                self.sae.factory.get_socket_by_name(a.name)
-                status=True
-            except:
-                status=False
+            i=self.sae.get_pool_info(a.name)
             r+=[{
                 "name"   : a.name,
-                "status" : status
+                "status" : i["status"],
+                "members": i["members"],
             }]
         return r

@@ -12,9 +12,10 @@ def reduce_status(task):
     data=[]
     for mt in task.maptask_set.filter(status="C"):
         for r in mt.script_result:
-            data+=[(r["name"],r["status"])]
+            data+=[(r["name"], r["status"], r["members"])]
     report=Report()
-    t=TableSection(name="status",columns=["Activator",TableColumn("Status",format="bool")],data=data,enumerate=True)
+    t=TableSection(name="status",columns=["Activator",TableColumn("Status",format="bool"),TableColumn("Members", align="right")],
+        data=data,enumerate=True)
     report.append_section(t)
     return report
 ##
