@@ -255,6 +255,7 @@ class Activator(Daemon,FSM):
         self.children={}
         self.ping_check_results={} # address -> last ping check result
         self.sae_stream=None
+        self.to_listen=False # To start or not to start collectors
         self.event_sources=set()
         self.ignore_event_rules=[] # [(left_re,right_re)]
         self.trap_collectors=[]   # List of SNMP Trap collectors
@@ -291,12 +292,13 @@ class Activator(Daemon,FSM):
         if self.sae_stream:
             self.sae_stream.close()
             self.sae_stream=None
-        if self.trap_collectors:
-            self.stop_trap_collectors()
-        if self.syslog_collectors:
-            self.stop_syslog_collectors()
-        if self.pm_data_collectors:
-            self.stop_pm_data_collectors()
+        if self.to_listen:
+            if self.trap_collectors:
+                self.stop_trap_collectors()
+            if self.syslog_collectors:
+                self.stop_syslog_collectors()
+            if self.pm_data_collectors:
+                self.stop_pm_data_collectors()
         self.set_timeout(3)
     ##
     ## CONNECT state
@@ -342,15 +344,17 @@ class Activator(Daemon,FSM):
     def on_ESTABLISHED_enter(self):
         to_refresh_filters=False
         self.next_filter_update=None
-        if self.config.get("activator","listen_traps"):
-            self.start_trap_collectors()
-            to_refresh_filters=True
-        if self.config.get("activator","listen_syslog"):
-            self.start_syslog_collectors()
-            to_refresh_filters=True
-        if self.config.get("activator","listen_pm_data"):
-            self.start_pm_data_collectors()
-            to_refresh_filters=True
+        self.to_listen=self.config.get("activator", "listen_instance")==self.instance_id
+        if self.to_listen:
+            if self.config.get("activator","listen_traps"):
+                self.start_trap_collectors()
+                to_refresh_filters=True
+            if self.config.get("activator","listen_syslog"):
+                self.start_syslog_collectors()
+                to_refresh_filters=True
+            if self.config.get("activator","listen_pm_data"):
+                self.start_pm_data_collectors()
+                to_refresh_filters=True
         if to_refresh_filters:
             self.get_event_filter()
         if self.stand_alone_mode:
