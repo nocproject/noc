@@ -18,6 +18,7 @@ log_cli_sessions_script_re =
 
 [activator]
 name            = unknown
+listen_instance = 0
 listen_traps    =
 listen_syslog   =
 listen_pm_data  = 127.0.0.1
