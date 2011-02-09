@@ -16,33 +16,40 @@ heartbeat= false
 enabled = true
 user  = noc
 group =
+config = etc/noc-fcgi.conf
 
 [noc-sae]
 enabled = true
 user  = noc
 group =
+config = etc/noc-sae.conf
 
 [noc-activator]
 enabled = true
 user  = noc
 group =
+config.0 = etc/noc-activator.conf 
 
 [noc-classifier]
 enabled = true
 user  = noc
 group =
+config = etc/noc-classifier.conf
 
 [noc-correlator]
 enabled = true
 user  = noc
 group =
+config = etc/noc-correlator.conf
 
 [noc-notifier]
 enabled = true
 user = noc
 group =
+config = etc/noc-notifier.conf
 
 [noc-probe]
 enabled = true
 user = noc
 group =
+config = etc/noc-probe.conf

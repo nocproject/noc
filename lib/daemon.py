@@ -36,6 +36,8 @@ class Daemon(object):
         self.opt_parser=optparse.OptionParser()
         self.opt_parser.add_option("-c","--config",action="store",type="string",dest="config",
                 help="Read config from CONFIG")
+        self.opt_parser.add_option("-i","--instance",action="store",type="string",dest="instance_id",default="0",
+                help="Set instnace id")
         self.opt_parser.add_option("-f","--foreground",action="store_false",dest="daemonize",default=True,
                 help="Do not daemonize. Run at the foreground")
         self.opt_parser.add_option("-V","--version",action="store_true",dest="show_version",default=False,
@@ -50,6 +52,7 @@ class Daemon(object):
         # Read config
         self.pidfile=None
         self.config=None
+        self.instance_id=self.options.instance_id
         self.load_config()
         # GC statistics collector
         self.gc_stats=GCStats()
@@ -79,7 +82,7 @@ class Daemon(object):
         if not first_run:
             self.on_load_config()
         if self.config.get("main","logfile"):
-            set_crashinfo_context(self.daemon_name,os.path.dirname(self.config.get("main","logfile")))
+            set_crashinfo_context(self.daemon_name,os.path.dirname(self.config.get("main","logfile").replace("{{instance}}", self.instance_id)))
         else:
             set_crashinfo_context(None,None)
         # Set up logging
@@ -93,13 +96,13 @@ class Daemon(object):
                 loglevel=self.LOG_LEVELS[self.config.get("main","loglevel")]
                 logging.root.setLevel(loglevel)
                 rf_handler=logging.handlers.RotatingFileHandler(
-                    filename=self.config.get("main","logfile"),
+                    filename=self.config.get("main","logfile").replace("{{instance}}", self.instance_id),
                     maxBytes=self.config.getint("main","logsize"),
                     backupCount=self.config.getint("main","logfiles")
                 )
                 rf_handler.setFormatter(logging.Formatter('%(asctime)s %(message)s',None))
                 logging.root.addHandler(rf_handler)
-            self.pidfile=self.config.get("main","pidfile")
+            self.pidfile=self.config.get("main","pidfile").replace("{{instance}}", self.instance_id)
         else:
             logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(message)s')
     ##
