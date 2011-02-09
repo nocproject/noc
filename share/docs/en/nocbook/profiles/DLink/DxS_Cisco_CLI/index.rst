@@ -1,7 +1,7 @@
 .. _DLink.DxS_Cisco_CLI:
 
-DLink.DxS
-=============
+DLink.DxS_Cisco_CLI
+===================
 
 ====== =================================
 Vendor `D-Link <http://www.dlink.com/>`_
