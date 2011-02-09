@@ -18,14 +18,20 @@ class Script(NOCScript):
     def execute(self,address,count=None,source_address=None,size=None,df=None):
         if ":" in address:
             cmd="ping ipv6 %s"%address
+            if count:
+                cmd+=" -n %d"%int(count)
+            if source_address:
+                cmd+=" -s %s"%source_address
+            if size:
+                cmd+=" -l %d"%int(size)
         else:
             cmd="ping ip %s"%address
-        if count:
-            cmd+=" ntimes %d"%int(count)
-        if source_address:
-            cmd+=" source %s"%source_address
-        if size:
-            cmd+=" length %d"%int(size)
+            if count:
+                cmd+=" ntimes %d"%int(count)
+            if source_address:
+                cmd+=" source %s"%source_address
+            if size:
+                cmd+=" length %d"%int(size)
         # Don't implemented, may be in future firmware revisions ?
         #if df:
         #    cmd+=" df-bit"
