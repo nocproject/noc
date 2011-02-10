@@ -18,25 +18,26 @@ class Script(NOCScript):
     def execute(self):
         r=[]
         for match in self.rx_line.finditer(self.cli("show interfaces switchport")):
-            trunk = match.group("mode").startswith("TRUNK")
-            vlans = match.group("vlans")
-            if vlans == "ALL":
-                tagged = range(1,4095)
+            trunk = match.group("mode") == "TRUNK"
+            if trunk:
+                vlans = match.group("vlans")
+                if vlans == "ALL":
+                    tagged = range(1,4095)
+                else:
+                    tagged = self.expand_rangelist(vlans)
             else:
-                tagged = self.expand_rangelist(match.group("vlans"))
-            interface = match.group("interface")
+                tagged = []
             members = []
+            interface = match.group("interface")
             if interface.startswith("AggregatePort"):
                 shortname = self.profile.convert_interface_name(interface)
-                print "\n\n\n %s \n\n\n"%shortname
                 for p in self.scripts.get_portchannel():
-                    print "\n\n\n %s \n\n\n"%p["interface"]
                     if p["interface"] == shortname:
                         members = p["members"]
             r+=[{
                 "interface"      : interface,
-                "status"         : True,
-                #"description" : "qwe";
+                "status"         : match.group("status") == "enabled",
+                #"description"    : "Dummy";
                 "802.1Q Enabled" : trunk,
                 "802.1ad Tunnel" : False,
                 "untagged"       : int(match.group("untagged")),
