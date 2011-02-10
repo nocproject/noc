@@ -13,7 +13,7 @@ class DLink_DxS_Cisco_CLI_get_portchannel_Test(ScriptTestCase):
     platform='DGS-3610-26G'
     version='10.3(5T16)'
     input={}
-    result=[{'interface': 'Po 1', 'members': ['Gi 0/1', 'Gi 0/2'], 'type': 'L'}]
+    result=[{'interface': 'Ag 1', 'members': ['Gi 0/1', 'Gi 0/2'], 'type': 'L'}]
     motd='\n\n'
     cli={
 'show interfaces status | i AggregatePort':  'show interfaces status | i AggregatePort\nAggregatePort 1          down      1     Unknown  Unknown   fiber\n',

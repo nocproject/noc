@@ -26,7 +26,7 @@ class Script(NOCScript):
             for match1 in self.rx_line1.finditer(data1):
                 members+=[match1.group("interface")]
             r+=[{
-                "interface" : "Po %i"%port,
+                "interface" : "Ag %i"%port,
                 "members"   : members,
                 "type"      : "L", #<!> TODO: port-channel type detection
                 }]
