@@ -61,5 +61,8 @@ class Notify(NotifyBase):
         except smtplib.SMTPSenderRefused,why:
             self.error("Sender refused: %s"%str(why))
             return False
+        except smtplib.SMTPServerDisconnected, why:
+            self.error("Server disconnected: %s"%str(why))
+            return False
         #
         return True
