@@ -9,7 +9,6 @@
 """
 ## Python modules
 import re
-import binascii
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetLLDPNeighbors, MACAddressParameter
@@ -56,7 +55,7 @@ class Script(NOCScript):
     
 def parse_neighbor(text):
     rx_ngh_line=re.compile(r"Neighbor[^\n]+\n(?P<neighbor>.*?Expired time[^\n]+)",re.MULTILINE|re.DOTALL|re.IGNORECASE)
-    rx_neigh=re.compile(r"Chassis\s*ID\s*:\s*(?P<id>[^\n]+).*?Port\s*ID\s*(sub)*type\s*:\s*(?P<p_type>\S+).*?Port\s*ID\s*:\s*(?P<p_id>[^\n]+).*?Sys.*?name\s*:\s*(?P<name>[^\n]+).*?Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)",re.MULTILINE|re.IGNORECASE|re.DOTALL)
+    rx_neigh=re.compile(r"Chassis\s*ID\s*:\s*(?P<id>\S+).*?Port\s*ID\s*(sub)*type\s*:\s*(?P<p_type>\S+).*?Port\s*ID\s*:\s*(?P<p_id>\S+).*?Sys.*?name\s*:\s*(?P<name>[^\n]+).*?Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)",re.MULTILINE|re.IGNORECASE|re.DOTALL)
     n=[]
     for match_n in rx_ngh_line.finditer(text):
 	for match_data in rx_neigh.finditer(match_n.group("neighbor")):
@@ -66,7 +65,7 @@ def parse_neighbor(text):
                 if n["remote_port_subtype"]==3:
                     n["remote_port"]=MACAddressParameter().clean(match_data.group("p_id"))
                 else:
-		    n["remote_port"]=match_data.group("p_id").rstrip(" ")
+		    n["remote_port"]=match_data.group("p_id")
                 n["remote_chassis_id"]=match_data.group("id")
                 n["remote_system_name"]=match_data.group("name")
                 # Get capability
