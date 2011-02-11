@@ -428,6 +428,39 @@ class Prefix(models.Model):
             ORDER BY from_address, to_address
             """, [self.vrf.id, self.afi, self.prefix, self.prefix, self.prefix]))
     
+    ##
+    ## Rebase prefix to a new location
+    ##
+    def rebase(self, vrf, new_prefix):
+        c=connection.cursor()
+        b=IP.prefix(self.prefix)
+        nb=IP.prefix(new_prefix)
+        # Rebase nested prefixes
+        r=[] # (prefix, new_prefix)
+        for p in Prefix.objects.raw("""
+            SELECT *
+            FROM   ip_prefix
+            WHERE
+                    vrf_id=%s
+                AND prefix<<=%s
+        """, [self.vrf.id, self.prefix]):
+            pp=IP.prefix(p.prefix)
+            r+=[(p.prefix, pp.rebase(b, nb).prefix)]
+        for op, np in r:
+            c.execute("UPDATE ip_prefix SET prefix=%s, vrf_id=%s WHERE prefix=%s AND vrf_id=%s", [np, vrf.id, op, self.vrf.id])
+        # Rebase addresses
+        r=[]
+        for a in Address.objects.raw("""
+            SELECT  *
+            FROM    ip_address
+            WHERE
+                    vrf_id=%s
+                AND address<<=%s
+        """,[self.vrf.id, self.prefix]):
+            r+=[(a.address, IP.prefix(a.address).rebase(b, nb).address)]
+        for oa, na in r:
+            c.execute("UPDATE ip_address SET address=%s, vrf_id=%s WHERE address=%s AND vrf_id=%s", [na, vrf.id, oa, self.vrf.id])
+        return Prefix.objects.get(vrf=vrf, prefix=new_prefix)
 
 ##
 ## Allocate address
