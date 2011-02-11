@@ -460,6 +460,28 @@ class Prefix(models.Model):
             r+=[(a.address, IP.prefix(a.address).rebase(b, nb).address)]
         for oa, na in r:
             c.execute("UPDATE ip_address SET address=%s, vrf_id=%s WHERE address=%s AND vrf_id=%s", [na, vrf.id, oa, self.vrf.id])
+        # Rebase permissions
+        # move all permissions to the nested blocks
+        r=set([a.prefix for a in PrefixAccess.objects.raw("""
+            SELECT  *
+            FROM    ip_prefixaccess
+            WHERE
+                    vrf_id=%s
+                AND prefix<<=%s
+            """,[self.vrf.id, self.prefix])])
+        for p in r:
+            np=IP.prefix(p).rebase(b, nb).prefix
+            c.execute("UPDATE ip_prefixaccess SET prefix=%s, vrf_id=%s WHERE prefix=%s AND vrf_id=%s",[np, vrf.id, p, self.vrf.id])
+        # create permissions for covered blocks
+        for a in PrefixAccess.objects.raw("""
+            SELECT  *
+            FROM    ip_prefixaccess
+            WHERE
+                    vrf_id=%s
+                AND prefix >> %s
+            """, [self.vrf.id, self.prefix]):
+            PrefixAccess(user=a.user, vrf=vrf, afi=a.afi, prefix=new_prefix, can_view=a.can_view, can_change=a.can_change).save()
+        # Return rebased prefix
         return Prefix.objects.get(vrf=vrf, prefix=new_prefix)
 
 ##
