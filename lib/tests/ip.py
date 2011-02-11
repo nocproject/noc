@@ -217,6 +217,19 @@ class IPv4TestCase(TestCase):
         self.assertEquals(repr(IPv4("192.168.0.0/24").wildcard), '<IPv4 0.0.0.255/32>')
         self.assertEquals(repr(IPv4("192.168.0.0/30").wildcard), '<IPv4 0.0.0.3/32>')
     
+    def test_rebase(self):
+        # prefix, base, new base, result
+        data=[
+            ("192.168.0.0/24", "192.168.0.0/24", "192.168.1.0/24", "192.168.1.0/24"),
+            ("192.168.0.0/25", "192.168.0.0/24", "192.168.1.0/24", "192.168.1.0/25"),
+            ("192.168.0.128/25", "192.168.0.0/24", "192.168.1.0/24", "192.168.1.128/25"),
+            ("192.168.0.130/32", "192.168.0.0/24", "192.168.1.0/24", "192.168.1.130/32"),
+            ("192.168.0.130/32", "192.168.0.128/25", "192.168.1.0/24", "192.168.1.2/32"),
+        ]
+        
+        for p, b, nb, r in data:
+            self.assertEquals(IPv4(p).rebase(IPv4(b), IPv4(nb)), IPv4(r))
+        
 
 ##
 ## IPv6 Prefix unittests
@@ -378,4 +391,12 @@ class IPv6TestCase(TestCase):
     def test_digits(self):
         self.assertEquals(IPv6("2001:db8::1").digits, ["2","0","0","1","0","d","b","8","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","1"])
     
+    def test_rebase(self):
+        # prefix, base, new base, result
+        data=[
+            ("2001:db8::7/128", "2001:db8::/32", "2001:db9::/32", "2001:db9::7/128"),
+        ]
+        
+        for p, b, nb, r in data:
+            self.assertEquals(IPv6(p).rebase(IPv6(b), IPv6(nb)), IPv6(r))
 
