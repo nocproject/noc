@@ -168,6 +168,14 @@ class IP(object):
         else:
             return spot
     
+    ##
+    ## Rebase to a new base
+    ##
+    def rebase(self, base, new_base):
+        pb=list(self.iter_bits())[base.mask:]
+        nb=list(new_base.iter_bits())+[0]*(base.mask-new_base.mask)+pb
+        return self.from_bits(nb)
+    
 
 ##
 ## IPv4 prefix
@@ -210,7 +218,7 @@ class IPv4(IP):
     ## == operator
     ##
     def __eq__(self,other):
-        return self.d==other.d and self.mask==other.mask
+        return self.afi==other.afi and self.d==other.d and self.mask==other.mask
     
     ##
     ## != operator
@@ -435,7 +443,7 @@ class IPv6(IP):
     ## == operator
     ##
     def __eq__(self,other):
-        return self.d0==other.d0 and self.d1==other.d1 and self.d2==other.d2 and self.d3==other.d3 and self.mask==other.mask
+        return self.afi==other.afi and self.d0==other.d0 and self.d1==other.d1 and self.d2==other.d2 and self.d3==other.d3 and self.mask==other.mask
     
     ##
     ## != operator
