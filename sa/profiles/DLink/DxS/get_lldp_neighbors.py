@@ -31,6 +31,7 @@ class Script(NOCScript):
     rx_remote_chassis_id=re.compile(r"Chassis ID\s+: (?P<id>.+)",re.MULTILINE|re.IGNORECASE)
     rx_remote_port_id_subtype=re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
     rx_remote_port_id=re.compile(r"Port ID\s+: (.*[:/])*(?P<port>.+)",re.MULTILINE|re.IGNORECASE)
+    rx_remote_port_id2=re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)",re.IGNORECASE)
     rx_remote_system_name=re.compile(r"System Name\s+: (?P<name>.+)",re.MULTILINE|re.IGNORECASE)
     rx_remote_capabilities=re.compile(r"System Capabilities\s+: (?P<capabilities>.+)",re.MULTILINE|re.IGNORECASE)
 
@@ -129,6 +130,16 @@ class Script(NOCScript):
                     print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
                     continue
                 n["remote_port"] = match.group("port").strip()
+                # On DES-3028/52 Series "Port ID" may be typed as
+                # "RMON Port 28 on Unit 1"
+                if n["remote_port_subtype"] == 7 \
+                and n["remote_port"].lower().startswith("RMON Port"):
+                    match=self.rx_remote_port_id2.search(n["remote_port"])
+                    if not match:
+                        # Debug string
+                        print "\n\n\n\n\nInvalid remote_port_id\n\n\n\n\n"
+                        continue
+                    n["remote_port"] = match.group("port")
 
                 # remote_system_name
                 match=self.rx_remote_system_name.search(s1)
