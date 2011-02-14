@@ -455,7 +455,7 @@ class ConnectedTCPSocket(TCPSocket):
         if self.local_address:
             self.socket.bind((self.local_address,0))
         e=self.socket.connect_ex((self.address,self.port))
-        if e in (ETIMEDOUT, ECONNREFUSED):
+        if e in (ETIMEDOUT, ECONNREFUSED, ENETUNREACH):
             self.on_conn_refused()
             self.close()
             return
