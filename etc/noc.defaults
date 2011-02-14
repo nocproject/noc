@@ -114,6 +114,8 @@ logo_url = /static/img/logo.png
 logo_width = 43
 # Logo height
 logo_height = 21
+# favicon url
+favicon_url = /static/img/favicon/ocean-32x32.png
 
 #
 # cm module setup
