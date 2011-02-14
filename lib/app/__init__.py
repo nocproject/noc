@@ -18,11 +18,21 @@ from noc.settings import config,IS_WEB
 ##      "installation_name"
 ##
 def setup_processor(request):
+    favicon_url=config.get("customization", "favicon_url")
+    if favicon_url.endswith(".png"):
+        favicon_mime="image/png"
+    elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
+        favicon_mime="image/jpeg"
+    else:
+        favicon_mime=None
+    
     return {
         "setup" : {
-            "installation_name" : config.get("customization","installation_name"),
-            "logo_url"          : config.get("customization","logo_url"),
-            "logo_width"        : config.get("customization","logo_width"),
-            "logo_height"       : config.get("customization","logo_height"),
+            "installation_name" : config.get("customization", "installation_name"),
+            "logo_url"          : config.get("customization", "logo_url"),
+            "logo_width"        : config.get("customization", "logo_width"),
+            "logo_height"       : config.get("customization", "logo_height"),
+            "favicon_url"       : favicon_url,
+            "favicon_mime"      : favicon_mime,
         }
     }

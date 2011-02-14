@@ -327,6 +327,12 @@ logo_width
 ^^^^^^^^^^
 A width of the logo in pixels
 
+.. _noc-conf-customization-favicon_url:
+
+favicon_url
+^^^^^^^^^^^
+An url for page icon
+
 .. _noc-conf-path:
 
 [path] section
