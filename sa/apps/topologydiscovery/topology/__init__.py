@@ -62,7 +62,7 @@ class TopologyDiscovery(object):
     ##
     ## data is a list of (managed_object,IGetTopologyData)
     ##
-    def __init__(self,data,mac=True,per_vlan_mac=False,arp=True,lldp=True,stp=True,cdp=False):
+    def __init__(self, data, mac=True, per_vlan_mac=False, arp=True, lldp=True, stp=True, cdp=False, mac_port_bindings=False):
         #
         self.links=[] # List of Link
         self.object_links={} # object->link
@@ -70,6 +70,7 @@ class TopologyDiscovery(object):
         self.object_interfaces={}      # o -> interfaces list
         self.portchannels={}           # o -> portchannel -> members
         self.portchannel_interfaces={} # o -> interface -> portchannel
+        self.mac_bindings=[]           # (object, interface, mac, ip)
         # Find objects
         for o,d in data:
             # Populate objects
@@ -110,6 +111,9 @@ class TopologyDiscovery(object):
                 for R in t.discover():
                     self.add_link(R,"MAC")
                 t.dot("mac")
+                if mac_port_bindings:
+                    self.mac_port_bindings=list(t.get_mac_port_bindings())
+                #
         # LLDP Topology discovery
         if lldp:
             t=LLDPTopology(data)
