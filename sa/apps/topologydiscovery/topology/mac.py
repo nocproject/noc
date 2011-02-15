@@ -163,7 +163,7 @@ class MACTopology(Topology):
         self.interface_vlans={}       # (object,interface)->set of vlans
         self.mac_interfaces={}        # mac_label -> [(object,interface)]
         self.object_macs={}
-        self.fib=FIB()                
+        self.fib=FIB()
         self.data=data
         super(MACTopology,self).__init__(data,hints)
     
@@ -239,36 +239,6 @@ class MACTopology(Topology):
                 g+=1
                 seen.add(I)
         return mac_interfaces
-    ##
-    ## Detect access interfaces and populate FIB
-    ##
-    def process_access_interfaces(self,mac_interfaces):
-        processed=set()
-        for m,I in mac_interfaces:
-            one=set()
-            many=set()
-            one_vlan=set()
-            many_vlans=set()
-            for o,i in I:
-                if self.interface_macs[o,i]==1:
-                    one.add((o,i))
-                else:
-                    many.add((o,i))
-                if len(self.interface_vlans[o,i])==1:
-                    one_vlan.add((o,i))
-                else:
-                    many_vlans.add((o,i))
-            if len(one)==1 and len(many)>0:
-                o2,i2=list(one)[0]
-                for o,i in many:
-                    self.fib.add(o,o2,i)
-                processed.add(m)
-            elif len(one_vlan)==1 and len(many_vlans)>0 and False:
-                o2,i2=list(one_vlan)[0]
-                for o,i in many_vlans:
-                    self.fib.add(o,o2,i)
-                processed.add(m)
-        return [(m,I) for m,I in mac_interfaces if m not in processed]
     
     ##
     ## Remove MAC groups that contained within other groups
@@ -365,7 +335,7 @@ class MACTopology(Topology):
         self.refine_fib()
         self.fib.report("Refine FIB")
         self.fib.classify_objects()
-        if True:
+        if False:
             print "Unprocessed entries: ",len(mac_interfaces)
             for m,I in mac_interfaces:
                 print str(m)+":"
@@ -384,6 +354,52 @@ class MACTopology(Topology):
                 print "       Interface |FIB| MACS | VLANS"
                 for i in sorted(interfaces[o]):
                     print "    %12s | %s | %04d | %04d"%(i,"+" if self.fib.ilookup(o,i) else ("?" if len(self.interface_vlans[o,i])>1 else "-"),self.interface_macs[o,i],len(self.interface_vlans[o,i]))
+    
+    ##
+    ## Generate (object, interface, mac) database
+    ##
+    def get_mac_port_bindings(self):
+        import re
+        rx_m=re.compile(r"^\[(\d+)\](\S+)$")
+        # Build topology links
+        topo=set() # (o, i)
+        for o1, i1, o2, i2 in self.get_links():
+            topo.add((o1, i1))
+            topo.add((o2, i2))
+        # Process ARP cache
+        arp={} # mac->ip
+        for o,d in self.data:
+            if not d["has_mac"] or not d["has_arp"]:
+                continue
+            for r in d["arp"]:
+                ip=r["ip"]
+                mac=r["mac"]
+                arp[mac]=ip
+        # 
+        macs={} # mac -> interfaces
+        seen=set()
+        for m in self.mac_interfaces:
+            match=rx_m.match(m)
+            if match:
+                vlan,mac=match.groups()
+                if mac in seen:
+                    continue
+                if mac in macs:
+                    del macs[mac]
+                    continue
+                macs[mac]=[(o, i) for o,i in self.mac_interfaces[m] if (o, i) not in topo]
+        r=[] # (object, interface, mac)
+        for m in macs:
+            I=macs[m]
+            if len(I)==1:
+                o,i=I[0]
+                r+=[(o, i, m)]
+        for o, i, m in r:
+            try:
+                ip=arp[m]
+            except KeyError:
+                ip=""
+            yield (o, i, m, ip)
     
     ##
     ## Generate links using FIB
