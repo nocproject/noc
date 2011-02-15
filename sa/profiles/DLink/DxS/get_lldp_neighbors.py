@@ -130,10 +130,10 @@ class Script(NOCScript):
                     print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
                     continue
                 n["remote_port"] = match.group("port").strip()
-                # On DES-3028/52 Series "Port ID" may be typed as
+                # On DES-3028/52 Series "Port ID" may be typed like
                 # "RMON Port 28 on Unit 1"
                 if n["remote_port_subtype"] == 7 \
-                and n["remote_port"].lower().startswith("RMON Port"):
+                and n["remote_port"].lower().startswith("rmon port"):
                     match=self.rx_remote_port_id2.search(n["remote_port"])
                     if not match:
                         # Debug string
