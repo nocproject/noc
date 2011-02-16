@@ -26,3 +26,5 @@ class Script(NOCScript):
             self.cli("exit")
         self.save_config()
         return True
+
+

@@ -19,9 +19,10 @@ class Script(NOCScript):
     name="HP.ProCurve9xxx.get_version"
     implements=[IGetVersion]
     
-    rx_ver=re.compile(r"^Image stamp:\s+\S+\n[^\n]+?\n\s*(?P<version>\S+)\n\s+\S+\nBoot Image:\s+\S+\n$",re.MULTILINE|re.DOTALL)
+    rx_sw_ver=re.compile(r"SW:\sVersion\s(?P<version>\S+)",re.MULTILINE|re.DOTALL)
+    rx_hw_ver=re.compile(r"HW:\sProCurve\s(?P<version>\S+)",re.MULTILINE|re.DOTALL)
     rx_snmp_ver=re.compile(r"ProCurve\s+\S+\s+\S+\s(?P<platform>\S+)\,\s+\S+\s+Version\s+(?P<version>\S+).+$")
-    rx_motd=re.compile(r"ProCurve\s+\S+\s+(?P<platform>\S+)",re.IGNORECASE|re.MULTILINE)
+
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
             try:
@@ -34,17 +35,14 @@ class Script(NOCScript):
                 }
             except self.snmp.TimeOutError:
                 pass
-        # ProCurve does not returns platform via CLI,
-        # While still displays it in message of the day
-        # Try to fetch platform
-        match=self.re_search(self.rx_motd, self.motd)
-        platform=match.group("platform") if match else "ProCurve"
+
         # Get version
         v=self.cli("show version")
-        match=self.re_search(self.rx_ver, v)
+        match1=self.re_search(self.rx_sw_ver, v)
+        match2=self.re_search(self.rx_hw_ver, v)
         return {
             "vendor"    : "HP",
-            "platform"  : platform,
-            "version"   : match.group("version"),
+            "platform"  : match2.group("version"),
+            "version"   : match1.group("version"),
         }
     

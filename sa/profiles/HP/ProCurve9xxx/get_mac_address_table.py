@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
+
 ## Python modules
 import re
 ## NOC modules
@@ -24,13 +25,14 @@ class Script(NOCScript):
     ## Parse MAC address table
     ##
     dataline = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}")
-    def parse_mac_table(s):
+    def parse_mac_table(self,s):
         r=[]
         for line in s.splitlines():
             if self.dataline.match(line):
                l=line.split()
-               r.append([l[0],l[1]])
+               r.append([l[0],l[1],l[3]])
         return r
+    
     ##
     def execute(self,interface=None,vlan=None,mac=None):
         cmd="show mac-address"
@@ -42,14 +44,17 @@ class Script(NOCScript):
             rmac=mac.replace(":","").lower()
         r=[]
         for v in vlans:
-            for m,port in self.parse_mac_table(self.cli("show mac-address vlan %d"%v)):
-                rrmac=m.replace(".","").lower()
-                if (not interface or port==interface) and (not mac or rmac==rrmac):
-                    r+=[{
-                        "vlan_id"    : v,
-                        "mac"        : m,
-                        "interfaces" : [port],
-                        "type"       : "D"
-                    }]
+#            try:
+                for m,port,type in self.parse_mac_table(self.cli("show mac-address vlan %d" % v)):
+                    rrmac=m.replace(".","").lower()
+                    if (not interface or port==interface) and (not mac or rmac==rrmac):
+                        r+=[{
+                            "vlan_id"    : v,
+                            "mac"        : m,
+                            "interfaces" : [port],
+                            "type"       : type
+                        }]
+#            except TypeError:
+#                r = []             
         return r
     

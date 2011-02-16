@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## HP.ProCurve.get_fdp_neighbors
+## HP.ProCurve9xxx.get_fdp_neighbors
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
@@ -10,32 +10,33 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetFDPNeighbors
+import noc.sa.script
+from noc.sa.interfaces import IGetCDPNeighbors
+
+
 ##
-## HP.ProCurve.get_fdp_neighbors
+## HP.ProCurve9xxx.get_fdp_neighbors
 ##
-class Script(NOCScript):
+class Script(noc.sa.script.Script):
     name="HP.ProCurve9xxx.get_fdp_neighbors"
-    implements=[IGetFDPNeighbors]
+    implements=[IGetCDPNeighbors]
     
-    rx_split=re.compile(r"^\s*----.+?\n",re.MULTILINE|re.DOTALL)
+#    rx_entry=re.compile(r"Device ID: (?P<device_id>\S+).+?"
+#        r"Interface: (?P<local_interface>\S+),\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)",re.MULTILINE|re.DOTALL|re.IGNORECASE)
+    rx_entry=re.compile(r"Device ID: (?P<device_id>\S+).+?"
+					r"Interface:\s(?P<local_interface>\S+)\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     def execute(self):
-        r=[]
+        device_id=self.scripts.get_fqdn()
         # Get neighbors
-        v=self.cli("show fdp neighbors")
-        for l in self.rx_split.split(v)[1].splitlines():
-            l=l.strip()
-            if not l:
-                continue
-            data = l.split()
-            local_interface = data[1]
-            r+=[{"local_interface":local_interface,
-                "neighbors":[{ 'remote_capability': data[3],
-                                'remote_device_id' : data[0],
-                                'remote_platform' : data[4],
-                                'remote_port_id' : data[5],
-                                'hold_tm' : data[2]
-                                  }]}]
-        return r
+        neighbors=[]
+        for match in self.rx_entry.finditer(self.cli("show fdp neighbors detail")):
+            neighbors+=[{
+                "device_id"        : match.group("device_id"),
+                "local_interface"  : match.group("local_interface"),
+                "remote_interface" : match.group("remote_interface")
+            }]
+        return {
+            "device_id" : device_id,
+            "neighbors" : neighbors
+        }
     
