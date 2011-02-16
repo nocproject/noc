@@ -171,7 +171,7 @@ class Profile(object):
     # or should be more specific as well
     #
     def generate_prefix_list(self,name,pl,strict=True):
-        raise Excepton("Not implemented")
+        raise Exception("Not implemented")
     #
     # Volatile strings:
     # A list of strings can be changed over time, which
