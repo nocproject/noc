@@ -37,6 +37,13 @@ class SAApplication(Application):
     ##
     def clean_map(self,data):
         return dict([(k[4:],v) for k,v in data.items() if k.startswith("map_")])
+    
+    ##
+    ##
+    ##
+    def render_result(self, request, result):
+        return self.render(request,"sa_app_result.html",{"result":result})
+    
     ##
     ## Display a list of selectors
     ##
@@ -116,7 +123,7 @@ class SAApplication(Application):
         if isinstance(result,Report):
             # Convert report instance to HTML
             result=result.to_html()
-        return self.render(request,"sa_app_result.html",{"result":result})
+        return self.render_result(request, result)
     view_task.url=r"^task/(?P<task_id>\d+)/$"
     view_task.url_name="task"
     view_task.access=HasPerm("run")
