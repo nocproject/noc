@@ -20,6 +20,14 @@ from tagging.models import Tag
 ##
 ##
 ##
+class LabelWidget(Input):
+    def render(self, name, value, attrs=None):
+        return value
+    
+
+##
+##
+##
 class ColorPickerWidget(forms.TextInput):
     class Media:
         css={
