@@ -61,9 +61,10 @@ class Registry(object):
                         if f=="__init__.py":
                             f=""
                         else:
-                            f="."+f[:-3]
-                        if f in self.exclude:
-                            continue
+                            f=f[:-3]
+                            if f in self.exclude:
+                                continue
+                            f="."+f
                         __import__(mb+f,{},{},self.classname)
         self.is_registered=True
     #
