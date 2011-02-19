@@ -18,7 +18,19 @@ class Reportreportstaleconfigs(SimpleReport):
             columns=["Config",TableColumn("Last Pull",format="datetime")],
             query="""
                 SELECT repo_path,last_pull
-                FROM cm_config WHERE last_pull IS NULL OR last_pull<('now'::timestamp-'%d days'::interval)
+                FROM cm_config
+                WHERE
+                        (
+                            last_pull IS NULL
+                        OR  last_pull<('now'::timestamp-'%d days'::interval)
+                        )
+                    AND managed_object_id IN (
+                        SELECT  id
+                        FROM    sa_managedobject
+                        WHERE
+                                    is_managed
+                                AND is_configuration_managed
+                        )
                 ORDER BY 2
             """%STALE_INTERVAL,
             enumerate=True)
