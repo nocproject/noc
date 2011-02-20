@@ -31,7 +31,11 @@ def reduce_route(task):
         for instance in mt.script_result:
             if instance["type"]=="ip" and instance["forwarding_instance"]=="default":
                 for iface in instance["interfaces"]:
+                    if not iface["admin_status"]:
+                        continue
                     for subiface in iface["subinterfaces"]:
+                        if not iface["admin_status"]:
+                            continue
                         if "is_ipv4" in subiface and subiface["is_ipv4"]:
                             # Get description
                             if "description" in subiface and subiface["description"]:
@@ -64,6 +68,7 @@ class RouteImportAppplication(SAApplication):
         prefix=forms.CharField()
         description=forms.CharField()
         objects=forms.CharField(required=False, widget=LabelWidget)
+        DELETE=forms.BooleanField(required=False)
         
         def clean_prefix(self):
             p=self.cleaned_data["prefix"]
@@ -79,7 +84,7 @@ class RouteImportAppplication(SAApplication):
         for prefix in result:
             description, objects=result[prefix]
             initial+=[{"prefix": prefix, "description": description, "objects": ", ".join(objects)}]
-        AddAddressFormSet=formset_factory(self.AddAddressForm, extra=0)
+        AddAddressFormSet=formset_factory(self.AddAddressForm, extra=0, can_delete=True)
         formset=AddAddressFormSet(initial=initial)
         return self.render(request, "found.html", formset=formset)
     
@@ -90,14 +95,17 @@ class RouteImportAppplication(SAApplication):
             url_name="submit",
             access=HasPerm("submit"))
     def view_submit(self, request):
-        AddAddressFormSet=formset_factory(self.AddAddressForm, extra=0)
+        AddAddressFormSet=formset_factory(self.AddAddressForm, extra=0, can_delete=True)
         formset=AddAddressFormSet(request.POST)
         c=0
         if formset.is_valid():
             vrf=VRF.get_global()
             asn=AS.default_as()
             for form in formset.forms:
-                prefix=IP.prefix(form.cleaned_data["prefix"])
+                try:
+                    prefix=IP.prefix(form.cleaned_data["prefix"])
+                except AttributeError:
+                    continue # Empty set
                 description=form.cleaned_data["description"]
                 p, created=Prefix.objects.get_or_create(vrf=vrf, afi=prefix.afi, prefix=prefix.normalized.prefix,
                     defaults={"asn": asn, "description": description})
