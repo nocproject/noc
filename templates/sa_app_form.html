@@ -33,7 +33,10 @@ function toggle() {
                 <td>
                     <ul class="sa-object-list">
                         {% for o in objects %}
-                            <li><input type="checkbox" checked name="OBJ:{{o.id}}" class="sa-app-obj" /> {{o.name}}</li>
+                            <li>
+                                <input type="checkbox" checked name="OBJ:{{o.id}}" id="OBJ:{{o.id}}" class="sa-app-obj" />
+                                <label for="OBJ:{{o.id}}">{{o.name}}</label>
+                            </li>
                         {% endfor %}
                     </ul>
                 </td>
