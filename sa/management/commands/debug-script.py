@@ -145,7 +145,8 @@ class ActivatorStub(object):
                 if self.to_save_output:
                     logging.debug("Writing session test to %s"%self.output)
                     self.session_can.dump(self.output)
-                logging.debug("SCRIPT RESULT:\n%s"%pprint.pformat(cPickle.loads(self.script.result)))
+                if self.script.result:
+                    logging.debug("SCRIPT RESULT:\n%s"%pprint.pformat(cPickle.loads(self.script.result)))
                 os._exit(0)
             logging.debug("%d TICKS TO EXIT"%self.wait_ticks)
         else:
