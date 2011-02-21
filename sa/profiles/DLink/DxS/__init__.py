@@ -25,7 +25,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^(?P<hostname>\S+(:\S+)*)#"
     command_disable_pager="disable clipaging"
     command_more="a"
-    command_exit="logout"
+    command_exit="enable clipaging\nlogout"
     command_save_config="save"
     config_volatile=["^%.*?$"]
     ##
