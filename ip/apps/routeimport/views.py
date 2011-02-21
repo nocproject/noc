@@ -102,6 +102,8 @@ class RouteImportAppplication(SAApplication):
             vrf=VRF.get_global()
             asn=AS.default_as()
             for form in formset.forms:
+                if "DELETE" in form.cleaned_data and form.cleaned_data["DELETE"]:
+                    continue
                 try:
                     prefix=IP.prefix(form.cleaned_data["prefix"])
                 except AttributeError:
