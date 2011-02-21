@@ -145,6 +145,7 @@ class ActivatorStub(object):
                 if self.to_save_output:
                     logging.debug("Writing session test to %s"%self.output)
                     self.session_can.dump(self.output)
+                logging.debug("SCRIPT RESULT:\n%s"%pprint.pformat(cPickle.loads(self.script.result)))
                 os._exit(0)
             logging.debug("%d TICKS TO EXIT"%self.wait_ticks)
         else:
@@ -157,8 +158,8 @@ class ActivatorStub(object):
     def run_script(self,_script_name,access_profile,callback,timeout=0,**kwargs):
         pv,pos,sn=_script_name.split(".",2)
         profile=profile_registry["%s.%s"%(pv,pos)]()
-        script=script_registry[_script_name](profile,self,access_profile,**kwargs)
-        script.start()
+        self.script=script_registry[_script_name](profile,self,access_profile,**kwargs)
+        self.script.start()
     
     def request_call(self,f,*args,**kwargs):
         logging.debug("Requesting call: %s(*%s,**%s)"%(f,args,kwargs))
