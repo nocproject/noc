@@ -10,8 +10,8 @@ from noc.lib.test import ScriptTestCase
 class OS_FreeBSD_get_vlans_Test(ScriptTestCase):
     script="OS.FreeBSD.get_vlans"
     vendor="OS"
-    platform='<<<INSERT YOUR PLATFORM HERE>>>'
-    version='<<<INSERT YOUR VERSION HERE>>>'
+    platform='amd64'
+    version='8.2-PRERELEASE'
     input={}
     result=[{'name': 'em0.256', 'vlan_id': 256}]
     motd='\n'
