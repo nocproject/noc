@@ -436,6 +436,10 @@ class Script(threading.Thread):
             if self.parent is None and self.need_to_save and self.profile.command_save_config:
                 self.debug("Saving config")
                 self.cli(self.profile.command_save_config)
+            # Exit sequence
+            if self.parent is None and self.cli_provider is not None and self.profile.command_exit:
+                self.debug("Exiting")
+                self.cli(self.profile.command_exit)
         except TimeOutError:
             self.error("Timed out")
             self.e_timeout=True

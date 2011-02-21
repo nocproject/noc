@@ -85,7 +85,7 @@ class Profile(object):
     command_disable_pager=None
     # Sequence to gracefully close session
     #
-    command_exit="exit"
+    command_exit=None
     # Sequence to enable priveleged mode
     #
     command_super=None
