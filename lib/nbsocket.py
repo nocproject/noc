@@ -692,12 +692,27 @@ class PopenSocket(Socket):
 ##
 class SocketFactory(object):
     def __init__(self,tick_callback=None):
+        self.setup_poller()
         self.sockets={}     # fileno -> socket
         self.socket_name={} # socket -> name
         self.name_socket={} # name -> socket
         self.new_sockets=[] # list of (socket,name)
         self.tick_callback=tick_callback
         self.register_lock=RLock() # Guard for register/unregister operations
+    
+    ##
+    ## Set up optimal polling function
+    ##
+    def setup_poller(self):
+        if False and hasattr(select,"poll"):
+            # poll()
+            logging.debug("Setting up poll() poller")
+            self.loop=self.loop_poll
+        else:
+            # Fallback to select()
+            logging.debug("Setting up select() poller")
+            self.loop=self.loop_select
+    
     ##
     ## Attack socket to the new_sockets list
     ##
@@ -802,7 +817,10 @@ class SocketFactory(object):
                 socket,name=self.new_sockets.pop(0)
                 self.init_socket(socket,name)
     
-    def loop(self,timeout=1):
+    ##
+    ## Straightforward select() implementation
+    ##
+    def loop_select(self,timeout=1):
         self.create_pending_sockets()
         if self.sockets:
             with self.register_lock:
@@ -835,6 +853,47 @@ class SocketFactory(object):
                 time.sleep(timeout)
         else:
             time.sleep(timeout)
+    
+    ##
+    ## poll() implementation
+    ##
+    def loop_poll(self):
+        self.create_pending_sockets()
+        if self.sockets:
+            poll=select.poll()
+            has_work=False
+            with self.register_lock:
+                for f,s in self.sockets.items():
+                    e=(select.POLLIN if s.can_read() else 0) | (select.POLLOUT if s.can_write() else 0)
+                    poll.register(f, e)
+                    if e:
+                        has_work=True
+            if has_work:
+                try:
+                    E=poll.poll(timeout)
+                except select.error,why:
+                    if why[0]==EINTR:
+                        return
+                    error_report()
+                    return
+                except:
+                    error_report()
+                    return
+                if E:
+                    with self.register_lock:
+                        # Write events processed before read events
+                        # to catch connection refused causes
+                        for f, e in [(f, e) for f, e in E if e==select.POLLOUT]+[(f, e) for f, e in E if e==select.POLLIN]:
+                            try:
+                                s=self.sockets[f]
+                                self.guarded_socket_call(s, s.handle_write if e==select.POLLIN else s.handle_read)
+                            except KeyError:
+                                pass
+            else:
+                time.sleep(timeout)
+        else:
+            time.sleep(timeout)
+        
     ##
     def run(self,run_forever=False):
         logging.debug("Running socket factory")
