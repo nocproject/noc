@@ -704,7 +704,7 @@ class SocketFactory(object):
     ## Set up optimal polling function
     ##
     def setup_poller(self):
-        if False and hasattr(select,"poll"):
+        if hasattr(select,"poll"):
             # poll()
             logging.debug("Setting up poll() poller")
             self.loop=self.loop_poll
@@ -857,7 +857,7 @@ class SocketFactory(object):
     ##
     ## poll() implementation
     ##
-    def loop_poll(self):
+    def loop_poll(self, timeout):
         self.create_pending_sockets()
         if self.sockets:
             poll=select.poll()
@@ -883,10 +883,10 @@ class SocketFactory(object):
                     with self.register_lock:
                         # Write events processed before read events
                         # to catch connection refused causes
-                        for f, e in [(f, e) for f, e in E if e==select.POLLOUT]+[(f, e) for f, e in E if e==select.POLLIN]:
+                        for f, e in [(f, e) for f, e in E if e==select.EPOLLOUT]+[(f, e) for f, e in E if e==select.EPOLLIN]:
                             try:
                                 s=self.sockets[f]
-                                self.guarded_socket_call(s, s.handle_write if e==select.POLLIN else s.handle_read)
+                                self.guarded_socket_call(s, s.handle_write if e==select.EPOLLOUT else s.handle_read)
                             except KeyError:
                                 pass
             else:
