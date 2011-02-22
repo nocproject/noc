@@ -704,14 +704,18 @@ class SocketFactory(object):
     ## Set up optimal polling function
     ##
     def setup_poller(self):
-        if hasattr(select,"poll"):
+        if False and hasattr(select, "kqueue"):
+            # kevent/kqueue
+            logging.debug("Setting up kevent/kqueue poller")
+            self.inner_loop=self.loop_kevent
+        elif hasattr(select,"poll"):
             # poll()
             logging.debug("Setting up poll() poller")
-            self.loop=self.loop_poll
+            self.inner_loop=self.loop_poll
         else:
             # Fallback to select()
             logging.debug("Setting up select() poller")
-            self.loop=self.loop_select
+            self.inner_loop=self.loop_select
     
     ##
     ## Attack socket to the new_sockets list
@@ -818,82 +822,101 @@ class SocketFactory(object):
                 self.init_socket(socket,name)
     
     ##
-    ## Straightforward select() implementation
+    ## Generic loop wrapper.
+    ## Depends upon inner_loop() set up by constructor
     ##
-    def loop_select(self,timeout=1):
+    def loop(self, timeout=1):
         self.create_pending_sockets()
         if self.sockets:
-            with self.register_lock:
-                r=[f for f,s in self.sockets.items() if s.can_read()]
-                w=[f for f,s in self.sockets.items() if s.can_write()]
-            if r or w:
-                try:
-                    r,w,x=select.select(r,w,[],timeout)
-                except select.error,why:
-                    if why[0]==EINTR:
-                        return
-                    error_report()
-                    return
-                except:
-                    error_report()
-                    return
-                if r or w:
-                    # Write events processed before read events
-                    # to catch connection refused causes
-                    with self.register_lock:
-                        for f in w:
-                            if f in self.sockets:
-                                s=self.sockets[f]
-                                self.guarded_socket_call(s,s.handle_write)
-                        for f in r:
-                            if f in self.sockets:
-                                s=self.sockets[f]
-                                self.guarded_socket_call(s,s.handle_read)
+            n=0
+            events=list(self.inner_loop(timeout))
+            if events:
+                with self.register_lock:
+                    # Reorder write events before write to catch refused connections
+                    for fd, to_write in [(fd, to_write) for fd, to_write in events if to_write]\
+                        +[(fd, to_write) for fd, to_write in events if not to_write]:
+                        try:
+                            s=self.sockets[fd]
+                            self.guarded_socket_call(s, s.handle_write if to_write else s.handle_read)
+                        except KeyError:
+                            pass
             else:
+                # No work in inner loop. Sleep to prevent CPU hogging
                 time.sleep(timeout)
         else:
+            # No sockets initialized. Sleep to prevent CPU hogging
             time.sleep(timeout)
+    
+    ##
+    ## Straightforward select() implementation
+    ##
+    def loop_select(self, timeout):
+        with self.register_lock:
+            r=[f for f,s in self.sockets.items() if s.can_read()]
+            w=[f for f,s in self.sockets.items() if s.can_write()]
+        if r or w:
+            try:
+                r,w,x=select.select(r,w,[],timeout)
+            except select.error,why:
+                if why[0]==EINTR:
+                    raise StopIteration
+                error_report()
+                raise StopIteration
+            except:
+                error_report()
+                raise StopIteration
+            # Yield sockets to write
+            for fd in w:
+                yield fd, True
+            # Yield sockets to read
+            for fd in r:
+                yield fd, False
     
     ##
     ## poll() implementation
     ##
     def loop_poll(self, timeout):
-        self.create_pending_sockets()
-        if self.sockets:
-            poll=select.poll()
-            has_work=False
-            with self.register_lock:
-                for f,s in self.sockets.items():
-                    e=(select.POLLIN if s.can_read() else 0) | (select.POLLOUT if s.can_write() else 0)
-                    poll.register(f, e)
-                    if e:
-                        has_work=True
-            if has_work:
-                try:
-                    E=poll.poll(timeout)
-                except select.error,why:
-                    if why[0]==EINTR:
-                        return
-                    error_report()
-                    return
-                except:
-                    error_report()
-                    return
-                if E:
-                    with self.register_lock:
-                        # Write events processed before read events
-                        # to catch connection refused causes
-                        for f, e in [(f, e) for f, e in E if e==select.EPOLLOUT]+[(f, e) for f, e in E if e==select.EPOLLIN]:
-                            try:
-                                s=self.sockets[f]
-                                self.guarded_socket_call(s, s.handle_write if e==select.EPOLLOUT else s.handle_read)
-                            except KeyError:
-                                pass
-            else:
-                time.sleep(timeout)
-        else:
-            time.sleep(timeout)
-        
+        poll=select.poll()
+        has_work=False
+        with self.register_lock:
+            for f,s in self.sockets.items():
+                e=(select.POLLIN if s.can_read() else 0) | (select.POLLOUT if s.can_write() else 0)
+                poll.register(f, e)
+                if e:
+                    has_work=True
+        if has_work:
+            try:
+                events=poll.poll(timeout*1000)
+            except select.error,why:
+                if why[0]==EINTR:
+                    raise StopIteration
+                error_report()
+                raise StopIteration
+            except:
+                error_report()
+                raise StopIteration
+            for fd, e in events:
+                yield fd, e==select.EPOLLOUT
+    
+    ##
+    ## kevent/kqueue implementation
+    ##
+    def loop_kevent(self, timeout):
+        events=[]
+        kqueue=select.kqueue()
+        with self.register_lock:
+            for f, s in self.sockets.items():
+                if s.can_write():
+                    events+=[select.kevent(f, select.KQ_FILTER_WRITE, select.KQ_EV_ADD)]
+                if s.can_read():
+                    events+=[select.kevent(f, select.KQ_FILTER_READ, select.KQ_EV_ADD)]
+        if events:
+            # register
+            kqueue.control(events, len(events), None) #@todo: FAILED
+            # wait
+            for e in kqueue.control([], len(events), timeout):
+                yield e.ident, e.filter==select.KQ_FILTER_WRITE
+    
     ##
     def run(self,run_forever=False):
         logging.debug("Running socket factory")
