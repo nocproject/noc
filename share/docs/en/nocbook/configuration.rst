@@ -138,6 +138,17 @@ datetime_format
 ^^^^^^^^^^^^^^^
 Default date and time format to be used by noc. See :ref:`datetime_format` for format characters description.
 
+.. _noc-conf-main-polling_method:
+
+polling_method
+^^^^^^^^^^^^^^
+Socket factory polling method. Available choices are:
+
+* optimal - Use optimal available polling method
+* select - Use select() method (default)
+* poll - Use poll() method
+* kevent - Use kevent/kqueue method
+
 .. _noc-conf-main-installed_apps:
 
 installed_apps
