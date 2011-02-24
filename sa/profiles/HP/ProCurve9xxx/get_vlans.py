@@ -28,6 +28,8 @@ class Script(NOCScript):
             match=self.rx_vlan_line.match(l.strip())
             if match:
                 name=match.group("name")
+                if name == "[None]":
+                    name = 'VLAN%s' % match.group("vlan_id")
                 vlan_id=int(match.group("vlan_id"))
                 r+=[{
                     "vlan_id": vlan_id,
