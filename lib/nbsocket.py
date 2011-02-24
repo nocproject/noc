@@ -704,18 +704,51 @@ class SocketFactory(object):
     ## Set up optimal polling function
     ##
     def setup_poller(self):
-        if False and hasattr(select, "kqueue"):
-            # kevent/kqueue
-            logging.debug("Setting up kevent/kqueue poller")
-            self.inner_loop=self.loop_kevent
-        elif hasattr(select,"poll"):
-            # poll()
-            logging.debug("Setting up poll() poller")
-            self.inner_loop=self.loop_poll
-        else:
-            # Fallback to select()
-            logging.debug("Setting up select() poller")
+        # Enable select()
+        def setup_select_poller():
+            logging.debug("Set up select() poller")
             self.inner_loop=self.loop_select
+        
+        # Enable poll()
+        def setup_poll_poller():
+            logging.debug("Set up poll() poller")
+            self.inner_loop=self.loop_poll
+        
+        # Enable kevent/kqueue
+        def setup_kevent_poller():
+            logging.debug("Set up kevent/kqueue poller")
+            self.inner_loop=self.loop_kevent
+        
+        # Check kevent/kqueue available
+        def has_kevent():
+            return hasattr(select, "kqueue")
+        
+        # Check poll() available
+        def has_poll():
+            return hasattr(select, "poll")
+        
+        # Read settings if available
+        try:
+            from noc.settings import config
+            poller=config.get("main", "polling_method")
+        except ImportError:
+            poller="select"
+        logging.debug("Setting up '%s' poller"%poller)
+        if poller=="optimal":
+            # Detect possibilities
+            if has_kevent(): # kevent
+                setup_kevent_poller()
+            elif has_poll(): # poll
+                setup_poll_poller()
+            else: # Fallback to select
+                setup_select_poller()
+        elif poller=="kevent" and has_kevent():
+            setup_kevent_poller()
+        elif poller=="poll" and has_poll():
+            setup_poll_poller()
+        else:
+            # Fallback to select
+            setup_select_poller()
     
     ##
     ## Attack socket to the new_sockets list
@@ -837,9 +870,9 @@ class SocketFactory(object):
                         +[(fd, to_write) for fd, to_write in events if not to_write]:
                         try:
                             s=self.sockets[fd]
-                            self.guarded_socket_call(s, s.handle_write if to_write else s.handle_read)
                         except KeyError:
-                            pass
+                            continue
+                        self.guarded_socket_call(s, s.handle_write if to_write else s.handle_read)
             else:
                 # No work in inner loop. Sleep to prevent CPU hogging
                 time.sleep(timeout)
@@ -907,14 +940,14 @@ class SocketFactory(object):
         with self.register_lock:
             for f, s in self.sockets.items():
                 if s.can_write():
-                    events+=[select.kevent(f, select.KQ_FILTER_WRITE, select.KQ_EV_ADD)]
+                    events+=[select.kevent(f, select.KQ_FILTER_WRITE, select.KQ_EV_ADD | select.KQ_EV_ENABLE)]
                 if s.can_read():
-                    events+=[select.kevent(f, select.KQ_FILTER_READ, select.KQ_EV_ADD)]
+                    events+=[select.kevent(f, select.KQ_FILTER_READ, select.KQ_EV_ADD | select.KQ_EV_ENABLE)]
         if events:
             # register
-            kqueue.control(events, len(events), None) #@todo: FAILED
+            print kqueue.control(events, len(events), None) #@todo: FAILED
             # wait
-            for e in kqueue.control([], len(events), timeout):
+            for e in kqueue.control(None, len(events), timeout):
                 yield e.ident, e.filter==select.KQ_FILTER_WRITE
     
     ##
