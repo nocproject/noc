@@ -10,7 +10,7 @@
 # Python modules
 import re
 # NOC modules
-import noc.sa.script
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
 ##
 ## Force10.FTOS.get_interfaces
@@ -22,7 +22,8 @@ from noc.sa.interfaces import IGetInterfaces
 ## @todo: isis, ospf, bgp, rip
 ## @todo: ip unnumbered
 ## @todo: subinterfaces
-class Script(noc.sa.script.Script):
+## @todo: Q-in-Q
+class Script(NOCScript):
     name="Force10.FTOS.get_interfaces"
     implements=[IGetInterfaces]
     
