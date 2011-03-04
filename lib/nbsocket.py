@@ -692,13 +692,14 @@ class PopenSocket(Socket):
 ##
 class SocketFactory(object):
     def __init__(self,tick_callback=None):
-        self.setup_poller()
         self.sockets={}     # fileno -> socket
         self.socket_name={} # socket -> name
         self.name_socket={} # name -> socket
         self.new_sockets=[] # list of (socket,name)
         self.tick_callback=tick_callback
         self.register_lock=RLock() # Guard for register/unregister operations
+        self.get_active_sockets=None # Polling method
+        self.setup_poller()
     
     ##
     ## Set up optimal polling function
@@ -707,17 +708,17 @@ class SocketFactory(object):
         # Enable select()
         def setup_select_poller():
             logging.debug("Set up select() poller")
-            self.inner_loop=self.loop_select
+            self.get_active_sockets=self.get_active_select
         
         # Enable poll()
         def setup_poll_poller():
             logging.debug("Set up poll() poller")
-            self.inner_loop=self.loop_poll
+            self.get_active_sockets=self.get_active_poll
         
         # Enable kevent/kqueue
         def setup_kevent_poller():
             logging.debug("Set up kevent/kqueue poller")
-            self.inner_loop=self.loop_kevent
+            self.get_active_sockets=self.get_active_kevent
         
         # Check kevent/kqueue available
         def has_kevent():
@@ -757,6 +758,7 @@ class SocketFactory(object):
         logging.debug("register_socket(%s,%s)"%(socket,name))
         with self.register_lock:
             self.new_sockets+=[(socket,name)]
+    
     ##
     ## Remove socket from factory
     ##
@@ -770,6 +772,7 @@ class SocketFactory(object):
             self.name_socket.pop(old_name,None)
             if socket in self.new_sockets:
                 self.new_sockets.remove(socket)
+    
     ##
     ## Safe call of socket's method
     ## Returns call status (True/False)
@@ -791,6 +794,7 @@ class SocketFactory(object):
                 error_report()
             return False
         return True
+    
     ##
     ## Call socket's create_socket when necessary
     ## and add socket to the fabric
@@ -856,99 +860,103 @@ class SocketFactory(object):
     
     ##
     ## Generic loop wrapper.
-    ## Depends upon inner_loop() set up by constructor
+    ## Depends upon get_active_sockets() set up by constructor
     ##
     def loop(self, timeout=1):
         self.create_pending_sockets()
         if self.sockets:
-            n=0
-            events=list(self.inner_loop(timeout))
-            if events:
-                with self.register_lock:
-                    # Reorder write events before write to catch refused connections
-                    for fd, to_write in [(fd, to_write) for fd, to_write in events if to_write]\
-                        +[(fd, to_write) for fd, to_write in events if not to_write]:
-                        try:
-                            s=self.sockets[fd]
-                        except KeyError:
-                            continue
-                        self.guarded_socket_call(s, s.handle_write if to_write else s.handle_read)
-            else:
-                # No work in inner loop. Sleep to prevent CPU hogging
-                time.sleep(timeout)
+            r, w=self.get_active_sockets(timeout)
+            logging.debug("Active sockets: Read=%s Write=%s"%(repr(r), repr(w)))
+            # Process write events before read to catch refused connections
+            for fd in w:
+                s=self.sockets.get(fd)
+                if s:
+                    self.guarded_socket_call(s, s.handle_write)
+            # Process read events
+            for fd in r:
+                s=self.sockets.get(fd)
+                if s:
+                    self.guarded_socket_call(s, s.handle_read)
         else:
-            # No sockets initialized. Sleep to prevent CPU hogging
+            # No socket initialized. Sleep to prevent CPU hogging
             time.sleep(timeout)
     
     ##
     ## Straightforward select() implementation
+    ## Returns a list of (read fds, write fds)
     ##
-    def loop_select(self, timeout):
+    def get_active_select(self, timeout):
+        # Get read and write candidates
         with self.register_lock:
-            r=[f for f,s in self.sockets.items() if s.can_read()]
-            w=[f for f,s in self.sockets.items() if s.can_write()]
-        if r or w:
-            try:
-                r,w,x=select.select(r,w,[],timeout)
-            except select.error,why:
-                if why[0]==EINTR:
-                    raise StopIteration
-                error_report()
-                raise StopIteration
-            except:
-                error_report()
-                raise StopIteration
-            # Yield sockets to write
-            for fd in w:
-                yield fd, True
-            # Yield sockets to read
-            for fd in r:
-                yield fd, False
+            r=[f for f, s in self.sockets.items() if s.can_read()]
+            w=[f for f, s in self.sockets.items() if s.can_write()]
+        # Poll socket status
+        try:
+            r, w, x=select.select(r, w, [], timeout)
+            return r, w
+        except select.error, why:
+            if why[0] not in (EINTR,):
+                error_report() # non-ignorable errors
+            return [], []
+        except:
+            error_report()
+            return [], []
     
     ##
     ## poll() implementation
     ##
-    def loop_poll(self, timeout):
+    def get_active_poll(self, timeout):
         poll=select.poll()
-        has_work=False
+        # Get read and write candidates
         with self.register_lock:
-            for f,s in self.sockets.items():
+            for f, s in self.sockets.items():
                 e=(select.POLLIN if s.can_read() else 0) | (select.POLLOUT if s.can_write() else 0)
-                poll.register(f, e)
                 if e:
-                    has_work=True
-        if has_work:
-            try:
-                events=poll.poll(timeout*1000)
-            except select.error,why:
-                if why[0]==EINTR:
-                    raise StopIteration
-                error_report()
-                raise StopIteration
-            except:
-                error_report()
-                raise StopIteration
-            for fd, e in events:
-                yield fd, e==select.EPOLLOUT
+                    poll.register(f, e)
+        # Poll socket status
+        try:
+            events=poll.poll(timeout*1000) # ms->s
+        except select.error,why:
+            if why[0] not in (EINTR,):
+                error_report() # non-ignorable errors
+            return [], []
+        except:
+            return [], []
+        # Build result
+        rset=[]
+        wset=[]
+        for fd, e in events:
+            if e&select.POLLOUT:
+                wset+=[fd]
+            if e&select.POLLIN:
+                rset+=[fd]
+        return rset, wset
     
     ##
     ## kevent/kqueue implementation
+    ## (dumb one)
     ##
-    def loop_kevent(self, timeout):
-        events=[]
+    def get_active_kevent(self, timeout):
+        # Get read and write candidates
         kqueue=select.kqueue()
+        events=[]
         with self.register_lock:
             for f, s in self.sockets.items():
                 if s.can_write():
-                    events+=[select.kevent(f, select.KQ_FILTER_WRITE, select.KQ_EV_ADD | select.KQ_EV_ENABLE)]
+                    events+=[select.kevent(f, select.KQ_FILTER_WRITE, select.KQ_EV_ADD)]
                 if s.can_read():
-                    events+=[select.kevent(f, select.KQ_FILTER_READ, select.KQ_EV_ADD | select.KQ_EV_ENABLE)]
-        if events:
-            # register
-            print kqueue.control(events, len(events), None) #@todo: FAILED
-            # wait
-            for e in kqueue.control(None, len(events), timeout):
-                yield e.ident, e.filter==select.KQ_FILTER_WRITE
+                    events+=[select.kevent(f, select.KQ_FILTER_READ, select.KQ_EV_ADD)]
+        # Register events with kqueue
+        print kqueue.control(events, len(events), None)
+        # Poll events
+        rset=[]
+        wset=[]
+        for e in kqueue.control(None, len(events), timeout):
+            if e.filter&select.KQ_FILTER_WRITE:
+                wset+=[e.ident]
+            if e.filter&select.KQ_FILTER_READ:
+                rset+=[e.ident]
+        return rset, wset
     
     ##
     def run(self,run_forever=False):
