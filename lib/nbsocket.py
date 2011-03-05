@@ -715,6 +715,11 @@ class SocketFactory(object):
             logging.debug("Set up poll() poller")
             self.get_active_sockets=self.get_active_poll
         
+        # Enable epoll()
+        def setup_epoll_poller():
+            logging.debug("Set up epoll() poller")
+            self.get_active_sockets=self.get_active_epoll
+        
         # Enable kevent/kqueue
         def setup_kevent_poller():
             logging.debug("Set up kevent/kqueue poller")
@@ -728,6 +733,10 @@ class SocketFactory(object):
         def has_poll():
             return hasattr(select, "poll")
         
+        # Check epoll() available
+        def has_epoll():
+            return hasattr(select, "epoll")
+        
         # Read settings if available
         try:
             from noc.settings import config
@@ -739,12 +748,16 @@ class SocketFactory(object):
             # Detect possibilities
             if has_kevent(): # kevent
                 setup_kevent_poller()
+            elif has_epoll():
+                setup_epoll_poller() # epoll
             elif has_poll(): # poll
                 setup_poll_poller()
             else: # Fallback to select
                 setup_select_poller()
         elif poller=="kevent" and has_kevent():
             setup_kevent_poller()
+        elif poller=="epoll" and has_epoll():
+            setup_epoll_poller()
         elif poller=="poll" and has_poll():
             setup_poll_poller()
         else:
@@ -951,6 +964,31 @@ class SocketFactory(object):
                 wset+=[e.ident]
             if e.filter&select.KQ_FILTER_READ:
                 rset+=[e.ident]
+        return rset, wset
+    
+    ##
+    ## poll() implementation
+    ##
+    def get_active_epoll(self, timeout):
+        epoll=select.epoll()
+        # Get read and write candidates
+        with self.register_lock:
+            for f, s in self.sockets.items():
+                e=(select.EPOLLIN if s.can_read() else 0) | (select.EPOLLOUT if s.can_write() else 0)
+                if e:
+                    epoll.register(f, e)
+        # Poll socket status
+        try:
+            events=epoll.poll(timeout)
+        except select.error,why:
+            if why[0] not in (EINTR,):
+                error_report() # non-ignorable errors
+            return [], []
+        except:
+            return [], []
+        # Build result
+        rset=[fd for fd, e in events if e&select.EPOLLIN]
+        wset=[fd for fd, e in events if e&select.EPOLLOUT]
         return rset, wset
     
     ##
