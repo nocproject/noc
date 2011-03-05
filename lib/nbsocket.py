@@ -923,13 +923,8 @@ class SocketFactory(object):
         except:
             return [], []
         # Build result
-        rset=[]
-        wset=[]
-        for fd, e in events:
-            if e&select.POLLOUT:
-                wset+=[fd]
-            if e&select.POLLIN:
-                rset+=[fd]
+        rset=[fd for fd, e in events if e&select.POLLIN]
+        wset=[fd for fd, e in events if e&select.POLLOUT]
         return rset, wset
     
     ##
