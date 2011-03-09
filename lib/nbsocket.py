@@ -267,7 +267,9 @@ class LineProtocol(Protocol):
 ## Should not be used directly. Use SocketFactory.listen_tcp method instead
 ##
 class ListenTCPSocket(Socket):
-    def __init__(self,factory,address,port,socket_class,**kwargs):
+    def __init__(self,factory, address, port, socket_class, backlog=100, nconnects=None, **kwargs):
+        self.backlog=backlog
+        self.nconnects=nconnects
         Socket.__init__(self,factory)
         self.socket_class=socket_class
         self.address=address
@@ -281,7 +283,7 @@ class ListenTCPSocket(Socket):
         self.socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,
             self.socket.getsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR) | 1)
         self.socket.bind((self.address,self.port))
-        self.socket.listen(5)
+        self.socket.listen(self.backlog)
         super(ListenTCPSocket,self).create_socket()
     
     def handle_read(self):
@@ -291,6 +293,10 @@ class ListenTCPSocket(Socket):
         else:
             logging.error("Refusing connection from %s"%addr[0])
             s.close()
+        if self.nconnects is not None:
+            self.nconnects-=1
+            if self.nconnects==0:
+                self.close()
     
     def log_label(self):
         return "%s(0x%x,%s:%s)"%(self.__class__.__name__,id(self),self.address,self.port)
@@ -394,6 +400,8 @@ class AcceptedTCPSocket(TCPSocket):
             if why[0] in (ECONNRESET,ENOTCONN,ESHUTDOWN):
                 self.close()
                 return
+            if why[0] in (EINTR, EAGAIN):
+                return
             raise socket.error, why
         if data=="":
             self.close()
@@ -475,6 +483,8 @@ class ConnectedTCPSocket(TCPSocket):
                 return
             if why[0] in (ECONNRESET,ENOTCONN,ESHUTDOWN):
                 self.close()
+                return
+            if why[0] in (EINTR, EAGAIN):
                 return
             raise socket.error,why
         if not data:
@@ -691,7 +701,7 @@ class PopenSocket(Socket):
 ## run         - main event loop
 ##
 class SocketFactory(object):
-    def __init__(self,tick_callback=None):
+    def __init__(self, tick_callback=None, polling_method=None):
         self.sockets={}     # fileno -> socket
         self.socket_name={} # socket -> name
         self.name_socket={} # name -> socket
@@ -699,66 +709,75 @@ class SocketFactory(object):
         self.tick_callback=tick_callback
         self.register_lock=RLock() # Guard for register/unregister operations
         self.get_active_sockets=None # Polling method
-        self.setup_poller()
+        self.setup_poller(polling_method)
     
+    # Check select() available
+    def has_select(self):
+        return True
+    
+    # Check kevent/kqueue available
+    def has_kevent(self):
+        return hasattr(select, "kqueue")
+    
+    # Check poll() available
+    def has_poll(self):
+        return hasattr(select, "poll")
+    
+    # Check epoll() available
+    def has_epoll(self):
+        return hasattr(select, "epoll")
+
     ##
     ## Set up optimal polling function
     ##
-    def setup_poller(self):
+    def setup_poller(self, polling_method=None):
         # Enable select()
         def setup_select_poller():
             logging.debug("Set up select() poller")
             self.get_active_sockets=self.get_active_select
+            self.polling_method="select"
         
         # Enable poll()
         def setup_poll_poller():
             logging.debug("Set up poll() poller")
             self.get_active_sockets=self.get_active_poll
+            self.polling_method="poll"
         
         # Enable epoll()
         def setup_epoll_poller():
             logging.debug("Set up epoll() poller")
             self.get_active_sockets=self.get_active_epoll
+            self.polling_method="epoll"
         
         # Enable kevent/kqueue
         def setup_kevent_poller():
             logging.debug("Set up kevent/kqueue poller")
             self.get_active_sockets=self.get_active_kevent
+            self.polling_method="kevent"
         
-        # Check kevent/kqueue available
-        def has_kevent():
-            return hasattr(select, "kqueue")
-        
-        # Check poll() available
-        def has_poll():
-            return hasattr(select, "poll")
-        
-        # Check epoll() available
-        def has_epoll():
-            return hasattr(select, "epoll")
-        
-        # Read settings if available
-        try:
-            from noc.settings import config
-            poller=config.get("main", "polling_method")
-        except ImportError:
-            poller="select"
-        logging.debug("Setting up '%s' poller"%poller)
-        if poller=="optimal":
+        if polling_method is None:
+            # Read settings if available
+            try:
+                from noc.settings import config
+                polling_method=config.get("main", "polling_method")
+            except ImportError:
+                polling_method="select"
+        logging.debug("Setting up '%s' polling method"%polling_method)
+        if polling_method=="optimal":
             # Detect possibilities
-            if has_kevent(): # kevent
+            if self.has_kevent(): # kevent
                 setup_kevent_poller()
-            elif has_epoll():
+            elif self.has_epoll():
                 setup_epoll_poller() # epoll
-            elif has_poll(): # poll
+            elif self.has_poll(): # poll
                 setup_poll_poller()
             else: # Fallback to select
                 setup_select_poller()
-        elif poller=="kevent" and has_kevent():
+        elif polling_method=="kevent" and self.has_kevent():
             setup_kevent_poller()
-        elif poller=="epoll" and has_epoll():
+        elif polling_method=="epoll" and self.has_epoll():
             setup_epoll_poller()
-        elif poller=="poll" and has_poll():
+        elif polling_method=="poll" and self.has_poll():
             setup_poll_poller()
         else:
             # Fallback to select
@@ -833,10 +852,10 @@ class SocketFactory(object):
             if name:
                 self.name_socket[name]=socket
         
-    def listen_tcp(self,address,port,socket_class,**kwargs):
+    def listen_tcp(self, address, port, socket_class, backlog=100, nconnects=None, **kwargs):
         if not issubclass(socket_class,AcceptedTCPSocket):
             raise "socket_class should be a AcceptedTCPSocket subclass"
-        l=ListenTCPSocket(self,address,port,socket_class,**kwargs)
+        l=ListenTCPSocket(self, address, port, socket_class, backlog, nconnects, **kwargs)
         l.set_name("listen-tcp-%s:%d"%(address,port))
         return l
     
@@ -911,6 +930,9 @@ class SocketFactory(object):
             if why[0] not in (EINTR,):
                 error_report() # non-ignorable errors
             return [], []
+        except KeyboardInterrupt:
+            logging.info("Got Ctrl+C, exiting")
+            sys.exit(0)
         except:
             error_report()
             return [], []
@@ -955,7 +977,7 @@ class SocketFactory(object):
                 if s.can_read():
                     events+=[select.kevent(f, select.KQ_FILTER_READ, select.KQ_EV_ADD)]
         # Register events with kqueue
-        print kqueue.control(events, len(events), None)
+        kqueue.control(events, len(events), None)
         # Poll events
         rset=[]
         wset=[]
