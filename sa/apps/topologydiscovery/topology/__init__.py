@@ -5,11 +5,14 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+## Python modules
+import re
+## NOC modules
 from mac import MACTopology
 from lldp import LLDPTopology
 from cdp import CDPTopology
+from fdp import FDPTopology
 from stp import STPTopology
-import re
 
 class Link(object):
     def __init__(self,topology,o1,i1,o2,i2,portchannel_link=None):
@@ -62,7 +65,7 @@ class TopologyDiscovery(object):
     ##
     ## data is a list of (managed_object,IGetTopologyData)
     ##
-    def __init__(self, data, mac=True, per_vlan_mac=False, arp=True, lldp=True, stp=True, cdp=False, mac_port_bindings=False):
+    def __init__(self, data, mac=True, per_vlan_mac=False, arp=True, lldp=True, stp=True, cdp=False, fdp=False, mac_port_bindings=False):
         #
         self.links=[] # List of Link
         self.object_links={} # object->link
@@ -124,6 +127,11 @@ class TopologyDiscovery(object):
             t=CDPTopology(data)
             for R in t.discover():
                 self.add_link(R,"CDP")
+        # FDP Topology discovery
+        if fdp:
+            t=FDPTopology(data)
+            for R in t.discover():
+                self.add_link(R, "FDP")
         # STP Topology discovery
         if stp:
             t=STPTopology(data)

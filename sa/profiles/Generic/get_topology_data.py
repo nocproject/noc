@@ -7,18 +7,20 @@
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
 from __future__ import with_statement
-import noc.sa.script
+## NOC modules
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetTopologyData
 ##
 ## Retrieve data for topology discovery
 ##
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name="Generic.get_topology_data"
     implements=[IGetTopologyData]
     requires=[]
     
-    def execute(self,get_mac=False,get_arp=False,get_lldp=False,get_stp=False,get_cdp=False):
+    def execute(self, get_mac=False, get_arp=False, get_lldp=False, get_stp=False, get_cdp=False, get_fdp=False):
         data={
             "has_mac" : False,
             "mac"     : None,
@@ -28,6 +30,8 @@ class Script(noc.sa.script.Script):
             "lldp_neighbors" : None,
             "has_cdp" : False,
             "cdp_neighbors"  : None,
+            "has_fdp" : False,
+            "fdp_neighbors" : None,
             "has_stp" : False,
             "stp"     : None,
             "portchannels"   : [],
@@ -66,6 +70,14 @@ class Script(noc.sa.script.Script):
                     if cdp_neighbors:
                         data["has_cdp"]=True
                         data["cdp_neighbors"]=cdp_neighbors
+        # get fdp neighbors
+        if get_fdp:
+            if self.scripts.has_script("get_fdp_neighbors"):
+                with self.ignored_exceptions(x_list):
+                    fdp_neighbors=self.scripts.get_fdp_neighbors()
+                    if cdp_neighbors:
+                        data["has_fdp"]=True
+                        data["fdp_neighbors"]=fdp_neighbors
         # Get STP data
         if get_stp:
             if self.scripts.has_script("get_spanning_tree"):

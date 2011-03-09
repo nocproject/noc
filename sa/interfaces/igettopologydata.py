@@ -12,6 +12,7 @@ from igetmacaddresstable import IGetMACAddressTable
 from igetarp import IGetARP
 from igetlldpneighbors import IGetLLDPNeighbors
 from igetcdpneighbors import IGetCDPNeighbors
+from igetfdpneighbors import IGetFDPNeighbors
 from igetspanningtree import IGetSpanningTree
 from igetportchannel import IGetPortchannel
 
@@ -45,6 +46,11 @@ class IGetTopologyData(Interface):
         # CDP neighbors
         # Returned only if get_cdp is set
         "cdp_neighbors"  : NoneParameter() | IGetCDPNeighbors.returns,
+        # Set to true if "has_fdp" is not empty
+        "has_fdp"        : BooleanParameter(required=False,default=False),
+        # CDP neighbors
+        # Returned only if get_cdp is set
+        "fdp_neighbors"  : NoneParameter() | IGetFDPNeighbors.returns,
         # Set to true if "stp" is not empty
         "has_stp"    : BooleanParameter(required=False,default=False),
         # STP Protocol data
