@@ -958,7 +958,7 @@ class SocketFactory(object):
         except:
             return [], []
         # Build result
-        rset=[fd for fd, e in events if e&select.POLLIN]
+        rset=[fd for fd, e in events if e&(select.POLLIN|select.POLLHUP)]
         wset=[fd for fd, e in events if e&select.POLLOUT]
         return rset, wset
     
@@ -1009,7 +1009,7 @@ class SocketFactory(object):
         except:
             return [], []
         # Build result
-        rset=[fd for fd, e in events if e&select.EPOLLIN]
+        rset=[fd for fd, e in events if e&(select.EPOLLIN|select.EPOLLHUP)]
         wset=[fd for fd, e in events if e&select.EPOLLOUT]
         return rset, wset
     
