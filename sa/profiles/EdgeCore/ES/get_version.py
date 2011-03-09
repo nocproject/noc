@@ -23,24 +23,48 @@ class Script(NOCScript):
     ## Main dispatcher
     ##
     def execute(self):
-        try:
-            v=self.cli("show system")
-        except self.CLISyntaxError:
-            # Get 4xxx version
-            return self.get_version_4xxx()
-        return self.get_version_35xx(v)
+	s=""
+        if self.snmp and self.access_profile.snmp_ro:
+# Trying SNMP
+            try:
+		s=self.snmp.get("1.3.6.1.2.1.1.1.0") # SNMPv2-MIB::sysDescr.0
+		oid=self.snmp.get("1.3.6.1.2.1.1.2.0") # SNMPv2-MIB::sysObjectID.0
+		if oid=="":
+		    raise self.snmp.TimeOutError # Fallback to CLI
+		oid=oid[1:-1].replace(", ", ".")
+# 3526-Style OID
+		v=self.snmp.get(oid+".1.1.3.1.6.1")
+		if v=="":
+# 4626-Style OID
+		    v=self.snmp.get(oid+".100.1.3.0")
+		    if v=="":
+			raise self.snmp.TimeOutError # Fallback to CLI
+	    except self.snmp.TimeOutError:
+                pass
+	    if self.rx_sys_4.search(s):
+		return self.get_version_4xxx(s,v)
+	    return self.get_version_35xx("System description : "+s,v)
+	if s=="":
+# Trying CLI
+    	    try:
+	        s=self.cli("show system")
+    	    except self.CLISyntaxError:
+        	# Get 4xxx version
+        	return self.get_version_4xxx(None,None)
+    	    return self.get_version_35xx(s,None)
     ##
     ## 35xx
     ##
     rx_sys_35=re.compile(r"^\s*System description\s*:\s(?P<platform>.+?)\s*$",re.MULTILINE|re.IGNORECASE)
     rx_ver_35=re.compile(r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$",re.MULTILINE|re.IGNORECASE)
-    def get_version_35xx(self, show_system):
+    def get_version_35xx(self, show_system, version):
         # Detect version
-        v=self.cli("show version")
-        match=self.re_search(self.rx_ver_35, v)
-        version=match.group("version")
+	if not version:
+    	    v=self.cli("show version")
+    	    match=self.re_search(self.rx_ver_35, v)
+    	    version=match.group("version")
         # Detect platform
-        match=self.re_search(self.rx_sys_35, show_system)
+        match=self.rx_sys_35.search(show_system)
         platform=match.group("platform")
         if "ES3526XA" in platform:
             # Detect ES3626XA hardware version
@@ -77,13 +101,16 @@ class Script(NOCScript):
     ##
     rx_sys_4=re.compile(r"BootRom Version\s+.*?(?P<platform>ES.+?)_",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     rx_ver_4=re.compile(r"SoftWare (Package )?Version.*?_(?P<version>\d.+?)$",re.MULTILINE|re.DOTALL|re.IGNORECASE)
-    def get_version_4xxx(self):
-        v=self.cli("show version 1")
-        match_sys=self.re_search(self.rx_sys_4, v)
-        match_ver=self.re_search(self.rx_ver_4, v)
+    def get_version_4xxx(self, v, version):
+	if not v:
+    	    v=self.cli("show version 1")
+    	match_sys=self.re_search(self.rx_sys_4, v)
+	if not version:
+    	    match_ver=self.re_search(self.rx_ver_4, v)
+	    version=match_ver.group("version")
         return {
             "vendor"    : "EdgeCore",
             "platform"  : match_sys.group("platform"),
-            "version"   : match_ver.group("version"),
+            "version"   : version,
         }
     
