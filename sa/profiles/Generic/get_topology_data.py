@@ -75,7 +75,7 @@ class Script(NOCScript):
             if self.scripts.has_script("get_fdp_neighbors"):
                 with self.ignored_exceptions(x_list):
                     fdp_neighbors=self.scripts.get_fdp_neighbors()
-                    if cdp_neighbors:
+                    if fdp_neighbors:
                         data["has_fdp"]=True
                         data["fdp_neighbors"]=fdp_neighbors
         # Get STP data
