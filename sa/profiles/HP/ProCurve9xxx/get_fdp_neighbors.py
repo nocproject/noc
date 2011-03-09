@@ -10,21 +10,17 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetCDPNeighbors
-
-
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetFDPNeighbors
 ##
 ## HP.ProCurve9xxx.get_fdp_neighbors
 ##
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name="HP.ProCurve9xxx.get_fdp_neighbors"
-    implements=[IGetCDPNeighbors]
+    implements=[IGetFDPNeighbors]
     
-#    rx_entry=re.compile(r"Device ID: (?P<device_id>\S+).+?"
-#        r"Interface: (?P<local_interface>\S+),\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     rx_entry=re.compile(r"Device ID: (?P<device_id>\S+).+?"
-					r"Interface:\s(?P<local_interface>\S+)\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)",re.MULTILINE|re.DOTALL|re.IGNORECASE)
+        "Interface:\s(?P<local_interface>\S+)\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     def execute(self):
         device_id=self.scripts.get_fqdn()
         # Get neighbors
