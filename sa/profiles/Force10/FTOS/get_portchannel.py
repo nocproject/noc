@@ -2,26 +2,29 @@
 ##----------------------------------------------------------------------
 ## Force10.FTOS.get_portchannel
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetPortchannel
+## Python modules
 import re
-
-rx_first=re.compile(r"^\s*(?P<lacp>L?)\s+(?P<port>\d+)\s+\S+\s+(?:up|down)\s+\S+\s+(?P<interface>\S+\s+\S+)\s+\((Up|Down)\)\s*\*?$")
-rx_next=re.compile(r"^\s+(?P<interface>\S+\s+\S+)\s+\((Up|Down)\)\s*\*?$")
-
-
-class Script(noc.sa.script.Script):
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetPortchannel
+##
+## Force10.FTOS.get_portchannel
+##
+class Script(NOCScript):
     name="Force10.FTOS.get_portchannel"
     implements=[IGetPortchannel]
+    
+    rx_first=re.compile(r"^\s*(?P<lacp>L?)\s+(?P<port>\d+)\s+\S+\s+(?:up|down)\s+\S+\s+(?P<interface>\S+\s+\S+)\s+\((Up|Down)\)\s*\*?$")
+    rx_next=re.compile(r"^\s+(?P<interface>\S+\s+\S+)\s+\((Up|Down)\)\s*\*?$")
     def execute(self):
         r=[]
         for l in self.cli("show interface port-channel brief").splitlines():
-            match=rx_first.match(l)
+            match=self.rx_first.match(l)
             if match:
                 r+=[{
                     "interface": "Po %s"%match.group("port"),
@@ -29,7 +32,7 @@ class Script(noc.sa.script.Script):
                     "members"  : [match.group("interface")]
                 }]
                 continue
-            match=rx_next.match(l)
+            match=self.rx_next.match(l)
             if match:
                 r[-1]["members"]+=[match.group("interface")]
                 continue
