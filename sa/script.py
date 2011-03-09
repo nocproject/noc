@@ -439,7 +439,8 @@ class Script(threading.Thread):
             # Exit sequence
             if self.parent is None and self.cli_provider is not None and self.profile.command_exit:
                 self.debug("Exiting")
-                self.cli(self.profile.command_exit)
+                command_submit=self.profile.command_submit if command_submit is None else command_submit
+                self.cli_provider.submit(self.profile.command_exit, command_submit=command_submit)
         except TimeOutError:
             self.error("Timed out")
             self.e_timeout=True
