@@ -13,7 +13,8 @@ from noc.vc.models import VCDomain
 ##
 ##
 ##
-def reduce_topology(task,mac=True,per_vlan_mac=False,arp=True,lldp=False,cdp=False,stp=False,save_data=False,mac_port_bindings=False):
+def reduce_topology(task, mac=True, per_vlan_mac=False, arp=True, lldp=False, cdp=False, fdp=False,
+        stp=False, save_data=False, mac_port_bindings=False):
     from noc.sa.apps.topologydiscovery.topology import TopologyDiscovery
     import csv
     data=[(mt.managed_object,mt.script_result) for mt in task.maptask_set.filter(status="C")]
@@ -24,7 +25,8 @@ def reduce_topology(task,mac=True,per_vlan_mac=False,arp=True,lldp=False,cdp=Fal
         with open("/tmp/topo.data","w") as f:
             import cPickle
             cPickle.dump(data,f)
-    td=TopologyDiscovery(data=data,mac=mac,per_vlan_mac=per_vlan_mac,arp=arp,lldp=lldp,cdp=cdp,stp=stp,mac_port_bindings=mac_port_bindings)
+    td=TopologyDiscovery(data=data, mac=mac, per_vlan_mac=per_vlan_mac, arp=arp, lldp=lldp, cdp=cdp, fdp=fdp,
+        stp=stp, mac_port_bindings=mac_port_bindings)
     out+=["Writting topology into /tmp/topo.dot"]
     with open("/tmp/topo.dot","w") as f:
         f.write(unicode(td.dot()).encode("utf-8"))
@@ -51,6 +53,7 @@ class TopologyDiscoveryAppplication(SAApplication):
         arp         = forms.BooleanField(label="Use ARP cache",          initial=True, required=False)
         lldp        = forms.BooleanField(label="LLDP Neighbor Discovery",initial=True, required=False)
         cdp         = forms.BooleanField(label="CDP Neighbor Discovery", initial=False, required=False)
+        fdp         = forms.BooleanField(label="FDP Neighbor Discovery", initial=False, required=False)
         stp         = forms.BooleanField(label="STP Discovery",          initial=True, required=False)
         save_data   = forms.BooleanField(label="Save Topology Data",     initial=False,required=False)
         mac_port_bindings = forms.BooleanField(label="MAC-Port bindings",initial=False,required=False)
@@ -65,6 +68,7 @@ class TopologyDiscoveryAppplication(SAApplication):
             "get_arp" : "arp"  in data and data["arp"],
             "get_lldp": "lldp" in data and data["lldp"],
             "get_cdp" : "cdp"  in data and data["cdp"],
+            "get_fdp" : "fdp"  in data and data["fdp"],
             "get_stp" : "stp"  in data and data["stp"],
         }
     
