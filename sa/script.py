@@ -432,15 +432,6 @@ class Script(threading.Thread):
         try:
             with self.cancelable():
                 result=self.guarded_run()
-            self.result=self.serialize_result(result)
-            if self.parent is None and self.need_to_save and self.profile.command_save_config:
-                self.debug("Saving config")
-                self.cli(self.profile.command_save_config)
-            # Exit sequence
-            if self.parent is None and self.cli_provider is not None and self.profile.command_exit:
-                self.debug("Exiting")
-                command_submit=self.profile.command_submit if command_submit is None else command_submit
-                self.cli_provider.submit(self.profile.command_exit, command_submit=command_submit)
         except TimeOutError:
             self.error("Timed out")
             self.e_timeout=True
@@ -462,6 +453,17 @@ class Script(threading.Thread):
                 r+=[format_frames(get_traceback_frames(tb))]
                 self.error_traceback="\n".join(r)
                 self.debug("Script traceback:\n%s"%self.error_traceback)
+        else:
+            # Serialize result
+            self.result=self.serialize_result(result)
+            if self.parent is None and self.need_to_save and self.profile.command_save_config:
+                self.debug("Saving config")
+                self.cli(self.profile.command_save_config)
+            # Exit sequence
+            if self.parent is None and self.cli_provider is not None and self.profile.command_exit:
+                self.debug("Exiting")
+                command_submit=self.profile.command_submit if command_submit is None else command_submit
+                self.cli_provider.submit(self.profile.command_exit, command_submit=command_submit)
         self.debug("Closing")
         if self.activator.to_save_output and result:
             self.activator.save_result(result,self.motd)
