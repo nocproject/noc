@@ -2,15 +2,28 @@
 ##----------------------------------------------------------------------
 ## Clean and lightweight non-blocking socket I/O implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Python modules
 from __future__ import with_statement
-import socket,select,errno,time,logging,pty,os,signal,subprocess,errno,sys
+import socket
+import select
+import errno
+import time
+import logging
+import pty
+import os
+import signal
+import subprocess
+import sys
+import fcntl
 from errno import *
 from threading import RLock
+## NOC modules
 from noc.lib.debug import error_report
-
+## Try to load SSL module
 try:
     import ssl
     HAS_SSL=True
@@ -574,25 +587,37 @@ class UDPSocket(Socket):
 class FileWrapper(object):
     def __init__(self,fileno):
         self._fileno=fileno
-        
+    
     def fileno(self):
         return self._fileno
-        
+    
     def recv(self, *args):
         return os.read(self._fileno, *args)
-        
+    
     def send(self, *args):
         return os.write(self._fileno, *args)
-        
+    
     read = recv
     
     write = send
     
     def close(self):
         os.close(self._fileno)
-        
-    def setblocking(self,status):
-        pass
+    
+    ##
+    ## Set blocking status
+    ## 0 - non-blocking mode
+    ## 1 - blocking mode
+    ##
+    def setblocking(self, status):
+        flags=fcntl.fcntl(self._fileno, fcntl.F_GETFL, 0)
+        if status:
+            flags = flags & (0xFFFFFFFF^os.O_NONBLOCK) # Blocking mode
+        else:
+            flags = flags | os.O_NONBLOCK # Nonblocking mode
+        fcntl.fcntl(self._fileno, fcntl.F_SETFL, flags)
+    
+
 ##
 ## PTY Socket Emulation
 ## Events: on_read, on_close
