@@ -6,27 +6,42 @@
 ## This module implements part of activator functionality.
 ## Sometimes via dirty hacks
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
 from __future__ import with_statement
-from django.core.management.base import BaseCommand
+import logging
+import sys
+import ConfigParser
+import Queue
+import time
+import cPickle
+import threading
+import signal
+import os
+import datetime
+import pprint
+from optparse import OptionParser, make_option
+## Django modules
+from django.core.management.base import BaseCommand, CommandError
+## NOC modules
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,scheme_id
 from noc.sa.activator import Service,ServersHub
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
-import logging,sys,ConfigParser,Queue,time,cPickle,threading,signal,os,datetime,pprint
 from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory
-from optparse import OptionParser, make_option
 from noc.lib.validators import is_int
 
-class Controller(object): pass
+class Controller(object):
+    pass
+
 ##
-##
+## Canned beef output
 ##
 class SessionCan(object):
     def __init__(self,script_name,input={}):
@@ -37,20 +52,25 @@ class SessionCan(object):
         self.script_name=script_name
         self.snmp_get={}
         self.snmp_getnext={}
+    
     ## Store data
     def save_interaction(self,provider,cmd,data):
         if provider=="cli":
             self.cli[cmd]=data
+    
     ##
     def save_snmp_get(self,oid,result):
         self.snmp_get[oid]=result
+    
     ##
     def save_snmp_getnext(self,oid,result):
         self.snmp_getnext[oid]=result
+    
     ## Save final result
     def save_result(self,result,motd=""):
         self.result=result
         self.motd=motd
+    
     ## Dump canned data
     def dump(self,output):
         def format_stringdict(d):
@@ -103,12 +123,14 @@ class %(test_name)s_Test(ScriptTestCase):
         }
         with open(output,"w") as f:
             f.write(s)
+    
+
 ##
 ## Activator emulation
 ##
 class ActivatorStub(object):
     WAIT_TICKS=4
-    def __init__(self,request,output=None):
+    def __init__(self, script_name, values=[], output=None):
         # Simple config stub
         self.config=ConfigParser.SafeConfigParser()
         self.config.read("etc/noc-activator.defaults")
@@ -122,11 +144,12 @@ class ActivatorStub(object):
         self.to_save_output=output is not None
         self.output=output
         self.use_canned_session=False
+        self.scripts=[]
         if self.to_save_output:
-            self.script_name=request.script
+            self.script_name=script_name
             args={}
-            for a in request.kwargs:
-                args[a.key]=cPickle.loads(a.value)
+            for k, v in values:
+                args[k]=cPickle.loads(v)
             self.session_can=SessionCan(self.script_name,args)
     
     def tick(self):
@@ -145,8 +168,14 @@ class ActivatorStub(object):
                 if self.to_save_output:
                     logging.debug("Writing session test to %s"%self.output)
                     self.session_can.dump(self.output)
-                if self.script.result:
-                    logging.debug("SCRIPT RESULT:\n%s"%pprint.pformat(cPickle.loads(self.script.result)))
+                # Finally dump results
+                for s in self.scripts:
+                    if s.result:
+                        # Format output
+                        r=cPickle.loads(s.result)
+                        if not isinstance(r, basestring):
+                            r=pprint.pformat(r)
+                        logging.debug("SCRIPT RESULT: %s\n%s"%(s.debug_name, r))
                 os._exit(0)
             logging.debug("%d TICKS TO EXIT"%self.wait_ticks)
         else:
@@ -156,11 +185,12 @@ class ActivatorStub(object):
         if script.parent is None:
             self.servers.close()
         
-    def run_script(self,_script_name,access_profile,callback,timeout=0,**kwargs):
+    def run_script(self, _script_name, access_profile, callback, timeout=0, **kwargs):
         pv,pos,sn=_script_name.split(".",2)
         profile=profile_registry["%s.%s"%(pv,pos)]()
-        self.script=script_registry[_script_name](profile,self,access_profile,**kwargs)
-        self.script.start()
+        script=script_registry[_script_name](profile, self, access_profile, **kwargs)
+        self.scripts+=[script]
+        script.start()
     
     def request_call(self,f,*args,**kwargs):
         logging.debug("Requesting call: %s(*%s,**%s)"%(f,args,kwargs))
@@ -191,51 +221,67 @@ class Command(BaseCommand):
         make_option("-c","--read-community",dest="snmp_ro"),
         make_option("-o","--output",dest="output"),
     )
-    def run_script(self,service,request):
-        def handle_callback(controller,response=None,error=None):
-            if error:
-                logging.debug("Error: %s"%error.text)
-            if response:
-                logging.debug("Script completed")
-                logging.debug(response.config)
-        logging.debug("Running script thread")
-        controller=Controller()
-        tf=TransactionFactory()
-        controller.transaction=tf.begin()
-        service.script(controller=controller,request=request,done=handle_callback)
     
+    ##
+    ## Gentle SIGINT handler
+    ##
     def SIGINT(self,signo,frame):
         logging.info("SIGINT")
         os._exit(0)
     
-    def set_access_profile_url(self,access_profile,url):
-        url=URL(url)
-        access_profile.scheme         = scheme_id[url.scheme]
-        access_profile.address        = url.host
+    ##
+    ## Print usage and exit
+    ##
+    def _usage(self):
+        print "USAGE:"
+        print "%s debug-script [-c <community>] [-o <output>] <script> <obj1> [ .. <objN>] [<key1>=<value1> [ .. <keyN>=<valueN>]]"%sys.argv[0]
+        print "Where:"
+        print "\t-c <community> - SNMP RO Community"
+        print "\t-o <output>    - Canned beef output"
+        return
+    
+    ##
+    ## Create access profile from URL
+    ##
+    def set_access_profile_url(self, access_profile, obj, profile, snmp_ro_community):
+        if profile is None:
+            raise CommandError("Script name must contain profile when using URLs")
+        url=URL(obj)
+        access_profile.profile = profile
+        access_profile.scheme  = scheme_id[url.scheme]
+        access_profile.address = url.host
         if url.port:
-            access_profile.port       = url.port
-        access_profile.user           = url.user
+            access_profile.port = url.port
+        access_profile.user = url.user
         if "\x00" in url.password: # Check the password really the pair of password/enable password
-            p,s=url.password.split("\x00",1)
-            access_profile.password   = p
+            p, s=url.password.split("\x00", 1)
+            access_profile.password = p
             access_profile.super_password = s
         else:
-            access_profile.password   = url.password
-        access_profile.path           = url.path
-        return True
+            access_profile.password = url.password
+        access_profile.path = url.path
+        if snmp_ro_community:
+            access_profile.snmp_ro = snmp_ro_community
     
-    def set_access_profile_name(self,access_profile,name):
+    ##
+    ## Create access profile from Database
+    ##
+    def set_access_profile_name(self, access_profile, obj, profile, snmp_ro_community):
         from noc.sa.models import ManagedObject
         from django.db.models import Q
         
-        if is_int(name):
-            q=Q(id=int(name))|Q(name=name)
+        # Prepare query
+        if is_int(obj):
+            q=Q(id=int(obj))|Q(name=obj) # Integers can be object id or name
         else:
-            q=Q(name=name)
+            q=Q(name=obj) # Search by name otherwise
+        # Get object from database
         try:
             o=ManagedObject.objects.get(q)
         except ManagedObject.DoesNotExist:
-            return False
+            raise CommandError("Object not found: %s"%obj)
+        # Fill access profile
+        access_profile.profile = o.profile_name
         access_profile.scheme = o.scheme
         access_profile.address= o.address
         if o.port:
@@ -244,59 +290,94 @@ class Command(BaseCommand):
         access_profile.password = o.password
         if o.super_password:
             access_profile.super_password=o.super_password
+        #if o.snmp_ro:
+        #    access_profile.snmp_ro=o.snmp_ro
         if o.remote_path:
             access_profile.path=o.remote_path
-        return True
     
-    def set_access_profile(self,access_profile,arg):
-        if "://" in arg:
-            return self.set_access_profile_url(access_profile,arg)
+    ##
+    ## Prepare script request
+    ##
+    def get_request(self, script, obj, snmp_ro_community, values):
+        vendor=None
+        os_name=None
+        profile=None
+        r=ScriptRequest()
+        # Normalize script name
+        if "." in script:
+            vendor, os_name, script=script.split(".", 2)
+            profile="%s.%s"%(vendor, os_name)
+        # Fill access profile and script name
+        if "://" in obj:
+            # URL
+            self.set_access_profile_url(r.access_profile, obj, profile, snmp_ro_community)
+            r.script="%s.%s"%(profile, script)
         else:
-            return self.set_access_profile_name(access_profile,arg)
-        
+            # Database name or id
+            self.set_access_profile_name(r.access_profile, obj, profile, snmp_ro_community)
+            if profile and r.access_profile.profile!=profile:
+                raise CommandError("Profile mismatch for '%s'"%obj)
+            r.script="%s.%s"%(r.access_profile.profile, script)
+        ## Fill values
+        for k, v in values:
+            a=r.kwargs.add()
+            a.key=k
+            a.value=v
+        return r
+    
+    ##
+    def run_script(self, service, request):
+        def handle_callback(controller, response=None, error=None):
+            if error:
+                logging.debug("Error: %s"%error.text)
+            if response:
+                logging.debug("Script completed")
+                logging.debug(response.config)
+        logging.debug("Running script thread")
+        controller=Controller()
+        controller.transaction=self.tf.begin()
+        service.script(controller=controller, request=request, done=handle_callback)
+    
+    ##
+    ## Handle command
+    ##
     def handle(self, *args, **options):
         if len(args)<2:
-            print "Usage: debug-script <script> (<stream url>|<object id>|<object_name>) [key1=value1 key2=value2 ... ]"
-            print "Where value is valid python expression"
-            return
+            return self._usage()
         script_name=args[0]
-        vendor,os_name,rest=script_name.split(".",2)
-        profile_name="%s.%s"%(vendor,os_name)
-        try:
-            profile=profile_registry[profile_name]()
-        except:
-            print "Invalid profile. Available profiles are:"
-            print "\n".join([x[0] for x in profile_registry.choices])
-            return
-        try:
-            script_class=script_registry[script_name]
-        except:
-            print "Invalid script. Available scripts are:"
-            print "\n".join([x[0] for x in script_registry.choices])
-            return
+        objects=[]
+        values=[]
+        # Parse args
+        for a in args[1:]:
+            if "=" in a:
+                # key=value
+                k, v=a.split("=", 1)
+                v=cPickle.dumps(eval(v, {}, {}))
+                values+=[(k, v)]
+            else:
+                # object
+                objects+=[a]
+        # Canned beef for only one object
+        output=options.get("output",None)
+        if output and len(objects)!=1:
+            raise CommandError("Can write canned beef for one object only")
+        # Get SNMP community
+        snmp_ro_community=None
+        if options["snmp_ro"]:
+            snmp_ro_community=options["snmp_ro"]
+        # Prepare requests
+        requests=[self.get_request(script_name, obj, snmp_ro_community, values) for obj in objects]
+        # Set up logging and signal handlers
         logging.root.setLevel(logging.DEBUG)
         signal.signal(signal.SIGINT,self.SIGINT)
+        ## Prepare activator stub
+        self.tf=TransactionFactory()
         service=Service()
-        r=ScriptRequest()
-        r.script=script_name
-        r.access_profile.profile        = profile_name
-        if not self.set_access_profile(r.access_profile,args[1]):
-            print "Invalid object name or url"
-            return
-        if options["snmp_ro"]:
-            r.access_profile.snmp_ro=options["snmp_ro"]
-        # Parse script args
-        if len(args)>=3:
-            for p in args[2:]:
-                k,v=p.split("=",1)
-                v=eval(v,{},{})
-                a=r.kwargs.add()
-                a.key=k
-                a.value=cPickle.dumps(v)
-        #
-        service.activator=ActivatorStub(r,options.get("output",None))
-        #
-        t=threading.Thread(target=self.run_script,args=(service,r,))
-        t.start()
-        #
+        service.activator=ActivatorStub(requests[0].script if output else None, values, output)
+        ## Run scripts
+        for r in requests:
+            t=threading.Thread(target=self.run_script, args=(service, r))
+            t.start()
+        # Finally give control to activator's factory
         service.activator.factory.run(run_forever=True)
+    
