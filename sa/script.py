@@ -462,8 +462,7 @@ class Script(threading.Thread):
             # Exit sequence
             if self.parent is None and self.cli_provider is not None and self.profile.command_exit:
                 self.debug("Exiting")
-                command_submit=self.profile.command_submit if command_submit is None else command_submit
-                self.cli_provider.submit(self.profile.command_exit, command_submit=command_submit)
+                self.cli_provider.submit(self.profile.command_exit)
         self.debug("Closing")
         if self.activator.to_save_output and result:
             self.activator.save_result(result,self.motd)
