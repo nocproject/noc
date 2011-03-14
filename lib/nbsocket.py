@@ -165,6 +165,7 @@ def get_socket_error():
 ##
 class Socket(object):
     TTL=None # maximum time to live in seconds
+    READ_CHUNK=65536
     def __init__(self,factory,socket=None):
         self.factory=factory
         self.socket=socket
@@ -331,7 +332,7 @@ class ListenUDPSocket(Socket):
         super(ListenUDPSocket,self).create_socket()
     
     def handle_read(self):
-        msg,transport_address=self.socket.recvfrom(8192)
+        msg,transport_address=self.socket.recvfrom(self.READ_CHUNK)
         if msg=="":
             return
         self.on_read(msg,transport_address[0],transport_address[1])
@@ -351,11 +352,15 @@ class TCPSocket(Socket):
     def __init__(self,factory,socket=None):
         super(TCPSocket,self).__init__(factory,socket)
         self.is_connected=False
-        self.s=socket
+        #self.s=socket
         self.out_buffer=""
         if self.protocol_class:
             self.protocol=self.protocol_class(self.on_read)
         self.in_shutdown=False
+    
+    def create_socket(self):
+        super(TCPSocket, self).create_socket()
+        self.adjust_buffers()
         
     def close(self,flush=False):
         if flush and len(self.out_buffer)>0:
@@ -385,6 +390,10 @@ class TCPSocket(Socket):
     def on_read(self,data): pass
     
     def on_connect(self): pass
+    
+    def adjust_buffers(self):
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1048576)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1048576)
 
 ##
 ## A socket wrapping accepted TCP connection.
@@ -408,7 +417,7 @@ class AcceptedTCPSocket(TCPSocket):
         
     def handle_read(self):
         try:
-            data=self.socket.recv(8192)
+            data=self.socket.recv(self.READ_CHUNK)
         except socket.error,why:
             if why[0] in (ECONNRESET,ENOTCONN,ESHUTDOWN):
                 self.close()
@@ -488,7 +497,7 @@ class ConnectedTCPSocket(TCPSocket):
             self.handle_connect()
             return
         try:
-            data=self.socket.recv(8192)
+            data=self.socket.recv(self.READ_CHUNK)
         except socket.error,why:
             if why[0]==ECONNREFUSED:
                 self.on_conn_refused()
@@ -570,7 +579,7 @@ class UDPSocket(Socket):
 
     def handle_read(self):
         self.update_status()
-        msg,transport_address=self.socket.recvfrom(8192)
+        msg,transport_address=self.socket.recvfrom(self.READ_CHUNK)
         if msg=="":
             return
         self.on_read(msg,transport_address[0],transport_address[1])
@@ -645,7 +654,7 @@ class PTYSocket(Socket):
     
     def handle_read(self):
         try:
-            data=self.socket.read(8192)
+            data=self.socket.read(self.READ_CHUNK)
         except OSError:
             self.close()
             return
@@ -706,7 +715,7 @@ class PopenSocket(Socket):
 
     def handle_read(self):
         try:
-            data=self.socket.read(8192)
+            data=self.socket.read(self.READ_CHUNK)
         except OSError:
             self.close()
             return
@@ -735,6 +744,8 @@ class SocketFactory(object):
         self.register_lock=RLock() # Guard for register/unregister operations
         self.get_active_sockets=None # Polling method
         self.setup_poller(polling_method)
+        # Performance data
+        self.cnt_polls=0 # Number of polls
     
     # Check select() available
     def has_select(self):
@@ -742,7 +753,7 @@ class SocketFactory(object):
     
     # Check kevent/kqueue available
     def has_kevent(self):
-        return hasattr(select, "kqueue")
+        return False and hasattr(select, "kqueue")
     
     # Check poll() available
     def has_poll(self):
@@ -923,6 +934,7 @@ class SocketFactory(object):
         self.create_pending_sockets()
         if self.sockets:
             r, w=self.get_active_sockets(timeout)
+            self.cnt_polls+=1
             logging.debug("Active sockets: Read=%s Write=%s"%(repr(r), repr(w)))
             # Process write events before read to catch refused connections
             for fd in w:
