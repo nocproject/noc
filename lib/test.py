@@ -4,21 +4,30 @@
 ##----------------------------------------------------------------------
 ## Credits: Some ideas are borrowed from django_webtest
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+## Python modules
 from __future__ import with_statement
+import os
+import types
+import re
+import unittest
+import cPickle
+## Django modules
 from django.test import TestCase
 from django.conf import settings
 from django.http import HttpResponseServerError
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.servers.basehttp import AdminMediaHandler
 from django.db import close_connection
-from django.core import signals,serializers
-from noc.lib.app import Application,site
+from django.core import signals, serializers
+## Third-party modules
 from webtest import TestApp
-import unittest
-import os,types,re
+## NOC modules
+from noc.lib.app import Application, site
+from noc.sa.models import script_registry, profile_registry
+from noc.sa.protocols.sae_pb2 import *
 ##
 ## Prevent closing database connection after each request
 ##
@@ -322,11 +331,8 @@ class ReportApplicationTestCase(ApplicationTestCase):
                         user=self.user,
                         params=p)
 ##
+## Activator emulation
 ##
-##
-from noc.sa.models import script_registry,profile_registry
-from noc.sa.protocols.sae_pb2 import *
-import cPickle
 class ActivatorStub(object):
     def __init__(self,test):
         self.to_save_output=None
@@ -359,8 +365,11 @@ class ActivatorStub(object):
     
     def get_motd(self):
         return self.test.motd
-        
-
+    
+##
+## Canned beef base class
+##
+rx_timestamp=re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d+$")
 class ScriptTestCase(unittest.TestCase):
     script=None
     vendor=None
@@ -373,6 +382,25 @@ class ScriptTestCase(unittest.TestCase):
     snmp_get={}
     snmp_getnext={}
     mock_get_version=False # Emulate get_version_call
+    ignore_timestamp_mismatch = False
+    
+    def clean_timestamp(self, r):
+        if isinstance(r, basestring):
+            # Process strings
+            if rx_timestamp.match(r):
+                # Fill timestamp by zeroes
+                return "0000-00-00T00:00:00.000000"
+            else:
+                return r
+        elif type(r) in (types.ListType, types.TupleType):
+            # Iterate lists
+            return [self.clean_timestamp(x) for x in r]
+        elif type(r)==types.DictType:
+            # Iterate hashes
+            return dict([(k, self.clean_timestamp(v)) for k,v in r.items()])
+        else:
+            # Return unprocessed
+            return r
     
     def test_script(self):
         p=self.script.split(".")
@@ -394,7 +422,10 @@ class ScriptTestCase(unittest.TestCase):
         # Parse script result
         if script.result:
             result=cPickle.loads(script.result)
-            self.assertEquals(result,self.result)
+            if self.ignore_timestamp_mismatch:
+                self.assertEquals(self.clean_timestamp(result), self.clean_timestamp(self.result))
+            else:
+                self.assertEquals(result, self.result)
         else:
             print script.error_traceback
             self.assertEquals(script.error_traceback,None)
