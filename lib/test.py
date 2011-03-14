@@ -369,7 +369,7 @@ class ActivatorStub(object):
 ##
 ## Canned beef base class
 ##
-rx_timestamp=re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\.\d+$")
+rx_timestamp=re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?$")
 class ScriptTestCase(unittest.TestCase):
     script=None
     vendor=None
