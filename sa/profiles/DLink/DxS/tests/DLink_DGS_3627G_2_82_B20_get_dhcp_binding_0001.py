@@ -13,6 +13,7 @@ class DLink_DxS_get_dhcp_binding_Test(ScriptTestCase):
     platform='DGS-3627G'
     version='2.82.B20'
     input={}
+    ignore_timestamp_mismatch=True
     result=[{'expiration': '2011-01-13T16:57:44.436778',
   'ip': '10.109.176.2',
   'mac': '00:0C:46:46:90:E7',
