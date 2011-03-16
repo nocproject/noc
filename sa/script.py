@@ -35,7 +35,7 @@ except ImportError:
 ## NOC Modules
 from noc.lib.fsm import StreamFSM
 from noc.lib.registry import Registry
-from noc.lib.nbsocket import PTYSocket,UDPSocket,SocketTimeoutError
+from noc.lib.nbsocket import PTYSocket, UDPSocket, SocketTimeoutError, ConnectedTCPSocket, Protocol
 from noc.lib.debug import format_frames,get_traceback_frames
 from noc.lib.text import replace_re_group
 from noc.sa.protocols.sae_pb2 import TELNET,SSH,HTTP
@@ -950,26 +950,84 @@ class CLI(StreamFSM):
     on_USERNAME_match=on_START_match
     on_PASSWORD_match=on_START_match
 ##
-##
+## Base class for script sockets
 ##
 class ScriptSocket(object):pass
-#
 ##
+## Telnet protocol parser
 ##
-class CLITelnetSocket(ScriptSocket,CLI,PTYSocket):
-    TTL=30
+IAC=chr(255)  # Interpret As Command
+D_IAC=IAC+IAC # Doubled IAC
+DONT = chr(254)
+DO   = chr(253)
+WONT = chr(252)
+WILL = chr(251)
+IAC_CMD= (DO, DONT, WONT, WILL)
+
+class TelnetProtocol(Protocol):
+    def __init__(self, callback):
+        super(TelnetProtocol, self).__init__(callback)
+        self.iac_seq=""
+    
+    def parse_pdu(self):
+        while self.in_buffer:
+            if not self.iac_seq:
+                idx=self.in_buffer.find(IAC)
+                if idx==-1:
+                    # No IACs in the stream
+                    r=self.in_buffer.replace("\000", "").replace("\021", "")
+                    self.in_buffer=""
+                    yield r
+                    continue
+                elif idx==0:
+                    # IAC is the first character in the stream
+                    self.iac_seq=IAC
+                    self.in_buffer=self.in_buffer[1:]
+                    continue
+                else:
+                    r=self.in_buffer[:idx].replace("\000", "").replace("\021", "")
+                    self.in_buffer=self.in_buffer[idx+1:]
+                    self.iac_seq=IAC
+                    yield r
+                    continue
+            else:
+                # Process IACs
+                if self.iac_seq==IAC:
+                    c=self.in_buffer[0]
+                    if c in IAC_CMD:
+                        self.iac_seq+=c
+                        self.in_buffer=self.in_buffer[1:]
+                        continue
+                    self.iac_seq=""
+                    if c==IAC:
+                        # Doubled IAC
+                        self.in_buffer=self.in_buffer[1:]
+                        yield IAC
+                        continue
+                else:
+                    cmd=self.iac_seq[1]
+                    opt=self.in_buffer[0]
+                    self.iac_seq=""
+                    self.in_buffer=self.in_buffer[1:] # Strip option
+            
+    
+
+##
+## Telnet client
+##
+class CLITelnetSocket(ScriptSocket, CLI, ConnectedTCPSocket):
+    protocol_class=TelnetProtocol
+    
     def __init__(self,factory,profile,access_profile):
-        logging.debug("CLITelnetSocket connecting '%s'"%access_profile.address)
-        cmd_args=[config.get("path","telnet"),access_profile.address]
-        if access_profile.port and access_profile.port!=23:
-            cmd_args+=[str(access_profile.port)]
         CLI.__init__(self,profile,access_profile)
-        PTYSocket.__init__(self,factory,cmd_args)
+        port=access_profile.port or 23
+        ConnectedTCPSocket.__init__(self, factory, access_profile.address, port)
         ScriptSocket.__init__(self)
     
-    def is_stale(self):
-        self.async_check_fsm()
-        return PTYSocket.is_stale(self)
+    def write(self, s):
+        # Double all IACs
+        super(CLITelnetSocket, self).write(str(s).replace(IAC, D_IAC))
+    
 
 ##
 ##
