@@ -130,7 +130,7 @@ class StreamFSM(FSM):
         self.patterns=[]
         self.in_buffer=""
         self.async_throttle=async_throttle # Limit to throttle synchronous check
-        self.feed_count=0 # Number of feeds from last state transition
+        self.feed_count=0 # Number of bytes fed from last state transition
         self.cleanup=None
         super(StreamFSM,self).__init__()
         
@@ -165,7 +165,7 @@ class StreamFSM(FSM):
     
     def feed(self,data,cleanup=None):
         self.in_buffer+=data
-        self.feed_count+=1
+        self.feed_count+=len(data)
         self.cleanup=cleanup
         if not self.in_async_check():
             self.check_fsm()
@@ -174,3 +174,6 @@ class StreamFSM(FSM):
         if self.in_async_check():
             self.debug("Asynchronous check")
             self.check_fsm()
+    
+    def reset_async_check(self):
+        self.feed_count=0

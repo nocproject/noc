@@ -808,7 +808,7 @@ class CLI(StreamFSM):
             self.more_patterns=[x[0] for x in self.profile.pattern_more]
             self.more_commands=[x[1] for x in self.profile.pattern_more]
         self.pager_patterns="|".join([r"(%s)"%p for p in self.more_patterns])
-        super(CLI,self).__init__(async_throttle=32)
+        super(CLI,self).__init__(async_throttle=100000)
     
     def on_read(self,data):
         self.debug("on_read: %s"%repr(data))
@@ -923,6 +923,7 @@ class CLI(StreamFSM):
         self.set_patterns(p)
         
     def on_PROMPT_match(self,data,match):
+        self.reset_async_check()
         if match.re.pattern in self.pager_patterns:
             self.collected_data+=data
         elif match.re.pattern==self.pattern_prompt:
@@ -949,6 +950,7 @@ class CLI(StreamFSM):
         self.motd+=data
     on_USERNAME_match=on_START_match
     on_PASSWORD_match=on_START_match
+
 ##
 ## Base class for script sockets
 ##
@@ -1027,6 +1029,10 @@ class CLITelnetSocket(ScriptSocket, CLI, ConnectedTCPSocket):
     def write(self, s):
         # Double all IACs
         super(CLITelnetSocket, self).write(str(s).replace(IAC, D_IAC))
+    
+    def is_stale(self):
+        self.async_check_fsm()
+        return ConnectedTCPSocket.is_stale(self)
     
 
 ##
