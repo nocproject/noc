@@ -467,7 +467,7 @@ class Script(threading.Thread):
         if self.activator.to_save_output and result:
             self.activator.save_result(result,self.motd)
         if self.cli_provider:
-            self.activator.request_call(self.cli_provider.close)
+            self.activator.request_call(self.cli_provider.close, flush=True)
         if self.snmp:
             self.snmp.close()
         self.activator.on_script_exit(self)
