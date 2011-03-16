@@ -392,8 +392,10 @@ class TCPSocket(Socket):
     def on_connect(self): pass
     
     def adjust_buffers(self):
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1048576)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1048576)
+        #print self.socket.getsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF)
+        #self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1048576)
+        #self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1048576)
+        pass
 
 ##
 ## A socket wrapping accepted TCP connection.
