@@ -528,7 +528,8 @@ class ConnectedTCPSocket(TCPSocket):
             try:
                 self.socket.send("")
             except socket.error,why:
-                if why[0] in (EPIPE,ECONNREFUSED):
+                err_code=why[0]
+                if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT):
                     self.on_conn_refused()
                     self.close()
                     return
@@ -681,7 +682,7 @@ class PTYSocket(Socket):
         self.debug("write(%s)"%repr(msg))
         self.out_buffer+=msg
     
-    def close(self):
+    def close(self, flush=False):
         Socket.close(self)
         if self.pid is None:
             return
@@ -727,7 +728,7 @@ class PopenSocket(Socket):
         else:
             self.close()
 
-    def close(self):
+    def close(self, flush=False):
         Socket.close(self)
 ##
 ## Socket Factory.
