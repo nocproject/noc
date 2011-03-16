@@ -937,7 +937,7 @@ class SocketFactory(object):
         if self.sockets:
             r, w=self.get_active_sockets(timeout)
             self.cnt_polls+=1
-            logging.debug("Active sockets: Read=%s Write=%s"%(repr(r), repr(w)))
+            #logging.debug("Active sockets: Read=%s Write=%s"%(repr(r), repr(w)))
             # Process write events before read to catch refused connections
             for fd in w:
                 s=self.sockets.get(fd)
