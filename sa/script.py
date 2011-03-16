@@ -789,6 +789,7 @@ class CLI(StreamFSM):
         "CLOSED":{
         }
     }
+    MATCH_TAIL=256 # Analyze last 256 characters only
     
     def __init__(self,profile,access_profile):
         self.profile=profile
@@ -808,7 +809,7 @@ class CLI(StreamFSM):
             self.more_patterns=[x[0] for x in self.profile.pattern_more]
             self.more_commands=[x[1] for x in self.profile.pattern_more]
         self.pager_patterns="|".join([r"(%s)"%p for p in self.more_patterns])
-        super(CLI,self).__init__(async_throttle=100000)
+        super(CLI,self).__init__(async_throttle=100000) # Switch to asynchronous check after 100K of input
     
     def on_read(self,data):
         self.debug("on_read: %s"%repr(data))
