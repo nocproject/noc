@@ -39,11 +39,11 @@ class Script(NOCScript):
 		    v=self.snmp.get(oid+".100.1.3.0")
 		    if v=="":
 			raise self.snmp.TimeOutError # Fallback to CLI
+		if self.rx_sys_4.search(s):
+		    return self.get_version_4xxx(s,v)
+		return self.get_version_35xx("System description : "+s,v)
 	    except self.snmp.TimeOutError:
                 pass
-	    if self.rx_sys_4.search(s):
-		return self.get_version_4xxx(s,v)
-	    return self.get_version_35xx("System description : "+s,v)
 	if s=="":
 # Trying CLI
     	    try:
