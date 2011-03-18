@@ -255,7 +255,8 @@ class Socket(object):
 ## remove them from buffer and return a list of parsed PDU (or empty list if not found)
 ## All parsed pdu are returned via callback method
 class Protocol(object):
-    def __init__(self,callback):
+    def __init__(self, parent, callback):
+        self.parent=parent
         self.callback=callback
         self.in_buffer=""
         
@@ -349,13 +350,13 @@ class ListenUDPSocket(Socket):
 ##
 class TCPSocket(Socket):
     protocol_class=None
-    def __init__(self,factory,socket=None):
-        super(TCPSocket,self).__init__(factory,socket)
+    def __init__(self, factory, socket=None):
+        super(TCPSocket,self).__init__(factory, socket)
         self.is_connected=False
         #self.s=socket
         self.out_buffer=""
         if self.protocol_class:
-            self.protocol=self.protocol_class(self.on_read)
+            self.protocol=self.protocol_class(self, self.on_read)
         self.in_shutdown=False
     
     def create_socket(self):
@@ -475,7 +476,7 @@ class AcceptedTCPSSLSocket(AcceptedTCPSocket):
 ## close(self)        - close socket (Also implies on_close(self) event)
 ##
 class ConnectedTCPSocket(TCPSocket):
-    def __init__(self,factory,address,port,local_address=None):
+    def __init__(self, factory, address, port, local_address=None):
         super(ConnectedTCPSocket,self).__init__(factory)
         self.address=address
         self.port=port
