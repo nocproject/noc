@@ -968,8 +968,8 @@ WILL = chr(251)
 IAC_CMD= (DO, DONT, WONT, WILL)
 
 class TelnetProtocol(Protocol):
-    def __init__(self, callback):
-        super(TelnetProtocol, self).__init__(callback)
+    def __init__(self, parent, callback):
+        super(TelnetProtocol, self).__init__(parent, callback)
         self.iac_seq=""
     
     def parse_pdu(self):
@@ -1012,6 +1012,11 @@ class TelnetProtocol(Protocol):
                     opt=self.in_buffer[0]
                     self.iac_seq=""
                     self.in_buffer=self.in_buffer[1:] # Strip option
+                    # Refuse options
+                    if cmd in (DO, DONT):
+                        self.parent.out_buffer += IAC+WONT+opt # Write directly to avoid IAC doubling
+                    elif cmd in (WILL, WONT):
+                        self.parent.out_buffer += IAC+DONT+opt
             
     
 
@@ -1019,10 +1024,11 @@ class TelnetProtocol(Protocol):
 ## Telnet client
 ##
 class CLITelnetSocket(ScriptSocket, CLI, ConnectedTCPSocket):
+    TTL=30
     protocol_class=TelnetProtocol
     
-    def __init__(self,factory,profile,access_profile):
-        CLI.__init__(self,profile,access_profile)
+    def __init__(self, factory, profile, access_profile):
+        CLI.__init__(self, profile, access_profile)
         port=access_profile.port or 23
         ConnectedTCPSocket.__init__(self, factory, access_profile.address, port)
         ScriptSocket.__init__(self)
