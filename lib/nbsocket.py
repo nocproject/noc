@@ -530,7 +530,7 @@ class ConnectedTCPSocket(TCPSocket):
                 self.socket.send("")
             except socket.error,why:
                 err_code=why[0]
-                if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT):
+                if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT, EHOSTUNREACH, ENETUNREACH):
                     self.on_conn_refused()
                     self.close()
                     return
