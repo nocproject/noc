@@ -2,14 +2,27 @@
 ##----------------------------------------------------------------------
 ## Service Activator Daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
 from __future__ import with_statement
-import os,logging,pty,signal,time,re,sys,signal,Queue,cPickle,tempfile
+import os
+import logging
+import pty
+import signal
+import time
+import re
+import sys
+import signal
+import Queue
+import cPickle
+import tempfile
 from errno import ECONNREFUSED
+from threading import Lock
+## NOC modules
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry,ScriptSocket
 from noc.sa.rpc import RPCSocket,file_hash,get_digest
@@ -22,7 +35,6 @@ from noc.lib.fsm import FSM,check_state
 from noc.lib.nbsocket import ConnectedTCPSocket,ConnectedTCPSSLSocket,SocketFactory,PTYSocket,HAS_SSL,ListenUDPSocket,AcceptedTCPSocket,ListenTCPSocket
 from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 from noc.lib.pmhash import pmhash
-from threading import Lock
 
 ##
 ##
