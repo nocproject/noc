@@ -67,7 +67,7 @@ class ScriptCallProxy(object):
     ##
     ## Call script
     ##
-    def __call__(self,**kwargs):
+    def __call__(self, **kwargs):
         s=self.script(self.parent.profile, self.parent.activator, self.parent.access_profile, parent=self.parent, **kwargs)
         return s.guarded_run()
     
@@ -87,14 +87,14 @@ class ScriptRegistry(Registry):
     ##
     def register_generics(self):
         for c in [c for c in self.classes.values() if c.name and c.name.startswith("Generic.")]:
-            g,name=c.name.split(".")
+            g, name=c.name.split(".")
             for p in profile_registry.classes:
                 s_name=p+"."+name
                 # Do not register generic when specific exists
                 if s_name in self.classes:
                     continue
                 to_register=True
-                for r_name,r_interface in c.requires:
+                for r_name, r_interface in c.requires:
                     rs_name=p+"."+r_name
                     if rs_name not in self.classes or not self.classes[rs_name].implements_interface(r_interface):
                         to_register=False
@@ -108,7 +108,7 @@ class ScriptRegistry(Registry):
     ## Register all scripts and generic scripts
     ##
     def register_all(self):
-        super(ScriptRegistry,self).register_all()
+        super(ScriptRegistry, self).register_all()
         self.register_generics()
     
 
@@ -119,16 +119,16 @@ script_registry=ScriptRegistry()
 ##
 _execute_chain=[]
 class ScriptBase(type):
-    def __new__(cls,name,bases,attrs):
+    def __new__(cls, name,bases,attrs):
         global _execute_chain
-        m=type.__new__(cls,name,bases,attrs)
+        m=type.__new__(cls, name,bases,attrs)
         m._execute_chain=_execute_chain
         _execute_chain=[]
         m.implements=[c() for c in m.implements]
-        script_registry.register(m.name,m)
+        script_registry.register(m.name, m)
         if m.name and not m.name.startswith("Generic."):
-            pv,pos,sn=m.name.split(".",2)
-            profile_registry["%s.%s"%(pv,pos)].scripts[sn]=m
+            pv, pos,sn=m.name.split(".",2)
+            profile_registry["%s.%s"%(pv, pos)].scripts[sn]=m
         return m
 
 
@@ -148,7 +148,7 @@ class ConfigurationContextManager(object):
     ##
     ## Leaving context
     ##
-    def __exit__(self,exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type is None:
             self.script.leave_config()
         else:
@@ -159,7 +159,7 @@ class ConfigurationContextManager(object):
 ## Mark cancelable part of script
 ##
 class CancellableContextManager(object):
-    def __init__(self,script):
+    def __init__(self, script):
         self.script=script
     
     ##
@@ -211,7 +211,7 @@ class Script(threading.Thread):
     implements=[]
     # Scripts required by generic script.
     # For common scripts - empty list
-    # For generics - list of pairs (script_name,interface)
+    # For generics - list of pairs (script_name, interface)
     requires=[]
     # Constants
     TELNET=TELNET
@@ -242,8 +242,8 @@ class Script(threading.Thread):
             p=self.access_profile.path
         else:
             p="<unknown>"
-        self.debug_name="script-%s-%s"%(p,self.name)
-        super(Script,self).__init__(name=self.debug_name, kwargs=kwargs)
+        self.debug_name="script-%s-%s"%(p, self.name)
+        super(Script, self).__init__(name=self.debug_name, kwargs=kwargs)
         self.activator=activator
         self.servers=activator.servers
         self.profile=profile
@@ -273,12 +273,12 @@ class Script(threading.Thread):
             and self.activator.log_cli_sessions_ip_re.search(self.access_profile.address)\
             and self.activator.log_cli_sessions_script_re.search(self.name):
             self.log_cli_sessions_path=self.activator.log_cli_sessions_path
-            for k,v in [
-                ("ip",self.access_profile.address),
-                ("script",self.name),
-                ("ts",datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))]:
-                self.log_cli_sessions_path=self.log_cli_sessions_path.replace("{{%s}}"%k,v)
-            self.cli_debug("IP: %s SCRIPT: %s"%(self.access_profile.address,self.name),"!")
+            for k, v in [
+                ("ip", self.access_profile.address),
+                ("script", self.name),
+                ("ts", datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))]:
+                self.log_cli_sessions_path=self.log_cli_sessions_path.replace("{{%s}}"%k, v)
+            self.cli_debug("IP: %s SCRIPT: %s"%(self.access_profile.address, self.name),"!")
     
     ##
     ## Compile arguments into version check function
@@ -287,10 +287,10 @@ class Script(threading.Thread):
     @classmethod
     def compile_match_filter(cls, *args, **kwargs):
         c=[lambda self, x, g=f: g(x) for f in args]
-        for k,v in kwargs.items():
+        for k, v in kwargs.items():
             # Split to field name and lookup operator
             if "__" in k:
-                f,o=k.split("__")
+                f, o=k.split("__")
             else:
                 f=k
                 o="exact"
@@ -299,44 +299,44 @@ class Script(threading.Thread):
                 raise Exception("Invalid field '%s'"%f)
             # Compile lookup functions
             if o=="exact":
-                c+=[lambda self,x,f=f,v=v: x[f]==v]
+                c+=[lambda self, x,f=f,v=v: x[f]==v]
             elif o=="iexact":
-                c+=[lambda self,x,f=f,v=v: x[f].lower()==v.lower()]
+                c+=[lambda self, x,f=f,v=v: x[f].lower()==v.lower()]
             elif o=="startswith":
-                c+=[lambda self,x,f=f,v=v: x[f].startswith(v)]
+                c+=[lambda self, x,f=f,v=v: x[f].startswith(v)]
             elif o=="istartswith":
-                c+=[lambda self,x,f=f,v=v: x[f].lower().startswith(v.lower())]
+                c+=[lambda self, x,f=f,v=v: x[f].lower().startswith(v.lower())]
             elif o=="endswith":
-                c+=[lambda self,x,f=f,v=v: x[f].endswith(v)]
+                c+=[lambda self, x,f=f,v=v: x[f].endswith(v)]
             elif o=="iendswith":
-                c+=[lambda self,x,f=f,v=v: x[f].lower().endswith(v.lower())]
+                c+=[lambda self, x,f=f,v=v: x[f].lower().endswith(v.lower())]
             elif o=="contains":
-                c+=[lambda self,x,f=f,v=v: v in x[f]]
+                c+=[lambda self, x,f=f,v=v: v in x[f]]
             elif o=="icontains":
-                c+=[lambda self,x,f=f,v=v: v.lower() in x[f].lower()]
+                c+=[lambda self, x,f=f,v=v: v.lower() in x[f].lower()]
             elif o=="in":
-                c+=[lambda self,x,f=f,v=v: x[f] in v]
+                c+=[lambda self, x,f=f,v=v: x[f] in v]
             elif o=="regex":
-                c+=[lambda self,x,f=f,v=re.compile(v): v.search(x[f]) is not None]
+                c+=[lambda self, x,f=f,v=re.compile(v): v.search(x[f]) is not None]
             elif o=="iregex":
-                c+=[lambda self,x,f=f,v=re.compile(v, re.IGNORECASE): v.search(x[f]) is not None]
+                c+=[lambda self, x,f=f,v=re.compile(v, re.IGNORECASE): v.search(x[f]) is not None]
             elif o=="isempty": # Empty string or null
-                c+=[lambda self,x,f=f,v=v: not x[f] if v else x[f]]
+                c+=[lambda self, x,f=f,v=v: not x[f] if v else x[f]]
             elif f=="version":
                 if o=="lt": # <
-                    c+=[lambda self,x,v=v: self.profile.cmp_version(x["version"],v)<0 ]
+                    c+=[lambda self, x,v=v: self.profile.cmp_version(x["version"], v)<0 ]
                 elif o=="lte": # <=
-                    c+=[lambda self,x,v=v: self.profile.cmp_version(x["version"],v)<=0 ]
+                    c+=[lambda self, x,v=v: self.profile.cmp_version(x["version"], v)<=0 ]
                 elif o=="gt": # >
-                    c+=[lambda self,x,v=v: self.profile.cmp_version(x["version"],v)>0 ]
+                    c+=[lambda self, x,v=v: self.profile.cmp_version(x["version"], v)>0 ]
                 elif o=="gte": # >=
-                    c+=[lambda self,x,v=v: self.profile.cmp_version(x["version"],v)>=0 ]
+                    c+=[lambda self, x,v=v: self.profile.cmp_version(x["version"], v)>=0 ]
                 else:
                     raise Exception("Invalid lookup operation: %s"%o)
             else:
                 raise Exception("Invalid lookup operation: %s"%o)
         # Combine expressions into single lambda
-        return reduce(lambda x,y: lambda self,v,x=x,y=y: x(self,v) and y(self,v), c, lambda self,x: True)
+        return reduce(lambda x, y: lambda self, v,x=x,y=y: x(self, v) and y(self, v), c, lambda self, x: True)
     
     ##
     ## execute method decorator
@@ -362,7 +362,7 @@ class Script(threading.Thread):
     ##
     ##
     ##
-    def cli_debug(self,msg,chars=None):
+    def cli_debug(self, msg, chars=None):
         if not self.log_cli_sessions_path:
             return
         m=datetime.datetime.now().strftime("[%Y-%m-%d %H:%M:%S] ")
@@ -370,7 +370,7 @@ class Script(threading.Thread):
             m+=chars*50
         m+="\n"
         m+=msg+"\n"
-        with open(self.log_cli_sessions_path,"a") as f:
+        with open(self.log_cli_sessions_path, "a") as f:
             f.write(m)
     
     ##
@@ -392,14 +392,14 @@ class Script(threading.Thread):
     ##
     ## Debug log message
     ##
-    def debug(self,msg):
+    def debug(self, msg):
         logging.debug("[%s] %s"%(self.debug_name, msg))
     
     ##
     ## Error log message
     ##
-    def error(self,msg):
-        logging.error("[%s] %s"%(self.debug_name,msg))
+    def error(self, msg):
+        logging.error("[%s] %s"%(self.debug_name, msg))
     
     ##
     ## Return root script
@@ -414,14 +414,14 @@ class Script(threading.Thread):
     ##
     ## Get cached result or raise KeyError
     ##
-    def get_cache(self,key1,key2):
+    def get_cache(self, key1, key2):
         s=self.root
         return s.call_cache[repr(key1)][repr(key2)]
     
     ##
     ## Set cached result
     ##
-    def set_cache(self,key1,key2,value):
+    def set_cache(self, key1, key2, value):
         key1=repr(key1)
         key2=repr(key2)
         s=self.root
@@ -435,34 +435,34 @@ class Script(threading.Thread):
     def guarded_run(self):
         # Enforce interface type checking
         for i in self.implements:
-            self.kwargs=i.script_clean_input(self.profile,**self.kwargs)
+            self.kwargs=i.script_clean_input(self.profile, **self.kwargs)
         self.debug("Running script: %s (%s)"%(self.name, self.kwargs))
         # Use cached result when available
         if self.cache and self.parent is not None:
             try:
-                result=self.get_cache(self.name,self.kwargs)
+                result=self.get_cache(self.name, self.kwargs)
                 self.debug("Script returns with cached result: %s"%result)
                 return result
             except KeyError:
-                self.debug("Not in call cache: %s, %s"%(self.name,self.kwargs))
+                self.debug("Not in call cache: %s, %s"%(self.name, self.kwargs))
                 pass
         # Calling script body
         self._thread_id=thread.get_ident()
         result=self.execute(**self.kwargs)
         # Enforce interface result checking
         for i in self.implements:
-            result=i.script_clean_result(self.profile,result)
+            result=i.script_clean_result(self.profile, result)
         # Cache result when required
         if self.cache and self.parent is not None:
-            self.debug("Write to call cache: %s, %s, %s"%(self.name,self.kwargs,result))
-            self.set_cache(self.name,self.kwargs,result)
+            self.debug("Write to call cache: %s, %s, %s"%(self.name, self.kwargs,result))
+            self.set_cache(self.name, self.kwargs,result)
         self.debug("Script returns with result: %s"%result)
         return result
     
     ##
     ## Serialize script results
     ##
-    def serialize_result(self,result):
+    def serialize_result(self, result):
         return cPickle.dumps(result)
     
     ##
@@ -482,7 +482,7 @@ class Script(threading.Thread):
             self.e_cancel=True
         except self.NotSupportedError:
             self.e_not_supported=True
-        except self.LoginError,why:
+        except self.LoginError, why:
             self.login_error=why.args[0]
             self.error("Login failed: %s"%self.login_error)
         except:
@@ -490,8 +490,8 @@ class Script(threading.Thread):
                 # Race condition caught. Handle CancelledError
                 self.error("Cancelled")
             else:
-                t,v,tb=sys.exc_info()
-                r=[str(t),str(v)]
+                t, v,tb=sys.exc_info()
+                r=[str(t), str(v)]
                 r+=[format_frames(get_traceback_frames(tb))]
                 self.error_traceback="\n".join(r)
                 self.debug("Script traceback:\n%s"%self.error_traceback)
@@ -507,7 +507,7 @@ class Script(threading.Thread):
                 self.cli_provider.submit(self.profile.command_exit)
         self.debug("Closing")
         if self.activator.to_save_output and result:
-            self.activator.save_result(result,self.motd)
+            self.activator.save_result(result, self.motd)
         if self.cli_provider:
             self.activator.request_call(self.cli_provider.close, flush=True)
         if self.snmp:
@@ -518,7 +518,7 @@ class Script(threading.Thread):
     ## Default script behavior:
     ## Pass through _execute_chain and call appropriative handler
     ##
-    def execute(self,**kwargs):
+    def execute(self, **kwargs):
         if self._execute_chain and not self.name.endswith(".get_version"):
             # Get version information
             v=self.scripts.get_version()
@@ -536,7 +536,7 @@ class Script(threading.Thread):
     def cli_queue_get(self):
         while True:
             try:
-                return self.cli_provider.queue.get(block=True,timeout=1)
+                return self.cli_provider.queue.get(block=True, timeout=1)
             except Queue.Empty:
                 pass
             except thread.error:
@@ -576,7 +576,7 @@ class Script(threading.Thread):
     def cli(self, cmd, command_submit=None, bulk_lines=None, list_re=None):
         #
         self.debug("cli(%s)"%cmd)
-        self.cli_debug(cmd,">")
+        self.cli_debug(cmd, ">")
         # Submit command
         command_submit=self.profile.command_submit if command_submit is None else command_submit
         if self.activator.use_canned_session:
@@ -611,14 +611,14 @@ class Script(threading.Thread):
                 if match:
                     r+=[match.groupdict()]
             data=r
-        self.debug("cli(%s) returns:\n---------\n%s\n---------"%(cmd,repr(data)))
-        self.cli_debug(data,"<")
+        self.debug("cli(%s) returns:\n---------\n%s\n---------"%(cmd, repr(data)))
+        self.cli_debug(data, "<")
         return data
     
     ##
     ## Clean up config from all unnecessary trash
     ##
-    def cleaned_config(self,config):
+    def cleaned_config(self, config):
         return self.profile.cleaned_config(config)
     
     ##
@@ -632,21 +632,21 @@ class Script(threading.Thread):
             return "\n".join(t[lines:])
     
     ##
-    ## Expand expressions like "1,2,5-7" to [1,2,5,6,7]
+    ## Expand expressions like "1, 2,5-7" to [1, 2,5,6,7]
     ##
-    def expand_rangelist(self,s):
+    def expand_rangelist(self, s):
         result={}
-        for x in s.split(","):
+        for x in s.split(", "):
             x=x.strip()
             if x=="":
                 continue
             if "-" in x:
-                l,r=[int(y) for y in x.split("-")]
+                l, r=[int(y) for y in x.split("-")]
                 if l>r:
                     x=r
                     r=l
                     l=x
-                for i in range(l,r+1):
+                for i in range(l, r+1):
                     result[i]=None
             else:
                 result[int(x)]=None
@@ -655,7 +655,7 @@ class Script(threading.Thread):
     ##
     ## Convert a 6-octet string to MAC address
     ##
-    def hexstring_to_mac(self,s):
+    def hexstring_to_mac(self, s):
         return ":".join(["%02X"%ord(x) for x in s])
     
     ##
@@ -766,8 +766,8 @@ class Script(threading.Thread):
     ## rx can be string or compiled regular expression
     ##
     def re_search(self, rx, s, flags=0):
-        if isinstance(rx,basestring):
-            rx=re.compile(rx,flags)
+        if isinstance(rx, basestring):
+            rx=re.compile(rx, flags)
         match=rx.search(s)
         if match is None:
             raise self.UnexpectedResultError()
@@ -780,8 +780,8 @@ class Script(threading.Thread):
     ## rx can be string or compiled regular expression
     ##
     def re_match(self, rx, s, flags=0):
-        if isinstance(rx,basestring):
-            rx=re.compile(rx,flags)
+        if isinstance(rx, basestring):
+            rx=re.compile(rx, flags)
         match=rx.match(s)
         if match is None:
             raise self.UnexpectedResultError()
