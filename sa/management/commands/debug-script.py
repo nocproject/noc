@@ -29,7 +29,7 @@ from optparse import OptionParser, make_option
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.sa.profiles import profile_registry
-from noc.sa.script import script_registry
+from noc.sa.script import script_registry, Script
 from noc.sa.activator import Service, ServersHub
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
@@ -251,7 +251,7 @@ class Command(BaseCommand):
             raise CommandError("Script name must contain profile when using URLs")
         url=URL(obj)
         access_profile.profile = profile
-        access_profile.scheme  = scheme_id[url.scheme]
+        access_profile.scheme  = Script.get_scheme_id(url.scheme)
         access_profile.address = url.host
         if url.port:
             access_profile.port = url.port
