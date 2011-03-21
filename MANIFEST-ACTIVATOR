@@ -25,7 +25,7 @@ sa/protocols/__init__.py
 sa/protocols/pm_pb2.py
 sa/protocols/sae_pb2.py
 sa/rpc.py
-sa/script.py
+sa/script/
 sa/servers/
 sa/syslogcollector.py
 sa/trapcollector.py
