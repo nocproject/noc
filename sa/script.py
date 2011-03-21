@@ -1010,6 +1010,8 @@ TELNET_OPTIONS={
     255 : "EXOPL",
 }
 
+ACCEPTED_TELNET_OPTIONS=set([chr(c) for c in (1, 3)]) # ECHO+SGA
+
 class TelnetProtocol(Protocol):
     def __init__(self, parent, callback):
         super(TelnetProtocol, self).__init__(parent, callback)
@@ -1055,14 +1057,21 @@ class TelnetProtocol(Protocol):
                     opt=self.in_buffer[0]
                     self.iac_seq=""
                     self.in_buffer=self.in_buffer[1:] # Strip option
-                    self.debug("IAC %s received"%self.iac_repr(cmd, opt))
+                    self.debug("Received IAC %s"%self.iac_repr(cmd, opt))
                     # Refuse options
+                    iac_response=None
                     if cmd in (DO, DONT):
-                        self.debug("Sending IAC %s"%self.iac_repr(WONT, opt))
-                        self.parent.out_buffer += IAC+WONT+opt # Write directly to avoid IAC doubling
+                        if cmd==DO and opt in ACCEPTED_TELNET_OPTIONS:
+                            iac_response=(WILL, opt)
+                        else:
+                            iac_response=(WONT, opt)
                     elif cmd in (WILL, WONT):
-                        self.debug("Sending IAC %s"%self.iac_repr(DONT, opt))
-                        self.parent.out_buffer += IAC+DONT+opt
+                        if cmd==WILL and opt in ACCEPTED_TELNET_OPTIONS:
+                            iac_response=(DO, opt)
+                        else:
+                            iac_response=(DONT, opt)
+                    self.debug("Sending IAC %s"%self.iac_repr(iac_response[0], iac_response[1]))
+                    self.parent.out_buffer += IAC+iac_response[0]+iac_response[1]
     
     ##
     ## Human-readable IAC sequence
