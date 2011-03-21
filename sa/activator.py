@@ -24,7 +24,7 @@ from errno import ECONNREFUSED
 from threading import Lock
 ## NOC modules
 from noc.sa.profiles import profile_registry
-from noc.sa.script import script_registry,ScriptSocket
+from noc.sa.script import script_registry
 from noc.sa.rpc import RPCSocket,file_hash,get_digest
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.protocols.pm_pb2 import *
