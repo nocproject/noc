@@ -31,7 +31,6 @@ class CLISSHSocket(CLI, PTYSocket):
         cmd_args+=[access_profile.address]
         CLI.__init__(self,profile,access_profile)
         PTYSocket.__init__(self,factory,cmd_args)
-        ScriptSocket.__init__(self)
     
     def is_stale(self):
         self.async_check_fsm()
