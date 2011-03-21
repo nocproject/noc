@@ -966,6 +966,49 @@ DO   = chr(253)
 WONT = chr(252)
 WILL = chr(251)
 IAC_CMD= (DO, DONT, WONT, WILL)
+TELNET_OPTIONS={
+    0   : "BINARY",
+    1   : "ECHO",
+    2   : "RCP",
+    3   : "SGA",
+    4   : "NAMS",
+    5   : "STATUS",
+    6   : "TM",
+    7   : "RCTE",
+    8   : "NAOL",
+    9   : "NAOP",
+    10  : "NAOCRD",
+    11  : "NAOHTS",
+    12  : "NAOHTD",
+    13  : "NAOFFD",
+    14  : "NAOVTS",
+    15  : "NAOVTD",
+    16  : "NAOLFD",
+    17  : "XASCII",
+    18  : "LOGOUT",
+    19  : "BM",
+    20  : "DET",
+    21  : "SUPDUP",
+    22  : "SUPDUPOUTPUT",
+    23  : "SNDLOC",
+    24  : "TTYPE",
+    25  : "EOR",
+    26  : "TUID",
+    27  : "OUTMRK",
+    28  : "TTYLOC",
+    29  : "3270REGIME",
+    30  : "X3PAD",
+    31  : "NAWS",
+    32  : "TSPEED",
+    33  : "LFLOW",
+    34  : "LINEMODE",
+    35  : "XDISPLOC",
+    36  : "OLD_ENVIRON",
+    37  : "AUTHENTICATION",
+    38  : "ENCRYPT",
+    39  : "NEW_ENVIRON",
+    255 : "EXOPL",
+}
 
 class TelnetProtocol(Protocol):
     def __init__(self, parent, callback):
@@ -1012,13 +1055,26 @@ class TelnetProtocol(Protocol):
                     opt=self.in_buffer[0]
                     self.iac_seq=""
                     self.in_buffer=self.in_buffer[1:] # Strip option
+                    self.debug("IAC %s received"%self.iac_repr(cmd, opt))
                     # Refuse options
                     if cmd in (DO, DONT):
+                        self.debug("Sending IAC %s"%self.iac_repr(WONT, opt))
                         self.parent.out_buffer += IAC+WONT+opt # Write directly to avoid IAC doubling
                     elif cmd in (WILL, WONT):
+                        self.debug("Sending IAC %s"%self.iac_repr(DONT, opt))
                         self.parent.out_buffer += IAC+DONT+opt
-            
     
+    ##
+    ## Human-readable IAC sequence
+    ##
+    def iac_repr(self, cmd, opt):
+        if isinstance(opt, basestring):
+            opt=ord(opt)
+        return "%s %s (%s %s)"%({DO: "DO", DONT: "DONT", WILL: "WILL", WONT: "WONT"}.get(cmd, "???"),
+            TELNET_OPTIONS.get(opt, "???"), ord(cmd), opt)
+    
+    def debug(self, msg):
+        self.parent.debug(msg)
 
 ##
 ## Telnet client
@@ -1028,6 +1084,7 @@ class CLITelnetSocket(ScriptSocket, CLI, ConnectedTCPSocket):
     protocol_class=TelnetProtocol
     
     def __init__(self, factory, profile, access_profile):
+        self._log_label="TELNET: %s"%access_profile.address
         CLI.__init__(self, profile, access_profile)
         port=access_profile.port or 23
         ConnectedTCPSocket.__init__(self, factory, access_profile.address, port)
@@ -1041,11 +1098,21 @@ class CLITelnetSocket(ScriptSocket, CLI, ConnectedTCPSocket):
         self.async_check_fsm()
         return ConnectedTCPSocket.is_stale(self)
     
+    ##
+    def log_label(self):
+        return self._log_label
+    
+    ##
+    ##
+    ##
+    def debug(self,msg):
+        logging.debug("[%s] %s"%(self.log_label(),msg))
+    
 
 ##
 ##
 ##
-class CLISSHSocket(ScriptSocket,CLI,PTYSocket):
+class CLISSHSocket(ScriptSocket, CLI, PTYSocket):
     TTL=30
     def __init__(self,factory,profile,access_profile):
         logging.debug("CLISSHSocket connecting '%s'"%access_profile.address)
@@ -1056,6 +1123,7 @@ class CLISSHSocket(ScriptSocket,CLI,PTYSocket):
             "-l",access_profile.user]
         if access_profile.port and access_profile.port!=22:
             cmd_args+=["-p",str(access_profile.port)]
+        self._log_label="SSH: %s"%access_profile.address
         cmd_args+=[access_profile.address]
         CLI.__init__(self,profile,access_profile)
         PTYSocket.__init__(self,factory,cmd_args)
@@ -1064,6 +1132,14 @@ class CLISSHSocket(ScriptSocket,CLI,PTYSocket):
     def is_stale(self):
         self.async_check_fsm()
         return PTYSocket.is_stale(self)
+    
+    def log_label(self):
+        return self._log_label
+    
+    def debug(self,msg):
+        logging.debug("[%s] %s"%(self.log_label(),msg))
+    
+
 ##
 ##
 ##
