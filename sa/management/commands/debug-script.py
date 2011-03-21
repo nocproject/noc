@@ -30,7 +30,7 @@ from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
-from noc.sa.activator import Service,ServersHub
+from noc.sa.activator import Service, ServersHub
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
 from noc.lib.url import URL
@@ -44,7 +44,7 @@ class Controller(object):
 ## Canned beef output
 ##
 class SessionCan(object):
-    def __init__(self,script_name,input={}):
+    def __init__(self, script_name, input={}):
         self.cli={} # Command -> result
         self.input=input
         self.result=None
@@ -54,39 +54,39 @@ class SessionCan(object):
         self.snmp_getnext={}
     
     ## Store data
-    def save_interaction(self,provider,cmd,data):
+    def save_interaction(self, provider, cmd, data):
         if provider=="cli":
             self.cli[cmd]=data
     
     ##
-    def save_snmp_get(self,oid,result):
+    def save_snmp_get(self, oid, result):
         self.snmp_get[oid]=result
     
     ##
-    def save_snmp_getnext(self,oid,result):
+    def save_snmp_getnext(self, oid, result):
         self.snmp_getnext[oid]=result
     
     ## Save final result
-    def save_result(self,result,motd=""):
+    def save_result(self, result, motd=""):
         self.result=result
         self.motd=motd
     
     ## Dump canned data
-    def dump(self,output):
+    def dump(self, output):
         def format_stringdict(d):
             def lrepr(s):
                 return repr(s)[1:-1]
             out=["{"]
-            for k,v in d.items():
+            for k, v in d.items():
                 lines=v.splitlines()
                 if len(lines)<4:
-                    out+=["%s:  %s,"%(repr(k),repr(v))]
+                    out+=["%s:  %s, "%(repr(k), repr(v))]
                 else:
                     out+=["## %s"%repr(k)]
-                    out+=["%s: \"\"\"%s"%(repr(k),lrepr(lines[0]))]+[lrepr(l) for l in lines[1:-1]]+["%s\"\"\","%lrepr(lines[-1])]
+                    out+=["%s: \"\"\"%s"%(repr(k), lrepr(lines[0]))]+[lrepr(l) for l in lines[1:-1]]+["%s\"\"\", "%lrepr(lines[-1])]
             out+=["}"]
             return "\n".join(out)
-        vendor,profile,script=self.script_name.split(".")
+        vendor, profile, script=self.script_name.split(".")
         date=str(datetime.datetime.now()).split(".")[0]
         s="""# -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
@@ -109,7 +109,7 @@ class %(test_name)s_Test(ScriptTestCase):
     snmp_get=%(snmp_get)s
     snmp_getnext=%(snmp_getnext)s
 """%{
-            "test_name"    : self.script_name.replace(".","_"),
+            "test_name"    : self.script_name.replace(".", "_"),
             "script"       : self.script_name,
             "vendor"       : vendor,
             "year"         : datetime.datetime.now().year,
@@ -121,7 +121,7 @@ class %(test_name)s_Test(ScriptTestCase):
             "snmp_getnext" : pprint.pformat(self.snmp_getnext),
             "motd"         : pprint.pformat(self.motd),
         }
-        with open(output,"w") as f:
+        with open(output, "w") as f:
             f.write(s)
     
 
@@ -150,17 +150,17 @@ class ActivatorStub(object):
             args={}
             for k, v in values:
                 args[k]=cPickle.loads(v)
-            self.session_can=SessionCan(self.script_name,args)
+            self.session_can=SessionCan(self.script_name, args)
     
     def tick(self):
         logging.debug("Tick")
         while not self.script_call_queue.empty():
             try:
-                f,args,kwargs=self.script_call_queue.get_nowait()
+                f, args, kwargs=self.script_call_queue.get_nowait()
             except:
                 break
-            logging.debug("Calling delayed %s(*%s,**%s)"%(f,args,kwargs))
-            apply(f,args,kwargs)
+            logging.debug("Calling delayed %s(*%s, **%s)"%(f, args, kwargs))
+            apply(f, args, kwargs)
         if len(self.factory.sockets)==0:
             self.wait_ticks-=1
             if self.wait_ticks==0:
@@ -181,51 +181,54 @@ class ActivatorStub(object):
         else:
             self.wait_ticks=self.WAIT_TICKS
         
-    def on_script_exit(self,script):
+    def on_script_exit(self, script):
         if script.parent is None:
             self.servers.close()
         
     def run_script(self, _script_name, access_profile, callback, timeout=0, **kwargs):
-        pv,pos,sn=_script_name.split(".",2)
-        profile=profile_registry["%s.%s"%(pv,pos)]()
+        pv, pos, sn=_script_name.split(".", 2)
+        profile=profile_registry["%s.%s"%(pv, pos)]()
         script=script_registry[_script_name](profile, self, access_profile, **kwargs)
         self.scripts+=[script]
         script.start()
     
-    def request_call(self,f,*args,**kwargs):
-        logging.debug("Requesting call: %s(*%s,**%s)"%(f,args,kwargs))
-        self.script_call_queue.put((f,args,kwargs))
+    def request_call(self, f, *args, **kwargs):
+        logging.debug("Requesting call: %s(*%s, **%s)"%(f, args, kwargs))
+        self.script_call_queue.put((f, args, kwargs))
     
     def can_run_script(self):
         return True
     ##
     ## Handler to accept canned input
     ##
-    def save_interaction(self,provider,cmd,data):
-        self.session_can.save_interaction(provider,cmd,data)
+    def save_interaction(self, provider, cmd, data):
+        self.session_can.save_interaction(provider, cmd, data)
     ##
     ## Handler to save final result
     ##
-    def save_result(self,result,motd=""):
-        self.session_can.save_result(result,motd)
+    def save_result(self, result, motd=""):
+        self.session_can.save_result(result, motd)
     ##
-    def save_snmp_get(self,oid,result):
-        self.session_can.save_snmp_get(oid,result)
+    def save_snmp_get(self, oid, result):
+        self.session_can.save_snmp_get(oid, result)
     ##
-    def save_snmp_getnext(self,oid,result):
-        self.session_can.save_snmp_getnext(oid,result)
+    def save_snmp_getnext(self, oid, result):
+        self.session_can.save_snmp_getnext(oid, result)
 
+##
+## debug-script handler
+##
 class Command(BaseCommand):
     help="Debug SA Script"
     option_list=BaseCommand.option_list+(
-        make_option("-c","--read-community",dest="snmp_ro"),
-        make_option("-o","--output",dest="output"),
+        make_option("-c", "--read-community", dest="snmp_ro"),
+        make_option("-o", "--output", dest="output"),
     )
     
     ##
     ## Gentle SIGINT handler
     ##
-    def SIGINT(self,signo,frame):
+    def SIGINT(self, signo, frame):
         logging.info("SIGINT")
         os._exit(0)
     
@@ -290,8 +293,11 @@ class Command(BaseCommand):
         access_profile.password = o.password
         if o.super_password:
             access_profile.super_password=o.super_password
-        #if o.snmp_ro:
-        #    access_profile.snmp_ro=o.snmp_ro
+        if snmp_ro_community:
+            if snmp_ro_community!="-":
+                access_profile.snmp_ro=snmp_ro_community
+            elif o.snmp_ro:
+                access_profile.snmp_ro=o.snmp_ro
         if o.remote_path:
             access_profile.path=o.remote_path
     
@@ -358,7 +364,7 @@ class Command(BaseCommand):
                 # object
                 objects+=[a]
         # Canned beef for only one object
-        output=options.get("output",None)
+        output=options.get("output", None)
         if output and len(objects)!=1:
             raise CommandError("Can write canned beef for one object only")
         # Get SNMP community
@@ -369,13 +375,14 @@ class Command(BaseCommand):
         requests=[self.get_request(script_name, obj, snmp_ro_community, values) for obj in objects]
         # Set up logging and signal handlers
         logging.root.setLevel(logging.DEBUG)
-        signal.signal(signal.SIGINT,self.SIGINT)
+        signal.signal(signal.SIGINT, self.SIGINT)
         ## Prepare activator stub
         self.tf=TransactionFactory()
         service=Service()
         service.activator=ActivatorStub(requests[0].script if output else None, values, output)
         ## Run scripts
         for r in requests:
+            print r
             t=threading.Thread(target=self.run_script, args=(service, r))
             t.start()
         # Finally give control to activator's factory
