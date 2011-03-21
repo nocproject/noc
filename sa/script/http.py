@@ -10,6 +10,9 @@
 import random
 import urllib
 import httplib
+import base64
+import hashlib
+
 ##
 ## HTTP Provider
 ##
