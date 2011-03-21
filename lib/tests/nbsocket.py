@@ -13,50 +13,77 @@ from noc.lib.nbsocket import *
 ##
 ## TCP Ping server
 ##
+TCP_TEST_SIZE=4*1024*1024
+TCP_TEST_DATA="X"*TCP_TEST_SIZE
+
 class TCPServer(AcceptedTCPSocket):
+    def __init__(self, *args, **kwargs):
+        self._read_count=0
+        super(TCPServer, self).__init__(*args, **kwargs)
+    
+    def on_connect(self):
+        self.write(TCP_TEST_DATA)
+    
     def on_read(self, data):
-        if data=="PING":
-            self.write("PONG")
+        self._read_count+=len(data)
+        if self._read_count==TCP_TEST_SIZE:
             self.factory.tcp_server_success+=1
+            self.close()
     
 
 ##
 ## TCP Ping client
 ##
 class TCPClient(ConnectedTCPSocket):
+    def __init__(self, *args, **kwargs):
+        self._read_count=0
+        super(TCPClient, self).__init__(*args, **kwargs)
+    
     def on_connect(self):
-        self.write("PING")
+        self.write(TCP_TEST_DATA)
     
     def on_read(self, data):
-        if data=="PONG":
+        self._read_count+=len(data)
+        if self._read_count==TCP_TEST_SIZE:
             self.factory.tcp_client_success+=1
-        self.close()
+            self.close()
     
+
 ##
 ##
 ##
 class PopenTestSocket(PopenSocket):
     def on_read(self, data):
-        if data:
+        if data and not hasattr(self, "_done"):
             self.factory.popen_success+=1
+            self._done=True
     
 
 ##
 ##
 ##
-class PTYTestSocket(PopenSocket):
+class PTYTestSocket(PTYSocket):
     def on_read(self, data):
-        if data:
+        if data and not hasattr(self, "_done"):
             self.factory.pty_success+=1
+            self._done=True
+    
+
+##
+##
+##
+#class PTYStressTest
 
 ##
 ## NonBlocking sockets tests
 ##
 class NBSocketTestCase(TestCase):
-    TCP_CLIENTS=200
+    TCP_CLIENTS=20
+    POPEN_CLIENTS=0
+    PTY_CLIENTS=0
     IPv4_ADDRESS="127.0.0.1"
     TCP_PORT=65028
-    POPEN_CMD=["/bin/ls","/"]
+    POPEN_CMD=["/bin/dd", "if=/dev/zero", "of=/dev/stdout", "bs=4096" ,"count=1024"]
     
     ## Prepare test sockets
     def set_up_sockets(self, factory, port):
@@ -71,16 +98,21 @@ class NBSocketTestCase(TestCase):
         for i in range(self.TCP_CLIENTS):
             TCPClient(factory, self.IPv4_ADDRESS, port)
         # Create popen socket
-        PopenTestSocket(factory, self.POPEN_CMD)
+        for i in range(self.POPEN_CLIENTS):
+            PopenTestSocket(factory, self.POPEN_CMD)
         # Create PTY socket
-        PTYTestSocket(factory, self.POPEN_CMD)
+        for i in range(self.PTY_CLIENTS):
+            PTYTestSocket(factory, self.POPEN_CMD)
     
     ## Validate result
     def check_result(self, factory):
         self.assertEquals(factory.tcp_server_success, self.TCP_CLIENTS)
         self.assertEquals(factory.tcp_client_success, self.TCP_CLIENTS)
-        self.assertEquals(factory.popen_success, 1)
-        self.assertEquals(factory.pty_success, 1)
+        self.assertEquals(factory.popen_success, self.POPEN_CLIENTS)
+        self.assertEquals(factory.pty_success, self.PTY_CLIENTS)
+        print "POLLS", factory.cnt_polls
+        print self.TCP_CLIENTS*TCP_TEST_SIZE*2,"bytes transceived"
+        print self.TCP_CLIENTS*TCP_TEST_SIZE*2/factory.cnt_polls,"bytes per poll"
     
     ## Poller test wrapper
     def poller_test(self, polling_method, port):
@@ -106,4 +138,3 @@ class NBSocketTestCase(TestCase):
     ## Test kevent/kqueue method
     def test_epoll(self):
         self.poller_test("epoll", self.TCP_PORT+3)
-    
