@@ -16,3 +16,4 @@ contrib/lib/*
 contrib/bin/*
 contrib/share/*
 MANIFEST
+.*
