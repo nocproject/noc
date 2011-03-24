@@ -10,12 +10,15 @@
 import pprint
 import os
 ## Django modules
+from django.utils.translation import ugettext as _
+from django.utils.encoding import smart_unicode
 from django.contrib import admin
 from django.shortcuts import get_object_or_404
 from django import forms
 from django.db.models import Q
 from django.contrib.auth.models import User, Group
 from django.utils.safestring import SafeString
+from django.contrib.admin.filterspecs import FilterSpec, ChoicesFilterSpec
 ## NOC modules
 from noc.lib.app import ModelApplication, site, Permit, PermitSuperuser, HasPerm, PermissionDenied, view
 from noc.sa.models import *
@@ -96,6 +99,26 @@ def object_status(o):
 object_status.short_description=u"Status"
 object_status.allow_tags=True
 
+##
+## Profile filter
+##
+class ExistingChoicesFilterSpec(ChoicesFilterSpec):
+    def choices(self, cl):
+        yield {
+            "selected"    : self.lookup_val is None,
+            "query_string": cl.get_query_string({}, [self.lookup_kwarg]),
+            "display"     : _("All")}
+        
+        used=set(self.field.model.objects.distinct().values_list(self.field.name, flat=True))
+        for k, v in self.field.flatchoices:
+            if k in used:
+                yield {
+                    "selected"     : smart_unicode(k) == self.lookup_val,
+                    "query_string" : cl.get_query_string({self.lookup_kwarg: k}),
+                    "display"      : v}
+    
+
+FilterSpec.filter_specs.insert(0, (lambda f: getattr(f, "existing_choices_filter", False), ExistingChoicesFilterSpec))
 ##
 ## Administrative domain/activator
 ##
