@@ -137,7 +137,7 @@ class ActivatorStub(object):
         self.config.read("etc/noc-activator.conf")
         self.script_call_queue=Queue.Queue()
         self.ping_check_results=None
-        self.factory=SocketFactory(tick_callback=self.tick)
+        self.factory=SocketFactory(tick_callback=self.tick, controller=self)
         self.servers=ServersHub(self)
         self.log_cli_sessions=None
         self.wait_ticks=self.WAIT_TICKS
