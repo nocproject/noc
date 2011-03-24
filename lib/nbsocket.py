@@ -739,13 +739,14 @@ class PopenSocket(Socket):
 ## run         - main event loop
 ##
 class SocketFactory(object):
-    def __init__(self, tick_callback=None, polling_method=None):
+    def __init__(self, tick_callback=None, polling_method=None, controller=None):
         self.sockets={}     # fileno -> socket
         self.socket_name={} # socket -> name
         self.name_socket={} # name -> socket
         self.new_sockets=[] # list of (socket,name)
         self.tick_callback=tick_callback
         self.register_lock=RLock() # Guard for register/unregister operations
+        self.controller=None # Reference to controlling daemon
         self.get_active_sockets=None # Polling method
         self.setup_poller(polling_method)
         # Performance data
