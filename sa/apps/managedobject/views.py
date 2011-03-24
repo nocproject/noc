@@ -64,6 +64,18 @@ action_links.short_description="Actions"
 action_links.allow_tags=True
 
 ##
+## Display profile and platform
+##
+def profile(obj):
+    r=[obj.profile_name]
+    p=" ".join([x for x in [obj.get_attr("vendor"), obj.get_attr("platform")] if x])
+    if p:
+        r+=[p]
+    return "<br/>".join(r)
+profile.short_description=SafeString("Profile<br/>Platform")
+profile.allow_tags=True
+
+##
 ## Display object status
 ##
 def object_status(o):
@@ -152,7 +164,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("tags",)
         }),
     )
-    list_display=["name", object_status, "profile_name", "address",
+    list_display=["name", object_status, profile, "address",
                 domain_activator,
                 "description", "repo_path", action_links]
     list_filter=["is_managed","is_configuration_managed","activator","administrative_domain","profile_name"]
