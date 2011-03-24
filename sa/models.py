@@ -114,6 +114,8 @@ class ManagedObject(models.Model):
     #
     tags=AutoCompleteTagsField(_("Tags"),null=True,blank=True)
     
+    profile_name.existing_choices_filter=True # Use special filter for profile
+    
     def __unicode__(self):
         return self.name
 
