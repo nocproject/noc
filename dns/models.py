@@ -126,7 +126,7 @@ class DNSZone(models.Model):
         verbose_name_plural="DNS Zones"
         ordering=["name"]
     
-    name=models.CharField("Domain",max_length=64,unique=True)
+    name=models.CharField("Domain",max_length=256,unique=True)
     description=models.CharField("Description",null=True,blank=True,max_length=64)
     is_auto_generated=models.BooleanField("Auto generated?")
     serial=models.CharField("Serial",max_length=10,default="0000000000")
