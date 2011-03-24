@@ -67,7 +67,7 @@ action_links.allow_tags=True
 ## Display profile and platform
 ##
 def profile(obj):
-    r=[obj.profile_name]
+    r=["<a href='?profile_name__exact=%s'>%s</a>"%(obj.profile_name, obj.profile_name)]
     p=" ".join([x for x in [obj.get_attr("vendor"), obj.get_attr("platform")] if x])
     if p:
         r+=[p]
