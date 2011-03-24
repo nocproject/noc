@@ -131,10 +131,10 @@ class Service(SAEService):
 class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
     def __init__(self,factory,address,port,local_address=None):
         ConnectedTCPSocket.__init__(self,factory,address,port,local_address)
-        RPCSocket.__init__(self,factory.activator.service)
+        RPCSocket.__init__(self,factory.controller.service)
         
     def activator_event(self,event):
-        self.factory.activator.event(event)
+        self.factory.controller.event(event)
     
     def on_connect(self):
         self.activator_event("connect")
@@ -150,10 +150,10 @@ class ActivatorSocket(RPCSocket,ConnectedTCPSocket):
 class ActivatorSSLSocket(RPCSocket,ConnectedTCPSSLSocket):
     def __init__(self,factory,address,port,local_address=None):
         ConnectedTCPSSLSocket.__init__(self,factory,address,port,local_address)
-        RPCSocket.__init__(self,factory.activator.service)
+        RPCSocket.__init__(self,factory.controller.service)
         
     def activator_event(self,event):
-        self.factory.activator.event(event)
+        self.factory.controller.event(event)
 
     def on_connect(self):
         self.activator_event("connect")
@@ -184,10 +184,8 @@ class FPingProbeSocket(PTYSocket):
         os.unlink(self.tmp_path)
         # fping issues duplicated addresses sometimes.
         # Remove duplicates
-        r={}
-        for u in [x.strip() for x in self.result.split("\n") if x.strip()]:
-            r[u]=None
-        self.callback(r.keys())
+        r=set([x.strip() for x in self.result.split("\n") if x.strip()])
+        self.callback(r)
         
     def on_read(self,data):
         self.result+=data
@@ -262,8 +260,7 @@ class Activator(Daemon,FSM):
         self.stand_alone_mode=self.config.get("activator","software_update") and not os.path.exists(os.path.join("sa","sae.py"))
         self.service=Service()
         self.service.activator=self
-        self.factory=SocketFactory(tick_callback=self.tick)
-        self.factory.activator=self
+        self.factory=SocketFactory(tick_callback=self.tick, controller=self)
         self.children={}
         self.ping_check_results={} # address -> last ping check result
         self.sae_stream=None
