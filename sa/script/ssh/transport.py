@@ -417,7 +417,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     ##     [string signature] - if has signature set
     ##
     ##
-    def request_auth_publickey(self, sign=False):
+    def request_auth_publickey(self, sign=True):
         pub_k=self.factory.controller.ssh_public_key
         pub_k_blob=pub_k.blob()
         if sign:
@@ -835,7 +835,8 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     ##     string pk blob
     ##
     def ssh_USERAUTH_PK_OK_publickey(self, packet):
-        self.request_auth_publickey(sign=True)
+        # Requesting to sign already signed authentication request.
+        self.request_auth_none()
     
     ##
     ## MSG_USERAUTH_PK_OK
