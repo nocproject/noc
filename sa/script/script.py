@@ -86,6 +86,7 @@ class ScriptRegistry(Registry):
     ## Register generic scripts to all supporting profiles
     ##
     def register_generics(self):
+        generics=[]
         for c in [c for c in self.classes.values() if c.name and c.name.startswith("Generic.")]:
             g, name=c.name.split(".")
             for p in profile_registry.classes:
@@ -100,9 +101,10 @@ class ScriptRegistry(Registry):
                         to_register=False
                         break
                 if to_register:
-                    logging.debug("Script Registry: Register generic %s"%s_name)
                     self.classes[s_name]=c
                     profile_registry[p].scripts[name]=c
+                    generics+=[s_name]
+        logging.debug("Registering generics: %s"%", ".join(sorted(generics)))
     
     ##
     ## Register all scripts and generic scripts

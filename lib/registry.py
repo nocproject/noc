@@ -25,7 +25,6 @@ class Registry(object):
     def register(self,name,module):
         if name is None:
             return
-        logging.debug("%s: Register %s"%(self.name,name))
         self.classes[name]=module
     #
     # Should be called at the top of the models.py
@@ -67,6 +66,8 @@ class Registry(object):
                             f="."+f
                         __import__(mb+f,{},{},self.classname)
         self.is_registered=True
+        logging.debug("%s: Registered %s"%(self.name, ", ".join(sorted(self.classes.keys()))))
+    
     #
     #
     #
