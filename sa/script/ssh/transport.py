@@ -921,8 +921,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     def ssh_CHANNEL_DATA(self, packet):
         channel_id,=struct.unpack(">L", packet[:4]) # @todo: Check local channel id
         packet, rest=get_NS(packet[4:])
-        self.debug("Read: %r"%packet)
-        self.feed(packet, cleanup=self.profile.cleaned_input)
+        CLI.on_read(self, packet)
         self.local_window_left -= len(packet)
         if self.local_window_left <= 0: # @todo: adaptive behavior
             self.local_window_left=self.local_window_size
