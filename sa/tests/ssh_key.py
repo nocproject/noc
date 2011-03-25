@@ -10,20 +10,21 @@ from unittest import TestCase
 ## NOC modules
 from noc.sa.script.ssh.keys import *
 
-K=Key.generate(1024)
+R=Key.generate("RSA", 1024)
+D=Key.generate("DSA", 512)
 DATA="foobar"
 
 class SSHKeyTestCase(TestCase):
-    def test_sign_verify(self):
-        signature=K.sign(DATA)
-        self.assertEquals(K.verify(signature, DATA), True)
+    def test_rsa_sign_verify(self):
+        signature=R.sign(DATA)
+        self.assertEquals(R.verify(signature, DATA), True)
     
-    def test_sign_pk_verify(self):
-        signature=K.sign(DATA)
-        self.assertEquals(K.public().verify(signature, DATA), True)
+    def test_rsa_sign_pk_verify(self):
+        signature=R.sign(DATA)
+        self.assertEquals(R.public().verify(signature, DATA), True)
     
-    def test_serialization(self):
-        k=K
+    def test_rsa_serialization(self):
+        k=R
         pk=k.public()
         # Convert to string
         s_k=k.to_string()
@@ -37,4 +38,12 @@ class SSHKeyTestCase(TestCase):
         self.assertEquals(pk.verify(k1.sign(DATA), DATA), True)
         self.assertEquals(pk1.verify(k.sign(DATA), DATA), True)
         self.assertEquals(pk1.verify(k1.sign(DATA), DATA), True)
+    
+    def test_dsa_sign_verify(self):
+        signature=D.sign(DATA)
+        self.assertEquals(D.verify(signature, DATA), True)
+    
+    def test_dsa_sign_pk_verify(self):
+        signature=D.sign(DATA)
+        self.assertEquals(D.public().verify(signature, DATA), True)
     
