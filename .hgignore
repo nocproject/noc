@@ -10,6 +10,7 @@ build/
 noc.egg-info/
 etc/*.conf
 etc/certs/*
+etc/ssh/id_*
 local/*
 static/doc/*
 contrib/lib/*
