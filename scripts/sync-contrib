@@ -106,11 +106,36 @@ class Installer(object):
         # Install
         return self.install("protobuf")
 
+##
+## Check all required system modules present
+##
+def check_system():
+    r=True
+    # Check psycopg2
+    try:
+        import psycopg2
+    except ImportError:
+        print "Error: psycopg2 not found. Please install psycopg2 module (easy_install psycopg2)"
+        r=False
+    # Check pyCrypto
+    try:
+        from Crypto.PublicKey import RSA, DSA
+    except ImportError:
+        print "Error: pycrypto not found. Please install pycrypto module (easy_install pycrypto)"
+        r=False
+    return r
+
 if __name__=="__main__":
     check_only=False
-    optlist,optargs=getopt.getopt(sys.argv[1:],"c")
+    system_only=False
+    optlist,optargs=getopt.getopt(sys.argv[1:],"cs")
     for k,v in optlist:
         if k=="-c":
             check_only=True
-    r=Installer(check_only=check_only).sync()
+        elif k=="-s":
+            system_only=True
+    if system_only:
+        r=check_system()
+    else:
+        r=Installer(check_only=check_only).sync()
     sys.exit({True:0,False:1}[r])

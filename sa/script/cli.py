@@ -65,7 +65,9 @@ class CLI(StreamFSM):
             "PAGER"       : "PROMPT",
             "CLOSE"       : "CLOSED",
         },
-        "FAILURE":{},
+        "FAILURE":{
+            "FAILURE"     : "FAILURE",
+        },
         "CLOSED":{},
     }
     MATCH_TAIL=256 # Analyze last 256 characters only
@@ -271,7 +273,7 @@ class CLI(StreamFSM):
         self.set_patterns([])
         if not self.is_ready:
             self.queue.put(None) # Signal status upodate
-        self.queue.put(Script.LoginError(self.motd))
+        self.queue.put(LoginError(self.motd))
     
     ##
     ## Save MoTD on start

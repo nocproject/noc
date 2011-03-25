@@ -558,7 +558,7 @@ class Script(threading.Thread):
                 s_class=CLISSHSocket
             else:
                 raise UnknownAccessScheme(self.access_profile.scheme)
-            self.cli_provider=s_class(self.activator.factory, self.profile, self.access_profile)
+            self.cli_provider=s_class(self.activator.factory, self.profile, self.access_profile) #@todo: pass activator
             self.cli_queue_get()
             self.debug("CLI Provider is ready")
             # Disable pager when necessary

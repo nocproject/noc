@@ -30,12 +30,14 @@ from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry, Script
+from noc.sa.script.ssh.keys import Key
 from noc.sa.activator import Service, ServersHub
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
 from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory
 from noc.lib.validators import is_int
+from noc.lib.fileutils import read_file
 
 class Controller(object):
     pass
@@ -151,6 +153,28 @@ class ActivatorStub(object):
             for k, v in values:
                 args[k]=cPickle.loads(v)
             self.session_can=SessionCan(self.script_name, args)
+        # SSH keys
+        self.ssh_public_key=None
+        self.ssh_private_key=None
+        self.load_ssh_keys()
+    
+    ##
+    ## Initialize ssh keys
+    ##
+    def load_ssh_keys(self):
+        private_path=self.config.get("ssh", "key")
+        public_path=private_path+".pub"
+        # Load keys
+        logging.debug("Loading private ssh key from '%s'"%private_path)
+        s_priv=read_file(private_path)
+        logging.debug("Loading public ssh key from '%s'"%public_path)
+        s_pub=read_file(public_path)
+        # Check all keys presend
+        if s_priv is None or s_pub is None:
+            self.error("Cannot find ssh keys. Generate one by 'python manage.py generate-ssh-keys' command")
+            os._exit(1)
+        self.ssh_public_key=Key.from_string(s_pub)
+        self.ssh_private_key=Key.from_string_private_noc(s_priv)
     
     def tick(self):
         logging.debug("Tick")
@@ -332,6 +356,30 @@ class Command(BaseCommand):
         return r
     
     ##
+    ## Expand names starting with "selector:"
+    ##
+    def expand_selectors(self, objects):
+        if [o for o in objects if o.startswith("selector:")]:
+            # Has selectors
+            from noc.sa.models import ManagedObjectSelector
+            
+            r=set()
+            for o in objects:
+                if o.startswith("selector:"):
+                    o=o[9:]
+                    try:
+                        s=ManagedObjectSelector.objects.get(name=o)
+                    except ManagedObjectSelector.DoesNotExist:
+                        raise CommandError("Selector not found: %s"%o)
+                    r|=set([mo.name for mo in s.managed_objects])
+                else:
+                    r.add(o)
+            return list(r)
+        else:
+            # No selectors. Nothing to expand
+            return objects
+    
+    ##
     def run_script(self, service, request):
         def handle_callback(controller, response=None, error=None):
             if error:
@@ -372,6 +420,7 @@ class Command(BaseCommand):
         if options["snmp_ro"]:
             snmp_ro_community=options["snmp_ro"]
         # Prepare requests
+        objects=self.expand_selectors(objects)
         requests=[self.get_request(script_name, obj, snmp_ro_community, values) for obj in objects]
         # Set up logging and signal handlers
         logging.root.setLevel(logging.DEBUG)
