@@ -417,26 +417,30 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     ##     [string signature] - if has signature set
     ##
     ##
-    def request_auth_publickey(self):
+    def request_auth_publickey(self, sign=False):
         pub_k=self.factory.controller.ssh_public_key
         pub_k_blob=pub_k.blob()
-        priv_k=self.factory.controller.ssh_private_key
-        signature=priv_k.sign(
-            NS(self.session_id)+
-            chr(MSG_USERAUTH_REQUEST)+
-            NS(self.access_profile.user)+
-            NS("ssh-connection")+
-            NS("publickey")+
-            "\xff"+
-            NS(pub_k.ssh_type())+
-            NS(pub_k.blob())
-        )
+        if sign:
+            priv_k=self.factory.controller.ssh_private_key
+            signature=priv_k.sign(
+                NS(self.session_id)+
+                chr(MSG_USERAUTH_REQUEST)+
+                NS(self.access_profile.user)+
+                NS("ssh-connection")+
+                NS("publickey")+
+                "\xff"+
+                NS(pub_k.ssh_type())+
+                NS(pub_k.blob())
+            )
+            signature=NS(signature)
+        else:
+            signature=""
         
         self.send_auth("publickey", (
-            "\xff"+
+            ("\xff" if sign else "\x00")+
             NS(pub_k.ssh_type())+
             NS(pub_k.blob())+
-            NS(signature)
+            signature
         ))
     
     ##
@@ -811,14 +815,38 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.motd=message
     
     ##
-    ## MSG_USERAUTH_INFO_RESPONSE:
+    ## MSG_USERAUTH_PK_OK
+    ## Has different meanings depending on current authentication method.
+    ## Try to dispatch
+    ##
+    def ssh_USERAUTH_PK_OK(self, packet):
+        try:
+            h=getattr(self, "ssh_USERAUTH_PK_OK_%s"%self.last_auth.lower().replace("-", "_"))
+        except AttributeError:
+            self.request_auth_none()
+            return
+        h(packet)
+    
+    ##
+    ## MSG_USERAUTH_PK_OK
+    ## publickey authentication
+    ## Payload:
+    ##     string pk algorithm
+    ##     string pk blob
+    ##
+    def ssh_USERAUTH_PK_OK_publickey(self, packet):
+        self.request_auth_publickey(sign=True)
+    
+    ##
+    ## MSG_USERAUTH_PK_OK
+    ## keyboard-interactive authentication
     ## Payload:
     ##     string name
     ##     string instruction
     ##     string lang
     ##     string data
     ##
-    def ssh_USERAUTH_PK_OK(self, packet):
+    def ssh_USERAUTH_PK_OK_keyboard_interactive(self, packet):
         name, instruction, lang, data = get_NS(packet, 3)
         n_prompts = struct.unpack('!L', data[:4])[0]
         data = data[4:]
