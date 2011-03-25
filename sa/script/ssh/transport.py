@@ -85,6 +85,7 @@ MSG_USERAUTH_INFO_RESPONSE = 61
 MSG_CHANNEL_OPEN = 90
 MSG_CHANNEL_OPEN_CONFIRMATION = 91
 MSG_CHANNEL_OPEN_FAILURE = 92
+MSG_CHANNEL_WINDOW_ADJUST = 93
 MSG_CHANNEL_DATA = 94
 MSG_CHANNEL_EXTENDED_DATA = 95
 MSG_CHANNEL_REQUEST = 98
@@ -150,8 +151,9 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.session_id=None
         self.local_channel_id=0
         self.local_window_size=131072
+        self.local_window_left=self.local_window_size
         self.local_max_packet=32768
-        self.remote_window_size=None
+        self.remote_window_left=None
         self.remote_max_packet=None
         self.requested_service_name=None
         self.is_ssh_ready=False
@@ -160,6 +162,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.current_remote_channel=None
         self.last_auth=None
         self.authenticated_with=set()
+        self.out_data_buffer=""
         ConnectedTCPSocket.__init__(self, factory, access_profile.address, port)
     
     ##
@@ -191,11 +194,30 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     ## Transfer data to server
     ##
     def write(self, msg):
-        if self.is_ssh_ready:
-            self.send_packet(MSG_CHANNEL_DATA,(
-                struct.pack(">L", self.current_remote_channel)+
-                NS(str(msg))
-            ))
+        if not self.is_ssh_ready:
+            return
+        self.out_data_buffer += msg
+        if self.remote_window_left == 0:
+            # No window left, buffer data
+            return
+        l=len(self.out_data_buffer)
+        if l>self.remote_window_left:
+            data = self.out_data_buffer[:self.remote_window_left]
+            self.out_data_buffer = self.out_data_buffer[self.remote_window_left:]
+        else:
+            data = self.out_data_buffer
+            self.out_data_buffer = ""
+        self.remote_window_left-=len(data)
+        self.send_packet(MSG_CHANNEL_DATA,(
+            struct.pack(">L", self.current_remote_channel)+
+            NS(str(data))
+        ))
+    
+    ##
+    ## Flush buffered data
+    ##
+    def flush_data_buffer(self):
+        self.write("")
     
     ##
     ##
@@ -825,7 +847,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             remote_window, remote_max_packet)=struct.unpack(">4L", packet[:16])
         self.local_to_remote_channel[local_channel]=remote_channel
         self.remote_to_local_channel[remote_channel]=local_channel
-        self.remote_window_size=remote_window
+        self.remote_window_left=remote_window
         self.remote_max_packet=remote_max_packet
         self.current_remote_channel=remote_channel
         self.debug("Opening channel. local=%d remote=%d"%(local_channel, remote_channel))
@@ -836,6 +858,17 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     ##
     def ssh_CHANNEL_OPEN_FAILURE(self, packet):
         self.ssh_failure("Cannot open channel")
+    
+    ##
+    ## MSG_CHANNEL_WINDOW_ADJUST
+    ## Payload:
+    ##     uint32 local channel number
+    ##     uint32 bytes to add
+    ##
+    def ssh_CHANNEL_WINDOW_ADJUST(self, packet):
+        local_channel, bytes_to_add = struct.unpack(">2L", packet[:8])
+        self.remote_window_left += bytes_to_add
+        self.flush_data_buffer()
     
     ##
     ## MSG_CHANNEL_SUCCESS
@@ -859,6 +892,12 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         packet, rest=get_NS(packet[4:])
         self.debug("Read: %r"%packet)
         self.feed(packet, cleanup=self.profile.cleaned_input)
+        self.local_window_left -= len(packet)
+        if self.local_window_left <= 0: # @todo: adaptive behavior
+            self.local_window_left=self.local_window_size
+            self.send_packet(MSG_CHANNEL_WINDOW_ADJUST,
+                struct.pack(">2L", self.current_remote_channel, self.local_window_left)
+            )
         #self.__flush_submitted_data()
     
     ##
@@ -900,6 +939,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         MSG_CHANNEL_EXTENDED_DATA     : ssh_CHANNEL_EXTENDED_DATA,
         MSG_CHANNEL_OPEN_CONFIRMATION : ssh_CHANNEL_OPEN_CONFIRMATION,
         MSG_CHANNEL_OPEN_FAILURE      : ssh_CHANNEL_OPEN_FAILURE,
+        MSG_CHANNEL_WINDOW_ADJUST     : ssh_CHANNEL_WINDOW_ADJUST,
         MSG_CHANNEL_SUCCESS           : ssh_CHANNEL_SUCCESS,
     }
 
