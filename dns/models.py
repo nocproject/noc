@@ -168,16 +168,16 @@ class DNSZone(models.Model):
             p.reverse()
             l=len(p)
             if l%4:
-                p+=["0"]*(4-l%4)
+                p+=[u"0"]*(4-l%4)
             r=""
             for i,c in enumerate(p):
                 if i and i%4==0:
                     r+=":"
                 r+=c
-            if l!=32:
+            if len(p)!=32:
                 r+="::"
-            return IPv6(r+"/%d"%(l*4)).normalized.prefix
-            
+            prefix=r+"/%d"%(l*4)
+            return IPv6(prefix).normalized.prefix
     
     @property
     def next_serial(self):
