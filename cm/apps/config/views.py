@@ -18,7 +18,7 @@ from noc.cm.models import Config
 ## Config admin
 ##
 class ConfigAdmin(admin.ModelAdmin):
-    list_display=["repo_path","pull_every","last_modified","next_pull","status","change_link"]
+    list_display=["repo_path", "pull_every", "last_modified", "last_pull", "next_pull", "status", "change_link"]
     search_fields=["repo_path"]
     fields=["pull_every","next_pull"]
     actions=["get_now"]
