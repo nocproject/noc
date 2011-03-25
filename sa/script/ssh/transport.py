@@ -170,8 +170,10 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     ##
     def on_read(self, data):
         self.buffer+=data
-        if self.get_state()=="SSH_START" and self.buffer.startswith("SSH-") and "\n" in self.buffer:
-            self.event("SSH_VERSION")
+        if self.get_state()=="SSH_START":
+            if self.buffer.startswith("SSH-") and "\n" in self.buffer:
+                # Pass further only if full string collected
+                self.event("SSH_VERSION")
         else:
             for p in  self.get_packet():
                 msg_type=ord(p[0])
