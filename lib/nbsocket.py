@@ -438,7 +438,7 @@ class AcceptedTCPSocket(TCPSocket):
             self.on_read(data)
         
     def can_write(self):
-        return self.out_buffer
+        return len(self.out_buffer)>0
 ##
 ## SSL-enabled AcceptedTCPSocket
 ##
@@ -522,7 +522,7 @@ class ConnectedTCPSocket(TCPSocket):
             self.on_read(data)
     
     def can_write(self):
-        return self.out_buffer or not self.is_connected
+        return len(self.out_buffer)>0 or not self.is_connected
     
     def handle_write(self):
         if not self.is_connected:
@@ -574,7 +574,7 @@ class UDPSocket(Socket):
         super(UDPSocket,self).create_socket()
     
     def can_write(self):
-        return self.out_buffer
+        return len(self.out_buffer)>0
     
     def handle_write(self):
         msg,addr=self.out_buffer.pop(0)
@@ -669,7 +669,7 @@ class PTYSocket(Socket):
             self.close()
 
     def can_write(self):
-        return self.out_buffer
+        return len(self.out_buffer)>0
         
     def handle_write(self):
         sent=self.socket.send(self.out_buffer)
