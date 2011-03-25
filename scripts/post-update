@@ -7,6 +7,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 PROGNAME=`basename $0`
+
 error_exit ( ) {
     echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
     echo "Terminating" 1>&2
@@ -21,6 +22,13 @@ PREFIX=`dirname "$0"`/../
 info "Jumping to '$PREFIX'"
 cd $PREFIX || error_exit "$LINENO: Cannot chdir to '$PREFIX'"
 info "Landing at '$PWD'"
+
+# Check system python modules
+info "Checking system python modules"
+./scripts/sync-contrib -s
+if [ $? -ne 0 ]; then
+    error_exit "Please install required python modules"
+fi
 
 # Refresh contrib/lib when necessary
 info "Checking contrib/"
@@ -47,6 +55,9 @@ python manage.py migrate || error_exit "$LINENO: migrate failed"
 # Set up permissions
 info "Setting up permissions"
 python manage.py sync-perm || error_exit "$LINENO: sync-perm failed"
+# Generate SSH keys
+info "Generating SSH keys"
+python manage.py generate-ssh-keys || error_exit "$LINENO: generate-ssh-keys failed"
 # Syncronize pyRules
 info "Syncronizing pyRules"
 python manage.py sync-pyrules || error_exit "$LINENO: sync-pyrules failed"

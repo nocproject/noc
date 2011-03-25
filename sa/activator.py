@@ -25,11 +25,12 @@ from threading import Lock
 ## NOC modules
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
+from noc.sa.script.ssh.keys import Key
 from noc.sa.rpc import RPCSocket,file_hash,get_digest
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.protocols.pm_pb2 import *
 from noc.sa.servers import ServersHub
-from noc.lib.fileutils import safe_rewrite
+from noc.lib.fileutils import safe_rewrite, read_file
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM,check_state
 from noc.lib.nbsocket import ConnectedTCPSocket,ConnectedTCPSSLSocket,SocketFactory,PTYSocket,HAS_SSL,ListenUDPSocket,AcceptedTCPSocket,ListenTCPSocket
@@ -293,7 +294,29 @@ class Activator(Daemon,FSM):
         self.log_cli_sessions_path=self.config.get("main","log_cli_sessions_path")
         self.log_cli_sessions_ip_re=re.compile(self.config.get("main","log_cli_sessions_ip_re"))
         self.log_cli_sessions_script_re=re.compile(self.config.get("main","log_cli_sessions_script_re"))
-        
+        # SSH keys
+        self.ssh_public_key=None
+        self.ssh_private_key=None
+        self.load_ssh_keys()
+    
+    ##
+    ## Initialize ssh keys
+    ##
+    def load_ssh_keys(self):
+        private_path=self.config.get("ssh", "key")
+        public_path=private_path+".pub"
+        # Load keys
+        self.debug("Loading private ssh key from '%s'"%private_path)
+        s_priv=read_file(private_path)
+        self.debug("Loading public ssh key from '%s'"%public_path)
+        s_pub=read_file(public_path)
+        # Check all keys presend
+        if s_priv is None or s_pub is None:
+            self.error("Cannot find ssh keys. Generate one by 'python manage.py generate-ssh-keys' command")
+            os._exit(1)
+        self.ssh_public_key=Key.from_string(s_pub)
+        self.ssh_private_key=Key.from_string_private_noc(s_priv)
+    
     ##
     ## IDLE state 
     ##

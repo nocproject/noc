@@ -356,18 +356,6 @@ backup_dir
 Directory to place database and repo backup. Must be writable by *noc* user. Ensure *backup_dir* is readable and
 writable only by trusted users
 
-.. _noc-conf-path-ssh:
-
-ssh
-^^^
-A path to the *ssh* binary
-
-.. _noc-conf-path-telnet:
-
-telnet
-^^^^^^
-A path to the *telnet* binary
-
 .. _noc-conf-path-tar:
 
 tar
@@ -1082,6 +1070,18 @@ fping6
 Path to the *fping6* utility. *fping6* used to perform IPv6 host reachability detection during ping_check.
 *fping6* binary must be eighter suid root, or operation system's security options
 must be altered to allow generate and receive ICMPv6 packets by *noc* user.
+
+.. _noc-activator-conf-ssh:
+
+[ssh] section
++++++++++++++
+SSH client related configuration
+
+.. _noc-activator-conf-ssh-key:
+
+key
+^^^
+Path to SSH private key. Public key must reside in _key_.pub file
 
 .. _noc-classifier-conf:
 
