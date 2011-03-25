@@ -42,3 +42,6 @@ fping6     =
 listen_http =
 listen_ftp =
 listen_tftp =
+
+[ssh]
+key = etc/ssh/id_rsa
