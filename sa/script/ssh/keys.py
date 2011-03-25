@@ -29,8 +29,14 @@ class Key(object):
     ## Return new generated key
     ##
     @classmethod
-    def generate(cls, bits):
-        return cls(RSA.generate(bits, secure_random))
+    def generate(cls, type, bits):
+        if type=="RSA":
+            k=RSA
+        elif type=="DSA":
+            k=DSA
+        else:
+            raise ValueError("Invalid key type")
+        return cls(k.generate(bits, secure_random))
     
     ##
     ## Load key from file. Returns Key instance
@@ -151,7 +157,7 @@ class Key(object):
             numbers = list(get_MP(signature))
             digest = pkcs1_digest(data, self.key.size() / 8)
         elif self.type() == "DSA":
-            signature = get_NS(signature)[0]
+            signature, rest = get_NS(signature)
             numbers = [bytes_to_long(n) for n in signature[:20], signature[20:]]
             digest = sha1(data).digest()
         return self.key.verify(digest, numbers)
@@ -256,11 +262,11 @@ class Key(object):
     ## Sign data with key
     ##
     def sign(self, data):
-        if self.type() == 'RSA':
+        if self.type() == "RSA":
             digest = pkcs1_digest(data, self.key.size()/8)
             signature = self.key.sign(digest, '')[0]
             return NS(self.ssh_type())+NS(long_to_bytes(signature))
-        elif self.type() == 'DSA':
+        elif self.type() == "DSA":
             digest = sha1(data).digest()
             r = secure_random(19)
             sig = self.key.sign(digest, r)
@@ -272,6 +278,6 @@ class Key(object):
 ## And save to files path and path.pub
 ##
 def generate_pair(path, bits=1024):
-    k=Key.generate(bits)
+    k=Key.generate("RSA", bits)
     safe_rewrite(path, k.to_string())
     safe_rewrite(path+".pub", k.public().to_string())
