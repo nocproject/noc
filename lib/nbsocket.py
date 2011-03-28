@@ -745,12 +745,18 @@ class SocketFactory(object):
         self.name_socket={} # name -> socket
         self.new_sockets=[] # list of (socket,name)
         self.tick_callback=tick_callback
+        self.to_shutdown=False
         self.register_lock=RLock() # Guard for register/unregister operations
         self.controller=controller # Reference to controlling daemon
         self.get_active_sockets=None # Polling method
         self.setup_poller(polling_method)
         # Performance data
         self.cnt_polls=0 # Number of polls
+    
+    # Shutdown factory and exit next loop
+    def shutdown(self):
+        logging.info("Shutting down the factory")
+        self.to_shutdown=True
     
     # Check select() available
     def has_select(self):
@@ -1068,7 +1074,7 @@ class SocketFactory(object):
                 time.sleep(1)
         last_tick=time.time()
         last_stale=time.time()
-        while cond():
+        while cond() and not self.to_shutdown:
             self.loop(1)
             t=time.time()
             if self.tick_callback and t-last_tick>=1:
@@ -1081,3 +1087,4 @@ class SocketFactory(object):
             if t-last_stale>3:
                 self.close_stale()
                 last_stale=t
+    
