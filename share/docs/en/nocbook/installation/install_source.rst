@@ -52,6 +52,25 @@ Install::
 
     # easy_install psycopg2
 
+gmpy
+----
+`gmpy <http://gmpy.sourceforge.net/>`_ is an general multiprecision python library, used together with pycrypto.
+Version 1.4 or later requred.
+
+Install::
+
+    # easy_install gmpy
+
+
+pycrypto
+--------
+`pycrypto <http://pycrypto.org/>`_ is the Python Cryptography Toolkit. Version 2.3 or later required.
+
+Install::
+
+    # easy_install pycrypto
+
+
 webserver
 ---------
 Any FastCGI-capable HTTP server supported. Commonly user choices are:
