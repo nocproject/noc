@@ -117,6 +117,12 @@ def check_system():
     except ImportError:
         print "Error: psycopg2 not found. Please install psycopg2 module (easy_install psycopg2)"
         r=False
+    # Check gmpy
+    try:
+        import gmpy
+    except ImportError:
+        print "Error: gmpy not found. Please install gmpy module (easy_install gmpy)"
+        r=False
     # Check pyCrypto
     try:
         from Crypto.PublicKey import RSA, DSA

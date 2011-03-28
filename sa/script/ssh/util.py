@@ -11,6 +11,7 @@
 import struct
 import os
 from hashlib import sha1
+import logging
 ## Third-party modules
 from Crypto.Util.number import bytes_to_long, long_to_bytes
 
@@ -42,7 +43,7 @@ def get_NS(s, count=1):
 ##
 ##
 ##
-def MP(number):
+def _MP(number):
     if number==0:
         return "\x00\x00\x00\x00"
     assert number>0
@@ -54,13 +55,13 @@ def MP(number):
 ##
 ##
 ##
-def MPpow(x, y, z):
+def _MPpow(x, y, z):
     return MP(pow(x,y,z))
 
 ##
 ##
 ##
-def get_MP(s, count=1):
+def _get_MP(s, count=1):
     c=0
     while s and c<count:
         l,=struct.unpack(">L", s[:4])
@@ -78,4 +79,68 @@ def pkcs1_digest(data, message_len):
     return "\x01" + ("\xff" * pad_len) + "\x00" + d
 
 ##
+## gmpy version of get_MP
+##
+def _gmpy_get_MP(data, count=1):
+    mp = []
+    c = 0
+    for i in range(count):
+        length = struct.unpack('!L', data[c:c+4])[0]
+        mp.append(long(gmpy.mpz(data[c + 4:c + 4 + length][::-1] + '\x00', 256)))
+        c += length + 4
+    return tuple(mp) + (data[c:],)
+
+##
+## gmpy version of MP
+##
+def _gmpy_MP(i):
+    i2 = gmpy.mpz(i).binary()[::-1]
+    return struct.pack("!L", len(i2)) + i2
+
+##
+## gmpy version of MPpow
+##
+def _gmpy_MPpow(x, y, z=None):
+    r = py_pow(gmpy.mpz(x),y,z).binary()[::-1]
+    return struct.pack('!L', len(r)) + r
+
+##
+## gmpy version of pow
+##
+def _gmpy_pow(x, y, z=None):
+    return py_pow(gmpy.mpz(x), y, z)
+
+##
 ID_SHA1 = "\x30\x21\x30\x09\x06\x05\x2b\x0e\x03\x02\x1a\x05\x00\x04\x14"
+
+## Save system pow
+py_pow=pow
+
+# Will be set by install functions
+get_MP=None
+MP=None
+MPpow=None
+
+## Install gmp-less implementations
+def install():
+    global get_MP, MP, MPpow
+    logging.info("SSH: gmpy not found. Using python implementation")
+    get_MP=_get_MP
+    MP=_MP
+    MPpow=_MPpow
+
+## Install gmpy-accelerated functions
+def install_gmpy():
+    global get_MP, MP, MPpow
+    logging.info("SSH: Using gmpy")
+    get_MP=_gmpy_get_MP
+    MP=_gmpy_MP
+    MPpow=_gmpy_MPpow
+    __builtins__["pow"]=_gmpy_pow # @todo: define separate _pow function
+
+## Install functions
+try:
+    import gmpy
+    install_gmpy()
+except ImportError:
+    install()
