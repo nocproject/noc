@@ -200,7 +200,7 @@ class ActivatorStub(object):
                         if not isinstance(r, basestring):
                             r=pprint.pformat(r)
                         logging.debug("SCRIPT RESULT: %s\n%s"%(s.debug_name, r))
-                os._exit(0)
+                self.factory.shutdown()
             logging.debug("%d TICKS TO EXIT"%self.wait_ticks)
         else:
             self.wait_ticks=self.WAIT_TICKS
@@ -247,6 +247,7 @@ class Command(BaseCommand):
     option_list=BaseCommand.option_list+(
         make_option("-c", "--read-community", dest="snmp_ro"),
         make_option("-o", "--output", dest="output"),
+        make_option("-p", "--profile", dest="profile", action="store_true")
     )
     
     ##
@@ -265,6 +266,7 @@ class Command(BaseCommand):
         print "Where:"
         print "\t-c <community> - SNMP RO Community"
         print "\t-o <output>    - Canned beef output"
+        print "\t--profile      - Run through python profiler"
         return
     
     ##
@@ -429,11 +431,20 @@ class Command(BaseCommand):
         self.tf=TransactionFactory()
         service=Service()
         service.activator=ActivatorStub(requests[0].script if output else None, values, output)
+        
         ## Run scripts
-        for r in requests:
-            print r
-            t=threading.Thread(target=self.run_script, args=(service, r))
-            t.start()
-        # Finally give control to activator's factory
-        service.activator.factory.run(run_forever=True)
+        def run():
+            for r in requests:
+                print r
+                t=threading.Thread(target=self.run_script, args=(service, r))
+                t.start()
+            # Finally give control to activator's factory
+            service.activator.factory.run(run_forever=True)
+        
+        if options.get("profile", True):
+            logging.debug("Enabling python profiler")
+            import cProfile
+            cProfile.runctx("run()", globals(), locals())
+        else:
+            run()
     
