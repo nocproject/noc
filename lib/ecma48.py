@@ -2,24 +2,26 @@
 ##----------------------------------------------------------------------
 ## ECMA-48 control sequences processing
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Python modules
 import re
 ## Convert ECMA Notation to byte form
-def c(x,y):
+def c(x, y):
     """
     Convert ECMA-48 character notation to 8-bit form
-    >>> c(0,0)
+    >>> c(0, 0)
     0
-    >>> c(1,11)
+    >>> c(1, 11)
     27
-    >>> c(15,15)
+    >>> c(15, 15)
     255
     """
     return (x<<4)+y
 
-ESC=chr(c(1,11))
+ESC=chr(c(1, 11))
 ##
 ## Definitions of Control Character Sequences from ECMA-48
 ##
@@ -36,15 +38,15 @@ def compile_ecma_def(s):
     for token in s.split(","):
         match=rx_range.match(token)
         if match:
-            c1=c(int(match.group(1)),int(match.group(2)))
-            c2=c(int(match.group(3)),int(match.group(4)))
+            c1=c(int(match.group(1)), int(match.group(2)))
+            c2=c(int(match.group(3)), int(match.group(4)))
             if c1==c2:
                 x=[r"\x%02x"%c1]
             elif c1<c2:
-                rr=[r"\x%02x"%x for x in range(c1,c2+1)]
+                rr=[r"\x%02x"%x for x in range(c1, c2+1)]
                 x=["[%s]"%"".join(rr)]
             else:
-                rr=[r"\x%02x"%x for x in range(c2,c1+1)]
+                rr=[r"\x%02x"%x for x in range(c2, c1+1)]
                 x=["[%s]"%"".join(rr)]
             if match.group(5):
                 x+="*"
@@ -52,27 +54,29 @@ def compile_ecma_def(s):
             continue
         match=rx_char.match(token)
         if match:
-            r+=[r"\x%02x"%c(int(match.group(1)),int(match.group(2)))]
+            r+=[r"\x%02x"%c(int(match.group(1)), int(match.group(2)))]
             continue
         raise Exception("Invalid token: <%s>"%token)
     return "".join(r)
+
 ##
 ## Compile ECMA-48 definitions to regular expression
 ##
 def get_ecma_re():
     re_csi=compile_ecma_def(CSI)
-    re_c1=compile_ecma_def(C1).replace("\\x5b","")
+    re_c1=compile_ecma_def(C1).replace("\\x5b", "")
     re_c0=compile_ecma_def(C0)
-    for xc in ["\\x08","\\x09","\\x0a","\\x0d","\\x1b"]:
+    for xc in ["\\x08", "\\x09", "\\x0a", "\\x0d", "\\x1b"]:
         re_c0=re_c0.replace(xc,"")
     #re_c0=compile_ecma_def(C0).replace("\\x08","").replace("\\x0d","").replace("\\x0a","").replace("\\x1b","").replace("\\x09","") # \n,\r, ESC, \t, BS
     re_vt100="\\x1b[c()78]" # VT100
     re_other="\\x1b[^[]"       # Last resort. Skip all ESC+char
     return "|".join(["(%s)"%r for r in (re_csi,re_c1,re_c0,re_vt100,re_other)])
+
 ##
 ## Backspace pattern
 ##
-rx_bs=re.compile("(^\x08)|([^\x08]\x08)|(\x08 )")
+rx_bses=re.compile("\x08+")
 ##
 ## \r<spaces>\r should be cut
 ##
@@ -133,24 +137,27 @@ def strip_control_sequences(s):
     
     Backspaces followed with spaces
     >>> strip_control_sequences('\x08 \x08\x08 \x08\x08 \x08\x08 test')
-    'test'
+    ' test'
     
     ASCII mess
     >>> strip_control_sequences('\x1b[2J\x1b[?7l\x1b[3;23r\x1b[?6l\x1b[24;27H\x1b[?25h\x1b[24;27H\x1b[?6l\x1b[1;24r\x1b[?7l\x1b[2J\x1b[24;27H\x1b[1;24r\x1b[24;27H\x1b[2J\x1b[?7l\x1b[1;24r\x1b[?6l\x1b[24;1H\x1b[1;24r\x1b[24;1H\x1b[24;1H\x1b[2K\x1b[24;1H\x1b[?25h\x1b[24;1H\x1b[24;1Hswitch# \x1b[24;1H\x1b[24;13H\x1b[24;1H\x1b[?25h\x1b[24;13H')
     'switch# '
     """
-    def strip_while(s,rx):
-        while True:
-            ss=rx.sub("",s)
-            if ss==s:
-                return s
-            s=ss
-    
-    # Remove pager trash
-    #s=strip_while(s,rx_esc_pager)
     # Process backspaces
-    s=strip_while(s,rx_bs)
+    while True:
+        match=rx_bses.search(s)
+        if not match:
+            break
+        nbs=len(match.group(0))
+        start=max(0, match.start()-nbs)
+        end=match.end()
+        b=s[:start]
+        e=s[end:]
+        # Strip filling spaces if any
+        if e.startswith(" "*nbs):
+            e=e[nbs:]
+        s=b+e
     # Process LFs
-    s=rx_lf_spaces.sub("",s)
+    s=rx_lf_spaces.sub("", s)
     # Remove escape sequences
-    return rx_ecma.sub("",s)
+    return rx_ecma.sub("", s)
