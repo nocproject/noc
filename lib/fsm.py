@@ -155,16 +155,13 @@ class StreamFSM(FSM):
                     offset=max(0, len(self.in_buffer)-self.MATCH_TAIL)
                 else:
                     offset=0
-                if offset:
-                    match=rx.search(self.in_buffer[offset:])
-                else:
-                    match=rx.search(self.in_buffer)
+                match=rx.search(self.in_buffer, offset)
                 if match:
                     matched=True
                     self.feed_count=0 # Reset counter on event
                     self.debug("match '%s'"%rx.pattern)
-                    self.call_state_handler(self._current_state,"match",self.in_buffer[:match.start(0)+offset],match)
-                    self.in_buffer=self.in_buffer[match.end(0)+offset:]
+                    self.call_state_handler(self._current_state,"match",self.in_buffer[:match.start(0)],match)
+                    self.in_buffer=self.in_buffer[match.end(0):]
                     self.match=match
                     self.event(event) # Change state
                     break
