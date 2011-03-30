@@ -1,0 +1,22 @@
+#!/bin/sh
+
+PEP8=`which pep8`
+MODULES="cm dns fm ip kb lib main peer pm sa vc"
+
+if [ -z $PEP8 ]; then
+    echo "ERROR: pep8 is not installed!"
+    echo "Please install pep8:"
+    echo
+    echo "    easy_install pep8"
+    echo
+    exit 1
+fi
+
+if [ -z $* ]; then
+    CHECK=$MODULES
+else
+    CHECK=$*
+fi
+
+$PEP8 --ignore=W293 $CHECK
+
