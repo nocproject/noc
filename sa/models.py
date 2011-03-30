@@ -31,6 +31,7 @@ from noc.sa.protocols.sae_pb2 import *
 from noc.lib.search import SearchResult
 from noc.lib.fields import PickledField, INETField, AutoCompleteTagsField
 from noc.lib.app.site import site
+from noc.lib.validators import check_re
 ##
 ## Register objects
 ##
@@ -330,15 +331,15 @@ class ManagedObjectSelector(models.Model):
     description=models.TextField(_("Description"),blank=True,null=True)
     is_enabled=models.BooleanField(_("Is Enabled"),default=True)
     filter_id=models.IntegerField(_("Filter by ID"),null=True,blank=True)
-    filter_name=models.CharField(_("Filter by Name (REGEXP)"),max_length=256,null=True,blank=True) # @todo: RE check
+    filter_name=models.CharField(_("Filter by Name (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
     filter_profile=models.CharField(_("Filter by Profile"),max_length=64,null=True,blank=True,choices=profile_registry.choices)
-    filter_address=models.CharField(_("Filter by Address (REGEXP)"),max_length=256,null=True,blank=True)
+    filter_address=models.CharField(_("Filter by Address (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
     filter_administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name=_("Filter by Administrative Domain"),null=True,blank=True)
     filter_activator=models.ForeignKey(Activator,verbose_name=_("Filter by Activator"),null=True,blank=True)
     filter_user=models.CharField(_("Filter by User (REGEXP)"),max_length=256,null=True,blank=True)
-    filter_remote_path=models.CharField(_("Filter by Remote Path (REGEXP)"),max_length=256,null=True,blank=True)
-    filter_description=models.CharField(_("Filter by Description (REGEXP)"),max_length=256,null=True,blank=True)
-    filter_repo_path=models.CharField(_("Filter by Repo Path (REGEXP)"),max_length=256,null=True,blank=True)
+    filter_remote_path=models.CharField(_("Filter by Remote Path (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
+    filter_description=models.CharField(_("Filter by Description (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
+    filter_repo_path=models.CharField(_("Filter by Repo Path (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
     filter_tags=AutoCompleteTagsField(_("Filter By Tags"),null=True,blank=True)
     source_combine_method=models.CharField(_("Source Combine Method"),max_length=1,default="O",choices=[("A","AND"),("O","OR")])
     sources=models.ManyToManyField("ManagedObjectSelector",verbose_name=_("Sources"),symmetrical=False,null=True,blank=True)
@@ -437,8 +438,8 @@ class ManagedObjectSelectorByAttribute(models.Model):
         verbose_name = _("Managed Object Selectors by Attribute")
     
     selector=models.ForeignKey(ManagedObjectSelector,verbose_name=_("Object Selector"))
-    key_re=models.CharField(_("Filter by key (REGEXP)"), max_length=256) # @todo: RE check
-    value_re=models.CharField(_("Filter by value (REGEXP)"), max_length=256) # @todo: RE check
+    key_re=models.CharField(_("Filter by key (REGEXP)"), max_length=256, validators=[check_re])
+    value_re=models.CharField(_("Filter by value (REGEXP)"), max_length=256, validators=[check_re])
     
     def __unicode__(self):
         return u"%s: %s = %s"%(self.selector.name, self.key_re, self.value_re)
