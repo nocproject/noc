@@ -42,7 +42,14 @@ def reduce_vlan_import(task,vc_domain):
         try:
             vc=VC.objects.get(vc_domain=vc_domain,l1=vlan_id)
         except VC.DoesNotExist:
-            vc=VC(vc_domain=vc_domain,l1=vlan_id,l2=0,name=name,description=name)
+            # Generate unique name
+            n=0
+            nm=name
+            while VC.objects.exists(vc_domain=vc_domain, name=nm):
+                n += 1
+                nm = name + "_%d"%n
+            # Save
+            vc=VC(vc_domain=vc_domain, l1=vlan_id, l2=0, name=nm, description=name)
             vc.save()
             count+=1
     return count
