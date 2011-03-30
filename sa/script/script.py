@@ -638,7 +638,7 @@ class Script(threading.Thread):
     ##
     def expand_rangelist(self, s):
         result={}
-        for x in s.split(", "):
+        for x in s.split(","):
             x=x.strip()
             if x=="":
                 continue
