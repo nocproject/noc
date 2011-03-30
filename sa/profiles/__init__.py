@@ -82,7 +82,7 @@ class Profile(object):
     command_submit="\n"
     # Callable assepting script instance
     # to set up session.
-    command_setup_session=None
+    setup_session=None
     # Sequence to disable pager
     #
     command_disable_pager=None
