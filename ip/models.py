@@ -513,7 +513,7 @@ class Address(models.Model):
         return u"%s(%s): %s"%(self.vrf.name,self.afi,self.address)
     
     def get_absolute_url(self):
-        return site.reverse("ip:ipmanage:vrf_index",self.vrf.id,self.parent)
+        return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi, self.prefix.prefix)
     
     ##
     ## Save address
