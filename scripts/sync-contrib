@@ -121,8 +121,7 @@ def check_system():
     try:
         import gmpy
     except ImportError:
-        print "Error: gmpy not found. Please install gmpy module (easy_install gmpy)"
-        r=False
+        print "Warning: gmpy not found. Please install gmpy module (easy_install gmpy) if it possible"
     # Check pyCrypto
     try:
         from Crypto.PublicKey import RSA, DSA
