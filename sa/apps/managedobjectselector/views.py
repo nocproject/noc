@@ -2,13 +2,32 @@
 ##----------------------------------------------------------------------
 ## ManagedObjectSelector Manager
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Django modules
 from django.contrib import admin
-from django.shortcuts import get_object_or_404
-from noc.lib.app import ModelApplication,HasPerm
-from noc.sa.models import ManagedObjectSelector
+from django import forms
+## NOC modules
+from noc.lib.app import ModelApplication, HasPerm
+from noc.sa.models import ManagedObjectSelector, ManagedObjectSelectorByAttribute
+
+##
+## Filter by attributes inline form
+##
+class ManagedObjectSeletorByAttributeInlineForm(forms.ModelForm):
+    class Meta:
+        model=ManagedObjectSelectorByAttribute
+
+##
+## Filter by attributes inline
+##
+class ManagedObjectAttributeInline(admin.TabularInline):
+    form=ManagedObjectSeletorByAttributeInlineForm
+    model=ManagedObjectSelectorByAttribute
+    extra=3
+
 ##
 ## ManagedObjectSelector admin
 ##
@@ -18,6 +37,7 @@ class ManagedObjectSelectorAdmin(admin.ModelAdmin):
     actions=["test_selectors"]
     search_fields=["name"]
     filter_horizontal=["filter_groups","sources"]
+    inlines=[ManagedObjectAttributeInline]
     ##
     ## Test selected seletors
     ##
@@ -36,7 +56,7 @@ class ManagedObjectSelectorApplication(ModelApplication):
     ##
     def view_test(self,request,objects):
         r=[{"name":q.name,"objects":sorted(q.managed_objects,lambda x,y:cmp(x.name,y.name))}
-            for q in[get_object_or_404(ManagedObjectSelector,id=int(x)) for x in objects.split(",")]]
+            for q in[self.get_object_or_404(ManagedObjectSelector,id=int(x)) for x in objects.split(",")]]
         return self.render(request,"test.html",{"data":r})
     view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
     view_test.access=HasPerm("change")

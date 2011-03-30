@@ -330,7 +330,7 @@ class ManagedObjectSelector(models.Model):
     description=models.TextField(_("Description"),blank=True,null=True)
     is_enabled=models.BooleanField(_("Is Enabled"),default=True)
     filter_id=models.IntegerField(_("Filter by ID"),null=True,blank=True)
-    filter_name=models.CharField(_("Filter by Name (REGEXP)"),max_length=256,null=True,blank=True)
+    filter_name=models.CharField(_("Filter by Name (REGEXP)"),max_length=256,null=True,blank=True) # @todo: RE check
     filter_profile=models.CharField(_("Filter by Profile"),max_length=64,null=True,blank=True,choices=profile_registry.choices)
     filter_address=models.CharField(_("Filter by Address (REGEXP)"),max_length=256,null=True,blank=True)
     filter_administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name=_("Filter by Administrative Domain"),null=True,blank=True)
@@ -375,6 +375,16 @@ class ManagedObjectSelector(models.Model):
         t_ids=TaggedItem.objects.get_intersection_by_model(ManagedObject,self.filter_tags).values_list("id",flat=True)
         if t_ids:
             q&=Q(id__in=t_ids)
+        # Restrict to attributes when necessary
+        m_ids=None
+        for s in  self.managedobjectselectorbyattribute_set.all():
+            ids = ManagedObjectAttribute.objects.filter(key__regex=s.key_re, value__regex=s.value_re).values_list("managed_object", flat=True)
+            if m_ids is None:
+                m_ids = set(ids)
+            else:
+                m_ids &= set(ids)
+        if m_ids is not None:
+            q &= Q(id__in=m_ids)
         # Apply filters
         r=ManagedObject.objects.filter(q)
         # Restrict to sources
@@ -416,6 +426,22 @@ class ManagedObjectSelector(models.Model):
             if not skip:
                 sp.add(p)
         return self.managed_objects.filter(profile_name__in=sp)
+    
+
+##
+## 
+##
+class ManagedObjectSelectorByAttribute(models.Model):
+    class Meta:
+        verbose_name = _("Managed Object Selector by Attribute")
+        verbose_name = _("Managed Object Selectors by Attribute")
+    
+    selector=models.ForeignKey(ManagedObjectSelector,verbose_name=_("Object Selector"))
+    key_re=models.CharField(_("Filter by key (REGEXP)"), max_length=256) # @todo: RE check
+    value_re=models.CharField(_("Filter by value (REGEXP)"), max_length=256) # @todo: RE check
+    
+    def __unicode__(self):
+        return u"%s: %s = %s"%(self.selector.name, self.key_re, self.value_re)
     
 
 ##
