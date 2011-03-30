@@ -17,6 +17,8 @@ from django.contrib.auth.models import User,Group
 from django.core.validators import MaxLengthValidator
 from django.contrib import databrowse
 from django.db.models.signals import class_prepared,pre_save, pre_delete, post_save, post_delete
+## Third-party modules
+from tagging.models import Tag
 ## NOC Modules
 from noc import settings
 from noc.lib.fields import BinaryField
@@ -34,13 +36,13 @@ from noc.lib.app.site import site
 ## Model.search is a generator taking parameters (user,query,limit)
 ## And yielding a SearchResults (ordered by relevancy)
 ##
-search_methods={}
+search_methods=set()
 ##
 ## Register new search handler if model has .search classmethod
 ##
 def on_new_model(sender,**kwargs):
     if hasattr(sender,"search"):
-        search_methods[getattr(sender,"search")]=None
+        search_methods.add(getattr(sender, "search"))
     databrowse.site.register(sender)
 ##
 ## Attach to the 'class_prepared' signal
@@ -990,3 +992,42 @@ if settings.IS_WEB:
 ##
 User._meta.get_field("username").max_length=User._meta.get_field("email").max_length
 User._meta.get_field("username").validators=[MaxLengthValidator(User._meta.get_field("username").max_length)]
+
+##
+## Search by tags
+##
+def search_tags(user, query, limit):
+    from noc.lib.search import SearchResult # Must be inside method to prevent import loops
+    
+    # Find tags
+    tags = []
+    for p in query.split(","):
+        p = p.strip()
+        try:
+            tags += [Tag.objects.get(name=p)]
+        except Tag.DoesNotExist:
+            return []
+    if not tags:
+        return []
+    # Intersect tags
+    r = None
+    for t in tags:
+        o = [o.object for o in t.items.all()]
+        if r is None:
+            r = set(o)
+        else:
+            r &= set(o)
+    if not r:
+        return []
+    rr=[]
+    for i in r:
+        if hasattr(i, "get_absolute_url"):
+            rr += [SearchResult(
+                    url=i.get_absolute_url(),
+                    title=unicode(i),
+                    text=i.tags,
+                    relevancy=1.0,
+                )]
+    return rr
+
+search_methods.add(search_tags)
