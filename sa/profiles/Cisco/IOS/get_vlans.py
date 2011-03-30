@@ -50,7 +50,7 @@ class Script(NOCScript):
     ##
     ## 18xx/28xx/38xx/72xx with EtherSwitch module
     ##
-    @NOCScript.match(platform__regex=r"([123]8[0-9]{2}|72[0-9]{2})")
+    @NOCScript.match(platform__regex=r"^([123]8[0-9]{2}|72[0-9]{2})")
     def execute_vlan_switch(self):
         vlans=self.cli("show vlan-switch")
         vlans, _=vlans.split("\nVLAN Type", 1)
