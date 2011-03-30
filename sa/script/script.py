@@ -563,6 +563,10 @@ class Script(threading.Thread):
             self.cli_provider=s_class(self.activator.factory, self.profile, self.access_profile) #@todo: pass activator
             self.cli_queue_get()
             self.debug("CLI Provider is ready")
+            # Set up session when necessary
+            if self.profile.setup_session:
+                self.debug("Setting up session")
+                self.profile.setup_session(self)
             # Disable pager when necessary
             if self.to_disable_pager:
                 self.debug("Disable paging")
