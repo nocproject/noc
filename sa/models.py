@@ -108,10 +108,18 @@ class ManagedObject(models.Model):
     is_configuration_managed=models.BooleanField(_("Is Configuration Managed?"),default=True)
     repo_path=models.CharField(_("Repo Path"),max_length=128,blank=True,null=True)
     # pyRules
-    config_filter_rule=models.ForeignKey(PyRule, verbose_name="Config Filter pyRule", 
-            limit_choices_to={"interface": "IConfigFilter"}, null=True, blank=True, related_name="managed_object_config_filter_rule_set")
-    config_validation_rule=models.ForeignKey(PyRule, verbose_name="Config Validation pyRule",
-            limit_choices_to={"interface": "IConfigValidator"}, null=True, blank=True, related_name="managed_object_config_validation_rule_set")
+    config_filter_rule = models.ForeignKey(PyRule,
+            verbose_name="Config Filter pyRule", 
+            limit_choices_to={"interface": "IConfigFilter"},
+            null=True, blank=True, related_name="managed_object_config_filter_rule_set")
+    config_diff_filter_rule = models.ForeignKey(PyRule,
+            verbose_name=_("Config Diff Filter Rule"),
+            limit_choices_to={"interface": "IConfigDiffFilter"},
+            null=True, blank=True, related_name="managed_object_config_diff_rule_set")
+    config_validation_rule = models.ForeignKey(PyRule,
+            verbose_name="Config Validation pyRule",
+            limit_choices_to={"interface": "IConfigValidator"},
+            null=True, blank=True, related_name="managed_object_config_validation_rule_set")
     #
     tags=AutoCompleteTagsField(_("Tags"),null=True,blank=True)
     
