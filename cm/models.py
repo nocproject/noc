@@ -207,7 +207,10 @@ class Object(models.Model):
         if delayed:
             q&=Q(notify_delayed=True)
         return set([n.notification_group for n in ObjectNotify.objects.filter(q)])
-        
+    
+    def notification_diff(self, old_data, new_data):
+        return self.diff(old_data, new_data)
+    
     def on_object_changed(self):
         notification_groups=self.get_notification_groups(immediately=True)
         if not notification_groups:
@@ -220,9 +223,13 @@ class Object(models.Model):
             message+="Object value follows:\n---------------------------\n%s\n-----------------------\n"%self.data
             link=None
         else:
+            diff = self.notification_diff(revs[1], revs[0])
+            if not diff:
+                # No significant difference to notify
+                return
             subject="NOC: Object changed '%s'"%str(self)
             message="The object %s was changed at %s\n"%(str(self),now)
-            message+="Object changes follows:\n---------------------------\n%s\n-----------------------\n"%self.diff(revs[1],revs[0])
+            message += "Object changes follows:\n---------------------------\n%s\n-----------------------\n" % diff
             link=None
         NotificationGroup.group_notify(groups=notification_groups,subject=subject,body=message,link=link)
     
@@ -316,7 +323,7 @@ class Config(Object):
             else:
                 q&=(Q(tags__isnull=True)|Q(tags=""))
         return set([n.notification_group for n in ObjectNotify.objects.filter(q)])
-
+    
     def write(self,data):
         if type(data)==types.ListType:
             # Convert list to plain text
@@ -339,12 +346,17 @@ class Config(Object):
         super(Config,self).write(data)
     
     ##
-    ## @todo: remove
+    ## Pass through notification filter
     ##
-    def change_link(self):
-        return "<a href='%s' class='changelink'>Change</a>"%site.reverse("cm:config:change",self.id)
-    change_link.short_description="Change"
-    change_link.allow_tags=True
+    def notification_diff(self, old_data, new_data):
+        nf = self.managed_object.config_diff_filter_rule
+        if nf:
+            old_data = nf(old_data)
+            new_data = ng(new_data)
+            if old_data == new_data:
+                return None
+        return self.diff(old_data, new_data)
+    
 
 ##
 ## PrefixList
