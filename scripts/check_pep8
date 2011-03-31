@@ -18,5 +18,5 @@ else
     CHECK=$*
 fi
 
-$PEP8 --ignore=W293 $CHECK
+$PEP8 -r --statistics --ignore=W293 $CHECK
 
