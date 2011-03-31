@@ -110,9 +110,6 @@ class NBSocketTestCase(TestCase):
         self.assertEquals(factory.tcp_client_success, self.TCP_CLIENTS)
         self.assertEquals(factory.popen_success, self.POPEN_CLIENTS)
         self.assertEquals(factory.pty_success, self.PTY_CLIENTS)
-        print "POLLS", factory.cnt_polls
-        print self.TCP_CLIENTS*TCP_TEST_SIZE*2,"bytes transceived"
-        print self.TCP_CLIENTS*TCP_TEST_SIZE*2/factory.cnt_polls,"bytes per poll"
     
     ## Poller test wrapper
     def poller_test(self, polling_method, port):
