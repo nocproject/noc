@@ -14,11 +14,21 @@ from django.contrib import admin
 from noc.cm.repoapp import RepoApplication, HasPerm, ModelApplication, view
 from noc.sa.models import TaskSchedule
 from noc.cm.models import Config
+from noc.lib.app.site import site
+
+##
+## Change link wrapper
+##
+def change_link(obj):
+    return "<a href='%s' class='changelink'>Change</a>"%site.reverse("cm:config:change",obj.id)
+change_link.short_description="Change"
+change_link.allow_tags=True
+
 ##
 ## Config admin
 ##
 class ConfigAdmin(admin.ModelAdmin):
-    list_display=["repo_path", "pull_every", "last_modified", "last_pull", "next_pull", "status", "change_link"]
+    list_display=["repo_path", "pull_every", "last_modified", "last_pull", "next_pull", "status", change_link]
     search_fields=["repo_path"]
     fields=["pull_every","next_pull"]
     actions=["get_now"]
