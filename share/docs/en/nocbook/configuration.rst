@@ -356,6 +356,12 @@ backup_dir
 Directory to place database and repo backup. Must be writable by *noc* user. Ensure *backup_dir* is readable and
 writable only by trusted users
 
+.. _noc-conf-path-ssh:
+
+ssh
+^^^
+A path to the *ssh* binary
+
 .. _noc-conf-path-tar:
 
 tar
