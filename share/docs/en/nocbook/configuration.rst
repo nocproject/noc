@@ -1306,6 +1306,13 @@ helo_hostname
 ^^^^^^^^^^^^^
 Custom HELO greeting
 
+.. _noc-notifier-conf-mail-command:
+
+command
+^^^^^^^
+
+Spool message through command instead of SMTP
+
 .. _noc-notifier-conf-file:
 
 [file] section
