@@ -101,5 +101,6 @@ configuration management, DNS provisioning, peering management, RPSL and BGP fil
       provides=["noc"],
       requires=[
         "psycopg2 (>= 2.0.5)",
+        "pycrypto (>= 2.3)",
       ],
      )
