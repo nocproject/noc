@@ -350,7 +350,9 @@ class ManagedObjectSelector(models.Model):
     filter_repo_path=models.CharField(_("Filter by Repo Path (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
     filter_tags=AutoCompleteTagsField(_("Filter By Tags"),null=True,blank=True)
     source_combine_method=models.CharField(_("Source Combine Method"),max_length=1,default="O",choices=[("A","AND"),("O","OR")])
-    sources=models.ManyToManyField("ManagedObjectSelector",verbose_name=_("Sources"),symmetrical=False,null=True,blank=True)
+    sources=models.ManyToManyField("self",
+        verbose_name=_("Sources"), symmetrical=False, null=True, blank=True,
+        related_name="sources_set")
     
     def __unicode__(self):
         return self.name
