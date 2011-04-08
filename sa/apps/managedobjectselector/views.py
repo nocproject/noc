@@ -29,6 +29,23 @@ class ManagedObjectAttributeInline(admin.TabularInline):
     extra=3
 
 ##
+##
+##
+class ManagedObjectSelectorForm(forms.ModelForm):
+    class Meta:
+        model = ManagedObjectSelector
+    
+    def __init__(self, *args, **kwargs):
+        super(ManagedObjectSelectorForm, self).__init__(*args, **kwargs)
+        # Prevent recursion
+        if self.instance.id:
+            f_src = self.fields["sources"]
+            f_src.queryset = ManagedObjectSelector.objects.exclude(
+                                id__exact=self.instance.id).exclude(
+                                id__in=self.instance.sources_set.all())
+    
+
+##
 ## ManagedObjectSelector admin
 ##
 class ManagedObjectSelectorAdmin(admin.ModelAdmin):
@@ -38,12 +55,14 @@ class ManagedObjectSelectorAdmin(admin.ModelAdmin):
     search_fields=["name"]
     filter_horizontal=["filter_groups","sources"]
     inlines=[ManagedObjectAttributeInline]
+    form = ManagedObjectSelectorForm
     ##
     ## Test selected seletors
     ##
     def test_selectors(self,request,queryset):
         return self.app.response_redirect("test/%s/"%",".join([str(p.id) for p in queryset]))
     test_selectors.short_description="Test selected Object Selectors"
+    
 ##
 ## ManagedObjectSelector application
 ##
