@@ -479,6 +479,33 @@ class DNS(Object):
         for ns in nses.values():
             logging.debug("DNSHandler.global_push: provisioning %s"%ns.name)
             ns.provision_zones()
+    
+    ##
+    ## Override default notification order
+    ##
+    def get_notification_groups(self, immediately=False, delayed=False):
+        from noc.dns.models import DNSZone
+        # Try to assotiate with DNSZone
+        if not self.repo_path.endswith("autozones.conf")\
+                and os.sep in self.repo_path:
+            z = None
+            sn, zn = self.repo_path.split(os.sep, 1)
+            try:
+                z = DNSZone.objects.get(name=zn)
+            except DNSZone.DoesNotExist:
+                pass
+            if z:
+                # Zone found
+                if z.notification_group:
+                    # Return zone's notification group, if given
+                    return set([z.notification_group])
+                if z.profile.notification_group:
+                    # Return profile's notification_group, if given
+                    return set([z.profile.notification_group])
+        # Fall back to default notification group
+        return super(DNS, self).get_notification_groups(immediately=immediately, delayed=delayed)
+    
+
 ##
 ## RPSL
 ##

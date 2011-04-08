@@ -18,6 +18,7 @@ from django.db import models
 from django.db.models import Q
 # NOC Modules
 from noc.settings import config
+from noc.main.models import NotificationGroup
 from noc.ip.models import Address, AddressRange
 from noc.lib.validators import is_ipv4
 from noc.lib.fileutils import is_differ, rewrite_when_differ, safe_rewrite
@@ -103,6 +104,9 @@ class DNSZoneProfile(models.Model):
     zone_retry = models.IntegerField(_("Retry"), default=900)
     zone_expire = models.IntegerField(_("Expire"), default=86400)
     zone_ttl = models.IntegerField(_("TTL"), default=3600)
+    notification_group = models.ForeignKey(NotificationGroup,
+        verbose_name=_("Notification Group"), null=True, blank=True,
+        help_text=_("Notification group to use when zone group is not set"))
     description = models.TextField(_("Description"), blank=True, null=True)
     
     def __str__(self):
@@ -133,6 +137,7 @@ class ReverseZoneManager(models.Manager):
 
 ##
 ##
+##
 class DNSZone(models.Model):
     class Meta:
         verbose_name = _("DNS Zone")
@@ -146,6 +151,9 @@ class DNSZone(models.Model):
     serial = models.CharField(_("Serial"),
         max_length=10, default="0000000000")
     profile = models.ForeignKey(DNSZoneProfile, verbose_name=_("Profile"))
+    notification_group = models.ForeignKey(NotificationGroup,
+        verbose_name=_("Notification Group"), null=True, blank=True,
+        help_text=_("Notification group to use when zone changed"))
     paid_till = models.DateField(_("Paid Till"), null=True, blank=True)
     tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
     
