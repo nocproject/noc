@@ -318,6 +318,12 @@ class Activator(Daemon,FSM):
         self.ssh_private_key=Key.from_string_private_noc(s_priv)
     
     ##
+    ##
+    ##
+    def error(self, msg):
+        logging.error(msg)
+    
+    ##
     ## IDLE state 
     ##
     def on_IDLE_enter(self):
