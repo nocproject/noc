@@ -11,6 +11,7 @@ import datetime
 ## Django modules
 from django import forms
 from django.contrib import admin
+from django.utils.safestring import SafeString
 ## NOC modules
 from noc.lib.app import ModelApplication, HasPerm, view
 from noc.dns.models import DNSZone, DNSZoneRecord, DNSServer, DNSZoneProfile
@@ -30,6 +31,15 @@ def distribution(obj):
             for n in obj.distribution_list])
 distribution.short_description = "Distribution"
 distribution.allow_tags = True
+
+##
+## Override auto-generated column
+##
+def ag(obj):
+    return "<img src='/media/img/admin/icon-%s.gif'>" % {True: "yes",
+                                            False: "no"}[obj.is_auto_generated]
+ag.short_description = SafeString("Auto<br/>Gen.")
+ag.allow_tags = True
 
 ##
 ## Validation form for RR inlines
@@ -60,8 +70,8 @@ class DNSZoneRecordInline(admin.TabularInline):
 ##
 class DNSZoneAdmin(admin.ModelAdmin):
     inlines = [DNSZoneRecordInline]
-    list_display = ["name", "description", "paid_till", "is_auto_generated",
-                    "profile", "serial", distribution]
+    list_display = ["name", "description", "paid_till", ag,
+                    "profile", "serial", distribution, "notification_group"]
     list_filter = ["is_auto_generated", "profile"]
     search_fields = ["name", "description"]
     actions = ["rpsl_for_selected"]
