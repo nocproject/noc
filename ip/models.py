@@ -203,6 +203,7 @@ class Prefix(models.Model):
         if not self.is_root:
             # Set proper parent
             self.parent=Prefix.get_parent(self.vrf,self.afi,self.prefix)
+        self.afi = "6" if ":" in self.prefix else "4"
         super(Prefix,self).save(**kwargs)
         # Rebuild tree if necessary
         # Reconnect children children prefixes
@@ -519,6 +520,8 @@ class Address(models.Model):
     ## Save address
     ##
     def save(self,**kwargs):
+        # Detect AFI
+        self.afi = "6" if ":" in self.address else "4"
         # Set proper prefix
         self.prefix=Prefix.get_parent(self.vrf,self.afi,self.address)
         super(Address,self).save(**kwargs)
