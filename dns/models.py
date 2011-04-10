@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Models for DNS module
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -108,9 +108,6 @@ class DNSZoneProfile(models.Model):
         verbose_name=_("Notification Group"), null=True, blank=True,
         help_text=_("Notification group to use when zone group is not set"))
     description = models.TextField(_("Description"), blank=True, null=True)
-    
-    def __str__(self):
-        return self.name
     
     def __unicode__(self):
         return self.name
@@ -309,9 +306,9 @@ class DNSZone(models.Model):
                 nses = [ns.strip() for ns in r.reverse_nses.split(",")]
                 for a in r.addresses:
                     n = a.address.split(".")[-1]
-                    records += [[n, "CNAME", "%s.%s/32" % (n, n)]]
+                    records += [(n, "CNAME", "%s.%s/32" % (n, n))]
                     for ns in nses:
-                        records += [["%s/32" % n, "IN NS", ns]]
+                        records += [("%s/32" % n, "IN NS", ns)]
             # Subnet delegation macro
             delegations = {}
             for d in [r for r in zonerecords if "NS" in r.type.type and "/" in r.left]:
@@ -328,17 +325,17 @@ class DNSZone(models.Model):
                     if net < 0 or net > 255 or mask <= 24 or mask > 32:
                         raise Exception("Invalid record")
                 except:
-                    records += [[";; Invalid record: %s" % d, "IN NS", "error"]]
+                    records += [(";; Invalid record: %s" % d, "IN NS", "error")]
                     continue
                 for ns in nses:
-                    records += [[d, "IN NS", ns]]
+                    records += [(d, "IN NS", str(ns))]
                 m = mask - 24
                 bitmask = ((1 << m) - 1) << (8 - m)
                 if net & bitmask != net:
-                    records += [[";; Invalid network: %s" % d, "CNAME", d]]
+                    records += [(";; Invalid network: %s" % d, "CNAME", d)]
                     continue
                 for i in range(net, net + (1 << (8 - m))):
-                    records += [["%d" % i, "CNAME", "%d.%s" % (i, d)]]
+                    records += [("%d" % i, "CNAME", "%d.%s" % (i, d))]
             # Other records
             records += [(x.left, x.type.type, x.right)
                         for x in zonerecords
@@ -375,7 +372,7 @@ class DNSZone(models.Model):
             if l in in_zone_nses and t in ["A", "IN A"]:
                 del in_zone_nses[l]
         for name, ip in in_zone_nses.items():
-            records += [[name, "IN A", ip]]
+            records += [(name, "IN A", ip)]
         #
         return sorted(records, order_by)
     
@@ -408,7 +405,7 @@ class DNSZone(models.Model):
     
     @property
     def rpsl(self):
-        if self.type != "R":
+        if self.type == "F":
             return ""
         # Do not generate RPSL for private reverse zones
         if self.name.lower().endswith(".10.in-addr.arpa"):
