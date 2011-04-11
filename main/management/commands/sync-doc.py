@@ -43,10 +43,6 @@ class Command(BaseCommand):
         return rewrite_when_differ(db_path,out.getvalue())
         
     def handle(self, *args, **options):
-        # Prepare paths
-        sphinx_build=os.path.abspath(os.path.join("contrib","bin","sphinx-build"))
-        if not os.path.exists(sphinx_build):
-            raise CommandError("%s not found. Please rebuild contrib/"%sphinx_build)
         #
         se_db_updated=self.update_se_db()
         # Prepare options
@@ -56,6 +52,7 @@ class Command(BaseCommand):
         # Prepare environment
         env=os.environ.copy()
         env["PYTHONPATH"]=":".join(sys.path)
+        env["PATH"] = os.path.abspath(os.path.join("contrib", "bin")) + ":" + env["PATH"]
         # Rebuild all documentation
         for conf in glob.glob("share/docs/*/*/conf.py"):
             d,f=os.path.split(conf)
@@ -69,5 +66,8 @@ class Command(BaseCommand):
                         os.makedirs(p)
                     except OSError:
                         raise CommandError("Unable to create directory: %s"%p)
-            cmd=[sphinx_build]+opts+["-b","html","-d",doctrees,"-D","latex_paper_size=a4",".",html]
-            subprocess.call(cmd,cwd=d,env=env)
+            cmd=["sphinx-build"]+opts+["-b","html","-d",doctrees,"-D","latex_paper_size=a4",".",html]
+            try:
+                subprocess.call(cmd,cwd=d,env=env)
+            except OSError:
+                raise CommandError("sphinx-build not found")
