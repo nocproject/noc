@@ -10,6 +10,6 @@ python-creole,0.2.4
 docutils,0.7
 Pygments,1.2.2
 Jinja2,2.2.1
-Sphinx,0.6.4
+Sphinx,1.0.7
 WebOb,0.9.8
 WebTest,1.2.1
