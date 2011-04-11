@@ -69,6 +69,6 @@ info "Installing FM rules"
 python manage.py sync-rules || error_exit "$LINENO: sync-rules failed"
 # Build documentation
 info "Building documentation"
-python manage.py sync-doc || error_exit "$LINO: cannot build documentation"
+python manage.py sync-doc nocbook || error_exit "$LINO: cannot build documentation"
 #
 info "$PROGNAME complete"
