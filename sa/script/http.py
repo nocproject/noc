@@ -25,7 +25,7 @@ class HTTPProvider(object):
         if self.authorization:
             headers["Authorization"]=self.authorization
         conn=httplib.HTTPConnection(self.access_profile.address,
-                self.access_profile.port if self.access_profile.port else 80)
+                int(self.access_profile.port) if self.access_profile.port else 80)
         conn.request(method,path,params,headers)
         response=conn.getresponse()
         try:
