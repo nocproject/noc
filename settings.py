@@ -1,10 +1,13 @@
 # Django settings for noc project.
 # Do not modify this file directly
 # Edit etc/noc.conf instead
-import ConfigParser,sys
+import ConfigParser, sys
 
 config=ConfigParser.SafeConfigParser()
 config.read(["etc/noc.defaults","etc/noc.conf"])
+if not config.sections():
+    # Called from autodoc
+    config.read(["../../../../etc/noc.defaults","../../../../etc/noc.conf"])
 
 DEBUG = config.get("main","debug")
 TEMPLATE_DEBUG = DEBUG
