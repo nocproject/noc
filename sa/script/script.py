@@ -404,13 +404,15 @@ class Script(threading.Thread):
     ## Debug log message
     ##
     def debug(self, msg):
-        logging.debug("[%s] %s"%(self.debug_name, msg))
+        print self.debug_name
+        print msg
+        logging.debug(u"[%s] %s"%(self.debug_name, unicode(msg, "utf8")))
     
     ##
     ## Error log message
     ##
     def error(self, msg):
-        logging.error("[%s] %s"%(self.debug_name, msg))
+        logging.error(u"[%s] %s"%(self.debug_name, unicode(msg, "utf8")))
     
     ##
     ## Return root script
