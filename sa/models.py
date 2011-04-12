@@ -99,7 +99,7 @@ class ManagedObject(models.Model):
     user=models.CharField(_("User"),max_length=32,blank=True,null=True)
     password=models.CharField(_("Password"),max_length=32,blank=True,null=True)
     super_password=models.CharField(_("Super Password"),max_length=32,blank=True,null=True)
-    remote_path=models.CharField(_("Path"),max_length=32,blank=True,null=True)
+    remote_path=models.CharField(_("Path"),max_length=256,blank=True,null=True)
     trap_source_ip=INETField(_("Trap Source IP"),null=True,blank=True,default=None)
     trap_community=models.CharField(_("Trap Community"),blank=True,null=True,max_length=64)
     snmp_ro=models.CharField(_("RO Community"),blank=True,null=True,max_length=64)
