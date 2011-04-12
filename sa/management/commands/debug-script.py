@@ -326,6 +326,11 @@ class Command(BaseCommand):
                 access_profile.snmp_ro=o.snmp_ro
         if o.remote_path:
             access_profile.path=o.remote_path
+        attrs=[(a.key,a.value) for a in o.managedobjectattribute_set.all()]
+        for k,v in attrs:
+            a=access_profile.attrs.add()
+            a.key=str(k)
+            a.value=v
     
     ##
     ## Prepare script request
