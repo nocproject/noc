@@ -101,5 +101,6 @@ class ConfigApplication(RepoApplication):
     ## Config highlight
     ##
     def render_content(self,object,content):
+        content=unicode(content, "utf8")
         return object.managed_object.profile.highlight_config(content)
     
