@@ -45,6 +45,10 @@ def DES3200(v):
 def DGS3100(v):
     return v["platform"].startswith("DGS-3100")
 
+## DGS-3120-series
+def DGS3120(v):
+    return v["platform"].startswith("DGS-3120")
+
 ## DGS-3400-series
 def DGS3400(v):
     return v["platform"].startswith("DGS-34")
