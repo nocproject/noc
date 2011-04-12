@@ -15,6 +15,7 @@ import random
 import cPickle
 import time
 import types
+import re
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -127,7 +128,7 @@ class ManagedObject(models.Model):
     
     def __unicode__(self):
         return self.name
-
+    
     def get_absolute_url(self):
         return self.reverse("sa:managedobject:change",self.id)
         
@@ -629,6 +630,9 @@ class ReduceTask(models.Model):
                 status="W" if ms in o.profile.scripts else "F"
                 # Build full map script name
                 msn="%s.%s"%(o.profile_name,ms)
+                # Expand parameter, if callable
+                if callable(p):
+                    p = p(o)
                 #
                 m=MapTask(
                     task=r_task,
@@ -698,4 +702,45 @@ class MapTask(models.Model):
             return u"%d: %s %s"%(self.id,self.managed_object,self.map_script)
         else:
             return u"New: %s %s"%(self.managed_object,self.map_script)
+    
+
+class CommandSnippet(models.Model):
+    """
+    Command snippet
+    """
+    class Meta:
+        verbose_name = _("Command Snippet")
+        verbose_name_plural = _("Command Snippets")
+    name = models.CharField(_("Name"), max_length = 128, unique = True)
+    description = models.TextField(_("Description"))
+    snippet = models.TextField(_("Snippet"),
+            help_text=_("Code snippet template"))
+    change_configuration = models.BooleanField(_("Change configuration"),
+            default=False)
+    selector = models.ForeignKey(ManagedObjectSelector,
+                                 verbose_name=_("Object Selector"))
+    is_enabled = models.BooleanField(_("Is Enabled?"), default=True)
+    timeout = models.IntegerField(_("Timeout (sec)"), default=60)
+    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    
+    def get_absolute_url(self):
+        return self.reverse("sa:commandsnippet:change", self.id)
+    
+    rx_var=re.compile(r"{{\s*([^|}]+)\s*(?:\|.+?)?}}", re.MULTILINE)
+    @property
+    def vars(self):
+        """
+        List of variables used in template
+        """
+        return set(self.rx_var.findall(self.snippet))
+    
+    def expand(self, data):
+        """
+        Expand snippet with variables
+        """
+        from django.template import Template, Context
+        return Template(self.snippet).render(Context(data))
     
