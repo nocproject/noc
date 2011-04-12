@@ -197,9 +197,11 @@ class ActivatorStub(object):
                     if s.result:
                         # Format output
                         r=cPickle.loads(s.result)
-                        if not isinstance(r, basestring):
+                        if isinstance(r, basestring):
+                            r = unicode(str(r), "utf8")
+                        else:
                             r=pprint.pformat(r)
-                        logging.debug("SCRIPT RESULT: %s\n%s"%(s.debug_name, r))
+                        logging.debug(u"SCRIPT RESULT: %s\n%s"%(s.debug_name, r))
                 self.factory.shutdown()
             logging.debug("%d TICKS TO EXIT"%self.wait_ticks)
         else:
