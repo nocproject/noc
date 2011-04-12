@@ -234,10 +234,6 @@ class Script(threading.Thread):
         self.access_profile=access_profile
         self.attrs={}
         self._timeout=timeout if timeout else self.TIMEOUT
-        for a in access_profile.attrs:
-            self.attrs[a.key]=a.value
-        import logging
-        logging.debug(repr(self.attrs))
         if self.access_profile.address:
             p=self.access_profile.address
         elif self.access_profile.path:
@@ -245,6 +241,19 @@ class Script(threading.Thread):
         else:
             p="<unknown>"
         self.debug_name="script-%s-%s"%(p, self.name)
+        self.encoding = None # Device encoding. None if UTF8
+        for a in access_profile.attrs:
+            self.attrs[a.key]=a.value
+            # Try to get encoding from attributes
+            if a.key == "encoding":
+                v = a.value.strip()
+                # Test encoding
+                try:
+                    u"test".encode(v)
+                    self.encoding = v
+                    self.debug("Using '%s' encoding" % v)
+                except LookupError:
+                    self.error("Unknown encoding: '%s'" % v)
         super(Script, self).__init__(name=self.debug_name, kwargs=kwargs)
         self.activator=activator
         self.servers=activator.servers
@@ -268,7 +277,7 @@ class Script(threading.Thread):
         self.e_cancel=False # Scrcipt cancelled
         self.e_not_supported=False # NotSupportedError risen
         self._thread_id=None # Python 2.5 compatibility
-        
+        # Set up CLI session logging
         if self.parent:
             self.log_cli_sessions_path=self.parent.log_cli_sessions_path
         elif self.activator.log_cli_sessions\
@@ -591,6 +600,9 @@ class Script(threading.Thread):
             self.request_cli_provider()
             self.cli_provider.submit(cmd, command_submit=command_submit, bulk_lines=bulk_lines)
             data=self.cli_queue_get()
+        # Encode to UTF8 if requested
+        if self.encoding:
+            data = unicode(data, self.encoding).encode("utf8")
         # Save canned output if requested
         if self.activator.to_save_output:
             self.activator.save_interaction("cli", cmd, data)
