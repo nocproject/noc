@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
+DNS database models
 """
 # Python modules
 import re
@@ -31,10 +32,22 @@ from noc.lib.ip import *
 ## register all generator classes
 ##
 generator_registry.register_all()
-##
-## DNS Server
-##
+
+
 class DNSServer(models.Model):
+    """
+    DNS Server is an database object representing real DNS server.
+    
+    :param name: Unique DNS server name (usually, FQDN)
+    :param generator_name: Zone generator name (BINDv9)
+    :param ip: Server's IP address
+    :param description: Optional description
+    :param location: Optional location
+    :param provisioning: Optional string containing shell command for
+        zone provisioning. Can contain expansion variables.
+        See expand_vars for details
+    :param autozones_path: Optional prefix for autozones in config files
+    """
     class Meta:
         verbose_name = _("DNS Server")
         verbose_name_plural = _("DNS Servers")
@@ -60,8 +73,20 @@ class DNSServer(models.Model):
         else:
             return self.name
     
-    # Expands variables if any
     def expand_vars(self, s):
+        """
+        Expand string variables.
+        
+        :param s: String, possible containing expansion variables.
+        
+        Valid expansion variables are:
+        
+        * rsync -- path to _rsync_ binary
+        * vcs_path -- path to VCS's binary (i.e. hg)
+        * repo -- path to the repo
+        * ns -- DNS server's name
+        * ip -- DNS server's IP address
+        """
         return s % {
             "rsync"    : config.get("path", "rsync"),
             "vcs_path" : config.get("cm", "vcs_path"),
@@ -82,13 +107,28 @@ class DNSServer(models.Model):
     
     @property
     def generator_class(self):
+        """
+        Property containing generator class
+        """
         return generator_registry[self.generator_name]
     
 
-##
-##
-##
 class DNSZoneProfile(models.Model):
+    """
+    DNS Zone profile is a set of common parameters, shared between zones.
+    
+    :param name:
+    :param masters:
+    :param slaves:
+    :param zone_soa:
+    :param zone_contact:
+    :param zone_refresh:
+    :param zone_retry:
+    :param zone_expire:
+    :param zone_ttl:
+    :param notification_group:
+    :param description:
+    """
     class Meta:
         verbose_name = _("DNS Zone Profile")
         verbose_name_plural = _("DNS Zone Profiles")
@@ -114,6 +154,10 @@ class DNSZoneProfile(models.Model):
     
     @property
     def authoritative_servers(self):
+        """
+        Returns a list of DNSServer instances for all zone's master and
+        slave servers
+        """
         return list(self.masters.all()) + list(self.slaves.all())
     
 
@@ -229,6 +273,9 @@ class DNSZone(models.Model):
                     pass
             return cmp(x1, y1)
         
+        ##
+        ## Compare two RRs
+        ##
         def cmp_fwd(x, y):
             x1, x2, x3 = x
             y1, y2, y3 = y
