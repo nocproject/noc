@@ -92,6 +92,7 @@ class RepoApplication(ModelApplication):
                 diff=diff.replace("rules=\"groups\"","rules=\"none\"",1) # Use no colgroup rules
             else:
                 diff=o.diff(rev1,rev2)
+                diff=unicode(diff, "utf8")
                 diff=highlight(diff,DiffLexer(),NOCHtmlFormatter()) # Highlight diff
             return self.render(request,"diff.html",{"o":o,"diff":diff,"r1":r1,"r2":r2,"mode":mode})
         else:
