@@ -12,13 +12,15 @@ import urllib
 import httplib
 import base64
 import hashlib
+import socket
 
 ##
 ## HTTP Provider
 ##
 class HTTPProvider(object):
-    def __init__(self,access_profile):
-        self.access_profile=access_profile
+    def __init__(self, script):
+        self.script = script
+        self.access_profile = script.access_profile
         self.authorization=None
     
     def request(self, method, path, params=None, headers={}):
@@ -82,7 +84,10 @@ class HTTPProvider(object):
             raise Exception("Unknown auth method: %s"%scheme)
     
     def get(self, path, params=None, headers={}):
-        return self.request("GET",path)
+        try:
+            return self.request("GET",path)
+        except socket.error, why:
+            raise script.LoginError(why[1])
     
     def post(self, path, params=None, headers={}):
         if params:
