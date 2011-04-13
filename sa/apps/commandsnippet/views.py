@@ -8,23 +8,35 @@
 
 ## Django modules
 from django.contrib import admin
+from django import forms
+from django.template import Template, TemplateSyntaxError
 ## NOC modules
 from noc.lib.app import ModelApplication
 from noc.sa.models import CommandSnippet
 
+class CommandSnippetForm(forms.ModelForm):
+    """Validation form"""
+    class Meta:
+        model=CommandSnippet
+    
+    def clean_snippet(self):
+        s = self.cleaned_data["snippet"]
+        try:
+            Template(s)
+        except TemplateSyntaxError, why:
+            raise forms.ValidationError("Template syntax error: %s" % why)
+        return s
+    
 
-##
-## CommandSnippet admin
-##
 class CommandSnippetAdmin(admin.ModelAdmin):
+    """CommandSnippet Admin"""
+    form = CommandSnippetForm
     list_display = ["name", "selector"]
+    
 
 
-##
-## CommandSnippet application
-## @todo: test form
-##
 class CommandSnippetApplication(ModelApplication):
+    """CommandSnippet application"""
     model = CommandSnippet
     model_admin = CommandSnippetAdmin
     menu = "Setup | Command Snippets"
