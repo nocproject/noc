@@ -259,7 +259,7 @@ class Script(threading.Thread):
         self.servers=activator.servers
         self.profile=profile
         self.cli_provider=None
-        self.http=HTTPProvider(self.access_profile)
+        self.http=HTTPProvider(self)
         self.snmp=SNMPProvider(self)
         self.status=False
         self.result=None
