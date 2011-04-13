@@ -33,7 +33,7 @@ class Reportreportmissedreverse(SimpleReport):
                 FROM ip_prefix
                 WHERE vrf_id=%s
                     AND masklen(prefix)=24
-                    AND regexp_replace(host(prefix),E'([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)',E'\\3.\\2.\\1.in-addr.arpa')
+                    AND regexp_replace(host(prefix),E'([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)',E'\\\\3.\\\\2.\\\\1.in-addr.arpa')
                         NOT IN (SELECT name FROM dns_dnszone WHERE name LIKE '%%.in-addr.arpa')
                 ORDER BY 1
             """,
