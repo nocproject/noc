@@ -13,7 +13,7 @@ class EdgeCore_ES_get_portchannel_Test(ScriptTestCase):
     platform='ES4612'
     version='1.0.6.9'
     input={}
-    result=[{'interface': 'Trunk 2', 'members': ['Eth1/10', ' Eth1/11'], 'type': 'S'}]
+    result=[{'interface': 'Trunk 2', 'members': ['Eth 1/10', 'Eth 1/11'], 'type': 'S'}]
     motd=' \n\n      CLI session with the 8 SFP ports + 4 Gigabit Combo ports L2/L3/L4 managed standalone switch is opened.\n      To end the CLI session, enter [Exit].\n\n'
     cli={
 ## 'show version'

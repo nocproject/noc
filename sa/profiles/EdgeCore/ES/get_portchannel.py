@@ -26,9 +26,10 @@ class Script(NOCScript):
         status=self.cli("show interface status")
 	r=[]
 	for match in self.rx_chan_line_3526.finditer(status):
+	    members=match.group("members_str").strip().rstrip(",").replace("Eth","Eth ")
 	    r+=[{
 		"interface":	match.group("interface"),
-		"members": 	match.group("members_str").strip().rstrip(",").split(","),
+		"members": 	members.split(", "),
 		"type" :	"S"
 	    }]
 	return r
