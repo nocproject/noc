@@ -276,6 +276,7 @@ class Script(threading.Thread):
         self.e_timeout=False # Script terminated with timeout
         self.e_cancel=False # Scrcipt cancelled
         self.e_not_supported=False # NotSupportedError risen
+        self.e_http_error = False # HTTPError risen
         self._thread_id=None # Python 2.5 compatibility
         # Set up CLI session logging
         if self.parent:
@@ -496,6 +497,9 @@ class Script(threading.Thread):
         except self.LoginError, why:
             self.login_error=why.args[0]
             self.error("Login failed: %s"%self.login_error)
+        except self.http.HTTPError, e:
+            self.error(str(e))
+            self.e_http_error = str(e)
         except:
             if self.e_cancel:
                 # Race condition caught. Handle CancelledError

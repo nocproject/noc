@@ -64,6 +64,9 @@ class Service(SAEService):
                 elif script.login_error is not None:
                     e.code=ERR_LOGIN_FAILED
                     e.text=script.login_error
+                elif script.e_http_error:
+                    e.code = ERR_HTTP_ERROR
+                    c.text = script.e_http_error
                 else:
                     e.code=ERR_SCRIPT_EXCEPTION
                     e.text=script.error_traceback if script.error_traceback else "Mysterious death"
