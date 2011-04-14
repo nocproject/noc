@@ -14,10 +14,19 @@ import base64
 import hashlib
 import socket
 
+class HTTPError(Exception):
+    def __init__(self, code, msg=None):
+        self.code = code
+        if msg is None:
+            msg = "HTTP Error: %s" % code
+        super(HTTPException, self).__init__(msg)
+
 ##
 ## HTTP Provider
 ##
 class HTTPProvider(object):
+    HTTPError = HTTPError
+    
     def __init__(self, script):
         self.script = script
         self.access_profile = script.access_profile
@@ -37,10 +46,10 @@ class HTTPProvider(object):
                 self.set_authorization(response.getheader("www-authenticate"),method,path)
                 return self.request(method,path,params,headers)
             else:
-                raise Exception("HTTP Error: %s"%response.status)
+                raise self.HTTPError(response.status)
         finally:
             conn.close()
-            
+    
     def set_authorization(self, auth, method, path):
         scheme,data=auth.split(" ",1)
         scheme=scheme.lower()
