@@ -21,7 +21,7 @@ class HTTPError(Exception):
         self.code = code
         if msg is None:
             msg = "HTTP Error: %s" % code
-        super(HTTPException, self).__init__(msg)
+        super(HTTPError, self).__init__(msg)
     
 
 class HTTPProvider(object):
