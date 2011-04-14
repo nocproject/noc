@@ -21,7 +21,7 @@ from django.db.models import Q
 from noc.settings import config
 from noc.main.models import NotificationGroup
 from noc.ip.models import Address, AddressRange
-from noc.lib.validators import is_ipv4
+from noc.lib.validators import is_ipv4, check_re
 from noc.lib.fileutils import is_differ, rewrite_when_differ, safe_rewrite
 from noc.dns.generators import generator_registry
 from noc.lib.rpsl import rpsl_format
@@ -176,10 +176,10 @@ class ReverseZoneManager(models.Manager):
         return super(ReverseZoneManager, self).get_query_set().filter(q)
     
 
-##
-##
-##
 class DNSZone(models.Model):
+    """
+    DNS Zone
+    """
     class Meta:
         verbose_name = _("DNS Zone")
         verbose_name_plural = _("DNS Zones")
@@ -207,10 +207,25 @@ class DNSZone(models.Model):
         return self.name
     
     def get_absolute_url(self):
+        """Return link to zone preview
+        
+        :return: URL
+        :rtype: String
+        """
         return site.reverse("dns:dnszone:change", self.id)
     
     @property
     def type(self):
+        """
+        Zone type. One of:
+        
+        * R4 - IPv4 reverse
+        * R6 - IPv6 reverse
+        * F - forward zone
+        
+        :return: Zone type
+        :rtype: String
+        """
         nl = self.name.lower()
         if nl.endswith(".in-addr.arpa"):
             return "R4"  # IPv4 reverse
@@ -222,6 +237,12 @@ class DNSZone(models.Model):
     rx_rzone = re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
     @property
     def reverse_prefix(self):
+        """
+        Appropriative prefix for reverse zone
+        
+        :return: IPv4 or IPv6 prefix
+        :rtype: String
+        """
         if self.type == "R4":
             # Get IPv4 prefix covering reverse zone
             match = self.rx_rzone.match(self.name.lower())
@@ -247,6 +268,14 @@ class DNSZone(models.Model):
     
     @property
     def next_serial(self):
+        """
+        Next zone serial number. Next serial is greater
+        than current one. Serial is built using current data
+        to follow common practive.
+        
+        :return: Zone serial number
+        :rtype: String
+        """
         T = time.gmtime()
         p = "%04d%02d%02d" % (T[0], T[1], T[2])
         sn = int(self.serial[-2:])
@@ -260,10 +289,18 @@ class DNSZone(models.Model):
     ##
     @property
     def records(self):
-        ## Compare two RRs.
-        ## PTR records are compared as interger
-        ## other - as strings
+        """
+        All zone records. Zone records returned as list of tuples
+        (left, type, right), where type is RR type.
+        
+        :return: Zone records
+        :trype: List of tuples
+        """
         def cmp_ptr(x, y):
+            """
+            Compare two RR tuples. PTR records are compared as integer,
+            other records - as strings.
+            """
             x1, x2, x3 = x
             y1, y2, y3 = y
             if "PTR" in x2 and "PTR" in y2:
@@ -273,10 +310,8 @@ class DNSZone(models.Model):
                     pass
             return cmp(x1, y1)
         
-        ##
-        ## Compare two RRs
-        ##
         def cmp_fwd(x, y):
+            """Compare two RR tuples"""
             x1, x2, x3 = x
             y1, y2, y3 = y
             r = cmp(x1, y1)
@@ -424,22 +459,34 @@ class DNSZone(models.Model):
         return sorted(records, order_by)
     
     def zonedata(self, ns):
+        """
+        Return zone data formatted for given nameserver.
+        
+        :param ns: DNS Server
+        :type ns: DNSServer instance
+        :return: Zone data
+        :rtype: String
+        """
         return ns.generator_class().get_zone(self)
     
     @property
     def distribution_list(self):
+        """List of DNSServers to distribute zone
+        
+        :return: List of DNSServers
+        :rtype: List of DNSServer instances
+        """
         return self.profile.masters.filter(provisioning__isnull=False)
     
     @property
     def children(self):
+        """List of next-level nested zones"""
         l = len(self.name)
         return [z for z in DNSZone.objects.filter(name__iendswith="." + self.name) if "." not in z.name[:-l - 1]]
     
-    ##
-    ## Add missed "." to the end of NS name in case of FQDN
-    ##
     @classmethod
     def get_ns_name(cls, ns):
+        """Add missed '.' to the end of NS name, if given as FQDN"""
         name = ns.name.strip()
         if not is_ipv4(name) and not name.endswith("."):
             return name + "."
@@ -448,10 +495,24 @@ class DNSZone(models.Model):
     
     @property
     def ns_list(self):
+        """
+        Sorted list of zone NSes. NSes are properly formatted and have '.'
+        at the end.
+        
+        :return: List of zone NSes
+        :rtype: List of string
+        """
         return sorted([self.get_ns_name(ns) for ns in self.profile.authoritative_servers])
     
     @property
     def rpsl(self):
+        """
+        RPSL for reverse zone. RPSL contains domain: and nserver:
+        attributes
+        
+        :return: RPSL
+        :rtype: String
+        """
         if self.type == "F":
             return ""
         # Do not generate RPSL for private reverse zones
@@ -467,10 +528,10 @@ class DNSZone(models.Model):
         return rpsl_format("\n".join(s))
     
 
-##
-##
-##
 class DNSZoneRecordType(models.Model):
+    """
+    RR type
+    """
     class Meta:
         verbose_name = _("DNS Zone Record Type")
         verbose_name_plural = _("DNS Zone Record Types")
@@ -479,46 +540,61 @@ class DNSZoneRecordType(models.Model):
     is_visible = models.BooleanField(_("Is Visible?"), default=True)
     validation = models.CharField(_("Validation"), max_length=256,
         blank=True, null=True,
+        validators = [check_re],
         help_text=_("Regular expression to validate record. Following macros can be used: OCTET, IPv4, FQDN"))
-    
-    def __str__(self):
-        return self.type
     
     def __unicode__(self):
         return unicode(self.type)
     
     @classmethod
     def interpolate_re(self, rx):
+        """
+        Replace macroses in regular expression. Following macroses are
+        expanded:
+        
+        * OCTET - number in range 0 - 255
+        * IPv4 - IPv4 address
+        * FQDN - FQDN
+        
+        :param rx: Regular expression
+        :type rx: String
+        :return: Expanded regular expression
+        :rtype: String
+        """
         for m, s in [
             ("OCTET", r"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"),
             ("IPv4", r"(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"),
             ("FQDN", r"([a-z0-9\-]+\.?)*")]:
             rx = rx.replace(m, s)
-        return "^%s$" % rx
+        return r"^%s$" % rx
     
     def is_valid(self, value):
+        """
+        Validate value conforms RR type
+        """
         if self.validation:
             rx = DNSZoneRecordType.interpolate_re(self.validation)
             return re.match(rx, value) is not None
         else:
             return True
     
-    ## @todo: use validators
     def save(self):
         if self.validation:
             try:
                 rx = DNSZoneRecordType.interpolate_re(self.validation)
             except:
-                raise Exception("Invalid regular expression: %s" % rx)
+                raise ValueError("Invalid regular expression: %s" % rx)
             try:
                 re.compile(rx)
             except:
-                raise Exception("Invalid regular expression: %s" % rx)
+                raise ValueError("Invalid regular expression: %s" % rx)
         super(DNSZoneRecordType, self).save()
-##
-##
-##
+    
+
 class DNSZoneRecord(models.Model):
+    """
+    Zone RRs
+    """
     class Meta:
         verbose_name = _("DNS Zone Record")
         verbose_name_plural = _("DNS Zone Records")
@@ -538,5 +614,10 @@ class DNSZoneRecord(models.Model):
                     ]))
     
     def get_absolute_url(self):
+        """Return link to zone preview
+        
+        :return: URL
+        :rtype: String
+        """
         return site.reverse("dns:dnszone:change", self.zone.id)
     
