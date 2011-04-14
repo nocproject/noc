@@ -87,11 +87,14 @@ class HTTPProvider(object):
         try:
             return self.request("GET",path)
         except socket.error, why:
-            raise script.LoginError(why[1])
+            raise self.script.LoginError(why[1])
     
     def post(self, path, params=None, headers={}):
         if params:
             params=urllib.urlencode(params)
             headers["Content-Type"]="application/x-www-form-urlencoded"
-        return self.request("POST",path,params,headers)
+        try:
+            return self.request("POST",path,params,headers)
+        except socket.error, why:
+            raise self.script.LoginError(why[1])
     
