@@ -148,15 +148,22 @@ class CLITelnetSocket(CLI, ConnectedTCPSocket):
     TTL=30
     protocol_class=TelnetProtocol
     
-    def __init__(self, factory, profile, access_profile):
-        self._log_label="TELNET: %s"%access_profile.address
-        CLI.__init__(self, profile, access_profile)
-        port=access_profile.port or 23
-        ConnectedTCPSocket.__init__(self, factory, access_profile.address, port)
+    def __init__(self, script):
+        self.script = script
+        self._log_label = "TELNET: %s" % self.script.access_profile.address
+        CLI.__init__(self, self.script.profile, self.script.access_profile)
+        ConnectedTCPSocket.__init__(self, self.script.activator.factory,
+            self.script.access_profile.address,
+            self.script.access_profile.port or 23)
     
     def write(self, s):
+        if type(s) == unicode:
+            if self.script.encoding:
+                s = s.encode(self.script.encoding)
+            else:
+                s = str(s)
         # Double all IACs
-        super(CLITelnetSocket, self).write(str(s).replace(IAC, D_IAC))
+        super(CLITelnetSocket, self).write(s.replace(IAC, D_IAC))
     
     def is_stale(self):
         self.async_check_fsm()

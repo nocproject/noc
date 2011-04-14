@@ -136,10 +136,11 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     SSH_AUTH_METHODS=["publickey", "password", "keyboard-interactive", "none"]
     
     rx_ssh_version=re.compile(r"^SSH-(?P<version>\d+\.\d+)-(?P<soft>.+$)")
-    def __init__(self, factory, profile, access_profile):
-        self._log_label="SSH: %s"%access_profile.address
-        CLI.__init__(self, profile, access_profile)
-        port=access_profile.port or 22
+    def __init__(self, script):
+        self.script = script
+        self._log_label = "SSH: %s" % self.script.access_profile.address
+        CLI.__init__(self, self.script.profile, self.script.access_profile)
+        port = self.script.access_profile.port or 22
         self.transform=None # current SSH Transform
         self.next_transform=None
         self.in_seq=0
@@ -163,7 +164,8 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.last_auth=None
         self.authenticated_with=set()
         self.out_data_buffer=""
-        ConnectedTCPSocket.__init__(self, factory, access_profile.address, port)
+        ConnectedTCPSocket.__init__(self, self.script.activator.factory,
+            self.script.access_profile.address, port)
     
     ##
     ## Received data dispatcher
