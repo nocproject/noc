@@ -13,6 +13,8 @@ import httplib
 import base64
 import hashlib
 import socket
+import types
+
 
 class HTTPError(Exception):
     def __init__(self, code, msg=None):
@@ -20,11 +22,12 @@ class HTTPError(Exception):
         if msg is None:
             msg = "HTTP Error: %s" % code
         super(HTTPException, self).__init__(msg)
+    
 
-##
-## HTTP Provider
-##
 class HTTPProvider(object):
+    """
+    HTTP Provider
+    """
     HTTPError = HTTPError
     
     def __init__(self, script):
@@ -93,10 +96,31 @@ class HTTPProvider(object):
             raise Exception("Unknown auth method: %s"%scheme)
     
     def get(self, path, params=None, headers={}):
-        try:
-            return self.request("GET",path)
-        except socket.error, why:
-            raise self.script.LoginError(why[1])
+        """
+        Perform GET request. Path can be given as string or a list of strings.
+        If list of strings given, try first element, in case of 404 pass
+        to next
+        
+        :param path: Path or list of paths
+        :type path: String or List of string
+        """
+        if type(path) in (types.ListType, types.TupleType):
+            last_code = None
+            for p in path:
+                try:
+                    return self.get(p, params, headers)
+                except self.HTTPError, e:
+                    last_code = e.code
+                    if last_code == 404:
+                        continue
+                    else:
+                        break
+            raise self.HTTPError(last_code)
+        else:
+            try:
+                return self.request("GET",path)
+            except socket.error, why:
+                raise self.script.LoginError(why[1])
     
     def post(self, path, params=None, headers={}):
         if params:
