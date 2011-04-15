@@ -15,3 +15,4 @@ class IGetARP(Interface):
             "mac"        : MACAddressParameter(required=False), # NONE for incomplete entries
             "interface"  : StringParameter(required=False),     # NONE for incomplete entries
             }))
+    template = "interfaces/igetarp.html"
