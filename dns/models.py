@@ -166,13 +166,17 @@ class DNSZoneProfile(models.Model):
 ##
 class ForwardZoneManager(models.Manager):
     def get_query_set(self):
-        q = Q(name__iendswith=".in-addr.arpa") | Q(name__iendswith=".ip6.int")
+        q = (Q(name__iendswith=".in-addr.arpa") |
+             Q(name__iendswith=".ip6.int") |
+             Q(name__iendswith=".ip6.arpa"))
         return super(ForwardZoneManager, self).get_query_set().exclude(q)
     
 
 class ReverseZoneManager(models.Manager):
     def get_query_set(self):
-        q = Q(name__iendswith=".in-addr.arpa") | Q(name__iendswith=".ip6.int")
+        q = (Q(name__iendswith=".in-addr.arpa") |
+             Q(name__iendswith=".ip6.int") |
+             Q(name__iendswith=".ip6.arpa"))
         return super(ReverseZoneManager, self).get_query_set().filter(q)
     
 
@@ -229,7 +233,7 @@ class DNSZone(models.Model):
         nl = self.name.lower()
         if nl.endswith(".in-addr.arpa"):
             return "R4"  # IPv4 reverse
-        elif nl.endswith(".ip6.int"):
+        elif nl.endswith(".ip6.int") or nl.endswith(".ip6.arpa"):
             return "R6"  # IPv6 reverse
         else:
             return "F"  # Forward
@@ -251,7 +255,14 @@ class DNSZone(models.Model):
                                           match.group(1))
         elif self.type == "R6":
             # Get IPv6 prefix covering reverse zone
-            p = self.name.lower()[:-8].split(".")
+            n = self.name.lower()
+            if n.endswith(".ip6.int"):
+                n = n[:-8]
+            elif n.endswith(".ip6.arpa"):
+                n = n[:-9]
+            else:
+                raise Exception("Invalid IPv6 zone suffix")
+            p = n.split(".")
             p.reverse()
             l = len(p)
             if l % 4:
