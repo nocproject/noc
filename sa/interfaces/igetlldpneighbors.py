@@ -53,3 +53,4 @@ class IGetLLDPNeighbors(Interface):
             "remote_capabilities"       : IntParameter(default=0), # LldpSystemCapabilitiesMap TC bitmask
         }))
     }))
+    template = "interfaces/igetlldpneighbors.html"

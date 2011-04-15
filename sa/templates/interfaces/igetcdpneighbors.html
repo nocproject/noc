@@ -1,0 +1,30 @@
+{% if result %}
+    <link rel="stylesheet" type="text/css" href="/static/css/tablesorter.css" />
+    <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
+    <h1>{{object.name}} ({{object.address}}) CDP neighbors</h1>
+    <table border="0" id="result-{{object.id}}" class="tablesorter" width="100%">
+        <thead>
+            <tr>
+                <th>Local Interface</th>
+                <th>Remote System</th>
+                <th>Remote Interface</th>
+        </thead>
+        <tbody>
+            {% for n in result.neighbors %}
+                <tr>
+                    <td>{{n.local_interface}}</td>
+                    <td>{{n.device_id}}</td>
+                    <td>{{n.remote_interface}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <script>
+    $(document).ready(function() { 
+        $("#result-{{object.id}}").tablesorter();
+    });
+    </script>
+{% else %}
+    No data!!!
+{% endif %}
