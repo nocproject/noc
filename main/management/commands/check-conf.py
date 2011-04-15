@@ -21,7 +21,7 @@ class Command(BaseCommand):
             if os.path.isfile(path) and not os.access(path,os.R_OK):
                 failed+=["%s: permission denied"%path]
         # Check executables
-        for f in ["telnet","ssh","pg_dump","tar","gzip","smidump","smilint"]:
+        for f in ["ssh","pg_dump","tar","gzip","smidump","smilint"]:
             path=config.get("path",f)
             if not os.path.isfile(path):
                 failed+=["%s: %s is not found"%(f,path)]
