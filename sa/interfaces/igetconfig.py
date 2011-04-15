@@ -12,3 +12,4 @@ class IGetConfig(Interface):
                 "name"  : StringParameter(),
                 "config": StringParameter(),
             })) | StringParameter()
+    template = "interfaces/igetconfig.html"
