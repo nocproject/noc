@@ -1,0 +1,35 @@
+{% if result %}
+    <link rel="stylesheet" type="text/css" href="/static/css/tablesorter.css" />
+    <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
+    <h1>{{object.name}} ({{object.address}}) LLDP neighbors</h1>
+    <table border="0" id="result-{{object.id}}" class="tablesorter" width="100%">
+        <thead>
+            <tr>
+                <th>Local interface</th>
+                <th>Remote System</th>
+                <th>Remote Port</th>
+                <th>Remote Caps</th>
+        </thead>
+        <tbody>
+            {% for i in result %}
+                {% for n in i.neighbors %}
+                    <tr>
+                        <td>{{i.local_interface}}</td>
+                        <td>{{n.remote_system_name}}<br/>
+                            {{n.remote_chassis_id}}</td>
+                        <td>{{n.remote_port}}</td>
+                        <td>{{n.remote_capabilities}}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <script>
+    $(document).ready(function() { 
+        $("#result-{{object.id}}").tablesorter();
+    });
+    </script>
+{% else %}
+    No data!!!
+{% endif %}

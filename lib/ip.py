@@ -351,6 +351,10 @@ class IPv4(IP):
     ##
     @property
     def first(self):
+        """
+        :return: First address
+        :rtype:
+        """
         return self._to_prefix(self.d & (((1L << self.mask) - 1L) << (32L - self.mask)), self.mask)
     
     ##
