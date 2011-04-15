@@ -14,3 +14,4 @@ from base import *
 ##
 class IGetChassisID(Interface):
     returns=MACAddressParameter()
+    template = "interfaces/igetchassisid.html"
