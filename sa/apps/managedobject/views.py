@@ -348,7 +348,7 @@ class ManagedObjectApplication(ModelApplication):
             t_path = ["sa", "templates"] + scr.get_template().split("/")
             paths = [os.sep.join(["local"] + t_path), os.sep.join(t_path)]
             result = SafeString(loader.render_to_string(paths,
-                                       {"object": object, "result": result}))
+                                       {"object": object, "result": result}).encode("utf8"))
         return self.render(request, "script_result.html", object=object,
                            script=script, result=result,
                            display_box = display_box)
