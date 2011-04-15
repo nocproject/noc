@@ -2,8 +2,8 @@
 {% block breadcrumbs %}{{block.super}}<li>{{object.name}}</li><li><a href="{% url sa:managedobject:scripts object.id %}">Scripts</a></li><li>{{script}}</li>
 {%endblock%}
 <{% block content %}
-<h1>Script {{script}} on {{object.name}} ({{object.profile_name}})<h1>
     {% if display_box %}
+        <h1>Script {{script}} on {{object.name}} ({{object.profile_name}})<h1>
         <div class="module">
             <table width="100%">
                 <caption>Script result</caption>

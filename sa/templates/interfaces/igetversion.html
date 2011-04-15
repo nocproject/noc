@@ -1,0 +1,17 @@
+{% if result %}
+<h1>{{object.name}} ({{object.address}}) version</h1>
+
+<table border="0">
+    <tr><td><b>Object</b></td><td>{{object.name}}</td></tr>
+    <tr><td><b>Address</b></td><td>{{object.address}}</td></tr>
+    <tr><td><b>Profile</b></td><td>{{object.profile_name}}</td></tr>
+    <tr><td><b>Vendor</b></td><td>{{result.vendor}}</td></tr>
+    <tr><td><b>Platform</b></td><td>{{result.platform}}</td></tr>
+    <tr><td><b>Version</b></td><td>{{result.version}}</td></tr>
+    {% if result.image %}
+        <tr><td><b>Image</b></td><td>{{result.image}}</td></tr>
+    {% endif %}
+</table>
+{% else %}
+No data!!!
+{% endif %}

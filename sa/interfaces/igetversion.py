@@ -14,3 +14,4 @@ class IGetVersion(Interface):
                                 "version" : StringParameter(),
                                 "image"   : StringParameter(required=False)
                                 })
+    template = "interfaces/igetversion.html"
