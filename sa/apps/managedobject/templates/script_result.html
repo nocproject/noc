@@ -3,11 +3,15 @@
 {%endblock%}
 <{% block content %}
 <h1>Script {{script}} on {{object.name}} ({{object.profile_name}})<h1>
-<div class="module">
-    <table width="100%">
-        <caption>Script result</caption>
-        <tr><td><pre>{{result}}</pre></td></tr>
-    </table>
-</div>
+    {% if display_box %}
+        <div class="module">
+            <table width="100%">
+                <caption>Script result</caption>
+                <tr><td><pre>{{result}}</pre></td></tr>
+            </table>
+        </div>
+    {% else %}
+        {{result}}
+    {% endif %}
 {%endblock%}
 
