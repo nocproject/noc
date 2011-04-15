@@ -1,0 +1,14 @@
+{% load adminmedia %}
+{% if result %}
+<table border="0">
+    <caption>{{object.name}} ({{object.address}}) interfaces status</caption>
+    {% for r in result %}
+        <tr class="{%cycle 'row1' 'row2'%}">
+            <td>{{r.interface}}</td>
+            <td><img src="{% admin_media_prefix %}img/admin/icon-{% if r.status %}yes{%else%}no{%endif%}.gif" /></td>
+        </tr>
+    {% endfor %}
+</table>
+{% else %}
+No data!!!
+{% endif %}

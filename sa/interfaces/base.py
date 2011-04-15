@@ -972,12 +972,15 @@ class InterfaceBase(type):
 ##
 class Interface(object):
     __metaclass__ = InterfaceBase
+    
+    template = None  # Relative template path in sa/templates/
+    
     ##
     ## Generator returning (parameter name, parameter instance) pairs
     ##
     def gen_parameters(self):
         for n, p in self.__class__.__dict__.items():
-            if issubclass(p.__class__, Parameter) and n != "returns":
+            if issubclass(p.__class__, Parameter) and n not in ("returns", "template"):
                 yield (n, p)
     ##
     ## Clean up all parameters except "returns"
@@ -1030,6 +1033,12 @@ class Interface(object):
         except AttributeError:
             return result
         return rp.script_clean_result(__profile, result)
+    
+    ##
+    ## Clean result to render via template
+    ##
+    def template_clean_result(self, __profile, result):
+        return result
     
     ##
     def requires_input(self):

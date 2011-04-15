@@ -2,11 +2,28 @@
 {% block breadcrumbs %}{{block.super}}<li>{{object.name}}</li><li>Scripts</li>{% endblock %}
 <{% block content %}
 <h1>Scripts for {{object.name}} ({{object.profile_name}})</h1>
+<style>
+.fcol {
+    width: 30px;
+}
+</style>
 <div class="module">
     <table width="100%">
         <caption>Select script</caption>
-        {% for s in scripts %}
-            <TR class="{%cycle 'row1' 'row2'%}"><TD><A HREF="{% url sa:managedobject:script object.id s.0%}">{{s.1}}</A></TD></TR>
+        {% for s, n, has_html in scripts %}
+            <TR class="{%cycle 'row1' 'row2'%}">
+                <TD>
+                    <A HREF="{% if has_html %}{% url sa:managedobject:script object.id s 'HTML'%}{% else %}{% url sa:managedobject:script object.id s 'RAW'%}{% endif %}">{{n}}</A>
+                </TD>
+                <TD CLASS="fcol">
+                    <A HREF="{% url sa:managedobject:script object.id s 'RAW' %}">RAW</A>
+                </TD>
+                <TD CLASS="fcol">
+                    {% if has_html %}
+                        <A HREF="{% url sa:managedobject:script object.id s 'HTML'%}">HTML</A>
+                    {% endif %}
+                </TD>
+            </TR>
         {% endfor %}
     </table>
 </div>

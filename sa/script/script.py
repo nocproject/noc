@@ -215,6 +215,8 @@ class Script(threading.Thread):
     # For common scripts - empty list
     # For generics - list of pairs (script_name, interface)
     requires=[]
+    #
+    template = None  # Relative template path in sa/templates/
     # Constants
     TELNET=TELNET
     SSH=SSH
@@ -291,6 +293,30 @@ class Script(threading.Thread):
                 ("ts", datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))]:
                 self.log_cli_sessions_path=self.log_cli_sessions_path.replace("{{%s}}"%k, v)
             self.cli_debug("IP: %s SCRIPT: %s"%(self.access_profile.address, self.name),"!")
+    
+    @classmethod
+    def template_clean_result(cls, result):
+        """
+        Clean result to render template
+        """
+        if self.implements:
+            return cls.implements[0].template_clean_result(cls.profile, result)
+        else:
+            return result
+    
+    @classmethod
+    def get_template(cls):
+        """
+        Get template path.
+        
+        :return: Template path or None
+        :rtype: String or None
+        """
+        if cls.template:
+            return template
+        if cls.implements and cls.implements[0].template:
+            return cls.implements[0].template
+        return None
     
     ##
     ## Compile arguments into version check function
