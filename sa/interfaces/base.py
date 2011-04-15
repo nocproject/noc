@@ -2,17 +2,17 @@
 ##----------------------------------------------------------------------
 ## Abstract script interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-## Python modukes
+## Python modules
 import re
 import types
 import datetime
 ## NOC Modules
-from noc.lib.text import list_to_ranges,ranges_to_list,list_to_ranges
+from noc.lib.text import list_to_ranges, ranges_to_list, list_to_ranges
 from noc.lib.ip import IPv6
 from noc.lib.validators import *
 
@@ -22,60 +22,97 @@ try:
 except ImportError:
     # No django. Interface.get_form() is meaningless
     pass
-##
-##
-##
-class InterfaceTypeError(Exception): pass
-##
-## Abstract parameter
-##
+
+
+class InterfaceTypeError(Exception):
+    pass
+
+
 class Parameter(object):
-    def __init__(self,required=True,default=None):
-        self.required=required
-        self.default=None
+    """
+    Abstract parameter
+    """
+    def __init__(self, required=True, default=None):
+        self.required = required
+        self.default = None
         if default is not None:
-            self.default=self.clean(default)
-    ##
-    ## Returns ORParameter
-    ##
-    def __or__(self,other):
-        return ORParameter(self,other)
-    ##
-    ##
-    ##
-    def raise_error(self,value,msg=""):
-        raise InterfaceTypeError("%s: %s. %s"%(self.__class__.__name__,repr(value),msg))
-    ##
-    ## Perform input parameter normalization
-    ##
-    def clean(self,value):
+            self.default = self.clean(default)
+    
+    def __or__(self, other):
+        """ORParameter syntax sugar"""
+        return ORParameter(self, other)
+    
+    def raise_error(self, value, msg=""):
+        """Raise InterfaceTypeError
+        
+        :param value: Value where error detected
+        :type value: Arbitrary python type
+        :param msg: Optional message
+        :type msg: String
+        :raises InterfaceTypeError
+        """
+        raise InterfaceTypeError("%s: %s. %s" % (self.__class__.__name__,
+                                                 repr(value), msg))
+    
+    def clean(self, value):
+        """
+        Input parameter normalization
+        
+        :param value: Input parameter
+        :type value: Arbitrary python type
+        :return: Normalized value
+        """
         return value
-    ##
-    ## Clean up script input parameters.
-    ## Call .clean() by default
-    ##
-    def script_clean_input(self,profile,value):
+    
+    def script_clean_input(self, profile, value):
+        """
+        Clean up script input parameters. Can be overloaded to
+        handle profile specific.
+        
+        :param profile: Profile
+        :type profile: Profile instance
+        :param value: Input parameter
+        :type value: Arbitrary python type
+        :return: Normalized value
+        """
         return self.clean(value)
-    ##
-    ## Clean up script result
-    ## Call .clean() by default
-    def script_clean_result(self,profile,value):
+    
+    def script_clean_result(self, profile, value):
+        """
+        Clean up script result parameters. Can be overloaded to
+        handle profile specific.
+        
+        :param profile: Profile
+        :type profile: Profile instance
+        :param value: Input parameter
+        :type value: Arbitrary python type
+        :return: Normalized value
+        """
         return self.clean(value)
-    ##
-    ## Perform input parameter normalization for form fields
-    ##
-    def form_clean(self,value):
+    
+    def form_clean(self, value):
+        """
+        Clean up form field
+        
+        :param value: Input parameter
+        :type value: Arbitrary python type
+        :return: Normalized value
+        """
         if not value and not self.required:
             return self.default if self.default else None
         try:
             return self.clean(value)
-        except InterfaceTypeError,why:
+        except InterfaceTypeError, why:
             raise forms.ValidationError(why)
-    ##
-    ## Returns an form field object
-    ##
-    def get_form_field(self,label=None):
-        return forms.CharField(required=self.required,initial=self.default,label=label)
+    
+    def get_form_field(self, label=None):
+        """
+        Get appropriative form field
+        """
+        return forms.CharField(required=self.required,
+                               initial=self.default, label=label)
+    
+
 ##
 ##
 ##
@@ -107,31 +144,31 @@ class ORParameter(Parameter):
         ...
     InterfaceTypeError: IPv4Parameter: None.
     """
-    def __init__(self,left,right):
-        super(ORParameter,self).__init__()
-        self.left=left
-        self.right=right
-        self.required=self.left.required or self.right.required
+    def __init__(self, left, right):
+        super(ORParameter, self).__init__()
+        self.left = left
+        self.right = right
+        self.required = self.left.required or self.right.required
         
-    def clean(self,value):
-        if value is None and self.required==False:
+    def clean(self, value):
+        if value is None and self.required == False:
             return None
         try:
             return self.left.clean(value)
         except InterfaceTypeError:
             return self.right.clean(value)
         
-    def script_clean_input(self,profile,value):
+    def script_clean_input(self, profile, value):
         try:
-            return self.left.script_clean_input(profile,value)
+            return self.left.script_clean_input(profile, value)
         except InterfaceTypeError:
-            return self.right.script_clean_input(profile,value)
+            return self.right.script_clean_input(profile, value)
         
-    def script_clean_result(self,profile,value):
+    def script_clean_result(self, profile, value):
         try:
-            return self.left.script_clean_result(profile,value)
+            return self.left.script_clean_result(profile, value)
         except InterfaceTypeError:
-            return self.right.script_clean_result(profile,value)
+            return self.right.script_clean_result(profile, value)
 ##
 ##
 ##
@@ -143,9 +180,9 @@ class NoneParameter(Parameter):
         ...
     InterfaceTypeError: NoneParameter: 'None'
     """
-    def __init__(self,required=True):
-        super(NoneParameter,self).__init__(required=required)
-    def clean(self,value):
+    def __init__(self, required=True):
+        super(NoneParameter, self).__init__(required=required)
+    def clean(self, value):
         if value is not None:
             self.raise_error(value)
         return value
@@ -171,15 +208,16 @@ class StringParameter(Parameter):
     ...
     InterfaceTypeError: StringParameter: '3'.
     """
-    def __init__(self,required=True,default=None,choices=None):
-        self.choices=choices
-        super(StringParameter,self).__init__(required=required,default=default)
-        
-    def clean(self,value):
+    def __init__(self, required=True, default=None, choices=None):
+        self.choices = choices
+        super(StringParameter, self).__init__(required=required,
+                                              default=default)
+    
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
         try:
-            value=str(value)
+            value = str(value)
         except:
             self.raise_error(value)
         if self.choices and value not in self.choices:
@@ -205,14 +243,15 @@ class REStringParameter(StringParameter):
     >>> REStringParameter("ex+p",default="exxp").clean(None)
     'exxp'
     """
-    def __init__(self,regexp,required=True,default=None):
-        self.rx=re.compile(regexp) # Compile before calling the constructor
-        super(REStringParameter,self).__init__(required=required,default=default)
-
-    def clean(self,value):
+    def __init__(self, regexp, required=True, default=None):
+        self.rx = re.compile(regexp)  # Compile before calling the constructor
+        super(REStringParameter, self).__init__(required=required,
+                                                default=default)
+    
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v=super(REStringParameter,self).clean(value)
+        v = super(REStringParameter, self).clean(value)
         if not self.rx.search(v):
             self.raise_error(value)
         return v
@@ -242,19 +281,20 @@ class BooleanParameter(Parameter):
     >>> BooleanParameter(default=True).clean(None)
     True
     """
-    def clean(self,value):
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value)==types.BooleanType:
+        if type(value) == types.BooleanType:
             return value
-        if type(value) in [types.IntType,types.LongType]:
-            return value!=0
-        if type(value) in [types.StringType,types.UnicodeType]:
-            return value.lower() in ["true","t","yes","y"]
+        if type(value) in (types.IntType, types.LongType):
+            return value != 0
+        if type(value) in (types.StringType, types.UnicodeType):
+            return value.lower() in ("true", "t", "yes", "y")
         self.raise_error(value)
     ##
-    def get_form_field(self,label=None):
-        return forms.BooleanField(required=self.required,initial=self.default,label=label)
+    def get_form_field(self, label=None):
+        return forms.BooleanField(required=self.required,
+                                  initial=self.default, label=label)
     
 ##
 ##
@@ -286,26 +326,28 @@ class IntParameter(Parameter):
         ...
     InterfaceTypeError: IntParameter: 15
     """
-    def __init__(self,required=True,default=None,min_value=None,max_value=None):
-        self.min_value=min_value
-        self.max_value=max_value
-        super(IntParameter,self).__init__(required=required,default=default)
+    def __init__(self, required=True, default=None,
+                 min_value=None, max_value=None):
+        self.min_value = min_value
+        self.max_value = max_value
+        super(IntParameter, self).__init__(required=required, default=default)
         
-    def clean(self,value):
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
         try:
-            i=int(value)
+            i = int(value)
         except:
             self.raise_error(value)
-        if (self.min_value is not None and i<self.min_value) or (self.max_value is not None and i>self.max_value):
+        if ((self.min_value is not None and i < self.min_value)
+                or (self.max_value is not None and i > self.max_value)):
             self.raise_error(value)
         return i
 ##
 ##
 ##
 class ListParameter(Parameter):
-    def clean(self,value):
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
         try:
@@ -313,9 +355,9 @@ class ListParameter(Parameter):
         except:
             self.raise_error(value)
     
-    def form_clean(self,value):
+    def form_clean(self, value):
         try:
-            return self.clean(eval(value,{},{}))
+            return self.clean(eval(value, {}, {}))
         except:
             self.raise_error(value)
 ##
@@ -341,21 +383,23 @@ class InstanceOfParameter(Parameter):
     ...
     InterfaceTypeError: InstanceOfParameter: 1
     """
-    def __init__(self,cls,required=True,default=None):
-        super(InstanceOfParameter,self).__init__(required=required,default=default)
-        self.cls=cls
-        if isinstance(cls,basestring):
-            self.is_valid=self.is_valid_classname
+    def __init__(self, cls, required=True, default=None):
+        super(InstanceOfParameter, self).__init__(required=required,
+                                                  default=default)
+        self.cls = cls
+        if isinstance(cls, basestring):
+            self.is_valid = self.is_valid_classname
         else:
-            self.is_valid=self.is_valid_instance
+            self.is_valid = self.is_valid_instance
     
-    def is_valid_instance(self,value):
-        return isinstance(value,self.cls)
+    def is_valid_instance(self, value):
+        return isinstance(value, self.cls)
     
-    def is_valid_classname(self,value):
-        return hasattr(value,"__class__") and value.__class__.__name__==self.cls
-        
-    def clean(self,value):
+    def is_valid_classname(self, value):
+        return (hasattr(value, "__class__")
+                and value.__class__.__name__ == self.cls)
+    
+    def clean(self, value):
         if value is None:
             if self.default is not None:
                 return self.default
@@ -367,6 +411,8 @@ class InstanceOfParameter(Parameter):
         except:
             pass
         self.raise_error(value)
+    
+
 ##
 ##
 ##
@@ -394,32 +440,33 @@ class SubclassOfParameter(Parameter):
     InterfaceTypeError: SubclassOfParameter: <class base.C3>
     >>> SubclassOfParameter(cls="C",required=False).clean(None)
     """
-    def __init__(self,cls,required=True,default=None):
-        super(SubclassOfParameter,self).__init__(required=required,default=default)
-        self.cls=cls
-        if isinstance(cls,basestring):
-            self.is_valid=self.is_valid_classname
+    def __init__(self, cls, required=True, default=None):
+        super(SubclassOfParameter, self).__init__(required=required,
+                                                  default=default)
+        self.cls = cls
+        if isinstance(cls, basestring):
+            self.is_valid = self.is_valid_classname
         else:
-            self.is_valid=self.is_valid_class
+            self.is_valid = self.is_valid_class
     
-    def is_valid_classname(self,value):
-        def check_name(c,name):
+    def is_valid_classname(self, value):
+        def check_name(c, name):
             # Check class name
-            if c.__name__==name:
+            if c.__name__ == name:
                 return True
             # Check base classes name
             for bc in c.__bases__:
-                if check_name(bc,name):
+                if check_name(bc, name):
                     return True
             #
             return False
         
-        return check_name(value,self.cls)
+        return check_name(value, self.cls)
     
-    def is_valid_class(self,value):
-        return issubclass(value,self.cls)
+    def is_valid_class(self, value):
+        return issubclass(value, self.cls)
     
-    def clean(self,value):
+    def clean(self, value):
         if value is None:
             if self.default is not None:
                 return self.default
@@ -431,7 +478,8 @@ class SubclassOfParameter(Parameter):
         except:
             pass
         self.raise_error(value)
-        
+    
+
 ##
 ##
 ##
@@ -452,27 +500,29 @@ class ListOfParameter(ListParameter):
     >>> ListOfParameter(element=StringParameter(),default=[1,2,3]).clean(None)
     ['1', '2', '3']
     """
-    def __init__(self,element,required=True,default=None):
-        self.element=element
-        super(ListOfParameter,self).__init__(required=required,default=default)
-        
-    def clean(self,value):
+    def __init__(self, element, required=True, default=None):
+        self.element = element
+        super(ListOfParameter, self).__init__(required=required,
+                                              default=default)
+    
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v=super(ListOfParameter,self).clean(value)
+        v = super(ListOfParameter, self).clean(value)
         return [self.element.clean(x) for x in v]
-        
-    def script_clean_input(self,profile,value):
+    
+    def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        v=super(ListOfParameter,self).script_clean_input(profile,value)
-        return [self.element.script_clean_input(profile,x) for x in v]
-
-    def script_clean_result(self,profile,value):
+        v = super(ListOfParameter, self).script_clean_input(profile, value)
+        return [self.element.script_clean_input(profile, x) for x in v]
+    
+    def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        v=super(ListOfParameter,self).script_clean_result(profile,value)
-        return [self.element.script_clean_result(profile,x) for x in v]
+        v = super(ListOfParameter, self).script_clean_result(profile, value)
+        return [self.element.script_clean_result(profile, x) for x in v]
+    
 
 ##
 ##
@@ -484,8 +534,11 @@ class StringListParameter(ListOfParameter):
     >>> StringListParameter().clean(["1",2,"3"])
     ['1', '2', '3']
     """
-    def __init__(self,required=True,default=None):
-        super(StringListParameter,self).__init__(element=StringParameter(),required=required,default=default)
+    def __init__(self, required=True, default=None):
+        super(StringListParameter, self).__init__(element=StringParameter(),
+                                           required=required, default=default)
+    
+
 ##
 ##
 ##
@@ -498,76 +551,80 @@ class DictParameter(Parameter):
         ...
     InterfaceTypeError: DictParameter: {'i': '10', 'x': 'ten'}
     """
-    def __init__(self,required=True,default=None,attrs=None):
-        super(DictParameter,self).__init__(required=required,default=default)
-        self.attrs=attrs
-    def clean(self,value):
+    def __init__(self, required=True, default=None, attrs=None):
+        super(DictParameter, self).__init__(required=required, default=default)
+        self.attrs = attrs
+    
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value)!=types.DictType:
+        if type(value) != types.DictType:
             self.raise_error(value)
         if not self.attrs:
             return value
-        in_value=value.copy()
-        out_value={}
-        for a_name,attr in self.attrs.items():
+        in_value = value.copy()
+        out_value = {}
+        for a_name, attr in self.attrs.items():
             if a_name not in in_value and attr.required:
                 if attr.default:
-                    out_value[a_name]=attr.default
+                    out_value[a_name] = attr.default
                 else:
-                    self.raise_error(value,"Attribute '%s' is required in %s"%(a_name,in_value))
+                    self.raise_error(value,
+                                     "Attribute '%s' is required in %s" % (a_name, in_value))
             if a_name in in_value:
                 try:
-                    out_value[a_name]=attr.clean(in_value[a_name])
+                    out_value[a_name] = attr.clean(in_value[a_name])
                 except InterfaceTypeError, why:
-                    self.raise_error(value,"Invalid value for '%s': %s"%(a_name,why))
+                    self.raise_error(value,
+                                     "Invalid value for '%s': %s" % (a_name, why))
                 del in_value[a_name]
-        for k,v in in_value.items():
-            out_value[k]=v
+        for k, v in in_value.items():
+            out_value[k] = v
         return out_value
-        
-    def script_clean_input(self,profile,value):
+    
+    def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value)!=types.DictType:
+        if type(value) != types.DictType:
             self.raise_error(value)
         if not self.attrs:
             return value
-        in_value=value.copy()
-        out_value={}
-        for a_name,attr in self.attrs.items():
+        in_value = value.copy()
+        out_value = {}
+        for a_name, attr in self.attrs.items():
             if a_name not in in_value and attr.required:
-                self.raise_error(value,"Attribute '%s' required"%a_name)
+                self.raise_error(value, "Attribute '%s' required" % a_name)
             if a_name in in_value:
                 try:
-                    out_value[a_name]=attr.script_clean_input(profile,in_value[a_name])
+                    out_value[a_name] = attr.script_clean_input(profile, in_value[a_name])
                 except InterfaceTypeError:
-                    self.raise_error(value,"Invalid value for '%s'"%a_name)
+                    self.raise_error(value, "Invalid value for '%s'" % a_name)
                 del in_value[a_name]
-        for k,v in in_value.items():
-            out_value[k]=v
+        for k, v in in_value.items():
+            out_value[k] = v
         return out_value
-        
-    def script_clean_result(self,profile,value):
+    
+    def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value)!=types.DictType:
+        if type(value) != types.DictType:
             self.raise_error(value)
         if not self.attrs:
             return value
-        in_value=value.copy()
-        out_value={}
-        for a_name,attr in self.attrs.items():
+        in_value = value.copy()
+        out_value = {}
+        for a_name, attr in self.attrs.items():
             if a_name not in in_value and attr.required:
-                self.raise_error(value,"Attribute '%s' required"%a_name)
+                self.raise_error(value, "Attribute '%s' required" % a_name)
             if a_name in in_value:
                 try:
-                    out_value[a_name]=attr.script_clean_result(profile,in_value[a_name])
-                except InterfaceTypeError,why:
-                    self.raise_error(value,"Invalid value for '%s': %s"%(a_name,str(why)))
+                    out_value[a_name] = attr.script_clean_result(profile,
+                                                             in_value[a_name])
+                except InterfaceTypeError, why:
+                    self.raise_error(value, "Invalid value for '%s': %s" % (a_name, str(why)))
                 del in_value[a_name]
-        for k,v in in_value.items():
-            out_value[k]=v
+        for k, v in in_value.items():
+            out_value[k] = v
         return out_value
 
 ##
@@ -580,24 +637,27 @@ class DictListParameter(ListOfParameter):
     >>> DictListParameter(attrs={"i":IntParameter(),"s":StringParameter()}).clean([{"i":10,"s":"ten"},{"i":"5","s":"five"}])
     [{'i': 10, 's': 'ten'}, {'i': 5, 's': 'five'}]
     """
-    def __init__(self,required=True,default=None,attrs=None):
-        super(DictListParameter,self).__init__(element=DictParameter(attrs=attrs),required=required,default=default)
+    def __init__(self, required=True, default=None, attrs=None):
+        super(DictListParameter, self).__init__(element=DictParameter(attrs=attrs),
+                                           required=required, default=default)
 
 ##
 ##
 ##
-rx_datetime=re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
+rx_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$")
 class DateTimeParameter(StringParameter):
-    def clean(self,value):
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if isinstance(value,datetime.datetime):
+        if isinstance(value, datetime.datetime):
             return value.isoformat()
-        if value.lower()=="infinite":
-            return datetime.datetime(year=datetime.MAXYEAR,month=1,day=1)
+        if value.lower() == "infinite":
+            return datetime.datetime(year=datetime.MAXYEAR, month=1, day=1)
         if rx_datetime.match(value):
             return value
         self.raise_error(value)
+    
+
 ##
 ##
 ##
@@ -610,19 +670,21 @@ class IPv4Parameter(StringParameter):
         ...
     InterfaceTypeError: IPvParameter: '192.168.0.256'
     """
-    def clean(self,value):
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v=super(IPv4Parameter,self).clean(value)
-        X=v.split(".")
-        if len(X)!=4:
+        v = super(IPv4Parameter, self).clean(value)
+        X = v.split(".")
+        if len(X) != 4:
             self.raise_error(value)
         try:
-            if len([x for x in X if 0<=int(x)<=255])!=4:
+            if len([x for x in X if 0 <= int(x) <= 255]) != 4:
                 self.raise_error(value)
         except:
             self.raise_error(value)
         return v
+    
+
 ##
 ##
 ##
@@ -643,24 +705,24 @@ class IPv4PrefixParameter(StringParameter):
         ...
     InterfaceTypeError: IPv4PrefixParameter: '192.168.0.0/-5'
     """
-    def clean(self,value):
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v=super(IPv4PrefixParameter,self).clean(value)
+        v = super(IPv4PrefixParameter, self).clean(value)
         if "/" not in v:
             self.raise_error(value)
-        n,m=v.split("/",1)
+        n, m = v.split("/", 1)
         try:
-            m=int(m)
+            m = int(m)
         except:
             self.raise_error(value)
-        if m<0 or m>32:
+        if m < 0 or m > 32:
             self.raise_error(value)
-        X=n.split(".")
-        if len(X)!=4:
+        X = n.split(".")
+        if len(X) != 4:
             self.raise_error(value)
         try:
-            if len([x for x in X if 0<=int(x)<=255])!=4:
+            if len([x for x in X if 0 <= int(x) <= 255]) != 4:
                 self.raise_error(value)
         except:
             self.raise_error(value)
@@ -693,10 +755,10 @@ class IPv6Parameter(StringParameter):
     >>> IPv6Parameter().clean("2001:db8:0:7:0:0:0:1")
     '2001:db8:0:7::1'
     """
-    def clean(self,value):
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v=super(IPv6Parameter,self).clean(value)
+        v = super(IPv6Parameter, self).clean(value)
         if not is_ipv6(v):
             self.raise_error(value)
         return IPv6(v).normalized.address
@@ -727,25 +789,25 @@ class IPv6PrefixParameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        v=super(IPv6PrefixParameter,self).clean(value)
+        v = super(IPv6PrefixParameter, self).clean(value)
         if "/" not in v:
             self.raise_error(value)
-        n,m=v.split("/",1)
+        n, m = v.split("/", 1)
         try:
-            m=int(m)
+            m = int(m)
         except:
             self.raise_error(value)
-        if m<0 or m>128:
+        if m < 0 or m > 128:
             self.raise_error(value)
-        n=IPv6Parameter().clean(n)
-        return "%s/%d"%(n,m)
+        n = IPv6Parameter().clean(n)
+        return "%s/%d" % (n, m)
     
 
 ##
 ## IPv4/IPv6 parameter
 ##
 class IPParameter(StringParameter):
-    def clean(self,value):
+    def clean(self, value):
         """
         >>> IPParameter().clean("192.168.0.1")
         '192.168.0.1'
@@ -774,8 +836,10 @@ class VLANIDParameter(IntParameter):
         ...
     InterfaceTypeError: VLANIDParameter: 0
     """
-    def __init__(self,required=True,default=None):
-        super(VLANIDParameter,self).__init__(required=required,default=default,min_value=1,max_value=4095)
+    def __init__(self, required=True, default=None):
+        super(VLANIDParameter, self).__init__(required=required, default=default,
+                                              min_value=1, max_value=4095)
+    
 
 ##
 ##
@@ -787,19 +851,20 @@ class VLANIDListParameter(ListOfParameter):
     >>> VLANIDListParameter().clean([1,2,3])
     [1, 2, 3]
     """
-    def __init__(self,required=True,default=None):
-        super(VLANIDListParameter,self).__init__(element=VLANIDParameter(),required=required,default=default)
+    def __init__(self, required=True, default=None):
+        super(VLANIDListParameter, self).__init__(element=VLANIDParameter(),
+                                           required=required, default=default)
 
 ##
 ##
 ##
 class VLANIDMapParameter(StringParameter):
-    def clean(self,value):
+    def clean(self, value):
         """
         >>> VLANIDMapParameter().clean("1,2,5-10")
         '1-2,5-10'
         """
-        vp=VLANIDParameter()
+        vp = VLANIDParameter()
         try:
             return list_to_ranges([vp.clean(v) for v in ranges_to_list(value)])
         except SyntaxError:
@@ -807,11 +872,11 @@ class VLANIDMapParameter(StringParameter):
 ##
 ##
 ##
-rx_mac_address_cisco=re.compile(r"^[0-9A-F]{4}(?P<sep>[.\-])[0-9A-F]{4}(?P=sep)[0-9A-F]{4}$")
-rx_mac_address_cisco_media=re.compile("^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
-rx_mac_address_sixblock=re.compile("^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$")
-rx_mac_address_hp=re.compile("^[0-9A-F]{6}-[0-9A-F]{6}$")
-rx_mac_address_solid=re.compile(r"^[0-9a-f]{12}$", re.IGNORECASE)
+rx_mac_address_cisco = re.compile(r"^[0-9A-F]{4}(?P<sep>[.\-])[0-9A-F]{4}(?P=sep)[0-9A-F]{4}$")
+rx_mac_address_cisco_media = re.compile("^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
+rx_mac_address_sixblock = re.compile("^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$")
+rx_mac_address_hp = re.compile("^[0-9A-F]{6}-[0-9A-F]{6}$")
+rx_mac_address_solid = re.compile(r"^[0-9a-f]{12}$", re.IGNORECASE)
 class MACAddressParameter(StringParameter):
     """
     >>> MACAddressParameter().clean("1234.5678.9ABC")
@@ -847,136 +912,149 @@ class MACAddressParameter(StringParameter):
     >>> MACAddressParameter().clean("AABBCCDDEEFF")
     'AA:BB:CC:DD:EE:FF'
     """
-    def clean(self,value):
+    def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        value=super(MACAddressParameter,self).clean(value)
-        value=value.upper()
-        match=rx_mac_address_solid.match(value)
+        value = super(MACAddressParameter, self).clean(value)
+        value = value.upper()
+        match = rx_mac_address_solid.match(value)
         if match:
-            return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
-        match=rx_mac_address_cisco_media.match(value)
+            return "%s:%s:%s:%s:%s:%s" % (value[:2], value[2:4], value[4:6],
+                                          value[6:8], value[8:10], value[10:])
+        match = rx_mac_address_cisco_media.match(value)
         if match:
-            value=value.replace(".","")[2:]
-            return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
-        match=rx_mac_address_cisco.match(value)
+            value = value.replace(".", "")[2:]
+            return "%s:%s:%s:%s:%s:%s" % (value[:2], value[2:4], value[4:6],
+                                          value[6:8], value[8:10], value[10:])
+        match = rx_mac_address_cisco.match(value)
         if match:
-            value=value.replace(".","").replace("-","")
+            value = value.replace(".", "").replace("-", "")
         else:
-            match=rx_mac_address_hp.match(value)
+            match = rx_mac_address_hp.match(value)
             if match:
-                value=value.replace("-","")
+                value = value.replace("-", "")
             else:
-                value=value.replace("-",":")
-                match=rx_mac_address_sixblock.match(value)
+                value = value.replace("-", ":")
+                match = rx_mac_address_sixblock.match(value)
                 if not match:
                     self.raise_error(value)
-                value=""
-                for i in range(1,7):
-                    v=match.group(i)
-                    if len(v)==1:
-                        v="0"+v
-                    value+=v
-        return "%s:%s:%s:%s:%s:%s"%(value[:2],value[2:4],value[4:6],value[6:8],value[8:10],value[10:])
+                value = ""
+                for i in range(1, 7):
+                    v = match.group(i)
+                    if len(v) == 1:
+                        v = "0" + v
+                    value += v
+        return "%s:%s:%s:%s:%s:%s" % (value[:2], value[2:4], value[4:6],
+                                      value[6:8], value[8:10], value[10:])
+    
+
 ##
 class InterfaceNameParameter(StringParameter):
-    def script_clean_input(self,profile,value):
+    def script_clean_input(self, profile, value):
         return profile.convert_interface_name(value)
-        
-    def script_clean_result(self,profile,value):
-        return self.script_clean_input(profile,value)
-
+    
+    def script_clean_result(self, profile, value):
+        return self.script_clean_input(profile, value)
+    
 
 ## Stub for interface registry
-interface_registry={}
+interface_registry = {}
 
 class InterfaceBase(type):
-    def __new__(cls,name,bases,attrs):
-        m=type.__new__(cls,name,bases,attrs)
-        interface_registry[name]=m
+    def __new__(cls, name, bases, attrs):
+        m = type.__new__(cls, name, bases, attrs)
+        interface_registry[name] = m
         return m
+    
+
 ##
 ##
 ##
 class Interface(object):
-    __metaclass__=InterfaceBase
+    __metaclass__ = InterfaceBase
     ##
     ## Generator returning (parameter name, parameter instance) pairs
     ##
     def gen_parameters(self):
-        for n,p in self.__class__.__dict__.items():
-            if issubclass(p.__class__,Parameter) and n!="returns":
-                yield (n,p)
+        for n, p in self.__class__.__dict__.items():
+            if issubclass(p.__class__, Parameter) and n != "returns":
+                yield (n, p)
     ##
     ## Clean up all parameters except "returns"
     ##
-    def clean(self,__profile=None,**kwargs):
-        in_kwargs=kwargs.copy()
-        out_kwargs={}
-        for n,p in self.gen_parameters():
+    def clean(self, __profile=None, **kwargs):
+        in_kwargs = kwargs.copy()
+        out_kwargs = {}
+        for n, p in self.gen_parameters():
             if n not in in_kwargs and p.required:
                 if p.default is not None:
-                    out_kwargs[n]=p.default
+                    out_kwargs[n] = p.default
                 else:
-                    raise InterfaceTypeError("Parameter '%s' required"%n)
+                    raise InterfaceTypeError("Parameter '%s' required" % n)
             if n in in_kwargs:
                 if not (in_kwargs[n] is None and not p.required):
                     try:
                         if __profile:
-                            out_kwargs[n]=p.script_clean_input(__profile,in_kwargs[n])
+                            out_kwargs[n] = p.script_clean_input(__profile,
+                                                                 in_kwargs[n])
                         else:
-                            out_kwargs[n]=p.clean(in_kwargs[n])
-                    except InterfaceTypeError,why:
-                        raise InterfaceTypeError("Invalid value for '%s': %s"%(n,why))
+                            out_kwargs[n] = p.clean(in_kwargs[n])
+                    except InterfaceTypeError, why:
+                        raise InterfaceTypeError("Invalid value for '%s': %s" % (n, why))
                 del in_kwargs[n]
         # Copy other parameters
-        for k,v in in_kwargs.items():
-            if k!="__profile":
-                out_kwargs[k]=v
+        for k, v in in_kwargs.items():
+            if k != "__profile":
+                out_kwargs[k] = v
         return out_kwargs
+    
     ##
     ## Clean up returned result
     ##
-    def clean_result(self,result):
+    def clean_result(self, result):
         try:
-            rp=self.returns
+            rp = self.returns
         except AttributeError:
-            return result # No return result restriction
+            return result  # No return result restriction
         return rp.clean(result)
     ##
     ## Clean up script input
     ##
-    def script_clean_input(self,__profile,**kwargs):
-        return self.clean(__profile=__profile,**kwargs)
+    def script_clean_input(self, __profile, **kwargs):
+        return self.clean(__profile=__profile, **kwargs)
+    
     ##
-    def script_clean_result(self,__profile,result):
+    def script_clean_result(self, __profile, result):
         try:
-            rp=self.returns
+            rp = self.returns
         except AttributeError:
             return result
-        return rp.script_clean_result(__profile,result)
+        return rp.script_clean_result(__profile, result)
+    
     ##
     def requires_input(self):
-        for n,p in self.gen_parameters():
+        for n, p in self.gen_parameters():
             return True
         return False
-        
-    def get_form(self,data=None):
-        def get_clean_field_wrapper(form,name,param):
-            def clean_field_wrapper(form,name,param):
-                data=form.cleaned_data[name]
+    
+    def get_form(self, data=None):
+        def get_clean_field_wrapper(form, name, param):
+            def clean_field_wrapper(form, name, param):
+                data = form.cleaned_data[name]
                 if not param.required and not data:
                     return None
                 try:
                     return param.form_clean(data)
                 except InterfaceTypeError:
                     raise forms.ValidationError("Invalid value")
-            return lambda: clean_field_wrapper(form,name,param)
-        f=NOCForm(data)
-        for n,p in self.gen_parameters():
-            f.fields[n]=p.get_form_field(n)
-            setattr(f,"clean_%s"%n,get_clean_field_wrapper(f,n,p))
+            return lambda: clean_field_wrapper(form, name, param)
+        f = NOCForm(data)
+        for n, p in self.gen_parameters():
+            f.fields[n] = p.get_form_field(n)
+            setattr(f, "clean_%s" % n, get_clean_field_wrapper(f, n, p))
         return f
+    
+
 ##
 ## Module Test
 ##
