@@ -120,7 +120,7 @@ class AuditTrail(models.Model):
     class Meta:
         verbose_name="Audit Trail"
         verbose_name_plural="Audit Trail"
-        ordering=["timestamp"]
+        ordering=["-timestamp"]
     user=models.ForeignKey(User,verbose_name="User")
     timestamp=models.DateTimeField("Timestamp",auto_now=True)
     model=models.CharField("Model",max_length=128)
@@ -216,6 +216,7 @@ class Style(models.Model):
     class Meta:
         verbose_name="Style"
         verbose_name_plural="Styles"
+        ordering = ["name"]
     
     name=models.CharField("Name",max_length=64,unique=True)
     font_color=ColorField("Font Color",default=0)
@@ -336,6 +337,8 @@ class PyRule(models.Model):
     class Meta:
         verbose_name="pyRule"
         verbose_name_plural="pyRules"
+        ordering = ["name"]
+    
     name=models.CharField("Name",max_length=64,unique=True)
     interface=models.CharField("Interface",max_length=64,choices=[(i,i) for i in sorted(interface_registry)])
     description=models.TextField("Description")
@@ -992,6 +995,7 @@ if settings.IS_WEB:
 ##
 User._meta.get_field("username").max_length=User._meta.get_field("email").max_length
 User._meta.get_field("username").validators=[MaxLengthValidator(User._meta.get_field("username").max_length)]
+User._meta.ordering = ["username"]
 
 ##
 ## Search by tags

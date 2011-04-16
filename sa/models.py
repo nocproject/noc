@@ -47,6 +47,8 @@ class AdministrativeDomain(models.Model):
     class Meta:
         verbose_name=_("Administrative Domain")
         verbose_name_plural=_("Administrative Domains")
+        ordering = ["name"]
+    
     name=models.CharField(_("Name"),max_length=32,unique=True)
     description=models.TextField(_("Description"),null=True,blank=True)
     def __unicode__(self):
@@ -86,6 +88,7 @@ class ManagedObject(models.Model):
     class Meta:
         verbose_name=_("Managed Object")
         verbose_name_plural=_("Managed Objects")
+        ordering = ["name"]
     
     name=models.CharField(_("Name"),max_length=64,unique=True)
     is_managed=models.BooleanField(_("Is Managed?"),default=True)
@@ -463,6 +466,8 @@ class UserAccess(models.Model):
     class Meta:
         verbose_name=_("User Access")
         verbose_name_plural=_("User Access")
+        ordering = ["user"]  # @todo: sort by user__username
+    
     user=models.ForeignKey(User,verbose_name=_("User"))
     selector=models.ForeignKey(ManagedObjectSelector,verbose_name=_("Object Selector"))
     
@@ -496,6 +501,8 @@ class GroupAccess(models.Model):
     class Meta:
         verbose_name=_("Group Access")
         verbose_name_plural=_("Group Access")
+        ordering = ["group"]  # @todo: Sort by group__name
+    
     group=models.ForeignKey(Group,verbose_name=_("Group"))
     selector=models.ForeignKey(ManagedObjectSelector,verbose_name=_("Object Selector"))
     
@@ -711,6 +718,8 @@ class CommandSnippet(models.Model):
     class Meta:
         verbose_name = _("Command Snippet")
         verbose_name_plural = _("Command Snippets")
+        ordering = ["name"]
+    
     name = models.CharField(_("Name"), max_length = 128, unique = True)
     description = models.TextField(_("Description"))
     snippet = models.TextField(_("Snippet"),
