@@ -39,6 +39,7 @@ class VRFGroup(models.Model):
     class Meta:
         verbose_name=_("VRF Group")
         verbose_name_plural=_("VRF Groups")
+        ordering = ["name"]
     
     name=models.CharField(_("VRF Group"),unique=True,max_length=64,help_text=_("Unique VRF Group name"))
     address_constraint=models.CharField(_("Address Constraint"),max_length=1,
@@ -60,6 +61,7 @@ class VRF(models.Model):
     class Meta:
         verbose_name=_("VRF")
         verbose_name_plural=_("VRFs")
+        ordering = ["name"]
     
     name=models.CharField(_("VRF"),unique=True,max_length=64,
         help_text=_("Unique VRF Name"))
@@ -583,6 +585,7 @@ class PrefixAccess(models.Model):
         verbose_name=_("Prefix Access")
         verbose_name_plural=_("Prefix Access")
         unique_together=[("user","vrf","afi","prefix")]
+        ordering = ["user", "vrf", "afi", "prefix"]
     
     user=models.ForeignKey(User,verbose_name=_("User"))
     vrf=models.ForeignKey(VRF,verbose_name=_("VRF"))
