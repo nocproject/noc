@@ -13,7 +13,7 @@ import ConfigParser,os,re,pwd
 ##
 class ConfigApplication(Application):
     title="Configs"
-    CONFIGS=["noc.conf", "noc-launcher.conf", "noc-scheduler.py",
+    CONFIGS=["noc.conf", "noc-launcher.conf", "noc-scheduler.conf",
              "noc-fcgi.conf", "noc-sae.conf", "noc-activator.conf",
              "noc-classifier.conf", "noc-correlator.conf", "noc-notifier.conf"]
     ##
