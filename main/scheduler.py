@@ -56,7 +56,8 @@ class Scheduler(Daemon):
         """
         with self.running_lock:
             self.running.add(task.periodic_name)
-        threading.Thread(name=unicode(task), target=self.task_wrapper,
+        threading.Thread(name=unicode(task).encode("utf8"),
+                         target=self.task_wrapper,
                          kwargs={"task": task}).start()
     
     def task_wrapper(self, task):
