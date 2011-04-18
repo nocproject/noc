@@ -38,7 +38,10 @@ class Script(NOCScript):
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]]=s["status"]
 
-	if self.match_version(platform__contains="3526") or self.match_version(platform__contains="3510") or self.match_version(platform__contains="4612"):
+	if self.match_version(platform__contains="3526") or \
+	    self.match_version(platform__contains="3510") or \
+	    self.match_version(platform__contains="3528") or \
+	    self.match_version(platform__contains="4612"):
 	    cmd=self.cli("show interface switchport")
 	    for block in cmd.rstrip("\n\n").split("\n\n"):
 		matchint=self.rx_interface_3526.search(block)
