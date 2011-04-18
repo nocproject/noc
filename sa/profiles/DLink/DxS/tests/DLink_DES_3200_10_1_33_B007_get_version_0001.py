@@ -13,7 +13,10 @@ class DLink_DxS_get_version_Test(ScriptTestCase):
     platform='DES-3200-10'
     version='1.33.B007'
     input={}
-    result={'platform': 'DES-3200-10', 'vendor': 'DLink', 'version': '1.33.B007'}
+    result={'attributes': {'Boot PROM': '1.00.B004',
+                 'HW version': 'A1',
+                 'Serial Number': 'PVI31A8006348'},
+'platform': 'DES-3200-10', 'vendor': 'DLink', 'version': '1.33.B007'}
     motd=' \nD           \n                        DES-3200-10 Fast Ethernet Switch\n                             Command Line Interface\n\n                           Firmware: Build 1.33.B007\n           Copyright(C) 2010 D-Link Corporation. All rights reserved.\n'
     cli={
 ## 'show switch'

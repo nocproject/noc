@@ -13,7 +13,10 @@ class DLink_DxS_get_version_Test(ScriptTestCase):
    platform='DGS-3100-24TG'
    version='3.00.43'
    input={}
-   result={'platform': 'DGS-3100-24TG', 'vendor': 'DLink', 'version':
+   result={'attributes': {'Boot PROM': '1.0.1.04',
+                 'HW version': '04',
+                 'Serial Number': 'F3Q318C000636(unit'},
+'platform': 'DGS-3100-24TG', 'vendor': 'DLink', 'version':
 '3.00.43'}
    motd='******\n\n'
    cli={

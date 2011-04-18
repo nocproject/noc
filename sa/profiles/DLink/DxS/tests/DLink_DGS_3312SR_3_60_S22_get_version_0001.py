@@ -13,7 +13,8 @@ class DLink_DxS_get_version_Test(ScriptTestCase):
     platform='DGS-3312SR'
     version='3.60-S22'
     input={}
-    result={'platform': 'DGS-3312SR', 'vendor': 'DLink', 'version': '3.60-S22'}
+    result={'attributes': {'Boot PROM': '2.00.003', 'HW version': '0A2'},
+'platform': 'DGS-3312SR', 'vendor': 'DLink', 'version': '3.60-S22'}
     motd='******\n\n'
     cli={
 ## 'show switch'

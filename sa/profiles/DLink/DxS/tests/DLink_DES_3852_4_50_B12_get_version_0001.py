@@ -13,7 +13,8 @@ class DLink_DxS_get_version_Test(ScriptTestCase):
     platform='DES-3852'
     version='4.50.B12'
     input={}
-    result={'platform': 'DES-3852', 'vendor': 'DLink', 'version': '4.50.B12'}
+    result={'attributes': {'Boot PROM': '0.00.008', 'HW version': '1A1'},
+'platform': 'DES-3852', 'vendor': 'DLink', 'version': '4.50.B12'}
     motd='******\n\n'
     cli={
 ## 'show switch'
