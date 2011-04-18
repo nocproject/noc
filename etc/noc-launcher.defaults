@@ -18,6 +18,12 @@ user  = noc
 group =
 config = etc/noc-fcgi.conf
 
+[noc-scheduler]
+enabled = true
+user  = noc
+group =
+config = etc/noc-scheduler.conf
+
 [noc-sae]
 enabled = true
 user  = noc
