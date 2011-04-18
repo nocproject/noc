@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 from noc.settings import config
 import os,subprocess,datetime
 import logging
 from tagging.models import TaggedItem
 
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="main.cleanup"
     description="Obsolete data cleanup and system maintainance"
     

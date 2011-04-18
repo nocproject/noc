@@ -7,11 +7,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 import logging
 TIMEOUT=2000
 
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="peer.prefix_list_provisioning"
     description=""
     wait_for=["cm.prefix_list_pull"]

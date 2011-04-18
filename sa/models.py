@@ -26,7 +26,6 @@ from tagging.models import TaggedItem
 ## NOC modules
 from noc.main.models import PyRule
 from noc.sa.profiles import profile_registry
-from noc.sa.periodic import periodic_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.search import SearchResult
@@ -37,7 +36,6 @@ from noc.lib.validators import check_re
 ## Register objects
 ##
 profile_registry.register_all()
-periodic_registry.register_all()
 script_registry.register_all()
 scheme_choices=[(TELNET,"telnet"),(SSH,"ssh"),(HTTP,"http")]
 ##
@@ -293,45 +291,6 @@ class ManagedObjectAttribute(models.Model):
     
 
 ##
-##
-##
-class TaskSchedule(models.Model):
-    periodic_name=models.CharField(_("Periodic Task"),max_length=64,choices=periodic_registry.choices)
-    is_enabled=models.BooleanField(_("Enabled?"),default=False)
-    run_every=models.PositiveIntegerField(_("Run Every (secs)"),default=86400)
-    retries=models.PositiveIntegerField(_("Retries"),default=1)
-    retry_delay=models.PositiveIntegerField(_("Retry Delay (secs)"),default=60)
-    timeout=models.PositiveIntegerField(_("Timeout (secs)"),default=300)
-    next_run=models.DateTimeField(_("Next Run"),auto_now_add=True)
-    retries_left=models.PositiveIntegerField(_("Retries Left"),default=1)
-    
-    def __unicode__(self):
-        return self.periodic_name
-    
-    @property
-    def periodic_class(self):
-        return periodic_registry[self.periodic_name]
-    
-    @classmethod
-    def get_pending_tasks(cls,exclude=None):
-        if exclude:
-            TaskSchedule.objects.filter(next_run__lte=datetime.datetime.now(),is_enabled=True).exclude(id__in=exclude).order_by("-next_run")
-        else:
-            return TaskSchedule.objects.filter(next_run__lte=datetime.datetime.now(),is_enabled=True).order_by("-next_run")
-    ##
-    ## Reschedule an execution of task after specified time
-    ##
-    @classmethod
-    def reschedule(cls,periodic_name,days=0,minutes=0,seconds=0):
-        try:
-            t=cls.objects.get(periodic_name=periodic_name)
-            t.next_run=datetime.datetime.now()+datetime.timedelta(days=days,minutes=minutes,seconds=seconds)
-            t.save()
-        except TaskSchedule.DoesNotExist:
-            pass
-    
-
-##
 ## Object Selector
 ##
 class ManagedObjectSelector(models.Model):
@@ -578,6 +537,9 @@ class ReduceTask(models.Model):
     ##
     @classmethod
     def create_task(self,object_selector,reduce_script,reduce_script_params,map_script,map_script_params,timeout):
+        """
+        Create Map/Reduce task
+        """
         # Normalize map scripts to a list
         if type(map_script) in [types.ListType,types.TupleType]:
             # list of map scripts
@@ -607,6 +569,8 @@ class ReduceTask(models.Model):
             objects=object_selector
         elif isinstance(object_selector,ManagedObjectSelector):
             objects=object_selector.managed_objects
+        elif isinstance(object_selector, basestring):
+            objects=[ManagedObject.objects.get(name=object_selector)]
         else:
             objects=list(object_selector)
         # Resolve strings to managed objects, if returned by selector

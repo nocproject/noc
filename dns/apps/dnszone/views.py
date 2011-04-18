@@ -15,7 +15,7 @@ from django.utils.safestring import SafeString
 ## NOC modules
 from noc.lib.app import ModelApplication, HasPerm, view
 from noc.dns.models import DNSZone, DNSZoneRecord, DNSServer, DNSZoneProfile
-from noc.sa.models import TaskSchedule
+from noc.main.models import Schedule
 from noc.lib.validators import is_fqdn
 from noc.lib.app.site import site
 
@@ -141,7 +141,7 @@ class DNSZoneApplication(ModelApplication):
                     self.message_user(request, "No new zones found")
                 else:
                     # Trigger dns.update_domain_expiration to update paid_till
-                    TaskSchedule.reschedule("dns.update_domain_expiration",
+                    Schedule.reschedule("dns.update_domain_expiration",
                         minutes=10)
                     self.message_user(request, "%d new zones are imported" % n)
                 return self.response_redirect(self.base_url)

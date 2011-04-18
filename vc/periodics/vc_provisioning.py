@@ -7,12 +7,12 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 import time
 
 TIMEOUT=30
 CHECK_TIMEOUT=TIMEOUT/10
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="vc.vc_provisioning"
     description=""
     

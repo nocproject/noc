@@ -7,10 +7,10 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 import datetime,re,logging
 
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="dns.update_domain_expiration"
     description=""
     

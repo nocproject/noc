@@ -12,7 +12,7 @@ import datetime
 from django.contrib import admin
 ## NOC modules
 from noc.cm.repoapp import RepoApplication, HasPerm, ModelApplication, view
-from noc.sa.models import TaskSchedule
+from noc.main.models import Schedule
 from noc.cm.models import Config
 from noc.lib.app.site import site
 
@@ -47,7 +47,7 @@ class ConfigAdmin(admin.ModelAdmin):
             o.save()
             count+=1
         # Rechedule cm.config_pull
-        TaskSchedule.reschedule("cm.config_pull")
+        Schedule.reschedule("cm.config_pull")
         # Notify user
         if count==1:
             self.message_user(request,"1 config scheduled to immediate fetch")

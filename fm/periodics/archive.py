@@ -7,11 +7,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 import datetime,logging
 
 T_LIMIT=100
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="fm.archive"
     description=""
     

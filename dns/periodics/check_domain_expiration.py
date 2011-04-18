@@ -7,12 +7,12 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 from noc.settings import config
 from django.utils.dateformat import DateFormat
 import datetime
 
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="dns.check_domain_expiration"
     description=""
     

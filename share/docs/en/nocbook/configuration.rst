@@ -627,6 +627,29 @@ group
 ^^^^^
 Run noc-fcgi daemon with *group* credentials
 
+.. _noc-launcher-conf-noc-scheduler:
+
+[noc-scheduler] section
++++++++++++++++++++++++
+
+.. _noc-launcher-conf-noc-scheduler-enabled:
+
+enabled
+^^^^^^^
+true/false. Launch noc-scheduler daemon
+
+.. _noc-launcher-conf-noc-scheduler-user:
+
+user
+^^^^
+Run noc-scheduler daemon with *user* credentials
+
+.. _noc-launcher-conf-noc-scheduler-group:
+
+group
+^^^^^
+Run noc-scheduler daemon with *group* credentials
+
 .. _noc-launcher-conf-noc-sae:
 
 [noc-sae] section
@@ -841,6 +864,47 @@ Maximum requests processed by worker threads
 maxchildren
 ^^^^^^^^^^^
 Maximum worker threads
+
+.. _noc-scheduler-conf:
+
+noc-scheduler.conf
+------------------
+Scheduler daemon configuration.
+
+.. _noc-scheduler-conf-main:
+
+[main] section
+++++++++++++++
+
+.. _noc-scheduler-conf-main-logfile:
+
+logfile
+^^^^^^^
+Log file path
+
+.. _noc-scheduler-conf-main-loglevel:
+
+loglevel
+^^^^^^^^
+logging level. One of: debug, info, warning, error, critical
+
+.. _noc-scheduler-conf-main-logsize:
+
+logsize
+^^^^^^^
+Maximum log file size in bytes. 0 (default) means unlimited size
+
+.. _noc-scheduler-conf-main-logfiles:
+
+logfiles
+^^^^^^^^
+Keep *logfiles* backup copies of log file
+
+.. _noc-scheduler-conf-main-pidfile:
+
+pidfile
+^^^^^^^
+Pid file path
 
 .. _noc-sae-conf:
 
