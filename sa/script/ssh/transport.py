@@ -457,7 +457,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     ##
     ##
     def request_auth_keyboard_interactive(self):
-        self.send_auth("keyboard-interactive", NS("") + NS(""))
+        self.send_auth("keyboard-interactive", NS("") + NS("password"))
     
     ##
     ##
@@ -855,13 +855,13 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         name, instruction, lang, data = get_NS(packet, 3)
         n_prompts = struct.unpack('!L', data[:4])[0]
         data = data[4:]
-        prompts=[]
+        prompts = []
         for i in range(n_prompts):
-            s, data=get_NS(data, 1)
-            prompts+=[(s, bool(ord(data[0])))]
-            data=data[1:]
-        responses=[self.access_profile.password]
-        data=struct.pack("!L", len(responses))
+            s, data = get_NS(data, 1)
+            prompts += [(s, bool(ord(data[0])))]
+            data = data[1:]
+        responses = [self.access_profile.password]
+        data = struct.pack("!L", len(responses))
         for r in responses:
             data += NS(r.encode("utf8"))
         self.send_packet(MSG_USERAUTH_INFO_RESPONSE, data)
