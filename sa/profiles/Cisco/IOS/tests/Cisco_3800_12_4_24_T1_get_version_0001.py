@@ -13,7 +13,7 @@ class Cisco_IOS_get_version_Test(ScriptTestCase):
     platform='3800'
     version='12.4(24)T1'
     input={}
-    result={'image': 'C3845-ADVENTERPRISEK9-M',
+    result={'attributes': {'image': 'C3845-ADVENTERPRISEK9-M'},
  'platform': '3800',
  'vendor': 'Cisco',
  'version': '12.4(24)T1'}

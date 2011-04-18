@@ -13,11 +13,11 @@ class Cisco_IOS_get_version_Test(ScriptTestCase):
     platform='CBS31X0'
     version='12.2(55)SE'
     input={}
-    result={'image': 'CBS31X0-UNIVERSALK9-M',
+    result={'attributes': {'image': 'CBS31X0-UNIVERSALK9-M'},
  'platform': 'CBS31X0',
  'vendor': 'Cisco',
  'version': '12.2(55)SE'}
-    motd=' \nC\nThe system is a property of Innova Distribution LLC.\nPlease disconnect immediately if you are not authorized staff\n\n'
+    motd=' \nC\nThe system is a property of Acme Inc.\nPlease disconnect immediately if you are not authorized staff\n\n'
     cli={
 ## 'show version'
 'show version': """show version

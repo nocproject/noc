@@ -22,10 +22,12 @@ class Script(noc.sa.script.Script):
                 v=self.snmp.get("1.3.6.1.2.1.1.1.0") # sysDescr.0
                 match=rx_snmp_ver.search(v)
                 return {
-                    "vendor"    : "Cisco",
-                    "platform"  : match.group("platform"),
-                    "version"   : match.group("version"),
-                    "image"     : match.group("image"),
+                    "vendor"     : "Cisco",
+                    "platform"   : match.group("platform"),
+                    "version"    : match.group("version"),
+                    "attributes" : {
+                        "image"     : match.group("image"),
+                    }
                 }
             except self.snmp.TimeOutError:
                 pass
@@ -35,5 +37,7 @@ class Script(noc.sa.script.Script):
             "vendor"    : "Cisco",
             "platform"  : match.group("platform"),
             "version"   : match.group("version"),
-            "image"     : match.group("image"),
+            "attributes" : {
+                "image"     : match.group("image"),
+            }
         }

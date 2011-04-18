@@ -13,7 +13,7 @@ class Cisco_IOS_get_version_Test(ScriptTestCase):
     platform='C1900'
     version='15.0(1)M1'
     input={}
-    result={'image': 'C1900-UNIVERSALK9_NPE-M',
+    result={'attributes': {'image': 'C1900-UNIVERSALK9_NPE-M'},
  'platform': 'C1900',
  'vendor': 'Cisco',
  'version': '15.0(1)M1'}

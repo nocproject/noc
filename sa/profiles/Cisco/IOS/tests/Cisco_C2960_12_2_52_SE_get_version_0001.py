@@ -13,7 +13,7 @@ class Cisco_IOS_get_version_Test(ScriptTestCase):
     platform='C2960'
     version='12.2(52)SE'
     input={}
-    result={'image': 'C2960-LANBASEK9-M',
+    result={'attributes': {'image': 'C2960-LANBASEK9-M'},
  'platform': 'C2960',
  'vendor': 'Cisco',
  'version': '12.2(52)SE'}

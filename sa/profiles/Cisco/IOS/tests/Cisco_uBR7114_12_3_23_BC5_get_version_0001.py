@@ -13,7 +13,7 @@ class Cisco_IOS_get_version_Test(ScriptTestCase):
    platform='uBR7114'
    version='12.3(23)BC5'
    input={}
-   result={'image': 'UBR7100-IK8SU2-M',
+   result={'attributes': {'image': 'UBR7100-IK8SU2-M'},
 'platform': 'EGR',
 'vendor': 'Cisco',
 'version': '12.3(23)BC5'}

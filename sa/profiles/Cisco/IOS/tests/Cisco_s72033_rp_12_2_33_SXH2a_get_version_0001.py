@@ -13,7 +13,7 @@ class Cisco_IOS_get_version_Test(ScriptTestCase):
     platform='s72033_rp'
     version='12.2(33)SXH2a'
     input={}
-    result={'image': 's72033_rp-ADVENTERPRISEK9_WAN-M',
+    result={'attributes': {'image': 's72033_rp-ADVENTERPRISEK9_WAN-M'},
  'platform': 's72033_rp',
  'vendor': 'Cisco',
  'version': '12.2(33)SXH2a'}

@@ -13,7 +13,7 @@ class Cisco_IOS_get_version_Test(ScriptTestCase):
     platform='C3550'
     version='12.2(52)SE'
     input={}
-    result={'image': 'C3550-IPSERVICESK9-M',
+    result={'attributes': {'image': 'C3550-IPSERVICESK9-M'},
  'platform': 'C3550',
  'vendor': 'Cisco',
  'version': '12.2(52)SE'}

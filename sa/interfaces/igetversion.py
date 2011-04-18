@@ -12,6 +12,6 @@ class IGetVersion(Interface):
                                 "vendor"  : StringParameter(),
                                 "platform": StringParameter(),
                                 "version" : StringParameter(),
-                                "image"   : StringParameter(required=False)
+                                "attributes": DictParameter(required=False),
                                 })
     template = "interfaces/igetversion.html"
