@@ -117,6 +117,7 @@ class Scheduler(Daemon):
         transaction.enter_transaction_management()
         self.update_schedules()
         while True:
+            self.heartbeat()
             last_check = time.time()
             # Get tasks to run
             new_tasks = Schedule.get_tasks()
