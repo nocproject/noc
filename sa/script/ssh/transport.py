@@ -391,7 +391,8 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             self.debug("Authenticating with '%s' method"%m)
             getattr(self,"request_auth_%s"%m.replace("-", "_"))() # Request authentication method
         else:
-            self.send_disconnect(DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE, "No more authentication methods available")
+            self.send_disconnect(DISCONNECT_NO_MORE_AUTH_METHODS_AVAILABLE,
+                                 "No more authentication methods available")
     
     ##
     ##
@@ -457,7 +458,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     ##
     ##
     def request_auth_keyboard_interactive(self):
-        self.send_auth("keyboard-interactive", NS("") + NS("password"))
+        self.send_auth("keyboard-interactive", NS("") + NS(""))
     
     ##
     ##
@@ -860,7 +861,12 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
             s, data = get_NS(data, 1)
             prompts += [(s, bool(ord(data[0])))]
             data = data[1:]
-        responses = [self.access_profile.password]
+        self.debug("keyboard-interactive instruction: %s" % instruction)
+        self.debug("keyboard-interactive prompts: %s" % str(prompts))
+        if prompts:
+            responses = [self.access_profile.password]
+        else:
+            responses = []
         data = struct.pack("!L", len(responses))
         for r in responses:
             data += NS(r.encode("utf8"))
