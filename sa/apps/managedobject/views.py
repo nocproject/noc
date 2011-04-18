@@ -339,7 +339,7 @@ class ManagedObjectApplication(ModelApplication):
         # Format result
         display_box = True
         if isinstance(result, TaskFailed):
-            result = TaskFailed.msg
+            result = result.msg
         elif format == "RAW":
             result = pprint.pformat(result)
         elif format == "HTML":
