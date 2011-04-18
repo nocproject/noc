@@ -24,7 +24,9 @@ class Profile(NOCProfile):
     pattern_more=r"^ --More-- "
     command_more=" "
     pattern_syntax_error=r"% Invalid input detected at"
-    config_volatile=["^! Configuration script being generated on.*?^",r"^Please wait\.\.\."]
+    config_volatile=[r"^! Configuration script being generated on.*?^",
+                     r"^(Please wait\.\.\.)\n",
+                     r"^(\.+)\n"]
     rogue_chars=["\r","\x00","\x0d"]
     
     ##
