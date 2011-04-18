@@ -27,5 +27,7 @@ class Script(noc.sa.script.Script):
             "vendor"    : "Cisco",
             "platform"  : match.group("platform"),
             "version"   : match.group("version"),
-            "image"     : match.group("image"),
+            "attributes" : {
+                "image"     : match.group("image"),
+            }
         }

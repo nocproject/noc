@@ -13,7 +13,7 @@ class Cisco_IOS_get_version_Test(ScriptTestCase):
     platform='Catalyst 4500 L3 Switch'
     version='12.2(37)SG1'
     input={}
-    result={'image': 'cat4500-IPBASEK9-M',
+    result={'attributes': {'image': 'cat4500-IPBASEK9-M'},
  'platform': 'Catalyst 4500 L3 Switch',
  'vendor': 'Cisco',
  'version': '12.2(37)SG1'}

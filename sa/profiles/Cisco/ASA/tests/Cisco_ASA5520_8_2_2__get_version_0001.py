@@ -13,7 +13,7 @@ class Cisco_ASA_get_version_Test(ScriptTestCase):
     platform='ASA5520'
     version='8.2(2)'
     input={}
-    result={'image': 'asa822-k8.bin',
+    result={'attributes': {'image': 'asa822-k8.bin'},
  'platform': 'ASA5520',
  'vendor': 'Cisco',
  'version': '8.2(2)'}
