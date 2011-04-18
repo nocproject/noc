@@ -13,7 +13,10 @@ class DLink_DxS_get_version_Test(ScriptTestCase):
     platform='DGS-3426G'
     version='2.70.B54'
     input={}
-    result={'platform': 'DGS-3426G', 'vendor': 'DLink', 'version': '2.70.B54'}
+    result={'attributes': {'Boot PROM': '1.00-B13',
+                 'HW version': 'A1',
+                 'Serial Number': 'PV9G19A000085'},
+'platform': 'DGS-3426G', 'vendor': 'DLink', 'version': '2.70.B54'}
     motd='******\n\n'
     cli={
 ## 'show switch'

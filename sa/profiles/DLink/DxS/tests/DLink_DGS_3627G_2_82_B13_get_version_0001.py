@@ -13,7 +13,10 @@ class DLink_DxS_get_version_Test(ScriptTestCase):
    platform='DGS-3627G'
    version='2.82.B13'
    input={}
-   result={'platform': 'DGS-3627G', 'vendor': 'DLink', 'version': '2.82.B13'}
+   result={'attributes': {'Boot PROM': '1.10-B09',
+                 'HW version': 'A1',
+                 'Serial Number': 'P1JN1A7000427'},
+'platform': 'DGS-3627G', 'vendor': 'DLink', 'version': '2.82.B13'}
    motd='******\n\n'
    cli={
 ## 'show switch'

@@ -13,7 +13,10 @@ class DLink_DxS_get_version_Test(ScriptTestCase):
    platform='DES-3528'
    version='2.11.B020'
    input={}
-   result={'platform': 'DES-3528', 'vendor': 'DLink', 'version': '2.11.B020'}
+   result={'attributes': {'Boot PROM': '1.00.B007',
+                 'HW version': 'A1',
+                 'Serial Number': 'P1UM188000211'},
+'platform': 'DES-3528', 'vendor': 'DLink', 'version': '2.11.B020'}
    motd=' \n\n                        DES-3528 Fast Ethernet Switch\n Command Line Interface\n\n Firmware: Build 2.11.B020\n           Copyright(C) 2008 D-Link Corporation. All rights reserved.\n\n'
    cli={
 ## 'show switch'

@@ -13,7 +13,8 @@ class DLink_DxS_get_version_Test(ScriptTestCase):
     platform='DES-3526'
     version='6.00.B23'
     input={}
-    result={'platform': 'DES-3526', 'vendor': 'DLink', 'version': '6.00.B23'}
+    result={'attributes': {'Boot PROM': '5.00.009', 'HW version': 'A4G'},
+'platform': 'DES-3526', 'vendor': 'DLink', 'version': '6.00.B23'}
     motd=' \n\n\n**********\n* Logout *\n**********D           \n              DES-3526 Fast Ethernet Switch Command Line Interface\n\n                            Firmware: Build 6.00.B23\n            Copyright(C) 2008 D-Link Corporation. All rights reserved.\n\n'
     cli={
 ## 'show switch'
