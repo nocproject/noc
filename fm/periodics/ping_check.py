@@ -2,24 +2,39 @@
 ##----------------------------------------------------------------------
 ## Runs PING probe of all hosts
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
-import datetime,logging
+import noc.lib.periodic
 
-class Task(noc.sa.periodic.Task):
+def reduce_ping(task):
+    """Reduce script for ping_check"""
+    for mt in task.maptask_set.all():
+        if mt.status == "C":
+            return True
+    return False
+
+
+class Task(noc.lib.periodic.Task):
     name="fm.ping_check"
     description=""
+    default_timeout = 30
     
     def execute(self):
-        from noc.sa.models import Activator
+        from noc.sa.models import Activator, ReduceTask
         
+        # Look for addresses
+        params=[]
         for a in Activator.objects.filter(is_active=True):
-            objects=[o.trap_source_ip for o in a.managedobject_set.filter(trap_source_ip__isnull=False,is_managed=True)]
+            objects=[o.trap_source_ip for o in a.managedobject_set.filter(trap_source_ip__isnull=False, is_managed=True)]
             if objects:
-                self.sae.ping_check(a,objects)
+                params += [{"activator_name": a.name, "addresses": objects}]
+        # Run task
+        if params:
+            task = ReduceTask.create_task("SAE", reduce_ping, {},
+                ["ping_check"] * len(params), params, self.timeout - 1)
+            return task.get_result(block=True)
         return True
-
+    

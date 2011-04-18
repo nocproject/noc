@@ -7,11 +7,11 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 from django.db.models import Q
 import datetime
 
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="main.update_refbook"
     description=""
     

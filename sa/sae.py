@@ -19,7 +19,7 @@ import cPickle
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
-from noc.sa.models import Activator, ManagedObject, TaskSchedule, MapTask, periodic_registry, script_registry, profile_registry
+from noc.sa.models import Activator, ManagedObject, MapTask, script_registry, profile_registry
 from noc.fm.models import Event, EventData, EventPriority, EventClass, EventCategory, IgnoreEventRules
 from noc.sa.rpc import RPCSocket, file_hash, get_digest, get_nonce
 from noc.pm.models import TimeSeries
@@ -224,15 +224,11 @@ class SAE(Daemon):
         #
         self.sae_listener=None
         self.sae_ssl_listener=None
-        # Periodic tasks
-        self.active_periodic_tasks={}
-        self.periodic_task_lock=threading.Lock()
         #
         self.activator_manifest=None
         self.activator_manifest_files=None
         #
         t=time.time()
-        self.last_task_check=t
         self.last_crashinfo_check=t
         self.last_mrtask_check=t
         # Activator interface implementation
@@ -242,14 +238,6 @@ class SAE(Daemon):
         self.log_cli_sessions=False
         self.script_threads={}
         self.script_lock=threading.Lock()
-    ##
-    ## Create missed Task Schedules
-    ##
-    def update_task_schedules(self):
-        for pt in periodic_registry.classes:
-            if TaskSchedule.objects.filter(periodic_name=pt).count()==0:
-                logging.info("Creating task schedule for %s"%pt)
-                TaskSchedule(periodic_name=pt).save()
     ##
     ## Build activator manifest
     ##
@@ -273,7 +261,7 @@ class SAE(Daemon):
             cs=self.activator_manifest.files.add()
             cs.name=f
             cs.hash=file_hash(f)
-            
+    
     def start_listeners(self):
         # SAE Listener
         sae_listen=self.config.get("sae","listen")
@@ -326,7 +314,6 @@ class SAE(Daemon):
     ## Run SAE event loop
     ##
     def run(self):
-        self.update_task_schedules()
         self.build_manifest()
         self.start_listeners()
         self.factory.run(run_forever=True)
@@ -335,13 +322,6 @@ class SAE(Daemon):
     ##
     def tick(self):
         t=time.time()
-        if time.time()-self.last_task_check>=10:
-            with self.periodic_task_lock:
-                tasks = TaskSchedule.get_pending_tasks(exclude=self.active_periodic_tasks.keys())
-            self.last_task_check=t
-            if tasks:
-                for task in tasks:
-                    self.run_periodic_task(task)
         if t-self.last_crashinfo_check>=60:
             self.collect_crashinfo()
             self.last_crashinfo_check=time.time()
@@ -394,61 +374,6 @@ class SAE(Daemon):
             del data["ts"]
             self.write_event(data=data.items(),timestamp=datetime.datetime.fromtimestamp(ts))
             os.unlink(path)
-    ##
-    ## Periodic tasks
-    ##
-    def run_periodic_task(self,task):
-        # Check no wait_for task running
-        pc=task.periodic_class
-        if pc.wait_for:
-            with self.periodic_task_lock:
-                for t in self.active_periodic_tasks.values():
-                    if t.name in pc.wait_for:
-                        logging.info("Periodic task '%s' cannot be launched when '%s' is active"%(task.periodic_name,t.name))
-                        return
-        # Run task
-        logging.debug(u"New task running: %s"%unicode(task))
-        t=threading.Thread(name=task.periodic_name,target=self.periodic_wrapper,kwargs={"task":task})
-        with self.periodic_task_lock:
-            self.active_periodic_tasks[task.id]=t
-        t.start()
-    ##
-    ## Wrap periodic task handler and generate "periodic status"
-    ## events with completion status
-    ##
-    def periodic_wrapper(self,task):
-        logging.info(u"Periodic task=%s status=running"%unicode(task))
-        cwd=os.getcwd()
-        try:
-            status=task.periodic_class(sae=self, timeout=task.timeout).execute()
-        except:
-            error_report()
-            status=False
-        logging.info(u"Periodic task=%s status=%s"%(unicode(task),"completed" if status else "failed"))
-        if status:
-            timeout=task.run_every
-        else:
-            timeout=max(60,task.run_every/4)
-        task.next_run=datetime.datetime.now()+datetime.timedelta(seconds=timeout)
-        task.save()
-        with self.periodic_task_lock:
-            try:
-                del self.active_periodic_tasks[task.id]
-            except:
-                pass
-        # Write task complete status event
-        self.write_event([
-            ("source","system"),
-            ("type",  "periodic status"),
-            ("task",  unicode(task)),
-            ("status",{True:"success",False:"failure"}[status]),
-        ])
-        # Current path may be implicitly changed by periodic. Restore old value
-        # to prevent further bugs
-        new_cwd=os.getcwd()
-        if cwd!=new_cwd:
-            logging.error("CWD changed by periodic '%s' ('%s' -> '%s'). Restoring old cwd"%(unicode(task),cwd,new_cwd))
-            os.chdir(cwd)
 
     def on_stream_close(self,stream):
         self.streams.unregister(stream)
@@ -522,6 +447,7 @@ class SAE(Daemon):
     def ping_check(self,activator,addresses):
         def ping_check_callback(transaction,response=None,error=None):
             def save_probe_result(u,result):
+                # @todo: Make ManagedObject's method
                 mo=ManagedObject.objects.filter(activator=activator,trap_source_ip=u).order_by("id")
                 if len(mo)<1:
                     logging.error("Unknown object in ping_check: %s"%u)

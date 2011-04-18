@@ -5,9 +5,9 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="cm.prefix_list_pull"
     description=""
     wait_for=["peer.update_whois_cache","peer.prefix_list_provisioning"]

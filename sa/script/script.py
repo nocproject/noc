@@ -230,7 +230,7 @@ class Script(threading.Thread):
     #
     _execute_chain=[]
 
-    def __init__(self, profile, activator, access_profile, timeout=0, parent=None, **kwargs):
+    def __init__(self, profile, _activator, access_profile, timeout=0, parent=None, **kwargs):
         self.start_time=time.time()
         self.parent=parent
         self.access_profile=access_profile
@@ -257,8 +257,8 @@ class Script(threading.Thread):
                 except LookupError:
                     self.error("Unknown encoding: '%s'" % v)
         super(Script, self).__init__(name=self.debug_name, kwargs=kwargs)
-        self.activator=activator
-        self.servers=activator.servers
+        self.activator=_activator
+        self.servers=_activator.servers
         self.profile=profile
         self.cli_provider=None
         self.http=HTTPProvider(self)

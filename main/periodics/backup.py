@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Backup database,  repo and configs to main.backupdir
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -15,13 +15,13 @@ import datetime
 import re
 import logging
 ## NOC modules
-from noc.sa.periodic import Task as NOCTask
+from noc.lib.periodic import Task as PeriodicTask
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
 ##
 ## main.backup periodic task
 ##
-class Task(NOCTask):
+class Task(PeriodicTask):
     name="main.backup"
     description=""
     

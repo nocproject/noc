@@ -13,8 +13,9 @@ import ConfigParser,os,re,pwd
 ##
 class ConfigApplication(Application):
     title="Configs"
-    CONFIGS=["noc.conf","noc-launcher.conf","noc-fcgi.conf","noc-sae.conf","noc-activator.conf",
-        "noc-classifier.conf","noc-correlator.conf","noc-notifier.conf"]
+    CONFIGS=["noc.conf", "noc-launcher.conf", "noc-scheduler.py",
+             "noc-fcgi.conf", "noc-sae.conf", "noc-activator.conf",
+             "noc-classifier.conf", "noc-correlator.conf", "noc-notifier.conf"]
     ##
     ## Display config index
     ##

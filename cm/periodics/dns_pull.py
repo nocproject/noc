@@ -5,9 +5,9 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="cm.dns_pull"
     description=""
     wait_for=["cm.dns_push"]

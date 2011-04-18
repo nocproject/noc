@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.periodic
+import noc.lib.periodic
 import bisect
 
 def sync_macs_reduce(task,addresses):
@@ -54,7 +54,7 @@ def sync_macs_reduce(task,addresses):
         SystemNotification.notify("ip.sync_macs",subject="MAC Syncronization Report",body="\n".join(s))
 
 
-class Task(noc.sa.periodic.Task):
+class Task(noc.lib.periodic.Task):
     name="ip.sync_macs"
     description=""
     TIMEOUT=60
