@@ -31,6 +31,7 @@ change_link.allow_tags=True
 def reduce_get_now(task):
     from noc.lib.app import site
     import datetime
+    from noc.lib.dateutils import humanize_distance
     
     now = datetime.datetime.now()
     r = []
@@ -54,7 +55,10 @@ def reduce_get_now(task):
                 r1 = revs[1]
                 diff_link = site.reverse("cm:config:diff_rev",
                     mt.managed_object.config.id, "u", r1.revision, r0.revision)
-                diff_text = "Changes from %s to %s" % (r1.date, r0.date)
+                now = datetime.datetime.now()
+                diff_text = "Changes from %s to %s" % (
+                        humanize_distance(r1.date),
+                        humanize_distance(r0.date))
         r += [(mt.managed_object, mt.status == "C", cfg_link,
               diff_link, diff_text)]
     r = sorted(r, lambda x, y: cmp(x[0].name, y[0].name))
