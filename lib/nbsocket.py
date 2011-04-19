@@ -172,6 +172,8 @@ class Socket(object):
         self.start_time=time.time()
         self.last_read=self.start_time+100
         self.name=None
+        self.ttl=self.TTL
+        self.set_timeout(self.TTL)
         self.factory.register_socket(self)
     ##
     ## Performs actual socket creation
@@ -180,6 +182,15 @@ class Socket(object):
         if not self.socket_is_ready(): # Socket was not created
             raise SocketNotImplemented()
         self.socket.setblocking(0)
+    
+    ##
+    ##
+    ##
+    def set_timeout(self, ttl):
+        if ttl and ttl != self.ttl:
+            self.debug("Set timeout to %s secs" % ttl)
+            self.ttl = ttl
+    
     ##
     ## Returns True when socket created and ready for operation
     ##
@@ -243,10 +254,11 @@ class Socket(object):
     ##
     def update_status(self):
         self.last_read=time.time()
+    
     # Stale sockets detection.
     # Called by SocketFactory.close_stale to determine should socket be closed forcefully
     def is_stale(self):
-        return self.socket_is_ready() and self.TTL and time.time()-self.last_read>=self.TTL
+        return self.socket_is_ready() and self.ttl and time.time()-self.last_read>=self.ttl
 ##
 ## Abstract Protocol Parser.
 ## Accepts data via feed method, polupates internal buffer (self.in_buffer).

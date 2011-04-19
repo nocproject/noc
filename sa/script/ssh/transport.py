@@ -90,6 +90,7 @@ MSG_CHANNEL_DATA = 94
 MSG_CHANNEL_EXTENDED_DATA = 95
 MSG_CHANNEL_REQUEST = 98
 MSG_CHANNEL_SUCCESS = 99
+MSG_CHANNEL_FAILURE = 100
 
 DISCONNECT_HOST_NOT_ALLOWED_TO_CONNECT = 1
 DISCONNECT_PROTOCOL_ERROR = 2
@@ -166,6 +167,14 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.out_data_buffer=""
         ConnectedTCPSocket.__init__(self, self.script.activator.factory,
             self.script.access_profile.address, port)
+        if self.script.CLI_TIMEOUT:
+            ConnectedTCPSocket.set_timeout(self, self.script.CLI_TIMEOUT)
+    
+    ##
+    ##
+    ##
+    def dump_data(self, data):
+        return " ".join(["%02X"%ord(c) for c in data])
     
     ##
     ## Received data dispatcher
@@ -182,7 +191,9 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                 try:
                     h=self.SSH_MESSAGES[msg_type]
                 except KeyError:
-                    self.error("Uniplemented packet type: %d"%msg_type)
+                    self.error("Uniplemented packet type: %d (%s %s)" % (
+                                                msg_type, self.dump_data(p),
+                                                repr(p)))
                     self.send_uniplemented()
                     continue
                 self.debug("Receiving message type %s (%d)"%(msg_names[msg_type], msg_type))
@@ -228,7 +239,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     ##
     def is_stale(self):
         if self.get_state()=="PROMPT":
-            self.async_check_fsm() 
+            self.async_check_fsm()
         return ConnectedTCPSocket.is_stale(self)
     
     ##
@@ -910,6 +921,24 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.flush_data_buffer()
     
     ##
+    ## MSG_CHANNEL_REQUEST
+    ## Payload:
+    ##     uint32 channel_id
+    ##     string request type
+    ##     bool   want reply
+    ##
+    def ssh_CHANNEL_REQUEST(self, packet):
+        channel_id, = struct.unpack(">L", packet[:4]) # @todo: Check local channel id
+        request_type, rest = get_NS(packet[4:])
+        want_reply = bool(ord(rest[0]))
+        if not want_reply:
+            return
+        # Process keepalives
+        if request_type.startswith("keepalive@"):
+            self.send_packet(MSG_CHANNEL_FAILURE,
+                struct.pack(">2L", self.current_remote_channel, 0))
+    
+    ##
     ## MSG_CHANNEL_SUCCESS
     ##
     def ssh_CHANNEL_SUCCESS(self, packet):
@@ -978,6 +1007,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         MSG_CHANNEL_OPEN_CONFIRMATION : ssh_CHANNEL_OPEN_CONFIRMATION,
         MSG_CHANNEL_OPEN_FAILURE      : ssh_CHANNEL_OPEN_FAILURE,
         MSG_CHANNEL_WINDOW_ADJUST     : ssh_CHANNEL_WINDOW_ADJUST,
+        MSG_CHANNEL_REQUEST           : ssh_CHANNEL_REQUEST,
         MSG_CHANNEL_SUCCESS           : ssh_CHANNEL_SUCCESS,
     }
 
