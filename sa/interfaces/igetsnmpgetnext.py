@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## IGetSNMPGet
+## IGetSNMPGetNext
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
@@ -10,8 +10,14 @@
 ## NOC modules
 from base import *
 
-class IGetSNMPGet(Interface):
+
+class IGetSNMPGetNext(Interface):
     oid = OIDParameter()
     community_suffix = StringParameter(required=False)
-    returns = NoneParameter() | StringParameter()
-    template = "interfaces/igetsnmpget.html"
+    bulk = BooleanParameter(default=True)
+    min_index = IntParameter(required=False)
+    max_index = IntParameter(required=False)
+    
+    returns = (NoneParameter() |
+               ListOfParameter(element=[OIDParameter(), StringParameter()]))
+    template = "interfaces/igetsnmpgetnext.html"

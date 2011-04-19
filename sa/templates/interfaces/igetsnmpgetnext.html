@@ -1,0 +1,14 @@
+<h1>{{object.name}} ({{object.address}}) SNMP Get Next</h1>
+
+{% if result %}
+<table border="1">
+    {% for oid, v in result %}
+    <tr class="{%cycle 'row1' 'row2'%}">
+        <td>{{oid}}</td>
+        <td>{{v}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+No data available!!!
+{% endif %}
