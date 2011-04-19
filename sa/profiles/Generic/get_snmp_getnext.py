@@ -16,7 +16,7 @@ class Script(NOCScript):
     implements=[IGetSNMPGetNext]
     requires=[]
     
-    def execute(self, oid, community_suffix, bulk=True,
+    def execute(self, oid, community_suffix=None, bulk=True,
                 min_index=None, max_index=None):
         try:
             return self.snmp.getnext(oid=oid,
