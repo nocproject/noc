@@ -222,6 +222,7 @@ class Script(threading.Thread):
     SSH=SSH
     HTTP=HTTP
     TIMEOUT=120 # 2min by default
+    CLI_TIMEOUT = None # Optional timeout for telnet/ssh providers
     #
     LoginError=LoginError
     CLISyntaxError=CLISyntaxError
