@@ -957,6 +957,32 @@ class InterfaceNameParameter(StringParameter):
         return self.script_clean_input(profile, value)
     
 
+class OIDParameter(Parameter):
+    """
+    >>> OIDParameter().clean("1.3.6.1.2.1.1.1.0")
+    '1.3.6.1.2.1.1.1.0'
+    >>> OIDParameter(default="1.3.6.1.2.1.1.1.0").clean(None)
+    '1.3.6.1.2.1.1.1.0'
+    >>> OIDParameter().clean("1.3.6.1.2.1.1.X.0")  #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: OIDParameter: '1.3.6.1.2.1.1.X.0'
+    """
+    def clean(self, value):
+        def is_false(v):
+            try:
+                v=int(v)
+            except ValueError:
+                return True
+            return v<0
+        
+        if value is None and self.default is not None:
+            return self.default
+        if bool([v for v in value.split(".") if is_false(v)]):
+            self.raise_error(value)
+        return value
+    
+
 ## Stub for interface registry
 interface_registry = {}
 
