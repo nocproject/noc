@@ -47,7 +47,7 @@ class Scheduler(Daemon):
                     periodic_name=pt,
                     is_enabled=False,
                     time_pattern=tp,
-                    timeout=pt.default_timeout
+                    timeout=periodic_registry[pt].default_timeout
                 ).save()
     
     def launch_task(self, task):
