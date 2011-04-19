@@ -48,10 +48,14 @@ class Script(noc.sa.script.Script):
                 interfaces=[i for i in interfaces if i.lower() not in ("router","switch","stby-switch","yes","no","-")]
                 if not interfaces:
                     continue
-                r.append({
+                m_type = {"dynamic": "D",
+                          "static": "S"}.get(match.group("type").lower())
+                if not m_type:
+                    continue
+                r+=[{
                     "vlan_id"   : match.group("vlan_id"),
                     "mac"       : mac,
                     "interfaces": interfaces,
-                    "type"      : {"dynamic":"D","static":"S"}[match.group("type").lower()],
-                })
+                    "type"      : m_type,
+                }]
         return r
