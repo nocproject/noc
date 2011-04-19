@@ -395,7 +395,7 @@ class IPAMAppplication(Application):
                 if "_continue" in request.POST:
                     return self.response_redirect("ip:ipam:change_prefix",vrf.id,afi,p.prefix)
                 if "_addanother" in request.POST:
-                    return self.response_redirect("ip:ipam:add_prefix",vrf.id,afi)
+                    return self.response_redirect("ip:ipam:add_prefix", vrf.id, afi, "0.0.0.0/0")
                 return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,p.prefix)
         else:
             initial={"asn":parent.asn.id}
@@ -590,6 +590,15 @@ class IPAMAppplication(Application):
                     tags=form.cleaned_data["tags"],tt=form.cleaned_data["tt"],style=form.cleaned_data["style"])
                 a.save()
                 self.message_user(request,_("Address %(address)s was created")%{"address":a.address})
+                # Redirect depenging on submit button pressed
+                if "_continue" in request.POST:
+                    return self.response_redirect("ip:ipam:change_address",
+                                                  vrf.id, afi,
+                                                  form.cleaned_data["address"])
+                    #return self.response_redirect("ip:ipam:change_prefix",vrf.id,afi,p.prefix)
+                if "_addanother" in request.POST:
+                    return self.response_redirect("ip:ipam:add_address",
+                                                  vrf.id, afi, a.prefix.prefix)
                 return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,a.prefix.prefix)
         else:
             initial={}
@@ -665,6 +674,14 @@ class IPAMAppplication(Application):
                 address.style=form.cleaned_data["style"]
                 address.save()
                 self.message_user(request,_("Address %(address)s changed")%{"address":address.address})
+                if "_continue" in request.POST:
+                    return self.response_redirect("ip:ipam:change_address",
+                                                  vrf.id, afi,
+                                                  form.cleaned_data["address"])
+                    #return self.response_redirect("ip:ipam:change_prefix",vrf.id,afi,p.prefix)
+                if "_addanother" in request.POST:
+                    return self.response_redirect("ip:ipam:add_address",
+                                                  vrf.id, afi, prefix.prefix)
                 return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,address.prefix.prefix)
         else:
             initial={
