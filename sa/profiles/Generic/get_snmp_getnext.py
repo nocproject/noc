@@ -19,9 +19,9 @@ class Script(NOCScript):
     def execute(self, oid, community_suffix=None, bulk=True,
                 min_index=None, max_index=None):
         try:
-            return self.snmp.getnext(oid=oid,
-                                     community_suffix=community_suffix,
-                                     min_index=min_index, max_index=max_index)
+            return list(self.snmp.getnext(oid=oid,
+                                 community_suffix=community_suffix,
+                                 min_index=min_index, max_index=max_index))
         except self.snmp.TimeOutError:
             return None
     
