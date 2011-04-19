@@ -297,6 +297,8 @@ class ManagedObjectApplication(ModelApplication):
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
         # Check script exists
+        if "." not in script:
+            script = "%s.%s" % (o.profile_name, script)
         try:
             scr = script_registry[script]
         except:
