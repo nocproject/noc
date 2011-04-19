@@ -499,9 +499,16 @@ class ListOfParameter(ListParameter):
     []
     >>> ListOfParameter(element=StringParameter(),default=[1,2,3]).clean(None)
     ['1', '2', '3']
+    >>> ListOfParameter(element=[StringParameter(), IntParameter()]).clean([("a",1), ("b", "2")])
+    [['a', 1], ['b', 2]]
+    >>> ListOfParameter(element=[StringParameter(), IntParameter()]).clean([("a",1), ("b", "x")])   #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: IntParameter: 'x'
     """
     def __init__(self, element, required=True, default=None):
         self.element = element
+        self.is_list = type(element) in (list, tuple)
         super(ListOfParameter, self).__init__(required=required,
                                               default=default)
     
@@ -509,7 +516,10 @@ class ListOfParameter(ListParameter):
         if value is None and self.default is not None:
             return self.default
         v = super(ListOfParameter, self).clean(value)
-        return [self.element.clean(x) for x in v]
+        if self.is_list:
+            return [[e.clean(vv) for e, vv in zip(self.element, v)] for v in value]
+        else:
+            return [self.element.clean(x) for x in v]
     
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
