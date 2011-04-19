@@ -525,13 +525,19 @@ class ListOfParameter(ListParameter):
         if value is None and self.default is not None:
             return self.default
         v = super(ListOfParameter, self).script_clean_input(profile, value)
-        return [self.element.script_clean_input(profile, x) for x in v]
+        if self.is_list:
+            return [[e.script_clean_input(profile, vv) for e, vv in zip(self.element, v)] for v in value]
+        else:
+            return [self.element.script_clean_input(profile, x) for x in v]
     
     def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
         v = super(ListOfParameter, self).script_clean_result(profile, value)
-        return [self.element.script_clean_result(profile, x) for x in v]
+        if self.is_list:
+            return [[e.script_clean_result(profile, vv) for e, vv in zip(self.element, v)] for v in value]
+        else:
+            return [self.element.script_clean_result(profile, x) for x in v]
     
 
 ##
