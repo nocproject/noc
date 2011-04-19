@@ -385,7 +385,7 @@ class TCPSocket(Socket):
         self.on_connect()
         
     def write(self,msg):
-        self.debug("write(%s)"%repr(msg))
+        #self.debug("write(%s)"%repr(msg))
         self.out_buffer+=msg
         
     def on_read(self,data): pass
