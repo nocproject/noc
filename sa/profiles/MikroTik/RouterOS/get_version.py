@@ -20,9 +20,9 @@ class Script(NOCScript):
     cache=True
     implements=[IGetVersion]
     
-    rx_ver=re.compile(r"name=\"system\"\s+version=\"(?P<version>[^\"])\"", re.MULTILINE)
+    rx_ver=re.compile(r"name=\"system\"\s+version=\"(?P<version>[^\"]+)\"", re.MULTILINE)
     def execute(self):
-        v=self.cli("system package print detail")
+        v=self.cli("system package print detail where name=\"system\"")
         match=self.re_search(self.rx_ver, v)
         return {
             "vendor"    : "MikroTik",
