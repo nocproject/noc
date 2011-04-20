@@ -9,6 +9,7 @@
 ## Python modules
 import pprint
 import os
+import urllib
 ## Django modules
 from django.utils.translation import ugettext as _
 from django.utils.encoding import smart_unicode
@@ -156,8 +157,8 @@ def script_reduce(task):
     mt = task.maptask_set.all()[0]
     if mt.status != "C":
         msg = str(mt.script_result["text"]) if mt.script_result else ""
-        return TaskFailed(msg)
-    return mt.script_result
+        return mt.script_params, TaskFailed(msg)
+    return mt.script_params, mt.script_result
 
 ##
 ## Attributes inline form
@@ -334,7 +335,7 @@ class ManagedObjectApplication(ModelApplication):
             return self.response_not_found("Script not found")
         # Wait for task completion
         try:
-            result = task.get_result(block=False)
+            params, result = task.get_result(block=False)
         except ReduceTask.NotReady:
             return self.render_wait(request, subject="Script %s" % script,
                                     text="Processing script. Please wait ...")
@@ -349,10 +350,17 @@ class ManagedObjectApplication(ModelApplication):
             display_box = False
             t_path = ["sa", "templates"] + scr.get_template().split("/")
             paths = [os.sep.join(["local"] + t_path), os.sep.join(t_path)]
+            refresh = self.site.reverse("sa:managedobject:script", object.id,
+                script, "HTML")
+            if params:
+                refresh += "?" + urllib.urlencode(params)
             result = SafeString(loader.render_to_string(paths,
-                                       {"object": object, "result": result}).encode("utf8"))
+                        {"object": object,
+                         "script": script,
+                         "params": params,
+                         "result": result}).encode("utf8"))
         return self.render(request, "script_result.html", object=object,
-                           script=script, result=result,
+                           script=script, result=result, refresh=refresh,
                            display_box = display_box)
     ##
     ## AJAX lookup
