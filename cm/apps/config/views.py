@@ -68,9 +68,10 @@ def reduce_get_now(task):
 ## Config admin
 ##
 class ConfigAdmin(admin.ModelAdmin):
-    list_display=["repo_path", "pull_every", "last_modified", "last_pull", "next_pull", "status", change_link]
+    list_display=["repo_path", "pull_every", "last_modified", "last_pull",
+                  "next_pull", "status", change_link]
+    list_filter = ["managed_object__administrative_domain"]
     search_fields=["repo_path"]
-    fields=["pull_every","next_pull"]
     actions=["get_now"]
     def queryset(self,request):
         return Config.queryset(request.user)
