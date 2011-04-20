@@ -21,13 +21,13 @@ class CIDRField(models.Field):
     def __init__(self,*args,**kwargs):
         super(CIDRField,self).__init__(*args,**kwargs)
         
-    def db_type(self):
+    def db_type(self, connection):
         return "CIDR"
         
     def to_python(self,value):
         return str(value)
         
-    def get_db_prep_value(self,value):
+    def get_db_prep_value(self, value, connection, prepared=False):
         # Convert value to pure network address to prevent
         # PostgreSQL exception
         return IP.prefix(value).first.prefix
@@ -37,13 +37,13 @@ class CIDRField(models.Field):
 ## INETField maps to PostgreSQL INET Field
 ##
 class INETField(models.Field):
-    def db_type(self):
+    def db_type(self, connection):
         return "INET"
     
     def to_python(self,value):
         return str(value)
     
-    def get_db_prep_value(self,value):
+    def get_db_prep_value(self, value, connection, prepared=False):
         if not value:
             return None
         return value
@@ -52,7 +52,7 @@ class INETField(models.Field):
 ##
 class MACField(models.Field):
     __metaclass__=models.SubfieldBase
-    def db_type(self):
+    def db_type(self, connection):
         return "MACADDR"
     
     def to_python(self,value):
@@ -60,7 +60,7 @@ class MACField(models.Field):
             return None
         return value.upper()
     
-    def get_db_prep_value(self,value):
+    def get_db_prep_value(self, value, connection, prepared=False):
         if not value:
             return None
         return MACAddressParameter().clean(value)
@@ -68,7 +68,7 @@ class MACField(models.Field):
 ## Binary Field maps to PostgreSQL BYTEA
 ##
 class BinaryField(models.Field):
-    def db_type(self):
+    def db_type(self, connection):
         return "BYTEA"
 ##
 ## Text Array field maps to PostgreSQL TEXT[] type
@@ -76,7 +76,7 @@ class BinaryField(models.Field):
 class TextArrayField(models.Field):
     __metaclass__ = models.SubfieldBase
     
-    def db_type(self):
+    def db_type(self, connection):
         return "TEXT[]"
 
     def to_python(self,value):
@@ -94,7 +94,7 @@ class TextArrayField(models.Field):
 class TextArray2Field(models.Field):
     __metaclass__ = models.SubfieldBase
     
-    def db_type(self):
+    def db_type(self, connection):
         return "TEXT[][]"
 
     def to_python(self,value):
@@ -116,7 +116,7 @@ class TextArray2Field(models.Field):
 ##
 class InetArrayField(models.Field):
     __metaclass__ = models.SubfieldBase
-    def db_type(self):
+    def db_type(self, connection):
         return "INET[]"
 
     def to_python(self,value):
@@ -128,7 +128,7 @@ class InetArrayField(models.Field):
             return None
         return value[1:-1].split(",")
         
-    def get_db_prep_value(self,value):
+    def get_db_prep_value(self, value, connection, prepared=False):
         if value is None:
             return None
         return "{ "+", ".join(value)+" }"
@@ -138,7 +138,7 @@ class InetArrayField(models.Field):
 ##
 class IntArrayField(models.Field):
     __metaclass__ = models.SubfieldBase
-    def db_type(self):
+    def db_type(self, connection):
         return "INT[]"
 
     def to_python(self,value):
@@ -150,7 +150,7 @@ class IntArrayField(models.Field):
             return None
         return [int(x) for x in value[1:-1].split(",")]
         
-    def get_db_prep_value(self,value):
+    def get_db_prep_value(self, value, connection, prepared=False):
         if value is None:
             return None
         return "{ "+", ".join([str(x) for x in value])+" }"
@@ -160,7 +160,7 @@ class IntArrayField(models.Field):
 ##
 class DateTimeArrayField(models.Field):
     __metaclass__ = models.SubfieldBase
-    def db_type(self):
+    def db_type(self, connection):
         return "TIMESTAMP[]"
     
     def to_python(self,value):
@@ -172,7 +172,7 @@ class DateTimeArrayField(models.Field):
             return None
         return [x for x in value[1:-1].split(",")] # @todo: fix
     
-    def get_db_prep_value(self,value):
+    def get_db_prep_value(self, value, connection, prepared=False):
         if value is None:
             return None
         return "{ "+", ".join([str(x) for x in value])+" }"
@@ -183,7 +183,7 @@ class DateTimeArrayField(models.Field):
 ##
 class IntMapField(models.Field):
     __metaclass__ = models.SubfieldBase
-    def db_type(self):
+    def db_type(self, connection):
         return "TEXT"
     
     def to_python(self,value):
@@ -194,7 +194,7 @@ class IntMapField(models.Field):
         else:
             return value
     
-    def get_db_prep_value(self,value):
+    def get_db_prep_value(self, value, connection, prepared=False):
         return list_to_ranges(sorted(value))
     
 
@@ -203,7 +203,7 @@ class IntMapField(models.Field):
 ##
 class PickledField(models.Field):
     __metaclass__ = models.SubfieldBase
-    def db_type(self):
+    def db_type(self, connection):
         return "TEXT"
     def to_python(self,value):
         #if not value:
@@ -212,7 +212,8 @@ class PickledField(models.Field):
             return cPickle.loads(str(value))
         except:
             return value
-    def get_db_prep_value(self,value):
+    
+    def get_db_prep_value(self, value, connection, prepared=False):
         return cPickle.dumps(value)
 ##
 ## Autocomplete tags fields
@@ -234,7 +235,7 @@ class ColorField(models.Field):
     __metaclass__ = models.SubfieldBase
     default_validators=[]
     
-    def db_type(self):
+    def db_type(self, connection):
         return "INTEGER"
     
     def __init__(self,*args,**kwargs):
@@ -245,7 +246,7 @@ class ColorField(models.Field):
             return value
         return u"#%06x"%value
     
-    def get_db_prep_value(self,value):
+    def get_db_prep_value(self, value, connection, prepared=False):
         if value.startswith("#"):
             value=value[1:]
         return int(value,16)

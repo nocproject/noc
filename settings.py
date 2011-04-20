@@ -27,7 +27,7 @@ SERVER_EMAIL      = config.get("main","server_email")
 DATABASE_ENGINE   = config.get("database","engine")
 DATABASES={
     "default" : {
-        "ENGINE"   : config.get("database","engine"),
+        "ENGINE"   : "django.db.backends." + config.get("database","engine"),
         "NAME"     : config.get("database","name"),
         "USER"     : config.get("database","user"),
         "PASSWORD" : config.get("database","password"),
@@ -101,22 +101,24 @@ elif AUTH_METHOD=="pyrule":
     
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 #     'django.template.loaders.eggs.load_template_source',
 )
 # 
 TEMPLATE_CONTEXT_PROCESSORS= (
-    'django.core.context_processors.auth',
+    'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.media',
+    'django.contrib.messages.context_processors.messages',
     'noc.lib.app.setup_processor',
     )
 #
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
@@ -144,6 +146,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    'django.contrib.messages',
     'django.contrib.databrowse',
     "tagging",
     "south",
@@ -184,3 +187,5 @@ SOUTH_TESTS_MIGRATE = True
 LOGIN_URL="/main/auth/login/"
 ## Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS=False
+## Message application setup
+MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
