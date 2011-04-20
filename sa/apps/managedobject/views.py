@@ -341,6 +341,8 @@ class ManagedObjectApplication(ModelApplication):
                                     text="Processing script. Please wait ...")
         # Format result
         display_box = True
+        refresh = self.site.reverse("sa:managedobject:script", object.id,
+            script, format)
         if isinstance(result, TaskFailed):
             result = result.msg
         elif format == "RAW":
@@ -350,8 +352,6 @@ class ManagedObjectApplication(ModelApplication):
             display_box = False
             t_path = ["sa", "templates"] + scr.get_template().split("/")
             paths = [os.sep.join(["local"] + t_path), os.sep.join(t_path)]
-            refresh = self.site.reverse("sa:managedobject:script", object.id,
-                script, "HTML")
             if params:
                 refresh += "?" + urllib.urlencode(params)
             result = SafeString(loader.render_to_string(paths,
