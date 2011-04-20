@@ -22,9 +22,10 @@ class Script(NOCScript):
     
     ##
     ## Catalyst 2960/3560/3750/3120 on IOS SE
+    ## Catalyst 2950 on IOS EA
     ##
     rx_small_cat=re.compile(r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE)
-    @NOCScript.match(version__regex=r"SE")
+    @NOCScript.match(version__regex=r"SE|EA")
     def execute_small_cat(self):
         v=self.cli("show version")
         match=self.re_search(self.rx_small_cat, v)
