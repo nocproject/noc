@@ -1,0 +1,10 @@
+{% if result %}
+<h1>{{object.name}} ({{object.address}}) ping {{params.address}}</h1>
+
+<table border="0">
+    <tr><td>Success/Count</td><td>{{result.success}}/{{result.count}}</td></tr>
+    <tr><td>Min/Avg/Max ms</td><td>{{result.min}}/{{result.avg}}/{{result.max}}</td></tr>
+</table>
+{% else %}
+No data!!!
+{% endif %}
