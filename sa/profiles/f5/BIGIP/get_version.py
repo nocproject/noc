@@ -18,7 +18,7 @@ class Script(noc.sa.script.Script):
     cache=True
     implements=[IGetVersion]
     def execute(self):
-        v=self.cli("version")
+        v=self.cli("b version")
         match=rx_ver.search(v)
         return {
             "vendor"    : "f5",

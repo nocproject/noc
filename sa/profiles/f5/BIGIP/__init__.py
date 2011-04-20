@@ -15,7 +15,7 @@ class Profile(noc.sa.profiles.Profile):
     name="f5.BIGIP"
     supported_schemes=[SSH]
     pattern_username="^([Uu]sername|[Ll]ogin):"
-    pattern_prompt="bp>"
+    pattern_prompt=r"^\[(?P<hostprompt>[^\]]+)\]\s\S+\s#\s"
     pattern_more=[
             (r"^(/var/tmp/shell\.out\.\S+|:)"," "),
             (r"^\(END\) ","q"),

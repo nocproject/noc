@@ -16,5 +16,5 @@ class Script(noc.sa.script.Script):
     TIMEOUT = 300
     CLI_TIMEOUT = 60
     def execute(self):
-        config=self.cli("export")
+        config=self.cli("b export")
         return self.cleaned_config(config)
