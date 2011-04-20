@@ -23,7 +23,7 @@ class Script(NOCScript):
     rx_vlan=re.compile(r"^VLAN\s+(?P<name>.+?)(?:\s+\([^)]+\))?\s+tag\s+(?P<tag>\d+)", re.MULTILINE)
     def execute(self):
         r=[]
-        for match in self.rx_vlan.finditer(self.cli("vlan show")):
+        for match in self.rx_vlan.finditer(self.cli("b vlan show")):
             r+=[{
                 "name":    match.group("name"),
                 "vlan_id": match.group("tag")
