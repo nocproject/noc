@@ -307,8 +307,8 @@ class ManagedObjectApplication(ModelApplication):
         result = None
         if scr.implements and scr.implements[0].requires_input():
             # Script requires additional parameters
-            if request.POST:
-                form = scr.implements[0].get_form(request.POST)  # @todo: need to combine interfaces
+            if request.POST or request.GET:
+                form = scr.implements[0].get_form(request.POST or request.GET)  # @todo: need to combine interfaces
                 if form.is_valid():
                     return run_task(**form.cleaned_data)
             else:
