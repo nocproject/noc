@@ -4,7 +4,7 @@
 <table border="0" id="result-{{object.id}}" class="tablesorter">
     <caption>{{object.name}} ({{object.address}}) ARP Cache</caption>
     <thead>
-        <tr><th>IP</th><th>MAC</th><th>Interface<th></tr>
+        <tr><th>IP</th><th>MAC</th><th>Interface</th><th>Commands</th></tr>
     </thead>
     <tbody>
         {% for r in result %}
@@ -12,6 +12,11 @@
                 <td>{{r.ip}}</td>
                 <td>{{r.mac}}</td>
                 <td>{{r.interface}}</td>
+                <td>
+                    {% if "ping" in object.profile.scripts %}
+                        <a href='{% url sa:managedobject:script object.id "ping" "HTML" %}?address={{r.ip}}'>ping</a>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
     </tbody>
