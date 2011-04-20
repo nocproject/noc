@@ -105,6 +105,15 @@ class Installer(object):
         shutil.rmtree(os.path.join(self.LIB,"google"),ignore_errors=True)
         # Install
         return self.install("protobuf")
+    ##
+    ## Install django
+    ##
+    def install_django(self):
+        # Remove contrib/lib/django
+        import shutil
+        shutil.rmtree(os.path.join(self.LIB, "django"),ignore_errors=True)
+        # Install
+        return self.install("django")
 
 ##
 ## Check all required system modules present

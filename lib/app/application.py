@@ -11,6 +11,7 @@ from django.shortcuts import render_to_response
 from django.utils.simplejson.encoder import JSONEncoder
 from django.db import connection
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
 from access import HasPerm
 from site import site
 from noc.lib.forms import NOCForm
@@ -68,8 +69,9 @@ class Application(object):
     ##
     ## Send a message to user
     ##
-    def message_user(self,request,message):
-        request.user.message_set.create(message=unicode(message))
+    def message_user(self, request, message):
+        messages.info(request, unicode(message))
+    
     ##
     ## Return path to named template
     ##
