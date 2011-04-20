@@ -9,7 +9,7 @@
 ## Python modules
 import datetime
 ## Django modules
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 def humanize_timedelta(delta):
     def round(x):
