@@ -20,7 +20,7 @@ import re
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User,Group
+from django.contrib.auth.models import User, Group
 ## Third-party modules
 from tagging.models import TaggedItem
 ## NOC modules
@@ -37,101 +37,118 @@ from noc.lib.validators import check_re
 ##
 profile_registry.register_all()
 script_registry.register_all()
-scheme_choices=[(TELNET,"telnet"),(SSH,"ssh"),(HTTP,"http")]
-##
-##
-##
+scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
+
+
 class AdministrativeDomain(models.Model):
+   
     class Meta:
-        verbose_name=_("Administrative Domain")
-        verbose_name_plural=_("Administrative Domains")
+        verbose_name = _("Administrative Domain")
+        verbose_name_plural = _("Administrative Domains")
         ordering = ["name"]
     
-    name=models.CharField(_("Name"),max_length=32,unique=True)
-    description=models.TextField(_("Description"),null=True,blank=True)
+    name = models.CharField(_("Name"), max_length=32, unique=True)
+    description = models.TextField(_("Description"), null=True, blank=True)
+    
     def __unicode__(self):
         return self.name
     
 
-##
-##
-##
 class Activator(models.Model):
+    
     class Meta:
-        verbose_name=_("Activator")
-        verbose_name_plural=_("Activators")
-    name=models.CharField(_("Name"),max_length=32,unique=True)
-    ip=models.IPAddressField(_("From IP"))
-    to_ip=models.IPAddressField(_("To IP"))
-    auth=models.CharField(_("Auth String"),max_length=64)
-    is_active=models.BooleanField(_("Is Active"),default=True)
-    tags=AutoCompleteTagsField(_("Tags"),null=True,blank=True)
+        verbose_name= _("Activator")
+        verbose_name_plural = _("Activators")
+        ordering = ["name"]
+    
+    name = models.CharField(_("Name"), max_length=32, unique=True)
+    ip = models.IPAddressField(_("From IP"))
+    to_ip = models.IPAddressField(_("To IP"))
+    auth = models.CharField(_("Auth String"), max_length=64)
+    is_active = models.BooleanField(_("Is Active"), default=True)
+    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    
     def __unicode__(self):
         return self.name
     
     def get_absolute_url(self):
-        return self.reverse("sa:activator:change",self.id)
+        return site.reverse("sa:activator:change", self.id)
+    
     ##
     ## Returns true if IP can belong to any activator
     ##
     @classmethod
-    def check_ip_access(self,ip):
-        return Activator.objects.filter(ip__gte=ip,to_ip__lte=ip).count()>0
+    def check_ip_access(self, ip):
+        return Activator.objects.filter(ip__gte=ip, to_ip__lte=ip).exists()
     
 
-##
-## Managed Object
-##
 class ManagedObject(models.Model):
+    
     class Meta:
-        verbose_name=_("Managed Object")
-        verbose_name_plural=_("Managed Objects")
+        verbose_name = _("Managed Object")
+        verbose_name_plural = _("Managed Objects")
         ordering = ["name"]
     
-    name=models.CharField(_("Name"),max_length=64,unique=True)
-    is_managed=models.BooleanField(_("Is Managed?"),default=True)
-    administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name=_("Administrative Domain"))
-    activator=models.ForeignKey(Activator,verbose_name=_("Activator"))
-    profile_name=models.CharField(_("Profile"),max_length=128,choices=profile_registry.choices)
-    description=models.CharField(_("Description"),max_length=256,null=True,blank=True)
+    name = models.CharField(_("Name"), max_length=64, unique=True)
+    is_managed = models.BooleanField(_("Is Managed?"), default=True)
+    administrative_domain = models.ForeignKey(AdministrativeDomain,
+            verbose_name=_("Administrative Domain"))
+    activator = models.ForeignKey(Activator,
+            verbose_name=_("Activator"))
+    profile_name = models.CharField(_("Profile"),
+            max_length=128, choices=profile_registry.choices)
+    description = models.CharField(_("Description"),
+            max_length=256, null=True, blank=True)
     # Access
-    scheme=models.IntegerField(_("Scheme"),choices=scheme_choices)
-    address=models.CharField(_("Address"),max_length=64)
-    port=models.PositiveIntegerField(_("Port"),blank=True,null=True)
-    user=models.CharField(_("User"),max_length=32,blank=True,null=True)
-    password=models.CharField(_("Password"),max_length=32,blank=True,null=True)
-    super_password=models.CharField(_("Super Password"),max_length=32,blank=True,null=True)
-    remote_path=models.CharField(_("Path"),max_length=256,blank=True,null=True)
-    trap_source_ip=INETField(_("Trap Source IP"),null=True,blank=True,default=None)
-    trap_community=models.CharField(_("Trap Community"),blank=True,null=True,max_length=64)
-    snmp_ro=models.CharField(_("RO Community"),blank=True,null=True,max_length=64)
-    snmp_rw=models.CharField(_("RW Community"),blank=True,null=True,max_length=64)
+    scheme = models.IntegerField(_("Scheme"), choices=scheme_choices)
+    address = models.CharField(_("Address"), max_length=64)
+    port = models.PositiveIntegerField(_("Port"), blank=True, null=True)
+    user = models.CharField(_("User"), max_length=32, blank=True, null=True)
+    password = models.CharField(_("Password"),
+            max_length=32, blank=True, null=True)
+    super_password = models.CharField(_("Super Password"),
+            max_length=32, blank=True, null=True)
+    remote_path = models.CharField(_("Path"),
+            max_length=256, blank=True, null=True)
+    trap_source_ip = INETField(_("Trap Source IP"), null=True,
+            blank=True, default=None)
+    trap_community = models.CharField(_("Trap Community"),
+            blank=True, null=True, max_length=64)
+    snmp_ro = models.CharField(_("RO Community"),
+            blank=True, null=True, max_length=64)
+    snmp_rw = models.CharField(_("RW Community"),
+            blank=True, null=True, max_length=64)
     # CM
-    is_configuration_managed=models.BooleanField(_("Is Configuration Managed?"),default=True)
-    repo_path=models.CharField(_("Repo Path"),max_length=128,blank=True,null=True)
+    is_configuration_managed = models.BooleanField(_("Is Configuration Managed?"),
+            default=True)
+    repo_path = models.CharField(_("Repo Path"),
+            max_length=128, blank=True, null=True)
     # pyRules
     config_filter_rule = models.ForeignKey(PyRule,
             verbose_name="Config Filter pyRule", 
             limit_choices_to={"interface": "IConfigFilter"},
-            null=True, blank=True, related_name="managed_object_config_filter_rule_set")
+            null=True, blank=True,
+            related_name="managed_object_config_filter_rule_set")
     config_diff_filter_rule = models.ForeignKey(PyRule,
             verbose_name=_("Config Diff Filter Rule"),
             limit_choices_to={"interface": "IConfigDiffFilter"},
-            null=True, blank=True, related_name="managed_object_config_diff_rule_set")
+            null=True, blank=True,
+            related_name="managed_object_config_diff_rule_set")
     config_validation_rule = models.ForeignKey(PyRule,
             verbose_name="Config Validation pyRule",
             limit_choices_to={"interface": "IConfigValidator"},
-            null=True, blank=True, related_name="managed_object_config_validation_rule_set")
+            null=True, blank=True,
+            related_name="managed_object_config_validation_rule_set")
     #
-    tags=AutoCompleteTagsField(_("Tags"),null=True,blank=True)
+    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
     
-    profile_name.existing_choices_filter=True # Use special filter for profile
+    profile_name.existing_choices_filter = True  # Use special filter for profile
     
     def __unicode__(self):
         return self.name
     
     def get_absolute_url(self):
-        return self.reverse("sa:managedobject:change",self.id)
+        return site.reverse("sa:managedobject:change", self.id)
         
     # Returns object's profile
     @property
@@ -139,58 +156,68 @@ class ManagedObject(models.Model):
         try:
             return self._cached_profile
         except AttributeError:
-            self._cached_profile=profile_registry[self.profile_name]()
+            self._cached_profile = profile_registry[self.profile_name]()
             return self._cached_profile
     
     ##
     ## queryset returning objects for user
     ##
     @classmethod
-    def user_objects(cls,user):
+    def user_objects(cls, user):
         return cls.objects.filter(UserAccess.Q(user))
     
     ##
     ##
     ##
-    def has_access(self,user):
-        return self.user_objects(user).filter(id=self.id).count()>0
+    def has_access(self, user):
+        return self.user_objects(user).filter(id=self.id).exists()
     
     ##
     ## Returns a list of users granted access to object
     ##
     @property
     def granted_users(self):
-        return [u for u in User.objects.filter(is_active=True) if ManagedObject.objects.filter(UserAccess.Q(u)&Q(id=self.id)).count()>0]
+        return [u for u in User.objects.filter(is_active=True)
+                if ManagedObject.objects.filter(UserAccess.Q(u) &
+                                                Q(id=self.id)).exists()]
     
     ##
     ## Returns a list of groups granted access to object
     ##
     @property
     def granted_groups(self):
-        return [g for g in Group.objects.filter() if ManagedObject.objects.filter(GroupAccess.Q(g)&Q(id=self.id)).count()>0]
+        return [g for g in Group.objects.filter()
+                if ManagedObject.objects.filter(GroupAccess.Q(g) &
+                                                Q(id=self.id)).exists()]
     
     ##
     ## Override model's save()
     ## Change related Config object as well
     ##
     def save(self):
-        super(ManagedObject,self).save()
+        super(ManagedObject, self).save()
         try:
-            config=self.config # self.config is OneToOne field created by Config
+            # self.config is OneToOne field created by Config
+            config = self.config 
         except:
-            config=None
+            config = None
         if config is None: # No related Config object
-            if self.is_configuration_managed: # Object is configuration managed, create related object
+            if self.is_configuration_managed:
+                # Object is configuration managed, create related object
                 from noc.cm.models import Config
-                config=Config(managed_object=self,repo_path=self.repo_path,pull_every=86400)
+                config = Config(managed_object=self,
+                                repo_path=self.repo_path, pull_every=86400)
                 config.save()
         else: # Update existing config entry when necessary
-            if self.repo_path!=self.config.repo_path: # Repo path changed
-                config.repo_path=self.repo_path
-            if self.is_configuration_managed and config.pull_every is None: # Device is configuration managed but not on periodic pull
-                config.pull_every=86400
-            elif not self.is_configuration_managed and config.pull_every: # Reset pull_every for unmanaged devices
-                config.pull_every=None
+            if self.repo_path != self.config.repo_path:
+                # Repo path has been changed
+                config.repo_path = self.repo_path
+            if self.is_configuration_managed and config.pull_every is None:
+                # Device is configuration managed but not on periodic pull
+                config.pull_every = 86400
+            elif not self.is_configuration_managed and config.pull_every:
+                # Reset pull_every for unmanaged devices
+                config.pull_every = None
             config.save()
     
     ##
@@ -198,23 +225,27 @@ class ManagedObject(models.Model):
     ##
     def delete(self):
         try:
-            config=self.config
+            config = self.config
         except:
-            config=None
+            config = None
         if config:
             config.delete()
-        super(ManagedObject,self).delete()
+        super(ManagedObject, self).delete()
     
     ##
     ## Search engine
     ##
     @classmethod
-    def search(cls,user,query,limit):
-        q=Q(repo_path__icontains=query)|Q(name__icontains=query)|Q(address__icontains=query)|Q(user__icontains=query)|Q(description__icontains=query)
+    def search(cls, user, query, limit):
+        q = (Q(repo_path__icontains=query) |
+             Q(name__icontains=query) |
+             Q(address__icontains=query) |
+             Q(user__icontains=query) |
+             Q(description__icontains=query))
         for o in [o for o in cls.objects.filter(q) if o.has_access(user)]:
-            relevancy=1.0
+            relevancy = 1.0
             yield SearchResult(
-                url=("sa:managedobject:change",o.id),
+                url=("sa:managedobject:change", o.id),
                 title="SA: "+unicode(o),
                 text=unicode(o),
                 relevancy=relevancy
@@ -240,10 +271,10 @@ class ManagedObject(models.Model):
     ## Return attribute as bool
     ##
     def get_attr_bool(self, name, default=False):
-        v=self.get_attr(name)
+        v = self.get_attr(name)
         if v is None:
             return default
-        if v.lower() in ["t","true","y","yes","1"]:
+        if v.lower() in ["t", "true", "y", "yes", "1"]:
             return True
         else:
             return False
@@ -252,7 +283,7 @@ class ManagedObject(models.Model):
     ## Return attribute as integer
     ##
     def get_attr_int(self, name, default=0):
-        v=self.get_attr(name)
+        v = self.get_attr(name)
         if v is None:
             return default
         try:
@@ -281,13 +312,15 @@ class ManagedObjectAttribute(models.Model):
         verbose_name=_("Managed Object Attribute")
         verbose_name_plural=_("Managed Object Attributes")
         unique_together=[("managed_object","key")]
+        ordering = ["managed_object", "key"]
     
-    managed_object=models.ForeignKey(ManagedObject, verbose_name=_("Managed Object"))
-    key=models.CharField(_("Key"),max_length=64)
-    value=models.CharField(_("Value"),max_length=4096, blank=True, null=True)
+    managed_object = models.ForeignKey(ManagedObject,
+                                       verbose_name=_("Managed Object"))
+    key = models.CharField(_("Key"), max_length=64)
+    value = models.CharField(_("Value"), max_length=4096, blank=True, null=True)
     
     def __unicode__(self):
-        return u"%s: %s"%(self.managed_object,self.key)
+        return u"%s: %s" % (self.managed_object, self.key)
     
 
 ##
@@ -298,22 +331,36 @@ class ManagedObjectSelector(models.Model):
         verbose_name=_("Managed Object Selector")
         verbose_name_plural=_("Managed Object Selectors")
         ordering=["name"]
-    name=models.CharField(_("Name"),max_length=64,unique=True)
-    description=models.TextField(_("Description"),blank=True,null=True)
-    is_enabled=models.BooleanField(_("Is Enabled"),default=True)
-    filter_id=models.IntegerField(_("Filter by ID"),null=True,blank=True)
-    filter_name=models.CharField(_("Filter by Name (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
-    filter_profile=models.CharField(_("Filter by Profile"),max_length=64,null=True,blank=True,choices=profile_registry.choices)
-    filter_address=models.CharField(_("Filter by Address (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
-    filter_administrative_domain=models.ForeignKey(AdministrativeDomain,verbose_name=_("Filter by Administrative Domain"),null=True,blank=True)
-    filter_activator=models.ForeignKey(Activator,verbose_name=_("Filter by Activator"),null=True,blank=True)
-    filter_user=models.CharField(_("Filter by User (REGEXP)"),max_length=256,null=True,blank=True)
-    filter_remote_path=models.CharField(_("Filter by Remote Path (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
-    filter_description=models.CharField(_("Filter by Description (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
-    filter_repo_path=models.CharField(_("Filter by Repo Path (REGEXP)"), max_length=256, null=True, blank=True, validators=[check_re])
-    filter_tags=AutoCompleteTagsField(_("Filter By Tags"),null=True,blank=True)
-    source_combine_method=models.CharField(_("Source Combine Method"),max_length=1,default="O",choices=[("A","AND"),("O","OR")])
-    sources=models.ManyToManyField("self",
+    
+    name = models.CharField(_("Name"), max_length=64, unique=True)
+    description = models.TextField(_("Description"), blank=True, null=True)
+    is_enabled = models.BooleanField(_("Is Enabled"), default=True)
+    filter_id = models.IntegerField(_("Filter by ID"), null=True, blank=True)
+    filter_name = models.CharField(_("Filter by Name (REGEXP)"),
+                max_length=256, null=True, blank=True, validators=[check_re])
+    filter_profile = models.CharField(_("Filter by Profile"),
+                max_length=64, null=True, blank=True,
+                choices=profile_registry.choices)
+    filter_address = models.CharField(_("Filter by Address (REGEXP)"),
+                max_length=256, null=True, blank=True, validators=[check_re])
+    filter_administrative_domain = models.ForeignKey(AdministrativeDomain,
+                verbose_name=_("Filter by Administrative Domain"),
+                null=True, blank=True)
+    filter_activator = models.ForeignKey(Activator,
+                verbose_name=_("Filter by Activator"), null=True, blank=True)
+    filter_user = models.CharField(_("Filter by User (REGEXP)"),
+                max_length=256, null=True, blank=True)
+    filter_remote_path = models.CharField(_("Filter by Remote Path (REGEXP)"),
+                max_length=256, null=True, blank=True, validators=[check_re])
+    filter_description = models.CharField(_("Filter by Description (REGEXP)"),
+                max_length=256, null=True, blank=True, validators=[check_re])
+    filter_repo_path = models.CharField(_("Filter by Repo Path (REGEXP)"),
+                max_length=256, null=True, blank=True, validators=[check_re])
+    filter_tags = AutoCompleteTagsField(_("Filter By Tags"),
+                null=True, blank=True)
+    source_combine_method = models.CharField(_("Source Combine Method"),
+                max_length=1, default="O", choices=[("A","AND"),("O","OR")])
+    sources = models.ManyToManyField("self",
         verbose_name=_("Sources"), symmetrical=False, null=True, blank=True,
         related_name="sources_set")
     
@@ -322,33 +369,34 @@ class ManagedObjectSelector(models.Model):
     ##
     ## Returns a Q object
     ##
-    def _Q(self):
+    @property
+    def Q(self):
         # Apply restrictions
-        q=Q(is_managed=True)&~Q(profile_name="NOC")
+        q = Q(is_managed=True) & ~Q(profile_name="NOC")
         if self.filter_id:
-            q&=Q(id=self.filter_id)
+            q &= Q(id=self.filter_id)
         if self.filter_name:
-            q&=Q(name__regex=self.filter_name)
+            q &= Q(name__regex=self.filter_name)
         if self.filter_profile:
-            q&=Q(profile_name=self.filter_profile)
+            q &= Q(profile_name=self.filter_profile)
         if self.filter_address:
-            q&=Q(address__regex=self.filter_address)
+            q &= Q(address__regex=self.filter_address)
         if self.filter_administrative_domain:
-            q&=Q(administrative_domain=self.filter_administrative_domain)
+            q &= Q(administrative_domain=self.filter_administrative_domain)
         if self.filter_activator:
-            q&=Q(activator=self.filter_activator)
+            q &= Q(activator=self.filter_activator)
         if self.filter_user:
-            q&=Q(user__regex=self.filter_user)
+            q &= Q(user__regex=self.filter_user)
         if self.filter_remote_path:
-            q&=Q(remote_path__regex=self.filter_remote_path)
+            q &= Q(remote_path__regex=self.filter_remote_path)
         if self.filter_description:
-            q&=Q(description__regex=self.filter_description)
+            q &= Q(description__regex=self.filter_description)
         if self.filter_repo_path:
-            q&=Q(repo_path__regex=self.filter_repo_path)
+            q &= Q(repo_path__regex=self.filter_repo_path)
         # Restrict to tags when necessary
-        t_ids=TaggedItem.objects.get_intersection_by_model(ManagedObject,self.filter_tags).values_list("id",flat=True)
+        t_ids=TaggedItem.objects.get_intersection_by_model(ManagedObject, self.filter_tags).values_list("id", flat=True)
         if t_ids:
-            q&=Q(id__in=t_ids)
+            q &= Q(id__in=t_ids)
         # Restrict to attributes when necessary
         m_ids=None
         for s in  self.managedobjectselectorbyattribute_set.all():
@@ -363,29 +411,30 @@ class ManagedObjectSelector(models.Model):
         r=ManagedObject.objects.filter(q)
         # Restrict to sources
         if self.sources.count():
-            if self.source_combine_method=="A":
+            if self.source_combine_method == "A":
                 # AND
                 for s in self.sources.all():
-                    q&=s.Q
+                    q &= s.Q
             else:
                 # OR
-                ql=list(self.sources.all())
-                q=ql.pop(0).Q
+                ql = list(self.sources.all())
+                q = ql.pop(0).Q
                 for qo in ql:
-                    q|=qo.Q
+                    q |= qo.Q
         return q
-    Q=property(_Q)
+    
     ##
     ## Returns queryset containing managed objects
     ##
-    def _managed_objects(self):
+    @property
+    def managed_objects(self):
         return ManagedObject.objects.filter(self.Q)
-    managed_objects=property(_managed_objects)
+    
     ##
     ## Check Managed Object matches selector
     ##
     def match(self,managed_object):
-        return self.managed_objects.filter(id=managed_object.id).count()>0
+        return self.managed_objects.filter(id=managed_object.id).exists()
     ##
     ## Returns queryset containing managed objects supporting scripts
     ##
@@ -536,9 +585,16 @@ class ReduceTask(models.Model):
     ## each kind of map task
     ##
     @classmethod
-    def create_task(self,object_selector,reduce_script,reduce_script_params,map_script,map_script_params,timeout):
+    def create_task(self, object_selector, reduce_script, reduce_script_params,
+                    map_script, map_script_params, timeout=None):
         """
         Create Map/Reduce task
+        :param object_selector:
+        :param reduce_script:
+        :param reduce_script_params:
+        :param map_script:
+        :param map_script_params:
+        :param timeout:
         """
         # Normalize map scripts to a list
         if type(map_script) in [types.ListType,types.TupleType]:
@@ -616,6 +672,8 @@ class ReduceTask(models.Model):
                 if status=="F":
                     m.script_result=dict(code=ERR_INVALID_SCRIPT, text="Invalid script %s"%msn)
                 m.save()
+        # Send notification
+        
         return r_task
     ##
     ## Perform reduce script and execute result
@@ -700,7 +758,7 @@ class CommandSnippet(models.Model):
         return self.name
     
     def get_absolute_url(self):
-        return self.reverse("sa:commandsnippet:change", self.id)
+        return site.reverse("sa:commandsnippet:change", self.id)
     
     rx_var=re.compile(r"{{\s*([^|}]+)\s*(?:\|.+?)?}}", re.MULTILINE)
     @property
