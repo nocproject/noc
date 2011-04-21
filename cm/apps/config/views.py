@@ -40,7 +40,8 @@ def reduce_get_now(task):
         c = mt.managed_object.config
         if mt.status == "C":
             c.write(mt.script_result)
-            c.next_pull = now + datetime.timedelta(seconds=c.pull_every)
+            if c.pull_every:
+                c.next_pull = now + datetime.timedelta(seconds=c.pull_every)
             c.save()
         # Build result
         cfg_link = None
