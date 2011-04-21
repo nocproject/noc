@@ -80,9 +80,12 @@ class Profile(object):
     # Sequence to be send at the end of all CLI commands
     #
     command_submit="\n"
-    # Callable assepting script instance
+    # Callable accepting script instance
     # to set up session.
     setup_session=None
+    # Callable accepting script instance
+    # to finaly close session
+    shutdown_session=None
     # Sequence to disable pager
     #
     command_disable_pager=None
