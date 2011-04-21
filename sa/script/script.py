@@ -539,7 +539,7 @@ class Script(threading.Thread):
                 self.debug("Script traceback:\n%s"%self.error_traceback)
         else:
             # Shutdown session
-            if self.profile.shutdown_session:
+            if self.profile.shutdown_session and not self.activator.use_canned_session:
                 self.debug("Shutting down session")
                 self.profile.shutdown_session(self)
             # Serialize result
@@ -608,7 +608,7 @@ class Script(threading.Thread):
             self.cli_queue_get()
             self.debug("CLI Provider is ready")
             # Set up session when necessary
-            if self.profile.setup_session:
+            if self.profile.setup_session and not self.activator.use_canned_session:
                 self.debug("Setting up session")
                 self.profile.setup_session(self)
             # Disable pager when necessary
