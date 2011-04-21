@@ -18,8 +18,9 @@ class Script(NOCScript):
     TIMEOUT = 300
     CLI_TIMEOUT = 60
     def execute(self):
-        config = self.cli("tmsh")  # Enter tmsh
+        self.cli("tmsh")  # Enter tmsh
         self.cli("modify /cli preference pager disabled")  # Disable pager
         config = self.cli("list")  # Get config
         self.cli("quit")  # Leave tmsh
+        config = self.strip_first_lines(config, 1)
         return self.cleaned_config(config)
