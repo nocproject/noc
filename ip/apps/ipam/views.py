@@ -395,7 +395,7 @@ class IPAMAppplication(Application):
                 if "_continue" in request.POST:
                     return self.response_redirect("ip:ipam:change_prefix",vrf.id,afi,p.prefix)
                 if "_addanother" in request.POST:
-                    return self.response_redirect("ip:ipam:add_prefix", vrf.id, afi, "0.0.0.0/0")
+                    return self.response_redirect("ip:ipam:add_prefix", vrf.id, afi, p.parent.prefix)
                 return self.response_redirect("ip:ipam:vrf_index",vrf.id,afi,p.prefix)
         else:
             initial={"asn":parent.asn.id}
