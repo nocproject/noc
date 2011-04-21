@@ -538,6 +538,10 @@ class Script(threading.Thread):
                 self.error_traceback="\n".join(r)
                 self.debug("Script traceback:\n%s"%self.error_traceback)
         else:
+            # Shutdown session
+            if self.profile.shutdown_session:
+                self.debug("Shutting down session")
+                self.profile.shutdown_session(self)
             # Serialize result
             self.result=self.serialize_result(result)
             if self.parent is None and self.need_to_save and self.profile.command_save_config:
