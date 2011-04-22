@@ -129,6 +129,12 @@ class Service(SAEService):
                     self.activator.ping_check_results[a]=True
             done(controller,response=r)
         self.activator.ping_check([a for a in request.addresses],ping_check_callback)
+    
+    def refresh_event_filter(self, controller, request, done):
+        self.activator.refresh_event_filter()
+        done(controller, response=RefreshEventFilterResponse())
+    
+
 ##
 ## Activator-SAE channel
 ##
@@ -574,11 +580,11 @@ class Activator(Daemon,FSM):
     def release_stream(self,stream):
         logging.debug("Releasing stream %s"%str(stream))
         del self.streams[stream]
-                
+    
     def reboot(self):
         logging.info("Rebooting")
         os.execv(sys.executable,[sys.executable]+sys.argv)
-        
+    
     # Handlers
     ##
     ## Register
@@ -672,6 +678,12 @@ class Activator(Daemon,FSM):
         for f in update_list:
             r.names.append(f)
         self.software_upgrade_transaction=self.sae_stream.proxy.software_upgrade(r,software_upgrade_callback)
+    
+    ##
+    @check_state("ESTABLISHED")
+    def refresh_event_filter(self):
+        self.get_event_filter()
+    
     ##
     ##
     ##
