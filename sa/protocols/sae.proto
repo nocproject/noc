@@ -156,6 +156,12 @@ message SoftwareUpgradeResponse {
 //
 // Event processing
 //
+message RefreshEventFilterRequest{
+}
+
+message RefreshEventFilterResponse{
+}
+
 message EventFilterRequest {
 }
 
@@ -232,6 +238,7 @@ service SAEService {
     rpc manifest         (ManifestRequest)        returns (ManifestResponse);
     rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
     rpc script           (ScriptRequest)          returns (ScriptResponse);
+    rpc refresh_event_filter (RefreshEventFilterRequest) returns (RefreshEventFilterResponse);
     rpc event_filter     (EventFilterRequest)     returns (EventFilterResponse);
     rpc event            (EventRequest)           returns (EventResponse);
     rpc ping_check       (PingCheckRequest)       returns (PingCheckResponse);
