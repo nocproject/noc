@@ -59,6 +59,7 @@ class UserAdmin(DjangoUserAdmin):
     list_filter = ('is_superuser', 'is_active')
     filter_horizontal=("groups",)
     form = UserChangeForm
+    
 ##
 ##
 ##
@@ -84,3 +85,8 @@ class UserApplication(ModelApplication):
         return self.render(request,"change_password.html",{"form":form,"original":user})
     view_change_password.url=r"^(\d+)/password/$"
     view_change_password.access=HasPerm("change")
+    
+    def has_delete_permission(self, request, obj=None):
+        """Disable 'Delete' button"""
+        return False
+    
