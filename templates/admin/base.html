@@ -24,7 +24,7 @@
 
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
 <script type="text/javascript">
-    MENU_JSON_URL="{% url main:menu:json %}";
+    MENU_JSON_URL="{% url main:menu:json user.id %}";
     $(document).ready(menu);
 </script>
 <!-- Container -->
