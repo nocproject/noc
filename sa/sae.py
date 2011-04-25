@@ -44,6 +44,33 @@ class Service(SAEService):
     def get_controller_activator(self,controller):
         return Activator.objects.get(name=controller.stream.pool_name)
     
+    def get_activator(self, controller, name, done):
+        # Get activator
+        try:
+            activator=Activator.objects.get(name=name)
+        except Activator.DoesNotExist:
+            msg = "Unknown activator '%s'" % name
+            logging.error(msg)
+            done(controller, error=Error(code=ERR_UNKNOWN_ACTIVATOR,
+                    text=msg))
+            return None
+        # Check shard is match
+        if activator.shard.name not in self.sae.shards:
+            msg = "Shard mismatch for '%s'. '%s' is not in %s" % (
+                        name, activator.shard.name, self.sae.shards)
+            logging.error(msg)
+            done(controller, error=Error(code=ERR_INVALID_SHARD,
+                 text=msg))
+            return None
+        # Check shard is active
+        if not activator.shard.is_active:
+            msg = "Shard is down: '%s'" % activator.shard.name
+            logging.error(msg)
+            done(controller, error=Error(code=ERR_SHARD_IS_DOWN,
+                text=msg))
+            return None
+        return activator
+    
     ##
     ## RPC interfaces
     ##
@@ -51,18 +78,11 @@ class Service(SAEService):
         done(controller,response=PingResponse())
     
     def register(self,controller,request,done):
-        print self.sae.shards
-        try:
-            activator=Activator.objects.get(name=request.name)
-        except Activator.DoesNotExist:
-            logging.error("Unknown activator '%s'"%request.name)
-            done(controller, error=Error(code=ERR_UNKNOWN_ACTIVATOR, text="Unknown activator '%s'"%request.name))
+        # Get activator
+        activator = self.get_activator(controller, request.name, done)
+        if not activator:
             return
-        if activator.shard.name not in self.sae.shards:
-            logging.error("Shard mismatch for activator '%s'" % request.name)
-            done(controller, error=Error(code=ERR_INVALID_SHARD,
-                 text="Shard mismatch for '%s'. '%s' is not in %s" % (request.name, activator.shard.name, self.sae.shards)))
-            return
+        # Requesting digest
         logging.info("Requesting digest for activator '%s'"%request.name)
         r=RegisterResponse()
         r.nonce=get_nonce()
@@ -70,17 +90,11 @@ class Service(SAEService):
         done(controller,response=r)
         
     def auth(self,controller,request,done):
-        try:
-            activator=Activator.objects.get(name=request.name)
-        except Activator.DoesNotExist:
-            logging.error("Unknown activator '%s'"%request.name)
-            done(controller, error=Error(code=ERR_UNKNOWN_ACTIVATOR, text="Unknown activator '%s'"%request.name))
+        # Get activator
+        activator = self.get_activator(controller, request.name, done)
+        if not activator:
             return
-        if activator.shard.name not in self.sae.shards:
-            logging.error("Shard mismatch for activator '%s'" % request.name)
-            done(controller, error=Error(code=ERR_INVALID_SHARD,
-                 text="Shard mismatch for '%s'. '%s' is not in %s" % (request.name, activator.shard.name, self.sae.shards)))
-            return
+        # Authenticating
         logging.info("Authenticating activator '%s'"%request.name)
         if controller.stream.nonce is None or get_digest(request.name,activator.auth,controller.stream.nonce)!=request.digest:
             done(controller, error=Error(code=ERR_AUTH_FAILED, text="Authencication failed for activator '%s'"%request.name))
@@ -574,6 +588,7 @@ class SAE(Daemon):
                     **kwargs)
         t=datetime.datetime.now()
         for mt in MapTask.objects.filter(status="W", next_try__lte=t,
+                    managed_object__activator__shard__is_active=True,
                     managed_object__activator__shard__name__in=self.shards):
             if mt.task.stop_time<t: # Task timeout
                 mt.status="F"
