@@ -16,7 +16,7 @@ class Migration:
             ("is_active", models.BooleanField(_("Is Active"), default=True)),
             ("description", models.TextField(_("Description"), null=True, blank=True)),
         ))
-        db.send_create_signal("main", ["Schedule"])
+        db.send_create_signal("main", ["Shard"])
     
     def backwards(self):
         db.delete_table("main_shard")
