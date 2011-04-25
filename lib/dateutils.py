@@ -37,7 +37,7 @@ def humanize_timedelta(delta):
             return _("%d days") % round((float(d) * 86400.0 + s) / 86400)
         elif d < 60 and s < 84600:  # 59D23:59:30
             return _("about 1 month")
-        elif d < 356:
+        elif d < 365:
             return _("%d months") % round(float(d) / 30)
         elif d < 446:  # 1Y 3M
             return _("about 1 year")
