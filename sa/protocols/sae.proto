@@ -51,6 +51,7 @@ enum ErrorCode {
     ERR_NOT_SUPPORTED       =21; // Not supported feature
     ERR_HTTP_ERROR          =22; // HTTP Error
     ERR_INVALID_SHARD       =23; // Shard mismatch
+    ERR_SHARD_IS_DOWN       =24; // Shard is disabled
 }
 
 //
