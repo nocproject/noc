@@ -1031,6 +1031,20 @@ class Schedule(models.Model):
         t.save()
     
 
+class Shard(models.Model):
+    class Meta:
+        verbose_name = _("Shard")
+        verbose_name_plural = _("Shards")
+        ordering = ["name"]
+    
+    name = models.CharField(_("Name"), max_length=128, unique=True)
+    is_active = models.BooleanField(_("Is Active"), default=True)
+    description = models.TextField(_("Description"), null=True, blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    
+
 ##
 ## Install triggers
 ##

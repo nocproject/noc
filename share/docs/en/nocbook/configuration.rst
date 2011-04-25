@@ -952,6 +952,12 @@ Pid file path
 [sae] section
 +++++++++++++
 
+.. _noc-sae-conf-sae-shards:
+
+shards
+^^^^^^
+Comma-separated list of shards, served by SAE daemon
+
 .. _noc-sae-conf-sae-listen:
 
 listen

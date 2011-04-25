@@ -12,7 +12,8 @@ from noc.sa.models import Activator
 ## Activator admin
 ##
 class ActivatorAdmin(admin.ModelAdmin):
-    list_display=["name","ip","is_active"]
+    list_display=["name", "ip", "is_active", "shard"]
+    filter_display = ["is_active", "shard"]
 ##
 ## Activator application
 ##

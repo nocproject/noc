@@ -51,11 +51,17 @@ class Service(SAEService):
         done(controller,response=PingResponse())
     
     def register(self,controller,request,done):
+        print self.sae.shards
         try:
             activator=Activator.objects.get(name=request.name)
         except Activator.DoesNotExist:
             logging.error("Unknown activator '%s'"%request.name)
             done(controller, error=Error(code=ERR_UNKNOWN_ACTIVATOR, text="Unknown activator '%s'"%request.name))
+            return
+        if activator.shard.name not in self.sae.shards:
+            logging.error("Shard mismatch for activator '%s'" % request.name)
+            done(controller, error=Error(code=ERR_INVALID_SHARD,
+                 text="Shard mismatch for '%s'. '%s' is not in %s" % (request.name, activator.shard.name, self.sae.shards)))
             return
         logging.info("Requesting digest for activator '%s'"%request.name)
         r=RegisterResponse()
@@ -69,6 +75,11 @@ class Service(SAEService):
         except Activator.DoesNotExist:
             logging.error("Unknown activator '%s'"%request.name)
             done(controller, error=Error(code=ERR_UNKNOWN_ACTIVATOR, text="Unknown activator '%s'"%request.name))
+            return
+        if activator.shard.name not in self.sae.shards:
+            logging.error("Shard mismatch for activator '%s'" % request.name)
+            done(controller, error=Error(code=ERR_INVALID_SHARD,
+                 text="Shard mismatch for '%s'. '%s' is not in %s" % (request.name, activator.shard.name, self.sae.shards)))
             return
         logging.info("Authenticating activator '%s'"%request.name)
         if controller.stream.nonce is None or get_digest(request.name,activator.auth,controller.stream.nonce)!=request.digest:
@@ -212,6 +223,7 @@ class SAESSLSocket(RPCSocket, AcceptedTCPSSLSocket):
 class SAE(Daemon):
     daemon_name="noc-sae"
     def __init__(self):
+        self.shards = []
         Daemon.__init__(self)
         logging.info("Running SAE")
         #
@@ -238,6 +250,16 @@ class SAE(Daemon):
         self.log_cli_sessions=False
         self.script_threads={}
         self.script_lock=threading.Lock()
+    
+    ##
+    ##
+    ##
+    def load_config(self):
+        super(SAE, self).load_config()
+        self.shards = [s.strip()
+                       for s in self.config.get("sae", "shards", "").split(",")]
+        logging.info("Serving shards: %s" % ", ".join(self.shards))
+    
     ##
     ## Build activator manifest
     ##
@@ -551,7 +573,8 @@ class SAE(Daemon):
                     lambda result=None,error=None: map_callback(mt.id,result,error),
                     **kwargs)
         t=datetime.datetime.now()
-        for mt in MapTask.objects.filter(status="W",next_try__lte=t):
+        for mt in MapTask.objects.filter(status="W", next_try__lte=t,
+                    managed_object__activator__shard__name__in=self.shards):
             if mt.task.stop_time<t: # Task timeout
                 mt.status="F"
                 mt.script_result=dict(code=ERR_TIMEOUT, text="Timed out")
