@@ -2,6 +2,8 @@ VERSION
 __init__.py
 etc/noc-activator.defaults
 etc/noc.defaults
+etc/noc-launcher.defaults
+etc/ssh/
 lib/__init__.py
 lib/daemon.py
 lib/debug.py
@@ -31,7 +33,10 @@ sa/syslogcollector.py
 sa/trapcollector.py
 scripts/noc-activator.py
 scripts/stdin-wrapper
+scripts/noc-launcher.py
 contrib/lib/site.py
 contrib/lib/easy-install.pth
-contrib/lib/protobuf-2.3.0-py2.6.egg/
+contrib/lib/protobuf-*.egg/
+contrib/lib/pyasn1-*.egg/
+contrib/lib/pysnmp-*.egg/
 settings.py
