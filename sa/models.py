@@ -24,7 +24,7 @@ from django.contrib.auth.models import User, Group
 ## Third-party modules
 from tagging.models import TaggedItem
 ## NOC modules
-from noc.main.models import PyRule
+from noc.main.models import PyRule, Shard
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import *
@@ -68,6 +68,7 @@ class Activator(models.Model):
         ordering = ["name"]
     
     name = models.CharField(_("Name"), max_length=32, unique=True)
+    shard = models.ForeignKey(Shard, verbose_name=_("Shard"))
     ip = models.IPAddressField(_("From IP"))
     to_ip = models.IPAddressField(_("To IP"))
     auth = models.CharField(_("Auth String"), max_length=64)

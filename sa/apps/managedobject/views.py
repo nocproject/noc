@@ -209,7 +209,8 @@ class ManagedObjectAdmin(admin.ModelAdmin):
     list_display = ["name", object_status, profile, "address",
                     domain_activator,
                     "description", "repo_path", action_links]
-    list_filter = ["is_managed", "is_configuration_managed", "activator",
+    list_filter = ["is_managed", "is_configuration_managed", 
+                   "activator__shard", "activator",
                    "administrative_domain", "profile_name"]
     search_fields = ["name", "address", "repo_path", "description"]
     object_class = ManagedObject
@@ -219,8 +220,8 @@ class ManagedObjectAdmin(admin.ModelAdmin):
     ##
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name in ("password", "super_password"):
-            kwargs["widget"] = forms.widgets.PasswordInput
-            if "request" in kwargs:  # For Django 1.1 compatibility
+            kwargs["widget"] = forms.widgets.PasswordInput(render_value=True)
+            if "request" in kwargs:  # For Django 1.1 and later compatibility
                 kwargs.pop("request", None)
             return db_field.formfield(**kwargs)
         return super(ManagedObjectAdmin, self).formfield_for_dbfield(db_field, **kwargs)
@@ -239,9 +240,6 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             return obj.has_access(request.user)
         else:
             return admin.ModelAdmin.has_delete_permission(self, request)
-    
-    def queryset(self, request):
-        return ManagedObject.queryset(request.user)
     
     def save_model(self, request, obj, form, change):
         # Save before checking

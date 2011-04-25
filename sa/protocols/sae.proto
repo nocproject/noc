@@ -50,6 +50,7 @@ enum ErrorCode {
     ERR_CANCELLED           =20; // Script cancelled
     ERR_NOT_SUPPORTED       =21; // Not supported feature
     ERR_HTTP_ERROR          =22; // HTTP Error
+    ERR_INVALID_SHARD       =23; // Shard mismatch
 }
 
 //
