@@ -301,11 +301,18 @@ class Config(Object):
     ##
     def has_access(self,user):
         return self.managed_object.has_access(user)
-        
+    
     @classmethod
-    def queryset(cls,user):
+    def user_objects(cls, user):
+        """
+        Get objects available to user
+
+        :param user: User
+        :type user: User instance
+        :rtype: Queryset
+        """
         if user.is_superuser:
-            return cls.objects.all()
+            return cls.objects.all
         else:
             return cls.objects.filter(managed_object__in=ManagedObject.user_objects(user))
     
