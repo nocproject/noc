@@ -5,5 +5,6 @@
 PREFIX=`dirname $0`/../
 MANIFEST=$PREFIX/MANIFEST-ACTIVATOR
 DEST=$1/noc/
+export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
 [ -d $DEST ] || mkdir -p $DEST
 (tar cf - `cat $MANIFEST`)|(cd $DEST && tar xfv -)

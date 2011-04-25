@@ -16,6 +16,7 @@ import threading
 import logging
 import random
 import cPickle
+import glob
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
@@ -286,12 +287,17 @@ class SAE(Daemon):
         
         files=set()
         for f in manifest:
-            if f.endswith("/"):
-                for dirpath,dirnames,filenames in os.walk(f):
-                    for f in [f for f in filenames if f.endswith(".py")]:
-                        files.add(os.path.join(dirpath,f))
+            if "*" in f:
+                ff = glob.glob(f)
             else:
-                files.add(f)
+                ff = [f]
+            for g in ff:
+                if os.path.isdir(g):
+                    for dirpath,dirnames,filenames in os.walk(g):
+                        for f in [f for f in filenames if f.endswith(".py")]:
+                            files.add(os.path.join(dirpath, f))
+                else:
+                    files.add(g)
         for f in files:
             self.activator_manifest_files.add(f)
             cs=self.activator_manifest.files.add()
