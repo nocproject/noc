@@ -72,7 +72,7 @@ class TransactionFactory(object):
             if id not in self.transactions:
                 return id
 
-    def has_key(self,id):
+    def __contains__(self, id):
         return id in self.transactions
         
     def __getitem__(self,id):
@@ -158,7 +158,7 @@ class RPCSocket(object):
             
     def rpc_handle_request(self,id,request):
         logging.debug("rpc_handle_request")
-        if self.transactions.has_key(id):
+        if id in self.transactions:
             self.send_error(id,ERR_TRANSACTION_EXISTS,"Transaction %s is alreasy exists"%id)
             return
         method=self.service.GetDescriptor().FindMethodByName(request.method)
@@ -178,7 +178,7 @@ class RPCSocket(object):
         
     def rpc_handle_response(self,id,response):
         logging.debug("rpc_handle_response:\nid: %s\n%s"%(id,str(response)))
-        if not self.transactions.has_key(id):
+        if id not in self.transactions:
             logging.error("Invalid transaction: %s"%id)
             return
         t=self.transactions[id]
@@ -193,7 +193,7 @@ class RPCSocket(object):
     
     def rpc_handle_error(self,id,error):
         logging.debug("rpc_handle_error:\nid: %s\n%s"%(id,str(error)))
-        if not self.transactions.has_key(id):
+        if id not in self.transactions:
             logging.error("Invalid transaction: %s"%id)
             return
         self.transactions[id].commit(id,error=error)
@@ -215,7 +215,7 @@ class RPCSocket(object):
     def send_response(self,controller,response=None,error=None):
         id=controller.transaction.id
         logging.debug("send_response:\nid: %d\nresponse:\n%s\nerror:\n%s"%(id,str(response),str(error)))
-        if not self.transactions.has_key(id):
+        if id not in self.transactions:
             raise Exception("Invalid transaction")
         m=Message()
         m.id=id
