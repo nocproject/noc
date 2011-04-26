@@ -179,4 +179,10 @@ class CLITelnetSocket(CLI, ConnectedTCPSocket):
     def debug(self,msg):
         logging.debug("[%s] %s"%(self.log_label(),msg))
     
+    ##
+    def on_close(self):
+        if self.get_state() == "START":
+            self.motd = "Connection timeout"
+            self.set_state("FAILURE")
+    
 
