@@ -460,7 +460,7 @@ Timeout to wait when error occured during get_config script execution
 timeout_overload
 ^^^^^^^^^^^^^^^^
 Timeout to wait when activator reports overload during get_config script execution. Activator *overload* means
-activator's amount of concurrently executing scripts exceeds :ref:`noc-activator-conf-activator-max_pull_config` value
+activator's amount of concurrently executing scripts exceeds :ref:`noc-activator-conf-activator-max_scripts` value
 
 .. _noc-conf-cm-timeout_down:
 
@@ -1084,11 +1084,11 @@ software_update
 * true - enable software update on connect.
 * false - do not update software on connect
 
-.. _noc-activator-conf-activator-max_pull_config:
+.. _noc-activator-conf-activator-max_scripts:
 
-max_pull_config
-^^^^^^^^^^^^^^^
-Maximum concurrent telnet/ssh sessions
+max_scripts
+^^^^^^^^^^^
+Maximum concurrent scripts per activator
 
 .. _noc-activator-conf-sae:
 

@@ -124,6 +124,16 @@ class Service(SAEService):
             u.name=n
             u.code=read_file(n)
         done(controller,response=r)
+    
+    def set_caps(self, controller, request, done):
+        if not controller.stream.is_authenticated:
+            done(controller,error=Error(code=ERR_AUTH_REQUIRED, text="Authentication required"))
+            return
+        logging.debug("Set capabilities: max_scripts=%d" % request.max_scripts)
+        controller.stream.max_scripts = request.max_scripts
+        controller.stream.current_scripts = 0
+        r = SetCapsResponse()
+        done(controller, response=r)
     ##
     ## Retrieve event filters
     ##
@@ -423,16 +433,29 @@ class SAE(Daemon):
     ##
     ## Select activator for task
     ##
-    def get_activator_stream(self, name):
+    def get_activator_stream(self, name, for_script=False):
+        def weight(a):
+            """Load balancing weight"""
+            if a.max_scripts == a.current_scripts:
+                return 0
+            return float(a.max_scripts - a.current_scripts) / a.max_scripts
+        
         if name not in self.activators:
             raise Exception("Activator pool '%s' is not available"%name)
         a=self.activators[name]
         if len(a)==0:
             raise Exception("No activators in pool '%s' available"%name)
-        return random.choice(list(a)) # @todo: smarter selection
+        if not for_script:
+            return random.choice(list(a))
+        # Weighted balancing
+        a = sorted(a, lambda x, y: -cmp(weight(x), weight(y)))[0]
+        if a.max_scripts == a.current_scripts:
+            raise Exception("All activators are busy in pool '%s'" % name)
+        return a
     
     def script(self,object,script_name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
+            stream.current_scripts += 1
             if error:
                 logging.error("script(%s,%s,**%s) failed: %s"%(script_name,object,kwargs,error.text))
                 callback(error=error)
@@ -440,11 +463,12 @@ class SAE(Daemon):
             result=response.result
             result=cPickle.loads(str(result)) # De-serialize
             callback(result=result)
+        
         logging.info("script %s(%s)"%(script_name,object))
         if object.profile_name!="NOC.SAE":
             # Validate activator is present
             try:
-                stream=self.get_activator_stream(object.activator.name)
+                stream=self.get_activator_stream(object.activator.name, True)
             except Exception, why:
                 e=Error(code=ERR_ACTIVATOR_NOT_AVAILABLE, text=why)
                 logging.error(e.text)
@@ -481,6 +505,7 @@ class SAE(Daemon):
         if object.profile_name=="NOC.SAE":
             self.run_sae_script(r,script_callback)
         else:
+            stream.current_scripts += 1
             stream.proxy.script(r,script_callback)
     ##
     ## Send a list of addresses to activator
@@ -514,7 +539,7 @@ class SAE(Daemon):
                 save_probe_result(u,"success")
         logging.debug("ping_check(%s)"%activator.name)
         try:
-            stream=self.get_activator_stream(activator.name)
+            stream=self.get_activator_stream(activator.name, False)
         except:
             e=Error()
             e.code=ERR_ACTIVATOR_NOT_AVAILABLE
