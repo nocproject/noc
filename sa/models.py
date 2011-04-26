@@ -24,7 +24,7 @@ from django.contrib.auth.models import User, Group
 ## Third-party modules
 from tagging.models import TaggedItem
 ## NOC modules
-from noc.main.models import PyRule, Shard
+from noc.main.models import PyRule, Shard, PrefixTable
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import *
@@ -32,6 +32,7 @@ from noc.lib.search import SearchResult
 from noc.lib.fields import PickledField, INETField, AutoCompleteTagsField
 from noc.lib.app.site import site
 from noc.lib.validators import check_re
+from noc.lib.db import SQL
 ##
 ## Register objects
 ##
@@ -388,6 +389,10 @@ class ManagedObjectSelector(models.Model):
             choices=profile_registry.choices)
     filter_address = models.CharField(_("Filter by Address (REGEXP)"),
             max_length=256, null=True, blank=True, validators=[check_re])
+    filter_prefix = models.ForeignKey(PrefixTable,
+            verbose_name=_("Filter by Prefix Table"), null=True, blank=True)
+    filter_shard = models.ForeignKey(Shard,
+            verbose_name=_("Filter by Shard"), null=True, blank=True)
     filter_administrative_domain = models.ForeignKey(AdministrativeDomain,
             verbose_name=_("Filter by Administrative Domain"),
             null=True, blank=True)
@@ -418,32 +423,54 @@ class ManagedObjectSelector(models.Model):
     @property
     def Q(self):
         # Apply restrictions
-        q = Q(is_managed=True) & ~Q(profile_name="NOC")
+        q = Q(is_managed=True) & ~Q(profile_name__startswith="NOC.")
+        # Filter by ID
         if self.filter_id:
             q &= Q(id=self.filter_id)
+        # Filter by name (regex)
         if self.filter_name:
             q &= Q(name__regex=self.filter_name)
+        # Filter by profile
         if self.filter_profile:
             q &= Q(profile_name=self.filter_profile)
+        # Filter by address (regex)
         if self.filter_address:
             q &= Q(address__regex=self.filter_address)
+        # Filter by prefix table
+        if self.filter_prefix:
+            q &= SQL("""
+                EXISTS (
+                    SELECT * FROM main_prefixtableprefix p
+                    WHERE   table_id=%d
+                        AND address::inet <<= p.prefix)""" % self.filter_prefix.id)
+        # Filter by shard
+        if self.filter_shard:
+            q &= Q(activator__shard=self.filter_shard)
+        # Filter by administrative domain
         if self.filter_administrative_domain:
             q &= Q(administrative_domain=self.filter_administrative_domain)
+        # Filter by activator
         if self.filter_activator:
             q &= Q(activator=self.filter_activator)
+        # Filter by username
         if self.filter_user:
             q &= Q(user__regex=self.filter_user)
+        # Filter by remote path
         if self.filter_remote_path:
             q &= Q(remote_path__regex=self.filter_remote_path)
+        # Filter by description
         if self.filter_description:
             q &= Q(description__regex=self.filter_description)
+        # Filter by repo path
         if self.filter_repo_path:
             q &= Q(repo_path__regex=self.filter_repo_path)
         # Restrict to tags when necessary
+        # @todo: Optimize with SQL
         t_ids = TaggedItem.objects.get_intersection_by_model(ManagedObject, self.filter_tags).values_list("id", flat=True)
         if t_ids:
             q &= Q(id__in=t_ids)
         # Restrict to attributes when necessary
+        # @todo: optimize with SQL
         m_ids = None
         for s in  self.managedobjectselectorbyattribute_set.all():
             ids = ManagedObjectAttribute.objects.filter(key__regex=s.key_re, value__regex=s.value_re).values_list("managed_object", flat=True)
@@ -453,8 +480,6 @@ class ManagedObjectSelector(models.Model):
                 m_ids &= set(ids)
         if m_ids is not None:
             q &= Q(id__in=m_ids)
-        # Apply filters
-        r = ManagedObject.objects.filter(q)
         # Restrict to sources
         if self.sources.count():
             if self.source_combine_method == "A":
