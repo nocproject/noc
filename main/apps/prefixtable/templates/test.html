@@ -1,0 +1,23 @@
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>Test</li>{% endblock %}
+{% block content %}
+<h1>Test Prefix Table</h1>
+<form method="POST">
+    <table border="0">
+    {{form.as_table}}
+    </table>
+    <input type="submit" value="Test">
+</form>
+{% if result %}
+    <table border="0">
+        {% for p, s in result %}
+            <tr class="{%cycle 'row1' 'row2'%}">
+                <td>{{p.name}}</td>
+                <td>
+                    <img src="/media/img/admin/icon-{%if s%}yes{%else%}no{%endif%}.gif">
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+{% endblock %}

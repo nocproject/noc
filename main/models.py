@@ -13,7 +13,7 @@ import re
 import threading
 ## Django Modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
+from django.db import models, connection
 from django.contrib.auth.models import User, Group
 from django.core.validators import MaxLengthValidator
 from django.contrib import databrowse
@@ -25,13 +25,14 @@ from noc import settings
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 from noc.main.refbooks.downloaders import downloader_registry
-from noc.lib.fields import TextArrayField, PickledField, ColorField
+from noc.lib.fields import TextArrayField, PickledField, ColorField, CIDRField
 from noc.lib.middleware import get_user
 from noc.lib.timepattern import TimePattern as TP
 from noc.lib.timepattern import TimePatternList
 from noc.sa.interfaces.base import interface_registry
 from noc.lib.periodic import periodic_registry
 from noc.lib.app.site import site
+from noc.lib.ip import IP
 ## Register periodics
 periodic_registry.register_all()
 ##
@@ -1044,6 +1045,58 @@ class Shard(models.Model):
     def __unicode__(self):
         return self.name
     
+
+class PrefixTable(models.Model):
+    class Meta:
+        verbose_name = _("Perfix Table")
+        verbose_name_plural = _("Prefix Tables")
+        ordering = ["name"]
+    
+    name = models.CharField(_("Name"), max_length=128, unique=True)
+    description = models.TextField(_("Description"), null=True, blank=True)
+    
+    def __unicode__(self):
+        return self.name
+    
+    def match(self, prefix):
+        """
+        Check the prefix is inside Prefix Table
+        
+        :param prefix: Prefix
+        :type prefix: Str
+        :rtype: Bool
+        """
+        p = IP.prefix(prefix)
+        c = connection.cursor()
+        c.execute("""
+            SELECT COUNT(*)
+            FROM  main_prefixtableprefix
+            WHERE table_id = %s
+              AND afi = %s
+              AND %s <<= prefix
+        """, [self.id, p.afi, prefix])
+        return c.fetchall()[0][0] > 0
+    
+
+class PrefixTablePrefix(models.Model):
+    class Meta:
+        verbose_name = _("Prefix")
+        verbose_name_plural = _("Prefixes")
+        unique_together = [("table", "afi", "prefix")]
+        ordering = ["table", "afi", "prefix"]
+    
+    table = models.ForeignKey(PrefixTable, verbose_name = _("Prefix Table"))
+    afi = models.CharField(_("Address Family"),max_length=1,
+            choices=[("4", _("IPv4")), ("6", _("IPv6"))])
+    prefix = CIDRField(_("Prefix"))
+    
+    def __unicode__(self):
+        return u"%s %s" % (self.table.name, self.prefix)
+    
+    def save(self, *args, **kwargs):
+        # Set AFI
+        self.afi = IP.prefix(self.prefix).afi
+        return super(PrefixTablePrefix, self).save(*args, **kwargs)
 
 ##
 ## Install triggers
