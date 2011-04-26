@@ -14,7 +14,7 @@ import re
 class Script(NOCScript):
     name="OS.FreeBSD.ping"
     implements=[IPing]
-    rx_result=re.compile(r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+\.\d+% packet loss",re.MULTILINE|re.DOTALL|re.IGNORECASE)
+    rx_result=re.compile(r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+\.\d+% packet loss\nround-trip min/avg/max/stddev = (?P<min>\d+\.\d+)/(?P<avg>\d+\.\d+)/(?P<max>\d+\.\d+)/\d+\.\d+ ms",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     def execute(self,address,count=None,source_address=None,size=None,df=None):
         cmd="/sbin/ping -q"
         if count:
@@ -32,4 +32,7 @@ class Script(NOCScript):
         return {
             "success": match.group("success"),
             "count"  : match.group("count"),
+            "min"    : match.group("min"),
+            "avg"    : match.group("avg"),
+            "max"    : match.group("max"),
         }
