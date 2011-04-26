@@ -455,7 +455,7 @@ class SAE(Daemon):
     
     def script(self,object,script_name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
-            stream.current_scripts += 1
+            stream.current_scripts -= 1
             if error:
                 logging.error("script(%s,%s,**%s) failed: %s"%(script_name,object,kwargs,error.text))
                 callback(error=error)
