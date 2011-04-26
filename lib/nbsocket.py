@@ -212,6 +212,7 @@ class Socket(object):
         if not self.socket_is_ready():  # Socket was not created
             raise SocketNotImplemented()
         self.socket.setblocking(0)
+        self.last_read = time.time()
     
     def set_timeout(self, ttl):
         """
@@ -366,7 +367,7 @@ class Socket(object):
         """
         return (self.socket_is_ready() and self.ttl
                 and time.time() - self.last_read >= self.ttl)
-
+        
 
 class Protocol(object):
     """
@@ -749,6 +750,7 @@ class ConnectedTCPSocket(TCPSocket):
         super(ConnectedTCPSocket, self).create_socket()
         if self.local_address:
             self.socket.bind((self.local_address, 0))
+        self.debug("Connecting %s:%s" % (self.address, self.port))
         e = self.socket.connect_ex((self.address, self.port))
         if e in (ETIMEDOUT, ECONNREFUSED, ENETUNREACH):
             self.on_conn_refused()
@@ -759,6 +761,7 @@ class ConnectedTCPSocket(TCPSocket):
         
     def handle_read(self):
         if not self.is_connected:
+            self.debug("Connected")
             self.handle_connect()
             return
         try:
