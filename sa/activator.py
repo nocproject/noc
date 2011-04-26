@@ -103,7 +103,7 @@ class Service(SAEService):
             e.text="Host is down"
             done(controller,error=e)
             return
-        # Check [activator]/max_pull_config limit
+        # Check [activator]/max_scripts limit
         if not self.activator.can_run_script():
             e=Error()
             e.code=ERR_OVERLOAD
@@ -251,13 +251,16 @@ class Activator(Daemon,FSM):
                 "error"   : "IDLE",
         },
         "AUTHENTICATED" : {
-                "establish" : "ESTABLISHED",
-                "upgrade"   : "UPGRADE",
+                "caps"    : "CAPS",
+                "upgrade" : "UPGRADE",
                 "close"   : "IDLE",
         },
         "UPGRADE" : {
+                "caps"    : "CAPS",
+                "close"   : "IDLE",
+        },
+        "CAPS" : {
                 "establish" : "ESTABLISHED",
-                "close"     : "IDLE",
         },
         "ESTABLISHED" : {
                 "close"   : "IDLE",
@@ -291,7 +294,7 @@ class Activator(Daemon,FSM):
         self.next_crashinfo_check=None
         self.next_heartbeat=None
         self.script_threads={}
-        self.max_script_threads=self.config.getint("activator","max_pull_config")
+        self.max_script_threads=self.config.getint("activator","max_scripts")
         self.script_lock=Lock()
         self.script_call_queue=Queue.Queue()
         self.pm_data_queue=[]
@@ -378,13 +381,21 @@ class Activator(Daemon,FSM):
             self.event("upgrade")
         else:
             logging.info("In-bundle package. Skiping software updates")
-            self.event("establish")
+            self.event("caps")
     ##
     ## UPGRADE
     ##
     def on_UPGRADE_enter(self):
         logging.info("Requesting software update")
         self.manifest()
+    
+    ##
+    ## CAPS
+    ##
+    def on_CAPS_enter(self):
+        logging.info("Sending capabilities")
+        self.send_caps()
+    
     ##
     ## ESTABLISHED
     ##
@@ -466,7 +477,7 @@ class Activator(Daemon,FSM):
                 pdc.close()
             self.pm_data_collectors=[]
     ##
-    ## Checks wrether max_pull_config limit exceeded
+    ## Checks wrether max_scripts limit exceeded
     ##
     def can_run_script(self):
         with self.script_lock:
@@ -646,7 +657,7 @@ class Activator(Daemon,FSM):
                 if update_list:
                     self.software_upgrade(update_list)
                 else:
-                    self.event("establish")
+                    self.event("caps")
             else:
                 logging.error("Transaction id mismatch")
                 self.manifest_transaction=None
@@ -678,6 +689,16 @@ class Activator(Daemon,FSM):
         for f in update_list:
             r.names.append(f)
         self.software_upgrade_transaction=self.sae_stream.proxy.software_upgrade(r,software_upgrade_callback)
+    
+    ##
+    @check_state("CAPS")
+    def send_caps(self):
+        def send_caps_callback(transaction, response=None, error=None):
+            self.event("establish")
+        
+        r = SetCapsRequest()
+        r.max_scripts = self.max_script_threads
+        self.sae_stream.proxy.set_caps(r, send_caps_callback)
     
     ##
     @check_state("ESTABLISHED")

@@ -24,7 +24,7 @@ listen_syslog   =
 listen_pm_data  = 127.0.0.1
 secret          = thesecretkey
 software_update = true
-max_pull_config = 10
+max_scripts     = 10
 pm_data_secret  = secret
 
 [sae]
