@@ -312,7 +312,7 @@ class Config(Object):
         :rtype: Queryset
         """
         if user.is_superuser:
-            return cls.objects.all
+            return cls.objects.all()
         else:
             return cls.objects.filter(managed_object__in=ManagedObject.user_objects(user))
     
