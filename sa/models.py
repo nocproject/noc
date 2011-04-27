@@ -898,6 +898,8 @@ class CommandSnippet(models.Model):
                                  verbose_name=_("Object Selector"))
     is_enabled = models.BooleanField(_("Is Enabled?"), default=True)
     timeout = models.IntegerField(_("Timeout (sec)"), default=60)
+    require_confirmation = models.BooleanField(_("Require Confirmation"),
+            default=False)
     tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
     
     def __unicode__(self):
