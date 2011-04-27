@@ -163,6 +163,36 @@ class ManagedObject(models.Model):
     # Use special filter for profile
     profile_name.existing_choices_filter = True  
     
+    ## object.scripts. ...
+    class ScriptsProxy(object):
+        class CallWrapper(object):
+            def __init__(self, obj, name):
+                self.name = name
+                self.object = obj
+            
+            def __call__(self, **kwargs):
+                task = ReduceTask.create_task([self.object],
+                    reduce_object_script, {},
+                    self.name, kwargs, None)
+                return task.get_result(block=True)
+        
+        def __init__(self, obj):
+            self._object = obj
+            self._cache = {}
+        
+        def __getattr__(self, name):
+            if name in self._cache:
+                return self._cache[name]
+            if name not in self._object.profile.scripts:
+                raise AttributeError(name)
+            cw = ManagedObject.ScriptsProxy.CallWrapper(self._object, name)
+            self._cache[name] = cw
+            return cw
+    
+    def __init__(self, *args, **kwargs):
+        super(ManagedObject, self).__init__(*args, **kwargs)
+        self.scripts = ManagedObject.ScriptsProxy(self)
+    
     def __unicode__(self):
         return self.name
     
@@ -890,6 +920,16 @@ class CommandSnippet(models.Model):
         """
         from django.template import Template, Context
         return Template(self.snippet).render(Context(data))
+    
+##
+## Reduce Scripts
+##
+def reduce_object_script(task):
+    mt = task.maptask_set.all()[0]
+    if mt.status == "C":
+        return mt.script_result
+    else:
+        return None
     
 ##
 ## SAE services shortcuts
