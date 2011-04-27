@@ -202,6 +202,9 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("config_filter_rule", "config_diff_filter_rule",
                        "config_validation_rule")
         }),
+        ("Other", {
+            "fields": ("max_scripts", )
+        }),
         ("Tags", {
             "fields": ("tags",)
         }),

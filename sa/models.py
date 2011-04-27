@@ -154,6 +154,9 @@ class ManagedObject(models.Model):
             limit_choices_to={"interface": "IConfigValidator"},
             null=True, blank=True,
             related_name="managed_object_config_validation_rule_set")
+    max_scripts = models.IntegerField(_("Max. Scripts"),
+            null=True, blank=True,
+            help_text=_("Concurrent script session limits"))
     #
     tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
     
