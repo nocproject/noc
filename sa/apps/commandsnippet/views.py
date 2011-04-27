@@ -31,8 +31,9 @@ class CommandSnippetForm(forms.ModelForm):
 class CommandSnippetAdmin(admin.ModelAdmin):
     """CommandSnippet Admin"""
     form = CommandSnippetForm
-    list_display = ["name", "selector"]
-    
+    list_display = ["name", "is_enabled", "selector", "description",
+            "require_confirmation"]
+    list_filter = ["require_confirmation", "is_enabled"]
 
 
 class CommandSnippetApplication(ModelApplication):

@@ -15,14 +15,19 @@ from noc.sa.models import CommandSnippet, ReduceTask, ManagedObject
 
 def reduce_task(task, snippet):
     r = ["<style>.cmd {border-bottom: 1px solid black;font-weight: bold;}</style>"]
-    r += ["<table border='1'>", "<tr><th>Object</th><th>Status</th><th>Result</th></tr>"]
+    r += ["<table border='1'>", "<tr><th>Object</th><th>Result</th></tr>"]
     for mt in task.maptask_set.all():
         if mt.status == "C":
             result = "<pre>" + "<br/>".join(mt.script_result) + "</pre>"
+            icon = "yes"
         else:
             result = "<pre>%s</pre>" % str(mt.script_result)
-        r += ["<tr>", "<td>", mt.managed_object.name, "</td>",
-              "<td>", mt.status, "</td>", "<td>", result, "</td>", "</tr>"]
+            icon = "no"
+        r += ["<tr>", "<td>",
+              "<img src='/media/img/admin/icon-%s.gif' />" % icon,
+              "&nbsp;",
+              mt.managed_object.name, "</td>",
+              "<td>", result, "</td>", "</tr>"]
     r += ["</table>"]
     return "".join(r)
 
@@ -36,6 +41,31 @@ class RunSnippetApplication(Application):
         else:
             return "commands"
     
+    def get_form(self, data=None):
+        f = NOCForm(data)
+        for v in vars:
+            f.fields[v] = forms.CharField(label=v)
+        return f
+    
+    def run_task(self, snippet, objects, params):
+        def get_map_script_params(snippet, data):
+            def inner(obj):
+                v = data.copy()
+                v["object"] = obj
+                return {"commands": snippet.expand(v).splitlines()}
+            return inner
+        
+        map_task = self.get_map_script(snippet)
+        task = ReduceTask.create_task(
+            object_selector=objects,
+            reduce_script=reduce_task,
+            reduce_script_params={"snippet": snippet},
+            map_script=map_task,
+            map_script_params=get_map_script_params(snippet, params),
+            timeout=snippet.timeout
+        )
+        return task.id
+    
     @view(url=r"^$", url_name="index", menu="Tasks | Run Snippet",
         access=HasPerm("run"))
     def view_index(self, request):
@@ -46,19 +76,6 @@ class RunSnippetApplication(Application):
     @view(url=r"^(?P<snippet_id>\d+)/$", url_name="snippet",
         access=HasPerm("run"))
     def view_snippet(self, request, snippet_id):
-        def get_form(data=None):
-            f = NOCForm(data)
-            for v in vars:
-                f.fields[v] = forms.CharField(label=v)
-            return f
-        
-        def get_map_script_params(snippet, data):
-            def inner(obj):
-                v = data.copy()
-                v["object"] = obj
-                return {"commands": snippet.expand(v).splitlines()}
-            return inner
-        
         snippet = self.get_object_or_404(CommandSnippet, id=int(snippet_id))
         vars = snippet.vars
         if "object" in vars:
@@ -68,41 +85,34 @@ class RunSnippetApplication(Application):
         form = None
         if request.POST:
             objects = ManagedObject.objects.filter(id__in=[
-                int(n[4:]) for n in request.POST.keys() if n.startswith("OBJ:")])
+                int(n[4:]) for n in request.POST.keys()
+                if n.startswith("OBJ:") or n.startswith("CFM:")])
             data = None
             if vars:
-                form = get_form(request.POST)
+                form = self.get_form(request.POST)
                 if form.is_valid():
                     data = form.cleaned_data
             else:
                 data = {}
             if data is not None:
-                task = ReduceTask.create_task(
-                    object_selector=objects,
-                    reduce_script=reduce_task,
-                    reduce_script_params={"snippet": snippet},
-                    map_script=map_task,
-                    map_script_params=get_map_script_params(snippet, data),
-                    timeout=snippet.timeout
-                )
-                return self.response_redirect("sa:runsnippet:task",
-                                              snippet.id, task.id)
-                
+                if not snippet.require_confirmation or "__confirmed" in request.POST:
+                    task = self.run_task(snippet, objects, data)
+                    return self.response_redirect("sa:runsnippet:task",
+                                                  snippet.id, task)
+                elif snippet.require_confirmation:
+                    cd = [(o, snippet.expand(data.copy().update({"object": o})))
+                         for o in objects]
+                    return self.render(request, "confirm.html",
+                        data=cd, snippet=snippet)
         else:
-            if not vars and len(objects) == 1:
+            if (not vars and len(objects) == 1 and
+                    not snippet.require_confirmation):
                 # Run immediately
-                task = ReduceTask.create_task(
-                    object_selector=objects,
-                    reduce_script=reduce_task,
-                    reduce_script_params={"snippet": snippet},
-                    map_script=map_task,
-                    map_script_params=get_map_script_params(snippet, {}),
-                    timeout=snippet.timeout
-                )
+                task = self.run_task(snippet, objects, {})
                 return self.response_redirect("sa:runsnippet:task",
-                                              snippet.id, task.id)
+                                              snippet.id, task)
             elif vars:
-                form = get_form()
+                form = self.get_form()
         # Display form
         return self.render(request, "form.html", snippet=snippet,
                 objects=objects, form=form)
