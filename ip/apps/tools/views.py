@@ -101,9 +101,9 @@ class ToolsAppplication(Application):
                         fqdn=fqdn[:-1]
                 # Leave only addresses residing into "prefix"
                 # To prevent uploading to not-owned blocks
-                if p.contains(IPv4(ip)):
+                if not p.contains(IPv4(ip)):
                     continue
-                a,changed=Address.get_or_create(Address,vrf=vrf,afi=afi,address=ip)
+                a,changed=Address.objects.get_or_create(vrf=vrf,afi=afi,address=ip)
                 if a.fqdn!=fqdn:
                     a.fqdn=fqdn
                     changed=True
