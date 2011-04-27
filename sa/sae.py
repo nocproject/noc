@@ -492,9 +492,9 @@ class SAE(Daemon):
                     logging.error(e.text)
                     callback(error=e)
                     return
+                self.object_scripts[object.id] = o_scripts + 1
             # Update counters
             stream.current_scripts += 1
-            self.object_scripts[object.id] = o_scripts + 1
         # Build request
         r=ScriptRequest()
         r.script=script_name
