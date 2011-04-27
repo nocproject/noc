@@ -258,6 +258,7 @@ class SAE(Daemon):
         self.factory=SocketFactory(tick_callback=self.tick)
         self.factory.sae=self
         self.activators={} # pool name -> list of activators
+        self.object_scripts={} # object.id -> current scripts
         #
         self.sae_listener=None
         self.sae_ssl_listener=None
@@ -456,6 +457,11 @@ class SAE(Daemon):
     def script(self,object,script_name,callback,**kwargs):
         def script_callback(transaction,response=None,error=None):
             stream.current_scripts -= 1
+            if object.profile_name != "NOC.SAE":
+                try:
+                    self.object_scripts[object.id] -= 1
+                except KeyError:
+                    pass
             if error:
                 logging.error("script(%s,%s,**%s) failed: %s"%(script_name,object,kwargs,error.text))
                 callback(error=error)
@@ -474,6 +480,22 @@ class SAE(Daemon):
                 logging.error(e.text)
                 callback(error=e)
                 return
+            # Check object's limits
+            if object.max_scripts:
+                try:
+                    o_scripts = self.object_scripts[object.id]
+                except KeyError:
+                    o_scripts = 0
+                if o_scripts >= object.max_scripts:
+                    e = Error(code=ERR_OBJ_OVERLOAD,
+                        text="Object's script sessions limit exceeded")
+                    logging.error(e.text)
+                    callback(error=e)
+                    return
+            # Update counters
+            stream.current_scripts += 1
+            self.object_scripts[object.id] = o_scripts + 1
+        # Build request
         r=ScriptRequest()
         r.script=script_name
         r.access_profile.profile           = object.profile_name
@@ -505,7 +527,6 @@ class SAE(Daemon):
         if object.profile_name=="NOC.SAE":
             self.run_sae_script(r,script_callback)
         else:
-            stream.current_scripts += 1
             stream.proxy.script(r,script_callback)
     ##
     ## Send a list of addresses to activator
