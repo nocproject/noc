@@ -88,6 +88,7 @@ class SessionCan(object):
                     out+=["%s: \"\"\"%s"%(repr(k), lrepr(lines[0]))]+[lrepr(l) for l in lines[1:-1]]+["%s\"\"\", "%lrepr(lines[-1])]
             out+=["}"]
             return "\n".join(out)
+        
         vendor, profile, script=self.script_name.split(".")
         date=str(datetime.datetime.now()).split(".")[0]
         s="""# -*- coding: utf-8 -*-
@@ -100,16 +101,16 @@ class SessionCan(object):
 ##----------------------------------------------------------------------
 from noc.lib.test import ScriptTestCase
 class %(test_name)s_Test(ScriptTestCase):
-    script="%(script)s"
-    vendor="%(vendor)s"
-    platform='<<<INSERT YOUR PLATFORM HERE>>>'
-    version='<<<INSERT YOUR VERSION HERE>>>'
-    input=%(input)s
-    result=%(result)s
-    motd=%(motd)s
-    cli=%(cli)s
-    snmp_get=%(snmp_get)s
-    snmp_getnext=%(snmp_getnext)s
+    script = "%(script)s"
+    vendor = "%(vendor)s"
+    platform = '<<<INSERT YOUR PLATFORM HERE>>>'
+    version = '<<<INSERT YOUR VERSION HERE>>>'
+    input = %(input)s
+    result = %(result)s
+    motd = %(motd)s
+    cli = %(cli)s
+    snmp_get = %(snmp_get)s
+    snmp_getnext = %(snmp_getnext)s
 """%{
             "test_name"    : self.script_name.replace(".", "_"),
             "script"       : self.script_name,
@@ -190,8 +191,11 @@ class ActivatorStub(object):
             if self.wait_ticks==0:
                 logging.debug("EXIT")
                 if self.to_save_output:
-                    logging.debug("Writing session test to %s"%self.output)
-                    self.session_can.dump(self.output)
+                    if self.session_can.result:
+                        logging.debug("Writing session test to %s"%self.output)
+                        self.session_can.dump(self.output)
+                    else:
+                        logging.error("Cannot write session test due to errors")
                 # Finally dump results
                 for s in self.scripts:
                     if s.result:
