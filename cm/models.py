@@ -364,6 +364,17 @@ class Config(Object):
                 return None
         return self.diff(old_data, new_data)
     
+    @property
+    def is_stale(self):
+        """
+        Check config is stale
+        """
+        if (self.managed_object.is_managed
+            and self.managed_object.is_configuration_managed):
+            now = datetime.datetime.now()
+            return self.last_pull is None or (now - self.last_pull).days >= 2
+        return False
+    
 
 ##
 ## PrefixList
