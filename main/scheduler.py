@@ -20,7 +20,7 @@ from django.db import transaction, reset_queries
 from noc.lib.daemon import Daemon
 from noc.lib.periodic import periodic_registry
 from noc.lib.debug import error_report
-from noc.main.models import Schedule, TimePattern
+from noc.main.models import Schedule, TimePattern, PyRule
 from noc.sa.models import ManagedObject
 from noc.fm.models import Event, EventData, EventPriority,\
                           EventClass, EventCategory
@@ -28,13 +28,13 @@ from noc.fm.models import Event, EventData, EventPriority,\
 
 class Scheduler(Daemon):
     daemon_name = "noc-scheduler"
-    
+
     def __init__(self):
         super(Scheduler, self).__init__()
         logging.info("Running noc-scheduler")
         self.running = set()
         self.running_lock = threading.Lock()
-    
+
     def update_schedules(self):
         """Create schedules for new periodic tasks"""
         # Get or create Any time pattern
@@ -49,7 +49,7 @@ class Scheduler(Daemon):
                     time_pattern=tp,
                     timeout=periodic_registry[pt].default_timeout
                 ).save()
-    
+
     def launch_task(self, task):
         """
         Launch new periodic task
@@ -59,14 +59,18 @@ class Scheduler(Daemon):
         threading.Thread(name=unicode(task).encode("utf8"),
                          target=self.task_wrapper,
                          kwargs={"task": task}).start()
-    
+
     def task_wrapper(self, task):
         """Periodic thread target"""
         logging.info(u"Periodic task=%s status=running" % unicode(task))
         t = datetime.datetime.now()
         cwd = os.getcwd()
         try:
-            status = task.periodic(task.timeout).execute()
+            if task.periodic_name.startswith("pyrule:"):
+                status = PyRule.call(task.periodic_name[7:],
+                                     timeout=task.timeout)
+            else:
+                status = task.periodic(task.timeout).execute()
         except:
             error_report()
             status = False
@@ -89,15 +93,11 @@ class Scheduler(Daemon):
             ("task", unicode(task)),
             ("status", {True: "success", False: "failure"}[status]),
         ])
-    
-    ##
-    ## Write event.
-    ## data is a list of (left,right)
-    ##
+
     def write_event(self, data, timestamp=None):
         """
         Write FM event
-        
+
         :param data: List of (left, right)
         :type data: List
         """
@@ -113,7 +113,7 @@ class Scheduler(Daemon):
         e.save()
         for l, r in data:
             EventData(event=e, key=l, value=r).save()
-    
+
     def run(self):
         transaction.enter_transaction_management()
         self.update_schedules()
@@ -129,11 +129,12 @@ class Scheduler(Daemon):
                     if t.periodic_name in self.running:
                         continue
                     # Check for blocking tasks
-                    i = self.running.intersection(set(t.periodic.wait_for))
-                    if i:
-                        logging.info("Periodic task '%s' cannot be launched when %s is active" % 
-                                    (t.periodic_name, ", ".join(i)))
-                        continue
+                    if not t.periodic_name.startswith("pyrule:"):
+                        i = self.running.intersection(set(t.periodic.wait_for))
+                        if i:
+                            logging.info("Periodic task '%s' cannot be launched when %s is active" %
+                                        (t.periodic_name, ", ".join(i)))
+                            continue
                     to_run += [t]
             # Launch tasks
             for t in to_run:
@@ -142,4 +143,3 @@ class Scheduler(Daemon):
             reset_queries()
             time.sleep(max(0, 1.0 - time.time() + last_check))
         transaction.leave_transaction_management()
-    

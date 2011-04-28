@@ -335,7 +335,9 @@ class MIMEType(models.Model):
 ##
 ## pyRule
 ##
-class NoPyRuleException(Exception): pass
+class NoPyRuleException(Exception):
+    pass
+
 rx_coding=re.compile(r"^#\s*-\*-\s*coding:\s*\S+\s*-\*-\s*$",re.MULTILINE)
 
 class PyRule(models.Model):
@@ -355,6 +357,8 @@ class PyRule(models.Model):
     compiled_changed={}
     compiled_lock=threading.Lock()
     NoPyRule=NoPyRuleException
+    
+    alters_data = True  # Tell Django's template engine to not call PyRule
     def __unicode__(self):
         return self.name
     # Check syntax
@@ -988,8 +992,7 @@ class Schedule(models.Model):
         verbose_name_plural = _("Schedules")
         ordering = ["periodic_name"]
     
-    periodic_name = models.CharField(_("Periodic Task"), max_length=64,
-                                     choices=periodic_registry.choices)
+    periodic_name = models.CharField(_("Periodic Task"), max_length=64)
     is_enabled = models.BooleanField(_("Enabled?"), default=False)
     time_pattern = models.ForeignKey(TimePattern,
                                      verbose_name=_("Time Pattern"))
