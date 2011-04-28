@@ -1,0 +1,19 @@
+{% load i18n %}
+<h3>{% blocktrans with title as filter_title %} By {{ filter_title }} {% endblocktrans %}</h3>
+<!-- COUNT: {{choices|length}} -->
+{% if choices|length > 5 %}
+    <select onchange="document.location = this.options[this.selectedIndex].value;">
+        {% for choice in choices %}
+            <option {% if choice.selected %}selected{%endif%} value="{{ choice.query_string|iriencode }}">
+                {{ choice.display }}
+            </option>
+        {% endfor %}
+    </select>
+{% else %}
+    <ul>
+    {% for choice in choices %}
+        <li{% if choice.selected %} class="selected"{% endif %}>
+        <a href="{{ choice.query_string|iriencode }}">{{ choice.display }}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
