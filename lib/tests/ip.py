@@ -58,6 +58,9 @@ class IPv4TestCase(TestCase):
         self.assertEquals(unicode(IPv4("192.168.0.0/24")),u"192.168.0.0/24")
         # Address only
         self.assertEquals(unicode(IPv4("192.168.0.0")),u"192.168.0.0/32")
+        # Netmask
+        self.assertEquals(unicode(IPv4("192.168.0.0", netmask="255.255.255.0")),
+                          u"192.168.0.0/24")
         
     
     def test_repr(self):
@@ -229,7 +232,21 @@ class IPv4TestCase(TestCase):
         
         for p, b, nb, r in data:
             self.assertEquals(IPv4(p).rebase(IPv4(b), IPv4(nb)), IPv4(r))
+    
+    def test_netmask_to_len(self):
+        data = [
+            ("0.0.0.0", 0),
+            ("255.0.0.0", 8),
+            ("255.255.0.0", 16),
+            ("255.255.255.0", 24),
+            ("255.255.255.255", 32),
+            ("128.0.0.0", 1),
+            ("255.255.192.0", 18)
+        ]
         
+        for m, b in data:
+            self.assertEquals(IPv4.netmask_to_len(m), b, "%s != /%d" % (m, b))
+
 
 ##
 ## IPv6 Prefix unittests
