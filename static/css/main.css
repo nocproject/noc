@@ -107,6 +107,10 @@ table tbody tr.selected {
     background-color: #FFFFCC;
 }
 
+#changelist-content select {
+    margin-left: 8px;
+}
+
 @media print {
     #menu {
         display: none;
