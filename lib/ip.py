@@ -16,42 +16,42 @@ B32 = 0xffffffffL
 class IP(object):
     """Base class for IP prefix"""
     afi = None
-    
+
     def __init__(self, prefix):
         """
         Return new prefix instance.
-        
+
         :param prefix: String containing prefix
         :type prefix: String
         """
         self.prefix = prefix
         self.address, self.mask = prefix.split("/")
         self.mask = int(self.mask)
-    
+
     def __repr__(self):
         """Returns string representation of prefix"""
         return "<IPv%s %s>" % (self.afi, self.prefix)
-    
+
     def __str__(self):
         """Returns string containing prefix"""
         return self.prefix
-    
+
     def __unicode__(self):
         """Returns unicode containing prefix"""
         return self.prefix
-    
+
     def __len__(self):
         """Returns mask length (in bits)"""
         return self.mask
-    
+
     def __cmp__(self, other):
         """Compare prefix with other
-        
+
         :param other: IP instance to be compared
         :type other: IP instance
         :rtype: integer
         Returns:
-        
+
         * 0  -- if prefix equals to other
         * <0 -- if prefix less than other
         * >0 -- if prefix greater than other
@@ -61,20 +61,20 @@ class IP(object):
         if self < other:
             return -1
         return 1
-    
+
     def __le__(self, other):
         """<= operator"""
         return self == other or self < other
-    
+
     def __ge__(self, other):
         """>= operator"""
         return self == other or self > other
-    
+
     @classmethod
     def prefix(cls, prefix):
         """
         Convert string to prefix instance.
-        
+
         :param prefix: String containing IPv4/IPv6 prefix
         :type prefix: String
         :return: IPv6 or IPv6 instance
@@ -84,12 +84,12 @@ class IP(object):
             return IPv6(prefix)
         else:
             return IPv4(prefix)
-    
+
     def iter_address(self, count=None, until=None, filter=None):
         """
         Return generator of continuing addresses beginning from
         prefix instance.
-        
+
         :param count: Stop after yielding count addresses
         :type count: Integer, Optional
         :param until: Stop when reaching until address
@@ -113,11 +113,11 @@ class IP(object):
             n += 1
             if (count and n >= count) or (until and a == until):
                 raise StopIteration
-    
+
     def iter_free(self, prefixes):
         """
         Return generator of free prefixes.
-        
+
         :param prefixes: List of occupied prefixes
         :type prefixes: List of IP instances
         :return: Generator of free prefixes
@@ -137,12 +137,12 @@ class IP(object):
         #
         for p in db.iter_free(self):
             yield p
-    
+
     def area_spot(self, addresses, dist, sep=False):
         """
         eturns a list of addresses, laying inside prefix and containing area
         aroung given addresses
-        
+
         :param addresses: Used addresses
         :type addresses: List of IP instances or strings
         :param dist: Distance to spot araund used addresses
@@ -199,7 +199,7 @@ class IP(object):
             return [a for a in spot if a is None or a.address not in (self.first.address, self.last.address)]
         else:
             return spot
-    
+
     ##
     ## Rebase to a new base
     ##
@@ -207,21 +207,26 @@ class IP(object):
         pb = list(self.iter_bits())[base.mask:]
         nb = list(new_base.iter_bits()) + [0] * (base.mask - new_base.mask) + pb
         return self.from_bits(nb)
-    
+
 
 class IPv4(IP):
     """
     IPv4 Prefix. Internally stored as unsigned 32-bit integer and mask
     """
     afi = "4"
-    
-    def __init__(self, prefix):
+
+    def __init__(self, prefix, netmask=None):
         """
         :param prefix: String in format X.X.X.X or X.X.X.X/Y
         :type prefix: String
+        :param netmask: Optional netmask in X.X.X.X format
+        :type netmask: String
         """
         if "/" not in prefix:
-            prefix += "/32"
+            if netmask:
+                prefix += "/%d" % self.netmask_to_len(netmask)
+            else:
+                prefix += "/32"
         check_ipv4_prefix(prefix)
         super(IPv4, self).__init__(prefix)
         # Convert to int
@@ -230,21 +235,41 @@ class IPv4(IP):
         for d in self._get_parts():
             self.d += d << m
             m -= 8
-    
+
+    @classmethod
+    def netmask_to_len(cls, netmask):
+        """
+        Returns netmask mask length
+        """
+        n = 0
+        for m in [int(d) for d in netmask.split(".")]:
+            if m == 255:
+                n += 8
+            else:
+                x = 128
+                while x:
+                    if m & x:
+                        n += 1
+                        x >>= 1
+                    else:
+                        break        
+                break
+        return n
+        
     def _get_parts(self):
         """
         get list of 4 integers (IPv4 octets)
-        
+
         :return: List of 4 integers
         :rtype: List of 4 integers
         """
         return [int(d) for d in self.address.split(".")]
-    
+
     @classmethod
     def _to_prefix(cls, s, mask):
         """
         Convert integer and mask into new IPv4 instance
-        
+
         :param s: integer representation of address (unsigned 32-bit integer)
         :type s: integer
         :param mask: mask length (0 .. 32)
@@ -252,44 +277,44 @@ class IPv4(IP):
         """
         return IPv4("%d.%d.%d.%d/%d" % ((s >> 24) & 0xff, (s >> 16) & 0xff,
                                        (s >> 8) & 0xff, s & 0xff, mask))
-    
+
     def __hash__(self):
         """Hashing"""
         return self.d
-    
+
     def __eq__(self, other):
         """== operator"""
         return self.afi == other.afi and self.d == other.d and self.mask == other.mask
-    
+
     def __ne__(self, other):
         """!= operator"""
         return self.afi != other.afi or self.d != other.d or self.mask != other.mask
-    
+
     def __lt__(self, other):
         """< operator"""
         return self.d < other.d or (self.d == other.d and self.mask < other.mask)
-    
+
     def __gt__(self, other):
         """> operator"""
         return self.d > other.d or (self.d == other.d and self.mask > other.mask)
-    
+
     def __add__(self, n):
         """
         + operator.
-        
+
         :param n: distance
         :type n: integer
         :return: IPv4 instance
         :rtype: IPv4 instance
         """
         return self._to_prefix((self.d + n) & B32, self.mask)
-    
+
     def __sub__(self, n):
         """
         - operator.
         If argument is integer - returns new IPv4 instance
         If IPv4 instance - returns a distance between addresses
-        
+
         :param n:
         :type n: IPv4 instance or integer
         :return: Distance or new instance
@@ -302,11 +327,11 @@ class IPv4(IP):
             if d < 0:
                 d = B32 + self.d
             return self._to_prefix(d, self.mask)
-    
+
     def iter_bits(self):
         """
         Get generator returning up to mask bits of prefix
-        
+
         :return: Generator of bits
         :rtype: Generator
         """
@@ -322,7 +347,7 @@ class IPv4(IP):
     def from_bits(cls, bits):
         """
         Create new IPv4 instance from list of bits
-        
+
         :param bits: List of 0 or 1
         :return: New IPv4 instance
         :rtype: IPv4 instance
@@ -335,17 +360,17 @@ class IPv4(IP):
         if n < 32:
             d <<= (32 - n)
         return cls._to_prefix(d, n)
-    
+
     @property
     def size(self):
         """
         Get size of prefix (number of addresses to hold)
-        
+
         :return: Size of prefix
         :rtype: integer
         """
         return 2 ** (32 - self.mask)
-    
+
     ##
     ## Returns new IPv4 instance with first address of the block (network)
     ##
