@@ -115,6 +115,11 @@ class Scheduler(Daemon):
             EventData(event=e, key=l, value=r).save()
 
     def run(self):
+        # Wait for 15 seconds
+        logging.info("Waiting for 15 seconds")
+        for i in range(15):
+            time.sleep(1)
+            self.heartbeat()
         transaction.enter_transaction_management()
         self.update_schedules()
         while True:
