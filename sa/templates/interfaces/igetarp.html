@@ -1,14 +1,16 @@
 {% if result %}
 <link rel="stylesheet" type="text/css" href="/static/css/tablesorter.css" />
 <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
+
+<h1>{{object.name}} ({{object.address}}) ARP Cache</h1>
+
 <table border="0" id="result-{{object.id}}" class="tablesorter">
-    <caption>{{object.name}} ({{object.address}}) ARP Cache</caption>
     <thead>
         <tr><th>IP</th><th>MAC</th><th>Interface</th><th>Commands</th></tr>
     </thead>
     <tbody>
         {% for r in result %}
-            <tr class="{%cycle 'row1' 'row2'%}">
+            <tr>
                 <td>{{r.ip}}</td>
                 <td>{{r.mac}}</td>
                 <td>{{r.interface}}</td>
@@ -23,7 +25,10 @@
 </table>
 <script>
 $(document).ready(function() { 
-    $("#result-{{object.id}}").tablesorter();
+    $("#result-{{object.id}}").tablesorter({
+        stripingRowClass: ['row1', 'row2'],
+        stripeRowsOnStartUp: true
+    });
 });
 </script>
 {% else %}
