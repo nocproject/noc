@@ -31,9 +31,12 @@ def bin_quote(s):
         if oc<32 or oc>126:
             return "\\x%02x"%oc
         return c
+
     if s is None:
         return ""
     else:
+        if isinstance(s, unicode):
+           s = s.encode("utf-8")
         return "".join([qc(c) for c in s])
     
 ##
@@ -44,4 +47,6 @@ def bin_unquote(s):
     >>> [i for i in range(256) if bin_unquote(bin_quote(chr(i)))!=chr(i)]
     []
     """
+    if isinstance(s, unicode):
+        s = s.encode("utf-8")
     return rx_unqoute.sub(lambda x:hex_map[x.group(1)], str(s).replace(r"\\","\\x5c"))
