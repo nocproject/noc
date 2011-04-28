@@ -1,8 +1,10 @@
 {% if result %}
-<link rel="stylesheet" type="text/css" href="/static/css/tablesorter.css" />
-<script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
-<table border="0" id="result-{{object.id}}" class="tablesorter">
-    <caption>{{object.name}} ({{object.address}}) VLANs</caption>
+{% load noctags %}
+
+<h1>{{object.name}} ({{object.address}}) VLANs</h1>
+
+{% noctable %}
+<table>
     <thead>
         <tr><th>VLAN</th><th>Name</th></tr>
     </thead>
@@ -15,11 +17,7 @@
         {% endfor %}
     </tbody>
 </table>
-<script>
-$(document).ready(function() { 
-    $("#result-{{object.id}}").tablesorter();
-});
-</script>
+{% endnoctable %}
 {% else %}
 No data!!!
 {% endif %}

@@ -1,14 +1,22 @@
+{% load noctags %}
 <h1>{{object.name}} ({{object.address}}) SNMP Get Next</h1>
 
 {% if result %}
-<table border="1">
+{% noctable %}    
+<table>
     {% for oid, v in result %}
     <tr class="{%cycle 'row1' 'row2'%}">
-        <td>{{oid}}</td>
-        <td>{{v}}</td>
+        <thead>
+            <tr><th>OID</th><th>Value</th></tr>
+        </thead>
+        <tbody>
+            <td>{{oid}}</td>
+            <td>{{v}}</td>
+        </tbody>
     </tr>
     {% endfor %}
 </table>
+{% endnoctable %}
 {% else %}
 No data available!!!
 {% endif %}

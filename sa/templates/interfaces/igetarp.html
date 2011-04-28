@@ -1,10 +1,9 @@
 {% if result %}
-<link rel="stylesheet" type="text/css" href="/static/css/tablesorter.css" />
-<script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
-
+{% load noctags %}
 <h1>{{object.name}} ({{object.address}}) ARP Cache</h1>
 
-<table border="0" id="result-{{object.id}}" class="tablesorter">
+{% noctable %}
+<table>
     <thead>
         <tr><th>IP</th><th>MAC</th><th>Interface</th><th>Commands</th></tr>
     </thead>
@@ -23,14 +22,7 @@
         {% endfor %}
     </tbody>
 </table>
-<script>
-$(document).ready(function() { 
-    $("#result-{{object.id}}").tablesorter({
-        stripingRowClass: ['row1', 'row2'],
-        stripeRowsOnStartUp: true
-    });
-});
-</script>
+{% endnoctable %}
 {% else %}
 No data!!!
 {% endif %}
