@@ -1,12 +1,16 @@
 {% extends "template.html" %}
+{% load noctags %}
 {% block content %}
-<h1>{{app.title}}</h1>
-<div class="module">
-    <table width="100%">
-        <caption>Choose selector...</caption>
-        {% for s in selectors %}
-            <tr class="{%cycle 'row1' 'row2'%}"><td style="width: 200px"><a href="selector/{{s.id}}/">{{s.name}}</a></td><td>{{s.description}}</td></tr>
-        {% endfor %}
-    </table>
-</div>
+<h1>{{app.title}}. Choose selector</h1>
+{% noctable %}
+<table>
+    <caption>Choose selector...</caption>
+    {% for s in selectors %}
+        <tr class="{%cycle 'row1' 'row2'%}">
+            <td style="width: 200px"><a href="selector/{{s.id}}/">{{s.name}}</a></td>
+            <td>{{s.description}}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endnoctable %}
 {% endblock %}
