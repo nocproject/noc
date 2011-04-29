@@ -30,7 +30,33 @@ $(document).ready(function() {
         }
     );
 });
+
+function ts_on_search(s) {
+    var search = s.value;
+    var all_seen = search == "";
+    $(s).parents(".tablesorter-container").find("tbody").find("tr").each(function (i, r) {
+        var $r = $(r);
+        var seen = all_seen;
+        if(!seen) {
+            $r.children("td").each(function (j, d) {
+                seen = $(d).text().indexOf(search) > 0;
+                return !seen;
+            });
+        }
+        if(seen) {
+            $r.show();
+        } else {
+            $r.hide();
+        }
+        /*$r.css("display", seen? "block" : "none"); */
+    })
+}
 </script>
+<div class="tablesorter-container">
+<div class="tablesorter-search-row">
+    <label for="tablesorter-search">Search:</label>
+    <input type="text" id="tablesorter-search" onkeyup="ts_on_search(this);"/>
+</div>
 """
 
 rx_table = re.compile(r"<table[^>]*>", re.MULTILINE | re.DOTALL)
@@ -77,7 +103,7 @@ class NOCTableNode(template.Node):
                     a += ["%s='%s'" % (k, v)]
             
             tt = "<table %s>" % " ".join(a)
-            return NOCTableTemplate % attrs + output.replace(t, tt)
+            return NOCTableTemplate % attrs + output.replace(t, tt) + "</div>"
         else:
             # Return untouched
             return output

@@ -43,3 +43,11 @@ table.tablesorter thead tr .headerSortDown {
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
     background-color: #8dbdd8;
 }
+
+.tablesorter-search-row {
+    text-align: right;
+}
+
+.tablesorter-search-row label {
+    font-weight: bold;
+}
