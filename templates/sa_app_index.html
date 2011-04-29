@@ -4,7 +4,6 @@
 <h1>{{app.title}}. Choose selector</h1>
 {% noctable %}
 <table>
-    <caption>Choose selector...</caption>
     {% for s in selectors %}
         <tr class="{%cycle 'row1' 'row2'%}">
             <td style="width: 200px"><a href="selector/{{s.id}}/">{{s.name}}</a></td>
