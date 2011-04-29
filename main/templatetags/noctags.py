@@ -21,6 +21,7 @@ $(document).ready(function() {
     $("#%(id)s").tablesorter({
         widgets: ["zebra"],
     });
+    $("#tablesorter-search").focus();
     $("#%(id)s tbody td").hover(
         function () {
             $(this).parents("tr").children("td").addClass("highlight");
@@ -31,10 +32,15 @@ $(document).ready(function() {
     );
 });
 
+var ts_last_search = "";
 function ts_on_search(s) {
     var search = s.value;
+    if(search == ts_last_search)
+        return;
     var all_seen = search == "";
-    $(s).parents(".tablesorter-container").find("tbody").find("tr").each(function (i, r) {
+    var $tbody = $(s).parents(".tablesorter-container").find("tbody");
+    var scope = "tr";
+    $tbody.find(scope).each(function (i, r) {
         var $r = $(r);
         var seen = all_seen;
         if(!seen) {
@@ -48,8 +54,8 @@ function ts_on_search(s) {
         } else {
             $r.hide();
         }
-        /*$r.css("display", seen? "block" : "none"); */
-    })
+    });
+    ts_last_search = search;
 }
 </script>
 <div class="tablesorter-container">
