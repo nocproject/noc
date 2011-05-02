@@ -17,7 +17,7 @@ class f5_BIGIP_get_version_Test(ScriptTestCase):
     motd=' \nLast login: Thu Nov 25 07:41:54 2010 from 10.33.52.58\n'
     cli={
 ## 'version'
-'version': """version
+'b version': """version
 
 Kernel:
 Linux 2.6.18-164.11.1.el5.1.0.f5app

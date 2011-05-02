@@ -19,7 +19,7 @@ class f5_BIGIP_get_vlans_Test(ScriptTestCase):
     motd=' \nLast login: Mon Jan 31 14:18:30 2011 from 10.33.12.61\n'
     cli={
 ## 'vlan show'
-'vlan show': """vlan show
+'b vlan show': """vlan show
 
 VLAN VLAN012   tag 501   00:01:D7:83:7F:05   MTU 1500
 +-> VLAN MEMBER VLAN012/e0001trunk   tagged
