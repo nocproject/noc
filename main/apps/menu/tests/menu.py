@@ -15,7 +15,7 @@ class MenuTestCase(ApplicationTestCase):
     ##
     def test_menu(self):
         # get menu JSON
-        page=self.app.get("/main/menu/json/",user=self.user)
+        page=self.app.get("/main/menu/json/%d/" % self.user.id, user=self.user)
         # Check status
         self.assertEqual(page.status_int,200)
         # Check content-type
