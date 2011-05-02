@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.db import models
-from lib.ip import IP
+from noc.lib.ip import IP
 import types,cPickle
 from django.contrib.admin.widgets import AdminTextInputWidget
 from tagging.fields import TagField
