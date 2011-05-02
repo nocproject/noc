@@ -2,19 +2,24 @@
 ##----------------------------------------------------------------------
 ## Models for KB application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Python modules
+import difflib
+import re
+## Django modules
 from django.db import models
 from django.db.models import Q
-from noc.main.models import Language,database_storage
 from django.contrib.auth.models import User
+## NOC modules
+from noc.main.models import Language, database_storage
 from noc.kb.parsers import parser_registry
 from noc.lib.search import SearchResult
 from noc.lib.validators import is_int
 from noc.lib.app.site import site
 from noc.lib.fields import AutoCompleteTagsField
-import difflib,re
 
 ##
 ## Register all wiki-syntax parsers
@@ -74,9 +79,10 @@ class KBEntry(models.Model):
     ##
     ## Returns latest KBEntryHistory record
     ##
-    def _last_history(self):
+    @property
+    def last_history(self):
         return self.kbentryhistory_set.order_by("-timestamp")[0]
-    last_history=property(_last_history)
+    
     ##
     ## Returns a list of last modified KB Entries
     ##
@@ -94,9 +100,10 @@ class KBEntry(models.Model):
     ##
     ## Returns preview count
     ##
-    def _preview_count(self):
+    @property
+    def preview_count(self):
         return self.kbentrypreviewlog_set.count()
-    preview_count=property(_preview_count)
+    
     ##
     ## Returns most popular articles
     ##
@@ -115,16 +122,16 @@ class KBEntry(models.Model):
     ##
     ## Returns a list of visible attachments
     ##
-    def _visible_attachments(self):
+    @property
+    def visible_attachments(self):
         return [{"name":x.name,"size":x.size,"mtime":x.mtime,"description":x.description}
             for x in self.kbentryattachment_set.filter(is_hidden=False).order_by("name")]
-    visible_attachments=property(_visible_attachments)
     ##
     ##
     ##
-    def _has_visible_attachments(self):
-        return self.kbentryattachment_set.filter(is_hidden=False).count()>0
-    has_visible_attachments=property(_has_visible_attachments)
+    @property
+    def has_visible_attachments(self):
+        return self.kbentryattachment_set.filter(is_hidden=False).exists()
     ##
     ## save model, compute body's diff and save event history
     ##
@@ -144,7 +151,7 @@ class KBEntry(models.Model):
         # Check Global bookmarks
         if KBGlobalBookmark.objects.filter(kb_entry=self).count()>0:
             return True
-        if user and KBUserBookmark.objects.filter(kb_entry=self,user=user).count()>0:
+        if user and KBUserBookmark.objects.filter(kb_entry=self,user=user).exists():
             return True
         return False
     ##
@@ -159,12 +166,7 @@ class KBEntry(models.Model):
     def unset_user_bookmark(self,user):
         for b in  KBUserBookmark.objects.filter(kb_entry=self,user=user):
             b.delete()
-    ##
-    ## Returns True if KBEntry has categories attached
-    ##
-    def _has_categories(self):
-        return self.categories.count()>0
-    has_categories=property(_has_categories)
+
 ##
 ## Attachments
 ##
