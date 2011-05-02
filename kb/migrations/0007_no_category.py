@@ -15,7 +15,9 @@ class Migration:
                 db.execute("INSERT INTO tagging_tag(name) VALUES(%s)",[category])
             tag_id=db.execute("SELECT id FROM tagging_tag WHERE name=%s",[category])[0][0]
             db.execute("INSERT INTO tagging_taggeditem(tag_id,content_type_id,object_id) VALUES(%s,%s,%s)",[tag_id,ctype_id,entry_id])
-        db.drop_table("kb_kbcategory")
+        db.delete_table("kb_kbentrytemplate_categories")
+        db.delete_table("kb_kbentry_categories")
+        db.delete_table("kb_kbcategory")
 
     def backwards(self):
         pass
