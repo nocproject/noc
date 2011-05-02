@@ -17,7 +17,7 @@ NOCTableTemplate = """
 <link rel="stylesheet" type="text/css" href="/static/css/tablesorter.css" />
 <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
 <script type="text/javascript">
-$(document).ready(function() { 
+$(document).ready(function() {
     $("#%(id)s").tablesorter({
         widgets: ["zebra"],
     });
@@ -32,6 +32,10 @@ $(document).ready(function() {
     );
 });
 
+function startswith(s, ss) {
+    s.substr(0, ss.length) == ss;
+}
+
 var ts_last_search = "";
 function ts_on_search(s) {
     var search = s.value;
@@ -40,6 +44,11 @@ function ts_on_search(s) {
     var all_seen = search == "";
     var $tbody = $(s).parents(".tablesorter-container").find("tbody");
     var scope = "tr";
+    if(startswith(search, ts_last_search)) {
+        scope = "tr:visible";
+    } else if (startswith(ts_last_search, search)) {
+        scope = "tr:hidden";
+    }
     $tbody.find(scope).each(function (i, r) {
         var $r = $(r);
         var seen = all_seen;
@@ -67,11 +76,12 @@ function ts_on_search(s) {
 
 rx_table = re.compile(r"<table[^>]*>", re.MULTILINE | re.DOTALL)
 
+
 class NOCTableNode(template.Node):
     def __init__(self, nodelist):
         super(NOCTableNode, self).__init__()
         self.nodelist = nodelist
-    
+
     def render(self, context):
         output = self.nodelist.render(context)
         # Get ID and class
@@ -87,7 +97,7 @@ class NOCTableNode(template.Node):
                         (v[0] == '"' and v[-1] == '"')):
                         v = v[1:-1]
                 else:
-                     k, v = a, None
+                    k, v = a, None
                 attrs[k.lower()] = v
             # Add attribute
             if "id" not in attrs:
@@ -107,12 +117,12 @@ class NOCTableNode(template.Node):
                     a += [k]
                 else:
                     a += ["%s='%s'" % (k, v)]
-            
             tt = "<table %s>" % " ".join(a)
             return NOCTableTemplate % attrs + output.replace(t, tt) + "</div>"
         else:
             # Return untouched
             return output
+
 
 def do_noctable(parser, token):
     nodelist = parser.parse(("endnoctable",))
