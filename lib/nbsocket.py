@@ -1297,7 +1297,7 @@ class SocketFactory(object):
             r, w, x = select.select(r, w, [], timeout)
             return r, w
         except select.error, why:
-            if why[0] not in (EINTR, ):
+            if why[0] not in (EINTR, EBADF):
                 error_report()  # non-ignorable errors
             return [], []
         except KeyboardInterrupt:
@@ -1325,7 +1325,7 @@ class SocketFactory(object):
         try:
             events = poll.poll(timeout * 1000)  # ms->s
         except select.error, why:
-            if why[0] not in (EINTR, ):
+            if why[0] not in (EINTR, EBADF):
                 error_report()  # non-ignorable errors
             return [], []
         except:
@@ -1381,7 +1381,7 @@ class SocketFactory(object):
         try:
             events = epoll.poll(timeout)
         except select.error, why:
-            if why[0] not in (EINTR, ):
+            if why[0] not in (EINTR, EBADF):
                 error_report()  # non-ignorable errors
             return [], []
         except:
