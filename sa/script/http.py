@@ -56,6 +56,7 @@ class HTTPResponse(object):
         version, status, self.reason = l[0].split(" ", 2)
         self.status = int(status)
         if version != "HTTP/1.1":
+            self.status = None
             self.reason = "Invalid HTTP version: %s" % version
             return False
         # Parse headers
@@ -78,6 +79,7 @@ class HTTPResponse(object):
         else:
             self.status = None
             self.reason = "Unsupported encoding: %s" % encoding
+            return None
 
     def decode_chunked(self, data):
         r = []
@@ -157,6 +159,8 @@ class HTTPProvider(object):
                 self.set_authorization(response.getheader("www-authenticate"),
                                        method, path)
                 return self.request(method, path, params, headers)
+            elif response.status is None:
+                raise self.HTTPError(response.reason)
             else:
                 raise self.HTTPError(response.status)
         finally:
