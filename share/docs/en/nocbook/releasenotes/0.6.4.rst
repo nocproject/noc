@@ -142,7 +142,7 @@ f5 devices must be configured to use advanced shell (bash) for noc user.
 Event filters are refreshed on object's address changed
 -------------------------------------------------------
 Event filters are reloaded immediately when managed object's addresses
-are changed, reducing amount of _Invalid event filter_ events
+are changed, reducing amount of Invalid event filter events
 
 Bugfixes
 --------
