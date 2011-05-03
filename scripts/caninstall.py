@@ -9,10 +9,10 @@
 from __future__ import with_statement
 import csv,os,re
 
-rx_script=re.compile(r"^\s+script=\"(?P<script>.+?)\"",re.MULTILINE)
+rx_script=re.compile(r"^\s+script\s*=\s*\"(?P<script>.+?)\"",re.MULTILINE)
 rx_q=re.compile(r"[^0-9a-zA-Z_]")
-rx_platform=re.compile(r"platform='([^']+)'")
-rx_version=re.compile(r"version='([^']+)'")
+rx_platform=re.compile(r"platform\s*=\s*'([^']+)'")
+rx_version=re.compile(r"version\s*=\s*'([^']+)'")
 
 def install_can(path,platform,version):
     with open(path) as f:
