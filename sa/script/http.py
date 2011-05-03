@@ -17,6 +17,7 @@ import types
 import Queue
 ## NOC modules
 from noc.lib.nbsocket import ConnectedTCPSocket
+from noc.lib.version import get_version
 
 
 class HTTPError(Exception):
@@ -30,90 +31,100 @@ class HTTPError(Exception):
         super(HTTPError, self).__init__(msg)
 
 
-class NOCHTTPSocketFileWrapper(object):
-    def __init__(self, socket):
-        self.socket = socket
+class HTTPResponse(object):
+    def __init__(self, response):
+        self.headers = {}
+        self.status = None
+        self.reason = None
+        self.data = None
+        self.parse_headers(response) and self.parse_data(response)
 
-    def readline(self):
-        return self.socket.readline()
-    
-    def read(self, size=None):
-        return self.socket.read(size)
+    def parse_headers(self, response):
+        """
+        Parse response and set status and headers
 
-    def close(self):
-        return self.socket.close()
+        @todo: Properly parse multi-line headers
+
+        :param response: Raw response
+        :type response: Str
+        :returns: True if headers parsed properly, else False
+        :rtype: Bool
+        """
+        # Parse status
+        h, _ = response.split("\r\n\r\n", 1)
+        l = h.splitlines()
+        version, status, self.reason = l[0].split(" ", 2)
+        self.status = int(status)
+        if version != "HTTP/1.1":
+            self.reason = "Invalid HTTP version: %s" % version
+            return False
+        # Parse headers
+        headers = [x.split(":", 1) for x in l[1:]]
+        self.headers = dict([(x[0].strip().lower(), x[1].strip())
+                             for x in headers])
+        return True
+
+    def parse_data(self, response):
+        _, d = response.split("\r\n\r\n", 1)
+        if "transfer-encoding" in self.headers:
+            self.data = self.decode_encoding(self.headers["transfer-encoding"],
+                                             d)
+        else:
+            self.data = d
+
+    def decode_encoding(self, encoding, data):
+        if encoding == "chunked":
+            return self.decode_chunked(data)
+        else:
+            self.status = None
+            self.reason = "Unsupported encoding: %s" % encoding
+
+    def decode_chunked(self, data):
+        r = []
+        while data:
+            l, data = data.split("\r\n", 1)
+            l = int(l, 16)
+            if not l:
+                break
+            r += [data[:l]]
+            data = data[l + 2:]
+        return "".join(r)
 
 
 class NOCHTTPSocket(ConnectedTCPSocket):
     """
-    Wrap ConnectedTCPSocket to use into
-    httplib.HTTPConnection
+    HTTP Connection
     """
-    def __init__(self, factory, address, port, queue):
-        self.queue = queue
-        self.read_queue = Queue.Queue()
+    def __init__(self, parent, address, port):
         self.buffer = ""
-        super(NOCHTTPSocket, self).__init__(factory, address, port)
-
-    def on_connect(self):
-        self.queue.put(True)
-
-    def on_conn_refused(self):
-        self.queue.put(False)
-
-    def on_close(self):
-        self.queue.put(False)
-        self.read_queue.put(None)
+        self.queue = Queue.Queue()
+        super(NOCHTTPSocket, self).__init__(parent.script.activator.factory,
+                                            address, port)
 
     def on_read(self, data):
         self.buffer += data
-        self.read_queue.put(None)
 
-    def sendall(self, msg):
-        self.write(msg)
+    def on_conn_refused(self):
+        pass
 
-    def makefile(self, mode, buffsize):
-        return NOCHTTPSocketFileWrapper(self)
+    def on_close(self):
+        if self.buffer:
+            self.queue.put(HTTPResponse(self.buffer))
 
-    def readline(self):
-        while True:
-            idx = self.buffer.find("\n")
-            if idx >= 0:
-                data, self.buffer = self.buffer[:idx], self.buffer[idx:]
-                return data
-            if not self.socket_is_ready():
-                raise HTTPError("Broken pipe")
-            self.read_queue.get(block=True)
-    
-    def read(self, size=None):
-        while True:
-            if self.buffer:
-                if size is None:
-                    data, self.buffer = self.buffer, ""
-                    return data
-                elif len(self.buffer) >= size:
-                    data, self.buffer = self.buffer[:size], self.buffer[size:]
-            if not self.socket_is_ready():
-                return ""
-            self.read_queue.get(block=True)
-
-
-class NOCHTTPConnection(httplib.HTTPConnection):
-    def __init__(self, parent, address, port):
-        self.parent = parent
-        self.queue = Queue.Queue()
-        httplib.HTTPConnection.__init__(self, address, port)
-        #super(NOCHTTPConnection, self).__init__(address, port)
-
-    def connect(self):
-        """
-        Override standard connect method
-        """
-        self.sock = NOCHTTPSocket(self.parent.script.activator.factory,
-                                  self.host, self.port, self.queue)
-        # Wait for socket to connect
-        if not self.queue.get(block=True):
-            raise HTTPError("Connection timed out")
+    def request(self, method, path, params=None, headers={}):
+        # Build request
+        headers = headers.copy()
+        h_keys = set([k.lower() for k in headers])
+        if "host" not in headers:
+            headers["Host"] = self.address
+        headers["Connection"] = "close"
+        if "user-agent" not in headers:
+            headers["User-Agent"] = "NOC/%s" % get_version()
+        r = "%s %s HTTP/1.1\r\n" % (method, path)
+        r += "\r\n".join(["%s: %s" % (k, v) for k, v in headers.items()])
+        r += "\r\n\r\n"
+        self.write(r)
+        return self.queue.get(block=True)
 
 
 class HTTPProvider(object):
@@ -134,15 +145,14 @@ class HTTPProvider(object):
         if self.authorization:
             headers["Authorization"] = self.authorization
         self.debug("%s %s %s %s" % (method, path, params, headers))
-        conn = NOCHTTPConnection(self,
+        s = NOCHTTPSocket(self,
                 self.access_profile.address,
                 int(self.access_profile.port) if self.access_profile.port
                                               else 80)
-        conn.request(method, path, params, headers)
-        response = conn.getresponse()
+        response = s.request(method, path, params, headers)
         try:
             if response.status == 200:
-                return response.read()
+                return response.data
             elif response.status == 401 and self.authorization is None:
                 self.set_authorization(response.getheader("www-authenticate"),
                                        method, path)
@@ -150,7 +160,7 @@ class HTTPProvider(object):
             else:
                 raise self.HTTPError(response.status)
         finally:
-            conn.close()
+            s.close()
 
     def set_authorization(self, auth, method, path):
         scheme, data = auth.split(" ", 1)
@@ -222,7 +232,7 @@ class HTTPProvider(object):
             raise self.HTTPError(last_code)
         else:
             try:
-                return self.request("GET", path)
+                return self.request("GET", path, params, headers)
             except socket.error, why:
                 raise self.script.LoginError(why[1])
 
