@@ -30,6 +30,20 @@ class HTTPError(Exception):
         super(HTTPError, self).__init__(msg)
 
 
+class NOCHTTPSocketFileWrapper(object):
+    def __init__(self, socket):
+        self.socket = socket
+
+    def readline(self):
+        return self.socket.readline()
+    
+    def read(self, size=None):
+        return self.socket.read(size)
+
+    def close(self):
+        return self.socket.close()
+
+
 class NOCHTTPSocket(ConnectedTCPSocket):
     """
     Wrap ConnectedTCPSocket to use into
@@ -37,22 +51,51 @@ class NOCHTTPSocket(ConnectedTCPSocket):
     """
     def __init__(self, factory, address, port, queue):
         self.queue = queue
+        self.read_queue = Queue.Queue()
+        self.buffer = ""
         super(NOCHTTPSocket, self).__init__(factory, address, port)
 
     def on_connect(self):
         self.queue.put(True)
-    
+
     def on_conn_refused(self):
         self.queue.put(False)
 
     def on_close(self):
         self.queue.put(False)
-    
+        self.read_queue.put(None)
+
+    def on_read(self, data):
+        self.buffer += data
+        self.read_queue.put(None)
+
     def sendall(self, msg):
         self.write(msg)
-    
+
     def makefile(self, mode, buffsize):
-        return self.socket.makefile(mode, buffsize)
+        return NOCHTTPSocketFileWrapper(self)
+
+    def readline(self):
+        while True:
+            idx = self.buffer.find("\n")
+            if idx >= 0:
+                data, self.buffer = self.buffer[:idx], self.buffer[idx:]
+                return data
+            if not self.socket_is_ready():
+                raise HTTPError("Broken pipe")
+            self.read_queue.get(block=True)
+    
+    def read(self, size=None):
+        while True:
+            if self.buffer:
+                if size is None:
+                    data, self.buffer = self.buffer, ""
+                    return data
+                elif len(self.buffer) >= size:
+                    data, self.buffer = self.buffer[:size], self.buffer[size:]
+            if not self.socket_is_ready():
+                return ""
+            self.read_queue.get(block=True)
 
 
 class NOCHTTPConnection(httplib.HTTPConnection):
