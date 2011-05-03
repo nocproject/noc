@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 from noc.lib.test import ApplicationTestCase
 from django.utils import simplejson as json
+from django.contrib.auth.models import User
 import types
 
 class MenuTestCase(ApplicationTestCase):
@@ -15,7 +16,8 @@ class MenuTestCase(ApplicationTestCase):
     ##
     def test_menu(self):
         # get menu JSON
-        page=self.app.get("/main/menu/json/%d/" % self.user.id, user=self.user)
+        u = User.objects.get(username = self.user)
+        page=self.app.get("/main/menu/json/%d/" % u.id, user=self.user)
         # Check status
         self.assertEqual(page.status_int,200)
         # Check content-type
