@@ -632,52 +632,6 @@ class SAE(Daemon):
         else:
             stream.proxy.script(r, script_callback)
     
-    def ping_check(self, activator, addresses):
-        """
-        Send a list of addresses to activator
-        and generate fault events for unreachable ones
-        """
-        def ping_check_callback(transaction, response=None, error=None):
-            def save_probe_result(u, result):
-                # @todo: Make ManagedObject's method
-                mo = ManagedObject.objects.filter(activator=activator, trap_source_ip=u).order_by("id")
-                if len(mo) < 1:
-                    logging.error("Unknown object in ping_check: %s" % u)
-                    return
-                # Fetch first-created object in case of multiple objects
-                # with same trap_source_ip
-                mo = mo[0]
-                # Update object status
-                self.object_status[mo.id] = (result == "success")
-                # Save event to database
-                self.write_event(
-                    data=[("source", "system"),
-                          ("activator", activator_name),
-                          ("probe", "ping"),
-                          ("ip", u),
-                          ("result", result)],
-                    managed_object=mo,
-                    timestamp=ts)
-            if error:
-                logging.error("ping_check failed: %s" % error.text)
-                return
-            ts = datetime.datetime.now()
-            activator_name = activator.name
-            for u in response.unreachable:
-                save_probe_result(u, "failed")
-            for u in response.reachable:
-                save_probe_result(u, "success")
-        logging.debug("ping_check(%s)" % activator.name)
-        try:
-            stream = self.get_activator_stream(activator.name, False)
-        except:
-            logging.error("Activator '%s' not available" % activator.name)
-            return
-        r = PingCheckRequest()
-        for a in addresses:
-            r.addresses.append(a)
-        stream.proxy.ping_check(r, ping_check_callback)
-    
     def log_mrt(self, level, task, status, args=None, **kwargs):
         """
         Map/Reduce task logging
