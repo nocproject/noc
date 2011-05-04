@@ -232,6 +232,8 @@ class Script(threading.Thread):
     _execute_chain=[]
 
     def __init__(self, profile, _activator, access_profile, timeout=0, parent=None, **kwargs):
+        if profile.setup_script:
+            profile.setup_script(self)
         self.start_time=time.time()
         self.parent=parent
         self.access_profile=access_profile
