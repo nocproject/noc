@@ -9,7 +9,6 @@
 ## Python modules
 import random
 import urllib
-import httplib
 import base64
 import hashlib
 import socket
@@ -155,8 +154,10 @@ class HTTPProvider(object):
         try:
             if response.status == 200:
                 return response.data
-            elif response.status == 401 and self.authorization is None:
-                self.set_authorization(response.getheader("www-authenticate"),
+            elif (response.status == 401 and
+                  self.authorization is None and
+                  "www-authenticate" in response.headers):
+                self.set_authorization(response.headers["www-authenticate"],
                                        method, path)
                 return self.request(method, path, params, headers)
             elif response.status is None:
