@@ -10,6 +10,9 @@
 import re
 ## Django modules
 from django import template
+from django.utils.safestring import SafeString
+## NOC modules
+from noc.sa.models import ManagedObject
 
 register = template.Library()
 
@@ -130,3 +133,21 @@ def do_noctable(parser, token):
     return NOCTableNode(nodelist)
 
 register.tag("noctable", do_noctable)
+
+
+def object_name(value):
+    o = ManagedObject.objects.get(id=int(value))
+    return o.name
+
+register.filter("object_name", object_name)
+
+
+def bool_icon(value):
+    if value is None:
+        return "?"
+    elif value:
+        return SafeString("<img src='/media/img/admin/icon-yes.gif' alt='Yes' />")
+    else:
+        return SafeString("<img src='/media/img/admin/icon-no.gif' alt='No' />")
+
+register.filter("bool_icon", bool_icon)
