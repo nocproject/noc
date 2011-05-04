@@ -331,6 +331,7 @@ class SAE(Daemon):
         self.factory.sae = self
         self.activators = {}  # pool name -> list of activators
         self.object_scripts = {}  # object.id -> # of current scripts
+        self.object_status = {} # object.id -> last ping check status
         #
         self.sae_listener = None
         self.sae_ssl_listener = None
@@ -567,6 +568,13 @@ class SAE(Daemon):
         logging.info("script %s(%s)" % (script_name, object))
         stream = None
         if object.profile_name != "NOC.SAE":
+            # Check object is not unreachable
+            if not self.object_status.get(object.id, True):
+                # Object is unreachable. Report failure immediately
+                e = Error(code=ERR_DOWN, text="Host is down")
+                logging.error(e.text)
+                callback(error=e)
+                return
             # Validate activator is present
             try:
                 stream = self.get_activator_stream(object.activator.name, True)
@@ -639,6 +647,9 @@ class SAE(Daemon):
                 # Fetch first-created object in case of multiple objects
                 # with same trap_source_ip
                 mo = mo[0]
+                # Update object status
+                self.object_status[mo.id] = (result == "success")
+                # Save event to database
                 self.write_event(
                     data=[("source", "system"),
                           ("activator", activator_name),
@@ -660,10 +671,7 @@ class SAE(Daemon):
         try:
             stream = self.get_activator_stream(activator.name, False)
         except:
-            e = Error()
-            e.code = ERR_ACTIVATOR_NOT_AVAILABLE
-            e.text = "Activator '%s' not available" % activator.name
-            logging.error(e.text)
+            logging.error("Activator '%s' not available" % activator.name)
             return
         r = PingCheckRequest()
         for a in addresses:
