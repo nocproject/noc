@@ -94,15 +94,6 @@ class Service(SAEService):
                 request.access_profile.profile)
             done(controller,error=e)
             return
-        # Check host was checked by ping. Reject executing of script on known unreachable hosts
-        if self.activator.ping_check_results\
-                and request.access_profile.address in self.activator.ping_check_results\
-                and not self.activator.ping_check_results[request.access_profile.address]:
-            e=Error()
-            e.code=ERR_DOWN
-            e.text="Host is down"
-            done(controller,error=e)
-            return
         # Check [activator]/max_scripts limit
         if not self.activator.can_run_script():
             e=Error()
@@ -119,14 +110,11 @@ class Service(SAEService):
         def ping_check_callback(unreachable):
             u=set(unreachable)
             r=PingCheckResponse()
-            self.activator.ping_check_results={} # Reset previous ping checks
             for a in request.addresses:
                 if a in u:
                     r.unreachable.append(a)
-                    self.activator.ping_check_results[a]=False
                 else:
                     r.reachable.append(a)
-                    self.activator.ping_check_results[a]=True
             done(controller,response=r)
         self.activator.ping_check([a for a in request.addresses],ping_check_callback)
     
@@ -275,7 +263,6 @@ class Activator(Daemon,FSM):
         self.service.activator=self
         self.factory=SocketFactory(tick_callback=self.tick, controller=self)
         self.children={}
-        self.ping_check_results={} # address -> last ping check result
         self.sae_stream=None
         self.to_listen=False # To start or not to start collectors
         self.event_sources=set()

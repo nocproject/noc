@@ -21,11 +21,17 @@ class Script(noc.sa.script.Script):
                 queue.put([])
             else:
                 queue.put([{"ip":ip,"status":True} for ip in response.reachable]+[{"ip":ip,"status":False} for ip in response.unreachable])
-        stream=self.sae.get_activator_stream(activator_name)
+        
+        try:
+            stream=self.sae.get_activator_stream(activator_name)
+        except Exception, why:
+            e = Error(code=ERR_ACTIVATOR_NOT_AVAILABLE, text=why)
+            callback(None, error=e)
+            return queue.get()
         r=PingCheckRequest()
         for a in addresses:
             r.addresses.append(a)
-        stream.proxy.ping_check(r,callback)
+        stream.proxy.ping_check(r, callback)
         # Use queue to receive result from callback
         queue=Queue.Queue()
         return queue.get()
