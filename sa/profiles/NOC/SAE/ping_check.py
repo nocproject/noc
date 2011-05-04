@@ -27,7 +27,7 @@ class Script(noc.sa.script.Script):
         except Exception, why:
             e = Error(code=ERR_ACTIVATOR_NOT_AVAILABLE, text=why)
             callback(None, error=e)
-            return queue.get()
+            return []
         r=PingCheckRequest()
         for a in addresses:
             r.addresses.append(a)
