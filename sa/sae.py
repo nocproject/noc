@@ -548,7 +548,8 @@ class SAE(Daemon):
         Launch a script
         """
         def script_callback(transaction, response=None, error=None):
-            stream.current_scripts -= 1
+            if stream is not None:
+                stream.current_scripts -= 1
             if object.profile_name != "NOC.SAE":
                 try:
                     self.object_scripts[object.id] -= 1
@@ -564,6 +565,7 @@ class SAE(Daemon):
             callback(result=result)
         
         logging.info("script %s(%s)" % (script_name, object))
+        stream = None
         if object.profile_name != "NOC.SAE":
             # Validate activator is present
             try:
