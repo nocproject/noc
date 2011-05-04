@@ -15,3 +15,4 @@ class IGetObjectsStatus(Interface):
         "object_id"  : IntParameter(),
         "status": BooleanParameter() | NoneParameter(),  # Up/Down/Unknown
     }))
+    template = "interfaces/igetobjectsstatus.html"

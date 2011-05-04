@@ -1,0 +1,25 @@
+{% if result %}
+{% load noctags %}
+
+<h1>Managed objects' availability</h1>
+
+{% noctable %}
+<table>
+    <thead>
+        <tr><th></th><th>Object</th></tr>
+    </thead>
+    <tbody>
+        {% for r in result %}
+            <tr>
+                <td>
+                    {{r.status|bool_icon}}
+                </td>
+                <td>{{r.object_id|object_name}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endnoctable %}
+{% else %}
+No data!!!
+{% endif %}
