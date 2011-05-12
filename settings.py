@@ -158,7 +158,7 @@ INSTALLED_APPS = (
     "south",
     
     "noc.main",
-    "noc.inv",
+    # "noc.inv",  # Temporary set up from [main]/installed_apps
     "noc.sa",
     "noc.fm",
     "noc.pm",
