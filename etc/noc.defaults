@@ -60,6 +60,18 @@ host     =
 # Set to empty string for default
 port     =
 
+[nosql_database]
+# MongoDB database name
+name = noc
+# MongoDB database user
+user = noc
+# MongoDB database password
+password = noc
+#
+host =
+#
+port =
+
 #
 # NOC User Authentication
 #
