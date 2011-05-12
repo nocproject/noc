@@ -18,6 +18,7 @@ lib/registry.py
 lib/text.py
 lib/validators.py
 lib/version.py
+main/launcher.py
 sa/__init__.py
 sa/activator.py
 sa/eventcollector.py
