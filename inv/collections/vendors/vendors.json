@@ -1,0 +1,12 @@
+[
+    {"name": "Alcatel-Lucent", "site": "http://www.alcatel-lucent.com/"},
+    {"name": "Cisco Networks", "site": "http://cisco.com/"},
+    {"name": "Extreme Networks", "site": "http://extremenetworks.com/"},
+    {"name": "f5 Networks", "site": "http://www.f5.com/"},
+    {"name": "Force10 Networks", "site": "http://force10networks.com/"},
+    {"name": "Huawei Technologies Co.", "site": "http://huawei.com/"},
+    {"name": "Juniper Networks", "site": "http://juniper.net/"},
+    {"name": "NOC", "site": "http://nocproject.org/"},
+    {"name": "NoName"},
+    {"name": "ZTE", "site": "http://wwwen.zte.com.cn/"}
+]
