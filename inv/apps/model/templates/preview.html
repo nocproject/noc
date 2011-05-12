@@ -1,0 +1,47 @@
+{% extends "app/tree/preview.html" %}
+{% block preview %}
+<style>
+    .sockets_table {
+        margin-left: 20px;
+    }
+    .h_name {
+        width: 70px;
+    }
+    .h_type {
+        width: 200px;
+    }
+    .h_kind {
+        width: 50px;
+    }
+    .h_range {
+        width: 100px;
+    }
+    .h_x_range {
+        border-left: 7px solid #c0c0c0;
+    }
+</style>
+<h2>Description</h2>
+<table border="0">
+    <tr class="row1">
+        <td><b>Vendor:</b></td>
+        <td><a href="{% url inv:vendor:preview o.vendor.id %}">{{o.vendor.name}}</a></td>
+    </tr>
+    <tr class="row2"><td><b>Model:</b></td><td>{{o.short_name}}</td></tr>
+    <tr class="row1"><td><b>Description:</b></td><td>{{o.description}}</td></tr>
+    <tr class="row2"><td><b>Part No.:</b></td><td>{{o.part_number}}</td></tr>
+    <tr class="row2"><td><b>Part No. Aliases:</b></td><td>{{o.part_number_aliases|join:", "}}</td></tr>
+</table>
+
+{% with s_title="Outer" sockets=o.o_sockets %}
+    {% include "inv/apps/model/templates/sockets_table.html" %}
+{% endwith %}
+
+{% with s_title="Inner" sockets=o.i_sockets %}
+    {% include "inv/apps/model/templates/sockets_table.html" %}
+{% endwith %}
+
+{% with s_title="Connection" sockets=o.c_sockets %}
+    {% include "inv/apps/model/templates/sockets_table.html" %}
+{% endwith %}
+
+{% endblock %}
