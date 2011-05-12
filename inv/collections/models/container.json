@@ -2,7 +2,7 @@
     {
         "vendor__name" : "NOC",
         "name" : "Container | Inventory",
-        "description": "Inventory containers",
+        "description": "Inventory root container",
         
         "i_sockets" : [
             {
