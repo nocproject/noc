@@ -29,7 +29,7 @@
                 "name": "Gi {{i}} (SFP)",
                 "type__name": "Transceiver | GE | SFP",
                 "kind": "F",
-                "range": "i:20..24"
+                "range": "i:21..24"
             },
             
             {
@@ -109,7 +109,7 @@
                 "name": "Gi {{i}} (SFP)",
                 "type__name": "Transceiver | GE | SFP",
                 "kind": "F",
-                "range": "i:44..48"
+                "range": "i:45..48"
             },
             
             {
