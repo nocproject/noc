@@ -1,13 +1,16 @@
 {% if sockets %}
     <h2>{{s_title}} sockets</h2>
     <table border="0" class="sockets_table">
-        <tr>
-            <th class="h_name">Name</th>
-            <th class="h_type">Type</th>
-            <th class="h_kind">Kind</th>
-            <th class="h_range">Range</th>
-            <th></th>
-        </tr>
+        <thead>
+            <tr>
+                <th class="h_name">Name</th>
+                <th class="h_type">Type</th>
+                <th class="h_kind">Kind</th>
+                <th></th>
+                <th class="h_range">Range</th>
+                <th></th>
+            </tr>
+        </thead>
         {% for s in sockets %}
             <tr>
                 <td>{{s.name}}</td>
@@ -20,6 +23,9 @@
                             Male &#9794;
                         {% endif %}
                     {% endif %}
+                </td>
+                <td>
+                    <a href="{% url inv:model:connections direction s.type.id s.kind%}" target="_" title="Click to see models can be connected"><img src="/media/img/admin/selector-addall.gif"/></a>
                 </td>
                 <td>{% if s.range %}{{s.range}}{% endif %}</td>
                 {% if s.range %}

@@ -34,15 +34,15 @@
     <tr class="row2"><td><b>Part No. Aliases:</b></td><td>{{o.part_number_aliases|join:", "}}</td></tr>
 </table>
 
-{% with s_title="Outer" sockets=o.o_sockets %}
+{% with s_title="Outer" sockets=o.o_sockets direction="o"%}
     {% include "inv/apps/model/templates/sockets_table.html" %}
 {% endwith %}
 
-{% with s_title="Inner" sockets=o.i_sockets %}
+{% with s_title="Inner" sockets=o.i_sockets  direction="i"%}
     {% include "inv/apps/model/templates/sockets_table.html" %}
 {% endwith %}
 
-{% with s_title="Connection" sockets=o.c_sockets %}
+{% with s_title="Connection" sockets=o.c_sockets  direction="c"%}
     {% include "inv/apps/model/templates/sockets_table.html" %}
 {% endwith %}
 
