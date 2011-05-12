@@ -15,7 +15,7 @@ from noc.lib.nosql import *
 class Vendor(Document):
     meta = {
         "collection": "noc.vendors",
-        "allow_inheritance": False
+        "allow_inheritance": False,
     }
     
     name = StringField(unique=True)
@@ -138,8 +138,11 @@ rx_range_check = re.compile(r"^[a-zA-Z0-9_]+:\d+\.\.\d+(,[a-zA-Z0-9_]+:\d+\.\.\d
 rx_range_exp = re.compile(r"^(?P<var_name>[a-zA-Z0-9_]+):(?P<min>\d+)\.\.(?P<max>\d+)$")
 
 class ModelSocket(EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
     name = StringField()
-    type = ReferenceField(Socket)
+    type = PlainReferenceField(Socket)
     kind = StringField(max_length=1, choices=["M", "F"])
     # Socket range expression
     range = StringField(required=False)
@@ -211,7 +214,7 @@ class Model(Document):
         "collection": "noc.models",
         "allow_inheritance": False
     }
-    vendor = ReferenceField(Vendor)
+    vendor = PlainReferenceField(Vendor)
     name = StringField(unique=True)
     is_builtin = BooleanField(default=False)
     description = StringField(required=False)
