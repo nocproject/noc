@@ -1,0 +1,23 @@
+{% extends "app/tree/preview.html" %}
+{% block preview %}
+    <table border="0">
+        <tr class="row1"><td><b>Name:</b></td><td>{{o.short_name}}</td></tr>
+        {% if o.description %}
+        <tr class="row2">
+            <td><b>Description:</b></td>
+            <td>{{o.description}}</td>
+        </tr>
+        {% endif %}
+        <tr class="row1">
+            <td><b>Has gender:</b></td>
+            <td>{{o.has_gender}}</td>
+        </tr>
+        <tr class="row2">
+            <td><b>Multi-Connections:</b></td>
+            <td>{{o.multi_connection}}</td>
+        </tr>
+        <!-- m_compatible -->
+        <!-- f_compatible -->
+        <!-- model attributes -->
+    </table>
+{% endblock %}
