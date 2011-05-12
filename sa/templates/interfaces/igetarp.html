@@ -14,7 +14,7 @@
                 <td>{{r.mac}}</td>
                 <td>{{r.interface}}</td>
                 <td>
-                    {% if "ping" in object.profile.scripts %}
+                    {% if "ping" in object.profile.scripts  and r.mac != "FF:FF:FF:FF:FF:FF" %}
                         <a href='{% url sa:managedobject:script object.id "ping" "HTML" %}?address={{r.ip}}'>ping</a>
                     {% endif %}
                 </td>
