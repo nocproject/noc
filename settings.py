@@ -24,6 +24,7 @@ MANAGERS = ADMINS
 
 SERVER_EMAIL      = config.get("main","server_email")
 
+## RDBMS settings
 DATABASE_ENGINE   = config.get("database","engine")
 DATABASES={
     "default" : {
@@ -35,8 +36,13 @@ DATABASES={
         "PORT"     : config.get("database","port"),
     }
 }
-
 DATABASE_SUPPORTS_TRANSACTIONS = True
+## NoSQL settings
+NOSQL_DATABASE_NAME = config.get("nosql_database", "name")
+NOSQL_DATABASE_USER = config.get("nosql_database", "user")
+NOSQL_DATABASE_PASSWORD = config.get("nosql_database", "password")
+NOSQL_DATABASE_HOST = config.get("nosql_database", "host")
+NOSQL_DATABASE_PORT = config.get("nosql_database", "port")
 
 TIME_ZONE = config.get("main","timezone")
 LANGUAGE_CODE = config.get("main","language_code")
@@ -152,6 +158,7 @@ INSTALLED_APPS = (
     "south",
     
     "noc.main",
+    "noc.inv",
     "noc.sa",
     "noc.fm",
     "noc.pm",
