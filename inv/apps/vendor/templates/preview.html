@@ -1,9 +1,11 @@
 {{% extends "app/tree/preview.html" %}
+{% load noctags %}
 {% block preview %}
     <table border="0">
         <tr class="row1"><td><b>Vendor:</b></td><td>{{o.name}}</td></tr>
+        <tr class="row2"><td><b>Is builtin?:</b></td><td>{{o.is_builtin|bool_icon}}</td></tr>
         {% if o.site %}
-            <tr class="row2">
+            <tr class="row1">
                 <td><b>Site:</b></td>
                 <td><a href="{{o.site}}" target="_">{{o.site}}</a></td>
             </tr>

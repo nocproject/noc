@@ -1,4 +1,5 @@
 {% extends "app/tree/preview.html" %}
+{% load noctags %}
 {% block preview %}
 <style>
     .sockets_table {
@@ -27,8 +28,9 @@
         <td><a href="{% url inv:vendor:preview o.vendor.id %}">{{o.vendor.name}}</a></td>
     </tr>
     <tr class="row2"><td><b>Model:</b></td><td>{{o.short_name}}</td></tr>
-    <tr class="row1"><td><b>Description:</b></td><td>{{o.description}}</td></tr>
-    <tr class="row2"><td><b>Part No.:</b></td><td>{{o.part_number}}</td></tr>
+    <tr class="row1"><td><b>Is builtin?:</b></td><td>{{o.is_builtin|bool_icon}}</td></tr>
+    <tr class="row2"><td><b>Description:</b></td><td>{{o.description}}</td></tr>
+    <tr class="row1"><td><b>Part No.:</b></td><td>{{o.part_number}}</td></tr>
     <tr class="row2"><td><b>Part No. Aliases:</b></td><td>{{o.part_number_aliases|join:", "}}</td></tr>
 </table>
 
