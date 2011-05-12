@@ -14,7 +14,7 @@ import re
 class Script(NOCScript):
     name="DLink.DxS.get_arp" 
     implements=[IGetARP]
-    rx_line=re.compile(r"^(?P<interface>\S+)\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+\S+$", re.MULTILINE)
+    rx_line=re.compile(r"^(?P<interface>\S+)\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+\S+\s*$", re.MULTILINE)
     def execute(self):
         r=[]
         for match in self.rx_line.finditer(self.cli("show arpentry")):
