@@ -1,0 +1,33 @@
+{% if sockets %}
+    <h2>{{s_title}} sockets</h2>
+    <table border="0" class="sockets_table">
+        <tr>
+            <th class="h_name">Name</th>
+            <th class="h_type">Type</th>
+            <th class="h_kind">Kind</th>
+            <th class="h_range">Range</th>
+            <th></th>
+        </tr>
+        {% for s in sockets %}
+            <tr>
+                <td>{{s.name}}</td>
+                <td><a href="{% url inv:socket:preview s.type.id %}"{% if s.type.description %} title="{{s.type.description}}"{% endif %}>{{s.type.name}}</a></td>
+                <td>
+                    {% if s.type.has_gender %}
+                        {% if s.kind == "F" %}
+                            Female &#9792;
+                        {% else %}
+                            Male &#9794;
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>{% if s.range %}{{s.range}}{% endif %}</td>
+                {% if s.range %}
+                    <td class="h_x_range">{{s.names|join:", "}}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
