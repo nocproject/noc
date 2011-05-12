@@ -1,0 +1,12 @@
+{{% extends "app/tree/preview.html" %}
+{% block preview %}
+    <table border="0">
+        <tr class="row1"><td><b>Vendor:</b></td><td>{{o.name}}</td></tr>
+        {% if o.site %}
+            <tr class="row2">
+                <td><b>Site:</b></td>
+                <td><a href="{{o.site}}" target="_">{{o.site}}</a></td>
+            </tr>
+        {% endif %}
+    </table>
+{% endblock %}
