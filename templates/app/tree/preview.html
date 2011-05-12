@@ -1,0 +1,8 @@
+{% extends "template.html" %}
+{%block breadcrumbs %}{{block.super}}<li>{{o.name}}</li>{%endblock%}
+{% block content %}
+<h1>{{app.verbose_name_plural}}: {{o.name}}</h1>
+<div class="module">
+{% block preview %}{% endblock %}
+</div>
+{% endblock %}

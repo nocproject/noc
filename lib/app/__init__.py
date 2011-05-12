@@ -9,6 +9,7 @@ from site import *
 from access import *
 from application import *
 from modelapplication import *
+from treeapplication import *
 from noc.settings import config,IS_WEB
 ##
 ## Setup Context Processor.
