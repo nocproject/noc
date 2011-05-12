@@ -13,3 +13,4 @@ Jinja2,2.2.1
 Sphinx,1.0.7
 WebOb,0.9.8
 WebTest,1.2.1
+mongoengine,0.4
