@@ -22,24 +22,38 @@ class TreeApplication(Application):
     def get_menu(self):
         return self.menu
     
-    def get_children(self, parent=None):
+    def get_children(self, parent=None, filter=None):
         def has_children(p):
-            return (self.category_model.objects.filter(parent=p.id) or
-                    self.model.objects.filter(**{self.category_field: p.id}))
+            mq = self.model.objects.filter(**{self.category_field: p.id})
+            if filter:
+                mq = mq.filter(__raw__=filter)
+            return (self.category_model.objects.filter(parent=p.id) or mq)
         
         if self.category_model:
             # Categories tree given
             if parent is None:
                 for p in self.category_model.objects.filter(**{"%s__exists" % self.parent_field: False}).order_by("name"):
+                    if (filter and
+                        self.model.objects.filter(__raw__=filter).filter(**{self.category_field: p.id}).first() is None):
+                        continue
                     yield p.id, p.name, has_children(p)
             else:
                 for p in self.category_model.objects.filter(**{self.parent_field: parent}).order_by("name"):
+                    if (filter and
+                        self.model.objects.filter(__raw__=filter).filter(**{self.category_field: p.id}).first() is None):
+                        continue
                     yield p.id, p.name.split(" | ")[-1], has_children(p)
-                for p in self.model.objects.filter(**{self.category_field: parent}).order_by("name"):
+                mq = self.model.objects.filter(**{self.category_field: parent})
+                if filter:
+                    mq = mq.filter(__raw__=filter)
+                for p in mq.order_by("name"):
                     yield p.id, p.name.split(" | ")[-1], False
         else:
             # No categories
-            for p in self.model.objects.all().order_by("name"):
+            mq = self.model.objects.all()
+            if filter:
+                mq = mq.filter(__raw__=filter)
+            for p in mq.order_by("name"):
                 yield p.id, p.name, False
     
     def get_object(self, object_id):
@@ -72,7 +86,7 @@ class TreeApplication(Application):
             else:
                 d["data"]["attr"] = {"href": "%s/" % id}
             return d
-            
+        
         node = None
         if request.GET and "node" in request.GET:
             node = request.GET["node"]
