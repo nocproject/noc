@@ -34,8 +34,14 @@ function show_popup(title, url) {
     $popup.show();
     /* Load URL */
     var $body = $("#noc-popup-body");
-    
-    $body.load(url);
+    $body.html("<iframe src='" + url + "' id='noc-popup-iframe'></iframe>");
+    $iframe = $("#noc-popup-iframe");
+    $iframe.css({
+        "left": 0,
+        "top": 0,
+        "width": $body.width(),
+        "height": wh - 2 * margin - 30
+        });
     /* Return false to cancel link jumping */
     return false;
 }

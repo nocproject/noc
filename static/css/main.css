@@ -147,6 +147,10 @@ table tbody tr.selected {
     padding: 4px;
 }
 
+#noc-popup-iframe {
+    border: 0px;
+}
+
 @media print {
     #menu {
         display: none;
