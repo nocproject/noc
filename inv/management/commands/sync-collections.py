@@ -138,7 +138,7 @@ class Command(BaseCommand):
                         if created or changed:
                             t = ", ".join([u"%s = '%s'" % (x, y)
                                            for x, y in k.items()])
-                            print "%s in noc.%s: %s" % (
+                            print "    %s in noc.%s: %s" % (
                                 "Creating" if created else "Updating",
                                 collection,
                                 t
@@ -147,5 +147,5 @@ class Command(BaseCommand):
             # Remove hanging builtins
             if builtin_ids:
                 for o in doc.objects.filter(id__in=builtin_ids):
-                    print "Removing from noc.%s: %s" % (collection, unicode(o))
+                    print "    Removing from noc.%s: %s" % (collection, unicode(o))
                     o.delete()
