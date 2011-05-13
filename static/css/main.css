@@ -111,6 +111,42 @@ table tbody tr.selected {
     margin-left: 8px;
 }
 
+#noc-popup-window {
+    display: none;
+    z-index:9999;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: #f0f0f0;
+}
+
+#noc-popup-header {
+    font-weight: bold;
+    background-color: #c0c0c0;
+    padding: 4px;
+}
+
+#noc-popup-header-close {
+    float: right;
+}
+
+#noc-popup-header-title {
+    position: relative;
+}
+
+#noc-popup-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 9000;
+  background-color: #000;
+  display: none;
+}
+
+#noc-popup-body {
+    padding: 4px;
+}
+
 @media print {
     #menu {
         display: none;
