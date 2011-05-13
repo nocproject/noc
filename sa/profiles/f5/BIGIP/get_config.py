@@ -7,6 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
+from __future__ import with_statement
 ## NOC modules
 from noc.sa.script import NOCScript
 from noc.sa.interfaces import IGetConfig
