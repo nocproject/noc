@@ -52,6 +52,13 @@ class TreeApplication(Application):
         """
         return self.model.objects.filter(id=object_id).first()
     
+    def render_tree_popup(self, request, lookup_url):
+        """
+        Render tree-stype popup
+        """
+        return self.render(request, "app/tree/popup_tree.html",
+                           lookup_url=lookup_url)
+    
     @view(url=r"lookup_tree/$", url_name="lookup_tree", access=HasPerm("view"))
     def view_lookup_tree(self, request):
         """

@@ -1,0 +1,60 @@
+{% extends "popup.html" %}
+{% block extrahead %}
+      <script type="text/javascript" src="/static/js/jquery.jstree.js"></script>
+{% endblock %}
+{% block content %}
+<div id="popup-tree">Foobar</div>
+<script>
+      $(document).ready(function() {
+            $("#popup-tree")
+            .jstree({
+                  "core": {
+                        /*"initially_open": ["root"]*/
+                  },
+                  "plugins": ["themes", "json_data",
+                              "types"],
+                  "themes": {
+                        "url": "/static/themes/jstree/default/style.css"
+                  },
+                  "types": {
+                        "valid_children": ["root"],
+                        "types": {
+                              "default": {
+                                    "valid_children": "none",
+                                    "icon" : {
+                                          "image": "/static/themes/jstree/default/file.png"
+                                    }
+                              },
+                              "folder": {
+                                    "valid_children": ["default", "folder"],
+                                    "icon" : {
+                                          "image": "/static/themes/jstree/default/folder.png"
+                                    },
+                                    "select_node" : function () {return false;}
+                              },
+                              "root": {
+                                    "valid_children": ["default", "folder"],
+                                    "icon": {
+                                          "image": "/static/themes/jstree/default/root.png"
+                                    },
+                                    "hover_node": false,
+                                    "select_node" : function () {return false;}
+                              }
+
+                        }
+                  },
+                  "json_data": {
+                        "progressive_render": true,
+                        "ajax": {
+                              "url": "{{lookup_url}}",
+                              "data": function(n) {
+                                    return {
+                                          "node": n.attr ? n.attr("id").replace("node_", "") : "root"
+                                    };
+                              }
+                        }
+                  }
+            });
+      });
+</script>
+{% endblock %}
