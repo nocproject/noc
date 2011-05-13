@@ -20,12 +20,28 @@ class ModelApplication(TreeApplication):
     model = Model
     category_model = ModelCategory
 
-    @view(url=r"^connections/(?P<direction>[oic])/(?P<socket_type>[a-f0-9]+)/(?P<kind>[MF])/$",
+
+    @view(url=r"^connections/popup/(?P<direction>[oic])/(?P<socket_type>[a-f0-9]+)/(?P<kind>[MF])/$",
           url_name="connections", access=HasPerm("view"))
-    def view_connections(self, request, direction, socket_type, kind):
+    def view_connections_popup(self, request, direction, socket_type, kind):
+        return self.render_tree_popup(request,
+                            self.site.reverse("inv:model:lookup_connections",
+                                              direction, socket_type, kind))
+        
+    @view(url=r"^connections/lookup/(?P<direction>[oic])/(?P<socket_type>[a-f0-9]+)/(?P<kind>[MF])/$",
+          url_name="lookup_connections", access=HasPerm("view"))
+    def view_conenctions_lookup(self, request, direction, socket_type, kind):
+        def to_json(id, title, has_children):
+            d = {"data": {"title": title}, "attr": {"id": "node_"+str(id)}}
+            if has_children:
+                d["state"] = "closed"
+                d["attr"]["rel"] = "folder"
+            else:
+                d["data"]["attr"] = {"href": "%s/" % id}
+            return d
+
         k = {"M": "F", "F": "M"}[kind]
         f = "%s_sockets" % {"o": "i", "i": "o", "c": "c"}[direction]
-        # > db.noc.models.find({"i_sockets": {$elemMatch: {"kind": "F", "type": ObjectId("4dcc4d7a5a2090675d000002")}} }, {"name": 1})
         q = {
             f: {
                 "$elemMatch": {
@@ -34,5 +50,18 @@ class ModelApplication(TreeApplication):
                 }
             }
         }
-        connections = Model.objects.filter(__raw__=q).order_by("name")
-        return self.render(request, "connections.html", connections=connections)
+        node = None
+        if request.GET and "node" in request.GET:
+            node = request.GET["node"]
+            if node == "root":
+                node = None
+        if node is None:
+            data = {
+                "data": self.verbose_name_plural,
+                "state": "closed",
+                "attr": {"id": "node_root", "rel": "root"},
+                "children": [to_json(*c) for c in self.get_children(None, filter=q)]
+            }
+        else:
+            data = [to_json(*c) for c in self.get_children(node, filter=q)]
+        return self.render_json(data)
