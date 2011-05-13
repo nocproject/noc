@@ -13,6 +13,7 @@
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
 <SCRIPT TYPE="text/javascript" SRC="{% admin_media_prefix %}js/jquery.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/menu.js"></SCRIPT>
+<SCRIPT TYPE="text/javascript" SRC="/static/js/popup.js"></SCRIPT>
 {% block extrastyle %}{% endblock %}
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}{% admin_media_prefix %}css/ie.css{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
@@ -82,5 +83,15 @@
 </div>
 <!-- END Container -->
 
+<!-- Popup window stub -->
+<div id="noc-popup-mask"></div>
+<div id="noc-popup-window">
+    <div id="noc-popup-header">
+        <span id="noc-popup-header-title"></span>
+        <span id="noc-popup-header-close"><a href="#" onclick="hide_popup();">Close [X]</a></span>
+    </div>
+    <div id="noc-popup-body"></div>
+</div>
+<!-- END Popup -->
 </body>
 </html>
