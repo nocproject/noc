@@ -45,7 +45,6 @@ class TreeApplication(Application):
                     yield p.id, p.name, has_children(p)
             else:
                 for p in self.category_model.objects.filter(**{self.parent_field: parent}).order_by("name"):
-                    # ERROR!!!
                     if (filter and
                         self.model.objects.filter(__raw__=filter).filter(**{self.category_field + "__in": get_descendants(p.id)}).first() is None):
                         continue
