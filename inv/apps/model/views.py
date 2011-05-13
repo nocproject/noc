@@ -37,7 +37,7 @@ class ModelApplication(TreeApplication):
                 d["state"] = "closed"
                 d["attr"]["rel"] = "folder"
             else:
-                d["data"]["attr"] = {"href": "%s/" % id}
+                d["data"]["attr"] = {"href": self.site.reverse("inv:model:preview", id), "target": "_"}
             return d
 
         k = {"M": "F", "F": "M"}[kind]
