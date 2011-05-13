@@ -29,18 +29,25 @@ class TreeApplication(Application):
                 mq = mq.filter(__raw__=filter)
             return (self.category_model.objects.filter(parent=p.id) or mq)
         
+        def get_descendants(parent):
+            d = [parent]
+            for c in self.category_model.objects.filter(**{self.parent_field: parent}):
+                d += get_descendants(c.id)
+            return d
+        
         if self.category_model:
             # Categories tree given
             if parent is None:
                 for p in self.category_model.objects.filter(**{"%s__exists" % self.parent_field: False}).order_by("name"):
                     if (filter and
-                        self.model.objects.filter(__raw__=filter).filter(**{self.category_field: p.id}).first() is None):
+                        self.model.objects.filter(__raw__=filter).filter(**{self.category_field + "__in": get_descendants(p.id)}).first() is None):
                         continue
                     yield p.id, p.name, has_children(p)
             else:
                 for p in self.category_model.objects.filter(**{self.parent_field: parent}).order_by("name"):
+                    # ERROR!!!
                     if (filter and
-                        self.model.objects.filter(__raw__=filter).filter(**{self.category_field: p.id}).first() is None):
+                        self.model.objects.filter(__raw__=filter).filter(**{self.category_field + "__in": get_descendants(p.id)}).first() is None):
                         continue
                     yield p.id, p.name.split(" | ")[-1], has_children(p)
                 mq = self.model.objects.filter(**{self.category_field: parent})
