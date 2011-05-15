@@ -19,6 +19,18 @@ class ModelApplication(TreeApplication):
     menu = "Setup | Models"
     model = Model
     category_model = ModelCategory
+    list_display = [
+        {
+            "field": "name",
+            "format": "short",
+            "css": {
+                "width": "150px"
+            }
+        },
+        {
+            "field": "description",
+        }
+    ]
 
 
     @view(url=r"^connections/popup/(?P<direction>[oic])/(?P<socket_type>[a-f0-9]+)/(?P<kind>[MF])/$",
