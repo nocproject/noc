@@ -1,6 +1,7 @@
 {% extends "template.html" %}
 {% block extrahead %}
       <script type="text/javascript" src="/static/js/jquery.jstree.js"></script>
+      <link rel="stylesheet" type="text/css" href="{% url inv:model:tree_css%}" />
 {% endblock %}
 {% block content %}
 <h1>Select {{verbose_name}} to change</h1>
@@ -29,6 +30,8 @@
             .jstree({
                   "core": {
                         /*"initially_open": ["root"]*/
+                        "animation": 0,
+                        "html_titles": true
                   },
                   "plugins": ["themes", "json_data",
                               "types"],

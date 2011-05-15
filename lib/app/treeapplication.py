@@ -18,6 +18,22 @@ class TreeApplication(Application):
     category_field = "category"  # model.category_field
     category_model = None
     parent_field = "parent"  # category_model.parent -> category_model
+    ##
+    ## Fields to show in tree. List of dicts.
+    ## Possible items of dicts are:
+    ## * field (required) - DB field name
+    ## * format (optional) - optional field formatting, see below
+    ## * css (optional) - dict of column's CSS attributes
+    ##
+    ## Formats:
+    ## * short - Only part right of last |
+    list_display = [{"field": "name"}]  # List of field names to show
+    
+    def format_default(self, s):
+        return s
+    
+    def format_short(self, s):
+        return s.split(" | ")[-1]
     
     def get_menu(self):
         return self.menu
@@ -35,6 +51,19 @@ class TreeApplication(Application):
                 d += get_descendants(c.id)
             return d
         
+        def s_category(c):
+            return u"<span class='noc-tree-category'>%s</span>" % self.html_escape(c)
+        
+        def s_item(p):
+            r = [u"<span class='noc-tree-item'>"]
+            for i, f in enumerate(self.list_display):
+                r += ["<span class='noc-tree-c%d'>" % i]
+                format = getattr(self, "format_%s" % f.get("format", "default"))
+                r += [self.html_escape(format(getattr(p, f["field"])))]
+                r += ["</span>"]
+            r += [u"</span>"]
+            return "".join(r)
+        
         if self.category_model:
             # Categories tree given
             if parent is None:
@@ -42,25 +71,25 @@ class TreeApplication(Application):
                     if (filter and
                         self.model.objects.filter(__raw__=filter).filter(**{self.category_field + "__in": get_descendants(p.id)}).first() is None):
                         continue
-                    yield p.id, p.name, has_children(p)
+                    yield p.id, s_category("%s") % p.name, has_children(p)
             else:
                 for p in self.category_model.objects.filter(**{self.parent_field: parent}).order_by("name"):
                     if (filter and
                         self.model.objects.filter(__raw__=filter).filter(**{self.category_field + "__in": get_descendants(p.id)}).first() is None):
                         continue
-                    yield p.id, p.name.split(" | ")[-1], has_children(p)
+                    yield p.id, s_category("%s") % p.name.split(" | ")[-1], has_children(p)
                 mq = self.model.objects.filter(**{self.category_field: parent})
                 if filter:
                     mq = mq.filter(__raw__=filter)
                 for p in mq.order_by("name"):
-                    yield p.id, p.name.split(" | ")[-1], False
+                    yield p.id, s_item(p), False
         else:
             # No categories
             mq = self.model.objects.all()
             if filter:
                 mq = mq.filter(__raw__=filter)
             for p in mq.order_by("name"):
-                yield p.id, p.name, False
+                yield p.id, s_item(p), False
     
     def get_object(self, object_id):
         """
@@ -116,6 +145,24 @@ class TreeApplication(Application):
         """
         return self.render(request, "app/tree/tree.html",
                            verbose_name=self.verbose_name)
+    
+    @view(url=r"^css/$", url_name="tree_css", access=HasPerm("list"))
+    def view_css(self, request):
+        """
+        Render items' CSS
+        """
+        css=[]
+
+        for n, f in enumerate(self.list_display):
+            css += [".noc-tree-c%d {" % n]
+            css += ["display: inline-block;"]
+            if n > 0:
+                css += ["padding-left: 4px;"]
+                css += ["border-left: 1px solid #c0c0c0;"]
+            for k, v in f.get("css", {}).items():
+                css += ["    %s: %s;" % (k, v)]
+            css += ["}"]
+        return self.render_plain_text("\n".join(css), "text/css")
     
     @view(url=r"^(?P<object_id>[0-9a-f]+)/$", url_name="preview",
           access=HasPerm("view"))

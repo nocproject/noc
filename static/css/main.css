@@ -151,6 +151,14 @@ table tbody tr.selected {
     border: 0px;
 }
 
+/* TreeApplication */
+.noc-tree-category {
+    font-weight: bold;
+}
+
+.noc-tree-item {
+}
+
 @media print {
     #menu {
         display: none;
