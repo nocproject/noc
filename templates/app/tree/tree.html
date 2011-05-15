@@ -1,7 +1,7 @@
 {% extends "template.html" %}
 {% block extrahead %}
       <script type="text/javascript" src="/static/js/jquery.jstree.js"></script>
-      <link rel="stylesheet" type="text/css" href="{% url inv:model:tree_css%}" />
+      <link rel="stylesheet" type="text/css" href="{{app.base_url}}css/" />
 {% endblock %}
 {% block content %}
 <h1>Select {{verbose_name}} to change</h1>
