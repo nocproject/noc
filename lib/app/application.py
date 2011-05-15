@@ -2,9 +2,14 @@
 ##----------------------------------------------------------------------
 ## Application class
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Python modules
+import logging
+import os
+## Django modules
 from django.template import RequestContext
 from django.http import HttpResponse,HttpResponseRedirect,HttpResponseForbidden,HttpResponseNotFound
 from django.shortcuts import render_to_response
@@ -12,11 +17,12 @@ from django.utils.simplejson.encoder import JSONEncoder
 from django.db import connection
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from django.utils.html import escape
+## NOC modules
 from access import HasPerm
 from site import site
 from noc.lib.forms import NOCForm
 from noc import settings
-import logging,os
 ##
 ## Metaclass for Application.
 ## Register application class to site
@@ -150,6 +156,12 @@ class Application(object):
     ##
     def response_not_found(self,text=None):
         return HttpResponseNotFound(text)
+    
+    ##
+    ## Escape HTML
+    ##
+    def html_escape(self, s):
+        return escape(s)
     ##
     ## Logging
     ##
