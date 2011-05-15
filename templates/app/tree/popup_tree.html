@@ -1,6 +1,7 @@
 {% extends "popup.html" %}
 {% block extrahead %}
       <script type="text/javascript" src="/static/js/jquery.jstree.js"></script>
+      <link rel="stylesheet" type="text/css" href="{{app.base_url}}css/" />
 {% endblock %}
 {% block content %}
 <div id="popup-tree">Foobar</div>
@@ -10,6 +11,8 @@
             .jstree({
                   "core": {
                         /*"initially_open": ["root"]*/
+                        "animation": 0,
+                        "html_titles": true,
                   },
                   "plugins": ["themes", "json_data",
                               "types"],
