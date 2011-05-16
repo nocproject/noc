@@ -26,6 +26,7 @@ from noc.lib.app import ModelApplication, site, Permit, PermitSuperuser,\
 from noc.sa.models import *
 from noc.settings import config
 from noc.lib.fileutils import in_dir
+from noc.lib.widgets import PasswordWidget
 ##
 ## Validating form for managed object
 ##
@@ -223,7 +224,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
     ##
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name in ("password", "super_password"):
-            kwargs["widget"] = forms.widgets.PasswordInput(render_value=True)
+            kwargs["widget"] = PasswordWidget(render_value=True)
             if "request" in kwargs:  # For Django 1.1 and later compatibility
                 kwargs.pop("request", None)
             return db_field.formfield(**kwargs)
