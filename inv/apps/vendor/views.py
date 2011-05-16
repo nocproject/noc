@@ -24,7 +24,8 @@ class VendorApplication(TreeApplication):
     def view_models_popup(self, request, vendor):
         return self.render_tree_popup(request,
                             self.site.reverse("inv:vendor:lookup_models",
-                                              vendor))
+                                              vendor),
+                            css_url=self.site.reverse("inv:model:tree_css"))
     
     @view(url=r"^(?P<vendor>[a-f0-9]+)/models/lookup/$",
           url_name="lookup_models", access=HasPerm("view"))
