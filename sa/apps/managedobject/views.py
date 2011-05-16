@@ -27,6 +27,7 @@ from noc.sa.models import *
 from noc.settings import config
 from noc.lib.fileutils import in_dir
 from noc.lib.widgets import PasswordWidget
+from noc.lib.ip import IP
 ##
 ## Validating form for managed object
 ##
@@ -395,8 +396,19 @@ class ManagedObjectApplication(ModelApplication):
           access=HasPerm("change"))
     def view_addresses(self, request, object_id):
         o = self.get_object_or_404(ManagedObject, id=int(object_id))
+        # Group by parents
+        r = {}
+        for a in o.address_set.all():
+            p = a.prefix
+            try:
+                r[p] += [a]
+            except KeyError:
+                r[p] = [a]
+        # Order result
+        rr = [(p, sorted(r[p], key=lambda x: IP.prefix(x.address)))
+              for p in sorted(r, key=lambda x: IP.prefix(x.prefix))]
         return self.render(request, "addresses.html",
-                           addresses=o.address_set.order_by("address"),
+                           data=rr,
                            object=o)
     
     ##
