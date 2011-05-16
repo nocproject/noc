@@ -12,6 +12,7 @@
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
 <SCRIPT TYPE="text/javascript" SRC="{% admin_media_prefix %}js/jquery.js"></SCRIPT>
+<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.corner.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/menu.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/popup.js"></SCRIPT>
 {% block extrastyle %}{% endblock %}
@@ -88,7 +89,7 @@
 <div id="noc-popup-window">
     <div id="noc-popup-header">
         <span id="noc-popup-header-title"></span>
-        <span id="noc-popup-header-close"><a href="#" onclick="hide_popup();">Close [X]</a></span>
+        <span id="noc-popup-header-close"><a href="#" onclick="hide_popup();"><img src="{% admin_media_prefix %}img/admin/icon_deletelink.gif"/></a></span>
     </div>
     <div id="noc-popup-body"></div>
 </div>
