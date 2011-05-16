@@ -122,8 +122,12 @@ table tbody tr.selected {
 
 #noc-popup-header {
     font-weight: bold;
-    background-color: #c0c0c0;
+    background: #7CA0C7 url(/media/img/admin/default-bg.gif) top left repeat-x;
+    color: white;
     padding: 4px;
+    padding-right: 10px;
+    padding-left: 10px;
+    text-align: center;
 }
 
 #noc-popup-header-close {
@@ -132,6 +136,7 @@ table tbody tr.selected {
 
 #noc-popup-header-title {
     position: relative;
+    text-align: center;
 }
 
 #noc-popup-mask {

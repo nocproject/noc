@@ -17,6 +17,7 @@ function show_popup(title, url) {
     
     /* Show popup window */
     var $popup = $("#noc-popup-window");
+    $popup.corner();
     
     var margin = 50;
     $popup.css({
@@ -25,11 +26,13 @@ function show_popup(title, url) {
         "width": ww - 2 * margin,
         "height": wh - 2 * margin
     });
+    
+    $("#noc-popup-header").corner("round top");
 
     var $title = $("#noc-popup-header-title");
     $title.text(title);
     /* @todo: FIX */
-    $title.css({"left": ($popup.width() - $title.width()) / 2});
+    /* $title.css({"left": ($popup.width() - $title.width()) / 2}); */
     
     $popup.show();
     /* Load URL */
