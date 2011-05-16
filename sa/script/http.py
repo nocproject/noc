@@ -36,7 +36,10 @@ class HTTPResponse(object):
         self.status = None
         self.reason = None
         self.data = None
-        self.parse_headers(response) and self.parse_data(response)
+        if response:
+            self.parse_headers(response) and self.parse_data(response)
+        else:
+            self.reason = "Request failed. No data"
 
     def parse_headers(self, response):
         """
@@ -71,6 +74,7 @@ class HTTPResponse(object):
                                              d)
         else:
             self.data = d
+        return True
 
     def decode_encoding(self, encoding, data):
         if encoding == "chunked":
@@ -109,8 +113,7 @@ class NOCHTTPSocket(ConnectedTCPSocket):
         pass
 
     def on_close(self):
-        if self.buffer:
-            self.queue.put(HTTPResponse(self.buffer))
+        self.queue.put(HTTPResponse(self.buffer))
 
     def request(self, method, path, params=None, headers={}):
         # Build request
