@@ -9,7 +9,7 @@
 """
 ## Django modules
 from django import forms
-from django.forms.widgets import Input
+from django.forms.widgets import Input, PasswordInput
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from django.utils.simplejson.encoder import JSONEncoder
@@ -24,6 +24,15 @@ class LabelWidget(Input):
     def render(self, name, value, attrs=None):
         return value
     
+
+class PasswordWidget(PasswordInput):
+    class Media:
+        js = ["/static/js/toggle_password.js"]
+    
+    def render(self, name, value, attrs=None):
+        r= mark_safe("<span>")+ super(PasswordWidget, self).render(name, value, attrs)
+        return r + mark_safe(u""" <input type="checkbox" onclick="toggle_password('id_%s',this.checked);"> Show password </span>""" % name)
+
 
 ##
 ##
