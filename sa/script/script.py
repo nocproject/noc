@@ -638,7 +638,7 @@ class Script(threading.Thread):
             self.cli_provider.submit(cmd, command_submit=command_submit, bulk_lines=bulk_lines)
             data=self.cli_queue_get()
         # Encode to UTF8 if requested
-        if self.encoding:
+        if self.encoding and isinstance(data, basestring):
             data = unicode(data, self.encoding).encode("utf8")
         # Save canned output if requested
         if self.activator.to_save_output:

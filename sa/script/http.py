@@ -150,8 +150,8 @@ class HTTPProvider(object):
                 self.access_profile.address,
                 int(self.access_profile.port) if self.access_profile.port
                                               else 80)
-        response = s.request(method, path, params, headers)
         try:
+            response = s.request(method, path, params, headers)
             if response.status == 200:
                 return response.data
             elif (response.status == 401 and
