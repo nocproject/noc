@@ -9,7 +9,7 @@
 
 ## NOC modules
 from noc.lib.app import TreeApplication, view, HasPerm
-from noc.inv.models import Model, ModelCategory, ObjectId
+from noc.inv.models import Model, ModelCategory, ObjectId, Socket
 
 
 class ModelApplication(TreeApplication):
@@ -54,11 +54,21 @@ class ModelApplication(TreeApplication):
 
         k = {"M": "F", "F": "M"}[kind]
         f = "%s_sockets" % {"o": "i", "i": "o", "c": "c"}[direction]
+        # Get possible types
+        compatible_types = [ObjectId(socket_type)]
+        s = Socket.objects.filter(id=compatible_types[0]).first()
+        if s:
+            if kind == "M" and s.m_compatible:
+                compatible_types += [x.id for x in Socket.objects.filter(name__in=s.m_compatible)]
+            elif kind == "F" and s.f_compatible:
+                compatible_types += [x.id for x in Socket.objects.filter(name__in=s.f_compatible)]
         q = {
             f: {
                 "$elemMatch": {
                     "kind": k,
-                    "type": ObjectId(socket_type)
+                    "type": {
+                        "$in": compatible_types
+                    }
                 }
             }
         }
