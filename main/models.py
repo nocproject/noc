@@ -919,8 +919,10 @@ class UserProfile(models.Model):
 
     user=models.ForeignKey(User, unique=True)
     # User data
-    preferred_language=models.ForeignKey(Language,
-            verbose_name="Preferred Language", null=True, blank=True)
+    preferred_language=models.CharField("Preferred Language", max_length=16,
+                                        null=True, blank=True,
+                                        default=settings.LANGUAGE_CODE,
+                                        choices=settings.LANGUAGES)
     #
     objects = UserProfileManager()
 
