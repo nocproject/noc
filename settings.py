@@ -124,6 +124,7 @@ TEMPLATE_CONTEXT_PROCESSORS= (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
@@ -175,6 +176,13 @@ if apps:
     INSTALLED_APPS+=tuple([app.strip() for app in apps.split(",")])
 
 FORCE_SCRIPT_NAME=""
+
+# Available languages
+_ = lambda s: s
+LANGUAGES = [
+    ("en", _("English")),
+    ("ru", _("Russian")),
+]
 
 #SOUTH_AUTO_FREEZE_APP = False
 
