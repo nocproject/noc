@@ -45,9 +45,26 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 }
 
 .tablesorter-search-row {
-    text-align: right;
+    padding: 3px;
+    border-bottom: 1px solid #ddd;
+    background: #e1e1e1 url(/media/img/admin/nav-bg.gif) top left repeat-x;
+    color: #666;
 }
 
 .tablesorter-search-row label {
     font-weight: bold;
+}
+
+.tablesorter-search-row INPUT {
+    font-size: 11px;
+    padding: 1px 2px;
+}
+
+.tablesorter-search-row IMG {
+    vertical-align: middle;
+}
+
+.tablesorter-container {
+    border: 1px solid #ccc;
+    background: white url(/media/img/admin/changelist-bg.gif) top right repeat-y !important;
 }

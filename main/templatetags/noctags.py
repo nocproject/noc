@@ -72,7 +72,7 @@ function ts_on_search(s) {
 </script>
 <div class="tablesorter-container">
 <div class="tablesorter-search-row">
-    <label for="tablesorter-search">Search:</label>
+    <label for="tablesorter-search"><img src="/media/img/admin/icon_searchbox.png" alt="Search" /></label>
     <input type="text" id="tablesorter-search" onkeyup="ts_on_search(this);"/>
 </div>
 """
