@@ -169,7 +169,9 @@ class ToolsAppplication(Application):
             if form.is_valid():
                 # Rebase prefix
                 new_prefix=prefix.rebase(form.cleaned_data["vrf"], form.cleaned_data["to_prefix"])
-                self.message_user(request, _(u"Prefix %s is rebased to %s"%(prefix, form.cleaned_data["to_prefix"])))
+                self.message_user(request, _(u"Prefix %(old_prefix)s is rebased to %(new_prefix)s") % {
+                    "old_prefix": prefix,
+                    "new_prefix": form.cleaned_data["to_prefix"]})
                 return self.response_redirect("ip:ipam:vrf_index",new_prefix.vrf.id,afi,new_prefix.prefix)
         else:
             form=self.RebaseForm(prefix.prefix)
