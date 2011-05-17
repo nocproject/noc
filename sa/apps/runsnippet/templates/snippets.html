@@ -1,7 +1,9 @@
 {% extends "template.html" %}
+{% load noctags %}
 {% block content %}
 <h1>{{app.title}}</h1>
 <div class="module">
+    {% noctable %}
     <table width="100%">
         <caption>Choose snippet...</caption>
         {% for s in snippets %}
@@ -15,5 +17,6 @@
             </tr>
         {% endfor %}
     </table>
+    {% endnoctable %}
 </div>
 {% endblock %}
