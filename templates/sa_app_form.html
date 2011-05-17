@@ -4,20 +4,58 @@
 var _t=false;
 
 function toggle() {
-    $(".sa-app-obj").each(function(){this.checked=_t;});
-    _t=!_t;
+    $("#sa-object-list").children("li").each(function (i, r) {
+        var $li = $(r);
+        if($li.is(":visible"))
+            $li.children(".sa-app-obj").each(function(){this.checked=_t;});
+    });
+    _t = !_t;
+}
+
+function sa_app_on_search(s) {
+    var search = s.value;
+    
+    $("#sa-object-list").children("li").each(function (i, r) {
+        var $li = $(r);
+        var label = $li.find("label").html();
+        if (label.indexOf(search) >= 0)
+            $li.show();
+        else
+            $li.hide();
+    });
 }
 </script>
 <style>
-.sa-object-list, .sa-object-list LI {
+#sa-object-list, #sa-object-list LI {
     list-style: none;
     display: inline;
 }
 
-.sa-object-list LI {
+#sa-object-list LI {
     float: left;
     width: 200px;
 }
+
+.sa-app-search-row {
+    padding: 3px;
+    border-bottom: 1px solid #ddd;
+    background: #e1e1e1 url(/media/img/admin/nav-bg.gif) top left repeat-x;
+    color: #666;
+}
+
+.sa-app-search-row label {
+    font-weight: bold;
+}
+
+.sa-app-search-row INPUT {
+    font-size: 11px;
+    padding: 1px 2px;
+}
+
+.sa-app-search-row IMG {
+    vertical-align: middle;
+}
+
 </style>
 <h1>{{app.title}}</h1>
 <form method="POST" id="form">
@@ -27,11 +65,20 @@ function toggle() {
     </div>
 
     <div class="module">
+        <h2>Selected Objects</h2>
+        <div>
+            <div class="sa-app-search-row">
+            <label for="sa-app-search"><img src="/media/img/admin/icon_searchbox.png" alt="Search" /></label>
+            <input type="text" id="sa-app-search" onkeyup="sa_app_on_search(this);"/>
+            Select all shown:
+            <input type="checkbox" checked onclick="toggle();" />
+            </div>
+        </div>
+        
         <table width="100%">
-            <caption>Selected Objects: <input type="checkbox" checked onclick="toggle();" /></caption>
             <tr>
                 <td>
-                    <ul class="sa-object-list">
+                    <ul id="sa-object-list">
                         {% for o in objects %}
                             <li>
                                 <input type="checkbox" checked name="OBJ:{{o.id}}" id="OBJ:{{o.id}}" class="sa-app-obj" />
