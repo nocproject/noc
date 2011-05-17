@@ -780,12 +780,15 @@ class ReduceTask(models.Model):
                     s = o.profile.scripts[ms]
                     timeout = max(timeout, s.TIMEOUT)
             timeout += 3 # Add guard time
+        # Use dumb reduce function if reduce task is none
+        if reduce_script is None:
+            reduce_script = reduce_dumb
         # Create reduce task
         start_time = datetime.datetime.now()
         r_task = ReduceTask(
             start_time=start_time,
             stop_time=start_time + datetime.timedelta(seconds=timeout),
-            script=reduce_script,
+            script=reduce_script_params,
             script_params=reduce_script_params if reduce_script_params else {},
         )
         r_task.save()
@@ -932,7 +935,10 @@ def reduce_object_script(task):
         return mt.script_result
     else:
         return None
-    
+
+def reduce_dump(task):
+    pass
+
 ##
 ## SAE services shortcuts
 ##
