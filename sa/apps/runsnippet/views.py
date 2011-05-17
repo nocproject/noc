@@ -41,7 +41,7 @@ class RunSnippetApplication(Application):
         else:
             return "commands"
     
-    def get_form(self, data=None):
+    def get_form(self, vars, data=None):
         f = NOCForm(data)
         for v in vars:
             f.fields[v] = forms.CharField(label=v)
@@ -89,7 +89,7 @@ class RunSnippetApplication(Application):
                 if n.startswith("OBJ:") or n.startswith("CFM:")])
             data = None
             if vars:
-                form = self.get_form(request.POST)
+                form = self.get_form(vars, request.POST)
                 if form.is_valid():
                     data = form.cleaned_data
             else:
@@ -112,7 +112,7 @@ class RunSnippetApplication(Application):
                 return self.response_redirect("sa:runsnippet:task",
                                               snippet.id, task)
             elif vars:
-                form = self.get_form()
+                form = self.get_form(vars)
         # Display form
         return self.render(request, "form.html", snippet=snippet,
                 objects=objects, form=form)
