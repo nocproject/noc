@@ -788,7 +788,7 @@ class ReduceTask(models.Model):
         r_task = ReduceTask(
             start_time=start_time,
             stop_time=start_time + datetime.timedelta(seconds=timeout),
-            script=reduce_script_params,
+            script=reduce_script,
             script_params=reduce_script_params if reduce_script_params else {},
         )
         r_task.save()
