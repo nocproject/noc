@@ -15,6 +15,7 @@ from django.contrib.auth.views import password_change, AuthenticationForm
 from noc.lib.app import Application, Permit, PermitLogged, view
 from noc.main.models import PyRule
 from noc.settings import AUTH_FORM_PYRULE, LANGUAGE_CODE
+from noc.lib.middleware import set_user
 
 
 class AuthApplication(Application):
@@ -32,6 +33,8 @@ class AuthApplication(Application):
                          redirect_field_name=REDIRECT_FIELD_NAME,
                          authentication_form=authentication_form)
         if request.user.is_authenticated():
+            # Write actual user into TLS cache
+            set_user(request.user)
             # Set up session language
             lang = LANGUAGE_CODE
             profile = request.user.get_profile()
