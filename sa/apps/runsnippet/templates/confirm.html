@@ -22,6 +22,9 @@
         </div>
         <div class="code"><pre>{{cs}}</pre></td></div>
     {% endfor %}
+    {% for k, v in vars %}
+        <input type="hidden" name="{{k}}" value="{{v}}" />
+    {% endfor %}
     <input type="hidden" name="__confirmed" value="True" />
     <input type="submit" value="Run">
 </form>

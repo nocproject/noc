@@ -76,6 +76,9 @@ class RunSnippetApplication(Application):
     @view(url=r"^(?P<snippet_id>\d+)/$", url_name="snippet",
         access=HasPerm("run"))
     def view_snippet(self, request, snippet_id):
+        """
+        Snippet parameters and object selection form
+        """
         snippet = self.get_object_or_404(CommandSnippet, id=int(snippet_id))
         vars = snippet.vars
         if "object" in vars:
@@ -100,10 +103,13 @@ class RunSnippetApplication(Application):
                     return self.response_redirect("sa:runsnippet:task",
                                                   snippet.id, task)
                 elif snippet.require_confirmation:
-                    cd = [(o, snippet.expand(data.copy().update({"object": o})))
-                         for o in objects]
+                    cd = []
+                    for o in objects:
+                        d = data.copy()
+                        d.update({"object": o})
+                        cd += [(o, snippet.expand(d))]
                     return self.render(request, "confirm.html",
-                        data=cd, snippet=snippet)
+                        data=cd, snippet=snippet, vars = data.items())
         else:
             if (not vars and len(objects) == 1 and
                     not snippet.require_confirmation):
@@ -120,6 +126,9 @@ class RunSnippetApplication(Application):
     @view(url=r"^(?P<snippet_id>\d+)/task/(?P<task_id>\d+)/$",
         url_name="task", access=HasPerm("run"))
     def view_task(self, request, snippet_id, task_id):
+        """
+        Wait for task completion and render result
+        """
         snippet = self.get_object_or_404(CommandSnippet, id=int(snippet_id))
         task = self.get_object_or_404(ReduceTask, id=int(task_id))
         try:
