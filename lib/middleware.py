@@ -12,32 +12,52 @@ except ImportError:
 ##
 ## Thread local storage
 ##
-_tls=local()
+_tls = local()
 
-##
-## Thread Local Storage Middleware
-##
+
 class TLSMiddleware(object):
-    ## Fill TLS
-    def process_request(self,request):
-        _tls.request=request
-        _tls.user=getattr(request,"user",None)
-    # Clean TLS
-    def process_response(self,request,response):
-        _tls.request=None
-        _tls.user=None
+    """
+    Thread local storage middleware
+    """
+    def process_request(self, request):
+        """
+        Set up TLS' user and request
+        """
+        _tls.request = request
+        set_user(getattr(request, "user", None))
+
+    def process_response(self, request, response):
+        """
+        Clean TLS
+        """
+        _tls.request = None
+        _tls.user = None
         return response
-    # Clean TLS
-    def process_exception(self,request,exception):
-        _tls.request=None
-        _tls.user=None
-##
-## Returns current user
-##
+
+    def process_exception(self, request, exception):
+        """
+        Clean TLS
+        """
+        _tls.request = None
+        _tls.user = None
+
+
+def set_user(user):
+    """
+    Set up TLS user
+    """
+    _tls.user = user
+
+
 def get_user():
-    return getattr(_tls,"user",None)
-##
-## Returns current request
-##
+    """
+    Get current TLS user
+    """
+    return getattr(_tls, "user", None)
+
+
 def get_request():
-    return getattr(_tls,"request",None)
+    """
+    Get current TLS request
+    """
+    return getattr(_tls, "request", None)
