@@ -21,6 +21,27 @@ NOCTableTemplate = """
 <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+    $.tablesorter.addParser({
+        id: "switchPort",
+        is: function (s) {
+            return /^\d{1,2}:\d{1,2}$/.test(s);
+        },
+        format: function (s) {
+            var a = s.split(":"),
+                r = "",
+                l = a.length;
+            for (var i = 0; i < l; i++) {
+                var item = a[i];
+                if (item.length == 2) {
+                    r += "0" + item;
+                } else {
+                    r += item;
+                }
+            }
+            return $.tablesorter.formatFloat(r);
+        },
+        type: "numeric"
+    });
     $("#%(id)s").tablesorter({
         widgets: ["zebra"],
     });
