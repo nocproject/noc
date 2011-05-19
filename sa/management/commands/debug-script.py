@@ -247,6 +247,9 @@ class ActivatorStub(object):
     ##
     def save_snmp_getnext(self, oid, result):
         self.session_can.save_snmp_getnext(oid, result)
+    ##
+    def error(self, msg):
+        logging.error(msg)
 
 ##
 ## debug-script handler
