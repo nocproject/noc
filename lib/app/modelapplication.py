@@ -7,8 +7,11 @@
 ##----------------------------------------------------------------------
 
 ## Django modules
+from django.utils.translation import ugettext as _
 from django.contrib import admin as django_admin
 from django.contrib import admin
+from django.utils.encoding import smart_unicode
+from django.contrib.admin.filterspecs import FilterSpec, ChoicesFilterSpec
 ## NOC modules
 from access import HasPerm
 from application import Application, view
@@ -147,5 +150,26 @@ class ModelApplication(Application):
         """Display change form"""
         return self.admin.change_view(request, object_id,
                                       self.get_context(extra_context))
-    
 
+
+class ExistingChoicesFilterSpec(ChoicesFilterSpec):
+    """
+    List filter. Show only species present in list
+    """
+    def choices(self, cl):
+        yield {
+            "selected"    : self.lookup_val is None,
+            "query_string": cl.get_query_string({}, [self.lookup_kwarg]),
+            "display"     : _("All")}
+        
+        used = set(self.field.model.objects.distinct().values_list(self.field.name, flat=True))
+        for k, v in self.field.flatchoices:
+            if k in used:
+                yield {
+                    "selected"     : smart_unicode(k) == self.lookup_val,
+                    "query_string" : cl.get_query_string({self.lookup_kwarg: k}),
+                    "display"      : v
+                    }
+
+## Install specific filters to all models
+FilterSpec.filter_specs.insert(0, (lambda f: getattr(f, "existing_choices_filter", False), ExistingChoicesFilterSpec))
