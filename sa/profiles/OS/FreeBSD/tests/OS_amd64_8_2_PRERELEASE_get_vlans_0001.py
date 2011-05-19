@@ -16,8 +16,8 @@ class OS_FreeBSD_get_vlans_Test(ScriptTestCase):
     result=[{'name': 'em0.256', 'vlan_id': 256}]
     motd='\n'
     cli={
-## '/sbin/ifconfig'
-'/sbin/ifconfig': """ /sbin/ifconfig
+## 'ifconfig'
+'ifconfig': """ ifconfig
 em0: flags=8843<UP,BROADCAST,RUNNING,SIMPLEX,MULTICAST> metric 0 mtu 1500
 \tdescription: Inner network
 \toptions=9b<RXCSUM,TXCSUM,VLAN_MTU,VLAN_HWTAGGING,VLAN_HWCSUM>

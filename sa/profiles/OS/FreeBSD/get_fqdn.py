@@ -17,7 +17,7 @@ class Script(NOCScript):
     rx_hostname=re.compile(r"^(?P<hostname>\S+)")
     def execute(self):
         fqdn=[]
-        match=self.rx_hostname.search(self.cli("/bin/hostname"))
+        match=self.rx_hostname.search(self.cli("hostname"))
         if match:
             fqdn+=[match.group("hostname")]
         return fqdn

@@ -17,7 +17,7 @@ class Script(NOCScript):
     rx_vlan=re.compile(r"vlan: (?P<vlanid>\d+) parent interface: (?P<iface>\S+)", re.MULTILINE)
     def execute(self):
         r=[]
-        for match in self.rx_vlan.finditer(self.cli("/sbin/ifconfig")):
+        for match in self.rx_vlan.finditer(self.cli("ifconfig")):
             r+=[{
                 "vlan_id" : int(match.group('vlanid')),
                 "name"    : match.group('iface')+"."+match.group('vlanid'),

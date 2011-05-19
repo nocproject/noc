@@ -16,8 +16,8 @@ class OS_FreeBSD_ping_Test(ScriptTestCase):
     result={'avg': '0.164', 'count': 5, 'max': '0.241', 'min': '0.126', 'success': 5}
     motd='\n'
     cli={
-## '/sbin/ping -q -c 5 10.111.0.1'
-'/sbin/ping -q -c 5 10.111.0.1': """ /sbin/ping -q -c 5 10.111.0.1
+## 'ping -q -c 5 10.111.0.1'
+'ping -q -c 5 10.111.0.1': """ ping -q -c 5 10.111.0.1
 PING 10.111.0.1 (10.111.0.1): 56 data bytes
 
 --- 10.111.0.1 ping statistics ---
