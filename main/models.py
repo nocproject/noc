@@ -402,6 +402,9 @@ class PyRule(models.Model):
     NoPyRule = NoPyRuleException
 
     alters_data = True   # Tell Django's template engine to not call PyRule
+    
+    # Use special filter for interface
+    interface.existing_choices_filter = True
 
     def __unicode__(self):
         return self.name

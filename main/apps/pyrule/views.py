@@ -23,11 +23,13 @@ class PyRuleForm(forms.ModelForm):
             raise forms.ValidationError("Syntax Error: "+str(why))
         return text.replace("\r\n","\n")
 
+
 class PyRuleAdmin(admin.ModelAdmin):
     form=PyRuleForm
     list_display=["name","interface","is_builtin"]
-    list_filter=["is_builtin"]
+    list_filter=["is_builtin", "interface"]
     search_fields=["name"]
+
 ##
 ## PyRule application
 ##
