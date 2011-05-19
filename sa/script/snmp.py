@@ -35,6 +35,10 @@ class SNMPProvider(object):
             if r is None:
                 raise self.TimeOutError()
             return r
+        cache = self.script.root.cache
+        cc = "GET:" + oid
+        if self.script.is_cached and cc in cache:
+            return cache[cc]
         self.community_suffix=community_suffix
         s=SNMPGetSocket(self,oid)
         try:
@@ -47,6 +51,8 @@ class SNMPProvider(object):
             s.close()
         if self.to_save_output:
             self.script.activator.save_snmp_get(oid,r)
+        if self.script.is_cached:
+            cache[cc] = r
         return r
     
     ##
@@ -63,6 +69,11 @@ class SNMPProvider(object):
             for l in r:
                 yield l
             raise StopIteration
+        cache = self.script.root.cache
+        cc = "GET:" + oid
+        if self.script.is_cached and cc in cache:
+            for r in cache[cc]:
+                yield r
         if self.to_save_output:
             out=[]
         self.community_suffix=community_suffix
@@ -90,6 +101,11 @@ class SNMPProvider(object):
             else:
                 if self.script.activator.to_save_output:
                     out+=[r]
+                if self.script.is_cached:
+                    try:
+                        cache[cc] += [r]
+                    except KeyError:
+                        cache[cc] = [r]
                 yield r
     
     ##
