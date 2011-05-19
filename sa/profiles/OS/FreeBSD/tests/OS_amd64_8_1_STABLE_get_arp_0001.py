@@ -24,8 +24,8 @@ class OS_FreeBSD_get_arp_Test(ScriptTestCase):
  {'interface': 'em0', 'ip': '10.111.0.18', 'mac': '00:1F:C6:C8:DE:7B'}]
     motd='\n'
     cli={
-## '/usr/sbin/arp -an'
-'/usr/sbin/arp -an': """ /usr/sbin/arp -an
+## 'arp -an'
+'arp -an': """ arp -an
 ? (10.116.0.91) at 00:24:01:30:d3:5d on em0.256 expires in 985 seconds [vlan]
 ? (10.116.0.211) at 00:e0:81:40:8d:56 on em0.256 permanent [vlan]
 ? (10.116.0.41) at 00:1c:f0:23:e5:05 on em0.256 expires in 1198 seconds [vlan]

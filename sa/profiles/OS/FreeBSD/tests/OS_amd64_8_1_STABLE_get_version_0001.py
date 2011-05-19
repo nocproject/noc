@@ -16,7 +16,7 @@ class Unix_FreeBSD_get_version_Test(ScriptTestCase):
     result={'platform': 'amd64', 'vendor': 'FreeBSD', 'version': '8.1-STABLE'}
     motd='\n'
     cli={
-'/usr/bin/uname -m -r':  ' /usr/bin/uname -m -r\n8.1-STABLE amd64\n',
+'uname -m -r':  ' uname -m -r\n8.1-STABLE amd64\n',
 }
     snmp_get={}
     snmp_getnext={}

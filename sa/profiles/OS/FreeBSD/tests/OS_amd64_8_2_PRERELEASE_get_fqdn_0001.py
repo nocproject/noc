@@ -16,7 +16,7 @@ class OS_FreeBSD_get_fqdn_Test(ScriptTestCase):
     result="['noc.cabletv.dp.ua']"
     motd='\n'
     cli={
-'/bin/hostname':  ' /bin/hostname\nnoc.cabletv.dp.ua\n',
+'hostname':  ' hostname\nnoc.cabletv.dp.ua\n',
 }
     snmp_get={}
     snmp_getnext={}
