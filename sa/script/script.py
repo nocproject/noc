@@ -196,7 +196,18 @@ class IgnoredExceptionsContextManager(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         if exc_type and exc_type in self.exceptions:
             return True # Supress exception
+
+
+class CacheContextManager(object):
+    def __init__(self, script):
+        self.script = script
     
+    def __enter__(self):
+        script.is_cached = True
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.is_cached = False
+
 
 ##
 ## Service activation script
@@ -278,6 +289,8 @@ class Script(threading.Thread):
         self.to_disable_pager=not self.parent and self.profile.command_disable_pager
         self.log_cli_sessions_path=None # Path to log CLI session
         self.is_cancelable=False # Can script be cancelled
+        self.is_cached = False  # Cache CLI and SNMP calls, if set
+        self.cache = {}  # "(CLI|GET|GETNETX):key" -> value, suitable only for parent
         self.e_timeout=False # Script terminated with timeout
         self.e_cancel=False # Scrcipt cancelled
         self.e_not_supported=False # NotSupportedError risen
@@ -634,9 +647,19 @@ class Script(threading.Thread):
         if self.activator.use_canned_session:
             data=self.activator.cli(cmd)
         else:
-            self.request_cli_provider()
-            self.cli_provider.submit(cmd, command_submit=command_submit, bulk_lines=bulk_lines)
-            data=self.cli_queue_get()
+            cc = "CLI:" + cmd  # Cache key
+            cache = self.root.cache
+            if self.is_cached and cc in cache:
+                # Get result from cache
+                data = cache[cc]
+            else:
+                # Execute command
+                self.request_cli_provider()
+                self.cli_provider.submit(cmd, command_submit=command_submit, bulk_lines=bulk_lines)
+                data = self.cli_queue_get()
+                if self.is_cached:
+                    # Store back to cache
+                    cache[cc] = data
         # Encode to UTF8 if requested
         if self.encoding and isinstance(data, basestring):
             data = unicode(data, self.encoding).encode("utf8")
@@ -769,6 +792,19 @@ class Script(threading.Thread):
     ##
     def ignored_exceptions(self, iterable):
         return IgnoredExceptionsContextManager(iterable)
+    
+    def cache(self):
+        """
+        Return cached context managed. All nested CLI and SNMP GET/GETNEXT
+        calls will be cached.
+        
+        Usage:
+        
+        with self.cache():
+            self.cli(".....)
+            self.scripts.script()
+        """
+        return CacheContextManager(self)
     
     ##
     ## Enter configuration mote
