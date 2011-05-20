@@ -33,6 +33,7 @@ sa/servers/
 sa/syslogcollector.py
 sa/trapcollector.py
 scripts/noc-activator.py
+scripts/set_env.py
 scripts/stdin-wrapper
 scripts/noc-launcher.py
 contrib/lib/site.py
