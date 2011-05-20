@@ -86,5 +86,6 @@ class Script(noc.sa.script.Script):
     def execute(self):
         # Check if is MSTP
         v=self.cli("show spanning-tree mst configuration")
-        if not v.startswith("%"):
+        if v and not v.startswith("%"):
             return self.process_mstp()
+        raise self.NotSupportedError()
