@@ -69,7 +69,7 @@ class SNMPProvider(object):
             for l in r:
                 yield l
             raise StopIteration
-        cache = self.script.root.cache
+        cache = self.script.root.cmd_cache
         cc = "GET:" + oid
         if self.script.is_cached and cc in cache:
             for r in cache[cc]:

@@ -203,10 +203,10 @@ class CacheContextManager(object):
         self.script = script
     
     def __enter__(self):
-        script.is_cached = True
+        self.script.is_cached = True
     
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.is_cached = False
+        self.script.is_cached = False
 
 
 ##
@@ -290,7 +290,7 @@ class Script(threading.Thread):
         self.log_cli_sessions_path=None # Path to log CLI session
         self.is_cancelable=False # Can script be cancelled
         self.is_cached = False  # Cache CLI and SNMP calls, if set
-        self.cache = {}  # "(CLI|GET|GETNETX):key" -> value, suitable only for parent
+        self.cmd_cache = {}  # "(CLI|GET|GETNETX):key" -> value, suitable only for parent
         self.e_timeout=False # Script terminated with timeout
         self.e_cancel=False # Scrcipt cancelled
         self.e_not_supported=False # NotSupportedError risen
@@ -648,7 +648,7 @@ class Script(threading.Thread):
             data=self.activator.cli(cmd)
         else:
             cc = "CLI:" + cmd  # Cache key
-            cache = self.root.cache
+            cache = self.root.cmd_cache
             if self.is_cached and cc in cache:
                 # Get result from cache
                 data = cache[cc]
@@ -793,14 +793,14 @@ class Script(threading.Thread):
     def ignored_exceptions(self, iterable):
         return IgnoredExceptionsContextManager(iterable)
     
-    def cache(self):
+    def cached(self):
         """
         Return cached context managed. All nested CLI and SNMP GET/GETNEXT
         calls will be cached.
         
         Usage:
         
-        with self.cache():
+        with self.cached():
             self.cli(".....)
             self.scripts.script()
         """
