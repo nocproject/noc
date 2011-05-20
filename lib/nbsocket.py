@@ -816,10 +816,12 @@ class ConnectedTCPSSLSocket(ConnectedTCPSocket):
         self.ssl_handshake_passed = False
         super(ConnectedTCPSSLSocket, self).__init__(factory, address, port,
                                                     local_address)
+
+    def handle_connect(self):
         self.socket = ssl.wrap_socket(self.socket, server_side=False,
                                       do_handshake_on_connect=False,
                                       ssl_version=ssl.PROTOCOL_TLSv1)
-    
+
     def handle_read(self):
         if self.ssl_handshake_passed:
             super(ConnectedTCPSSLSocket, self).handle_read()
