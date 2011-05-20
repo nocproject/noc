@@ -45,7 +45,19 @@ class Profile(noc.sa.profiles.Profile):
         else:
             script.dlink_pager = False
 
+        script.cluster_member=None
+        # Parse path parameters
+        for p in script.access_profile.path.split("/"):
+            if p.startswith("cluster:"):
+                script.cluster_member=p[8:].strip()
+        # Switch to cluster member, if necessary
+        if script.cluster_member:
+            script.debug("Switching to SIM member '%s'"%script.cluster_member)
+            script.cli("reconfig member_id %s"%script.cluster_member)
+
     def shutdown_session(self, script):
+        if script.cluster_member:
+            script.cli("reconfig exit")
         if script.dlink_pager:
             script.cli("enable clipaging")
         else:
