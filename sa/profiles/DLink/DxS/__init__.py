@@ -25,7 +25,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt=r"^(?P<hostname>\S+(:\S+)*)#"
     command_disable_pager="disable clipaging"
     command_more="a"
-    command_exit="enable clipaging\nlogout"
+    command_exit="logout"
     command_save_config="save"
     config_volatile=["^%.*?$"]
     ##
@@ -37,10 +37,19 @@ class Profile(noc.sa.profiles.Profile):
     def cmp_version(self, x, y):
         return cmp([int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)])
 
+    rx_pager=re.compile(r"^Clipaging\s+:\s*(?P<cp>Enabled|Disabled)\s*$", re.MULTILINE)
     def setup_session(self, script):
-        show_switch = script.cli("show switch", cached=True)
+        match = self.rx_pager.search(script.cli("show switch", cached=True))
+        if match:
+            script.dlink_pager = (match.group("cp") == "Enabled")
+        else:
+            script.dlink_pager = False
 
-
+    def shutdown_session(self, script):
+        if script.dlink_pager:
+            script.cli("enable clipaging")
+        else:
+            script.cli("disable clipaging")
 
 ## DES-3200-series
 def DES3200(v):
