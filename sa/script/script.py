@@ -643,24 +643,28 @@ class Script(threading.Thread):
     ## if list_re is regular expression object, return a list of dicts (group name -> value), one dict per matched line
     ##
     def cli(self, cmd, command_submit=None, bulk_lines=None, list_re=None,
-            cached = False):
+            cached=False):
         #
         self.debug("cli(%s)"%cmd)
+        from_cache = False
         self.cli_debug(cmd, ">")
         # Submit command
         command_submit=self.profile.command_submit if command_submit is None else command_submit
         if self.activator.use_canned_session:
             data=self.activator.cli(cmd)
         else:
+            # Check CLI provider is ready
+            self.request_cli_provider()
+            # Check result is cached
             cc = "CLI:" + cmd  # Cache key
             cache = self.root.cmd_cache
             cached = cached or self.root.is_cached
             if cached and cc in cache:
                 # Get result from cache
                 data = cache[cc]
+                from_cache = True
             else:
                 # Execute command
-                self.request_cli_provider()
                 self.cli_provider.submit(cmd, command_submit=command_submit, bulk_lines=bulk_lines)
                 data = self.cli_queue_get()
                 if cached:
@@ -695,7 +699,9 @@ class Script(threading.Thread):
                 if match:
                     r+=[match.groupdict()]
             data=r
-        self.debug("cli(%s) returns:\n---------\n%s\n---------"%(cmd, repr(data)))
+        self.debug("cli(%s) returns%s:\n---------\n%s\n---------"%(cmd,
+                                        " cached result" if from_cache else "",
+                                        repr(data)))
         self.cli_debug(data, "<")
         return data
     
