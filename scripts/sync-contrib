@@ -86,7 +86,7 @@ class Installer(object):
             if not self.check_static_files():
                 return False
         else:
-            fail = fail or self.install_static_files()
+            fail = fail or not self.install_static_files()
         for app,version in sv:
             if app not in iv or iv[app]!=version:
                 if self.check_only: # Do nothing on version mismatch in check mode
