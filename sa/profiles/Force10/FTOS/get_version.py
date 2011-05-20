@@ -34,20 +34,21 @@ F10_CHASSIS={
     18 : "S25V",    # Force10 S25v access switch
     19 : "S25N",    # Force10 S25n access switch
 }
-##
-rx_ver=re.compile(r"^Force10 Networks .*Force10 Application Software Version: (?P<version>\S+).*(?:System|Chassis) Type: (?P<platform>\S+)",re.MULTILINE|re.DOTALL)
-rx_snmp_ver=re.compile(r"^Force10 Application Software Version:\s*(?P<version>\S+)",re.MULTILINE|re.DOTALL)
+
 
 class Script(noc.sa.script.Script):
     name="Force10.FTOS.get_version"
     cache=True
     implements=[IGetVersion]
+    
+    rx_ver=re.compile(r"^Force10 Networks .*Force10 Application Software Version: (?P<version>\S+).*(?:System|Chassis) Type: (?P<platform>\S+)",re.MULTILINE|re.DOTALL)
+    rx_snmp_ver=re.compile(r"^Force10 Application Software Version:\s*(?P<version>\S+)",re.MULTILINE|re.DOTALL)
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
             try:
                 # Get version from sysDescr
-                v=self.snmp.get("1.3.6.1.2.1.1.1.0") # sysDescr.0
-                match=rx_snmp_ver.search(v)
+                v=self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True) # sysDescr.0
+                match=self.re_search(rx_snmp_ver, v)
                 version=match.group("version")
                 # Get platform from F10-CHASSIS-MIB::chType
                 v=self.snmp.get("1.3.6.1.4.1.6027.3.1.1.1.1.0") # F10-CHASSIS-MIB::chType
@@ -62,8 +63,8 @@ class Script(noc.sa.script.Script):
             except self.snmp.TimeOutError:
                 pass
 
-        v=self.cli("show version")
-        match=rx_ver.search(v)
+        v=self.cli("show version", cached=True)
+        match=self.re_search(self.rx_ver, v)
         return {
             "vendor"    : "Force10",
             "platform"  : match.group("platform"),
