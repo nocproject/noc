@@ -37,6 +37,11 @@ class Profile(noc.sa.profiles.Profile):
     def cmp_version(self, x, y):
         return cmp([int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)])
 
+    def setup_session(self, script):
+        show_switch = script.cli("show switch", cached=True)
+
+
+
 ## DES-3200-series
 def DES3200(v):
     return v["platform"].startswith("DES-3200")

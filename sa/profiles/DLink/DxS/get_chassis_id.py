@@ -17,5 +17,6 @@ class Script(NOCScript):
     rx_ver=re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)",re.IGNORECASE|re.MULTILINE)
     implements=[IGetChassisID]
     def execute(self):
-        match=self.re_search(self.rx_ver, self.cli("show switch"))
+        match=self.re_search(self.rx_ver, self.cli("show switch", cached=True))
         return match.group("id")
+
