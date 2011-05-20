@@ -8,11 +8,14 @@
 ##----------------------------------------------------------------------
 
 from __future__ import with_statement
-import os,sys,csv,subprocess,getopt
-##
+import os,sys,csv,subprocess,getopt,py_compile
+
+STATIC_FILES = ["pkg_resources.py"]
+
 d=os.path.dirname(sys.argv[0])
 if d:
     os.chdir(d)
+
 ##
 ## Main installer class
 ##
@@ -29,6 +32,29 @@ class Installer(object):
     ##
     def __init__(self,check_only=False):
         self.check_only=check_only
+    
+    def is_differ(self, path1, path2):
+        if not os.path.isfile(path1) or not os.path.isfile(path2):
+            return True
+        with open(path1) as f1:
+            with open(path2) as f2:
+                return f1.read() == f2.read()
+        return False
+    
+    def copy_when_differ(self, src, dst):
+        with open(src) as s:
+            ds = s.read()
+        if os.path.isfile(dst):
+            with open(dst) as d:
+                dd = d.read()
+        else:
+            dd = None
+        if ds == dd:
+            return False
+        with open(dst, "w") as d:
+            d.write(ds)
+        return True
+        
     ##
     ## Read CSV file and returns hash {row[0]->row[1]}
     ##
@@ -56,6 +82,11 @@ class Installer(object):
         iv=self.read_csv(self.DST_VERSIONS)
         update_iv=False
         fail=False
+        if self.check_only:
+            if not self.check_static_files():
+                return False
+        else:
+            fail = fail or self.install_static_files()
         for app,version in sv:
             if app not in iv or iv[app]!=version:
                 if self.check_only: # Do nothing on version mismatch in check mode
@@ -96,6 +127,33 @@ class Installer(object):
         ],
         cwd=os.path.join(self.SRC,app),
         env=self.ENV)==0
+    
+    ##
+    ## Check static files in sync
+    ##
+    def check_static_files(self):
+        for f in STATIC_FILES:
+            src = os.path.join(self.SRC, f)
+            dst = os.path.join(self.LIB, f)
+            if self.is_differ(src, dst):
+                return False
+        return True
+
+    ##
+    ## Install static files
+    ##
+    def install_static_files(self):
+        fail = False
+        for f in STATIC_FILES:
+            src = os.path.join(self.SRC, f)
+            dst = os.path.join(self.LIB, f)
+            if self.copy_when_differ(src, dst):
+                print "Installing %s" % f
+                py_compile.compile(dst)
+            else:
+                print "%s is in sync" % f
+        return not fail
+    
     ##
     ## Install protobuf
     ##
