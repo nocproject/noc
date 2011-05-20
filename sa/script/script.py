@@ -201,12 +201,16 @@ class IgnoredExceptionsContextManager(object):
 class CacheContextManager(object):
     def __init__(self, script):
         self.script = script
+        self.changed = False
     
     def __enter__(self):
-        self.script.is_cached = True
+        if not self.script.root.is_cached:
+            self.changed = True
+            self.script.root.is_cached = True
     
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.script.is_cached = False
+        if self.changed:
+            self.script.root.is_cached = False
 
 
 ##
@@ -638,7 +642,8 @@ class Script(threading.Thread):
     ## if list_re is None, return a string
     ## if list_re is regular expression object, return a list of dicts (group name -> value), one dict per matched line
     ##
-    def cli(self, cmd, command_submit=None, bulk_lines=None, list_re=None):
+    def cli(self, cmd, command_submit=None, bulk_lines=None, list_re=None,
+            cached = False):
         #
         self.debug("cli(%s)"%cmd)
         self.cli_debug(cmd, ">")
@@ -649,7 +654,8 @@ class Script(threading.Thread):
         else:
             cc = "CLI:" + cmd  # Cache key
             cache = self.root.cmd_cache
-            if self.is_cached and cc in cache:
+            cached = cached or self.root.is_cached
+            if cached and cc in cache:
                 # Get result from cache
                 data = cache[cc]
             else:
@@ -657,7 +663,7 @@ class Script(threading.Thread):
                 self.request_cli_provider()
                 self.cli_provider.submit(cmd, command_submit=command_submit, bulk_lines=bulk_lines)
                 data = self.cli_queue_get()
-                if self.is_cached:
+                if cached:
                     # Store back to cache
                     cache[cc] = data
         # Encode to UTF8 if requested

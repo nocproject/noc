@@ -29,15 +29,16 @@ class SNMPProvider(object):
         self.community_suffix=None
         self.to_save_output=self.script.activator.to_save_output
     
-    def get(self,oid,community_suffix=None):
+    def get(self,oid,community_suffix=None, cached=False):
         if self.script.activator.use_canned_session:
             r=self.script.activator.snmp_get(oid)
             if r is None:
                 raise self.TimeOutError()
             return r
         cache = self.script.root.cache
+        cached = cached or self.script.root.is_cached
         cc = "GET:" + oid
-        if self.script.is_cached and cc in cache:
+        if cached and cc in cache:
             return cache[cc]
         self.community_suffix=community_suffix
         s=SNMPGetSocket(self,oid)
@@ -51,7 +52,7 @@ class SNMPProvider(object):
             s.close()
         if self.to_save_output:
             self.script.activator.save_snmp_get(oid,r)
-        if self.script.is_cached:
+        if cached or self.script.root.is_cache:
             cache[cc] = r
         return r
     
@@ -61,7 +62,7 @@ class SNMPProvider(object):
     ## for oid,v in self.getnext("xxxxx"):
     ##      ....
     ##
-    def getnext(self,oid,community_suffix=None,bulk=False,min_index=None,max_index=None):
+    def getnext(self,oid,community_suffix=None,bulk=False,min_index=None,max_index=None,cached=False):
         if self.script.activator.use_canned_session:
             r=self.script.activator.snmp_getnext(oid)
             if r is None:
@@ -70,8 +71,9 @@ class SNMPProvider(object):
                 yield l
             raise StopIteration
         cache = self.script.root.cmd_cache
+        cached = cached or self.script.root.is_cached
         cc = "GET:" + oid
-        if self.script.is_cached and cc in cache:
+        if cached and cc in cache:
             for r in cache[cc]:
                 yield r
         if self.to_save_output:
@@ -101,7 +103,7 @@ class SNMPProvider(object):
             else:
                 if self.script.activator.to_save_output:
                     out+=[r]
-                if self.script.is_cached:
+                if cached:
                     try:
                         cache[cc] += [r]
                     except KeyError:
