@@ -35,7 +35,7 @@ class SNMPProvider(object):
             if r is None:
                 raise self.TimeOutError()
             return r
-        cache = self.script.root.cache
+        cache = self.script.root.cmd_cache
         cached = cached or self.script.root.is_cached
         cc = "GET:" + oid
         if cached and cc in cache:
