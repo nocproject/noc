@@ -20,19 +20,19 @@ import glob
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
+from noc.sa.sae.service import Service
+from noc.sa.sae.sae_socket import SAESocket
 from noc.sa.models import Activator, ManagedObject, MapTask, script_registry,\
                           profile_registry
 from noc.fm.models import Event, EventData, EventPriority, EventClass,\
                           EventCategory, IgnoreEventRules
-from noc.sa.rpc import RPCSocket, file_hash, get_digest, get_nonce
-from noc.pm.models import TimeSeries
+from noc.sa.rpc import RPCSocket, file_hash
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.debug import error_report, DEBUG_CTX_CRASH_PREFIX
 from noc.lib.nbsocket import ListenTCPSocket, AcceptedTCPSocket,\
-                             AcceptedTCPSSLSocket, SocketFactory, Protocol,\
-                             HAS_SSL
+                             AcceptedTCPSSLSocket, SocketFactory, Protocol
 
 ##
 ## Additions to MANIFEST-ACTIVATfOR file
@@ -42,283 +42,13 @@ ACTIVATOR_MANIFEST = [
     "sa/interfaces/",
 ]
 
-##
-##
-##
-class Service(SAEService):
-    """
-    SAE RPC Service handler
-    """
-    def get_controller_activator(self, controller):
-        """
-        Get activator for given controller
-        
-        :param controller: Controller
-        :type controller: Controller
-        :return: Activator instance
-        :rtype: Activator
-        """
-        return Activator.objects.get(name=controller.stream.pool_name)
-    
-    def get_activator(self, controller, name, done):
-        """
-        Get activator and check it is enabled
-        """
-        # Get activator
-        try:
-            activator = Activator.objects.get(name=name)
-        except Activator.DoesNotExist:
-            msg = "Unknown activator '%s'" % name
-            logging.error(msg)
-            done(controller, error=Error(code=ERR_UNKNOWN_ACTIVATOR,
-                                         text=msg))
-            return None
-        # Check shard is match
-        if activator.shard.name not in self.sae.shards:
-            msg = "Shard mismatch for '%s'. '%s' is not in %s" % (
-                        name, activator.shard.name, self.sae.shards)
-            logging.error(msg)
-            done(controller, error=Error(code=ERR_INVALID_SHARD,
-                                         text=msg))
-            return None
-        # Check shard is active
-        if not activator.shard.is_active:
-            msg = "Shard is down: '%s'" % activator.shard.name
-            logging.error(msg)
-            done(controller, error=Error(code=ERR_SHARD_IS_DOWN,
-                                         text=msg))
-            return None
-        return activator
-    
-    ##
-    ## RPC interfaces
-    ##
-    def ping(self, controller, request, done):
-        """
-        Handle RPC ping request.
-        """
-        done(controller, response=PingResponse())
-    
-    def register(self, controller, request, done):
-        """
-        Handle RPC register request
-        """
-        # Get activator
-        activator = self.get_activator(controller, request.name, done)
-        if not activator:
-            return
-        # Requesting digest
-        logging.info("Requesting digest for activator '%s'" % request.name)
-        r = RegisterResponse()
-        r.nonce = get_nonce()
-        controller.stream.nonce = r.nonce
-        done(controller, response=r)
-    
-    def auth(self, controller, request, done):
-        """
-        Handle RPC auth request
-        """
-        # Get activator
-        activator = self.get_activator(controller, request.name, done)
-        if not activator:
-            return
-        # Authenticating
-        logging.info("Authenticating activator '%s'" % request.name)
-        if (controller.stream.nonce is None or
-            get_digest(request.name, activator.auth, controller.stream.nonce) != request.digest):
-            done(controller,
-                 error=Error(code=ERR_AUTH_FAILED,
-                 text="Authencication failed for activator '%s'" % request.name))
-            return
-        r = AuthResponse()
-        controller.stream.is_authenticated = True
-        self.sae.join_activator_pool(request.name, controller.stream)
-        done(controller, response=r)
-    
-    def manifest(self, controller, request, done):
-        """
-        Handle RCP manifest request
-        """
-        if not controller.stream.is_authenticated:
-            done(controller,
-                 error=Error(code=ERR_AUTH_REQUIRED,
-                             text="Authentication required"))
-            return
-        done(controller, response=self.sae.activator_manifest)
-    
-    def software_upgrade(self, controller, request, done):
-        """
-        Handle RPC software upgrade request
-        """
-        if not controller.stream.is_authenticated:
-            done(controller,
-                 error=Error(code=ERR_AUTH_REQUIRED,
-                             text="Authentication required"))
-            return
-        r = SoftwareUpgradeResponse()
-        for n in request.names:
-            if n not in self.sae.activator_manifest_files:
-                done(controller,
-                     error=Error(code=ERR_INVALID_UPGRADE,
-                                 text="Invalid file requested for upgrade: %s" % n))
-                return
-            u = r.codes.add()
-            u.name = n
-            u.code = read_file(n)
-        done(controller, response=r)
-    
-    def set_caps(self, controller, request, done):
-        """
-        Handle RPC set_caps request
-        """
-        if not controller.stream.is_authenticated:
-            done(controller,
-                 error=Error(code=ERR_AUTH_REQUIRED, text="Authentication required"))
-            return
-        logging.debug("Set capabilities: max_scripts=%d" % request.max_scripts)
-        controller.stream.max_scripts = request.max_scripts
-        controller.stream.current_scripts = 0
-        r = SetCapsResponse()
-        done(controller, response=r)
-    
-    def event_filter(self, controller, request, done):
-        """
-        Handle RPC event_filter request
-        """
-        if not controller.stream.is_authenticated:
-            done(controller,
-                 error=Error(code=ERR_AUTH_REQUIRED,
-                             text="Authentication required"))
-            return
-        activator = self.get_controller_activator(controller)
-        r = EventFilterResponse()
-        r.expire = self.sae.config.getint("sae", "refresh_event_filter")
-        # Build source filter
-        for c in ManagedObject.objects.filter(activator=activator, trap_source_ip__isnull=False):
-            r.sources.append(c.trap_source_ip)
-        # Build event filter
-        for ir in IgnoreEventRules.objects.filter(is_active=True):
-            i = r.ignore_rules.add()
-            i.left_re = ir.left_re
-            i.right_re = ir.right_re
-        done(controller, response=r)
-    
-    def event(self, controller, request, done):
-        """
-        Handle RPC event request
-        """
-        if not controller.stream.is_authenticated:
-            e = Error()
-            e.code = ERR_AUTH_REQUIRED
-            e.text = "Authentication required"
-            done(controller, error=e)
-            return
-        activator = self.get_controller_activator(controller)
-        try:
-            if request.ip:
-                mo = ManagedObject.objects.get(activator=activator,
-                                               trap_source_ip=request.ip)
-            else:
-                mo = None
-        except ManagedObject.DoesNotExist:
-            done(controller,
-                 error=Error(code=ERR_UNKNOWN_EVENT_SOURCE,
-                             text="Unknown event source '%s'" % request.ip))
-            return
-        self.sae.write_event(
-            data=[(b.key, b.value) for b in request.body],
-            timestamp=datetime.datetime.fromtimestamp(request.timestamp),
-            managed_object=mo
-        )
-        done(controller, EventResponse())
-    
-    def pm_data(self, controller, request, done):
-        """
-        Handle RPC pm_data request
-        """
-        if not controller.stream.is_authenticated:
-            done(controller, error=Error(code=ERR_AUTH_REQUIRED,
-                                         text="Authentication required"))
-            return
-        for d in request.result:
-            timestamp = datetime.datetime.fromtimestamp(d.timestamp)
-            self.sae.write_event([
-                    ("source",      "system"),
-                    ("type",        "pm probe"),
-                    ("probe_name",  d.probe_name),
-                    ("probe_type",  d.probe_type),
-                    ("service",     d.service),
-                    ("result",      d.result),
-                    ("message",     d.message),
-                ],
-                timestamp=timestamp)
-        for d in request.data:
-            value = d.value if not d.is_null else None
-            TimeSeries.register(d.name, d.timestamp, value)
-        done(controller, PMDataResponse())
-    
-
-class SAESocket(RPCSocket, AcceptedTCPSocket):
-    """
-    AcceptedTCPSocket with SAE RPC protocol
-    """
-    def __init__(self, factory, socket):
-        AcceptedTCPSocket.__init__(self, factory, socket)
-        RPCSocket.__init__(self, factory.sae.service)
-        self.nonce = None
-        self.is_authenticated = False
-        self.pool_name = None
-        
-    @classmethod
-    def check_access(cls, address):
-        return Activator.check_ip_access(address)
-    
-    def close(self):
-        # Rollback all active transactions
-        e = Error(code=ERR_ACTIVATOR_LOST,
-                  text="Connection with activator lost")
-        self.transactions.rollback_all_transactions(e)
-        super(AcceptedTCPSocket, self).close()
-    
-    def set_pool_name(self, name):
-        self.pool_name = name
-    
-    def on_close(self):
-        if self.is_authenticated:
-            self.factory.sae.leave_activator_pool(self.pool_name, self)
-    
-
-##
-## SSL version of SAE socket
-##
-class SAESSLSocket(RPCSocket, AcceptedTCPSSLSocket):
-    """
-    SSL-aware version of AcceptedTCPSocket with SAE RPC protocol
-    """
-    def __init__(self, factory, socket, cert):
-        AcceptedTCPSSLSocket.__init__(self, factory, socket, cert)
-        RPCSocket.__init__(self, factory.sae.service)
-        self.nonce = None
-        self.is_authenticated = True
-    
-    @classmethod
-    def check_access(cls, address):
-        return Activator.check_ip_access(address)
-    
-    def close(self):
-        # Rollback all active transactions
-        e = Error(code=ERR_ACTIVATOR_LOST,
-                  text="Connection with activator lost")
-        self.transactions.rollback_all_transactions(e)
-        super(AcceptedTCPSSLSocket, self).close()
-    
 
 class SAE(Daemon):
     """
     SAE daemon
     """
     daemon_name = "noc-sae"
-    
+
     def __init__(self):
         self.shards = []
         Daemon.__init__(self)
@@ -331,7 +61,7 @@ class SAE(Daemon):
         self.factory.sae = self
         self.activators = {}  # pool name -> list of activators
         self.object_scripts = {}  # object.id -> # of current scripts
-        self.object_status = {} # object.id -> last ping check status
+        self.object_status = {}  # object.id -> last ping check status
         #
         self.sae_listener = None
         self.sae_ssl_listener = None
@@ -349,7 +79,7 @@ class SAE(Daemon):
         self.log_cli_sessions = False
         self.script_threads = {}
         self.script_lock = threading.Lock()
-    
+
     def load_config(self):
         """
         Reload config and set up shards
@@ -358,18 +88,18 @@ class SAE(Daemon):
         self.shards = [s.strip()
                        for s in self.config.get("sae", "shards", "").split(",")]
         logging.info("Serving shards: %s" % ", ".join(self.shards))
-    
+
     def build_manifest(self):
         """
         Build activator manifest
         """
         logging.info("Building manifest")
-        manifest = (read_file("MANIFEST-ACTIVATOR").split("\n") +
-                    ACTIVATOR_MANIFEST)
+        manifest = read_file("MANIFEST-ACTIVATOR").split("\n")
         manifest = [x.strip() for x in manifest if x]
         self.activator_manifest = ManifestResponse()
         self.activator_manifest_files = set()
-        
+        has_errors = False
+
         files = set()
         for f in manifest:
             if "*" in f:
@@ -387,8 +117,14 @@ class SAE(Daemon):
             self.activator_manifest_files.add(f)
             cs = self.activator_manifest.files.add()
             cs.name = f
-            cs.hash = file_hash(f)
-    
+            try:
+                cs.hash = file_hash(f)
+            except IOError:
+                logging.error("Error while building activator manifest. "
+                              "File %s is not found" % f)
+                has_errors = True
+        return not has_errors
+
     def start_listeners(self):
         """
         Start SAE RPC listeners
@@ -404,20 +140,13 @@ class SAE(Daemon):
         if self.sae_listener is None:
             logging.info("Starting SAE listener at %s:%d" % (sae_listen, sae_port))
             self.sae_listener = self.factory.listen_tcp(sae_listen, sae_port, SAESocket)
-        # SAE SSL Listener
-        if HAS_SSL:
-            sae_ssl_listen = self.config.get("sae", "ssl_listen")
-            sae_ssl_port = self.config.getint("sae", "ssl_port")
-            sae_ssl_cert = self.config.get("sae", "ssl_cert")
-            if (self.sae_ssl_listener and
-                    (self.sae_ssl_listener.address != sae_ssl_listen or
-                     self.sae_ssl_listener.port != sae_ssl_port)):
-                self.sae_ssl_listener.close()
-                self.sae_ssl_listener = None
-            if self.sae_ssl_listener is None:
-                logging.info("Starting SAE SSL listener at %s:%d" % (sae_ssl_listen, sae_ssl_port))
-                self.sae_ssl_listener = self.factory.listen_tcp(sae_ssl_listen, sae_ssl_port, SAESSLSocket, cert=sae_ssl_cert)
-    
+
+    def check_activator_access(self, address):
+        """
+        Check connecting activator address
+        """
+        return Activator.check_ip_access(address)
+
     def join_activator_pool(self, name, stream):
         """
         Add registered activator stream to pool
@@ -427,7 +156,7 @@ class SAE(Daemon):
             self.activators[name] = set()
         logging.info("%s is joining activator pool '%s'" % (repr(stream), name))
         self.activators[name].add(stream)
-    
+
     def leave_activator_pool(self, name, stream):
         """
         Remove activator stream from pool
@@ -435,7 +164,7 @@ class SAE(Daemon):
         if name in self.activators and stream in self.activators[name]:
             logging.info("%s is leaving activator pool '%s'" % (repr(stream), name))
             self.activators[name].remove(stream)
-    
+
     def get_pool_info(self, name):
         """
         Get activator pool information
@@ -443,15 +172,17 @@ class SAE(Daemon):
         if name not in self.activators:
             return {"status": False, "members": 0}
         return {"status": True, "members": len(self.activators[name])}
-    
+
     def run(self):
         """
         Run SAE daemon event loop
         """
-        self.build_manifest()
+        if not self.build_manifest():
+            logging.error("Inconsistent MANIFEST-ACTIVATOR file. Exiting")
+            os._exit(1)
         self.start_listeners()
         self.factory.run(run_forever=True)
-    
+
     def tick(self):
         """
         Called every second. Performs periodic maintainance
@@ -466,11 +197,11 @@ class SAE(Daemon):
             # Check Map/Reduce task status
             self.process_mrtasks()
             self.last_mrtask_check = t
-    
+
     def write_event(self, data, timestamp=None, managed_object=None):
         """
         Write FM event to database
-        
+
         :param data: A list of (left, right)
         :param timestamp:
         :param managed_object:
@@ -490,7 +221,7 @@ class SAE(Daemon):
         for l, r in data:
             d = EventData(event=e, key=l, value=r)
             d.save()
-    
+
     def collect_crashinfo(self):
         """
         Collect crashinfo and write as FM events
@@ -516,10 +247,10 @@ class SAE(Daemon):
             self.write_event(data=data.items(),
                              timestamp=datetime.datetime.fromtimestamp(ts))
             os.unlink(path)
-    
+
     def on_stream_close(self, stream):
         self.streams.unregister(stream)
-    
+
     def get_activator_stream(self, name, for_script=False):
         """
         Select activator for new task. Performs WRR load balancing
@@ -530,7 +261,7 @@ class SAE(Daemon):
             if a.max_scripts == a.current_scripts:
                 return 0
             return float(a.max_scripts - a.current_scripts) / a.max_scripts
-        
+
         if name not in self.activators:
             raise Exception("Activator pool '%s' is not available" % name)
         a = self.activators[name]
@@ -543,7 +274,7 @@ class SAE(Daemon):
         if a.max_scripts == a.current_scripts:
             raise Exception("All activators are busy in pool '%s'" % name)
         return a
-    
+
     def script(self, object, script_name, callback, **kwargs):
         """
         Launch a script
@@ -564,7 +295,7 @@ class SAE(Daemon):
             result = response.result
             result = cPickle.loads(str(result))  # De-serialize
             callback(result=result)
-        
+
         logging.info("script %s(%s)" % (script_name, object))
         stream = None
         if object.profile_name != "NOC.SAE":
@@ -631,7 +362,7 @@ class SAE(Daemon):
             self.run_sae_script(r, script_callback)
         else:
             stream.proxy.script(r, script_callback)
-    
+
     def log_mrt(self, level, task, status, args=None, **kwargs):
         """
         Map/Reduce task logging
@@ -649,7 +380,7 @@ class SAE(Daemon):
             for k in kwargs:
                 r += [u"%s=%s" % (k, kwargs[k])]
         logging.log(level, u" ".join(r))
-    
+
     def process_mrtasks(self):
         """
         Process Map/Reduce tasks
@@ -696,7 +427,7 @@ class SAE(Daemon):
                 mt.script_result = result
                 self.log_mrt(logging.INFO, task=mt, status="completed")
             mt.save()
-        
+
         # Additional stack frame to store mt_id in a closure
         def exec_script(mt):
             kwargs = {}
@@ -706,7 +437,7 @@ class SAE(Daemon):
             self.script(mt.managed_object, mt.map_script,
                     lambda result=None, error=None: map_callback(mt.id, result, error),
                     **kwargs)
-        
+
         t = datetime.datetime.now()
         for mt in MapTask.objects.filter(status="W", next_try__lte=t,
                     managed_object__activator__shard__is_active=True,
@@ -721,7 +452,7 @@ class SAE(Daemon):
             mt.status = "R"
             mt.save()
             exec_script(mt)
-    
+
     def run_sae_script(self, request, callback):
         """
         Run internal SAE script
@@ -736,7 +467,7 @@ class SAE(Daemon):
             self.script_threads[script] = callback
             logging.info("%d script threads" % (len(self.script_threads)))
         script.start()
-    
+
     ##
     ##
     ##
@@ -755,13 +486,13 @@ class SAE(Daemon):
             e.code = ERR_SCRIPT_EXCEPTION
             e.text = script.error_traceback
             cb(None, error=e)
-    
+
     def on_load_config(self):
         """
         Called after config is reloaded by SIGHUP
         """
         self.start_listeners()
-    
+
     ##
     ## Signal handlers
     ##
@@ -782,4 +513,3 @@ class SAE(Daemon):
                 logging.info("Unregistred activator")
             for n, v in sock.stats:
                 logging.info("%s: %s" % (n, v))
-    
