@@ -84,7 +84,8 @@ class SAE(Daemon):
                        for s in self.config.get("sae", "shards", "").split(",")]
         logging.info("Serving shards: %s" % ", ".join(self.shards))
         self.force_plaintext = [IP.prefix(p) for p
-                        in self.config.get("sae", "force_plaintext").split(",")]
+                in self.config.get("sae", "force_plaintext").strip().split(",")
+                if p]
 
     def build_manifest(self):
         """
