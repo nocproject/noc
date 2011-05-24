@@ -299,7 +299,7 @@ class Activator(Daemon, FSM):
         Start SNMP Trap Collectors
         """
         logging.debug("Starting trap collectors")
-        from noc.sa.activator.trapc_ollector import TrapCollector
+        from noc.sa.activator.trap_collector import TrapCollector
         self.trap_collectors = [
             TrapCollector(self, ip, port)
             for ip, port
