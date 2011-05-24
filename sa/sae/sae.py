@@ -106,6 +106,8 @@ class SAE(Daemon):
             for g in ff:
                 if os.path.isdir(g):
                     for dirpath, dirnames, filenames in os.walk(g):
+                        if "tests" in dirpath.split(os.sep):
+                            continue
                         for f in [f for f in filenames if f.endswith(".py")]:
                             files.add(os.path.join(dirpath, f))
                 else:
