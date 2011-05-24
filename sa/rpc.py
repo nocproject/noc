@@ -14,6 +14,8 @@ import time
 import hashlib
 import zlib
 import logging
+## Third-party modules
+from Crypto.Cipher import XOR
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import Message, Error
 from google.protobuf.service import RpcController
@@ -172,13 +174,12 @@ class Transform(object):
         self.compression = compression
         if self.mac == "hmac-md5":
             self.hash = hashlib.md5
-            self.signature_size = 20
         elif self.mac == "hmac-sha1":
             self.hash = hashlib.sha1
-            self.signature_size = 16
         else:
             self.hash = None
-            self.signature_size = 0
+        self.signature_size = self.hash().digest_size if self.hash else 0
+
         self.block_size = 0
         self.encrypt = None
         self.decrypt = None
@@ -255,6 +256,13 @@ class Transform(object):
             k1 = self.hash(shared_secret + exchange_hash + c).digest()
             k2 = self.hash(shared_secret + exchange_hash + k1).digest()
             return k1 + k2
+        
+        def get_mac(key):
+            ds = self.signature_size
+            key = key[:ds] + "\x00" * (64 - ds)
+            i = XOR.new("\x36").encrypt(key)
+            o = XOR.new("\x5c").encrypt(key)
+            return i, o
 
         logging.debug("Setting encryption key")
         IV_CS = get_key("A", shared_secret, exchange_hash)
@@ -268,30 +276,38 @@ class Transform(object):
             # Server -> Client
             self.encrypt = get_cipher(self.cipher, IV_SC, enc_key_SC).encrypt
             self.decrypt = get_cipher(self.cipher, IV_CS, enc_key_CS).decrypt
+            self.i_mac = get_mac(integ_key_CS)
+            self.o_mac = get_mac(integ_key_SC)
         else:
             # Client -> Server
             self.encrypt = get_cipher(self.cipher, IV_CS, enc_key_CS).encrypt
             self.decrypt = get_cipher(self.cipher, IV_SC, enc_key_SC).decrypt
+            self.i_mac = get_mac(integ_key_SC)
+            self.o_mac = get_mac(integ_key_CS)
         # Get block size
         m_name, key_size = CIPHER_MAP[self.cipher]
         m = __import__("Crypto.Cipher.%s" % m_name, {}, {}, "x")
         self.block_size = m.block_size
 
-    def sign(self, data):
+    def sign(self, seq_id, data):
         """
         Sign portion of data. Returns signature
-
-        @todo: Actual sign
         """
-        return "\x00" * self.signature_size
+        data = struct.pack(">L", seq_id) + data
+        i, o = self.o_mac
+        inner = self.hash(i + data).digest()
+        outer = self.hash(o + inner).digest()
+        return outer
 
-    def verify(self, data, signature):
+    def verify(self, seq_id, data, signature):
         """
         Check data is signed properly
-
-        @todo: Acctual check
         """
-        return True
+        data = struct.pack(">L", seq_id) + data
+        i, o = self.i_mac
+        inner = self.hash(i + data).digest()
+        outer = self.hash(o + inner).digest()
+        return outer == signature
 
 
 class RPCSocket(object):
@@ -350,9 +366,10 @@ class RPCSocket(object):
     def on_read(self, data):
         # Check integrity when encryption is set
         if self.current_transform.signature_size:
-            signature = data[-self.current_transform.signature_size]
+            signature = data[-self.current_transform.signature_size:]
             data = data[:-self.current_transform.signature_size]
-            if not self.current_transform.verify(data, signature):
+            # @todo: use sequence id
+            if not self.current_transform.verify(0, data, signature):
                 logging.error("Message integrity failure")
                 self.close()
                 return
@@ -447,7 +464,7 @@ class RPCSocket(object):
             s = self.current_transform.encrypt(s)
         # Sign when encryption is set
         if self.current_transform.signature_size:
-            s += self.current_transform.sign(s)
+            s += self.current_transform.sign(0, s)  # @todo: sequence id
         # Write to socket
         self.write(struct.pack("!L", len(s)) + s)
 
