@@ -31,8 +31,6 @@ pm_data_secret  = secret
 host = 127.0.0.1
 port = 19701
 local_address =
-ssl_host =
-ssl_port = 19703
 
 [path]
 fping      =
