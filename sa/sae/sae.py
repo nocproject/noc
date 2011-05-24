@@ -33,14 +33,8 @@ from noc.lib.daemon import Daemon
 from noc.lib.debug import error_report, DEBUG_CTX_CRASH_PREFIX
 from noc.lib.nbsocket import ListenTCPSocket, AcceptedTCPSocket,\
                              AcceptedTCPSSLSocket, SocketFactory, Protocol
+from noc.lib.ip import IP
 
-##
-## Additions to MANIFEST-ACTIVATfOR file
-##
-ACTIVATOR_MANIFEST = [
-    "sa/profiles/",
-    "sa/interfaces/",
-]
 
 
 class SAE(Daemon):
@@ -51,6 +45,7 @@ class SAE(Daemon):
 
     def __init__(self):
         self.shards = []
+        self.force_plaintext = []
         Daemon.__init__(self)
         logging.info("Running SAE")
         #
@@ -88,6 +83,8 @@ class SAE(Daemon):
         self.shards = [s.strip()
                        for s in self.config.get("sae", "shards", "").split(",")]
         logging.info("Serving shards: %s" % ", ".join(self.shards))
+        self.force_plaintext = [IP.prefix(p) for p
+                        in self.config.get("sae", "force_plaintext").split(",")]
 
     def build_manifest(self):
         """
@@ -468,9 +465,6 @@ class SAE(Daemon):
             logging.info("%d script threads" % (len(self.script_threads)))
         script.start()
 
-    ##
-    ##
-    ##
     def on_script_exit(self, script):
         logging.info("Script %s(%s) completed" % (script.name,
                                                script.access_profile.address))

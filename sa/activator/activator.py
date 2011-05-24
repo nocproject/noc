@@ -24,7 +24,9 @@ from threading import Lock
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
 from noc.sa.script.ssh.keys import Key
-from noc.sa.rpc import RPCSocket, file_hash, get_digest
+from noc.sa.rpc import RPCSocket, file_hash, get_digest,\
+                       PROTOCOL_NAME, PROTOCOL_VERSION, PUBLIC_KEYS,\
+                       CIPHERS, MACS, COMPRESSIONS, KEY_EXCHANGES
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.activator.servers import ServersHub
 from noc.lib.fileutils import safe_rewrite, read_file
@@ -46,22 +48,50 @@ class Activator(Daemon, FSM):
     FSM_NAME = "Activator"
     DEFAULT_STATE = "IDLE"
     STATES = {
+        ## Starting stage. Activator is idle, all servers are down
         "IDLE": {
                 "timeout" : "CONNECT",
                 "close"   : "IDLE",
                 },
+        ## Beginning TCP connection
         "CONNECT" : {
                 "timeout" : "IDLE",
                 "refused" : "IDLE",
                 "close"   : "IDLE",
                 "connect" : "CONNECTED",
                 },
+        ## TCP connection established
         "CONNECTED" : {
                 "timeout" : "IDLE",
                 "close"   : "IDLE",
-                "register": "REGISTRED",
+                "setup"   : "SETUP",
+                "upgrade" : "UPGRADE",
                 "error"   : "IDLE",
         },
+        ## Protocol version negotiated
+        ## Crypto algorithms setup
+        "SETUP" : {
+                "timeout" : "IDLE",
+                "close"   : "IDLE",
+                "error"   : "IDLE",
+                "kex"     : "KEX",
+                "plaintext" : "REGISTER"
+        },
+        ## Key exchange
+        "KEX": {
+                "timeout" : "IDLE",
+                "close"   : "IDLE",
+                "error"   : "IDLE",
+                "register": "REGISTER"
+        },
+        ## Start registration
+        "REGISTER": {
+            "timeout" : "IDLE",
+            "close"   : "IDLE",
+            "error"   : "IDLE",
+            "registred" : "REGISTRED"
+        },
+            
         "REGISTRED" : {
                 "timeout" : "IDLE",
                 "auth"    : "AUTHENTICATED",
@@ -70,11 +100,10 @@ class Activator(Daemon, FSM):
         },
         "AUTHENTICATED" : {
                 "caps"    : "CAPS",
-                "upgrade" : "UPGRADE",
                 "close"   : "IDLE",
         },
         "UPGRADE" : {
-                "caps"    : "CAPS",
+                "setup"   : "SETUP",
                 "close"   : "IDLE",
         },
         "CAPS" : {
@@ -187,8 +216,33 @@ class Activator(Daemon, FSM):
         Entering CONNECTED state
         """
         self.set_timeout(10)
-        self.register()
+        if self.stand_alone_mode:
+            self.event("upgrade")
+        else:
+            logging.info("Bundled packaging. Skipping software updates")
+            self.protocol()
 
+    def on_SETUP_enter(self):
+        """
+        Entering SETUP state
+        """
+        self.set_timeout(10)
+        self.session_setup()
+
+    def on_KEX_enter(self):
+        """
+        Entering key exchange state
+        """
+        self.set_timeout(10)
+        self.kex()
+    
+    def on_REGISTER_enter(self):
+        """
+        Entering REGISTER state
+        """
+        self.set_timeout(10)
+        self.register()
+        
     def on_REGISTRED_enter(self):
         """
         Entering REGISTERED state
@@ -200,11 +254,8 @@ class Activator(Daemon, FSM):
         """
         Entering AUTHENTICATED state
         """
-        if self.stand_alone_mode:
-            self.event("upgrade")
-        else:
-            logging.info("In-bundle package. Skiping software updates")
-            self.event("caps")
+        self.set_timeout(10)
+        self.event("caps")
 
     def on_UPGRADE_enter(self):
         """
@@ -439,10 +490,84 @@ class Activator(Daemon, FSM):
         logging.info("Rebooting")
         os.execv(sys.executable, [sys.executable] + sys.argv)
 
-    @check_state("CONNECTED")
+    @check_state("CONNECTED", "UPGRADE")
+    def protocol(self):
+        """ Start protocol negotiation """
+        def protocol_callback(transaction, response=None, error=None):
+            if self.get_state() != "CONNECTED":
+                return
+            if error:
+                logging.error("Protocol negotiation error: %s" % error.text)
+                self.event("error")
+                return
+            if (response.protocol != PROTOCOL_NAME or
+                response.version != PROTOCOL_VERSION):
+                logging.error("Protocol negotiation failed")
+                self.event("error")
+                return
+            logging.info("Protocol version negotiated")
+            if self.stand_alone_mode:
+                self.event("upgrade")
+            else:
+                logging.info("In-bundle package. Skiping software updates")
+                self.event("setup")
+
+        logging.info("Negotiation protocol '%s' version '%s'" % (
+            PROTOCOL_NAME, PROTOCOL_VERSION))
+        r = ProtocolRequest(protocol=PROTOCOL_NAME, version=PROTOCOL_VERSION)
+        self.sae_stream.proxy.protocol(r, protocol_callback)
+    
+    @check_state("SETUP")
+    def session_setup(self):
+        """ Start crypto negotiations"""
+        def setup_callback(transaction, response=None, error=None):
+            if self.get_state() != "SETUP":
+                return
+            if error:
+                logging.error("Crypto negotiation failed: %s" % e.text)
+                self.event("error")
+                return
+            if response.key_exchange == "none":
+                self.event("plaintext")
+            else:
+                self.sae_stream.set_next_transform(response.key_exchange,
+                                                   response.public_key,
+                                                   response.cipher,
+                                                   response.mac,
+                                                   response.compression)
+                self.event("kex")
+
+        r = SetupRequest(
+            key_exchanges=KEY_EXCHANGES,
+            public_keys=PUBLIC_KEYS,
+            ciphers=CIPHERS,
+            macs=MACS,
+            compressions=COMPRESSIONS
+        )
+        self.sae_stream.proxy.setup(r, setup_callback)
+
+    @check_state("KEX")
+    def kex(self):
+        """
+        Perform key exchange
+        """
+        def kex_callback(transaction, response=None, error=None):
+            if self.get_state() != "KEX":
+                return
+            if error:
+                logging.error("Key exchange failed: %s" % error.text)
+                self.event("error")
+                return
+            self.sae_stream.complete_kex(response)
+            self.sae_stream.activate_next_transform()
+            self.event("register")
+
+        self.sae_stream.start_kex(kex_callback)
+
+    @check_state("REGISTER")
     def register(self):
         def register_callback(transaction, response=None, error=None):
-            if self.get_state() != "CONNECTED":
+            if self.get_state() != "REGISTER":
                 return
             if error:
                 logging.error("Registration error: %s" % error.text)
@@ -450,7 +575,7 @@ class Activator(Daemon, FSM):
                 return
             logging.info("Registration accepted")
             self.nonce = response.nonce
-            self.event("register")
+            self.event("registred")
         logging.info("Registering as '%s'" % self.config.get("activator", "name"))
         r = RegisterRequest()
         r.name = self.activator_name
@@ -493,7 +618,8 @@ class Activator(Daemon, FSM):
                 if update_list:
                     self.software_upgrade(update_list)
                 else:
-                    self.event("caps")
+                    self.protocol()
+                    self.event("setup")
             else:
                 logging.error("Transaction id mismatch")
                 self.manifest_transaction = None

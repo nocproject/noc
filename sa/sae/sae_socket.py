@@ -11,6 +11,7 @@ from noc.lib.nbsocket import AcceptedTCPSocket
 from noc.sa.rpc import RPCSocket
 from noc.sa.models import Activator
 from noc.sa.protocols.sae_pb2 import *
+from noc.lib.ip import IP
 
 
 class SAESocket(RPCSocket, AcceptedTCPSocket):
