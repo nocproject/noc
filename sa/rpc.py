@@ -44,6 +44,7 @@ MAC_MAP = {
     "hmac-md5": hashlib.md5
 }
 
+
 class Controller(RpcController):
     """RPC Controller"""
     def __init__(self, stream):
@@ -121,7 +122,7 @@ class TransactionFactory(object):
             if id in self.transactions:
                 raise Exception("Transaction is already exists")
         else:
-            id=self.__get_id()
+            id = self.__get_id()
         t = Transaction(self, id, method, callback)
         self.transactions[id] = t
         return t
@@ -156,7 +157,7 @@ class RPCProtocol(Protocol):
             l = struct.unpack("!L", self.in_buffer[:4])[0]
             if len(self.in_buffer) >= 4 + l:
                 r += [self.in_buffer[4:4 + l]]
-                self.in_buffer=self.in_buffer[4 + l:]
+                self.in_buffer = self.in_buffer[4 + l:]
             else:
                 break
         return r
@@ -198,7 +199,7 @@ class Transform(object):
             raise ValueError("Unsupported key exchange: %s" % self.key_exhange)
         self.kex_request = r.SerializeToString()
         return r
-    
+
     def get_kex_response(self, request):
         """
         Get KEXResponse
@@ -231,7 +232,7 @@ class Transform(object):
         else:
             raise ValueError("Unsupported key exchange: %s" % self.key_exhange)
         self.set_key(shared_secret, self.get_exchange_hash(shared_secret))
-    
+
     def get_exchange_hash(self, shared_secret):
         """Calculate exchange hash"""
         return self.hash((
@@ -241,7 +242,7 @@ class Transform(object):
             self.kex_response +
             str(shared_secret)
         )).digest()
-        
+
     def set_key(self, shared_secret, exchange_hash, server=False):
         def get_cipher(cipher, IV, key):
             m_name, key_size = CIPHER_MAP[cipher]
@@ -254,7 +255,7 @@ class Transform(object):
             k1 = self.hash(shared_secret + exchange_hash + c).digest()
             k2 = self.hash(shared_secret + exchange_hash + k1).digest()
             return k1 + k2
-        
+
         logging.debug("Setting encryption key")
         IV_CS = get_key("A", shared_secret, exchange_hash)
         IV_SC = get_key("B", shared_secret, exchange_hash)
@@ -262,7 +263,7 @@ class Transform(object):
         enc_key_SC = get_key("D", shared_secret, exchange_hash)
         integ_key_CS = get_key("E", shared_secret, exchange_hash)
         integ_key_SC = get_key("F", shared_secret, exchange_hash)
-        
+
         if server:
             # Server -> Client
             self.encrypt = get_cipher(self.cipher, IV_SC, enc_key_SC).encrypt
@@ -275,19 +276,19 @@ class Transform(object):
         m_name, key_size = CIPHER_MAP[self.cipher]
         m = __import__("Crypto.Cipher.%s" % m_name, {}, {}, "x")
         self.block_size = m.block_size
-    
+
     def sign(self, data):
         """
         Sign portion of data. Returns signature
-        
+
         @todo: Actual sign
         """
         return "\x00" * self.signature_size
-    
+
     def verify(self, data, signature):
         """
         Check data is signed properly
-        
+
         @todo: Acctual check
         """
         return True
@@ -298,16 +299,17 @@ class RPCSocket(object):
     RPC Socket
     """
     protocol_class = RPCProtocol
+
     def __init__(self, service):
         self.service = service
-        self.proxy = Proxy(self,SAEService_Stub)
+        self.proxy = Proxy(self, SAEService_Stub)
         self.transactions = TransactionFactory()
         self.stat_rpc_requests = 0
         self.stat_rpc_responses = 0
         self.stat_rpc_errors = 0
         self.current_transform = Transform(None, None, None, None, None)
         self.next_transform = Transform(None, None, None, None, None)
-    
+
     def set_next_transform(self, key_exhange, public_key, cipher,
                            mac, compression):
         def c(s):
@@ -315,7 +317,7 @@ class RPCSocket(object):
                 return None
             else:
                 return s
-        
+
         logging.debug("Setting next transform to %s" % ", ".join([
             key_exhange, public_key, cipher, mac, compression]))
         self.next_transform = Transform(c(key_exhange), c(public_key),
@@ -332,13 +334,13 @@ class RPCSocket(object):
         """
         r = self.next_transform.get_kex_request()
         self.proxy.kex(r, callback)
-    
+
     def get_kex_response(self, request):
         """
         Process KEX request and return KEX response or Error
         """
         return self.next_transform.get_kex_response(request)
-    
+
     def complete_kex(self, response):
         """
         Complete KEX process by parsing response
@@ -388,7 +390,7 @@ class RPCSocket(object):
         if method:
             req = self.service.GetRequestClass(method)()
             req.ParseFromString(request.serialized_request)
-            logging.debug("Request accepted:\nid: %s\n%s" % (id,str(req)))
+            logging.debug("Request accepted:\nid: %s\n%s" % (id, str(req)))
             controller = Controller(self)
             controller.transaction = self.transactions.begin(id=id,
                                                         method=request.method)
@@ -396,34 +398,34 @@ class RPCSocket(object):
                 self.service.CallMethod(method, controller,
                                         req, self.send_response)
             except:
-                self.send_error(id,ERR_INTERNAL,
+                self.send_error(id, ERR_INTERNAL,
                                 "RPC Call to %s failed" % request.method)
                 error_report()
         else:
-            self.send_error(id,ERR_INVALID_METHOD,
+            self.send_error(id, ERR_INVALID_METHOD,
                             "Invalid method '%s'" % request.method)
 
-    def rpc_handle_response(self,id,response):
-        logging.debug("rpc_handle_response:\nid: %s\n%s"%(id,str(response)))
+    def rpc_handle_response(self, id, response):
+        logging.debug("rpc_handle_response:\nid: %s\n%s" % (id, str(response)))
         if id not in self.transactions:
-            logging.error("Invalid transaction: %s"%id)
+            logging.error("Invalid transaction: %s" % id)
             return
-        t=self.transactions[id]
-        method=self.service.GetDescriptor().FindMethodByName(t.method)
+        t = self.transactions[id]
+        method = self.service.GetDescriptor().FindMethodByName(t.method)
         if method:
-            res=self.service.GetResponseClass(method)()
+            res = self.service.GetResponseClass(method)()
             res.ParseFromString(response.serialized_response)
             t.commit(response=res)
         else:
-            logging.error("Invalid method: %s"%t.method)
+            logging.error("Invalid method: %s" % t.method)
             t.rollback()
 
-    def rpc_handle_error(self,id,error):
-        logging.debug("rpc_handle_error:\nid: %s\n%s"%(id,str(error)))
+    def rpc_handle_error(self, id, error):
+        logging.debug("rpc_handle_error:\nid: %s\n%s" % (id, str(error)))
         if id not in self.transactions:
-            logging.error("Invalid transaction: %s"%id)
+            logging.error("Invalid transaction: %s" % id)
             return
-        self.transactions[id].commit(id,error=error)
+        self.transactions[id].commit(id, error=error)
 
     # Format and write SAE RPC PDU
     def write_message(self, msg):
@@ -447,91 +449,102 @@ class RPCSocket(object):
         if self.current_transform.signature_size:
             s += self.current_transform.sign(s)
         # Write to socket
-        self.write(struct.pack("!L",len(s))+s)
+        self.write(struct.pack("!L", len(s)) + s)
 
-    def send_request(self,id,method,request):
-        logging.debug("send_request\nmethod: %s\n%s"%(method,str(request)))
-        m=Message()
-        m.id=id
-        m.request.method=method
-        m.request.serialized_request=request.SerializeToString()
+    def send_request(self, id, method, request):
+        logging.debug("send_request\nmethod: %s\n%s" % (method, str(request)))
+        m = Message()
+        m.id = id
+        m.request.method = method
+        m.request.serialized_request = request.SerializeToString()
         self.write_message(m)
         return id
 
-    def send_response(self,controller,response=None,error=None):
-        id=controller.transaction.id
-        logging.debug("send_response:\nid: %d\nresponse:\n%s\nerror:\n%s"%(id,str(response),str(error)))
+    def send_response(self, controller, response=None, error=None):
+        id = controller.transaction.id
+        logging.debug("send_response:\nid: %d\nresponse:\n%s\nerror:\n%s" % (
+                        id, str(response), str(error)))
         if id not in self.transactions:
             raise Exception("Invalid transaction")
-        m=Message()
-        m.id=id
+        m = Message()
+        m.id = id
         if error:
-            m.error.code=error.code
-            m.error.text=error.text
+            m.error.code = error.code
+            m.error.text = error.text
         if response:
-            m.response.serialized_response=response.SerializeToString()
+            m.response.serialized_response = response.SerializeToString()
         self.write_message(m)
         controller.transaction.commit()
 
-    def send_error(self,id,code,text):
-        logging.debug("send_error:\nid: %s\ncode: %s\ntext: %s"%(id,code,text))
-        m=Message()
-        m.id=id
-        m.error.code=code
-        m.error.text=text
+    def send_error(self, id, code, text):
+        logging.debug("send_error:\nid: %s\ncode: %s\ntext: %s" % (id, code,
+                                                                   text))
+        m = Message()
+        m.id = id
+        m.error.code = code
+        m.error.text = text
         self.write_message(m)
 
-    def call(self,method,request,callback):
-        t=self.transactions.begin(method=method,callback=callback)
-        self.send_request(t.id,method,request)
+    def call(self, method, request, callback):
+        t = self.transactions.begin(method=method, callback=callback)
+        self.send_request(t.id, method, request)
         return t
 
-    def _stats(self):
+    @property
+    def stats(self):
         return [
             ("rpc.requests",  self.stat_rpc_requests),
             ("rpc.responses", self.stat_rpc_responses),
             ("rpc.errors",    self.stat_rpc_errors),
         ]
-    stats=property(_stats)
-##
-## Proxy class for RPC interface
-##
+
+
 class Proxy(object):
-    def __init__(self,stream,stub_class):
-        self.stream=stream
-        self.stub=stub_class(stream.service)
-    def __getattr__(self,name):
-        return lambda request,callback: self.stream.call(name,request,callback)
-##
-## file hash for software update services
-##
+    """
+    Proxy class for RPC interface
+    """
+    def __init__(self, stream, stub_class):
+        self.stream = stream
+        self.stub = stub_class(stream.service)
+
+    def __getattr__(self, name):
+        return lambda request, callback: self.stream.call(name, request, callback)
+
+
 def file_hash(path):
-    f=open(path)
-    data=f.read()
+    """
+    Calculate file hash for software update service
+    """
+    f = open(path)
+    data = f.read()
     f.close()
     return hashlib.sha1(data).hexdigest()
-##
-## Generic hash for digest authetications
-##
+
+
 def H(s):
+    """
+    Generic hash for digest authentication
+    """
     return hashlib.sha1(s).hexdigest()
 
-##
-## Generate random nonce for digest authetuication
-##
+
 def get_nonce():
-    ur=random.SystemRandom()
-    return H(H(str(ur.random())[2:])+str(ur.random())[2:])
+    """
+    Generate random nonce for digest authentication
 
-##
-## Compute digest for Activator authentications
-##
-def get_digest(name,password,nonce):
-    return H(H(name+":"+password)+":"+nonce)
+    @todo: use safe_random
+    """
+    ur = random.SystemRandom()
+    return H(H(str(ur.random())[2:]) + str(ur.random())[2:])
 
-##
-## Generate secret
-##
+
+def get_digest(name, password, nonce):
+    """
+    Compute digest for Activator authentication
+    """
+    return H(H(name + ":" + password) + ":" + nonce)
+
+
 def generate_private_x(bits):
     """
     Generate random long of bits size
@@ -541,7 +554,7 @@ def generate_private_x(bits):
             raise ValueError("Bits (%d) must be a multiple of 8" % bits)
         bytes = secure_random(bits / 8)
         return bytes_to_long(bytes)
-    
+
     MB = (2 ** bits) - 2
     while True:
         x = get_random(bits)
