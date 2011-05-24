@@ -10,10 +10,10 @@ import time,logging,re
 ##
 ## State checking decorator
 ##
-def check_state(state):
+def check_state(*sargs):
     def check_returns(f):
         def new_f(self,*args, **kwds):
-            assert self._current_state==state,\
+            assert self._current_state in sargs,\
                 "Function '%s' cannot be called from state '%s' ('%s' required)"%(f.func_name,self._current_state,state)
             return f(self,*args, **kwds)
         new_f.func_name = f.func_name
