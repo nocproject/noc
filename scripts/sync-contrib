@@ -51,6 +51,11 @@ class Installer(object):
             dd = None
         if ds == dd:
             return False
+        # Check target directory is exist
+        d, f = os.path.split(dst)
+        if not os.path.exists(d):
+            os.makedirs(d)
+        # Write file
         with open(dst, "w") as d:
             d.write(ds)
         return True
