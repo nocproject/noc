@@ -53,6 +53,8 @@ enum ErrorCode {
     ERR_INVALID_SHARD       =23; // Shard mismatch
     ERR_SHARD_IS_DOWN       =24; // Shard is disabled
     ERR_OBJ_OVERLOAD        =25; // Too many scripts on object
+    ERR_PROTO_MISMATCH      =26; // Protocol version mismatch
+    ERR_SETUP_FAILED        =27; // Cannot negotiate crypto session
 }
 
 //
@@ -81,6 +83,58 @@ message AccessProfile {
     optional string       snmp_rw        =10;
     repeated KWArg        attrs          =11;
 }
+//
+// Protocol negotiation
+// Activator -> SAE
+//
+message ProtocolRequest {
+    required string protocol = 1;
+    required string version = 2;
+}
+
+message ProtocolResponse {
+    required string protocol = 1;
+    required string version = 2;
+}
+
+//
+// Crypto algorithm negotiation
+//
+message SetupRequest {
+    repeated string key_exchanges = 1;
+    repeated string public_keys = 2;
+    repeated string ciphers = 3;
+    repeated string macs = 4;
+    repeated string compressions = 5;
+}
+
+message SetupResponse {
+    required string key_exchange = 1;
+    required string public_key = 2;
+    required string cipher = 3;
+    required string mac = 4;
+    required string compression = 5;
+}
+
+//
+// Key exhange
+//
+message KEXRequest {
+    message DHGroup1Sha1 {
+        required bytes e = 1;
+    }
+    
+    optional DHGroup1Sha1 dh_group1_sha1 = 1;
+}
+
+message KEXResponse {
+    message DHGroup1Sha1 {
+        required bytes e = 1;
+    }
+    
+    optional DHGroup1Sha1 dh_group1_sha1 = 1;
+}
+
 //
 // Ping server
 // SAE->Activator
@@ -245,6 +299,9 @@ message PMDataResponse {}
 // RPC Services
 //
 service SAEService {
+    rpc protocol         (ProtocolRequest)        returns (ProtocolResponse);
+    rpc setup            (SetupRequest)           returns (SetupResponse);
+    rpc kex              (KEXRequest)             returns (KEXRequest);
     rpc ping             (PingRequest)            returns (PingResponse);
     rpc register         (RegisterRequest)        returns (RegisterResponse);
     rpc auth             (AuthRequest)            returns (AuthResponse);

@@ -14,7 +14,10 @@ from noc.sa.protocols.sae_pb2 import *
 from noc.sa.models import Activator, ManagedObject
 from noc.fm.models import IgnoreEventRules
 from noc.pm.models import TimeSeries
-from noc.sa.rpc import get_nonce, get_digest
+from noc.sa.rpc import get_nonce, get_digest, PROTOCOL_NAME, PROTOCOL_VERSION,\
+                       PUBLIC_KEYS, CIPHERS, MACS, COMPRESSIONS, KEY_EXCHANGES
+from noc.lib.fileutils import read_file
+from noc.lib.ip import IP
 
 
 class Service(SAEService):
@@ -65,6 +68,72 @@ class Service(SAEService):
     ##
     ## RPC interfaces
     ##
+    def protocol(self, controller, request, done):
+        """
+        Protocol negotiation
+        """
+        if (request.protocol != PROTOCOL_NAME or
+            request.version != PROTOCOL_VERSION):
+            done(controller,
+                 error=Error(code=ERR_PROTO_MISMATCH,
+                             text="Protocol version mismatch"))
+        else:
+            done(controller,
+                 response=ProtocolResponse(protocol=PROTOCOL_NAME,
+                                           version=PROTOCOL_VERSION))
+    
+    def setup(self, controller, request, done):
+        def first_match(iter1, iter2):
+            for i in iter1:
+                for j in iter2:
+                    if i == j:
+                        return i
+            return "none"
+        
+        # Check whether encryption is disabled
+        r_addr = IP.prefix(controller.stream.socket.getpeername()[0])
+        force_plaintext = False
+        for p in self.sae.force_plaintext:
+            if p.contains(r_addr):
+                force_plaintext = True
+                break
+        
+        if force_plaintext:
+            logging.info("Forcing plaintext transmission")
+            kex = pk = cipher = mac = compression = "none"
+        else:
+            # Negotiate key exchange algorithm
+            kex = first_match(KEY_EXCHANGES, request.key_exchanges)
+            # Negotiate public key
+            pk = first_match(PUBLIC_KEYS, request.public_keys)
+            # Negotiate cipher
+            cipher = first_match(CIPHERS, request.ciphers)
+            # Negotiate mac
+            mac = first_match(MACS, request.macs)
+            # Negotiate compression
+            compression = first_match(COMPRESSIONS, request.compressions)
+            
+            if kex == "none" or pk == "none" or cipher == "none" or mac == "none":
+                done(
+                    controller,
+                    error=Error(error=ERR_SETUP_FAILED,
+                                text="Cannot negotiate crypto algorithm"))
+                return
+            controller.stream.set_next_transform(kex, pk, cipher, mac, compression)
+        done(
+            controller,
+            response=SetupResponse(key_exchange= kex, public_key=pk,
+                                   cipher=cipher, mac=mac,
+                                   compression=compression))
+
+    def kex(self, controller, request, done):
+        r = controller.stream.get_kex_response(request)
+        if isinstance(r, Error):
+            done(controller, error=r)
+        else:
+            done(controller, response=r)
+            controller.stream.activate_next_transform()
+
     def ping(self, controller, request, done):
         """
         Handle RPC ping request.
@@ -111,22 +180,12 @@ class Service(SAEService):
         """
         Handle RCP manifest request
         """
-        if not controller.stream.is_authenticated:
-            done(controller,
-                 error=Error(code=ERR_AUTH_REQUIRED,
-                             text="Authentication required"))
-            return
         done(controller, response=self.sae.activator_manifest)
 
     def software_upgrade(self, controller, request, done):
         """
         Handle RPC software upgrade request
         """
-        if not controller.stream.is_authenticated:
-            done(controller,
-                 error=Error(code=ERR_AUTH_REQUIRED,
-                             text="Authentication required"))
-            return
         r = SoftwareUpgradeResponse()
         for n in request.names:
             if n not in self.sae.activator_manifest_files:

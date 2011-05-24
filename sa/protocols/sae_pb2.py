@@ -12,7 +12,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = descriptor.FileDescriptor(
   name='sae.proto',
   package='sae',
-  serialized_pb='\n\tsae.proto\x12\x03sae\"p\n\x07Message\x12\n\n\x02id\x18\x01 \x02(\r\x12\x1d\n\x07request\x18\x02 \x01(\x0b\x32\x0c.sae.Request\x12\x1f\n\x08response\x18\x03 \x01(\x0b\x32\r.sae.Response\x12\x19\n\x05\x65rror\x18\x04 \x01(\x0b\x32\n.sae.Error\"5\n\x07Request\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x1a\n\x12serialized_request\x18\x02 \x02(\x0c\"\'\n\x08Response\x12\x1b\n\x13serialized_response\x18\x01 \x01(\x0c\"3\n\x05\x45rror\x12\x1c\n\x04\x63ode\x18\x01 \x02(\x0e\x32\x0e.sae.ErrorCode\x12\x0c\n\x04text\x18\x02 \x01(\t\"\x98\x02\n\rAccessProfile\x12\x0f\n\x07profile\x18\x01 \x02(\t\x12!\n\x06scheme\x18\x02 \x02(\x0e\x32\x11.sae.AccessScheme\x12\x0f\n\x07\x61\x64\x64ress\x18\x03 \x02(\t\x12\x0c\n\x04port\x18\x04 \x01(\r\x12\x0c\n\x04user\x18\x05 \x01(\t\x12\x10\n\x08password\x18\x06 \x01(\t\x12\x16\n\x0esuper_password\x18\x07 \x01(\t\x12\x0c\n\x04path\x18\x08 \x01(\t\x12\x0f\n\x07snmp_ro\x18\t \x01(\t\x12\x0f\n\x07snmp_rw\x18\n \x01(\t\x12\'\n\x05\x61ttrs\x18\x0b \x03(\x0b\x32\x18.sae.AccessProfile.KWArg\x1a#\n\x05KWArg\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\"\r\n\x0bPingRequest\"\x0e\n\x0cPingResponse\"\x1f\n\x0fRegisterRequest\x12\x0c\n\x04name\x18\x01 \x02(\t\"!\n\x10RegisterResponse\x12\r\n\x05nonce\x18\x01 \x02(\t\"+\n\x0b\x41uthRequest\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0e\n\x06\x64igest\x18\x02 \x02(\t\"\x0e\n\x0c\x41uthResponse\"%\n\x0eSetCapsRequest\x12\x13\n\x0bmax_scripts\x18\x01 \x02(\x05\"\x11\n\x0fSetCapsResponse\"\xab\x01\n\rScriptRequest\x12*\n\x0e\x61\x63\x63\x65ss_profile\x18\x01 \x02(\x0b\x32\x12.sae.AccessProfile\x12\x0e\n\x06script\x18\x02 \x02(\t\x12(\n\x06kwargs\x18\x03 \x03(\x0b\x32\x18.sae.ScriptRequest.KWArg\x12\x0f\n\x07timeout\x18\x04 \x01(\r\x1a#\n\x05KWArg\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\" \n\x0eScriptResponse\x12\x0e\n\x06result\x18\x01 \x02(\t\"*\n\x0c\x46ileChecksum\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04hash\x18\x02 \x02(\t\"\x11\n\x0fManifestRequest\"4\n\x10ManifestResponse\x12 \n\x05\x66iles\x18\x01 \x03(\x0b\x32\x11.sae.FileChecksum\"\'\n\x16SoftwareUpgradeRequest\x12\r\n\x05names\x18\x01 \x03(\t\"&\n\x08\x46ileCode\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04\x63ode\x18\x02 \x02(\t\"7\n\x17SoftwareUpgradeResponse\x12\x1c\n\x05\x63odes\x18\x01 \x03(\x0b\x32\r.sae.FileCode\"\x1b\n\x19RefreshEventFilterRequest\"\x1c\n\x1aRefreshEventFilterResponse\"\x14\n\x12\x45ventFilterRequest\"\xb4\x01\n\x13\x45ventFilterResponse\x12\x0e\n\x06\x65xpire\x18\x01 \x02(\x05\x12\x0f\n\x07sources\x18\x02 \x03(\t\x12\x42\n\x0cignore_rules\x18\x03 \x03(\x0b\x32,.sae.EventFilterResponse.EventIgnoreRuleItem\x1a\x38\n\x13\x45ventIgnoreRuleItem\x12\x0f\n\x07left_re\x18\x01 \x02(\t\x12\x10\n\x08right_re\x18\x02 \x02(\t\"\x89\x01\n\x0c\x45ventRequest\x12\x11\n\ttimestamp\x18\x01 \x02(\x05\x12\n\n\x02ip\x18\x02 \x02(\t\x12-\n\x04\x62ody\x18\x03 \x03(\x0b\x32\x1f.sae.EventRequest.EventBodyItem\x1a+\n\rEventBodyItem\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\"\x0f\n\rEventResponse\"%\n\x10PingCheckRequest\x12\x11\n\taddresses\x18\x01 \x03(\t\";\n\x11PingCheckResponse\x12\x11\n\treachable\x18\x01 \x03(\t\x12\x13\n\x0bunreachable\x18\x02 \x03(\t\"\x80\x03\n\rPMDataRequest\x12+\n\x06result\x18\x01 \x03(\x0b\x32\x1b.sae.PMDataRequest.PMResult\x12\'\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\x19.sae.PMDataRequest.PMData\x1a\x98\x01\n\x08PMResult\x12\x12\n\nprobe_name\x18\x01 \x02(\t\x12\x12\n\nprobe_type\x18\x02 \x02(\t\x12\x11\n\ttimestamp\x18\x03 \x02(\x05\x12\x0f\n\x07service\x18\x04 \x02(\t\x12/\n\x06result\x18\x05 \x02(\x0e\x32\x1f.sae.PMDataRequest.PMResultCode\x12\x0f\n\x07message\x18\x06 \x02(\t\x1aI\n\x06PMData\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x11\n\ttimestamp\x18\x02 \x02(\x05\x12\x0f\n\x07is_null\x18\x03 \x02(\x08\x12\r\n\x05value\x18\x04 \x02(\x01\"3\n\x0cPMResultCode\x12\t\n\x05PR_OK\x10\x00\x12\x0b\n\x07PR_WARN\x10\x01\x12\x0b\n\x07PR_FAIL\x10\x02\"\x10\n\x0ePMDataResponse*\xdd\x04\n\tErrorCode\x12\n\n\x06\x45RR_OK\x10\x00\x12\x10\n\x0c\x45RR_INTERNAL\x10\x01\x12\x16\n\x12\x45RR_INVALID_METHOD\x10\x02\x12\x1b\n\x17\x45RR_INVALID_TRANSACTION\x10\x03\x12\x1a\n\x16\x45RR_TRANSACTION_EXISTS\x10\x04\x12\x19\n\x15\x45RR_UNKNOWN_ACTIVATOR\x10\x05\x12\x17\n\x13\x45RR_INVALID_PROFILE\x10\x06\x12\x16\n\x12\x45RR_INVALID_SCHEME\x10\x07\x12\x1c\n\x18\x45RR_UNKNOWN_EVENT_SOURCE\x10\x08\x12\x13\n\x0f\x45RR_AUTH_FAILED\x10\t\x12\x15\n\x11\x45RR_AUTH_REQUIRED\x10\n\x12\x17\n\x13\x45RR_INVALID_UPGRADE\x10\x0b\x12\x10\n\x0c\x45RR_OVERLOAD\x10\x0c\x12\x16\n\x12\x45RR_INVALID_SCRIPT\x10\r\x12\x18\n\x14\x45RR_SCRIPT_EXCEPTION\x10\x0e\x12\x1f\n\x1b\x45RR_ACTIVATOR_NOT_AVAILABLE\x10\x0f\x12\x0c\n\x08\x45RR_DOWN\x10\x10\x12\x0f\n\x0b\x45RR_TIMEOUT\x10\x11\x12\x16\n\x12\x45RR_ACTIVATOR_LOST\x10\x12\x12\x14\n\x10\x45RR_LOGIN_FAILED\x10\x13\x12\x11\n\rERR_CANCELLED\x10\x14\x12\x15\n\x11\x45RR_NOT_SUPPORTED\x10\x15\x12\x12\n\x0e\x45RR_HTTP_ERROR\x10\x16\x12\x15\n\x11\x45RR_INVALID_SHARD\x10\x17\x12\x15\n\x11\x45RR_SHARD_IS_DOWN\x10\x18\x12\x14\n\x10\x45RR_OBJ_OVERLOAD\x10\x19*-\n\x0c\x41\x63\x63\x65ssScheme\x12\n\n\x06TELNET\x10\x00\x12\x07\n\x03SSH\x10\x01\x12\x08\n\x04HTTP\x10\x02\x32\xce\x05\n\nSAEService\x12+\n\x04ping\x12\x10.sae.PingRequest\x1a\x11.sae.PingResponse\x12\x37\n\x08register\x12\x14.sae.RegisterRequest\x1a\x15.sae.RegisterResponse\x12+\n\x04\x61uth\x12\x10.sae.AuthRequest\x1a\x11.sae.AuthResponse\x12\x37\n\x08manifest\x12\x14.sae.ManifestRequest\x1a\x15.sae.ManifestResponse\x12M\n\x10software_upgrade\x12\x1b.sae.SoftwareUpgradeRequest\x1a\x1c.sae.SoftwareUpgradeResponse\x12\x35\n\x08set_caps\x12\x13.sae.SetCapsRequest\x1a\x14.sae.SetCapsResponse\x12\x31\n\x06script\x12\x12.sae.ScriptRequest\x1a\x13.sae.ScriptResponse\x12W\n\x14refresh_event_filter\x12\x1e.sae.RefreshEventFilterRequest\x1a\x1f.sae.RefreshEventFilterResponse\x12\x41\n\x0c\x65vent_filter\x12\x17.sae.EventFilterRequest\x1a\x18.sae.EventFilterResponse\x12.\n\x05\x65vent\x12\x11.sae.EventRequest\x1a\x12.sae.EventResponse\x12;\n\nping_check\x12\x15.sae.PingCheckRequest\x1a\x16.sae.PingCheckResponse\x12\x32\n\x07pm_data\x12\x12.sae.PMDataRequest\x1a\x13.sae.PMDataResponse')
+  serialized_pb='\n\tsae.proto\x12\x03sae\"p\n\x07Message\x12\n\n\x02id\x18\x01 \x02(\r\x12\x1d\n\x07request\x18\x02 \x01(\x0b\x32\x0c.sae.Request\x12\x1f\n\x08response\x18\x03 \x01(\x0b\x32\r.sae.Response\x12\x19\n\x05\x65rror\x18\x04 \x01(\x0b\x32\n.sae.Error\"5\n\x07Request\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x1a\n\x12serialized_request\x18\x02 \x02(\x0c\"\'\n\x08Response\x12\x1b\n\x13serialized_response\x18\x01 \x01(\x0c\"3\n\x05\x45rror\x12\x1c\n\x04\x63ode\x18\x01 \x02(\x0e\x32\x0e.sae.ErrorCode\x12\x0c\n\x04text\x18\x02 \x01(\t\"\x98\x02\n\rAccessProfile\x12\x0f\n\x07profile\x18\x01 \x02(\t\x12!\n\x06scheme\x18\x02 \x02(\x0e\x32\x11.sae.AccessScheme\x12\x0f\n\x07\x61\x64\x64ress\x18\x03 \x02(\t\x12\x0c\n\x04port\x18\x04 \x01(\r\x12\x0c\n\x04user\x18\x05 \x01(\t\x12\x10\n\x08password\x18\x06 \x01(\t\x12\x16\n\x0esuper_password\x18\x07 \x01(\t\x12\x0c\n\x04path\x18\x08 \x01(\t\x12\x0f\n\x07snmp_ro\x18\t \x01(\t\x12\x0f\n\x07snmp_rw\x18\n \x01(\t\x12\'\n\x05\x61ttrs\x18\x0b \x03(\x0b\x32\x18.sae.AccessProfile.KWArg\x1a#\n\x05KWArg\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\"4\n\x0fProtocolRequest\x12\x10\n\x08protocol\x18\x01 \x02(\t\x12\x0f\n\x07version\x18\x02 \x02(\t\"5\n\x10ProtocolResponse\x12\x10\n\x08protocol\x18\x01 \x02(\t\x12\x0f\n\x07version\x18\x02 \x02(\t\"o\n\x0cSetupRequest\x12\x15\n\rkey_exchanges\x18\x01 \x03(\t\x12\x13\n\x0bpublic_keys\x18\x02 \x03(\t\x12\x0f\n\x07\x63iphers\x18\x03 \x03(\t\x12\x0c\n\x04macs\x18\x04 \x03(\t\x12\x14\n\x0c\x63ompressions\x18\x05 \x03(\t\"k\n\rSetupResponse\x12\x14\n\x0ckey_exchange\x18\x01 \x02(\t\x12\x12\n\npublic_key\x18\x02 \x02(\t\x12\x0e\n\x06\x63ipher\x18\x03 \x02(\t\x12\x0b\n\x03mac\x18\x04 \x02(\t\x12\x13\n\x0b\x63ompression\x18\x05 \x02(\t\"]\n\nKEXRequest\x12\x34\n\x0e\x64h_group1_sha1\x18\x01 \x01(\x0b\x32\x1c.sae.KEXRequest.DHGroup1Sha1\x1a\x19\n\x0c\x44HGroup1Sha1\x12\t\n\x01\x65\x18\x01 \x02(\x0c\"_\n\x0bKEXResponse\x12\x35\n\x0e\x64h_group1_sha1\x18\x01 \x01(\x0b\x32\x1d.sae.KEXResponse.DHGroup1Sha1\x1a\x19\n\x0c\x44HGroup1Sha1\x12\t\n\x01\x65\x18\x01 \x02(\x0c\"\r\n\x0bPingRequest\"\x0e\n\x0cPingResponse\"\x1f\n\x0fRegisterRequest\x12\x0c\n\x04name\x18\x01 \x02(\t\"!\n\x10RegisterResponse\x12\r\n\x05nonce\x18\x01 \x02(\t\"+\n\x0b\x41uthRequest\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0e\n\x06\x64igest\x18\x02 \x02(\t\"\x0e\n\x0c\x41uthResponse\"%\n\x0eSetCapsRequest\x12\x13\n\x0bmax_scripts\x18\x01 \x02(\x05\"\x11\n\x0fSetCapsResponse\"\xab\x01\n\rScriptRequest\x12*\n\x0e\x61\x63\x63\x65ss_profile\x18\x01 \x02(\x0b\x32\x12.sae.AccessProfile\x12\x0e\n\x06script\x18\x02 \x02(\t\x12(\n\x06kwargs\x18\x03 \x03(\x0b\x32\x18.sae.ScriptRequest.KWArg\x12\x0f\n\x07timeout\x18\x04 \x01(\r\x1a#\n\x05KWArg\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\" \n\x0eScriptResponse\x12\x0e\n\x06result\x18\x01 \x02(\t\"*\n\x0c\x46ileChecksum\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04hash\x18\x02 \x02(\t\"\x11\n\x0fManifestRequest\"4\n\x10ManifestResponse\x12 \n\x05\x66iles\x18\x01 \x03(\x0b\x32\x11.sae.FileChecksum\"\'\n\x16SoftwareUpgradeRequest\x12\r\n\x05names\x18\x01 \x03(\t\"&\n\x08\x46ileCode\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0c\n\x04\x63ode\x18\x02 \x02(\t\"7\n\x17SoftwareUpgradeResponse\x12\x1c\n\x05\x63odes\x18\x01 \x03(\x0b\x32\r.sae.FileCode\"\x1b\n\x19RefreshEventFilterRequest\"\x1c\n\x1aRefreshEventFilterResponse\"\x14\n\x12\x45ventFilterRequest\"\xb4\x01\n\x13\x45ventFilterResponse\x12\x0e\n\x06\x65xpire\x18\x01 \x02(\x05\x12\x0f\n\x07sources\x18\x02 \x03(\t\x12\x42\n\x0cignore_rules\x18\x03 \x03(\x0b\x32,.sae.EventFilterResponse.EventIgnoreRuleItem\x1a\x38\n\x13\x45ventIgnoreRuleItem\x12\x0f\n\x07left_re\x18\x01 \x02(\t\x12\x10\n\x08right_re\x18\x02 \x02(\t\"\x89\x01\n\x0c\x45ventRequest\x12\x11\n\ttimestamp\x18\x01 \x02(\x05\x12\n\n\x02ip\x18\x02 \x02(\t\x12-\n\x04\x62ody\x18\x03 \x03(\x0b\x32\x1f.sae.EventRequest.EventBodyItem\x1a+\n\rEventBodyItem\x12\x0b\n\x03key\x18\x01 \x02(\t\x12\r\n\x05value\x18\x02 \x02(\t\"\x0f\n\rEventResponse\"%\n\x10PingCheckRequest\x12\x11\n\taddresses\x18\x01 \x03(\t\";\n\x11PingCheckResponse\x12\x11\n\treachable\x18\x01 \x03(\t\x12\x13\n\x0bunreachable\x18\x02 \x03(\t\"\x80\x03\n\rPMDataRequest\x12+\n\x06result\x18\x01 \x03(\x0b\x32\x1b.sae.PMDataRequest.PMResult\x12\'\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\x19.sae.PMDataRequest.PMData\x1a\x98\x01\n\x08PMResult\x12\x12\n\nprobe_name\x18\x01 \x02(\t\x12\x12\n\nprobe_type\x18\x02 \x02(\t\x12\x11\n\ttimestamp\x18\x03 \x02(\x05\x12\x0f\n\x07service\x18\x04 \x02(\t\x12/\n\x06result\x18\x05 \x02(\x0e\x32\x1f.sae.PMDataRequest.PMResultCode\x12\x0f\n\x07message\x18\x06 \x02(\t\x1aI\n\x06PMData\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x11\n\ttimestamp\x18\x02 \x02(\x05\x12\x0f\n\x07is_null\x18\x03 \x02(\x08\x12\r\n\x05value\x18\x04 \x02(\x01\"3\n\x0cPMResultCode\x12\t\n\x05PR_OK\x10\x00\x12\x0b\n\x07PR_WARN\x10\x01\x12\x0b\n\x07PR_FAIL\x10\x02\"\x10\n\x0ePMDataResponse*\x8b\x05\n\tErrorCode\x12\n\n\x06\x45RR_OK\x10\x00\x12\x10\n\x0c\x45RR_INTERNAL\x10\x01\x12\x16\n\x12\x45RR_INVALID_METHOD\x10\x02\x12\x1b\n\x17\x45RR_INVALID_TRANSACTION\x10\x03\x12\x1a\n\x16\x45RR_TRANSACTION_EXISTS\x10\x04\x12\x19\n\x15\x45RR_UNKNOWN_ACTIVATOR\x10\x05\x12\x17\n\x13\x45RR_INVALID_PROFILE\x10\x06\x12\x16\n\x12\x45RR_INVALID_SCHEME\x10\x07\x12\x1c\n\x18\x45RR_UNKNOWN_EVENT_SOURCE\x10\x08\x12\x13\n\x0f\x45RR_AUTH_FAILED\x10\t\x12\x15\n\x11\x45RR_AUTH_REQUIRED\x10\n\x12\x17\n\x13\x45RR_INVALID_UPGRADE\x10\x0b\x12\x10\n\x0c\x45RR_OVERLOAD\x10\x0c\x12\x16\n\x12\x45RR_INVALID_SCRIPT\x10\r\x12\x18\n\x14\x45RR_SCRIPT_EXCEPTION\x10\x0e\x12\x1f\n\x1b\x45RR_ACTIVATOR_NOT_AVAILABLE\x10\x0f\x12\x0c\n\x08\x45RR_DOWN\x10\x10\x12\x0f\n\x0b\x45RR_TIMEOUT\x10\x11\x12\x16\n\x12\x45RR_ACTIVATOR_LOST\x10\x12\x12\x14\n\x10\x45RR_LOGIN_FAILED\x10\x13\x12\x11\n\rERR_CANCELLED\x10\x14\x12\x15\n\x11\x45RR_NOT_SUPPORTED\x10\x15\x12\x12\n\x0e\x45RR_HTTP_ERROR\x10\x16\x12\x15\n\x11\x45RR_INVALID_SHARD\x10\x17\x12\x15\n\x11\x45RR_SHARD_IS_DOWN\x10\x18\x12\x14\n\x10\x45RR_OBJ_OVERLOAD\x10\x19\x12\x16\n\x12\x45RR_PROTO_MISMATCH\x10\x1a\x12\x14\n\x10\x45RR_SETUP_FAILED\x10\x1b*-\n\x0c\x41\x63\x63\x65ssScheme\x12\n\n\x06TELNET\x10\x00\x12\x07\n\x03SSH\x10\x01\x12\x08\n\x04HTTP\x10\x02\x32\xe0\x06\n\nSAEService\x12\x37\n\x08protocol\x12\x14.sae.ProtocolRequest\x1a\x15.sae.ProtocolResponse\x12.\n\x05setup\x12\x11.sae.SetupRequest\x1a\x12.sae.SetupResponse\x12\'\n\x03kex\x12\x0f.sae.KEXRequest\x1a\x0f.sae.KEXRequest\x12+\n\x04ping\x12\x10.sae.PingRequest\x1a\x11.sae.PingResponse\x12\x37\n\x08register\x12\x14.sae.RegisterRequest\x1a\x15.sae.RegisterResponse\x12+\n\x04\x61uth\x12\x10.sae.AuthRequest\x1a\x11.sae.AuthResponse\x12\x37\n\x08manifest\x12\x14.sae.ManifestRequest\x1a\x15.sae.ManifestResponse\x12M\n\x10software_upgrade\x12\x1b.sae.SoftwareUpgradeRequest\x1a\x1c.sae.SoftwareUpgradeResponse\x12\x35\n\x08set_caps\x12\x13.sae.SetCapsRequest\x1a\x14.sae.SetCapsResponse\x12\x31\n\x06script\x12\x12.sae.ScriptRequest\x1a\x13.sae.ScriptResponse\x12W\n\x14refresh_event_filter\x12\x1e.sae.RefreshEventFilterRequest\x1a\x1f.sae.RefreshEventFilterResponse\x12\x41\n\x0c\x65vent_filter\x12\x17.sae.EventFilterRequest\x1a\x18.sae.EventFilterResponse\x12.\n\x05\x65vent\x12\x11.sae.EventRequest\x1a\x12.sae.EventResponse\x12;\n\nping_check\x12\x15.sae.PingCheckRequest\x1a\x16.sae.PingCheckResponse\x12\x32\n\x07pm_data\x12\x12.sae.PMDataRequest\x1a\x13.sae.PMDataResponse')
 
 _ERRORCODE = descriptor.EnumDescriptor(
   name='ErrorCode',
@@ -124,11 +124,19 @@ _ERRORCODE = descriptor.EnumDescriptor(
       name='ERR_OBJ_OVERLOAD', index=25, number=25,
       options=None,
       type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_PROTO_MISMATCH', index=26, number=26,
+      options=None,
+      type=None),
+    descriptor.EnumValueDescriptor(
+      name='ERR_SETUP_FAILED', index=27, number=27,
+      options=None,
+      type=None),
   ],
   containing_type=None,
   options=None,
-  serialized_start=2172,
-  serialized_end=2777,
+  serialized_start=2695,
+  serialized_end=3346,
 )
 
 
@@ -153,8 +161,8 @@ _ACCESSSCHEME = descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2779,
-  serialized_end=2824,
+  serialized_start=3348,
+  serialized_end=3393,
 )
 
 
@@ -184,6 +192,8 @@ ERR_HTTP_ERROR = 22
 ERR_INVALID_SHARD = 23
 ERR_SHARD_IS_DOWN = 24
 ERR_OBJ_OVERLOAD = 25
+ERR_PROTO_MISMATCH = 26
+ERR_SETUP_FAILED = 27
 TELNET = 0
 SSH = 1
 HTTP = 2
@@ -210,8 +220,8 @@ _PMDATAREQUEST_PMRESULTCODE = descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=2100,
-  serialized_end=2151,
+  serialized_start=2623,
+  serialized_end=2674,
 )
 
 
@@ -494,6 +504,298 @@ _ACCESSPROFILE = descriptor.Descriptor(
 )
 
 
+_PROTOCOLREQUEST = descriptor.Descriptor(
+  name='ProtocolRequest',
+  full_name='sae.ProtocolRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='protocol', full_name='sae.ProtocolRequest.protocol', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='version', full_name='sae.ProtocolRequest.version', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=564,
+  serialized_end=616,
+)
+
+
+_PROTOCOLRESPONSE = descriptor.Descriptor(
+  name='ProtocolResponse',
+  full_name='sae.ProtocolResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='protocol', full_name='sae.ProtocolResponse.protocol', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='version', full_name='sae.ProtocolResponse.version', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=618,
+  serialized_end=671,
+)
+
+
+_SETUPREQUEST = descriptor.Descriptor(
+  name='SetupRequest',
+  full_name='sae.SetupRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='key_exchanges', full_name='sae.SetupRequest.key_exchanges', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='public_keys', full_name='sae.SetupRequest.public_keys', index=1,
+      number=2, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='ciphers', full_name='sae.SetupRequest.ciphers', index=2,
+      number=3, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='macs', full_name='sae.SetupRequest.macs', index=3,
+      number=4, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='compressions', full_name='sae.SetupRequest.compressions', index=4,
+      number=5, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=673,
+  serialized_end=784,
+)
+
+
+_SETUPRESPONSE = descriptor.Descriptor(
+  name='SetupResponse',
+  full_name='sae.SetupResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='key_exchange', full_name='sae.SetupResponse.key_exchange', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='public_key', full_name='sae.SetupResponse.public_key', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='cipher', full_name='sae.SetupResponse.cipher', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='mac', full_name='sae.SetupResponse.mac', index=3,
+      number=4, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='compression', full_name='sae.SetupResponse.compression', index=4,
+      number=5, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=unicode("", "utf-8"),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=786,
+  serialized_end=893,
+)
+
+
+_KEXREQUEST_DHGROUP1SHA1 = descriptor.Descriptor(
+  name='DHGroup1Sha1',
+  full_name='sae.KEXRequest.DHGroup1Sha1',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='e', full_name='sae.KEXRequest.DHGroup1Sha1.e', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=963,
+  serialized_end=988,
+)
+
+_KEXREQUEST = descriptor.Descriptor(
+  name='KEXRequest',
+  full_name='sae.KEXRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='dh_group1_sha1', full_name='sae.KEXRequest.dh_group1_sha1', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_KEXREQUEST_DHGROUP1SHA1, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=895,
+  serialized_end=988,
+)
+
+
+_KEXRESPONSE_DHGROUP1SHA1 = descriptor.Descriptor(
+  name='DHGroup1Sha1',
+  full_name='sae.KEXResponse.DHGroup1Sha1',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='e', full_name='sae.KEXResponse.DHGroup1Sha1.e', index=0,
+      number=1, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value="",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=963,
+  serialized_end=988,
+)
+
+_KEXRESPONSE = descriptor.Descriptor(
+  name='KEXResponse',
+  full_name='sae.KEXResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='dh_group1_sha1', full_name='sae.KEXResponse.dh_group1_sha1', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[_KEXRESPONSE_DHGROUP1SHA1, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=990,
+  serialized_end=1085,
+)
+
+
 _PINGREQUEST = descriptor.Descriptor(
   name='PingRequest',
   full_name='sae.PingRequest',
@@ -510,8 +812,8 @@ _PINGREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=564,
-  serialized_end=577,
+  serialized_start=1087,
+  serialized_end=1100,
 )
 
 
@@ -531,8 +833,8 @@ _PINGRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=579,
-  serialized_end=593,
+  serialized_start=1102,
+  serialized_end=1116,
 )
 
 
@@ -559,8 +861,8 @@ _REGISTERREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=595,
-  serialized_end=626,
+  serialized_start=1118,
+  serialized_end=1149,
 )
 
 
@@ -587,8 +889,8 @@ _REGISTERRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=628,
-  serialized_end=661,
+  serialized_start=1151,
+  serialized_end=1184,
 )
 
 
@@ -622,8 +924,8 @@ _AUTHREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=663,
-  serialized_end=706,
+  serialized_start=1186,
+  serialized_end=1229,
 )
 
 
@@ -643,8 +945,8 @@ _AUTHRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=708,
-  serialized_end=722,
+  serialized_start=1231,
+  serialized_end=1245,
 )
 
 
@@ -671,8 +973,8 @@ _SETCAPSREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=724,
-  serialized_end=761,
+  serialized_start=1247,
+  serialized_end=1284,
 )
 
 
@@ -692,8 +994,8 @@ _SETCAPSRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=763,
-  serialized_end=780,
+  serialized_start=1286,
+  serialized_end=1303,
 )
 
 
@@ -775,8 +1077,8 @@ _SCRIPTREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=783,
-  serialized_end=954,
+  serialized_start=1306,
+  serialized_end=1477,
 )
 
 
@@ -803,8 +1105,8 @@ _SCRIPTRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=956,
-  serialized_end=988,
+  serialized_start=1479,
+  serialized_end=1511,
 )
 
 
@@ -838,8 +1140,8 @@ _FILECHECKSUM = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=990,
-  serialized_end=1032,
+  serialized_start=1513,
+  serialized_end=1555,
 )
 
 
@@ -859,8 +1161,8 @@ _MANIFESTREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1034,
-  serialized_end=1051,
+  serialized_start=1557,
+  serialized_end=1574,
 )
 
 
@@ -887,8 +1189,8 @@ _MANIFESTRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1053,
-  serialized_end=1105,
+  serialized_start=1576,
+  serialized_end=1628,
 )
 
 
@@ -915,8 +1217,8 @@ _SOFTWAREUPGRADEREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1107,
-  serialized_end=1146,
+  serialized_start=1630,
+  serialized_end=1669,
 )
 
 
@@ -950,8 +1252,8 @@ _FILECODE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1148,
-  serialized_end=1186,
+  serialized_start=1671,
+  serialized_end=1709,
 )
 
 
@@ -978,8 +1280,8 @@ _SOFTWAREUPGRADERESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1188,
-  serialized_end=1243,
+  serialized_start=1711,
+  serialized_end=1766,
 )
 
 
@@ -999,8 +1301,8 @@ _REFRESHEVENTFILTERREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1245,
-  serialized_end=1272,
+  serialized_start=1768,
+  serialized_end=1795,
 )
 
 
@@ -1020,8 +1322,8 @@ _REFRESHEVENTFILTERRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1274,
-  serialized_end=1302,
+  serialized_start=1797,
+  serialized_end=1825,
 )
 
 
@@ -1041,8 +1343,8 @@ _EVENTFILTERREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1304,
-  serialized_end=1324,
+  serialized_start=1827,
+  serialized_end=1847,
 )
 
 
@@ -1076,8 +1378,8 @@ _EVENTFILTERRESPONSE_EVENTIGNORERULEITEM = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1451,
-  serialized_end=1507,
+  serialized_start=1974,
+  serialized_end=2030,
 )
 
 _EVENTFILTERRESPONSE = descriptor.Descriptor(
@@ -1117,8 +1419,8 @@ _EVENTFILTERRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1327,
-  serialized_end=1507,
+  serialized_start=1850,
+  serialized_end=2030,
 )
 
 
@@ -1152,8 +1454,8 @@ _EVENTREQUEST_EVENTBODYITEM = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1604,
-  serialized_end=1647,
+  serialized_start=2127,
+  serialized_end=2170,
 )
 
 _EVENTREQUEST = descriptor.Descriptor(
@@ -1193,8 +1495,8 @@ _EVENTREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1510,
-  serialized_end=1647,
+  serialized_start=2033,
+  serialized_end=2170,
 )
 
 
@@ -1214,8 +1516,8 @@ _EVENTRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1649,
-  serialized_end=1664,
+  serialized_start=2172,
+  serialized_end=2187,
 )
 
 
@@ -1242,8 +1544,8 @@ _PINGCHECKREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1666,
-  serialized_end=1703,
+  serialized_start=2189,
+  serialized_end=2226,
 )
 
 
@@ -1277,8 +1579,8 @@ _PINGCHECKRESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1705,
-  serialized_end=1764,
+  serialized_start=2228,
+  serialized_end=2287,
 )
 
 
@@ -1340,8 +1642,8 @@ _PMDATAREQUEST_PMRESULT = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1871,
-  serialized_end=2023,
+  serialized_start=2394,
+  serialized_end=2546,
 )
 
 _PMDATAREQUEST_PMDATA = descriptor.Descriptor(
@@ -1388,8 +1690,8 @@ _PMDATAREQUEST_PMDATA = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2025,
-  serialized_end=2098,
+  serialized_start=2548,
+  serialized_end=2621,
 )
 
 _PMDATAREQUEST = descriptor.Descriptor(
@@ -1423,8 +1725,8 @@ _PMDATAREQUEST = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1767,
-  serialized_end=2151,
+  serialized_start=2290,
+  serialized_end=2674,
 )
 
 
@@ -1444,8 +1746,8 @@ _PMDATARESPONSE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=2153,
-  serialized_end=2169,
+  serialized_start=2676,
+  serialized_end=2692,
 )
 
 
@@ -1456,6 +1758,10 @@ _ERROR.fields_by_name['code'].enum_type = _ERRORCODE
 _ACCESSPROFILE_KWARG.containing_type = _ACCESSPROFILE;
 _ACCESSPROFILE.fields_by_name['scheme'].enum_type = _ACCESSSCHEME
 _ACCESSPROFILE.fields_by_name['attrs'].message_type = _ACCESSPROFILE_KWARG
+_KEXREQUEST_DHGROUP1SHA1.containing_type = _KEXREQUEST;
+_KEXREQUEST.fields_by_name['dh_group1_sha1'].message_type = _KEXREQUEST_DHGROUP1SHA1
+_KEXRESPONSE_DHGROUP1SHA1.containing_type = _KEXRESPONSE;
+_KEXRESPONSE.fields_by_name['dh_group1_sha1'].message_type = _KEXRESPONSE_DHGROUP1SHA1
 _SCRIPTREQUEST_KWARG.containing_type = _SCRIPTREQUEST;
 _SCRIPTREQUEST.fields_by_name['access_profile'].message_type = _ACCESSPROFILE
 _SCRIPTREQUEST.fields_by_name['kwargs'].message_type = _SCRIPTREQUEST_KWARG
@@ -1507,6 +1813,54 @@ class AccessProfile(message.Message):
   DESCRIPTOR = _ACCESSPROFILE
   
   # @@protoc_insertion_point(class_scope:sae.AccessProfile)
+
+class ProtocolRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _PROTOCOLREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.ProtocolRequest)
+
+class ProtocolResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _PROTOCOLRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.ProtocolResponse)
+
+class SetupRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _SETUPREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.SetupRequest)
+
+class SetupResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _SETUPRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.SetupResponse)
+
+class KEXRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class DHGroup1Sha1(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _KEXREQUEST_DHGROUP1SHA1
+    
+    # @@protoc_insertion_point(class_scope:sae.KEXRequest.DHGroup1Sha1)
+  DESCRIPTOR = _KEXREQUEST
+  
+  # @@protoc_insertion_point(class_scope:sae.KEXRequest)
+
+class KEXResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class DHGroup1Sha1(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _KEXRESPONSE_DHGROUP1SHA1
+    
+    # @@protoc_insertion_point(class_scope:sae.KEXResponse.DHGroup1Sha1)
+  DESCRIPTOR = _KEXRESPONSE
+  
+  # @@protoc_insertion_point(class_scope:sae.KEXResponse)
 
 class PingRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1701,13 +2055,40 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=2827,
-  serialized_end=3545,
+  serialized_start=3396,
+  serialized_end=4260,
   methods=[
+  descriptor.MethodDescriptor(
+    name='protocol',
+    full_name='sae.SAEService.protocol',
+    index=0,
+    containing_service=None,
+    input_type=_PROTOCOLREQUEST,
+    output_type=_PROTOCOLRESPONSE,
+    options=None,
+  ),
+  descriptor.MethodDescriptor(
+    name='setup',
+    full_name='sae.SAEService.setup',
+    index=1,
+    containing_service=None,
+    input_type=_SETUPREQUEST,
+    output_type=_SETUPRESPONSE,
+    options=None,
+  ),
+  descriptor.MethodDescriptor(
+    name='kex',
+    full_name='sae.SAEService.kex',
+    index=2,
+    containing_service=None,
+    input_type=_KEXREQUEST,
+    output_type=_KEXREQUEST,
+    options=None,
+  ),
   descriptor.MethodDescriptor(
     name='ping',
     full_name='sae.SAEService.ping',
-    index=0,
+    index=3,
     containing_service=None,
     input_type=_PINGREQUEST,
     output_type=_PINGRESPONSE,
@@ -1716,7 +2097,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='register',
     full_name='sae.SAEService.register',
-    index=1,
+    index=4,
     containing_service=None,
     input_type=_REGISTERREQUEST,
     output_type=_REGISTERRESPONSE,
@@ -1725,7 +2106,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='auth',
     full_name='sae.SAEService.auth',
-    index=2,
+    index=5,
     containing_service=None,
     input_type=_AUTHREQUEST,
     output_type=_AUTHRESPONSE,
@@ -1734,7 +2115,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='manifest',
     full_name='sae.SAEService.manifest',
-    index=3,
+    index=6,
     containing_service=None,
     input_type=_MANIFESTREQUEST,
     output_type=_MANIFESTRESPONSE,
@@ -1743,7 +2124,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='software_upgrade',
     full_name='sae.SAEService.software_upgrade',
-    index=4,
+    index=7,
     containing_service=None,
     input_type=_SOFTWAREUPGRADEREQUEST,
     output_type=_SOFTWAREUPGRADERESPONSE,
@@ -1752,7 +2133,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='set_caps',
     full_name='sae.SAEService.set_caps',
-    index=5,
+    index=8,
     containing_service=None,
     input_type=_SETCAPSREQUEST,
     output_type=_SETCAPSRESPONSE,
@@ -1761,7 +2142,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='script',
     full_name='sae.SAEService.script',
-    index=6,
+    index=9,
     containing_service=None,
     input_type=_SCRIPTREQUEST,
     output_type=_SCRIPTRESPONSE,
@@ -1770,7 +2151,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='refresh_event_filter',
     full_name='sae.SAEService.refresh_event_filter',
-    index=7,
+    index=10,
     containing_service=None,
     input_type=_REFRESHEVENTFILTERREQUEST,
     output_type=_REFRESHEVENTFILTERRESPONSE,
@@ -1779,7 +2160,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='event_filter',
     full_name='sae.SAEService.event_filter',
-    index=8,
+    index=11,
     containing_service=None,
     input_type=_EVENTFILTERREQUEST,
     output_type=_EVENTFILTERRESPONSE,
@@ -1788,7 +2169,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='event',
     full_name='sae.SAEService.event',
-    index=9,
+    index=12,
     containing_service=None,
     input_type=_EVENTREQUEST,
     output_type=_EVENTRESPONSE,
@@ -1797,7 +2178,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='ping_check',
     full_name='sae.SAEService.ping_check',
-    index=10,
+    index=13,
     containing_service=None,
     input_type=_PINGCHECKREQUEST,
     output_type=_PINGCHECKRESPONSE,
@@ -1806,7 +2187,7 @@ _SAESERVICE = descriptor.ServiceDescriptor(
   descriptor.MethodDescriptor(
     name='pm_data',
     full_name='sae.SAEService.pm_data',
-    index=11,
+    index=14,
     containing_service=None,
     input_type=_PMDATAREQUEST,
     output_type=_PMDATARESPONSE,
