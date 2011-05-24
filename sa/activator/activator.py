@@ -693,7 +693,7 @@ class Activator(Daemon, FSM):
             # Load and unpickle crashinfo
             path = os.path.join(c_d, fn)
             with open(path) as f:
-                data = Pickle.loads(f.read())  # @todo: Handle exception
+                data = cPickle.loads(f.read())  # @todo: Handle exception
             ts = data["ts"]
             del data["ts"]
             # Send event. "" is an virtual address of ROOT object
