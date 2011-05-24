@@ -6,3 +6,5 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from activator import Activator
+from service import Service
+from servers import ServersHub
