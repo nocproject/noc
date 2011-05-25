@@ -197,7 +197,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
                    "administrative_domain", "profile_name"]
     search_fields = ["name", "address", "repo_path", "description"]
     object_class = ManagedObject
-    actions = ["test_access"]
+    actions = ["test_access", "bulk_change_activator"]
     ##
     ## Dirty hack to display PasswordInput in admin form
     ##
@@ -230,13 +230,22 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         # Then check
         if not obj.has_access(request.user):
             raise PermissionDenied()
-    
-    ##
-    ## Test object access
-    ##
+
     def test_access(self, request, queryset):
+        """
+        Test access to the objects
+        """
         return self.app.response_redirect("test/%s/" % ",".join([str(p.id) for p in queryset]))
-    test_access.short_description = "Test selected object access"
+    test_access.short_description = _("Test selected object access")
+
+    def bulk_change_activator(self, request, queryset):
+        """
+        Bulk change activator form
+        """
+        return self.app.response_redirect("sa:managedobject:change_activator",
+                                    ",".join([str(p.id) for p in queryset]))
+    bulk_change_activator.short_description = _("Change activator for selected objects")
+
 
 ##
 ## ManagedObject application
@@ -366,7 +375,38 @@ class ManagedObjectApplication(ModelApplication):
                   "groups" : sorted([g.name for g in mo.granted_groups]),
                   }]
         return self.render(request, "test.html", data=r)
-    
+
+    class ChangeActivatorForm(forms.Form):
+        activator = forms.ModelChoiceField(label=_("New activator"),
+            queryset=Activator.objects.filter(is_active=True).order_by("name"))
+
+    @view(url=r"^change/activator/(?P<objects>\d+(?:,\d+)*)/$",
+          url_name="change_activator", access=HasPerm("change"))
+    def view_change_activator(self, request, objects):
+        """
+        Change activator for selected objects
+        """
+        user = request.user
+        o_list = [ManagedObject.objects.get(id=int(x))
+                  for x in objects.split(",")]
+        o_list = [o for o in o_list if o.has_access(user)]
+        if request.POST:
+            form = self.ChangeActivatorForm(request.POST)
+            if form.is_valid():
+                n = 0
+                activator = form.cleaned_data["activator"]
+                for o in o_list:
+                    o.activator = activator
+                    o.save()
+                    n += 1
+                self.message_user(request,
+                                  _("Activators for %(numobjects)d have been changed" % {"numobjects": n}))
+                return self.response_redirect("sa:managedobject:changelist")
+        else:
+            form = self.ChangeActivatorForm()
+        return self.render(request, "change_activator.html", objects=o_list,
+                           form=form)
+
     ##
     ## Display all managed object's addresses
     ##
