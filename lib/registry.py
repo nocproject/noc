@@ -2,80 +2,86 @@
 ##----------------------------------------------------------------------
 ## Abstract module loader/registry
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import os,logging
-##
-## Abstract module loader/registry
-##
+
+## Python modules
+import os
+import logging
+
+
 class Registry(object):
-    name="Registry"
-    subdir="directory"
-    classname="Class"
-    apps=None
-    exclude=[] # List of excluded modules
+    """
+    Abstract module loader/registry
+    """
+    name = "Registry"  # Registry name
+    subdir = "directory"  # Restrict to directory
+    classname = "Class"  # Auto-register class
+    apps = None  # Restrict to a list of application
+    exclude = []  # List of excluded modules
+
     def __init__(self):
-        self.classes={}
-        self.is_registered=False
-    
-    #
-    # Should be called within metaclass' __new__ method
-    #
-    def register(self,name,module):
+        self.classes = {}
+        self.is_registered = False
+
+    def register(self, name, module):
+        """
+        Should be called within metaclass' __new__ method
+        """
         if name is None:
             return
-        self.classes[name]=module
-    #
-    # Should be called at the top of the models.py
-    #
+        self.classes[name] = module
+
     def register_all(self):
+        """
+        Usually called at the top of the models.py
+        """
         if self.is_registered:
             return
         if self.apps is None:
             from django.conf import settings
-            apps=[a for a in settings.INSTALLED_APPS if a.startswith("noc.")]
+            apps = [a for a in settings.INSTALLED_APPS if a.startswith("noc.")]
         else:
-            apps=self.apps
-        for l in ["","local"]: # Look in the local/ directory too
+            apps = self.apps
+        for l in ["", "local"]:  # Look in the local/ directory too
             for app in apps:
-                pd=os.path.join(l,app[4:],self.subdir)
+                pd = os.path.join(l, app[4:], self.subdir)
                 if not os.path.isdir(pd):
                     continue
-                for dirpath,dirnames,filenames in os.walk(pd):
-                    parts=dirpath.split(os.sep)
+                for dirpath, dirnames, filenames in os.walk(pd):
+                    parts = dirpath.split(os.sep)
                     if "tests" in parts:
                         continue
                     if l:
-                        mb="noc.local.%s."%app[4:]+".".join(parts[2:])
+                        mb = "noc.local.%s." % app[4:] + ".".join(parts[2:])
                         # Create missed __init__.py for local/
-                        c=dirpath.split(os.sep)
-                        for i in range(1,len(c)+1):
-                            i_path=os.path.join(os.sep.join(c[:i]),"__init__.py")
+                        c = dirpath.split(os.sep)
+                        for i in range(1, len(c) + 1):
+                            i_path = os.path.join(os.sep.join(c[:i]),
+                                                  "__init__.py")
                             if not os.path.exists(i_path):
-                                open(i_path,"w").close() # Create file
+                                open(i_path, "w").close()  # Create file
                     else:
-                        mb=app+"."+".".join(dirpath.split(os.sep)[1:])
+                        mb = app + "." + ".".join(dirpath.split(os.sep)[1:])
                     for f in [f for f in filenames if not f.startswith(".") and f.endswith(".py")]:
-                        if f=="__init__.py":
-                            f=""
+                        if f == "__init__.py":
+                            f = ""
                         else:
-                            f=f[:-3]
+                            f = f[:-3]
                             if f in self.exclude:
                                 continue
-                            f="."+f
-                        __import__(mb+f,{},{},self.classname)
-        self.is_registered=True
-        logging.debug("%s: Registered %s"%(self.name, ", ".join(sorted(self.classes.keys()))))
-    
-    #
-    #
-    #
-    def __getitem__(self,name):
+                            f = "." + f
+                        __import__(mb + f, {}, {}, self.classname)
+        self.is_registered = True
+        logging.debug("%s: Registered %s" % (self.name, ", ".join(sorted(self.classes.keys()))))
+
+    def __getitem__(self, name):
         return self.classes[name]
-    #
-    # choices for Model's choices=
-    #
-    def _choices(self):
-        return [(x,x) for x in sorted(self.classes.keys())]
-    choices=property(_choices)
+
+    @property
+    def choices(self):
+        """
+        For model field's choices=
+        """
+        return [(x, x) for x in sorted(self.classes.keys())]
