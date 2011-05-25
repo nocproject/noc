@@ -917,7 +917,8 @@ class CommandSnippet(models.Model):
         """
         List of variables used in template
         """
-        return set(self.rx_var.findall(self.snippet))
+        return set([v for v in self.rx_var.findall(self.snippet)
+                    if not v.startswith("object.")])
     
     def expand(self, data):
         """
