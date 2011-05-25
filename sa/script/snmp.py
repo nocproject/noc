@@ -114,24 +114,32 @@ class SNMPProvider(object):
     ## getnext wrapper
     ## returns a hash of {index,value}
     ##
-    def get_table(self,oid,community_suffix=None,bulk=False,min_index=None,max_index=None):
-        r={}
-        for o,v in self.getnext(oid,community_suffix=community_suffix,bulk=bulk,min_index=min_index,max_index=max_index):
-            r[int(o.split(".")[-1])]=v
+    def get_table(self, oid, community_suffix=None, bulk=False,
+                  min_index=None, max_index=None, cached=False):
+        r = {}
+        for o, v in self.getnext(oid,community_suffix=community_suffix,
+                                 bulk=bulk, min_index=min_index,
+                                 max_index=max_index, cached=cached):
+            r[int(o.split(".")[-1])] = v
         return r
     
     ##
     ## Generator returning a rows of two snmp tables joined by index
     ##
-    def join_tables(self,oid1,oid2,community_suffix=None,bulk=False,min_index=None,max_index=None):
-        t1=self.get_table(oid1,community_suffix=community_suffix,bulk=bulk,min_index=min_index,max_index=max_index)
-        t2=self.get_table(oid2,community_suffix=community_suffix,bulk=bulk,min_index=min_index,max_index=max_index)
-        for k1,v1 in t1.items():
+    def join_tables(self, oid1, oid2,community_suffix=None, bulk=False,
+                    min_index=None, max_index=None, cached=False):
+        t1 = self.get_table(oid1, community_suffix=community_suffix, bulk=bulk,
+                            min_index=min_index, max_index=max_index,
+                            cached=cached)
+        t2 = self.get_table(oid2, community_suffix=community_suffix, bulk=bulk,
+                            min_index=min_index, max_index=max_index,
+                            cached=cached)
+        for k1, v1 in t1.items():
             try:
-                yield (v1,t2[k1])
+                yield (v1, t2[k1])
             except KeyError:
                 pass
-    
+
     ##
     ## Close all UDP sockets
     ##
