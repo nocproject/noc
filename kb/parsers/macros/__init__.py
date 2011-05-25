@@ -15,6 +15,7 @@ class MacroRegistry(Registry):
     subdir="parsers/macros"
     classname="Macro"
     apps=["noc.kb"]
+    exclude_daemons=["noc-sae"]
 macro_registry=MacroRegistry()
 
 ##
