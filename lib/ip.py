@@ -69,6 +69,16 @@ class IP(object):
     def __ge__(self, other):
         """>= operator"""
         return self == other or self > other
+    
+    def __contains__(self, other):
+        """
+        "other in self"
+        """
+        if isinstance(other, basestring):
+            other = IP.prefix(other)
+        if self.afi != other.afi:
+            raise ValueError("Mismatched address families")
+        return self.contains(other)
 
     @classmethod
     def prefix(cls, prefix):
