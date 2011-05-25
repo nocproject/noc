@@ -17,6 +17,14 @@ class IPTestCase(TestCase):
         self.assertEquals(repr(IP.prefix("::/0")),"<IPv6 ::/0>")
         self.assertEquals(repr(IP.prefix("2001:db8::/32")),"<IPv6 2001:db8::/32>")
         self.assertEquals(repr(IP.prefix("::ffff:192.168.0.1")),"<IPv6 ::ffff:192.168.0.1/128>")
+    
+    def test_in(self):
+        self.assertEquals("192.168.0.0/24" in IPv4("192.168.0.0/24"), True)
+        self.assertEquals(IPv4("192.168.0.0/24") in IPv4("192.168.0.0/24"), True)
+        self.assertEquals("192.168.1.1" in IPv4("192.168.0.0/24"), False)
+        self.assertEquals(IPv4("192.168.1.1") in IPv4("192.168.0.0/24"), False)
+        self.assertRaises(ValueError, lambda: "::1" in IPv4("192.168.0.0/24"))
+
 
 ##
 ## Test for PrefixDB
