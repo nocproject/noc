@@ -14,6 +14,7 @@ class GeneratorRegistry(Registry):
     subdir="generators"
     classname="Generator"
     apps=["noc.dns"]
+    exclude_daemons = ["noc-sae"]
 generator_registry=GeneratorRegistry()
 ##
 ## Metaclass for Generator
