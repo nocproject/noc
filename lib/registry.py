@@ -9,6 +9,7 @@
 ## Python modules
 import os
 import logging
+import sys
 
 
 class Registry(object):
@@ -20,10 +21,17 @@ class Registry(object):
     classname = "Class"  # Auto-register class
     apps = None  # Restrict to a list of application
     exclude = []  # List of excluded modules
+    exclude_daemons = []  # List of excluded daemons
 
     def __init__(self):
         self.classes = {}
-        self.is_registered = False
+        # Detect daemon name
+        _, self.daemon_name = os.path.split(sys.argv[0])
+        if self.daemon_name.endswith(".py"):
+            self.daemon_name = self.daemon_name[:-3]
+        #
+        self.is_registered = self.daemon_name in self.exclude_daemons
+
 
     def register(self, name, module):
         """
