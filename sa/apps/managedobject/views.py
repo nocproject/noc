@@ -44,12 +44,15 @@ class ManagedObjectAdminForm(forms.ModelForm):
     # Check repo_path remains inside repo
     def clean_repo_path(self):
         repo = os.path.join(config.get("cm", "repo"), "config")
+        path = os.path.join(repo, self.cleaned_data["repo_path"])
         if (self.cleaned_data["repo_path"]
                 and self.cleaned_data["repo_path"].startswith(".")):
             raise forms.ValidationError("Invalid repo path")
-        if (not in_dir(os.path.join(repo, self.cleaned_data["repo_path"]), repo)
+        if (not in_dir(path, repo)
                 or self.cleaned_data["repo_path"].startswith(os.sep)):
             raise forms.ValidationError("Repo path must be relative path inside repo")
+        if os.path.isdir(path):
+            raise forms.ValidationError(_("Repo path cannot be a directory"))
         return os.path.normpath(self.cleaned_data["repo_path"])
     
 
