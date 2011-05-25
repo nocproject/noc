@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python services
+import cPickle
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.profiles import profile_registry
