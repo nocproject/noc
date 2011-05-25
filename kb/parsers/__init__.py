@@ -20,7 +20,7 @@ class ParserRegistry(Registry):
     subdir="parsers"
     classname="Parser"
     apps=["noc.kb"]
-    exclude_daemons=["noc-sae"]
+    exclude_daemons=["noc-sae", "debug-script"]
 parser_registry=ParserRegistry()
 
 ##
