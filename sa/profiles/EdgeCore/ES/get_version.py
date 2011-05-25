@@ -27,16 +27,16 @@ class Script(NOCScript):
         if self.snmp and self.access_profile.snmp_ro:
 # Trying SNMP
             try:
-		s=self.snmp.get("1.3.6.1.2.1.1.1.0") # SNMPv2-MIB::sysDescr.0
-		oid=self.snmp.get("1.3.6.1.2.1.1.2.0") # SNMPv2-MIB::sysObjectID.0
+		s=self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True) # SNMPv2-MIB::sysDescr.0
+		oid=self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True) # SNMPv2-MIB::sysObjectID.0
 		if oid=="":
 		    raise self.snmp.TimeOutError # Fallback to CLI
 		oid=oid[1:-1].replace(", ", ".")
 # 3526-Style OID
-		v=self.snmp.get(oid+".1.1.3.1.6.1")
+		v=self.snmp.get(oid+".1.1.3.1.6.1", cached=True)
 		if v=="":
 # 4626-Style OID
-		    v=self.snmp.get(oid+".100.1.3.0")
+		    v=self.snmp.get(oid+".100.1.3.0", cached=True)
 		    if v=="":
 			raise self.snmp.TimeOutError # Fallback to CLI
 		if self.rx_sys_4.search(s):
@@ -47,7 +47,7 @@ class Script(NOCScript):
 	if s=="":
 # Trying CLI
     	    try:
-	        s=self.cli("show system")
+	        s=self.cli("show system", cached=True)
     	    except self.CLISyntaxError:
         	# Get 4xxx version
         	return self.get_version_4xxx(None,None)
@@ -60,7 +60,7 @@ class Script(NOCScript):
     def get_version_35xx(self, show_system, version):
         # Detect version
 	if not version:
-    	    v=self.cli("show version")
+    	    v=self.cli("show version", cached=True)
     	    match=self.re_search(self.rx_ver_35, v)
     	    version=match.group("version")
         # Detect platform
@@ -103,7 +103,7 @@ class Script(NOCScript):
     rx_ver_4=re.compile(r"SoftWare (Package )?Version.*?_(?P<version>\d.+?)$",re.MULTILINE|re.DOTALL|re.IGNORECASE)
     def get_version_4xxx(self, v, version):
 	if not v:
-    	    v=self.cli("show version 1")
+    	    v=self.cli("show version 1", cached=True)
     	match_sys=self.re_search(self.rx_sys_4, v)
 	if not version:
     	    match_ver=self.re_search(self.rx_ver_4, v)

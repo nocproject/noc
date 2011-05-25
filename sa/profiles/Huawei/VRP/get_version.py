@@ -16,7 +16,7 @@ class Script(noc.sa.script.Script):
     cache=True
     implements=[IGetVersion]
     def execute(self):
-        v=self.cli("display version")
+        v=self.cli("display version", cached=True)
         match=rx_ver.search(v)
         platform=match.group("platform")
         # Convert NetEngine to NE
