@@ -29,6 +29,8 @@ class Registry(object):
         _, self.daemon_name = os.path.split(sys.argv[0])
         if self.daemon_name.endswith(".py"):
             self.daemon_name = self.daemon_name[:-3]
+        if self.daemon_name == "manage":
+            self.daemon_name = sys.argv[1]
         #
         self.is_registered = self.daemon_name in self.exclude_daemons
 
