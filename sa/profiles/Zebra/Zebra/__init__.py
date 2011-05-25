@@ -19,6 +19,7 @@ class Profile(noc.sa.profiles.Profile):
     command_super="enable"
     pattern_prompt=r"^\S+?#"
     command_more=" "
+    command_disable_pager="terminal length 0"
     requires_netmask_conversion=True
     
     def generate_prefix_list(self,name,pl,strict=True):
