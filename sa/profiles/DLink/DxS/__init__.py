@@ -37,28 +37,28 @@ class Profile(noc.sa.profiles.Profile):
     def cmp_version(self, x, y):
         return cmp([int(z) for z in self.rx_ver.findall(x)], [int(z) for z in self.rx_ver.findall(y)])
 
+    cluster_member = None
+    dlink_pager = False
     rx_pager=re.compile(r"^Clipaging\s+:\s*(?P<cp>Enabled|Disabled)\s*$", re.MULTILINE)
     def setup_session(self, script):
+        # Cache "show switch" command and fetch CLI Paging from it
         match = self.rx_pager.search(script.cli("show switch", cached=True))
         if match:
-            script.dlink_pager = (match.group("cp") == "Enabled")
-        else:
-            script.dlink_pager = False
+            self.dlink_pager = (match.group("cp") == "Enabled")
 
-        script.cluster_member=None
         # Parse path parameters
         for p in script.access_profile.path.split("/"):
             if p.startswith("cluster:"):
-                script.cluster_member=p[8:].strip()
+                self.cluster_member=p[8:].strip()
         # Switch to cluster member, if necessary
-        if script.cluster_member:
+        if self.cluster_member:
             script.debug("Switching to SIM member '%s'"%script.cluster_member)
             script.cli("reconfig member_id %s"%script.cluster_member)
 
     def shutdown_session(self, script):
-        if script.cluster_member:
+        if self.cluster_member:
             script.cli("reconfig exit")
-        if script.dlink_pager:
+        if self.dlink_pager:
             script.cli("enable clipaging")
         else:
             script.cli("disable clipaging")
