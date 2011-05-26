@@ -17,7 +17,6 @@ class Script(NOCScript):
     implements = [IGetConfig]
 
     def execute(self):
-        self.cli("terminal length 0")
         config = self.cli("show running-config")
         config = self.strip_first_lines(config, 2)
         return self.cleaned_config(config)
