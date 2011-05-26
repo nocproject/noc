@@ -310,7 +310,7 @@ class SAE(Daemon):
             try:
                 stream = self.get_activator_stream(object.activator.name, True)
             except Exception, why:
-                e = Error(code=ERR_ACTIVATOR_NOT_AVAILABLE, text=why)
+                e = Error(code=ERR_ACTIVATOR_NOT_AVAILABLE, text=str(why))
                 logging.error(e.text)
                 callback(error=e)
                 return
