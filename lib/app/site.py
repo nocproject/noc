@@ -211,6 +211,9 @@ class Site(object):
         for app in [a for a in INSTALLED_APPS if a.startswith("noc.")]:
             n,m=app.split(".")
             for f in glob.glob("%s/apps/*/views.py"%m):
+                d, _ = os.path.split(f)
+                if os.path.isfile(os.path.join(d, "DISABLED")):
+                    continue
                 __import__(".".join(["noc"]+f[:-3].split(os.path.sep)),{},{},"*")
     ##
     ## Return application instance
