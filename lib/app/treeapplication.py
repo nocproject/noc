@@ -131,7 +131,7 @@ class TreeApplication(Application):
                 node = None
         if node is None:
             data = {
-                "data": self.verbose_name_plural,
+                "data": unicode(self.verbose_name_plural),
                 "state": "closed",
                 "attr": {"id": "node_root", "rel": "root"},
                 "children": [to_json(*c) for c in self.get_children()]
