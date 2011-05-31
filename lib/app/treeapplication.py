@@ -101,6 +101,13 @@ class TreeApplication(Application):
         """
         return self.model.objects.filter(id=object_id).first()
     
+    def get_preview_extra(self, obj):
+        """
+        Get additional data to preview form.
+        Extra data will be available as _extra_
+        """
+        return {}
+    
     def render_tree_popup(self, request, lookup_url, css_url=None):
         """
         Render tree-stype popup
@@ -145,7 +152,7 @@ class TreeApplication(Application):
         """
         Render tree
         """
-        return self.render(request, "app/tree/tree.html",
+        return self.render(request, ["tree.html", "app/tree/tree.html"],
                            verbose_name=self.verbose_name)
     
     @view(url=r"^css/$", url_name="tree_css", access=HasPerm("list"))
@@ -166,7 +173,7 @@ class TreeApplication(Application):
             css += ["}"]
         return self.render_plain_text("\n".join(css), "text/css")
     
-    @view(url=r"^(?P<object_id>[0-9a-f]+)/$", url_name="preview",
+    @view(url=r"^(?P<object_id>[0-9a-f]{24})/$", url_name="preview",
           access=HasPerm("view"))
     def view_preview(self, request, object_id):
         """
@@ -175,4 +182,5 @@ class TreeApplication(Application):
         o = self.get_object(object_id)
         if not o:
             return self.response_not_found("Object not found")
-        return self.render(request, "preview.html", o=o)
+        return self.render(request, "preview.html",
+                           o=o, extra=self.get_preview_extra(o))
