@@ -10,7 +10,10 @@
 from __future__ import with_statement
 import os,sys,csv,subprocess,getopt,py_compile
 
-STATIC_FILES = ["pkg_resources.py"]
+# Static files to install
+STATIC_FILES = []
+# Static files to install only when not installed in system
+SYSTEM_STATIC_FILES = ["pkg_resources.py"]
 
 d=os.path.dirname(sys.argv[0])
 if d:
@@ -88,12 +91,15 @@ class Installer(object):
         update_iv=False
         fail=False
         if self.check_only:
-            if not self.check_static_files():
+            if (not self.check_static_files() or
+                not self.check_system_static_files()):
                 return False
         else:
-            fail = fail or not self.install_static_files()
-        for app,version in sv:
-            if app not in iv or iv[app]!=version:
+            fail = (fail or
+                    not self.install_static_files() or
+                    not self.install_system_static_files())
+        for app, version in sv:
+            if app not in iv or iv[app] != version:
                 if self.check_only: # Do nothing on version mismatch in check mode
                     return False
                 print "Upgrading %s to version %s"%(app,version)
@@ -150,6 +156,43 @@ class Installer(object):
     def install_static_files(self):
         fail = False
         for f in STATIC_FILES:
+            src = os.path.join(self.SRC, f)
+            dst = os.path.join(self.LIB, f)
+            if self.copy_when_differ(src, dst):
+                print "Installing %s" % f
+                py_compile.compile(dst)
+            else:
+                print "%s is in sync" % f
+        return not fail
+    ##
+    ## Check system static files in sync
+    ##
+    def check_system_static_files(self):
+        for f in SYSTEM_STATIC_FILES:
+            mn = os.path.splitext(f)[0].replace("/", ".")
+            try:
+                __import__(mn, {}, {}, "*")
+                continue
+            except ImportError:
+                pass
+            src = os.path.join(self.SRC, f)
+            dst = os.path.join(self.LIB, f)
+            if self.is_differ(src, dst):
+                return False
+        return True
+
+    ##
+    ## Install static files
+    ##
+    def install_system_static_files(self):
+        fail = False
+        for f in SYSTEM_STATIC_FILES:
+            mn = os.path.splitext(f)[0].replace("/", ".")
+            try:
+                __import__(mn, {}, {}, "*")
+                continue
+            except ImportError:
+                pass
             src = os.path.join(self.SRC, f)
             dst = os.path.join(self.LIB, f)
             if self.copy_when_differ(src, dst):
