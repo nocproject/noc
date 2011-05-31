@@ -52,7 +52,7 @@ class SNMPProvider(object):
             s.close()
         if self.to_save_output:
             self.script.activator.save_snmp_get(oid,r)
-        if cached or self.script.root.is_cache:
+        if cached or self.script.root.is_cached:
             cache[cc] = r
         return r
     
