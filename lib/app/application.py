@@ -81,12 +81,18 @@ class Application(object):
     ##
     ## Return path to named template
     ##
-    def get_template_path(self,template):
-        return [
-            os.path.join(self.module,"apps",self.app,"templates",template),
-            os.path.join(self.module,"templates",template),
-            os.path.join("templates",template)
-        ]
+    def get_template_path(self, template):
+        if isinstance(template, basestring):
+            template = [template]
+        r = []
+        for t in template:
+            r += [
+                os.path.join(self.module, "apps", self.app, "templates", t),
+                os.path.join(self.module, "templates", t),
+                os.path.join("templates", t)
+            ]
+        return r
+
     ##
     ## Shortcut to get_object_or_404
     ##
