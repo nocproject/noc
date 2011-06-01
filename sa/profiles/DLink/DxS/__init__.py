@@ -39,7 +39,7 @@ class Profile(noc.sa.profiles.Profile):
 
     cluster_member = None
     dlink_pager = False
-    rx_pager=re.compile(r"^Clipaging\s+:\s*(?P<cp>Enabled|Disabled)\s*$", re.MULTILINE)
+    rx_pager=re.compile(r"^(Clipaging|CLI Paging)\s+:\s*(?P<cp>Enabled|Disabled)\s*$", re.MULTILINE)
     def setup_session(self, script):
         # Cache "show switch" command and fetch CLI Paging from it
         match = self.rx_pager.search(script.cli("show switch", cached=True))
