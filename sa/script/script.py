@@ -247,8 +247,6 @@ class Script(threading.Thread):
     _execute_chain=[]
 
     def __init__(self, profile, _activator, access_profile, timeout=0, parent=None, **kwargs):
-        if profile.setup_script:
-            profile.setup_script(self)
         self.start_time=time.time()
         self.parent=parent
         self.access_profile=access_profile
@@ -313,6 +311,10 @@ class Script(threading.Thread):
                 ("ts", datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))]:
                 self.log_cli_sessions_path=self.log_cli_sessions_path.replace("{{%s}}"%k, v)
             self.cli_debug("IP: %s SCRIPT: %s"%(self.access_profile.address, self.name),"!")
+        # Finally call setup_script() for additional script tuning
+        if profile.setup_script:
+            profile.setup_script(self)
+
     
     @classmethod
     def template_clean_result(cls, result):
