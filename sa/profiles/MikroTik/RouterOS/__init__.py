@@ -21,3 +21,7 @@ class Profile(noc.sa.profiles.Profile):
         ("Please press \"Enter\" to continue!", "\n"),
     ]
     config_volatile=[r"^#.*?$", r"^\s?"]
+
+    def setup_script(self, script):
+        if script.parent is None and not script.access_profile.user.endswith("+ct"):
+            script.access_profile.user += "+ct"
