@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Django modules
+from django.db.models import Model
 ## Third-party modules
 import pymongo
 from mongoengine.base import *
@@ -28,13 +30,13 @@ class PlainReferenceField(BaseField):
     A reference to the document that will be automatically
     dereferenced on access (lazily). Maps to plain ObjectId
     """
-    def __init__(self, document_type, **kwargs):
+    def __init__(self, document_type, *args, **kwargs):
         if not isinstance(document_type, basestring):
             if not issubclass(document_type, (Document, basestring)):
-                raise ValidationError('Argument to PlainReferenceField constructor '
-                                      'must be a document class or a string')
+                raise ValidationError("Argument to PlainReferenceField constructor "
+                                      "must be a document class or a string")
         self.document_type_obj = document_type
-        super(PlainReferenceField, self).__init__(**kwargs)
+        super(PlainReferenceField, self).__init__(*args, **kwargs)
     
     @property
     def document_type(self):
@@ -50,14 +52,16 @@ class PlainReferenceField(BaseField):
         if instance is None:
             # Document class being used rather than a document object
             return self
-
         # Get value from document instance if available
         value = instance._data.get(self.name)
         # Dereference DBRefs
         if isinstance(value, ObjectId):
-            value = self.document_type.objects(id=value).first()
-            if value is not None:
-                instance._data[self.name] = value
+            v = self.document_type.objects(id=value).first()
+            if v is not None:
+                instance._data[self.name] = v
+            else:
+                raise ValidationError("Unable to dereference %s:%s" % (
+                    self.document_type, value))
         return super(PlainReferenceField, self).__get__(instance, owner)
 
     def to_mongo(self, document):
@@ -65,20 +69,49 @@ class PlainReferenceField(BaseField):
             # We need the id from the saved object to create the DBRef
             id_ = document.id
             if id_ is None:
-                raise ValidationError('You can only reference documents once '
-                                      'they have been saved to the database')
+                raise ValidationError("You can only reference documents once "
+                                      "they have been saved to the database")
         else:
             id_ = document
-        
-        id_field_name = self.document_type._meta['id_field']
+        id_field_name = self.document_type._meta["id_field"]
         id_field = self.document_type._fields[id_field_name]
         return id_field.to_mongo(id_)
 
-    #def prepare_query_value(self, op, value):
-    #    return self.to_mongo(value)
 
-    #def validate(self, value):
-    #    assert isinstance(value, (self.document_type, pymongo.dbref.DBRef))
+class ForeignKeyField(BaseField):
+    """
+    A reference to the RDBMS" table that will be automatically
+    dereferenced on access (lazily). Maps to integer
+    """
+    def __init__(self, model, **kwargs):
+        if not issubclass(model, Model):
+            raise ValidationError("Argument to ForeignKeyField constructor "
+                                  "must be a Model class")
+        self.model = model
+        super(ForeignKeyField, self).__init__(**kwargs)
+    
+    def __get__(self, instance, owner):
+        """Descriptor to allow lazy dereferencing."""
+        if instance is None:
+            # Document class being used rather than a document object
+            return self
 
-    #def lookup_member(self, member_name):
-    #    return self.document_type._fields.get(member_name)
+        # Get value from document instance if available
+        value = instance._data.get(self.name)
+        # Dereference
+        if isinstance(value, int):
+            value = self.model.objects.get(id=value)
+            if value is not None:
+                instance._data[self.name] = value
+        return super(ForeignKeyField, self).__get__(instance, owner)
+
+    def to_mongo(self, document):
+        if isinstance(document, Model):
+            # We need the id from the saved object to create the DBRef
+            id_ = document.id
+            if id_ is None:
+                raise ValidationError("You can only reference models once "
+                                      "they have been saved to the database")
+        else:
+            id_ = document
+        return id_
