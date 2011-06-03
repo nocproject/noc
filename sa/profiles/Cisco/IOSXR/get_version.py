@@ -39,8 +39,5 @@ class Script(NOCScript):
         return {
             "vendor"    : "Cisco",
             "platform"  : match.group("platform"),
-            "version"   : match.group("version"),
-            "attributes" : {
-                "image"     : match.group("image"),
-            }
+            "version"   : match.group("version")
         }
