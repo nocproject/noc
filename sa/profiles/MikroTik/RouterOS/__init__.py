@@ -20,7 +20,9 @@ class Profile(noc.sa.profiles.Profile):
     pattern_more = [
         ("Please press \"Enter\" to continue!", "\n"),
     ]
+    pattern_syntax_error = r"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
+
     # Starting from v3.14 we can specify console options during login process.
     def setup_script(self, script):
         if script.parent is None \
