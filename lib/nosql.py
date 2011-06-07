@@ -87,7 +87,7 @@ class ForeignKeyField(BaseField):
         if not issubclass(model, Model):
             raise ValidationError("Argument to ForeignKeyField constructor "
                                   "must be a Model class")
-        self.model = model
+        self.document_type = model
         super(ForeignKeyField, self).__init__(**kwargs)
     
     def __get__(self, instance, owner):
@@ -100,7 +100,7 @@ class ForeignKeyField(BaseField):
         value = instance._data.get(self.name)
         # Dereference
         if isinstance(value, int):
-            value = self.model.objects.get(id=value)
+            value = self.document_type.objects.get(id=value)
             if value is not None:
                 instance._data[self.name] = value
         return super(ForeignKeyField, self).__get__(instance, owner)
