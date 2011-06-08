@@ -10,21 +10,21 @@ from noc.lib.test import ScriptTestCase
 class Zyxel_ZyNOS_get_interface_status_Test(ScriptTestCase):
     script = "Zyxel.ZyNOS.get_interface_status"
     vendor = "Zyxel"
-    platform='GS-4012F'
-    version='3.80(TS.0)'
+    platform = 'GS-4012F'
+    version = '3.80(TS.0)'
     input = {}
-    result = [{'interface': 'swp00', 'status': True},
- {'interface': 'swp01', 'status': True},
- {'interface': 'swp02', 'status': True},
- {'interface': 'swp03', 'status': True},
- {'interface': 'swp04', 'status': True},
- {'interface': 'swp05', 'status': True},
- {'interface': 'swp06', 'status': True},
- {'interface': 'swp07', 'status': False},
- {'interface': 'swp08', 'status': True},
- {'interface': 'swp09', 'status': True},
- {'interface': 'swp10', 'status': False},
- {'interface': 'swp11', 'status': False}]
+    result = [{'interface': '1', 'status': True},
+ {'interface': '2', 'status': True},
+ {'interface': '3', 'status': True},
+ {'interface': '4', 'status': True},
+ {'interface': '5', 'status': True},
+ {'interface': '6', 'status': True},
+ {'interface': '7', 'status': True},
+ {'interface': '8', 'status': False},
+ {'interface': '9', 'status': True},
+ {'interface': '10', 'status': True},
+ {'interface': '11', 'status': False},
+ {'interface': '12', 'status': False}]
     motd = ' **********\nCopyright (c) 1994 - 2007 ZyXEL Communications Corp.\n'
     cli = {
 }
