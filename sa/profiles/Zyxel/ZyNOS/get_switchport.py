@@ -8,6 +8,7 @@
 """
 """
 ## Python modules
+from __future__ import with_statement
 import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
