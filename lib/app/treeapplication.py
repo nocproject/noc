@@ -108,14 +108,16 @@ class TreeApplication(Application):
         """
         return {}
     
-    def render_tree_popup(self, request, lookup_url, css_url=None):
+    def render_tree_popup(self, request, lookup_url,
+                          css_url=None, choose_id=None):
         """
         Render tree-stype popup
         """
         if css_url is None:
             css_url = self.base_url + "css/"
         return self.render(request, "app/tree/popup_tree.html",
-                           lookup_url=lookup_url, css_url=css_url)
+                           lookup_url=lookup_url, css_url=css_url,
+                           choose_id=choose_id)
     
     @view(url=r"lookup_tree/$", url_name="lookup_tree", access=HasPerm("view"))
     def view_lookup_tree(self, request):
@@ -146,7 +148,7 @@ class TreeApplication(Application):
         else:
             data = [to_json(*c) for c in self.get_children(node)]
         return self.render_json(data)
-    
+
     @view(url=r"^$", url_name="tree", menu=get_menu, access=HasPerm("list"))
     def view_tree(self, request):
         """
@@ -184,3 +186,13 @@ class TreeApplication(Application):
             return self.response_not_found("Object not found")
         return self.render(request, "preview.html",
                            o=o, extra=self.get_preview_extra(o))
+
+    @view(url="^popup/$", url_name="popup", access=HasPerm("view"))
+    def view_popup(self, request):
+        if request.GET and "choose_id" in request.GET:
+            choose_id = request.GET["choose_id"]
+        else:
+            choose_id = None
+        return self.render_tree_popup(request,
+                                      self.base_url + "lookup_tree/",
+                                      choose_id=choose_id)

@@ -60,6 +60,14 @@
                         }
                   }
             });
+            {% if choose_id %}
+                  $("#popup-tree a").live("click", function(e) {
+                        var rx = /\/([0-9a-f]+)\/$/
+                        return parent.hide_popup_and_choose("{{choose_id}}",
+                              e.srcElement.innerText,
+                              e.currentTarget.href.match(rx)[1]);
+                  });
+            {% endif %}
       });
 </script>
 {% endblock %}

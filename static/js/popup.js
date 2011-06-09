@@ -49,6 +49,10 @@ function show_popup(title, url) {
     return false;
 }
 
+function show_popup_choose(p_id, title, url) {
+    return show_popup(title, url + "?choose_id=" + p_id);
+}
+
 function hide_popup() {
     var $mask = $("#noc-popup-mask");
     $("#noc-popup-header-title").text("");
@@ -56,7 +60,12 @@ function hide_popup() {
     $mask.fadeIn(500);
     $mask.fadeTo("show", 0);
     $mask.hide();
-    $("#noc-popup-body").html("");
-    
+    $("#noc-popup-body").html("");    
     return false;
+}
+
+function hide_popup_and_choose(choose_id, text, value) {
+    $("#" + choose_id + "_text").html(text);
+    $("#" + choose_id).attr("value", value);
+    return hide_popup();
 }
