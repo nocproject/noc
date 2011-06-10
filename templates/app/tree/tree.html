@@ -14,6 +14,7 @@
         </li>
       </ul>
     <div class="module" id="changelist">
+      {% block extraupper %}{% endblock %}
         <!-- search form -->
         <!-- filter -->
         <form id="changelist-form" action="" method="post"enctype="multipart/form-data">{% csrf_token %}
@@ -22,6 +23,7 @@
         <div id="app-tree">Foobar</div>
         <!-- pagination -->
         </form>
+      {% block extralower %}{% endblock %}
     </div>
 </div>
 <script>
