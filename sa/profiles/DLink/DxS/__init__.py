@@ -20,7 +20,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_password="[Pp]ass[Ww]ord:"
     pattern_more="CTRL\+C.+?a All"
     pattern_unpriveleged_prompt=r"^\S+:(3|6|user|operator)#"
-    pattern_syntax_error=r"(Available commands|Next possible completions):"
+    pattern_syntax_error=r"(Available commands|Next possible completions|Ambiguous token):"
     command_super="enable admin"
     pattern_prompt=r"^(?P<hostname>\S+(:\S+)*)#"
     command_disable_pager="disable clipaging"
