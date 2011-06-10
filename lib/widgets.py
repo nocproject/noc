@@ -17,6 +17,8 @@ from django.utils.html import escape
 from django.core.validators import EMPTY_VALUES
 ## Third-party modules
 from tagging.models import Tag
+# NOC modules
+from lib.nosql import Document
 
 ##
 ##
@@ -122,8 +124,8 @@ class AutoCompleteTags(Input):
 class TreePopupWidget(Input):
     def render(self, name, value, attrs=None):
         if value:
-            value = escape(value)
-            d_value = attrs["document"].objects.find(id=value).first()
+            d_value = self.attrs["document"].objects.filter(id=value).first().name
+            value=str(value)
         else:
             value = ""
             d_value = ""
@@ -159,6 +161,8 @@ class TreePopupField(forms.CharField):
     def to_python(self, value):
         if value in EMPTY_VALUES:
             return None
+        if isinstance(value, Document):
+            return value
         try:
             return self.document.objects.get(id=value)
         except self.document.DoesNotExist:
