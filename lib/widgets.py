@@ -18,7 +18,7 @@ from django.core.validators import EMPTY_VALUES
 ## Third-party modules
 from tagging.models import Tag
 # NOC modules
-from lib.nosql import Document
+from lib.nosql import Document, ObjectId
 
 ##
 ##
@@ -169,6 +169,8 @@ class TreePopupField(forms.CharField):
             raise ValidationError("Invalid choice")
 
     def prepare_value(self, value):
+        if isinstance(value, basestring):
+            return ObjectId(value)
         return value.id if value else None
 
     def validate(self, value):
