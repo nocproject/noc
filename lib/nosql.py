@@ -77,6 +77,9 @@ class PlainReferenceField(BaseField):
         id_field = self.document_type._fields[id_field_name]
         return id_field.to_mongo(id_)
 
+    def lookup_member(self, name):
+        return self.document_type._fields.get(name)
+
 
 class ForeignKeyField(BaseField):
     """
