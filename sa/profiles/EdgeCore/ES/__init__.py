@@ -16,7 +16,7 @@ class Profile(noc.sa.profiles.Profile):
     name="EdgeCore.ES"
     supported_schemes=[TELNET,SSH]
     pattern_unpriveleged_prompt=r"^(?P<hostname>[^\n]+)>"
-    pattern_syntax_error=r"% Invalid input detected at"
+    pattern_syntax_error=r"% Invalid input detected at|% Incomplete command"
     command_super="enable"
     pattern_prompt=r"^(?P<hostname>[^\n]+)#"
     pattern_more=r"---?More---?"
@@ -27,4 +27,11 @@ class Profile(noc.sa.profiles.Profile):
     convert_mac=noc.sa.profiles.Profile.convert_mac_to_dashed
     
     def convert_interface_name(self, s):
+	s=s.replace("  "," ")
 	return s.replace("/ ","/")
+
+    def setup_session(self, script):
+	try:
+	    script.cli("terminal length 0")
+        except script.CLISyntaxError:
+	    pass
