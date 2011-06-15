@@ -2,59 +2,85 @@
 ##----------------------------------------------------------------------
 ## Event Summary Report
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app.simplereport import SimpleReport,TableColumn
+
+## Django modules
 from django import forms
-##
-##
-##
-report_types=[
-            ("class","By Event Class"),
-            ("priority","By Event Priority"),
-            ("object","By Managed Object"),
-            ("profile","By Profile"),
+## NOC modules
+from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.fm.models import ActiveEvent, EventClass, ManagedObject
+
+## Report types
+report_types = [
+            ("class", "By Event Class"),
+            ("object", "By Managed Object"),
+            ("profile", "By Profile")
             ]
+
+
 class ReportForm(forms.Form):
-    report_type=forms.ChoiceField(choices=report_types)
-##
-##
-##
+    report_type = forms.ChoiceField(choices=report_types)
+
+
 class EventSummaryReport(SimpleReport):
-    title="Event Summary"
-    form=ReportForm
-    def get_data(self,report_type,**kwargs):
-        # By Profile
-        if report_type=="class":
-            columns=["Event Class"]
-            query="""SELECT ec.name,COUNT(*)
-                    FROM fm_eventclass ec JOIN fm_event e ON (ec.id=e.event_class_id)
-                    GROUP BY 1
-                    ORDER BY 2 DESC"""
-        elif report_type=="priority":
-            columns=["Priority"]
-            query="""SELECT ep.name,COUNT(*)
-                    FROM fm_eventpriority ep JOIN fm_event e ON (ep.id=e.event_priority_id)
-                    GROUP BY 1
-                    ORDER BY 2 DESC"""
-        elif report_type=="object":
-            columns=["Managed Object"]
-            query="""SELECT mo.name,COUNT(*)
-                    FROM fm_event e JOIN sa_managedobject mo ON (e.managed_object_id=mo.id)
-                    GROUP BY 1
-                    ORDER BY 2 DESC"""
-        elif report_type=="profile":
-            columns=["Profile"]
-            query="""SELECT mo.profile_name,COUNT(*)
-                    FROM fm_event e JOIN sa_managedobject mo ON (e.managed_object_id=mo.id)
-                    GROUP BY 1
-                    ORDER BY 2 DESC"""
+    title = "Event Summary"
+    form = ReportForm
+
+    def get_by_event_class(self):
+        """ Summary by event class """
+        c = ActiveEvent.objects.item_frequencies("event_class")
+        r = []
+        for k, v in c.items():
+            r += [[EventClass.objects.filter(id=k).first(), int(v)]]
+        return sorted(r, key=lambda x: -x[1])
+
+    def get_by_object(self):
+        """Summary by managed object"""
+        c = ActiveEvent.objects.item_frequencies("managed_object")
+        r = []
+        for k, v in c.items():
+            r += [[ManagedObject.objects.get(id=k), int(v)]]
+        return sorted(r, key=lambda x: -x[1])
+
+    def get_by_profile(self):
+        """Summary by managed object's profile"""
+        c = ActiveEvent.objects.item_frequencies("managed_object")
+        pc = {}
+        mo_map = {}  # managed object id -> profile name
+        for k, v in c.items():
+            try:
+                p = mo_map[k]
+            except KeyError:
+                p = ManagedObject.objects.get(id=k).profile_name
+                mo_map[k] = p
+            try:
+                pc[p] += v
+            except KeyError:
+                pc[p] = v
+        return sorted(pc.items(), key=lambda x: -x[1])
+
+    def get_data(self, report_type, **kwargs):
+        if report_type == "class":
+            # Summary by class
+            columns = ["Event Class"]
+            data = self.get_by_event_class()
+        elif report_type == "object":
+            # Summary by object
+            columns = ["Managed Object"]
+            data = self.get_by_object()
+        elif report_type == "profile":
+            # Summary by profile
+            columns = ["Profile"]
+            data = self.get_by_profile()
         else:
-            raise Exception("Invalid report type: %s"%report_type)
-        for r,t in report_types:
-            if r==report_type:
-                title=self.title+": "+t
+            raise Exception("Invalid report type: %s" % report_type)
+        for r, t in report_types:
+            if r == report_type:
+                title = self.title + ": " + t
                 break
-        columns+=[TableColumn("Quantity",align="right",total="sum",format="integer")]
-        return self.from_query(title=title,columns=columns,query=query,enumerate=True)
+        columns += [TableColumn("Quantity", align="right",
+                                total="sum", format="integer")]
+        return self.from_dataset(title=title, columns=columns,
+                                 data=data, enumerate=True)
