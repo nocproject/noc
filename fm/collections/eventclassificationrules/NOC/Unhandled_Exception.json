@@ -1,0 +1,30 @@
+[
+    {
+        "name": "NOC | Unhandled Exception",
+        "description": "Get unhandled exception from system event",
+        "event_class__name": "NOC | Unhandled Exception",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^component$",
+                "value_re": "^(?P<component>\\S+)$"
+            },
+            {
+                "key_re": "^traceback$",
+                "value_re": "^UNHANDLED EXCEPTION.+?START OF TRACEBACK.+?(?P<traceback>File:\\s+(?P<file>.+?)\\s+\\(Line:\\s+(?P<line>\\d+)\\).+)END OF TRACEBACK"
+            },
+            {
+                "key_re": "^type$",
+                "value_re": "^Unhandled Exception$"
+            },
+            {
+                "key_re": "^source$",
+                "value_re": "^system$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^NOC\\.SAE$"
+            }
+        ]
+    }
+]
