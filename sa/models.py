@@ -257,11 +257,11 @@ class ManagedObject(models.Model):
                 if ManagedObject.objects.filter(GroupAccess.Q(g) &
                                                 Q(id=self.id)).exists()]
     
-    ##
-    ## Override model's save()
-    ## Change related Config object as well
-    ##
     def save(self):
+        """
+        Overload model's save()
+        Change related Config object
+        """
         # Get previous version
         if self.id:
             old = ManagedObject.objects.get(id=self.id)
@@ -299,10 +299,10 @@ class ManagedObject(models.Model):
                 config.pull_every = None
             config.save()
     
-    ##
-    ## Delete appropriative config
-    ##
     def delete(self):
+        """
+        Delete related Config
+        """
         try:
             config = self.config
         except:
@@ -311,11 +311,11 @@ class ManagedObject(models.Model):
             config.delete()
         super(ManagedObject, self).delete()
     
-    ##
-    ## Search engine
-    ##
     @classmethod
     def search(cls, user, query, limit):
+        """
+        Search engine plugin
+        """
         q = (Q(repo_path__icontains=query) |
              Q(name__icontains=query) |
              Q(address__icontains=query) |
@@ -381,7 +381,18 @@ class ManagedObject(models.Model):
             v = ManagedObjectAttribute(managed_object=self,
                                        key=name, value=value)
         v.save()
-    
+
+    @property
+    def platform(self):
+        """
+        Return "vendor model" string from attributes
+        """
+        x = [self.get_attr("vendor"), self.get_attr("model")]
+        x = [a for a in x if a]
+        if x:
+            return " ".join(x)
+        else:
+            return None
 
 class ManagedObjectAttribute(models.Model):
     
