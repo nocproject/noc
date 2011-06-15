@@ -1,0 +1,111 @@
+{% extends "template.html"%}
+{% load noctags %}
+{% block content %}
+<ul class="object-tools">
+    <li><a href="#" onclick="return show_popup('JSON', '{% url fm:eventclass:to_json o.id%}')">JSON</a></li>
+</ul>
+
+<h1>Event Class: {{o.name}}</h1>
+
+<style>
+    .labels {
+        width: 100px;
+    }
+    
+    .types {
+        width: 50px;
+    }
+    
+    .required {
+        width: 30px;
+    }
+    
+    .optional {
+        font-style: italic;
+    }
+</style>
+
+<div class="module">
+    <table border="0" width="100%">
+        <tr><td class="labels"><b>Name</b></td><td>{{o.name}}</td></tr>
+        <tr><td><b>Is builtin</b></td><td>{{o.is_builtin|bool_icon}}</td></tr>
+        <tr><td><b>Description</b></td><td>{{o.description}}</td></tr>
+        <tr><td><b>Action</b></td><td>{{o.display_action}}</td></tr>
+        {% for lang in o.text %}
+        <tr>
+            <td><b>{{lang}}</b></td>
+            <td>
+                <table border="0" width="100%">
+                    {% for msg in o.text.lang %}
+                    <tr>
+                        <td class="labels"><b>msg</b></td>
+                        <td>{{o.text.lang.msg}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <h2>Vars</h2>
+    <table border="0" width="100%">
+        <thead>
+            <tr>
+                <th class="labels">Name</th>
+                <th class="types">Type</th>
+                <th class="required">Required</th>
+                <th>Description</th>
+            </td>
+        </thead>
+        {% for v in o.vars %}
+            <tr {% if not v.required %}class="optional"{% endif %}>
+                <td><b>{{v.name}}</b></td>
+                <td>{{v.type}}</td>
+                <td>{{v.required|bool_icon}}</td>
+                <td>{{v.description}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="module">
+    <h2>Disposition rules</h2>
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Condition</th>
+                <th>Action</th>
+                <th>Alarm Class/<br/>pyRule</th>
+                <th>Window</th>
+                <th>Stop</th>
+            </tr>
+        </thead>
+        {% for d in o.disposition %}
+            <tr>
+                <td>{{d.name}}</td>
+                <td>{{d.condition}}</td>
+                <td>{{d.action}}</td>
+                <td>{% if d.pyrule %}{{d.pyrule.name}}{% else %}{{d.alarm_class.name}}{%endif%}</td>
+                <td>{{d.window}}</td>
+                <td>{{d.stop_disposition|bool_icon}}</th>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="module">
+    <h2>Classification Rules</h2>
+    <table border="0">
+        <thead>
+            <tr><th>Rule</th><th>Preference</th></tr>
+        </thead>
+        {% for r in extra.rules %}
+            <tr>
+                <td><a href="{% url fm:classificationrule:preview r.id %}">{{r.name}}</a></td><td>{{r.preference}}</td></tr>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

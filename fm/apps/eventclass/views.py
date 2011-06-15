@@ -1,41 +1,77 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## EventClass Manager
+## Event Class Manager
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
-from noc.fm.models import EventClass,EventClassVar
 
-##
-## Variable inlines
-##
-class EventClassVarAdmin(admin.TabularInline):
-    extra=5
-    model=EventClassVar
-##
-## EventClass admin
-##
-class EventClassAdmin(admin.ModelAdmin):
-    list_display=["name","category","default_priority","is_builtin","repeat_suppression","repeat_suppression_interval",
-        "rule","last_modified"]
-    search_fields=["name"]
-    list_filter=["is_builtin","category"]
-    inlines=[EventClassVarAdmin]
-    actions=["view_python"]
-    ##
-    ## Display python code for selected objects
-    ##
-    def view_python(self,request,queryset):
-        code="\n\n".join([o.python_code for o in queryset])
-        return self.app.render_plain_text(code)
-    view_python.short_description="View Python Code for selected objects"
-##
-## EventClass application
-##
-class EventClassApplication(ModelApplication):
-    model=EventClass
-    model_admin=EventClassAdmin
-    menu="Setup | Event Classes"
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+## NOC modules
+from noc.lib.app import TreeApplication, view, HasPerm
+from noc.fm.models import EventClass, EventClassVar, EventClassCategory,\
+                          EventClassificationRule
+
+
+class EventClassApplication(TreeApplication):
+    title = _("Event Class")
+    verbose_name = _("Event Class")
+    verbose_name_plural = _("Event Classes")
+    menu = "Setup | Event Classes"
+    model = EventClass
+    category_model = EventClassCategory
+
+    def get_preview_extra(self, obj):
+        return {
+            "rules": EventClassificationRule.objects.filter(event_class=obj.id).order_by("preference")
+        }
+
+    @view(url="^(?P<class_id>[0-9a-f]{24})/json/", url_name="to_json",
+          access=HasPerm("view"))
+    def view_to_json(self, request, class_id):
+        def q(s):
+            return s.replace("\n", "\\n").replace("\"", "\\\"").replace("\\", "\\\\")
+        
+        def qb(s):
+            return "true" if s else "false"
+
+        c = EventClass.objects.filter(id=class_id).first()
+        if not c:
+            return self.response_not_found("Not found")
+        r = ["["]
+        r += ["    {"]
+        r += ["        \"name\": \"%s\"," % q(c.name)]
+        r += ["        \"desciption\": \"%s\"," % q(c.description)]
+        r += ["        \"action\": \"%s\"," % q(c.action)]
+        # vars
+        vars = []
+        for v in c.vars:
+            vd = ["            {"]
+            vd += ["                \"name\": \"%s\"," % q(v.name)]
+            vd += ["                \"description\": \"%s\"," % q(v.description)]
+            vd += ["                \"type\": \"%s\"," % q(v.type)]
+            vd += ["                \"required\": %s," % qb(v.required)]
+            vd += ["            }"]
+            vars += ["\n".join(vd)]
+        r += ["        \"vars \": ["]
+        r += [",\n\n".join(vars)]
+        r += ["        ],"]
+        # text
+        r += ["        \"text\": {"]
+        t = []
+        for lang in c.text:
+            l = ["            \"%s\": {" % lang]
+            ll = []
+            for v in ["subject_template", "body_template", "symptoms",
+                      "probable_causes", "recommended_actions"]:
+                if v in c.text[lang]:
+                    ll += ["                \"%s\": \"%s\"" % (v, q(c.text[lang][v]))]
+            l += [",\n".join(ll)]
+            l += ["            }"]
+            t += ["\n".join(l)]
+        r += [",\n\n".join(t)]
+        r += ["        }"]
+        r += ["    }"]
+        r += ["]"]
+        return self.render_plain_text("\n".join(r))
