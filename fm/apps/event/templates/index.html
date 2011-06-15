@@ -1,6 +1,5 @@
 {% extends "template.html" %}
 {% block extrahead %}
-    <link rel="stylesheet" type="text/css" href="{% url fm:event:css %}" />
     <link type="text/css" rel="stylesheet" href="/static/css/jquery.pager.css">
     <link type="text/css" rel="stylesheet" href="/static/apps/fm/event/css/index.css">
     <script type="text/javascript" src="/static/js/jquery.form.js"></script>
@@ -8,20 +7,24 @@
     <script type="text/javascript" src="/static/apps/fm/event/js/index.js"></script>
 {% endblock %}
 <{% block content %}
-<ul class="object-tools">
-    <li><a href="#" id="toggle_panel_link" onclick="toggle_panel();">Hide Filter</a></li>
-</ul>
-<h1>Fault Management</h1>
+<h1>Events</h1>
+<div class="module">
+    <h2>Event filter <span style="float: right;"><a href="#" id="toggle_panel_link" onclick="toggle_panel();">Hide Filter</a></span></h2>
 <div id="form_panel">
+    {{form.media}}
     <form id="form">
-        {% include "includes/noc_fieldset.html" %}
-        <div class="submit-row">
+        {{form.page}}
+            <b>Status</b> {{form.status}}
+            <b>From:</b> {{form.from_time}}
+            <b>To:</b> {{form.to_time}}
+            <b>Managed Object:</b> {{form.managed_object}}
+            <span id="e-class"><b>Event Class:</b> {{form.event_class}}</span>
             <INPUT TYPE="submit" VALUE="Filter" class="default"/>
-        </div>
     </form>
 </div>
 <script type="text/javascript">
     $(document).ready(function(){
+        /* Set up ajax form */
         $("#form").ajaxForm({
             dataType: "json",
             beforeSubmit : show_cover,
@@ -29,6 +32,14 @@
             url     : "{% url fm:event:events %}"
         });
         window.setTimeout(update_data, 200);
+        /* Status change hook */
+        $("#id_status").change(function(){
+            var v = $(this).val();
+            if((v == "A") || (v == "C"))
+                $("#e-class").show();
+            else
+                $("#e-class").hide();
+        });
     });
 </script>
 <div class="module">
@@ -40,11 +51,8 @@
                 <TH class="event-object">Object</TH>
                 <TH class="event-time">Time</TH>
                 <TH class="event-status">Status</TH>
-                <TH class="event-category">Category</TH>
                 <TH class="event-class">Class</TH>
-                <TH class="event-priority">Priority</TH>
                 <TH>Subject</TH>
-                <TH class="event-action">Action</TH>
             </TR>
         </THEAD>
         <TBODY>
@@ -53,4 +61,5 @@
 </div>
 <DIV ID="pager"></DIV>
 <DIV ID="cover"></DIV>
+</div>
 {%endblock%}

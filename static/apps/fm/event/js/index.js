@@ -2,36 +2,32 @@ function show_result(data) {
     var tb=$("#events_table TBODY");
     tb.empty();
     $.each(data["events"],function(i,r){
-        var event_id,status;
         var $tr=$(document.createElement("tr"));
         $tr.addClass(r[0]);
         tb.append($tr);
         $.each(r, function(j,d) {
-            if(j>0) {
-                var $td=$(document.createElement("td"));
-                $tr.append($td);
-                if(j==1) {
-                    event_id=d;
-                    $td.html("<A HREF='"+d+"/'>"+d+"</A>"); // Link to event
-                } else if (j==4) {
-                    status=d;
-                    $td.text({U:"Unclassified",A:"Active",C:"Closed"}[status]);
-                } else {
-                    $td.text(d);
-                }
-            }
+            var $td=$(document.createElement("td"));
+            $tr.append($td);
+            if(j==0) {
+                event_id=d;
+                $td.html("<A HREF='"+d+"/'>"+d+"</A>"); // Link to event
+            } else if (j==3) {
+                status=d;
+                $td.text({N:"New",A:"Active",S:"Archived",F:"Failed"}[status]);
+            } else
+                $td.text(d);
         });
         var $td=$(document.createElement("td"));
         $tr.append($td);
         var td_link="";
-        if(status=="C") {
-            td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"open\"); return false;'>[Open]</a>";
-        } else if (status=="A") {
-            td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"close\"); return false;'>[Close]</a>";
-        }
-        if(td_link) {
-            td_link+="<br/><a href='#' onclick='change_status(this,"+event_id+",\"reclassify\"); return false;'>[Reclassify]</a>";
-        }
+        //if(status=="C") {
+        //    td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"open\"); return false;'>[Open]</a>";
+        //} else if (status=="A") {
+        //    td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"close\"); return false;'>[Close]</a>";
+        //}
+        //if(td_link) {
+        //    td_link+="<br/><a href='#' onclick='change_status(this,"+event_id+",\"reclassify\"); return false;'>[Reclassify]</a>";
+        //}
         $td.html(td_link);
     });
     // Set up pager

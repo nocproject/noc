@@ -1,89 +1,211 @@
 {% extends "template.html" %}
 {% block breadcrumbs %}{{block.super}}<li>{{e.id}}</li>{% endblock %}
-{% block object-tools %}
-<ul class="object-tools">
-    {% ifequal e.status 'A' %}<LI><A HREF="{% url fm:event:close e.id %}" class="addlink">Close</A></LI>{% endifequal %}
-    {% ifequal e.status 'C' %}<LI><A HREF="{% url fm:event:open e.id %}" class="addlink">Open</A></LI>{% endifequal %}
-    <LI><A HREF="{% url fm:event:reclassify e.id %}" class="addlink">Re-Classify</A></LI>
-    <LI><A HREF="{% url fm:eventclassificationrule:from_event e.id %}"class="addlink">Create Rule</A></LI>
-    <LI><A HREF="{% url fm:eventpostprocessingrule:from_event e.id %}"class="addlink">Create Post-Processing Rule</A></LI>
-</ul>
-{% endblock %}
 {% block content %}
 <ul class="object-tools">
-    {% ifequal e.status 'A' %}<LI><A HREF="{% url fm:event:close e.id %}" class="addlink">Close</A></LI>{% endifequal %}
-    {% ifequal e.status 'C' %}<LI><A HREF="{% url fm:event:open e.id %}" class="addlink">Open</A></LI>{% endifequal %}
-    <LI><A HREF="{% url fm:event:reclassify e.id %}" class="addlink">Re-Classify</A></LI>
-    <LI><A HREF="{% url fm:eventclassificationrule:from_event e.id %}"class="addlink">Create Rule</A></LI>
-    <LI><A HREF="{% url fm:eventpostprocessingrule:from_event e.id %}"class="addlink">Create Post-Processing Rule</A></LI>
+    {% if e.status == "A" or e.status == "S" or e.status == "F" %}
+    <li><a href="{% url fm:event:reclassify e.id%}">Reclassify</a></li>
+{% endif %}
+    <LI><A HREF="{% url fm:classificationrule:from_event e.id %}"class="addlink">Create Rule</A></LI>
 </ul>
-<style type="text/css">
-.event_data_description {
-    display: none;
-}
+<style>
+    div#s-toc ul, div#s-toc li{
+        margin: 0px;
+        padding: 0px;
+        margin-right: 4px;
+        display: inline;
+        list-style: none;
+    }
+    
+    #change_priority {
+        display: none;
+    }
 </style>
 <script type="text/javascript">
-var shown=false;
-
-function toggle() {
-    if(shown) {
-        $(".event_data_description").hide();
-        $("#toggle_link").text("Show Descriptions");
-        shown=false;
-    } else {
-        $(".event_data_description").show();
-        $("#toggle_link").text("Hide Descriptions");
-        shown=true;
+    function toggle_module(m_selector, l_selector) {
+        var $m = $(m_selector);
+        var $l = $(l_selector);
+        
+        if ($m.is(":hidden")) {
+            $l.html("[Hide]");
+            $m.show();
+        } else {
+            $l.html("[Show]");
+            $m.hide();
+        }
+        return false;
     }
-}
 </script>
 <h1>Event #{{e.id}}: {{e.subject}}</h1>
-<DIV CLASS="module">
-    <TABLE WIDTH="100%">
-        <CAPTION><A CLASS="section">Common</A></CAPTION>
-        <TR><TD STYLE="width: 200px"><B>Managed Object:</B></TD><TD>{{e.managed_object}}</TD></TR>
-        <TR><TD><B>Class:</B></TD><TD>{{e.event_class}}</TD></TR>
-        <TR><TD><B>Priority:</B></TD><TD>{{e.event_priority}}</TD></TR>
-        <TR><TD><B>Category:</B></TD><TD>{{e.event_category}}</TD></TR>
-        <TR><TD><B>Status:</B></TD><TD>{{e.status}}</TD></TR>
-        <TR><TD><B>Time:</B></TD><TD>{{e.timestamp}}</TD</TR>
-    </TABLE>
-</DIV>
+<div class="module">
+    <a name="summary"></a>
+    <h2>Summary</h2>
+    <table WIDTH="100%">
+        <tr><TD STYLE="width: 150px"><b>Managed Object:</b></td><td>{{e.managed_object.name}} {% if e.managed_object.platform %}({{e.managed_object.platform}}){% endif %}</td></tr>
+        {% if e.status == 'A' or e.status == 'C' %}
+        <tr><td><b>Event Class:</b></td><td>{{e.event_class}}</td></tr>
+        {% endif %}
+        <tr><td><b>Event Status:</b></td>
+            <td>
+                {% if e.status == "U" %}Unclassified{% endif %}
+                {% if e.status == "A" %}Active{% endif %}
+                {% if e.status == "C" %}Closed{% endif %}
+                {% if e.status == "F" %}Failed{% endif %}
+            </td>
+        </tr>
+        <tr><td><b>Time:</b></td><td>{{e.timestamp}}</TD</tr>
+        <tr>
+            <td><b>Sections:</b></td>
+            <td>
+                <div id="s-toc">
+                    <ul>
+                        {% if e.status == 'A' or e.status == 'S' %}
+                        <li><a href="#text">Text</a></li>
+                        <li><a href="#symptoms">Symptoms</a></li>
+                        <li><a href="#pcauses">Probable Causes</a></li>
+                        <li><a href="#recommended_actions">Recommended Actions</a></li>
+                        <li><a href="#event_data">Event Data</a></li>
+                        <li><a href="#event_resolved">Resolved Variables</a></li>
+                        {% endif %}
+                        <li><a href="#event_raw">Raw Data</a></li>
+                        <li><a href="#log">Log</a></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>  
+    </table>
+</div>
 
-<DIV CLASS="module">
-    <TABLE WIDTH="100%">
-        <CAPTION><A CLASS="section">Subject: {{e.subject}}</A></CAPTION>
-        <TR><TD><PRE>{{e.body}}</PRE></TD></TR>
-    </TABLE>
-</DIV>
 
-<DIV CLASS="module">
-    <TABLE WIDTH="100%" ID="event_data">
-        <CAPTION><A CLASS="section">Event Data</A></CAPTION>
-        {% for ed in e.eventdata_set.all %}
-            <TR class="{%cycle 'row1' 'row2'%}"><TD>{{ed.type}}</TD><TD STYLE="width: 400px">{{ed.key}}</TD><TD>{{ed.value}}</TD><TD CLASS="event_data_description">{{ed.description}}</TD></TR>
+{% if e.status == 'A' or e.status == 'C' %}
+    <div class="module">
+        <a name="text"></a>
+        <h2>Subject: {{subject}}</h2>
+    
+        <pre>{{body}}</pre>
+    </div>
+
+    {% if symptoms %}
+        <div class="module">
+            <a name="symptoms"></a>
+            <h2>Symptoms</h2>
+            <pre>{{symptoms}}</pre>
+        </div>
+    {%endif%}
+
+    {% if probable_causes %}
+        <div class="module">
+            <a name="pcauses"></a>
+            <h2>Probable causes</h2>
+            <pre>{{probable_causes}}</pre>
+        </div>
+    {%endif%}
+
+    {% if recommended_actions %}
+        <div class="module">
+            <a name="recommended_actions"></a>
+            <h2>Recommended actions</h2>
+            <pre>{{recommended_actions}}</pre>
+        </div>    
+    {%endif%}
+    
+<div class="module">
+    <a name="event_data"></a>
+    <h2>Event Data
+        <span style="float: right">
+            <a  id="t-vars-l" href="#" onclick="return toggle_module('#t-vars', '#t-vars-l');">[Show]</a>
+        </span>
+    </h2>
+    <table id="t-vars" width="100%" style="display: none;">
+        {% for k, v in e.vars.items %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+                <td><b>{{k}}</b></td>
+                <td>{{v}}</td>
+            </tr>
         {% endfor %}
-            <tr><td></td><td></td><td><b><a href="#" onclick="toggle();" id="toggle_link">Show Descriptions</a></b></td><td></td></tr>
-    </TABLE>
-</DIV>
+    </table>
+</div>
 
-<DIV CLASS="module">
-<TABLE WIDTH="100%">
-    <CAPTION><A CLASS="section">Event History</A></CAPTION>
-    {% for l in e.eventlog_set.all %}
-        <TR class="{%cycle 'row1' 'row2'%}"><TD STYLE="width: 200px">{{l.timestamp}}</TD><TD>{{l.from_status}}</TD><TD>{{l.to_status}}</TD><TD>{{l.message}}</TD></TR>
-    {% endfor %}
-</TABLE>
-</DIV>
-
-{%if e.repeats %}
-<DIV CLASS="module">
-<TABLE WIDTH="100%">
-    <CAPTION><A CLASS="section">Previous occurences</A></CAPTION>
-    {% for r in e.eventrepeat_set.all %}
-        <TR class="{%cycle 'row1' 'row2'%}"><TD>{{r.timestamp}}</TD></TR>
-    {% endfor %}
-</TABLE>
+<div class="module">
+    <a name="event_resolved"></a>
+    <h2>Resolved variables
+            <span style="float: right">
+            <a id="t-resolved-vars-l" href="#" onclick="return toggle_module('#t-resolved-vars', '#t-resolved-vars-l');">[Show]</a>
+        </span>
+    </h2>
+    <table id="t-resolved-vars" width="100%" style="display: none;">
+        {% for k, v in e.resolved_vars.items %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+                <td><b>{{k}}</b></td>
+                <td>{{v}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
 {% endif %}
 
+{% if e.status == "F" %}
+    <div class="module">
+        <h2>Error diagnostics</h2>
+        <table border="0" width="100%">
+            <tr>
+                <td><b>NOC version</b></td>
+                <td>{{e.version}}</td>
+            </tr>
+            <tr>
+                <td><b>Traceback</b></td>
+                <td><pre>{{e.traceback}}</pre></td>
+            </tr>
+        </table>
+    </div>
+{% endif %}
+
+<div class="module">
+    <a name="event_raw"></a>
+    <h2>Raw data
+        <span style="float: right">
+            <a id="t-raw-vars-l" href="#" onclick="return toggle_module('#t-raw-vars', '#t-raw-vars-l');">[Show]</a>
+        </span>
+    </h2>
+    <table id="t-raw-vars" width="100%" style="display: none;">
+        {% for k, v in e.raw_vars.items %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+                <td><b>{{k}}</b></td>
+                <td>{{v}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="module">
+    <a name="log"></a>
+    <h2>Log</h2>
+    <table width="100%">
+        <thead>
+            <tr><th>Timestamp</th><th>From</th><th>-&gt;</th><th>To</th><th>Message</th></tr>
+        </thead>
+        {% for l in e.log %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+                <td>{{l.timestamp}}</td>
+                <td>{{l.from_status}}</td>
+                <td>-&gt;</td>
+                <td>{{l.to_status}}</td>
+                <td>{{l.message}}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="5">
+                <b>Post a message:</b><br/>
+                <form action="{% url fm:event:message e.id %}" method="POST" id="message_form">{% csrf_token %}
+                    <textarea id="id_message" name="message" rows="5" cols="80"></textarea><br/>
+                    <input type="submit" value="Post message" />
+                </form>
+            </td>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#e_priority").corner();
+    });
+</script>
 {%endblock%}
