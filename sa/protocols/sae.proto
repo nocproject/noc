@@ -244,8 +244,8 @@ message EventFilterResponse {
 
 message EventRequest {
     message EventBodyItem {
-        required string key   = 1;
-        required string value = 2;
+        required bytes key   = 1;
+        required bytes value = 2;
     }
     required int32         timestamp = 1;
     required string        ip        = 2;
