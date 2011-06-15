@@ -58,6 +58,12 @@ python manage.py sync-perm || error_exit "$LINENO: sync-perm failed"
 # Generate SSH keys
 info "Generating SSH keys"
 python manage.py generate-ssh-keys || error_exit "$LINENO: generate-ssh-keys failed"
+# Syncronize MIBS
+info "Syncronize MIBs"
+python manage.py sync-mibs || error_exit "$LINENO: sync-mib failed"
+# Syncronize mongodb collections
+info "Syncronize collections"
+python manage.py sync-collections || error_exit "$LINENO: sync-collections failed"
 # Syncronize pyRules
 info "Syncronizing pyRules"
 python manage.py sync-pyrules || error_exit "$LINENO: sync-pyrules failed"
