@@ -22,8 +22,7 @@ from noc.lib.periodic import periodic_registry
 from noc.lib.debug import error_report
 from noc.main.models import Schedule, TimePattern, PyRule
 from noc.sa.models import ManagedObject
-from noc.fm.models import Event, EventData, EventPriority,\
-                          EventClass, EventCategory
+from noc.fm.models import NewEvent
 
 
 class Scheduler(Daemon):
@@ -103,16 +102,12 @@ class Scheduler(Daemon):
         """
         if timestamp is None:
             timestamp = datetime.datetime.now()
-        e = Event(
-            timestamp=timestamp,
-            event_priority=EventPriority.objects.get(name="DEFAULT"),
-            event_class=EventClass.objects.get(name="DEFAULT"),
-            event_category=EventCategory.objects.get(name="DEFAULT"),
-            managed_object=ManagedObject.objects.get(name="SAE")
-            )
-        e.save()
-        for l, r in data:
-            EventData(event=e, key=l, value=r).save()
+        NewEvent(
+            timestamp = timestamp,
+            managed_object = ManagedObject.objects.get(name="SAE"),
+            raw_vars = dict(data),
+            log = []
+        ).save()
 
     def run(self):
         # Wait for 15 seconds

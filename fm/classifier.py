@@ -2,379 +2,367 @@
 ##----------------------------------------------------------------------
 ## noc-classifier daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
+## Python modules
+import re
+import logging
+import time
+import datetime
+import sys
+import os
+import binascii
+## NOC modules
 from noc.lib.daemon import Daemon
-from noc.lib.pyquote import bin_quote,bin_unquote
-from noc.lib.validators import is_ipv4
-from noc.fm.models import EventClassificationRule,Event,EventData,EventClass,MIB,EventClassVar,EventRepeat,EventPostProcessingRule
-from django.db import transaction,reset_queries,connection
-from django.template import Template, Context
-import re,logging,time,datetime
+from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
+                          EventClass, MIB, EventLog,\
+                          ActiveEvent
+from noc.sa.models import profile_registry
+from noc.lib.version import get_version
+from noc.lib.debug import format_frames, get_traceback_frames
+from noc.lib.snmputils import render_tc
+
+## Defaut active event window
+EVENT_WINDOW = 24 * 3600
 
 ##
 ## Patterns
 ##
-rx_template=re.compile(r"\{\{([^}]+)\}\}")
-rx_oid=re.compile(r"^(\d+\.){6,}")
-rx_mac_cisco=re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
-##
-## Global functions for variables evaluation
-##
+rx_oid = re.compile(r"^(\d+\.){6,}")
 
-##
-## Decode IPv4 from 4 octets
-##
-def decode_ipv4(s):
-    if len(s)==4:
-        return ".".join(["%d"%ord(c) for c in list(s)])
-    if is_ipv4(s):
-        return s
-    raise DecodeError
-##
-## Decode MAC address from 6 octets
-##
-def decode_mac(s):
-    if len(s)==6:
-        return "%02X:%02X:%02X:%02X:%02X:%02X"%tuple([ord(x) for x in list(s)])
-    if rx_mac_cisco.match(s):
-        s=s.replace(".","").upper()
-        return "%s:%s:%s:%s:%s:%s"%(s[:2],s[2:4],s[4:6],s[6:8],s[8:10],s[10:])
-    raise DecodeError
-##
-## Global variables dict
-##
-eval_globals={
-    "decode_ipv4" : decode_ipv4,
-    "decode_mac"  : decode_mac,
-}
 
-##
-## Exceptions
-##
-class DecodeError(Exception): pass
-##
-## In-memory Rule representation
-##
 class Rule(object):
-    def __init__(self,rule):
-        self.rule=rule
-        self.name=rule.name
-        self.re=[(re.compile(x.left_re,re.MULTILINE|re.DOTALL),re.compile(x.right_re,re.MULTILINE|re.DOTALL)) for x in rule.eventclassificationre_set.filter(is_expression=False)]
-        self.expressions=[(x.left_re,compile(x.right_re,"inline","eval")) for x in rule.eventclassificationre_set.filter(is_expression=True)]
-        if not self.expressions:
-            self.expressions=None
-    ##
-    ## Return a hash of extracted variables for object o, or None
-    ##
-    def match(self,o):
-        vars={}
-        for l,r in self.re:
-            found=False
-            for o_l,o_r in o:
-                l_match=l.search(o_l)
-                if not l_match:
+    """
+    In-memory rule representation
+    """
+    def __init__(self, rule):
+        self.rule = rule
+        self.name = rule.name
+        self.event_class = rule.event_class
+        self.event_class_name = self.event_class.name
+        self.patterns = [(re.compile(x.key_re, re.MULTILINE | re.DOTALL),
+                          re.compile(x.value_re, re.MULTILINE | re.DOTALL))
+                         for x in rule.patterns]
+        self.to_drop = self.event_class.action == "D"
+        self.to_dispose = len(self.event_class.disposition) > 0
+
+    def __unicode__(self):
+        return self.name
+
+    def match(self, vars):
+        """
+        Try to match variables agains a rule.
+        Return extracted variables or None
+        
+        :param vars: New and resolved variables
+        :type vars: dict
+        :returns: Extracted vars or None
+        :rtype: dict or None
+        """
+        e_vars = {}
+        for kp, vp in self.patterns:
+            found = False
+            for k in vars:
+                # Try to match key
+                k_match = kp.search(k)
+                if k_match is None:
                     continue
-                r_match=r.search(o_r)
-                if not r_match:
-                    return None
-                found=True
-                vars.update(l_match.groupdict()) # Populate vars with extracted variables
-                vars.update(r_match.groupdict())
+                v = vars[k]
+                v_match = vp.search(v)
+                if v_match is None:
+                    continue  #??? return None
+                # Matched line found
+                found = True
+                # Append extracted variables
+                e_vars.update(k_match.groupdict())
+                e_vars.update(v_match.groupdict())
                 break
             if not found:
+                # No matched lines found
                 return None
-        return vars
-    ##
-    ## Decode IPv4 from 4 octets
-    ##
-    def decode_ipv4(self,s):
-        if len(s)==4:
-            return ".".join(["%d"%ord(c) for c in list(s)])
-        if is_ipv4(s):
-            return s
-        raise DecodeError
-    ##
-    ## Decode MAC address from 6 octets
-    ##
-    def decode_mac(self,s):
-        if len(s)==6:
-            return "%02X:%02X:%02X:%02X:%02X:%02X"%tuple([ord(x) for x in list(s)])
-        if rx_mac_cisco.match(s):
-            s=s.replace(".","").upper()
-            return "%s:%s:%s:%s:%s:%s"%(s[:2],s[2:4],s[4:6],s[6:8],s[8:10],s[10:])
-        raise DecodeError
-##
-## Post-Process rule
-##
-class PostProcessRule(object):
-    def __init__(self,rule):
-        self.rule=rule
-        self.name=rule.name
-        self.re=[(re.compile(x.var_re,re.MULTILINE|re.DOTALL),re.compile(x.value_re,re.MULTILINE|re.DOTALL)) for x in rule.eventpostprocessingre_set.all()]
-    
-    def match(self,vars):
-        v=vars.items()
-        for rx_var,rx_value in self.re:
-            matched=False
-            for var,value in v:
-                if rx_var.match(var) and rx_value.match(value):
-                    matched=True
-                    break
-            if not matched:
-                return False
-        return True
+        return e_vars
 
-##
-## Noc-classifier daemon
-##
+
 class Classifier(Daemon):
+    """
+    noc-classifier daemon
+    """
     daemon_name="noc-classifier"
+
+    # SNMP OID pattern
+    rx_oid = re.compile(r"^(\d+\.){6,}")
+
     def __init__(self):
-        self.rules=[]
-        self.templates={} # event_class_id -> (body_template,subject_template)
-        self.post_process={} # event_class_id -> [rule1, ..., ruleN]
+        self.version = get_version()
+        self.rules = {}  # profile -> [rule, ..., rule]
+        self.templates = {}  # event_class_id -> (body_template,subject_template)
+        self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
         Daemon.__init__(self)
-        logging.info("Running Classifier")
-    ##
-    ## Load rules from database after loading config
-    ##
+        logging.info("Running Classifier version %s" % self.version)
+
     def load_config(self):
+        """
+        Load rules from database after loading config
+        """
         super(Classifier,self).load_config()
         self.load_rules()
-    ##
-    ## Load rules from database
-    ##
-    def load_rules(self):
-        logging.info("Loading rules")
-        self.rules=[Rule(r) for r in EventClassificationRule.objects.order_by("preference")]
-        logging.info("%d rules are loaded"%len(self.rules))
-        logging.info("Compiling templates")
-        self.templates=dict([(ec.id,(Template(ec.subject_template),Template(ec.body_template))) for ec in EventClass.objects.all()])
-        logging.info("%d templates are compiled"%len(self.templates))
-        logging.info("Loading post-process rules")
-        self.post_process={}
-        n=0
-        for r in EventPostProcessingRule.objects.order_by("preference"):
-            ec_id=r.event_class.id
-            if ec_id not in self.post_process:
-                self.post_process[ec_id]=[]
-            self.post_process[ec_id].append(PostProcessRule(r))
-            n+=1
-        logging.info("%d post-processing rules are loaded"%n)
-    ##
-    ## Classify single event:
-    ## 1. Resolve OIDs when source is SNMP Trap
-    ## 2. Try to find matching rule
-    ## 3. Drop event if required by rule
-    ## 4. Set event class of the matched rule or DEFAULT
-    ## 
-    def classify_event(self,event,cursor):
-        # Extract received event properties
-        props=[(x.key,bin_unquote(x.value)) for x in event.eventdata_set.filter(type=">")]
-        # Resolve additional event properties
-        resolved={
-            "profile":event.managed_object.profile_name
-        }
-        # Resolve SNMP oids
-        if self.get_source(props)=="SNMP Trap":
-            resolved.update(self.resolve_snmp_oids(props))
-        props+=resolved.items()
-        # Find rule
-        status="A"
-        rule,vars=self.find_classification_rule(event,props)
-        if rule: # Rule found
-            if rule.rule.action=="D": # Drop event when required by rule
-                self.drop_event(event)
-                return
-            event_class=rule.rule.event_class
-            event.event_class=event_class
-            if event_class.repeat_suppression and event_class.repeat_suppression_interval>0 and self.suppress_repeat(event,vars):
-                return # Event is suppressed, no further processing
-            event_category=event_class.category
-            event_priority=event_class.default_priority
-            event.log("CLASSIFICATION RULE: %s"%rule.name,to_status=status)
-        else:
-            # Set event class to DEFAULT when no matching rule found
-            event_class=EventClass.objects.get(name="DEFAULT")
-            vars={}
-            logging.debug("No rule found for event %d. Falling back to DEFAULT"%event.id)
-            event_category=event_class.category
-            event_priority=event_class.default_priority
-            event.log("FALLBACK TO DEFAULT")
-        # Fill event subject and body
-        f_vars=dict(props) # f_vars contains all event vars, including original, extracted and resolved
-        f_vars.update(vars)
-        f_vars.update(resolved)
-        # Does rule contain additional expressions which are need to be calculated?
-        if rule and rule.expressions:
-            c_vars=dict([(x[0],str(eval(x[1],f_vars,eval_globals))) for x in rule.expressions]) # Evaluate all expressions
-            f_vars.update(c_vars) # Update var dicts
-            vars.update(c_vars)
-        f_vars["event"]=event # Finally add "event" variable
-        subject_template,body_template=self.templates[event_class.id]
-        context=Context(f_vars)
-        subject=subject_template.render(context)
-        if len(subject)>255: # Too long subject must be truncated
-            subject=subject[:250]+" ..."
-        body=body_template.render(context)
-        # Write event
-        cursor.execute("SELECT classify_event(%s, %s, %s, %s, %s, %s, %s, %s)",
-            (event.id, event_class.id, event_category.id, event_priority.id, status, subject, body,
-            [["R", k, bin_quote(v)] for k, v in resolved.items()]+[["V", k, bin_quote(v)] for k, v in vars.items()]))
-        # Find post-processing rule
-        post_process=self.find_post_processing_rule(event,vars)
-        # Refetch event when necessary
-        if event.event_class.rule or post_process:
-            event=Event.objects.get(id=event.id)
-        # Run event class rule when defined
-        if event.event_class.rule:
-            logging.debug("Executing pyRule %s(%d)"%(event.event_class.rule,event.id))
-            event.event_class.rule(event=Event.objects.get(id=event.id))
-            # Check event is deleted in rule
-            try:
-                Event.objects.get(id=event.id)
-            except Event.DoesNotExist:
-                return
-        # Post-processing
-        if post_process:
-            # Notify if necessary
-            if post_process.rule.notification_group:
-                # Add object name and address to the rest of message
-                message=event.body+"\n\nObject: %s (%s,%s)\n"%(event.managed_object.name,event.managed_object.profile_name,event.managed_object.address)
-                # Add object name to subject
-                subject="[%s] %s"%(event.managed_object.name,event.subject)
-                post_process.rule.notification_group.notify(subject=subject,body=message)
-            if post_process.rule.action=="D": # Drop event if required by post_process_rule
-                self.drop_event(event)
-                return
-            if post_process.rule.change_category:
-                event_category=post_process.rule.change_category # Set up priority and category from rule
-            if post_process.rule.change_priority:
-                event_priority=post_process.rule.change_priority
-            if post_process.rule.rule:
-                post_process.rule.rule(event=event)
-            status=post_process.rule.action
-            event.log("POST-PROCESSING RULE: %s"%post_process.name,from_status=status,to_status=status)
-    ##
-    ## Return event source
-    ##
-    def get_source(self,props):
-        for k,v in props:
-            if k=="source":
-                return v
-        return None
-    ##
-    ## Resolve SNMP oids to symbolic names
-    ##
-    def resolve_snmp_oids(self,props):
-        def is_oid(s):
-            return rx_oid.search(s) is not None
-        resolved={}
-        for k,v in props:
-            if is_oid(k):
-                oid=MIB.get_name(k)
-                if oid!=k:
-                    if is_oid(v):
-                        v=MIB.get_name(v)
-                    resolved[oid]=v
-        return resolved
-        
-    ##
-    ## Find classification rule.
-    ## Returns Rule,vars or None,None
-    ##
-    def find_classification_rule(self,event,props):
-        for r in self.rules:
-            # Try to match rule
-            vars=r.match(props)
-            if vars is not None:
-                logging.debug("Matching class for event %d found: %s (Rule: %s)"%(event.id,r.rule.event_class.name,r.name))
-                return r,vars
-        return None,None
-        
-    ##
-    ## Find matching postprocessing rule for event class.
-    ## Returns PostProcessRule or None
-    ##
-    def find_post_processing_rule(self,event,vars):
-        event_class=event.event_class
-        if event_class.id in self.post_process:
-            for r in self.post_process[event_class.id]:
-                # Check time pattern
-                if r.rule.time_pattern and not r.rule.time_pattern.match(event.timestamp):
-                    continue
-                # Check object selector
-                if r.rule.managed_object_selector and not r.rule.managed_object_selector.match(event.managed_object):
-                    continue
-                # Check vars
-                if r.match(vars):
-                    logging.debug("Event #%d matches post-processing rule '%s'"%(event.id,r.name))
-                    return r
-        return None
-    ##
-    ## Drop event
-    ##
-    def drop_event(self,event):
-        logging.debug("Drop event #%d"%event.id)
-        event.delete()
-    ##
-    ## Suppress repeats.
-    ## Return True if event is suppressed, False otherwise
-    ##
-    def suppress_repeat(self,event,vars):
-        event_class=event.event_class
-        # Build keys
-        kv={}
-        for name in [v.name for v in EventClassVar.objects.filter(event_class=event_class,repeat_suppression=True)]:
-            if name in vars:
-                kv[name]=vars[name]
-            else:
-                return False
-        r=[e for e in Event.objects.filter(
-            event_class=event_class,
-            managed_object=event.managed_object,
-            timestamp__gte=event.timestamp-datetime.timedelta(seconds=event_class.repeat_suppression_interval),
-            timestamp__lte=event.timestamp
-            ).exclude(id=event.id).order_by("-timestamp")
-            if e.match_data(kv)]
-        if len(r)>0:
-            pe=r[0]
-            logging.debug("Event #%d repeats event #%d"%(event.id,pe.id))
-            er=EventRepeat(event=pe,timestamp=pe.timestamp)
-            er.save()
-            pe.timestamp=event.timestamp
-            pe.save()
-            event.delete()
-            return True
-    ##
-    ## Main daemon loop
-    ##
-    def run(self):
-        CHUNK=1000 # Maximum amount of events to proceed at once
-        INTERVAL=10
-        transaction.enter_transaction_management()
-        cursor=connection.cursor()
-        while True:
-            n=0
-            t0=time.time()
-            for e in Event.objects.filter(status="U").order_by("-id")[:CHUNK]:
-                self.classify_event(e, cursor)
-                transaction.commit()
-                reset_queries() # Free queries log
-                n+=1
-            if n: # Write out performance data
-                dt=time.time()-t0
-                if dt>0:
-                    perf=n/dt
-                else:
-                    perf=0
-                logging.info("%d events classified (%10.4f second elapsed. %10.4f events/sec)"%(n,dt,perf))
-            else: # No events classified this pass. Sleep
-                time.sleep(INTERVAL)
-        transaction.leave_transaction_management()
-        
 
+    def load_rules(self):
+        """
+        Load rules from database
+        """
+        def find_profile(rule):
+            for l, r in rule.patterns:
+                if l in ("profile", "^profile$"):
+                    return r
+            return None
+
+        logging.info("Loading rules")
+        n = 0
+        profiles = list(profile_registry.classes)
+        self.rules = {}
+        for p in profiles:
+            self.rules[p] = []
+        for r in EventClassificationRule.objects.order_by("preference"):
+            rule = Rule(r)
+            # Find profile restriction
+            p = find_profile(rule)
+            if p:
+                profile_re = p[0].right_re
+            else:
+                profile_re = r"^.*$"
+            rx = re.compile(profile_re)
+            for p in profiles:
+                if rx.search(p):
+                    self.rules[p] += [rule]
+            n += 1
+        logging.info("%d rules are loaded into %d chains" % (n, len(self.rules)))
+
+    ##
+    ## Variable decoders
+    ##
+    def decode_str(self, event, value):
+        return value
+
+    def decode_int(self, event, value):
+        return int(value)
+
+    def decode_ipv4_address(self, event, value): pass
+    def decode_ipv6_address(self, event, value): pass
+    def decode_ip_address(self, event, value): pass
+    def decode_ipv4_prefix(self, event, value): pass
+    def decode_ipv6_prefix(self, event, value): pass
+    def decode_ip_prefix(self, event, value): pass
+    def decode_mac(self, event, value): pass
+    def decode_interface_name(self, event, value): pass
+    def decode_oid(self, event, value):
+        return value
+    
+    def retry_failed_events(self):
+        """
+        Return failed events to the unclassified queue if
+        failed on other version of classifier
+        """
+        if FailedEvent.objects.count() == 0:
+            return
+        logging.info("Recovering failed events")
+        for e in FailedEvent.objects.filter(version__ne=self.version):
+            e.mark_as_new("Reclassification has been requested by noc-classifer")
+            logging.debug("Failed event %s has been recovered" % e.id)
+
+    def iter_new_events(self, max_chunk=1000):
+        """
+        Generator iterating unclassified events in the queue
+        """
+        for e in NewEvent.objects.order_by("timestamp")[:max_chunk]:
+            yield e
+    
+    def mark_as_failed(self, event):
+        """
+        Write error log and mark event as failed
+        """
+        logging.error("Failed to process event %s" % str(event.id))
+        # Prepare traceback
+        t, v, tb = sys.exc_info()
+        now = datetime.datetime.now()
+        r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
+        r += [str(t), str(v)]
+        r += [format_frames(get_traceback_frames(tb))]
+        r = "\n".join(r)
+        event.mark_as_failed(version=self.version, traceback=r)
+
+    def is_oid(self, v):
+        """
+        Check value is SNMP OID
+        """
+        return self.rx_oid.match(v) is not None
+
+    def format_snmp_trap_vars(self, event):
+        """
+        Try to resolve SNMP Trap variables according to MIBs
+
+        :param event: event
+        :type event: NewEvent
+        :returns: Resolved variables
+        :rtype: dict
+        """
+        r = {}
+        for k, v in event.raw_vars.items():
+            if not self.is_oid(k):
+                # Nothing to resolve
+                continue
+            v = binascii.a2b_qp(v)
+            rk, syntax = MIB.get_name_and_syntax(k)
+            rv = v
+            if syntax:
+                # Format value according to syntax
+                if syntax["base_type"] == "Enumeration":
+                    # Expand enumerated type
+                    try:
+                        rv = syntax["enum_map"][str(v)]
+                    except KeyError:
+                        pass
+                else:
+                    # Render according to TC
+                    rv = render_tc(v, syntax["base_type"],
+                                   syntax.get("display_hint", None))
+            elif self.is_oid(v):
+                # Resolve OID in value
+                rv = MIB.get_name(v)
+            if rk != k or rv != v:
+                r[rk] = rv
+        return r
+
+    def find_matching_rule(self, event, vars):
+        """
+        Find first matching classification rule
+        
+        :param event: Event
+        :type event: NewEvent
+        :param vars: raw and resolved variables
+        :type vars: dict
+        :returns: Event class and extracted variables
+        :rtype: tuple of (EventClass, dict)
+        """
+        for r in self.rules[event.managed_object.profile_name]:
+            # Try to match rule
+            v = r.match(vars)
+            if v is not None:
+                logging.debug("Matching class for event %s found: %s (Rule: %s)" % (
+                    event.id, r.event_class_name, r.name))
+                return r, v
+        return None, None
+
+    def eval_rule_variables(self, event, event_class, vars):
+        """
+        Evaluate rule variables
+        """
+        r = {}
+        for ecv in event_class.vars:
+            # Check variable is present
+            if ecv.name not in vars:
+                if ecv.required:
+                    raise Exception("Required variabe '%s' is not found" % ecv.name)
+                else:
+                    continue
+            # Decode variable
+            v = vars[ecv.name]
+            decoder = getattr(self, "decode_%s" % ecv.type, None)
+            if decoder:
+                v = decoder(event, v)
+            r[ecv.name] = v
+        return r
+
+    def classify_event(self, event):
+        """
+        Perform event classification.
+        Classification steps are:
+        
+        1. Format SNMP values accordind to MIB definitions (for SNMP events only)
+        2. Find matching classification rule
+        3. Calculate rule variables
+        
+        :param event: Event to classify
+        :type event: NewEvent
+        """
+        resolved_vars = {
+            "profile": event.managed_object.profile_name
+        }
+        # For SNMP traps format values according to MIB definitions
+        if event.source == "SNMP Trap":
+            resolved_vars.update(self.format_snmp_trap_vars(event))
+        # Find matched event class
+        c_vars = event.raw_vars.copy()
+        c_vars.update(resolved_vars)
+        rule, vars = self.find_matching_rule(event, c_vars)
+        if rule is None:
+            # Somethin goes wrong. No default rule found. Exit immediately
+            logging.error("No default rule found. Exiting")
+            os._exit(1)
+        if rule.to_drop:
+            # Silently drop event if declared by action
+            event.delete()
+            return
+        event_class = rule.event_class
+        # Calculate rule variables
+        vars = self.eval_rule_variables(event, event_class, vars)
+        message = "Classified as '%s' by rule '%s'" % (event_class.name,
+                                                       rule.name)
+        log = event.log + [EventLog(timestamp=datetime.datetime.now(),
+                                    from_status="N", to_status="A",
+                                    message=message)]
+        a_event = ActiveEvent(
+            id=event.id,
+            timestamp=event.timestamp,
+            managed_object=event.managed_object,
+            event_class=event_class,
+            raw_vars=event.raw_vars,
+            resolved_vars=resolved_vars,
+            vars=vars,
+            log=log
+        )
+        a_event.save()
+        event.delete()
+        event = a_event
+        # Finally dispose event to further processing by noc-correlator
+        if rule.to_dispose:
+            event.dispose_event()
+    
+    def run(self):
+        """
+        Main daemon loop
+        """
+        # @todo: move to configuration
+        CHECK_EVERY = 3  # Recheck queue every N seconds
+        REPORT_INTERVAL = 1000  # Performance report interval
+        
+        # Try to classify events which processing failed
+        # on previous versions of classifier
+        self.retry_failed_events()
+        # Enter main loop
+        while True:
+            n = 0  # Number of events processed
+            sn = 0  # Number of successes
+            t0 = time.time()
+            for e in self.iter_new_events(REPORT_INTERVAL):
+                try:
+                    self.classify_event(e)
+                    sn += 1
+                except:
+                    self.mark_as_failed(e)
+                n += 1
+            if n:
+                # Write performance report
+                dt = time.time() - t0
+                if dt:
+                    perf = n / dt
+                else:
+                    perf = 0
+                logging.info("%d events are classified (success: %d, failed: %d)"
+                             "(%10.4f second elapsed. %10.4f events/sec)" % (
+                                    n, sn, n - sn, dt, perf))
+            else:
+                # No events classified this pass. Sleep
+                time.sleep(CHECK_EVERY)

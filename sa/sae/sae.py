@@ -24,8 +24,7 @@ from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
 from noc.sa.models import Activator, ManagedObject, MapTask, script_registry,\
                           profile_registry
-from noc.fm.models import Event, EventData, EventPriority, EventClass,\
-                          EventCategory, IgnoreEventRules
+from noc.fm.models import NewEvent, IgnoreEventRules
 from noc.sa.rpc import RPCSocket, file_hash
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import read_file
@@ -202,25 +201,23 @@ class SAE(Daemon):
         """
         Write FM event to database
 
-        :param data: A list of (left, right)
+        :param data: A list of (key, value) or dict
         :param timestamp:
-        :param managed_object:
+        :param managed_object: Managed object
         """
         if managed_object is None:
+            # Set object to SAE, if not set
             managed_object = ManagedObject.objects.get(name="SAE")
-        if timestamp is None:
-            timestamp = datetime.datetime.now()
-        e = Event(
+        if type(data) == list:
+            data = dict(data)
+        elif type(data) != dict:
+            raise ValidationError("List or dict type required")
+        NewEvent(
             timestamp=timestamp,
-            event_priority=EventPriority.objects.get(name="DEFAULT"),
-            event_class=EventClass.objects.get(name="DEFAULT"),
-            event_category=EventCategory.objects.get(name="DEFAULT"),
-            managed_object=managed_object
-            )
-        e.save()
-        for l, r in data:
-            d = EventData(event=e, key=l, value=r)
-            d.save()
+            managed_object=managed_object,
+            raw_vars=data,
+            log=[]
+            ).save()
 
     def collect_crashinfo(self):
         """
