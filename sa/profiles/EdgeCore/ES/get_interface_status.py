@@ -30,7 +30,7 @@ class Script(noc.sa.script.Script):
             try:
                 # Get interface status
                 r=[]
-                for i,n,s,d,m in self.join_four_tables(self.snmp,"1.3.6.1.2.1.31.1.1.1.1","1.3.6.1.2.1.2.2.1.8","1.3.6.1.2.1.31.1.1.1.18","1.3.6.1.2.1.2.2.1.6",bulk=True,cached=True): # IF-MIB::ifName, IF-MIB::ifOperStatus, IF-MIB::ifAlias, IF-MIB::ifPhysAddress
+                for i,n,s,d,m in self.join_four_tables(self.snmp,"1.3.6.1.2.1.31.1.1.1.1","1.3.6.1.2.1.2.2.1.8","1.3.6.1.2.1.31.1.1.1.18","1.3.6.1.2.1.2.2.1.6",bulk=True): # IF-MIB::ifName, IF-MIB::ifOperStatus, IF-MIB::ifAlias, IF-MIB::ifPhysAddress
 		    if not n.startswith("Port-Channel"):
 			n=n.replace("Port","Eth 1/")
 			if n=="":
@@ -45,10 +45,10 @@ class Script(noc.sa.script.Script):
 	if self.match_version(platform__contains="4626"):
 	    try:
     		cmd="show interface status | include line protocol is|alias|address is"
-		buf=self.cli(cmd,cached=True).replace("\n "," ")
+		buf=self.cli(cmd).replace("\n "," ")
 	    except:
     		cmd="show interface status"
-		buf=self.cli(cmd,cached=True).replace("\n "," ")
+		buf=self.cli(cmd).replace("\n "," ")
     	    for l in buf.splitlines():
         	match=rx_interface_status.match(l)
         	if match:
@@ -63,7 +63,7 @@ class Script(noc.sa.script.Script):
 			r[-1]["description"]=mdescr.group("descr")
 	else:
     	    cmd="show interface status"
-	    buf=self.cli(cmd,cached=True).lstrip("\n\n")
+	    buf=self.cli(cmd).lstrip("\n\n")
 	    for l in buf.split("\n\n"):
 		match=rx_interface_status_3526.search(l+"\n")
 		if match:

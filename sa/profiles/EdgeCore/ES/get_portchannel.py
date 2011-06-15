@@ -18,6 +18,7 @@ from noc.sa.interfaces import IGetPortchannel
 class Script(NOCScript):
     name="EdgeCore.ES.get_portchannel"
     implements=[IGetPortchannel]
+    cache=True
     
     rx_chan_line_3526=re.compile(r"Information of (?P<interface>Trunk \d+).*?Member Ports: (?P<members_str>[^\n]+)", re.IGNORECASE|re.DOTALL|re.MULTILINE)
     @NOCScript.match(platform__contains="4612")
