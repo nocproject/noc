@@ -22,18 +22,15 @@ class Script(NOCScript):
     ##
     ## Extract vlan information
     ##
-    rx_vlan_line=re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s", re.MULTILINE)
+    rx_vlan_line=re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>.+?)\s+active", re.MULTILINE)
     def extract_vlans(self, data):
-        r=[]
-        for match in self.rx_vlan_line.finditer(data):
-            name=match.group("name")
-            vlan_id=int(match.group("vlan_id"))
-            if vlan_id>=1000 and vlan_id<=1005\
-                    and name in ["fddi-default","trcrf-default","token-ring-default","fddinet-default","trbrf-default","trnet-default"]:
-                continue
-            r+=[{"vlan_id": vlan_id, "name": name}]
-        return r
-        
+        return [
+            {
+                "vlan_id": int(match.group("vlan_id")),
+                "name": match.group("name")
+            }
+            for match in self.rx_vlan_line.finditer(data)
+        ]
     
     ##
     ## Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
