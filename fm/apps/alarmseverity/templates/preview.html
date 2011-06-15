@@ -1,0 +1,26 @@
+{% extends "template.html"%}
+{% block content %}
+<h1>Event priority: {{o.name}}</h1>
+<div class="module">
+    <table border="0" width="100%">
+        <tr><td style="width: 100px"><b>Name:</b></td><td>{{o.name}}</td></tr>
+        <tr><td><b>Severity:</b></td><td>{{o.severity}}</td></tr>
+        <tr><td><b>Description:</b></td><td>{{o.description}}</td></tr>
+        <tr><td><b>Style:</b></td><td>{{o.style.name}}</td></tr>
+    </table>
+</div>
+
+<div class="module">
+    <h2>Style preview</h2>
+    <table border="0" width="100%">
+        <tr><td>...</td></tr>
+        <tr style="{{o.style.style}}">
+            <td>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </td>
+        </tr>
+        <tr><td>...</td></tr>
+    </table>
+</div>
+{% endblock %}
