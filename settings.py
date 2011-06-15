@@ -159,7 +159,7 @@ INSTALLED_APPS = (
     "south",
     
     "noc.main",
-    # "noc.inv",  # Temporary set up from [main]/installed_apps
+    "noc.inv",
     "noc.sa",
     "noc.fm",
     "noc.pm",
