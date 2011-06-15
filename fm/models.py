@@ -1,741 +1,1247 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## FM module database models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
 from __future__ import with_statement
+import imp
+import subprocess
+import tempfile
+import os
+import datetime
+import re
+import random
+## Django modules
 from django.db import models
-from noc.sa.models import ManagedObject,ManagedObjectSelector
-from noc.main.models import TimePattern,NotificationGroup,PyRule
+from django.template import Template, Context
+## NOC modules
+from noc.sa.models import ManagedObject, ManagedObjectSelector
+from noc.main.models import TimePattern, NotificationGroup, PyRule, Style, User
 from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
-import imp,subprocess,tempfile,os,datetime,re,random
+import noc.lib.nosql as nosql
+from noc.lib.fileutils import temporary_file
 
-##
-## Python quote helper
-##
-def py_q(s):
-    return s.replace("\"","\\\"")
 
 ##
 ## Exceptions
 ##
 class MIBRequiredException(Exception):
-    def __init__(self,mib,requires_mib):
-        super(MIBRequiredException,self).__init__()
-        self.mib=mib
-        self.requires_mib=requires_mib
-    def __str__(self):
-        return "%s requires %s"%(self.mib,self.requires_mib)
-##
-class MIBNotFoundException(Exception):
-    def __init__(self,mib):
-        super(MIBNotFoundException,self).__init__()
-        self.mib=mib
-    def __str__(self):
-        return "MIB not found: %s"%self.mib
+    def __init__(self, mib, requires_mib):
+        super(MIBRequiredException, self).__init__()
+        self.mib = mib
+        self.requires_mib = requires_mib
 
+    def __str__(self):
+        return "%s requires %s" % (self.mib, self.requires_mib)
+
+
+class MIBNotFoundException(Exception):
+    def __init__(self, mib):
+        super(MIBNotFoundException, self).__init__()
+        self.mib = mib
+
+    def __str__(self):
+        return "MIB not found: %s" % self.mib
+
+
+class InvalidTypedef(Exception):
+    pass
 
 ##
 ## Regular expressions
 ##
-rx_module_not_found=re.compile(r"{module-not-found}.*`([^']+)'")
-rx_py_id=re.compile("[^0-9a-zA-Z]+")
-rx_mibentry=re.compile(r"^((\d+\.){5,}\d+)|(\S+::\S+)$")
-rx_mib_name=re.compile(r"^(\S+::\S+?)(.\d+)?$")
+rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
+rx_py_id = re.compile("[^0-9a-zA-Z]+")
+rx_mibentry = re.compile(r"^((\d+\.){5,}\d+)|(\S+::\S+)$")
+rx_mib_name = re.compile(r"^(\S+::\S+?)(.\d+)?$")
+rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
+rx_rule_name_quote = re.compile("[^a-zA-Z0-9]+")
+
+
+def rulename_quote(s):
+    """
+    Convert arbitrary string to pyrule name
+    
+    >>> rulename_quote("Unknown | Default")
+    'Unknown_Default'
+    """
+    return rx_rule_name_quote.sub("_", s)
+
 
 ##
-## SNMP MIB
+## MIB Processing
 ##
-class MIB(models.Model):
-    class Meta:
-        verbose_name="MIB"
-        verbose_name_plural="MIBs"
-        ordering=["name"]
-    name=models.CharField("Name",max_length=64,unique=True)
-    description=models.TextField("Description",blank=True,null=True)
-    last_updated=models.DateTimeField("Last Updated") # Latest revision of MIB
-    uploaded=models.DateTimeField("Uploaded")
-    
+class MIB(nosql.Document):
+    meta = {
+        "collection": "noc.mibs",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(required=True, unique=True)
+    description = nosql.StringField(required=False)
+    last_updated = nosql.DateTimeField(required=True)
+    depends_on = nosql.ListField(nosql.StringField())
+    # TC definitions: name -> SYNTAX
+    typedefs = nosql.DictField(required=False)
+
     def __unicode__(self):
         return self.name
-    ##
-    ## Load MIB into database
-    ## smidump from libsmi used to parse MIB
-    ##
+
     @classmethod
-    def load(self,path):
+    def parse_syntax(cls, syntax):
+        """
+        Process part of smidump output and convert to syntax structure
+        """
+        s = {}
+        if "basetype" in syntax:
+            s["base_type"] = syntax["basetype"]
+        if "name" in syntax and "module" in syntax:
+            if syntax["module"] == "":
+                # Empty module -> builitin types
+                s["base_type"] = syntax["name"]
+            else:
+                # Resolve references
+                mib = MIB.objects.filter(name=syntax["module"]).first()
+                if mib is None:
+                    raise MIBNotFoundException(syntax["module"])
+                if not mib.typedefs or syntax["name"] not in mib.typedefs:
+                    raise InvalidTypedef()
+                td = mib.typedefs[syntax["name"]]
+                for k in ["base_type", "display_hint", "enum_map"]:
+                    if k in td:
+                        s[k] = td[k]
+        if s["base_type"] == "Enumeration":
+            enum_map = s.get("enum_map", {})
+            for k in syntax:
+                sk = syntax[k]
+                if type(sk) != dict:
+                    continue
+                if "nodetype" in sk and sk["nodetype"] == "namednumber":
+                    enum_map[sk["number"]] = k
+            s["enum_map"] = enum_map
+        if "format" in syntax:
+            s["display_hint"] = syntax["format"]
+        return s
+
+    @classmethod
+    def load(cls, path):
         # Build SMIPATH variable for smidump to exclude locally installed MIBs
-        smipath=["share/mibs","local/share/mibs"]
+        smipath = ["share/mibs", "local/share/mibs"]
         # Pass MIB through smilint to detect missed modules
-        f=subprocess.Popen([config.get("path","smilint"),"-m",path],stderr=subprocess.PIPE,env={"SMIPATH":":".join(smipath)}).stderr
+        f = subprocess.Popen([config.get("path", "smilint"), "-m", path],
+            stderr=subprocess.PIPE,
+            env={"SMIPATH": ":".join(smipath)}).stderr
         for l in f:
-            match=rx_module_not_found.search(l.strip())
+            match = rx_module_not_found.search(l.strip())
             if match:
-                raise MIBRequiredException("Uploaded MIB",match.group(1))
+                raise MIBRequiredException("Uploaded MIB", match.group(1))
         # Convert MIB to python module and load
-        h,p=tempfile.mkstemp()
-        subprocess.check_call([config.get("path","smidump"),"-k","-f","python","-o",p,path],
-            env={"SMIPATH":":".join(smipath)})
-        m=imp.load_source("mib",p)
-        os.close(h)
-        os.unlink(p)
-        mib_name=m.MIB["moduleName"]
+        with temporary_file() as p:
+            subprocess.check_call([config.get("path", "smidump"), "-k", "-q",
+                                   "-f", "python", "-o", p, path],
+                env={"SMIPATH": ":".join(smipath)})
+            m = imp.load_source("mib", p)
+        mib_name = m.MIB["moduleName"]
         # Check module dependencies
-        depends_on={}
+        depends_on = {}  # MIB Name -> Object ID
         if "imports" in m.MIB:
             for i in m.MIB["imports"]:
                 if "module" not in i:
                     continue
-                rm=i["module"]
+                rm = i["module"]
                 if rm in depends_on:
                     continue
-                try:
-                    depends_on[rm]=MIB.objects.get(name=rm)
-                except MIB.DoesNotExist:
-                    raise MIBRequiredException(mib_name,rm)
+                md = MIB.objects.filter(name=rm).first()
+                if md is None:
+                    raise MIBRequiredException(mib_name, rm)
+                depends_on[rm] = md
         # Get MIB latest revision date
         try:
-            last_updated=datetime.datetime.strptime(sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1],"%Y-%m-%d %H:%M")
+            last_updated = datetime.datetime.strptime(
+                sorted([x["date"] for x in m.MIB[mib_name]["revisions"]])[-1],
+                "%Y-%m-%d %H:%M")
         except:
-            last_updated=datetime.datetime(year=1970,month=1,day=1)
+            last_updated = datetime.datetime(year=1970, month=1, day=1)
+        # Extract MIB typedefs
+        typedefs = {}
+        if "typedefs" in m.MIB:
+            for t in m.MIB["typedefs"]:
+                typedefs[t] = cls.parse_syntax(m.MIB["typedefs"][t])
         # Check mib already uploaded
-        mib_description=m.MIB[mib_name].get("description",None)
-        try:
-            mib=MIB.objects.get(name=mib_name)
+        mib_description = m.MIB[mib_name].get("description", None)
+        mib = MIB.objects.filter(name=mib_name).first()
+        if mib is not None:
             # Skip same version
-            if mib.last_updated>=last_updated:
+            if mib.last_updated >= last_updated:
                 return mib
-            mib.description=mib_description
-            mib.uploaded=datetime.datetime.now()
-            mib.last_updated=last_updated
+            mib.description = mib_description
+            mib.last_updated = last_updated
+            mib.depends_on = sorted(depends_on)
+            mib.typedefs = typedefs
             mib.save()
             # Delete all MIB Data
-            [d.delete() for d in mib.mibdata_set.all()]
-        except MIB.DoesNotExist:
-            o=None
-            mib=MIB(name=mib_name,description=mib_description,uploaded=datetime.datetime.now(),last_updated=last_updated)
+            MIBData.objects.filter(mib=mib).delete()
+        else:
+            # Create MIB
+            mib = MIB(name=mib_name, description=mib_description,
+                      last_updated=last_updated,
+                      depends_on=sorted(depends_on),
+                      typedefs=typedefs)
             mib.save()
-        # Save MIB Data
-        for i in ["nodes","notifications"]:
+        # Upload MIB data
+        for i in ["nodes", "notifications"]:
             if i in m.MIB:
-                for node,v in m.MIB[i].items():
-                    try: # Do not import duplicated OIDs
-                        MIBData.objects.get(oid=v["oid"])
-                    except MIBData.DoesNotExist:
-                        d=MIBData(mib=mib,oid=v["oid"],name="%s::%s"%(mib_name,node),description=v.get("description",None))
-                        d.save()
-        # Save MIB Dependency
-        for r in depends_on.values():
-            md=MIBDependency(mib=mib,requires_mib=r)
-            md.save()
+                for node, v in m.MIB[i].items():
+                    oid = v["oid"]
+                    # Do not save duplicated OIDs
+                    if MIBData.objects.filter(oid=oid).first() is None:
+                        syntax = {}
+                        if "syntax" in v:
+                            syntax = cls.parse_syntax(v["syntax"]["type"])
+                        MIBData(mib=mib, oid=oid,
+                                name="%s::%s" % (mib_name, node),
+                                description=v.get("description", None),
+                                syntax=syntax).save()
         # Save MIB to cache if not uploaded from cache
-        lcd=os.path.join("local","share","mibs")
-        if not os.path.isdir(lcd): # Ensure directory exists
-            os.makedirs(os.path.join("local","share","mibs")) 
-        local_cache_path=os.path.join(lcd,"%s.mib"%mib_name)
-        cache_path=os.path.join("share","mibs","%s.mib"%mib_name)
-        if (os.path.exists(local_cache_path) and os.path.samefile(path,local_cache_path))\
-            or (os.path.exists(cache_path) and os.path.samefile(path,cache_path)):
+        lcd = os.path.join("local", "share", "mibs")
+        if not os.path.isdir(lcd):  # Ensure directory exists
+            os.makedirs(os.path.join("local", "share", "mibs"))
+        local_cache_path = os.path.join(lcd, "%s.mib" % mib_name)
+        cache_path = os.path.join("share", "mibs", "%s.mib" % mib_name)
+        if ((os.path.exists(local_cache_path) and
+             os.path.samefile(path, local_cache_path)) or
+            (os.path.exists(cache_path) and
+             os.path.samefile(path, cache_path))):
             return mib
         with open(path) as f:
-            data=f.read()
-        safe_rewrite(local_cache_path,data)
+            data = f.read()
+        safe_rewrite(local_cache_path, data)
         return mib
-    ##
-    ## Get OID by name
-    ##
+
     @classmethod
-    def get_oid(cls,name):
-        try:
-            o=MIBData.objects.get(name=name)
-            return o.oid
-        except MIBData.DoesNotExist:
-            return None
-    ##
-    ## Get longest matched name by oid
-    ##
+    def get_oid(cls, name):
+        """
+        Get OID by name
+        """
+        tail = ""
+        match = rx_tailing_numbers.match(name)
+        if match:
+            name, tail = match.groups()
+        d = MIBData.objects.filter(name=name).first()
+        if d:
+            return d.oid + tail
+        return None
+
     @classmethod
-    def get_name(cls,oid):
-        l_oid=oid.split(".")
-        rest=[]
+    def get_name(cls, oid):
+        """
+        Get longest match name by OID
+        """
+        l_oid = oid.split(".")
+        rest = []
         while l_oid:
-            c_oid=".".join(l_oid)
-            try:
-                o=MIBData.objects.get(oid=c_oid)
-                name=o.name
+            c_oid = ".".join(l_oid)
+            d = MIBData.objects.filter(oid=c_oid).first()
+            if d:
+                name = d.name
                 if rest:
-                    name+="."+".".join(reversed(rest))
+                    name += "." + ".".join(reversed(rest))
                 return name
-            except MIBData.DoesNotExist:
-                rest.append(l_oid.pop())
-        return oid
-    ##
-    ## Returns description for symbolic/OID string
-    ##
-    @classmethod
-    def get_description(self,v):
-        if not rx_mibentry.match(v):
-            return ""
-        if "::" in v:
-            # MIB::name
-            match=rx_mib_name.match(v)
-            if not match:
-                return ""
-            try:
-                d=MIBData.objects.get(name=match.group(1))
-                return d.description
-            except MIBData.DoesNotExist:
-                return ""
-        else:
-            # Pure OID
-            try:
-                d=MIBData.objects.get(oid=v)
-                return d.description
-            except MIBData.DoesNotExist:
-                pass
-            try:
-                d=MIBData.objects.get(oid=".".join((v.split(".")[:-1])))
-                return d.description
-            except MIBData.DoesNotExist:
-                return ""
-            
-##
-## MIB elements
-##
-class MIBData(models.Model):
-    class Meta:
-        verbose_name="MIB Data"
-        verbose_name_plural="MIB Data"
-        ordering=["oid"]
-    mib = models.ForeignKey(MIB,verbose_name="MIB")
-    oid = models.CharField("OID",max_length=128,unique=True)
-    name= models.CharField("Name",max_length=128,unique=True)
-    description= models.TextField("Description",blank=True,null=True)
-
-    def __unicode__(self):
-        return u"%s:%s = %s"%(self.mib.name,self.name,self.oid)
-##
-## MIB Dependency
-##
-class MIBDependency(models.Model):
-    class Meta:
-        verbose_name="MIB Import"
-        verbose_name_plural="MIB Imports"
-        unique_together=[("mib","requires_mib")]
-    mib=models.ForeignKey(MIB,verbose_name="MIB")
-    requires_mib=models.ForeignKey(MIB,verbose_name="Requires MIB",related_name="requiredbymib_set")
-    
-    def __unicode__(self):
-        return u"%s requires %s"%(self.mib.name,self.requires_mib.name)
-    ##
-    ## Return graphviz dot with MIB dependencies
-    ##
-    @classmethod
-    def get_dot(cls):
-        r=["digraph {"]
-        r+=["label=\"MIB Dependencies\";"]
-        for d in cls.objects.all():
-            r+=["\"%s\" -> \"%s\";"%(d.mib.name,d.requires_mib.name)]
-        r+=["}"]
-        return "\n".join(r)
-    ##
-    ## Write graphviz dot with MIB dependencies
-    ##
-    @classmethod
-    def write_dot(cls,path):
-        safe_rewrite(path,cls.get_dot())
-##
-## Events
-##
-class EventPriority(models.Model):
-    class Meta:
-        verbose_name="Event Priority"
-        verbose_name_plural="Event Priorities"
-        ordering=["priority"]
-    name=models.CharField("Name",max_length=32,unique=True)
-    priority=models.IntegerField("Priority")
-    description=models.TextField("Description",blank=True,null=True)
-    font_color=models.CharField("Font Color",max_length=32,blank=True,null=True)
-    background_color=models.CharField("Background Color",max_length=32,blank=True,null=True)
-    def __unicode__(self):
-        return self.name
-    def _css_style_name(self):
-        return "CSS_%s"%self.name.replace(" ","")
-    css_style_name=property(_css_style_name)
-    def _css_style(self):
-        s=[]
-        if self.font_color:
-            s+=["    color: %s;"%self.font_color]
-        if self.background_color:
-            s+=["    background: %s;"%self.background_color]
-        return ".%s {\n%s\n}"%(self.css_style_name,"\n".join(s))
-    css_style=property(_css_style)
-##
-## Event categories.
-## Event categories separate events to area of responsibility (Network event, System event, Security event)
-##
-class EventCategory(models.Model):
-    class Meta:
-        verbose_name="Event Category"
-        verbose_name_plural="Event Categories"
-        ordering=["name"]
-    name=models.CharField("Name",max_length=32,unique=True)
-    description=models.TextField("Description",blank=True,null=True)
-
-    def __unicode__(self):
-        return self.name
-##
-## Event classes.
-## Event class specifies a kind of event with predefined set of event variables.
-## Event classes are assigned by Classifier process.
-## Correlator process performs event corelation mostly using event class analysys
-##
-class EventClass(models.Model):
-    class Meta:
-        verbose_name="Event Class"
-        verbose_name_plural="Event Classes"
-        ordering=["name"]
-    name=models.CharField("Name",max_length=64)
-    category=models.ForeignKey(EventCategory,verbose_name="Event Category")
-    default_priority=models.ForeignKey(EventPriority,verbose_name="Default Priority")
-    subject_template=models.CharField("Subject Template",max_length=128)
-    body_template=models.TextField("Body Template")
-    last_modified=models.DateTimeField("last_modified",auto_now=True)
-    repeat_suppression=models.BooleanField("Repeat Suppression",default=False)
-    repeat_suppression_interval=models.IntegerField("Repeat Suppression interval (secs)",default=3600)
-    rule=models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True,
-        limit_choices_to={"interface":"IEvent"})
-    is_builtin=models.BooleanField("Is Builtin",default=False)
-    
-    def __unicode__(self):
-        return self.name
-    ##
-    ## Python representation of data structure
-    ##
-    def _python_code(self):
-        s=["##","## %s"%self.name,"##"]
-        s+=["class %s(EventClass):"%rx_py_id.sub("",self.name)]
-        s+=["    name     = \"%s\""%py_q(self.name)]
-        s+=["    category = \"%s\""%py_q(self.category.name)]
-        s+=["    priority = \"%s\""%py_q(self.default_priority.name)]
-        s+=["    subject_template=\"%s\""%py_q(self.subject_template)]
-        s+=["    body_template=\"\"\"%s\"\"\""%self.body_template]
-        s+=["    repeat_suppression=%s"%self.repeat_suppression]
-        s+=["    repeat_suppression_interval=%d"%self.repeat_suppression_interval]
-        if self.rule:
-            s+=["    rule=\"%s\""%self.rule.name]
-        vars=list(self.eventclassvar_set.all())
-        if vars:
-            s+=["    class Vars:"]
-            for v in vars:
-                s+=["        %s=Var(required=%s,repeat=%s)"%(v.name,v.required,v.repeat_suppression)]
-        s+=[]
-        return "\n".join(s)
-    python_code=property(_python_code)
-##
-## Event class variables
-##
-class EventClassVar(models.Model):
-    class Meta:
-        verbose_name="Event Class Variable"
-        verbose_name_plural="Event Class Variables"
-        unique_together=[("event_class","name")]
-    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
-    name=models.CharField("Name",max_length=64)
-    required=models.BooleanField("Required",default=True)
-    repeat_suppression=models.BooleanField("Repeat Suppression",default=False) # Used for repeat supression
-    def __unicode__(self):
-        return u"%s: %s"%(self.event_class,self.name)
-##
-## Classification rule.
-## Used by Correlator process for assigning event class to unclassified events
-##
-class EventClassificationRule(models.Model):
-    class Meta:
-        verbose_name="Event Classification Rule"
-        verbose_name_plural="Event Classification Rules"
-        ordering=["preference"]
-    name=models.CharField("Name",max_length=64)
-    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
-    preference=models.IntegerField("Preference",1000)
-    action=models.CharField("Action",max_length=1,choices=[("A","Make Active"),("C","Close"),("D","Drop")],default="A")
-    is_builtin=models.BooleanField("Is Builtin",default=False)
-    
-    def __unicode__(self):
-        return self.name
-    ##
-    ## Python representation of data structure
-    ##
-    def _python_code(self):
-        s=["from noc.fm.rules.classification import ClassificationRule,Expression,CLOSE_EVENT,DROP_EVENT"]
-        s+=["##","## %s"%self.name,"##"]
-        s+=["class %s_Rule(ClassificationRule):"%rx_py_id.sub("_",self.name)]
-        s+=["    name=\"%s\""%py_q(self.name)]
-        s+=["    event_class=%s"%self.event_class.name.replace(" ","").replace("-","_")]
-        s+=["    preference=%d"%self.preference]
-        if self.action!="A":
-            s+=["    action=%s"%{"C":"CLOSE_EVENT","D":"DROP_EVENT"}[self.action]]
-        s+=["    patterns=["]
-        for p in self.eventclassificationre_set.all():
-            if p.is_expression:
-                s+=["        Expression(r\"%s\",r\"%s\"),"%(py_q(p.left_re),py_q(p.right_re))]
             else:
-                s+=["        (r\"%s\",r\"%s\"),"%(py_q(p.left_re),py_q(p.right_re))]
-        s+=["    ]",""]
-        return "\n".join(s)
-    python_code=property(_python_code)
-    ##
-    ## Return clone of existing rule
-    ##
-    def clone(self):
-        # Find suitable rule name
-        i=1
-        while True:
-            name=self.name+" copy #%d"%i
-            try:
-                EventClassificationRule.objects.get(name=name)
-            except EventClassificationRule.DoesNotExist:
-                break
-            i+=1
-        # Create cloned rule
-        new_rule=EventClassificationRule(
-            name=name,
-            event_class=self.event_class,
-            preference=self.preference,
-            is_builtin=False)
-        new_rule.save()
-        for r in self.eventclassificationre_set.all():
-            new_r=EventClassificationRE(rule=new_rule,left_re=r.left_re,right_re=r.right_re)
-            new_r.save()
-        return new_rule
-    ##
-    ## Return rule created from event
-    ##
+                rest += [l_oid.pop()]
+        return oid
+
     @classmethod
-    def from_event(cls,event):
-        def re_q(s):
-            for qc in ["\\",".","+","*","[","]","(",")"]:
-                s=s.replace(qc,"\\"+qc)
-            return s
-        s=""
-        sources=list(event.eventdata_set.filter(key="source"))
-        if len(sources)>0:
-            source=sources[0].value
-            if "SNMP" in source:
-                s=" SNMP"
-            elif "syslog" in source:
-                s=" SYSLOG"
-        name="%s %d:%d%s"%(event.managed_object.profile_name,event.id,random.randint(0,100000),s)
-        rule=EventClassificationRule(event_class=event.event_class,
-            name=name,preference=1000)
-        rule.save()
-        for d in event.eventdata_set.filter(type__in=[">","R"]):
-            r=EventClassificationRE(rule=rule,left_re="^%s$"%re_q(d.key)[:254],right_re="^%s$"%re_q(d.value)[:254])
-            r.save()
-        return rule
-##
-## Regular expressions to match event vars
-##
-class EventClassificationRE(models.Model):
-    class Meta:
-        verbose_name="Event Classification RE"
-        verbose_name_plural="Event Classification REs"
-    rule=models.ForeignKey(EventClassificationRule,verbose_name="Event Classification Rule")
-    left_re=models.CharField("Left RE",max_length=256)
-    right_re=models.CharField("Right RE",max_length=256)
-    is_expression=models.BooleanField("Is Expression",default=False)
-    ##
-    ## Check expression syntax before save
-    ##
-    def save(self):
-        if self.is_expression:
-            compile(self.right_re,"inline","eval") # Raise SyntaxError in case of invalid expression
-        super(EventClassificationRE,self).save()
-##
-## Event Post Processing
-##
-class EventPostProcessingRule(models.Model):
-    class Meta:
-        verbose_name="Event Post-Processing Rule"
-        verbose_name_plural="Event Post-Processing Rules"
-    name=models.CharField("Name",max_length=64)
-    preference=models.IntegerField("Preference",default=1000)
-    is_active=models.BooleanField("Is Active",default=True)
-    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
-    description=models.TextField("Description",blank=True,null=True)
-    managed_object_selector=models.ForeignKey(ManagedObjectSelector,verbose_name="Managed Object Selector",null=True,blank=True)
-    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern",null=True,blank=True)
-    # Actions
-    change_priority=models.ForeignKey(EventPriority,verbose_name="Change Priority to",blank=True,null=True)
-    change_category=models.ForeignKey(EventCategory,verbose_name="Change Category to",blank=True,null=True)
-    action=models.CharField("Action",max_length=1,choices=[("A","Make Active"),("C","Close"),("D","Drop")],default="A")
-    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group",null=True,blank=True)
-    rule=models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True,
-        limit_choices_to={"interface":"IEvent"})
-    def __unicode__(self):
-        return self.name
-    ##
-    ## Return clone of existing rule
-    ##
-    def clone(self):
-        # Find clone name
-        i=1
-        while True:
-            name=self.name+" copy #%d"%i
-            try:
-                EventPostProcessingRule.objects.get(name=name)
-            except EventPostProcessingRule.DoesNotExist:
-                break
-            i+=1
-        # Create cloned rule
-        new_rule=EventPostProcessingRule(
-            name=name,
-            event_class=self.event_class,
-            preference=self.preference,
-            description=self.description,
-            change_priority=self.change_priority,
-            change_category=self.change_category,
-            action=self.action,
-            is_active=True)
-        new_rule.save()
-        # Copy RE
-        for r in self.eventpostprocessingre_set.all():
-            new_r=EventPostProcessingRE(rule=new_rule,var_re=r.var_re,value_re=r.value_re)
-            new_r.save()
-        return new_rule
-    ##
-    ## Return rule created from event
-    ##
-    @classmethod
-    def from_event(cls,event):
-        def re_q(s):
-            return s.replace("\\","\\\\").replace(".","\\.").replace("+","\\+").replace("*","\\*")
-        rule=EventPostProcessingRule(event_class=event.event_class,name="Rule #%d:%d"%(event.id,random.randint(0,100000)),preference=1000)
-        rule.save()
-        for d in event.eventdata_set.filter(type="V"):
-            r=EventPostProcessingRE(rule=rule,var_re="^%s$"%re_q(d.key)[:254],value_re="^%s$"%re_q(d.value)[:254])
-            r.save()
-        return rule
-##
-## Regular expressions to match event vars
-##
-class EventPostProcessingRE(models.Model):
-    class Meta:
-        verbose_name="Event Post-Processing RE"
-        verbose_name_plural="Event Post-Processing REs"
-    rule=models.ForeignKey(EventPostProcessingRule,verbose_name="Event Post-Processing Rule")
-    var_re=models.CharField("Var RE",max_length=256)
-    value_re=models.CharField("Value RE",max_length=256)
-##
-## Event Correlation Rule
-##
-class EventCorrelationRule(models.Model):
-    class Meta:
-        verbose_name="Event Correlation Rule"
-        verbose_name_plural="Event Correlation Rules"
-        ordering=["name"]
-    name=models.CharField("Name",max_length=64,unique=True)
-    description=models.TextField("Description",null=True,blank=True)
-    is_builtin=models.BooleanField("Is Builtin",default=False)
-    rule_type=models.CharField("Rule Type",max_length=32,choices=[("Pair","Pair")])
-    action=models.CharField("Action",max_length=1,choices=[("C","Close"),("D","Drop"),("P","Root (parent)"),("c","Root (child)")])
-    same_object=models.BooleanField("Same Object",default=True)
-    window=models.IntegerField("Window (sec)",default=0)
+    def get_name_and_syntax(cls, oid):
+        """
+        :return: (name, syntax)
+        """
+        l_oid = oid.split(".")
+        rest = []
+        while l_oid:
+            c_oid = ".".join(l_oid)
+            d = MIBData.objects.filter(oid=c_oid).first()
+            if d:
+                name = d.name
+                if rest:
+                    name += "." + ".".join(reversed(rest))
+                return name, d.syntax
+            else:
+                rest += [l_oid.pop()]
+        return oid, None
+
+    @property
+    def depended_by(self):
+        return MIB.objects.filter(depends_on=self.name)
+
+
+class MIBData(nosql.Document):
+    meta = {
+        "collection": "noc.mibdata",
+        "allow_inheritance": False,
+        "indexes": ["oid", "name", "mib"]
+    }
+    mib = nosql.PlainReferenceField(MIB)
+    oid = nosql.StringField(required=True)
+    name = nosql.StringField(required=True)
+    description = nosql.StringField(required=False)
+    syntax = nosql.DictField(required=False)
 
     def __unicode__(self):
         return self.name
-        
-    ##
-    ## Python representation of data structure
-    ##
-    def _python_code(self):
-        s=["from noc.fm.rules.correlation import *"]
-        s+=["##","## %s"%self.name,"##"]
-        s+=["class %s_Rule(CorrelationRule):"%rx_py_id.sub("_",self.name)]
-        s+=["    name=\"%s\""%py_q(self.name)]
-        s+=["    description=\"%s\""%py_q(self.description)]
-        s+=["    rule_type=\"%s\""%py_q(self.rule_type)]
-        s+=["    action=%s"%{"C":"CLOSE_EVENT"}[self.action]]
-        s+=["    same_object=%s"%self.same_object]
-        s+=["    window=%s"%self.window]
-        s+=["    classes=[%s]"%(",".join([rx_py_id.sub("",x.event_class.name) for x in self.eventcorrelationmatchedclass_set.all()]))]
-        s+=["    vars=[%s]"%(",".join(["\"%s\""%x.var for x in self.eventcorrelationmatchedvar_set.all()]))]
-        return "\n".join(s)
-    python_code=property(_python_code)
+
+
 ##
-## Matched class list for correlation rule
+## Alarms and Events
 ##
-class EventCorrelationMatchedClass(models.Model):
-    class Meta:
-        verbose_name="Event Correlation Rule Matched Class"
-        verbose_name="Event Correlation Rule Matched Classes"
-        unique_together=[("rule","event_class")]
-    rule=models.ForeignKey(EventCorrelationRule,verbose_name="Rule")
-    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
-##
-## Matched var list for correlation rule
-##
-class EventCorrelationMatchedVar(models.Model):
-    class Meta:
-        verbose_name="Event Correlation Rule Matched Var"
-        verbose_name="Event Correlation Rule Matched Vars"
-        unique_together=[("rule","var")]
-    rule=models.ForeignKey(EventCorrelationRule,verbose_name="Rule")
-    var=models.CharField("Variable Name",max_length=256)
-##
-## Event itself
-##
-EVENT_STATUS_CHOICES=[("U","Unclassified"),("A","Active"),("C","Closed")]
-class Event(models.Model):
-    class Meta:
-        verbose_name="Event"
-        verbose_name_plural="Events"
-        ordering=["id"]
-    timestamp=models.DateTimeField("Timestamp")
-    managed_object=models.ForeignKey(ManagedObject,verbose_name="Managed Object")
-    event_priority=models.ForeignKey(EventPriority,verbose_name="Priority")
-    event_category=models.ForeignKey(EventCategory,verbose_name="Event Category")
-    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
-    status=models.CharField("Status",max_length=1,choices=EVENT_STATUS_CHOICES,default="U")
-    close_timestamp=models.DateTimeField("Close Timestamp",blank=True,null=True)
-    active_till=models.DateTimeField("Active Till",blank=True,null=True)          # Time-based event closing
-    root=models.ForeignKey("Event",verbose_name="Root cause",blank=True,null=True)# Set up by correlator, Null for root cause
-    subject=models.CharField("Subject",max_length=256,null=True,blank=True)       # Not null when classified
-    body=models.TextField("Body",null=True,blank=True)
+class AlarmSeverity(nosql.Document):
+    """
+    Alarm severities
+    """
+    meta = {
+        "collection": "noc.alarmseverities",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(required=True, unique=True)
+    is_builtin = nosql.BooleanField(default=False)
+    description = nosql.StringField(required=False)
+    severity = nosql.IntField(required=True)
+    style = nosql.ForeignKeyField(Style)
+
+    def __unicode__(self):
+        return self.name
+
+    @classmethod
+    def get_severity(cls, severity):
+        """
+        Returns Alarm Severity instance corresponding to numeric value
+        """
+        return cls.objects.filter(severity__lte=severity).order_by("-severity").first()
+
+
+class AlarmClassVar(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(required=True)
+    description = nosql.StringField(required=False)
+
+    def __unicode__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.name == other.name and self.description == other.description
+
+
+class AlarmClassCategory(nosql.Document):
+    meta = {
+        "collection": "noc.alartmclasscategories",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField()
+    parent = nosql.ObjectIdField(required=False)
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if " | " in self.name:
+            p_name = " | ".join(self.name.split(" | ")[:-1])
+            p = AlarmClassCategory.objects.filter(name=p_name).first()
+            if not p:
+                p = AlarmClassCategory(name=p_name)
+                p.save()
+            self.parent = p.id
+        else:
+            self.parent = None
+        super(AlarmClassCategory, self).save(*args, **kwargs)
+
+
+class AlarmClass(nosql.Document):
+    """
+    Alarm class
+    """
+    meta = {
+        "collection": "noc.alarmclasses",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(required=True, unique=True)
+    is_builtin = nosql.BooleanField(default=False)
+    description = nosql.StringField(required=False)
+    # Create or not create separate Alarm
+    # if is_unique is True and there is active alarm
+    # Do not create separate alarm if is_unique set
+    is_unique = nosql.BooleanField(default=False)
+    # List of var names to be used as discriminator key
+    discriminator = nosql.ListField(nosql.StringField())
+    # Can alarm status be cleared by user
+    user_clearable = nosql.BooleanField(default=True)
+    # Default alarm severity
+    default_severity = nosql.PlainReferenceField(AlarmSeverity)
+    #
+    vars = nosql.ListField(nosql.EmbeddedDocumentField(AlarmClassVar))
+    # Text messages
+    # alarm_class.text -> locale -> {
+    #     "subject_template" -> <template>
+    #     "body_template" -> <template>
+    #     "symptoms" -> <text>
+    #     "probable_causes" -> <text>
+    #     "recommended_actions" -> <text>
+    # }
+    text = nosql.DictField(required=True)
+    # Flap detection
+    flap_condition = nosql.StringField(required=False,
+                                       choices=["none",
+                                                "count"],
+                                       default=None)
+    flap_window = nosql.IntField(required=False, default=0)
+    flap_threshold = nosql.FloatField(required=False, default=0)
+    #
+
+    category = nosql.ObjectIdField()
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        c_name = " | ".join(self.name.split(" | ")[:-1])
+        c = AlarmClassCategory.objects.filter(name=c_name).first()
+        if not c:
+            c = AlarmClassCategory(name=c_name)
+            c.save()
+        self.category = c.id
+        super(AlarmClass, self).save(*args, **kwargs)
+
+
+class EventClassVar(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(required=True)
+    description = nosql.StringField(required=False)
+    type = nosql.StringField(required=True,
+                             choices=["str", "int",
+                                      "ipv4_address", "ipv6_address", "ip_address",
+                                      "ipv4_prefix", "ipv6_prefix", "ip_prefix",
+                                      "mac", "interface_name", "oid"])
+    required = nosql.BooleanField(required=True)
     
     def __unicode__(self):
-        return u"Event #%s: %s"%(str(self.id),str(self.subject))
+        return self.name
+
+    def __eq__(self, other):
+        return (self.name == other.name and
+                self.description == other.description and
+                self.type == other.type and
+                self.required == other.required)
+
+
+class EventDispositionRule(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    # Name, unique within event class
+    name = nosql.StringField(required=True, default="dispose")
+    # Python logical expression to check wrether the rules
+    # is applicable or not.
+    condition = nosql.StringField(required=True, default="True")
+    # What to do with disposed event:
+    action = nosql.StringField(required=True,
+                               choices=[
+                                    "pyrule",
+                                    "raise",
+                                    "raise_if_not_followed",
+                                    "clear"
+                                ])
+    # Applicable for action = pyRule
+    pyrule = nosql.ForeignKeyField(PyRule, required=False)
+    # Applicable for action = <raise-* | clear>
+    alarm_class = nosql.PlainReferenceField(AlarmClass, required=False)
+    # Applicable only for action = raise
+    window = nosql.IntField(default=0)
     
-    def _repeats(self):
-        return self.eventrepeat_set.count()
-    repeats=property(_repeats)
-    
-    def _data(self):
-        r={}
-        for d in self.eventdata_set.all():
-            r[d.key]=d.value
-        return r
-    data=property(_data)
-    
-    def match_data(self,vars):
-        data=self.data
-        for k,v in vars.items():
-            if k not in data or data[k]!=v:
+    # event var name -> alarm var name mappings
+    # try to use direct mapping if not set explicitly
+    var_mapping = nosql.DictField(required=False)
+    # Stop event disposition if True or continue with next rule
+    stop_disposition = nosql.BooleanField(required=False, default=True)
+
+    def __unicode__(self):
+        return "%s: %s" % (self.action, self.alarm_class.name)
+
+    def __eq__(self, other):
+        for a in ["name", "condition", "action", "pyrule", "window",
+                  "var_mapping", "stop_disposition"]:
+            if hasattr(self, a) != hasattr(other, a):
+                return False
+            if hasattr(self, a) and getattr(self, a) != getattr(other, a):
                 return False
         return True
-    ##
-    ## Reset event status to "Unclassified"
-    ##
-    def reclassify_event(self,message="Reclassification requested"):
-        self.change_status("U",message)
-    ##
-    ## Close event
-    ##
-    def close_event(self,message="Event Closed"):
-        self.change_status("C",message)
-    ##
-    ##
-    ##
-    def open_event(self,message="Event Opened"):
-        self.change_status("A",message)
-    ##
-    ## Change event status
-    ##
-    def change_status(self,status,msg=None):
-        if self.status==status:
-            return
-        if msg is None:
-            msg="Status changed from %s to %s"%(self.status,status)
-        from_status=self.status
-        self.status=status
-        self.save()
-        self.log(msg,from_status,status)
-    ##
-    ## Log event processing message
-    ##
-    def log(self,msg,from_status=None,to_status=None):
-        if from_status is None:
-            from_status=self.status
-        if to_status is None:
-            to_status=self.status
-        l=EventLog(event=self,timestamp=datetime.datetime.now(),from_status=from_status,to_status=to_status,message=msg)
-        l.save()
-##
-## Event body
-##
-class EventData(models.Model):
-    class Meta:
-        verbose_name="Event Data"
-        verbose_name_plural="Event Data"
-        unique_together=[("event","key","type")]
-    event=models.ForeignKey(Event,verbose_name="Event")
-    key=models.CharField("Key",max_length=256)
-    value=models.TextField("Value",blank=True,null=True)
-    type=models.CharField("Type",max_length=1,choices=[(">","Received"),("V","Variable"),("R","Resolved")],default=">")
-    ##
-    ## Resolve MIBs in key/value part and fill out hint
-    ##
-    def _description(self):
-        d=MIB.get_description(self.value)
-        if d:
-            return d
-        return MIB.get_description(self.key)
-    description=property(_description)
-##
-## Repeated events are deleated from Event table and only short record in EventRepeat remains
-##
-class EventRepeat(models.Model):
-    class Meta:
-        verbose_name="Event Repeat"
-        verbose_name_plural="Event Repeats"
-    event=models.ForeignKey(Event,verbose_name="Event")
-    timestamp=models.DateTimeField("Timestamp")
-##
-## Event Processing Log
-##
-class EventLog(models.Model):
-    class Meta:
-        verbose_name="Event Log"
-        verbose_name="Event Logs"
-        ordering=["event","timestamp"]
-    event=models.ForeignKey(Event,verbose_name="Event")
-    timestamp=models.DateTimeField("Timestamp")
-    from_status=models.CharField("From Status",max_length=1,choices=EVENT_STATUS_CHOICES)
-    to_status=models.CharField("To Status",max_length=1,choices=EVENT_STATUS_CHOICES)
-    message=models.TextField("Message")
-##
-##
-##
-class EventArchivationRule(models.Model):
-    class Meta:
-        verbose_name="Event Archivation Rule"
-        verbose_name_plural="Event Archivation Rules"
-        unique_together=[("event_class","action")]
-    event_class=models.ForeignKey(EventClass,verbose_name="Event Class")
-    ttl=models.IntegerField("Time To Live")
-    ttl_measure=models.CharField("Measure",choices=[("s","Seconds"),("m","Minutes"),("h","Hours"),("d","Days")],default="h",max_length=1)
-    action=models.CharField("Action",choices=[("C","Close"),("D","Drop")],default="D",max_length=1)
+
+
+class EventClassCategory(nosql.Document):
+    meta = {
+        "collection": "noc.eventclasscategories",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField()
+    parent = nosql.ObjectIdField(required=False)
+    
     def __unicode__(self):
-        return u"%s: %s"%(self.event_class.name,self.action)
-    ## Calculate ttl in seconds
-    def _ttl_seconds(self):
-        return self.ttl*{"s":1,"m":60,"h":3600,"d":86400}[self.ttl_measure]
-    ttl_seconds=property(_ttl_seconds)
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if " | " in self.name:
+            p_name = " | ".join(self.name.split(" | ")[:-1])
+            p = EventClassCategory.objects.filter(name=p_name).first()
+            if not p:
+                p = EventClassCategory(name=p_name)
+                p.save()
+            self.parent = p.id
+        else:
+            self.parent = None
+        super(EventClassCategory, self).save(*args, **kwargs)
+
+
+class EventClass(nosql.Document):
+    """
+    Event class
+    """
+    meta = {
+        "collection": "noc.eventclasses",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(required=True, unique=True)
+    is_builtin = nosql.BooleanField(default=False)
+    description = nosql.StringField(required=False)
+    # Event processing action:
+    #     D - Drop
+    #     L - Log as processed, do not move to archive
+    #     A - Log as processed, move to archive
+    action = nosql.StringField(required=True, choices=["D", "L", "A"])
+    vars = nosql.ListField(nosql.EmbeddedDocumentField(EventClassVar))
+    # Text messages
+    # alarm_class.text -> locale -> {
+    #     "subject_template" -> <template>
+    #     "body_template" -> <template>
+    #     "symptoms" -> <text>
+    #     "probable_causes" -> <text>
+    #     "recommended_actions" -> <text>
+    # }
+    text = nosql.DictField(required=True)
+
+    disposition = nosql.ListField(nosql.EmbeddedDocumentField(EventDispositionRule))
+    #
+    category = nosql.ObjectIdField()
+    
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        c_name = " | ".join(self.name.split(" | ")[:-1])
+        c = EventClassCategory.objects.filter(name=c_name).first()
+        if not c:
+            c = EventClassCategory(name=c_name)
+            c.save()
+        self.category = c.id
+        super(EventClass, self).save(*args, **kwargs)
+    
+    @property
+    def display_action(self):
+        return {
+            "D": "Drop",
+            "L": "Log",
+            "A": "Log and Archive"
+        }[self.action]
+
+
 ##
+## Classification rules
 ##
+class EventClassificationRuleCategory(nosql.Document):
+    meta = {
+        "collection": "noc.eventclassificationrulecategories",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField()
+    parent = nosql.ObjectIdField(required=False)
+    
+    def __unicode__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if " | " in self.name:
+            p_name = " | ".join(self.name.split(" | ")[:-1])
+            p = EventClassificationRuleCategory.objects.filter(name=p_name).first()
+            if not p:
+                p = EventClassificationRuleCategory(name=p_name)
+                p.save()
+            self.parent = p.id
+        else:
+            self.parent = None
+        super(EventClassificationRuleCategory, self).save(*args, **kwargs)
+
+
+class EventClassificationPattern(nosql.EmbeddedDocument):
+    key_re = nosql.StringField(required=True)
+    value_re = nosql.StringField(required=True)
+    
+    def __unicode__(self):
+        return u"'%s' : '%s'" % (self.key_re, self.value_re)
+
+    def __eq__(self, other):
+        return self.key_re == other.key_re and self.value_re == other.value_re
+
+
+class EventClassificationRule(nosql.Document):
+    """
+    Classification rules
+    """
+    meta = {
+        "collection": "noc.eventclassificationrules",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(required=True, unique=True)
+    is_builtin = nosql.BooleanField(required=True)
+    description = nosql.StringField(required=False)
+    event_class=nosql.PlainReferenceField(EventClass, required=True)
+    preference = nosql.IntField(required=True, default=1000)
+    patterns = nosql.ListField(nosql.EmbeddedDocumentField(EventClassificationPattern))
+    #
+    category = nosql.ObjectIdField()
+    
+    def __unicode__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        c_name = " | ".join(self.name.split(" | ")[:-1])
+        c = EventClassificationRuleCategory.objects.filter(name=c_name).first()
+        if not c:
+            c = EventClassificationRuleCategory(name=c_name)
+            c.save()
+        self.category = c.id
+        super(EventClassificationRule, self).save(*args, **kwargs)
+
+    
+    @property
+    def short_name(self):
+        return self.name.split(" | ")[-1]
+
 ##
+## Events.
+## Events are divided to 4 statuses:
+##     New
+##     Active
+##     Failed
+##     Archived
+##
+EVENT_STATUS_NAME = {
+    "N": "New",
+    "F": "Failed",
+    "A": "Active",
+    "S": "Archived"
+}
+
+
+class EventLog(nosql.EmbeddedDocument):
+    timestamp = nosql.DateTimeField()
+    from_status = nosql.StringField(max_length=1,
+                                    regex=r"^[NFAS]$", required=True)
+    to_status = nosql.StringField(max_length=1,
+                                  regex=r"^[NFAS]$", required=True)
+    message = nosql.StringField()
+
+    def __unicode__(self):
+        return u"%s [%s -> %s]: %s" % (self.timestamp, self.from_status,
+                                       self.to_status, self.message)
+
+
+class NewEvent(nosql.Document):
+    """
+    Raw unclassified event as written by SAE
+    """
+    meta = {
+        "collection": "noc.events.new",
+        "allow_inheritance": False,
+        "indexes": ["timestamp"]
+    }
+    status = "N"
+    # Fields
+    timestamp = nosql.DateTimeField(required=True)
+    managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
+    raw_vars = nosql.DictField(required=True)
+    log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
+
+    def __unicode__(self):
+        return unicode(self.id)
+    
+    def mark_as_failed(self, version, traceback):
+        """
+        Move event into noc.events.failed
+        """
+        message = "Failed to classify on NOC version %s" % version
+        log = self.log + [EventLog(timestamp=datetime.datetime.now(),
+                                   from_status="N", to_status="F",
+                                   message=message)]
+        e = FailedEvent(id=self.id, timestamp=self.timestamp,
+                        managed_object=self.managed_object,
+                        raw_vars=self.raw_vars, version=version,
+                        traceback=traceback, log=log)
+        e.save()
+        self.delete()
+        return e
+    
+    @property
+    def source(self):
+        """
+        Event source or None
+        """
+        if self.raw_vars and "source" is self.raw_vars:
+            return self.raw_vars["source"]
+        return None
+    
+    def log_message(self, message):
+        self.log += [EventLog(timestamp=datetime.datetime.now(),
+                     from_status=self.status, to_status=self.status,
+                     message=message)]
+        self.save()
+
+
+class FailedEvent(nosql.Document):
+    """
+    Events that caused noc-classifier traceback
+    """
+    meta = {
+        "collection": "noc.events.failed",
+        "allow_inheritance": False
+    }
+    status = "F"
+    # Fields
+    timestamp = nosql.DateTimeField(required=True)
+    managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
+    raw_vars = nosql.DictField(required=True)
+    version = nosql.StringField(required=True)  # NOC version caused traceback
+    traceback = nosql.StringField()
+    log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
+    
+    def __unicode__(self):
+        return unicode(self.id)
+    
+    def mark_as_new(self, message=None):
+        """
+        Move to unclassified queue
+        """
+        if message is None:
+            message = "Reclassification requested"
+        log = self.log + [EventLog(timestamp=datetime.datetime.now(),
+                                   from_status="F", to_status="N",
+                                   message=message)]
+        e = NewEvent(id=self.id, timestamp=self.timestamp,
+                     managed_object=self.managed_object, raw_vars=self.raw_vars,
+                     log=log)
+        e.save()
+        self.delete()
+        return e
+
+    def log_message(self, message):
+        self.log += [EventLog(timestamp=datetime.datetime.now(),
+                     from_status=self.status, to_status=self.status,
+                     message=message)]
+        self.save()
+
+
+class ActiveEvent(nosql.Document):
+    """
+    Event in the Active state
+    """
+    meta = {
+        "collection": "noc.events.active",
+        "allow_inheritance": False,
+        "indexes": ["timestamp"]
+    }
+    status = "A"
+    # Fields
+    timestamp = nosql.DateTimeField(required=True)
+    managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
+    event_class = nosql.PlainReferenceField(EventClass, required=True)
+    raw_vars = nosql.DictField()
+    resolved_vars = nosql.DictField()
+    vars = nosql.DictField()
+    log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
+
+    def __unicode__(self):
+        return u"%s" % self.id
+
+    def mark_as_new(self, message=None):
+        """
+        Move to new queue
+        """
+        if message is None:
+            message = "Reclassification requested"
+        log = self.log + [EventLog(timestamp=datetime.datetime.now(),
+                                   from_status="A", to_status="N",
+                                   message=message)]
+        e = NewEvent(id=self.id, timestamp=self.timestamp,
+                     managed_object=self.managed_object, raw_vars=self.raw_vars,
+                     log=log)
+        e.save()
+        self.delete()
+        return e
+
+    def mark_as_failed(self, version, traceback):
+        """
+        Move event into noc.events.failed
+        """
+        message = "Failed to classify on NOC version %s" % version
+        log = self.log + [EventLog(timestamp=datetime.datetime.now(),
+                                   from_status="N", to_status="F",
+                                   message=message)]
+        e = FailedEvent(id=self.id, timestamp=self.timestamp,
+                        managed_object=self.managed_object,
+                        raw_vars=self.raw_vars, version=version,
+                        traceback=traceback, log=log)
+        e.save()
+        self.delete()
+        return e
+
+    def mark_as_archived(self, message):
+        log = self.log + [EventLog(timestamp=datetime.datetime.now(),
+                                   from_status="A", to_status="S",
+                                   message=message)]
+        e = ArchivedEvent(
+            id=self.id,
+            timestamp=self.timestamp,
+            managed_object=self.managed_object,
+            event_class=self.event_class,
+            raw_vars=self.raw_vars,
+            resolved_vars=self.resolved_vars,
+            vars=self.vars,
+            log=log
+        )
+        e.save()
+        self.delete()
+        return e
+
+    def log_message(self, message):
+        self.log += [EventLog(timestamp=datetime.datetime.now(),
+                     from_status=self.status, to_status=self.status,
+                     message=message)]
+        self.save()
+
+    def dispose_event(self):
+        EventDispositionQueue(timestamp=datetime.datetime.now(),
+                              event_id=self.id).save()
+
+    def get_template_vars(self):
+        """
+        Prepare template variables
+        """
+        vars = self.vars.copy()
+        vars.update({"event": self})
+        return vars
+        
+    def get_translated_subject(self, lang):
+        s = get_translated_template(lang, self.event_class.text,
+                                    "subject_template",
+                                    self.get_template_vars())
+        if len(s) >= 255:
+            s = s[:125] + " ... " + s[-125:]
+        return s
+    
+    def get_translated_body(self, lang):
+        return get_translated_template(lang, self.event_class.text,
+                                       "body_template",
+                                       self.get_template_vars())
+    
+    def get_translated_symptoms(self, lang):
+        return get_translated_text(lang, self.event_class.text, "symptoms")
+
+    def get_translated_probable_causes(self, lang):
+        return get_translated_text(lang, self.event_class.text, "probable_causes")
+
+    def get_translated_recommended_actions(self, lang):
+        return get_translated_text(lang, self.event_class.text, "recommended_actions")
+
+
+class ArchivedEvent(nosql.Document):
+    """
+    """
+    meta = {
+        "collection": "noc.events.archive",
+        "allow_inheritance": True,
+        "indexes": ["timestamp"]
+    }
+    status = "S"
+
+    timestamp = nosql.DateTimeField(required=True)
+    managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
+    event_class = nosql.PlainReferenceField(EventClass, required=True)
+    raw_vars = nosql.DictField()
+    resolved_vars = nosql.DictField()
+    vars = nosql.DictField()
+    log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
+
+    def __unicode__(self):
+        return u"%s" % self.id
+
+    def get_template_vars(self):
+        """
+        Prepare template variables
+        """
+        vars = self.vars.copy()
+        vars.update({"event": self})
+        return vars
+
+    def get_translated_subject(self, lang):
+        s = get_translated_template(lang, self.event_class.text,
+                                    "subject_template",
+                                    self.get_template_vars())
+        if len(s) >= 255:
+            s = s[:125] + " ... " + s[-125:]
+        return s
+    
+    def get_translated_body(self, lang):
+        return get_translated_template(lang, self.event_class.text,
+                                       "body_template",
+                                       self.get_template_vars())
+    
+    def get_translated_symptoms(self, lang):
+        return get_translated_text(lang, self.event_class.text, "symptoms")
+
+    def get_translated_probable_causes(self, lang):
+        return get_translated_text(lang, self.event_class.text, "probable_causes")
+
+    def get_translated_recommended_actions(self, lang):
+        return get_translated_text(lang, self.event_class.text, "recommended_actions")
+
+
+class AlarmLog(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    timestamp = nosql.DateTimeField()
+    from_status = nosql.StringField(max_length=1,
+                                    regex=r"^[AC]$", required=True)
+    to_status = nosql.StringField(max_length=1,
+                                  regex=r"^[AC]$", required=True)
+    message = nosql.StringField()
+
+    def __unicode__(self):
+        return u"%s [%s -> %s]: %s" % (self.timestamp, self.from_status,
+                                       self.to_status, self.message)
+
+    
+class ActiveAlarm(nosql.Document):
+    meta = {
+        "collection": "noc.alarms.active",
+        "allow_inheritance": False,
+        "indexes": ["timestamp", "discriminator"]
+    }
+    status = "A"
+    
+    timestamp = nosql.DateTimeField(required=True)
+    last_update = nosql.DateTimeField(required=True)
+    managed_object = nosql.ForeignKeyField(ManagedObject)
+    alarm_class = nosql.PlainReferenceField(AlarmClass)
+    severity = nosql.IntField(required=True)
+    vars = nosql.DictField()
+    # Calculated alarm discriminator
+    # Has meaning only for alarms with is_unique flag set
+    # Calculated as sha1("value1\x00....\x00valueN").hexdigest()
+    discriminator = nosql.StringField(required=False)
+    events = nosql.ListField(nosql.ObjectIdField())
+    log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
+    # Responsible person
+    owner = nosql.ForeignKeyField(User, required=False)
+    # List of subscribers
+    subscribers = nosql.ListField(nosql.ForeignKeyField(User))
+    #
+    custom_subject = nosql.StringField(required=False)
+    custom_style = nosql.ForeignKeyField(Style, required=False)
+
+    def __unicode__(self):
+        return u"%s" % self.id
+
+    def save(self, *args, **kwargs):
+        if not self.last_update:
+            self.last_update = self.timestamp
+        return super(ActiveAlarm, self).save(*args, **kwargs)
+
+    def change_severity(self, user="", delta=None, severity=None):
+        """
+        Change alarm severity
+        """
+        if isinstance(user, User):
+            user = user.username
+        if delta:
+            self.severity += delta
+            if delta > 0:
+                self.log_message("%s has increased event severity by %s" % (user, delta))
+            else:
+                self.log_message("%s has decreased event severity by %s" % (user, delta))
+        elif severity:
+            self.severity = severity.severity
+            self.log_message("%s has changed severity to %s" % (user, severity.name))
+        self.save()
+
+    def log_message(self, message):
+        self.log += [AlarmLog(timestamp=datetime.datetime.now(),
+                     from_status=self.status, to_status=self.status,
+                     message=message)]
+        self.save()
+
+    def contribute_event(self, e):
+        # Update timestamp
+        if e.timestamp < self.timestamp:
+            self.timestamp = e.timestamp
+        else:
+            self.last_update = max(self.last_update, e.timestamp)
+        self.events += [e.id]
+        self.save()
+
+    def clear_alarm(self, message):
+        ts = datetime.datetime.now()
+        log = self.log + [AlarmLog(timestamp=ts, from_status="A",
+                                   to_status="C", message=message)]
+        a = ArchivedAlarm(id=self.id,
+                          timestamp=self.timestamp,
+                          clear_timestamp=ts,
+                          managed_object=self.managed_object,
+                          alarm_class=self.alarm_class,
+                          severity=self.severity,
+                          vars=self.vars,
+                          events=self.events,
+                          log=log
+                          )
+        a.save()
+        self.delete()
+        return a
+
+    def get_template_vars(self):
+        """
+        Prepare template variables
+        """
+        vars = self.vars.copy()
+        vars.update({"event": self})
+        return vars
+
+    def get_translated_subject(self, lang):
+        s = get_translated_template(lang, self.alarm_class.text,
+                                    "subject_template",
+                                    self.get_template_vars())
+        if len(s) >= 255:
+            s = s[:125] + " ... " + s[-125:]
+        return s
+    
+    def get_translated_body(self, lang):
+        return get_translated_template(lang, self.alarm_class.text,
+                                       "body_template",
+                                       self.get_template_vars())
+    
+    def get_translated_symptoms(self, lang):
+        return get_translated_text(lang, self.alarm_class.text, "symptoms")
+
+    def get_translated_probable_causes(self, lang):
+        return get_translated_text(lang, self.alarm_class.text, "probable_causes")
+
+    def get_translated_recommended_actions(self, lang):
+        return get_translated_text(lang, self.alarm_class.text, "recommended_actions")
+
+    def change_owner(self, user):
+        """
+        Change alarm's owner
+        """
+        self.owner = user
+        self.save()
+
+    def subscribe(self, user):
+        """
+        Change alarm's subscribers
+        """
+        if user.id not in self.subscribers:
+            self.subscribers += [user.id]
+            self.save()
+    
+    def unsubscribe(self, user):
+        if self.is_subscribed(user):
+            self.subscribers = [u.id for u in self.subscribers if u != user.id]
+            self.save()
+    
+    def is_owner(self, user):
+        return self.owner == user
+    
+    def is_subscribed(self, user):
+        return user.id in self.subscribers
+    
+    @property
+    def is_unassigned(self):
+        return self.owner is None
+    
+    @property
+    def duration(self):
+        dt = datetime.datetime.now() - self.timestamp
+        return dt.days * 86400 + dt.seconds
+    
+    @property
+    def display_duration(self):
+        duration = datetime.datetime.now() - self.timestamp
+        secs = duration.seconds % 60
+        mins = (duration.seconds / 60) % 60
+        hours = (duration.seconds / 3600) % 24
+        days = duration.days
+        return "%d %02d:%02d:%02d" % (days, hours, mins, secs)
+    
+    @property
+    def effective_style(self):
+        if self.custom_style:
+            return self.custom_style
+        else:
+            return AlarmSeverity.get_severity(self.severity).style
+
+
+class ArchivedAlarm(nosql.Document):
+    meta = {
+        "collection": "noc.alarms.archived",
+        "allow_inheritance": False
+    }
+    status = "C"
+    
+    timestamp = nosql.DateTimeField(required=True)
+    clear_timestamp = nosql.DateTimeField(required=True)
+    managed_object = nosql.ForeignKeyField(ManagedObject)
+    alarm_class = nosql.PlainReferenceField(AlarmClass)
+    severity = nosql.IntField(required=True)
+    vars = nosql.DictField()
+    events = nosql.ListField(nosql.ObjectIdField())
+    log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
+    
+    def __unicode__(self):
+        return u"%s" % self.id
+
+    def log_message(self, message):
+        self.log += [AlarmLog(timestamp=datetime.datetime.now(),
+                     from_status=self.status, to_status=self.status,
+                     message=message)]
+        self.save()
+
+    def get_template_vars(self):
+        """
+        Prepare template variables
+        """
+        vars = self.vars.copy()
+        vars.update({"event": self})
+        return vars
+
+    def get_translated_subject(self, lang):
+        s = get_translated_template(lang, self.alarm_class.text,
+                                    "subject_template",
+                                    self.get_template_vars())
+        if len(s) >= 255:
+            s = s[:125] + " ... " + s[-125:]
+        return s
+
+    def get_translated_body(self, lang):
+        return get_translated_template(lang, self.alarm_class.text,
+                                       "body_template",
+                                       self.get_template_vars())
+    
+    def get_translated_symptoms(self, lang):
+        return get_translated_text(lang, self.alarm_class.text, "symptoms")
+
+    def get_translated_probable_causes(self, lang):
+        return get_translated_text(lang, self.alarm_class.text, "probable_causes")
+
+    def get_translated_recommended_actions(self, lang):
+        return get_translated_text(lang, self.alarm_class.text, "recommended_actions")
+
+    @property
+    def duration(self):
+        dt = self.clear_timestamp - self.timestamp
+        return dt.days * 86400 + dt.seconds
+    
+    @property
+    def display_duration(self):
+        duration = self.clear_timestamp - self.timestamp
+        secs = duration.seconds % 60
+        mins = (duration.seconds / 60) % 60
+        hours = (duration.seconds / 3600) % 24
+        days = duration.days
+        return "%d %02d:%02d:%02d" % (days, hours, mins, secs)
+    
+    @property
+    def effective_style(self):
+        return AlarmSeverity.get_severity(self.severity).style
+
+
 class IgnoreEventRules(models.Model):
     class Meta:
-        verbose_name="Ignore Event Rule"
-        verbose_name_plural="Ignore Event Rules"
-        unique_together=[("left_re","right_re")]
-    name=models.CharField("Name",max_length=64,unique=True)
-    left_re=models.CharField("Left RE",max_length=256)
-    right_re=models.CharField("Right Re",max_length=256)
-    is_active=models.BooleanField("Is Active",default=True)
-    description=models.TextField("Description",null=True,blank=True)
+        verbose_name = "Ignore Event Rule"
+        verbose_name_plural = "Ignore Event Rules"
+        unique_together = [("left_re", "right_re")]
+
+    name = models.CharField("Name", max_length=64,unique=True)
+    left_re = models.CharField("Left RE", max_length=256)
+    right_re = models.CharField("Right Re", max_length=256)
+    is_active = models.BooleanField("Is Active", default=True)
+    description = models.TextField("Description", null=True, blank=True)
+
     def __unicode__(self):
-        return u"%s (%s,%s)"%(self.name,self.left_re,self.right_re)
+        return u"%s (%s,%s)"%(self.name, self.left_re, self.right_re)
+
+
+class EventDispositionQueue(nosql.Document):
+    meta = {
+        "collection": "noc.events.disposition",
+        "allow_inheritance": False,
+    }
+    timestamp = nosql.DateTimeField(required=True)
+    event_id = nosql.ObjectIdField(required=True)
+
+    def __unicode__(self):
+        return str(self.event_id)
+
+##
+## Event/Alarm text decoder
+##
+def get_translated_text(lang, texts, name):
+    if lang not in texts:
+        # Fallback to "en" when no translation for language
+        lang = "en"
+    if lang in texts and name not in texts[lang] and lang != "en":
+        # Fallback to "en" when not translation for message
+        lang = "en"
+    try:
+        return texts[lang][name]
+    except KeyError:
+        return "--- UNTRANSLATED MESSAGE ---"
+
+
+def get_translated_template(lang, texts, name, vars):
+    return Template(get_translated_text(lang, texts, name)).render(Context(vars))
+
+
+def get_event(event_id):
+        """
+        Get event by event_id
+        """
+        for ec in (ActiveEvent, ArchivedEvent, FailedEvent, NewEvent):
+            e = ec.objects.filter(id=event_id).first()
+            if e:
+                return e
+        return None
+
+
+def get_alarm(alarm_id):
+        """
+        Get alarm by alarm_id
+        """
+        for ac in (ActiveAlarm, ArchivedAlarm):
+            a = ac.objects.filter(id=alarm_id).first()
+            if a:
+                return a
+        return None
