@@ -1,0 +1,263 @@
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>{{a.id}}</li>{% endblock %}
+{% block content %}
+<ul class="object-tools">
+    {% if a.status == "A" %}
+        {% if is_unassigned %}
+            <li><a href="{% url fm:alarm:take a.id %}">Take</a></li>
+        {% else %}
+            {% if not is_owner %}
+                <li><a href="{% url fm:alarm:take a.id %}">Steal</a></li>
+            {% endif %}
+        {% endif %}
+        
+        {% if not is_owner %}
+            {% if is_subscribed %}
+                <li><a href="{% url fm:alarm:unsubscribe a.id %}">Unsubscribe</a></li>
+            {% else %}
+                <li><a href="{% url fm:alarm:subscribe a.id %}">Subscribe</a></li>
+            {% endif %}
+        {% endif %}
+
+        {% if can_clear and is_owner %}
+            <li><a href="{% url fm:alarm:clear %}">Clear</a></li>
+        {% endif %}
+    {% endif %}
+</ul>
+<style>
+    div#s-toc ul, div#s-toc li{
+        margin: 0px;
+        padding: 0px;
+        margin-right: 4px;
+        display: inline;
+        list-style: none;
+    }
+    
+    #change_severity {
+        display: none;
+    }
+    
+    #severity-panel {
+        display: none;
+        border: 1px solid #c0c0c0;
+        padding: 4px;
+    }
+</style>
+<script type="text/javascript">
+    function toggle_module(m_selector, l_selector) {
+        var $m = $(m_selector);
+        var $l = $(l_selector);
+        
+        if ($m.is(":hidden")) {
+            $l.html("[Hide]");
+            $m.show();
+        } else {
+            $l.html("[Show]");
+            $m.hide();
+        }
+        return false;
+    }
+
+    
+function toggle_severity() {
+    var $m = $("#severity-panel");
+    var $i = $("#severity-icon");
+    
+    if ($m.is(":hidden")) {
+        $m.show();
+        $i.attr("src", "/media/img/admin/selector-removeall.gif");
+    } else {
+        $m.hide();
+        $i.attr("src", "/media/img/admin/selector-addall.gif");
+    }
+}
+</script>
+<h1>Alarm #{{a.id}}: {{a.subject}}</h1>
+<div class="module">
+    <a name="summary"></a>
+    <h2>Summary</h2>
+    <table WIDTH="100%">
+        <tr><TD STYLE="width: 150px"><b>Managed Object:</b></td><td>{{a.managed_object.name}} {% if a.managed_object.platform %}({{a.managed_object.platform}}){% endif %}</td></tr>
+        <tr><td><b>Alarm Class:</b></td><td>{{a.alarm_class}}</td></tr>
+        <tr><td><b>Severity:</b></td>
+            <td style="{{a.effective_style.style}}" id="e_severity">{{severity}} ({{a.severity}})
+            {% if is_owner %}
+                <span id="severity-panel">
+                    <b>Change severity:</b>
+                    <a href="{% url fm:alarm:change_severity a.id %}?delta=-1000" title="Decrease severity by 1000">-1000</a>
+                    <a href="{% url fm:alarm:change_severity a.id %}?delta=-100" title="Decrease severity by 100">-100</a>
+                    <a href="{% url fm:alarm:change_severity a.id %}?delta=100" title="Increase severity by 100">+100</a>
+                    <a href="{% url fm:alarm:change_severity a.id %}?delta=1000" title="Increase severity by 1000">+1000</a>
+                    <select id="set_severity">
+                        {% for s in severities %}
+                            <option value="{{s.id}}">{{s.name}}</option>
+                        {% endfor %}
+                    </select>
+                </span>
+                <a href="#" onclick="return toggle_severity();">
+                    <img id="severity-icon" src="/media/img/admin/selector-addall.gif" title="Change severity" />
+                </a>
+            {% endif %}
+            </td>
+        </tr>
+        <tr><td><b>Alarm Status:</b></td>
+            <td>
+                {% if a.status == "A" %}Active{% endif %}
+                {% if a.status == "C" %}Cleared{% endif %}
+            </td>
+        </tr>
+        <tr><td><b>Rise Time:</b></td><td>{{a.timestamp}}</TD</tr>
+        {% if a.status == "C" %}
+            <tr><td><b>Clear Time:</b></td><td>{{a.clear_timestamp}}</td></tr>
+        {% endif %}
+        <tr><td><b>Duration:</b></td><td>{{a.display_duration}}</TD</tr>
+        <tr>
+            <td><b>Sections:</b></td>
+            <td>
+                <div id="s-toc">
+                    <ul>
+                        <li><a href="#text">Text</a></li>
+                        <li><a href="#symptoms">Symptoms</a></li>
+                        <li><a href="#pcauses">Probable Causes</a></li>
+                        <li><a href="#recommended_actions">Recommended Actions</a></li>
+                        <li><a href="#alarm_data">Alarm Data</a></li>
+                        <li><a href="#events">Events</a></li>
+                        <li><a href="#log">Log</a></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        {% if a.status == "A" %}
+            <tr>
+                <td><b>Owner:</b></td>
+                <td>
+                    {% if is_unassigned %}
+                        Unassigned
+                    {% else %}
+                        {{a.owner}}
+                    {% endif %}
+                </td>
+            </tr>
+            
+            <tr>
+                <td><b>Subscribers:</b></td>
+                <td>
+                    {% for s in a.subscribers %}
+                        {{s}}
+                    {% endfor %}
+                </td>
+            </tr>
+        {%endif%}
+    </table>
+</div>
+
+
+<div class="module">
+    <a name="text"></a>
+    <h2>Subject: {{subject}}</h2>
+
+    <pre>{{body}}</pre>
+</div>
+
+{% if symptoms %}
+    <div class="module">
+        <a name="symptoms"></a>
+        <h2>Symptoms</h2>
+        <pre>{{symptoms}}</pre>
+    </div>
+{%endif%}
+
+{% if probable_causes %}
+    <div class="module">
+        <a name="pcauses"></a>
+        <h2>Probable causes</h2>
+        <pre>{{probable_causes}}</pre>
+    </div>
+{%endif%}
+
+{% if recommended_actions %}
+    <div class="module">
+        <a name="recommended_actions"></a>
+        <h2>Recommended actions</h2>
+        <pre>{{recommended_actions}}</pre>
+    </div>    
+{%endif%}
+    
+<div class="module">
+    <a name="alarm_data"></a>
+    <h2>Alarm Data
+        <span style="float: right">
+            <a  id="t-vars-l" href="#" onclick="return toggle_module('#t-vars', '#t-vars-l');">[Show]</a>
+        </span>
+    </h2>
+    <table id="t-vars" width="100%" style="display: none;">
+        {% for k, v in a.vars.items %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+                <td><b>{{k}}</b></td>
+                <td>{{v}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="module">
+    <a name="events"></a>
+    <h2>Events
+        <span style="float: right">
+            <a  id="t-events-l" href="#" onclick="return toggle_module('#t-events', '#t-events-l');">[Show]</a>
+        </span>
+    </h2>
+    <table id="t-events" width="100%" style="display: none;">
+        <thead>
+            <tr>
+                <th>ID</th><th>Class</th><th>Timestamp</th><th>Subject</th>
+            </tr>
+        </thead>
+        {% for e_id, e_class, timestamp, subject in events %}
+            <tr>
+                <td><a href="{%url fm:event:event e_id %}">{{e_id}}</a></td>
+                <td>{{e_class}}</td>
+                <td>{{timestamp}}</td>
+                <td>{{subject}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="module">
+    <a name="log"></a>
+    <h2>Log</h2>
+    <table width="100%">
+        <thead>
+            <tr><th>Timestamp</th><th>From</th><th>-&gt;</th><th>To</th><th>Message</th></tr>
+        </thead>
+        {% for l in a.log %}
+            <tr class="{% cycle 'row1' 'row2' %}">
+                <td>{{l.timestamp}}</td>
+                <td>{{l.from_status}}</td>
+                <td>-&gt;</td>
+                <td>{{l.to_status}}</td>
+                <td>{{l.message}}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="5">
+                <b>Post a message:</b><br/>
+                <form action="{% url fm:alarm:message a.id %}" method="POST" id="message_form">{% csrf_token %}
+                    <textarea id="id_message" name="message" rows="5" cols="80"></textarea><br/>
+                    <input type="submit" value="Post message" />
+                </form>
+            </td>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#e_severity").corner();
+        $("#severity-panel").corner();
+        $("#set_severity").change(function(){
+            document.location = "{% url fm:alarm:change_severity a.id %}?severity=" + $(this).val();
+        });
+    });
+</script>
+{%endblock%}
