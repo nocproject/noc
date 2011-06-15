@@ -47,7 +47,7 @@ def convert_event(cursor, event_id):
                       WHERE e.id = %s""", [event_id])
     profile = cursor.fetchall()[0][0]
     # Get event data
-    cursor.execute("SELECT key, value FROM fm_eventdata WHERE event_id=%s", [event_id])
+    cursor.execute("SELECT key, value FROM fm_eventdata WHERE event_id=%s and type='>'", [event_id])
     vars = {}
     for k, v in cursor.fetchall():
         vars[k] = bin_unquote(v)
