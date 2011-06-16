@@ -674,7 +674,7 @@ class NewEvent(nosql.Document):
     # Fields
     timestamp = nosql.DateTimeField(required=True)
     managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
-    raw_vars = nosql.DictField(required=True)
+    raw_vars = nosql.RawDictField(required=True)
     log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
 
     def __unicode__(self):
@@ -724,7 +724,7 @@ class FailedEvent(nosql.Document):
     # Fields
     timestamp = nosql.DateTimeField(required=True)
     managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
-    raw_vars = nosql.DictField(required=True)
+    raw_vars = nosql.RawDictField(required=True)
     version = nosql.StringField(required=True)  # NOC version caused traceback
     traceback = nosql.StringField()
     log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
@@ -769,8 +769,8 @@ class ActiveEvent(nosql.Document):
     timestamp = nosql.DateTimeField(required=True)
     managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
     event_class = nosql.PlainReferenceField(EventClass, required=True)
-    raw_vars = nosql.DictField()
-    resolved_vars = nosql.DictField()
+    raw_vars = nosql.RawDictField()
+    resolved_vars = nosql.RawDictField()
     vars = nosql.DictField()
     log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
 
@@ -881,8 +881,8 @@ class ArchivedEvent(nosql.Document):
     timestamp = nosql.DateTimeField(required=True)
     managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
     event_class = nosql.PlainReferenceField(EventClass, required=True)
-    raw_vars = nosql.DictField()
-    resolved_vars = nosql.DictField()
+    raw_vars = nosql.RawDictField()
+    resolved_vars = nosql.RawDictField()
     vars = nosql.DictField()
     log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
 
