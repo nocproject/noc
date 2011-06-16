@@ -32,7 +32,6 @@ class Rule(object):
         self.pyrule = dr.action == "pyrule" and dr.pyrule and PyRule.objects.get(name=dr.pyrule)
         self.alarm_class = dr.alarm_class
         self.severity = self.alarm_class.default_severity.severity
-        self.raise_condition = dr.raise_condition
         self.stop_disposition = dr.stop_disposition
         self.unique = self.alarm_class.is_unique
         self.var_mapping = {}
