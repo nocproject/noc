@@ -118,3 +118,20 @@ class ForeignKeyField(BaseField):
         else:
             id_ = document
         return id_
+
+
+ESC1 = "__"  # Escape for '.'
+ESC2 = "^^"  # Escape for '$'
+class RawDictField(DictField):
+    def validate(self, value):
+        if not isinstance(value, dict):
+            raise ValidationError("Only dictionaries may be used in a "
+                                  "RawDictField")
+    
+    def to_python(self, value):
+        return dict([(k.replace(ESC1, ".").replace(ESC2, "$"), v)
+            for k, v in value.items()])
+
+    def to_mongo(self, value):
+        return dict([(k.replace(".", ESC1).replace("$", ESC2), v)
+            for k, v in value.items()])
