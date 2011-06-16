@@ -56,16 +56,11 @@ class Rule(object):
             vars = {}
             for k, v in self.var_mapping.items():
                 vars[v] = e.vars[k]
-            ds = []
-            for n in self.discriminator:
-                ds += [vars[n]]
-            if ds:
-                discriminator = hashlib.sha1("\x00".join(ds)).hexdigest()
-            else:
-                discriminator = None
+            ds = [vars[n] for n in self.discriminator]
+            discriminator = hashlib.sha1("\x00".join(ds)).hexdigest()
             return discriminator, vars
         else:
-            return None, None
+            return hashlib.sha1("").hexdigest(), None
 
     
 class Correlator(Daemon):
