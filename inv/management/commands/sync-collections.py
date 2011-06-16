@@ -46,6 +46,7 @@ class Command(BaseCommand):
 
     def _handle(self, *args, **options):
         def lookup(doc, field, key):
+            field = str(field)
             if ref not in ref_cache:
                 ref_cache[doc] = {field: {}}
             if field not in ref_cache[doc]:
@@ -116,6 +117,7 @@ class Command(BaseCommand):
                                 builtin_ids.remove(str(obj._id))
                             # Compare attributes
                             for i, v in d.items():
+                                i = str(i)
                                 # Ignore id field
                                 if i == "id":
                                     continue
@@ -145,6 +147,7 @@ class Command(BaseCommand):
                                                 ii, f = ii.split("__")
                                                 ref = edoc._fields[ii].document_type
                                                 dd[ii] = lookup(ref, f, vv)
+                                        dd = dict([(str(x), y) for x, y in dd.items()])
                                         v += [edoc(**dd)]
                                     if getattr(obj, i) != v:
                                         changed = True
