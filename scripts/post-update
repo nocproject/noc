@@ -70,9 +70,6 @@ python manage.py sync-pyrules || error_exit "$LINENO: sync-pyrules failed"
 # Syncronize refbooks
 info "Syncronizing refbooks"
 python manage.py sync-refbooks || error_exit "$LINENO: sync-refbooks failed"
-# Syncronize FM rules
-info "Installing FM rules"
-python manage.py sync-rules || error_exit "$LINENO: sync-rules failed"
 # Build documentation
 info "Building documentation"
 python manage.py sync-doc nocbook || error_exit "$LINO: cannot build documentation"
