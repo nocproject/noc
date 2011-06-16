@@ -129,9 +129,9 @@ class RawDictField(DictField):
                                   "RawDictField")
     
     def to_python(self, value):
-        return dict([(str(k).replace(ESC1, ".").replace(ESC2, "$"), v)
+        return dict([(k.replace(ESC1, ".").replace(ESC2, "$").replace(u"\uff0e", "."), v)
             for k, v in value.items()])
 
     def to_mongo(self, value):
-        return dict([(str(k).replace(".", ESC1).replace("$", ESC2), v)
+        return dict([(k.replace(".", ESC1).replace("$", ESC2), v)
             for k, v in value.items()])
