@@ -45,9 +45,11 @@ def reduce_vlan_import(task,vc_domain):
             # Generate unique name
             n=0
             nm=name
+            ml = VC._meta.get_field_by_name("name")[0].max_length
             while VC.objects.filter(vc_domain=vc_domain, name=nm).exists():
                 n += 1
-                nm = name + "_%d"%n
+                nm = "_%d" % n
+                nm = name[:ml - len(nm)] + nm
             # Save
             vc=VC(vc_domain=vc_domain, l1=vlan_id, l2=0, name=nm, description=name)
             vc.save()
