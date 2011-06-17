@@ -2,6 +2,7 @@
 {% block breadcrumbs %}{{block.super}}<li>{{e.id}}</li>{% endblock %}
 {% block content %}
 <ul class="object-tools">
+    <li><a href="#" onclick="return show_popup('JSON', '{% url fm:event:to_json e.id%}')">JSON</a></li>
     {% if e.status == "A" or e.status == "S" or e.status == "F" %}
     <li><a href="{% url fm:event:reclassify e.id%}">Reclassify</a></li>
 {% endif %}
