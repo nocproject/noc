@@ -195,12 +195,6 @@ smilint    = /usr/bin/smilint
 dig        = /usr/bin/dig
 gpg        = /usr/bin/gpg
 #
-# SAE XML-RPC interface
-#
-[xmlrpc]
-server     = 127.0.0.1
-port       = 19702
-#
 # Backup parameters
 #
 [backup]
@@ -215,3 +209,10 @@ keep_day_of_month  = 1
 [pgp]
 use_key   = user@example.com
 keyserver = keys.gnupg.net
+#
+# FM Settings
+#
+[fm]
+# Time to store active event in the noc.event.active collection
+# before moving to archive
+active_window = 86400
