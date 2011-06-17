@@ -42,6 +42,16 @@
         border: 1px solid #c0c0c0;
         padding: 4px;
     }
+    
+    .help-title {
+        font-weight: bold;
+    }
+    
+    .help-text {
+        padding-left: 8px;
+        padding-bottom: 8px;
+        white-space: pre;
+    }
 </style>
 <script type="text/javascript">
     function toggle_module(m_selector, l_selector) {
@@ -117,9 +127,7 @@ function toggle_severity() {
                 <div id="s-toc">
                     <ul>
                         <li><a href="#text">Text</a></li>
-                        <li><a href="#symptoms">Symptoms</a></li>
-                        <li><a href="#pcauses">Probable Causes</a></li>
-                        <li><a href="#recommended_actions">Recommended Actions</a></li>
+                        <li><a href="#help">Help</a></li>
                         <li><a href="#alarm_data">Alarm Data</a></li>
                         <li><a href="#events">Events</a></li>
                         <li><a href="#log">Log</a></li>
@@ -159,29 +167,26 @@ function toggle_severity() {
     <pre>{{body}}</pre>
 </div>
 
-{% if symptoms %}
-    <div class="module">
-        <a name="symptoms"></a>
-        <h2>Symptoms</h2>
-        <pre>{{symptoms}}</pre>
-    </div>
-{%endif%}
-
-{% if probable_causes %}
-    <div class="module">
-        <a name="pcauses"></a>
-        <h2>Probable causes</h2>
-        <pre>{{probable_causes}}</pre>
-    </div>
-{%endif%}
-
-{% if recommended_actions %}
-    <div class="module">
-        <a name="recommended_actions"></a>
-        <h2>Recommended actions</h2>
-        <pre>{{recommended_actions}}</pre>
-    </div>    
-{%endif%}
+{% if syptoms or probable_causes or recommended_actions %}
+<div class="module">
+    <a name="help"></a>
+    <h2>Help</h2>
+    {% if symptoms %}
+        <div class="help-title">Symptoms:</div>
+        <div class="help-text">{{symptoms}}</div>
+    {%endif%}
+    
+    {% if probable_causes %}
+        <div class="help-title">Probable causes:</div>
+        <div class="help-text">{{probable_causes}}</div>
+    {%endif%}
+    
+    {% if recommended_actions %}
+        <div class="help-title">Recommended actions:</div>
+        <div class="help-text">{{recommended_actions}}</div>
+    {%endif%}    
+</div>
+{% endif %}
     
 <div class="module">
     <a name="alarm_data"></a>
@@ -229,14 +234,12 @@ function toggle_severity() {
     <h2>Log</h2>
     <table width="100%">
         <thead>
-            <tr><th>Timestamp</th><th>From</th><th>-&gt;</th><th>To</th><th>Message</th></tr>
+            <tr><th>Timestamp</th><th>Status</th><th>Message</th></tr>
         </thead>
         {% for l in a.log %}
             <tr class="{% cycle 'row1' 'row2' %}">
                 <td>{{l.timestamp}}</td>
-                <td>{{l.from_status}}</td>
-                <td>-&gt;</td>
-                <td>{{l.to_status}}</td>
+                <td>{{l.from_status}} -&gt; {{l.to_status}}</td>
                 <td>{{l.message}}</td>
             </tr>
         {% endfor %}
