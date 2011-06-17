@@ -31,6 +31,7 @@ class ClassificationRuleApplication(TreeApplication):
     category_model = EventClassificationRuleCategory
 
     rx_re_quote=re.compile(r"[()\[\].+*?^$]", re.MULTILINE)
+    rx_oid = re.compile(r"^(\d+\.){6,}$")
     
     @view(url="^(?P<rule_id>[0-9a-f]{24})/to_json/$",
           url_name="to_json", access=HasPerm("to_json"))
@@ -163,23 +164,28 @@ class ClassificationRuleApplication(TreeApplication):
                 "key_re": "^%s$" % re_q(k),
                 "value_re": "^%s$" % re_q(v)
             }
+
+        def is_oid(self):
+            return self.rx_oid.match(v) is not None
         
         event = get_event(event_id)
         if event is None:
             return self.response_not_found("Not found")
         form_initial = {"preference": 1000}
-        formset_initial = [p(k, v) for k, v in event.raw_vars.items()]
+        formset_initial = [p(k, v)
+                           for k, v in event.raw_vars.items()
+                           if k not in ("collector",) and not self.is_oid(k)]
         if hasattr(event, "resolved_vars"):
             lkeys = [k for k in event.resolved_vars.keys()
-                    if k not in ("collector", "RFC1213-MIB::sysUpTime.0")]
+                    if k not in ("RFC1213-MIB::sysUpTime.0",)]
             keys = []
             for k in ("source", "profile"):
                 if k in lkeys:
                     keys += [k]
                     lkeys.remove(k)
             keys += sorted(lkeys)
-            # Override unresolved values
-            formset_initial = [p(k, event.resolved_vars[k]) for k in keys]
+            #
+            formset_initial += [p(k, event.resolved_vars[k]) for k in keys]
         return self.process_change_form(request, form_initial=form_initial,
                                         formset_initial=formset_initial)
 
