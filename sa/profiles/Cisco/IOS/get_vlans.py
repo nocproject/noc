@@ -22,7 +22,7 @@ class Script(NOCScript):
     ##
     ## Extract vlan information
     ##
-    rx_vlan_line=re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>.+?)\s+active", re.MULTILINE)
+    rx_vlan_line=re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>.+?)\s+(?:active|act/lshut)", re.MULTILINE)
     def extract_vlans(self, data):
         return [
             {
