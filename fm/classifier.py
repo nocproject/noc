@@ -30,7 +30,7 @@ EVENT_WINDOW = 24 * 3600
 ##
 ## Patterns
 ##
-rx_oid = re.compile(r"^(\d+\.){6,}")
+rx_oid = re.compile(r"^(\d+\.){6,}$")
 
 
 class Rule(object):
@@ -228,7 +228,7 @@ class Classifier(Daemon):
                     # Render according to TC
                     rv = render_tc(v, syntax["base_type"],
                                    syntax.get("display_hint", None))
-            elif self.is_oid(v):
+            if self.is_oid(v):
                 # Resolve OID in value
                 rv = MIB.get_name(v)
             if rk != k or rv != v:
