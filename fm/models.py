@@ -701,7 +701,7 @@ class NewEvent(nosql.Document):
         """
         Event source or None
         """
-        if self.raw_vars and "source" is self.raw_vars:
+        if self.raw_vars and "source" in self.raw_vars:
             return self.raw_vars["source"]
         return None
     
