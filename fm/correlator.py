@@ -17,7 +17,7 @@ import hashlib
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventDispositionQueue, ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog
-from noc.main.models import PyRule
+from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames
 
@@ -71,6 +71,8 @@ class Correlator(Daemon):
         self.rules = {}  # event_class -> [Rule]
         Daemon.__init__(self)
         logging.info("Running noc-correlator")
+        # Tables
+        self.NOC_ACTIVATORS = self.get_activators()  # NOC::Activators prefix table
     
     def load_config(self):
         """
@@ -167,8 +169,12 @@ class Correlator(Daemon):
         if not drc:
             return
         # Apply disposition rules
+        env = {
+            "event": e,
+            "NOC_ACTIVATORS": self.NOC_ACTIVATORS
+        }
         for r in drc:
-            if eval(r.condition, {}, {"event": e}):
+            if eval(r.condition, {}, env):
                 if r.action == "pyrule":
                     if r.pyrule:
                         r.pyrule(e)
@@ -178,6 +184,26 @@ class Correlator(Daemon):
                     self.clear_alarm(r, e)
                 if r.stop_disposition:
                     break
+
+    def get_activators(self):
+        """
+        Get SELF_ADDRESSES instance, or create
+        and populate with activator addresses
+        and local interface addresses
+        """
+        try:
+            return PrefixTable.objects.get(name="NOC::Activators")
+        except PrefixTable.DoesNotExist:
+            pass
+        # Get prefixes
+        prefixes = ["127.0.0.1/32"]
+        # Save prefixes
+        t = PrefixTable(name="NOC::Activators",
+                        description="NOC's activators IP addresses")
+        t.save()
+        for p in prefixes:
+            PrefixTablePrefix(table=t, prefix=p).save()
+        return t
 
     def run(self):
         """
