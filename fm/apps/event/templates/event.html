@@ -182,14 +182,12 @@
     <h2>Log</h2>
     <table width="100%">
         <thead>
-            <tr><th>Timestamp</th><th>From</th><th>-&gt;</th><th>To</th><th>Message</th></tr>
+            <tr><th>Timestamp</th><th>Status</th><th>Message</th></tr>
         </thead>
         {% for l in e.log %}
             <tr class="{% cycle 'row1' 'row2' %}">
                 <td>{{l.timestamp}}</td>
-                <td>{{l.from_status}}</td>
-                <td>-&gt;</td>
-                <td>{{l.to_status}}</td>
+                <td>{{l.from_status}} -&gt; {{l.to_status}}</td>
                 <td>{{l.message}}</td>
             </tr>
         {% endfor %}
