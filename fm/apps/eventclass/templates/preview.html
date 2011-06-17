@@ -91,7 +91,9 @@
                     {% if d.pyrule %}
                         {{d.pyrule.name}}
                     {% else %}
+                        {% if d.alarmclass.name %}
                         <a href="{% url fm:alarmclass:preview d.alarm_class.id %}">{{d.alarm_class.name}}</a>
+                        {% endif %}
                     {%endif%}
                 </td>
                 <td>{{d.window}}</td>
