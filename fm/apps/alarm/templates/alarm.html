@@ -20,7 +20,7 @@
         {% endif %}
 
         {% if can_clear and is_owner %}
-            <li><a href="{% url fm:alarm:clear %}">Clear</a></li>
+            <li><a href="{% url fm:alarm:clear a.id %}">Clear</a></li>
         {% endif %}
     {% endif %}
 </ul>
