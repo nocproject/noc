@@ -54,6 +54,8 @@ def render_tc(value, base_type, format=None):
     >>> render_tc("\x74\x65\x73\x74", "OctetString", "255a")
     'test'
     """
+    if format is None:
+        return str(value)
     if base_type == "Integer32":
         if format == "x":
             # Hexadecimal
