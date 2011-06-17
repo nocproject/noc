@@ -34,7 +34,7 @@ class PrefixTableInline(admin.TabularInline):
 ## PrefixTable admin
 ##
 class PrefixTableAdmin(admin.ModelAdmin):
-    display_list = ["name", "description"]
+    list_display = ["name", "description"]
     search_fields = ["name", "description"]
     inlines = [PrefixTableInline]
     actions = ["test_prefix_tables"]
