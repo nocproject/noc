@@ -87,7 +87,13 @@
                 <td>{{d.name}}</td>
                 <td>{{d.condition}}</td>
                 <td>{{d.action}}</td>
-                <td>{% if d.pyrule %}{{d.pyrule.name}}{% else %}{{d.alarm_class.name}}{%endif%}</td>
+                <td>
+                    {% if d.pyrule %}
+                        {{d.pyrule.name}}
+                    {% else %}
+                        <a href="{% url fm:alarmclass:preview d.alarm_class.id %}">{{d.alarm_class.name}}</a>
+                    {%endif%}
+                </td>
                 <td>{{d.window}}</td>
                 <td>{{d.stop_disposition|bool_icon}}</td>
             </tr>
