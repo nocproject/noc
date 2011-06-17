@@ -267,3 +267,10 @@ class AlarmManagedApplication(Application):
                     a.change_severity(user=request.user, severity=s)
                     self.message_user(request, "Alarm severity has been changed")
         return self.response_redirect_to_referrer(request)
+
+    @view(url="^(?P<alarm_id>[0-9a-f]{24})/clear/$", url_name="clear",
+          access=HasPerm("change"))
+    def view_clear(self, request, alarm_id):
+        a = self.get_alarm_or_404(alarm_id)
+        a.mark_as_archived("Cleared by %s" % request.user)
+        return self.response_redirect_to_referrer(request)
