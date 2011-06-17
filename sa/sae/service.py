@@ -245,17 +245,21 @@ class Service(SAEService):
             done(controller, error=e)
             return
         activator = self.get_controller_activator(controller)
-        try:
-            if request.ip:
-                mo = ManagedObject.objects.get(activator=activator,
-                                               trap_source_ip=request.ip)
+        # Resolve managed object by request's IP
+        # @todo: Speed optimization
+        if request.ip:
+            mo = ManagedObject.objects.filter(activator=activator,
+                        trap_source_ip=request.ip).order_by("-remote_path")[:1]
+            if mo:
+                mo = mo[0]
             else:
-                mo = None
-        except ManagedObject.DoesNotExist:
-            done(controller,
-                 error=Error(code=ERR_UNKNOWN_EVENT_SOURCE,
-                             text="Unknown event source '%s'" % request.ip))
-            return
+                done(controller,
+                     error=Error(code=ERR_UNKNOWN_EVENT_SOURCE,
+                                 text="Unknown event source '%s'" % request.ip))
+                return
+        else:
+            mo = None
+        # Write event to database
         self.sae.write_event(
             data=[(b.key, b.value) for b in request.body],
             timestamp=datetime.datetime.fromtimestamp(request.timestamp),
