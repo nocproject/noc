@@ -1202,6 +1202,14 @@ class PrefixTable(models.Model):
         """, [self.id, p.afi, prefix])
         return c.fetchall()[0][0] > 0
 
+    def __contains__(self, other):
+        """
+        Usage:
+        "prefix" in table
+        """
+        return self.match(other)
+
+
 class PrefixTablePrefix(models.Model):
     class Meta:
         verbose_name = _("Prefix")
