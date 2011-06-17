@@ -9,13 +9,13 @@
 """
 ## Python module
 import time
-import binascii
 ## pysnmp modules
 from pyasn1.codec.ber import decoder
 from pysnmp.proto import api
 ## NOC modules
 from noc.lib.nbsocket import ListenUDPSocket
 from noc.sa.activator.event_collector import EventCollector
+from noc.lib.escape import fm_escape
 
 
 class TrapCollector(ListenUDPSocket, EventCollector):
@@ -61,7 +61,7 @@ class TrapCollector(ListenUDPSocket, EventCollector):
             v = v[-1]
             if type(v) == tuple:
                 return oid_to_str(v)
-            return binascii.b2a_qp(str(v))
+            return fm_escape(v)
 
         if not self.check_source_address(address):
             return
