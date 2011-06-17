@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import binascii
 ## Django modules
 from django import forms
 from django.forms.widgets import HiddenInput, DateTimeInput
@@ -198,3 +200,34 @@ class EventAppplication(Application):
             "pages" : count / self.PAGE_SIZE + (1 if count % self.PAGE_SIZE else 0),
             "events": data
             })
+    
+    @view(url="^(?P<event_id>[0-9a-f]{24})/to_json/$", url_name="to_json",
+          access=HasPerm("view"))
+    def view_to_json(self, request, event_id):
+        """
+        Display event's beef
+        """
+        def q(s):
+            return s.replace("\n", "\\n").replace("\"", "\\\"").replace("\\", "\\\\")
+
+        event = self.get_event_or_404(event_id)
+        vars = event.raw_vars
+        keys = []
+        lkeys = vars.keys()
+        for k in ("source", "profile", "1.3.6.1.6.3.1.1.4.1.0"):
+            if k in vars:
+                keys += [k]
+                lkeys.remove(k)
+        keys += sorted(lkeys)
+        r = ["["]
+        r += ["    {"]
+        r += ["        \"profile\": \"%s\"," % q(event.managed_object.profile_name)]
+        r += ["        \"raw_vars\": {"]
+        x = []
+        for k in keys:
+            x += ["            \"%s\": \"%s\"" % (q(k), q(binascii.b2a_qp(str(vars[k]))))]
+        r += [",\n".join(x)]
+        r += ["        }"]
+        r += ["    }"]
+        r += ["]"]
+        return self.render_plain_text("\n".join(r))
