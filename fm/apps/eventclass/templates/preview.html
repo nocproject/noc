@@ -56,7 +56,7 @@
                 <th class="types">Type</th>
                 <th class="required">Required</th>
                 <th>Description</th>
-            </td>
+            </tr>
         </thead>
         {% for v in o.vars %}
             <tr {% if not v.required %}class="optional"{% endif %}>
@@ -89,7 +89,7 @@
                 <td>{{d.action}}</td>
                 <td>{% if d.pyrule %}{{d.pyrule.name}}{% else %}{{d.alarm_class.name}}{%endif%}</td>
                 <td>{{d.window}}</td>
-                <td>{{d.stop_disposition|bool_icon}}</th>
+                <td>{{d.stop_disposition|bool_icon}}</td>
             </tr>
         {% endfor %}
     </table>
