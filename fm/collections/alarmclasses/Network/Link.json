@@ -1,0 +1,25 @@
+[
+    {
+        "name": "Network | Link | Link Down",
+        "description": "Link down",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface name"
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Link down: {{interface}}",
+                "body_template": "Link down: {{interface}}",
+                "symptoms": "Connection lost",
+                "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
+                "recommended_actions": "Check configuration, both sides of links and hardware"
+            }
+        }
+    }
+]
