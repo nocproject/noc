@@ -32,12 +32,12 @@ class Rule(object):
         self.action = dr.action
         self.pyrule = dr.action == "pyrule" and dr.pyrule and PyRule.objects.get(name=dr.pyrule)
         self.alarm_class = dr.alarm_class
-        self.severity = self.alarm_class.default_severity.severity
         self.stop_disposition = dr.stop_disposition
-        self.unique = self.alarm_class.is_unique
         self.var_mapping = {}
         self.discriminator = []
         if self.alarm_class:
+            self.severity = self.alarm_class.default_severity.severity
+            self.unique = self.alarm_class.is_unique
             a_vars = set([v.name for v in self.alarm_class.vars])
             e_vars = set([v.name for v in self.event_class.vars])
             for v in a_vars.intersection(e_vars):
