@@ -393,6 +393,14 @@ class ManagedObject(models.Model):
             return " ".join(x)
         else:
             return None
+    
+    def is_ignored_interface(self, interface):
+        interface = self.profile.convert_interface_name(interface)
+        rx = self.get_attr("ignored_interfaces")
+        if rx:
+            return re.match(rx, interface) is not None
+        return False
+
 
 class ManagedObjectAttribute(models.Model):
     
