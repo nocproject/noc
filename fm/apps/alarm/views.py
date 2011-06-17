@@ -272,5 +272,5 @@ class AlarmManagedApplication(Application):
           access=HasPerm("change"))
     def view_clear(self, request, alarm_id):
         a = self.get_alarm_or_404(alarm_id)
-        a.mark_as_archived("Cleared by %s" % request.user)
+        a.clear_alarm("Cleared by %s" % request.user)
         return self.response_redirect_to_referrer(request)
