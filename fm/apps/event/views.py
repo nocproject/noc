@@ -225,6 +225,8 @@ class EventAppplication(Application):
         r += ["        \"raw_vars\": {"]
         x = []
         for k in keys:
+            if k in ("collector",):
+                continue
             x += ["            \"%s\": \"%s\"" % (q(k), q(binascii.b2a_qp(str(vars[k]))))]
         r += [",\n".join(x)]
         r += ["        }"]
