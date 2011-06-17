@@ -7,40 +7,35 @@
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
+import datetime
+import logging
+## NOC modules
 import noc.lib.periodic
-import datetime,logging
+from noc.settings import config
 
-T_LIMIT=100
 class Task(noc.lib.periodic.Task):
-    name="fm.archive"
-    description=""
+    name = "fm.archive"
+    description = ""
     
     def execute(self):
-        from django.db import connection
-        cursor=connection.cursor()
-                
-        from noc.fm.models import Event,EventArchivationRule
-        now=datetime.datetime.now()
-        # Process events
-        cursor.execute("BEGIN")
-        for rule in EventArchivationRule.objects.all():
-            ts=now-datetime.timedelta(seconds=rule.ttl_seconds)
-            if rule.action=="D":
-                proc="delete_event(id)"
-                status="C"
-            elif rule.action=="C":
-                proc="close_event(id,'Closed by archiver')"
-                status="A"
-            else:
-                logging.error("fm.archive: Invalid rule action %s"%rule.action)
-                continue
-            while True:
-                cursor.execute("SELECT COUNT(%s) FROM fm_event WHERE id IN (SELECT id FROM fm_event WHERE status=%%s AND timestamp<=%%s AND event_class_id=%%s LIMIT %d)"%(proc,T_LIMIT),
-                    [status,ts,rule.event_class.id])
-                c=cursor.fetchall()[0][0]
-                cursor.execute("COMMIT")
-                if c==0:
-                    break
-                logging.info("fm.archive: %d events of class '%s' are %s"%(c,rule.event_class.name,{"C":"closed","D":"dropped"}[rule.action]))
-        cursor.execute("COMMIT")
+        from noc.fm.models import EventClass, ActiveEvent
+        
+        w = config.getint("fm", "active_window")
+        border = datetime.datetime.now() - datetime.timedelta(seconds=w)
+        # Drop all events with event class action L
+        to_drop = [c.id for c in EventClass.objects.filter(action="L")]
+        dc = ActiveEvent.objects.filter(event_class__in=to_drop,
+                                        timestamp__lte=border).count()
+        if dc:
+            ActiveEvent.objects.filter(event_class__in=to_drop,
+                                        timestamp__lte=border).delete()
+            self.info("%d active events cleaned" % dc)
+        # Archive other events
+        n = 0
+        for e in ActiveEvent.objects.filter(timestamp__lte=border):
+            e.mark_as_archived("Archived by fm.archive task")
+            n += 1
+        if n:
+            self.info("%d active events are moved into archive" % n)
         return True
