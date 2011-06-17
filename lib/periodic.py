@@ -10,6 +10,7 @@
 ## Python modules
 import os
 import datetime
+import logging
 ## NOC modules
 from noc.lib.registry import Registry
 
@@ -51,4 +52,12 @@ class Task(object):
     
     def execute(self):
         return True
-    
+
+    def debug(self, msg):
+        logging.debug("%s: %s" % (self.name, msg))
+
+    def info(self, msg):
+        logging.info("%s: %s" % (self.name, msg))
+
+    def error(self, msg):
+        logging.error("%s: %s" % (self.name, msg))
