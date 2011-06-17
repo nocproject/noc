@@ -451,8 +451,16 @@ class EventDispositionRule(nosql.EmbeddedDocument):
     # is applicable or not.
     condition = nosql.StringField(required=True, default="True")
     # What to do with disposed event:
+    #    drop - delete and stop disposition
+    #    ignore - stop disposition
+    #    pyrule - execute pyrule
+    #    raise - raise an alarm
+    #    clear - clear alarm
+    #
     action = nosql.StringField(required=True,
                                choices=[
+                                    "drop",
+                                    "ignore",
                                     "pyrule",
                                     "raise",
                                     "raise_if_not_followed",

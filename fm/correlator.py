@@ -13,6 +13,7 @@ import datetime
 import time
 import logging
 import hashlib
+import re
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventDispositionQueue, ActiveEvent, EventClass,\
@@ -171,11 +172,17 @@ class Correlator(Daemon):
         # Apply disposition rules
         env = {
             "event": e,
-            "NOC_ACTIVATORS": self.NOC_ACTIVATORS
+            "NOC_ACTIVATORS": self.NOC_ACTIVATORS,
+            "re": re
         }
         for r in drc:
             if eval(r.condition, {}, env):
-                if r.action == "pyrule":
+                if r.action == "drop":
+                    event.delete()
+                    return
+                elif r.action == "ignore":
+                    return
+                elif r.action == "pyrule":
                     if r.pyrule:
                         r.pyrule(e)
                 elif r.action == "raise":
