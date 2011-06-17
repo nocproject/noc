@@ -6,8 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import binascii
 ## Django modules
 from django import forms
 from django.forms.widgets import HiddenInput, DateTimeInput
@@ -16,7 +14,7 @@ from django.http import Http404
 ## NOC modules
 from noc.lib.widgets import AutoCompleteTextInput, lookup, TreePopupField
 from noc.lib.app import Application, HasPerm, view
-from noc.lib.escape import json_escape
+from noc.lib.escape import json_escape, fm_escape
 from noc.fm.models import *
 from noc.sa.models import ManagedObject
 
@@ -226,7 +224,7 @@ class EventAppplication(Application):
             if k in ("collector",):
                 continue
             x += ["            \"%s\": \"%s\"" % (json_escape(k),
-                                                  json_escape(binascii.b2a_qp(str(vars[k]))))]
+                                                  json_escape(fm_escape(vars[k])))]
         r += [",\n".join(x)]
         r += ["        }"]
         r += ["    }"]

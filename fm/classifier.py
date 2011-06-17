@@ -13,7 +13,6 @@ import time
 import datetime
 import sys
 import os
-import binascii
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
@@ -23,6 +22,7 @@ from noc.sa.models import profile_registry
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames
 from noc.lib.snmputils import render_tc
+from noc.lib.escape import fm_unescape
 
 ## Defaut active event window
 EVENT_WINDOW = 24 * 3600
@@ -213,7 +213,7 @@ class Classifier(Daemon):
             if not self.is_oid(k):
                 # Nothing to resolve
                 continue
-            v = binascii.a2b_qp(v)
+            v = fm_unescape(v)
             rk, syntax = MIB.get_name_and_syntax(k)
             rv = v
             if syntax:

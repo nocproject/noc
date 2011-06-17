@@ -8,7 +8,6 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import binascii
 import re
 import sys
 ## Third-party modules
@@ -16,6 +15,7 @@ import psycopg2
 ## NOC modules
 import set_env
 set_env.setup(use_django=True)
+from noc.lib.escape import fm_escape
 
 def usage():
     print "Usage: %s <event_id> [ ... <event_id>]" % sys.argv[0]
@@ -65,7 +65,7 @@ def convert_event(cursor, event_id):
     r += ["        \"raw_vars\": {"]
     x =[]
     for k in keys:
-        x += ["            \"%s\": \"%s\"" % (q(k), q(binascii.b2a_qp(str(vars[k]))))]
+        x += ["            \"%s\": \"%s\"" % (q(k), q(fm_escape(vars[k])))]
     r += [",\n".join(x)]
     r += ["        }"]
     r += ["    }"]
