@@ -23,9 +23,7 @@ from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames
 from noc.lib.snmputils import render_tc
 from noc.lib.escape import fm_unescape
-
-## Defaut active event window
-EVENT_WINDOW = 24 * 3600
+from noc.sa.interfaces.base import *
 
 ##
 ## Patterns
@@ -149,14 +147,30 @@ class Classifier(Daemon):
     def decode_int(self, event, value):
         return int(value)
 
-    def decode_ipv4_address(self, event, value): pass
-    def decode_ipv6_address(self, event, value): pass
-    def decode_ip_address(self, event, value): pass
-    def decode_ipv4_prefix(self, event, value): pass
-    def decode_ipv6_prefix(self, event, value): pass
-    def decode_ip_prefix(self, event, value): pass
-    def decode_mac(self, event, value): pass
-    def decode_interface_name(self, event, value): pass
+    def decode_ipv4_address(self, event, value):
+        return IPv4Parameter().clean(value)
+
+    def decode_ipv6_address(self, event, value):
+        return IPv6Parameter().clean(value)
+
+    def decode_ip_address(self, event, value):
+        return IPParameter().clean(value)
+
+    def decode_ipv4_prefix(self, event, value):
+        return IPv4PrefixParameter().clean(value)
+
+    def decode_ipv6_prefix(self, event, value):
+        return IPv6PrefixParameter().clean(value)
+
+    def decode_ip_prefix(self, event, value):
+        return IPPrefixParameter().clean(value)
+
+    def decode_mac(self, event, value):
+        return MACAddressParameter().clean(value)
+
+    def decode_interface_name(self, event, value):
+        return event.managed_object.profile.convert_interface_name(value)
+
     def decode_oid(self, event, value):
         return value
     
