@@ -1173,7 +1173,7 @@ class Shard(models.Model):
 
 class PrefixTable(models.Model):
     class Meta:
-        verbose_name = _("Perfix Table")
+        verbose_name = _("Prefix Table")
         verbose_name_plural = _("Prefix Tables")
         ordering = ["name"]
 
