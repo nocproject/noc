@@ -19,7 +19,7 @@ class ReportUnclassifiedOIDs(SimpleReport):
         var c = {}
         db[collection].find(query, {"vars": 1}).forEach(function(doc) {
             var oid = doc.vars.trap_oid;
-            c[oid] = (c[oid] || o) + 1;
+            c[oid] = (c[oid] || 0) + 1;
         });
         return c;
     }
