@@ -2,7 +2,7 @@
     {
         "name": "Unknown | Default",
         "description": "All rules have been failed to classify event",
-        "action": "A",
+        "action": "L",
         "text" : {
             "en": {
                 "subject_template": "Failed to classify event",
@@ -17,7 +17,7 @@
     {
         "name": "Unknown | Syslog",
         "description": "All rules have been failed to classify this SYSLOG message",
-        "action": "A",
+        "action": "L",
         "vars": [
             {
                 "name": "syslog_message",
@@ -40,7 +40,7 @@
     {
         "name": "Unknown | SNMP Trap",
         "description": "All rules have been failed to classify this SNMP TRAP",
-        "action": "A",
+        "action": "L",
         "vars": [
             {
                 "name": "trap_oid",
