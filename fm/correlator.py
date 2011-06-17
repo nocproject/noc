@@ -27,7 +27,7 @@ class Rule(object):
         self.name = dr.name
         self.event_class = ec
         self.u_name = "%s: %s" % (self.event_class.name, self.name)
-        self.condition = lambda event: True
+        self.condition = compile(dr.condition, "<string>", "eval")
         self.action = dr.action
         self.pyrule = dr.action == "pyrule" and dr.pyrule and PyRule.objects.get(name=dr.pyrule)
         self.alarm_class = dr.alarm_class
@@ -168,7 +168,7 @@ class Correlator(Daemon):
             return
         # Apply disposition rules
         for r in drc:
-            if r.condition(e):
+            if eval(r.condition, {}, {"event": e}):
                 if r.action == "pyrule":
                     if r.pyrule:
                         r.pyrule(e)
