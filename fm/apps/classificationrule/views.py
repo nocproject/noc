@@ -19,6 +19,7 @@ from noc.fm.models import EventClassificationRule,\
                           EventClassificationRuleCategory,\
                           EventClass, EventClassificationPattern,\
                           get_event
+from noc.lib.escape import json_escape as q
 
 
 class ClassificationRuleApplication(TreeApplication):
@@ -38,9 +39,6 @@ class ClassificationRuleApplication(TreeApplication):
         Render classification rule as JSON, ready to include
         into the NOC distribution
         """
-        def q(s):
-            return s.replace("\n", "\\n").replace("\"", "\\\"").replace("\\", "\\\\")
-
         rule = EventClassificationRule.objects.filter(id=rule_id).first()
         if not rule:
             return self.response_not_found()

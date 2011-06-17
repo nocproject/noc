@@ -13,6 +13,7 @@ lib/__init__.py
 lib/daemon.py
 lib/debug.py
 lib/ecma48.py
+lib/escape.py
 lib/fileutils.py
 lib/fsm.py
 lib/ip.py

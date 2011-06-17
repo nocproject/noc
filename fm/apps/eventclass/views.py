@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from noc.lib.app import TreeApplication, view, HasPerm
 from noc.fm.models import EventClass, EventClassVar, EventClassCategory,\
                           EventClassificationRule
+from noc.lib.escape import json_escape as q
 
 
 class EventClassApplication(TreeApplication):
@@ -30,12 +31,6 @@ class EventClassApplication(TreeApplication):
     @view(url="^(?P<class_id>[0-9a-f]{24})/json/", url_name="to_json",
           access=HasPerm("view"))
     def view_to_json(self, request, class_id):
-        def q(s):
-            return s.replace("\n", "\\n").replace("\"", "\\\"").replace("\\", "\\\\")
-        
-        def qb(s):
-            return "true" if s else "false"
-
         c = EventClass.objects.filter(id=class_id).first()
         if not c:
             return self.response_not_found("Not found")
@@ -51,7 +46,7 @@ class EventClassApplication(TreeApplication):
             vd += ["                \"name\": \"%s\"," % q(v.name)]
             vd += ["                \"description\": \"%s\"," % q(v.description)]
             vd += ["                \"type\": \"%s\"," % q(v.type)]
-            vd += ["                \"required\": %s," % qb(v.required)]
+            vd += ["                \"required\": %s," % q(v.required)]
             vd += ["            }"]
             vars += ["\n".join(vd)]
         r += ["        \"vars \": ["]

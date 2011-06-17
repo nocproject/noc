@@ -16,6 +16,7 @@ from django.http import Http404
 ## NOC modules
 from noc.lib.widgets import AutoCompleteTextInput, lookup, TreePopupField
 from noc.lib.app import Application, HasPerm, view
+from noc.lib.escape import json_escape
 from noc.fm.models import *
 from noc.sa.models import ManagedObject
 
@@ -207,9 +208,6 @@ class EventAppplication(Application):
         """
         Display event's beef
         """
-        def q(s):
-            return s.replace("\n", "\\n").replace("\"", "\\\"").replace("\\", "\\\\")
-
         event = self.get_event_or_404(event_id)
         vars = event.raw_vars
         keys = []
@@ -221,13 +219,14 @@ class EventAppplication(Application):
         keys += sorted(lkeys)
         r = ["["]
         r += ["    {"]
-        r += ["        \"profile\": \"%s\"," % q(event.managed_object.profile_name)]
+        r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile_name)]
         r += ["        \"raw_vars\": {"]
         x = []
         for k in keys:
             if k in ("collector",):
                 continue
-            x += ["            \"%s\": \"%s\"" % (q(k), q(binascii.b2a_qp(str(vars[k]))))]
+            x += ["            \"%s\": \"%s\"" % (json_escape(k),
+                                                  json_escape(binascii.b2a_qp(str(vars[k]))))]
         r += [",\n".join(x)]
         r += ["        }"]
         r += ["    }"]
