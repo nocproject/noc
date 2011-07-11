@@ -87,20 +87,22 @@ def render_tc(value, base_type, format=None):
                 repeat = 1
             rr = []
             for i in range(repeat):
-                v = 0
-                for j in range(size):
-                    v = (v << 8) + value.pop(0)
-                if format == "x":
-                    rr += ["%x" % v]
-                elif format == "d":
-                    rr += ["%d" % v]
-                elif format == "o":
-                    rr += ["%o" % v]
-                elif format == "a":
-                    rr += [chr(v)]
+                if format == "a":
+                    rr += [chr(v) for v in value[:size]]
+                    value = value[size:]
                 else:
-                    # @todo: "t" format
-                    raise ValueError("Unknown format: %s" % format)
+                    v = 0
+                    for j in range(size):
+                        v = (v << 8) + value.pop(0)
+                    if format == "x":
+                        rr += ["%x" % v]
+                    elif format == "d":
+                        rr += ["%d" % v]
+                    elif format == "o":
+                        rr += ["%o" % v]
+                    else:
+                        # @todo: "t" format
+                        raise ValueError("Unknown format: %s" % format)
             # Join with repeat separator
             r += rt.join(rr)
             #
