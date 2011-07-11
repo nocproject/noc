@@ -10,13 +10,15 @@
 from django import forms
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.fm.models import ActiveEvent, EventClass, ManagedObject
+from noc.fm.models import ActiveEvent, EventClass, ManagedObject,\
+                          NewEvent, FailedEvent, ArchivedEvent
 
 ## Report types
 report_types = [
             ("class", "By Event Class"),
             ("object", "By Managed Object"),
-            ("profile", "By Profile")
+            ("profile", "By Profile"),
+            ("status", "By Status")
             ]
 
 
@@ -61,6 +63,14 @@ class EventSummaryReport(SimpleReport):
                 pc[p] = v
         return sorted(pc.items(), key=lambda x: -x[1])
 
+    def get_by_status(self):
+        return [
+            ("New", NewEvent.objects.count()),
+            ("Failed", FailedEvent.objects.count()),
+            ("Active", ActiveEvent.objects.count()),
+            ("Archived", ArchivedEvent.objects.count())
+        ]
+
     def get_data(self, report_type, **kwargs):
         if report_type == "class":
             # Summary by class
@@ -74,6 +84,10 @@ class EventSummaryReport(SimpleReport):
             # Summary by profile
             columns = ["Profile"]
             data = self.get_by_profile()
+        elif report_type == "status":
+            # Summary by event status
+            columns = ["Status"]
+            data = self.get_by_status()
         else:
             raise Exception("Invalid report type: %s" % report_type)
         for r, t in report_types:
