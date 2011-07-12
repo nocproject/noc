@@ -18,7 +18,7 @@ class VCSRegistry(Registry):
     name="VCSRegistry"
     subdir="vcs"
     classname="VCS"
-    exclude_daemons = ["debug-script"]
+    exclude_daemons = ["debug-script", "noc-classifier", "noc-correlator"]
     def get(self,repo):
         return self[config.get("cm","vcs_type")](repo)
 vcs_registry=VCSRegistry()
