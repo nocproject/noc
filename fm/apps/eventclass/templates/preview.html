@@ -77,8 +77,10 @@
                 <th>Name</th>
                 <th>Condition</th>
                 <th>Action</th>
-                <th>Alarm Class/<br/>pyRule</th>
-                <th>Window</th>
+                <th>Alarm Class</th>
+                <th>Combo<br/>Condition</th>
+                <th>Combo<br/>Window</th>
+                <th>Combo<br/>Classes</th>
                 <th>Stop</th>
             </tr>
         </thead>
@@ -88,15 +90,19 @@
                 <td>{{d.condition}}</td>
                 <td>{{d.action}}</td>
                 <td>
-                    {% if d.pyrule %}
-                        {{d.pyrule.name}}
-                    {% else %}
-                        {% if d.alarmclass.name %}
+                    {% if d.alarm_class %}
                         <a href="{% url fm:alarmclass:preview d.alarm_class.id %}">{{d.alarm_class.name}}</a>
-                        {% endif %}
-                    {%endif%}
+                    {% else %}
+                        -
+                    {% endif %}
                 </td>
-                <td>{{d.window}}</td>
+                <td>{{d.combo_condition}}</td>
+                <td>{{d.combo_window}}</td>
+                <td>
+                    {% for cc in d.combo_event_classes %}
+                        <a href="{% url fm:eventclass:preview cc.id %}">{{cc.name}}</a><br/>
+                    {% endfor %}
+                </td>
                 <td>{{d.stop_disposition|bool_icon}}</td>
             </tr>
         {% endfor %}

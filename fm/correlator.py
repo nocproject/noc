@@ -45,11 +45,14 @@ class Rule(object):
             if dr.var_mapping:
                 self.var_mapping.update(dr.var_mapping)
             self.discriminator = self.alarm_class.discriminator
-    
+            self.combo_condition = dr.combo_condition
+            self.combo_window = dr.combo_window
+            self.combo_event_classes = [c.id for c in dr.combo_event_classes]
+
     def get_vars(self, e):
         """
         Get alarm variables from event.
-        
+
         :param e: ActiveEvent
         :returns: tuple of (discriminator, vars)
         """
@@ -63,33 +66,51 @@ class Rule(object):
         else:
             return hashlib.sha1("").hexdigest(), None
 
-    
+
 class Correlator(Daemon):
     daemon_name = "noc-correlator"
-    
+
     def __init__(self):
         self.version = get_version()
         self.rules = {}  # event_class -> [Rule]
+        self.back_rules = {}  # event_class -> [Rule]
         Daemon.__init__(self)
         logging.info("Running noc-correlator")
         # Tables
         self.NOC_ACTIVATORS = self.get_activators()  # NOC::Activators prefix table
-    
+
     def load_config(self):
         """
         Load rules from database just after loading config
         """
-        super(Correlator,self).load_config()
+        super(Correlator, self).load_config()
         self.load_rules()
 
     def load_rules(self):
         """
         Load rules from database
         """
+        logging.debug("Loading rules")
         self.rules = {}
+        self.back_rules = {}
+        nr = 0
+        nbr = 0
         for c in EventClass.objects.all():
             if c.disposition:
-                self.rules[c.id] = [Rule(c, dr) for dr in c.disposition]
+                r = []
+                for dr in c.disposition:
+                    rule = Rule(c, dr)
+                    r += [rule]
+                    nr += 1
+                    if dr.combo_condition != "none" and dr.combo_window:
+                        for cc in combo_event_classes:
+                            try:
+                                self.back_rules[cc.id] += [dr]
+                            except KeyError:
+                                self.back_rules[cc.id] = [dr]
+                            nbr += 1
+                self.rules[c.id] = r
+        logging.debug("%d rules are loaded. %d combos" % (nr, nbr))
 
     def mark_as_failed(self, event):
         """
@@ -146,7 +167,7 @@ class Correlator(Daemon):
                                         ))
                             ])
         a.save()
-        logging.debug("%s: Event %s(%s) raises alarm %s(%s)" %(
+        logging.debug("%s: Event %s(%s) raises alarm %s(%s)" % (
             r.u_name, str(e.id), e.event_class.name,
             str(a.id), r.alarm_class.name))
 
@@ -161,6 +182,46 @@ class Correlator(Daemon):
                     r.u_name, str(e.id), e.event_class.name,
                     str(a.id), a.alarm_class.name))
                 a.clear_alarm("Cleared by disposition rule '%s'" % r.u_name)
+
+    def get_delayed_event(self, r, e):
+        """
+        Check wrether all delayed conditions are met
+
+        :param r: Delayed rule
+        :param e: Event which can trigger delayed rule
+        """
+        discriminator, vars = r.get_vars(e)
+        ws = e.timestamp - datetime.timedelta(seconds=r.combo_window)
+        de = ActiveEvent.objects.filter(
+                managed_object=e.managed_object.id,
+                event_class=r.event_class,
+                discriminator=discriminator,
+                timestamp__gte=ws
+                ).first()
+        if not de:
+            # No starting event
+            return None
+        # Probable starting event found, get all interesting following event
+        # classes
+        fe = [ee.event_class.id
+              for ee in ActiveEvent.objects.filter(
+                managed_object=e.managed_object.id,
+                event_class__in=r.combo_event_classes,
+                discriminator=discriminator,
+                timestamp__gte=ws).order_by("timestamp")]
+        if r.combo_condition == "sequence":
+            # Exact match
+            if fe == self.combo_event_classes:
+                return de
+        elif r.combo_condition == "all":
+            # All present
+            if not any([c for c in r.combo_event_classes if c not in fe]):
+                return de
+        elif r.combo_condition == "any":
+            # Any found
+            if fe:
+                return de
+        return None
 
     def dispose_event(self, e):
         """
@@ -177,18 +238,31 @@ class Correlator(Daemon):
         }
         for r in drc:
             if eval(r.condition, {}, env):
+                # Process action
                 if r.action == "drop":
                     event.delete()
                     return
                 elif r.action == "ignore":
                     return
-                elif r.action == "pyrule":
-                    if r.pyrule:
-                        r.pyrule(e)
-                elif r.action == "raise":
+                elif r.action == "raise" and r.combo_condition == "none":
                     self.raise_alarm(r, e)
-                elif r.action == "clear":
+                elif r.action == "clear" and r.combo_condition == "none":
                     self.clear_alarm(r, e)
+                if r.action in ("raise", "clear"):
+                    # Write discriminator if can trigger delayed event
+                    if r.unique and r.event_class.id in self.back_rules:
+                        discriminator, vars = r.get_vars(e)
+                        e.discriminator = discriminator
+                        e.save()
+                    # Process delayed combo conditions
+                    if e.event_class.id in self.back_rules:
+                        for br in self.back_rules[e.event_class.id]:
+                            de = self.get_delayed_event(br, e)
+                            if de:
+                                if br.action == "raise":
+                                    self.raise_alarm(br, de)
+                                elif br.action == "clear":
+                                    self.clear_alarm(br, de)
                 if r.stop_disposition:
                     break
 
