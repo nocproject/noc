@@ -461,18 +461,32 @@ class EventDispositionRule(nosql.EmbeddedDocument):
                                choices=[
                                     "drop",
                                     "ignore",
-                                    "pyrule",
                                     "raise",
-                                    "raise_if_not_followed",
                                     "clear"
                                 ])
-    # Applicable for action = pyRule
-    pyrule = nosql.ForeignKeyField(PyRule, required=False)
-    # Applicable for action = <raise-* | clear>
+    # Applicable for actions: raise and clear
     alarm_class = nosql.PlainReferenceField(AlarmClass, required=False)
-    # Applicable only for action = raise
-    window = nosql.IntField(default=0)
-    
+    # Additional condition. Raise or clear action
+    # will be performed only if additional events occured during time window
+    combo_condition = nosql.StringField(required=False,
+                                        default="none",
+                                        choices=[
+                                            "none",  # Apply action immediately
+                                            "sequence",  # Apply action if event
+                                                         # followed by all combo events
+                                                         # in strict order
+                                            "all",  # Apply action if event
+                                                    # followed by all combo events
+                                                    # in no specific order
+                                            "any"   # Apply action if event
+                                                    # followed by any of combo events
+                                            ])
+    # Time window for combo events in seconds
+    combo_window = nosql.IntField(required=False, default=0)
+    # 
+    combo_event_classes = nosql.ListField(nosql.PlainReferenceField("EventClass"),
+                                          required=False,
+                                          default=[])
     # event var name -> alarm var name mappings
     # try to use direct mapping if not set explicitly
     var_mapping = nosql.DictField(required=False)
@@ -770,7 +784,7 @@ class ActiveEvent(nosql.Document):
     meta = {
         "collection": "noc.events.active",
         "allow_inheritance": False,
-        "indexes": ["timestamp"]
+        "indexes": ["timestamp", "discriminator"]
     }
     status = "A"
     # Fields
@@ -781,6 +795,7 @@ class ActiveEvent(nosql.Document):
     resolved_vars = nosql.RawDictField()
     vars = nosql.DictField()
     log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
+    discriminator = nosql.StringField(required=False)
 
     def __unicode__(self):
         return u"%s" % self.id
