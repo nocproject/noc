@@ -66,7 +66,23 @@ class EventClassApplication(TreeApplication):
             l += ["            }"]
             t += ["\n".join(l)]
         r += [",\n\n".join(t)]
-        r += ["        }"]
+        # Disposition rules
+        if c.disposition:
+            r += ["        },"]
+            r += ["        \"disposition\": ["]
+            l = []
+            for d in c.disposition:
+                ll = ["            {"]
+                lll = ["                \"name\": \"%s\"" % q(d.name)]
+                lll += ["                \"condition\": \"%s\"" % q(d.condition)]
+                lll += ["                \"action\": \"%s\"" % q(d.action)]
+                if d.alarm_class:
+                    lll += ["                \"alarm_class__name\": \"%s\"" % q(d.alarm_class.name)]
+                ll += [",\n".join(lll)]
+                ll += ["            }"]
+                l += ["\n".join(ll)]
+            r += [",\n".join(l)]
+            r += ["        ]"]
         r += ["    }"]
         r += ["]"]
         return self.render_plain_text("\n".join(r))
