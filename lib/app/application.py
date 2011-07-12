@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 import logging
 import os
 ## Django modules
@@ -18,6 +19,7 @@ from django.db import connection
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.utils.html import escape
+from django.template import loader
 ## NOC modules
 from access import HasPerm
 from site import site
@@ -105,6 +107,13 @@ class Application(object):
     def render(self,request,template,dict={},**kwargs):
         return render_to_response(self.get_template_path(template),dict if dict else kwargs,
             context_instance=RequestContext(request,dict={"app":self}))
+    ##
+    ## Render template to string
+    ##
+    def render_template(self, template, dict={}, **kwargs):
+        tp = self.get_template_path(template)
+        return loader.render_to_string(tp, dict or kwargs)
+
     ##
     ## Render arpitrary Content-Type response
     ##
