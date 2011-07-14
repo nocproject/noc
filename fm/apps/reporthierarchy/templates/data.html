@@ -13,8 +13,13 @@
     padding-left: 32px;
 }
 
+UL.rules, UL.rules LI {
+    margin-left: 8pt;
+    padding-left: 0pt;
+    list-style-position: outside;
+}
 </style>
-<h2>Event Classes Hierarchy ({{ne}} total)</h2>
+<h2>Event Classes Hierarchy ({{ne}} classes, {{ncr}} rules)</h2>
 
 <table>
     <thead>
@@ -24,11 +29,12 @@
             <th>Action</th>
             <th>Vars</th>
             <th>Disposition</th>
+            <th>Rules</th>
         </tr>
     </thead>
-{% for level, c in event_classes %}
+{% for level, c, rules in event_classes %}
     {% if level != -1 %}
-    <tr class="category"><td colspan="5">{{c}}</td></tr>
+    <tr class="category"><td colspan="6">{{c}}</td></tr>
     {% else %}
     <tr class="item {% cycle "row1" "row2" %}" >
         <td class="offset">{{c.name}}</td>
@@ -40,7 +46,9 @@
         </td>
         <td>
             {% for v in c.vars %}
+                {% if not v.required %}<i>{% endif %}
                 <b>{{v.name}} ({{v.type}}):</b> {{v.description}}<br/>
+                {% if not v.required %}</i>{% endif %}
             {% endfor %}
         </td>
         <td>
@@ -49,6 +57,13 @@
                 {% if r.action == "raise" or r.action == "clear"%}<a href="#">{{r.alarm_class.name}}</a>{% endif %}
                 <br/>
             {% endfor %}
+        </td>
+        <td>
+            <ul class="rules">
+            {% for r in rules %}
+                <li>{{r.name}}</li>
+            {% endfor %}
+            </ul>
         </td>
     </tr>
     {% endif %}
