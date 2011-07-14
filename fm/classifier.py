@@ -246,12 +246,12 @@ class Classifier(Daemon):
                     # Render according to TC
                     rv = render_tc(v, syntax["base_type"],
                                    syntax.get("display_hint", None))
-                    # quote invalid UTF8
-                    if syntax["base_type"] == "OctetString":
-                        try:
-                            unicode(rv, "utf8")
-                        except:
-                            rv = fm_escape(rv)
+            else:
+                try:
+                    unicode(rv, "utf8")
+                except:
+                    # escape invalid UTF8
+                    rv = fm_escape(rv)
             if self.is_oid(v):
                 # Resolve OID in value
                 rv = MIB.get_name(v)
