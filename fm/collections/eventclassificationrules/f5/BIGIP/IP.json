@@ -1,6 +1,6 @@
 [
     {
-        "name": "f5 | BIGIP | Network | IP | Port Exhaustion",
+        "name": "f5 | BIGIP | Network | IP | Port Exhaustion (SNMP)",
         "description": "F5-BIGIP-COMMON-MIB::bigipInetPortExhaustion",
         "event_class__name": "Network | IP | Port Exhaustion",
         "preference": 1000,
