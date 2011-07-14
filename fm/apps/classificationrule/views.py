@@ -96,7 +96,6 @@ class ClassificationRuleApplication(TreeApplication):
             form = self.RuleForm(request.POST)
             formset = RulePatternFormset(request.POST)
             if form.is_valid() and formset.is_valid():
-                print formset.cleaned_data
                 if rule is None:
                     rule = EventClassificationRule()
                 rule.name = form.cleaned_data["name"]
