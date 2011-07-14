@@ -115,7 +115,10 @@ class Command(BaseCommand):
                                 obj = doc()
                                 created = True
                             else:
-                                builtin_ids.remove(str(obj._id))
+                                try:
+                                    builtin_ids.remove(str(obj._id))
+                                except KeyError:
+                                    pass
                             # Compare attributes
                             for i, v in d.items():
                                 i = str(i)
