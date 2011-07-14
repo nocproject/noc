@@ -53,7 +53,7 @@ class Rule(object):
         """
         Try to match variables agains a rule.
         Return extracted variables or None
-        
+
         :param vars: New and resolved variables
         :type vars: dict
         :returns: Extracted vars or None
@@ -70,7 +70,7 @@ class Rule(object):
                 v = vars[k]
                 v_match = vp.search(v)
                 if v_match is None:
-                    continue  #??? return None
+                    continue  # ??? return None
                 # Matched line found
                 found = True
                 # Append extracted variables
@@ -87,7 +87,7 @@ class Classifier(Daemon):
     """
     noc-classifier daemon
     """
-    daemon_name="noc-classifier"
+    daemon_name = "noc-classifier"
 
     # SNMP OID pattern
     rx_oid = re.compile(r"^(\d+\.){6,}")
@@ -104,7 +104,7 @@ class Classifier(Daemon):
         """
         Load rules from database after loading config
         """
-        super(Classifier,self).load_config()
+        super(Classifier, self).load_config()
         self.load_rules()
 
     def load_rules(self):
@@ -113,8 +113,8 @@ class Classifier(Daemon):
         """
         def find_profile(rule):
             for l, r in rule.patterns:
-                if l in ("profile", "^profile$"):
-                    return r
+                if l.pattern in ("profile", "^profile$"):
+                    return r.pattern
             return None
 
         logging.info("Loading rules")
@@ -128,7 +128,7 @@ class Classifier(Daemon):
             # Find profile restriction
             p = find_profile(rule)
             if p:
-                profile_re = p[0].right_re
+                profile_re = p
             else:
                 profile_re = r"^.*$"
             rx = re.compile(profile_re)
@@ -137,6 +137,10 @@ class Classifier(Daemon):
                     self.rules[p] += [rule]
             n += 1
         logging.info("%d rules are loaded into %d chains" % (n, len(self.rules)))
+        for p in sorted(self.rules):
+            logging.debug("%s (%d rules):" % (p, len(self.rules[p])))
+            for r in self.rules[p]:
+                logging.debug("    %s" % r.name)
 
     ##
     ## Variable decoders
@@ -173,7 +177,7 @@ class Classifier(Daemon):
 
     def decode_oid(self, event, value):
         return value
-    
+
     def retry_failed_events(self):
         """
         Return failed events to the unclassified queue if
@@ -192,7 +196,7 @@ class Classifier(Daemon):
         """
         for e in NewEvent.objects.order_by("timestamp")[:max_chunk]:
             yield e
-    
+
     def mark_as_failed(self, event):
         """
         Write error log and mark event as failed
@@ -252,7 +256,7 @@ class Classifier(Daemon):
     def find_matching_rule(self, event, vars):
         """
         Find first matching classification rule
-        
+
         :param event: Event
         :type event: NewEvent
         :param vars: raw and resolved variables
@@ -278,7 +282,7 @@ class Classifier(Daemon):
             # Check variable is present
             if ecv.name not in vars:
                 if ecv.required:
-                    raise Exception("Required variabe '%s' is not found" % ecv.name)
+                    raise Exception("Required variable '%s' is not found" % ecv.name)
                 else:
                     continue
             # Decode variable
@@ -293,11 +297,11 @@ class Classifier(Daemon):
         """
         Perform event classification.
         Classification steps are:
-        
+
         1. Format SNMP values accordind to MIB definitions (for SNMP events only)
         2. Find matching classification rule
         3. Calculate rule variables
-        
+
         :param event: Event to classify
         :type event: NewEvent
         """
@@ -343,7 +347,7 @@ class Classifier(Daemon):
         # Finally dispose event to further processing by noc-correlator
         if rule.to_dispose:
             event.dispose_event()
-    
+
     def run(self):
         """
         Main daemon loop
@@ -351,10 +355,11 @@ class Classifier(Daemon):
         # @todo: move to configuration
         CHECK_EVERY = 3  # Recheck queue every N seconds
         REPORT_INTERVAL = 1000  # Performance report interval
-        
+
         # Try to classify events which processing failed
         # on previous versions of classifier
         self.retry_failed_events()
+        logging.info("Ready to process events")
         # Enter main loop
         while True:
             n = 0  # Number of events processed
