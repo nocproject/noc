@@ -72,7 +72,8 @@ class Command(BaseCommand):
             for collection, doc in collections:
                 c_root = os.path.join(app, "collections")
                 print "Syncing noc.%s" % collection
-                builtin_ids = set([str(o._id) for o in doc.objects.all()])
+                builtin_ids = set([str(o._id) for o
+                                   in doc.objects.filter(is_builtin=True)])
                 # Define set of unique fields
                 unique = set()
                 for index in doc._meta["unique_indexes"]:
