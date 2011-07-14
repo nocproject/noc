@@ -1,0 +1,34 @@
+[
+    {
+        "name": "NOC | Unknown Event Source",
+        "description": "NOC | Unknown Event Source",
+        "event_class__name": "NOC | Unknown Event Source",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^system$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^NOC\\.SAE$"
+            },
+            {
+                "key_re": "^activator$",
+                "value_re": "^(?P<activator>\\S+)$"
+            },
+            {
+                "key_re": "^ip$",
+                "value_re": "^(?P<ip>\\S+)$"
+            },
+            {
+                "key_re": "^type$",
+                "value_re": "^Invalid Event Source$"
+            },
+            {
+                "key_re": "^collector$",
+                "value_re": "^(?P<collector_ip>\\S+):(?P<collector_port>\\d+)$"
+            }
+        ]
+    }
+]
