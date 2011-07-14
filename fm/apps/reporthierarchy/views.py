@@ -9,7 +9,8 @@
 ## NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.fm.models import EventClass, EventClassCategory,\
-                          AlarmClass, AlarmClassCategory
+                          AlarmClass, AlarmClassCategory,\
+                          EventClassificationRule
 
 
 class HierarchyReportAppplication(ReportApplication):
@@ -27,9 +28,15 @@ class HierarchyReportAppplication(ReportApplication):
             if not e:
                 continue
             p = cc.name.split(" | ")
-            ec += [(len(p) * 24, cc.name)]
-            ec += [(-1, c) for c in e]
+            ec += [(len(p) * 24, cc.name, None)]
+            ec += [(-1, c,
+                    EventClassificationRule.objects.filter(event_class=c.id))
+                    for c in e]
             ne += len(e)
+        ncr = 0
+        for _, _, r in ec:
+            if r:
+                ncr += len(r)
         # Alarm classes
         ac = []
         na = 0
@@ -43,4 +50,4 @@ class HierarchyReportAppplication(ReportApplication):
             na += len(a)
         return self.render_template("data.html",
                                     event_classes=ec, alarm_classes=ac,
-                                    ne=ne, na=na)
+                                    ne=ne, na=na, ncr=ncr)
