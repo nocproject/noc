@@ -22,7 +22,7 @@ from noc.sa.models import profile_registry
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames
 from noc.lib.snmputils import render_tc
-from noc.lib.escape import fm_unescape
+from noc.lib.escape import fm_unescape, fm_escape
 from noc.sa.interfaces.base import *
 
 ##
@@ -246,6 +246,12 @@ class Classifier(Daemon):
                     # Render according to TC
                     rv = render_tc(v, syntax["base_type"],
                                    syntax.get("display_hint", None))
+                    # quote invalid UTF8
+                    if syntax["base_type"] == "OctetString":
+                        try:
+                            unicode(rv, "utf8")
+                        except:
+                            rv = fm_escape(rv)
             if self.is_oid(v):
                 # Resolve OID in value
                 rv = MIB.get_name(v)
