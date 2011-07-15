@@ -1,0 +1,64 @@
+[
+    {
+        "name": "Juniper | JUNOS | Unknown | Ignore UI_COMMIT_PROGRESS (SYSLOG)",
+        "description": "UI_COMMIT_PROGRESS",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Juniper\\.JUNOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "UI_COMMIT_PROGRESS"
+            }
+        ]
+    },
+    
+    {
+        "name": "Juniper | JUNOS | Unknown | Ignore UI_CHILD_STATUS (SYSLOG)",
+        "description": "UI_CHILD_STATUS",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Juniper\\.JUNOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "UI_CHILD_STATUS"
+            }
+        ]
+    },
+    
+    {
+        "name": "Juniper | JUNOS | Unknown | Ignore UI_CHILD_START (SYSLOG)",
+        "description": "UI_CHILD_START",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Juniper\\.JUNOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "UI_CHILD_START"
+            }
+        ]
+    }
+]
