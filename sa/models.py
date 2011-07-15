@@ -387,7 +387,7 @@ class ManagedObject(models.Model):
         """
         Return "vendor model" string from attributes
         """
-        x = [self.get_attr("vendor"), self.get_attr("model")]
+        x = [self.get_attr("vendor"), self.get_attr("platform")]
         x = [a for a in x if a]
         if x:
             return " ".join(x)
