@@ -64,5 +64,22 @@
                 "recommended_actions": "Grab this event, create appropriative classification rule and reclassify the event again"
             }
         }
+    },
+    
+    {
+        "name": "Unknown | Ignore",
+        "description": "Delete event and stop processing",
+        "action": "D",
+        "vars": [
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Ignored event",
+                "body_template": "Ignored event",
+                "symptoms": "No specific symptoms",
+                "probable_causes": "Event without any usable information for FM",
+                "recommended_actions": "No specific action needed"
+            }
+        }
     }
 ]
