@@ -18,5 +18,48 @@
                 "value_re": "SNMP request received from (?P<ip>\\S+) with invalid community string"
             }
         ]
+    },
+    
+    {
+        "name": "DLink | DxS | Security | Authentication | Login (SYSLOG)",
+        "description": "Successful login through Telnet (Username: noc, IP: 172.16.7.56)",
+        "event_class__name": "Security | Authentication | Login",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "Successful login through \\S+ \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)"
+            }
+        ]
+    },
+    
+    {
+        "name": "DLink | DxS | Security | Authentication | Logout (SYSLOG)",
+        "description": "Logout through Telnet (Username: noc, IP: 172.16.7.56)",
+        "event_class__name": "Security | Authentication | Logout",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "Logout through \\S+ \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)"
+            }
+        ]
     }
+
 ]
