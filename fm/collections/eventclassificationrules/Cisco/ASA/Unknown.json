@@ -22,7 +22,7 @@
     
     {
         "name": "Cisco | ASA | Unknown | Ignore IPsec debug (SYSLOG)",
-        "description": "PIX-7-715xxx debug messages"
+        "description": "PIX-7-715xxx debug messages",
         "event_class__name": "Unknown | Ignore",
         "preference": 1000,
         "patterns": [
