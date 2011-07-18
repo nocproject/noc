@@ -30,7 +30,8 @@ class Rule(object):
         self.u_name = "%s: %s" % (self.event_class.name, self.name)
         self.condition = compile(dr.condition, "<string>", "eval")
         try:
-            self.conditional_pyrule = PyRule.objects.get(name=ec.conditional_pyrule_name)
+            self.conditional_pyrule = PyRule.objects.get(name=ec.conditional_pyrule_name,
+                                                         interface="IDispositionCondition")
         except PyRule.DoesNotExist:
             self.conditional_pyrule = None
         self.action = dr.action
@@ -242,7 +243,7 @@ class Correlator(Daemon):
         }
         for r in drc:
             if r.conditional_pyrule:
-                cond = r.conditional_pyrule(r.name, e)
+                cond = r.conditional_pyrule(rule_name=r.name, event=e)
             else:
                 cond = eval(r.condition, {}, env)
             if cond:
