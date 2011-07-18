@@ -20,7 +20,7 @@ from noc.fm.models import EventDispositionQueue, ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
 from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
-from noc.lib.debug import format_frames, get_traceback_frames
+from noc.lib.debug import format_frames, get_traceback_frames, error_report
 
 
 class Trigger(object):
@@ -54,7 +54,7 @@ class Trigger(object):
                 body=self.template.render_body(alarm=alarm))
         # Call pyRule
         if self.pyrule:
-            self.pyrule.call(alarm=alarm)
+            self.pyrule(alarm=alarm)
 
 
 class Rule(object):
@@ -233,7 +233,10 @@ class Correlator(Daemon):
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
-                t.call(a)
+                try:
+                    t.call(a)
+                except:
+                    error_report()
 
     def clear_alarm(self, r, e):
         if r.unique:

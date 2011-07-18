@@ -20,7 +20,7 @@ from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
                           ActiveEvent, EventTrigger
 from noc.sa.models import profile_registry
 from noc.lib.version import get_version
-from noc.lib.debug import format_frames, get_traceback_frames
+from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.snmputils import render_tc
 from noc.lib.escape import fm_unescape, fm_escape
 from noc.sa.interfaces.base import *
@@ -62,7 +62,7 @@ class Trigger(object):
                 body=self.template.render_body(event=event))
         # Call pyRule
         if self.pyrule:
-            self.pyrule.call(event=event)
+            self.pyrule(event=event)
 
 
 class Rule(object):
@@ -409,7 +409,10 @@ class Classifier(Daemon):
         # Call triggers if necessary
         if event_class.id in self.triggers:
             for t in self.triggers[event_class.id]:
-                t.call(event)
+                try:
+                    t.call(event)
+                except:
+                    error_report()
         # Finally dispose event to further processing by noc-correlator
         if rule.to_dispose:
             event.dispose_event()
