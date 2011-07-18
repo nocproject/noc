@@ -17,7 +17,7 @@ import os
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
                           EventClass, MIB, EventLog,\
-                          ActiveEvent
+                          ActiveEvent, EventTrigger
 from noc.sa.models import profile_registry
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames
@@ -29,6 +29,40 @@ from noc.sa.interfaces.base import *
 ## Patterns
 ##
 rx_oid = re.compile(r"^(\d+\.){6,}$")
+
+
+class Trigger(object):
+    def __init__(self, t):
+        self.name = t.name
+        # Condition
+        self.condition = compile(t.condition, "<string>", "eval")
+        self.time_pattern = t.time_pattern
+        self.selector = t.selector
+        # Action
+        self.notification_group = t.notification_group
+        self.template = t.template
+        self.pyrule = t.pyrule
+
+    def match(self, event):
+        """
+        Check event matches trigger condition
+        """
+        return (eval(self.condition, {}, {"event": event, "re": re}) and
+                (self.time_pattern.match(event.timestamp) if self.time_pattern else True) and
+                (self.selector.match(event.managed_object) if self.selector else True))
+        
+    def call(self, event):
+        if not self.match(event):
+            return
+        logging.debug("Calling trigger '%s'" % self.name)
+        # Notify if necessary
+        if self.notification_group and self.template:
+            self.notification_group.notify(
+                subject=self.template.render_subject(event=event),
+                body=self.template.render_body(event=event))
+        # Call pyRule
+        if self.pyrule:
+            self.pyrule.call(event=event)
 
 
 class Rule(object):
@@ -95,6 +129,7 @@ class Classifier(Daemon):
     def __init__(self):
         self.version = get_version()
         self.rules = {}  # profile -> [rule, ..., rule]
+        self.triggers = {}  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
         Daemon.__init__(self)
@@ -106,6 +141,7 @@ class Classifier(Daemon):
         """
         super(Classifier, self).load_config()
         self.load_rules()
+        self.load_triggers()
 
     def load_rules(self):
         """
@@ -141,6 +177,26 @@ class Classifier(Daemon):
             logging.debug("%s (%d rules):" % (p, len(self.rules[p])))
             for r in self.rules[p]:
                 logging.debug("    %s" % r.name)
+    
+    def load_triggers(self):
+        logging.info("Loading triggers")
+        self.triggers = {}
+        n = 0
+        cn = 0
+        ec = [(c.name, c.id) for c in EventClass.objects.all()]
+        for t in EventTrigger.objects.filter(is_enabled=True):
+            logging.debug("Trigger '%s' for classes:" % t.name)
+            for c_name, c_id in ec:
+                if re.search(t.event_class_re, c_name, re.IGNORECASE):
+                    try:
+                        self.triggers[c_id] += [Trigger(t)]
+                    except KeyError:
+                        self.triggers[c_id] = [Trigger(t)]
+                    cn += 1
+                    logging.debug("    %s" % c_name)
+            n += 1
+            logging.debug("    %s" % c_name)
+        logging.info("%d triggers has been loaded to %d classes" % (n, cn))
 
     ##
     ## Variable decoders
@@ -350,6 +406,10 @@ class Classifier(Daemon):
         a_event.save()
         event.delete()
         event = a_event
+        # Call triggers if necessary
+        if event_class.id in self.triggers:
+            for t in self.triggers[event_class.id]:
+                t.call(event)
         # Finally dispose event to further processing by noc-correlator
         if rule.to_dispose:
             event.dispose_event()
