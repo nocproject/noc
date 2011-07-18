@@ -17,10 +17,44 @@ import re
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventDispositionQueue, ActiveEvent, EventClass,\
-                          ActiveAlarm, AlarmLog
+                          ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
 from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames
+
+
+class Trigger(object):
+    def __init__(self, t):
+        self.name = t.name
+        # Condition
+        self.condition = compile(t.condition, "<string>", "eval")
+        self.time_pattern = t.time_pattern
+        self.selector = t.selector
+        # Action
+        self.notification_group = t.notification_group
+        self.template = t.template
+        self.pyrule = t.pyrule
+
+    def match(self, alarm):
+        """
+        Check event matches trigger condition
+        """
+        return (eval(self.condition, {}, {"alarm": alarm, "re": re}) and
+                (self.time_pattern.match(alarm.timestamp) if self.time_pattern else True) and
+                (self.selector.match(alarm.managed_object) if self.selector else True))
+        
+    def call(self, alarm):
+        if not self.match(alarm):
+            return
+        logging.debug("Calling trigger '%s'" % self.name)
+        # Notify if necessary
+        if self.notification_group and self.template:
+            self.notification_group.notify(
+                subject=self.template.render_subject(alarm=alarm),
+                body=self.template.render_body(alarm=alarm))
+        # Call pyRule
+        if self.pyrule:
+            self.pyrule.call(alarm=alarm)
 
 
 class Rule(object):
@@ -79,6 +113,7 @@ class Correlator(Daemon):
         self.version = get_version()
         self.rules = {}  # event_class -> [Rule]
         self.back_rules = {}  # event_class -> [Rule]
+        self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         Daemon.__init__(self)
         logging.info("Running noc-correlator")
         # Tables
@@ -90,6 +125,7 @@ class Correlator(Daemon):
         """
         super(Correlator, self).load_config()
         self.load_rules()
+        self.load_triggers()
 
     def load_rules(self):
         """
@@ -116,6 +152,25 @@ class Correlator(Daemon):
                             nbr += 1
                 self.rules[c.id] = r
         logging.debug("%d rules are loaded. %d combos" % (nr, nbr))
+
+    def load_triggers(self):
+        logging.info("Loading triggers")
+        self.triggers = {}
+        n = 0
+        cn = 0
+        ec = [(c.name, c.id) for c in AlarmClass.objects.all()]
+        for t in AlarmTrigger.objects.filter(is_enabled=True):
+            logging.debug("Trigger '%s' for classes:" % t.name)
+            for c_name, c_id in ec:
+                if re.search(t.alarm_class_re, c_name, re.IGNORECASE):
+                    try:
+                        self.triggers[c_id] += [Trigger(t)]
+                    except KeyError:
+                        self.triggers[c_id] = [Trigger(t)]
+                    cn += 1
+                    logging.debug("    %s" % c_name)
+            n += 1
+        logging.info("%d triggers has been loaded to %d classes" % (n, cn))
 
     def mark_as_failed(self, event):
         """
@@ -175,6 +230,10 @@ class Correlator(Daemon):
         logging.debug("%s: Event %s(%s) raises alarm %s(%s)" % (
             r.u_name, str(e.id), e.event_class.name,
             str(a.id), r.alarm_class.name))
+        # Call triggers if necessary
+        if r.alarm_class.id in self.triggers:
+            for t in self.triggers[r.alarm_class.id]:
+                t.call(a)
 
     def clear_alarm(self, r, e):
         if r.unique:
