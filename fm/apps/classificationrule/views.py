@@ -173,7 +173,7 @@ class ClassificationRuleApplication(TreeApplication):
         form_initial = {"preference": 1000}
         initial = [(k, v)
             for k, v in event.raw_vars.items()
-            if k not in ("collector",) and not is_oid(k)
+            if k not in ("collector", "facility", "severity") and not is_oid(k)
             ]
         if hasattr(event, "resolved_vars"):
             initial += [(k, v)
