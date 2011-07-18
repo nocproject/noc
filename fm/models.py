@@ -472,6 +472,10 @@ class EventDispositionRule(nosql.EmbeddedDocument):
                                         default="none",
                                         choices=[
                                             "none",  # Apply action immediately
+                                            "frequency", # Apply when event
+                                                         # firing rate exceeds
+                                                         # combo_count times
+                                                         # during combo_window
                                             "sequence",  # Apply action if event
                                                          # followed by all combo events
                                                          # in strict order
@@ -483,7 +487,9 @@ class EventDispositionRule(nosql.EmbeddedDocument):
                                             ])
     # Time window for combo events in seconds
     combo_window = nosql.IntField(required=False, default=0)
-    # 
+    # Applicable for frequency.
+    combo_count = nosql.IntField(required=False, default=0)
+    # Applicable for sequence, all and any combo_condition 
     combo_event_classes = nosql.ListField(nosql.PlainReferenceField("EventClass"),
                                           required=False,
                                           default=[])
@@ -580,6 +586,10 @@ class EventClass(nosql.Document):
             "L": "Log",
             "A": "Log and Archive"
         }[self.action]
+
+    @property
+    def conditional_pyrule_name(self):
+        return ("fm_dc_" + rulename_quote(self.name)).lower()
 
 
 ##

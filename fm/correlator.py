@@ -29,8 +29,11 @@ class Rule(object):
         self.event_class = ec
         self.u_name = "%s: %s" % (self.event_class.name, self.name)
         self.condition = compile(dr.condition, "<string>", "eval")
+        try:
+            self.conditional_pyrule = PyRule.objects.get(name=ec.conditional_pyrule_name)
+        except PyRule.DoesNotExist:
+            self.conditional_pyrule = None
         self.action = dr.action
-        self.pyrule = dr.action == "pyrule" and dr.pyrule and PyRule.objects.get(name=dr.pyrule)
         self.alarm_class = dr.alarm_class
         self.stop_disposition = dr.stop_disposition
         self.var_mapping = {}
@@ -48,6 +51,7 @@ class Rule(object):
             self.combo_condition = dr.combo_condition
             self.combo_window = dr.combo_window
             self.combo_event_classes = [c.id for c in dr.combo_event_classes]
+            self.combo_count = dr.combo_count
 
     def get_vars(self, e):
         """
@@ -237,7 +241,11 @@ class Correlator(Daemon):
             "re": re
         }
         for r in drc:
-            if eval(r.condition, {}, env):
+            if r.conditional_pyrule:
+                cond = r.conditional_pyrule(r.name, e)
+            else:
+                cond = eval(r.condition, {}, env)
+            if cond:
                 # Process action
                 if r.action == "drop":
                     event.delete()
