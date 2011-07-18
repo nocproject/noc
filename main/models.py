@@ -21,6 +21,7 @@ from django.core.validators import MaxLengthValidator
 from django.contrib import databrowse
 from django.db.models.signals import class_prepared, pre_save, pre_delete,\
                                      post_save, post_delete
+from django.template import Template, Context
 ## Third-party modules
 from tagging.models import Tag
 ## NOC Modules
@@ -1229,6 +1230,47 @@ class PrefixTablePrefix(models.Model):
         # Set AFI
         self.afi = IP.prefix(self.prefix).afi
         return super(PrefixTablePrefix, self).save(*args, **kwargs)
+
+
+class Template(models.Model):
+    class Meta:
+        verbose_name = _("Template")
+        verbose_name_plural = _("Templates")
+        ordering = ["name"]
+
+    name = models.CharField(_("Name"), unique=True, max_length=128)
+    subject = models.TextField(_("Subject"))
+    body = models.TextField(_("Body"))
+
+    def __unicode__(self):
+        return self.name
+
+    def render_subject(self, **kwargs):
+        return Template(self.subject).render(Context(kwargs))
+
+    def render_body(self, **kwargs):
+        return Template(self.body).render(Context(kwargs))
+
+
+class SystemTemplate(models.Model):
+    class Meta:
+        verbose_name = _("System template")
+        verbose_name_plural = _("System templates")
+        ordering = ["name"]
+
+    name = models.CharField(_("Name"), max_length=64, unique=True)
+    description = models.TextField(_("Description"), null=True, blank=True)
+    template = models.ForeignKey(Template, verbose_name=_("Template"))
+
+    def __unicode__(self):
+        return self.name
+
+    def render_subject(self, **kwargs):
+        return self.template.render_subject(**kwargs)
+
+    def render_body(self, **kwargs):
+        return self.template.render_body(**kwargs)
+
 
 ##
 ## Install triggers
