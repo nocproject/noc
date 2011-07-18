@@ -21,7 +21,8 @@ from django.core.validators import MaxLengthValidator
 from django.contrib import databrowse
 from django.db.models.signals import class_prepared, pre_save, pre_delete,\
                                      post_save, post_delete
-from django.template import Template, Context
+from django.template import Template as DjangoTemplate
+from django.template import Context
 ## Third-party modules
 from tagging.models import Tag
 ## NOC Modules
@@ -1246,10 +1247,10 @@ class Template(models.Model):
         return self.name
 
     def render_subject(self, **kwargs):
-        return Template(self.subject).render(Context(kwargs))
+        return DjangoTemplate(self.subject).render(Context(kwargs))
 
     def render_body(self, **kwargs):
-        return Template(self.body).render(Context(kwargs))
+        return DjangoTemplate(self.body).render(Context(kwargs))
 
 
 class SystemTemplate(models.Model):
