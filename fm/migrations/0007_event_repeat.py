@@ -11,7 +11,9 @@ from noc.fm.models import *
 class Migration:
     
     def forwards(self):
-        
+        # Mock Models
+        Event = db.mock_model(model_name='Event', db_table='fm_event', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+
         # Model 'EventRepeat'
         db.create_table('fm_eventrepeat', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
