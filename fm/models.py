@@ -998,6 +998,9 @@ class ActiveAlarm(nosql.Document):
     #
     custom_subject = nosql.StringField(required=False)
     custom_style = nosql.ForeignKeyField(Style, required=False)
+    # RCA
+    # Reference to root cause (Active Alarm or Archived Alarm instance)
+    root = nosql.ObjectIdField(required=False)
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -1051,7 +1054,8 @@ class ActiveAlarm(nosql.Document):
                           severity=self.severity,
                           vars=self.vars,
                           events=self.events,
-                          log=log
+                          log=log,
+                          root=self.root
                           )
         a.save()
         self.delete()
@@ -1138,6 +1142,24 @@ class ActiveAlarm(nosql.Document):
         else:
             return AlarmSeverity.get_severity(self.severity).style
 
+    def set_root(self, root_alarm):
+        """
+        Set root cause
+        """
+        if self.root:
+            return
+        # Detect loop
+        root = root_alarm
+        while root:
+            root = root.root
+            if root == self.id:
+                return
+        # Set root
+        self.root = root_alarm.id
+        self.log_message("Alarm %s has been marked as root cause" % root_alarm.id)
+        # self.save()  Saved by log_message
+        root_alarm.log_message("Alarm %s has meen marked as child" % self.id)
+
 
 class ArchivedAlarm(nosql.Document):
     meta = {
@@ -1154,6 +1176,9 @@ class ArchivedAlarm(nosql.Document):
     vars = nosql.DictField()
     events = nosql.ListField(nosql.ObjectIdField())
     log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
+    # RCA
+    # Reference to root cause (Active Alarm or Archived Alarm instance)
+    root = nosql.ObjectIdField(required=False)
     
     def __unicode__(self):
         return u"%s" % self.id

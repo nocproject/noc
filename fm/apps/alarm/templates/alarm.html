@@ -33,8 +33,10 @@
         list-style: none;
     }
     
-    #change_severity {
+    #root-panel {
         display: none;
+        border: 1px solid #c0c0c0;
+        padding: 4px;
     }
     
     #severity-panel {
@@ -52,6 +54,26 @@
         padding-left: 12px;
         padding-bottom: 8px;
         white-space: pre;
+    }
+    
+    .cl0 {
+        padding-left: 0px;
+    }
+    
+    .cl1 {
+        padding-left: 16px;
+    }
+    
+    .cl2 {
+        padding-left: 32px;
+    }
+    
+    .cl3 {
+        padding-left: 48px;
+    }
+    
+    .cl4 {
+        padding-left: 64px;
     }
 </style>
 <script type="text/javascript">
@@ -82,6 +104,19 @@ function toggle_severity() {
         $i.attr("src", "/media/img/admin/selector-addall.gif");
     }
 }
+
+function toggle_root() {
+    var $m = $("#root-panel");
+    var $i = $("#root-icon");
+    
+    if ($m.is(":hidden")) {
+        $m.show();
+        $i.attr("src", "/media/img/admin/selector-removeall.gif");
+    } else {
+        $m.hide();
+        $i.attr("src", "/media/img/admin/selector-addall.gif");
+    }
+}
 </script>
 <h1>Alarm #{{a.id}}: {{subject}}</h1>
 <div class="module">
@@ -90,6 +125,26 @@ function toggle_severity() {
     <table WIDTH="100%">
         <tr><TD STYLE="width: 150px"><b>Managed Object:</b></td><td>{{a.managed_object.name}} {% if a.managed_object.platform %}({{a.managed_object.platform}}){% endif %}</td></tr>
         <tr><td><b>Alarm Class:</b></td><td>{{a.alarm_class}}</td></tr>
+        <tr>
+            <td><b>Root Cause:</b></td>
+            <td>{% if root %}
+                <a href="{% url fm:alarm:alarm root.id%}">#{{root.id}} ({{root.managed_object.name}}): {{root.alarm_class.name}}</a>
+                {% else %}
+                    Top Level
+                {% endif %}
+                {% if is_owner %}
+                    <span id="root-panel">
+                        <b>New root alarm id:</b>
+                        <form method="POST" action="{%url fm:alarm:change_root a.id%}">
+                            <input type="text" name="root" value="{% if root %}{{root.id}}{%endif%}" />
+                        </form>
+                    </span>
+                    <a href="#" onclick="return toggle_root();">
+                        <img id="root-icon" src="/media/img/admin/selector-addall.gif" title="Change root cause" />
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
         <tr><td><b>Severity:</b></td>
             <td style="{{a.effective_style.style}}" id="e_severity">{{severity}} ({{a.severity}})
             {% if is_owner %}
@@ -151,7 +206,7 @@ function toggle_severity() {
             <tr>
                 <td><b>Subscribers:</b></td>
                 <td>
-                    {% for s in a.subscribers %}
+                    {% for s in subscribers %}
                         {{s}}
                     {% endfor %}
                 </td>
@@ -188,7 +243,24 @@ function toggle_severity() {
     {%endif%}    
 </div>
 {% endif %}
-    
+
+{% if children %}
+    <div class="module">
+        <h2>Alarm consequences (child alarms): {{n_children}}
+            <span style="float: right">
+                <a  id="t-childnren-l" href="#" onclick="return toggle_module('#t-children', '#t-children-l');">[Hide]</a>
+            </span>
+        </h2>
+        <table id="t-children" width="100%">
+            {% for level, c in children %}
+                <tr>
+                    <td class="cl{{level}}"><a href="{% url fm:alarm:alarm c.id %}">{{c.id}} ({{c.managed_object}}): {{c.alarm_class.name}}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}
+
 <div class="module">
     <a name="alarm_data"></a>
     <h2>Alarm Data
