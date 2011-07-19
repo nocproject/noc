@@ -975,7 +975,7 @@ class ActiveAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.active",
         "allow_inheritance": False,
-        "indexes": ["timestamp", "discriminator"]
+        "indexes": ["timestamp", "discriminator", "root"]
     }
     status = "A"
     
@@ -1164,7 +1164,8 @@ class ActiveAlarm(nosql.Document):
 class ArchivedAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.archived",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "indexes": ["root"]
     }
     status = "C"
     
@@ -1237,6 +1238,8 @@ class ArchivedAlarm(nosql.Document):
     def effective_style(self):
         return AlarmSeverity.get_severity(self.severity).style
 
+    def set_root(self, root_alarm):
+        pass
 
 class IgnoreEventRules(models.Model):
     class Meta:
