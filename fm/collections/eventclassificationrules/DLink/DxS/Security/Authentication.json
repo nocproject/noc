@@ -63,7 +63,7 @@
     },
 
     {
-        "name": "DLink | DxS | Security | Authentication | Web Logout (SYSLOG)",
+        "name": "DLink | DxS | Security | Authentication | Session timed out (SYSLOG)",
         "description": "Web session timed out (Username: grant, IP: 172.16.0.4)",
         "event_class__name": "Security | Authentication | Logout",
         "preference": 1000,
@@ -78,7 +78,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "Web session timed out \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)"
+                "value_re": "\\S+ session timed out \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)"
             }
         ]
     }
