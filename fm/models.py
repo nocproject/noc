@@ -975,7 +975,7 @@ class ActiveAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.active",
         "allow_inheritance": False,
-        "indexes": ["timestamp", "discriminator", "root"]
+        "indexes": ["timestamp", "discriminator", "root", "-severity"]
     }
     status = "A"
     
