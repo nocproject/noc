@@ -2,6 +2,8 @@
 from south.db import db
 from noc.fm.models import *
 
+EVENT_STATUS_CHOICES = [("U", "Unclassified"), ("A", "Active"), ("C","Closed")]
+
 class Migration:
     def forwards(self):
         # Mock Models
