@@ -11,6 +11,7 @@
 from __future__ import with_statement
 import sys
 import datetime
+from optparse import OptionParser, make_option
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.simplejson.decoder import JSONDecoder
@@ -21,7 +22,10 @@ from noc.fm.models import NewEvent
 
 class Command(BaseCommand):
     help = "Inject events from JSON files"
-
+    option_list = BaseCommand.option_list + (
+        make_option("-s", "--syslog", dest="syslog"),
+    )
+    
     def _usage(self):
         print "./noc inject-event <object name> <file1> [ .. <fileN>]"
         sys.exit(0)
@@ -37,6 +41,9 @@ class Command(BaseCommand):
         # Load jsons
         for f in args[1:]:
             self.load_events(o, f)
+        # Inject syslog messages
+        if "syslog" in options:
+            self.syslog_message(options["syslog"])
 
     def load_events(self, obj, path):
         """
@@ -63,3 +70,19 @@ class Command(BaseCommand):
             )
             ne.save()
             print ne.id
+    
+    def syslog_messages(self, obj, msg):
+        raw_vars = {
+            "source": "syslog",
+            "facility": "23",
+            "severity": "6",
+            "message": msg
+        }
+        ne = NewEvent(
+            timestamp=datetime.datetime.now(),
+            managed_object=obj,
+            raw_vars=raw_vars,
+            log=[]
+        )
+        ne.save()
+        print ne.id
