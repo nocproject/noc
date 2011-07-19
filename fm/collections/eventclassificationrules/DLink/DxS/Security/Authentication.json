@@ -60,6 +60,27 @@
                 "value_re": "Logout through \\S+ \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)"
             }
         ]
+    },
+
+    {
+        "name": "DLink | DxS | Security | Authentication | Session timed out (SYSLOG)",
+        "description": "Web session timed out (Username: grant, IP: 172.16.0.4)",
+        "event_class__name": "Security | Authentication | Logout",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "\\S+ session timed out \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)"
+            }
+        ]
     }
 
 ]
