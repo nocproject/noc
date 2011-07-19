@@ -7,6 +7,12 @@
     <script type="text/javascript" src="/static/apps/fm/event/js/index.js"></script>
 {% endblock %}
 <{% block content %}
+    <style>
+        #pager {
+            width: 100%;
+            border: 1px solid #c0c0c0;
+        }
+    </style>
 <h1>Events</h1>
 <div class="module">
     <h2>Event filter <span style="float: right;"><a href="#" id="toggle_panel_link" onclick="toggle_panel();">Hide Filter</a></span></h2>
@@ -42,6 +48,7 @@
         });
     });
 </script>
+</div>
 <div class="module">
     <TABLE BORDER='0' width="100%" ID="events_table">
         <caption>Events: <span id="events_count"></span></caption>
@@ -61,5 +68,4 @@
 </div>
 <DIV ID="pager"></DIV>
 <DIV ID="cover"></DIV>
-</div>
 {%endblock%}
