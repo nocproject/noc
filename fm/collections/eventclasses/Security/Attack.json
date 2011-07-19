@@ -1,0 +1,40 @@
+[
+    {
+        "name": "Security | Attack | Attack",
+        "description": "Attack in progress detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "{{name}} attack detected{% if interface %} at inteface{{interface}}{% endif %}{% if src_ip %} from {{src_ip}}{% endif %}",
+                "body_template": "{{name}} attack detected.{% if interface %}\\nInterface: {{interface}}{% endif %}{% if src_ip %}\\nSource: {{src_ip}}{% endif %}",
+                "symptoms": "Unsolicitized traffic from source",
+                "probable_causes": "Virus/Botnet activity or malicious actions",
+                "recommended_actions": "Negotiate the source if it is your customer, or ignore"
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "Attack name",
+                "type": "str",
+                "required": true
+            },
+            
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": false
+            },
+
+            {
+                "name": "src_ip",
+                "description": "Source IP",
+                "type": "ip_address",
+                "required": false
+            }
+        ],
+        "disposition": [
+        ]
+    }
+]
