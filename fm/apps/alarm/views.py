@@ -92,7 +92,18 @@ class AlarmManagedApplication(Application):
         """
         Display alarm
         """
+        def get_chilren(root, level=0):
+            children = []
+            for a in ActiveAlarm.objects.filter(root=root.id):
+                children += [(level, a)]
+                children += get_chilren(a, level + 1)
+            for a in ArchivedAlarm.objects.filter(root=root.id):
+                children += [(level, a)]
+                children += get_chilren(a, level + 1)
+            return children
+        
         alarm = self.get_alarm_or_404(alarm_id)
+        root = get_alarm(alarm.root) if alarm.root else None
         u_lang = request.session["django_language"]
         subject = alarm.get_translated_subject(u_lang)
         body = alarm.get_translated_body(u_lang)
@@ -110,8 +121,15 @@ class AlarmManagedApplication(Application):
         is_subscribed = alarm.status == "A" and alarm.is_subscribed(user)
         is_unassigned = alarm.status == "A" and alarm.is_unassigned
         severities = AlarmSeverity.objects.order_by("severity")
+        if alarm.status == "A":
+            subscribers = User.objects.filter(id__in=alarm.subscribers).order_by("username")
+        else:
+            subscribers = []
+        children = get_chilren(alarm)  # (level, alarm)
+        
         return self.render(request, "alarm.html",
                            a=alarm,
+                           root=root,
                            subject=subject,
                            body=body,
                            symptoms=symptoms,
@@ -123,7 +141,11 @@ class AlarmManagedApplication(Application):
                            is_owner=is_owner,
                            is_subscribed=is_subscribed,
                            is_unassigned=is_unassigned,
-                           severities=severities)
+                           severities=severities,
+                           subscribers=subscribers,
+                           children=children,
+                           n_children=len(children)
+                          )
 
     class MessageForm(Application.Form):
         message = forms.CharField()
@@ -168,7 +190,7 @@ class AlarmManagedApplication(Application):
                     "U": ActiveAlarm,
                     "O": ActiveAlarm,
                     "C": ArchivedAlarm
-                }[status].objects
+                }[status].objects.filter(root__exists=False)
                 #if status == "U":
                 #    alarms = alarms.filter(owner__isnull=True)
                 if status == "O":
@@ -273,4 +295,19 @@ class AlarmManagedApplication(Application):
     def view_clear(self, request, alarm_id):
         a = self.get_alarm_or_404(alarm_id)
         a.clear_alarm("Cleared by %s" % request.user)
+        return self.response_redirect_to_referrer(request)
+
+    @view(url="^(?P<alarm_id>[0-9a-f]{24})/change_root/$",
+          url_name="change_root", access=HasPerm("change"))
+    def view_change_root(self, request, alarm_id):
+        a = self.get_alarm_or_404(alarm_id)
+        if request.POST and "root" in request.POST:
+            root = request.POST["root"]
+            print root
+            r = get_alarm(root)
+            if r:
+                a.set_root(r)
+                self.message_user(request, "Root cause has been set")
+            else:
+                self.message_user(request, "Alarm #%s is not found" % root)
         return self.response_redirect_to_referrer(request)
