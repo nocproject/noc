@@ -31,21 +31,6 @@
         <tr><td><b>Is builtin</b></td><td>{{o.is_builtin|bool_icon}}</td></tr>
         <tr><td><b>Description</b></td><td>{{o.description}}</td></tr>
         <tr><td><b>Action</b></td><td>{{o.display_action}}</td></tr>
-        {% for lang in o.text %}
-        <tr>
-            <td><b>{{lang}}</b></td>
-            <td>
-                <table border="0" width="100%">
-                    {% for msg in o.text.lang %}
-                    <tr>
-                        <td class="labels"><b>msg</b></td>
-                        <td>{{o.text.lang.msg}}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </td>
-        </tr>
-        {% endfor %}
     </table>
     
     <h2>Vars</h2>
@@ -123,4 +108,17 @@
         {% endfor %}
     </table>
 </div>
+
+{% for t in extra.text %}
+    <div class="module">
+        <h2>{{t.language}}</h2>
+        <table border="0" width="100%">
+            <tr><td><b>Subject Template:</b></td><td><pre>{{t.subject_template}}</pre></td></tr>
+            <tr><td><b>Body Template:</b></td><td><pre>{{t.body_template}}</pre></td></tr>
+            <tr><td><b>Symptoms:</b></td><td><pre>{{t.symptoms}}</pre></td></tr>
+            <tr><td><b>Probable Causes:</b></td><td><pre>{{t.probable_causes}}</pre></td></tr>
+            <tr><td><b>Recommended Actions:</b></td><td><pre>{{t.recommended_actions}}</pre></td></tr>
+        </table>
+    </div>
+{% endfor %}
 {% endblock %}
