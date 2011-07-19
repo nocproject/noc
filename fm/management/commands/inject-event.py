@@ -71,7 +71,7 @@ class Command(BaseCommand):
             ne.save()
             print ne.id
     
-    def syslog_messages(self, obj, msg):
+    def syslog_message(self, obj, msg):
         raw_vars = {
             "source": "syslog",
             "facility": "23",
