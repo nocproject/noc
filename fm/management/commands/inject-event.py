@@ -38,12 +38,12 @@ class Command(BaseCommand):
             o = ManagedObject.objects.get(name=args[0])
         except ManagedObject.DoesNotExist:
             raise CommandError("Managed Object '%s' is not found" % args[0])
+        # Inject syslog messages
+        if "syslog" in options:
+            self.syslog_message(o, options["syslog"])
         # Load jsons
         for f in args[1:]:
             self.load_events(o, f)
-        # Inject syslog messages
-        if "syslog" in options:
-            self.syslog_message(options["syslog"])
 
     def load_events(self, obj, path):
         """
