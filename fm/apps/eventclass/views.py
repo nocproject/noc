@@ -114,10 +114,17 @@ class EventClassApplication(TreeApplication):
     class TextForm(forms.Form):
         language = forms.CharField(label="Language")
         subject_template = forms.CharField(label="Subject Template")
-        body_template = forms.CharField(label="Body Template")
-        symptoms = forms.CharField(label="Symptoms")
-        probable_causes = forms.CharField(label="Probable Causes")
-        recommended_actions = forms.CharField(label="Recommendsd Actions")
+        body_template = forms.CharField(label="Body Template",
+                                widget=forms.TextInput())
+        symptoms = forms.CharField(label="Symptoms",
+                                widget=forms.TextInput())
+        probable_causes = forms.CharField(label="Probable Causes",
+                                widget=forms.TextInput())
+        recommended_actions = forms.CharField(label="Recommended Actions",
+                                widget=forms.TextInput())
+
+    class VarsForm(forms.Form):
+        pass
 
     def process_change_form(self, request, object_id=None,
                             form_initial=None, formset_initial=None):
@@ -134,11 +141,16 @@ class EventClassApplication(TreeApplication):
         else:
             # New
             form = self.EventClassForm()
+            TextFormset = forms.formsets.formset_factory(self.TextForm,
+                                                         can_delete=True,
+                                                         extra=3)
             vars_formset = None
             rules_formset = None
+            text_formset = TextFormset()
         return self.render(request, "edit.html", form=form,
                            vars_formset=vars_formset,
                            rules_formset=rules_formset,
+                           text_formset=text_formset,
                            object_id=object_id)
 
     
