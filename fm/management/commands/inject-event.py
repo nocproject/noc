@@ -14,7 +14,7 @@ import datetime
 from optparse import OptionParser, make_option
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
-from django.utils.simplejson.decoder import JSONDecoder
+from django.utils import simplejson
 ## NOC modules
 from noc.sa.models import ManagedObject
 from noc.fm.models import NewEvent
@@ -52,7 +52,7 @@ class Command(BaseCommand):
         # Decode JSON
         with open(path) as f:
             try:
-                data = JSONDecoder().decode(f.read())
+                data = simplejson.JSONDecoder().decode(f.read())
             except ValueError, why:
                 raise CommandError("Failed to decode JSON file \"%s\": %s" % (
                     path, why))
