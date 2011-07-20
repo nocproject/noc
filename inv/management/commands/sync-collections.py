@@ -12,7 +12,7 @@ from __future__ import with_statement
 import os
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
-from django.utils.simplejson.decoder import JSONDecoder
+from django.utils import simplejson
 ## NOC modules
 from noc.inv.models import *
 from noc.fm.models import *
@@ -89,7 +89,7 @@ class Command(BaseCommand):
                         path = os.path.join(dirpath, f)
                         with open(path, "r") as jf:
                             try:
-                                data = JSONDecoder().decode(jf.read())
+                                data = simplejson.JSONDecoder().decode(jf.read())
                             except ValueError, why:
                                 fail(collection, "JSON error in %s: %s" % (path,
                                                                            why))
