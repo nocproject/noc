@@ -1,0 +1,48 @@
+[
+    {
+        "name": "Network | OSPF | Neighbor Down",
+        "description": "OSPF neighbor down",
+        "is_unique": true,
+        "discriminator": ["area", "neighbor"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "area",
+                "description": "OSPF area",
+                "type": "str",
+                "required": true
+            },
+            
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            
+            {
+                "name": "neighbor",
+                "description": "Neighbor's Router ID",
+                "type": "ip_address",
+                "required": true
+            },
+            
+            {
+                "name": "reason",
+                "description": "Adjacency lost reason",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "OSPF lost area {{area}} adjacency to {{neighbor}}. Reason: {{reason}}",
+                "body_template": "OSPF lost area {{area}} adjacency to {{neighbor}}\nReason: {{reason}}",
+                "symptoms": "Routing table changes and possible lost of connectivity",
+                "probable_causes": "Link failure or protocol misconfiguration",
+                "recommended_actions": "Check links and local and neighbor router configuration"
+            }
+        }
+    }
+]
