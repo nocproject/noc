@@ -37,8 +37,14 @@ class Script(noc.sa.script.Script):
     rx_log_ae=re.compile(r"AE bundle: (?P<bundle>\S+?)\.\d+", re.MULTILINE)
     
     internal_interfaces=re.compile(r"^(lc-|cbp|demux|dsc|em|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip)")
+    internal_interfaces_olive = re.compile(r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip)")
     def execute(self):
         interfaces=[]
+        version = self.scripts.get_version()
+        if version["platform"] == "olive":
+            internal = self.internal_interfaces_olive
+        else:
+            internal = self.internal_interfaces
         v=self.cli("show interfaces")
         for I in self.rx_phy_split.split(v)[1:]:
             L=self.rx_log_split.split(I)
@@ -46,7 +52,7 @@ class Script(noc.sa.script.Script):
             match=self.re_search(self.rx_phy_name, phy)
             name=match.group("ifname")
             # Skip internal interfaces
-            if self.internal_interfaces.search(name):
+            if internal.search(name):
                 continue
             # Detect interface type
             if name.startswith("lo"):
