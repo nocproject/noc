@@ -60,5 +60,26 @@
                 "value_re": "Failed password for (?P<user>.+?) from (?P<ip>\\S+) port"
             }
         ]
+    },
+    
+    {
+        "name": "Juniper | JUNOS | Authentication | Login (SNMP)",
+        "description": "UI_LOGIN_EVENT: User 'noc' login, class 'j-super-user' [1866]",
+        "event_class__name": "Security | Authentication | Login",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Juniper\\.JUNOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "UI_LOGIN_EVENT: User '(?P<user>.+?)' login, class '.+'"
+            }
+        ]
     }
 ]
