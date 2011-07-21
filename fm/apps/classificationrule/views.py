@@ -31,7 +31,7 @@ class ClassificationRuleApplication(TreeApplication):
     category_model = EventClassificationRuleCategory
 
     rx_re_quote=re.compile(r"[()\[\].+*?^$]", re.MULTILINE)
-    rx_oid = re.compile(r"^(\d+\.){6,}$")
+    rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
     
     @view(url="^(?P<rule_id>[0-9a-f]{24})/to_json/$",
           url_name="to_json", access=HasPerm("to_json"))
