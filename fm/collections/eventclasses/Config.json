@@ -35,5 +35,51 @@
                 "recommended_actions": "No specific action needed"
             }
         }
+    },
+    
+    {
+        "name": "Config | Entering Configuration Mode",
+        "description": "Entering configuration mode",
+        "action": "L",
+        "vars": [
+            {
+                "name": "user",
+                "description": "Username",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text" : {
+            "en": {
+                "subject_template": "{% if user %}User {{user}} entered{% else %}Entering{% endif %} configuration mode",
+                "body_template": "{% if user %}User {{user}} entered{% else %}Entering{% endif %} configuration mode",
+                "symptoms": "Behavior of the network can be changed",
+                "probable_causes": "User switched to configuration mode",
+                "recommended_actions": "No specific action needed"
+            }
+        }
+    },
+
+    {
+        "name": "Config | Exiting Configuration Mode",
+        "description": "Exitin configuration mode",
+        "action": "L",
+        "vars": [
+            {
+                "name": "user",
+                "description": "Username",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text" : {
+            "en": {
+                "subject_template": "{% if user %}User {{user}} exited{% else %}Exiting{% endif %} configuration mode",
+                "body_template": "{% if user %}User {{user}} exited{% else %}Exiting{% endif %} configuration mode",
+                "symptoms": "Behavior of the network can be changed",
+                "probable_causes": "User switched off configuration mode",
+                "recommended_actions": "No specific action needed"
+            }
+        }
     }
 ]
