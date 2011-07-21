@@ -28,6 +28,7 @@ from noc.settings import config
 from noc.lib.fileutils import safe_rewrite
 import noc.lib.nosql as nosql
 from noc.lib.fileutils import temporary_file
+from noc.lib.escape import json_escape as jq
 
 
 ##
@@ -665,6 +666,26 @@ class EventClassificationRule(nosql.Document):
     @property
     def short_name(self):
         return self.name.split(" | ")[-1]
+
+    def to_json(self):
+        r = ["{"]
+        r += ["    \"name\": \"%s\"," % jq(self.name)]
+        r += ["    \"description\": \"%s\"," % jq(self.description)]
+        r += ["    \"event_class__name\": \"%s\"," % jq(self.event_class.name)]
+        r += ["    \"preference\": %d," % self.preference]
+        r += ["    \"patterns\": ["]
+        patterns = []
+        for p in self.patterns:
+            pt = []
+            pt += ["        {"]
+            pt += ["            \"key_re\": \"%s\"," % jq(p.key_re)]
+            pt += ["            \"value_re\": \"%s\"" % jq(p.value_re)]
+            pt += ["        }"]
+            patterns += ["\n".join(pt)]
+        r += [",\n".join(patterns)]
+        r += ["    ]"]
+        r += ["}"]
+        return "\n".join(r)
 
 ##
 ## Events.

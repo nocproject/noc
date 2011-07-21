@@ -20,6 +20,7 @@ from noc.fm.models import EventClassificationRule,\
                           EventClass, EventClassificationPattern,\
                           get_event
 from noc.lib.escape import json_escape as q
+from noc.lib.text import indent
 
 
 class ClassificationRuleApplication(TreeApplication):
@@ -44,23 +45,7 @@ class ClassificationRuleApplication(TreeApplication):
         if not rule:
             return self.response_not_found()
         r = ["["]
-        r += ["    {"]
-        r += ["        \"name\": \"%s\"," % q(rule.name)]
-        r += ["        \"description\": \"%s\"," % q(rule.description)]
-        r += ["        \"event_class__name\": \"%s\"," % q(rule.event_class.name)]
-        r += ["        \"preference\": %d," % rule.preference]
-        r += ["        \"patterns\": ["]
-        patterns = []
-        for p in rule.patterns:
-            pt = []
-            pt += ["            {"]
-            pt += ["                \"key_re\": \"%s\"," % q(p.key_re)]
-            pt += ["                \"value_re\": \"%s\"" % q(p.value_re)]
-            pt += ["            }"]
-            patterns += ["\n".join(pt)]
-        r += [",\n".join(patterns)]
-        r += ["        ]"]
-        r += ["    }"]
+        r += [indent(rule.to_json(), 4)]
         r += ["]",""]
         return self.render_plain_text("\n".join(r))
 
