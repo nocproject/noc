@@ -358,6 +358,19 @@ def is_email(v):
     return rx_email.match(v) is not None
 
 ##
+## Check OID
+##
+rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
+def is_oid(v):
+    """
+    >>> is_oid("1.3.6.1.6.3.1.1.4.1.0")
+    True
+    >>> is_oid("1.3.6.1.6.3.1.1.4.a.1.0")
+    False
+    """
+    return rx_oid.match(v) is not None
+
+##
 ## Validator factory
 ##
 def generic_validator(check,error_message):
