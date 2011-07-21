@@ -12,16 +12,10 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.forms.formsets import formset_factory
 ## NOC modules
-from noc.lib.app import TreeApplication, HasPerm, view
+from noc.lib.app import TreeApplication, HasPerm, view, PermitLogged
 from noc.fm.models import MIB, MIBData, MIBRequiredException
 from noc.lib.fileutils import temporary_file
-
-#from __future__ import with_statement
-#from django.contrib import admin
-#from django import forms
-#from noc.lib.app import ModelApplication,HasPerm
-#from noc.lib.fileutils import temporary_file
-#from noc.fm.models import MIB,MIBData,MIBRequiredException
+from noc.lib.validators import is_oid
 
 
 class MIBApplication(TreeApplication):
@@ -31,32 +25,33 @@ class MIBApplication(TreeApplication):
     menu = "MIBs"
     model = MIB
 
+
+    def get_syntax(self, x):
+        s = []
+        if x.syntax:
+            s += [x.syntax["base_type"]]
+            if "display_hint" in x.syntax:
+                s += ["display-hint: %s" % x.syntax["display_hint"]]
+            if (x.syntax["base_type"] == "Enumeration" and
+                "enum_map" in x.syntax):
+                # Display enumeration
+                for k in sorted(x.syntax["enum_map"],
+                                key=lambda x: int(x)):
+                    s += ["%s -> %s" % (
+                        k, x.syntax["enum_map"][k])]
+            return s
+        else:
+            return []
+                
     def get_preview_extra(self, obj):
         """
         Collect additional data for preview
         """
-        def get_syntax(x):
-            s = []
-            if x.syntax:
-                s += [x.syntax["base_type"]]
-                if "display_hint" in x.syntax:
-                    s += ["display-hint: %s" % x.syntax["display_hint"]]
-                if (x.syntax["base_type"] == "Enumeration" and
-                    "enum_map" in x.syntax):
-                    # Display enumeration
-                    for k in sorted(x.syntax["enum_map"],
-                                    key=lambda x: int(x)):
-                        s += ["%s -> %s" % (
-                            k, x.syntax["enum_map"][k])]
-                return s
-            else:
-                return []
-
         r = [{
                 "oid": x.oid,
                 "name": x.name,
                 "description": x.description,
-                "syntax": get_syntax(x)
+                "syntax": self.get_syntax(x)
             } for x in MIBData.objects.filter(mib=obj.id)]
         r = sorted(r, key=lambda x: [int(y) for y in x["oid"].split(".")])
         # Calculate indent
@@ -155,3 +150,27 @@ class MIBApplication(TreeApplication):
         else:
             formset = upload_formset()
         return self.render(request, "add.html", form=formset)
+
+    @view(url="help/(?P<key>\S+)/", url_name="help", access=PermitLogged())
+    def view_help(self, request, key):
+        # Get OID
+        if "::" in key:
+            oid = MIB.get_oid(key)
+        elif is_oid(key):
+            oid = key
+        else:
+            raise self.response_not_found("Key not found")
+        # Find data
+        l_oid = oid.split(".")
+        data = None
+        while l_oid:
+            c_oid = ".".join(l_oid)
+            d = MIBData.objects.filter(oid=c_oid).first()
+            if d:
+                data = d
+                break
+            l_oid.pop(-1)
+        if data is None:
+            raise self.response_not_found("No help available")
+        return self.render(request, "help.html", data=data,
+                           syntax=self.get_syntax(data))
