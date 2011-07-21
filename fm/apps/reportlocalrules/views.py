@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Django modules
+from django.utils.html import escape
 ## NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.fm.models import EventClassificationRule
@@ -19,4 +21,4 @@ class ReportClassificationRules(ReportApplication):
         r += [",\n".join([indent(r.to_json())
                           for r in EventClassificationRule.objects.filter(is_builtin=False)])]
         r += ["]",""]
-        return "<pre>" + "\n".join(r) + "</pre>"
+        return "<pre>" + escape("\n".join(r)) + "</pre>"
