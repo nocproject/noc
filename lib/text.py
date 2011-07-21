@@ -192,3 +192,20 @@ def replace_re_group(expr,group,pattern):
                     r+=pattern
                     break
     return r+expr
+
+def indent(text, n=4):
+    """
+    Indent each line of text with spaces
+    
+    :param text: text
+    :param n: amount of spaces to ident
+    
+    >>> indent("")
+    ''
+    >>> indent("the quick brown fox\\njumped over an lazy dog\\nend")
+    '    the quick brown fox\\n    jumped over an lazy dog\\n    end'
+    """
+    if not text:
+        return ""
+    i = " " * n
+    return i + text.replace("\n", "\n" + i)
