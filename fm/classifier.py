@@ -25,6 +25,12 @@ from noc.lib.snmputils import render_tc
 from noc.lib.escape import fm_unescape, fm_escape
 from noc.sa.interfaces.base import *
 
+
+##
+## Exceptions
+##
+class InvalidPatternException(Exception):
+    pass
 ##
 ## Patterns
 ##
@@ -74,9 +80,17 @@ class Rule(object):
         self.name = rule.name
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
-        self.patterns = [(re.compile(x.key_re, re.MULTILINE | re.DOTALL),
-                          re.compile(x.value_re, re.MULTILINE | re.DOTALL))
-                         for x in rule.patterns]
+        self.patterns = []
+        for x in rule.patterns:
+            try:
+                rx_key = re.compile(x.key_re, re.MULTILINE | re.DOTALL)
+            except Exception, why:
+                raise InvalidPatternException("Error in '%s': %s" % (x.key_re, why))
+            try:
+                rx_value = re.compile(x.value_re, re.MULTILINE | re.DOTALL)
+            except Exception, why:
+                raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
+            self.patterns += [(rx_key, rx_value)]
         self.to_drop = self.event_class.action == "D"
         self.to_dispose = len(self.event_class.disposition) > 0
 
@@ -160,7 +174,11 @@ class Classifier(Daemon):
         for p in profiles:
             self.rules[p] = []
         for r in EventClassificationRule.objects.order_by("preference"):
-            rule = Rule(r)
+            try:
+                rule = Rule(r)
+            except InvalidPatternException, why:
+                logging.error("Failed to load rule '%s': Invalid patterns: %s" % (r.name, why))
+                continue
             # Find profile restriction
             p = find_profile(rule)
             if p:
