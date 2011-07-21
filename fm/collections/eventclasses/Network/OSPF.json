@@ -58,7 +58,7 @@
         "disposition": [
             {
                 "name": "dispose",
-                "condition": "(event.vars['to_state'].lower() in ['full']) or 'to_state' not in event.vars",
+                "condition": "('to_state' not in event.vars) or (event.vars['to_state'].lower() in ['full'])",
                 "action": "clear",
                 "alarm_class__name": "Network | OSPF | Neighbor Down"
             }
