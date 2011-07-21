@@ -35,6 +35,7 @@
     <table border="0" width="100%">
         <tr><td class="labels"><b>Name</b></td><td>{{o.name}}</td></tr>
         <tr><td><b>Is builtin</b></td><td>{{o.is_builtin|bool_icon}}</td></tr>
+        <tr><td><b>Description</b></td><td>{{o.description}}</td></tr>
         <tr><td><b>Event class</b></td><td><a href="{% url fm:eventclass:preview o.event_class.id %}">{{o.event_class.name}}</a></td></tr>
         <tr><td><b>Preference</b></td><td>{{o.preference}}</td></tr>
     </table>

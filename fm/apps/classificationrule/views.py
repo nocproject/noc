@@ -155,7 +155,18 @@ class ClassificationRuleApplication(TreeApplication):
         event = get_event(event_id)
         if event is None:
             return self.response_not_found("Not found")
-        form_initial = {"preference": 1000}
+        event_name = " | ".join(event.managed_object.profile_name.split("."))
+        event_name += " | name "
+        if event.raw_vars["source"] == "syslog":
+            event_name += "(SYSLOG)"
+        elif event.raw_vars["source"] == "SNMP Trap":
+            event_name += "(SNMP)"
+        form_initial = {
+            "name": event_name,
+            "preference": 1000
+            }
+        if event.raw_vars["source"] == "syslog":
+            form_initial["description"] = event.raw_vars["message"]
         initial = [(k, v)
             for k, v in event.raw_vars.items()
             if k not in ("collector", "facility", "severity") and not is_oid(k)
