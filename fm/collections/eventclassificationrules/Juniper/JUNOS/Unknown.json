@@ -60,5 +60,43 @@
                 "value_re": "UI_CHILD_START"
             }
         ]
+    },
+    
+    {
+        "name": "Unknown | Ignore | Ignore Syslog Repeats (SYSLOG)",
+        "description": "Jul 22 08:40:00 last message repeated 42 times",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "last message repeated \\d+ times$"
+            }
+        ]
+    },
+
+    {
+        "name": "Juniper | JUNOS | Unknown | Ignore | Ignore mcae_conn_init_connect (SYSLOG)",
+        "description": "Jul 22 08:47:00 lacpd[1284]: mcae_conn_init_connect in evConnect()",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Juniper\\.JUNOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "mcae_conn_init_connect in evConnect\\(\\)$"
+            }
+        ]
     }
 ]
