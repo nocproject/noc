@@ -1,34 +1,40 @@
 function show_result(data) {
+    add_cell = function(row, html) {
+        var $td = $(document.createElement("td"));
+        $td.html(html);
+        row.append($td);
+        return $td;
+    }
+    
+    add_cells = function(row, cells) {
+        $.each(cells, function(i, d) {
+            add_cell(row, d)
+        });
+    }
+    
     var tb=$("#events_table TBODY");
     tb.empty();
     $.each(data["events"],function(i,r){
         var $tr=$(document.createElement("tr"));
         $tr.addClass(r[0]);
         tb.append($tr);
-        $.each(r, function(j,d) {
-            var $td=$(document.createElement("td"));
-            $tr.append($td);
-            if(j==0) {
-                event_id=d;
-                $td.html("<A HREF='"+d+"/'>"+d+"</A>"); // Link to event
-            } else if (j==3) {
-                status=d;
-                $td.text({N:"New",A:"Active",S:"Archived",F:"Failed"}[status]);
-            } else
-                $td.text(d);
-        });
-        var $td=$(document.createElement("td"));
-        $tr.append($td);
-        var td_link="";
-        //if(status=="C") {
-        //    td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"open\"); return false;'>[Open]</a>";
-        //} else if (status=="A") {
-        //    td_link+="<a href='#' onclick='change_status(this,"+event_id+",\"close\"); return false;'>[Close]</a>";
-        //}
-        //if(td_link) {
-        //    td_link+="<br/><a href='#' onclick='change_status(this,"+event_id+",\"reclassify\"); return false;'>[Reclassify]</a>";
-        //}
-        $td.html(td_link);
+        if (r.length == 4) {
+            // Checkpoint <id, user, timestamp, comment>
+            txt = r[2];
+            if (r[1])
+                txt += "[" + r[1] + "]";
+            txt += ": " + r[3];
+            var $cp = add_cell($tr, txt);
+            $cp.attr("colspan", "6");
+            $cp.addClass("checkpoint");
+            $cp.corner();
+        } else {
+            // Event
+            add_cells($tr, ["<A HREF='" + r[0] + "/'>" + r[0] + "</A>",
+                            r[1], r[2],
+                            {N:"New",A:"Active",S:"Archived",F:"Failed"}[r[3]],
+                            r[4], r[5]]);
+        }
     });
     // Set up pager
     $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
