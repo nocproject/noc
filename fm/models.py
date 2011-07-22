@@ -883,6 +883,21 @@ class ActiveEvent(nosql.Document):
         self.delete()
         return e
 
+    def drop(self):
+        """
+        Mark event to be dropped. Only for use from event trigger pyrule.
+        All further operations on event may lead to unpredictable results.
+        Event actually deleted by noc-classifier
+        """
+        self.id = None
+
+    @property
+    def to_drop(self):
+        """
+        Check event marked to be dropped
+        """
+        return self.id is None
+
     def log_message(self, message):
         self.log += [EventLog(timestamp=datetime.datetime.now(),
                      from_status=self.status, to_status=self.status,
@@ -1348,6 +1363,7 @@ class EventDispositionQueue(nosql.Document):
 
     def __unicode__(self):
         return str(self.event_id)
+
 
 ##
 ## Event/Alarm text decoder

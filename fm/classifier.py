@@ -426,11 +426,19 @@ class Classifier(Daemon):
         event = a_event
         # Call triggers if necessary
         if event_class.id in self.triggers:
+            event_id = event.id
             for t in self.triggers[event_class.id]:
                 try:
                     t.call(event)
                 except:
                     error_report()
+                if event.to_drop:
+                    # Delete event and stop processing
+                    logging.debug("Drop event %s (Requested by trigger %s)" % (
+                        event_id, t.name))
+                    event.id = event_id  # Restore event id
+                    event.delete()
+                    return
         # Finally dispose event to further processing by noc-correlator
         if rule.to_dispose:
             event.dispose_event()
