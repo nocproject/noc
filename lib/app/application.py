@@ -173,6 +173,12 @@ class Application(object):
         return HttpResponseNotFound(text)
     
     ##
+    ## Render javescript closing popup window
+    ##
+    def close_popup(self, request):
+        return self.render(request, "close_popup.html")
+    
+    ##
     ## Escape HTML
     ##
     def html_escape(self, s):
