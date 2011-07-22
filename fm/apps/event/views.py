@@ -11,12 +11,14 @@ from django import forms
 from django.forms.widgets import HiddenInput, DateTimeInput
 from django.utils.dateformat import DateFormat
 from django.http import Http404
+from django.db.models import Q
 ## NOC modules
 from noc.lib.widgets import AutoCompleteTextInput, lookup, TreePopupField
 from noc.lib.app import Application, HasPerm, view
 from noc.lib.escape import json_escape, fm_escape
 from noc.fm.models import *
 from noc.sa.models import ManagedObject
+from noc.main.models import Checkpoint
 
 
 class EventAppplication(Application):
@@ -176,9 +178,29 @@ class EventAppplication(Application):
         lr = self.PAGE_SIZE * page
         rr = self.PAGE_SIZE * (page + 1)
         data = []
+        
         count = events.count()
         u_lang = request.session["django_language"]
-        for e in events.order_by("-timestamp")[lr:rr]:
+        
+        events = list(events.order_by("-timestamp")[lr:rr])
+        checkpoints = []
+        if events:
+            # Get visible checkpoints
+            min_time = events[-1].timestamp
+            max_time = events[0].timestamp
+            q = Q(user=request.user) | Q(private=False)
+            cpq = Checkpoint.objects.filter(timestamp__gte=min_time,
+                                            timestamp__lte=min_time)
+            cpq = cpq.filter(q).order_by("-timestamp")
+        
+        for e in events:
+            # Insert checkpoints
+            while checkpoints and checkpoints[0].timestamp > e.timestamp:
+                cp = checkpoints.pop(0)
+                data += [cp.id, cp.user.username if cp.user else None,
+                         DateFormat(cp.timestamp).format(datetime_format),
+                         cp.comment]
+            # Insert event
             if e.status in ("A", "S"):
                 subject = e.get_translated_subject(u_lang)
                 event_class = e.event_class.name

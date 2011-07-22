@@ -25,3 +25,9 @@ th[class="event-priority"] {
 th[class="event-action"] {
     width: 6em;
 }
+
+.checkpoint {
+    background-color: #c0c0c0;
+    font-weight: bold;
+    font-style: italic;
+}

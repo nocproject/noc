@@ -6,7 +6,11 @@
     <script type="text/javascript" src="/static/js/jquery.pager.js"></script>
     <script type="text/javascript" src="/static/apps/fm/event/js/index.js"></script>
 {% endblock %}
-<{% block content %}
+{% block content %}
+<ul class="object-tools">
+    <li><a href="#" onclick="return show_popup('Set Checkpoint', '{% url main:checkpoint:create %}')">Set Checkpoint</a></li>
+</ul>
+
     <style>
         #pager {
             width: 100%;
