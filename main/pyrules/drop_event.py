@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## drop envent
+## drop event
 ##----------------------------------------------------------------------
-## INTERFACE: IEvent
+## INTERFACE: IEventTrigger
 ##----------------------------------------------------------------------
 ## DESCRIPTION:
 ## Delete event
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 @pyrule
 def drop_event(event):
-    event.delete()
+    event.drop()
