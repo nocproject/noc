@@ -343,6 +343,52 @@ class IntParameter(Parameter):
                 or (self.max_value is not None and i > self.max_value)):
             self.raise_error(value)
         return i
+
+
+class FloatParameter(Parameter):
+    """
+    >>> FloatParameter().clean(1.2)
+    1.2
+    >>> FloatParameter().clean("1.2")
+    1.2
+    >>> FloatParameter().clean("not a number") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: FloatParameter: 'not a number'
+    >>> FloatParameter(min_value=10).clean(5) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: FloatParameter: 5
+    >>> FloatParameter(max_value=7).clean(10) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: FloatParameter: 10
+    >>> FloatParameter(max_value=10,default=7).clean(5)
+    5
+    >>> FloatParameter(max_value=10,default=7).clean(None)
+    7
+    >>> FloatParameter(max_value=10,default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: FloatParameter: 15
+    """
+    def __init__(self, required=True, default=None,
+                 min_value=None, max_value=None):
+        self.min_value = min_value
+        self.max_value = max_value
+        super(FloatParameter, self).__init__(required=required, default=default)
+
+    def clean(self, value):
+        if value is None and self.default is not None:
+            return self.default
+        try:
+            i = float(value)
+        except:
+            self.raise_error(value)
+        if ((self.min_value is not None and i < self.min_value)
+                or (self.max_value is not None and i > self.max_value)):
+            self.raise_error(value)
+        return i   
 ##
 ##
 ##
