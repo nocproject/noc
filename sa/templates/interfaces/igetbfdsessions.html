@@ -1,0 +1,26 @@
+{% if result %}
+{% load noctags %}
+<h1>{{object.name}} ({{object.address}}) ARP Cache</h1>
+
+{% noctable %}
+<table>
+    <thead>
+        <tr><th>Peer</th><th>State</th><th>Interface</th><th>Detect time<br/>(microseconds)</th><th>TX interval<br/>(microseconds)</th><th>Multiplier</th></tr>
+    </thead>
+    <tbody>
+        {% for r in result %}
+            <tr>
+                <td>{{r.peer}}</td>
+                <td>{{r.state|bool_icon}}</td>
+                <td>{{r.iterface}}</td>
+                <td>{{r.detect_time}}</td>
+                <td>{{r.tx_interval}}</td>
+                <td>{{r.multiplier}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endnoctable %}
+{% else %}
+No data!!!
+{% endif %}
