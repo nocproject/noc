@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Network | BFD | Session Down",
+        "description": "BFD Session Down",
+        "is_unique": true,
+        "discriminator": ["interface", "peer"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "BFD interface",
+                "type": "interface_name",
+                "required": true
+            },
+            
+            {
+                "name": "peer",
+                "description": "BFD Peer",
+                "type": "ip_address",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "BFD Session Down: {{peer}} on {{interface}}",
+                "body_template": "BFD Session Down: {{peer}} on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    }
+]
