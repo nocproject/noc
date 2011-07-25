@@ -34,6 +34,12 @@ def reduce_task(task, snippet):
 
 class RunSnippetApplication(Application):
     title = "Run Snippet"
+
+    def extra_permissions(self):
+        x = set([s.permission_name
+                 for s in
+                 CommandSnippet.objects.filter(permission_name__isnull=False)])
+        return list(x)
     
     def get_map_script(self, snippet):
         if snippet.change_configuration:
@@ -70,7 +76,11 @@ class RunSnippetApplication(Application):
         access=HasPerm("run"))
     def view_index(self, request):
         """ Display all available snippets"""
-        snippets = CommandSnippet.objects.filter(is_enabled=True).order_by("name")
+        # @todo: check permissions
+        user = request.user
+        snippets = [s for s in
+                    CommandSnippet.objects.filter(is_enabled=True).order_by("name")
+                    if s.permission_name is None or Permission.has_perm(user, s.effective_permission_name)]
         return self.render(request, "snippets.html", snippets=snippets)
     
     @view(url=r"^(?P<snippet_id>\d+)/$", url_name="snippet",
@@ -80,6 +90,8 @@ class RunSnippetApplication(Application):
         Snippet parameters and object selection form
         """
         snippet = self.get_object_or_404(CommandSnippet, id=int(snippet_id))
+        if snippet.permission_name and not Permission.has_perm(request.user, snippet.effective_permission_name):
+            return self.response_forbidden("Forbidden")
         vars = snippet.vars
         if "object" in vars:
             vars.remove("object")
