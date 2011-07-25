@@ -190,16 +190,16 @@ class EventAppplication(Application):
             max_time = events[0].timestamp
             q = Q(user=request.user) | Q(private=False)
             cpq = Checkpoint.objects.filter(timestamp__gte=min_time,
-                                            timestamp__lte=min_time)
-            cpq = cpq.filter(q).order_by("-timestamp")
+                                            timestamp__lte=max_time)
+            checkpoints = list(cpq.filter(q).order_by("-timestamp"))
         
         for e in events:
             # Insert checkpoints
             while checkpoints and checkpoints[0].timestamp > e.timestamp:
                 cp = checkpoints.pop(0)
-                data += [cp.id, cp.user.username if cp.user else None,
+                data += [[cp.id, cp.user.username if cp.user else None,
                          DateFormat(cp.timestamp).format(datetime_format),
-                         cp.comment]
+                         cp.comment]]
             # Insert event
             if e.status in ("A", "S"):
                 subject = e.get_translated_subject(u_lang)
