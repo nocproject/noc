@@ -237,7 +237,11 @@ class Application(object):
             if isinstance(view.access,HasPerm):
                 p.add(view.access.get_permission(self))
         # extra_permissions
-        for e in self.extra_permissions:
+        if callable(self.extra_permissions):
+            extra = self.extra_permissions()
+        else:
+            extra = self.extra_permissions
+        for e in extra:
             p.add(HasPerm(e).get_permission(self))
         return p
     ##
