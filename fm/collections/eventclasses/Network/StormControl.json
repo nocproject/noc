@@ -1,0 +1,121 @@
+[
+    {
+        "name": "Network | Storm Control | Broadcast Storm Detected",
+        "description": "Broadcast Storm Detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Broadcast Storm Detected on {{interface}}",
+                "body_template": "Broadcast Storm Detected  on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | Storm Control | Broadcast Storm Detected"
+            }
+        ]
+    },
+    
+    {
+        "name": "Network | Storm Control | Broadcast Storm Cleared",
+        "description": "Broadcast Storm Cleared",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Broadcast Storm Cleared on {{interface}}",
+                "body_template": "Broadcast Storm Cleared  on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | Storm Control | Broadcast Storm Detected"
+            }
+        ]
+    },
+    
+    {
+        "name": "Network | Storm Control | Multicast Storm Detected",
+        "description": "Multicast Storm Detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Multicast Storm Detected on {{interface}}",
+                "body_template": "Multicast Storm Detected  on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | Storm Control | Multicast Storm Detected"
+            }
+        ]
+    },
+    
+    {
+        "name": "Network | Storm Control | Multicast Storm Cleared",
+        "description": "Multicast Storm Cleared",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Multicast Storm Cleared on {{interface}}",
+                "body_template": "Multicast Storm Cleared  on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | Storm Control | Multicast Storm Detected"
+            }
+        ]
+    }
+]
