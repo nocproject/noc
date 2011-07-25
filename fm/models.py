@@ -1405,3 +1405,24 @@ def get_alarm(alarm_id):
             if a:
                 return a
         return None
+
+
+def get_object_status(managed_object):
+    """
+    Returns current object status
+    
+    :param managed_object: Managed Object instance
+    :returns: True, if object is up, False, if object is down, None, if object
+              is unreachable
+    """
+    ac = AlarmClass.objects.get(name="NOC | Managed Object | Ping Failed")
+    a = ActiveAlarm.objects.filter(managed_object=managed_object.id,
+                                   alarm_class=ac.id).first()
+    if a is None:
+        # No active alarm, object is up
+        return True
+    elif a.root:
+        # Inferred alarm, object status is unknown
+        return None
+    else:
+        return False
