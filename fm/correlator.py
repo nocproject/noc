@@ -98,7 +98,10 @@ class Rule(object):
         if self.var_mapping:
             vars = {}
             for k, v in self.var_mapping.items():
-                vars[v] = e.vars[k]
+                try:
+                    vars[v] = e.vars[k]
+                except KeyError:
+                    pass
             ds = [vars[n] for n in self.discriminator]
             discriminator = hashlib.sha1("\x00".join(ds)).hexdigest()
             return discriminator, vars
