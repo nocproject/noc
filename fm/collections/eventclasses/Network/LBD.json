@@ -1,0 +1,60 @@
+[
+    {
+        "name": "Network | LBD | Loop Cleared",
+        "description": "LBD Loop Cleared",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "LBD Loop cleared on {{interface}}",
+                "body_template": "LBD Loop cleared on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "LBD interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | LBD | Loop Detected"
+            }
+        ]
+    },
+    {
+        "name": "Network | LBD | Loop Detected",
+        "description": "LBD Loop Detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "LBD Loop detected on {{interface}}",
+                "body_template": "LBD Loop detected on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "LBD interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | LBD | Loop Detected"
+            }
+        ]
+    }
+]
