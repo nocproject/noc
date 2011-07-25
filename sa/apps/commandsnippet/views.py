@@ -14,6 +14,15 @@ from django.template import Template, TemplateSyntaxError
 from noc.lib.app import ModelApplication
 from noc.sa.models import CommandSnippet
 
+
+def permission(o):
+    p = o.effective_permission_name
+    if p:
+        return p
+    else:
+        return ""
+permission.short_description = "Permission"
+
 class CommandSnippetForm(forms.ModelForm):
     """Validation form"""
     class Meta:
@@ -32,8 +41,8 @@ class CommandSnippetAdmin(admin.ModelAdmin):
     """CommandSnippet Admin"""
     form = CommandSnippetForm
     list_display = ["name", "is_enabled", "selector", "description",
-            "require_confirmation"]
-    list_filter = ["require_confirmation", "is_enabled"]
+            "require_confirmation", permission, "display_in_menu"]
+    list_filter = ["require_confirmation", "is_enabled", "permission_name"]
 
 
 class CommandSnippetApplication(ModelApplication):

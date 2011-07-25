@@ -24,7 +24,7 @@ from django.contrib.auth.models import User, Group
 ## Third-party modules
 from tagging.models import TaggedItem
 ## NOC modules
-from noc.main.models import PyRule, Shard, PrefixTable
+from noc.main.models import PyRule, Shard, PrefixTable, Permission
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import *
@@ -922,6 +922,12 @@ class CommandSnippet(models.Model):
     timeout = models.IntegerField(_("Timeout (sec)"), default=60)
     require_confirmation = models.BooleanField(_("Require Confirmation"),
             default=False)
+    # Restrict access to snippet if set
+    # effective permission name will be sa:runsnippet:<permission_name>
+    permission_name = models.CharField(_("Permission Name"), max_length=64,
+                                       null=True, blank=True)
+    display_in_menu = models.BooleanField(_("Show in menu"), default=False)
+    #
     tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
     
     def __unicode__(self):
@@ -945,7 +951,24 @@ class CommandSnippet(models.Model):
         """
         from django.template import Template, Context
         return Template(self.snippet).render(Context(data))
-    
+
+    @property
+    def effective_permission_name(self):
+        if self.permission_name:
+            return "sa:runsnippet:" + self.permission_name
+        else:
+            return None
+
+    def save(self, *args, **kwargs):
+        super(CommandSnippet, self).save(*args, **kwargs)
+        # Create permission if required
+        if self.permission_name:
+            try:
+                Permission.objects.get(name=self.effective_permission_name)
+            except Permission.DoesNotExist:
+                Permission(name=self.effective_permission_name).save()
+
+
 ##
 ## Reduce Scripts
 ##
