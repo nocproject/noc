@@ -1,0 +1,53 @@
+[
+    {
+        "name": "Network | MPLS | LSP Down",
+        "description": "MPLS LSP down",
+        "is_unique": true,
+        "discriminator": ["name"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "name",
+                "description": "LSP name",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "MPLS LSP Down: {{name}}",
+                "body_template": "MPLS LSP Down: {{name}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    },
+    
+    {
+        "name": "Network | MPLS | Path Down",
+        "description": "MPLS Path down",
+        "is_unique": true,
+        "discriminator": ["name"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "name",
+                "description": "Path name",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "MPLS Path Down: {{name}}",
+                "body_template": "MPLS Path Down: {{name}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    }
+]
