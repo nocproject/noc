@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) System cold start$"
+                "value_re": "(CRIT:|CRIT\\(2\\)) System (cold|warm) start$"
             }
         ]
     }
