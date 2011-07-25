@@ -1169,7 +1169,10 @@ class ActiveAlarm(nosql.Document):
         mins = (duration.seconds / 60) % 60
         hours = (duration.seconds / 3600) % 24
         days = duration.days
-        return "%d %02d:%02d:%02d" % (days, hours, mins, secs)
+        r = "%02d:%02d:%02d" % (hours, mins, secs)
+        if days:
+            r += "%d %s" % (days, r)
+        return r
     
     @property
     def effective_style(self):
