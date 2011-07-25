@@ -51,10 +51,57 @@
             },
 
             {
-                "name": "clear",
+                "name": "clear_peer_down",
                 "condition": "event.vars['to_state'].lower() == 'established'",
                 "action": "clear",
-                "alarm_class__name": "Network | BGP | Peer Down"
+                "alarm_class__name": "Network | BGP | Peer Down",
+                "stop_disposition": false
+            },
+            
+            {
+                "name": "clear_maxprefix",
+                "condition": "event.vars['to_state'].lower() == 'established'",
+                "action": "clear",
+                "alarm_class__name": "Network | BGP | Prefix Limit Exceeded",
+                "stop_disposition": false
+            }
+
+        ]
+    },
+    
+    {
+        "name": "Network | BGP | Prefix Limit Exceeded",
+        "description": "BGP Prefix Limit Exceeded",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "BGP Peer {{peer}}(AS{{as}}) prefix limit exceeded",
+                "body_template": "BGP Peer {{peer}}(AS{{as}}) prefix limit exceeded",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "peer",
+                "description": "Peer",
+                "type": "ip_address",
+                "required": true
+            },
+            
+            {
+                "name": "as",
+                "description": "Peer AS",
+                "type": "int",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | BGP | Prefix Limit Exceeded"
             }
         ]
     }
