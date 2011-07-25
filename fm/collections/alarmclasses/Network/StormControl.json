@@ -1,0 +1,53 @@
+[
+    {
+        "name": "Network | Storm Control | Broadcast Storm Detected",
+        "description": "Broadcast Storm Detected",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Broadcast Storm detected on {{interface}}",
+                "body_template": "Broadcast Storm detected on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    },
+    
+    {
+        "name": "Network | Storm Control | Multicast Storm Detected",
+        "description": "Multicast Storm Detected",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Multicast Storm detected on {{interface}}",
+                "body_template": "Multicast Storm detected on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    }
+]
