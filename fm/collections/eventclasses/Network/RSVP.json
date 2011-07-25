@@ -1,7 +1,7 @@
 [
     {
         "name": "Network | RSVP | Neighbor Up",
-        "description": "ISIS Neighbor up",
+        "description": "RSVP Neighbor up",
         "action": "A",
         "text" : {
             "en": {
