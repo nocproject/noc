@@ -5,8 +5,8 @@
         "action": "L",
         "text": {
             "en": {
-                "subject_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}} on {{interface}}",
-                "body_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}} on {{interface}}",
+                "subject_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
+                "body_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}}{% if interface %} on {{interface}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -17,7 +17,7 @@
                 "name": "interface",
                 "description": "BFD interface",
                 "type": "interface_name",
-                "required": true
+                "required": false
             },
             
             {
