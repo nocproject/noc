@@ -1,0 +1,22 @@
+[
+    {
+        "name": "DLink | DxS | System | Started (SYSLOG)",
+        "description": "CRIT: System cold start",
+        "event_class__name": "System | Started",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(CRIT:|CRIT\\(2\\)) System cold start$"
+            }
+        ]
+    }
+]
