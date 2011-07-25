@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "Configuration saved to flash \\(Username: (?P<user>.+), IP: \\S+.+\\)$"
+                "value_re": "(INFO:|INFO\\(6\\)) Configuration saved to flash \\(Username: (?P<user>.+), IP: \\S+.+\\)$"
             }
         ]
     }
