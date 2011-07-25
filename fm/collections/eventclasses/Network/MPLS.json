@@ -1,0 +1,136 @@
+[
+    {
+        "name": "Network | MPLS | LSP Up",
+        "description": "MPLS LSP Up",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "MPLS LSP Up: {{name}}{% if bandwidth %}({{bandwidth}} bps){% endif %}",
+                "body_template": "MPLS LSP Up: {{name}}{% if bandwidth %}({{bandwidth}} bps){% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "LSP name",
+                "type": "str",
+                "required": true
+            },
+            
+            {
+                "name": "bandwidth",
+                "description": "Bandwidth (bps)",
+                "type": "int",
+                "required": false
+            }
+
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | MPLS | LSP Down"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | MPLS | LSP Down",
+        "description": "MPLS LSP Down",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "MPLS LSP Down: {{name}}",
+                "body_template": "MPLS LSP Down: {{name}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "LSP name",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | MPLS | LSP Down"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | MPLS | Path Up",
+        "description": "MPLS Path Up",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "MPLS Path Up: {{name}}{% if bandwidth %}({{bandwidth}} bps){%endif%}",
+                "body_template": "MPLS Path Up: {{name}}{% if bandwidth %}({{bandwidth}} bps){%endif%}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "Path name",
+                "type": "str",
+                "required": true
+            },
+            
+            {
+                "name": "bandwidth",
+                "description": "Bandwidth (bps)",
+                "type": "int",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | MPLS | Path Down"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | MPLS | Path Down",
+        "description": "MPLS Path Down",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "MPLS Path Down: {{name}}",
+                "body_template": "MPLS Path Down: {{name}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "Path name",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | MPLS | Path Down"
+            }
+        ]
+    }
+]
