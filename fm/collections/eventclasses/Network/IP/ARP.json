@@ -1,0 +1,52 @@
+[
+    {
+        "name": "Network | IP | ARP Moved",
+        "description": "ARP Moved",
+        "action": "L",
+        "text": {
+            "en": {
+                "subject_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}} on {{interface}}",
+                "body_template": "ARP {{ip}} moved from {{from_mac}} to {{to_mac}} on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "BFD interface",
+                "type": "interface_name",
+                "required": true
+            },
+            
+            {
+                "name": "ip",
+                "description": "IP",
+                "type": "ip_address",
+                "required": true
+            },
+            
+            {
+                "name": "from_mac",
+                "description": "From MAC",
+                "type": "mac",
+                "required": true
+            },
+
+            {
+                "name": "to_mac",
+                "description": "To MAC",
+                "type": "mac",
+                "required": true
+            }            
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | IP | ARP Moved"
+            }
+        ]
+    }
+]
