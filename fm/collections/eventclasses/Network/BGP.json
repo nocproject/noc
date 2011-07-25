@@ -1,0 +1,61 @@
+[
+    {
+        "name": "Network | BGP | Peer State Changed",
+        "description": "BGP Peer State Changed",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "BGP Peer {{peer}}(AS{{as}}) state changed: {{from_state}} -> {{to_state}}",
+                "body_template": "BGP Peer {{peer}}(AS{{as}}) state changed: {{from_state}} -> {{to_state}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "peer",
+                "description": "Peer",
+                "type": "ip_address",
+                "required": true
+            },
+            
+            {
+                "name": "as",
+                "description": "Peer AS",
+                "type": "int",
+                "required": true
+            },
+            
+            {
+                "name": "from_state",
+                "description": "Initial state",
+                "type": "str",
+                "required": true
+            },
+            
+            {
+                "name": "to_state",
+                "description": "Final state",
+                "type": "str",
+                "required": true
+            }
+
+        ],
+        "disposition": [
+            {
+                "name": "raise",
+                "condition": "event.vars['from_state'].lower() == 'established'",
+                "action": "raise",
+                "alarm_class__name": "Network | BGP | Peer Down"
+            },
+
+            {
+                "name": "clear",
+                "condition": "event.vars['to_state'].lower() == 'established'",
+                "action": "clear",
+                "alarm_class__name": "Network | BGP | Peer Down"
+            }
+        ]
+    }
+]
