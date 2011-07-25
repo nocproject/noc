@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Network | BGP | Peer Down",
+        "description": "A",
+        "is_unique": true,
+        "discriminator": ["peer"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "peer",
+                "description": "BGP Peer",
+                "type": "ip_address",
+                "required": true
+            },
+            
+            {
+                "name": "as",
+                "description": "BGP Peer AS",
+                "type": "int",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "BGP Peer {{peer}}(AS{{as}}) session down",
+                "body_template": "BGP Peer {{peer}}(AS{{as}}) session down",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    }
+]
