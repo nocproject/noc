@@ -47,6 +47,18 @@ class Menu(object):
     ##
     def add_item(self,title,full_url,access):
         self.items+=[(title,full_url,access)]
+
+
+class DynamicMenu(object):
+    title = "DYNAMIC MENU"
+
+    @property
+    def items(self):
+        """
+        Generator yielding (title, url, access)
+        """
+        raise StopIteration
+
 ##
 ## ProxyNone
 ##
@@ -204,17 +216,28 @@ class Site(object):
         for view in app.get_views():
             if hasattr(view,"url"):
                 self.register_view(app,view)
+
     ##
     ## Auto-load all application classes
     ##
     def autodiscover(self):
         for app in [a for a in INSTALLED_APPS if a.startswith("noc.")]:
             n,m=app.split(".")
+            # Install application menues
             for f in glob.glob("%s/apps/*/views.py"%m):
                 d, _ = os.path.split(f)
                 if os.path.isfile(os.path.join(d, "DISABLED")):
                     continue
                 __import__(".".join(["noc"]+f[:-3].split(os.path.sep)),{},{},"*")
+            # Try to install dynamic menus
+            menu = None
+            try:
+                menu = __import__(app + ".menu", {}, {}, "DYNAMIC_MENUS")
+            except ImportError:
+                pass
+            if menu:
+                self.app_menu[m].submenus += menu.DYNAMIC_MENUS
+
     ##
     ## Return application instance
     ##
