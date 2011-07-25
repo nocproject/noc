@@ -12,11 +12,14 @@ function show_result(data) {
         });
     }
     
+    var n = 0;
     var tb=$("#events_table TBODY");
     tb.empty();
     $.each(data["events"],function(i,r){
         var $tr=$(document.createElement("tr"));
-        $tr.addClass(r[0]);
+        var rc = "row" + ((n % 2) + 1);
+        console.log(rc);
+        $tr.addClass(rc);
         tb.append($tr);
         if (r.length == 4) {
             // Checkpoint <id, user, timestamp, comment>
@@ -35,6 +38,7 @@ function show_result(data) {
                             {N:"New",A:"Active",S:"Archived",F:"Failed"}[r[3]],
                             r[4], r[5]]);
         }
+        n += 1;
     });
     // Set up pager
     $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
