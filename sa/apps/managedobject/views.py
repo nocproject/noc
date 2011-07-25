@@ -26,6 +26,7 @@ from noc.settings import config
 from noc.lib.fileutils import in_dir
 from noc.lib.widgets import PasswordWidget
 from noc.lib.ip import IP
+from noc.fm.models import get_object_status, ActiveAlarm, AlarmSeverity
 ##
 ## Validating form for managed object
 ##
@@ -97,6 +98,13 @@ profile.allow_tags = True
 ##
 def object_status(o):
     s = []
+    status = get_object_status(o)
+    if status is None:
+        s += ["? "]
+    elif status:
+        s += ["<img src='/media/img/admin/icon-yes.gif' title='Up' />"]
+    else:
+        s += ["<img src='/media/img/admin/icon-no.gif' title='Down' />"]
     if o.is_managed:
         try:
             o.profile
@@ -112,6 +120,16 @@ def object_status(o):
     return " ".join(s)
 object_status.short_description = u"Status"
 object_status.allow_tags = True
+
+
+def alarms(o):
+    n = ActiveAlarm.objects.filter(managed_object=o.id).count()
+    if n:
+        return "<a href='%d/alarms/'>%d</a>" % (o.id, n)
+    else:
+        return "0"
+alarms.short_description = u"Alarms"
+alarms.allow_tags = True
 
 ##
 ## Administrative domain/activator
@@ -192,7 +210,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("tags",)
         }),
     )
-    list_display = ["name", object_status, profile, "address",
+    list_display = ["name", object_status, alarms, profile, "address",
                     domain_activator,
                     "description", "repo_path", action_links]
     list_filter = ["is_managed", "is_configuration_managed", 
@@ -441,6 +459,17 @@ class ManagedObjectApplication(ModelApplication):
         o = self.get_object_or_404(ManagedObject, id=int(object_id))
         return self.render(request, "attributes.html",
            attributes=o.managedobjectattribute_set.order_by("key"), object=o)
+
+    @view(url=r"(?P<object_id>\d+)/alarms/", url_name="active_alarms",
+          access=HasPerm("change"))
+    def view_alarms(self, request, object_id):
+        o = self.get_object_or_404(ManagedObject, id=int(object_id))
+        u_lang = request.session["django_language"]
+        alarms = [(a, AlarmSeverity.get_severity(a.severity), a.get_translated_subject(u_lang))
+            for a in
+            ActiveAlarm.objects.filter(managed_object=o.id).order_by("-severity,timestamp")]
+        return self.render(request, "alarms.html",
+                           object=o, alarms=alarms)
     
     ##
     def user_access_list(self, user):
