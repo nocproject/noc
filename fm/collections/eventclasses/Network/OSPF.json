@@ -5,8 +5,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "OSPF area {{area}} neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
-                "body_template": "OSPF area {{area}} neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
+                "subject_template": "OSPF {% if area %}area {{area}} {% endif %}neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
+                "body_template": "OSPF {% if area %}area {{area}} {% endif %}neighbor {{neighbor}} state changed {{from_state}} -> {{to_state}}. Reason: {{reason}}",
                 "symptoms": "Routing table changes",
                 "probable_causes": "An OSPF adjacency was established with the indicated neighboring router. The local router can now exchange information with it.",
                 "recommended_actions": "No specific actions needed"
@@ -17,7 +17,7 @@
                 "name": "area",
                 "description": "OSPF area",
                 "type": "str",
-                "required": true
+                "required": false
             },
             
             {
@@ -71,8 +71,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "OSPF lost area {{area}} adjacency to {{neighbor}}. Reason: {{reason}}",
-                "body_template": "OSPF lost area {{area}} adjacency to {{neighbor}}\nReason: {{reason}}\nTransiting from {{from_state}} to {{to_state}} state",
+                "subject_template": "OSPF lost {% if area %}area {{area}} {% endif %}adjacency to {{neighbor}}. Reason: {{reason}}",
+                "body_template": "OSPF lost {% area %}area {{area}} {% endif %}adjacency to {{neighbor}}\nReason: {{reason}}\nTransiting from {{from_state}} to {{to_state}} state",
                 "symptoms": "Routing table changes and possible lost of connectivity",
                 "probable_causes": "Link failure or protocol misconfiguration",
                 "recommended_actions": "Check links and local and neighbor router configuration"
@@ -83,7 +83,7 @@
                 "name": "area",
                 "description": "OSPF area",
                 "type": "str",
-                "required": true
+                "required": false
             },
             
             {
