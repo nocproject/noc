@@ -42,7 +42,7 @@
     },
     
     {
-        "name": "Cisco | IOS | Config | Config Synced (SYSLOG)",
+        "name": "Cisco | IOS | Config | Config Synced #1 (SYSLOG)",
         "description": "%C4K_REDUNDANCY-5-CONFIGSYNC: The startup-config has been successfully synchronized to the standby supervisor",
         "event_class__name": "Config | Config Synced",
         "preference": 1000,
@@ -58,6 +58,27 @@
             {
                 "key_re": "^message$",
                 "value_re": "%C4K_REDUNDANCY-5-CONFIGSYNC: The startup-config has been successfully synchronized to the standby supervisor"
+            }
+        ]
+    },
+    
+    {
+        "name": "Cisco | IOS | Config | Config Synced #2 (SYSLOG)",
+        "description": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the startup configuration to the standby Router.",
+        "event_class__name": "Config | Config Synced",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the startup configuration to the standby Router."
             }
         ]
     }
