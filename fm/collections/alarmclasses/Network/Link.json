@@ -20,6 +20,17 @@
                 "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
                 "recommended_actions": "Check configuration, both sides of links and hardware"
             }
-        }
+        },
+        "root_cause": [
+            {
+                "name": "LBD Loop",
+                "root__name": "Network | LBD | Loop Detected",
+                "window": 10,
+                "condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__interface": "alarm.vars['interface']"
+                }
+            }
+        ]
     }
 ]
