@@ -23,7 +23,7 @@ connect(noc.settings.NOSQL_DATABASE_NAME,
         noc.settings.NOSQL_DATABASE_PASSWORD)
 ## Shortcut to ObjectId
 ObjectId = pymongo.objectid.ObjectId
-
+RECURSIVE_REFERENCE_CONSTANT = "self"
 
 class PlainReferenceField(BaseField):
     """
