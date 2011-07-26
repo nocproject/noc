@@ -190,6 +190,19 @@ class Profile(object):
             raise InterfaceTypeError("Invalid interface '%s'" % s)
         return "%s %s" % (match.group("type").capitalize(),
                           match.group("number"))
+
+    def root_interface(self, name):
+        """
+        Returns root interface
+        >>> Profile().root_interface("Gi 0/1")
+        'Gi 0/1'
+        >>> Profile().root_interface("Gi 0/1.15")
+        'Gi 0/1'
+        """
+        name = name.split(".")[0]
+        name = name.split(":")[0]
+        return name
+
     #
     # Configuration generators
     #
