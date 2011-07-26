@@ -1,0 +1,86 @@
+[
+    {
+        "name": "DLink | DxS | Security | Attack | Blat Attack (SYSLOG)",
+        "description": "CRIT: Blat Attack is detected from (IP: 193.239.74.146 Port: 23)",
+        "event_class__name": "Security | Attack | Blat Attack",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(CRIT:|CRIT\\(2\\)) Blat Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+            }
+        ]
+    },
+    
+    {
+        "name": "DLink | DxS | Security | Attack | Land Attack (SYSLOG)",
+        "description": "CRIT: Land Attack is detected from (IP: 255.255.255.255 Port: 8)",
+        "event_class__name": "Security | Attack | Land Attack",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(CRIT:|CRIT\\(2\\)) Land Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+            }
+        ]
+    },
+    
+    {
+        "name": "DLink | DxS | Security | Attack | Smurf Attack (SYSLOG)",
+        "description": "CRIT: Smurf Attack is detected from (IP: 172.16.1.235 Port: 14)",
+        "event_class__name": "Security | Attack | Smurf Attack",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(CRIT:|CRIT\\(2\\)) Smurf Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+            }
+        ]
+    },
+    
+    {
+        "name": "DLink | DxS | Security | Attack | TCP SYNFIN Scan (SYSLOG)",
+        "description": "CRIT: TCP SYNFIN is detected from (IP: 95.84.197.193 Port: 24)",
+        "event_class__name": "Security | Attack | TCP SYNFIN Scan",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(CRIT:|CRIT\\(2\\)) TCP SYNFIN is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+            }
+        ]
+    }
+
+]

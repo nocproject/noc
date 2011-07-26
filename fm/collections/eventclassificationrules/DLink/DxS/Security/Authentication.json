@@ -1,7 +1,7 @@
 [
     {
         "name": "DLink | DxS | Security | Authentication | SNMP Authentication Failure (SYSLOG)",
-        "description": "SNMP request received from 172.16.2.2 with invalid community string!",
+        "description": "INFO: SNMP request received from 172.16.2.2 with invalid community string!",
         "event_class__name": "Security | Authentication | SNMP Authentication Failure",
         "preference": 1000,
         "patterns": [
@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "SNMP request received from (?P<ip>\\S+) with invalid community string"
+                "value_re": "(INFO:|INFO\\(6\\)) SNMP request received from (?P<ip>\\S+) with invalid community string"
             }
         ]
     },
@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Logout through (Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)"
+                "value_re": "(INFO:|INFO\\(6\\)) Logout through (Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)$"
             }
         ]
     },
@@ -78,7 +78,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) (Web|Telnet|SSH) session timed out \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)"
+                "value_re": "(INFO:|INFO\\(6\\)) (Web|Telnet|SSH) session timed out \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)$"
             }
         ]
     }
