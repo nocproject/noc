@@ -1,0 +1,85 @@
+[
+    {
+        "name": "DLink | DxS | Network | Storm Control | Broadcast Storm Detected (SYSLOG)",
+        "description": "WARN(4) Port 22 Broadcast storm is occurring",
+        "event_class__name": "Network | Storm Control | Broadcast Storm Detected",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(WARN:|WARN\\(4\\)) Port (?P<interface>.+) Broadcast storm is occurring$"
+            }
+        ]
+    },
+    
+    {
+        "name": "DLink | DxS | Network | Storm Control | Broadcast Storm Cleared (SYSLOG)",
+        "description": "INFO(6) Port 22 Broadcast storm has cleared",
+        "event_class__name": "Network | Storm Control | Broadcast Storm Cleared",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(INFO:|INFO\\(6\\)) Port (?P<interface>.+) Broadcast storm has cleared$"
+            }
+        ]
+    },
+    
+    {
+        "name": "DLink | DxS | Network | Storm Control | Multicast Storm Detected (SYSLOG)",
+        "description": "WARN(4) Port 9 Multicast storm is occurring",
+        "event_class__name": "Network | Storm Control | Multicast Storm Detected",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(WARN:|WARN\\(4\\)) Port (?P<interface>.+) Multicast storm is occurring$"
+            }
+        ]
+    },
+    
+    {
+        "name": "DLink | DxS | Network | Storm Control | Multicast Storm Cleared (SYSLOG)",
+        "description": "INFO(6) Port 9 Multicast storm has cleared",
+        "event_class__name": "Network | Storm Control | Multicast Storm Cleared",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(INFO:|INFO\\(6\\)) Port (?P<interface>.+) Multicast storm has cleared$"
+            }
+        ]
+    }
+]
