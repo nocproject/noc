@@ -21,6 +21,7 @@ from noc.fm.models import EventDispositionQueue, ActiveEvent, EventClass,\
 from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
+from noc.lib.nosql import ObjectId
 
 
 class Trigger(object):
@@ -55,6 +56,33 @@ class Trigger(object):
         # Call pyRule
         if self.pyrule:
             self.pyrule(alarm=alarm)
+
+
+class RCACondition(object):
+    def __init__(self, alarm_class, condition):
+        self.name = "%s::%s" % (alarm_class.name, condition.name)
+        self.window = condition.window
+        self.root = condition.root
+        self.same_object = False
+        # Build condition expression
+        x = [
+            "'alarm_class': ObjectId('%s')" % self.root.id,
+            "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
+            "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
+        ]
+        for k, v in condition.condition.items():
+            if k == "managed_object" and v == "alarm.managed_object":
+                self.same_object = True
+            x += ["'%s': %s" % (k, v)]
+        self.condition = compile("{%s}" % ", ".join(x), "<string>", "eval")
+    
+    def __unicode__(self):
+        return self.name
+
+    def get_condition(self, alarm):
+        return eval(self.condition, {}, {"alarm": alarm,
+                                         "datetime": datetime,
+                                         "ObjectId": ObjectId})
 
 
 class Rule(object):
@@ -117,6 +145,8 @@ class Correlator(Daemon):
         self.rules = {}  # event_class -> [Rule]
         self.back_rules = {}  # event_class -> [Rule]
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
+        self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
+        self.rca_reverse = {}  # alarm_class -> set([alarm_class])
         Daemon.__init__(self)
         logging.info("Running noc-correlator")
         # Tables
@@ -129,6 +159,7 @@ class Correlator(Daemon):
         super(Correlator, self).load_config()
         self.load_rules()
         self.load_triggers()
+        self.load_rca_rules()
 
     def load_rules(self):
         """
@@ -175,6 +206,28 @@ class Correlator(Daemon):
             n += 1
         logging.info("%d triggers has been loaded to %d classes" % (n, cn))
 
+    def load_rca_rules(self):
+        """
+        Load root cause analisys rules
+        """
+        logging.debug("Loading RCA Rules")
+        n = 0
+        self.rca_forward = {}
+        self.rca_reverse = {}
+        for a in AlarmClass.objects.all():
+            if not a.root_cause:
+                continue
+            self.rca_forward[a.id] = []
+            for c in a.root_cause:
+                rc = RCACondition(a, c)
+                self.rca_forward[a.id] += [rc]
+                try:
+                    self.rca_reverse[rc.root.id].add(a.id)
+                except KeyError:
+                    self.rca_reverse[rc.root.id] = set([a.id])
+                n += 1
+        logging.debug("%d RCA Rules has been loaded" % n)
+
     def mark_as_failed(self, event):
         """
         Write error log and mark event as failed
@@ -197,6 +250,23 @@ class Correlator(Daemon):
             e = ActiveEvent.objects.filter(id=de.event_id).first()
             de.delete()
             yield e
+
+    def set_root_cause(self, a, root=None):
+        """
+        Search for root cause and set, if found
+        :returns: Boolean. True, if root cause set
+        """
+        for rc in self.rca_forward[a.alarm_class.id]:
+            q = rc.get_condition(a)
+            if root:
+                q["id"]=root.id
+            root = ActiveAlarm.objects.filter(**q).first()
+            if root:
+                # Root cause found
+                logging.debug("%s is root cause for %s (Rule: %s)" % (root.id, a.id, rc.name))
+                a.set_root(root)
+                return True
+        return False
 
     def raise_alarm(self, r, e):
         discriminator, vars = r.get_vars(e)
@@ -233,6 +303,15 @@ class Correlator(Daemon):
         logging.debug("%s: Event %s(%s) raises alarm %s(%s)" % (
             r.u_name, str(e.id), e.event_class.name,
             str(a.id), r.alarm_class.name))
+        # RCA
+        if a.alarm_class.id in self.rca_forward:
+            # Check alarm is a consequence of existing one
+            self.set_root_cause(a)
+        # Check alarm is root cause for existing ones
+        if a.alarm_class.id in self.rca_reverse:
+            # @todo: Restrict to window
+            for aa in ActiveAlarm.objects.filter(alarm_class__in=self.rca_reverse):
+                self.set_root_cause(aa, a)                
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
