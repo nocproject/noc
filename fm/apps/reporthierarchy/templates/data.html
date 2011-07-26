@@ -77,15 +77,16 @@ UL.rules, UL.rules LI {
             <th>Name</th>
             <th>Description</th>
             <th>Unique</th>
-            <th>Discriminator</th>
+            <th>Discr.</th>
             <th>User clearable</th>
             <th>Vars</th>
             <th>Default severity</th>
+            <th>Root Cause</th>
         </tr>
     </thead>
 {% for level, a in alarm_classes %}
     {% if level != -1 %}
-    <tr class="category"><td colspan="7">{{a}}</td></tr>
+    <tr class="category"><td colspan="8">{{a}}</td></tr>
     {% else %}
     <tr>
         <td>{{a.name}}</td>
@@ -99,6 +100,16 @@ UL.rules, UL.rules LI {
             {% endfor %}
         </td>
         <td>{{a.default_severity}}</td>
+        <td>
+            {% for rc in a.root_cause %}
+                <b>{{rc.name}}:</b><br/>
+                Root: {{rc.root.name}}<br/>
+                Window: {{rc.window}}<br/>
+                {% for k, v in rc.condition.items %}
+                    {{k}}&nbsp;==&nbsp;{{v}}<br/>
+                {% endfor %}
+            {% endfor %}
+        </td>
     </tr>
     {% endif %}
 {% endfor %}
