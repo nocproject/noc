@@ -341,6 +341,24 @@ class AlarmClassVar(nosql.EmbeddedDocument):
         return self.name == other.name and self.description == other.description
 
 
+class AlarmRootCauseCondition(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    
+    name = nosql.StringField(required=True)
+    root = nosql.PlainReferenceField("AlarmClass")
+    window = nosql.IntField(required=True)
+    condition = nosql.DictField(required=True)
+    
+    def __unicode__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return (self.name == other.name and self.root.id == other.root.id and
+                self.window == other.window and self.condition == other.condition)
+
+
 class AlarmClassCategory(nosql.Document):
     meta = {
         "collection": "noc.alartmclasscategories",
@@ -404,7 +422,8 @@ class AlarmClass(nosql.Document):
                                        default=None)
     flap_window = nosql.IntField(required=False, default=0)
     flap_threshold = nosql.FloatField(required=False, default=0)
-    #
+    # RCA
+    root_cause = nosql.ListField(nosql.EmbeddedDocumentField(AlarmRootCauseCondition))
 
     category = nosql.ObjectIdField()
 
