@@ -1,0 +1,52 @@
+[
+    {
+        "name": "Network | MAC | MAC Flap",
+        "description": "MAC Flap detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "MAC Flap detected on {{vlan}}: {{from_interface}} -> {{to_interface}}",
+                "body_template": "MAC Flap detected on {{vlan}}: {{from_interface}} -> {{to_interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "mac",
+                "description": "MAC Address",
+                "type": "mac",
+                "required": true
+            },
+            
+            {
+                "name": "vlan",
+                "description": "VLAN",
+                "type": "int",
+                "required": true
+            },
+            
+            {
+                "name": "from_interface",
+                "description": "From interface",
+                "type": "interface_name",
+                "required": true
+            },
+
+            {
+                "name": "to_interface",
+                "description": "To interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | MAC | MAC Flap"
+            }
+        ]
+    }
+]
