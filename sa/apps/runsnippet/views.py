@@ -11,6 +11,7 @@ from django import forms
 ## NOC modules
 from noc.lib.app import Application, HasPerm, view, NOCForm
 from noc.sa.models import CommandSnippet, ReduceTask, ManagedObject
+from noc.main.models import Permission
 
 
 def reduce_task(task, snippet):
