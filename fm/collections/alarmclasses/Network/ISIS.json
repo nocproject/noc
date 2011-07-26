@@ -43,6 +43,17 @@
                 "probable_causes": "Link failure or protocol misconfiguration",
                 "recommended_actions": "Check links and local and neighbor router configuration"
             }
-        }
+        },
+        "root_cause": [
+            {
+                "name": "Link Down",
+                "root__name": "Network | Link | Link Down",
+                "window": 10,
+                "condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__interface": "alarm.managed_object.profile.root_interface(alarm.vars['interface'])"
+                }
+            }
+        ]
     }
 ]
