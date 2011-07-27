@@ -14,7 +14,7 @@ cd $PREFIX
 ##
 sed_script=`mktemp tmp.XXXXXX`
 rm $sed_script
-for cmd in ssh rsync pg_dump tar gzip smidump smilint fping dig gpg; do
+for cmd in ssh rsync pg_dump tar gzip smidump smilint fping dig gpg mongodump; do
     echo 's@^\\($cmd *\\)=.*\$@\\1 = '`which $cmd`'@' >> $sed_script
 done
 
