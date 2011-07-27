@@ -59,7 +59,9 @@ class Task(noc.lib.periodic.Task):
         """
         Cleanup empty categories
         """
-        from noc.fm.models import *
+        from noc.fm.models import AlarmClass, AlarmClassCategory,\
+            EventClass, EventClassCategory, EventClassificationRule,\
+            EventClassificationRuleCategory
         
         self.info("Cleaning empty categories")
         for cls, cat_cls in [(AlarmClass, AlarmClassCategory),
