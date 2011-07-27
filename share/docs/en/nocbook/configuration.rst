@@ -392,6 +392,12 @@ pg_dump
 ^^^^^^^
 A path to the PostgreSQL *pg_dump* utility. Ensure proper version of *pg_dump* used (PostgreSQL 8.1 or later)
 
+.. _noc-conf-path-mongodump:
+
+mongodump
+^^^^^^^^^
+A path to the MongoDB's *mongodump* utility.
+
 .. _noc-conf-path-smilint:
 
 smilint

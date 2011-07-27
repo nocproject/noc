@@ -194,6 +194,7 @@ smidump    = /usr/bin/smidump
 smilint    = /usr/bin/smilint
 dig        = /usr/bin/dig
 gpg        = /usr/bin/gpg
+mongodump  = /usr/bin/mongodump
 #
 # Backup parameters
 #
