@@ -147,6 +147,27 @@
     },
     
     {
+        "name": "DLink | DxS | Security | Authentication | Login #4 (SYSLOG)",
+        "description": "%AAA-I-CONNECT: New http connection for user admin, source 10.1.4.19 destination 10.8.25.150 ACCEPTED",
+        "event_class__name": "Security | Authentication | Login",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%AAA-I-CONNECT: New http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination 10.8.25.150 ACCEPTED"
+            }
+        ]
+    },
+    
+    {
         "name": "DLink | DxS | Security | Authentication | Login #2 (SYSLOG)",
         "description": "INFO: Successful login through Console (Username: noc)",
         "event_class__name": "Security | Authentication | Login",
