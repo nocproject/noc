@@ -2,45 +2,61 @@
 ##----------------------------------------------------------------------
 ## Obsolete data cleanup and system maintainance
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
+## Python modules
+import logging
+import os
+import subprocess
+import datetime
+## NOC modules
 import noc.lib.periodic
 from noc.settings import config
-import os,subprocess,datetime
-import logging
-from tagging.models import TaggedItem
+
 
 class Task(noc.lib.periodic.Task):
-    name="main.cleanup"
-    description="Obsolete data cleanup and system maintainance"
-    
-    def execute(self):
-        from django.db import connection
-        cursor=connection.cursor()
-        # Delete expired sessions
-        cursor.execute("DELETE FROM django_session WHERE expire_date<'now'")
-        cursor.execute("COMMIT")
-        # Find and delete hangling tags
+    name = "main.cleanup"
+    description = "Obsolete data cleanup and system maintainance"
+
+    def cleanup_expired_sessions(self):
+        """
+        Delete expired sessions
+        """
+        from django.contrib.sessions.models import Session
+
+        self.info("Cleaning expired sessions")
+        Session.objects.filter(expire_date__lt=datetime.datetime.now()).delete()
+        self.info("Expired sessions are cleaned")
+
+    def cleanup_hanging_tags(self):
+        """
+        Remove hanging tag references
+        """
+        from tagging.models import TaggedItem
+
+        self.info("Cleaning hanging tags")
         for i in TaggedItem.objects.all():
             if i.object is None:
-                logging.info("Delete hanging tag reference: %s"%str(i))
+                logging.info("Delete hanging tag reference: %s" % str(i))
                 i.delete()
-        cursor.execute("COMMIT")
-        # Delete forgotten map/reduce tasks
-        cursor.execute("""
-            DELETE FROM sa_maptask
-            WHERE task_id IN (
-                SELECT id
-                FROM sa_reducetask
-                WHERE stop_time < ('now'::timestamp - '1day'::interval)
-            )
-        """)
-        cursor.execute("""
-            DELETE FROM sa_reducetask
-            WHERE stop_time < ('now'::timestamp - '1day'::interval)
-        """)
-        cursor.execute("COMMIT")
+        self.info("Hanging tags are cleaned")
+
+    def cleanup_mrt(self):
+        """
+        Remove old map/reduce tasks
+        """
+        from noc.sa.models import ReduceTask
+
+        self.info("Cleanup map/reduce tasks")
+        watermark = datetime.datetime.now() - datetime.timedelta(days=1)
+        for t in ReduceTask.objects.filter(stop_time__lt=watermark):
+            t.delete()
+        self.info("Map/Reduce tasks are cleaned")
+
+    def execute(self):
+        self.cleanup_expired_sessions()
+        self.cleanup_hanging_tags()
+        self.cleanup_mrt()
         return True
