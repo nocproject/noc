@@ -55,8 +55,32 @@ class Task(noc.lib.periodic.Task):
             t.delete()
         self.info("Map/Reduce tasks are cleaned")
 
+    def cleanup_empty_categories(self):
+        """
+        Cleanup empty categories
+        """
+        from noc.fm.models import *
+        
+        self.info("Cleaning empty categories")
+        for cls, cat_cls in [(AlarmClass, AlarmClassCategory),
+                             (EventClass, EventClassCategory),
+                             (EventClassificationRule,
+                              EventClassificationRuleCategory)]:
+            
+            for cat in cat_cls.objects.all().order_by("-name"):
+                if cls.objects.filter(category=cat.id).count():
+                    # There are child items
+                    continue
+                if cat_cls.objects.filter(parent=cat.id).count():
+                    # There are
+                    continue
+                logging.info("Cleaning %s category: %s" % (cls, cat))
+                cat.delete()
+        self.info("Empty categories are cleaned")
+
     def execute(self):
         self.cleanup_expired_sessions()
         self.cleanup_hanging_tags()
         self.cleanup_mrt()
+        self.cleanup_empty_categories()
         return True
