@@ -234,7 +234,7 @@ class Site(object):
             try:
                 menu = __import__(app + ".menu", {}, {}, "DYNAMIC_MENUS")
             except ImportError:
-                pass
+                continue
             if menu:
                 self.app_menu[m].submenus += menu.DYNAMIC_MENUS
 
