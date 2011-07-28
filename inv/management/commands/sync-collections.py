@@ -41,6 +41,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             self._handle(*args, **options)
+        except CommandError, why:
+            raise CommandError(why)
         except:
             error_report()
 
@@ -54,8 +56,9 @@ class Command(BaseCommand):
             if key in ref_cache[doc][field]:
                 return ref_cache[doc][field][key]
             else:
-                v = ref.objects.get(**{field: key})
-                if not v:
+                try:
+                    v = ref.objects.get(**{field: key})
+                except ref.DoesNotExist:
                     raise CommandError("%s: lookup for %s.%s == '%s' has been failed" % (
                         collection, doc._meta["collection"], field, key))
                 ref_cache[doc][field][key] = v
