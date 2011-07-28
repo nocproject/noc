@@ -311,7 +311,8 @@ class Correlator(Daemon):
         if a.alarm_class.id in self.rca_reverse:
             # @todo: Restrict to window
             for aa in ActiveAlarm.objects.filter(alarm_class__in=self.rca_reverse):
-                self.set_root_cause(aa, a)                
+                if aa.alarm_class.id in self.rca_forward:
+                    self.set_root_cause(aa, a)
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
