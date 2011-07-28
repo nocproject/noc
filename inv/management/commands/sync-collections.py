@@ -153,7 +153,17 @@ class Command(BaseCommand):
                                                 vv = dd.pop(ii)
                                                 ii, f = ii.split("__")
                                                 ref = edoc._fields[ii].document_type
-                                                dd[ii] = lookup(ref, f, vv)
+                                                if doc == ref:
+                                                    # Circular reference
+                                                    # Can be unresolved
+                                                    # for this moment
+                                                    try:
+                                                        dd[ii] = lookup(ref, f, vv)
+                                                    except CommandError:
+                                                        # Try to skip and resolve later
+                                                        continue
+                                                else:
+                                                    dd[ii] = lookup(ref, f, vv)
                                         dd = dict([(str(x), y) for x, y in dd.items()])
                                         v += [edoc(**dd)]
                                     if getattr(obj, i) != v:
