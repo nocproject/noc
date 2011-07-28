@@ -24,7 +24,7 @@ class CheckpointAppplication(Application):
     
     class FullCheckpointForm(NOCForm):
         comment = forms.CharField(label=_("Comment"))
-        is_private = forms.BooleanField(label=_("Private"))
+        is_private = forms.BooleanField(label=_("Private"), required=False)
 
     @view(url="^create/$", url_name="create", access=HasPerm("create"))
     def view_create(self, request):
