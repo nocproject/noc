@@ -355,7 +355,9 @@ class AlarmRootCauseCondition(nosql.EmbeddedDocument):
         return self.name
 
     def __eq__(self, other):
-        return (self.name == other.name and self.root.id == other.root.id and
+        return (self.name == other.name and
+                ((self.root is None and other.root is None) or
+                    (self.root and other.root and self.root.id == other.root.id)) and
                 self.window == other.window and self.condition == other.condition)
 
 
