@@ -468,6 +468,8 @@ class AlarmClass(nosql.Document):
     flap_threshold = nosql.FloatField(required=False, default=0)
     # RCA
     root_cause = nosql.ListField(nosql.EmbeddedDocumentField(AlarmRootCauseCondition))
+    #
+    enrichment_pyrule = nosql.ForeignKeyField(PyRule, required=False)
 
     category = nosql.ObjectIdField()
 
@@ -1084,6 +1086,7 @@ class ActiveAlarm(nosql.Document):
     alarm_class = nosql.PlainReferenceField(AlarmClass)
     severity = nosql.IntField(required=True)
     vars = nosql.DictField()
+    data = nosql.DictField(default={})  # Enriched variables
     # Calculated alarm discriminator
     # Has meaning only for alarms with is_unique flag set
     # Calculated as sha1("value1\x00....\x00valueN").hexdigest()
@@ -1152,6 +1155,7 @@ class ActiveAlarm(nosql.Document):
                           alarm_class=self.alarm_class,
                           severity=self.severity,
                           vars=self.vars,
+                          data=self.data,
                           events=self.events,
                           log=log,
                           root=self.root
@@ -1165,7 +1169,7 @@ class ActiveAlarm(nosql.Document):
         Prepare template variables
         """
         vars = self.vars.copy()
-        vars.update({"event": self})
+        vars.update({"alarm": self})
         return vars
 
     def get_translated_subject(self, lang):
@@ -1277,6 +1281,7 @@ class ArchivedAlarm(nosql.Document):
     alarm_class = nosql.PlainReferenceField(AlarmClass)
     severity = nosql.IntField(required=True)
     vars = nosql.DictField()
+    data = nosql.DictField(default={})  # Enriched variables
     events = nosql.ListField(nosql.ObjectIdField())
     log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
     # RCA
