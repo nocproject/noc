@@ -18,12 +18,12 @@
                 "name": "as",
                 "description": "BGP Peer AS",
                 "type": "int",
-                "required": true
+                "required": false
             }
         ],
         "text": {
             "en": {
-                "subject_template": "BGP Peer {{peer}}(AS{{as}}) session down",
+                "subject_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}){% endif %} session down",
                 "body_template": "BGP Peer {{peer}}(AS{{as}}) session down",
                 "symptoms": "",
                 "probable_causes": "",
@@ -51,12 +51,12 @@
                 "name": "as",
                 "description": "BGP Peer AS",
                 "type": "int",
-                "required": true
+                "required": false
             }
         ],
         "text": {
             "en": {
-                "subject_template": "BGP Peer {{peer}}(AS{{as}}) prefix limit exceeded",
+                "subject_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}){% endif %} prefix limit exceeded",
                 "body_template": "BGP Peer {{peer}}(AS{{as}}) prefix limit exceeded",
                 "symptoms": "",
                 "probable_causes": "",
