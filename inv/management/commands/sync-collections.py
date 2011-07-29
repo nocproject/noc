@@ -113,7 +113,10 @@ class CollectionSync(object):
                     setattr(obj, i, v)
                 continue
             # Process fields
-            field = self.doc._fields[i]
+            try:
+                field = self.doc._fields[i]
+            except KeyError:
+                self.die("Unknown field: '%s'" % i)
             if (type(field) == ListField and
                 isinstance(field.field, EmbeddedDocumentField)):
                 # ListField(EmbeddedDocumentField(...))
@@ -201,6 +204,7 @@ class Command(BaseCommand):
         ]),
         ("fm", [
             # Fault management
+            ("oidaliases", OIDAlias),
             ("alarmseverities", AlarmSeverity),
             ("alarmclasses", AlarmClass),
             ("eventclasses", EventClass),

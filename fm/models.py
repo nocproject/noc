@@ -80,6 +80,46 @@ def rulename_quote(s):
 ##
 ## MIB Processing
 ##
+class OIDAlias(nosql.Document):
+    meta = {
+        "collection": "noc.oidaliases",
+        "allow_inheritance": False
+    }
+    
+    rewrite_oid = nosql.StringField(unique=True)
+    to_oid = nosql.StringField()
+    is_builtin = nosql.BooleanField(default=False)
+    
+    ## Lookup cache
+    cache = None
+    
+    def __unicode__(self):
+        return u"%s -> %s" % (self.rewrite_oid, self.to_oid)
+
+    @classmethod
+    def rewrite(cls, oid):
+        """
+        Rewrite OID with alias if any
+        """
+        if cls.cache is None:
+            # Initialize cache
+            cls.cache = dict([(a.rewrite_oid, a.to_oid)
+                for a in cls.objects.all()])
+        # Lookup
+        l_oid = oid.split(".")
+        rest = []
+        while l_oid:
+            c_oid = ".".join(l_oid)
+            try:
+                a_oid = cls.cache[c_oid]
+                # Found
+                return ".".join([a_oid, ".".join(rest)])
+            except KeyError:
+                rest += [l_oid.pop()]
+        # Not found
+        return oid
+
+
 class MIB(nosql.Document):
     meta = {
         "collection": "noc.mibs",
@@ -245,6 +285,7 @@ class MIB(nosql.Document):
         """
         Get longest match name by OID
         """
+        oid = OIDAlias.rewrite(oid)
         l_oid = oid.split(".")
         rest = []
         while l_oid:
@@ -264,6 +305,7 @@ class MIB(nosql.Document):
         """
         :return: (name, syntax)
         """
+        oid = OIDAlias.rewrite(oid)
         l_oid = oid.split(".")
         rest = []
         while l_oid:
