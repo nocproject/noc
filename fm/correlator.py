@@ -299,10 +299,14 @@ class Correlator(Daemon):
                                         r.u_name
                                         ))
                             ])
+        # Enrich alarm if necessary
+        if r.alarm_class.enrichment_pyrule:
+            a.data = r.alarm_class.enrichment_pyrule(alarm=a)
         a.save()
         logging.debug("%s: Event %s(%s) raises alarm %s(%s)" % (
             r.u_name, str(e.id), e.event_class.name,
             str(a.id), r.alarm_class.name))
+        # Enrich alarm if necessary
         # RCA
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one
