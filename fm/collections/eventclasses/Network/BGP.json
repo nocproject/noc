@@ -182,7 +182,7 @@
             {
                 "name": "state",
                 "description": "Transition from state",
-                "type": "int",
+                "type": "str",
                 "required": false
             }
         ],
