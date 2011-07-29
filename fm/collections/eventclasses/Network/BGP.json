@@ -157,8 +157,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "BGP Backward transition {{peer}}{% if as %}(AS{{as}}){% endif %}{% if state %}{{state}}{% endif %}",
-                "body_template": "BGP Backward transition {{peer}}{% if as %}(AS{{as}}){% endif %}{% if state %}{{state}}{% endif %}",
+                "subject_template": "BGP Backward transition {{peer}}{% if as %}(AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
+                "body_template": "BGP Backward transition {{peer}}{% if as %}(AS{{as}}){% endif %}{% if state %}: {{state}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
