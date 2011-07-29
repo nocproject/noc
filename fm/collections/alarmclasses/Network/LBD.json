@@ -20,7 +20,39 @@
                 "body_template": "LBD loop detected on {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
-                "recommended_actions": ""
+                "recommended_actions": "Check hardware link and topology"
+            }
+        }
+    },
+
+    {
+        "name": "Network | LBD | Vlan Loop Detected",
+        "description": "LBD Loop Detected on a specific vlan",
+        "is_unique": true,
+        "discriminator": ["interface", "vlan"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "Vlan",
+                "type": "int",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "LBD loop detected on {{interface}} vlan {{vlan}}",
+                "body_template": "LBD loop detected on {{interface}} vlan {{vlan}}",
+                "symptoms": "Lost traffic on specific vlan",
+                "probable_causes": "",
+                "recommended_actions": "Check topology or use STP to avoid loops"
             }
         }
     }
