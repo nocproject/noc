@@ -5,8 +5,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "BGP Peer {{peer}}(AS{{as}}) state changed: {{from_state}} -> {{to_state}}",
-                "body_template": "BGP Peer {{peer}}(AS{{as}}) state changed: {{from_state}} -> {{to_state}}",
+                "subject_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}){% endif %} state changed: {{from_state}} -> {{to_state}}",
+                "body_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}){% endif %} state changed: {{from_state}} -> {{to_state}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -24,7 +24,7 @@
                 "name": "as",
                 "description": "Peer AS",
                 "type": "int",
-                "required": true
+                "required": false
             },
             
             {
@@ -75,8 +75,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "BGP Peer {{peer}}(AS{{as}}) prefix limit exceeded",
-                "body_template": "BGP Peer {{peer}}(AS{{as}}) prefix limit exceeded",
+                "subject_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}){% endif %} prefix limit exceeded",
+                "body_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}){% endif %} prefix limit exceeded",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -94,7 +94,7 @@
                 "name": "as",
                 "description": "Peer AS",
                 "type": "int",
-                "required": true
+                "required": false
             }
         ],
         "disposition": [
@@ -102,6 +102,95 @@
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Network | BGP | Prefix Limit Exceeded"
+            }
+        ]
+    },
+    
+    {
+        "name": "Network | BGP | Established",
+        "description": "BGP Session Established",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "BGP Session established {{peer}}{% if as %}(AS{{as}}){% endif %}",
+                "body_template": "BGP Session established {{peer}}(AS{{as}})",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "peer",
+                "description": "Peer",
+                "type": "ip_address",
+                "required": true
+            },
+            
+            {
+                "name": "as",
+                "description": "Peer AS",
+                "type": "int",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | BGP | Peer Down",
+                "stop_disposition": false
+            },
+
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | BGP | Prefix Limit Exceeded",
+                "stop_disposition": false
+            }
+        ]
+    },
+
+    {
+        "name": "Network | BGP | Backward Transition",
+        "description": "BGP Backward Transition",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "BGP Backward transition {{peer}}{% if as %}(AS{{as}}){% endif %}{% if state %}{{state}}{% endif %}",
+                "body_template": "BGP Backward transition {{peer}}{% if as %}(AS{{as}}){% endif %}{% if state %}{{state}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "peer",
+                "description": "Peer",
+                "type": "ip_address",
+                "required": true
+            },
+            
+            {
+                "name": "as",
+                "description": "Peer AS",
+                "type": "int",
+                "required": false
+            },
+            
+            {
+                "name": "state",
+                "description": "Transition from state",
+                "type": "int",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | BGP | Peer Down"
             }
         ]
     }
