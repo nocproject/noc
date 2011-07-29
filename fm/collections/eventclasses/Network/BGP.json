@@ -152,6 +152,43 @@
     },
 
     {
+        "name": "Network | BGP | Peer Down",
+        "description": "BGP Session Established",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "BGP Session down {{peer}}{% if as %}(AS{{as}}){% endif %}",
+                "body_template": "BGP Session down {{peer}}(AS{{as}})",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "peer",
+                "description": "Peer",
+                "type": "ip_address",
+                "required": true
+            },
+            
+            {
+                "name": "as",
+                "description": "Peer AS",
+                "type": "int",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | BGP | Peer Down"
+            }
+        ]
+    },
+
+    {
         "name": "Network | BGP | Backward Transition",
         "description": "BGP Backward Transition",
         "action": "A",
