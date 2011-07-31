@@ -22,6 +22,7 @@ from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.nosql import ObjectId
+from noc.lib.datasource import datasource_registry
 
 
 class Trigger(object):
@@ -101,6 +102,9 @@ class Rule(object):
         self.stop_disposition = dr.stop_disposition
         self.var_mapping = {}
         self.discriminator = []
+        self.datasources = {}
+        self.c_defaults = {}
+        self.d_defaults = {}
         if self.alarm_class:
             self.severity = self.alarm_class.default_severity.severity
             self.unique = self.alarm_class.is_unique
@@ -115,6 +119,26 @@ class Rule(object):
             self.combo_window = dr.combo_window
             self.combo_event_classes = [c.id for c in dr.combo_event_classes]
             self.combo_count = dr.combo_count
+            # Default variables
+            for v in self.alarm_class.vars:
+                if v.default:
+                    if v.default.startswith("="):
+                        # Expression
+                        self.d_defaults[v.name] = compile(v.default[1:],
+                                                          "<string>", "eval")
+                    else:
+                        # Constant
+                        self.c_defaults[v.name] = v.default
+            # Compile datasource lookup functions
+            self.datasources = {}  # name -> ds class
+            for ds in self.alarm_class.datasources:
+                self.datasources[ds.name] = eval(
+                    "lambda vars: datasource_registry['%s'](%s)" % (
+                        ds.datasource,
+                        ", ".join(["%s=vars['%s']" % (k, v)
+                                   for k, v in ds.search.items()])),
+                    {"datasource_registry": datasource_registry}, {})
+            
 
     def get_vars(self, e):
         """
@@ -124,12 +148,21 @@ class Rule(object):
         :returns: tuple of (discriminator, vars)
         """
         if self.var_mapping:
-            vars = {}
+            vars = self.c_defaults.copy()
+            # Map vars
             for k, v in self.var_mapping.items():
                 try:
                     vars[v] = e.vars[k]
                 except KeyError:
                     pass
+            # Calculate dynamic defaults
+            context = dict([(k, v(vars)) for k, v in self.datasources.items()])
+            context.update(vars)
+            for k, v in self.d_defaults.items():
+                x = eval(v, {}, context)
+                if x:
+                    vars[k] = x
+            # Calculate discriminators
             ds = [vars[n] for n in self.discriminator]
             discriminator = hashlib.sha1("\x00".join(ds)).hexdigest()
             return discriminator, vars
@@ -287,7 +320,8 @@ class Correlator(Daemon):
         a = ActiveAlarm(timestamp=e.timestamp, last_update=e.timestamp,
                         managed_object=e.managed_object,
                         alarm_class=r.alarm_class,
-                        severity=r.severity, vars=vars,
+                        severity=r.severity,
+                        vars=vars,
                         discriminator=discriminator,
                         events=[e],
                         log=[
@@ -299,14 +333,10 @@ class Correlator(Daemon):
                                         r.u_name
                                         ))
                             ])
-        # Enrich alarm if necessary
-        if r.alarm_class.enrichment_pyrule:
-            a.data = r.alarm_class.enrichment_pyrule(alarm=a)
         a.save()
         logging.debug("%s: Event %s(%s) raises alarm %s(%s)" % (
             r.u_name, str(e.id), e.event_class.name,
             str(a.id), r.alarm_class.name))
-        # Enrich alarm if necessary
         # RCA
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one

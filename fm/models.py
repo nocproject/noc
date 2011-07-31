@@ -375,12 +375,32 @@ class AlarmClassVar(nosql.EmbeddedDocument):
     }
     name = nosql.StringField(required=True)
     description = nosql.StringField(required=False)
+    default = nosql.StringField(required=False)
 
     def __unicode__(self):
         return self.name
 
     def __eq__(self, other):
-        return self.name == other.name and self.description == other.description
+        return (self.name == other.name and
+                self.description == other.description and
+                self.default == other.default)
+
+
+class AlarmClassDataSource(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    name = nosql.StringField()
+    datasource = nosql.StringField()
+    search = nosql.DictField()
+
+    def __unicode__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return (self.name == other.name and
+                self.datasource == other.datasource and
+                self.search == other.search)
 
 
 class AlarmRootCauseCondition(nosql.EmbeddedDocument):
@@ -449,6 +469,7 @@ class AlarmClass(nosql.Document):
     # Default alarm severity
     default_severity = nosql.PlainReferenceField(AlarmSeverity)
     #
+    datasources = nosql.ListField(nosql.EmbeddedDocumentField(AlarmClassDataSource))
     vars = nosql.ListField(nosql.EmbeddedDocumentField(AlarmClassVar))
     # Text messages
     # alarm_class.text -> locale -> {
@@ -469,8 +490,6 @@ class AlarmClass(nosql.Document):
     # RCA
     root_cause = nosql.ListField(nosql.EmbeddedDocumentField(AlarmRootCauseCondition))
     #
-    enrichment_pyrule = nosql.ForeignKeyField(PyRule, required=False)
-
     category = nosql.ObjectIdField()
 
     def __unicode__(self):
@@ -1086,7 +1105,6 @@ class ActiveAlarm(nosql.Document):
     alarm_class = nosql.PlainReferenceField(AlarmClass)
     severity = nosql.IntField(required=True)
     vars = nosql.DictField()
-    data = nosql.DictField(default={})  # Enriched variables
     # Calculated alarm discriminator
     # Has meaning only for alarms with is_unique flag set
     # Calculated as sha1("value1\x00....\x00valueN").hexdigest()
@@ -1155,7 +1173,6 @@ class ActiveAlarm(nosql.Document):
                           alarm_class=self.alarm_class,
                           severity=self.severity,
                           vars=self.vars,
-                          data=self.data,
                           events=self.events,
                           log=log,
                           root=self.root
@@ -1281,7 +1298,6 @@ class ArchivedAlarm(nosql.Document):
     alarm_class = nosql.PlainReferenceField(AlarmClass)
     severity = nosql.IntField(required=True)
     vars = nosql.DictField()
-    data = nosql.DictField(default={})  # Enriched variables
     events = nosql.ListField(nosql.ObjectIdField())
     log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
     # RCA
