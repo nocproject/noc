@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from django.db import models
+from django.db import models, connection
 from noc.settings import config
 from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
 from noc.lib.tt import tt_url
@@ -533,6 +533,29 @@ class Peer(models.Model):
             return self.export_med
         return self.peer_group.export_med
     effective_export_med=property(_effective_export_med)
+
+    @classmethod
+    def get_peer(self, address):
+        """
+        Get peer by address
+        
+        :param address: Remote address
+        :type address: Str
+        :returns: Peer instance or None
+        """
+        cursor = connection.cursor()
+        cursor.execute("""SELECT id
+                       FROM peer_peer
+                       WHERE host(remote_ip) = %s
+                            OR host(remote_backup_ip) = %s""",
+                            [address, address])
+        data = cursor.fetchall()
+        if data:
+            return Peer.objects.get(id=data[0][0])
+        else:
+            return None
+
+
 ##
 ## Whois Database
 ##
