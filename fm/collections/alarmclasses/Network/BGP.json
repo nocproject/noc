@@ -6,7 +6,15 @@
         "discriminator": ["peer"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
-        "enrichment_pyrule__name": "ae_network_bgp_peer_down",
+        "datasources": [
+            {
+                "name": "PeerDS",
+                "datasource": "peer.Peer",
+                "search": {
+                    "peer": "peer"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "peer",
@@ -19,13 +27,46 @@
                 "name": "as",
                 "description": "BGP Peer AS",
                 "type": "int",
-                "required": false
+                "required": false,
+                "default": "=PeerDS.remote_asn"
+            },
+
+            {
+                "name": "local_as",
+                "description": "Local AS",
+                "type": "int",
+                "required": false,
+                "default": "=PeerDS.local_asn"
+            },
+            
+            {
+                "name": "description",
+                "description": "BGP Peer Description",
+                "type": "str",
+                "required": false,
+                "default": "=PeerDS.description"
+            },
+
+            {
+                "name": "import_filter",
+                "description": "BGP Import Filter",
+                "type": "str",
+                "required": false,
+                "default": "=PeerDS.import_filter"
+            },
+
+            {
+                "name": "export_filter",
+                "description": "BGP Export Filter",
+                "type": "str",
+                "required": false,
+                "default": "=PeerDS.export_filter"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}{% if alarm.data and alarm.data.description %}, {{alarm.data.description}}{% endif %}){% else %}{% if alarm.data %}(AS{{alarm.data.remote_as}}, {{alarm.data.description}}){%endif%}{% endif %} session down",
-                "body_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}){% endif %} session down{% if alarm.data %}\nLocal AS: {{alarm.data.local_as}}\nRemote AS:{{alarm.data.remote_as}}\nDescription: {{alarm.data.description}}\nLink: {{alarm.data.local_ip}} -- {{alarm.data.remote_ip}}\nImport Filter: {{alarm.data.import_filter}}\nExport Filter: {{alarm.data.export_filter}}{% endif %}",
+                "subject_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down",
+                "body_template": "BGP Peer {{peer}}{% if as %}(AS{{as}}{% if description %}, {{description}}{% endif %}){% endif %} session down\n{% if local_as %}Local AS: AS{{local_as}}\nRemote AS: AS{{as}} ({{description}})\nImport Filter: {{import_filter}}\nExport Filter: {{export_filter}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
