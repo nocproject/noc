@@ -13,13 +13,14 @@ from noc.lib.nosql import get_db
 class Migration:
     def forwards(self):
         def process_event(event_id, alarm_id):
-            c = active_events
-            e = active_events.find_one(_id=event_id)
+            e = None
+            for c in (active_events, archived_events):
+                e = c.find_one(event_id)
+                if e:
+                    break
             if not e:
-                e = archived_events.find_one(_id=event_id)
-                c = archived_events
-                if not e:
-                    return
+                return
+            assert e["_id"] == event_id
             alarms = e.get("alarms", [])
             if alarm_id not in alarms:
                 alarms += [alarm_id]
@@ -41,10 +42,9 @@ class Migration:
         active_events = db.noc.events.active
         archived_events = db.noc.events.archive
         
-        for doc in active_alarms.find():
-            process_alarm(active_alarms, doc)
-        for doc in archived_alarms.find():
-            process_alarm(archived_alarms, doc)
+        for ac in (active_alarms, archived_alarms):
+            for doc in ac.find():
+                process_alarm(ac, doc)
     
     def backwards(self):
         pass
