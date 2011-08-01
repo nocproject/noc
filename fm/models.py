@@ -1256,7 +1256,7 @@ class ActiveAlarm(nosql.Document):
         days = duration.days
         r = "%02d:%02d:%02d" % (hours, mins, secs)
         if days:
-            r += "%d %s" % (days, r)
+            r = "%d %s" % (days, r)
         return r
     
     @property
@@ -1355,8 +1355,11 @@ class ArchivedAlarm(nosql.Document):
         mins = (duration.seconds / 60) % 60
         hours = (duration.seconds / 3600) % 24
         days = duration.days
-        return "%d %02d:%02d:%02d" % (days, hours, mins, secs)
-    
+        if days:
+            return "%d %02d:%02d:%02d" % (days, hours, mins, secs)
+        else:
+            return "%02d:%02d:%02d" % (hours, mins, secs)
+
     @property
     def effective_style(self):
         return AlarmSeverity.get_severity(self.severity).style
