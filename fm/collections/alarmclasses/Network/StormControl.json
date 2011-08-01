@@ -49,5 +49,32 @@
                 "recommended_actions": ""
             }
         }
+    },
+    
+    {
+        "name": "Network | Storm Control | Unicast Storm Detected",
+        "description": "Unicast Storm Detected",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Unicast Storm detected on {{interface}}",
+                "body_template": "Unicast Storm detected on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
     }
+
 ]
