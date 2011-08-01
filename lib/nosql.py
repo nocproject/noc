@@ -12,6 +12,7 @@ from django.db.models import Model
 import pymongo
 from mongoengine.base import *
 from mongoengine import *
+import mongoengine
 ## NOC modules
 import noc.settings
 
@@ -24,6 +25,15 @@ connect(noc.settings.NOSQL_DATABASE_NAME,
 ## Shortcut to ObjectId
 ObjectId = pymongo.objectid.ObjectId
 RECURSIVE_REFERENCE_CONSTANT = "self"
+
+
+def get_connection():
+    return mongoengine.connection._get_connection()
+
+
+def get_db():
+    return mongoengine.connection._get_db()
+
 
 class PlainReferenceField(BaseField):
     """
