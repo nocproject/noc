@@ -213,7 +213,6 @@ class Classifier(Daemon):
                     cn += 1
                     logging.debug("    %s" % c_name)
             n += 1
-            logging.debug("    %s" % c_name)
         logging.info("%d triggers has been loaded to %d classes" % (n, cn))
 
     ##
