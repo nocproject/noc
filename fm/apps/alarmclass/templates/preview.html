@@ -47,18 +47,35 @@
         {% endfor %}
     </table>
     
+    {% if o.datasources %}
+        <h2>DataSources</h2>
+        <table width="100%">
+            <thead>
+                <tr><th>Name</th><th>DataSource</th><th>Search</th>
+            </thead>
+        {% for ds in o.datasources %}
+            <tr>
+                <td>{{ds.name}}</td>
+                <td>{{ds.datasource}}</td>
+                <td>{% for k, v in ds.search.items %}{{k}} = {{v}}<br/>{% endfor %}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
     <h2>Vars</h2>
     <table border="0" width="100%">
         <thead>
             <tr>
                 <th class="labels">Name</th>
                 <th>Description</th>
+                <th>Default</th>
             </td>
         </thead>
         {% for v in o.vars %}
             <tr>
                 <td><b>{{v.name}}</b></td>
                 <td>{{v.description}}</td>
+                <td>{% if v.default %}{{v.default}}{% endif %}</td>
             </tr>
         {% endfor %}
     </table>
