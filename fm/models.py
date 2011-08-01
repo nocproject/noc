@@ -425,7 +425,7 @@ class AlarmRootCauseCondition(nosql.EmbeddedDocument):
 
 class AlarmClassCategory(nosql.Document):
     meta = {
-        "collection": "noc.alartmclasscategories",
+        "collection": "noc.alartmclasscategories",  # @todo: Fix bug
         "allow_inheritance": False
     }
     name = nosql.StringField()
@@ -901,7 +901,7 @@ class ActiveEvent(nosql.Document):
     meta = {
         "collection": "noc.events.active",
         "allow_inheritance": False,
-        "indexes": ["timestamp", "discriminator"]
+        "indexes": ["timestamp", "discriminator", "alarms"]
     }
     status = "A"
     # Fields
@@ -913,6 +913,7 @@ class ActiveEvent(nosql.Document):
     vars = nosql.DictField()
     log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
     discriminator = nosql.StringField(required=False)
+    alarms = nosql.ListField(nosql.ObjectIdField())
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -961,7 +962,8 @@ class ActiveEvent(nosql.Document):
             raw_vars=self.raw_vars,
             resolved_vars=self.resolved_vars,
             vars=self.vars,
-            log=log
+            log=log,
+            alarms=self.alarms
         )
         e.save()
         self.delete()
@@ -1029,7 +1031,7 @@ class ArchivedEvent(nosql.Document):
     meta = {
         "collection": "noc.events.archive",
         "allow_inheritance": True,
-        "indexes": ["timestamp"]
+        "indexes": ["timestamp", "alarms"]
     }
     status = "S"
 
@@ -1040,6 +1042,7 @@ class ArchivedEvent(nosql.Document):
     resolved_vars = nosql.RawDictField()
     vars = nosql.DictField()
     log = nosql.ListField(nosql.EmbeddedDocumentField(EventLog))
+    alarms = nosql.ListField(nosql.ObjectIdField())
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -1109,7 +1112,6 @@ class ActiveAlarm(nosql.Document):
     # Has meaning only for alarms with is_unique flag set
     # Calculated as sha1("value1\x00....\x00valueN").hexdigest()
     discriminator = nosql.StringField(required=False)
-    events = nosql.ListField(nosql.ObjectIdField())
     log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
     # Responsible person
     owner = nosql.ForeignKeyField(User, required=False)
@@ -1173,7 +1175,6 @@ class ActiveAlarm(nosql.Document):
                           alarm_class=self.alarm_class,
                           severity=self.severity,
                           vars=self.vars,
-                          events=self.events,
                           log=log,
                           root=self.root
                           )
@@ -1298,7 +1299,6 @@ class ArchivedAlarm(nosql.Document):
     alarm_class = nosql.PlainReferenceField(AlarmClass)
     severity = nosql.IntField(required=True)
     vars = nosql.DictField()
-    events = nosql.ListField(nosql.ObjectIdField())
     log = nosql.ListField(nosql.EmbeddedDocumentField(AlarmLog))
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
