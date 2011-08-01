@@ -103,7 +103,7 @@
 
 <div class="module" id="tabs">
     <ul style="height:25pt">
-        {% if e.status == 'A' or e.status == 'C' %}
+        {% if e.status == 'A' or e.status == 'S' %}
             <li><a href="#tabs-overview">Overview</a></li>
         {% endif %}
         {% if syptoms or probable_causes or recommended_actions %}
@@ -112,6 +112,9 @@
         <li><a href="#tabs-data">Data</a></li>
         {% if e.status == "F" %}
             <li><a href="#tabs-traceback">Traceback</a></li>
+        {% endif %}
+        {% if alarms %}
+            <li><a href="#tabs-alarms">Alarms</a></li>
         {% endif %}
         <li><a href="#tabs-log">Log</a></li>
     </ul>
@@ -187,6 +190,23 @@
         </div>
     {% endif %}
     
+    {% if alarms %}
+        <div id="tabs-alarms">
+            <table border="0" width="100%">
+                <thead>
+                </thead>
+                {% for a_id, a_class, ts, duration, subject in alarms %}
+                    <tr>
+                        <td><a href="{% url fm:alarm:alarm a_id %}">{{a_id}}</a></td>
+                        <td>{{a_calss}}</td>
+                        <td>{{ts}}</td>
+                        <td>{{duration}}</td>
+                        <td>{{subject}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
     <div id="tabs-log">
         <table width="100%">
             <thead>

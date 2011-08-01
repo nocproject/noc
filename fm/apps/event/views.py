@@ -88,18 +88,24 @@ class EventAppplication(Application):
             symptoms = event.get_translated_symptoms(u_lang)
             probable_causes = event.get_translated_probable_causes(u_lang)
             recommended_actions = event.get_translated_recommended_actions(u_lang)
+            alarms = [get_alarm(a) for a in event.alarms]
+            alarms = [(a.id, a.alarm_class.name, a.timestamp, a.display_duration,
+                       a.get_translated_subject(u_lang))
+                for a in alarms if a]
         else:
             subject = ""
             body = ""
             symptoms = ""
             probable_causes = ""
             recommended_actions = ""
+            alarms = None
         return self.render(request, "event.html", e=event,
                            subject=subject,
                            body=body,
                            symptoms=symptoms,
                            probable_causes=probable_causes,
-                           recommended_actions=recommended_actions)
+                           recommended_actions=recommended_actions,
+                           alarms=alarms)
 
     @view(url="^(?P<event_id>[0-9a-f]{24})/reclassify/$", url_name="reclassify",
           access=HasPerm("change"))

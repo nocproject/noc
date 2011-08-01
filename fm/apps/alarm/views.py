@@ -111,10 +111,11 @@ class AlarmManagedApplication(Application):
         probable_causes = alarm.get_translated_probable_causes(u_lang)
         recommended_actions = alarm.get_translated_recommended_actions(u_lang)
         can_clear = alarm.alarm_class.user_clearable
-        events = [get_event(e) for e in alarm.events]
+        events = (list(ArchivedEvent.objects.filter(alarms=alarm.id)) +
+                  list(ActiveEvent.objects.filter(alarms=alarm.id)))
         events = [(e.id, e.event_class.name,
                    e.timestamp, e.get_translated_subject(u_lang))
-            for e in events if e]
+                  for e in events]
         severity = AlarmSeverity.get_severity(alarm.severity)
         user = request.user
         is_owner = alarm.status == "A" and alarm.is_owner(user)
