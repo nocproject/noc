@@ -163,7 +163,7 @@ class Rule(object):
                 if x:
                     vars[k] = x
             # Calculate discriminators
-            ds = [vars[n] for n in self.discriminator]
+            ds = [str(vars[n]) for n in self.discriminator]
             discriminator = hashlib.sha1("\x00".join(ds)).hexdigest()
             return discriminator, vars
         else:
