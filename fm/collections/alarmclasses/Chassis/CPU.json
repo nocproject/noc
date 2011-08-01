@@ -1,6 +1,6 @@
 [
     {
-        "name": "System | CPU Exhausted",
+        "name": "Chassis | CPU | CPU Exhausted",
         "description": "CPU Exhausted",
         "is_unique": true,
         "discriminator": [],
