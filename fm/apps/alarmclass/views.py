@@ -37,12 +37,29 @@ class EventClassApplication(TreeApplication):
             r += ["        \"discriminator\": [%s]," % ", ".join(["\"%s\"" % q(d) for d in c.discriminator])]
         r += ["        \"user_clearable\": %s," % q(c.user_clearable)]
         r += ["        \"default_severity__name\": \"%s\"," % q(c.default_severity.name)]
+        # datasources
+        if c.datasources:
+            r += ["        \"datasources\": ["]
+            jds = []
+            for ds in c.datasources:
+                x = []
+                x += ["                \"name\": \"%s\"" % q(ds.name)]
+                x += ["                \"datasource\": \"%s\"" % q(ds.datasource)]
+                ss = []
+                for k in sorted(ds.search):
+                    ss += ["                    \"%s\": \"%s\"" % (q(k), q(ds.search[k]))]
+                x += ["                \"search\": {\n%s\n                }" % (",\n".join(ss))]
+                jds += ["            {\n%s\n            }" % ",\n".join(x)]
+            r += [",\n\n".join(jds)]
+            r += ["        ]"]
         # vars
         vars = []
         for v in c.vars:
             vd = ["            {"]
             vd += ["                \"name\": \"%s\"," % q(v.name)]
             vd += ["                \"description\": \"%s\"" % q(v.description)]
+            if v.default:
+                vd += ["                \"default\": \"%s\"" % q(v.default)]                
             vd += ["            }"]
             vars += ["\n".join(vd)]
         r += ["        \"vars \": ["]
