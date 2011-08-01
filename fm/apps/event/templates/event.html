@@ -93,7 +93,7 @@
             <td>
                 {% if e.status == "N" %}New{% endif %}
                 {% if e.status == "A" %}Active{% endif %}
-                {% if e.status == "C" %}Closed{% endif %}
+                {% if e.status == "S" %}Archived{% endif %}
                 {% if e.status == "F" %}Failed{% endif %}
             </td>
         </tr>
@@ -147,7 +147,7 @@
     
     <div id="tabs-data">
         <table width="100%">
-            {% if e.status == "A" or e.status == "C" %}
+            {% if e.status == "A" or e.status == "S" %}
                 <tr class="v-caption"><td colspan="2">Event Variables</td></tr>
                 {% for k, v in e.vars.items %}
                     <tr class="{% cycle 'row1' 'row2' %}">
