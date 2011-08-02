@@ -25,8 +25,8 @@ class Command(BaseCommand):
         make_option("-a", "--action", dest="action",
                     default="show",
                     help="Action: show, reclassify"),
-        #make_option("-s", "--selector", dest="selector",
-        #            help="Selector name"),
+        make_option("-s", "--selector", dest="selector",
+                    help="Selector name"),
         make_option("-o", "--object", dest="object",
                     help="Managed Object's name"),
         make_option("-p", "--profile", dest="profile",
@@ -57,6 +57,12 @@ class Command(BaseCommand):
             except ManagedObject.DoesNotExist:
                 raise CommandError("Object not found: %s" % options["object"])
             c = c.filter(managed_object=o.id)
+        if options["selector"]:
+            try:
+                s = ManagedObjectSelector.objects.get(name=options["selector"])
+            except ManagedObjectSelector.DoesNotExist:
+                raise CommandError("Selector not found: %s" % options["selector"])
+            c = c.filter(managed_object__in=[o.id for o in s.managed_objects])
         if options["class"]:
             o = EventClass.objects.filter(name=options["class"]).first()
             if not o:
