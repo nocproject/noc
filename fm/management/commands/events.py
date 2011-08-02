@@ -24,10 +24,12 @@ class Command(BaseCommand):
         make_option("-a", "--action", dest="action",
                     default="show",
                     help="Action: show, reclassify"),
-        make_option("-s", "--selector", dest="selector",
-                    help="Selector name"),
+        #make_option("-s", "--selector", dest="selector",
+        #            help="Selector name"),
         make_option("-o", "--object", dest="object",
                     help="Managed Object's name"),
+        make_option("-p", "--profile", dest="profile",
+                    help="Object's profile"),
         make_option("-e", "--event", dest="event",
                     help="Event ID"),
         make_option("-c", "--class", dest="class",
@@ -45,6 +47,7 @@ class Command(BaseCommand):
         c = ActiveEvent.objects.all()
         trap_oid = None
         syslog_re = None
+        profile = options["profile"]
         if options["event"]:
             c = c.filter(id=ObjectId(options["event"]))
         if options["object"]:
@@ -68,6 +71,9 @@ class Command(BaseCommand):
                 raise CommandError("Invalid RE: %s" % why)
             c = c.filter(raw_vars__source="syslog")
         for e in c:
+            if profile:
+                if not e.managed_object.profile_name == profile:
+                    continue
             if trap_oid:
                 if ("source" in e.raw_vars and
                     e.raw_vars["source"] == "SNMP Trap" and
