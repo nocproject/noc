@@ -29,8 +29,9 @@ class ReportUnclassifiedOIDs(SimpleReport):
         c = EventClass.objects.filter(name="Unknown | SNMP Trap").first()
         oids = ActiveEvent.objects.filter(event_class=c.id).exec_js(self.c_f)
         data = [(o, MIB.get_name(o), c) for o, c in oids.items()]
+        data = sorted(data, key=lambda x: x[2])
         return self.from_dataset(title=self.title,
             columns=["OID", "Name",
-                     TableColumn("Count", format="numeric",
+                     TableColumn("Count", format="integer",
                                  align="right", total="sum")],
             data=data)
