@@ -128,7 +128,20 @@ class Rule(object):
             if not found:
                 # No matched lines found
                 return None
+        # Apply fixups when necessary
+        for v in [k for k in e_vars if "__" in k]:
+            n, f = v.split("__")
+            e_vars[n] = getattr(self, "fixup_%s" % f)(e_vars[v])
+            del e_vars[v]
         return e_vars
+
+    def fixup_int_to_ip(self, v):
+        v = long(v)
+        return "%d.%d.%d.%d" % (
+            v & 0xFF000000 >> 24,
+            v & 0x00FF0000 >> 16,
+            v & 0x0000FF00 >> 8,
+            v & 0x000000FF)
 
 
 class Classifier(Daemon):
