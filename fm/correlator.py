@@ -68,6 +68,7 @@ class RCACondition(object):
         # Build condition expression
         x = [
             "'alarm_class': ObjectId('%s')" % self.root.id,
+            "'id__ne': alarm.id",
             "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
             "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
         ]
