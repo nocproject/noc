@@ -283,7 +283,8 @@ class Correlator(Daemon):
         for de in EventDispositionQueue.objects.order_by("timestamp")[:max_chunk]:
             e = ActiveEvent.objects.filter(id=de.event_id).first()
             de.delete()
-            yield e
+            if e:
+                yield e
 
     def set_root_cause(self, a, root=None):
         """
