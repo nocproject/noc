@@ -10,6 +10,7 @@
 import re
 ## NOC modules
 from noc.lib.nosql import *
+from noc.sa.models import ManagedObject
 
 
 class Vendor(Document):
@@ -249,3 +250,65 @@ class Model(Document):
 #    name = StringField()
 #    file = FileField()
 ##   tags = 
+
+##
+## Network topology
+##
+class ForwardingInstance(Document):
+    """
+    Non-default forwarding instances
+    """
+    meta = {
+        "collection": "noc.forwardinginstances",
+        "allow_inheritance": False
+    }
+    managed_object = ForeignKeyField(ManagedObject)
+    type = StringField(choices=["ip", "bridge", "VRF", "VPLS", "VLL"],
+                       default="ip")
+    virtual_router = StringField(required=False)
+    forwarding_instance = StringField()
+
+    def __unicode__(self):
+        return u"%s: %s" % (self.managed_object.name, forwarding_instance)
+
+
+class Interface(Document):
+    """
+    Interfaces
+    """
+    meta = {
+        "collection": "noc.interfaces",
+        "allow_inheritance": False
+    }
+    managed_object = ForeignKeyField(ManagedObject)
+    name = StringField()
+    type = StringField(choices=["physical", "SVI", "aggregated",
+                                "loopback", "management"])
+    description = StringField(required=False)
+    mac = StringField(required=False)
+    aggregated_interface = PlainReferenceField("self", required=False)
+    is_lacp = BooleanField(default=False)
+    # admin status + oper status
+    # is_ignored
+    
+    def __unicode__(self):
+        return u"%s: %s" % (self.management.name, name)
+
+
+class Link(Document):
+    """
+    Network links.
+    Always contains a list of 2*N references.
+    2 - for fully resolved links
+    2*N for unresolved N-link portchannel
+    """
+    meta = {
+        "collection": "noc.links",
+        "allow_inheritance": False,
+        "index": ["interfaces"]
+    }
+
+    interfaces = ListField(PlainReferenceField(Interface))
+
+    def __unicode__(self):
+        return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])

@@ -96,7 +96,7 @@ UL.rules, UL.rules LI {
         <td>{{a.user_clearable|bool_icon}}</td>
         <td>
             {% for v in a.vars %}
-            <b>{{v.name}}:</b> {{v.description}}<br/>
+            <b>{{v.name}}:</b> {{v.description}}<br/>{% if v.default %}default: {{v.default}}<br/>{% endif %}
             {% endfor %}
         </td>
         <td>{{a.default_severity}}</td>
