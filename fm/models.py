@@ -1161,8 +1161,10 @@ class ActiveAlarm(nosql.Document):
             self.timestamp = e.timestamp
         else:
             self.last_update = max(self.last_update, e.timestamp)
-        self.events += [e.id]
         self.save()
+        if self.id not in e.alarms:
+            e.alarms += [self.id]
+            e.save()
 
     def clear_alarm(self, message):
         ts = datetime.datetime.now()
@@ -1256,7 +1258,7 @@ class ActiveAlarm(nosql.Document):
         days = duration.days
         r = "%02d:%02d:%02d" % (hours, mins, secs)
         if days:
-            r = "%d %s" % (days, r)
+            r = "%dd %s" % (days, r)
         return r
     
     @property
@@ -1356,7 +1358,7 @@ class ArchivedAlarm(nosql.Document):
         hours = (duration.seconds / 3600) % 24
         days = duration.days
         if days:
-            return "%d %02d:%02d:%02d" % (days, hours, mins, secs)
+            return "%dd %02d:%02d:%02d" % (days, hours, mins, secs)
         else:
             return "%02d:%02d:%02d" % (hours, mins, secs)
 
