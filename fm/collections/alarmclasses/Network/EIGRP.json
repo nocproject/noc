@@ -1,0 +1,59 @@
+[
+    {
+        "name": "Network | EIGRP | Neighbor Down",
+        "description": "EIGRP neighbor down",
+        "is_unique": true,
+        "discriminator": ["interface", "neighbor"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "as",
+                "description": "EIGRP autonomus system",
+                "type": "str",
+                "required": false
+            },
+
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+
+            {
+                "name": "neighbor",
+                "description": "Neighbor's Router ID",
+                "type": "ip_address",
+                "required": true
+            },
+
+            {
+                "name": "reason",
+                "description": "Adjacency lost reason",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "EIGRP {% if as %} as {{as}} {% endif %} {{neighbor}} down on {{interface}}. {% if reason %} Reason: {{reason}}{% endif %}",
+                "body_template": "EIGRP {% if as %} as {{as}} {% endif %} {{neighbor}} down on {{interface}}. {% if reason %} Reason: {{reason}}{% endif %}",
+                "symptoms": "Routing table changes and possible lost of connectivity",
+                "probable_causes": "Link failure or protocol misconfiguration",
+                "recommended_actions": "Check links and local and neighbor router configuration" 
+            }
+        },
+        "root_cause": [
+            {
+                "name": "Link Down",
+                "root__name": "Network | Link | Link Down",
+                "window": 10,
+                "condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__interface": "alarm.managed_object.profile.root_interface(alarm.vars['interface'])" 
+                }
+            }
+        ]
+    }
+]
