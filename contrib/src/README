@@ -1,5 +1,0 @@
-contrib/src directory contains third-party libraries and applications
-supplied with NOC.
-
-django
-south
