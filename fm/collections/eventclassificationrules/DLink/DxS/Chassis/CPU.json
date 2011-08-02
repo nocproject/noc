@@ -1,0 +1,43 @@
+[
+    {
+        "name": "DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode (SYSLOG)",
+        "description": "WARN: Safeguard Engine enters EXHAUSTED mode",
+        "event_class__name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters EXHAUSTED mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(WARN:|WARN\\(4\\)) Safeguard Engine enters EXHAUSTED mode$"
+            }
+        ]
+    },
+    
+    {
+        "name": "DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode (SYSLOG)",
+        "description": "INFO: Safeguard Engine enters NORMAL mode",
+        "event_class__name": "Vendor | DLink | DxS | Chassis | CPU | Safeguard Engine enters NORMAL mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(INFO:|INFO\\(6\\)) Safeguard Engine enters NORMAL mode$"
+            }
+        ]
+    }
+]
