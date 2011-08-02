@@ -60,11 +60,13 @@ class Command(BaseCommand):
             c = c.filter(event_class=o.id)
         if options["trap"]:
             trap_oid = MIB.get_oid(options["trap"])
+            c = c.filter(raw_vars__source="SNMP Trap")
         if options["syslog"]:
             try:
                 syslog_re = re.compile(options["syslog"])
             except Exception, why:
                 raise CommandError("Invalid RE: %s" % why)
+            c = c.filter(raw_vars__source="syslog")
         for e in c:
             if trap_oid:
                 if ("source" in e.raw_vars and
