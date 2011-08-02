@@ -36,6 +36,16 @@
                 "probable_causes": "",
                 "recommended_actions": ""
             }
-        }
+        },
+        "root_cause": [
+            {
+                "name": "Address Conflict",
+                "root__name": "Network | IP | Address Conflict",
+                "window": 3600,
+                "condition": {
+                    "vars__ip": "alarm.vars['ip']"
+                }
+            }
+        ]
     }
 ]
