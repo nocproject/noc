@@ -86,10 +86,18 @@ class CollectionSync(object):
         partial = False
         # Forcefully set is_builtin
         d["is_builtin"] = True
-        # Build key for lookup
-        k = dict([(u, d[u]) for u in self.unique if u in d])
+        # Build keys for lookup
+        sk = [dict([(u, d[u]) for u in self.unique if u in d])]
+        # Get aliases
+        if "__aliases" in d:
+            for a in d["__aliases"]:
+                sk = [dict([(u, a[u]) for u in self.unique if u in a])] + sk                
+            del d["__aliases"]
         # Find existing record
-        obj = self.doc.objects.filter(**k).first()
+        for k in sk:
+            obj = self.doc.objects.filter(**k).first()
+            if obj:
+                break
         if not obj:
             # Create record if not found
             obj = self.doc()
