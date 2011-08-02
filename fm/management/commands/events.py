@@ -67,6 +67,8 @@ class Command(BaseCommand):
                 trap_oid = options["trap"]
             else:
                 trap_oid = MIB.get_oid(options["trap"])
+                if trap_oid is None:
+                    raise CommandError("Cannot find OID for %s" % options["trap"])
             c = c.filter(raw_vars__source="SNMP Trap")
         if options["syslog"]:
             try:
