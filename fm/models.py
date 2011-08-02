@@ -1274,6 +1274,8 @@ class ActiveAlarm(nosql.Document):
         """
         if self.root:
             return
+        if self.id == root_alarm.id:
+            raise Exception("Cannot set self as root cause")
         # Detect loop
         root = root_alarm
         while root:
