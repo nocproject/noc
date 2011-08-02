@@ -16,6 +16,7 @@ from django.core.management.base import BaseCommand, CommandError
 from noc.sa.models import ManagedObject
 from noc.fm.models import ActiveEvent, EventClass, MIB
 from noc.lib.nosql import ObjectId
+from noc.lib.validators import is_oid
 
 
 class Command(BaseCommand):
@@ -62,7 +63,10 @@ class Command(BaseCommand):
                 raise CommandError("Event class not found: %s" % options["class"])
             c = c.filter(event_class=o.id)
         if options["trap"]:
-            trap_oid = MIB.get_oid(options["trap"])
+            if is_oid(options["trap"]):
+                trap_oid = options["trap"]
+            else:
+                trap_oid = MIB.get_oid(options["trap"])
             c = c.filter(raw_vars__source="SNMP Trap")
         if options["syslog"]:
             try:
