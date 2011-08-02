@@ -23,7 +23,7 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option("-a", "--action", dest="action",
                     default="show",
-                    help="Action: show"),
+                    help="Action: show, reclassify"),
         make_option("-s", "--selector", dest="selector",
                     help="Selector name"),
         make_option("-o", "--object", dest="object",
@@ -84,7 +84,10 @@ class Command(BaseCommand):
                 yield e
 
     def handle(self, *args, **options):
-        handler = getattr(self, "handle_%s" % options["action"])
+        try:
+            handler = getattr(self, "handle_%s" % options["action"])
+        except AttributeError:
+            raise CommandError("Invalid action: %s" % options["action"])
         events = self.get_events(options)
         handler(options, events)
 
@@ -94,3 +97,8 @@ class Command(BaseCommand):
             print "%s, %s, %s, %s" % (e.id, e.managed_object.name,
                                       e.event_class.name,
                                       e.get_translated_subject("en"))
+
+    def handle_reclassify(self, options, events):
+        for e in events:
+            e.mark_as_new("Reclassification requested via CLI")
+            print e.id
