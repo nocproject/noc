@@ -103,6 +103,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
+            return self._handle(*args, **options)
+        except KeyboardInterrupt:
+            pass
+        except IOError, why:
+            print "IO Error: %s" % why
+
+    def _handle(self, *args, **options):
+        try:
             handler = getattr(self, "handle_%s" % options["action"])
         except AttributeError:
             raise CommandError("Invalid action: %s" % options["action"])
