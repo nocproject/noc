@@ -23,6 +23,16 @@
         },
         "root_cause": [
             {
+                "name": "Linecard Down",
+                "root__name": "Chassis | Linecard | LC Down",
+                "window": 30,
+                "condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__number": "alarm.managed_object.profile.get_linecard(alarm.vars['interface'])"
+                }
+            },
+
+            {
                 "name": "LBD Loop",
                 "root__name": "Network | LBD | Loop Detected",
                 "window": 10,
