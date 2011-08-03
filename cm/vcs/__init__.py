@@ -53,7 +53,8 @@ class VCS(object):
         self.repo=repo
     # Check wrether repository exists and create when necessary
     def check_repository(self):
-        pass
+        if not os.path.exists(self.repo):
+            os.makedirs(self.repo)
     # Add file to repository
     def add(self,path):
         self.cmd(["add",path])
