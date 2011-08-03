@@ -203,6 +203,27 @@ class Profile(object):
         name = name.split(":")[0]
         return name
 
+    def get_linecard(self, interface_name):
+        """
+        Returns linecard number related to interface
+        >>> Profile().get_linecard("Gi 4/15")
+        4
+        >>> Profile().get_linecard("Lo")
+        None
+        >>> Profile().get_linecard("ge-1/1/0")
+        1
+        """
+        if " " in interface_name:
+            l, r = interface_name.split(" ")
+        elif "-" in interface_name:
+            l, r = interface_name.split("-")
+        else:
+            return None
+        if "/" in r:
+            return int(r.split("/", 1)[0])
+        else:
+            return None
+
     #
     # Configuration generators
     #
