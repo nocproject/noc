@@ -1,0 +1,31 @@
+[
+    {
+        "name": "Chassis | PSU | PSU Failed",
+        "description": "Power Suppply Unit failed",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Power Supply Unit Failed: {{name}}",
+                "body_template": "Power Supply Unit Failed: {{name}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "PSU Name",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | PSU | PSU Failed"
+            }
+        ]
+    }
+]
