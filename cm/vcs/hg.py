@@ -14,8 +14,10 @@ import os,datetime
 class VCS(noc.cm.vcs.VCS):
     name="hg"
     def check_repository(self):
+        super(VCS, self).check_repository()
         if not os.path.exists(os.path.join(self.repo,".hg")):
             self.cmd(["init"],check=False)
+
     def log(self,path):
         revs=[]
         for l in self.cmd_out(["log","--template","{rev} {date}\n",path]).split("\n"):
