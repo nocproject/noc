@@ -12,7 +12,6 @@ import sys
 import datetime
 import time
 import logging
-import hashlib
 import re
 ## NOC modules
 from noc.lib.daemon import Daemon
@@ -163,12 +162,11 @@ class Rule(object):
                 x = eval(v, {}, context)
                 if x:
                     vars[k] = x
-            # Calculate discriminators
-            ds = [str(vars[n]) for n in self.discriminator]
-            discriminator = hashlib.sha1("\x00".join(ds)).hexdigest()
+            # Calculate discriminator
+            discriminator = self.alarm_class.get_discriminator(vars)
             return discriminator, vars
         else:
-            return hashlib.sha1("").hexdigest(), None
+            return self.alarm_class.get_discriminator({}), None
 
 
 class Correlator(Daemon):

@@ -16,6 +16,7 @@ import os
 import datetime
 import re
 import random
+import hashlib
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -503,6 +504,19 @@ class AlarmClass(nosql.Document):
             c.save()
         self.category = c.id
         super(AlarmClass, self).save(*args, **kwargs)
+
+    def get_discriminator(self, vars):
+        """
+        Calculate discriminator hash
+        
+        :param vars: Dict of vars
+        :returns: Discriminator hash
+        """
+        if vars:
+            ds = [str(vars[n]) for n in self.discriminator]
+            return hashlib.sha1("\x00".join(ds)).hexdigest()
+        else:
+            return hashlib.sha1("").hexdigest()
 
 
 class EventClassVar(nosql.EmbeddedDocument):
