@@ -27,4 +27,4 @@ class TemplateApplication(ModelApplication):
     """
     model = Template
     model_admin = TemplateAdmin
-    menu = "Setup | Template"
+    menu = "Setup | Templates"
