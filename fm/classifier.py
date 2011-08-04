@@ -63,9 +63,16 @@ class Trigger(object):
         logging.debug("Calling trigger '%s'" % self.name)
         # Notify if necessary
         if self.notification_group and self.template:
-            self.notification_group.notify(
-                subject=self.template.render_subject(event=event),
-                body=self.template.render_body(event=event))
+            subject = {}
+            body = {}
+            for lang in self.notification_group.languages:
+                s = event.get_translated_subject(lang)
+                b = event.get_translated_body(lang)
+                subject[lang] = self.template.render_subject(LANG=lang,
+                                                event=event, subject=s, body=b)
+                body[lang] = self.template.render_body(LANG=lang,
+                                                event=event, subject=s, body=b)
+            self.notification_group.notify(subject=subject, body=body)
         # Call pyRule
         if self.pyrule:
             self.pyrule(event=event)
