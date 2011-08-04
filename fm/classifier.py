@@ -82,27 +82,54 @@ class Rule(object):
     """
     In-memory rule representation
     """
+    
+    rx_escape = re.compile(r"\\(.)")
+    rx_exact = re.compile(r"^\^[a-zA-Z0-9%: \-_]+\$$")
+    
     def __init__(self, rule):
         self.rule = rule
         self.name = rule.name
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
         self.patterns = []
+        self.profile = None
         for x in rule.patterns:
-            try:
-                rx_key = re.compile(x.key_re, re.MULTILINE | re.DOTALL)
-            except Exception, why:
-                raise InvalidPatternException("Error in '%s': %s" % (x.key_re, why))
-            try:
-                rx_value = re.compile(x.value_re, re.MULTILINE | re.DOTALL)
-            except Exception, why:
-                raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
-            self.patterns += [(rx_key, rx_value)]
+            x_key = None
+            rx_key = None
+            x_value = None
+            rx_value = None
+            # Process key pattern
+            if self.is_exact(x.key_re):
+                x_key = self.unescape(x.key_re[1:-1])
+            else:
+                try:
+                    rx_key = re.compile(x.key_re, re.MULTILINE | re.DOTALL)
+                except Exception, why:
+                    raise InvalidPatternException("Error in '%s': %s" % (x.key_re, why))
+            # Process value pattern
+            if self.is_exact(x.value_re):
+                x_value = self.unescape(x.value_re[1:-1])
+            else:
+                try:
+                    rx_value = re.compile(x.value_re, re.MULTILINE | re.DOTALL)
+                except Exception, why:
+                    raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
+            # Save patterns
+            self.patterns += [(x_key, rx_key, x_value, rx_value)]
+            # Store profile
+            if x.key_re in ("profile", "^profile$"):
+                self.profile = x.value_re
         self.to_drop = self.event_class.action == "D"
         self.to_dispose = len(self.event_class.disposition) > 0
 
     def __unicode__(self):
         return self.name
+
+    def unescape(self, pattern):
+        return self.rx_escape.sub(lambda m: m.group(1), pattern)
+
+    def is_exact(self, pattern):
+        return self.rx_exact.match(self.rx_escape.sub("", pattern)) is not None
 
     def match(self, vars):
         """
@@ -115,26 +142,43 @@ class Rule(object):
         :rtype: dict or None
         """
         e_vars = {}
-        for kp, vp in self.patterns:
-            found = False
-            for k in vars:
-                # Try to match key
-                k_match = kp.search(k)
-                if k_match is None:
-                    continue
-                v = vars[k]
-                v_match = vp.search(v)
-                if v_match is None:
-                    continue  # ??? return None
-                # Matched line found
+        for xkp, kp, xvp, vp in self.patterns:
+            if xkp:
+                try:
+                    v = vars[xkp]
+                except KeyError:
+                    return None
+                if xvp:
+                    if v != xvp:
+                        return None
+                else:
+                    v_match = vp.search(v)
+                    if v_match is None:
+                        return None
+                    e_vars.update(v_match.groupdict())
+                continue
+            else:
                 found = True
-                # Append extracted variables
-                e_vars.update(k_match.groupdict())
-                e_vars.update(v_match.groupdict())
-                break
-            if not found:
-                # No matched lines found
-                return None
+                if xvp:
+                    for k in vars:
+                        k_match = kp.search(k)
+                        if k_match:
+                            if vars[k] == xvp:
+                                e_vars.update(k_match.groupdict())
+                                found = True
+                                break
+                else:
+                    for k in vars:
+                        k_match = kp.search(k)
+                        if k_match:
+                            v_match = vp.search(vars[k])
+                            if v_match:
+                                e_vars.update(k_match.groupdict())
+                                e_vars.update(v_match.groupdict())
+                                found = True
+                                break
+                if not found:
+                    return None
         # Apply fixups when necessary
         for v in [k for k in e_vars if "__" in k]:
             n, f = v.split("__")
@@ -181,12 +225,6 @@ class Classifier(Daemon):
         """
         Load rules from database
         """
-        def find_profile(rule):
-            for l, r in rule.patterns:
-                if l.pattern in ("profile", "^profile$"):
-                    return r.pattern
-            return None
-
         logging.info("Loading rules")
         n = 0
         profiles = list(profile_registry.classes)
@@ -200,9 +238,8 @@ class Classifier(Daemon):
                 logging.error("Failed to load rule '%s': Invalid patterns: %s" % (r.name, why))
                 continue
             # Find profile restriction
-            p = find_profile(rule)
-            if p:
-                profile_re = p
+            if rule.profile:
+                profile_re = rule.profile
             else:
                 profile_re = r"^.*$"
             rx = re.compile(profile_re)
@@ -279,7 +316,7 @@ class Classifier(Daemon):
         if FailedEvent.objects.count() == 0:
             return
         logging.info("Recovering failed events")
-        for e in FailedEvent.objects.filter(version__ne=self.version):
+        for e in FailedEvent.objects.all():  #filter(version__ne=self.version):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             logging.debug("Failed event %s has been recovered" % e.id)
 
