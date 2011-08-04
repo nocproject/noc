@@ -321,12 +321,10 @@ class Correlator(Daemon):
                                            discriminator=discriminator).first()
             if a:
                 # Active alarm found, refresh
-                logging.debug("%s: Contirbuting event %s(%s) to active alarm %s(%s)" % (
+                logging.debug("%s: Contributing event %s(%s) to active alarm %s(%s)" % (
                     r.u_name, str(e.id), e.event_class.name,
                     str(a.id), a.alarm_class.name))
                 a.contribute_event(e)
-                a.log_message("Event #%s(%s) has been contributed by rule '%s'" % (
-                    str(e.id), e.event_class.name, r.u_name))
                 return
         # Create new alarm
         a = ActiveAlarm(timestamp=e.timestamp, last_update=e.timestamp,
@@ -346,6 +344,7 @@ class Correlator(Daemon):
                                         ))
                             ])
         a.save()
+        a.contribute_event(e)
         logging.debug("%s: Event %s(%s) raises alarm %s(%s)" % (
             r.u_name, str(e.id), e.event_class.name,
             str(a.id), r.alarm_class.name))
