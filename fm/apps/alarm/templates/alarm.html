@@ -274,9 +274,20 @@ function toggle_root() {
     {% if children %}
         <div id="tabs-consequences">
             <table id="t-children" width="100%">
-                {% for level, c in children %}
+                <thead>
                     <tr>
-                        <td class="cl{{level}}"><a href="{% url fm:alarm:alarm c.id %}">{{c.id}} ({{c.managed_object}}): {{c.alarm_class.name}}</a></td>
+                        <th>ID</th><th>Timestamp</th><th>Duration</th>
+                        <th>Object</th><th>Class</th><th>Subject</th>
+                    </tr>
+                </thead>
+                {% for level, c, s in children %}
+                    <tr>
+                        <td class="cl{{level}}"><a href="{% url fm:alarm:alarm c.id %}">{{c.id}}</td>
+                        <td>{{c.timestamp}}</td>
+                        <td>{{c.display_duration}}</td>
+                        <td>{{c.managed_object}}</td>
+                        <td>{{c.alarm_class.name}}</td>
+                        <td>{{s}}</td>
                     </tr>
                 {% endfor %}
             </table>

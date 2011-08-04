@@ -95,10 +95,10 @@ class AlarmManagedApplication(Application):
         def get_chilren(root, level=0):
             children = []
             for a in ActiveAlarm.objects.filter(root=root.id):
-                children += [(level, a)]
+                children += [(level, a, a.get_translated_subject(u_lang))]
                 children += get_chilren(a, level + 1)
             for a in ArchivedAlarm.objects.filter(root=root.id):
-                children += [(level, a)]
+                children += [(level, a, a.get_translated_subject(u_lang))]
                 children += get_chilren(a, level + 1)
             return children
         
@@ -126,7 +126,7 @@ class AlarmManagedApplication(Application):
             subscribers = User.objects.filter(id__in=alarm.subscribers).order_by("username")
         else:
             subscribers = []
-        children = get_chilren(alarm)  # (level, alarm)
+        children = get_chilren(alarm)  # (level, alarm, subject)
         
         return self.render(request, "alarm.html",
                            a=alarm,
