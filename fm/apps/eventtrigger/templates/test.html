@@ -1,0 +1,16 @@
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>Test triggers</li>{% endblock %}
+{% block content %}
+<h1>Test triggers</h1>
+<div class="module">
+{% for i in r %}
+    <h2>{{i.trigger.name}}</h2>
+    <b>Matched Event Classes:</b>
+    <ul>
+    {% for c in i.classes %}
+        <li>{{c}}</li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+</div>
+{% endblock %}
