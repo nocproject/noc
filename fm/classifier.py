@@ -13,6 +13,7 @@ import time
 import datetime
 import sys
 import os
+import new
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
@@ -92,12 +93,21 @@ class Rule(object):
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
         self.patterns = []
+        c1 = []
+        c2 = {}
+        c3 = []
+        c4 = []
+        self.rxp = {}
         self.profile = None
         for x in rule.patterns:
             x_key = None
             rx_key = None
             x_value = None
             rx_value = None
+            # Store profile
+            if x.key_re in ("profile", "^profile$"):
+                self.profile = x.value_re
+                continue
             # Process key pattern
             if self.is_exact(x.key_re):
                 x_key = self.unescape(x.key_re[1:-1])
@@ -115,74 +125,104 @@ class Rule(object):
                 except Exception, why:
                     raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
             # Save patterns
-            self.patterns += [(x_key, rx_key, x_value, rx_value)]
-            # Store profile
-            if x.key_re in ("profile", "^profile$"):
-                self.profile = x.value_re
+            if x_key:
+                c1 += ["'%s' in vars" % x_key]
+                if x_value:
+                    c1 += ["vars['%s'] == '%s'" % (x_key, x_value)]
+                else:
+                    c2[x_key] = self.get_rx(rx_value)
+            else:
+                if x_value:
+                    c3 += [(self.get_rx(rx_key), x_value)]
+                else:
+                    c4 += [(self.get_rx(rx_key), self.get_rx(rx_value))]
         self.to_drop = self.event_class.action == "D"
         self.to_dispose = len(self.event_class.disposition) > 0
+        self.compile(c1, c2, c3, c4)
 
     def __unicode__(self):
         return self.name
     
     def __repr__(self):
-        return "<Rule %s>" % self.name
+        return "<Rule '%s'>" % self.name
+    
+    def get_rx(self, rx):
+        n = len(self.rxp)
+        self.rxp[n] = rx.pattern
+        setattr(self, "rx_%d" % n, rx)
+        return n
 
     def unescape(self, pattern):
         return self.rx_escape.sub(lambda m: m.group(1), pattern)
 
     def is_exact(self, pattern):
         return self.rx_exact.match(self.rx_escape.sub("", pattern)) is not None
+    
+    def compile(self, c1, c2, c3, c4):
+        e_vars_used = c2 or c3 or c4
+        c = []
+        if e_vars_used:
+            c += ["e_vars = {}"]
+        if c1:
+            cc = " and ".join(["(%s)" % x for x in c1])
+            c += ["if not (%s):" % cc]
+            c += ["    return None"]
+        if c2:
+            cc = ""
+            for k in c2:
+                c += ["# %s" % self.rxp[c2[k]]]
+                c += ["match = self.rx_%s.search(vars['%s'])" % (c2[k], k)]
+                c += ["if not match:"]
+                c += ["    return None"]
+                c += ["e_vars.update(match.groupdict())"]
+        if c3:
+            for rx, v in c3:
+                c += ["found = False"]
+                c += ["for k in vars:"]
+                c += ["    # %s" % self.rxp[rx]]
+                c += ["    match = self.rx_%s.search(k)" % rx]
+                c += ["    if match:"]
+                c += ["        if vars[k] == '%s':" % v]
+                c += ["            e_vars.update(match.groupdict())"]
+                c += ["            found = True"]
+                c += ["            break"]
+                c += ["        else:"]
+                c += ["            return None"]
+                c += ["if not found:"]
+                c += ["    return None"]
+        if c4:
+            for rxk, rxv in c4:
+                c += ["found = False"]
+                c += ["for k in vars:"]
+                c += ["    # %s" % self.rxp[rxk]]
+                c += ["    match_k = self.rx_%s.search(k)" % rxk]
+                c += ["    if match_k:"]
+                c += ["        # %s" % self.rxp[rxv]]
+                c += ["        match_v = self.rx_%s.search(vars[k])" % rxv]
+                c += ["        if match_v:"]
+                c += ["            e_vars.update(match_k.groupdict())"]
+                c += ["            e_vars.update(match_v.groupdict())"]
+                c += ["            found = True"]
+                c += ["            break"]
+                c += ["        else:"]
+                c += ["            return None"]
+                c += ["if not found:"]
+                c += ["    return None"]
+        if e_vars_used:
+            c += ["return self.fixup(e_vars)"]
+        else:
+            c += ["return {}"]
+        c = ["    " + l for l in c]
+        
+        cc = ["# %s" % self.name]
+        cc += ["def match(self, vars):"]
+        cc += c
+        cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
+        c = "\n".join(cc)
+        code = compile(c, "<string>", "exec")
+        exec code in {"rule": self, "new": new, "logging": logging}
 
-    def match(self, vars):
-        """
-        Try to match variables agains a rule.
-        Return extracted variables or None
-
-        :param vars: New and resolved variables
-        :type vars: dict
-        :returns: Extracted vars or None
-        :rtype: dict or None
-        """
-        e_vars = {}
-        for xkp, kp, xvp, vp in self.patterns:
-            if xkp:
-                try:
-                    v = vars[xkp]
-                except KeyError:
-                    return None
-                if xvp:
-                    if v != xvp:
-                        return None
-                else:
-                    v_match = vp.search(v)
-                    if v_match is None:
-                        return None
-                    e_vars.update(v_match.groupdict())
-                continue
-            else:
-                found = True
-                if xvp:
-                    for k in vars:
-                        k_match = kp.search(k)
-                        if k_match:
-                            if vars[k] == xvp:
-                                e_vars.update(k_match.groupdict())
-                                found = True
-                                break
-                else:
-                    for k in vars:
-                        k_match = kp.search(k)
-                        if k_match:
-                            v_match = vp.search(vars[k])
-                            if v_match:
-                                e_vars.update(k_match.groupdict())
-                                e_vars.update(v_match.groupdict())
-                                found = True
-                                break
-                if not found:
-                    return None
-        # Apply fixups when necessary
+    def fixup(self, e_vars):
         for v in [k for k in e_vars if "__" in k]:
             n, f = v.split("__")
             e_vars[n] = getattr(self, "fixup_%s" % f)(e_vars[v])
@@ -250,11 +290,8 @@ class Classifier(Daemon):
                 if rx.search(p):
                     self.rules[p] += [rule]
             n += 1
-        logging.info("%d rules are loaded into %d chains" % (n, len(self.rules)))
-        for p in sorted(self.rules):
-            logging.debug("%s (%d rules):" % (p, len(self.rules[p])))
-            for r in self.rules[p]:
-                logging.debug("    %s" % r.name)
+        logging.info("%d rules are loaded in the %d profiles" % (n,
+                                                            len(self.rules)))
     
     def load_triggers(self):
         logging.info("Loading triggers")
@@ -319,7 +356,7 @@ class Classifier(Daemon):
         if FailedEvent.objects.count() == 0:
             return
         logging.info("Recovering failed events")
-        for e in FailedEvent.objects.all():  #filter(version__ne=self.version):
+        for e in FailedEvent.objects.filter(version__ne=self.version):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             logging.debug("Failed event %s has been recovered" % e.id)
 
@@ -509,7 +546,6 @@ class Classifier(Daemon):
         # @todo: move to configuration
         CHECK_EVERY = 3  # Recheck queue every N seconds
         REPORT_INTERVAL = 1000  # Performance report interval
-
         # Try to classify events which processing failed
         # on previous versions of classifier
         self.retry_failed_events()
