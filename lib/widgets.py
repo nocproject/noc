@@ -62,9 +62,9 @@ class AutoCompleteTextInput(Input):
     input_type="text"
     class Media:
         css={
-            "all": ["/static/css/jquery.autocomplete.css"]
+            "all": ["/static/css/jquery-ui.css"]
         }
-        js=["/static/js/jquery.autocomplete.js"]
+        js=["/static/js/jquery-ui.min.js"]
     def __init__(self,url_name,*args,**kwargs):
         super(AutoCompleteTextInput,self).__init__(*args,**kwargs)
         self.lookup_url=url_name #reverse(url_name)
@@ -72,7 +72,20 @@ class AutoCompleteTextInput(Input):
         html=super(AutoCompleteTextInput,self).render(name,value,attrs)
         set_value="$(\"#%s\").val(\"%s\");"%(attrs["id"],escape(value)) if value else ""
         js="""<script type=\"text/javascript\">
-        $(\"#%s\").autocomplete(\"%s\",{minChars:3,mustMatch:1});
+        $(\"#%s\").autocomplete({minLength:3,
+source: function(request,response) {
+      $.ajax({
+        url: \"%s\",
+        data: { q: request.term  },
+        success: function(data) {
+	    var bb=data.split('\\n')
+          response($.map(bb, function(item) {
+            return { value: item   }
+          }));
+        }
+      });
+    }
+});
         %s
         </script>
         """%(attrs["id"],site.reverse(self.lookup_url),set_value)
