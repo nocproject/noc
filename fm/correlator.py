@@ -65,25 +65,33 @@ class RCACondition(object):
         self.root = condition.root
         self.same_object = False
         # Build condition expression
+        self.condition = compile(condition.condition, "<string>", "eval")
+        # Build match condition expression
         x = [
             "'alarm_class': ObjectId('%s')" % self.root.id,
             "'id__ne': alarm.id",
             "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
             "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
         ]
-        for k, v in condition.condition.items():
+        for k, v in condition.match_condition.items():
             if k == "managed_object" and v == "alarm.managed_object":
                 self.same_object = True
             x += ["'%s': %s" % (k, v)]
-        self.condition = compile("{%s}" % ", ".join(x), "<string>", "eval")
+        self.match_condition = compile("{%s}" % ", ".join(x), "<string>", "eval")
     
     def __unicode__(self):
         return self.name
 
-    def get_condition(self, alarm):
+    def check_condition(self, alarm):
         return eval(self.condition, {}, {"alarm": alarm,
                                          "datetime": datetime,
                                          "ObjectId": ObjectId})
+
+    def get_match_condition(self, alarm):
+        return eval(self.match_condition, {}, {"alarm": alarm,
+                                               "datetime": datetime,
+                                               "ObjectId": ObjectId})
+
 
 
 class Rule(object):
@@ -290,9 +298,13 @@ class Correlator(Daemon):
         :returns: Boolean. True, if root cause set
         """
         for rc in self.rca_forward[a.alarm_class.id]:
-            q = rc.get_condition(a)
+            # Check condition
+            if not rc.check_condition(a):
+                continue
+            # Check match condition
+            q = rc.get_match_condition(a)
             if root:
-                q["id"]=root.id
+                q["id"] = root.id
             root = ActiveAlarm.objects.filter(**q).first()
             if root:
                 # Root cause found

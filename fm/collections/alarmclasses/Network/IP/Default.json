@@ -42,7 +42,7 @@
                 "name": "Address Conflict",
                 "root__name": "Network | IP | Address Conflict",
                 "window": 3600,
-                "condition": {
+                "match_condition": {
                     "vars__ip": "alarm.vars['ip']"
                 }
             }
