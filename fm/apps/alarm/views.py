@@ -138,6 +138,7 @@ class AlarmManagedApplication(Application):
                            recommended_actions=recommended_actions,
                            can_clear=can_clear,
                            events=events,
+                           n_events=len(events),
                            severity=severity,
                            is_owner=is_owner,
                            is_subscribed=is_subscribed,
