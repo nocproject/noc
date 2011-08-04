@@ -49,7 +49,7 @@
                 "name": "Link Down",
                 "root__name": "Network | Link | Link Down",
                 "window": 10,
-                "condition": {
+                "match_condition": {
                     "managed_object": "alarm.managed_object.id",
                     "vars__interface": "alarm.managed_object.profile.root_interface(alarm.vars['interface'])"
                 }

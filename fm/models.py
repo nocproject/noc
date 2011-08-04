@@ -412,7 +412,8 @@ class AlarmRootCauseCondition(nosql.EmbeddedDocument):
     name = nosql.StringField(required=True)
     root = nosql.PlainReferenceField("AlarmClass")
     window = nosql.IntField(required=True)
-    condition = nosql.DictField(required=True)
+    condition = nosql.StringField(default="True")
+    match_condition = nosql.DictField(required=True)
     
     def __unicode__(self):
         return self.name
@@ -421,7 +422,9 @@ class AlarmRootCauseCondition(nosql.EmbeddedDocument):
         return (self.name == other.name and
                 ((self.root is None and other.root is None) or
                     (self.root and other.root and self.root.id == other.root.id)) and
-                self.window == other.window and self.condition == other.condition)
+                self.window == other.window and
+                self.condition == other.condition and
+                self.match_condition == other.match_condition)
 
 
 class AlarmClassCategory(nosql.Document):
