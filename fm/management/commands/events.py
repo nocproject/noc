@@ -10,6 +10,7 @@
 ## Python modules
 from optparse import OptionParser, make_option
 import re
+import hashlib
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
@@ -38,8 +39,15 @@ class Command(BaseCommand):
         make_option("-T", "--trap", dest="trap",
                     help="SNMP Trap OID or name"),
         make_option("-S", "--syslog", dest="syslog",
-                    help="SYSLOG Message RE")
+                    help="SYSLOG Message RE"),
+        make_option("-d", "--suppress-duplicated", dest="suppress",
+                    action="store_true",
+                    help="Suppress duplicated subjects")
     )
+    
+    rx_ip = re.compile(r"\d+\.\d+\.\d+\.\d+")
+    rx_float = re.compile(r"\d+\.\d+")
+    rx_int = re.compile(r"\d+")
 
     def get_events(self, options):
         """
@@ -118,11 +126,25 @@ class Command(BaseCommand):
         handler(options, events)
 
     def handle_show(self, options, events):
+        to_suppress = options["suppress"]
+        seen = set()  # Message hashes
         print "ID, Object, Class, Subject"
         for e in events:
+            subject = e.get_translated_subject("en")
+            if to_suppress:
+                # Replace volarile parts
+                s = self.rx_ip.sub("$IP", subject)
+                s = self.rx_float.sub("$FLOAT", s)
+                s = self.rx_int.sub("$INT", s)
+                sh = hashlib.sha1(s).hexdigest()
+                # Check subject is already seen
+                if sh in seen:
+                    # Suppress seen
+                    continue
+                seen.add(sh)
             print "%s, %s, %s, %s" % (e.id, e.managed_object.name,
                                       e.event_class.name,
-                                      e.get_translated_subject("en"))
+                                      subject)
 
     def handle_reclassify(self, options, events):
         for e in events:
