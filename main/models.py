@@ -13,6 +13,7 @@ import os
 import datetime
 import re
 import threading
+import types
 ## Django Modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
@@ -772,45 +773,73 @@ class NotificationGroup(models.Model):
 
     def __unicode__(self):
         return self.name
-    ##
-    ## Returns a list of (time_pattern,method,params)
-    ##
-    def _members(self):
-        m=[]
+
+    @property
+    def members(self):
+        """
+        List of (time pattern, method, params, language)
+        """
+        default_language = settings.LANGUAGE_CODE
+        m = []
         # Collect user notifications
         for ngu in self.notificationgroupuser_set.filter(user__is_active=True):
+            lang = default_language
             try:
-                profile=ngu.user.get_profile()
+                profile = ngu.user.get_profile()
+                if profile.preferred_language:
+                    lang = profile.preferred_language
             except:
                 continue
-            for tp,method,params in profile.contacts:
-                m+=[(TimePatternList([ngu.time_pattern,tp]),method,params)]
+            for tp, method, params in profile.contacts:
+                m += [(TimePatternList([ngu.time_pattern, tp]),
+                       method, params, lang)]
         # Collect other notifications
         for ngo in self.notificationgroupother_set.all():
-            if ngo.notification_method=="mail" and "," in ngo.params:
+            if ngo.notification_method == "mail" and "," in ngo.params:
                 for y in ngo.params.split(","):
-                    m+=[(ngo.time_pattern,ngo.notification_method,y.strip())]
+                    m += [(ngo.time_pattern, ngo.notification_method,
+                           y.strip(), default_language)]
             else:
-                m+=[(ngo.time_pattern,ngo.notification_method,ngo.params)]
+                m += [(ngo.time_pattern, ngo.notification_method,
+                       ngo.params, default_language)]
         return m
-    members=property(_members)
-    ##
-    ## Returns a set of currently active members: (method,params)
-    ##
-    def _active_members(self):
-        now=datetime.datetime.now()
-        return set([(method,param) for tp,method,param in self.members if tp.match(now)])
-    active_members=property(_active_members)
-    ##
-    ## Send message to active members
-    ##
-    def notify(self,subject,body,link=None):
-        for method,params in self.active_members:
+
+    @property
+    def active_members(self):
+        """
+        List of currently active members: (method, param, language)
+        """
+        now = datetime.datetime.now()
+        return set([(method, param, lang) for tp, method, param, lang
+            in self.members if tp.match(now)])
+
+    @property
+    def languages(self):
+        """
+        List of preferred languages for users
+        """
+        return set([x[3] for x in self.members])
+
+    def notify(self, subject, body, link=None):
+        """
+        Send message to active members
+        """
+        def get_effective_message(messages, lang):
+            for cl in (lang, settings.LANGUAGE_CODE, "en"):
+                if cl in messages:
+                    return messages[cl]
+            return "Cannot translate message"
+            
+        if type(subject) != types.DictType:
+            subject = {settings.LANGUAGE_CODE: subject}
+        if type(body) != types.DictType:
+            body = {settings.LANGUAGE_CODE: body}
+        for method, params, lang in self.active_members:
             Notification(
                 notification_method=method,
                 notification_params=params,
-                subject=subject,
-                body=body,
+                subject=get_effective_message(subject, lang),
+                body=get_effective_message(body, lang),
                 link=link
             ).save()
     ##
@@ -1246,10 +1275,10 @@ class Template(models.Model):
     def __unicode__(self):
         return self.name
 
-    def render_subject(self, **kwargs):
+    def render_subject(self, LANG=None, **kwargs):
         return DjangoTemplate(self.subject).render(Context(kwargs))
 
-    def render_body(self, **kwargs):
+    def render_body(self, LANG=None, **kwargs):
         return DjangoTemplate(self.body).render(Context(kwargs))
 
 
