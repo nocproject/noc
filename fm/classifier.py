@@ -124,6 +124,9 @@ class Rule(object):
 
     def __unicode__(self):
         return self.name
+    
+    def __repr__(self):
+        return "<Rule %s>" % self.name
 
     def unescape(self, pattern):
         return self.rx_escape.sub(lambda m: m.group(1), pattern)
