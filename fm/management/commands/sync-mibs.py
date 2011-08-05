@@ -8,6 +8,7 @@
 
 ## Python modules
 import os
+from optparse import OptionParser, make_option
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
@@ -17,15 +18,23 @@ from noc.fm.models import MIB, MIBRequiredException
 class Command(BaseCommand):
     help = "Upload bundled MIBs"
 
-    def handle(self, *args, **options):
-        self.sync_mibs()
+    option_list = BaseCommand.option_list + (
+        make_option("-f", "--force", dest="force", action="store_true",
+                    default=False, help="Force reload"),
+    )
 
-    def sync_mibs(self):
+    def handle(self, *args, **options):
+        self.sync_mibs(force=options["force"])
+
+    def sync_mibs(self, force=False):
         """
         Upload bundled MIBs
         """
         # Loaded MIBs cache
-        loaded_mibs = set([m.name for m in MIB.objects.all()])
+        if force:
+            loaded_mibs = set()
+        else:
+            loaded_mibs = set([m.name for m in MIB.objects.all()])
         # Enumerate local stored MIBs
         prefix = os.path.join("share", "mibs")
         new_mibs = {}
