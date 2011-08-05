@@ -820,16 +820,16 @@ class NotificationGroup(models.Model):
         """
         return set([x[3] for x in self.members])
 
+    def get_effective_message(self, messages, lang):
+        for cl in (lang, settings.LANGUAGE_CODE, "en"):
+            if cl in messages:
+                return messages[cl]
+        return "Cannot translate message"
+
     def notify(self, subject, body, link=None):
         """
         Send message to active members
-        """
-        def get_effective_message(messages, lang):
-            for cl in (lang, settings.LANGUAGE_CODE, "en"):
-                if cl in messages:
-                    return messages[cl]
-            return "Cannot translate message"
-            
+        """            
         if type(subject) != types.DictType:
             subject = {settings.LANGUAGE_CODE: subject}
         if type(body) != types.DictType:
@@ -838,8 +838,8 @@ class NotificationGroup(models.Model):
             Notification(
                 notification_method=method,
                 notification_params=params,
-                subject=get_effective_message(subject, lang),
-                body=get_effective_message(body, lang),
+                subject=self.get_effective_message(subject, lang),
+                body=self.get_effective_message(body, lang),
                 link=link
             ).save()
     ##
@@ -847,19 +847,28 @@ class NotificationGroup(models.Model):
     ## Prevent duplicated messages
     ##
     @classmethod
-    def group_notify(cls,groups,subject,body,link=None):
-        ngs=set()
+    def group_notify(cls, groups, subject, body, link=None):
+        if type(subject) != types.DictType:
+            subject = {settings.LANGUAGE_CODE: subject}
+        if type(body) != types.DictType:
+            body = {settings.LANGUAGE_CODE: body}
+        ngs = set()
+        lang = {}  # (method, params) -> lang
         for g in groups:
-            for method,params in g.active_members:
-                ngs.add((method,params))
-        for method,params in ngs:
+            for method, params, l in g.active_members:
+                ngs.add((method, params))
+                lang[(method, params)] = l
+        for method, params in ngs:
+            l = lang[(method, params)]
             Notification(
                 notification_method=method,
                 notification_params=params,
-                subject=subject,
-                body=body,
+                subject=self.get_effective_message(subject, l),
+                body=self.get_effective_message(body, l),
                 link=link
             ).save()
+
+
 ##
 ## Users in Notification Groups
 ##
