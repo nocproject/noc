@@ -27,6 +27,11 @@ class Profile(noc.sa.profiles.Profile):
     convert_mac=noc.sa.profiles.Profile.convert_mac_to_cisco
     convert_interface_name=noc.sa.profiles.Profile.convert_interface_name_cisco
     config_volatile=["^ntp clock-period .*?^"]
+
+    def convert_interface_name(self, interface):
+        if interface.lower().startswith("dot11radio"):
+            return "Dot11Radio" + interface[10:]
+        return self.convert_interface_name_cisco(interface)
     
     def generate_prefix_list(self,name,pl,strict=True):
         p="ip prefix-list %s permit %%s"%name
