@@ -59,11 +59,11 @@ def render_tc(value, base_type, format=None):
     '97.98.99.10'
     """
     if format is None:
-        if base_type == "OctetString":
-            # Apply default formatting for octet strings
-            if len(value) == 4:
-                # Format as IPv4 address
-                return ".".join([str(ord(c)) for c in value])
+        #if base_type == "OctetString":
+        #    # Apply default formatting for octet strings
+        #    if len(value) == 4:
+        #        # Format as IPv4 address
+        #        return ".".join([str(ord(c)) for c in value])
         return str(value)
     if base_type == "Integer32":
         if format == "x":
