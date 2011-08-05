@@ -417,7 +417,9 @@ class Classifier(Daemon):
                     if v.startswith("="):
                         xv = int(v[1:], 16)
                     else:
-                        xv = int(v)
+                        xv = 0
+                        for c in v:
+                            xv = (xv << 8) + ord(c)
                     # Decode
                     b_map = syntax.get("enum_map", {})
                     b = []
