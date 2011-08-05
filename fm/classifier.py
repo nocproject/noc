@@ -412,6 +412,26 @@ class Classifier(Daemon):
                         rv = syntax["enum_map"][str(v)]
                     except KeyError:
                         pass
+                elif syntax["base_type"] == "Bits":
+                    # @todo: Fix ugly hack
+                    if v.startswith("="):
+                        xv = int(v[1:], 16)
+                    else:
+                        xv = int(v)
+                    # Decode
+                    b_map = syntax.get("enum_map", {})
+                    b = []
+                    n = 0
+                    while xv:
+                        if xv & 1:
+                            x = str(n)
+                            if x in b_map:
+                                b = [b_map[x]] + b
+                            else:
+                                b = ["%X" % (1 << n)]
+                        n += 1
+                        xv >>= 1
+                    rv = "(%s)" % ",".join(b)
                 else:
                     # Render according to TC
                     rv = render_tc(v, syntax["base_type"],

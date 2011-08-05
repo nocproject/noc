@@ -159,7 +159,7 @@ class MIB(nosql.Document):
                 for k in ["base_type", "display_hint", "enum_map"]:
                     if k in td:
                         s[k] = td[k]
-        if s["base_type"] == "Enumeration":
+        if s["base_type"] in ("Enumeration", "Bits"):
             enum_map = s.get("enum_map", {})
             for k in syntax:
                 sk = syntax[k]

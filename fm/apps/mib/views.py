@@ -32,7 +32,7 @@ class MIBApplication(TreeApplication):
             s += [x.syntax["base_type"]]
             if "display_hint" in x.syntax:
                 s += ["display-hint: %s" % x.syntax["display_hint"]]
-            if (x.syntax["base_type"] == "Enumeration" and
+            if (x.syntax["base_type"] in ("Enumeration", "Bits") and
                 "enum_map" in x.syntax):
                 # Display enumeration
                 for k in sorted(x.syntax["enum_map"],
