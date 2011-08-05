@@ -820,7 +820,8 @@ class NotificationGroup(models.Model):
         """
         return set([x[3] for x in self.members])
 
-    def get_effective_message(self, messages, lang):
+    @classmethod
+    def get_effective_message(cls, messages, lang):
         for cl in (lang, settings.LANGUAGE_CODE, "en"):
             if cl in messages:
                 return messages[cl]
@@ -863,8 +864,8 @@ class NotificationGroup(models.Model):
             Notification(
                 notification_method=method,
                 notification_params=params,
-                subject=self.get_effective_message(subject, l),
-                body=self.get_effective_message(body, l),
+                subject=cls.get_effective_message(subject, l),
+                body=cls.get_effective_message(body, l),
                 link=link
             ).save()
 
