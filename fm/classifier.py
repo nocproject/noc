@@ -237,6 +237,14 @@ class Rule(object):
             v & 0x0000FF00 >> 8,
             v & 0x000000FF)
 
+    def fixup_bin_to_ip(self, v):
+        """
+        Fix 4-octet binary ip to dottet representation
+        """
+        if len(v) != 4:
+            return v
+        return "%d.%d.%d.%d" % (ord(v[0]), ord(v[1]), ord(v[2]), ord(v[3]))
+
 
 class Classifier(Daemon):
     """
