@@ -52,7 +52,7 @@
         "disposition": [
             {
                 "name": "dispose",
-                "condition": "('to_state' not in event.vars) or (event.vars['to_state'].lower() in ['full'])",
+                "condition": "('to_state' not in event.vars) or (event.vars['to_state'].lower() in ['full', 'up'])",
                 "action": "clear",
                 "alarm_class__name": "Network | EIGRP | Neighbor Down" 
             }
