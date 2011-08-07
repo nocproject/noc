@@ -156,7 +156,7 @@ class ClassificationRuleApplication(TreeApplication):
         if event is None:
             return self.response_not_found("Not found")
         event_name = " | ".join(event.managed_object.profile_name.split("."))
-        event_name += " | name "
+        event_name += " | <name> "
         if event.raw_vars["source"] == "syslog":
             event_name += "(SYSLOG)"
         elif event.raw_vars["source"] == "SNMP Trap":
