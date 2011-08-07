@@ -39,5 +39,26 @@
                 "value_re": "^CISCO-SYSLOG-MIB::clogMessageGenerated$"
             }
         ]
+    },
+    
+    {
+        "name": "Cisco | IOS | Unknown | Ignore TCP Connection Close (SNMP)",
+        "description": "CISCOTRAP-MIB::tcpConnectionClose",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^CISCOTRAP-MIB::tcpConnectionClose$"
+            }
+        ]
     }
 ]
