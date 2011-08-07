@@ -1,7 +1,19 @@
 {% extends "template.html"%}
 {% block content %}
 <h1>Change Event Classification Rule</h1>
-
+<script>
+    $(document).ready(function() {
+        var w = $("#id_name").parent().width() - 150;
+        $("#id_name").width(w);
+        $("#id_description").width(w);
+        $("#event_class").change(function(){
+            $name = $("#id_name");
+            var v = $("#event_class_text").html();
+            var n = $name.attr("value");
+            $name.attr("value", n.replace("<name>", v));
+        });
+    });
+</script>
 <form method="POST">
     {% include "includes/noc_fieldset.html" %}
     
