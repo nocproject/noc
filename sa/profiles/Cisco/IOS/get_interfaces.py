@@ -10,21 +10,22 @@
 # Python modules
 import re
 # NOC modules
-import noc.sa.script
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
 from noc.sa.interfaces import base
 from noc.sa.script import Script as NOCScript
-##
-## Cisco.IOS.get_interfaces
-##
-## @todo: VRF support
-## @todo: IPv6
-## @todo: ISIS
-## @todo: isis, bgp, rip
-## @todo: subinterfaces
-## @todo: Q-in-Q
 
-class Script(noc.sa.script.Script):
+
+class Script(NOCScript):
+    """
+    Cisco.IOS.get_interfaces
+    @todo: VRF support
+    @todo: IPv6
+    @todo: ISIS
+    @todo: isis, bgp, rip
+    @todo: subinterfaces
+    @todo: Q-in-Q
+    """
     name = "Cisco.IOS.get_interfaces"
     implements = [IGetInterfaces]
 
@@ -111,20 +112,23 @@ class Script(noc.sa.script.Script):
         ospfs = self.get_ospfint()
 
         types = {
-               "L": 'loopback',
-               "E": 'physical',
-               "G": 'physical',
-               "F": 'physical',
-               "S": 'physical',
+               "Lo": 'loopback',
+               "Et": 'physical',
+               "Gi": 'physical',
+               "Fa": 'physical',
+               "Se": 'physical',
                "M": 'management',
                "R": 'aggregated',
-               "T": 'tunnel',
+               "Tu": 'tunnel',
                "C": 'physical',
+               "Vl": 'SVI',
                }
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
 
             ifname = match.group('interface')
+            if ifname[:2] in ['Vi', 'Tu']:
+                continue
             if ifname.find(':') > 0:
                 inm = ifname.split(':')[0]
                 if inm != interfaces[-1]['name']:
@@ -153,7 +157,7 @@ class Script(noc.sa.script.Script):
                 encaps = match.group('encaps')
                 if encaps[:6] == '802.1Q':
                     sub['vlan_ids'] = [encaps.split(',')[1].split()[2][:-1]]
-            #vtp      
+            #vtp
             if ifname in self.pvm.keys():
                 sub['vlan_ids'] = pwd[ifname]
 
@@ -173,25 +177,26 @@ class Script(noc.sa.script.Script):
             shotn = matchifn.group("type").capitalize() + matchifn.group("number")
             if shotn in ospfs:
                     sub['is_ospf'] = True
-
             phys = len(ifname.split('.')) + len(ifname.split(':'))
             if phys == 2:
                         iface = {
                             "name": ifname,
                             "admin_status": a_stat,
                             "oper_status": o_stat,
-                            "type": types[ifname[0]],
+                            "type": types[ifname[:2]],
                             'subinterfaces': [sub]
                         }
                         if 'mac' in sub.keys():
                             iface['mac'] = sub['mac']
                         if 'alias' in sub.keys():
                             iface['alias'] = sub['alias']
-                        interfaces.append(iface)
+                        # Set VLAN IDs for SVI
+                        if iface['type'] == "SVI":
+                            sub["vlan_ids"] = [int(shotn[2:].strip())]
+                        interfaces += [iface]
             else:
                 if 'subinterfaces' in interfaces[-1].keys():
                     interfaces[-1]['subinterfaces'].append(sub)
                 else:
                     interfaces[-1]['subinterfaces'] = [sub]
-
-        return [{"interfaces": interfaces}]            
+        return [{"interfaces": interfaces}]
