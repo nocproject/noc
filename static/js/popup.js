@@ -67,5 +67,6 @@ function hide_popup() {
 function hide_popup_and_choose(choose_id, text, value) {
     $("#" + choose_id + "_text").html(text);
     $("#" + choose_id).attr("value", value);
+    $("#" + choose_id).change();
     return hide_popup();
 }
