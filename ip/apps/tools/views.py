@@ -61,9 +61,9 @@ class ToolsAppplication(Application):
             return self.response_forbidden(_("Permission denined"))
         out=cStringIO.StringIO()
         writer=csv.writer(out)
-        writer.writerow(["address","fqdn","description","tt","tags"])
-        for a in prefix.address_set.order_by("address"):
-            writer.writerow([a.address,a.fqdn,to_utf8(a.description),a.tt,a.tags])
+        writer.writerow(["address","fqdn","mac","description","tt","tags"])
+        for a in prefix.nested_address_set.order_by("address"):
+            writer.writerow([a.address,a.fqdn,a.mac,to_utf8(a.description),a.tt,a.tags])
         return self.render_response(out.getvalue(),content_type="text/csv")
     
     ##
