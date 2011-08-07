@@ -30,7 +30,7 @@
         "action": "A",
         "text": {
             "en": {
-                "subject_template": "{% if cpu %}{{cpu}} {% endif %} CPU Usage drops below above threshold",
+                "subject_template": "{% if cpu %}{{cpu}} {% endif %} CPU Usage drops below threshold",
                 "body_template": "{% if cpu %}{{cpu}} {% endif %} CPU Usage drops below threshold",
                 "symptoms": "",
                 "probable_causes": "",
