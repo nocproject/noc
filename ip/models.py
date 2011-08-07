@@ -487,6 +487,15 @@ class Prefix(models.Model):
         # Return rebased prefix
         return Prefix.objects.get(vrf=vrf, prefix=new_prefix)
 
+    @property
+    def nested_address_set(self):
+        """
+        Queryset returning all nested addresses inside the prefix
+        """
+        return Address.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["address <<= %s"], params=[self.prefix])
+
+
 ##
 ## Allocate address
 ##
