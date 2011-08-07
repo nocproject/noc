@@ -167,6 +167,9 @@ class ClassificationRuleApplication(TreeApplication):
             }
         if event.raw_vars["source"] == "syslog":
             form_initial["description"] = event.raw_vars["message"]
+        elif (event.raw_vars["source"] == "SNMP Trap" and
+              "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
+            form_initial["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
         initial = [(k, v)
             for k, v in event.raw_vars.items()
             if k not in ("collector", "facility", "severity") and not is_oid(k)
