@@ -2,7 +2,7 @@
     {
         "name": "NOC | Managed Object | Ping OK",
         "description": "Managed object has been pinged successfully",
-        "action": "A",
+        "action": "L",
         "text" : {
             "en": {
                 "subject_template": "Ping OK",
@@ -24,7 +24,7 @@
     {
         "name": "NOC | Managed Object | Ping Failed",
         "description": "Failed to ping managed object",
-        "action": "A",
+        "action": "L",
         "text" : {
             "en": {
                 "subject_template": "Ping Failed",
