@@ -1,4 +1,21 @@
 [
+        {
+        "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow (SYSLOG)",
+        "description": "Aug 08 2011 09:09:52: %ASA-6-302015: Built inbound UDP connection 1902040 for outside:10.17.106.115/62969 (10.17.106.115/62969) to inside:10.15.121.5/53 (10.15.121.5/53) (joe)",
+        "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%(?:ASA|PIX)-6-302015: Built \\S+ (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) \\(.+?\\) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) \\(\\S+\\)(?: \\((?P<user>\\S+)\\))?$"
+            }
+        ]
+    },
+
     {
         "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow (SYSLOG)",
         "description": "Aug 07 2011 23:40:13: %ASA-6-302014: Teardown TCP connection 1220481 for outside:10.12.101.71/59492 to inside:10.10.121.31/110 duration 0:00:01 bytes 498 TCP FINs (joe)",
@@ -11,7 +28,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%ASA-6-302014: Teardown (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) duration .+? bytes (?P<bytes>\\d+) .+? \\((?P<user>\\S+)\\)$"
+                "value_re": "%(?:ASA|PIX)-6-302014: Teardown (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) duration .+? bytes (?P<bytes>\\d+) .+? (?:\\((?P<user>\\S+)\\))?$"
             }
         ]
     }
