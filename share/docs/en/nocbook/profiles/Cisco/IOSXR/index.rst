@@ -1,7 +1,7 @@
 .. _Cisco.IOSXR:
 
-Cisco.IOS
-=========
+Cisco.IOSXR
+===========
 
 ====== ========================================
 Vendor `Cisco Systems <http://www.cisco.com/>`_
