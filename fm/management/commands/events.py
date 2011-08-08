@@ -18,6 +18,7 @@ from noc.sa.models import ManagedObject
 from noc.fm.models import ActiveEvent, EventClass, MIB
 from noc.lib.nosql import ObjectId
 from noc.lib.validators import is_oid
+from noc.lib.escape import json_escape, fm_escape
 
 
 class Command(BaseCommand):
@@ -127,11 +128,15 @@ class Command(BaseCommand):
         events = self.get_events(options)
         handler(options, events)
 
-    def handle_show(self, options, events):
+    def handle_show(self, options, events, show_json=False):
         limit = int(options["limit"])
         to_suppress = options["suppress"]
         seen = set()  # Message hashes
-        print "ID, Object, Class, Subject"
+        if show_json:
+            print "["
+            spool = None
+        else:
+            print "ID, Object, Class, Subject"
         for e in events:
             subject = e.get_translated_subject("en")
             if to_suppress:
@@ -145,13 +150,45 @@ class Command(BaseCommand):
                     # Suppress seen
                     continue
                 seen.add(sh)
-            print "%s, %s, %s, %s" % (e.id, e.managed_object.name,
-                                      e.event_class.name,
-                                      subject)
+            if show_json:
+                if spool:
+                    print spool + ","
+                s = ["    {"]
+                s += ["        \"profile\": \"%s\"," % json_escape(e.managed_object.profile_name)]
+                s += ["        \"raw_vars\": {"]
+                x = []
+                vars = e.raw_vars
+                keys = []
+                lkeys = vars.keys()
+                for k in ("source", "profile", "1.3.6.1.6.3.1.1.4.1.0"):
+                    if k in vars:
+                        keys += [k]
+                        lkeys.remove(k)
+                keys += sorted(lkeys)
+                for k in keys:
+                    if k in ("collector",):
+                        continue
+                    x += ["            \"%s\": \"%s\"" % (json_escape(k),
+                            json_escape(fm_escape(vars[k])))]
+                s += [",\n".join(x)]
+                s += ["        }"]
+                s += ["    }"]
+                spool = "\n".join(s)
+            else:
+                print "%s, %s, %s, %s" % (e.id, e.managed_object.name,
+                                          e.event_class.name,
+                                          subject)
             if limit:
                 limit -= 1
                 if not limit:
                     break
+        if show_json:
+            if spool:
+                print spool
+            print "]"
+
+    def handle_json(self, option, events):
+        return self.handle_show(option, events, show_json=True)
 
     def handle_reclassify(self, options, events):
         limit = int(options["limit"])
