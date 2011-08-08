@@ -17,6 +17,12 @@
             {% endfor %}
         </table>
         {% endif %}
+        {% if not status %}
+            <table border="0">
+                <tr><td><b>Longest matched RE</b></td><td>{{longest_matched_re}}</td></tr>
+                <tr><td><b>Longest matched string</b></td><td>{{longest_matched}}</td></tr>
+            </table>
+        {% endif %}
     {% endif %}
     </div>
     <div style="clear: both"></div>
