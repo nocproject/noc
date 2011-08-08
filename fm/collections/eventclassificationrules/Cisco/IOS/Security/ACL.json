@@ -11,7 +11,49 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) denied tcp (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) \\((?P<src_interface>.+?) (?P<src_mac>\\S+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$"
+                "value_re": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) \\((?P<src_interface>.+?) (?P<src_mac>\\S+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$"
+            }
+        ]
+    },
+    
+    {
+        "name": "Cisco | IOS | Security | ACL | ACL Deny #2 (SYSLOG)",
+        "description": "4462: Aug  7 23:36:30.993: %SEC-6-IPACCESSLOGP: list aclOUTSIDE_IN denied udp 54.11.18.121(5064) -> 194.221.181.5(5060), 1 packet",
+        "event_class__name": "Security | ACL | ACL Deny",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$"
+            }
+        ]
+    },
+    
+    {
+        "name": "Cisco | IOS | Security | ACL | ACL Permit #2 (SYSLOG)",
+        "description": "15435: 015463: Aug  8 08:49:20.976 MSD: %SEC-6-IPACCESSLOGP: list aclIN permitted tcp 201.104.211.230(36995) -> 211.12.61.191(22), 8 packets",
+        "event_class__name": "Security | ACL | ACL Permit",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) permitted (?P<proto>\\S+) (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$"
             }
         ]
     }
