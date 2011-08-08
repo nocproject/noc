@@ -42,7 +42,9 @@ class Command(BaseCommand):
                     help="SYSLOG Message RE"),
         make_option("-d", "--suppress-duplicated", dest="suppress",
                     action="store_true",
-                    help="Suppress duplicated subjects")
+                    help="Suppress duplicated subjects"),
+        make_option("-l", "--limit", dest="limit", default=0, type="int",
+                    help="Limit action to N records")
     )
     
     rx_ip = re.compile(r"\d+\.\d+\.\d+\.\d+")
@@ -126,6 +128,7 @@ class Command(BaseCommand):
         handler(options, events)
 
     def handle_show(self, options, events):
+        limit = int(options["limit"])
         to_suppress = options["suppress"]
         seen = set()  # Message hashes
         print "ID, Object, Class, Subject"
@@ -145,8 +148,17 @@ class Command(BaseCommand):
             print "%s, %s, %s, %s" % (e.id, e.managed_object.name,
                                       e.event_class.name,
                                       subject)
+            if limit:
+                limit -= 1
+                if not limit:
+                    break
 
     def handle_reclassify(self, options, events):
+        limit = int(options["limit"])
         for e in events:
             e.mark_as_new("Reclassification requested via CLI")
             print e.id
+            if limit:
+                limit -= 1
+                if not limit:
+                    break
