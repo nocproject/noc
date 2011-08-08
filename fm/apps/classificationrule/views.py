@@ -220,6 +220,8 @@ class ClassificationRuleApplication(TreeApplication):
         if line >= len(o.patterns):
             return self.response_not_found("Line not found")
         to_reload = False
+        longest_matched = ""
+        longest_matched_re = ""
         if request.POST:
             rx = request.POST.get("rx")
             value = request.POST.get("value")
@@ -235,6 +237,20 @@ class ClassificationRuleApplication(TreeApplication):
                     if match:
                         status = True
                         vars = match.groupdict()
+                    else:
+                        # Find longest matched part of regular expression
+                        longest_matched_re = rx
+                        while longest_matched_re:
+                            longest_matched_re = longest_matched_re[:-1]
+                            try:
+                                rxl = re.compile(longest_matched_re,
+                                                 re.MULTILINE | re.DOTALL)
+                            except:
+                                continue
+                            match = rxl.search(value)
+                            if match:
+                                longest_matched = value[match.start():match.end()]
+                                break
                     if "_update" in request.POST:
                         # Fix regular expression
                         p = o.patterns[line]
@@ -253,7 +269,9 @@ class ClassificationRuleApplication(TreeApplication):
             value = ""
         return self.render(request, "test_re.html", rx=rx,
                            status=status, vars=vars, value=value,
-                           to_reload=to_reload)
+                           to_reload=to_reload,
+                           longest_matched_re=longest_matched_re,
+                           longest_matched=longest_matched)
     
     @view(url=r"(?P<object_id>[0-9a-f]{24})/test_event/$", url_name="test_event",
           access=HasPerm("change"))
