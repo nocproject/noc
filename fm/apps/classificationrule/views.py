@@ -33,6 +33,8 @@ class ClassificationRuleApplication(TreeApplication):
 
     rx_re_quote=re.compile(r"[()\[\].+*?^$]", re.MULTILINE)
     rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
+    rx_heading = re.compile(r"^\^.+?(?=%[A-Z0-9])")
+    rx_ip = re.compile(r"[0-9]{,3}\\\.[0-9]{,3}\\\.[0-9]{,3}\\\.[0-9]{,3}")
     
     @view(url="^(?P<rule_id>[0-9a-f]{24})/to_json/$",
           url_name="to_json", access=HasPerm("to_json"))
@@ -144,9 +146,13 @@ class ClassificationRuleApplication(TreeApplication):
             return self.rx_re_quote.sub(lambda x: "\\" + x.group(0), s).replace("\n", "\\n")
 
         def p(k, v):
+            v = "^%s$" % re_q(v)
+            if event.raw_vars["source"] == "syslog" and k == "message":
+                v = self.rx_heading.sub("", v)
+                v = self.rx_ip.sub(r"(?P<ip>\S+)", v)
             return {
                 "key_re": "^%s$" % re_q(k),
-                "value_re": "^%s$" % re_q(v)
+                "value_re": v
             }
 
         def is_oid(v):
@@ -177,7 +183,8 @@ class ClassificationRuleApplication(TreeApplication):
         if hasattr(event, "resolved_vars"):
             initial += [(k, v)
                 for k, v in event.resolved_vars.items()
-                if k not in ("RFC1213-MIB::sysUpTime.0",)]
+                if k not in ("RFC1213-MIB::sysUpTime.0",
+                             "SNMPv2-MIB::sysUpTime.0")]
         initial = dict(initial)
         lkeys = initial.keys()
         keys = []
