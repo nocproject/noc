@@ -38,6 +38,48 @@
     },
     
     {
+        "name": "Cisco | IOS | Security | ACL | ACL Deny #3 (SYSLOG)",
+        "description": "13812: Aug  9 14:42:49.342: %SEC-6-IPACCESSLOGS: list 50 denied 118.61.236.12 1 packet",
+        "event_class__name": "Security | ACL | ACL Deny",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SEC-6-IPACCESSLOGS: list (?P<name>\\S+) denied (?P<src_ip>\\S+) (?P<count>\\d+) packets?$" 
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Security | ACL | ACL Deny #4 (SYSLOG)",
+        "description": "970: Aug  9 16:18:24.541: %SEC-6-IPACCESSLOGNP: list acl-manage-nets denied 0 109.161.33.19 -> 0.0.0.0, 1 packet",
+        "event_class__name": "Security | ACL | ACL Deny",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SEC-6-IPACCESSLOGNP: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+) -> (?P<dst_ip>\\S+), (?P<count>\\d+) packets?$" 
+            }
+        ]
+    },
+    
+    {
         "name": "Cisco | IOS | Security | ACL | ACL Permit #1 (SYSLOG)",
         "description": "15435: 015463: Aug  8 08:49:20.976 MSD: %SEC-6-IPACCESSLOGP: list aclIN permitted tcp 211.114.211.230(36995) -> 211.12.61.191(22), 8 packets",
         "event_class__name": "Security | ACL | ACL Permit",
