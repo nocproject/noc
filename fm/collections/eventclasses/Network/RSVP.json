@@ -43,7 +43,7 @@
         "text" : {
             "en": {
                 "subject_template": "RSVP neighbor {{neighbor}} lost on {{interface}}. Reason: {{reason}}",
-                "body_template": "RSVP neighbot {{neighbor}} lost on {{interface}}. Reason: {{reason}}",
+                "body_template": "RSVP neighbor {{neighbor}} lost on {{interface}}. Reason: {{reason}}",
                 "symptoms": "Routing table changes and possible lost of connectivity",
                 "probable_causes": "RSVP protocol configuration problem or link failure",
                 "recommended_actions": "Check links and local and neighbor's router configuration"
