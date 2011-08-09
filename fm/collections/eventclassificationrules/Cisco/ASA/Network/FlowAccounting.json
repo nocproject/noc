@@ -34,7 +34,7 @@
     },
 
     {
-        "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow (SYSLOG)",
+        "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow #1 (SYSLOG)",
         "description": "Aug 07 2011 23:40:13: %ASA-6-302014: Teardown TCP connection 1220481 for outside:10.12.101.71/59492 to inside:10.10.121.31/110 duration 0:00:01 bytes 498 TCP FINs (joe)",
         "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow",
         "preference": 1000,
@@ -45,7 +45,24 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%(?:ASA|PIX)-6-302014: Teardown (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) duration .+? bytes (?P<bytes>\\d+) .+? (?:\\((?P<user>\\S+)\\))?$"
+                "value_re": "%(?:ASA|PIX)-6-302014: Teardown (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) duration .+? bytes (?P<bytes>\\d+).*?(?:\\((?P<user>\\S+)\\))?$"
+            }
+        ]
+    },
+    
+    {
+        "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow #2 (SYSLOG)",
+        "description": "Aug 08 2011 19:22:59: %ASA-6-302016: Teardown UDP connection 1912942 for outside:85.26.184.191/52955 to identity:194.228.191.3/4500 duration 0:03:01 bytes 370",
+        "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%(?:ASA|PIX)-6-302016: Teardown (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) duration .+? bytes (?P<bytes>\\d+).*?(?:\\((?P<user>\\S+)\\))?$"
             }
         ]
     }
