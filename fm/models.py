@@ -387,7 +387,7 @@ class AlarmClassVar(nosql.EmbeddedDocument):
                 self.default == other.default)
 
 
-class AlarmClassDataSource(nosql.EmbeddedDocument):
+class DataSource(nosql.EmbeddedDocument):
     meta = {
         "allow_inheritance": False
     }
@@ -473,7 +473,7 @@ class AlarmClass(nosql.Document):
     # Default alarm severity
     default_severity = nosql.PlainReferenceField(AlarmSeverity)
     #
-    datasources = nosql.ListField(nosql.EmbeddedDocumentField(AlarmClassDataSource))
+    datasources = nosql.ListField(nosql.EmbeddedDocumentField(DataSource))
     vars = nosql.ListField(nosql.EmbeddedDocumentField(AlarmClassVar))
     # Text messages
     # alarm_class.text -> locale -> {
@@ -699,6 +699,21 @@ class EventClass(nosql.Document):
 ##
 ## Classification rules
 ##
+class EventClassificationRuleVar(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(required=True)
+    value = nosql.StringField(required=False)
+
+    def __unicode__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return (self.name == other.name and
+                self.value == other.value)
+
+
 class EventClassificationRuleCategory(nosql.Document):
     meta = {
         "collection": "noc.eventclassificationrulecategories",
@@ -748,6 +763,8 @@ class EventClassificationRule(nosql.Document):
     event_class=nosql.PlainReferenceField(EventClass, required=True)
     preference = nosql.IntField(required=True, default=1000)
     patterns = nosql.ListField(nosql.EmbeddedDocumentField(EventClassificationPattern))
+    datasources = nosql.ListField(nosql.EmbeddedDocumentField(DataSource))
+    vars = nosql.ListField(nosql.EmbeddedDocumentField(EventClassificationRuleVar))
     #
     category = nosql.ObjectIdField()
     
@@ -763,7 +780,6 @@ class EventClassificationRule(nosql.Document):
         self.category = c.id
         super(EventClassificationRule, self).save(*args, **kwargs)
 
-    
     @property
     def short_name(self):
         return self.name.split(" | ")[-1]
@@ -774,6 +790,35 @@ class EventClassificationRule(nosql.Document):
         r += ["    \"description\": \"%s\"," % jq(self.description)]
         r += ["    \"event_class__name\": \"%s\"," % jq(self.event_class.name)]
         r += ["    \"preference\": %d," % self.preference]
+        # Dump datasources
+        if self.datasources:
+            r += ["    \"datasources\": ["]
+            jds = []
+            for ds in self.datasources:
+                x = ["        \"name\": \"%s\"" % jq(ds.name)]
+                x += ["        \"datasource\": \"%s\"" % jq(ds.datasource)]
+                ss = []
+                for k in sorted(ds.search):
+                    ss += ["            \"%s\": \"%s\"" % (jq(k), jq(ds.search[k]))]
+                x += ["            \"search\": {"]
+                x += [",\n".join(ss)]
+                x += ["            }"]
+                jds += ["        {", ",\n".join(x), "        }"]
+            r += [",\n\n".join(jds)]
+            r += ["    ],"]
+        # Dump vars
+        if self.vars:
+            r += ["    \"vars\": ["]
+            vars = []
+            for v in self.vars:
+                vd = ["        {"]
+                vd += ["            \"name\": \"%s\"" % jq(v.name)]
+                vd += ["            \"value\": \"%s\"" % jq(v.value)]
+                vd += ["        }"]
+                vars += ["\n".join(vd)]
+            r += [",\n\n".join(vars)]
+            r += ["    ],"]
+        # Dump patterns
         r += ["    \"patterns\": ["]
         patterns = []
         for p in self.patterns:

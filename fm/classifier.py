@@ -25,6 +25,7 @@ from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.snmputils import render_tc
 from noc.lib.escape import fm_unescape, fm_escape
 from noc.sa.interfaces.base import *
+from noc.lib.datasource import datasource_registry
 
 
 ##
@@ -93,6 +94,23 @@ class Rule(object):
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
         self.patterns = []
+        self.datasources = {}  # name -> DS
+        self.vars = {}  # name -> value
+        # Parse datasources
+        for ds in rule.datasources:
+            self.datasources[ds.name] = eval(
+                    "lambda vars: datasource_registry['%s'](%s)" % (
+                        ds.datasource,
+                        ", ".join(["%s=vars['%s']" % (k, v)
+                                   for k, v in ds.search.items()])),
+                    {"datasource_registry": datasource_registry}, {})
+        # Parse vars
+        for v in rule.vars:
+            value = v["value"]
+            if value.startswith("="):
+                value = compile(value[1:], "<string>", "eval")
+            self.vars[v["name"]] = value
+        # Parse patterns
         c1 = []
         c2 = {}
         c3 = []
@@ -159,6 +177,13 @@ class Rule(object):
         return self.rx_exact.match(self.rx_escape.sub("", pattern)) is not None
     
     def compile(self, c1, c2, c3, c4):
+        """
+        Compile native python rule-matching function
+        and install it as .match() instance method
+        """
+        def pyq(s):
+            return s.replace("\\", "\\\\").replace("\"", "\\\"")
+
         e_vars_used = c2 or c3 or c4
         c = []
         if e_vars_used:
@@ -208,6 +233,13 @@ class Rule(object):
                 c += ["            return None"]
                 c += ["if not found:"]
                 c += ["    return None"]
+        # Vars binding
+        if self.vars:
+            for k, v in self.vars.items():
+                if isinstance(v, basestring):
+                    c += ["e_vars[\"%s\"] = \"%s\"" % (k, pyq(v))]
+                else:
+                    c += ["e_vars[\"%s\"] = eval(self.vars[\"%s\"], {}, e_vars)" % (k, k)]
         if e_vars_used:
             c += ["return self.fixup(e_vars)"]
         else:
