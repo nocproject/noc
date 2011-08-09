@@ -1,7 +1,7 @@
 [
     {
         "name": "Chassis | Fan | Fan Failed",
-        "description": "Power Suppply Unit failed",
+        "description": "Fan failed",
         "action": "A",
         "text": {
             "en": {
@@ -31,7 +31,7 @@
     
     {
         "name": "Chassis | Fan | Fan Recovered",
-        "description": "Power Suppply Unit recovered",
+        "description": "Fan recovered",
         "action": "A",
         "text": {
             "en": {
