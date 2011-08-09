@@ -1,0 +1,40 @@
+[
+    {
+        "name": "Network | STP | Topology Changed",
+        "description": "STP Topology changed",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "STP Topology changed on {{interface}}{% if vlan %} VLAN {{vlan}}{%endif %}{% if instance %}MST Instance {{instance}}{% endif %}",
+                "body_template": "STP Topology changed on {{interface}}{% if vlan %} VLAN {{vlan}}{%endif %}{% if instance %}MST Instance {{instance}}{% endif %}",
+                "symptoms": "Unexpected MAC address table cleanups, short-time traffic disruptions",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            
+            {
+                "name": "vlan",
+                "description": "VLAN ID",
+                "type": "int",
+                "required": false
+            },
+            
+            {
+                "name": "instance",
+                "description": "MST instance",
+                "type": "int",
+                "required": false
+            }
+        ],
+        "disposition": [
+        ]
+    }
+]
