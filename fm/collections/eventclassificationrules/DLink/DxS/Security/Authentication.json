@@ -78,7 +78,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-W-REJECT: New (web|telnet|ssh) connection, source (?P<ip>\\S+) destination 10.116.0.10  REJECTED$"
+                "value_re": "%AAA-W-REJECT: New (web|telnet|ssh) connection, source (?P<ip>\\S+) destination \\S+  REJECTED$"
             }
         ]
     },
@@ -162,7 +162,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-I-CONNECT: New http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination 10.8.25.150 ACCEPTED"
+                "value_re": "%AAA-I-CONNECT: New http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+ ACCEPTED"
             }
         ]
     },
