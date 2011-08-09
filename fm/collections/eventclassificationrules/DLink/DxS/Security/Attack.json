@@ -81,6 +81,27 @@
                 "value_re": "(CRIT:|CRIT\\(2\\)) TCP SYNFIN is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
             }
         ]
+    },
+    
+    {
+        "name": "DLink | DxS | Security | Attack | IP Spoofing (SYSLOG)",
+        "description": "CRIT(2) Possible spoofing attack from (IP 10.109.36.1 MAC 00-1C-F0-21-59-03 port 19)",
+        "event_class__name": "Security | Attack | IP Spoofing",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(CRIT:|CRIT\\(2\\)) Possible spoofing attack from \\(IP (?P<src_ip>\\S+) MAC (?P<src_mac>\\S+) port (?P<interface>\\S+)\\)$"
+            }
+        ]
     }
 
 ]
