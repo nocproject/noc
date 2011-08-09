@@ -115,7 +115,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%LINK-3-UPDOWN: Interface (?P<interface>.+), changed state to up$"
+                "value_re": "%LINK-(?:SP-)?3-UPDOWN: Interface (?P<interface>.+), changed state to up$"
             }
         ]
     },
@@ -136,7 +136,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%LINK-3-UPDOWN: Interface (?P<interface>.+), changed state to down$"
+                "value_re": "%LINK-(?:SP-)?3-UPDOWN: Interface (?P<interface>.+), changed state to down$"
             }
         ]
     }
