@@ -27,7 +27,7 @@ class Command(BaseCommand):
     )
     
     def _usage(self):
-        print "./noc inject-event <object name> <file1> [ .. <fileN>]"
+        print "./noc inject-event <object name> [<file1> [ .. <fileN>]]"
         sys.exit(0)
 
     def handle(self, *args, **options):
@@ -42,8 +42,11 @@ class Command(BaseCommand):
         if options["syslog"]:
             self.syslog_message(o, options["syslog"])
         # Load jsons
-        for f in args[1:]:
-            self.load_events(o, f)
+        if len(args) > 1:
+            for f in args[1:]:
+                self.load_events(o, f)
+        else:
+            self.load_events(o, "/dev/stdin")
 
     def load_events(self, obj, path):
         """
