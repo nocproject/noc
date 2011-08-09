@@ -56,6 +56,13 @@
             },
 
             {
+                "name": "dst_interface",
+                "description": "Destination Interface",
+                "type": "interface_name",
+                "required": false
+            },
+
+            {
                 "name": "dst_ip",
                 "description": "Destination IP",
                 "type": "ip_address",
@@ -133,6 +140,13 @@
                 "name": "src_mac",
                 "description": "Source MAC",
                 "type": "mac",
+                "required": false
+            },
+
+            {
+                "name": "dst_interface",
+                "description": "Destination Interface",
+                "type": "interface_name",
                 "required": false
             },
 
