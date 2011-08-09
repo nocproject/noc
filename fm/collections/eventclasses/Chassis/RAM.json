@@ -7,9 +7,9 @@
             "en": {
                 "subject_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
                 "body_template": "RAM Failed {% if bank %}at bank {{bank}}{% endif %}",
-                "symptoms": "Instability work",
+                "symptoms": "From random instability to complete operation failure",
                 "probable_causes": "",
-                "recommended_actions": "Replace bogus RAM with new" 
+                "recommended_actions": "Replace faulty RAM module" 
             }
         },
         "vars": [
