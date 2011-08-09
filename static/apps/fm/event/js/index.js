@@ -18,7 +18,6 @@ function show_result(data) {
     $.each(data["events"],function(i,r){
         var $tr=$(document.createElement("tr"));
         var rc = "row" + ((n % 2) + 1);
-        console.log(rc);
         $tr.addClass(rc);
         tb.append($tr);
         if (r.length == 4) {
@@ -44,6 +43,15 @@ function show_result(data) {
     $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
     $("#events_count").text(data["count"]);
     $("#cover").hide();
+    // Enable row hover
+    $("#events_table TR").hover(
+        function() {
+            $(this).addClass("ui-state-highlight");
+        },
+        function() {
+            $(this).removeClass("ui-state-highlight");
+        }
+    );    
 }
 
 var timeout_submit;

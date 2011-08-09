@@ -28,6 +28,15 @@ function show_result(data) {
     $("#pager").pager({pagenumber:data["page"]+1,pagecount:data["pages"],buttonClickCallback: pager_click});
     $("#alarms_count").text(data["count"]);
     $("#cover").hide();
+    // Enable row hover
+    $("#alarms_table TR").hover(
+        function() {
+            $(this).addClass("ui-state-highlight");
+        },
+        function() {
+            $(this).removeClass("ui-state-highlight");
+        }
+    );
 }
 
 var timeout_submit;
