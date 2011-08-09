@@ -184,5 +184,47 @@
                 "alarm_class__name" : "Security | Attack | TCP SYNFIN Scan"
             }
         ]
+    },
+    
+    {
+        "name": "Security | Attack | IP Spoofing",
+        "description": "IP Spoofing detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "IP Spoofing detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "body_template": "IP Spoofing detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "src_ip",
+                "description": "Source IP",
+                "type": "ip_address",
+                "required": true
+            },
+            {
+                "name": "src_mac",
+                "description": "Source MAC",
+                "type": "mac",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name" : "Security | Attack | IP Spoofing" 
+            }
+        ]
     }
 ]
