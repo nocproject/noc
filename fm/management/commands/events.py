@@ -89,7 +89,7 @@ class Command(BaseCommand):
             c = c.filter(raw_vars__source="SNMP Trap")
         if options["syslog"]:
             try:
-                syslog_re = re.compile(options["syslog"])
+                syslog_re = re.compile(options["syslog"], re.IGNORECASE)
             except Exception, why:
                 raise CommandError("Invalid RE: %s" % why)
             c = c.filter(raw_vars__source="syslog")
