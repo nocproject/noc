@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed (SYSLOG)",
+        "description": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
+        "event_class__name": "Chassis | Fan | Fan Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Zyxel\\.ZyNOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ENVM-2-FAN: (?P<name>\\S+) has failed"
+            }
+        ]
+    }
+]
