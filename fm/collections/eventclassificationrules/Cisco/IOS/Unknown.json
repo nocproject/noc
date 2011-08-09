@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%LINEPROTO-5-UPDOWN"
+                "value_re": "%LINEPROTO-(?:SP-)?5-UPDOWN"
             }
         ]
     },
