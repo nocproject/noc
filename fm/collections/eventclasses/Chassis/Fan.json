@@ -1,0 +1,61 @@
+[
+    {
+        "name": "Chassis | Fan | Fan Failed",
+        "description": "Power Suppply Unit failed",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Fan Failed: {{name}}",
+                "body_template": "Fan Unit Failed: {{name}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "Fan Name",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | Fan | Fan Failed"
+            }
+        ]
+    },
+    
+    {
+        "name": "Chassis | Fan | Fan Recovered",
+        "description": "Power Suppply Unit recovered",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Fan Recovered: {{name}}",
+                "body_template": "Fan Recovered: {{name}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "Fan Name",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Chassis | Fan | Fan Failed"
+            }
+        ]
+    }
+]
