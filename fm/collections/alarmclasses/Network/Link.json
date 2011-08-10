@@ -1,4 +1,34 @@
 [
+        
+    {
+        "name": "Network | Link | Err-Disable",
+        "description": "Link in err-disable state",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface name"
+            },
+            
+            {
+                "name": "reason",
+                "description": "err-disable reason"
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Link err-disable: {{interface}} ({{reason}})",
+                "body_template": "Link err-disable: {{interface}} ({{reason}})",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    },
+
     {
         "name": "Network | Link | Link Down",
         "description": "Link down",
@@ -35,6 +65,16 @@
             {
                 "name": "LBD Loop",
                 "root__name": "Network | LBD | Loop Detected",
+                "window": 10,
+                "match_condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__interface": "alarm.vars['interface']"
+                }
+            },
+            
+            {
+                "name": "err-disable",
+                "root_name": "Network | Link | Err-Disable",
                 "window": 10,
                 "match_condition": {
                     "managed_object": "alarm.managed_object.id",
