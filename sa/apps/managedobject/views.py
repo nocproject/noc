@@ -250,7 +250,8 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         admin.ModelAdmin.save_model(self, request, obj, form, change)
         # Then check
         if not obj.has_access(request.user):
-            raise PermissionDenied()
+            # Will be rolled back by exception handler
+            raise PermissionDenied("Permission denied")
 
     def test_access(self, request, queryset):
         """
