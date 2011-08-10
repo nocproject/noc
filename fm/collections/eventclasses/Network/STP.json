@@ -36,5 +36,124 @@
         ],
         "disposition": [
         ]
+    },
+    
+    {
+        "name": "Network | STP | BPDU Guard Violation",
+        "description": "BPDU Guard Violation",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "BPDU Guard Violation on {{interface}}",
+                "body_template": "BPDU Guard Violation on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | STP | BPDU Guard Violation" 
+            }
+        ]
+    },
+
+    {
+        "name": "Network | STP | BPDU Guard Recovery",
+        "description": "BPDU Guard Recovery",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "BPDU Guard Recovery on {{interface}}",
+                "body_template": "BPDU Guard Recovery on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | STP | BPDU Guard Violation" 
+            }
+        ]
+    },
+    {
+        "name": "Network | STP | BPDU Root Violation",
+        "description": "BPDU Root Violation",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "BPDU Root Violation on {{interface}}",
+                "body_template": "BPDU Root Violation on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | STP | Root Guard Violation" 
+            }
+        ]
+    },
+
+    {
+        "name": "Network | STP | Root Guard Recovery",
+        "description": "Root Guard Recovery",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Root Guard Recovery on {{interface}}",
+                "body_template": "Root Guard Recovery on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | STP | Root Guard Violation" 
+            }
+        ]
     }
 ]
