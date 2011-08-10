@@ -2,18 +2,27 @@
 ##----------------------------------------------------------------------
 ## Site implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.http import HttpResponseRedirect
+
+## Python modules
+import re
+import types
+import glob
+import os
+import urllib
+## Django modules
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.http import urlquote
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import *
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
+## NOC modules
 from noc.settings import INSTALLED_APPS
 from noc.lib.debug import error_report
-import re,types,glob,os,urllib
+
 ##
 ## Application menu
 ## Populated by Site
@@ -186,7 +195,10 @@ class Site(object):
         def inner(request,*args,**kwargs):
             if not request.user or not view.access.check(app,request.user):
                 return self.login(request)
-            return view(request,*args,**kwargs)
+            try:
+                return view(request,*args,**kwargs)
+            except PermissionDenied, why:
+                return HttpResponse(why)
         # Render view in testing mode
         def inner_test(request,*args,**kwargs):
             try:
@@ -194,6 +206,7 @@ class Site(object):
             except:
                 #print error_report()
                 raise
+        from access import PermissionDenied
         # Return actual handler
         if self.testing_mode:
             return inner_test
