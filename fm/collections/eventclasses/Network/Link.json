@@ -58,15 +58,24 @@
         ],
         "disposition": [
             {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
+                "name": "Clear Link Down",
+                "action": "clear",
+                "alarm_class__name": "Network | Link | Link Down",
+                "stop_disposition": false
             },
 
             {
-                "name": "dispose",
+                "name": "Clear BPDU Guard Violation",
                 "action": "clear",
-                "alarm_class__name": "Network | Link | Link Down"
+                "alarm_class__name": "Network | STP | BPDU Guard Violation",
+                "stop_disposition": false
+            },
+            
+            {
+                "name": "Clear Root Guard Violation",
+                "action": "clear",
+                "alarm_class__name": "Network | STP | Root Guard Violation",
+                "stop_disposition": false
             }
         ]
     }
