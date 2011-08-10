@@ -1204,7 +1204,7 @@ class ActiveAlarm(nosql.Document):
         if isinstance(user, User):
             user = user.username
         if delta:
-            self.severity += delta
+            self.severity = max(0, self.severity + delta)
             if delta > 0:
                 self.log_message("%s has increased event severity by %s" % (user, delta))
             else:
