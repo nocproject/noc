@@ -51,6 +51,7 @@ class Command(BaseCommand):
     rx_ip = re.compile(r"\d+\.\d+\.\d+\.\d+")
     rx_float = re.compile(r"\d+\.\d+")
     rx_int = re.compile(r"\d+")
+    rx_volatile_date = re.compile(r"^.+?(?=%[A-Z])")
 
     def get_events(self, options):
         """
@@ -141,7 +142,8 @@ class Command(BaseCommand):
             subject = e.get_translated_subject("en")
             if to_suppress:
                 # Replace volarile parts
-                s = self.rx_ip.sub("$IP", subject)
+                s = self.rx_volatile_date.sub("", subject)
+                s = self.rx_ip.sub("$IP", s)
                 s = self.rx_float.sub("$FLOAT", s)
                 s = self.rx_int.sub("$INT", s)
                 sh = hashlib.sha1(s).hexdigest()
