@@ -110,5 +110,68 @@
                 "value_re": "%SEC_LOGIN-4-LOGIN_FAILED: Login failed \\[user: (?P<user>.*)\\] \\[Source: (?P<ip>\\S+)\\] \\[localport: (?P<lport>.+)\\] \\[Reason: Login Authentication Failed\\]" 
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Security | Authentication | SSH - Login (SYSLOG)",
+        "description": "%SSH-5-SSH2_USERAUTH: User 'admin' authentication for SSH2 Session from 172.16.0.22 (tty = 1) using crypto cipher 'aes256-cbc', hmac 'hmac-sha1' Succeeded",
+        "event_class__name": "Security | Authentication | Login",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SSH-5-SSH2_USERAUTH: User '(?P<user>.*)' authentication for SSH2 Session from (?P<ip>\\S+) \\(tty = (?P<vty>\\d+)\\) using crypto cipher '\\S+', hmac '\\S+' Succeeded$" 
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Security | Authentication | SSH - Login Failed (SYSLOG)",
+        "description": "%SSH-5-SSH2_USERAUTH: User 'admin' authentication for SSH2 Session from 172.16.0.22 (tty = 1) using crypto cipher 'aes256-cbc', hmac 'hmac-sha1' Failed",
+        "event_class__name": "Security | Authentication | Login Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SSH-5-SSH2_USERAUTH: User '(?P<user>.*)' authentication for SSH2 Session from (?P<ip>\\S+) \\(tty = (?P<vty>\\d+)\\) using crypto cipher '\\S+', hmac '\\S+' Failed$" 
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Security | Authentication | SSH - Logout (SYSLOG)",
+        "description": "%SSH-5-SSH2_CLOSE: SSH2 Session from 172.16.0.22 (tty = 1) for user 'admin' using crypto cipher 'aes256-cbc', hmac 'hmac-sha1' closed",
+        "event_class__name": "Security | Authentication | Logout",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SSH-5-SSH2_CLOSE: SSH2 Session from (?P<ip>\\S+) \\(tty = (?P<vty>\\d+)\\) for user '(?P<user>.*)' using crypto cipher '\\S+', hmac '\\S+' closed$" 
+            }
+        ]
     }
 ]
