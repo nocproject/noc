@@ -60,5 +60,68 @@
                 "value_re": "^CISCOTRAP-MIB::tcpConnectionClose$"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Unknown | Ignore Storm Control (SYSLOG)",
+        "description": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on Gi0/24. The interface has been disabled.",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on \\S+. The interface has been disabled."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Unknown | Ignore BPDUGUARD (SYSLOG)",
+        "description": "%SPANTREE-SP-2-BLOCK_BPDUGUARD: Received BPDU on port GigabitEthernet4/1 with BPDU Guard enabled. Disabling port.",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SPANTREE-SP-2-BLOCK_BPDUGUARD: Received BPDU on port \\S+ with BPDU Guard enabled. Disabling port."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Unknown | Ignore NGP Notification (SYSLOG)",
+        "description": "%BGP-3-NOTIFICATION: sent to neighbor 10.110.0.81 4/0 (hold time expired) 0 bytes",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%BGP-3-NOTIFICATION: sent to neighbor .+ (hold time expired) \\d+ bytes"
+            }
+        ]
     }
 ]
