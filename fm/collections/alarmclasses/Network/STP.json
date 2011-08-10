@@ -1,0 +1,53 @@
+[
+    {
+        "name": "Network | STP | BPDU Guard Violation",
+        "description": "BPDU Guard Violation",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "BPDU Guard Violation on {{interface}}",
+                "body_template": "BPDU Guard Violation on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        }
+    },
+    
+    {
+        "name": "Network | STP | Root Guard Violation",
+        "description": "Root Guard Violation",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "STP Root Guard Violation on {{interface}}",
+                "body_template": "STP Root Guard Violation on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        }
+    }
+]
