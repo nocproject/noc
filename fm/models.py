@@ -367,7 +367,10 @@ class AlarmSeverity(nosql.Document):
         """
         Returns Alarm Severity instance corresponding to numeric value
         """
-        return cls.objects.filter(severity__lte=severity).order_by("-severity").first()
+        s = cls.objects.filter(severity__lte=severity).order_by("-severity").first()
+        if not s:
+            s = cls.objects.order_by("severity").first()
+        return s
 
 
 class AlarmClassVar(nosql.EmbeddedDocument):
