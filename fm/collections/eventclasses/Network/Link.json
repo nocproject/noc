@@ -1,4 +1,33 @@
 [
+        {
+        "name": "Network | Link | Err-Disable",
+        "description": "Link in err-disable state",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Link err-disable: {{interface}} ({{reason}})",
+                "body_template": "Link err-disable: {{interface}} ({{reason}})",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface name",
+                "type": "interface_name",
+                "required": true
+            },
+            
+            {
+                "name": "reason",
+                "description": "err-disable reason",
+                "type": "str",
+                "required": false
+            }
+        ]
+    },
     {
         "name": "Network | Link | Link Down",
         "description": "Link Down",
