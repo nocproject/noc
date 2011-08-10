@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Vendor | f5 | BIGIP | Network | Load Balance | Node Down",
+        "description": "Node Down",
+        "is_unique": true,
+        "discriminator": ["host"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "str",
+                "description": "IP or hostname",
+                "type": "ip_address",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Node down: {{host}}",
+                "body_template": "Node down: {{node}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    }
+]
