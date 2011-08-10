@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Zyxel | ZyNOS | System | Started (SYSLOG)",
+        "description": "Jan  1  0: 1:41 sw-name system: System cold start",
+        "event_class__name": "System | Started",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Zyxel\\.ZyNOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "system: System cold start$"
+            }
+        ]
+    }
+]
