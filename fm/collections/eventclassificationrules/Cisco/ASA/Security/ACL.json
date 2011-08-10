@@ -60,5 +60,26 @@
                 "value_re": "%PIX-3-710003: (?P<proto>\\S+) access denied by ACL from (?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+)$"
             }
         ]
+    },
+    
+    {
+        "name": "Cisco | ASA | Security | ACL | ACL Deny #4 (SYSLOG)",
+        "description": "Aug 10 2011 16:25:44: %ASA-3-313001: Denied ICMP type=8, code=0 from 93.119.241.226 on interface outside",
+        "event_class__name": "Security | ACL | ACL Deny",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.ASA$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ASA-3-313001: Denied (?P<proto>\\S+) type=\\d+, code=\\d+ from (?P<src_ip>\\S+) on interface (?P<src_interface>\\S+)$"
+            }
+        ]
     }
 ]
