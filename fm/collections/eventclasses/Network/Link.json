@@ -1,5 +1,5 @@
 [
-        {
+    {
         "name": "Network | Link | Err-Disable",
         "description": "Link in err-disable state",
         "action": "A",
@@ -104,6 +104,13 @@
                 "name": "Clear Link Down",
                 "action": "clear",
                 "alarm_class__name": "Network | Link | Link Down",
+                "stop_disposition": false
+            },
+
+            {
+                "name": "Clear Err-Disable",
+                "action": "clear",
+                "alarm_class__name": "Network | Link | Err-Disable",
                 "stop_disposition": false
             },
 
