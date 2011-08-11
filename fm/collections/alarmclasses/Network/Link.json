@@ -74,7 +74,7 @@
             
             {
                 "name": "err-disable",
-                "root_name": "Network | Link | Err-Disable",
+                "root__name": "Network | Link | Err-Disable",
                 "window": 10,
                 "match_condition": {
                     "managed_object": "alarm.managed_object.id",
