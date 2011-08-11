@@ -101,9 +101,10 @@ class TopologyDiscovery(object):
                 for vlan in vlans:
                     vd=[]
                     for o,d in data:
-                        dd = d.copy()
-                        dd["mac"] = [r for r in d["mac"] if r["vlan_id"]==vlan]
+                        vlan_macs = [r for r in d["mac"] if r["vlan_id"] == vlan]
                         if vlan_macs:
+                            dd = d.copy()
+                            dd["mac"] = vlan_macs
                             vd += [(o, dd)]
                     # Perform discovery
                     t=MACTopology(vd)
