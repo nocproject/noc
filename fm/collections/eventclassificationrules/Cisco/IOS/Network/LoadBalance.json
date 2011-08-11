@@ -1,0 +1,42 @@
+[
+    {
+        "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | vserver In Service (SYSLOG)",
+        "description": "325402: Aug 10 23:36:37: %CSM_SLB-6-INFO: Module 1 info: SLB-NETMGT: vserver VS1 inservice",
+        "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver In Service",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "Module (?P<module>\\d+) info: SLB-NETMGT: vserver (?P<name>.+?) inservice$"
+            }
+        ]
+    },
+    {
+        "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service (SYSLOG)",
+        "description": "325328: Aug 10 23:25:33: %CSM_SLB-6-INFO: Module 1 info: SLB-NETMGT: vserver VS1 out of service",
+        "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%CSM_SLB-6-INFO: Module (?P<module>\\d+) info: SLB-NETMGT: vserver (?P<name>.+?) out of service$"
+            }
+        ]
+    }
+]
