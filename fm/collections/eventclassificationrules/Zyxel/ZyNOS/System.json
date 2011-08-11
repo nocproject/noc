@@ -18,5 +18,26 @@
                 "value_re": "system: System cold start$"
             }
         ]
+    },
+
+    {
+        "name": "Zyxel | ZyNOS | System | Reboot (SYSLOG)",
+        "description": "Jan  1  0: 1:42 switch-name system: system has reset without management command",
+        "event_class__name": "System | Reboot",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Zyxel\\.ZyNOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "system: system has reset without management command$"
+            }
+        ]
     }
 ]
