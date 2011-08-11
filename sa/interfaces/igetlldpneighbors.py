@@ -48,7 +48,7 @@ class IGetLLDPNeighbors(Interface):
             "remote_chassis_id_subtype" : IntParameter(default=4), # LldpChassisIdSubtype TC, macAddress(4)
             "remote_chassis_id"         : MACAddressParameter() | IPv4Parameter() | StringParameter() , # Remote chassis ID
             "remote_port_subtype"       : IntParameter(default=5), # LldpPortIdSubtype TC, interfaceName(5)
-            "remote_port"               : StringParameter(),
+            "remote_port"               : MACAddressParameter() | IPv4Parameter() | StringParameter(),
             "remote_system_name"        : StringParameter(required=False),
             "remote_capabilities"       : IntParameter(default=0), # LldpSystemCapabilitiesMap TC bitmask
         }))
