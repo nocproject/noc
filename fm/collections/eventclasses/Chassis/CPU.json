@@ -47,5 +47,30 @@
         ],
         "disposition": [
         ]
+    },
+    
+    {
+        "name": "Chassis | CPU | CoPP Drop",
+        "description": "CoPP drops exceeded threshold",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}",
+                "body_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "CoPP protects control plane by dropping traffic exceeding thresholds",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "cpu",
+                "description": "CPU Name",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+        ]
     }
 ]
