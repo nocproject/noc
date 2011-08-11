@@ -98,6 +98,8 @@ class TopologyDiscovery(object):
                         for r in d["mac"]:
                             vlans.add(r["vlan_id"])
                 # Buld data and perform discovery per each vlan
+                if mac_port_bindings:
+                    self.mac_port_bindings = []
                 for vlan in vlans:
                     vd=[]
                     for o,d in data:
@@ -110,6 +112,8 @@ class TopologyDiscovery(object):
                     t=MACTopology(vd)
                     for R in t.discover():
                         self.add_link(R,"MAC%d"%vlan)
+                    if mac_port_bindings:
+                        self.mac_port_bindings += list(t.get_mac_port_bindings())
             else:
                 # Perform discovery for common tree
                 t=MACTopology(data)
