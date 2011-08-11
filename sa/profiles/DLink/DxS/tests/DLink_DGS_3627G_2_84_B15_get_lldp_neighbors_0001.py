@@ -27,14 +27,14 @@ class DLink_DxS_get_lldp_neighbors_Test(ScriptTestCase):
   'neighbors': [{'remote_capabilities': 6,
                  'remote_chassis_id': '00:21:91:A7:0A:00',
                  'remote_chassis_id_subtype': 4,
-                 'remote_port': '00-21-91-A7-0A-FF',
+                 'remote_port': '00:21:91:A7:0A:FF',
                  'remote_port_subtype': 3,
                  'remote_system_name': 'Aggr-druzhaeva-1'}]},
  {'local_interface': '26',
   'neighbors': [{'remote_capabilities': 6,
                  'remote_chassis_id': '00:21:91:A6:EF:00',
                  'remote_chassis_id_subtype': 4,
-                 'remote_port': '00-21-91-A6-EF-FF',
+                 'remote_port': '00:21:91:A6:EF:FF',
                  'remote_port_subtype': 3,
                  'remote_system_name': 'Aggr-druzhaeva-3'}]}]
     motd = '******\n\n'
