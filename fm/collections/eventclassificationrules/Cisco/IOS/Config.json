@@ -81,5 +81,26 @@
                 "value_re": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the startup configuration to the standby Router."
             }
         ]
+    },
+    
+    {
+        "name": "Cisco | IOS | Config | Entering Configuration Mode (SYSLOG)",
+        "description": "164: 6w6d: %SYS-5-CONFIG_I: Configured from console by vty0 (172.17.1.51)",
+        "event_class__name": "Config | Entering Configuration Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-5-CONFIG_I: Configured from console by \\S+ \\(\\S+\\)$"
+            }
+        ]
     }
 ]
