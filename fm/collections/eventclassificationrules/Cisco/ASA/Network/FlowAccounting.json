@@ -10,6 +10,10 @@
                 "value_re": "^syslog$"
             },
             {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.ASA$"
+            },
+            {
                 "key_re": "^message$",
                 "value_re": "%(?:ASA|PIX)-6-302013: Built \\S+ (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) \\(.+?\\) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) \\(\\S+\\)(?: \\((?P<user>\\S+)\\))?$"
             }
@@ -25,6 +29,10 @@
             {
                 "key_re": "^source$",
                 "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.ASA$"
             },
             {
                 "key_re": "^message$",
@@ -65,6 +73,10 @@
                 "value_re": "^syslog$"
             },
             {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.ASA$"
+            },
+            {
                 "key_re": "^message$",
                 "value_re": "%(?:ASA|PIX)-6-302014: Teardown (?P<proto>\\S+) connection \\d+ for (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) duration .+? bytes (?P<bytes>\\d+).*?(?:\\((?P<user>\\S+)\\))?$"
             }
@@ -80,6 +92,10 @@
             {
                 "key_re": "^source$",
                 "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.ASA$"
             },
             {
                 "key_re": "^message$",
