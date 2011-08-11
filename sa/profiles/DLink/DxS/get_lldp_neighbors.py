@@ -164,13 +164,22 @@ class Script(NOCScript):
                 if match:
                     remote_capabilities = match.group("capabilities").strip()
                     # TODO: Find other capabilities
-                    cc = 1
-                    for cap in ("Other", "Repeater", "Bridge",
-                                "WLAN Access Point", "Router", "Telephone",
-                                "DOCSIS Cable Device", "Station Only"):
-                        if cap in remote_capabilities:
-                            caps |= cc
-                        cc <<= 1
+                    if remote_capabilities.find("Other") != -1:
+                        caps += 1
+                    if remote_capabilities.find("Repeater") != -1:
+                        caps += 2
+                    if remote_capabilities.find("Bridge") != -1:
+                        caps += 4
+                    if remote_capabilities.find("WLAN Access Point") != -1:
+                        caps += 8
+                    if remote_capabilities.find("Router") != -1:
+                        caps += 16
+                    if remote_capabilities.find("Telephone") != -1:
+                        caps += 32
+                    if remote_capabilities.find("DOCSIS Cable Device") != -1:
+                        caps += 64
+                    if remote_capabilities.find("Station Only") != -1:
+                        caps += 128
                 # 8-15 bits are reserved
                 n["remote_capabilities"] = caps
 
