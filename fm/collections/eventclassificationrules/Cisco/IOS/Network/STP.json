@@ -73,7 +73,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PM-SP-4-ERR_DISABLE: bpduguard error detected on (?P<interface>\\S+), putting \\S+ in err-disable state"
+                "value_re": "%PM(-SP)?-4-ERR_DISABLE: bpduguard error detected on (?P<interface>\\S+), putting \\S+ in err-disable state"
             }
         ]
     }
