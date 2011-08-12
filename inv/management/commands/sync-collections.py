@@ -21,37 +21,39 @@ from noc.lib.debug import error_report
 
 
 class CollectionSync(object):
-    def __init__(self, app, name, doc):
+    def __init__(self, app, name, doc, paths=None):
         self.app = app
         self.name = name
         self.doc = doc
         self.builtin_ids = set()  # existing builtin ids
         self.unique = set()  # unique fields
         self.ref_cache = {}  # model -> field -> key -> value
+        self.paths = paths
+        if paths is None:
+            self.paths = []
+            # Look  <app>/collections/<name>/ tree for JSON files
+            for dirpath, dirnames, files in os.walk(os.path.join(self.app,
+                                                "collections", self.name)):
+                for f in files:
+                    if f.startswith(".") or not f.endswith(".json"):
+                        continue
+                    self.paths += [os.path.join(dirpath, f)]
 
     def get_data(self):
-        # Look  <app>/collections/<name>/ tree for JSON files
-        for dirpath, dirnames, files in os.walk(os.path.join(self.app,
-                                                             "collections",
-                                                             self.name)):
-            for f in files:
-                if f.startswith(".") or not f.endswith(".json"):
-                    continue
-                # Load JSON
-                path = os.path.join(dirpath, f)
-                with open(path, "r") as jf:
-                    try:
-                        data = simplejson.JSONDecoder().decode(jf.read())
-                    except ValueError, why:
-                        self.die("JSON error in %s: %s" % (path, why))
-                # Data must be either dict or list
-                if type(data) == type({}):
-                    # Convert dict to list
-                    data = [data]
-                if type(data) != type([]):
-                    self.die("Invalid JSON data type: %s" % type(data))
-                for d in data:
-                    yield d
+        for path in self.paths:
+            with open(path, "r") as jf:
+                try:
+                    data = simplejson.JSONDecoder().decode(jf.read())
+                except ValueError, why:
+                    self.die("JSON error in %s: %s" % (path, why))
+            # Data must be either dict or list
+            if type(data) == type({}):
+                # Convert dict to list
+                data = [data]
+            if type(data) != type([]):
+                self.die("Invalid JSON data type: %s" % type(data))
+            for d in data:
+                yield d
 
     def log(self, msg):
         print "    " + msg
@@ -222,10 +224,28 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            # Sync all collections
-            for app, collections in self.collections:
-                for collection, doc in collections:
-                    CollectionSync(app, collection, doc).sync()
+            if len(args) > 0:
+                name = args[0]
+                if "." not in name:
+                    raise CommandError("Invalid collection name: %s" % name)
+                app, c = name.split(".", 1)
+                a = None
+                for ad in self.collections:
+                    if ad[0] == app:
+                        for cn, doc in ad[1]:
+                            if cn == c:
+                                a = (app, cn, doc, args[1:])
+                                break
+                        if a:
+                            break
+                if not a:
+                    raise CommandError("Invalid collection: %s" % name)
+                CollectionSync(*a)
+            else:
+                # Sync all collections
+                for app, collections in self.collections:
+                    for collection, doc in collections:
+                        CollectionSync(app, collection, doc).sync()
         except CommandError, why:
             raise CommandError(why)
         except:
