@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%UBR7\\d00-3-OVERLAPIP: Interface (?P<interface>\\S+), IP address (?P<src_ip>\\S+) from MAC (?P<src_mac>\\S+) is already in use on .+.  SID = \\d+"
+                "value_re": "%UBR\\S+00-3-OVERLAPIP: Interface (?P<interface>\\S+), IP address (?P<src_ip>\\S+) from MAC (?P<src_mac>\\S+) is already in use on .+.  SID = \\d+"
             }
         ]
     }
