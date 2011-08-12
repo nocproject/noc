@@ -1,5 +1,35 @@
 [
     {
+        "name": "Network | Storm Control | Storm Detected",
+        "description": "Storm Detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Storm Detected on {{interface}}",
+                "body_template": "Storm Detected  on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | Storm Control | Storm Detected" 
+            }
+        ]
+    },
+
+    {
         "name": "Network | Storm Control | Broadcast Storm Detected",
         "description": "Broadcast Storm Detected",
         "action": "A",
