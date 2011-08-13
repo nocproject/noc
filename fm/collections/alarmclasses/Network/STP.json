@@ -49,5 +49,63 @@
                 "recommended_actions": "" 
             }
         }
+    },
+    
+    {
+        "name": "Network | STP | STP Loop Detected",
+        "description": "STP Loop Detected",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "STP Loop Detected on {{interface}}",
+                "body_template": "STP Loop Detected on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        }
+    },
+
+    {
+        "name": "Network | STP | STP Vlan Loop Detected",
+        "description": "STP Vlan Loop Detected",
+        "is_unique": true,
+        "discriminator": ["interface", "vlan"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "vlan",
+                "type": "int",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "STP Vlan Loop Detected on {{interface}} vlan {{vlan}}",
+                "body_template": "STP Vlan Loop Detected on {{interface}} vlan {{vlan}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        }
     }
 ]
