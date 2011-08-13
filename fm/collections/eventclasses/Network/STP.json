@@ -155,5 +155,137 @@
                 "alarm_class__name": "Network | STP | Root Guard Violation" 
             }
         ]
+    },
+    
+    {
+        "name": "Network | STP | STP Loop Detected",
+        "description": "STP Loop Detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "STP Loop Detected on {{interface}}",
+                "body_template": "STP Loop Detected on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | STP | STP Loop Detected" 
+            }
+        ]
+    },
+
+    {
+        "name": "Network | STP | STP Loop Cleared",
+        "description": "STP Loop Cleared",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "STP Loop Cleared on {{interface}}",
+                "body_template": "STP Loop Cleared on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | STP | STP Loop Detected" 
+            }
+        ]
+    },
+
+    {
+        "name": "Network | STP | STP Vlan Loop Detected",
+        "description": "STP Vlan Loop Detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "STP Vlan Loop Detected on {{interface}} vlan {{vlan}}",
+                "body_template": "STP Vlan Loop Detected on {{interface}} vlan {{vlan}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "vlan",
+                "type": "int",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | STP | STP Vlan Loop Detected" 
+            }
+        ]
+    },
+
+    {
+        "name": "Network | STP | STP Vlan Loop Cleared",
+        "description": "STP Vlan Loop Cleared",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "STP Vlan Loop Cleared on {{interface}} vlan {{vlan}}",
+                "body_template": "STP Vlan Loop Cleared on {{interface}} vlan {{vlan}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "vlan",
+                "type": "int",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | STP | STP Vlan Loop Detected" 
+            }
+        ]
     }
 ]
