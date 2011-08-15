@@ -33,6 +33,10 @@ from noc.lib.datasource import datasource_registry
 ##
 class InvalidPatternException(Exception):
     pass
+
+
+class EventProcessingFailed(Exception):
+    pass
 ##
 ## Patterns
 ##
@@ -271,7 +275,7 @@ class Rule(object):
 
     def fixup_bin_to_ip(self, v):
         """
-        Fix 4-octet binary ip to dottet representation
+        Fix 4-octet binary ip to dotted representation
         """
         if len(v) != 4:
             return v
@@ -407,19 +411,22 @@ class Classifier(Daemon):
         for e in NewEvent.objects.order_by("timestamp")[:max_chunk]:
             yield e
 
-    def mark_as_failed(self, event):
+    def mark_as_failed(self, event, traceback=None):
         """
         Write error log and mark event as failed
         """
-        logging.error("Failed to process event %s" % str(event.id))
-        # Prepare traceback
-        t, v, tb = sys.exc_info()
-        now = datetime.datetime.now()
-        r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
-        r += [str(t), str(v)]
-        r += [format_frames(get_traceback_frames(tb))]
-        r = "\n".join(r)
-        event.mark_as_failed(version=self.version, traceback=r)
+        if traceback:
+            logging.error("Failed to process event %s: %s" % (str(event.id), traceback))
+        else:
+            logging.error("Failed to process event %s" % str(event.id))
+            # Prepare traceback
+            t, v, tb = sys.exc_info()
+            now = datetime.datetime.now()
+            r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
+            r += [str(t), str(v)]
+            r += [format_frames(get_traceback_frames(tb))]
+            traceback = "\n".join(r)
+        event.mark_as_failed(version=self.version, traceback=traceback)
 
     def is_oid(self, v):
         """
@@ -532,7 +539,10 @@ class Classifier(Daemon):
             v = vars[ecv.name]
             decoder = getattr(self, "decode_%s" % ecv.type, None)
             if decoder:
-                v = decoder(event, v)
+                try:
+                    v = decoder(event, v)
+                except InterfaceTypeError, why:
+                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
             r[ecv.name] = v
         return r
 
@@ -626,6 +636,8 @@ class Classifier(Daemon):
                 try:
                     self.classify_event(e)
                     sn += 1
+                except EventProcessingFailed, why:
+                    self.mark_as_failed(e, why[0])
                 except:
                     self.mark_as_failed(e)
                 n += 1
