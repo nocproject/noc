@@ -478,6 +478,11 @@ class Classifier(Daemon):
                     # Render according to TC
                     rv = render_tc(v, syntax["base_type"],
                                    syntax.get("display_hint", None))
+                    try:
+                        unicode(rv, "utf8")
+                    except:
+                        # Escape invalid UTF8
+                        rv = fm_escape(rv)
             else:
                 try:
                     unicode(rv, "utf8")
