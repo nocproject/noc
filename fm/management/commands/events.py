@@ -141,7 +141,7 @@ class Command(BaseCommand):
         for e in events:
             subject = e.get_translated_subject("en")
             if to_suppress:
-                # Replace volarile parts
+                # Replace volatile parts
                 s = self.rx_volatile_date.sub("", subject)
                 s = self.rx_ip.sub("$IP", s)
                 s = self.rx_float.sub("$FLOAT", s)
@@ -172,7 +172,7 @@ class Command(BaseCommand):
                     if k in ("collector",):
                         continue
                     x += ["            \"%s\": \"%s\"" % (json_escape(k),
-                            json_escape(fm_escape(vars[k])))]
+                            json_escape(vars[k]))]
                 s += [",\n".join(x)]
                 s += ["        }"]
                 s += ["    }"]

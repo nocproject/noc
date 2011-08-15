@@ -255,7 +255,7 @@ class EventAppplication(Application):
             if k in ("collector",):
                 continue
             x += ["            \"%s\": \"%s\"" % (json_escape(k),
-                                                  json_escape(fm_escape(vars[k])))]
+                                                  json_escape(vars[k]))]
         r += [",\n".join(x)]
         r += ["        }"]
         r += ["    }"]
