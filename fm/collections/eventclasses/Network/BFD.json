@@ -1,7 +1,7 @@
 [
     {
         "name": "Network | BFD | Session Up",
-        "description": "BFD SEssion Up",
+        "description": "BFD Session Up",
         "action": "A",
         "text" : {
             "en": {
@@ -38,7 +38,7 @@
     
     {
         "name": "Network | BFD | Session Down",
-        "description": "BFD SEssion Down",
+        "description": "BFD Session Down",
         "action": "A",
         "text" : {
             "en": {
