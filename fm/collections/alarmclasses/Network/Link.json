@@ -82,7 +82,17 @@
                     "vars__interface": "alarm.vars['interface']"
                 }
             },
-            
+
+            {
+                "name": "STP Loop Detected",
+                "root__name": "Network | STP | STP Loop Detected",
+                "window": 10,
+                "match_condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__interface": "alarm.vars['interface']"
+                }
+            },
+
             {
                 "name": "err-disable",
                 "root__name": "Network | Link | Err-Disable",
