@@ -281,6 +281,13 @@ class Rule(object):
             return v
         return "%d.%d.%d.%d" % (ord(v[0]), ord(v[1]), ord(v[2]), ord(v[3]))
 
+    def fixup_bin_to_mac(self, v):
+        """
+        Fix 6-octet binary to standard MAC address representation
+        """
+        if len(v) != 6:
+            return v
+        return ":".join(["%02X" % ord(x) for x in v])
 
 class Classifier(Daemon):
     """
