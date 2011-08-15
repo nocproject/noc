@@ -61,7 +61,7 @@
             },
             {
                 "key_re": "^OLD-CISCO-SYSTEM-MIB::authAddr\\.0$",
-                "value_re": "^(?P<ip>\\S+)$"
+                "value_re": "^(?P<ip__bin_to_ip>\\S+)$"
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
