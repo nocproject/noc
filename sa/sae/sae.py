@@ -73,6 +73,9 @@ class SAE(Daemon):
         self.log_cli_sessions = False
         self.script_threads = {}
         self.script_lock = threading.Lock()
+        #
+        self.strip_syslog_facility = False
+        self.strip_syslog_severity = False
 
     def load_config(self):
         """
@@ -85,6 +88,10 @@ class SAE(Daemon):
         self.force_plaintext = [IP.prefix(p) for p
                 in self.config.get("sae", "force_plaintext").strip().split(",")
                 if p]
+        self.strip_syslog_facility = self.config.getboolean("event",
+                                                    "strip_syslog_facility")
+        self.strip_syslog_severity = self.config.getboolean("event",
+                                                    "strip_syslog_severity")
 
     def build_manifest(self):
         """
@@ -212,6 +219,14 @@ class SAE(Daemon):
             data = dict(data)
         elif type(data) != dict:
             raise ValidationError("List or dict type required")
+        # Strip syslog facility if required
+        if (self.strip_syslog_facility and "source" in data
+            and data["source"] == "syslog" and "facility" in data):
+            del data["facility"]
+        # Strip syslog severity if required
+        if (self.strip_syslog_severity and "source" in data
+            and data["source"] == "syslog" and "severity" in data):
+            del data["severity"]
         NewEvent(
             timestamp=timestamp,
             managed_object=managed_object,

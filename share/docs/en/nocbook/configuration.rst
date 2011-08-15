@@ -990,6 +990,19 @@ Comma-separated list of prefixes. If activator falls within one of prefixes
 all encrypting, compression and signing of RDP traffic will be disabled
 to increase performance.
 
+.. _noc-sae-event:
+
+[event] section
++++++++++++++++
+
+strip_syslog_facility
+^^^^^^^^^^^^^^^^^^^^^
+Strip facility info from syslog message before writting into database
+
+strip_syslog_severity
+^^^^^^^^^^^^^^^^^^^^^
+Strip severity info from syslog message before writting into database
+
 .. _noc-activator-conf:
 
 noc-activator.conf

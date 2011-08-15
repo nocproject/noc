@@ -18,3 +18,7 @@ listen     = 127.0.0.1
 port       = 19701
 refresh_event_filter = 600
 force_plaintext = 127.0.0.1/32
+
+[event]
+strip_syslog_facility = true
+strip_syslog_severity = true
