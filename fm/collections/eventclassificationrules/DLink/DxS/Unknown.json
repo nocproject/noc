@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Spanning Tree port status change \\(Instance:(?P<instance>\\d+), Port:(?P<interface>\\S+)\\) .+"
+                "value_re": "(INFO:|INFO\\(6\\)) Spanning Tree port .+ change \\(Instance:(?P<instance>\\d+), Port:(?P<interface>\\S+)\\) .+"
             }
         ]
     }
