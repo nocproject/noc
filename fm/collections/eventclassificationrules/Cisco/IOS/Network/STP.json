@@ -97,5 +97,47 @@
                 "value_re": "%PM(-SP)?-4-ERR_RECOVER: Attempting to recover from bpduguard err-disable state on (?P<interface>\\S+)"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | STP | STP Vlan Loop Detected (SYSLOG)",
+        "description": "%SPANTREE-2-LOOPGUARD_BLOCK: Loop guard blocking port GigabitEthernet0/39 on VLAN0252.",
+        "event_class__name": "Network | STP | STP Vlan Loop Detected",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SPANTREE-2-LOOPGUARD_BLOCK: Loop guard blocking port (?P<interface>\\S+) on VLAN(?P<vlan>\\d+)."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | STP | STP Vlan Loop Cleared (SYSLOG)",
+        "description": "%SPANTREE-2-LOOPGUARD_UNBLOCK: Loop guard unblocking port GigabitEthernet0/39 on VLAN0252.",
+        "event_class__name": "Network | STP | STP Vlan Loop Cleared",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SPANTREE-2-LOOPGUARD_UNBLOCK: Loop guard unblocking port (?P<interface>\\S+) on VLAN(?P<vlan>\\d+)."
+            }
+        ]
     }
 ]
