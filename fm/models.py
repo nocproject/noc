@@ -104,7 +104,7 @@ class OIDAlias(nosql.Document):
         """
         if cls.cache is None:
             # Initialize cache
-            cls.cache = dict([(a.rewrite_oid, a.to_oid)
+            cls.cache = dict([(a.rewrite_oid, a.to_oid.split("."))
                 for a in cls.objects.all()])
         # Lookup
         l_oid = oid.split(".")
@@ -114,9 +114,9 @@ class OIDAlias(nosql.Document):
             try:
                 a_oid = cls.cache[c_oid]
                 # Found
-                return ".".join([a_oid, ".".join(rest)])
+                return ".".join(a_oid + rest)
             except KeyError:
-                rest += [l_oid.pop()]
+                rest = [l_oid.pop()] + rest
         # Not found
         return oid
 
@@ -293,12 +293,9 @@ class MIB(nosql.Document):
             c_oid = ".".join(l_oid)
             d = MIBData.objects.filter(oid=c_oid).first()
             if d:
-                name = d.name
-                if rest:
-                    name += "." + ".".join(reversed(rest))
-                return name
+                return ".".join([d.name] + rest)
             else:
-                rest += [l_oid.pop()]
+                rest = [l_oid.pop()] + rest
         return oid
 
     @classmethod
