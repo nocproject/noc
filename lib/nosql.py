@@ -19,16 +19,16 @@ import noc.settings
 ##
 ## Create database connection
 ## @todo: Handle tests
-connection_args = {}
+connection_args = {
+    "db": noc.settings.NOSQL_DATABASE_NAME,
+    "username": noc.settings.NOSQL_DATABASE_USER,
+    "password": noc.settings.NOSQL_DATABASE_PASSWORD
+}
 if noc.settings.NOSQL_DATABASE_HOST:
     connection_args["host"] = noc.settings.NOSQL_DATABASE_HOST
 if noc.settings.NOSQL_DATABASE_PORT:
-    connection_args["port"] = noc.settings.NOSQL_DATABASE_PORT    
-
-connect(noc.settings.NOSQL_DATABASE_NAME,
-        noc.settings.NOSQL_DATABASE_USER,
-        noc.settings.NOSQL_DATABASE_PASSWORD,
-        **connection_args)
+    connection_args["port"] = noc.settings.NOSQL_DATABASE_PORT
+connect(**connection_args)
 ## Shortcut to ObjectId
 ObjectId = pymongo.objectid.ObjectId
 RECURSIVE_REFERENCE_CONSTANT = "self"
