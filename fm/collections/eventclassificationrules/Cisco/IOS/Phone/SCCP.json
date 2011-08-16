@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%IPPHONE-6-REG_ALARM: (?P<socket>\\d+): Name=(?P<sn>\\S+) Load=(?P<image>\\S+) Last=(?P<reason>.+)"
+                "value_re": "%IPPHONE-6-REG_ALARM: (?:(?P<socket>\\d+): )?Name=(?P<sn>\\S+) Load=(?P<image>\\S+) Last=(?P<reason>.+)"
             }
         ]
     },
