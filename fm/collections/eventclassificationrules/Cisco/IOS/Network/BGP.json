@@ -42,7 +42,7 @@
     },
     
     {
-        "name": "Cisco | IOS | Network | BGP | Peer State Changed (SNMP)",
+        "name": "Cisco | IOS | Network | BGP | Peer State Changed #1 (SNMP)",
         "description": "CISCO-BGP4-MIB::ciscoBgp4MIB",
         "event_class__name": "Network | BGP | Peer State Changed",
         "preference": 1000,
@@ -66,6 +66,31 @@
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
                 "value_re": "^CISCO-BGP4-MIB::ciscoBgp4MIB$"
+            }
+        ]
+    },
+    
+    {
+        "name": "Cisco | IOS | Network | BGP | Peer State Changed #2 (SNMP)",
+        "description": "BGP4-MIB::bgpTraps",
+        "event_class__name": "Network | BGP | Peer State Changed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^BGP4-MIB::bgpPeerState\\.(?P<peer>\\S+)$",
+                "value_re": "^(?P<to_state>\\S+)$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^BGP4-MIB::bgpTraps$"
             }
         ]
     }
