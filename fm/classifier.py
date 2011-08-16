@@ -289,6 +289,14 @@ class Rule(object):
             return v
         return ":".join(["%02X" % ord(x) for x in v])
 
+    def fixup__oid_to_str(self, v):
+        """
+        Fix N.c1. .. .cN into "c1..cN" string
+        """
+        x = [int(c) for c in v.split(".")]
+        return "".join([chr(c) for c in x[1:x[0] + 1]])
+
+
 class Classifier(Daemon):
     """
     noc-classifier daemon
