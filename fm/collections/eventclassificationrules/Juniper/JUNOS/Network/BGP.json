@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "RPD_BGP_NEIGHBOR_STATE_CHANGED: BGP peer (?P<peer>\\S+) \\(.+? AS (?P<as>\\d+)\\) changed state from (?P<from_state>\\S+) to (?P<to_state>\\S+)"
+                "value_re": "RPD_BGP_NEIGHBOR_STATE_CHANGED: BGP peer (?P<peer>\\S+) \\(.+? AS (?P<as>\\d+)\\) changed state from (?P<from_state__enum__bgp_state>\\S+) to (?P<to_state__enum__bgp_state>\\S+)"
             }
         ]
     },

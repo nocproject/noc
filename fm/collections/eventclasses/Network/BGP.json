@@ -45,14 +45,14 @@
         "disposition": [
             {
                 "name": "raise",
-                "condition": "event.vars['to_state'].lower() != 'established'",
+                "condition": "event.vars['to_state'] != 'ESTABLISHED'",
                 "action": "raise",
                 "alarm_class__name": "Network | BGP | Peer Down"
             },
 
             {
                 "name": "clear_peer_down",
-                "condition": "event.vars['to_state'].lower() == 'established'",
+                "condition": "event.vars['to_state'] == 'ESTABLISHED'",
                 "action": "clear",
                 "alarm_class__name": "Network | BGP | Peer Down",
                 "stop_disposition": false
@@ -60,7 +60,7 @@
             
             {
                 "name": "clear_maxprefix",
-                "condition": "event.vars['to_state'].lower() == 'established'",
+                "condition": "event.vars['to_state'] == 'ESTABLISHED'",
                 "action": "clear",
                 "alarm_class__name": "Network | BGP | Prefix Limit Exceeded",
                 "stop_disposition": false

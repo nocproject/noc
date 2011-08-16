@@ -11,7 +11,7 @@
             },
             {
                 "key_re": "^BGP4-MIB::bgpPeerState\\.(?P<peer>\\S+)$",
-                "value_re": "^(?P<state>\\S+)$"
+                "value_re": "^(?P<state__enum__bgp_state>\\S+)$"
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
