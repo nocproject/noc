@@ -6,7 +6,58 @@
         "text" : {
             "en": {
                 "subject_template": "New SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
-                "body_template": "",
+                "body_template": "New SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "Device name",
+                "type": "str",
+                "required": true
+            },
+
+            {
+                "name": "type",
+                "description": "Device type",
+                "type": "str",
+                "required": true
+            },
+            
+            {
+                "name": "sn",
+                "description": "Device Serial Number",
+                "type": "str",
+                "required": true
+            },
+
+            {
+                "name": "ip",
+                "description": "Device IP address",
+                "type": "ip_address",
+                "required": true
+            },
+
+            {
+                "name": "socket",
+                "description": "Socket number",
+                "type": "int",
+                "required": true
+            }
+        ]
+    },
+    
+        {
+        "name": "Phone | SCCP | Register",
+        "description": "SCCP phone registered",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
+                "body_template": "SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
