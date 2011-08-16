@@ -126,7 +126,7 @@
                 "name": "socket",
                 "description": "Socket number",
                 "type": "int",
-                "required": true
+                "required": false
             },
 
             {
