@@ -100,6 +100,50 @@
             }
         ]
     },
+
+    {
+        "name": "Phone | SCCP | Register Alarm",
+        "description": "SCCP phone registration alarm",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "SCCP register alarm: {{sn}} load {{image}}: {{reason}}",
+                "body_template": "SCCP register alarm: {{sn}} load {{image}}: {{reason}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "sn",
+                "description": "Device Serial Number",
+                "type": "str",
+                "required": true
+            },
+
+            {
+                "name": "socket",
+                "description": "Socket number",
+                "type": "int",
+                "required": true
+            },
+
+            {
+                "name": "image",
+                "description": "Load image",
+                "type": "str",
+                "required": true
+            },
+
+            {
+                "name": "reason",
+                "description": "Alarm reason",
+                "type": "str",
+                "required": true
+            }
+        ]
+    },
     
     {
         "name": "Phone | SCCP | Unregister Normal",
