@@ -18,7 +18,7 @@ import new
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
                           EventClass, MIB, EventLog,\
-                          ActiveEvent, EventTrigger
+                          ActiveEvent, EventTrigger, Enumeration
 from noc.sa.models import profile_registry
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
@@ -92,7 +92,8 @@ class Rule(object):
     rx_escape = re.compile(r"\\(.)")
     rx_exact = re.compile(r"^\^[a-zA-Z0-9%: \-_]+\$$")
     
-    def __init__(self, rule):
+    def __init__(self, classifier, rule):
+        self.classifier = classifier
         self.rule = rule
         self.name = rule.name
         self.event_class = rule.event_class
@@ -261,7 +262,10 @@ class Rule(object):
     def fixup(self, e_vars):
         for v in [k for k in e_vars if "__" in k]:
             n, f = v.split("__")
-            e_vars[n] = getattr(self, "fixup_%s" % f)(e_vars[v])
+            if f.startswith("enum__"):
+                e_vars[n] = self.fixup_enum(f[6:], e_vars[v])
+            else:
+                e_vars[n] = getattr(self, "fixup_%s" % f)(e_vars[v])
             del e_vars[v]
         return e_vars
 
@@ -289,12 +293,18 @@ class Rule(object):
             return v
         return ":".join(["%02X" % ord(x) for x in v])
 
-    def fixup__oid_to_str(self, v):
+    def fixup_oid_to_str(self, v):
         """
         Fix N.c1. .. .cN into "c1..cN" string
         """
         x = [int(c) for c in v.split(".")]
         return "".join([chr(c) for c in x[1:x[0] + 1]])
+
+    def fixup_enum(self, name, v):
+        """
+        Resolve v via enumeration name
+        """
+        return self.classifier.enumerations[name][v.lower()]
 
 
 class Classifier(Daemon):
@@ -312,6 +322,7 @@ class Classifier(Daemon):
         self.triggers = {}  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
+        self.enumerations = {}  # name -> value -> enumerated
         Daemon.__init__(self)
         logging.info("Running Classifier version %s" % self.version)
 
@@ -320,6 +331,7 @@ class Classifier(Daemon):
         Load rules from database after loading config
         """
         super(Classifier, self).load_config()
+        self.load_enumerations()
         self.load_rules()
         self.load_triggers()
 
@@ -335,7 +347,7 @@ class Classifier(Daemon):
             self.rules[p] = []
         for r in EventClassificationRule.objects.order_by("preference"):
             try:
-                rule = Rule(r)
+                rule = Rule(self, r)
             except InvalidPatternException, why:
                 logging.error("Failed to load rule '%s': Invalid patterns: %s" % (r.name, why))
                 continue
@@ -370,6 +382,19 @@ class Classifier(Daemon):
                     logging.debug("    %s" % c_name)
             n += 1
         logging.info("%d triggers has been loaded to %d classes" % (n, cn))
+
+    def load_enumerations(self):
+        logging.info("Loading enumerations")
+        n = 0
+        self.enumerations = {}
+        for e in Enumeration.objects.all():
+            r = {}
+            for k, v in e.values.items():
+                for vv in v:
+                    r[vv.lower()] = k
+            self.enumerations[e.name] = r
+            n += 1
+        logging.info("%d enumerations loaded" % n)
 
     ##
     ## Variable decoders

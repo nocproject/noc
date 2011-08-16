@@ -1,0 +1,13 @@
+[
+    {
+        "name": "bgp_state",
+        "values": {
+            "IDLE": ["idle"],
+            "CONNECT": ["connect"],
+            "ACTIVE": ["active"],
+            "OPENSENT": ["opensent"],
+            "OPENCONFIRM": ["openconfirm"],
+            "ESTABLISHED": ["established"]
+        }
+    }
+]

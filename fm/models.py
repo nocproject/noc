@@ -1521,6 +1521,20 @@ class EventDispositionQueue(nosql.Document):
         return str(self.event_id)
 
 
+class Enumeration(nosql.Document):
+    meta = {
+        "collection": "noc.enumerations",
+        "allow_inheritance": False
+    }
+
+    name = nosql.StringField(unique=True)
+    is_builtin = nosql.BooleanField(default=False)
+    values = nosql.DictField()  # value -> [possible combinations]
+
+    def __unicode__(self):
+        return self.name
+
+    
 ##
 ## Event/Alarm text decoder
 ##
