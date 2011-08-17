@@ -5,8 +5,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "MAC Flap detected on {{vlan}}: {{from_interface}} -> {{to_interface}}",
-                "body_template": "MAC Flap detected on {{vlan}}: {{from_interface}} -> {{to_interface}}",
+                "subject_template": "MAC Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
+                "body_template": "MAC Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -46,6 +46,48 @@
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Network | MAC | MAC Flap"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | MAC | MAC Flood",
+        "description": "Flooding MAC Detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "The flooding MAC is detected on vlan {{vlan}}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+                "body_template": "The flooding MAC is detected on vlan {{vlan}}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "mac",
+                "description": "MAC Address",
+                "type": "mac",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "VLAN",
+                "type": "int",
+                "required": true
+            },
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | MAC | MAC Flood"
             }
         ]
     }
