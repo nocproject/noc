@@ -22,13 +22,13 @@ from noc.lib.validators import is_oid
 from noc.lib.escape import json_escape, fm_escape
 
 name2codepoint["#39"] = 39
+rx_cp = re.compile("&(%s);" % "|".join(name2codepoint))
 
 def unescape(s):
     """
     Unescape HTML string
     """
-    return re.sub('&(%s);' % '|'.join(name2codepoint),
-              lambda m: unichr(name2codepoint[m.group(1)]), s)
+    return rx_cp.sub(lambda m: unichr(name2codepoint[m.group(1)]), s)
 
 
 class Command(BaseCommand):
