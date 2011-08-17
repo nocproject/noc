@@ -204,6 +204,8 @@ LOGIN_URL="/main/auth/login/"
 FORCE_LOWERCASE_TAGS=False
 ## Message application setup
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
+## Store sessions in mongodb
+SESSION_ENGINE = "mongoengine.django.sessions"
 ## Set up logging
 ## Disable SQL statement logging
 import logging
