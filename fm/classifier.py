@@ -261,11 +261,9 @@ class Rule(object):
 
     def fixup(self, e_vars):
         for v in [k for k in e_vars if "__" in k]:
-            n, f = v.split("__")
-            if f.startswith("enum__"):
-                e_vars[n] = self.fixup_enum(f[6:], e_vars[v])
-            else:
-                e_vars[n] = getattr(self, "fixup_%s" % f)(e_vars[v])
+            r = v.split("__")
+            args = r[2:] + [e_vars[v]]
+            e_vars[r[0]] = getattr(self, "fixup_%s" % r[1])(*args)
             del e_vars[v]
         return e_vars
 
