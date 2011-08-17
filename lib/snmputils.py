@@ -55,8 +55,8 @@ def render_tc(value, base_type, format=None):
     'test'
     >>> render_tc("UTF8", "OctetString", "255t")
     'UTF8'
-    >>> render_tc("abcd", "OctetString")
-    '97.98.99.10'
+    >>> render_tc("abcdef", "OctetString", "1x:")
+    '61:62:63:64:65:66'
     """
     if format is None:
         #if base_type == "OctetString":
@@ -104,20 +104,23 @@ def render_tc(value, base_type, format=None):
                     value = value[size:]
                     rr += [unicode(s, "utf8", "ignore").encode("utf8")]
                 else:
-                    v = 0
-                    for j in range(size):
-                        v = (v << 8) + value.pop(0)
+                    parts = []
+                    while value:
+                        v = 0
+                        for j in range(size):
+                            v = (v << 8) + value.pop(0)
+                        parts += [v]
                     if format == "x":
-                        rr += ["%x" % v]
+                        rr += ["%x" % v for v in parts]
                     elif format == "d":
-                        rr += ["%d" % v]
+                        rr += ["%d" % v for v in parts]
                     elif format == "o":
-                        rr += ["%o" % v]
+                        rr += ["%o" % v for v in parts]
                     else:
                         raise ValueError("Unknown format: %s" % format)
             # Join with repeat separator
-            r += rt.join(rr)
+            r += dsep.join(rr)
             #
-            r += dsep
+            r += rt
         return r
     return str(value)
