@@ -1,0 +1,12 @@
+[
+   {
+       "name": "stp_state",
+       "values": {
+           "FORWARDING": ["forwarding"],
+           "LEARNING": ["learning"],
+           "DISABLED": ["disabled"],
+           "LISTENING": ["listening"],
+           "BLOCKING": ["blocking"]
+       }
+   }
+]
