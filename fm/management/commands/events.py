@@ -11,6 +11,7 @@
 from optparse import OptionParser, make_option
 import re
 import hashlib
+from htmlentitydefs import name2codepoint
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
@@ -19,6 +20,15 @@ from noc.fm.models import ActiveEvent, EventClass, MIB
 from noc.lib.nosql import ObjectId
 from noc.lib.validators import is_oid
 from noc.lib.escape import json_escape, fm_escape
+
+name2codepoint["#39"] = 39
+
+def unescape(s):
+    """
+    Unescape HTML string
+    """
+    return re.sub('&(%s);' % '|'.join(name2codepoint),
+              lambda m: unichr(name2codepoint[m.group(1)]), s)
 
 
 class Command(BaseCommand):
@@ -139,7 +149,7 @@ class Command(BaseCommand):
         else:
             print "ID, Object, Class, Subject"
         for e in events:
-            subject = e.get_translated_subject("en")
+            subject = unescape(e.get_translated_subject("en"))
             if to_suppress:
                 # Replace volatile parts
                 s = self.rx_volatile_date.sub("", subject)
