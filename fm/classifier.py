@@ -262,7 +262,7 @@ class Rule(object):
     def fixup(self, e_vars):
         for v in [k for k in e_vars if "__" in k]:
             r = v.split("__")
-            args = r[2:] + [e_vars[v]]
+            args = r[2:] + [fm_unescape(e_vars[v])]
             e_vars[r[0]] = getattr(self, "fixup_%s" % r[1])(*args)
             del e_vars[v]
         return e_vars
