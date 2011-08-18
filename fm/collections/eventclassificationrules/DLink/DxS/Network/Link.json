@@ -15,11 +15,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Port (?P<interface>.+) link down$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) link down$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Network | Link | Link Down #2 (SYSLOG)",
         "description": "%LINK-W-Down:  1:24",
@@ -40,7 +40,7 @@
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Network | Link | Link Up #1 (SYSLOG)",
         "description": "INFO: Port 17 link up, 100Mbps  FULL duplex",
@@ -57,11 +57,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Port (?P<interface>.+) link up"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) link up"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Network | Link | Link Up #2 (SYSLOG)",
         "description": "%LINK-I-Up:  1:22",

@@ -15,11 +15,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) Blat Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+                "value_re": "(?:CRIT:|CRIT\\(2\\)) Blat Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Attack | Land Attack (SYSLOG)",
         "description": "CRIT: Land Attack is detected from (IP: 255.255.255.255 Port: 8)",
@@ -36,11 +36,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) Land Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+                "value_re": "(?:CRIT:|CRIT\\(2\\)) Land Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Attack | Smurf Attack (SYSLOG)",
         "description": "CRIT: Smurf Attack is detected from (IP: 172.16.1.235 Port: 14)",
@@ -57,11 +57,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) Smurf Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+                "value_re": "(?:CRIT:|CRIT\\(2\\)) Smurf Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Attack | TCP SYNFIN Scan (SYSLOG)",
         "description": "CRIT: TCP SYNFIN is detected from (IP: 95.84.197.193 Port: 24)",
@@ -78,11 +78,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) TCP SYNFIN is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+                "value_re": "(?:CRIT:|CRIT\\(2\\)) TCP SYNFIN is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Attack | IP Spoofing (SYSLOG)",
         "description": "CRIT(2) Possible spoofing attack from (IP 10.109.36.1 MAC 00-1C-F0-21-59-03 port 19)",
@@ -99,7 +99,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) Possible spoofing attack from \\(IP (?P<src_ip>\\S+) MAC (?P<src_mac>\\S+) port (?P<interface>\\S+)\\)$"
+                "value_re": "(?:CRIT:|CRIT\\(2\\)) Possible spoofing attack from \\(IP (?P<src_ip>\\S+) MAC (?P<src_mac>\\S+) port (?P<interface>\\S+)\\)$"
             }
         ]
     }

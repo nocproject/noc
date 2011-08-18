@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(WARN:|WARN\\(4\\)|CRIT:|CRIT\\(2\\)) (?P<name>Internal) Power failed$"
+                "value_re": "(?:WARN:|WARN\\(4\\)|CRIT:|CRIT\\(2\\)) (?P<name>Internal) Power failed$"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%(Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) status is - not operational.$"
+                "value_re": "%(?:Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) status is - not operational.$"
             }
         ]
     },
@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)|CRIT:|CRIT\\(2\\)) (?P<name>Internal) Power is recovered$"
+                "value_re": "(?:INFO:|INFO\\(6\\)|CRIT:|CRIT\\(2\\)) (?P<name>Internal) Power is recovered$"
             }
         ]
     },
@@ -78,7 +78,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%(Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) status changed - operational.$"
+                "value_re": "%(?:Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) status changed - operational.$"
             }
         ]
     }

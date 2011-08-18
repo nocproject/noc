@@ -15,11 +15,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(WARN:|WARN\\(4\\)|INFO:) Configuration Testing Protocol detects a loop in port (?P<interface>.+)$"
+                "value_re": "(?:WARN:|WARN\\(4\\)|INFO:) Configuration Testing Protocol detects a loop in port (?P<interface>.+)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Network | LBD | Loop Cleared #1 (SYSLOG)",
         "description": "INFO: Port 11 LBD port recovered. Loop detection restarted",
@@ -36,11 +36,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Port (?P<interface>.+) LBD port recovered. Loop detection restarted$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) LBD port recovered. Loop detection restarted$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Network | LBD | Loop Detected #2 (SYSLOG)",
         "description": "CRIT: Port 4 LBD loop occurred. Port blocked",
@@ -57,11 +57,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) Port (?P<interface>.+) LBD loop occurred. Port blocked$"
+                "value_re": "(?:CRIT:|CRIT\\(2\\)) Port (?P<interface>.+) LBD loop occurred. Port blocked$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Network | LBD | Vlan Loop Detected (SYSLOG)",
         "description": "CRIT(2) Port 25 VID 356 LBD loop occurred. Packet discard begun",
@@ -78,11 +78,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun$"
+                "value_re": "(?:CRIT:|CRIT\\(2\\)) Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Network | LBD | Vlan Loop Cleared (SYSLOG)",
         "description": "INFO(6) Port 25 VID 356 LBD recovered. Loop detection restarted",
@@ -99,7 +99,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted$"
             }
         ]
     }
