@@ -152,3 +152,23 @@ class RawDictField(DictField):
     def to_mongo(self, value):
         return dict([(k.replace(".", ESC1).replace("$", ESC2), v)
             for k, v in value.items()])
+
+
+class Sequence(object):
+    """
+    Unique sequence number generator
+    """
+    def __init__(self, name, prefix, shard_id):
+        # Generate sequence template
+        self.format = "%s%d.%%d" % (prefix, shard_id)
+        self.name = "%s.%d" % (name, shard_id)
+        self.sequences = get_db().noc.sequences
+        self.sequences.insert({"_id": self.name, "value": 0L})
+
+    def next(self):
+        s = self.sequences.find_and_modify(
+            query={"_id": self.name},
+            update={"$inc": {"value": 1}},
+            new=True
+        )
+        return self.format % s["value"]
