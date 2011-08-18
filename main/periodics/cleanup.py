@@ -24,10 +24,10 @@ class Task(noc.lib.periodic.Task):
         """
         Delete expired sessions
         """
-        from django.contrib.sessions.models import Session
+        from mongoengine.django.sessions import MongoSession
 
         self.info("Cleaning expired sessions")
-        Session.objects.filter(expire_date__lt=datetime.datetime.now()).delete()
+        MongoSession.objects.filter(expire_date__lt=datetime.datetime.now()).delete()
         self.info("Expired sessions are cleaned")
 
     def cleanup_hanging_tags(self):
