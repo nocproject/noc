@@ -1,0 +1,64 @@
+[
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Failed #1 (SYSLOG)",
+        "description": "15w5d: %PLATFORM_ENV-1-DUAL_PWR: Faulty internal power supply A detected",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PLATFORM_ENV-1-DUAL_PWR: Faulty internal power supply (?P<name>\\S+) detected$"
+            }
+        ]
+    },
+    
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Failed #2 (SYSLOG)",
+        "description": "%ENVM-4-RPSFAIL: Power Supply may have a failed channel",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ENVM-4-RPSFAIL: (?P<name>.+) may have a failed channel"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #2 (SYSLOG)",
+        "description": "ENVM-6-PSOK: [chars] now appears to be working correctly",
+        "event_class__name": "Chassis | PSU | PSU Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "ENVM-6-PSOK: (?P<name>.+) now appears to be working correctly"
+            }
+        ]
+    }
+]
