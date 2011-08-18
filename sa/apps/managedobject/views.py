@@ -118,7 +118,7 @@ def object_status(o):
             s += ["<img src='/static/img/configuration.png' title='Configuration Managed' />"]
 
     return " ".join(s)
-object_status.short_description = u"Status"
+object_status.short_description = SafeString(u"&nbsp;&nbsp;Status&nbsp;&nbsp;")
 object_status.allow_tags = True
 
 
