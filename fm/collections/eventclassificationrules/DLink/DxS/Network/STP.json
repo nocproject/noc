@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Port <(?P<interface>\\S+)>\\s+enter BPDU under attacking state \\(mode: \\S+\\)"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Port <(?P<interface>\\S+)>\\s+enter BPDU under attacking state \\(mode: \\S+\\)"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Port <(?P<interface>\\S+)>\\s+recover from BPDU under attacking state automatically"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Port <(?P<interface>\\S+)>\\s+recover from BPDU under attacking state automatically"
             }
         ]
     },
@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Topology changed\\s+\\(Instance:(?P<instance>\\d+), Port:(?P<interface>\\S+),.+\\)"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Topology changed\\s+\\(Instance:(?P<instance>\\d+), Port:(?P<interface>\\S+),.+\\)"
             }
         ]
     },
@@ -78,7 +78,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(WARN:|WARN\\(4\\)) BPDU Loop Back on Port (?P<interface>\\S+)"
+                "value_re": "(?:WARN:|WARN\\(4\\)) BPDU Loop Back on Port (?P<interface>\\S+)"
             }
         ]
     },
@@ -99,7 +99,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) Port (?P<interface>\\S+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun"
+                "value_re": "(?:CRIT:|CRIT\\(2\\)) Port (?P<interface>\\S+) VID (?P<vlan>\\d+) LBD loop occurred. Packet discard begun"
             }
         ]
     },
@@ -120,7 +120,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Port (?P<interface>\\S+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>\\S+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted"
             }
         ]
     }

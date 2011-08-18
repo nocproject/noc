@@ -15,11 +15,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) SNMP request received from (?P<ip>\\S+) with invalid community string"
+                "value_re": "(?:INFO:|INFO\\(6\\)) SNMP request received from (?P<ip>\\S+) with invalid community string"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Login Failed #1 (SYSLOG)",
         "description": "INFO: Login failed through Telnet (Username: Anonymous, IP: 10.116.0.2, MAC: 00-05-74-97-49-00)",
@@ -36,11 +36,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Login failed through (Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)(, MAC: \\S+)?\\)$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Login failed through (?:Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)(, MAC: \\S+)?\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Login Failed #2 (SYSLOG)",
         "description": "INFO: Login failed through Console (Username: Anonymous)",
@@ -57,11 +57,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Login failed through (Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Login failed through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Login Failed #3 (SYSLOG)",
         "description": "%AAA-W-REJECT: New telnet connection, source 10.116.0.2 destination 10.116.0.10  REJECTED",
@@ -78,11 +78,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-W-REJECT: New (web|telnet|ssh) connection, source (?P<ip>\\S+) destination \\S+  REJECTED$"
+                "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection, source (?P<ip>\\S+) destination \\S+  REJECTED$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Login #1 (SYSLOG)",
         "description": "INFO: Successful login through Telnet (Username: noc, IP: 172.16.7.56)",
@@ -99,11 +99,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Successful login through (Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)(, MAC: \\S+)?\\)$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Successful login through (?:Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)(, MAC: \\S+)?\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Login #2 (SYSLOG)",
         "description": "INFO: Successful login through Console (Username: noc)",
@@ -120,11 +120,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Successful login through (Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Successful login through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Login #3 (SYSLOG)",
         "description": "%AAA-I-CONNECT: User CLI session for user admin over telnet , source 10.1.4.19 destination 10.8.25.150 ACCEPTED",
@@ -141,11 +141,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-I-CONNECT: User CLI session for user (?P<user>.+?) over (telnet|ssh) , source (?P<ip>\\S+) destination \\S+ ACCEPTED"
+                "value_re": "%AAA-I-CONNECT: User CLI session for user (?P<user>.+?) over (?:telnet|ssh) , source (?P<ip>\\S+) destination \\S+ ACCEPTED"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Login #4 (SYSLOG)",
         "description": "%AAA-I-CONNECT: New http connection for user admin, source 10.1.4.19 destination 10.8.25.150 ACCEPTED",
@@ -166,7 +166,7 @@
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Login #2 (SYSLOG)",
         "description": "INFO: Successful login through Console (Username: noc)",
@@ -183,11 +183,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Successful login through (Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Successful login through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Logout #1 (SYSLOG)",
         "description": "INFO: Logout through Telnet (Username: noc, IP: 172.16.7.56)",
@@ -204,11 +204,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Logout through (Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)(, MAC: \\S+)?\\)$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Logout through (?:Web|Telnet|SSH) \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)(, MAC: \\S+)?\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Logout #2 (SYSLOG)",
         "description": "INFO: Logout through Console (Username: noc)",
@@ -225,11 +225,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Logout through (Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Logout through (?:Web|Telnet|SSH|Console) \\(Username: (?P<user>.+?)\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Logout #3 (SYSLOG)",
         "description": "%AAA-I-DISCONNECT: User CLI session for user admin over telnet , source 10.1.4.19 destination 10.8.25.150 TERMINATED. The Telnet/SSH session may still be connected.",
@@ -250,7 +250,7 @@
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Security | Authentication | Session timed out (SYSLOG)",
         "description": "INFO: Web session timed out (Username: grant, IP: 172.16.0.4)",
@@ -267,7 +267,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) (Web|Telnet|SSH) session timed out \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) (?:Web|Telnet|SSH) session timed out \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)\\)$"
             }
         ]
     }

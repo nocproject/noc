@@ -15,11 +15,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) (Unit \\d+, )?Configuration (and log )*saved to flash \\(Username: (?P<user>.+), IP: \\S+.+\\)$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) (Unit \\d+, )?Configuration (and log )*saved to flash \\(Username: (?P<user>.+), IP: \\S+.+\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Config | Config Changed #2 (SYSLOG)",
         "description": "INFO(6) Configuration and log saved to flash (Username: fenomen_krog)",
@@ -36,11 +36,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(INFO:|INFO\\(6\\)) Configuration (and log )*saved to flash \\(Username: (?P<user>.+)\\)$"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Configuration (and log )*saved to flash \\(Username: (?P<user>.+)\\)$"
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | Config | Config Changed #3 (SYSLOG)",
         "description": "%Stack-I-STCK-CFG-CHNG: Configuration changed: chain",
