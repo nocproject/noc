@@ -41,6 +41,7 @@ class Command(BaseCommand):
         # Inject syslog messages
         if options["syslog"]:
             self.syslog_message(o, options["syslog"])
+            return
         # Load jsons
         if len(args) > 1:
             for f in args[1:]:
