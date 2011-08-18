@@ -196,7 +196,9 @@ class AlarmManagedApplication(Application):
                 #if status == "U":
                 #    alarms = alarms.filter(owner__isnull=True)
                 if status == "O":
-                    alarms = alarms.filter(owner = request.user.id)
+                    alarms = alarms.filter(owner=request.user.id)
+                elif status == "U":
+                    alarms = alarms.filter(owner=None)
                 ## Apply additional restriction
                 if form.cleaned_data["page"]:
                     page = form.cleaned_data["page"] - 1
