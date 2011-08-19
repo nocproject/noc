@@ -15,13 +15,13 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "INFO\\(6\\) \\[BGP\\(1\\):\\] BGP connection is successfully established Peer:<(?P<peer>\\S+)>\\."
+                "value_re": "(?:INFO:|INFO\\(6\\)) \\[BGP(\\(1\\))?:\\] BGP connection is successfully established Peer:<(?P<peer>\\S+)>\\."
             }
         ]
     },
 
     {
-        "name": "DLink | DxS | Network | BGP | Peer Down (SYSLOG)",
+        "name": "DLink | DxS | Network | BGP | Peer Down #1 (SYSLOG)",
         "description": "INFO(6) [BGP(2):] BGP connection is normally closed (Peer:<10.110.0.110>).",
         "event_class__name": "Network | BGP | Peer Down",
         "preference": 1000,
@@ -36,7 +36,28 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "INFO\\(6\\) \\[BGP\\(2\\):\\] BGP connection is normally closed \\(Peer:<(?P<peer>\\S+)>\\)\\."
+                "value_re": "(?:INFO:|INFO\\(6\\)) \\[BGP(\\(2\\))?:\\] BGP connection is normally closed \\(Peer:<(?P<peer>\\S+)>\\)\\."
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS | Network | BGP | Peer Down #2 (SYSLOG)",
+        "description": "WARN: [BGP:] BGP connection is closed due to Event: <10> (Peer:<10.0.0.1>).",
+        "event_class__name": "Network | BGP | Peer Down",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(?:WARN:|WARN\\(4\\)) \\[BGP(\\(2\\))?:\\] BGP connection is closed due to Event: <\\d+> \\(Peer:<(?P<peer>\\S+)>\\)\\."
             }
         ]
     }
