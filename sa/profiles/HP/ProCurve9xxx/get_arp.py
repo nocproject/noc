@@ -27,7 +27,6 @@ class Script(noc.sa.script.Script):
             type=match.group("type")
             mac=match.group("mac")
             if mac.lower() in ("incomplete" or "none") or type.lower() in ("pending", "invalid"):
-#                r.append({"ip":match.group("ip"),"mac":None,"interface":None})
                 continue
             else:
                 r.append({"ip":match.group("ip"),"mac":match.group("mac"),"interface":match.group("interface")})
