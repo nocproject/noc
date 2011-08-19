@@ -14,6 +14,8 @@ import datetime
 import sys
 import os
 import new
+## Django modules
+from django.db import reset_queries
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
@@ -686,6 +688,7 @@ class Classifier(Daemon):
                 except:
                     self.mark_as_failed(e)
                 n += 1
+                reset_queries()
             if n:
                 # Write performance report
                 dt = time.time() - t0
