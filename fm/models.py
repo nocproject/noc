@@ -1086,6 +1086,16 @@ class ActiveEvent(nosql.Document):
     def get_translated_recommended_actions(self, lang):
         return get_translated_text(lang, self.event_class.text, "recommended_actions")
 
+    @property
+    def managed_object_id(self):
+        """
+        Hack to return managed_object.id without SQL lookup
+        """
+        o = self._data["managed_object"]
+        if type(o) in (int, long):
+            return o
+        return o.id
+
 
 class ArchivedEvent(nosql.Document):
     """
