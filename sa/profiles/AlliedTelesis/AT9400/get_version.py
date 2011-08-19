@@ -12,12 +12,11 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVersion
 
-
 class Script(NOCScript):
     name = "AlliedTelesis.AT9400.get_version"
     cache = True
     implements = [IGetVersion]
-    rx_ver = re.compile(r"^Model Name ...... (?P<platform>AT[/\w-]+).+^Application ..... ATS63 v(?P<version>\S+(\s\S+))\s\s", re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(r"^Model Name ...... (?P<platform>AT[/\w-]+).+^Serial Number ... (?P<serial>\S+).+^Bootloader ...... ATS63_LOADER v(?P<bootprom>\d+\.\d+\.\d+).+^Application ..... ATS63 v(?P<version>\S+(\s\S+))\s\s", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
@@ -31,10 +30,13 @@ class Script(NOCScript):
                 }
             except self.snmp.TimeOutError:
                 pass
-        v = self.cli("show system")
-        match = self.rx_ver.search(v)
+        match = self.rx_ver.search(self.cli("show system", cached=True))
         return {
             "vendor"  : "Allied Telesis",
             "platform": match.group("platform"),
             "version" : match.group("version"),
+            "attributes" : {
+                "Boot PROM" : match.group("bootprom"),
+                "serial"    : match.group("serial")
+            }
         }
