@@ -161,8 +161,8 @@ class Sequence(object):
     def __init__(self, name, prefix, shard_id):
         # Generate sequence template
         self.format = "%s%d.%%d" % (prefix, shard_id)
-        self.name = "%s.%d" % (name, shard_id)
-        self.sequences = get_db().noc.sequences
+        self.name = name
+        self.sequences = get_db().noc.sequences["s%d" % shard_id]
         self.sequences.insert({"_id": self.name, "value": 0L})
 
     def next(self):
