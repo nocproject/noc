@@ -1,0 +1,49 @@
+[
+    {
+        "name": "Network | IP | IP Flap",
+        "description": "IP Flapped between interfaces",
+        "action": "L",
+        "text": {
+            "en": {
+                "subject_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
+                "body_template": "IP {{ip}} moved from {{from_interface}} to{% if mac %} {{mac}} on {% endif %}{{to_interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "ip",
+                "description": "Flapped IP",
+                "type": "ip_address",
+                "required": true
+            },
+            {
+                "name": "mac",
+                "description": "MAC",
+                "type": "mac",
+                "required": false
+            },
+            {
+                "name": "from_interface",
+                "description": "From interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "to_interface",
+                "description": "To interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | IP | IP Flap"
+            }
+        ]
+    }
+]
