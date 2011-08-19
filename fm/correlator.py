@@ -319,7 +319,8 @@ class Correlator(Daemon):
         discriminator, vars = r.get_vars(e)
         if r.unique:
             assert discriminator is not None
-            a = ActiveAlarm.objects.filter(managed_object=e.managed_object.id,
+            # @todo: unneeded SQL lookup here
+            a = ActiveAlarm.objects.filter(managed_object=e.managed_object_id,
                                            discriminator=discriminator).first()
             if a:
                 # Active alarm found, refresh
@@ -372,7 +373,7 @@ class Correlator(Daemon):
         if r.unique:
             discriminator, vars = r.get_vars(e)
             assert discriminator is not None
-            a = ActiveAlarm.objects.filter(managed_object=e.managed_object.id,
+            a = ActiveAlarm.objects.filter(managed_object=e.managed_object_id,
                                            discriminator=discriminator).first()
             if a:
                 logging.debug("%s: Event %s(%s) clears alarm %s(%s)" % (
@@ -390,7 +391,7 @@ class Correlator(Daemon):
         discriminator, vars = r.get_vars(e)
         ws = e.timestamp - datetime.timedelta(seconds=r.combo_window)
         de = ActiveEvent.objects.filter(
-                managed_object=e.managed_object.id,
+                managed_object=e.managed_object_id,
                 event_class=r.event_class,
                 discriminator=discriminator,
                 timestamp__gte=ws
@@ -402,7 +403,7 @@ class Correlator(Daemon):
         # classes
         fe = [ee.event_class.id
               for ee in ActiveEvent.objects.filter(
-                managed_object=e.managed_object.id,
+                managed_object=e.managed_object_id,
                 event_class__in=r.combo_event_classes,
                 discriminator=discriminator,
                 timestamp__gte=ws).order_by("timestamp")]
