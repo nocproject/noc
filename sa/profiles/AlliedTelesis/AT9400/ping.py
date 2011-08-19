@@ -16,7 +16,6 @@ from noc.sa.interfaces import IPing
 class Script(NOCScript):
     name = "AlliedTelesis.AT9400.ping"
     implements = [IPing]
-
     rx_result = re.compile(r"^Reply from [\d\.]+ time=(?P<resp>\d+)ms$", re.MULTILINE | re.DOTALL)
 
     def execute(self, address, size=None, count=None, timeout=None):
@@ -25,7 +24,7 @@ class Script(NOCScript):
         r = []
         n = 0
         for l in pr.split("\n"):
-            match = rx_result.match(l.strip())
+            match = self.rx_result.match(l.strip())
             if match:
                 r += [match.group("resp")]
                 n += int(match.group("resp"))
