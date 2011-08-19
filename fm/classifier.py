@@ -41,6 +41,7 @@ class EventProcessingFailed(Exception):
 ## Patterns
 ##
 rx_oid = re.compile(r"^(\d+\.){6,}$")
+rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
 
 class Trigger(object):
@@ -98,7 +99,6 @@ class Rule(object):
         self.name = rule.name
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
-        self.patterns = []
         self.datasources = {}  # name -> DS
         self.vars = {}  # name -> value
         # Parse datasources
@@ -121,6 +121,7 @@ class Rule(object):
         c3 = []
         c4 = []
         self.rxp = {}
+        self.fixups = set()
         self.profile = None
         for x in rule.patterns:
             x_key = None
@@ -173,6 +174,10 @@ class Rule(object):
         n = len(self.rxp)
         self.rxp[n] = rx.pattern
         setattr(self, "rx_%d" % n, rx)
+        for match in rx_named_group.finditer(rx.pattern):
+            name = match.group(1)
+            if "__" in name:
+                self.fixups.add(name)
         return n
 
     def unescape(self, pattern):
@@ -246,7 +251,16 @@ class Rule(object):
                 else:
                     c += ["e_vars[\"%s\"] = eval(self.vars[\"%s\"], {}, e_vars)" % (k, k)]
         if e_vars_used:
-            c += ["return self.fixup(e_vars)"]
+            #c += ["return self.fixup(e_vars)"]
+            for name in self.fixups:
+                r = name.split("__")
+                if len(r) == 2:
+                    c += ["e_vars[\"%s\"] = self.fixup_%s(fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
+                else:                
+                    c += ["args = [%s, fm_unescape(e_vars[\"%s\"])]" % (", ".join(["\"%s\"" % x for x in r[2:]]), name)]
+                    c += ["e_vars[\"%s\"] = self.fixup_%s(*args)" % (r[0], r[1])]
+                c += ["del e_vars[\"%s\"]" % name]
+            c += ["return e_vars"]
         else:
             c += ["return {}"]
         c = ["    " + l for l in c]
@@ -257,15 +271,8 @@ class Rule(object):
         cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
         c = "\n".join(cc)
         code = compile(c, "<string>", "exec")
-        exec code in {"rule": self, "new": new, "logging": logging}
-
-    def fixup(self, e_vars):
-        for v in [k for k in e_vars if "__" in k]:
-            r = v.split("__")
-            args = r[2:] + [fm_unescape(e_vars[v])]
-            e_vars[r[0]] = getattr(self, "fixup_%s" % r[1])(*args)
-            del e_vars[v]
-        return e_vars
+        exec code in {"rule": self, "new": new,
+                      "logging": logging, "fm_unescape": fm_unescape}
 
     def fixup_int_to_ip(self, v):
         v = long(v)
