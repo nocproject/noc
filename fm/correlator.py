@@ -13,6 +13,8 @@ import datetime
 import time
 import logging
 import re
+## Django modules
+from django.db import reset_queries
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventDispositionQueue, ActiveEvent, EventClass,\
@@ -502,6 +504,7 @@ class Correlator(Daemon):
                 except:
                     self.mark_as_failed(e)
                 n += 1
+                reset_queries()
             if n:
                 # Write performance report
                 dt = time.time() - t0
