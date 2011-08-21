@@ -3,49 +3,71 @@
 ##----------------------------------------------------------------------
 ## System Version Report
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Python modules
 from __future__ import with_statement
-import os,sys,csv
+import os
+import sys
+import csv
+## Third-party modules
+import pymongo
+## NOC modules
+sys.path = [".", ".."] + sys.path
+import settings
 
 ##
 ## Return NOC version
 ##
 def get_version():
     with open("VERSION") as f:
-        v=f.read().split("\n")[0].strip()
+        v = f.read().split("\n")[0].strip()
     try:
-        from mercurial import ui,localrepo
+        from mercurial import ui, localrepo
         
         try:
-            lr=localrepo.localrepository(ui.ui(),path=".")
-            rev=lr.changelog.rev(lr.changelog.tip())
-            v+="r%s"%rev
+            lr = localrepo.localrepository(ui.ui(), path=".")
+            rev = lr.changelog.rev(lr.changelog.tip())
+            v += "r%s" % rev
         except:
             pass
     except ImportError:
         pass
     return v
+
+##
+def get_mongo_version():
+    connection_args = {}
+    if settings.NOSQL_DATABASE_HOST:
+        connection_args["host"] = settings.NOSQL_DATABASE_HOST
+    if settings.NOSQL_DATABASE_PORT:
+        connection_args["port"] = settings.NOSQL_DATABASE_PORT
+    c = pymongo.Connection(**connection_args)
+    i = c.server_info()
+    return "%s (%d bits)" % (i["version"], i["bits"])
+
 ##
 def about():
     with os.popen("pg_config --version") as f:
-        pg_version=f.read().strip()
-    versions=[
-        ["NOC"    ,    get_version()],
-        ["OS"     ,    " ".join(os.uname())],
-        ["Python" ,    sys.version],
+        pg_version = f.read().strip()
+    versions = [
+        ["NOC", get_version()],
+        ["OS", " ".join(os.uname())],
+        ["Python", sys.version],
         ["PostgreSQL", pg_version],
+        ["MongoDB", get_mongo_version()],
         ["Python Path", ":".join(sys.path)]
     ]
-    cv_path=os.path.join("contrib","lib","VERSION.csv")
+    cv_path = os.path.join("contrib", "lib", "VERSION.csv")
     if os.path.exists(cv_path):
         with open(cv_path) as f:
-            r=csv.reader(f)
+            r = csv.reader(f)
             for row in r:
-                versions+=[row]
-    for c,v in versions:
-        print "|%s|%s|"%(c,v.replace("\n"," "))
+                versions += [row]
+    for c, v in versions:
+        print "|%s|%s|" % (c, v.replace("\n", " "))
 
 if __name__=="__main__":
     about()
