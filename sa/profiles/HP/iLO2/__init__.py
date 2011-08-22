@@ -14,5 +14,6 @@ from noc.sa.protocols.sae_pb2 import TELNET,SSH
 class Profile(noc.sa.profiles.Profile):
     name="HP.iLO2"
     supported_schemes=[TELNET,SSH]
+    pattern_username = r"Login Name:"
     pattern_prompt=r"hpiLO->"
     command_submit="\r"
