@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
