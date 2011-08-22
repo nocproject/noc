@@ -30,12 +30,18 @@
                 "description": "Max State",
                 "type": "str",
                 "required": false
+            },
+            {
+                "name": "threshold",
+                "description": "Threshold",
+                "type": "str",
+                "required": false
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Humidity measured at {{name}}, is outside of the normal range.{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
-                "body_template": "Humidity measured at {{name}}, is outside of the normal range.{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+                "subject_template": "Humidity measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
+                "body_template": "Humidity measured at {{name}}, is outside of the normal range.{%if threshold %} {{threshold}} threshold exceeded.{% endif %}{% if measure %} The current state is {{measure}}. {% endif %}{% if min %} Min state is {{min}}. {% endif %}{% if max %} Max state is {{max}}. {% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
