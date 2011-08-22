@@ -1,0 +1,33 @@
+[
+    {
+        "name": "Network | Port Security | Port Security Violation",
+        "description": "Port Security Violation",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "mac",
+                "description": "MAC Address",
+                "type": "mac",
+                "required": false
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Port Security Violation on {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
+                "body_template": "Port Security Violation on {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        }
+    }
+]
