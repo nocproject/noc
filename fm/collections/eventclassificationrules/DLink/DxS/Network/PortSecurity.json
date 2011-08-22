@@ -1,0 +1,22 @@
+[
+    {
+        "name": "DLink | DxS | Network | Port Security | Port Security Violation (SYSLOG)",
+        "description": "WARN: Port security violation (port: 14, MAC: 48-5B-39-47-0C-4B)",
+        "event_class__name": "Network | Port Security | Port Security Violation",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(?:WARN:|WARN\\(4\\)) Port security violation \\(port: (?P<interface>\\S+), MAC: (?P<mac>\\S+)\\)$"
+            }
+        ]
+    }
+]
