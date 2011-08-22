@@ -1,0 +1,59 @@
+[
+    {
+        "name": "Network | LAG | Port Joined",
+        "description": "Port joined into the LAG",
+        "action": "L",
+        "text" : {
+            "en": {
+                "subject_template": "Port {{interface}} joined into the LAG {{lag_interface}}",
+                "body_template": "Port {{interface}} joined into the LAG {{lag_interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Port",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "lag_interface",
+                "description": "LAG interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ]
+    },
+
+    {
+        "name": "Network | LAG | Port Leaving",
+        "description": "Port leaving from the LAG",
+        "action": "L",
+        "text" : {
+            "en": {
+                "subject_template": "Port {{interface}} leaving from the LAG {{lag_interface}}",
+                "body_template": "Port {{interface}} leaving from the LAG {{lag_interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Port",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "lag_interface",
+                "description": "LAG interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ]
+    }
+]
