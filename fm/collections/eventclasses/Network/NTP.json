@@ -1,5 +1,35 @@
 [
     {
+        "name": "Network | NTP | NTP Server Unreachable",
+        "description": "NTP Server unreachable",
+        "action": "L",
+        "text" : {
+            "en": {
+                "subject_template": "NTP Server Unreachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+                "body_template": "NTP Server Unreachable{% if server_name %}: {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "server_name",
+                "description": "NTP server name",
+                "type": "str",
+                "required": false
+            },
+            
+            {
+                "name": "server_address",
+                "description": "NTP server IP address",
+                "type": "ip_address",
+                "required": false
+            }
+        ]
+    },
+
+    {
         "name": "Network | NTP | System Clock Adjusted",
         "description": "System clock was adjusted",
         "action": "L",
