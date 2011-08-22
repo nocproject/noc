@@ -1,6 +1,6 @@
 [
     {
-        "name": "Cisco | IOS | Chassis | Fan | Fan Failed (SYSLOG)",
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #1 (SYSLOG)",
         "description": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
         "event_class__name": "Chassis | Fan | Fan Failed",
         "preference": 1000,
@@ -11,11 +11,53 @@
             },
             {
                 "key_re": "^profile$",
-                "value_re": "^Zyxel\\.ZyNOS$"
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%FAN-3-FAN_FAILED: Fan (?P<name>\\S+) had a rotation error reported\\.$"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #2 (SYSLOG)",
+        "description": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
+        "event_class__name": "Chassis | Fan | Fan Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
             },
             {
                 "key_re": "^message$",
                 "value_re": "%ENVM-2-FAN: (?P<name>\\S+) has failed"
+            }
+        ]
+    },
+    
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Recovered #1 (SYSLOG)",
+        "description": "%FAN-3-FAN_OK: Fan 1 had earlier reported a rotation error. It is ok now",
+        "event_class__name": "Chassis | Fan | Fan Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%FAN-3-FAN_OK: Fan (?P<name>\\S+) had earlier reported a rotation error\\. It is ok now$"
             }
         ]
     }
