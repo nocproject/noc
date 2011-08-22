@@ -65,11 +65,13 @@ class CodeTest(TestCase):
     ## Test all modules
     ##
     def test_code(self):
-        failures=[]
+        failures = []
         for d in [app[4:] for app in INSTALLED_APPS if app.startswith("noc.")]+["lib"]:
-            for root,dirs,files in os.walk(d):
+            for root, dirs, files in os.walk(d):
+                if "templates" in dirs.split(os.sep):
+                    continue
                 for fn in [f for f in files if f.endswith(".py")]:
-                    path=os.path.join(root,fn)
+                    path = os.path.join(root,fn)
                     with open(os.path.join(root,fn)) as file:
-                        failures+=self.check_file(path,file.read())
-        assert len(failures)==0,"%d errors in code:\n\t"%len(failures)+"\n\t".join(failures)
+                        failures += self.check_file(path,file.read())
+        assert len(failures) == 0, "%d errors in code:\n\t" % len(failures) + "\n\t".join(failures)
