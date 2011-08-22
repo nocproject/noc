@@ -1,12 +1,12 @@
 [
     {
-        "name": "Network | LAG | Port Joined",
-        "description": "Port joined into the LAG",
+        "name": "Network | LAG | Bundle",
+        "description": "Interface joined LAG",
         "action": "L",
         "text" : {
             "en": {
-                "subject_template": "Port {{interface}} joined into the LAG {{lag_interface}}",
-                "body_template": "Port {{interface}} joined into the LAG {{lag_interface}}",
+                "subject_template": "Interface {{interface}} joined LAG {{lag_interface}}",
+                "body_template": "Interface {{interface}} joined LAG {{lag_interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
@@ -25,17 +25,20 @@
                 "type": "interface_name",
                 "required": true
             }
+        ],
+        "__aliases": [
+            {"name": "Network | LAG | Port Joined"}
         ]
     },
 
     {
-        "name": "Network | LAG | Port Leaving",
-        "description": "Port leaving from the LAG",
+        "name": "Network | LAG | Unbundle",
+        "description": "Interface left LAG",
         "action": "L",
         "text" : {
             "en": {
-                "subject_template": "Port {{interface}} leaving from the LAG {{lag_interface}}",
-                "body_template": "Port {{interface}} leaving from the LAG {{lag_interface}}",
+                "subject_template": "Interface {{interface}} left LAG {{lag_interface}}",
+                "body_template": "Interface {{interface}} left LAG {{lag_interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
@@ -54,6 +57,9 @@
                 "type": "interface_name",
                 "required": true
             }
+        ],
+        "__aliases": [
+            {"name": "Network | LAG | Port Leaving"}
         ]
     }
 ]
