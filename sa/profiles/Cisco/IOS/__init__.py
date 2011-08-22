@@ -33,6 +33,8 @@ class Profile(noc.sa.profiles.Profile):
             return "Dot11Radio" + interface[10:]
         if interface.lower().startswith("bvi"):
             return "BVI" + interface[3:]
+        if interface.lower().startswith("e1"):
+            return "E1 %s" % interface[2:].strip()
         return self.convert_interface_name_cisco(interface)
 
     def generate_prefix_list(self, name, pl, strict=True):
