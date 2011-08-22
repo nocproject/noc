@@ -1,8 +1,8 @@
 [
     {
-        "name": "DLink | DxS | Network | LAG | Port Joined (SYSLOG)",
+        "name": "DLink | DxS | Network | LAG | Bundle (SYSLOG)",
         "description": "%TRUNK-I-PORTADDED: Port 1:11 added to ch3",
-        "event_class__name": "Network | LAG | Port Joined",
+        "event_class__name": "Network | LAG | Bundle",
         "preference": 1000,
         "patterns": [
             {
@@ -21,9 +21,9 @@
     },
 
     {
-        "name": "DLink | DxS | Network | LAG | Port Leaving (SYSLOG)",
+        "name": "DLink | DxS | Network | LAG | Unbundle (SYSLOG)",
         "description": "%TRUNK-W-PORTREMOVED: Port 1:11 removed from ch3",
-        "event_class__name": "Network | LAG | Port Leaving",
+        "event_class__name": "Network | LAG | Unbundle",
         "preference": 1000,
         "patterns": [
             {
