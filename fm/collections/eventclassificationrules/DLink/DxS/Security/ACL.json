@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%MNGINF-W-ACL: (?P<name>Management) ACL drop packet received on interface (?P<src_interface>.+) from (?P<src_ip>\\S+) to (?P<dst_ip>\\S+) protocol \\d+ service (?P<proto>\\S+)"
+                "value_re": "%MNGINF-W-ACL: (?P<name>Management) ACL drop packet received on interface (?P<src_interface>.+) from (?P<src_ip>\\S+) to (?P<dst_ip>\\S+) protocol (?P<proto>\\d+) service \\S+"
             }
         ]
     }
