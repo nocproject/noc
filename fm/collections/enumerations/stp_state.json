@@ -2,11 +2,14 @@
    {
        "name": "stp_state",
        "values": {
-           "FORWARDING": ["forwarding"],
-           "LEARNING": ["learning"],
            "DISABLED": ["disabled"],
+           "BLOCKING": ["blocking", "discarding"],
            "LISTENING": ["listening"],
-           "BLOCKING": ["blocking"]
+           "LEARNING": ["learning"],
+           "FORWARDING": ["forwarding"],
+           "BROKEN": ["broken"],
+           "NOSTP":  ["no-stp-enabled"],
+           "ERRDISBLED": ["err-disabled"]
        }
    }
 ]
