@@ -1,0 +1,15 @@
+[
+    {
+        "name": "ospf_state",
+        "values": {
+            "DOWN": ["down"],
+            "ATTEMPT": ["attempt"],
+            "INIT": ["init"],
+            "2WAY": ["2way", "twoway"],
+            "EXSTART": ["exstart", "exchangestart"],
+            "EXCHANGE": ["exchange"],
+            "LOADING": ["loading"],
+            "FULL": ["full"]
+        }
+    }
+]
