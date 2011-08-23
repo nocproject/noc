@@ -21,6 +21,39 @@
     },
 
     {
+        "name": "DLink | DxS | Security | Attack | Blat Attack (SNMP)",
+        "description": "DOS-PREV-MIB::swDoSAttackDetected",
+        "event_class__name": "Security | Attack | Blat Attack",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^DOS-PREV-MIB::swDoSAttackDetected$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
+                "value_re": "^(?P<src_ip__bin_to_ip>.+)$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSNotifyVarPortNumber\\.0$",
+                "value_re": "^(?P<interface>.+)$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSCtrlType\\.2$",
+                "value_re": "^blat-attack$"
+            }
+        ]
+    },
+
+    {
         "name": "DLink | DxS | Security | Attack | Land Attack (SYSLOG)",
         "description": "CRIT: Land Attack is detected from (IP: 255.255.255.255 Port: 8)",
         "event_class__name": "Security | Attack | Land Attack",
