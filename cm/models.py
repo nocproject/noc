@@ -343,7 +343,7 @@ class Config(Object):
             data=self.managed_object.config_filter_rule(managed_object=self.managed_object, config=data)
         # Pass data through the validation filter, if given
         if self.managed_object.config_validation_rule:
-            warnings=self.managed_object.config_validation_rule(managed_object=self.managed_object, config=config)
+            warnings=self.managed_object.config_validation_rule(managed_object=self.managed_object, config=data)
             if warnings:
                 # There are some warnings. Notify responsible persons
                 NotificationGroup.group_notify(groups=self.get_notification_groups(immediately=True),
