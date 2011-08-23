@@ -1,0 +1,106 @@
+[
+    {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #1 (SYSLOG)",
+        "description": "%SYS-0-MOD_TEMPMAJORFAIL: Module 2 major temperature threshold exceeded",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-0-MOD_TEMP(?:MINOR|MAJOR)FAIL:\\s*Module (?P<name>\\S+) (?P<threshold>minor|major) temperature threshold exceeded"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #1 (SYSLOG)",
+        "description": "%SYS-0-MOD_TEMPMAJORRECOVER: Module 2 major temperature threshold recovered",
+        "event_class__name": "Environment | Temperature Returned to Normal Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-0-MOD_TEMP(?:MINOR|MAJOR)RECOVER:\\s*Module (?P<name>\\S+) (?P<threshold>minor|major) temperature threshold recovered"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #2 (SYSLOG)",
+        "description": "%SYS-0-SUP_TEMPMAJORFAIL:Supervisor in slot 5 EARL major temperature threshold exceeded ",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-0-SUP_TEMP(?:MINOR|MAJOR)FAIL:\\s*Supervisor in slot (?P<name>\\S+) \\S+ (?P<threshold>minor|major) temperature threshold exceeded"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #2 (SYSLOG)",
+        "description": "%SYS-0-SUP_TEMPMAJORRECOVER: Supervisor in slot 5 EARL major temperature threshold recovered",
+        "event_class__name": "Environment | Temperature Returned to Normal Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-0-SUP_TEMP(?:MINOR|MAJOR)RECOVER:\\s*Supervisor in slot (?P<name>\\S+) \\S+ (?P<threshold>minor|major) temperature threshold recovered"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #3 (SYSLOG)",
+        "description": "%SYS-0-MOD_THERMALSHUTDOWN: Module 2 'shutdown' temperature threshold exceeded on CPU 1",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-0-MOD_THERMAL(?:SHUTDOWN|WARNING):\\s*Module (?P<name>\\S+) '(?P<threshold>shutdown|warning)' temperature threshold exceeded on CPU \\d+"
+            }
+        ]
+    }
+]
