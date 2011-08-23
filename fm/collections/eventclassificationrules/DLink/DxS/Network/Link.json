@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%LINK-W-Down:  (?P<interface>\\d:\\d+)$"
+                "value_re": "%LINK-W-Down:\\s+(?P<interface>(?:\\d:|ch)\\d+)$"
             }
         ]
     },
@@ -78,7 +78,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%LINK-I-Up:  (?P<interface>\\d:\\d+)$"
+                "value_re": "%LINK-I-Up:\\s+(?P<interface>(?:\\d:|ch)\\d+)$"
             }
         ]
     }
