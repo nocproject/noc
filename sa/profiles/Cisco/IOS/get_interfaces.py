@@ -53,7 +53,10 @@ class Script(NOCScript):
            }
 
     def get_ospfint(self):
-        v = self.cli("show ip ospf interface brief")
+        try:
+            v = self.cli("show ip ospf interface brief")
+        except self.CLISyntaxError:
+            return []
         ospfs = []
         for s in v.split("\n"):
             match = self.rx_ospf.search(s)
