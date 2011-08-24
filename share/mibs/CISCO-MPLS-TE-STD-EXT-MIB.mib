@@ -1,0 +1,712 @@
+-- *****************************************************************
+-- CISCO-MPLS-TE-STD-EXT-MIB.my
+--   
+-- April 2010, Salvatore Valenza
+--   
+-- Copyright (c) 2009-2010 by cisco Systems Inc.
+-- All rights reserved.
+--   
+-- *****************************************************************
+
+CISCO-MPLS-TE-STD-EXT-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY,
+    OBJECT-TYPE,
+    Counter32,
+    Gauge32,
+    Unsigned32
+        FROM SNMPv2-SMI
+    MODULE-COMPLIANCE,
+    OBJECT-GROUP
+        FROM SNMPv2-CONF
+    TEXTUAL-CONVENTION
+        FROM SNMPv2-TC
+    mplsTunnelIndex,
+    mplsTunnelInstance,
+    mplsTunnelIngressLSRId,
+    mplsTunnelEgressLSRId
+        FROM MPLS-TE-STD-MIB
+    ciscoMgmt
+        FROM CISCO-SMI;
+
+
+cmplsTeStdExtMIB MODULE-IDENTITY
+    LAST-UPDATED    "201005270000Z"
+    ORGANIZATION    "Cisco Systems, Inc."
+    CONTACT-INFO
+            "Cisco Systems
+            Customer Service             
+            Postal: 170 W Tasman Drive             
+            San Jose, CA  95134             
+            USA             
+            Tel: +1 800 553-NETS             
+            E-mail: cs-snmp@cisco.com"
+    DESCRIPTION
+        "This MIB module contains Cisco specific managed object
+        definitions for MPLS Traffic Engineering (TE), not contained in
+        MPLS-TE-STD-MIB.
+        The auto bandwidth feature enables MPLS TE Tunnels to adapt
+        automatically their bandwidth to their actual load."
+    REVISION        "201005270000Z"
+    DESCRIPTION
+        "Initial version of this MIB module."
+    ::= { ciscoMgmt 738 }
+
+
+
+CmplsTunnelBWPercent ::= TEXTUAL-CONVENTION
+    DISPLAY-HINT    "d"
+    STATUS          current
+    DESCRIPTION
+        "A fraction of the bandwidth expressed in percentage."
+    SYNTAX          Unsigned32 (0..100)
+-- Textual Conventions definition will be defined before this line
+
+cmplsTeStdExtMIBNotifs  OBJECT IDENTIFIER
+    ::= { cmplsTeStdExtMIB 0 }
+
+cmplsTeStdExtMIBObjects  OBJECT IDENTIFIER
+    ::= { cmplsTeStdExtMIB 1 }
+
+cmplsTeStdExtMIBConform  OBJECT IDENTIFIER
+    ::= { cmplsTeStdExtMIB 2 }
+
+
+cmplsTunnelAutoBWTable OBJECT-TYPE
+    SYNTAX          SEQUENCE OF CmplsTunnelAutoBWEntry 
+    MAX-ACCESS      not-accessible
+    STATUS          current
+    DESCRIPTION
+        "This table is used in order to manage auto bandwidth data.
+        This table is sparse dependent on the mplsTunnelTable.  An entry
+        in this table exists for each mplsTunnelEntry with a
+        mplsTunnelRole of 'head' or 'headTail'. Each row contains
+        auto-bandwidth data for the tunnel identified by the indexes
+        defined later.
+        An entry is created as soon as a 'head' or 'headTail' MPLS TE
+        tunnel is configured in the system."
+    ::= { cmplsTeStdExtMIBObjects 1 }
+
+cmplsTunnelAutoBWEntry OBJECT-TYPE
+    SYNTAX          CmplsTunnelAutoBWEntry
+    MAX-ACCESS      not-accessible
+    STATUS          current
+    DESCRIPTION
+        "A conceptual row in cmplsTunnelAutoBWTable. There is an entry
+        in this table for each MPLS-TE tunnel with mplsTunnelRole 
+        equals to 'head' or 'headTail'."
+    INDEX           {
+                        mplsTunnelIndex,
+                        mplsTunnelInstance,
+                        mplsTunnelIngressLSRId,
+                        mplsTunnelEgressLSRId
+                    } 
+    ::= { cmplsTunnelAutoBWTable 1 }
+
+CmplsTunnelAutoBWEntry ::= SEQUENCE {
+        cmplsTunnelAutoBWStatus                 INTEGER,
+        cmplsTunnelAutoBWMin                    Unsigned32,
+        cmplsTunnelAutoBWMax                    Unsigned32,
+        cmplsTunnelAutoBWAdjThreshPercs         CmplsTunnelBWPercent,
+        cmplsTunnelAutoBWAdjThreshBW            Unsigned32,
+        cmplsTunnelAutoBWOverflowThreshPercs    CmplsTunnelBWPercent,
+        cmplsTunnelAutoBWOverflowThreshBW       Unsigned32,
+        cmplsTunnelAutoBWOverflowLimit          Unsigned32,
+        cmplsTunnelAutoBWUnderflowThreshPercs   CmplsTunnelBWPercent,
+        cmplsTunnelAutoBWUnderflowThreshBW      Unsigned32,
+        cmplsTunnelAutoBWUnderflowLimit         Unsigned32,
+        cmplsTunnelAutoBWApplicationFrequency   Unsigned32,
+        cmplsTunnelAutoBWCollectionFrequency    Unsigned32,
+        cmplsTunnelAutoBWLastAppliedBW          Unsigned32,
+        cmplsTunnelAutoBWApplications           Counter32,
+        cmplsTunnelAutoBWLastApplicationTrigger INTEGER,
+        cmplsTunnelAutoBWOverflowApplications   Counter32,
+        cmplsTunnelAutoBWOverflowOccurrences    Counter32,
+        cmplsTunnelAutoBWUnderflowApplications  Counter32,
+        cmplsTunnelAutoBWUnderflowOccurrences   Counter32,
+        cmplsTunnelAutoBWUnderflowHighestBW     Gauge32,
+        cmplsTunnelAutoBWRequested              Unsigned32,
+        cmplsTunnelAutoBWSignaled               Unsigned32,
+        cmplsTunnelAutoBWCollectOnlyRequested   Unsigned32,
+        cmplsTunnelAutoBWHighest                Unsigned32,
+        cmplsTunnelAutoBWCollectedSamples       Counter32,
+        cmplsTunnelAutoBWJitter                 Unsigned32,
+        cmplsTunnelAutoBWAppRejectReason        INTEGER
+}
+
+cmplsTunnelAutoBWStatus OBJECT-TYPE
+    SYNTAX          INTEGER  {
+                        autoBWDisabled(1),
+                        autoBWEnabled(2),
+                        autoBWCollectOnlyMode(3)
+                    }
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the operational status [or mode] of the
+        auto bandwidth algorithm:
+
+        - autoBWDisabled: The auto-bandwidth algorithm is not running;
+        - autoBWEnabled: The auto-bandwidth algorithm is running;
+        - autoBWCollectOnlyMode: The auto-bandwidth algorithm is
+        running,
+                                 but the bandwidth applications are 
+                                 disabled;"
+    DEFVAL          { autoBWDisabled } 
+    ::= { cmplsTunnelAutoBWEntry 1 }
+
+cmplsTunnelAutoBWMin OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kbps"
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the minimum bandwidth that the
+        auto-bandwidth algorithm can apply to a tunnel when the
+        adjustment threshold is overcome.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 0 } 
+    ::= { cmplsTunnelAutoBWEntry 2 }
+
+cmplsTunnelAutoBWMax OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kbps"
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the maximum bandwidth that the
+        auto-bandwidth algorithm can apply to a tunnel when the
+        adjustment threshold is overcome.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 100 } 
+    ::= { cmplsTunnelAutoBWEntry 3 }
+
+cmplsTunnelAutoBWAdjThreshPercs OBJECT-TYPE
+    SYNTAX          CmplsTunnelBWPercent
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the adjustment threshold percentage that
+        needs to be overcome in order to trigger a new bandwidth
+        application.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 10 } 
+    ::= { cmplsTunnelAutoBWEntry 4 }
+
+cmplsTunnelAutoBWAdjThreshBW OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kbps"
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the adjustment threshold bandwidth that
+        needs to be overcome in order to trigger a new bandwidth
+        application.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 10 } 
+    ::= { cmplsTunnelAutoBWEntry 5 }
+
+cmplsTunnelAutoBWOverflowThreshPercs OBJECT-TYPE
+    SYNTAX          CmplsTunnelBWPercent
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the adjustment threshold percentage that
+        needs to be overcome in order to trigger an overflow occurrence.
+        If the application period has not completed when a
+        cmplsTunnelAutoBWOverflowLimit overflow has occurred, a new
+        bandwidth will be applied.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 10 } 
+    ::= { cmplsTunnelAutoBWEntry 6 }
+
+cmplsTunnelAutoBWOverflowThreshBW OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kbps"
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the adjustment threshold bandwidth that
+        needs to be overcome in order to trigger an overflow occurrence.
+        If the application period has not completed when a
+        cmplsTunnelAutoBWOverflowLimit overflow has occurred, a new
+        bandwidth will be applied.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 10 } 
+    ::= { cmplsTunnelAutoBWEntry 7 }
+
+cmplsTunnelAutoBWOverflowLimit OBJECT-TYPE
+    SYNTAX          Unsigned32
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the number of consecutive collections
+        exceeding overflow threshold.
+        If the application period has not completed when a
+        cmplsTunnelAutoBWOverflowLimit overflow has occurred, a new
+        bandwidth will be applied.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 1 } 
+    ::= { cmplsTunnelAutoBWEntry 8 }
+
+cmplsTunnelAutoBWUnderflowThreshPercs OBJECT-TYPE
+    SYNTAX          CmplsTunnelBWPercent
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the adjustment threshold percentage that
+        needs to be overcome in order to trigger an underflow
+        occurrence.
+        If the application period has not completed when a
+        cmplsTunnelAutoBWUnderflowLimit underflow has occurred, a new
+        bandwidth will be applied.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 10 } 
+    ::= { cmplsTunnelAutoBWEntry 9 }
+
+cmplsTunnelAutoBWUnderflowThreshBW OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kbps"
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the adjustment threshold bandwidth that
+        needs to be overcome in order to trigger an underflow
+        occurrence.
+        If the application period has not completed when a
+        cmplsTunnelAutoBWUnderflowLimit underflow has occurred, a new
+        bandwidth will be applied.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 1 } 
+    ::= { cmplsTunnelAutoBWEntry 10 }
+
+cmplsTunnelAutoBWUnderflowLimit OBJECT-TYPE
+    SYNTAX          Unsigned32
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the number of consecutive collections
+        under the underflow threshold.
+        If the application period has not completed when a
+        cmplsTunnelAutoBWUnderflowLimit underflow has occurred, a new
+        bandwidth will be applied.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 1 } 
+    ::= { cmplsTunnelAutoBWEntry 11 }
+
+cmplsTunnelAutoBWApplicationFrequency OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "seconds"
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the bandwidth application period.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 300 } 
+    ::= { cmplsTunnelAutoBWEntry 12 }
+
+cmplsTunnelAutoBWCollectionFrequency OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "seconds"
+    MAX-ACCESS      read-write
+    STATUS          current
+    DESCRIPTION
+        "This object specifies the sampling period for data rates.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 300 } 
+    ::= { cmplsTunnelAutoBWEntry 13 }
+
+cmplsTunnelAutoBWLastAppliedBW OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kbps"
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the last bandwidth applied by the
+        auto-bandwidth algorithm.
+        It will be set to zero if no bandwidth has been applied yet.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 14 }
+
+cmplsTunnelAutoBWApplications OBJECT-TYPE
+    SYNTAX          Counter32
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the number of auto bandwidths applied.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 15 }
+
+cmplsTunnelAutoBWLastApplicationTrigger OBJECT-TYPE
+    SYNTAX          INTEGER {
+                        applicationNone(1),
+                        applicationPeriodic(2),
+                        applicationManual(3),
+                        applicationOverflow(4),
+                        applicationUnderflow(5)
+                    }
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the trigger reason for the last bandwidth
+        application.
+        If mplsTunnelInstance is zero this object will be set to
+        'applicationNone'.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 16 }
+
+cmplsTunnelAutoBWOverflowApplications OBJECT-TYPE
+    SYNTAX          Counter32
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the number of bandwidth applications
+        due to overflow occurrences.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 17 }
+
+cmplsTunnelAutoBWOverflowOccurrences OBJECT-TYPE
+    SYNTAX          Counter32
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the number of overflow occurrences
+        since last application period.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 18 }
+
+cmplsTunnelAutoBWUnderflowApplications OBJECT-TYPE
+    SYNTAX          Counter32
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the number of bandwidth applications due
+        to underflow occurrences.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 19 }
+
+cmplsTunnelAutoBWUnderflowOccurrences OBJECT-TYPE
+    SYNTAX          Counter32
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the number of underflow occurrences
+        since last application period.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 20 }
+
+cmplsTunnelAutoBWUnderflowHighestBW OBJECT-TYPE
+    SYNTAX          Gauge32
+    UNITS           "kbps"
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the highest sample collected during
+        an underflow sequence.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 21 }
+
+cmplsTunnelAutoBWRequested OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kpbs"
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the bandwidth requested by the
+        auto-bandwidth algorithm.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 22 }
+
+cmplsTunnelAutoBWSignaled OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kpbs"
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the bandwidth signaled by the
+        auto-bandwidth algorithm.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 23 }
+
+cmplsTunnelAutoBWCollectOnlyRequested OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kpbs"
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the bandwidth that would have been
+        requested by the auto-bandwidth algorithm if the auto-bandwidth
+        functionality was enabled. If the collect only mode is enabled,
+        the bandwidth change request will not be executed.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 24 }
+
+cmplsTunnelAutoBWHighest OBJECT-TYPE
+    SYNTAX          Unsigned32
+    UNITS           "kpbs"
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the highest bandwidth sampled by
+        the auto-bandwidth algorithm.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 25 }
+
+cmplsTunnelAutoBWCollectedSamples OBJECT-TYPE
+    SYNTAX          Counter32
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the samples collected since the last
+        auto-bandwidth application.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 26 }
+
+cmplsTunnelAutoBWJitter OBJECT-TYPE
+    SYNTAX          Unsigned32
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the auto-bandwidth application jitter.
+        Jitter is the extra time to be added to the application interval
+        the first time the auto bandwidth is applied.
+        If mplsTunnelInstance is zero this object will be set to zero.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'."
+    DEFVAL          { 0 } 
+    ::= { cmplsTunnelAutoBWEntry 27 }
+
+cmplsTunnelAutoBWAppRejectReason OBJECT-TYPE
+    SYNTAX          INTEGER {
+                        applicationAllowed(1),
+                        autoBWDisabled(2),
+                        tunnelIsDown(3),
+                        tunnelIsFRR(4),
+                        tunnelIsBackup(5),
+                        tunnelIsLockDown(6)
+                    }
+    MAX-ACCESS      read-only
+    STATUS          current
+    DESCRIPTION
+        "This object indicates the reason for the bandwidth application
+        rejection.
+        This object value is not aplicable if cmplsTunnelAutoBWStatus is
+        'autoBWDisabled'." 
+    ::= { cmplsTunnelAutoBWEntry 28 }
+ 
+
+cmplsTeStdExtMIBCompliances  OBJECT IDENTIFIER
+    ::= { cmplsTeStdExtMIBConform 1 }
+
+cmplsTeStdExtMIBGroups  OBJECT IDENTIFIER
+    ::= { cmplsTeStdExtMIBConform 2 }
+
+
+cmplsTeStdExtMIBCompliance MODULE-COMPLIANCE
+    STATUS          current
+    DESCRIPTION
+        "This is the main compliance statement for the MIB."
+    MODULE          -- this module
+    GROUP           cmplsTeStdExtMIBAutoBWOptionalGroup
+    DESCRIPTION
+        "Optional group for routers implementing auto-bandwidth
+        feature."
+
+    GROUP           cmplsTeStdExtMIBAutoBWObjectGroup
+    DESCRIPTION
+        "main objects group for routers implementing auto-bandwidth
+        feature."
+    ::= { cmplsTeStdExtMIBCompliances 1 }
+
+-- Units of Conformance
+
+cmplsTeStdExtMIBAutoBWObjectGroup OBJECT-GROUP
+    OBJECTS         {
+                        cmplsTunnelAutoBWStatus,
+                        cmplsTunnelAutoBWMin,
+                        cmplsTunnelAutoBWMax,
+                        cmplsTunnelAutoBWAdjThreshPercs,
+                        cmplsTunnelAutoBWAdjThreshBW,
+                        cmplsTunnelAutoBWApplicationFrequency,
+                        cmplsTunnelAutoBWCollectionFrequency,
+                        cmplsTunnelAutoBWLastAppliedBW,
+                        cmplsTunnelAutoBWApplications,
+                        cmplsTunnelAutoBWLastApplicationTrigger,
+                        cmplsTunnelAutoBWOverflowApplications,
+                        cmplsTunnelAutoBWOverflowOccurrences,
+                        cmplsTunnelAutoBWUnderflowApplications,
+                        cmplsTunnelAutoBWUnderflowOccurrences,
+                        cmplsTunnelAutoBWUnderflowHighestBW,
+                        cmplsTunnelAutoBWRequested,
+                        cmplsTunnelAutoBWSignaled,
+                        cmplsTunnelAutoBWCollectOnlyRequested,
+                        cmplsTunnelAutoBWHighest,
+                        cmplsTunnelAutoBWCollectedSamples,
+                        cmplsTunnelAutoBWAppRejectReason
+                    }
+    STATUS          current
+    DESCRIPTION
+        "This contains the main MPLS TE extensions groups."
+    ::= { cmplsTeStdExtMIBGroups 1 }
+
+cmplsTeStdExtMIBAutoBWOptionalGroup OBJECT-GROUP
+    OBJECTS         {
+                        cmplsTunnelAutoBWOverflowThreshPercs,
+                        cmplsTunnelAutoBWOverflowThreshBW,
+                        cmplsTunnelAutoBWOverflowLimit,
+                        cmplsTunnelAutoBWUnderflowThreshPercs,
+                        cmplsTunnelAutoBWUnderflowThreshBW,
+                        cmplsTunnelAutoBWUnderflowLimit,
+                        cmplsTunnelAutoBWJitter
+                    }
+    STATUS          current
+    DESCRIPTION
+        "This contains the optional MPLS TE extensions groups."
+    ::= { cmplsTeStdExtMIBGroups 2 }
+
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
