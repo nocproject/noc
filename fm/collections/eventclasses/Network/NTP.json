@@ -30,6 +30,43 @@
     },
 
     {
+        "name": "Network | NTP | System Clock Synchronized",
+        "description": "System clock synchronized",
+        "action": "L",
+        "text" : {
+            "en": {
+                "subject_template": "System clock synchronized with {% if server_name %}{{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}{% if stratum %} stratum={{stratum}}{% endif %}",
+                "body_template": "System clock synchronized with {% if server_name %}{{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}{% if stratum %} stratum={{stratum}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "server_name",
+                "description": "NTP server name",
+                "type": "str",
+                "required": false
+            },
+            
+            {
+                "name": "server_address",
+                "description": "NTP server IP address",
+                "type": "ip_address",
+                "required": false
+            },
+            
+            {
+                "name": "stratum",
+                "description": "NTP server stratum",
+                "type": "int",
+                "required": false
+            }
+        ]
+    },
+
+    {
         "name": "Network | NTP | System Clock Adjusted",
         "description": "System clock was adjusted",
         "action": "L",
