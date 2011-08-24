@@ -771,7 +771,7 @@ class ConnectedTCPSocket(TCPSocket):
                 self.on_conn_refused()
                 self.close()
                 return
-            if why[0] in (ECONNRESET, ENOTCONN, ESHUTDOWN):
+            if why[0] in (ECONNRESET, ENOTCONN, ESHUTDOWN, ETIMEDOUT):
                 self.close()
                 return
             if why[0] in (EINTR, EAGAIN):
