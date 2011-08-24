@@ -87,5 +87,8 @@ class Notify(NotifyBase):
             except smtplib.SMTPServerDisconnected, why:
                 self.error("Server disconnected: %s"%str(why))
                 return False
+            except smtplib.SMTPDataError, why:
+                self.error("Data error: %s" % str(why))
+                return False
         #
         return True
