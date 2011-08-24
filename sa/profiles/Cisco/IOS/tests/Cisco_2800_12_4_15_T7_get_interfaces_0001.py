@@ -839,6 +839,11 @@ FastEthernet0/0/0 is up, line protocol is down
      0 lost carrier, 0 no carrier
      0 output buffer failures, 0 output buffers swapped out""", 
 'show interfaces status | i ^Po[0-9]+':  'show interfaces status | i ^Po[0-9]+\n', 
+'show vlan brief': """show vlan brief
+show vlan brief
+     ^
+% Invalid input detected at '^' marker.
+"""
 }
     snmp_get = {}
     snmp_getnext = {}

@@ -815,6 +815,11 @@ Vlan246 is up, line protocol is up
   WCCP Redirect inbound is disabled
   WCCP Redirect exclude is disabled""", 
 'show interfaces status | i ^Po[0-9]+':  'show interfaces status | i ^Po[0-9]+\n', 
+'show vlan brief': """show vlan brief
+show vlan brief
+     ^
+% Invalid input detected at '^' marker.
+"""
 }
     snmp_get = {}
     snmp_getnext = {}
