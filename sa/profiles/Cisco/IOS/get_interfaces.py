@@ -14,6 +14,7 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
 from noc.sa.interfaces import base
 from noc.sa.script import Script as NOCScript
+from noc.sa.profiles.Cisco.IOS import uBR
 
 
 class Script(NOCScript):
@@ -37,6 +38,19 @@ class Script(NOCScript):
     rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?)$", re.IGNORECASE)
+
+    types = {
+           "Lo": 'loopback',
+           "Et": 'physical',
+           "Gi": 'physical',
+           "Fa": 'physical',
+           "Se": 'physical',
+           "M": 'management',
+           "R": 'aggregated',
+           "Tu": 'tunnel',
+           "C": 'physical',
+           "Vl": 'SVI',
+           }
 
     def get_ospfint(self):
         v = self.cli("show ip ospf interface brief")
@@ -66,8 +80,7 @@ class Script(NOCScript):
     ##
     rx_vlan_ubr = re.compile(r"^\w{4}\.\w{4}\.\w{4}\s(?P<port>\S+)\s+(?P<vlan_id>\d{1,4})", re.MULTILINE)
 
-    @NOCScript.match(version__contains="BC")
-    def execute_ubr(self):
+    def get_ubr_pvm(self):
         vlans = self.cli("show cable l2-vpn dot1q-vc-map")
         pvm = {}
         for l in sh_dot1_map.split('\n'):
@@ -79,28 +92,24 @@ class Script(NOCScript):
                             pvm[port] = ['%s' % vlan_id]
                     else:
                             pvm[port] += '%s' % vlan_id
-        self.pvm = self.scripts.get_vlans()
-        return self.execute_main()
+        return pvm
 
-    ##
-    ## 18xx/28xx/38xx/72xx with EtherSwitch module
-    ##
-    @NOCScript.match(platform__regex=r"^([123]8[0-9]{2}|72[0-9]{2})")
-    def execute_vlan_switch(self):
-        vlans = self.cli("show vlan-switch brief")
-        self.pvm = self.map_vlans_to_ports(vlans)
-        return self.execute_main()
-
-    ##
-    ## Other
-    ##
-    @NOCScript.match()
-    def execute_vlan_brief(self):
-        vlans = self.cli("show vlan brief")
-        self.pvm = self.map_vlans_to_ports(vlans)
-        return self.execute_main()
-
-    def execute_main(self):
+    def execute(self):
+        # Get port-to-vlan mappings
+        pvm = {}
+        if self.match_version(uBR):
+            # uBR series
+            pvm = self.get_ubr_pvm()
+        else:
+            vlans = None
+            for cmd in ("show vlan brief", "show vlan-switch brief"):
+                try:
+                    vlans = self.cli(cmd)
+                except self.CLISyntaxError:
+                    continue
+            if vlans:
+                pvm = self.map_vlans_to_ports(vlans)
+        # Get portchannels
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
             i = pc["interface"]
@@ -109,23 +118,11 @@ class Script(NOCScript):
                 portchannel_members[m] = (i, t)
         interfaces = []
         subinterfaces = []
+        # Get OSPF interfaces
         ospfs = self.get_ospfint()
 
-        types = {
-               "Lo": 'loopback',
-               "Et": 'physical',
-               "Gi": 'physical',
-               "Fa": 'physical',
-               "Se": 'physical',
-               "M": 'management',
-               "R": 'aggregated',
-               "Tu": 'tunnel',
-               "C": 'physical',
-               "Vl": 'SVI',
-               }
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
-
             ifname = match.group('interface')
             if ifname[:2] in ['Vi', 'Tu']:
                 continue
@@ -158,7 +155,7 @@ class Script(NOCScript):
                 if encaps[:6] == '802.1Q':
                     sub['vlan_ids'] = [encaps.split(',')[1].split()[2][:-1]]
             #vtp
-            if ifname in self.pvm.keys():
+            if ifname in pvm:
                 sub['vlan_ids'] = pwd[ifname]
 
             if match.group('ip'):
@@ -179,21 +176,21 @@ class Script(NOCScript):
                     sub['is_ospf'] = True
             phys = len(ifname.split('.')) + len(ifname.split(':'))
             if phys == 2:
-                        iface = {
-                            "name": ifname,
-                            "admin_status": a_stat,
-                            "oper_status": o_stat,
-                            "type": types[ifname[:2]],
-                            'subinterfaces': [sub]
-                        }
-                        if 'mac' in sub.keys():
-                            iface['mac'] = sub['mac']
-                        if 'alias' in sub.keys():
-                            iface['alias'] = sub['alias']
-                        # Set VLAN IDs for SVI
-                        if iface['type'] == "SVI":
-                            sub["vlan_ids"] = [int(shotn[2:].strip())]
-                        interfaces += [iface]
+                iface = {
+                    "name": ifname,
+                    "admin_status": a_stat,
+                    "oper_status": o_stat,
+                    "type": self.types[ifname[:2]],
+                    'subinterfaces': [sub]
+                }
+                if 'mac' in sub.keys():
+                    iface['mac'] = sub['mac']
+                if 'alias' in sub.keys():
+                    iface['alias'] = sub['alias']
+                # Set VLAN IDs for SVI
+                if iface['type'] == "SVI":
+                    sub["vlan_ids"] = [int(shotn[2:].strip())]
+                interfaces += [iface]
             else:
                 if 'subinterfaces' in interfaces[-1].keys():
                     interfaces[-1]['subinterfaces'].append(sub)
