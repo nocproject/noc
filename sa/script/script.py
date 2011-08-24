@@ -683,7 +683,7 @@ class Script(threading.Thread):
             raise data
         # Check for syntax error
         if self.profile.pattern_syntax_error and re.search(self.profile.pattern_syntax_error, data):
-            raise self.CLISyntaxError()
+            raise self.CLISyntaxError(data)
         # Echo cancelation
         if self.strip_echo and data.lstrip().startswith(cmd):
             data=data.lstrip()
