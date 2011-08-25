@@ -72,8 +72,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "Duplicate MAC detected on interfaces {{one_interface}} and {{two_interface}}",
-                "body_template": "Duplicate MAC detected on interfaces {{one_interface}} and {{two_interface}}",
+                "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
+                "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
