@@ -102,5 +102,48 @@
                 "value_re": "%SYS-2-PS_OK: Power supply (?P<name>\\d+) okay"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Failed #4 (SYSLOG)",
+        "description": "%ENVMON-5-48V_STATUS: -48V supply failed",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ENVMON-5-\\S+V_STATUS: (?P<name>\\S+V) supply failed"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #4 (SYSLOG)",
+        "description": "%ENVMON-5-48V_STATUS: -48V supply OK",
+        "event_class__name": "Chassis | PSU | PSU Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ENVMON-5-\\S+V_STATUS: (?P<name>\\S+V) supply OK"
+            }
+        ]
     }
+
 ]
