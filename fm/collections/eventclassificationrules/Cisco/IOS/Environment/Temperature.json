@@ -208,5 +208,32 @@
                 "value_re": "%SYS-2-MOD_TEMPOK:\\s*(?P<name>Module \\d+) temperature OK"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #5 (SYSLOG)",
+        "description": "%SYS-1-OVERTEMP: System detected OVERTEMPERATURE condition. Please resolve cooling problem immediately!",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "Chassis"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-1-OVERTEMP: System detected OVERTEMPERATURE condition. Please resolve cooling problem immediately!"
+            }
+        ]
     }
 ]
