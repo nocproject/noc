@@ -13,7 +13,7 @@ DLink.DxS_Cisco_CLI profile supports various DLink switches
 Supported platform series
 -------------------------
 ======== =====================================================================
-DGS-3610 DGS-3610-26, DGS-3610-26G
+DGS-3610 DGS-3610-26, DGS-3610-26G, DGS-3610-50P
 ======== =====================================================================
 
 Partially supported series (not tested)
