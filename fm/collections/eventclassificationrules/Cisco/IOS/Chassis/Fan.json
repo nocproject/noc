@@ -1,7 +1,7 @@
 [
     {
         "name": "Cisco | IOS | Chassis | Fan | Fan Failed #1 (SYSLOG)",
-        "description": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
+        "description": "%FAN-3-FAN_FAILED: Fan 1 had a rotation error reported.",
         "event_class__name": "Chassis | Fan | Fan Failed",
         "preference": 1000,
         "patterns": [
@@ -15,28 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%FAN-3-FAN_FAILED: Fan (?P<name>\\S+) had a rotation error reported\\.$"
-            }
-        ]
-    },
-
-    {
-        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #2 (SYSLOG)",
-        "description": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
-        "event_class__name": "Chassis | Fan | Fan Failed",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^Cisco\\.IOS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "%ENVM-2-FAN: (?P<name>\\S+) has failed"
+                "value_re": "%FAN-3-FAN_FAILED: (?P<name>Fan \\S+) had a rotation error reported\\.$"
             }
         ]
     },
@@ -57,7 +36,103 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%FAN-3-FAN_OK: Fan (?P<name>\\S+) had earlier reported a rotation error\\. It is ok now$"
+                "value_re": "%FAN-3-FAN_OK: (?P<name>Fan \\S+) had earlier reported a rotation error\\. It is ok now$"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #2 (SYSLOG)",
+        "description": "%SYS-2-PS_FANFAIL: Power supply 2 fan failed",
+        "event_class__name": "Chassis | Fan | Fan Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-2-PS_FANFAIL: (?P<name>Power supply \\d+ fan) failed"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #3 (SYSLOG)",
+        "description": "%SYS-2-FAN_FAIL: Fan failed",
+        "event_class__name": "Chassis | Fan | Fan Failed",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "Chassis Fan"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-2-FAN_FAIL: Fan failed"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Recovered #3 (SYSLOG)",
+        "description": "%SYS-2-FAN_FAIL: Fan failed",
+        "event_class__name": "Chassis | Fan | Fan Recovered",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "Chassis Fan"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "SYS-2-FAN_OK: Fan okay"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #4 (SYSLOG)",
+        "description": "%ENVM-2-FAN: Blower has failed, shutdown in 2 minutes",
+        "event_class__name": "Chassis | Fan | Fan Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ENVM-2-FAN: (?P<name>Blower) has failed, shutdown in 2 minutes"
             }
         ]
     }

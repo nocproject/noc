@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%SYS-0-MOD_TEMP(?:MINOR|MAJOR)FAIL:\\s*Module (?P<name>\\S+) (?P<threshold>minor|major) temperature threshold exceeded"
+                "value_re": "%SYS-0-MOD_TEMP(?:MINOR|MAJOR)FAIL:\\s*(?P<name>Module \\d+) (?P<threshold>minor|major) temperature threshold exceeded"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%SYS-0-MOD_TEMP(?:MINOR|MAJOR)RECOVER:\\s*Module (?P<name>\\S+) (?P<threshold>minor|major) temperature threshold recovered"
+                "value_re": "%SYS-0-MOD_TEMP(?:MINOR|MAJOR)RECOVER:\\s*(?P<name>Module \\d+) (?P<threshold>minor|major) temperature threshold recovered"
             }
         ]
     },
@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%SYS-0-SUP_TEMP(?:MINOR|MAJOR)FAIL:\\s*Supervisor in slot (?P<name>\\S+) \\S+ (?P<threshold>minor|major) temperature threshold exceeded"
+                "value_re": "%SYS-0-SUP_TEMP(?:MINOR|MAJOR)FAIL:\\s*(?P<name>Supervisor in slot \\d+) \\S+ (?P<threshold>minor|major) temperature threshold exceeded"
             }
         ]
     },
@@ -78,13 +78,55 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%SYS-0-SUP_TEMP(?:MINOR|MAJOR)RECOVER:\\s*Supervisor in slot (?P<name>\\S+) \\S+ (?P<threshold>minor|major) temperature threshold recovered"
+                "value_re": "%SYS-0-SUP_TEMP(?:MINOR|MAJOR)RECOVER:\\s*(?P<name>Supervisor in slot \\d+) \\S+ (?P<threshold>minor|major) temperature threshold recovered"
             }
         ]
     },
 
     {
         "name": "Cisco | IOS | Environment | Temperature Out of Range #3 (SYSLOG)",
+        "description": "%SYS-0-SYS_TEMPMAJORFAIL: Chassis major temperature threshold exceeded",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-0-SYS_TEMP(?:MINOR|MAJOR)FAIL:\\s*(?P<name>Chassis) (?P<threshold>major|minor) temperature threshold exceeded"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #3 (SYSLOG)",
+        "description": "%SYS-0-SYS_TEMPMAJORRECOVER: Chassis major temperature threshold recovered",
+        "event_class__name": "Environment | Temperature Returned to Normal Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-0-SYS_TEMPMAJORRECOVER:\\s*(?P<name>Chassis) (?P<threshold>major|minor) temperature threshold recovered"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #4 (SYSLOG)",
         "description": "%SYS-0-MOD_THERMALSHUTDOWN: Module 2 'shutdown' temperature threshold exceeded on CPU 1",
         "event_class__name": "Environment | Temperature Out of Range",
         "preference": 1000,
@@ -99,7 +141,71 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%SYS-0-MOD_THERMAL(?:SHUTDOWN|WARNING):\\s*Module (?P<name>\\S+) '(?P<threshold>shutdown|warning)' temperature threshold exceeded on CPU \\d+"
+                "value_re": "%SYS-0-MOD_THERMAL(?:SHUTDOWN|WARNING):\\s*(?P<name>Module \\S+) '(?P<threshold>shutdown|warning)' temperature threshold exceeded on CPU \\d+"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #4 (SYSLOG)",
+        "description": "%SYS-2-SUP_TEMPOK: Supervisor in slot 5 EARL temperature OK",
+        "event_class__name": "Environment | Temperature Returned to Normal Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-2-SUP_TEMPOK:\\s*(?P<name>Supervisor in slot \\d+) \\S+ temperature OK"
+            }
+        ]
+    },
+
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #5 (SYSLOG)",
+        "description": "%SYS-2-SYS_TEMPOK: Chassis temperature OK",
+        "event_class__name": "Environment | Temperature Returned to Normal Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-2-SYS_TEMPOK:\\s*(?P<name>Chassis) temperature OK"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #6 (SYSLOG)",
+        "description": "%SYS-2-MOD_TEMPOK: Module 2 temperature OK",
+        "event_class__name": "Environment | Temperature Returned to Normal Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-2-MOD_TEMPOK:\\s*(?P<name>Module \\d+) temperature OK"
             }
         ]
     }
