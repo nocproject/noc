@@ -75,6 +75,39 @@
     },
 
     {
+        "name": "DLink | DxS | Security | Attack | Land Attack (SNMP)",
+        "description": "DOS-PREV-MIB::swDoSAttackDetected",
+        "event_class__name": "Security | Attack | Land Attack",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^DOS-PREV-MIB::swDoSAttackDetected$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
+                "value_re": "^(?P<src_ip__bin_to_ip>.+)$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSNotifyVarPortNumber\\.0$",
+                "value_re": "^(?P<interface>.+)$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSCtrlType\\.1$",
+                "value_re": "^land-attack$"
+            }
+        ]
+    },
+
+    {
         "name": "DLink | DxS | Security | Attack | Smurf Attack (SYSLOG)",
         "description": "CRIT: Smurf Attack is detected from (IP: 172.16.1.235 Port: 14)",
         "event_class__name": "Security | Attack | Smurf Attack",
@@ -96,6 +129,39 @@
     },
 
     {
+        "name": "DLink | DxS | Security | Attack | Smurf Attack (SNMP)",
+        "description": "DOS-PREV-MIB::swDoSAttackDetected",
+        "event_class__name": "Security | Attack | Smurf Attack",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^DOS-PREV-MIB::swDoSAttackDetected$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
+                "value_re": "^(?P<src_ip__bin_to_ip>.+)$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSNotifyVarPortNumber\\.0$",
+                "value_re": "^(?P<interface>.+)$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSCtrlType\\.3$",
+                "value_re": "^smurf-attack$"
+            }
+        ]
+    },
+
+    {
         "name": "DLink | DxS | Security | Attack | TCP SYNFIN Scan (SYSLOG)",
         "description": "CRIT: TCP SYNFIN is detected from (IP: 95.84.197.193 Port: 24)",
         "event_class__name": "Security | Attack | TCP SYNFIN Scan",
@@ -112,6 +178,39 @@
             {
                 "key_re": "^message$",
                 "value_re": "(?:CRIT:|CRIT\\(2\\)) TCP SYNFIN is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS | Security | Attack | TCP SYNFIN Scan (SNMP)",
+        "description": "DOS-PREV-MIB::swDoSAttackDetected",
+        "event_class__name": "Security | Attack | TCP SYNFIN Scan",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^DOS-PREV-MIB::swDoSAttackDetected$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
+                "value_re": "^(?P<src_ip__bin_to_ip>.+)$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSNotifyVarPortNumber\\.0$",
+                "value_re": "^(?P<interface>.+)$"
+            },
+            {
+                "key_re": "^DOS-PREV-MIB::swDoSCtrlType\\.6$",
+                "value_re": "^tcp-synfin$"
             }
         ]
     },
