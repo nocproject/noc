@@ -135,5 +135,53 @@
                 "value_re": "%ENVM-2-FAN: (?P<name>Blower) has failed, shutdown in 2 minutes"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #5 (SYSLOG)",
+        "description": "%ENVMON-3-FAN_FAILED: Fan 1 not rotating.",
+        "event_class__name": "Chassis | Fan | Fan Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ENVMON-3-FAN_FAILED: (?P<name>Fan \\d+) not rotating."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #6 (SYSLOG)",
+        "description": "%ENVMON-3-FAN_FAILED: Fan 1 not rotating.",
+        "event_class__name": "Chassis | Fan | Fan Failed",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "Chassis Fan"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%ENVMON-3-FAN_FAILED: Fan not rotating."
+            }
+        ]
     }
 ]
