@@ -44,6 +44,44 @@
     },
 
     {
+        "name": "Network | MAC | Duplicate MAC",
+        "description": "Duplicate MAC Detected",
+        "is_unique": true,
+        "discriminator": ["mac"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "mac",
+                "description": "MAC Address",
+                "type": "mac",
+                "required": true
+            },
+            {
+                "name": "one_interface",
+                "description": "First interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "two_interface",
+                "description": "Second interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Duplicate MAC detected on interfaces {{one_interface}} and {{two_interface}}",
+                "body_template": "Duplicate MAC detected on interfaces {{one_interface}} and {{two_interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    },
+
+    {
         "name": "Network | MAC | MAC Flood",
         "description": "Flooding MAC Detected",
         "is_unique": true,
