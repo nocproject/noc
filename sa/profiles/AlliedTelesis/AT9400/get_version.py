@@ -16,7 +16,10 @@ class Script(NOCScript):
     name = "AlliedTelesis.AT9400.get_version"
     cache = True
     implements = [IGetVersion]
-    rx_ver = re.compile(r"^Model Name ...... (?P<platform>AT[/\w-]+).+^Serial Number ... (?P<serial>\S+).+^Bootloader ...... ATS63_LOADER v(?P<bootprom>\d+\.\d+\.\d+).+^Application ..... ATS63 v(?P<version>\S+(\s\S+))\s\s", re.MULTILINE | re.DOTALL)
+    rx_platform = re.compile(r"Model Name ...... (?P<platform>AT\S+)", re.MULTILINE | re.DOTALL)
+    rx_version = re.compile(r"^Application ..... ATS63 v(?P<version>\S+(\s\S+)*)\s\s", re.MULTILINE | re.DOTALL)
+    rx_serial = re.compile(r"^Serial Number ... (?P<serial>\S+)", re.MULTILINE | re.DOTALL)
+    rx_bootprom = re.compile(r"^Bootloader ...... ATS63_LOADER v(?P<bootprom>\d+\.\d+\.\d+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
@@ -30,13 +33,22 @@ class Script(NOCScript):
                 }
             except self.snmp.TimeOutError:
                 pass
-        match = self.rx_ver.search(self.cli("show system", cached=True))
+        s = self.cli("show system", cached=True)
+        match = self.rx_platform.search(s)
+        platform = match.group("platform")
+        match = self.rx_version.search(s)
+        version = match.group("version")
+        match = self.rx_bootprom.search(s)
+        bootprom = match.group("bootprom")
+        match = self.rx_serial.search(s)
+        serial = match.group("serial")
+
         return {
             "vendor"  : "Allied Telesis",
-            "platform": match.group("platform"),
-            "version" : match.group("version"),
+            "platform": platform,
+            "version" : version,
             "attributes" : {
-                "Boot PROM" : match.group("bootprom"),
-                "serial"    : match.group("serial")
+                "Boot PROM" : bootprom,
+                "serial"    : serial
             }
         }
