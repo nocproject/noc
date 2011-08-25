@@ -60,5 +60,47 @@
                 "value_re": "ENVM-6-PSOK: (?P<name>.+) now appears to be working correctly"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Failed #3 (SYSLOG)",
+        "description": "%SYS-2-PS_FAIL: Power supply 2 failed",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-2-PS_(NFAN)?FAIL: Power supply (?P<name>\\d+)( and power supply fan)? failed"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #3 (SYSLOG)",
+        "description": "%SYS-2-PS_OK: Power supply 2 okay",
+        "event_class__name": "Chassis | PSU | PSU Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-2-PS_OK: Power supply (?P<name>\\d+) okay"
+            }
+        ]
     }
 ]
