@@ -78,7 +78,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%SYS-2-PS_(NFAN)?FAIL: Power supply (?P<name>\\d+)( and power supply fan)? failed"
+                "value_re": "%SYS-2-PS_(?:NFAN)?FAIL: Power supply (?P<name>\\d+)(?: and power supply fan)? failed"
             }
         ]
     },
