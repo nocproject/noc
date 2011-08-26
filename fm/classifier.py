@@ -806,11 +806,12 @@ class Classifier(Daemon):
                     perf = 0
                 s = [
                     "elapsed: %ss" % ("%10.4f" % dt).strip(),
-                    "speed: %sev/s" % ("%10.1f" % perf).strip()
+                    "speed: %sev/s" % ("%10.1f" % perf).strip(),
+                    "events: %d" % n
                     ]
                 s += ["%s: %d" % (CR[i], sn[i]) for i in range(len(CR))]
                 s = ", ".join(s)
-                logging.info("%d events are classified: %s" % (n, s))
+                logging.info("REPORT: %s" % s)
             else:
                 # No events classified this pass. Sleep
                 time.sleep(CHECK_EVERY)
