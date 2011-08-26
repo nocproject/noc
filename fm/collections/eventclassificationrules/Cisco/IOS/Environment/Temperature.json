@@ -289,5 +289,26 @@
                 "value_re": "%SYS-0-TEMP_CRIT(?:OK|RECOVER): Temp (?P<threshold>critical) (?:okay|recovered)"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #8 (SYSLOG)",
+        "description": "%UBR7200-0-TEMPHIGH : [chars] measured at [chars] is too high: shutdown temperature [chars]",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%UBR\\d+00-0-TEMPHIGH\\s*: \\S+ measured at (?P<name>\\S+) is too (?P<threshold>high): shutdown temperature (?P<max>\\S+)"
+            }
+        ]
     }
 ]
