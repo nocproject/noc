@@ -144,5 +144,39 @@
                 "value_re": "%SSH-5-SSH2_SESSION: SSH2 Session request from (?P<ip>\\S+) \\(tty = (?P<vty>\\d+)\\) using crypto cipher '\\S+', hmac '\\S+' Succeeded$" 
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Unknown | Ignore show running-config (SNMP)",
+        "description": "CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 3000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent$"
+            },
+            {
+                "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigDestination\\.391$",
+                "value_re": "^running$"
+            },
+            {
+                "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigSource\\.391$",
+                "value_re": "^commandSource$"
+            },
+            {
+                "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventCommandSource\\.391$",
+                "value_re": "^commandLine$"
+            }
+        ]
     }
+
 ]
