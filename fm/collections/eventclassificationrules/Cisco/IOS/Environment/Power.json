@@ -21,7 +21,7 @@
     },
 
     {
-        "name": "Cisco | IOS | Environment | DC Voltage Out of Range #1 (SYSLOG)",
+        "name": "Cisco | IOS | Environment | DC Voltage Out of Range #2 (SYSLOG)",
         "description": "%UBR7200-0-VOLTLOW : [chars] measured at [chars] is too low: shutdown voltage [chars]",
         "event_class__name": "Environment | DC Voltage Out of Range",
         "preference": 1000,
