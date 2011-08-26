@@ -102,6 +102,7 @@ class Rule(object):
         self.name = rule.name
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
+        self.is_unknown = self.event_class_name.startswith("Unknown | ")
         self.datasources = {}  # name -> DS
         self.vars = {}  # name -> value
         # Parse datasources
@@ -317,9 +318,10 @@ class Rule(object):
 CR_FAILED = 0
 CR_DELETED = 1
 CR_SUPPRESSED = 2
-CR_CLASSIFIED = 3
-CR_DISPOSED = 4
-CR = ["failed", "deleted", "suppressed", "classified", "disposed"]
+CR_UNKNOWN = 3
+CR_CLASSIFIED = 4
+CR_DISPOSED = 5
+CR = ["failed", "deleted", "suppressed", "unknown", "classified", "disposed"]
 
 class Classifier(Daemon):
     """
@@ -760,7 +762,10 @@ class Classifier(Daemon):
         if rule.to_dispose:
             event.dispose_event()
             return CR_DISPOSED
-        return CR_CLASSIFIED
+        elif rule.is_unknown:
+            return CR_UNKNOWN
+        else:
+            return CR_CLASSIFIED
 
     def run(self):
         """
@@ -774,7 +779,7 @@ class Classifier(Daemon):
         self.retry_failed_events()
         logging.info("Ready to process events")
         st = {CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
-              CR_CLASSIFIED: 0, CR_DISPOSED: 0}
+              CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0}
         # Enter main loop
         while True:
             n = 0  # Number of events processed
@@ -801,7 +806,7 @@ class Classifier(Daemon):
                     perf = 0
                 s = [
                     "elapsed: %ss" % ("%10.4f" % dt).strip(),
-                    "speed: %sev/s" % ("%10.4f" % perf).strip()
+                    "speed: %sev/s" % ("%10.1f" % perf).strip()
                     ]
                 s += ["%s: %d" % (CR[i], sn[i]) for i in range(len(CR))]
                 s = ", ".join(s)
