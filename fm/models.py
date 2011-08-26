@@ -616,6 +616,27 @@ class EventDispositionRule(nosql.EmbeddedDocument):
         return True
 
 
+class EventSuppressionRule(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    name = nosql.StringField()
+    condition = nosql.StringField(required=True, default="True")
+    event_class = nosql.PlainReferenceField("EventClass", required=True)
+    match_condition = nosql.DictField(required=True, default={})
+    window = nosql.IntField(required=True, default=3600)
+    suppress = nosql.BooleanField(required=True, default=True)
+
+    def __unicode__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return (self.name == other.name and self.condition == other.condition and
+                self.event_class.id == other.event_class.id and
+                self.match_condition == other.match_condition and
+                self.window == other.window and self.suppress == other.suppress)
+
+
 class EventClassCategory(nosql.Document):
     meta = {
         "collection": "noc.eventclasscategories",
@@ -668,6 +689,7 @@ class EventClass(nosql.Document):
     text = nosql.DictField(required=True)
 
     disposition = nosql.ListField(nosql.EmbeddedDocumentField(EventDispositionRule))
+    repeat_suppression = nosql.ListField(nosql.EmbeddedDocumentField(EventSuppressionRule))
     #
     category = nosql.ObjectIdField()
     

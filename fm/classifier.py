@@ -28,6 +28,7 @@ from noc.lib.snmputils import render_tc
 from noc.lib.escape import fm_unescape, fm_escape
 from noc.sa.interfaces.base import *
 from noc.lib.datasource import datasource_registry
+from noc.lib.nosql import ObjectId
 
 
 ##
@@ -313,6 +314,12 @@ class Rule(object):
         """
         return self.classifier.enumerations[name][v.lower()]
 
+CR_FAILED = 0
+CR_DELETED = 1
+CR_SUPPRESSED = 2
+CR_CLASSIFIED = 3
+CR_DISPOSED = 4
+CR = ["failed", "deleted", "suppressed", "classified", "disposed"]
 
 class Classifier(Daemon):
     """
@@ -330,6 +337,7 @@ class Classifier(Daemon):
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
         self.enumerations = {}  # name -> value -> enumerated
+        self.suppression = {}  # event_class_id -> (condition, suppress)
         Daemon.__init__(self)
         logging.info("Running Classifier version %s" % self.version)
 
@@ -341,6 +349,7 @@ class Classifier(Daemon):
         self.load_enumerations()
         self.load_rules()
         self.load_triggers()
+        self.load_suppression()
 
     def load_rules(self):
         """
@@ -402,6 +411,60 @@ class Classifier(Daemon):
             self.enumerations[e.name] = r
             n += 1
         logging.info("%d enumerations loaded" % n)
+
+    def load_suppression(self):
+        """
+        Load suppression rules
+        """
+        def compile_rule(s):
+            """
+            Compile suppression rule
+            """
+            x = [
+                "'timestamp__gte': event.timestamp - datetime.timedelta(seconds=%d)" % s["window"],
+                "'timestamp__lte': event.timestamp + datetime.timedelta(seconds=%d)" % s["window"]
+            ]
+            if len(s["event_class"]) == 1:
+                x += ["'event_class': ObjectId('%s')" % s["event_class"][0]]
+            else:
+                x += ["'event_class__in: [%s]" % ", ".join(["ObjectId('%s')" % c for c in s["event_class"]])]
+            for k, v in s["match_condition"].items():
+                x += ["'%s': %s" % (k, v)]
+            return compile("{%s}" % ", ".join(x), "<string>", "eval")
+
+        logging.info("Loading suppression rules")
+        self.suppression = {}
+        for c in EventClass.objects.filter(repeat_suppression__exists=True):
+            # Read event class rules
+            suppression = []
+            for r in c.repeat_suppression:
+                to_skip = False
+                for s in suppression:
+                    if (s["condition"] == r.condition and
+                        s["window"] == r.window and
+                        s["suppress"] == r.suppress and
+                        s["match_condition"] == r.match_condition):
+                        if r.event_class.id not in s["event_class"]:
+                            s["event_class"] += [r.event_class.id]
+                            s["name"] += ", " + r.name
+                            to_skip = True
+                            break
+                if to_skip:
+                    continue
+                suppression += [{
+                    "name": r.name,
+                    "condition": r.condition,
+                    "window": r.window,
+                    "suppress": r.suppress,
+                    "match_condition": r.match_condition,
+                    "event_class": [r.event_class.id]
+                }]
+            # Compile suppression rules
+            self.suppression[c.id] = [(compile_rule(s),
+                                       "%s::%s" % (c.name, s["name"]),
+                                       s["suppress"])
+                for s in suppression]
+        logging.info("Suppression rules are loaded")
 
     ##
     ## Variable decoders
@@ -593,6 +656,30 @@ class Classifier(Daemon):
             r[ecv.name] = v
         return r
 
+    def to_suppress(self, event, event_class, vars):
+        """
+        Check wrether event must be suppressed
+        
+        :returns: (bool, rule name)
+        """
+        ts = event.timestamp
+        n_delta = None
+        nearest = None
+        n_name = None
+        n_suppress = False
+        for r, name, suppress in self.suppression[event_class.id]:
+            q = eval(r, {}, {"event": event, "ObjectId": ObjectId,
+                             "datetime": datetime})
+            e = ActiveEvent.objects.filter(**q).order_by("-timestamp").first()
+            if e:
+                d = ts - e.timestamp
+                if n_delta is None or d < n_delta:
+                    n_delta = d
+                    nearest = e
+                    n_name = name
+                    n_suppress = suppress
+        return n_suppress, n_name
+
     def classify_event(self, event):
         """
         Perform event classification.
@@ -604,6 +691,7 @@ class Classifier(Daemon):
 
         :param event: Event to classify
         :type event: NewEvent
+        :returns: Classification status (CR_*)
         """
         resolved_vars = {
             "profile": event.managed_object.profile_name
@@ -622,10 +710,19 @@ class Classifier(Daemon):
         if rule.to_drop:
             # Silently drop event if declared by action
             event.delete()
-            return
+            return CR_DELETED
         event_class = rule.event_class
         # Calculate rule variables
         vars = self.eval_rule_variables(event, event_class, vars)
+        # Suppress repeats
+        if event_class.id in self.suppression:
+            suppress, name = self.to_suppress(event, event_class, vars)
+            if suppress:
+                logging.debug("Event %s was suppressed by rule %s" % (
+                    event.id, name))
+                event.delete()
+                return CR_SUPPRESSED
+        # Activate event
         message = "Classified as '%s' by rule '%s'" % (event_class.name,
                                                        rule.name)
         log = event.log + [EventLog(timestamp=datetime.datetime.now(),
@@ -658,10 +755,12 @@ class Classifier(Daemon):
                         event_id, t.name))
                     event.id = event_id  # Restore event id
                     event.delete()
-                    return
+                    return CR_DELETED
         # Finally dispose event to further processing by noc-correlator
         if rule.to_dispose:
             event.dispose_event()
+            return CR_DISPOSED
+        return CR_CLASSIFIED
 
     def run(self):
         """
@@ -674,19 +773,23 @@ class Classifier(Daemon):
         # on previous versions of classifier
         self.retry_failed_events()
         logging.info("Ready to process events")
+        st = {CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
+              CR_CLASSIFIED: 0, CR_DISPOSED: 0}
         # Enter main loop
         while True:
             n = 0  # Number of events processed
-            sn = 0  # Number of successes
+            sn = st.copy()
             t0 = time.time()
             for e in self.iter_new_events(REPORT_INTERVAL):
                 try:
-                    self.classify_event(e)
-                    sn += 1
+                    s = self.classify_event(e)
+                    sn[s] += 1
                 except EventProcessingFailed, why:
                     self.mark_as_failed(e, why[0])
+                    sn[CR_FAILED] += 1
                 except:
                     self.mark_as_failed(e)
+                    sn[CR_FAILED] += 1
                 n += 1
                 reset_queries()
             if n:
@@ -696,9 +799,13 @@ class Classifier(Daemon):
                     perf = n / dt
                 else:
                     perf = 0
-                logging.info("%d events are classified (success: %d, failed: %d)"
-                             "(%10.4f second elapsed. %10.4f events/sec)" % (
-                                    n, sn, n - sn, dt, perf))
+                s = [
+                    "elapsed: %ss" % ("%10.4f" % dt).strip(),
+                    "speed: %sev/s" % ("%10.4f" % perf).strip()
+                    ]
+                s += ["%s: %d" % (CR[i], sn[i]) for i in range(len(CR))]
+                s = ", ".join(s)
+                logging.info("%d events are classified: %s" % (n, s))
             else:
                 # No events classified this pass. Sleep
                 time.sleep(CHECK_EVERY)
