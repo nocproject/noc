@@ -198,6 +198,60 @@
                 "value_re": "SYS-2-VTT_OK: VTT modules recovered from failure"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Failed #6 (SYSLOG)",
+        "description": "%PS-3-DCOUTPUTVOLTFAIL: System detected Power System 1 DC FAIL condition.",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "VTT (voltage termination)"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PS-3-DCOUTPUTVOLTFAIL: System detected (?P<name>Power System) \\d+ DC FAIL condition\\.$"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #6 (SYSLOG)",
+        "description": "%PS-3-DCOUTPUTVOLTOK: Power System DC condition is now normal.",
+        "event_class__name": "Chassis | PSU | PSU Recovered",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "VTT (voltage termination)"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PS-3-DCOUTPUTVOLTOK: (?P<name>Power System) DC condition is now normal\\.$"
+            }
+        ]
     }
 
 ]
