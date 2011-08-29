@@ -249,11 +249,17 @@ class Rule(object):
                 c += ["    return None"]
         # Vars binding
         if self.vars:
+            has_expressions = any(v for v in self.vars.values()
+                                  if not isinstance(v, basestring))
+            if has_expressions:
+                # Callculate vars context
+                c += ["var_context = {'event': event}"]
+                c += ["var_context.update(e_vars)"]
             for k, v in self.vars.items():
                 if isinstance(v, basestring):
                     c += ["e_vars[\"%s\"] = \"%s\"" % (k, pyq(v))]
                 else:
-                    c += ["e_vars[\"%s\"] = eval(self.vars[\"%s\"], {}, e_vars)" % (k, k)]
+                    c += ["e_vars[\"%s\"] = eval(self.vars[\"%s\"], {}, var_context)" % (k, k)]
         if e_vars_used:
             #c += ["return self.fixup(e_vars)"]
             for name in self.fixups:
@@ -270,7 +276,7 @@ class Rule(object):
         c = ["    " + l for l in c]
         
         cc = ["# %s" % self.name]
-        cc += ["def match(self, vars):"]
+        cc += ["def match(self, event, vars):"]
         cc += c
         cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
         c = "\n".join(cc)
@@ -628,7 +634,7 @@ class Classifier(Daemon):
         """
         for r in self.rules[event.managed_object.profile_name]:
             # Try to match rule
-            v = r.match(vars)
+            v = r.match(event, vars)
             if v is not None:
                 logging.debug("Matching class for event %s found: %s (Rule: %s)" % (
                     event.id, r.event_class_name, r.name))
