@@ -163,12 +163,6 @@
         "description": "System detected SYS PS 1 fan fail condition.",
         "event_class__name": "Chassis | Fan | Fan Failed",
         "preference": 1000,
-        "vars": [
-            {
-                "name": "name",
-                "value": "Chassis Fan"
-            }
-        ],
         "patterns": [
             {
                 "key_re": "^source$",
