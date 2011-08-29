@@ -88,6 +88,8 @@ MSG_CHANNEL_OPEN_FAILURE = 92
 MSG_CHANNEL_WINDOW_ADJUST = 93
 MSG_CHANNEL_DATA = 94
 MSG_CHANNEL_EXTENDED_DATA = 95
+MSG_CHANNEL_EOF = 96
+MSG_CHANNEL_CLOSE = 97
 MSG_CHANNEL_REQUEST = 98
 MSG_CHANNEL_SUCCESS = 99
 MSG_CHANNEL_FAILURE = 100
@@ -929,6 +931,23 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.flush_data_buffer()
     
     ##
+    ## MSG_CHANNEL_EOF
+    ## Payload:
+    ##     uint32 channel_id
+    ##
+    def ssh_MSG_CHANNEL_EOF(self, packet):
+        pass  # Silently ignore
+    
+    ##
+    ## MSG_CHANNEL_CLOSE
+    ## Payload:
+    ##     uint32 channel_id
+    ##
+    def ssh_MSG_CHANNEL_CLOSE(self, packet):
+        self.send_packet(MSG_CHANNEL_CLOSE,
+                         struct.pack(">L", self.current_remote_channel))
+
+    ##
     ## MSG_CHANNEL_REQUEST
     ## Payload:
     ##     uint32 channel_id
@@ -1015,6 +1034,8 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         MSG_CHANNEL_OPEN_CONFIRMATION : ssh_CHANNEL_OPEN_CONFIRMATION,
         MSG_CHANNEL_OPEN_FAILURE      : ssh_CHANNEL_OPEN_FAILURE,
         MSG_CHANNEL_WINDOW_ADJUST     : ssh_CHANNEL_WINDOW_ADJUST,
+        MSG_CHANNEL_EOF               : ssh_MSG_CHANNEL_EOF,
+        MSG_CHANNEL_CLOSE             : ssh_MSG_CHANNEL_CLOSE,
         MSG_CHANNEL_REQUEST           : ssh_CHANNEL_REQUEST,
         MSG_CHANNEL_SUCCESS           : ssh_CHANNEL_SUCCESS,
     }
