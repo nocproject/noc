@@ -72,8 +72,8 @@
         "action": "L",
         "text" : {
             "en": {
-                "subject_template": "System clock adjusted {% if adjustment_s %}{{adjustment_s}}s{% endif %} {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
-                "body_template": "System clock adjusted {% if adjustment_s %}{{adjustment_s}}s{% endif %} {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+                "subject_template": "System clock adjusted {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
+                "body_template": "System clock adjusted {% if adjustment_ms %}{{adjustment_ms}}ms{% endif %} from NTP server{% if server_name %} {{server_name}}{% endif %}{% if server_address %}({{server_address}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -84,12 +84,6 @@
                 "name": "adjustment_ms",
                 "description": "Time adjustment in msec",
                 "type": "int",
-                "required": false
-            },
-            {
-                "name": "adjustment_s",
-                "description": "Time adjustment in sec",
-                "type": "str",
                 "required": false
             },
             {
