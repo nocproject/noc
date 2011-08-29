@@ -205,12 +205,6 @@
         "description": "%PS-3-DCOUTPUTVOLTFAIL: System detected Power System 1 DC FAIL condition.",
         "event_class__name": "Chassis | PSU | PSU Failed",
         "preference": 1000,
-        "vars": [
-            {
-                "name": "name",
-                "value": "VTT (voltage termination)"
-            }
-        ],
         "patterns": [
             {
                 "key_re": "^source$",
@@ -222,7 +216,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PS-3-DCOUTPUTVOLTFAIL: System detected (?P<name>Power System) \\d+ DC FAIL condition\\.$"
+                "value_re": "%PS-3-DCOUTPUTVOLTFAIL: System detected (?P<name>Power System) \\d+ (?:AC|DC) FAIL condition\\.$"
             }
         ]
     },
@@ -232,12 +226,6 @@
         "description": "%PS-3-DCOUTPUTVOLTOK: Power System DC condition is now normal.",
         "event_class__name": "Chassis | PSU | PSU Recovered",
         "preference": 1000,
-        "vars": [
-            {
-                "name": "name",
-                "value": "VTT (voltage termination)"
-            }
-        ],
         "patterns": [
             {
                 "key_re": "^source$",
@@ -249,9 +237,50 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PS-3-DCOUTPUTVOLTOK: (?P<name>Power System) DC condition is now normal\\.$"
+                "value_re": "%PS-3-DCOUTPUTVOLTOK: (?P<name>Power System) (?:AC|DC) condition is now normal\\.$"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Failed #7 (SYSLOG)",
+        "description": "%PS-3-MULTFAIL: There is more than one failure with the Power System 1; please resolve problems immediately.",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PS-3-MULTFAIL: There is more than one failure with the (?P<name>Power System) \\d+; please resolve problems immediately\\.$"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #7 (SYSLOG)",
+        "description": "%PS-3-PSOK: Power System is now normal",
+        "event_class__name": "Chassis | PSU | PSU Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PS-3-PSOK: (?P<name>Power System) is now normal\\.$"
             }
         ]
     }
-
 ]
