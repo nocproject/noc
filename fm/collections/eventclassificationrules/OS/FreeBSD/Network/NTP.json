@@ -38,6 +38,12 @@
                 "key_re": "^message$",
                 "value_re": "ntpd\\[\\d+\\]: time reset (?P<adjustment_s>\\S+) s$"
             }
+        ],
+        "vars": [
+            {
+                "name": "adjustment_ms",
+                "value": "=str(int(float(adjustment_s) * 1000))"
+            }
         ]
     }
 ]
