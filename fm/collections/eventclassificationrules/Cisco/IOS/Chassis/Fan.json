@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%FAN-3-FAN_FAILED: (?P<name>Fan \\S+) had a rotation error reported\\.$"
+                "value_re": "%FAN-3-FAN_FAILED: (?P<name>Fan \\S+|Fans) had a rotation error reported\\.$"
             }
         ]
     },
@@ -160,7 +160,7 @@
 
     {
         "name": "Cisco | IOS | Chassis | Fan | Fan Failed #6 (SYSLOG)",
-        "description": "%ENVMON-3-FAN_FAILED: Fan 1 not rotating.",
+        "description": "System detected SYS PS 1 fan fail condition.",
         "event_class__name": "Chassis | Fan | Fan Failed",
         "preference": 1000,
         "vars": [
@@ -180,7 +180,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%ENVMON-3-FAN_FAILED: Fan not rotating."
+                "value_re": "System detected (?P<name>SYS PS \\d+ fan) fail condition."
             }
         ]
     }

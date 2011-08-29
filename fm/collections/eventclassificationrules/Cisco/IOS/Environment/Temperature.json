@@ -167,7 +167,6 @@
         ]
     },
 
-
     {
         "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #5 (SYSLOG)",
         "description": "%SYS-2-SYS_TEMPOK: Chassis temperature OK",
@@ -308,6 +307,48 @@
             {
                 "key_re": "^message$",
                 "value_re": "%UBR\\d+00-0-TEMPHIGH\\s*: \\S+ measured at (?P<name>\\S+) is too (?P<threshold>high): shutdown temperature (?P<max>\\S+)"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #9 (SYSLOG)",
+        "description": "%THERMAL-3-PS: System detected Power System 1 THERMAL FAIL condition.",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%THERMAL-3-PS: System detected (?P<name>Power System) \\d+ THERMAL FAIL condition."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #8 (SYSLOG)",
+        "description": "%THERMOK-3-PS: Power System THERMAL condition is now normal.",
+        "event_class__name": "Environment | Temperature Returned to Normal Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%THERMAL-3-PS: (?P<name>Power System) \\d+ THERMAL condition is now normal."
             }
         ]
     }
