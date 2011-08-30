@@ -204,7 +204,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%UBR\\d+00-5-OVERLIMIT: Interface (?P<interface)> Current total reservation of (?P<cur_bps>\\d+) bps on Port (?P<upstream>U\\d+), exceeds its maximum configured reservation limit of (?P<res_bps>\\d+) bps"
+                "value_re": "%UBR\\d+00-5-OVERLIMIT: Interface (?P<interface>.+).Current total reservation of (?P<cur_bps>\\d+) bps on Port (?P<upstream>U\\d+), exceeds its.+maximum configured reservation limit of (?P<res_bps>\\d+) bps"
             }
         ]
     },
