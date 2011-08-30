@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%(SW_MATM-4-MACFLAP_NOTIF|C4K_EBM-4-HOSTFLAPPING): Host (?P<mac>\\S+) in vlan (?P<vlan>\\d+) is flapping between port (?P<from_interface>\\S+) and port (?P<to_interface>\\S+)$"
+                "value_re": "%(?:MAC_MOVE-SP-4-NOTIF|SW_MATM-4-MACFLAP_NOTIF|C4K_EBM-4-HOSTFLAPPING): Host (?P<mac>\\S+) in vlan (?P<vlan>\\d+) is flapping between port (?P<from_interface>\\S+) (?:efp_id \\d+ )?and port (?P<to_interface>\\S+)$"
             }
         ]
     },
