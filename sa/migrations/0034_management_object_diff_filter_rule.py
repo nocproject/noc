@@ -1,10 +1,9 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(SchemaMigration):
+class Migration:
     def forwards(self):
         PyRule = db.mock_model(model_name="PyRule", db_table="main_pyrule", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField)
         db.add_column("sa_managedobject", "config_diff_filter_rule",
