@@ -1,12 +1,11 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import DataMigration
 from django.db import models
 from django.contrib.contenttypes.management import update_contenttypes
 import noc.ip.models
 
-class Migration(DataMigration):
+class Migration:
 
     def forwards(self):
         # VRF Group

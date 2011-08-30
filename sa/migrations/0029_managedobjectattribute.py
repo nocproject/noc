@@ -1,10 +1,9 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
 from django.db import models
 
-class Migration(SchemaMigration):
+class Migration:
 
     def forwards(self):
         ManagedObject = db.mock_model(model_name="ManagedObject", db_table="sa_managedobject", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField)

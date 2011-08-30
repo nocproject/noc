@@ -1,13 +1,12 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
 from django.db import models
 from noc.lib.fields import AutoCompleteTagsField,CIDRField,INETField,MACField
 from django.contrib.contenttypes.management import update_contenttypes
 import noc.ip.models
 
-class Migration(SchemaMigration):
+class Migration:
     depends_on=(
         ("main", "0027_style"),
     )
