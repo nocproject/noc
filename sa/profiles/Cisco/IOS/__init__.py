@@ -7,6 +7,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import re
 ## NOC modules
 import noc.sa.profiles
 from noc.sa.protocols.sae_pb2 import TELNET, SSH
@@ -28,6 +30,8 @@ class Profile(noc.sa.profiles.Profile):
     convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
     config_volatile = ["^ntp clock-period .*?^"]
 
+    rx_cable_if = re.compile(r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE)
+
     def convert_interface_name(self, interface):
         if interface.lower().startswith("dot11radio"):
             return "Dot11Radio" + interface[10:]
@@ -35,6 +39,9 @@ class Profile(noc.sa.profiles.Profile):
             return "BVI" + interface[3:]
         if interface.lower().startswith("e1"):
             return "E1 %s" % interface[2:].strip()
+        match = self.rx_cable_if.search(interface)
+        if match:
+            return "Ca %s/%s" % match.group('pr_if'), match.group('sub_if')
         return self.convert_interface_name_cisco(interface)
 
     def generate_prefix_list(self, name, pl, strict=True):
