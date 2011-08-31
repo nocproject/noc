@@ -215,6 +215,7 @@ class Command(BaseCommand):
         ("fm", [
             # Fault management
             ("oidaliases", OIDAlias),
+            ("syntaxaliases", SyntaxAlias),
             ("enumerations", Enumeration),
             ("alarmseverities", AlarmSeverity),
             ("alarmclasses", AlarmClass),
