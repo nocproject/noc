@@ -17,7 +17,11 @@ class Script(noc.sa.script.Script):
     implements=[IGetPortchannel]
     def execute(self):
         r=[]
-        for l in self.cli("show interfaces status | i ^Po[0-9]+").splitlines():
+        try:
+            s = self.cli("show interfaces status | i ^Po[0-9]+")
+        except self.CLISyntaxError:
+            return []
+        for l in s.splitlines():
             pc,rest=l.split(" ",1)
             pc=pc[2:]
             v=self.cli("show interfaces port-channel %s | i Members in this channel"%pc).strip()
