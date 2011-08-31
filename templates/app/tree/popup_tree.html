@@ -63,8 +63,14 @@
             {% if choose_id %}
                   $("#popup-tree a").live("click", function(e) {
                         var rx = /\/([0-9a-f]+)\/$/
+                        var text;
+                        if(e.srcElement)
+                              text = e.srcElement.innerText;
+                        else
+                              text = e.currentTarget.textContent;
+                        console.log(e);
                         return parent.hide_popup_and_choose("{{choose_id}}",
-                              e.srcElement.innerText,
+                              text,
                               e.currentTarget.href.match(rx)[1]);
                   });
             {% endif %}
