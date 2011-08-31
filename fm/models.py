@@ -121,6 +121,26 @@ class OIDAlias(nosql.Document):
         return oid
 
 
+class SyntaxAlias(nosql.Document):
+    meta = {
+        "collection": "noc.syntaxaliases",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(unique=True, required=True)
+    syntax = nosql.StringField(required=True)
+    # Lookup cache
+    cache = None
+
+    def __unicode__(self):
+        return self.name
+
+    @classmethod
+    def rewrite(self, name, syntax):
+        if cls.cache is None:
+            cls.cache = dict([(o.name, o.syntax) for o in cls.objects.all()])
+        return cls.cache.get(name, syntax)
+
+
 class MIB(nosql.Document):
     meta = {
         "collection": "noc.mibs",
@@ -313,7 +333,7 @@ class MIB(nosql.Document):
                 name = d.name
                 if rest:
                     name += "." + ".".join(reversed(rest))
-                return name, d.syntax
+                return name, SyntaxAlias.rewrite(name, d.syntax)
             else:
                 rest += [l_oid.pop()]
         return oid, None
