@@ -132,5 +132,75 @@
                 "alarm_class__name": "Network | MAC | MAC Flood"
             }
         ]
+    },
+    
+    {
+        "name": "Network | MAC | MAC Learned",
+        "description": "New MAC learned on switch port",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "MAC Learned: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "body_template": "MAC Learned: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "mac",
+                "description": "MAC Address",
+                "type": "mac",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "VLAN",
+                "type": "int",
+                "required": false
+            },
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": false
+            }
+        ]
+    },
+    
+    {
+        "name": "Network | MAC | MAC Aged",
+        "description": "MAC address aged",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "MAC aged: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "body_template": "MAC aged: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "mac",
+                "description": "MAC Address",
+                "type": "mac",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "VLAN",
+                "type": "int",
+                "required": false
+            },
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": false
+            }
+        ]
     }
 ]
