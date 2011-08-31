@@ -3,7 +3,7 @@
         "name": "DES3526-L2MGMT-MIB::swL2IpMacBindingViolationIP",
         "syntax": {
             "base_type": "OctetString",
-            "display-hint": "1d."
+            "display_hint": "1d."
         }
     }
 ]
