@@ -154,6 +154,14 @@ class CollectionSync(object):
                     v += [edoc(**dd)]
                 if getattr(obj, i) != v:
                     changed = True
+                    if allow_partial:
+                        # Check List Field is valid
+                        # and has all resolved referencies
+                        try:
+                            field.validate(v)
+                        except ValidationError:
+                            partial = True
+                            continue
                     setattr(obj, i, v)
             elif getattr(obj, i) != v:
                 # Other types
