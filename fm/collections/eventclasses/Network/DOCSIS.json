@@ -435,6 +435,42 @@
             }
         ],
         "disposition": [ ]
+    },
+
+    {
+        "name": "Network | DOCSIS | Channel Width Changed",
+        "description": "The upstream channel width has been changed.",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} channel width changed to {{width}} kHz",
+                "body_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} channel width changed to {{width}} kHz",
+                "symptoms": "",
+                "probable_causes": "The upstream channel frequency has been changed.",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Cable interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "upstream",
+                "description": "Upstream",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "width",
+                "description": "Channel width",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "disposition": [ ]
     }
 
 ]
