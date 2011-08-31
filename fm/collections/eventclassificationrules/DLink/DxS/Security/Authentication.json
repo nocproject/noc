@@ -78,7 +78,28 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection, source (?P<ip>\\S+) destination \\S+  REJECTED$"
+                "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection, source (?P<ip>\\S+) destination \\S+\\s+REJECTED$"
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS | Security | Authentication | Login Failed #4 (SYSLOG)",
+        "description": "%AAA-W-REJECT: New telnet connection for user admin, source 172.16.16.1 destination 172.16.17.153 REJECTED",
+        "event_class__name": "Security | Authentication | Login Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+\\s+REJECTED$"
             }
         ]
     },
