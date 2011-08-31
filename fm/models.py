@@ -127,7 +127,7 @@ class SyntaxAlias(nosql.Document):
         "allow_inheritance": False
     }
     name = nosql.StringField(unique=True, required=True)
-    syntax = nosql.StringField(required=True)
+    syntax = nosql.DictField(required=False)
     is_builtin = nosql.BooleanField(default=False)
     # Lookup cache
     cache = None
