@@ -363,6 +363,78 @@
             }
         ],
         "disposition": [ ]
+    },
+
+    {
+        "name": "Network | DOCSIS | Upstream Input Power Level Changed",
+        "description": "The upstream channel input power level has been changed.",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} power level changed to {{power}} dBmV",
+                "body_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} power level changed to {{power}} dBmV",
+                "symptoms": "",
+                "probable_causes": "The upstream channel input power level has been changed.",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Cable interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "upstream",
+                "description": "Upstream",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "power",
+                "description": "Input power",
+                "type": "int",
+                "required": true
+            }
+        ],
+        "disposition": [ ]
+    },
+
+    {
+        "name": "Network | DOCSIS | Upstream Frequency Changed",
+        "description": "The upstream channel frequency has been changed.",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} frequency changed to {{frequency}} MHz",
+                "body_template": "Interface {{interface}}{% if upstream %} U {{upstream}}{% endif %} frequency changed to {{frequency}} MHz",
+                "symptoms": "",
+                "probable_causes": "The upstream channel frequency has been changed.",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Cable interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "upstream",
+                "description": "Upstream",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "frequency",
+                "description": "Frequency",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "disposition": [ ]
     }
 
 ]
