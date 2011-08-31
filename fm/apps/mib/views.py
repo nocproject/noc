@@ -14,7 +14,7 @@ from django import forms
 from django.forms.formsets import formset_factory
 ## NOC modules
 from noc.lib.app import TreeApplication, HasPerm, view, PermitLogged
-from noc.fm.models import MIB, MIBData, MIBRequiredException
+from noc.fm.models import MIB, MIBData, MIBRequiredException, SyntaxAlias
 from noc.lib.fileutils import temporary_file
 from noc.lib.validators import is_oid
 
@@ -26,23 +26,30 @@ class MIBApplication(TreeApplication):
     menu = "MIBs"
     model = MIB
 
-
     def get_syntax(self, x):
-        s = []
-        if x.syntax:
-            s += [x.syntax["base_type"]]
-            if "display_hint" in x.syntax:
-                s += ["display-hint: %s" % x.syntax["display_hint"]]
-            if (x.syntax["base_type"] in ("Enumeration", "Bits") and
-                "enum_map" in x.syntax):
+        def syntax_descr(syntax):
+            if not syntax:
+                return []
+            s = []
+            s += [syntax["base_type"]]
+            if "display_hint" in syntax:
+                s += ["display-hint: %s" % syntax["display_hint"]]
+            if (syntax["base_type"] in ("Enumeration", "Bits") and
+                "enum_map" in syntax):
                 # Display enumeration
-                for k in sorted(x.syntax["enum_map"],
+                for k in sorted(syntax["enum_map"],
                                 key=lambda x: int(x)):
-                    s += ["%s -> %s" % (
-                        k, x.syntax["enum_map"][k])]
+                    s += ["%s -> %s" % (k, syntax["enum_map"][k])]
             return s
-        else:
-            return []
+        
+        s = []
+        sa = SyntaxAlias.rewrite(x.name, x.syntax)
+        if x.syntax:
+            s += syntax_descr(x.syntax)
+        if sa != x.syntax:
+            s += ["", "Effective syntax:"]
+            s += syntax_descr(sa)
+        return s
                 
     def get_preview_extra(self, obj):
         """
