@@ -19,7 +19,6 @@
                 "type": "str",
                 "required": true
             },
-            
             {
                 "name": "interface",
                 "description": "Interface",
@@ -58,7 +57,6 @@
                 "type": "interface_name",
                 "required": true
             },
-            
             {
                 "name": "src_ip",
                 "description": "Source IP",
@@ -95,7 +93,6 @@
                 "type": "interface_name",
                 "required": true
             },
-            
             {
                 "name": "src_ip",
                 "description": "Source IP",
@@ -132,7 +129,6 @@
                 "type": "interface_name",
                 "required": true
             },
-            
             {
                 "name": "src_ip",
                 "description": "Source IP",
@@ -169,7 +165,6 @@
                 "type": "interface_name",
                 "required": true
             },
-            
             {
                 "name": "src_ip",
                 "description": "Source IP",
@@ -224,6 +219,90 @@
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name" : "Security | Attack | IP Spoofing" 
+            }
+        ]
+    },
+
+    {
+        "name": "Security | Attack | Ping Of Death",
+        "description": "Ping Of Death detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "body_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "src_ip",
+                "description": "Source IP",
+                "type": "ip_address",
+                "required": true
+            },
+            {
+                "name": "src_mac",
+                "description": "Source MAC",
+                "type": "mac",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name" : "Security | Attack | Ping Of Death"
+            }
+        ]
+    },
+
+    {
+        "name": "Security | Attack | Teardrop Attack",
+        "description": "Teardrop attack detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Teardrop attack detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "body_template": "Teardrop attack detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "src_ip",
+                "description": "Source IP",
+                "type": "ip_address",
+                "required": true
+            },
+            {
+                "name": "src_mac",
+                "description": "Source MAC",
+                "type": "mac",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name" : "Security | Attack | Teardrop Attack"
             }
         ]
     }
