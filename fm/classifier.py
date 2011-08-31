@@ -95,6 +95,7 @@ class Rule(object):
     
     rx_escape = re.compile(r"\\(.)")
     rx_exact = re.compile(r"^\^[a-zA-Z0-9%: \-_]+\$$")
+    rx_hex = re.compile(r"(?<!\\)\\x([0-9a-f][0-9a-f])", re.IGNORECASE)
     
     def __init__(self, classifier, rule):
         self.classifier = classifier
@@ -141,7 +142,7 @@ class Rule(object):
                 x_key = self.unescape(x.key_re[1:-1])
             else:
                 try:
-                    rx_key = re.compile(x.key_re, re.MULTILINE | re.DOTALL)
+                    rx_key = re.compile(self.unhex_re(x.key_re), re.MULTILINE | re.DOTALL)
                 except Exception, why:
                     raise InvalidPatternException("Error in '%s': %s" % (x.key_re, why))
             # Process value pattern
@@ -149,7 +150,7 @@ class Rule(object):
                 x_value = self.unescape(x.value_re[1:-1])
             else:
                 try:
-                    rx_value = re.compile(x.value_re, re.MULTILINE | re.DOTALL)
+                    rx_value = re.compile(self.unhex_re(x.value_re), re.MULTILINE | re.DOTALL)
                 except Exception, why:
                     raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
             # Save patterns
@@ -186,6 +187,9 @@ class Rule(object):
 
     def unescape(self, pattern):
         return self.rx_escape.sub(lambda m: m.group(1), pattern)
+
+    def unhex_re(self, pattern):
+        return self.rx_hex.sub(lambda m: chr(int(m.group(1), 16)), pattern)
 
     def is_exact(self, pattern):
         return self.rx_exact.match(self.rx_escape.sub("", pattern)) is not None
@@ -709,7 +713,7 @@ class Classifier(Daemon):
             resolved_vars.update(self.format_snmp_trap_vars(event))
         # Find matched event class
         c_vars = event.raw_vars.copy()
-        c_vars.update(resolved_vars)
+        c_vars.update(dict([(k, fm_unescape(v)) for k, v in resolved_vars.items()]))
         rule, vars = self.find_matching_rule(event, c_vars)
         if rule is None:
             # Somethin goes wrong. No default rule found. Exit immediately
