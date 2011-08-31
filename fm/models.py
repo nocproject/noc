@@ -128,6 +128,7 @@ class SyntaxAlias(nosql.Document):
     }
     name = nosql.StringField(unique=True, required=True)
     syntax = nosql.StringField(required=True)
+    is_builtin = nosql.BooleanField(default=False)
     # Lookup cache
     cache = None
 
