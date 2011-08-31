@@ -50,6 +50,10 @@ class Script(NOCScript):
            "Tu": 'tunnel',
            "C": 'physical',
            "Vl": 'SVI',
+           "Ca": 'physical',
+           "As": 'physical',
+           "BV": 'aggregated',
+           "Bu": 'aggregated'
            }
 
     def get_ospfint(self):
@@ -81,20 +85,20 @@ class Script(NOCScript):
     ##
     ## Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
     ##
-    rx_vlan_ubr = re.compile(r"^\w{4}\.\w{4}\.\w{4}\s(?P<port>\S+)\s+(?P<vlan_id>\d{1,4})", re.MULTILINE)
+    rx_vlan_ubr = re.compile(r"^\w{4}\.\w{4}\.\w{4}\s(?P<port>\S+)\s+(?P<vlan_id>\d{1,4})")
 
     def get_ubr_pvm(self):
         vlans = self.cli("show cable l2-vpn dot1q-vc-map")
         pvm = {}
-        for l in sh_dot1_map.split('\n'):
-            match = rx_vlan_ubr.search(l)
+        for l in vlans.split('\n'):
+            match = self.rx_vlan_ubr.search(l)
             if match:
                     port = match.group("port")
                     vlan_id = int(match.group("vlan_id"))
                     if not port in pvm.keys():
                             pvm[port] = ['%s' % vlan_id]
                     else:
-                            pvm[port] += '%s' % vlan_id
+                            pvm[port] += ['%s' % vlan_id]
         return pvm
 
     def execute(self):
@@ -159,7 +163,7 @@ class Script(NOCScript):
                     sub['vlan_ids'] = [encaps.split(',')[1].split()[2][:-1]]
             #vtp
             if ifname in pvm:
-                sub['vlan_ids'] = pwd[ifname]
+                sub['vlan_ids'] = pvm[ifname]
 
             if match.group('ip'):
                     ip = match.group('ip')
