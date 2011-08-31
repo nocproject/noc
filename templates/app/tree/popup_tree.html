@@ -67,7 +67,7 @@
                         if(e.srcElement)
                               text = e.srcElement.innerText;
                         else
-                              text = e.currentTarget.textContent;
+                              text = e.currentTarget.textContent.replace(/^ +/, "");
                         console.log(e);
                         return parent.hide_popup_and_choose("{{choose_id}}",
                               text,
