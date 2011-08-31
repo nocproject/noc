@@ -136,7 +136,7 @@ class SyntaxAlias(nosql.Document):
         return self.name
 
     @classmethod
-    def rewrite(self, name, syntax):
+    def rewrite(cls, name, syntax):
         if cls.cache is None:
             cls.cache = dict([(o.name, o.syntax) for o in cls.objects.all()])
         return cls.cache.get(name, syntax)
