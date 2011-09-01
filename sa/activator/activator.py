@@ -105,6 +105,7 @@ class Activator(Daemon, FSM):
         "UPGRADE" : {
                 "setup"   : "SETUP",
                 "close"   : "IDLE",
+                "refused" : "IDLE"
         },
         "CAPS" : {
                 "establish" : "ESTABLISHED",
