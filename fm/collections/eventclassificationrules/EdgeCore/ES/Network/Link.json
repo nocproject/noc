@@ -15,7 +15,13 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "snmp (?:Unit \\d+, )?(?P<interface>(?:Port|VLAN)\\s+\\S+) link-down notification\\.$"
+                "value_re": "Unit (?P<unit>\\S+), Port\\s+(?P<port>\\d+) link-down notification\\.$"
+            }
+        ],
+        "vars": [
+            {
+                "name": "interface",
+                "value": "='Eth %s/%s' % (unit, port)" 
             }
         ]
     },
@@ -36,7 +42,13 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "snmp (?:Unit \\d+, )?(?P<interface>(?:Port|VLAN)\\s+\\S+) link-up (?:10M|100M|1G) (?:FD|HD) notification\\.$"
+                "value_re": "Unit (?P<unit>\\S+), Port\\s+(?P<port>\\d+) link-up(?: 10M | 100M | 1G )?(?:FD|HD)? notification\\.$"
+            }
+        ],
+        "vars": [
+            {
+                "name": "interface",
+                "value": "='Eth %s/%s' % (unit, port)" 
             }
         ]
     }
