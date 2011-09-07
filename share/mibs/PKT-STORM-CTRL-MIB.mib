@@ -1,8 +1,8 @@
 -- -----------------------------------------------------------------------------
 -- MIB NAME : Packet Strom Control Common mib
 -- FILE NAME: PktStormCtrl.mib
--- DATE     : 2009/11/23
--- VERSION  : 2.02
+-- DATE     : 2010/4/15
+-- VERSION  : 2.03
 -- PURPOSE  : To construct the MIB structure of packet storm control management
 --            for proprietary enterprise
 -- -----------------------------------------------------------------------------
@@ -14,6 +14,19 @@
 --  [Modification]
 -- Notes: (Requested by who and which project)
 --
+-- Version 2.03 2010/4/15, Shawn
+-- [Modification]
+-- 1. Remove the description about unit and use the "UNITS¡± macro to define it
+-- for all related objects. Requested by customer.
+-- 2. Add default value to swPktStormCtrlthreshold, swPktStormCtrlCountDown,
+-- swPktStormCtrlTimeinterval, swPktStormCtrlBCastThreshold, 
+-- swPktStormCtrlMCastThreshold and swPktStormCtrlUnicastThreshold. Requested by customer.
+-- 3. Remove value range in swPktStormCtrlCountDown, swPktStormCtrlTimeinterval,
+-- swPktStormCtrlBCastThreshold, swPktStormCtrlMCastThreshold 
+-- and swPktStormCtrlUnicastThreshold. Requested by customer.
+-- 4. Add value "-1" in swPktStormCtrlCountDown to support directly shutdown function.
+-- Notes: Requested by Shawn Chen for project DGS36xxR2.
+--
 -- Version 2.02, 2009/11/23, Henry
 -- Description:
 -- [New Object]
@@ -22,7 +35,8 @@
 -- shutdown status. 
 -- [Modification]
 -- 1. Modified the range of swPktStormCtrlCountDown from (0..30) to (0|3..30).
--- 2. Modified the range of swPktStormCtrlTimeinterval from (5..30) to (5..600).
+-- 2. Modified the range of swPktStormCtrlTimeinterval from (5..30) to (5..600).     
+-- 3. Remove the range for MIB object swPktStormAutoRecoverTime.
 -- Notes: Requested by henry Chen for project DGS36xxR2.
 --
 -- Version 2.01 2008/09/03, Peter
@@ -49,7 +63,7 @@ PKT-STORM-CTRL-MIB DEFINITIONS ::= BEGIN
 
 
     swPktStormMIB MODULE-IDENTITY
-     LAST-UPDATED "0911230000Z"
+     LAST-UPDATED "1004150000Z"
      ORGANIZATION "D-Link Corp."
      CONTACT-INFO
          "http://support.dlink.com"
@@ -115,16 +129,19 @@ swPktStormLogCtrl OBJECT-TYPE
      ::= { swPktStormCtrl 3}
 
 swPktStormAutoRecoverTime  OBJECT-TYPE
-        SYNTAX  INTEGER (0..65535)
+        SYNTAX  INTEGER
+        UNITS   "minutes"
         MAX-ACCESS  read-write
         STATUS  current
         DESCRIPTION
-            "Automatically recover port from shutdown state when the auto recover timer timeout.  
-            The unit is minute.            
+            "Automatically recover port from shutdown state when the auto recover timer timeout.
+            Note:
+            The max entry range is (0..N), the value N means the maximum number, it is 
+            determined by the project itself.
             The value 0 to disable the function of auto recover from shutdown state."
-		DEFVAL{0}
+        DEFVAL{0}
         ::= { swPktStormCtrl 4 }
-	    
+
 -- -----------------------------------------------------------------------------
 -- swPktStormCtrlTable            OBJECT IDENTIFIER ::= { swPktStormMIB 2 }
 -- -----------------------------------------------------------------------------
@@ -191,7 +208,12 @@ swPktStormAutoRecoverTime  OBJECT-TYPE
         MAX-ACCESS  read-write
         STATUS  obsolete
         DESCRIPTION
-        "This object is the upper threshold at which the specified storm control will turn on."
+        "This object is the upper threshold at which the specified storm control will turn on.
+         Note:
+         The max entry range is (M..N), the value M means the minimum number,
+         the value N means the maximuim number, it is determined by the project itself.
+         "
+        DEFVAL{131072}
     ::= { swPktStormCtrlEntry 2 }
 
     swPktStormCtrlBroadcastStatus  OBJECT-TYPE
@@ -246,22 +268,38 @@ swPktStormAutoRecoverTime  OBJECT-TYPE
     ::= { swPktStormCtrlEntry 6 }
 
     swPktStormCtrlCountDown  OBJECT-TYPE
-        SYNTAX  INTEGER (0|3..30)
+        SYNTAX  INTEGER
+        UNITS   "minutes"
         MAX-ACCESS  read-write
         STATUS  current
         DESCRIPTION
         "If a packet storm has been encountered continuously on a given port for a long
-        period of time (indicated by the value of this object, unit: minute), the port will be shut
-        down forever until it's recovered manually.
-	Value 0 to disable the function of shutdown forever."
+         period of time (indicated by the value of this object), the port will be shut
+         down forever until it's recovered manually.
+         Note:
+         The max entry range is (-1..N), the value N means the maximum number, it is 
+         determined by the project itself.
+
+         Value 0 to disable the function of shutdown forever.
+         
+         Value -1 means disable the countdown timer, When the action is shutdown and countdown time is disabled, 
+		 when the switch detects storm, it will shutdown the port directly.
+         "
+        DEFVAL{0}
    ::= { swPktStormCtrlEntry 7 }
 
     swPktStormCtrlTimeinterval  OBJECT-TYPE
-        SYNTAX  INTEGER (5..600)
+        SYNTAX  INTEGER
+        UNITS   "seconds"
         MAX-ACCESS  read-write
         STATUS  current
         DESCRIPTION
-        "This object is the sampling interval of received packet counts(unit: second)."
+        "This object is the sampling interval of received packet counts.
+         Note:
+         The max entry range is (M..N), the value M means the minimum number,
+         the value N means the max number, it is determined by the project itself.
+         "
+        DEFVAL{5}
     ::= { swPktStormCtrlEntry 8 }
 
     swPktStormCtrlShutdownForever  OBJECT-TYPE
@@ -278,27 +316,42 @@ swPktStormAutoRecoverTime  OBJECT-TYPE
     ::= { swPktStormCtrlEntry 9 }
 
     swPktStormCtrlBCastThreshold  OBJECT-TYPE
-        SYNTAX  INTEGER (0..255000)
+        SYNTAX  INTEGER
         MAX-ACCESS  read-write
         STATUS  current
         DESCRIPTION
-        "The upper threshold at which the specified storm control will turn on."
+        "The upper threshold at which the specified storm control will turn on.
+         Note:
+         The max entry range is (M..N), the value M means the minimum number,
+         the value N means the maximuim number, it is determined by the project itself.
+         "
+        DEFVAL{131072}
     ::= { swPktStormCtrlEntry 10 }
 
     swPktStormCtrlMCastThreshold  OBJECT-TYPE
-        SYNTAX  INTEGER (0..255000)
+        SYNTAX  INTEGER
         MAX-ACCESS  read-write
         STATUS  current
         DESCRIPTION
-        "This object indicates the upper threshold at which the specified storm control will turn on."
+        "This object indicates the upper threshold at which the specified storm control will turn on.
+         Note:
+         The max entry range is (M..N), the value M means the minimum number,
+         the value N means the maximuim number, it is determined by the project itself.
+         "
+        DEFVAL{131072}
     ::= { swPktStormCtrlEntry 11 }
 
     swPktStormCtrlUnicastThreshold  OBJECT-TYPE
-        SYNTAX  INTEGER (0..255000)
+        SYNTAX  INTEGER
         MAX-ACCESS  read-write
         STATUS  current
         DESCRIPTION
-        "This object indicates the upper threshold at which the specified storm control will turn on."
+        "This object indicates the upper threshold at which the specified storm control will turn on.
+         Note:
+         The max entry range is (M..N), the value M means the minimum number,
+         the value N means the maximuim number, it is determined by the project itself.
+         "
+        DEFVAL{131072}
     ::= { swPktStormCtrlEntry 12 }
 
 

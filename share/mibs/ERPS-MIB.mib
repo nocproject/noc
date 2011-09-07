@@ -1,8 +1,8 @@
 -- -----------------------------------------------------------------------------
 -- MIB NAME : ERPS Common mib
 -- FILE NAME: ERPS.mib
--- DATE     : 2009/11/18
--- VERSION  : 1.04
+-- DATE     : 2010/07/16
+-- VERSION  : 1.06
 -- PURPOSE  : To construct the MIB structure of ERPS for proprietary enterprise
 -- -----------------------------------------------------------------------------
 -- MODIFICTION HISTORY:
@@ -12,6 +12,19 @@
 --  [New Object]
 --  [Modification]
 -- Notes: (Requested by who and which project)
+-- -----------------------------------------------------------------------------
+-- Version 1.06 2010/07/16, Sprind Xiong
+-- Description:
+-- [New Object]
+-- 1. Added swERPSMgmtRAPSOperWestPort and swERPSMgmtRAPSOperEastPort to display 
+-- the actual running port.
+-- 2. Added swERPSMgmtRAPSOperRPLPort and swERPSMgmtRAPSRPLOwnerOperState to 
+-- display the actual running RPL port and RPL owner.
+-- -----------------------------------------------------------------------------
+-- Version 1.05 2010/05/06, Jefferson Li
+-- Description:
+-- [New Object]
+-- 1. Added swERPSMgmtRAPSRevertive to control the revertive operation. 
 -- -----------------------------------------------------------------------------
 -- Version 1.04 2009/11/18, Eli Lin
 -- [New Object]
@@ -29,14 +42,7 @@
 -- [New Object]
 -- 1. Added swERPSMgmtRAPSRingAdminState to indicate the administrative state of 
 --    the ring.
--- 2. Added swERPSMgmtSubRingCtrlTable. 
--- 3. Added swERPSMgmtSubRingCtrlEntry.
--- 4. Added swERPSMgmtSubRingCtrlRAPSVlanId to indicate the raps vlan id of a ring which 
---    the sub-ring is connected to. 
--- 5. Added swERPSMgmtSubRingCtrlSubRingRAPSVlanId to indicate the raps vlan id of the sub-ring.
--- 6. Added swERPSMgmtSubRingCtrlTCPropagationState to indicate the state of sub-ring 
---    topology change propagation.
--- 7. Added swERPSMgmtSubRingCtrlRowStatus.  
+-- 2. Added swERPSMgmtSubRingCtrlTable to support multiple rings.
 -- [Modification]
 -- 1. Changed the value range of swERPSMgmtRAPSWestPort and SwERPSMgmtRAPSEastPort 
 -- from "(1..65535)" to "(0|1..65535)".
@@ -71,7 +77,7 @@
               		FROM Q-BRIDGE-MIB;
 
     swERPSMIB MODULE-IDENTITY
-        LAST-UPDATED "0911180000Z"
+        LAST-UPDATED "201007160000Z"
         ORGANIZATION "D-Link Corp."
         CONTACT-INFO
             "http://support.dlink.com"
@@ -136,7 +142,7 @@
         MAX-ACCESS  not-accessible
         STATUS      current
         DESCRIPTION
-            "This table contains ERPS ring configuration information."
+            "This table contains the ERPS ring configuration information."
         ::= { swERPSMgmt 1 }
 
     swERPSMgmtRAPSVlanEntry OBJECT-TYPE
@@ -144,7 +150,7 @@
         MAX-ACCESS  not-accessible
         STATUS      current
         DESCRIPTION
-            "A list of ERPS ring configuration information."
+            "A list of the ERPS ring configuration information."
         INDEX    {swERPSMgmtRAPSVlanId}
         ::= { swERPSMgmtRAPSVlanTable 1 }
 
@@ -195,6 +201,16 @@
                 OCTET STRING,
             swERPSMgmtRAPSProtectionVlanRangeList449to512                
                 OCTET STRING,
+            swERPSMgmtRAPSRevertive
+                INTEGER,
+            swERPSMgmtRAPSOperWestPort
+                INTEGER,
+            swERPSMgmtRAPSOperEastPort
+                INTEGER,
+            swERPSMgmtRAPSOperRPLPort
+                INTEGER,  
+            swERPSMgmtRAPSRPLOwnerOperState
+                INTEGER,
             swERPSMgmtRAPSRowStatus
                 RowStatus     
         }
@@ -204,7 +220,7 @@
         MAX-ACCESS  read-only
         STATUS      current
         DESCRIPTION
-            "The RAPS VLAN is an index of configuration."
+            "The RAPS VLAN is an index of the configuration."
         ::= { swERPSMgmtRAPSVlanEntry 1 }
     
     swERPSMgmtRAPSWestPort OBJECT-TYPE
@@ -213,8 +229,7 @@
         STATUS  current
         DESCRIPTION
             "This is one of the RPL owner ports.The RPL owner may block this port.
-            The value 0 indicates the west port is a virtual channel.
-           "
+            The value 0 indicates the west port is a virtual channel."
         ::= { swERPSMgmtRAPSVlanEntry 2 }
 
     swERPSMgmtRAPSWestPortState OBJECT-TYPE
@@ -226,9 +241,9 @@
         MAX-ACCESS  read-only
         STATUS  current
         DESCRIPTION
-            "This is the west port state. It may change sometimes. When the west port 
-            is configured on a virtual channel, the west port state is always fowarding.
-           "
+            "This is the west port state. The state may change occasionally. 
+            When the west port is configured on a virtual channel, the west 
+            port state is always forwarding."
         ::= { swERPSMgmtRAPSVlanEntry 3 }
 
     swERPSMgmtRAPSEastPort OBJECT-TYPE
@@ -237,8 +252,7 @@
         STATUS  current
         DESCRIPTION
             "This is the other RPL owner port.The RPL Owner may block this port.
-            The value 0 indicates the west port is a virtual channel.
-           "
+            The value 0 indicates the west port is a virtual channel."
         ::= { swERPSMgmtRAPSVlanEntry 4 }
 
     swERPSMgmtRAPSEastPortState OBJECT-TYPE
@@ -250,9 +264,9 @@
         MAX-ACCESS  read-only
         STATUS  current
         DESCRIPTION
-            "This is the east port state. It may change sometimes. When the east port 
-            is configured on a virtual channel, the east port state is always fowarding.
-           "
+            "This is the east port state. The state may change occasionally. 
+            When the east port is configured on a virtual channel, the east 
+            port state is always forwarding."
         ::= { swERPSMgmtRAPSVlanEntry 5 }
 
     swERPSMgmtRAPSRPLPort OBJECT-TYPE
@@ -264,8 +278,8 @@
         MAX-ACCESS  read-write
         STATUS  current
         DESCRIPTION
-            "When the port Enable state is enabled, the RPL port's current port role is defined by the application of the ERPS.
-           "
+            "When the port enable state is enabled, the RPL port's current 
+            port role is defined by the ERPS application."
         ::= { swERPSMgmtRAPSVlanEntry 6 }
 
     swERPSMgmtRAPSRPLOwnerAdminState OBJECT-TYPE
@@ -295,16 +309,18 @@
         MAX-ACCESS  read-write
         STATUS      current
         DESCRIPTION
-            "The ring MEL is the maintenance entity group (MEG) level providing a communication channel for
-                ring automatic protection switching (RAPS) information."
+            "The ring MEL is the maintenance entity group (MEG) level that 
+            provides a communication channel for the ring automatic protection 
+            switching (RAPS) information."
         ::= { swERPSMgmtRAPSVlanEntry 9 }
+        
 
     swERPSMgmtRAPSHoldOffTime OBJECT-TYPE
         SYNTAX      INTEGER (0..10000)
         MAX-ACCESS  read-write
         STATUS      current
         DESCRIPTION
-            "In order to coordinate timing of protection switches at multiple layers."
+            "In order to coordinate the timing of protection switches at multiple layers."
         ::= { swERPSMgmtRAPSVlanEntry 10 }
 
     swERPSMgmtRAPSGuardTime OBJECT-TYPE
@@ -320,8 +336,9 @@
         MAX-ACCESS  read-write
         STATUS      current
         DESCRIPTION
-                "In the revertive mode of operation, to prevent frequent operation of the protection switch due to an
-                intermittent defect, a failed working transport entity must become stable in a fault-free state."
+                "When revertive is enabled, this is used to prevent frequent 
+                operation of the protection switch due to an intermittent defect. 
+                A failed working transport entity must become stable in a fault-free state."
         ::= { swERPSMgmtRAPSVlanEntry 12 }
 
     swERPSMgmtRAPSRingState OBJECT-TYPE
@@ -334,8 +351,9 @@
         MAX-ACCESS  read-only
         STATUS      current
         DESCRIPTION
-                "This indicates the state of the ring: begin, init, idle, or protection."
-        ::= { swERPSMgmtRAPSVlanEntry 13 }  
+                "This indicates the state of the ring.The available states 
+                are: begin, init, idle, or protection."
+        ::= { swERPSMgmtRAPSVlanEntry 13 }
         
         swERPSMgmtRAPSRingAdminState OBJECT-TYPE
 	    SYNTAX      INTEGER {
@@ -346,7 +364,7 @@
 	    STATUS      current
 	    DESCRIPTION
                 "This indicates the administrative state of the ring."
-	    ::= { swERPSMgmtRAPSVlanEntry 14 }	    
+	    ::= { swERPSMgmtRAPSVlanEntry 14 }	
      
     swERPSMgmtRAPSRPLOwnerOperStatus OBJECT-TYPE
         SYNTAX      INTEGER {
@@ -359,9 +377,9 @@
         DESCRIPTION
             "The current operational value of the RPL owner state. The value 'active' 
              is used to indicate that the RPL owner administrative state is enabled 
-             and the device is operated as the active RPL owner. The value 'inactive' 
+             and the device is operating as the active RPL owner. The value 'inactive' 
              is used to indicate that the RPL owner administrative state is enabled, 
-             but the device is operated as the inactive RPL owner. The value 
+             but the device is operating as the inactive RPL owner. The value 
              'disabled' is used to indicate that the RPL owner administrative 
              state of the device is disabled."
         ::= { swERPSMgmtRAPSVlanEntry 15 }
@@ -372,7 +390,7 @@
 		STATUS      current
 		DESCRIPTION
 			"This object indicates the VLAN range (1-512)
-			 that belongs to the protection VLANs."
+			 that belong to the protected VLANs."
         ::= { swERPSMgmtRAPSVlanEntry 16 }
 
     swERPSMgmtRAPSProtectionVlanRangeList65to128 OBJECT-TYPE
@@ -381,7 +399,7 @@
 		STATUS      current
 		DESCRIPTION
 			"This object indicates the VLAN range (513-1024)
-			 that belongs to the protection VLANs."
+			 that belong to the protected VLANs."
         ::= { swERPSMgmtRAPSVlanEntry 17 }
 
     swERPSMgmtRAPSProtectionVlanRangeList129to192 OBJECT-TYPE
@@ -390,7 +408,7 @@
 		STATUS      current
 		DESCRIPTION
 			"This object indicates the VLAN range (1025-1536)
-			 that belongs to the protection VLANs."
+			 that belong to the protected VLANs."
         ::= { swERPSMgmtRAPSVlanEntry 18 }
 
     swERPSMgmtRAPSProtectionVlanRangeList193to256 OBJECT-TYPE
@@ -399,7 +417,7 @@
 		STATUS      current
 		DESCRIPTION
 			"This object indicates the VLAN range (1537-2048)
-			 that belongs to the protection VLANs."
+			 that belong to the protected VLANs."
         ::= { swERPSMgmtRAPSVlanEntry 19 }
 
     swERPSMgmtRAPSProtectionVlanRangeList257to320 OBJECT-TYPE
@@ -408,7 +426,7 @@
 		STATUS      current
 		DESCRIPTION
 			"This object indicates the VLAN range (2049-2560)
-			 that belongs to the protection VLANs."
+			 that belong to the protected VLANs."
         ::= { swERPSMgmtRAPSVlanEntry 20 }
 
     swERPSMgmtRAPSProtectionVlanRangeList321to384 OBJECT-TYPE
@@ -417,7 +435,7 @@
 		STATUS      current
 		DESCRIPTION
 			"This object indicates the VLAN range (2561-3072)
-			 that belongs to the protection VLANs."
+			 that belongs to the protected VLANs."
         ::= { swERPSMgmtRAPSVlanEntry 21 }
 
     swERPSMgmtRAPSProtectionVlanRangeList385to448 OBJECT-TYPE
@@ -426,7 +444,7 @@
 		STATUS      current
 		DESCRIPTION
 			"This object indicates the VLAN range (3073-3584)
-			 that belongs to the protection VLANs."
+			 that belong to the protected VLANs."
         ::= { swERPSMgmtRAPSVlanEntry 22 }
 
     swERPSMgmtRAPSProtectionVlanRangeList449to512 OBJECT-TYPE
@@ -435,8 +453,64 @@
 		STATUS      current
 		DESCRIPTION
 			"This object indicates the VLAN range (3585-4096)
-			 that belongs to the protection VLANs."
+			 that belong to the protected VLANs."
         ::= { swERPSMgmtRAPSVlanEntry 23 }
+
+    swERPSMgmtRAPSRevertive OBJECT-TYPE
+        SYNTAX      INTEGER {
+                  enabled(1),
+                  disabled(2)
+                   }
+        MAX-ACCESS  read-write
+        STATUS      current
+        DESCRIPTION
+            "The object is used to enable or disable the revertive operation of a special 
+            ring. When revertive is disabled, the traffic link is allowed to use the RPL, 
+            after revovering from a failure. When revertive is enabled, the traffic 
+            link is restored to the working transport link."
+		DEFVAL{enabled}
+        ::= { swERPSMgmtRAPSVlanEntry 24 }
+
+    swERPSMgmtRAPSOperWestPort OBJECT-TYPE
+        SYNTAX  INTEGER (0|1..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates actual running ring west port.
+            The value 0 indicates the west port is a virtual channel."
+        ::= { swERPSMgmtRAPSVlanEntry 25 }
+
+    swERPSMgmtRAPSOperEastPort OBJECT-TYPE
+        SYNTAX  INTEGER (0|1..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates actual running ring east port.
+            The value 0 indicates the east port is a virtual channel."
+        ::= { swERPSMgmtRAPSVlanEntry 26 }
+
+    swERPSMgmtRAPSOperRPLPort OBJECT-TYPE
+        SYNTAX  INTEGER {
+                none(1),
+                west(2),
+                east(3)
+        }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates actual running ring RPL port."
+        ::= { swERPSMgmtRAPSVlanEntry 27 }
+
+    swERPSMgmtRAPSRPLOwnerOperState OBJECT-TYPE
+        SYNTAX      INTEGER {
+                  enabled(1),
+                  disabled(2)
+                   }
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+            "This object indicates actual running RPL owner state."
+        ::= { swERPSMgmtRAPSVlanEntry 28 }
 
      swERPSMgmtRAPSRowStatus OBJECT-TYPE
         SYNTAX      RowStatus
@@ -455,7 +529,7 @@
         MAX-ACCESS  not-accessible
         STATUS      current
         DESCRIPTION
-            "This table contains ERPS sub-ring configuration information."
+            "This table contains the ERPS sub-ring configuration information."
         ::= { swERPSMgmt 2 } 
      
     swERPSMgmtSubRingCtrlEntry OBJECT-TYPE
@@ -463,7 +537,7 @@
         MAX-ACCESS  not-accessible
         STATUS      current
         DESCRIPTION
-            "A list of ERPS sub-ring configuration information."
+            "A list of the ERPS sub-ring configuration information."
         INDEX    {swERPSMgmtSubRingCtrlRAPSVlanId, swERPSMgmtSubRingCtrlSubRingRAPSVlanId}
         ::= { swERPSMgmtSubRingCtrlTable 1 }
            
@@ -483,7 +557,7 @@
         MAX-ACCESS  not-accessible
         STATUS      current
         DESCRIPTION
-            "The RAPS VLAN is an index of configuration."
+            "The RAPS VLAN is an index of the configuration."
         ::= { swERPSMgmtSubRingCtrlEntry 1 }  
     
     swERPSMgmtSubRingCtrlSubRingRAPSVlanId  OBJECT-TYPE
@@ -491,18 +565,19 @@
         MAX-ACCESS  not-accessible
         STATUS      current
         DESCRIPTION
-            "This indicates the ring control VLAN-ID of the sub-ring which connects to another ring."
+            "This indicates the ring control VLAN-ID of the sub-ring which 
+            connects to another ring."
         ::= { swERPSMgmtSubRingCtrlEntry 2 } 
         
     swERPSMgmtSubRingCtrlTCPropagationState  OBJECT-TYPE
         SYNTAX      INTEGER {
-					enabled(1),
+			enabled(1),
                 	disabled(2)
-					}
+			}
         MAX-ACCESS  read-write
         STATUS      current
         DESCRIPTION
-            "This indicates the state of sub-ring topology change propagation."
+            "This indicates the state of the sub-ring topology change propagation."
         ::= { swERPSMgmtSubRingCtrlEntry 3 } 
         
     swERPSMgmtSubRingCtrlRowStatus OBJECT-TYPE
@@ -510,7 +585,7 @@
         MAX-ACCESS  read-create
         STATUS      current
         DESCRIPTION
-            "This object indicates the RowStatus of this entry."
+            "This object indicates the status of this entry."
         ::= { swERPSMgmtSubRingCtrlEntry 4 }       
 
 -- -----------------------------------------------------------------------------
@@ -523,14 +598,14 @@
         OBJECTS     {swERPSNodeId }
         STATUS      current
         DESCRIPTION
-            "When the signal fail occurs, a trap will be generated."
+            "When a signal failure occurs, a trap will be generated."
         ::= { swERPSNotifyPrefix 1 }
 
     swERPSSFClearedTrap NOTIFICATION-TYPE
         OBJECTS     {swERPSNodeId }
         STATUS          current
         DESCRIPTION
-            "When the signal fail clears, a trap will be generated."
+            "When the signal failure clears, a trap will be generated."
         ::= { swERPSNotifyPrefix 2 }
 
     swERPSRPLOwnerConflictTrap   NOTIFICATION-TYPE
