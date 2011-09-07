@@ -1,8 +1,8 @@
 -- -----------------------------------------------------------------------------
 -- MIB NAME : DoS Prevention Common mib
 -- FILE NAME: DOSprev.mib
--- DATE     : 2008/09/18
--- VERSION  : 2.04
+-- DATE     : 2011/02/21
+-- VERSION  : 2.06
 -- PURPOSE  : To construct the MIB structure for DoS Prevention feature
 --            for proprietary enterprise
 -- -----------------------------------------------------------------------------
@@ -13,6 +13,47 @@
 --  [New Object]
 --  [Modification]
 -- Notes: (Requested by who and which project)
+-- -----------------------------------------------------------------------------
+-- Version 2.06, 2011/02/21, Randy Xie
+-- [New Object]
+-- Add swDoSFunctionVersion 
+-- Notes: display the function version
+-- -----------------------------------------------------------------------------
+-- Version 2.05, 2011/01/24, Randy
+-- [New Object]
+-- 1. Add swDoSLogState and swDoSTrapState to configure the DoS trap and Log state.
+-- [Modification]
+-- 1. Add new DoS type in swDoSClearCounters:
+--	  arp-mac-sa-mismatch(10),
+--	  fraggle-attack(11),
+--	  icmp-redirect-attack(12),
+--	  icmp-unreachable-attack(13),
+--	  ip-route-record-attac(14),
+--	  ip-source-route-attack(15),
+--	  ping-death-attack(16),
+--	  tcp-flag-synrst(17),
+--	  tcp-over-mac-mcbc(18),
+--	  tcp-syn-with-data(19),
+--	  tcp-tiny-frag-attack(20),
+--	  tcpudp-port-zero(21),
+--	  tracert-attack(22),
+--	  winnuke-attack (23).
+-- 2. Add new DoS type in swDoSCtrlType:
+--	  arp-mac-sa-mismatch(10),
+--	  fraggle-attack(11),
+--	  icmp-redirect-attack(12),
+--	  icmp-unreachable-attack(13),
+--	  ip-route-record-attac(14),
+--	  ip-source-route-attack(15),
+--	  ping-death-attack(16),
+--	  tcp-flag-synrst(17),
+--	  tcp-over-mac-mcbc(18),
+--	  tcp-syn-with-data(19),
+--	  tcp-tiny-frag-attack(20),
+--	  tcpudp-port-zero(21),
+--	  tracert-attack(22),
+--	  winnuke-attack (23).
+-- 3. Modifiy the description of swDoSAttackDetected.
 -- -----------------------------------------------------------------------------
 -- Version 2.04, 2008/09/18, Marco
 -- rename *DOS* to *DoS*
@@ -46,7 +87,7 @@ DOS-PREV-MIB DEFINITIONS ::= BEGIN
 	dlink-common-mgmt				FROM DLINK-ID-REC-MIB;
 		
 	swDoSMgmtMIB MODULE-IDENTITY
-		LAST-UPDATED "0809180000Z"
+		LAST-UPDATED "201101240000Z"
 	  	ORGANIZATION "D-Link Corp."
 	  	CONTACT-INFO
 	   		"http://support.dlink.com"
@@ -83,7 +124,21 @@ DOS-PREV-MIB DEFINITIONS ::= BEGIN
 			tcp-synfin(6),
 			tcp-syn-srcport-less-1024(7),
 			all(8),
-			other(9)
+			other(9),
+			arp-mac-sa-mismatch(10),
+			fraggle-attack(11),
+			icmp-redirect-attack(12),
+			icmp-unreachable-attack(13),
+			ip-route-record-attac(14),
+			ip-source-route-attack(15),
+			ping-death-attack(16),
+			tcp-flag-synrst(17),
+			tcp-over-mac-mcbc(18),
+			tcp-syn-with-data(19),
+			tcp-tiny-frag-attack(20),
+			tcpudp-port-zero(21),
+			tracert-attack(22),
+			winnuke-attack (23)
     	}
         MAX-ACCESS  read-write
         STATUS current
@@ -135,7 +190,21 @@ DOS-PREV-MIB DEFINITIONS ::= BEGIN
 			tcp-null-scan(4),
 			tcp-xmascan(5),
 			tcp-synfin(6),
-			tcp-syn-srcport-less-1024(7)
+			tcp-syn-srcport-less-1024(7),
+			arp-mac-sa-mismatch(10),
+			fraggle-attack(11),
+			icmp-redirect-attack(12),
+			icmp-unreachable-attack(13),
+			ip-route-record-attac(14),
+			ip-source-route-attack(15),
+			ping-death-attack(16),
+			tcp-flag-synrst(17),
+			tcp-over-mac-mcbc(18),
+			tcp-syn-with-data(19),
+			tcp-tiny-frag-attack(20),
+			tcpudp-port-zero(21),
+			tracert-attack(22),
+			winnuke-attack (23)
    	    	}
         MAX-ACCESS  read-only
         STATUS current
@@ -211,6 +280,36 @@ DOS-PREV-MIB DEFINITIONS ::= BEGIN
             "This object indicates the number of frames detected under the DoS prevention type.
             A valid mirror port must first be specified in order to set this value."
         ::= { swDoSCtrlEntry 7 } 
+		
+    swDoSTrapState OBJECT-TYPE
+    	SYNTAX INTEGER {
+    		enabled(1), 
+    		disabled(2)
+    	}
+        MAX-ACCESS  read-write
+        STATUS current
+        DESCRIPTION
+            "This object indicates the status of the DoS prevention trap."
+	::= { swDoSCtrl 4 }
+	
+    swDoSLogState OBJECT-TYPE
+    	SYNTAX INTEGER {
+    		enabled(1), 
+    		disabled(2)
+    	}
+        MAX-ACCESS  read-write
+        STATUS current
+        DESCRIPTION
+            "This object indicates the status of the DoS prevention log."
+	::= { swDoSCtrl 5 }
+	
+    swDoSFunctionVersion OBJECT-TYPE
+	    SYNTAX  DisplayString (SIZE (0..128))
+	    MAX-ACCESS  read-only
+	    STATUS  current
+	    DESCRIPTION
+	        "This object indicates the function version."
+	::= { swDoSCtrl 6 } 
         
 --***************************************************************************
 --	swDoSNotify
@@ -227,9 +326,8 @@ DOS-PREV-MIB DEFINITIONS ::= BEGIN
 				}
 		STATUS  current
 		DESCRIPTION
-				"This trap is sent when the specific DoS packet is received,
-				 swDoSTrapLog is enable(1) and swDoSCtrlActionType is
-				 drop(1) for specific swDoSCtrlType."
+				"This trap is sent when the specific DoS packet is received and 
+				trap is enabled."
 		::= { swDoSNotifyPrefix 1 }
 
 	swDoSNotifyVarBindings	OBJECT IDENTIFIER ::= { swDoSNotify 1 }
