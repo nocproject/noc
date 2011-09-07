@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:WARN:|WARN\\(4\\)) Port security violation \\(port: (?P<interface>\\S+), MAC: (?P<mac>\\S+)\\)$"
+                "value_re": "(?:WARN:|WARN\\(4\\)) Port security violation \\([Pp]ort: (?P<interface>\\S+), MAC: (?P<mac>\\S+)\\)$"
             }
         ]
     },
