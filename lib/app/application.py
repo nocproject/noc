@@ -12,7 +12,8 @@ import logging
 import os
 ## Django modules
 from django.template import RequestContext
-from django.http import HttpResponse,HttpResponseRedirect,HttpResponseForbidden,HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect,\
+                        HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render_to_response
 from django.utils.simplejson.encoder import JSONEncoder
 from django.db import connection
@@ -21,33 +22,37 @@ from django.contrib import messages
 from django.utils.html import escape
 from django.template import loader
 ## NOC modules
-from access import HasPerm
+from access import HasPerm, Permit, Deny
 from site import site
 from noc.lib.forms import NOCForm
 from noc import settings
-##
-## Metaclass for Application.
-## Register application class to site
-##
+
+
 class ApplicationBase(type):
-    def __new__(cls,name,bases,attrs):
+    """
+    Application metaclass. Registers application class to site
+    """
+    def __new__(cls, name, bases, attrs):
         global site
-        m=type.__new__(cls,name,bases,attrs)
+        m = type.__new__(cls, name, bases, attrs)
         if "apps" in m.__module__:
             site.register(m)
         return m
-##
-## Basic application
-## Application combined by set of view_* methods
-## Each handling requests
-##
+
+
 class Application(object):
-    __metaclass__=ApplicationBase
-    title="APPLICATION TITLE"
-    extra_permissions=[] # List of additional permissions, not related with views
+    """
+    Basic application class.
+    
+    Application combined by set of methods, decorated with @view.
+    Each method accepts requests and returns reply
+    """
+    __metaclass__ = ApplicationBase
+    title = "APPLICATION TITLE"
+    extra_permissions = []  # List of additional permissions, not related with views
     ##
-    Form=NOCForm # Shortcut for form class
-    config=settings.config
+    Form = NOCForm # Shortcut for form class
+    config = settings.config
     ##
     def __init__(self,site):
         self.site=site
@@ -56,24 +61,39 @@ class Application(object):
         self.app=parts[3]
         self.module_title=__import__("noc.%s"%self.module,{},{},["MODULE_NAME"]).MODULE_NAME
         self.app_id="%s.%s"%(self.module,self.app)
-    ##
-    ## Return application id
-    ##
+        self.menu_url = None  # Set by site.autodiscover()
+
+    @property
+    def launch_info(self):
+        """
+        Return desktop launch information
+        """
+        return {
+            "class": "NOC.main.desktop.IFramePanel",
+            "title": unicode(self.title),
+            "params": {"url": self.menu_url}
+        }
+
     @classmethod
     def get_app_id(cls):
+        """
+        Returns application id
+        """
         parts=cls.__module__.split(".")
         return "%s.%s"%(parts[1],parts[3])
-    ##
-    ## Return application's base url
-    ##
+
+    @property
     def base_url(self):
+        """
+        Application's base URL
+        """
         return "/%s/%s/"%(self.module,self.app)
-    base_url=property(base_url)
     ##
     ## Reverse URL
     ##
     def reverse(self,url,*args,**kwargs):
         return self.site.reverse(url,*args,**kwargs)
+
     ##
     ## Send a message to user
     ##
@@ -107,6 +127,7 @@ class Application(object):
     def render(self,request,template,dict={},**kwargs):
         return render_to_response(self.get_template_path(template),dict if dict else kwargs,
             context_instance=RequestContext(request,dict={"app":self}))
+
     ##
     ## Render template to string
     ##
@@ -225,7 +246,7 @@ class Application(object):
     ## Iterator returning application views
     ##
     def get_views(self):
-        for n in [v for v in dir(self) if v.startswith("view_")]:
+        for n in [v for v in dir(self) if hasattr(getattr(self, v), "url")]:
             yield getattr(self,n)
     ##
     ## Return a set of permissions, used by application
@@ -264,23 +285,31 @@ class Application(object):
     ##
     def group_access_change_url(self,group):
         return None
-    ##
-    ## View
-    ##
-    #def view_test(self,request):
-    #    return self.render_text("test")
-    #view_test.url=r"^test/"
-    #view_test.url_name="test"
-    #view_test.access=permit
-    #view_test.menu="Test"
-##
-## @view decorator
-##
-def view(url,access,url_name=None,menu=None):
+
+def view(url, access, url_name=None, menu=None, method=None, validate=None,
+         api=False):
+    """
+    @view decorator
+    :param url: URL relative to application root
+    :param access:
+    :param url_name:
+    :param menu:
+    :param method:
+    :param validate: Form class or callable to check input
+    :param api: Does the view exposed as API function
+    """
     def decorate(f):
-        f.url=url
-        f.url_name=url_name
-        f.access=access
-        f.menu=menu
+        f.url = url
+        f.url_name = url_name
+        # Process access
+        if type(access) == bool:
+            f.access = Permit() if access else Deny()
+        elif isinstance(access, basestring):
+            f.access = HasPerm(access)
+        else:
+            f.access = access
+        f.menu = menu
+        f.method = method
+        f.api = api
         return f
     return decorate
