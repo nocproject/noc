@@ -8,7 +8,7 @@ Ext.define("NOC.main.desktop.IFramePanel", {
     extend: "Ext.Panel",
     initComponent: function() {
         this.items = [{
-            html: "<iframe width='100%' height='100%' src='" + this.noc.url + "'/>"
+            html: "<iframe style='border: none; width: 100%; height: 100%' src='" + this.noc.url + "'/>"
         }];
         NOC.main.desktop.IFramePanel.superclass.initComponent.call(this);
         this.on("resize", this.on_resize);
