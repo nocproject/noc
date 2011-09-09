@@ -38,8 +38,16 @@ Ext.define("NOC.main.desktop.Login", {
     ],
     buttons: [
         {
+            text: "Reset",
+            handler: function() {
+                this.up("window").down("form").getForm().reset();
+            }
+        },
+
+        {
             text: "Login",
-            action: "login",
+            // disabled: true,
+            // formBind: true,  @todo: Fix
             handler: function() {
                 // Validate form
                 var win = this.up("window");
