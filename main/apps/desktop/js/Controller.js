@@ -1,0 +1,148 @@
+//---------------------------------------------------------------------
+// Desktop application controller
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2011 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+Ext.define("NOC.main.desktop.Controller", {
+    extend: "Ext.app.Controller",    
+    views: ["NOC.main.desktop.Viewport"],
+    init: function() {
+        console.log("Controller started");
+        this.login_window = null;
+        this.check_logged();
+        this.control({
+            // Nav tree select
+            "#navtree": {
+                selectionchange: this.on_nav_app
+            }
+            // Search entered
+        });
+    },
+    // Check session is authenticated
+    check_logged: function() {
+        Ext.Ajax.request({
+            method: "GET",
+            url: "/main/desktop/is_logged/",
+            scope: this,
+            success: function(response) {
+                var status = Ext.decode(response.responseText);
+                if (status)
+                    this.on_login();
+                else
+                    this.show_login();
+            },
+            failure: function(response) {
+                this.show_login();
+            }
+        }); 
+    },
+    // Called when session is authenticated or user logged in
+    on_login: function() {
+        // Apply user settings
+        Ext.Ajax.request({
+            method: "GET",
+            url: "/main/desktop/user_settings/",
+            scope: this,
+            success: function(response) {
+                var settings = Ext.decode(response.responseText);
+                // Change theme
+                this.change_theme(settings["theme"]);
+                // Set username in the header
+                var display_name = "";
+                if(settings["first_name"])
+                    display_name += settings["first_name"];
+                if(settings["last_name"]) {
+                    if(display_name)
+                        display_name += " ";
+                    display_name += settings["last_name"];
+                }
+                if(!display_name)
+                    display_name = settings["username"];
+                Ext.getCmp("header").set_user_name(display_name);
+            }
+        });
+        // Load menu
+        this.update_menu();
+    },
+    // Show login window
+    show_login: function() {
+        this.login_window = Ext.create("NOC.main.desktop.Login", {
+            controller: this});
+    },
+    // Start login sequence
+    do_login: function(values) {
+        console.log("Do login");
+        Ext.Ajax.request({
+            method: "POST",
+            url: "/main/desktop/login/",
+            params: values,
+            scope: this,
+            success: function(response) {
+                var status = Ext.decode(response.responseText);
+                if(status) {
+                    // Login successfull
+                    this.login_window.close();
+                    this.login_window = null;
+                    this.on_login();
+                } else {
+                    // Login failed
+                    Ext.Msg.alert("Failed", "Login failed!");
+                }
+            },
+            failure: function(response) {
+                Ext.Msg.alert("Failed", "Login failed due to internal error");
+            }
+        });
+    },
+    // Start logout sequence
+    do_logout: function() {
+        Ext.Ajax.request({
+            method: "POST",
+            url: "/main/desktop/logout/",
+            scope: this,
+            success: function(response) {
+                this.show_login();
+            },
+            failure: function(response) {
+                Ext.Msg.alert("Failed", "Logout failed");
+            }
+        });
+    },
+    // Change current theme
+    change_theme: function(theme) {
+        if(theme == "default")
+            theme = "ext-all.css";
+        else
+            theme = "ext-all-" + theme + ".css";
+        Ext.util.CSS.swapStyleSheet("theme",
+            "/static/resources/css/" + theme);
+    },
+    // Update menu
+    update_menu: function() {
+        console.log("Update menu");
+        Ext.getStore("NOC.main.desktop.NavTreeStore").load();
+    },
+    // Search text entered
+    on_search: function() {
+    },
+    // Application selected in nav tree
+    on_nav_app: function(view, records) {
+        Ext.Ajax.request({
+            method: "GET",
+            url: "/main/desktop/launch_info/",
+            params: {
+                node: records[0].data.id
+            },
+            scope: this,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                this.launch_tab(data["class"], data["title"], data["params"]);
+            }
+        });
+    },
+    // Launch application in tab
+    launch_tab: function(panel_class, title, params) {
+        Ext.getCmp("workplace").launch_tab(panel_class, title, params);
+    }
+});

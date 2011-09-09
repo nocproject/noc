@@ -1,0 +1,12 @@
+//---------------------------------------------------------------------
+// Favorites panel
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2011 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+Ext.define("NOC.main.desktop.Favorites", {
+    extend: "Ext.Panel",
+    id: "favorites",
+    title: "Favorites",
+    html: "FAVORITES"
+});
