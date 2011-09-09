@@ -36,6 +36,9 @@ class ReportApplication(Application):
     ##
     def report_html(self,result,query):
         pass
+
+    def get_menu(self):
+        return "Reports.|" + unicode(self.title)
     ##
     ## Render report
     ##
@@ -66,3 +69,4 @@ class ReportApplication(Application):
     view_report.url=r"^(?P<format>\S+)/$"
     view_report.url_name="view"
     view_report.access=HasPerm("view")
+    view_report.menu=get_menu
