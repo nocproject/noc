@@ -13,7 +13,6 @@
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
 <SCRIPT TYPE="text/javascript" SRC="{% admin_media_prefix %}js/jquery.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.corner.js"></SCRIPT>
-<SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.stickyfooter.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/menu.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/popup.js"></SCRIPT>
 {% block extrastyle %}{% endblock %}
@@ -47,8 +46,6 @@
         {% block sidebar %}{% endblock %}
     </div>
     <!-- END Content -->
-
-    {% block footer %}<div id="footer">&copy;2007-2011, <A HREF="http://nocproject.org/">nocproject.org</A></div>{% endblock %}
 </div>
 <!-- END Container -->
 
@@ -62,12 +59,5 @@
     <div id="noc-popup-body"></div>
 </div>
 <!-- END Popup -->
-<!-- align footer -->
-<script>
-    $(document).ready(function() {
-        $("#footer").stickyFooter();
-    });
-</script>
-<!-- END align footer -->
 </body>
 </html>
