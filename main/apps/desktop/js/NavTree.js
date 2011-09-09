@@ -1,0 +1,14 @@
+//---------------------------------------------------------------------
+// Navigation tree panel
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2011 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+Ext.define("NOC.main.desktop.NavTree", {
+    extend: "Ext.tree.Panel",
+    id: "navtree",
+    title: "Navigation",
+    useArrows: true,
+    rootVisible: false,
+    store: Ext.create("NOC.main.desktop.NavTreeStore")
+});
