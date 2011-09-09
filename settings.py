@@ -81,80 +81,81 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = ""
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
-MEDIA_URL = ''
+MEDIA_URL = ""
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
+ADMIN_MEDIA_PREFIX = "/media/"
 
-# Make this unique, and don't share it with anybody.
+# Make this unique, and don"t share it with anybody.
 SECRET_KEY = config.get("main","secret_key")
 
 # Set up authentication backends
-if AUTH_METHOD=="local":
-    AUTHENTICATION_BACKENDS= ('noc.main.auth.backends.localbackend.NOCLocalBackend',)
-elif AUTH_METHOD=="http":
-    AUTHENTICATION_BACKENDS= ('noc.main.auth.backends.httpbackend.NOCHTTPBackend',)
-elif AUTH_METHOD=="ldap":
-    AUTHENTICATION_BACKENDS= ('noc.main.auth.backends.ldapbackend.NOCLDAPBackend',)
-elif AUTH_METHOD=="pyrule":
-    AUTHENTICATION_BACKENDS= ('noc.main.auth.backends.pyrulebackend.NOCPyRuleBackend',)
-    
+if AUTH_METHOD == "local":
+    AUTHENTICATION_BACKENDS = ["noc.main.auth.backends.localbackend.NOCLocalBackend"]
+elif AUTH_METHOD == "http":
+    AUTHENTICATION_BACKENDS = ["noc.main.auth.backends.httpbackend.NOCHTTPBackend"]
+elif AUTH_METHOD == "ldap":
+    AUTHENTICATION_BACKENDS = ["noc.main.auth.backends.ldapbackend.NOCLDAPBackend"]
+elif AUTH_METHOD == "pyrule":
+    AUTHENTICATION_BACKENDS = ["noc.main.auth.backends.pyrulebackend.NOCPyRuleBackend"]
+
 # List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.load_template_source',
-)
+TEMPLATE_LOADERS = [
+    "django.template.loaders.filesystem.Loader",
+    "django.template.loaders.app_directories.Loader"
+]
 # 
 TEMPLATE_CONTEXT_PROCESSORS= (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.contrib.messages.context_processors.messages',
-    'noc.lib.app.setup_processor',
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.contrib.messages.context_processors.messages",
+    "noc.lib.app.setup_processor",
     )
 #
-MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.doc.XViewMiddleware',
-    'django.middleware.transaction.TransactionMiddleware',
-    'noc.lib.middleware.TLSMiddleware', # Thread local storage
-)
-if AUTH_METHOD=="http":
-    MIDDLEWARE_CLASSES=MIDDLEWARE_CLASSES+('django.contrib.auth.middleware.RemoteUserMiddleware',)
+MIDDLEWARE_CLASSES = [
+    "django.middleware.common.CommonMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "noc.lib.middleware.HTTPBasicAuthMiddleware",
+    "django.middleware.doc.XViewMiddleware",
+    "django.middleware.transaction.TransactionMiddleware",
+    "noc.lib.middleware.TLSMiddleware", # Thread local storage
+]
 
-ROOT_URLCONF = 'noc.urls'
+if AUTH_METHOD == "http":
+    MIDDLEWARE_CLASSES += ["django.contrib.auth.middleware.RemoteUserMiddleware"]
+
+ROOT_URLCONF = "noc.urls"
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    # Don"t forget to use absolute paths, not relative paths.
     "local",
     ".",
     "templates"
 )
 
-CACHE_BACKEND = 'locmem:///'
+CACHE_BACKEND = "locmem:///"
 
-INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.admin',
-    'django.contrib.messages',
-    'django.contrib.databrowse',
+INSTALLED_APPS = [
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.sites",
+    "django.contrib.admin",
+    "django.contrib.messages",
+    "django.contrib.databrowse",
     "tagging",
     "south",
     
@@ -168,14 +169,14 @@ INSTALLED_APPS = (
     "noc.vc",
     "noc.dns",
     "noc.peer",
-    "noc.kb",
-)
+    "noc.kb"
+]
 # Populate list of locally-installed apps
-apps=config.get("main","installed_apps").strip()
+apps = config.get("main","installed_apps").strip()
 if apps:
-    INSTALLED_APPS+=tuple([app.strip() for app in apps.split(",")])
+    INSTALLED_APPS += [app.strip() for app in apps.split(",")]
 
-FORCE_SCRIPT_NAME=""
+FORCE_SCRIPT_NAME = ""
 
 # Available languages
 _ = lambda s: s
@@ -186,11 +187,13 @@ LANGUAGES = [
 
 #SOUTH_AUTO_FREEZE_APP = False
 
-AUTH_PROFILE_MODULE="main.UserProfile"
+AUTH_PROFILE_MODULE = "main.UserProfile"
 ##
 ## Determine WEB process
 ##
-IS_WEB=(len(sys.argv)>=2 and sys.argv[0]=="manage.py" and sys.argv[1] in ["runserver","test","sync-perm"]) or sys.argv[0].endswith("noc-fcgi.py")
+IS_WEB = ((len(sys.argv) >= 2 and sys.argv[0] == "manage.py" and
+          sys.argv[1] in ["runserver","test","sync-perm"])
+    or sys.argv[0].endswith("noc-fcgi.py"))
 ##
 ## Coverage wrapper
 ##

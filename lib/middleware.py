@@ -5,15 +5,39 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Python modules
+import base64
 try:
     from threading import local
 except ImportError:
     from django.utils._threading_local import local
+## Django modules
+from django.contrib import auth
+
+
+class HTTPBasicAuthMiddleware(object):
+    """
+    Process HTTP Basic auth
+    """
+    def process_request(self, request):
+        if request.user.is_authenticated():
+            # Already authenticated
+            return
+        if "HTTP_AUTHORIZATION" in request.META:
+            a = request.META["HTTP_AUTHORIZATION"]
+            if a.startswith("Basic "):
+                username, password = base64.b64decode(a[6:]).split(":")
+                user = auth.authenticate(username=username, password=password)
+                if user:
+                    # Authentication passed
+                    request.user = user
+
+
 ##
 ## Thread local storage
 ##
 _tls = local()
-
 
 class TLSMiddleware(object):
     """
