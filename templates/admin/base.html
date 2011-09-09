@@ -26,40 +26,8 @@
 {% load i18n %}
 
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
-<script type="text/javascript">
-    MENU_JSON_URL="{% url main:menu:json user.id %}";
-    $(document).ready(menu);
-</script>
 <!-- Container -->
 <div id="container">
-
-    {% if not is_popup %}
-    <!-- Header -->
-    <div id="header">
-        <div id="branding">
-        {% block branding %}<img src="{{setup.logo_url}}" width="{{setup.logo_width}}" height="{{setup.logo_height}}" alt="logo" style="float: left; margin: 0px 4px 0px 4px"/><h1 ID="site-name">{{setup.installation_name}}</h1>{% endblock %}
-        </div>
-        {% if user.is_active and user.is_staff %}
-        <div id="user-tools">
-            {% trans 'Welcome,' %}
-            <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
-            {% block userlinks %}
-                <a href="{% url main:userprofile:change %}">Profile</a> /
-                <a href="{% url main:auth:change_password %}">{% trans 'Change password' %}</a> /
-                <a href="{% url main:auth:logout %}">{% trans 'Log out' %}</a>
-            {% endblock %}
-            <FORM METHOD="POST" ACTION="{% url main:search:search %}"><INPUT TYPE="search" NAME="query"  PLACEHOLDER="Search..."/></FORM>
-        </div>
-        {% endif %}
-        {% block nav-global %}{% endblock %}
-    </div>
-    <div id="menu"></div>
-    <!-- END Header -->
-    <!-- Breadcrumbs -->
-    <div class="breadcrumbs"><ul>{% block breadcrumbs %}<li><a href="{% url main:index:home %}">{% trans 'Home' %}</a></li>{% endblock %}</ul></div>
-    <!-- END Breadcrumbs -->
-    {% endif %}
-
     {% if messages %}
     <ul class="messagelist">
         {% for message in messages %}

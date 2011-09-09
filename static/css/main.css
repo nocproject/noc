@@ -6,12 +6,14 @@
 }
 
 #content {
+    /*
     margin-left: 204px;
     min-height: 400px;
+    */
 }
 
 div.breadcrumbs {
-    margin-left: 204px;
+    /* margin-left: 204px; */
 }
 
 div.breadcrumbs ul, div.breadcrumbs ul li {
