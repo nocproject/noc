@@ -10,7 +10,8 @@ from access import *
 from application import *
 from modelapplication import *
 from treeapplication import *
-from noc.settings import config,IS_WEB
+from extapplication import *
+from noc.settings import config, IS_WEB
 ##
 ## Setup Context Processor.
 ## Used via TEMPLATE_CONTEXT_PROCESSORS variable in settings.py
