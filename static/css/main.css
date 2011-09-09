@@ -1,10 +1,6 @@
 @import url("/media/css/base.css");
 @import url("/media/css/dashboard.css");
 
-#footer {
-    text-align: center;
-}
-
 #content {
     /*
     margin-left: 204px;
