@@ -120,14 +120,14 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%BGP-3-NOTIFICATION: sent to neighbor .+ (hold time expired) \\d+ bytes"
+                "value_re": "%BGP-3-NOTIFICATION: sent to neighbor .+ \\(hold time expired\\) \\d+ bytes"
             }
         ]
     },
 
     {
         "name": "Cisco | IOS | Unknown | Ignore BGP Notification (SNMP)",
-        "description": "sent to neighbor 10.110.0.62 4/0 (hold time expired) 0 bytes",
+        "description": "CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix",
         "event_class__name": "Unknown | Ignore",
         "preference": 1000,
         "patterns": [
@@ -152,8 +152,12 @@
                 "value_re": "^NOTIFICATION$"
             },
             {
+                "key_re": "^CISCO-SYSLOG-MIB::clogHistSeverity\\.\\d+$",
+                "value_re": "^error$"
+            },
+            {
                 "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgText\\.\\d+$",
-                "value_re": "^sent to neighbor .+ (hold time expired) \\d+ bytes$"
+                "value_re": "^sent to neighbor .+ \\(hold time expired\\) \\d+ bytes"
             }
         ]
     },
