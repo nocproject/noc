@@ -163,14 +163,17 @@ def format_frames(frames):
     r+=[u"END OF TRACEBACK"]
     return u"\n".join(r)
 
+def get_traceback():
+    t, v, tb = sys.exc_info()
+    now = datetime.datetime.now()
+    r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
+    r += ["Working directory: %s" % os.getcwd()]
+    r += [str(t), str(v)]
+    r += [format_frames(get_traceback_frames(tb))]
+    return "\n".join(r)
+
 def error_report():
-    t,v,tb=sys.exc_info()
-    now=datetime.datetime.now()
-    r=["UNHANDLED EXCEPTION (%s)"%str(now)]
-    r+=["Working directory: %s"%os.getcwd()]
-    r+=[str(t),str(v)]
-    r+=[format_frames(get_traceback_frames(tb))]
-    r="\n".join(r)
+    r = get_traceback()
     logging.error(r)
     if DEBUG_CTX_COMPONENT and DEBUG_CTX_CRASH_DIR:
         c={
