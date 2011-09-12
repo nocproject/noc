@@ -11,6 +11,7 @@ Ext.define("NOC.main.desktop.NavPanel", {
     width: 200,
     collapsible: true,
     animCollapse: true,
+    collapseMode: "mini",
     split: true,
     preventHeader: true,
     layout: "accordion",
