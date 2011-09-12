@@ -9,6 +9,8 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     id: "header",
     region: "north",
     height: 30,
+    maxHeight: 30,
+    minHeight: 30,
     collapsible: true,
     animCollapse: true,
     collapseMode: "mini",
