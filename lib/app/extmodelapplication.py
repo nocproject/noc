@@ -34,6 +34,13 @@ class ExtModelApplication(ExtApplication):
     INTERNAL_ERROR = 500
     NOT_IMPLEMENTED = 501
     THROTTLED = 503
+    
+    ignored_params = ["_dc"]
+    page_param = "__page"
+    start_param = "__start"
+    limit_param = "__limit"
+    sort_param = "__sort"
+    format_param = "__format"  # List output format
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
@@ -55,6 +62,17 @@ class ExtModelApplication(ExtApplication):
                                mimetype="text/plain; charset=utf-8",
                                status=status)
 
+    def cleaned_query(self, q):
+        q = q.copy()
+        for p in self.ignored_params:
+            if p in q:
+                del q[p]
+        for p in (self.limit_param, self.page_param, self.start_param,
+            self.format_param, self.sort_param):
+            if p in q:
+                del q[p]
+        return q
+
     def instance_to_dict(self, o):
         r = {}
         for f in o._meta.local_fields:
@@ -64,14 +82,40 @@ class ExtModelApplication(ExtApplication):
                 r[f.name] = getattr(o, f.name)._get_pk_val()
         return r
 
-    @view(method=["GET"], url="^$", access="list", api=True)
+    @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
         """
         Returns a list of available objects
         """
         q = dict(request.GET.items())
-        return self.response([{"id": o.id, "label": unicode(o)}
-            for o in self.queryset(request).filter(**q)], status=self.OK)
+        limit = q.get(self.limit_param)
+        page = q.get(self.page_param)
+        start = q.get(self.start_param)
+        format = q.get(self.format_param)
+        ordering = []
+        if format == "ext" and self.sort_param in q:
+            for r in self.deserialize(q[self.sort_param]):
+                if r["direction"] == "DESC":
+                    ordering += ["-%s" % r["property"]]
+                else:
+                    ordering += [r["property"]]
+        q = self.cleaned_query(q)
+        data = self.queryset(request).filter(**q)
+        # Apply sorting
+        if ordering:
+            data = data.order_by(*ordering)
+        if format == "ext":
+            total = data.count()
+        if start is not None and limit is not None:
+            data = data[int(start):int(start) + int(limit)]
+        out = [self.instance_to_dict(o) for o in data]
+        if format == "ext":
+            out = {
+                "total": total,
+                "success": True,
+                "data": out
+            }
+        return self.response(out, status=self.OK)
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
