@@ -26,6 +26,7 @@
                 enabled: true,
                 paths: {
                     {% for m, a in apps %}"NOC.{{m}}.{{a}}": "/{{m}}/{{a}}/js",{% endfor %}
+                    "NOC.core": "/static/js/noc"
                 }});
         </script>
         <script type="text/javascript" src="{% url main:desktop:static "js/app.js" %}"></script>
