@@ -4,6 +4,8 @@
 // Copyright (C) 2007-2011 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
+console.debug("Defining NOC.main.desktop.WorkplacePanel");
+
 Ext.define("NOC.main.desktop.WorkplacePanel", {
     extend: "Ext.TabPanel",
     id: "workplace",

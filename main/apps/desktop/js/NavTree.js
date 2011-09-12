@@ -4,6 +4,8 @@
 // Copyright (C) 2007-2011 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
+console.debug("Defining NOC.main.desktop.NavTree");
+
 Ext.define("NOC.main.desktop.NavTree", {
     extend: "Ext.tree.Panel",
     id: "navtree",
