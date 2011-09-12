@@ -11,6 +11,7 @@ from application import *
 from modelapplication import *
 from treeapplication import *
 from extapplication import *
+from extmodelapplication import *
 from noc.settings import config, IS_WEB
 ##
 ## Setup Context Processor.
