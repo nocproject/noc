@@ -14,7 +14,9 @@ import os
 import urllib
 import hashlib
 ## Django modules
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect,\
+                        HttpResponseNotFound, HttpResponseForbidden,\
+                        HttpResponseServerError
 from django.utils.http import urlquote
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import *
@@ -23,7 +25,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.simplejson.encoder import JSONEncoder
 ## NOC modules
 from noc.settings import INSTALLED_APPS
-from noc.lib.debug import error_report
+from noc.lib.debug import get_traceback
 
 
 class DynamicMenu(object):
@@ -127,14 +129,6 @@ class Site(object):
         else:
             raise Exception("Invalid URL object: %s" % str(view.url))
 
-    def login(self, request):
-        """
-        Redirect to login page
-        """
-        return HttpResponseRedirect("%s?%s=%s" % (settings.LOGIN_URL,
-                                            REDIRECT_FIELD_NAME,
-                                            urlquote(request.get_full_path())))
-
     def site_access(self, app, view):
         """
         Curry application with access
@@ -152,11 +146,14 @@ class Site(object):
             except KeyError:
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
             if not request.user or not v.access.check(app, request.user):
-                return self.login(request)
+                return HttpResponseForbidden()
             try:
                 r = v(request, *args, **kwargs)
             except PermissionDenied, why:
-                return HttpResponse(why)
+                return HttpResponseForbidden(why)
+            except:
+                # Generate 500
+                r = HttpResponseServerError(content=get_traceback())
             if not isinstance(r, HttpResponse):
                 return HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),
                                     mimetype="text/json; charset=utf-8")
@@ -168,7 +165,6 @@ class Site(object):
             try:
                 return inner(request, *args, **kwargs)
             except:
-                #print error_report()
                 raise
 
         from access import PermissionDenied
