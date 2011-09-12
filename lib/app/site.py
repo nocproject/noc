@@ -155,8 +155,11 @@ class Site(object):
                 # Generate 500
                 r = HttpResponseServerError(content=get_traceback())
             if not isinstance(r, HttpResponse):
-                return HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),
-                                    mimetype="text/json; charset=utf-8")
+                try:
+                    return HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),
+                                        mimetype="text/json; charset=utf-8")
+                except:
+                    return HttpResponse(get_traceback(), status=500)
             else:
                 return r
 
@@ -206,6 +209,34 @@ class Site(object):
             "title": parts[0],
             "app": app,
             "access": self.site_access(app, v)
+        }
+        self.set_menu_id(r, path)
+        root["children"] += [r]
+
+    def add_app_menu(self, app):
+        path = [app.module]
+        parts = [x.strip() for x in unicode(app.menu).split("|")]
+        root = self.menu[-1]
+        while len(parts) > 1:
+            p = parts.pop(0)
+            path += [p]
+            exists = False
+            for n in root["children"]:
+                if p == n["title"]:
+                    exists = True
+                    break
+            if exists:
+                root = n
+            else:
+                r = {"title": p, "children": []}
+                self.set_menu_id(r, path)
+                root["children"] += [r]
+                root = r
+        path += parts
+        r = {
+            "title": parts[0],
+            "app": app,
+            "access": lambda user: app.launch_access.check(app, user)
         }
         self.set_menu_id(r, path)
         root["children"] += [r]
@@ -262,6 +293,10 @@ class Site(object):
             ar += [RegexURLPattern(u.url, sv, name=u.name)]
             for n in names:
                 self.register_named_view(app.module, app.app, n, sv)
+        # Register application-level menu
+        if (hasattr(app, "launch_access") and
+            hasattr(app, "menu") and app.menu):
+            self.add_app_menu(app)
 
     def autodiscover(self):
         """
