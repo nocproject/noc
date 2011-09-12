@@ -9,6 +9,8 @@ Ext.define("NOC.main.desktop.StatusPanel", {
     id: "status",
     region: "south",
     height: 20,
+    maxHeight: 20,
+    minHeight: 20,
     collapsible: true,
     animCollapse: true,
     collapseMode: "mini",
