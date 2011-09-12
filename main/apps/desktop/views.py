@@ -141,9 +141,26 @@ class DesktopAppplication(ExtApplication):
         :param node:
         :returns:
         """
-        def is_visible(node, user):
-            return True
-
+        def get_children(node, user):
+            c = []
+            for r in node:
+                n = {
+                    "id": r["id"],
+                    "text": r["title"]
+                }
+                if "children" in r:
+                    cld = get_children(r["children"], user)
+                    if not cld:
+                        continue
+                    n["leaf"] = False
+                    n["children"] = cld
+                    c += [n]
+                else:
+                    if r["access"](user):
+                        n["leaf"] = True
+                        c += [n]
+            return c
+        
         # Return empty list for unauthenticated user
         if not request.user.is_authenticated():
             return []
@@ -156,12 +173,7 @@ class DesktopAppplication(ExtApplication):
                 root = self.site.menu_index[node]["children"]
             except KeyError:
                 return self.response_not_found()
-        return [
-            {
-                "id": r["id"],
-                "text": r["title"],
-                "leaf": "children" not in r
-            } for r in root if is_visible(r, request.user)]
+        return get_children(root, request.user)
 
     @view(method=["GET"], url="^launch_info/$", access=PermitLogged(), api=True)
     def api_launch_info(self, request):
