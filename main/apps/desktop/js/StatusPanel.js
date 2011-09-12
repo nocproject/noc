@@ -4,6 +4,8 @@
 // Copyright (C) 2007-2011 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
+console.debug("Defining NOC.main.desktop.StatusPanel");
+
 Ext.define("NOC.main.desktop.StatusPanel", {
     extend: "Ext.Panel",
     id: "status",
@@ -20,7 +22,17 @@ Ext.define("NOC.main.desktop.StatusPanel", {
     items: [
         {
             xtype: "container",
+            flex: 1
+        },
+
+        {
+            xtype: "container",
             html: "&copy;2007-2011, <A HREF='http://nocproject.org/'>nocproject.org</A>"
+        },
+
+        {
+            xtype: "container",
+            flex: 1
         }
     ]
 });
