@@ -4,6 +4,8 @@
 // Copyright (C) 2007-2011 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
+console.debug("Defining NOC.main.desktop.Login");
+
 Ext.define("NOC.main.desktop.Login", {
     extend: "Ext.Window",
     title: "NOC Login: " + NOC.settings.installation_name,

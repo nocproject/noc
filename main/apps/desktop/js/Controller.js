@@ -4,6 +4,8 @@
 // Copyright (C) 2007-2011 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
+console.debug("Defining NOC.main.desktop.Controller");
+
 Ext.define("NOC.main.desktop.Controller", {
     extend: "Ext.app.Controller",    
     views: ["NOC.main.desktop.Viewport"],
