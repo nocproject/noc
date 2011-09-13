@@ -62,6 +62,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             }
         },
 
+        /*
         {
             xtype: "container",
             html: "Anonymous",
@@ -71,7 +72,28 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 color: "#f4f379",
                 padding: "2 2 2 2"
             }
-        },
+        },*/
+        Ext.create("Ext.Button", {
+            id: "user_display_name",
+            text: "Anonymous",
+            scale: "small",
+            menu: [
+                {
+                    id: "header_menu_toggle",
+                    text: "Toggle all panels",
+                    disabled: true
+                },
+                {
+                    id: "header_menu_profile",
+                    text: "User profile ...",
+                    disabled: true
+                },
+                {
+                    id: "header_menu_logout",
+                    text: "Logout"
+                }
+            ]
+        }),
         
         {
             id: "search",
@@ -90,7 +112,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     ],
     // Change displayed username
     set_user_name: function(username) {
-        Ext.get("user_display_name").dom.innerHTML = username;
-        //var u = Ext.getCmp("user_display_name");
+        //Ext.get("user_display_name").dom.innerHTML = username;
+        Ext.getCmp("user_display_name").setText(username);
     }
 });

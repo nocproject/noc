@@ -7,16 +7,23 @@
 console.debug("Defining NOC.main.desktop.Controller");
 
 Ext.define("NOC.main.desktop.Controller", {
-    extend: "Ext.app.Controller",    
+    extend: "Ext.app.Controller",
     views: ["NOC.main.desktop.Viewport"],
     init: function() {
         console.log("Controller started");
         this.login_window = null;
         this.check_logged();
         this.control({
-            // Nav tree select
+            // Navigation tree events
             "#navtree": {
                 selectionchange: this.on_nav_app
+            },
+            // Header events
+            "#header_menu_toggle": {
+                click: this.on_panels_toggle
+            },
+            "#header_menu_logout": {
+                click: this.do_logout
             }
             // Search entered
         });
