@@ -16,7 +16,7 @@ Ext.define("NOC.main.desktop.Controller", {
         this.control({
             // Navigation tree events
             "#navtree": {
-                selectionchange: this.on_nav_app
+                itemclick: this.on_nav_launch
             },
             // Header events
             "#header_menu_toggle": {
@@ -136,12 +136,13 @@ Ext.define("NOC.main.desktop.Controller", {
     on_search: function() {
     },
     // Application selected in nav tree
-    on_nav_app: function(view, records) {
+    on_nav_launch: function(view, record) {
+        console.log(view, record);
         Ext.Ajax.request({
             method: "GET",
             url: "/main/desktop/launch_info/",
             params: {
-                node: records[0].data.id
+                node: record.data.id
             },
             scope: this,
             success: function(response) {
