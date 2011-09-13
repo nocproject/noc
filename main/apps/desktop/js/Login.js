@@ -65,7 +65,7 @@ Ext.define("NOC.main.desktop.Login", {
     ],
     listeners: {
         afterrender: function() {
-            this.down("form").getForm().getFields().items[0].focus(false, 100);
+            this.down("form").getForm().getFields().first().focus(false, 100);
             return true;
         }
     }
