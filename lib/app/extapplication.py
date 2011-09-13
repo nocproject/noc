@@ -12,7 +12,8 @@ import os
 from django.views.static import serve as serve_static
 ## NOC modules
 from application import Application, view, HasPerm
-from access import Permit
+from access import Permit, PermitLogged
+from noc.main.models import Permission
 
 
 class ExtApplication(Application):
@@ -35,6 +36,22 @@ class ExtApplication(Application):
     def launch_access(self):
         m, a = self.get_app_id().split(".")
         return HasPerm("%s:%s:launch" % (m, a))
+
+    @view(url="^permissions/$", method=["GET"], access=PermitLogged(),
+          api=True)
+    def api_permissions(self, request):
+        """
+        Get user permissions to given application
+        
+        :returns: List of strings with permissions names
+        """
+        ps = self.get_app_id().replace(".", ":") + ":"
+        if request.user.is_superuser:
+            qs = Permission.objects
+        else:
+            qs = request.user.noc_user_permissions
+        return [p.split(":")[2] for p in
+                qs.filter(name__startswith = ps).values_list("name", flat=True)]
 
     @view(url="^(?P<path>(?:js|css|img)/[0-9a-zA-Z/]+.js)", url_name="static",
           access=Permit())
