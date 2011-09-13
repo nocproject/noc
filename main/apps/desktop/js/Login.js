@@ -19,6 +19,8 @@ Ext.define("NOC.main.desktop.Login", {
     items: [
         {
             xtype: "form",
+            bodyPadding: 4,
+            border: false,
             items: [
                 {
                     xtype: "textfield",
@@ -60,5 +62,11 @@ Ext.define("NOC.main.desktop.Login", {
                 win.controller.do_login(v);
             }
         }
-    ]
+    ],
+    listeners: {
+        afterrender: function() {
+            this.down("form").getForm().getFields().items[0].focus(false, 100);
+            return true;
+        }
+    }
 });
