@@ -80,8 +80,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             menu: [
                 {
                     id: "header_menu_toggle",
-                    text: "Toggle all panels",
-                    disabled: true
+                    text: "Collapse all panels"
                 },
                 {
                     id: "header_menu_profile",
@@ -105,7 +104,8 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             items: [
                 {
                     xtype: "textfield",
-                    emptyText: "Search..."
+                    emptyText: "Search...",
+                    inputType: "search"
                 }
             ]
         }
