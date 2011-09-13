@@ -137,7 +137,6 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     // Application selected in nav tree
     on_nav_launch: function(view, record) {
-        console.log(view, record);
         Ext.Ajax.request({
             method: "GET",
             url: "/main/desktop/launch_info/",
@@ -154,5 +153,11 @@ Ext.define("NOC.main.desktop.Controller", {
     // Launch application in tab
     launch_tab: function(panel_class, title, params) {
         Ext.getCmp("workplace").launch_tab(panel_class, title, params);
+    },
+    // Toggle panels
+    on_panels_toggle: function() {
+        Ext.getCmp("header").collapse(Ext.Component.DIRECTION_TOP);
+        Ext.getCmp("nav").collapse(Ext.Component.DIRECTION_LEFT);
+        Ext.getCmp("status").collapse(Ext.Component.DIRECTION_BOTTOM);
     }
 });
