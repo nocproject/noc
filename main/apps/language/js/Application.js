@@ -6,28 +6,40 @@
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.language.Application");
 
-Ext.require("NOC.main.language.Model");
-var store = Ext.create("Ext.data.Store", {
-    model: "NOC.main.language.Model",
-    autoLoad: true,
-    autoSync: true,
-    pageSize: 10
-});
-
-console.debug("Store for NOC.main.language.Model initialized");
-
 Ext.define("NOC.main.language.Application", {
-    extend: "Ext.grid.Panel",
-    store: store,
+    extend: "NOC.core.ModelApplication",
+    uses: ["NOC.main.language.Model"],
+    
+    model: "NOC.main.language.Model",
+    
     columns: [
-        {text: "Name", dataIndex: "name"},
-        {text: "Native Name", dataIndex: "native_name"},
-        {text: "Active", dataIndex: "is_active"}
+        {
+            text: "Name",
+            dataIndex: "name"
+        },
+        {
+            text: "Native Name",
+            dataIndex: "native_name"
+        },
+        {
+            text: "Active",
+            dataIndex: "is_active"
+        }
     ],
-    dockedItems: [{
-            xtype: "pagingtoolbar",
-            store: store,
-            dock: "bottom",
-            displayInfo: true
-    }]
+    
+    fields: [
+        {
+            fieldLabel: "Name",
+            name: "name",
+            type: "textfield",
+            allowBlank: false
+        },
+
+        {
+            fieldLabel: "Native Name",
+            name: "native_name",
+            type: "textfield",
+            allowBlank: false
+        }
+    ]
 });
