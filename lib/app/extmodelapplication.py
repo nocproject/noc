@@ -123,6 +123,8 @@ class ExtModelApplication(ExtApplication):
             attrs = self.deserialize(request.raw_post_data)
         except ValueError, why:
             return self.response(str(why), status=self.BAD_REQUEST)
+        if "id" in attrs:
+            del attrs["id"]
         try:
             o = self.queryset(request).get(**attrs)
             return self.response(status=self.DUPLICATE_ENTRY)
