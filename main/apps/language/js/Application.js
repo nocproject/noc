@@ -29,17 +29,23 @@ Ext.define("NOC.main.language.Application", {
     
     fields: [
         {
+            xtype: "textfield",
             fieldLabel: "Name",
             name: "name",
-            type: "textfield",
             allowBlank: false
         },
 
         {
+            xtype: "textfield",
             fieldLabel: "Native Name",
             name: "native_name",
-            type: "textfield",
             allowBlank: false
+        },
+        
+        {
+            xtype: "checkboxfield",
+            boxLabel: "Is Active",
+            name: "is_active"
         }
     ]
 });
