@@ -133,7 +133,7 @@ class ExtModelApplication(ExtApplication):
             o.save()
             return self.response(self.instance_to_dict(o), status=self.CREATED)
 
-    @view(method=["GET"], url="^(?P<id>\d+)/", access="read", api=True)
+    @view(method=["GET"], url="^(?P<id>\d+)/?$", access="read", api=True)
     def api_read(self, request, id):
         """
         Returns dict with object's fields and values
@@ -144,7 +144,7 @@ class ExtModelApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         return self.response(self.instance_to_dict(o), status=self.OK)
 
-    @view(method=["PUT"], url="^(?P<id>\d+)/", access="update", api=True)
+    @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
         try:
             attrs = self.deserialize(request.raw_post_data)
@@ -159,7 +159,7 @@ class ExtModelApplication(ExtApplication):
         o.save()
         return self.response(status=self.OK)
 
-    @view(method=["DELETE"], url="^(?P<id>\d+)/", access="delete", api=True)
+    @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
     def api_delete(self, request, id):
         try:
             o = self.queryset(request).get(id=int(id))
