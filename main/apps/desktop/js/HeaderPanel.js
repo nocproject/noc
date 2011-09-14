@@ -20,64 +20,39 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     preventHeader: true,
     layout: {
         type: "hbox",
-        align: "stretch"
+        align: "middle"
     },
     border: false,
-    style: {
-        backgroundColor: "#417690",
-        verticalAlign: "middle"
-    },
     items: [
-        {
-            xtype: "container",
-            items: [Ext.create("Ext.Img",{
-                src: NOC.settings.logo_url,
-                width: NOC.settings.logo_width,
-                height: NOC.settings.logo_height
-            })],
-            border: false,
-            style: {
-                backgroundColor: "#417690",
-                padding: "2 2 2 2"
-            }
-        },
+        Ext.create("Ext.Img",{
+            src: NOC.settings.logo_url,
+            width: NOC.settings.logo_width,
+            height: NOC.settings.logo_height
+        }),
 
         {
             xtype: "container",
             html: NOC.settings.installation_name,
             style: {
-                fontSize: "18px",
-                color: "#f4f379",
-                backgroundColor: "#417690",
-                paddingLeft: "8px"
+                fontSize: "18px"
             },
             border: false
         },
 
         {
             xtype: "container",
-            flex: 1,
-            style: {
-                backgroundColor: "#417690"
-            }
+            flex: 1
         },
 
-        /*
-        {
-            xtype: "container",
-            html: "Anonymous",
-            id: "user_display_name",
-            style: {
-                backgroundColor: "#417690",
-                color: "#f4f379",
-                padding: "2 2 2 2"
-            }
-        },*/
         Ext.create("Ext.Button", {
             id: "user_display_name",
             text: "Anonymous",
             scale: "small",
             menu: [
+                {
+                    id: "header_test",
+                    text: "Launch languages"
+                },
                 {
                     id: "header_menu_toggle",
                     text: "Collapse all panels"
@@ -96,18 +71,9 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         
         {
             id: "search",
-            xtype: "container",
-            style: {
-                backgroundColor: "#417690",
-                padding: "2 2 2 2"
-            },
-            items: [
-                {
-                    xtype: "textfield",
-                    emptyText: "Search...",
-                    inputType: "search"
-                }
-            ]
+            xtype: "textfield",
+            emptyText: "Search...",
+            inputType: "search"
         }
     ],
     // Change displayed username
