@@ -24,6 +24,11 @@ Ext.define("NOC.main.desktop.Controller", {
             },
             "#header_menu_logout": {
                 click: this.do_logout
+            },
+            "#header_test": {
+                click: function() {
+                    this.launch_tab("NOC.main.language.Application", "Languages", {});
+                }
             }
             // Search entered
         });
@@ -129,8 +134,11 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     // Update menu
     update_menu: function() {
+        var store = Ext.getStore("NOC.main.desktop.NavTreeStore");
+        if (store.isLoading())
+            return;
         console.log("Update menu");
-        Ext.getStore("NOC.main.desktop.NavTreeStore").load();
+        store.load();
     },
     // Search text entered
     on_search: function() {
