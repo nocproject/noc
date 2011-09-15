@@ -12,33 +12,37 @@ if not config.sections():
 DEBUG = config.get("main","debug")
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS=[]
-for a in config.get("main","admin_emails").split(","):
-    a=a.strip()
+## Set up admins
+## @todo: remove
+ADMINS = []
+for a in config.get("main", "admin_emails").split(","):
+    a = a.strip()
     if not a:
         continue
-    n,d=a.split("@")
-    ADMINS.append((n,a))
+    n, d = a.split("@")
+    ADMINS.append((n, a))
 
 MANAGERS = ADMINS
 
-SERVER_EMAIL      = config.get("main","server_email")
+SERVER_EMAIL      = config.get("main", "server_email")
 
 ## RDBMS settings
-DATABASE_ENGINE   = config.get("database","engine")
+DATABASE_ENGINE   = config.get("database", "engine")
 DATABASES={
     "default" : {
-        "ENGINE"   : "django.db.backends." + config.get("database","engine"),
+        "ENGINE"   : "django.db.backends." + config.get("database", "engine"),
         "NAME"     : config.get("database","name"),
         "USER"     : config.get("database","user"),
         "PASSWORD" : config.get("database","password"),
         "HOST"     : config.get("database","host"),
         "PORT"     : config.get("database","port"),
+        "TEST_NAME": config.get("database", "name") + "_test"
     }
 }
 DATABASE_SUPPORTS_TRANSACTIONS = True
 ## NoSQL settings
 NOSQL_DATABASE_NAME = config.get("nosql_database", "name")
+NOSQL_DATABASE_TEST_NAME = NOSQL_DATABASE_NAME + "_test"
 NOSQL_DATABASE_USER = config.get("nosql_database", "user")
 NOSQL_DATABASE_PASSWORD = config.get("nosql_database", "password")
 NOSQL_DATABASE_HOST = config.get("nosql_database", "host")
@@ -69,7 +73,7 @@ if AUTH_METHOD=="ldap":
     AUTH_LDAP_REQUIRED_FILTER = config.get("authentication","ldap_required_filter")
     AUTH_LDAP_SUPERUSER_GROUP = config.get("authentication","ldap_superuser_group")
     AUTH_LDAP_SUPERUSER_FILTER= config.get("authentication","ldap_superuser_filter")
-elif AUTH_METHOD=="pyrule":
+elif AUTH_METHOD == "pyrule":
     # Process pyRule-specific settings
     AUTH_PYRULE_AUTHENTICATION = config.get("authentication","pyrule_authentication")
 
@@ -192,8 +196,9 @@ AUTH_PROFILE_MODULE = "main.UserProfile"
 ## Determine WEB process
 ##
 IS_WEB = ((len(sys.argv) >= 2 and sys.argv[0] == "manage.py" and
-          sys.argv[1] in ["runserver","test","sync-perm"])
+          sys.argv[1] in ["runserver", "test", "sync-perm"])
     or sys.argv[0].endswith("noc-fcgi.py"))
+IS_TEST = False  # Set by test_runner
 ##
 ## Coverage wrapper
 ##
@@ -202,7 +207,7 @@ COVERAGE_REPORT_PATH="local/coverage_report"
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True
 ##
-LOGIN_URL="/main/auth/login/"
+LOGIN_URL="/main/auth/login/"  # @todo: remove
 ## Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS=False
 ## Message application setup
