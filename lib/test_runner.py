@@ -5,16 +5,26 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import os,unittest,sys,logging
+
+## Python modules
+import os
+import unittest
+import sys
+import logging
+import types
+## Django modules
+from django.utils import unittest  # unittest2 backport
 from django.test import simple
 from django.conf import settings
 from django.test.utils import setup_test_environment, teardown_test_environment
-from coverage import coverage as Coverage
 from django.test import _doctest as doctest
 from django.test.testcases import OutputChecker, DocTestRunner, TestCase
 from django.core import management
+## Third-party modules
+from coverage import coverage as Coverage
 from south.logger import get_logger
-import types,unittest
+## NOC modules
+
 ##
 ## Test module by importing it
 ##
@@ -136,27 +146,24 @@ def get_tests(test_labels):
 ##
 def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=True,reuse_db=False):
     # Set up logger
-    if verbosity>1:
-        get_logger().setLevel(logging.DEBUG)
-    else:
-        get_logger().setLevel(logging.INFO)
+    get_logger().setLevel(logging.DEBUG if verbosity > 1 else logging.INFO)
     # Mark testing environment
-    settings.NOC_TEST=True
-    suite=unittest.TestSuite()
+    settings.IS_TEST = True
+    suite = unittest.TestSuite()
     # Scan for tests
     print "Scanning for tests ...",
-    modules,tsuite=get_tests(test_labels)
-    test_cases=len(modules)+len(tsuite)
-    print "... %d test module(s) found"%test_cases
+    modules, tsuite = get_tests(test_labels)
+    test_cases = len(modules) + len(tsuite)
+    print "... %d test module(s) found" % test_cases
     if not test_cases:
         print "... no tests found"
         return 1
     print "Preparing test cases ..."
     if coverage:
         # Initialize Coverage
-        coverage=Coverage()
-        coverage.exclude(r"^\s*$")                # Exclude empty lines
-        coverage.exclude(r"^\s*#.*$")             # Exclude comment blocks
+        coverage = Coverage()
+        coverage.exclude(r"^\s*$")  # Exclude empty lines
+        coverage.exclude(r"^\s*#.*$")  # Exclude comment blocks
         coverage.exclude(r"^\s*(import|from)\s")  # Exclude import statements
         coverage.start()
     # Add docstrings and module load tests
@@ -191,16 +198,20 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
     print "Testing ..."
     setup_test_environment()
     settings.DEBUG = False
-    from django.db import connection,connections
-    old_names=[ connections[alias].settings_dict["NAME"] for alias in connections ]
+    from django.db import connection, connections
+    old_names = [connections[alias].settings_dict["NAME"] for alias in connections ]
     try:
         connection.cursor() # Raises operational error when no database exists
-        has_db=True
+        has_db = True
     except:
-        has_db=False
+        has_db = False
     # Create database when necessary
     if not reuse_db or not has_db:
-        connection.creation.create_test_db(verbosity, autoclobber=not interactive)
+        # PostgreSQL
+        connection.creation.create_test_db(verbosity,
+                                           autoclobber=not interactive)
+        # MongoDB
+        nosql.create_test_db(verbosity, autoclobber=not interactive)
         # Call sync-perm to install permissions
         management.call_command("sync-perm")
         management.call_command("sync-pyrules")
@@ -208,8 +219,11 @@ def run_tests(test_labels,verbosity=1,interactive=True,extra_tests=[],coverage=T
     result = unittest.TextTestRunner(verbosity=verbosity).run(suite)
     # Drop database when necessary
     if not reuse_db:
+        # PostgreSQL
         for name in old_names:
             connection.creation.destroy_test_db(name, verbosity)
+        # MongoDB
+        nosql.destroy_test_db(verbosity)
     teardown_test_environment()
 
     test_results=len(result.failures) + len(result.errors)

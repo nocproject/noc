@@ -14,25 +14,31 @@ from mongoengine.base import *
 from mongoengine import *
 import mongoengine
 ## NOC modules
-import noc.settings
+from noc import settings
 
 ##
 ## Create database connection
 ## @todo: Handle tests
+if settings.IS_TEST:
+    db_name = settings.NOSQL_DATABASE_TEST_NAME
+else:
+    db_name = settings.NOSQL_DATABASE_NAME
 connection_args = {
-    "db": noc.settings.NOSQL_DATABASE_NAME,
-    "username": noc.settings.NOSQL_DATABASE_USER,
-    "password": noc.settings.NOSQL_DATABASE_PASSWORD
+    "db": db_name,
+    "username": settings.NOSQL_DATABASE_USER,
+    "password": settings.NOSQL_DATABASE_PASSWORD
 }
-if noc.settings.NOSQL_DATABASE_HOST:
-    connection_args["host"] = noc.settings.NOSQL_DATABASE_HOST
-if noc.settings.NOSQL_DATABASE_PORT:
-    connection_args["port"] = noc.settings.NOSQL_DATABASE_PORT
-connect(**connection_args)
+if settings.NOSQL_DATABASE_HOST:
+    connection_args["host"] = settings.NOSQL_DATABASE_HOST
+if settings.NOSQL_DATABASE_PORT:
+    connection_args["port"] = settings.NOSQL_DATABASE_PORT
+
+if not settings.IS_TEST:
+    connect(**connection_args)
+
 ## Shortcut to ObjectId
 ObjectId = pymongo.objectid.ObjectId
 RECURSIVE_REFERENCE_CONSTANT = "self"
-
 
 def get_connection():
     return mongoengine.connection._get_connection()
@@ -54,7 +60,7 @@ class PlainReferenceField(BaseField):
                                       "must be a document class or a string")
         self.document_type_obj = document_type
         super(PlainReferenceField, self).__init__(*args, **kwargs)
-    
+
     @property
     def document_type(self):
         if isinstance(self.document_type_obj, basestring):
@@ -63,7 +69,7 @@ class PlainReferenceField(BaseField):
             else:
                 self.document_type_obj = get_document(self.document_type_obj)
         return self.document_type_obj
-    
+
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
         if instance is None:
@@ -109,7 +115,7 @@ class ForeignKeyField(BaseField):
                                   "must be a Model class")
         self.document_type = model
         super(ForeignKeyField, self).__init__(**kwargs)
-    
+
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
         if instance is None:
@@ -139,12 +145,14 @@ class ForeignKeyField(BaseField):
 
 ESC1 = "__"  # Escape for '.'
 ESC2 = "^^"  # Escape for '$'
+
+
 class RawDictField(DictField):
     def validate(self, value):
         if not isinstance(value, dict):
             raise ValidationError("Only dictionaries may be used in a "
                                   "RawDictField")
-    
+
     def to_python(self, value):
         return dict([(k.replace(ESC1, ".").replace(ESC2, "$").replace(u"\uff0e", "."), v)
             for k, v in value.items()])
@@ -172,3 +180,10 @@ class Sequence(object):
             new=True
         )
         return self.format % s["value"]
+
+
+def create_test_db(verbosity, autoclobber):
+    connect(**connection_args)
+
+def destroy_test_db(verbosity):
+    get_connection().drop_database(settings.NOSQL_DATABASE_TEST_NAME)  
