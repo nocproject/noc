@@ -36,7 +36,7 @@ DATABASES={
         "PASSWORD" : config.get("database","password"),
         "HOST"     : config.get("database","host"),
         "PORT"     : config.get("database","port"),
-        "TEST_NAME": config.get("database", "name") + "_test"
+        "TEST_NAME": "test_" + config.get("database", "name")
     }
 }
 DATABASE_SUPPORTS_TRANSACTIONS = True
@@ -198,7 +198,7 @@ AUTH_PROFILE_MODULE = "main.UserProfile"
 IS_WEB = ((len(sys.argv) >= 2 and sys.argv[0] == "manage.py" and
           sys.argv[1] in ["runserver", "test", "sync-perm"])
     or sys.argv[0].endswith("noc-fcgi.py"))
-IS_TEST = False  # Set by test_runner
+IS_TEST = len(sys.argv) >= 2 and sys.argv[:2] == ["manage.py", "test"]
 ##
 ## Coverage wrapper
 ##
