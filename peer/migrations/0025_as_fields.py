@@ -5,11 +5,14 @@ from django.db import models
 from noc.peer.models import *
 import re
 
-rx_remarks=re.compile(r"^remarks:\s*")
 
 class Migration:
-    
+    depends_on=[
+        ("ip","0004_default_vrf")
+    ]
     def forwards(self):
+        rx_remarks=re.compile(r"^remarks:\s*")
+
         RIR = db.mock_model(model_name='RIR', db_table='peer_rir', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         AS = db.mock_model(model_name='AS', db_table='peer_as', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         Person = db.mock_model(model_name='Person', db_table='peer_person', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
