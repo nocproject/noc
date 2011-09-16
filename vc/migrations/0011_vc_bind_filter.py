@@ -5,6 +5,9 @@ from django.db import models
 from noc.vc.models import *
 
 class Migration:
+    depends_on = [
+        ("ip", "0001_initial")
+    ]
     def forwards(self):
         # Adding model 'VCBindFilter'
         VCDomain=db.mock_model(model_name="VCDomain",db_table="vc_vcdomain")

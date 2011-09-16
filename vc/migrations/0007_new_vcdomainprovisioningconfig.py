@@ -5,7 +5,10 @@ from django.db import models
 from noc.vc.models import *
 
 class Migration:
-    
+    depends_on = [
+        ("main", "0013_notifications")
+    ]
+
     def forwards(self):
         # Get data
         pc={}
