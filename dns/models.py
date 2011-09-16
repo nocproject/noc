@@ -548,7 +548,7 @@ class DNSZoneRecordType(models.Model):
         verbose_name_plural = _("DNS Zone Record Types")
         ordering = ["type"]
     type = models.CharField(_("Type"), max_length=16, unique=True)
-    is_visible = models.BooleanField(_("Is Visible?"), default=True)
+    is_active = models.BooleanField(_("Is Active?"), default=True)
     validation = models.CharField(_("Validation"), max_length=256,
         blank=True, null=True,
         validators = [check_re],
