@@ -202,7 +202,6 @@ IS_TEST = len(sys.argv) >= 2 and sys.argv[:2] == ["manage.py", "test"]
 ##
 ## Coverage wrapper
 ##
-TEST_RUNNER="noc.lib.test_runner.run_tests"
 COVERAGE_REPORT_PATH="local/coverage_report"
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True

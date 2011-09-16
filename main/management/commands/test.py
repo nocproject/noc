@@ -14,6 +14,8 @@ from django.core.management.base import BaseCommand
 from django.core import management
 ## Third-party modules
 from south.management.commands import MigrateAndSyncCommand
+## NOC modules
+from noc.lib.test_runner import TestRunner
 
 
 class Command(BaseCommand):
@@ -35,13 +37,11 @@ class Command(BaseCommand):
 
     def handle(self, *test_labels, **options):
         from django.conf import settings
-        from django.test.utils import get_runner
 
         verbosity = int(options.get("verbosity", 1))
         interactive = options.get("interactive", True)
         coverage = options.get("coverage", True)
         reuse_db = options.get("reuse_db", False)
-        test_runner = get_runner(settings)
 
         if (len(test_labels) == 1 and
             test_labels[0].startswith("noc.sa.profiles")):
@@ -50,8 +50,8 @@ class Command(BaseCommand):
         management.get_commands()
         management._commands["syncdb"] = MigrateAndSyncCommand()
         # Run tests
-        failures = test_runner(test_labels=test_labels, verbosity=verbosity,
-                               interactive=interactive,
-                               coverage=coverage, reuse_db=reuse_db)
+        failures = TestRunner(test_labels=test_labels, verbosity=verbosity,
+                              interactive=interactive,
+                              coverage=coverage, reuse_db=reuse_db).run()
         if failures:
             sys.exit(1 if failures else 0)
