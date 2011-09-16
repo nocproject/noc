@@ -1370,7 +1370,7 @@ class Checkpoint(models.Model):
 ##
 ## Install triggers
 ##
-if settings.IS_WEB:
+if settings.IS_WEB and not settings.IS_TEST:
     DBTrigger.refresh_cache()  # Load existing triggers
     # Trigger cache syncronization
     post_save.connect(DBTrigger.refresh_cache, sender=DBTrigger)
