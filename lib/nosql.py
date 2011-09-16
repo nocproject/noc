@@ -33,12 +33,13 @@ if settings.NOSQL_DATABASE_HOST:
 if settings.NOSQL_DATABASE_PORT:
     connection_args["port"] = settings.NOSQL_DATABASE_PORT
 
-if not settings.IS_TEST:
-    connect(**connection_args)
+#if not settings.IS_TEST:
+connect(**connection_args)
 
 ## Shortcut to ObjectId
 ObjectId = pymongo.objectid.ObjectId
 RECURSIVE_REFERENCE_CONSTANT = "self"
+
 
 def get_connection():
     return mongoengine.connection._get_connection()
