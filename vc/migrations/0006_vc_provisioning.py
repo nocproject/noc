@@ -5,6 +5,9 @@ from django.db import models
 from noc.vc.models import *
 
 class Migration:
+    depends_on = [
+        ("sa", "0015_managedobjectselector")
+    ]
     
     def forwards(self):
         VCDomain = db.mock_model(model_name='VCDomain', db_table='vc_vcdomain', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
