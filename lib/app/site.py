@@ -86,7 +86,7 @@ class Site(object):
         self.menu_index = {}  # id -> menu item
         self.reports = []  # app_id -> title
         self.views = ProxyNode()  # Named views proxy
-        self.testing_mode = hasattr(settings, "NOC_TEST")
+        self.testing_mode = hasattr(settings, "IS_TEST")
 
     @property
     def urls(self):
@@ -171,6 +171,7 @@ class Site(object):
                 raise
 
         from access import PermissionDenied
+        return inner
         # Return actual handler
         if self.testing_mode:
             return inner_test
@@ -214,9 +215,13 @@ class Site(object):
         root["children"] += [r]
 
     def add_app_menu(self, app):
+        if not self.menu:
+            # Started without autodiscover
+            # Add module menu
+            self.add_module_menu(app.get_app_id().split(".")[0])
+        root = self.menu[-1]
         path = [app.module]
         parts = [x.strip() for x in unicode(app.menu).split("|")]
-        root = self.menu[-1]
         while len(parts) > 1:
             p = parts.pop(0)
             path += [p]
@@ -298,17 +303,19 @@ class Site(object):
             hasattr(app, "menu") and app.menu):
             self.add_app_menu(app)
 
+    def add_module_menu(self, m):
+        mod_name = __import__(m, {}, {}, ["MODULE_NAME"]).MODULE_NAME
+        r = {"title": mod_name, "children": []}
+        self.set_menu_id(r, [m])
+        self.menu += [r]
+
     def autodiscover(self):
         """
         Auto-load and initialize all application classes
         """
         for app in [a for a in INSTALLED_APPS if a.startswith("noc.")]:
             m = app.split(".")[1]
-            # Get module name
-            mod_name = __import__(app, {}, {}, ["MODULE_NAME"]).MODULE_NAME
-            r = {"title": mod_name, "children": []}
-            self.set_menu_id(r, [m])
-            self.menu += [r]
+            self.add_module_menu(app)
             # Initialize application
             for f in glob.glob("%s/apps/*/views.py" % m):
                 d = os.path.split(f)[0]
