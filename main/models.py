@@ -222,8 +222,11 @@ class Permission(models.Model):
         current = cls.get_user_permissions(user)
         # Add new permissions
         for p in perms - current:
-            Permission.objects.get(name=p).users.add(user)
-        # Revoke permissions
+            try:
+                Permission.objects.get(name=p).users.add(user)
+            except Permission.DoesNotExist:
+                raise Permission.DoesNotExist("Permission '%s' does not exist" % p)
+        # Revoke permission
         for p in current - perms:
             Permission.objects.get(name=p).users.remove(user)
 
@@ -1005,38 +1008,7 @@ class UserProfileContact(models.Model):
     time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
     notification_method=models.CharField("Method",max_length=16,choices=USER_NOTIFICATION_METHOD_CHOICES)
     params=models.CharField("Params",max_length=256)
-##
-## Quarantine for automatical changes
-##
-class ChangesQuarantine(models.Model):
-    class Meta:
-        verbose_name="Changes Quarantine"
-        verbose_name_plural="Changes Quarantine"
-    # Quarantine types. name -> view_url
-    quarantine_types={
-    }
-    #
-    timestamp=models.DateTimeField("Timestamp",auto_now_add=True)
-    changes_type=models.CharField("Type",choices=[(x,x) for x in quarantine_types],max_length=64)
-    subject=models.CharField("Subject",max_length=256)
-    data=PickledField("Data")
-    def __unicode__(self):
-        return u"%s: %s: %s"%(self.timestamp,self.changes_type,self.subject)
-##
-## Processing rules for changes quarantine
-##
-class ChangesQuarantineRule(models.Model):
-    class Meta:
-        verbose_name="Changes Quarantine Rule"
-        verbose_name="Changes Quarantine Rules"
-    name=models.CharField("Name",max_length=64,unique=True)
-    is_active=models.BooleanField("Is Active",default=True)
-    changes_type=models.CharField("Type",choices=[(x,x) for x in ChangesQuarantine.quarantine_types],max_length=64)
-    subject_re=models.CharField("Subject",max_length=256)
-    action=models.CharField("Action",max_length=1,choices=[("I","Ignore"),("A","Accept"),("Q","Quarantine")])
-    description=models.TextField("Description",null=True,blank=True)
-    def __unicode__(self):
-        return self.name
+
 ##
 ## Triggers
 ##
