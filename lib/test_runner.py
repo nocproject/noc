@@ -14,7 +14,6 @@ import logging
 import types
 ## Django modules
 from django.utils import unittest  # unittest2 backport
-from django.test import simple
 from django.conf import settings
 from django.test.utils import setup_test_environment, teardown_test_environment
 from django.test import _doctest as doctest
@@ -36,6 +35,9 @@ class ImportTestCase(unittest.TestCase):
     def __init__(self, module):
         super(ImportTestCase, self).__init__()
         self.module = module
+
+    def __str__(self):
+        return "<ImportTestCase: '%s'>" % self.module
 
     def runTest(self):
         __import__(self.module, {}, {}, "*")
@@ -83,7 +85,7 @@ class DatabaseContext(object):
         self.autoclobber = not interactive
         self.verbosity = verbosity
         self.dbname = connection.settings_dict["NAME"]
-        self.test_dbname = connection.creation._get_test_db_name()[0]
+        self.test_dbname = connection.creation._get_test_db_name()
         connection.creation.prepare_for_test_db_ddl = self._fixup
 
     def info(self, message):
@@ -342,10 +344,10 @@ class TestRunner(object):
                 self.info("No modules to test. Exiting")
                 return 0
             # Run test suite in database and coverage context
-            with self.databases(reuse=self.reuse_db):
-                with self.coverage(enable=self.enable_coverage):
+            with self.coverage(enable=self.enable_coverage):
+                with self.databases(reuse=self.reuse_db):
                     # Initialize database: Wrap as tests
-                    #management.call_command("sync-perm")
+                    management.call_command("sync-perm")
                     #management.call_command("sync-pyrules")
                     #management.call_command("sync-collections")
                     # Add as tests
