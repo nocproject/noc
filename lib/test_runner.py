@@ -320,9 +320,8 @@ class TestRunner(object):
                 obj = getattr(mo, name)
                 if (isinstance(obj, (type, types.ClassType)) and
                     issubclass(obj, unittest.TestCase)):
-                    if obj.__module__ == "noc.lib.test":
-                        continue
-                    t += [unittest.defaultTestLoader.loadTestsFromTestCase(obj)]
+                    if obj.__module__ == m:
+                        t += [unittest.defaultTestLoader.loadTestsFromTestCase(obj)]
             suite.addTest(unittest.TestSuite(t))
         self.info("Test suite build: %d test cases are found" % suite.countTestCases())
         return suite
