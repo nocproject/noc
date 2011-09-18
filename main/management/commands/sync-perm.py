@@ -17,9 +17,11 @@ class Command(BaseCommand):
     """
     ./noc sync-perm
     """
-    help = "Syncronize permissions"
+    help = "Synchronize permissions"
 
     def handle(self, *args, **options):
+        if not site.apps:
+            site.autodiscover()  # Initialize applications to get permissions
         new_perms = set()
         for app in site.apps.values():
             new_perms = new_perms.union(app.get_permissions())
