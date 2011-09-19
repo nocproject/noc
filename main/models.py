@@ -110,6 +110,7 @@ def audit_trail_save(sender, instance, **kwargs):
                              for f in sender._meta.fields])
     AuditTrail.log(sender, instance, operation, message)
 
+
 def audit_trail_delete(sender, instance, **kwargs):
     """
     Audit trail for DELETE operation
@@ -133,6 +134,7 @@ if settings.IS_WEB:
 ## Initialize download registry
 ##
 downloader_registry.register_all()
+
 
 class AuditTrail(models.Model):
     """
@@ -172,6 +174,7 @@ class AuditTrail(models.Model):
             subject=subject,
             body=message
         ).save()
+
 
 class Permission(models.Model):
     """
@@ -255,6 +258,7 @@ class Permission(models.Model):
         for p in current - perms:
             Permission.objects.get(name=p).groups.remove(group)
 
+
 class Style(models.Model):
     """
     CSS Style
@@ -305,6 +309,7 @@ class Style(models.Model):
         """
         return u".%s { %s }\n" % (self.css_class_name, self.style)
 
+
 class Language(models.Model):
     """
     Language
@@ -320,6 +325,7 @@ class Language(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class DatabaseStorage(models.Model):
     """
@@ -340,11 +346,11 @@ class DatabaseStorage(models.Model):
     @classmethod
     def dbs_options(cls):
         return {
-            "db_table"    : DatabaseStorage._meta.db_table,
-            "name_field"  : "name",
-            "data_field"  : "data",
-            "mtime_field" : "mtime",
-            "size_field"  : "size",
+            "db_table": DatabaseStorage._meta.db_table,
+            "name_field": "name",
+            "data_field": "data",
+            "mtime_field": "mtime",
+            "size_field": "size",
         }
 
     @classmethod
@@ -357,6 +363,7 @@ class DatabaseStorage(models.Model):
 ## Default database storage
 ##
 database_storage = DatabaseStorage.get_dbs()
+
 
 class MIMEType(models.Model):
     """
@@ -383,10 +390,12 @@ class MIMEType(models.Model):
         except MIMEType.DoesNotExist:
             return "application/octet-stream"
 
+
 class NoPyRuleException(Exception):
     pass
 
 rx_coding = re.compile(r"^#\s*-\*-\s*coding:\s*\S+\s*-\*-\s*$", re.MULTILINE)
+
 
 class PyRule(models.Model):
     class Meta:
@@ -408,7 +417,7 @@ class PyRule(models.Model):
     NoPyRule = NoPyRuleException
 
     alters_data = True   # Tell Django's template engine to not call PyRule
-    
+
     # Use special filter for interface
     interface.existing_choices_filter = True
 
@@ -497,6 +506,7 @@ class PyRule(models.Model):
 ## Search patters
 ##
 rx_mac_3_octets = re.compile("^([0-9A-F]{6}|[0-9A-F]{12})$", re.IGNORECASE)
+
 
 class RefBook(models.Model):
     """
@@ -614,6 +624,7 @@ class RefBook(models.Model):
         """
         return self.refbookfield_set.order_by("order")
 
+
 class RefBookField(models.Model):
     """
     Refbook fields
@@ -638,53 +649,54 @@ class RefBookField(models.Model):
                 ("mac_3_octets_upper", "3 Octets of the MAC")])
 
     def __unicode__(self):
-        return u"%s: %s"%(self.ref_book, self.name)
+        return u"%s: %s" % (self.ref_book, self.name)
 
     # Return **kwargs for extra
-    def get_extra(self,search):
+    def get_extra(self, search):
         if self.search_method:
-            return getattr(self,"search_%s" % self.search_method)(search)
+            return getattr(self, "search_%s" % self.search_method)(search)
         else:
             return {}
 
-    def search_string(self,search):
+    def search_string(self, search):
         """
         string search method
         """
         return {
-            "where" : ["value[%d] ILIKE %%s" % self.order],
+            "where": ["value[%d] ILIKE %%s" % self.order],
             "params": [search]
         }
 
-    def search_substring(self,search):
+    def search_substring(self, search):
         """
         substring search method
         """
         return {
-            "where" : ["value[%d] ILIKE %%s" % self.order],
+            "where": ["value[%d] ILIKE %%s" % self.order],
             "params": ["%" + search + "%"]
         }
 
-    def search_starting(self,search):
+    def search_starting(self, search):
         """
         starting search method
         """
         return {
-            "where" : ["value[%d] ILIKE %%s" % self.order],
+            "where": ["value[%d] ILIKE %%s" % self.order],
             "params": [search + "%"]
         }
 
-    def search_mac_3_octets_upper(self,search):
+    def search_mac_3_octets_upper(self, search):
         """
         Match 3 first octets of the MAC address
         """
-        mac=search.replace(":", "").replace("-", "").replace(".", "")
+        mac = search.replace(":", "").replace("-", "").replace(".", "")
         if not rx_mac_3_octets.match(mac):
             return {}
         return {
-            "where" : ["value[%d]=%%s" % self.order],
+            "where": ["value[%d]=%%s" % self.order],
             "params": [mac]
         }
+
 
 class RBDManader(models.Manager):
     """
@@ -693,6 +705,7 @@ class RBDManader(models.Manager):
     # Order by first field
     def get_query_set(self):
         return super(RBDManader, self).get_query_set().extra(order_by=["main_refbookdata.value[1]"])
+
 
 class RefBookData(models.Model):
     """
@@ -709,70 +722,83 @@ class RefBookData(models.Model):
 
     def __unicode__(self):
         return u"%s: %s" % (self.ref_book, self.value)
-    ##
-    ## Returns list of pairs (field,data)
-    ##
-    def _items(self):
-        return zip(self.ref_book.fields,self.value)
-    items=property(_items)
-##
-## Time Patterns
-##
+
+    @property
+    def items(self):
+        """
+        Returns list of pairs (field,data)
+        """
+        return zip(self.ref_book.fields, self.value)
+
+
 class TimePattern(models.Model):
+    """
+    Time Patterns
+    """
     class Meta:
-        verbose_name="Time Pattern"
-        verbose_name_plural="Time Patterns"
-    name=models.CharField("Name",max_length=64,unique=True)
-    description=models.TextField("Description",null=True,blank=True)
+        verbose_name = "Time Pattern"
+        verbose_name_plural = "Time Patterns"
+
+    name = models.CharField("Name", max_length=64, unique=True)
+    description = models.TextField("Description", null=True, blank=True)
 
     def __unicode__(self):
         return self.name
-    ##
-    ## Returns associated Time Pattern object
-    ##
-    def _time_pattern(self):
+
+    @property
+    def time_pattern(self):
+        """
+        Returns associated Time Pattern object
+        """
         return TP([t.term for t in self.timepatternterm_set.all()])
-    time_pattern=property(_time_pattern)
-    ##
-    ## Matches DateTime objects against time pattern
-    ##
-    def match(self,d):
+
+    def match(self, d):
+        """
+        Matches DateTime objects against time pattern
+        """
         return self.time_pattern.match(d)
-##
-## Time Pattern Terms
-##
+
+
 class TimePatternTerm(models.Model):
+    """
+    Time pattern terms
+    """
     class Meta:
-        verbose_name="Time Pattern Term"
-        verbose_name_plural="Time Pattern Terms"
-        unique_together=[("time_pattern","term")]
-    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
-    term=models.CharField("Term",max_length=256)
+        verbose_name = "Time Pattern Term"
+        verbose_name_plural = "Time Pattern Terms"
+        unique_together = [("time_pattern", "term")]
+
+    time_pattern = models.ForeignKey(TimePattern, verbose_name="Time Pattern")
+    term = models.CharField("Term", max_length=256)
 
     def __unicode__(self):
-        return u"%s: %s"%(self.time_pattern.name,self.term)
-    ##
-    ## Checks Time Pattern syntax. Raises SyntaxError in case of error
-    ##
+        return u"%s: %s" % (self.time_pattern.name, self.term)
+
     @classmethod
-    def check_syntax(cls,term):
+    def check_syntax(cls, term):
+        """
+        Checks Time Pattern syntax. Raises SyntaxError in case of error
+        """
         TP(term)
-    ##
-    ## Check syntax before save
-    ##
-    def save(self,*args):
+
+    def save(self, *args):
+        """
+        Check syntax before save
+        """
         TimePatternTerm.check_syntax(self.term)
-        super(TimePatternTerm,self).save(*args)
-##
-## Notification Group
-##
+        super(TimePatternTerm, self).save(*args)
+
+
 class NotificationGroup(models.Model):
+    """
+    Notification Groups
+    """
     class Meta:
-        verbose_name="Notification Group"
-        verbose_name_plural="Notification Groups"
-        ordering=[("name")]
-    name=models.CharField("Name",max_length=64,unique=True)
-    description=models.TextField("Description",null=True,blank=True)
+        verbose_name = "Notification Group"
+        verbose_name_plural = "Notification Groups"
+        ordering = [("name")]
+    name = models.CharField("Name", max_length=64, unique=True)
+    description = models.TextField("Description", null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -833,7 +859,7 @@ class NotificationGroup(models.Model):
     def notify(self, subject, body, link=None):
         """
         Send message to active members
-        """            
+        """
         if type(subject) != types.DictType:
             subject = {settings.LANGUAGE_CODE: subject}
         if type(body) != types.DictType:
@@ -846,12 +872,13 @@ class NotificationGroup(models.Model):
                 body=self.get_effective_message(body, lang),
                 link=link
             ).save()
-    ##
-    ## Send notification to a list of groups
-    ## Prevent duplicated messages
-    ##
+
     @classmethod
     def group_notify(cls, groups, subject, body, link=None):
+        """
+        Send notification to a list of groups
+        Prevent duplicated messages
+        """
         if type(subject) != types.DictType:
             subject = {settings.LANGUAGE_CODE: subject}
         if type(body) != types.DictType:
@@ -878,98 +905,125 @@ class NotificationGroup(models.Model):
 ##
 class NotificationGroupUser(models.Model):
     class Meta:
-        verbose_name="Notification Group User"
-        verbose_name_plural="Notification Group Users"
-        unique_together=[("notification_group","time_pattern","user")]
-    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group")
-    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
-    user=models.ForeignKey(User,verbose_name="User")
+        verbose_name = "Notification Group User"
+        verbose_name_plural = "Notification Group Users"
+        unique_together = [("notification_group", "time_pattern", "user")]
+
+    notification_group = models.ForeignKey(NotificationGroup,
+                                           verbose_name="Notification Group")
+    time_pattern = models.ForeignKey(TimePattern, verbose_name="Time Pattern")
+    user = models.ForeignKey(User, verbose_name="User")
 
     def __unicode__(self):
-        return u"%s: %s: %s"%(self.notification_group.name,self.time_pattern.name,self.user.username)
+        return u"%s: %s: %s" % (self.notification_group.name,
+                                self.time_pattern.name, self.user.username)
+
 ##
 ## Other Notification Group Items
 ##
-NOTIFICATION_METHOD_CHOICES=[("mail","Email"),("file","File")]
-USER_NOTIFICATION_METHOD_CHOICES=[("mail","Email")]
+NOTIFICATION_METHOD_CHOICES = [("mail", "Email"), ("file", "File")]
+USER_NOTIFICATION_METHOD_CHOICES = [("mail", "Email")]
+
 
 class NotificationGroupOther(models.Model):
     class Meta:
-        verbose_name="Notification Group Other"
-        verbose_name_plural="Notification Group Others"
-        unique_together=[("notification_group","time_pattern","notification_method","params")]
-    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group")
-    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
-    notification_method=models.CharField("Method",max_length=16,choices=NOTIFICATION_METHOD_CHOICES)
-    params=models.CharField("Params",max_length=256)
+        verbose_name = "Notification Group Other"
+        verbose_name_plural = "Notification Group Others"
+        unique_together = [("notification_group", "time_pattern",
+                            "notification_method", "params")]
+
+    notification_group = models.ForeignKey(NotificationGroup,
+                                           verbose_name="Notification Group")
+    time_pattern = models.ForeignKey(TimePattern, verbose_name="Time Pattern")
+    notification_method = models.CharField("Method", max_length=16,
+                                           choices=NOTIFICATION_METHOD_CHOICES)
+    params = models.CharField("Params", max_length=256)
 
     def __unicode__(self):
-        return u"%s: %s: %s: %s"%(self.notification_group.name,self.time_pattern.name,self.notification_method,self.params)
-##
-##
-##
+        return u"%s: %s: %s: %s" % (self.notification_group.name,
+                                    self.time_pattern.name,
+                                    self.notification_method, self.params)
+
+
 class Notification(models.Model):
     class Meta:
-        verbose_name="Notification"
-        verbose_name_plural="Notifications"
-    timestamp=models.DateTimeField("Timestamp",auto_now=True,auto_now_add=True)
-    notification_method=models.CharField("Method",max_length=16,choices=NOTIFICATION_METHOD_CHOICES)
-    notification_params=models.CharField("Params",max_length=256)
-    subject=models.CharField("Subject",max_length=256)
-    body=models.TextField("Body")
-    link=models.CharField("Link",max_length=256,null=True,blank=True)
-    next_try=models.DateTimeField("Next Try",null=True,blank=True)
-    actual_till=models.DateTimeField("Actual Till",null=True,blank=True)
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
+
+    timestamp = models.DateTimeField("Timestamp", auto_now=True,
+                                     auto_now_add=True)
+    notification_method = models.CharField("Method", max_length=16,
+                                           choices=NOTIFICATION_METHOD_CHOICES)
+    notification_params = models.CharField("Params", max_length=256)
+    subject = models.CharField("Subject", max_length=256)
+    body = models.TextField("Body")
+    link = models.CharField("Link", max_length=256, null=True, blank=True)
+    next_try = models.DateTimeField("Next Try", null=True, blank=True)
+    actual_till = models.DateTimeField("Actual Till", null=True, blank=True)
+
     def __unicode__(self):
         return self.subject
-##
-## System Notification
-##
+
+
 class SystemNotification(models.Model):
+    """
+    System Notifications
+    """
     class Meta:
-        verbose_name="System Notification"
-        verbose_name_plural="System Notifications"
-    name=models.CharField("Name",max_length=64,unique=True)
-    notification_group=models.ForeignKey(NotificationGroup,verbose_name="Notification Group",null=True,blank=True)
+        verbose_name = "System Notification"
+        verbose_name_plural = "System Notifications"
+
+    name = models.CharField("Name", max_length=64, unique=True)
+    notification_group = models.ForeignKey(NotificationGroup,
+                                           verbose_name="Notification Group",
+                                           null=True, blank=True)
+
     def __unicode__(self):
         return self.name
+
     @classmethod
-    def notify(cls,name,subject,body,link=None):
+    def notify(cls, name, subject, body, link=None):
         try:
-            sn=SystemNotification.objects.get(name=name)
-        except SystemNotification.DoesNotExist: # Ignore undefined notifications
+            sn = SystemNotification.objects.get(name=name)
+        except SystemNotification.DoesNotExist:  # Ignore undefined notifications
             return
         if sn.notification_group:
-            sn.notification_group.notify(subject=subject,body=body,link=link)
-##
-## User Profile Manager
-## Leave only current user's profile
+            sn.notification_group.notify(subject=subject, body=body, link=link)
+
+
 class UserProfileManager(models.Manager):
+    """
+    @todo: remove
+    User Profile Manager
+    Leave only current user's profile
+    """
     def get_query_set(self):
-        user=get_user()
+        user = get_user()
         if user:
             # Create profile when necessary
             try:
-                p=super(UserProfileManager,self).get_query_set().get(user=user)
+                p = super(UserProfileManager, self).get_query_set().get(user=user)
             except UserProfile.DoesNotExist:
                 UserProfile(user=user).save()
-            return super(UserProfileManager,self).get_query_set().filter(user=user)
+            return super(UserProfileManager, self).get_query_set().filter(user=user)
         else:
-            return super(UserProfileManager,self).get_query_set()
-##
-## User Profile
-##
+            return super(UserProfileManager, self).get_query_set()
+
+
 class UserProfile(models.Model):
+    """
+    User profile
+    """
     class Meta:
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"
 
-    user=models.ForeignKey(User, unique=True)
+    user = models.ForeignKey(User, unique=True)
     # User data
-    preferred_language=models.CharField("Preferred Language", max_length=16,
-                                        null=True, blank=True,
-                                        default=settings.LANGUAGE_CODE,
-                                        choices=settings.LANGUAGES)
+    preferred_language = models.CharField("Preferred Language", max_length=16,
+                                          null=True, blank=True,
+                                          default=settings.LANGUAGE_CODE,
+                                          choices=settings.LANGUAGES)
     #
     objects = UserProfileManager()
 
@@ -984,7 +1038,8 @@ class UserProfile(models.Model):
 
     @property
     def contacts(self):
-        return [(c.time_pattern,c.notification_method,c.params) for c in self.userprofilecontact_set.all()]
+        return [(c.time_pattern, c.notification_method, c.params)
+            for c in self.userprofilecontact_set.all()]
 
     @property
     def active_contacts(self):
@@ -993,21 +1048,23 @@ class UserProfile(models.Model):
 
         :returns: List of (method, params)
         """
-        now=datetime.datetime.now()
-        return [(c.notification_method,c.params) for c in self.contacts if c.time_pattern.match(now)]
+        now = datetime.datetime.now()
+        return [(c.notification_method, c.params)
+            for c in self.contacts if c.time_pattern.match(now)]
 
-##
-##
-##
+
 class UserProfileContact(models.Model):
     class Meta:
-        verbose_name="User Profile Contact"
-        verbose_name_plural="User Profile Contacts"
-        unique_together=[("user_profile","time_pattern","notification_method","params")]
-    user_profile=models.ForeignKey(UserProfile,verbose_name="User Profile")
-    time_pattern=models.ForeignKey(TimePattern,verbose_name="Time Pattern")
-    notification_method=models.CharField("Method",max_length=16,choices=USER_NOTIFICATION_METHOD_CHOICES)
-    params=models.CharField("Params",max_length=256)
+        verbose_name = "User Profile Contact"
+        verbose_name_plural = "User Profile Contacts"
+        unique_together = [("user_profile", "time_pattern",
+                            "notification_method", "params")]
+    user_profile = models.ForeignKey(UserProfile, verbose_name="User Profile")
+    time_pattern = models.ForeignKey(TimePattern, verbose_name="Time Pattern")
+    notification_method = models.CharField("Method", max_length=16,
+                                    choices=USER_NOTIFICATION_METHOD_CHOICES)
+    params = models.CharField("Params", max_length=256)
+
 
 ##
 ## Triggers
@@ -1015,6 +1072,7 @@ class UserProfileContact(models.Model):
 def model_choices():
     for m in models.get_models():
         yield (m._meta.db_table, m._meta.db_table)
+
 
 class DBTrigger(models.Model):
     class Meta:
@@ -1030,7 +1088,7 @@ class DBTrigger(models.Model):
     pre_save_rule = models.ForeignKey(PyRule,
             verbose_name="Pre-Save Rule",
             related_name="dbtrigger_presave_set",
-            limit_choices_to={"interface":"IDBPreSave"},
+            limit_choices_to={"interface": "IDBPreSave"},
             blank=True, null=True)
     post_save_rule = models.ForeignKey(PyRule,
             verbose_name="Post-Save Rule",
@@ -1060,68 +1118,73 @@ class DBTrigger(models.Model):
     ## Refresh triggers cache
     ##
     @classmethod
-    def refresh_cache(cls,*args,**kwargs):
+    def refresh_cache(cls, *args, **kwargs):
         # Clear cache
-        cls._pre_save_triggers={}
-        cls._post_save_triggers={}
-        cls._pre_delete_triggers={}
-        cls._post_delete_triggers={}
+        cls._pre_save_triggers = {}
+        cls._post_save_triggers = {}
+        cls._pre_delete_triggers = {}
+        cls._post_delete_triggers = {}
         # Add all active triggers
         for t in cls.objects.filter(is_active=True).order_by("order"):
-            for r in ["pre_save","post_save","pre_delete","post_delete"]:
-                c=getattr(cls,"_%s_triggers"%r)
-                rule=getattr(t,"%s_rule"%r)
+            for r in ["pre_save", "post_save", "pre_delete", "post_delete"]:
+                c = getattr(cls, "_%s_triggers" % r)
+                rule = getattr(t, "%s_rule" % r)
                 if rule:
                     try:
-                        c[t.model]+=[rule]
+                        c[t.model] += [rule]
                     except KeyError:
-                        c[t.model]=[rule]
+                        c[t.model] = [rule]
 
     ##
     ## Dispatcher for pre-save
     ##
     @classmethod
-    def pre_save_dispatch(cls,**kwargs):
-        m=kwargs["sender"]._meta.db_table
+    def pre_save_dispatch(cls, **kwargs):
+        m = kwargs["sender"]._meta.db_table
         if m in cls._pre_save_triggers:
             for t in cls._pre_save_triggers[m]:
-                t(model=kwargs["sender"],instance=kwargs["instance"])
+                t(model=kwargs["sender"], instance=kwargs["instance"])
 
     ##
     ## Dispatcher for post-save
     ##
     @classmethod
-    def post_save_dispatch(cls,**kwargs):
-        m=kwargs["sender"]._meta.db_table
+    def post_save_dispatch(cls, **kwargs):
+        m = kwargs["sender"]._meta.db_table
         if m in cls._post_save_triggers:
             for t in cls._post_save_triggers[m]:
-                t(model=kwargs["sender"],instance=kwargs["instance"],created=kwargs["created"])
+                t(model=kwargs["sender"], instance=kwargs["instance"],
+                  created=kwargs["created"])
 
     ##
     ## Dispatcher for pre-delete
     ##
     @classmethod
-    def pre_delete_dispatch(cls,**kwargs):
-        m=kwargs["sender"]._meta.db_table
+    def pre_delete_dispatch(cls, **kwargs):
+        m = kwargs["sender"]._meta.db_table
         if m in cls._pre_delete_triggers:
             for t in cls._pre_delete_triggers[m]:
-                t(model=kwargs["sender"],instance=kwargs["instance"])
+                t(model=kwargs["sender"], instance=kwargs["instance"])
 
     ##
     ## Dispatcher for post-delete
     ##
     @classmethod
-    def post_delete_dispatch(cls,**kwargs):
-        m=kwargs["sender"]._meta.db_table
+    def post_delete_dispatch(cls, **kwargs):
+        m = kwargs["sender"]._meta.db_table
         if m in cls._post_delete_triggers:
             for t in cls._post_delete_triggers[m]:
-                t(model=kwargs["sender"],instance=kwargs["instance"])
+                t(model=kwargs["sender"], instance=kwargs["instance"])
+
     ##
     ## Called when all models are initialized
     ##
     @classmethod
     def x(cls):
-        self._meta.get_field_by_name("model")[0].choices=[(m._meta.db_table,m._meta.db_table) for m in models.get_models()]
+        f = self._meta.get_field_by_name("model")[0]
+        f.choices = [(m._meta.db_table, m._meta.db_table)
+            for m in models.get_models()]
+
 
 class Schedule(models.Model):
     class Meta:
@@ -1171,6 +1234,7 @@ class Schedule(models.Model):
                                          seconds=seconds))
         t.save()
 
+
 class Shard(models.Model):
     class Meta:
         verbose_name = _("Shard")
@@ -1183,6 +1247,7 @@ class Shard(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class PrefixTable(models.Model):
     class Meta:
@@ -1311,6 +1376,7 @@ class SystemTemplate(models.Model):
         u_list = [u for u in u_list if u.is_active]
         # Send notifications
 
+
 class Checkpoint(models.Model):
     """
     Checkpoint is a marked moment in time
@@ -1318,12 +1384,12 @@ class Checkpoint(models.Model):
     class Meta:
         verbose_name = _("Checkpoing")
         verbose_name_plural = _("Checkpoints")
-    
+
     timestamp = models.DateTimeField(_("Timestamp"))
     user = models.ForeignKey(User, verbose_name=_("User"), blank=True, null=True)
     comment = models.CharField(_("Comment"), max_length=256)
     private = models.BooleanField(_("Private"), default=False)
-    
+
     def __unicode__(self):
         if self.user:
             return u"%s[%s]: %s" % (self.timestamp, self.user.username,
@@ -1338,7 +1404,7 @@ class Checkpoint(models.Model):
         cp.save()
         return cp
 
-    
+
 ##
 ## Install triggers
 ##
@@ -1359,6 +1425,7 @@ if settings.IS_WEB and not settings.IS_TEST:
 User._meta.get_field("username").max_length = User._meta.get_field("email").max_length
 User._meta.get_field("username").validators = [MaxLengthValidator(User._meta.get_field("username").max_length)]
 User._meta.ordering = ["username"]
+
 
 def search_tags(user, query, limit):
     """
