@@ -10,15 +10,26 @@ try:
     from django.forms import ValidationError
 except:  # pragma: no cover
     pass
+
+##
+## Regular expressions
+##
+rx_fqdn = re.compile(r"^([a-z0-9\-]+\.)+[a-z0-9\-]+$", re.IGNORECASE)
+rx_asset = re.compile(r"^AS-[A-Z0-9\-]+$")
+rx_extension = re.compile(r"^\.[a-zA-Z0-9]+$")
+rx_mimetype = re.compile(r"^[a-zA-Z0-9\-]+/[a-zA-Z0-9\-]+$")
+rx_email = re.compile(r"^[a-z0-9._\-]+@([a-z0-9\-]+\.)+[a-z0-9\-]+$",
+                      re.IGNORECASE)
+rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
+
+
 ##
 ## Validators returning boolean
 ##
-
-##
-## Check value is valid integer
-##
 def is_int(v):
     """
+    Check for valid integer
+
     >>> is_int(10)
     True
     >>> is_int("10")
@@ -27,16 +38,16 @@ def is_int(v):
     False
     """
     try:
-        v=int(v)
-    except:
+        v = int(v)
+    except ValueError:
         return False
     return True
 
-##
-## Check value is valid 2-byte or 4-byte autonomous system number
-##
+
 def is_asn(v):
     """
+    Check value is valid 2-byte or 4-byte autonomous system number
+
     >>> is_asn(100)
     True
     >>> is_asn(100000)
@@ -45,16 +56,16 @@ def is_asn(v):
     False
     """
     try:
-        v=long(v)
-        return v>0
-    except:
+        v = long(v)
+        return v > 0
+    except ValueError:
         return False
 
-##
-## Check value is valid IPv4 address
-##
+
 def is_ipv4(v):
     """
+    Check value is valid IPv4 address
+
     >>> is_ipv4("192.168.0.1")
     True
     >>> is_ipv4("192.168.0")
@@ -66,19 +77,19 @@ def is_ipv4(v):
     >>> is_ipv4("192.168.a.250")
     False
     """
-    X=v.split(".")
-    if len(X)!=4:
+    X = v.split(".")
+    if len(X) != 4:
         return False
     try:
-        return len([x for x in X if 0<=int(x)<=255])==4
+        return len([x for x in X if 0 <= int(x) <= 255]) == 4
     except:
         return False
 
-##
-## Check value is valid IPv6 address
-##
+
 def is_ipv6(v):
     """
+    Check value is valid IPv6 address
+
     >>> is_ipv6("::")
     True
     >>> is_ipv6("::1")
@@ -102,49 +113,50 @@ def is_ipv6(v):
     >>> is_ipv6("100:0:")
     False
     """
-    if v=="::":
+    if v == "::":
         return True
-    parts=v.split(":")
-    if len(parts)!=8 and "::" not in v:
+    parts = v.split(":")
+    if len(parts) != 8 and "::" not in v:
         return False
     # Process IPv4 at the end
     if parts and "." in parts[-1]:
         if not is_ipv4(parts[-1]):
             return False
-        p=[int(x) for x in parts[-1].split(".")]
-        parts=parts[:-1]+["%02x%02x"%(p[0],p[1]),"%02x%02x"%(p[2],p[3])]
-    if len(parts)>8:
+        p = [int(x) for x in parts[-1].split(".")]
+        parts = (parts[:-1] +
+                 ["%02x%02x" % (p[0], p[1]), "%02x%02x" % (p[2], p[3])])
+    if len(parts) > 8:
         return False
-    if len(parts)==8:
+    if len(parts) == 8:
         # Replace empty parts with "0"
-        parts=[p if p else "0" for p in parts]
+        parts = [p if p else "0" for p in parts]
     else:
         # Expand ::
         try:
-            i=parts.index("")
+            i = parts.index("")
         except ValueError:
             return False
-        h=[]
-        t=[]
-        if i>0:
-            h=parts[:i]
-        if i+1<len(parts) and not parts[i+1]:
-            i+=1
-        t=parts[i+1:]
-        parts=h+["0"]*(8-len(h)-len(t))+t
+        h = []
+        t = []
+        if i > 0:
+            h = parts[:i]
+        if i + 1 < len(parts) and not parts[i + 1]:
+            i += 1
+        t = parts[i + 1:]
+        parts = h + ["0"] * (8 - len(h) - len(t)) + t
     # Check all parts
     try:
         for p in parts:
-            int(p,16)
+            int(p, 16)
     except ValueError:
         return False
     return True
 
-##
-## Check value is valid IPv4 prefix
-##
+
 def is_ipv4_prefix(v):
     """
+    Check value is valid IPv4 prefix
+
     >>> is_ipv4_prefix("192.168.0.0")
     False
     >>> is_ipv4_prefix("192.168.0.0/16")
@@ -158,23 +170,25 @@ def is_ipv4_prefix(v):
     >>> is_ipv4_prefix("192.168.0.0/33")
     False
     """
-    x=v.split("/")
-    if len(x)!=2:
+    x = v.split("/")
+    if len(x) != 2:
         return False
     if not is_ipv4(x[0]):
         return False
     try:
-        y=int(x[1])
+        y = int(x[1])
     except:
         return False
-    return 0<=y<=32
-is_cidr=is_ipv4_prefix
+    return 0 <= y <= 32
 
-##
-## Check value is valid IPv6 prefix
-##
+
+is_cidr = is_ipv4_prefix
+
+
 def is_ipv6_prefix(v):
     """
+    Check value is valid IPv6 prefix
+
     >>> is_ipv6_prefix("1::/32")
     True
     >>> is_ipv6_prefix("1::/-1")
@@ -188,22 +202,22 @@ def is_ipv6_prefix(v):
     >>> is_ipv6_prefix("192.168.0.0/32")
     False
     """
-    x=v.split("/")
-    if len(x)!=2:
+    x = v.split("/")
+    if len(x) != 2:
         return False
     if not is_ipv6(x[0]):
         return False
     try:
-        y=int(x[1])
+        y = int(x[1])
     except:
         return False
-    return 0<=y<=128
+    return 0 <= y <= 128
 
-##
-## Check value is valid IPv4 or IPv6 prefix
-##
+
 def is_prefix(v):
     """
+    Check value is valid IPv4 or IPv6 prefix
+
     >>> is_prefix("192.168.0.0/16")
     True
     >>> is_prefix("1::/32")
@@ -211,17 +225,17 @@ def is_prefix(v):
     """
     return is_ipv4_prefix(v) or is_ipv6_prefix(v)
 
-##
-## Check value is valid Route Distinguisher
-##
+
 def is_rd(v):
     """
+    Check value is valid Route Distinguisher
+
     Special case RD: 0:0
     >>> is_rd("0:0")
     True
 
     Type 0 RD: <2byte ASN> : <ID>
-    
+
     >>> is_rd("100:10")
     True
     >>> is_rd("100:0")
@@ -232,9 +246,9 @@ def is_rd(v):
     False
     >>> is_rd("0:4294967296")
     False
-    
+
     Type 1 RD: <IPv4> : <ID>
-    
+
     >>> is_rd("10.10.10.10:0")
     True
     >>> is_rd("10.10.10.10:65535")
@@ -243,16 +257,16 @@ def is_rd(v):
     False
     >>> is_rd("10.10.10.10:65536")
     False
-    
-    Tyoe 2 RD: <4byte ASN> : <ID>
-    
+
+    Type 2 RD: <4byte ASN> : <ID>
+
     >>> is_rd("100000:0")
     True
     >>> is_rd("100000:65535")
     True
-    
+
     Error handling
-    
+
     >>> is_rd("100000:-1")
     False
     >>> is_rd("100000:65536")
@@ -262,34 +276,33 @@ def is_rd(v):
     >>> is_rd("100:b")
     False
     """
-    if v=="0:0":
+    if v == "0:0":
         return True
-    x=v.split(":")
-    if len(x)!=2:
+    x = v.split(":")
+    if len(x) != 2:
         return False
-    a,b=x
+    a, b = x
     try:
-        b=int(b)
-    except:
+        b = int(b)
+    except ValueError:
         return False
     if is_asn(a):
-        a=int(a)
-        if a<=65535:
+        a = int(a)
+        if a <= 65535:
             # Type 0 RD: <2byte ASN>: <ID>
-            return 0<=b<=4294967295L
+            return 0 <= b <= 4294967295L
         # Type 2 RD: <4 byte ASN>: <ID>
-        return 0<=b<=65535
+        return 0 <= b <= 65535
     if is_ipv4(a):
         # Type 1 RD: <ipv4>:<ID>
-        return 0<=b<=65535
+        return 0 <= b <= 65535
     return False
 
-##
-## Check value is valuid AS-SET
-##
-rx_asset=re.compile(r"^AS-[A-Z0-9\-]+$")
+
 def is_as_set(v):
     """
+    Check value is valuid AS-SET
+
     >>> is_as_set("AS-TEST")
     True
     >>> is_as_set("AS100")
@@ -297,12 +310,11 @@ def is_as_set(v):
     """
     return rx_asset.match(v) is not None
 
-##
-## Check value is valid FQDN
-##
-rx_fqdn=re.compile(r"^([a-z0-9\-]+\.)+[a-z0-9\-]+$",re.IGNORECASE)
+
 def is_fqdn(v):
     """
+    Check value is valid FQDN
+
     >>> is_fqdn("test.example.com")
     True
     >>> is_fqdn("test")
@@ -310,11 +322,11 @@ def is_fqdn(v):
     """
     return rx_fqdn.match(v) is not None
 
-##
-## Check value is valid regular expression
-##
+
 def is_re(v):
     """
+    Check value is valid regular expression
+
     >>> is_re("1{1,2}")
     True
     >>> is_re("1[")
@@ -326,11 +338,11 @@ def is_re(v):
     except:
         return False
 
-##
-## Check value is valid VLAN ID
-##
+
 def is_vlan(v):
     """
+    Check value is valid VLAN ID
+
     >>> is_vlan(1)
     True
     >>> is_vlan(-1)
@@ -343,17 +355,16 @@ def is_vlan(v):
     False
     """
     try:
-        v=int(v)
-        return v>=1 and v<=4095
+        v = int(v)
+        return 1 <= v <= 4095
     except:
         return False
 
-##
-## Check value is valid email
-##
-rx_email=re.compile(r"^[a-z0-9._\-]+@([a-z0-9\-]+\.)+[a-z0-9\-]+$",re.IGNORECASE)
+
 def is_email(v):
     """
+    Check value is valid email
+
     >>> is_email("test@example.com")
     True
     >>> is_email("test")
@@ -361,21 +372,17 @@ def is_email(v):
     """
     return rx_email.match(v) is not None
 
-##
-## Check OID
-##
-rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
+
 def is_oid(v):
     """
+    Check OID
+
     >>> is_oid("1.3.6.1.6.3.1.1.4.1.0")
     True
     >>> is_oid("1.3.6.1.6.3.1.1.4.a.1.0")
     False
     """
     return rx_oid.match(v) is not None
-
-
-rx_extension = re.compile(r"^\.[a-zA-Z0-9]+$")
 
 
 def is_extension(v):
@@ -390,13 +397,10 @@ def is_extension(v):
     return rx_extension.match(v) is not None
 
 
-rx_mimetype = re.compile(r"^[a-zA-Z0-9\-]+/[a-zA-Z0-9\-]+$")
-
-
 def is_mimetype(v):
     """
     Check value is MIME Type
-    
+
     >>> is_mimetype("application/octet-stream")
     True
     >>> is_mimetype("application")
@@ -405,11 +409,11 @@ def is_mimetype(v):
     return rx_mimetype.match(v) is not None
 
 
-def generic_validator(check,error_message):
+def generic_validator(check, error_message):
     """
     Validator factory
 
-    >>> v=generic_validator(is_int,"invalid int")
+    >>> v = generic_validator(is_int, "invalid int")
     >>> v(6)
     6
     >>> v("g")
@@ -418,7 +422,7 @@ def generic_validator(check,error_message):
     ValidationError: [u'invalid int']
     """
     # Validator closure
-    def inner_validator(value,*args,**kwargs):
+    def inner_validator(value, *args, **kwargs):
         if not check(value):
             raise ValidationError(error_message)
         return value
@@ -427,19 +431,19 @@ def generic_validator(check,error_message):
 ##
 ## Validators
 ##
-check_asn = generic_validator(is_asn,"Invalid ASN")
+check_asn = generic_validator(is_asn, "Invalid ASN")
 check_prefix = generic_validator(is_prefix, "Invalid prefix")
-check_ipv4 = generic_validator(is_ipv4,"Invalid IPv4")
-check_ipv6 = generic_validator(is_ipv6,"Invalid IPv6")
-check_ipv4_prefix = generic_validator(is_ipv4_prefix,"Invalid IPv4 prefix")
-check_ipv6_prefix = generic_validator(is_ipv6_prefix,"Invalid IPv6 prefix")
-check_cidr = generic_validator(is_cidr,"Invalid CIDR")
-check_rd = generic_validator(is_rd,"Invalid RD")
-check_fqdn = generic_validator(is_fqdn,"Invalid FQDN")
+check_ipv4 = generic_validator(is_ipv4, "Invalid IPv4")
+check_ipv6 = generic_validator(is_ipv6, "Invalid IPv6")
+check_ipv4_prefix = generic_validator(is_ipv4_prefix, "Invalid IPv4 prefix")
+check_ipv6_prefix = generic_validator(is_ipv6_prefix, "Invalid IPv6 prefix")
+check_cidr = generic_validator(is_cidr, "Invalid CIDR")
+check_rd = generic_validator(is_rd, "Invalid RD")
+check_fqdn = generic_validator(is_fqdn, "Invalid FQDN")
 check_re = generic_validator(is_re, "Invalid Regular Expression")
-check_as_set = generic_validator(is_as_set,"Invalid AS-SET")
-check_re = generic_validator(is_re,"Invalid Regular Expression")
-check_vlan = generic_validator(is_vlan,"Invalid VLAN")
-check_email = generic_validator(is_email,"Invalid EMail")
+check_as_set = generic_validator(is_as_set, "Invalid AS-SET")
+check_re = generic_validator(is_re, "Invalid Regular Expression")
+check_vlan = generic_validator(is_vlan, "Invalid VLAN")
+check_email = generic_validator(is_email, "Invalid EMail")
 check_extension = generic_validator(is_extension, "Invalid extension")
 check_mimetype = generic_validator(is_mimetype, "Invalid MIME type")
