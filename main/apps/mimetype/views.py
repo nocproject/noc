@@ -2,22 +2,18 @@
 ##----------------------------------------------------------------------
 ## MIMEType Manager
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## Django modules
+from django.utils.translation import ugettext as _
+## NOC modules
+from noc.lib.app import ExtModelApplication
 from noc.main.models import MIMEType
-##
-## MIMEType admin
-##
-class MIMETypeAdmin(admin.ModelAdmin):
-    list_display=["extension","mime_type"]
-    search_fields=["extension","mime_type"]
-##
-## MIMEType application
-##
-class MIMETypeApplication(ModelApplication):
-    model=MIMEType
-    model_admin=MIMETypeAdmin
-    menu="Setup | MIME Types"
+
+
+class MIMETypeApplication(ExtModelApplication):
+    title = _("MIME Types")
+    model = MIMEType
+    menu = "Setup | MIME Types"

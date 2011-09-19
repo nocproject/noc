@@ -1,12 +1,28 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## mimetype Test
+## main.mimetype unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
-from django.utils import simplejson as json
+from noc.lib.test import RestModelTestCase
 
-class mimetypeTestCase(ModelApplicationTestCase):
-    pass
+
+class MIMETypeTestCase(RestModelTestCase):
+    app = "main.mimetype"
+
+    scenario = [
+        {
+            "GET": {
+                "extension": ".noc",
+                "mime_type": "application/noc-type"
+            },
+            "POST": {
+                "extension": ".noc",
+                "mime_type": "application/noc-type"
+            },
+            "PUT": {
+                "mime_type": "application/x-noc-type"
+            }
+        }
+    ]
