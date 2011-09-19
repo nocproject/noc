@@ -8,7 +8,7 @@
 import re
 try:
     from django.forms import ValidationError
-except:
+except:  # pragma: no cover
     pass
 ##
 ## Validators returning boolean
@@ -216,6 +216,10 @@ def is_prefix(v):
 ##
 def is_rd(v):
     """
+    Special case RD: 0:0
+    >>> is_rd("0:0")
+    True
+
     Type 0 RD: <2byte ASN> : <ID>
     
     >>> is_rd("100:10")
@@ -370,11 +374,41 @@ def is_oid(v):
     """
     return rx_oid.match(v) is not None
 
-##
-## Validator factory
-##
+
+rx_extension = re.compile(r"^\.[a-zA-Z0-9]+$")
+
+
+def is_extension(v):
+    """
+    Check value is file extension starting with dot
+
+    >>> is_extension(".txt")
+    True
+    >>> is_extension("txt")
+    False
+    """
+    return rx_extension.match(v) is not None
+
+
+rx_mimetype = re.compile(r"^[a-zA-Z0-9\-]+/[a-zA-Z0-9\-]+$")
+
+
+def is_mimetype(v):
+    """
+    Check value is MIME Type
+    
+    >>> is_mimetype("application/octet-stream")
+    True
+    >>> is_mimetype("application")
+    False
+    """
+    return rx_mimetype.match(v) is not None
+
+
 def generic_validator(check,error_message):
     """
+    Validator factory
+
     >>> v=generic_validator(is_int,"invalid int")
     >>> v(6)
     6
@@ -407,3 +441,5 @@ check_as_set = generic_validator(is_as_set,"Invalid AS-SET")
 check_re = generic_validator(is_re,"Invalid Regular Expression")
 check_vlan = generic_validator(is_vlan,"Invalid VLAN")
 check_email = generic_validator(is_email,"Invalid EMail")
+check_extension = generic_validator(is_extension, "Invalid extension")
+check_mimetype = generic_validator(is_mimetype, "Invalid MIME type")
