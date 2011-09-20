@@ -147,8 +147,10 @@ class Site(object):
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
             if not request.user or not v.access.check(app, request.user):
                 return HttpResponseForbidden()
-            if hasattr(v, "validate") and v.validate:
-                if issubclass(v.validate, Form):
+            try:
+                if (hasattr(v, "validate") and v.validate and
+                    issubclass(v.validate, Form)):
+                    # Additional validation
                     f = v.validate(request.GET)
                     if f.is_valid():
                         kwargs.update(f.cleaned_data)
@@ -159,7 +161,6 @@ class Site(object):
                         })
                         return HttpResponse(r, status=400,  # BAD REQUEST
                                             mimetype="text/json; charset=utf-8")
-            try:
                 r = v(request, *args, **kwargs)
             except PermissionDenied, why:
                 return HttpResponseForbidden(why)
