@@ -147,7 +147,7 @@ class Site(object):
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
             if not request.user or not v.access.check(app, request.user):
                 return HttpResponseForbidden()
-            if v.validate:
+            if hasattr(v, "validate") and v.validate:
                 if issubclass(v.validate, Form):
                     f = v.validate(request.GET)
                     if f.is_valid():
