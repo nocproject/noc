@@ -28,7 +28,7 @@ from noc.lib.middleware import get_user
 from noc.lib.fileutils import urlopen
 from noc.lib.crypto import md5crypt
 from noc.lib.app.site import site
-from noc.peer.tree import optimize_prefix_list
+from noc.peer.tree import optimize_prefix_list_maxlen
 
 ##
 ## Exception classes
@@ -744,16 +744,40 @@ class WhoisCache(models.Model):
         return members
 
     @classmethod
-    def resolve_as_set_prefixes(cls, as_set):
+    def resolve_as_set_prefixes(cls, as_set, optimize=None):
         prefixes = set()
         for a in cls.resolve_as_set(as_set):
             prefixes.update(WhoisLookup.lookup("origin:route", a))
-        optimize = config.getboolean("peer", "prefix_list_optimization")
+        pl_optimize = config.getboolean("peer", "prefix_list_optimization")
         threshold = config.getint("peer", "prefix_list_optimization_threshold")
-        if optimize and len(prefixes) >= threshold:
+        if (optimize or
+            (optimize is None and pl_optimize and len(prefixes) >= threshold)):
             return set(optimize_prefix_list(prefixes))
         return prefixes
 
+    @classmethod
+    def resolve_as_set_prefixes_maxlen(cls, as_set, optimize=None):
+        """
+        Generate prefixes for as-sets.
+        Returns a list of (prefix, min length, max length)
+        """
+        prefixes = set()
+        for a in cls.resolve_as_set(as_set):
+            prefixes.update(WhoisLookup.lookup("origin:route", a))
+        pl_optimize = config.getboolean("peer", "prefix_list_optimization")
+        threshold = config.getint("peer", "prefix_list_optimization_threshold")
+        max_len = config.getint("peer", "max_prefix_length")
+        if (optimize or
+            (optimize is None and pl_optimize and len(prefixes) >= threshold)):
+            # Optimization is enabled
+            return [(p.prefix, p.mask, m) for p, m
+                in optimize_prefix_list_maxlen(prefixes)
+                if x.mask <= max_len]
+        else:
+            # Optimization is disabled
+            return [(x.prefix, x.mask, x.mask)
+                for x in sorted([IP.prefix(p) for p in prefixes])
+                if x.mask <= max_len]
 
 ##
 ## Prepared prefix list cache

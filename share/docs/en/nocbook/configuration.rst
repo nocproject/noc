@@ -486,6 +486,28 @@ rpsl_inverse_pref_style
 ^^^^^^^^^^^^^^^^^^^^^^^
 Select RPSL pref= behavior. *off* means pref = localpref, *on* means standard RPSL's pref = 65535-localpref
 
+.. _noc-conf-peer-prefix_list_optimization:
+
+prefix_list_optimization
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Enable prefix list optimization. If set to on, all prefix lists longer than
+_prefix_list_optimization_threshold_ will be reduced to the minimal size
+
+.. _noc-conf-peer-prefix_list_optimization_threshold:
+
+prefix_list_optimization_threshold
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When prefix_list_optimization is on, all prefix lists shorter than
+prefix_list_optimization_threshold will not be reduced
+
+.. _noc-conf-peer-max_prefix_length:
+
+max_prefix_length
+^^^^^^^^^^^^^^^^^
+Maximal length of prefixes in generated prefix lists
+
 .. _noc-conf-dns:
 
 [dns] section
