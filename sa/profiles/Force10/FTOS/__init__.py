@@ -25,15 +25,20 @@ class Profile(noc.sa.profiles.Profile):
     command_submit="\r"
     convert_interface_name=noc.sa.profiles.Profile.convert_interface_name_cisco
     
-    def generate_prefix_list(self,name,pl,strict=True):
-        suffix=""
-        if not strict:
-            suffix+=" le 32"
-        p="no ip prefix-list %s\n"%name
-        p+="ip prefix-list %s\n"%name
-        p+="\n".join(["    permit %s%s"%(x,suffix) for x in pl])
-        p+="\nexit\n"
-        return p
+    def generate_prefix_list(self, name, pl):
+        """
+        Generate prefix list _name_. pl is a list of (prefix, min_len, max_len)
+        """
+        me = "ip prefix-list %s permit %%s" % name
+        mne = "ip prefix-list %s permit %%s le %%d" % name
+        r = ["no ip prefix-list %s" % name]
+        for prefix, min_len, max_len in pl:
+            if min_len == max_len:
+                r += [me % prefix]
+            else:
+                r += [mne % (prefix, max_len)]
+        return "\n".join(r)
+
     ##
     ## Compare versions.
     ## Versions are in format
