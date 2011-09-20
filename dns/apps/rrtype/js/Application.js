@@ -14,7 +14,7 @@ Ext.define("NOC.dns.rrtype.Application", {
     
     columns: [
         {
-            text: "Name",
+            text: "Type",
             dataIndex: "type"
         },
         {
@@ -30,8 +30,8 @@ Ext.define("NOC.dns.rrtype.Application", {
     fields: [
         {
             xtype: "textfield",
-            fieldLabel: "Name",
-            name: "name",
+            fieldLabel: "Type",
+            name: "type",
             allowBlank: false
         },
         
