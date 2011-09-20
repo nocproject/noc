@@ -166,6 +166,20 @@ timeout_variation = 10
 #   on  -> pref == 65535 - localpref
 rpsl_inverse_pref_style = off
 #
+# Enable prefix list optimization
+#
+prefix_list_optimization = on
+#
+# Prefix list optimization threshold.
+# Do not optimize prefix lists shorter than threshold
+#
+prefix_list_optimization_threshold = 0
+#
+# Maximal prefix length for generated prefix lists
+#
+max_prefix_length = 32
+
+#
 # DNS Module setup
 #
 [dns]
