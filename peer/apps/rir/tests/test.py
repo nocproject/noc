@@ -1,12 +1,28 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## rir Test
+## peer.rir unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
-from django.utils import simplejson as json
 
-class rirTestCase(ModelApplicationTestCase):
-    pass
+## NOC modules
+from noc.lib.test import RestModelTestCase
+
+
+class RIRTestCase(RestModelTestCase):
+    app = "peer.rir"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]
