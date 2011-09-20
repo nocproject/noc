@@ -41,7 +41,7 @@ class PrefixListBuilderAppplication(Application):
             form = PrefixListBuilderForm(request.POST)
             if form.is_valid():
                 as_set = form.cleaned_data["as_set"]
-                prefixes = sorted(WhoisCache.resolve_as_set_prefixes_maxlen(as_set))
+                prefixes = WhoisCache.resolve_as_set_prefixes_maxlen(as_set)
                 pp = form.cleaned_data["peering_point"].profile
                 pl = pp.generate_prefix_list(form.cleaned_data["name"],
                                              prefixes)
