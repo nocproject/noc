@@ -195,7 +195,12 @@ Ext.define("NOC.core.ModelApplication", {
     save_record: function(data) {
         var grid = this.items.items[0],
             store = grid.store;
+        var mv = Ext.create(this.model, data).validate();
         
+        if(!mv.isValid()) {
+            // @todo: Error report
+            return;
+        }
         if (data["id"]) {
             // Change
             var record = grid.getSelectionModel().getLastSelected();
@@ -223,6 +228,7 @@ Ext.define("NOC.core.ModelApplication", {
     // New record. Hide grid and open form
     new_record: function() {
         var form = this.items.items[1].getForm();
+        form.reset();
         this.toggle();
         form.getFields().first().focus(false, 100);
         // Activate delete button
