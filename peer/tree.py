@@ -9,11 +9,10 @@
 ## the prefix will be directed left from current node.
 ## The set bit means right direction.
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 # NOC modules
 from noc.lib.ip import *
 ##
@@ -21,11 +20,11 @@ from noc.lib.ip import *
 ## @todo: merge with PrefixDB
 ##
 class Node(object):
-    def __init__(self,parent=None,prefix=[]):
-        self.parent=parent
-        self.prefix=prefix
-        self.children=[None,None]
-        self.is_final=False
+    def __init__(self, parent=None, prefix=[]):
+        self.parent = parent
+        self.prefix = prefix
+        self.children = [None, None]
+        self.is_final = False
         
     # Binary prefix is a list of integers
     def append_binary_prefix(self,prefix):
@@ -35,8 +34,8 @@ class Node(object):
             # When summary accepted
             if not self.is_final:
                 self.release_children()
-            # Mark this node as final
-            self.is_final=True
+                # Mark this node as final
+                self.is_final=True
             return
         # Optimization #2
         # Do not append specifics when summary exists
@@ -47,21 +46,20 @@ class Node(object):
         # Do not append child when another final child exists.
         # Make this node final instead (summarize two prefixes)
         if not prefix:
-            c=[c for c in self.children if c is not None]
-            if len(c):
-                if c[0].is_final:
-                    self.release_children()
-                    # Optimization #4
-                    # When summarized prefixes try to summarize
-                    # with siblings
-                    n=self.parent
-                    while n:
-                        if len([c for c in n.children if c and c.is_final])==2:
-                            n.release_children()
-                            n=n.parent
-                        else:
-                            break
-                    return
+            c = self.children[(d + 1) % 2]  # Other children
+            if c is not None and c.is_final:
+                self.release_children()
+                # Optimization #4
+                # When summarized prefixes try to summarize
+                # with siblings
+                n=self.parent
+                while n:
+                    if len([c for c in n.children if c and c.is_final])==2:
+                        n.release_children()
+                        n=n.parent
+                    else:
+                        break
+                return
         # Cannot reduce prefix (yet). Append to the tree
         if not self.children[d]:
             self.children[d]=Node(self,self.prefix+[d])
@@ -115,6 +113,10 @@ def optimize_prefix_list(prefix_list):
     
     >>> optimize_prefix_list(["192.168.%d.0/24"%i for i in range(17)])
     ['192.168.0.0/20', '192.168.16.0/24']
+    
+    Check duplication
+    >>> optimize_prefix_list(["192.168.0.0/24", "192.168.0.0/24"])
+    ['192.168.0.0/24']
     """
     n=Node()
     for p in prefix_list:
