@@ -25,12 +25,9 @@ Ext.define("NOC.main.desktop.Controller", {
             "#header_menu_logout": {
                 click: this.do_logout
             },
-            "#header_test": {
-                click: function() {
-                    this.launch_tab("NOC.main.language.Application", "Languages", {});
-                }
+            "#search": {
+                search: this.on_search
             }
-            // Search entered
         });
     },
     // Check session is authenticated
@@ -167,5 +164,11 @@ Ext.define("NOC.main.desktop.Controller", {
         Ext.getCmp("header").collapse(Ext.Component.DIRECTION_TOP);
         Ext.getCmp("nav").collapse(Ext.Component.DIRECTION_LEFT);
         Ext.getCmp("status").collapse(Ext.Component.DIRECTION_BOTTOM);
+    },
+    // Search text entered
+    on_search: function(value) {
+        this.launch_tab("NOC.main.desktop.IFramePanel",
+                        "Search",
+                        {url: "/main/search/"});
     }
 });

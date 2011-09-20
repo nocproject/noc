@@ -11,6 +11,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     id: "workplace",
     region: "center", // Always required for border layout
     activeTab: 0,
+    border: false,
     items: [],
     // Launch application in tab
     launch_tab: function(panel_class, title, params) {

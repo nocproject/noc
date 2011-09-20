@@ -13,5 +13,5 @@ Ext.define("NOC.main.desktop.NavTreeStore", {
     proxy: {
         type: "ajax",
         url: "/main/desktop/navigation/"
-    }
+    }    
 });
