@@ -22,8 +22,16 @@ class Profile(noc.sa.profiles.Profile):
     command_disable_pager="terminal length 0"
     requires_netmask_conversion=True
     
-    def generate_prefix_list(self,name,pl,strict=True):
-        p="ip prefix-list %s permit %%s"%name
-        if not strict:
-            p+=" le 32"
-        return "no ip prefix-list %s\n"%name+"\n".join([p%x for x in pl])
+    def generate_prefix_list(self, name, pl):
+        """
+        Generate prefix list _name_. pl is a list of (prefix, min_len, max_len)
+        """
+        me = "ip prefix-list %s permit %%s" % name
+        mne = "ip prefix-list %s permit %%s le %%d" % name
+        r = ["no ip prefix-list %s" % name]
+        for prefix, min_len, max_len in pl:
+            if min_len == max_len:
+                r += [me % prefix]
+            else:
+                r += [mne % (prefix, max_len)]
+        return "\n".join(r)
