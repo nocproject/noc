@@ -7,7 +7,7 @@
 console.debug("Defining NOC.core.ModelApplication");
 
 Ext.define("NOC.core.ModelApplication", {
-    extend: "Ext.panel.Panel",
+    extend: "NOC.core.Application",
     layout: "anchor",
     
     initComponent: function() {
