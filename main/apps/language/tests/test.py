@@ -1,12 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## language Test
+## main.language unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
-from django.utils import simplejson as json
+from noc.lib.test import RestModelTestCase
 
-class languageTestCase(ModelApplicationTestCase):
-    pass
+
+class MainLanguageTestCase(RestModelTestCase):
+    app = "main.language"
+
+    scenario = [
+        {
+            "GET": {
+                "name": "Tengwar",
+                "native_name": "Quenya"
+            },
+            "POST": {
+                "name": "Tengwar",
+                "native_name": "Quenya",
+                "is_active": True
+            },
+            "PUT": {
+                "is_active": False
+            }
+        }
+    ]
