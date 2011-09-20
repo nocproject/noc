@@ -50,10 +50,6 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             scale: "small",
             menu: [
                 {
-                    id: "header_test",
-                    text: "Launch languages"
-                },
-                {
                     id: "header_menu_toggle",
                     text: "Collapse all panels"
                 },
@@ -73,7 +69,17 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             id: "search",
             xtype: "textfield",
             emptyText: "Search...",
-            inputType: "search"
+            inputType: "search",
+            listeners: {
+                specialkey: function(field, event) {
+                    var k = event.getKey();
+                    if(k == event.ENTER) {
+                        this.fireEvent("search", this.getValue());
+                    } else if(k == event.ESC) {
+                        this.reset();
+                    }
+                }
+            }
         }
     ],
     // Change displayed username
