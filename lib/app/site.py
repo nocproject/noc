@@ -147,6 +147,18 @@ class Site(object):
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
             if not request.user or not v.access.check(app, request.user):
                 return HttpResponseForbidden()
+            if v.validate:
+                if issubclass(v.validate, Form):
+                    f = v.validate(request.GET)
+                    if f.is_valid():
+                        kwargs.update(f.cleaned_data)
+                    else:
+                        r = JSONEncoder(ensure_ascii=False).encode({
+                            "status": False,
+                            "error": f.errors
+                        })
+                        return HttpResponse(r, status=400,  # BAD REQUEST
+                                            mimetype="text/json; charset=utf-8")
             try:
                 r = v(request, *args, **kwargs)
             except PermissionDenied, why:
@@ -163,20 +175,9 @@ class Site(object):
             else:
                 return r
 
-        # Render view in testing mode
-        def inner_test(request, *args, **kwargs):
-            try:
-                return inner(request, *args, **kwargs)
-            except:
-                raise
-
         from access import PermissionDenied
+        from django.forms import Form
         return inner
-        # Return actual handler
-        if self.testing_mode:
-            return inner_test
-        else:
-            return inner
 
     def add_to_menu(self, app, v):
         if callable(v.menu):
