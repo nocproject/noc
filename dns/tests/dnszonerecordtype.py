@@ -45,3 +45,11 @@ class DNSZoneRecordTypeModelTestCase(ModelTestCase):
                               validation="+")
         with self.assertRaises(ValueError):
             t.save()
+
+    def test_migrations(self):
+        """
+        Check default RR types created during migration
+        """
+        self.assertEquals(DNSZoneRecordType.objects.count(), 34)
+        self.assertEquals(DNSZoneRecordType.objects.filter(is_active=True).count(), 10)
+        self.assertEquals(DNSZoneRecordType.objects.filter(is_active=False).count(), 24)
