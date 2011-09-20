@@ -772,7 +772,7 @@ class WhoisCache(models.Model):
             # Optimization is enabled
             return [(p.prefix, p.mask, m) for p, m
                 in optimize_prefix_list_maxlen(prefixes)
-                if x.mask <= max_len]
+                if p.mask <= max_len]
         else:
             # Optimization is disabled
             return [(x.prefix, x.mask, x.mask)
