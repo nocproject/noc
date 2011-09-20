@@ -39,6 +39,7 @@ from noc.sa.interfaces.base import interface_registry
 from noc.lib.periodic import periodic_registry
 from noc.lib.app.site import site
 from noc.lib.ip import IP
+from noc.lib.validators import check_extension, check_mimetype
 ## Register periodics
 periodic_registry.register_all()
 ##
@@ -372,8 +373,12 @@ class MIMEType(models.Model):
     class Meta:
         verbose_name = "MIME Type"
         verbose_name_plural = "MIME Types"
-    extension = models.CharField("Extension", max_length=32, unique=True)
-    mime_type = models.CharField("MIME Type", max_length=63)
+        ordering = ["extension"]
+
+    extension = models.CharField("Extension", max_length=32, unique=True,
+                                 validators=[check_extension])
+    mime_type = models.CharField("MIME Type", max_length=63,
+                                 validators=[check_mimetype])
 
     def __unicode__(self):
         return u"%s -> %s" % (self.extension, self.mime_type)
