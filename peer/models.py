@@ -2,17 +2,24 @@
 ##----------------------------------------------------------------------
 ## Peer module models
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
+## Python modules
+import random
+import time
+import logging
+import urllib
+import urllib2
+## Django modules
 from django.db import models, connection
+## NOC modules
 from noc.settings import config
-from noc.lib.validators import check_asn,check_as_set,is_ipv4,is_cidr
+from noc.lib.validators import check_asn, check_as_set, is_ipv4, is_cidr, is_asn
 from noc.lib.tt import tt_url
 from noc.lib.rpsl import rpsl_format
-from noc.lib.fields import INETField,InetArrayField,AutoCompleteTagsField
+from noc.lib.fields import INETField, InetArrayField, AutoCompleteTagsField
 from noc.sa.profiles import profile_registry
 from noc.main.models import NotificationGroup
 from noc.cm.models import PrefixList
@@ -21,7 +28,7 @@ from noc.lib.middleware import get_user
 from noc.lib.fileutils import urlopen
 from noc.lib.crypto import md5crypt
 from noc.lib.app.site import site
-import random,time,logging,urllib,urllib2
+from noc.peer.tree import optimize_prefix_list
 
 ##
 ## Exception classes
@@ -623,12 +630,13 @@ class WhoisLookup(models.Model):
 ##
 class WhoisCache(models.Model):
     class Meta:
-        verbose_name="Whois Cache"
-        verbose_name_plural="Whois Cache"
-        unique_together=[("lookup","key")]
-    lookup=models.ForeignKey(WhoisLookup,verbose_name="Whois Lookup")
-    key=models.CharField("Key",max_length=64)
-    value=models.TextField("Value")
+        verbose_name = "Whois Cache"
+        verbose_name_plural = "Whois Cache"
+        unique_together = [("lookup", "key")]
+
+    lookup = models.ForeignKey(WhoisLookup,verbose_name="Whois Lookup")
+    key = models.CharField("Key",max_length=64)
+    value = models.TextField("Value")
     ##
     ## Convert key to upper case
     ##
@@ -717,6 +725,36 @@ class WhoisCache(models.Model):
                         WhoisCache(lookup=wl,key=key,value="|".join(value)).save()
                         keys.add(key)
         return True
+
+    @classmethod
+    def resolve_as_set(cls, as_set, seen=None):
+        """
+        Resolve as-set and return a set of member ases
+        """
+        if is_asn(as_set[2:]):
+            # ASN given
+            return set([as_set.upper()])
+        members = set()
+        if seen is None:
+            seen = set()
+        seen.add(as_set)
+        for a in WhoisLookup.lookup("as-set:members", as_set):
+            if a not in seen:
+                members.update(cls.resolve_as_set(a, seen))
+        return members
+
+    @classmethod
+    def resolve_as_set_prefixes(cls, as_set):
+        prefixes = set()
+        for a in cls.resolve_as_set(as_set):
+            prefixes.update(WhoisLookup.lookup("origin:route", a))
+        optimize = config.getboolean("peer", "prefix_list_optimization")
+        threshold = config.getint("peer", "prefix_list_optimization_threshold")
+        if optimize and len(prefixes) >= threshold:
+            return set(optimize_prefix_list(prefixes))
+        return prefixes
+
+
 ##
 ## Prepared prefix list cache
 ##
