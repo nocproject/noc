@@ -311,5 +311,6 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None,
         f.menu = menu
         f.method = method
         f.api = api
+        f.validate = validate
         return f
     return decorate
