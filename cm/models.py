@@ -386,18 +386,14 @@ class PrefixList(Object):
     repo_name="prefix-list"
     @classmethod
     def build_prefix_lists(cls):
-        from noc.peer.resolver import resolve_as_set_prefixes
         from noc.peer.tree import optimize_prefix_list
-        from noc.peer.models import PeeringPoint
+        from noc.peer.models import PeeringPoint, WhoisCache
         for pp in PeeringPoint.objects.all():
             profile=pp.profile
             for name,filter_exp in pp.generated_prefix_lists:
-                prefixes=resolve_as_set_prefixes(filter_exp)
-                strict=len(prefixes)<10
-                if not strict:
-                    prefixes=optimize_prefix_list(prefixes)
+                prefixes=WhoisCache.resolve_as_set_prefixes(filter_exp)
                 prefixes=sorted(prefixes)
-                pl=profile.generate_prefix_list(name,prefixes,strict)
+                pl=profile.generate_prefix_list(name,prefixes,False)
                 yield (pp,name,pl,prefixes,strict)
     @classmethod
     def global_pull(cls):
