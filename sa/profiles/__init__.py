@@ -232,12 +232,12 @@ class Profile(object):
 
     # Generate prefix list:
     # name - name of prefix list
-    # pl -  is a list of prefixes
+    # pl -  is a list of (prefix, min_len, max_len)
     # Strict - should tested prefix be exactly matched
     # or should be more specific as well
     #
-    def generate_prefix_list(self, name, pl, strict=True):
-        raise Exception("Not implemented")
+    def generate_prefix_list(self, name, pl):
+        raise NotImplementedError()
     #
     # Volatile strings:
     # A list of strings can be changed over time, which
