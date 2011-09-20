@@ -16,4 +16,4 @@ from noc.dns.models import DNSZoneRecordType
 class DNSZoneRecordTypeApplication(ExtModelApplication):
     title = _("RR Types")
     model = DNSZoneRecordType
-    menu = "Setup | Zone RR Types"
+    menu = "Setup | RR Types"
