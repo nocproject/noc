@@ -9,7 +9,7 @@
 ## Django modules
 from django import forms
 ## NOC modules
-from noc.lib.app import Application, view
+from noc.lib.app import ExtApplication, view
 from noc.peer.models import PeeringPoint, WhoisCache
 
 
@@ -18,8 +18,13 @@ class PrefixListBuilderForm(forms.Form):
     Builder form
     """
     peering_point = forms.ModelChoiceField(queryset=PeeringPoint.objects.all())
-    name = forms.CharField()
+    name = forms.CharField(required=False)
     as_set = forms.CharField()
+
+    def clean(self):
+        if not self.cleaned_data["name"] and "as_set" in self.cleaned_data:
+            self.cleaned_data["name"] = self.cleaned_data["as_set"]
+        return self.cleaned_data
 
     def clean_as_set(self):
         as_set = self.cleaned_data["as_set"]
@@ -28,23 +33,19 @@ class PrefixListBuilderForm(forms.Form):
         return as_set
 
 
-class PrefixListBuilderAppplication(Application):
+class PrefixListBuilderAppplication(ExtApplication):
     """
     Interactive prefix list builder
     """
     title = "Prefix List Builder"
+    menu = "Prefix List Builder"
 
-    @view(url=r"^$", menu="Prefix List Builder", access="view")
-    def view_builder(self, request):
-        pl = ""
-        if request.POST:
-            form = PrefixListBuilderForm(request.POST)
-            if form.is_valid():
-                as_set = form.cleaned_data["as_set"]
-                prefixes = WhoisCache.resolve_as_set_prefixes_maxlen(as_set)
-                pp = form.cleaned_data["peering_point"].profile
-                pl = pp.generate_prefix_list(form.cleaned_data["name"],
-                                             prefixes)
-        else:
-            form = PrefixListBuilderForm()
-        return self.render(request, "builder.html", form=form, prefix_list=pl)
+    @view(method=["GET"], url=r"^$", access="read", api=True,
+          validate=PrefixListBuilderForm)
+    def api_list(self, request, peering_point, name, as_set):
+        prefixes = WhoisCache.resolve_as_set_prefixes_maxlen(as_set)
+        pl = peering_point.profile.generate_prefix_list(name, prefixes)
+        return {
+            "name": name,
+            "prefix_list": pl
+        }
