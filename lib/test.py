@@ -396,6 +396,10 @@ class RestModelTestCase(AjaxTestCase):
             status, data = self.get("/", user="superuser", query=s["GET"])
             self.assertEquals(status, self.HTTP_OK)
             self.assertEquals(data, [])
+            # Lookup for object
+            status, data = self.get("/lookup/", user="superuser", query=s["GET"])
+            self.assertEquals(status, self.HTTP_OK)
+            self.assertEquals(data, [])
             # Create object
             status, data = self.post("/", user="superuser", data=s["POST"])
             self.assertEquals(status, self.HTTP_CREATED)
@@ -411,6 +415,12 @@ class RestModelTestCase(AjaxTestCase):
             self.assertEquals(status, self.HTTP_OK)
             self.assertIn("id", data)
             self.assertEquals(object_id, data["id"])
+            # Lookup for object
+            status, data = self.get("/lookup/", user="superuser",
+                                    query={"id": object_id})
+            self.assertEquals(status, self.HTTP_OK)
+            self.assertDictIn({"id": object_id}, data)
+            self.assertEquals(len(data), 1)
             # Get objects list
             status, data = self.get("/", user="superuser")
             self.assertEquals(status, self.HTTP_OK)
