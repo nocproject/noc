@@ -92,6 +92,7 @@ Ext.define("NOC.core.ModelApplication", {
                     border: true,
                     hidden: true,
                     padding: 4,
+                    bodyPadding: 4,
                     items: [
                         {
                             xtype: "container",
