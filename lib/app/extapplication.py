@@ -13,7 +13,6 @@ from django.views.static import serve as serve_static
 ## NOC modules
 from application import Application, view, HasPerm
 from access import Permit, PermitLogged
-from noc.main.models import Permission
 
 
 class ExtApplication(Application):
@@ -45,6 +44,8 @@ class ExtApplication(Application):
         
         :returns: List of strings with permissions names
         """
+        from noc.main.models import Permission
+
         ps = self.get_app_id().replace(".", ":") + ":"
         if request.user.is_superuser:
             qs = Permission.objects
