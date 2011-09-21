@@ -21,18 +21,23 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                             xtype: "textfield",
                             fieldLabel: "Name",
                             name: "name",
-                            emptyText: "Prefix list name ..."
+                            emptyText: "Prefix list name ...",
+                            allowBlank: true,
+                            regex: /^[0-9a-zA-Z_\-]*$/
                         },
                         {
                             xtype: "peer.peeringpoint.LookupField",
                             fieldLabel: "Peering Point",
-                            name: "peering_point"
+                            name: "peering_point",
+                            allowBlank: false
                         },
                         {
                             xtype: "textfield",
                             fieldLabel: "as-set",
                             name: "as_set",
-                            emptyText: "AS or AS-set"
+                            emptyText: "AS or AS-set",
+                            allowBlank: false,
+                            regex: /^AS[0-9a-zA-z\-_]+$/
                         }
                     ],
                     buttons: [
