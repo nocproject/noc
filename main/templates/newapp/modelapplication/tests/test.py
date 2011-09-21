@@ -1,14 +1,28 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## {{module}}.{{app}} unittests
+## {{module}}.{{app}} unittes
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-{{year}} The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.test import ModelApplicationTestCase
+from noc.lib.test import RestModelTestCase
 
 
-class {{model}}TestCase(ModelApplicationTestCase):
-    pass
+class {{model}}TestCase(RestModelTestCase):
+    app = "{{module}}.{{app}}"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]

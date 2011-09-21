@@ -11,8 +11,11 @@ from __future__ import with_statement
 import os
 import datetime
 from optparse import make_option
+import re
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
+from django.template import Template, Context
+from django.db.models.fields import NOT_PROVIDED
 ## NOC modules
 from noc.settings import INSTALLED_APPS
 
@@ -28,6 +31,11 @@ class Command(BaseCommand):
         make_option("--report", "-r", dest="report",
                     choices=["simple"],
                     help="Create Report"))
+
+    rx_empty = re.compile("^ +\n", re.MULTILINE)
+
+    def compact(self, s):
+        return self.rx_empty.sub("", s)
 
     def create_dir(self, path):
         print "    Creating directory %s ..." % path,
@@ -81,6 +89,26 @@ class Command(BaseCommand):
             tv = vars.copy()
             tv["module"] = m
             tv["app"] = a
+            # Initialize model if necessary
+            if tv["model"]:
+                models = __import__("noc.%s.models" % m, {}, {}, "*")
+                model = getattr(models, tv["model"])
+                fields = []
+                for f in model._meta.fields:
+                    if f.name == "id":
+                        continue
+                    if f.default == NOT_PROVIDED:
+                        d = None
+                    else:
+                        d = f.default
+                    fields += [{
+                        "type": f.__class__.__name__,
+                        "name": f.name,
+                        "label": unicode(f.verbose_name),
+                        "null": f.null,
+                        "default": d
+                    }]
+                tv["fields"] = fields
             # Check applications is not exists
             app_root = os.path.join(m, "apps", a)
             if os.path.exists(app_root):
@@ -107,8 +135,8 @@ class Command(BaseCommand):
                     # Fill template
                     with open(os.path.join(dirpath, fn)) as f:
                         template = f.read()
-                    for k, v in tv.items():
-                        template = template.replace("{{%s}}" % k, v if v else "")
+                    content = Template(template).render(Context(tv))
+                    content = self.compact(content)
                     # Write template
                     p = [app_root] + dp + [fn]
-                    self.create_file(os.path.join(*p), template)
+                    self.create_file(os.path.join(*p), content)
