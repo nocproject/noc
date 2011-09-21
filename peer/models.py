@@ -29,6 +29,7 @@ from noc.lib.fileutils import urlopen
 from noc.lib.crypto import md5crypt
 from noc.lib.app.site import site
 from noc.peer.tree import optimize_prefix_list_maxlen
+from noc.lib import nosql
 
 ##
 ## Exception classes
@@ -563,174 +564,60 @@ class Peer(models.Model):
             return None
 
 
-##
-## Whois Database
-##
-class WhoisDatabase(models.Model):
-    class Meta:
-        verbose_name="Whois Database"
-        verbose_name_plural="Whois Databases"
-    name=models.CharField("Name",unique=True,max_length=32)
-    def __unicode__(self):
-        return self.name
-    #
-    def parse(self,f,fields=None):
-        return getattr(self,"parse_%s"%self.name)(f,fields)
-    #
-    @classmethod
-    def parse_RIPE(self,f,fields=None):
-        obj={}
-        for l in f:
-            l=l.strip()
-            if l.startswith("#"):
-                continue
-            if l=="":
-                # New object
-                if obj:
-                    yield obj
-                    obj={}
-                continue
-            if "#" in l:
-                l,r=l.split("#",1)
-            if ":" in l:
-                k,v=[x.strip() for x in l.split(":",1)]
-                if fields and k not in fields:
-                    continue
-                if k in obj:
-                    obj[k]+=[v]
-                else:
-                    obj[k]=[v]
-        if obj:
-            yield obj
-##
-##
-##
-class WhoisLookup(models.Model):
-    class Meta:
-        unique_together=[("whois_database","url","key","value")]
-    whois_database=models.ForeignKey(WhoisDatabase,verbose_name="Whois Database")
-    url=models.CharField("URL",max_length=256)
-    direction=models.CharField("Direction",max_length=1,choices=[("F","Forward"),("R","Reverse")])
-    key=models.CharField("Key",max_length=32)
-    value=models.CharField("Value",max_length=32)
-    def __unicode__(self):
-        return u"(%s:%s:%s:%s)"%(self.whois_database.name,self.direction,self.key,self.value)
-    # method is key:value
-    #
-    @classmethod
-    def lookup(self,method,query):
-        key,value=method.split(":")
-        lookup_ids=[l.id for l in WhoisLookup.objects.filter(key=key,value=value)]
-        r=list(WhoisCache.objects.filter(lookup__in=lookup_ids,key=query.upper()))
-        if len(r)==0:
-            return set()
-        return set(r[0].value.split("|"))
-##
-##
-##
-class WhoisCache(models.Model):
-    class Meta:
-        verbose_name = "Whois Cache"
-        verbose_name_plural = "Whois Cache"
-        unique_together = [("lookup", "key")]
+class WhoisASSetMembers(nosql.Document):
+    """
+    as-set -> members lookup
+    """
+    meta = {
+        "collection": "noc.whois.asset.members",
+        "allow_inheritance": False
+    }
+    
+    as_set = nosql.StringField(unique=True)
+    members = nosql.ListField(nosql.StringField())
 
-    lookup = models.ForeignKey(WhoisLookup,verbose_name="Whois Lookup")
-    key = models.CharField("Key",max_length=64)
-    value = models.TextField("Value")
-    ##
-    ## Convert key to upper case
-    ##
-    def save(self,**kwargs):
-        self.key=self.key.upper()
-        super(WhoisCache,self).save(**kwargs)
-    ##
-    ## Fetch data into cache
-    ## Returns boolean with update status
-    ##
-    @classmethod
-    def update(cls):
-        WhoisCache.objects.all().delete()
-        lt={}
-        for wdb in WhoisDatabase.objects.all():
-            # Fetch
-            urls={}
-            for wl in wdb.whoislookup_set.all():
-                try:
-                    urls[wl.url]+=[wl]
-                except KeyError:
-                    urls[wl.url]=[wl]
-            #
-            for url in urls:
-                fields=set()
-                f_set=[]
-                r_set=[]
-                for wl in urls[url]:
-                    fields.add(wl.key)
-                    fields.add(wl.value)
-                    if wl.direction=="F":
-                        f_set+=[wl]
-                    else:
-                        r_set+=[wl]
-                # Fetch
-                try:
-                    f=urlopen(url,auto_deflate=True)
-                except:
-                    logging.error("peer.update_whois_cache: Cannot fetch URL %s"%url)
-                    return False
-                data=list(wdb.parse(f,fields))
-                f.close()
-                # Process forward lookups
-                keys=set()
-                for wl in f_set:
-                    key=wl.key
-                    value=wl.value
-                    for d in data:
-                        k=d[key][0].upper()
-                        if k in keys:
-                            continue
-                        try:
-                            v=d[value]
-                        except KeyError:
-                            v=[]
-                        v=",".join(v)
-                        v="|".join([x.strip() for x in v.split(",")])
-                        WhoisCache(lookup=wl,key=k,value=v).save()
-                        keys.add(k)
-                # Process reverse lookups
-                keys=set()
-                for wl in r_set:
-                    key=wl.key
-                    value=wl.value
-                    result={}
-                    for d in data:
-                        try:
-                            k=d[key]
-                        except KeyError:
-                            continue
-                        try:
-                            v=d[value][0]
-                        except KeyError:
-                            continue
-                        k=",".join(k)
-                        k="|".join([x.strip() for x in k.split(",")])
-                        for k in k.split("|"):
-                            try:
-                                result[k].add(v)
-                            except KeyError:
-                                result[k]=set([v])
-                    for key,value in result.items():
-                        key=key.upper()
-                        if key in keys:
-                            continue
-                        WhoisCache(lookup=wl,key=key,value="|".join(value)).save()
-                        keys.add(key)
-        return True
+    def __unicode__(self):
+        return self.as_set
 
     @classmethod
-    def resolve_as_set(cls, as_set, seen=None):
-        """
-        Resolve as-set and return a set of member ases
-        """
+    def lookup(cls, key):
+        v = cls.objects.filter(as_set=key.upper()).first()
+        if v is None:
+            return []
+        else:
+            return v.members
+
+
+class WhoisOriginRoute(nosql.Document):
+    """
+    origin -> route
+    """
+    meta = {
+        "collection": "noc.whois.origin.route",
+        "allow_inheritance": False
+    }
+    
+    origin = nosql.StringField(unique=True)
+    routes = nosql.ListField(nosql.StringField())
+
+    def __unicode__(self):
+        return self.as_set
+
+    @classmethod
+    def lookup(cls, key):
+        v = cls.objects.filter(origin=key.upper()).first()
+        if v is None:
+            return []
+        else:
+            return v.routes
+
+
+class WhoisCache(object):
+    """
+    Whois cache interface
+    """
+    @classmethod
+    def resolve_as_set(cls, as_set, seen=None, collection=None):
         if is_asn(as_set[2:]):
             # ASN given
             return set([as_set.upper()])
@@ -738,16 +625,30 @@ class WhoisCache(models.Model):
         if seen is None:
             seen = set()
         seen.add(as_set)
-        for a in WhoisLookup.lookup("as-set:members", as_set):
-            if a not in seen:
-                members.update(cls.resolve_as_set(a, seen))
+        if collection is None:
+            db = nosql.get_db()
+            collection = db.noc.whois.asset.members
+        o = collection.find_one({"as_set": as_set}, fields=["members"])
+        if o:
+            for a in o["members"]:
+                if a not in seen:
+                    members.update(cls.resolve_as_set(a, seen, collection))
         return members
 
     @classmethod
-    def resolve_as_set_prefixes(cls, as_set, optimize=None):
+    def _resolve_as_set_prefixes(cls, as_set):
+        db = nosql.get_db()
+        collection = db.noc.whois.origin.route
         prefixes = set()
         for a in cls.resolve_as_set(as_set):
-            prefixes.update(WhoisLookup.lookup("origin:route", a))
+            o = collection.find_one({"origin": a}, fields=["routes"])
+            if o:
+                prefixes.update(o["routes"])
+        return prefixes
+
+    @classmethod
+    def resolve_as_set_prefixes(cls, as_set, optimize=None):
+        prefixes = cls._resolve_as_set_prefixes(as_set)
         pl_optimize = config.getboolean("peer", "prefix_list_optimization")
         threshold = config.getint("peer", "prefix_list_optimization_threshold")
         if (optimize or
@@ -761,9 +662,7 @@ class WhoisCache(models.Model):
         Generate prefixes for as-sets.
         Returns a list of (prefix, min length, max length)
         """
-        prefixes = set()
-        for a in cls.resolve_as_set(as_set):
-            prefixes.update(WhoisLookup.lookup("origin:route", a))
+        prefixes = cls._resolve_as_set_prefixes(as_set)
         pl_optimize = config.getboolean("peer", "prefix_list_optimization")
         threshold = config.getint("peer", "prefix_list_optimization_threshold")
         max_len = config.getint("peer", "max_prefix_length")
