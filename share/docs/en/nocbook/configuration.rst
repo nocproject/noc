@@ -508,6 +508,20 @@ max_prefix_length
 ^^^^^^^^^^^^^^^^^
 Maximal length of prefixes in generated prefix lists
 
+.. _noc-conf-peer-use_ripe:
+
+use_ripe
+^^^^^^^^
+
+Update whois cache from RIPE database
+
+.. _noc-conf-peer-use_arin:
+
+use_arin
+^^^^^^^^
+
+Update whois cache from ARIN database
+
 .. _noc-conf-dns:
 
 [dns] section

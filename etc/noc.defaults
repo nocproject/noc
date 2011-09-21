@@ -178,6 +178,14 @@ prefix_list_optimization_threshold = 0
 # Maximal prefix length for generated prefix lists
 #
 max_prefix_length = 32
+#
+# Update whois cache from RIPE database
+#
+use_ripe = on
+#
+# Update whois cache from ARIN database
+#
+use_arin = on
 
 #
 # DNS Module setup
