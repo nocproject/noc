@@ -119,7 +119,7 @@ class DatabaseContext(object):
         connection.connection.set_isolation_level(0)
 
     def __enter__(self):
-        if self.reuse and self.has_pg_db():
+        if self.reuse:
             return
         self.info("Creating PostgreSQL test database")
         # Create PostgreSQL database
