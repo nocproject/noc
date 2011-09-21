@@ -8,7 +8,6 @@
 """
 """
 from noc.lib.app.site import site, patterns
-from django.conf.urls.defaults import handler404, handler500
 
 ##
 ## Discover all applications
