@@ -93,6 +93,29 @@ Ext.define("NOC.core.ModelApplication", {
                     hidden: true,
                     padding: 4,
                     bodyPadding: 4,
+                    defaults: {
+                        enableKeyEvents: true,
+                        listeners: {
+                            specialkey: function(field, key) {
+                                if (field.xtype != "textfield")
+                                    return;
+                                var get_button = function(scope, name) {
+                                    return scope.up("panel").dockedItems.items[0].getComponent(name);
+                                }
+                                switch(key.getKey()) {
+                                    case Ext.EventObject.ENTER:
+                                        var b = get_button(this, "save");
+                                        key.stopEvent();
+                                        b.handler.call(b);
+                                        break;
+                                    case Ext.EventObject.ESC:
+                                        var b = get_button(this, "reset");
+                                        key.stopEvent();
+                                        b.handler.call(b);
+                                }
+                            }
+                        }
+                    },
                     items: [
                         {
                             xtype: "container",
@@ -108,6 +131,7 @@ Ext.define("NOC.core.ModelApplication", {
                         }].concat(this.fields),
                     buttons: [
                         {
+                            itemId: "save",
                             id: "save",
                             text: "Save",
                             formBind: true,
@@ -122,6 +146,7 @@ Ext.define("NOC.core.ModelApplication", {
                             }
                         },
                         {
+                            itemId: "reset",
                             id: "reset",
                             text: "Reset",
                             disabled: true,
