@@ -37,5 +37,7 @@ for d in local static/doc /var/repo /var/backup /var/log/noc; do
     [ ! -d $d ] && mkdir $d
     chown noc:noc $d
 done
+chmod 700 etc/ssh
+chown noc:noc etc/ssh
 
 # Perform post-update to syncronize the rest
