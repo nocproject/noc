@@ -78,8 +78,18 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     // Show login window
     show_login: function() {
-        this.login_window = Ext.create("NOC.main.desktop.Login", {
-            controller: this});
+        Ext.Ajax.request({
+            method: "GET",
+            url: "/main/desktop/login_fields/",
+            scope: this,
+            success: function(response) {
+                var fields = Ext.decode(response.responseText);
+                this.login_window = Ext.create("NOC.main.desktop.Login", {
+                    controller: this,
+                    login_fields: fields
+                });
+            }
+        });
     },
     // Start login sequence
     do_login: function(values) {
@@ -131,10 +141,10 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     // Update menu
     update_menu: function() {
+        console.log("Update menu");
         var store = Ext.getStore("NOC.main.desktop.NavTreeStore");
         if (store.isLoading())
             return;
-        console.log("Update menu");
         store.load();
     },
     // Search text entered

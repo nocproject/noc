@@ -16,6 +16,7 @@ from noc.lib.app import ExtApplication, view, PermitLogged
 from noc.lib.version import get_version
 from noc.lib.middleware import set_user
 from noc.settings import AUTH_FORM_PYRULE, LANGUAGE_CODE
+from noc.main.models import PyRule
 
 
 class DesktopAppplication(ExtApplication):
@@ -189,3 +190,15 @@ class DesktopAppplication(ExtApplication):
         except KeyError:
             return self.response_not_found()
         return menu["app"].launch_info
+
+    @view(method=["GET"], url="^login_fields/", access=True, api=True)
+    def api_login_fields(self, request):
+        """
+        Returns a list of login form form fields, suitable to use as
+        ExtJS Ext.form.Panel items
+        """
+        pyrule = AUTH_FORM_PYRULE
+        if not pyrule:
+            pyrule = "auth_form_user_password"
+        authentication_form = PyRule.call(pyrule)
+        return authentication_form

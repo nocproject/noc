@@ -10,4 +10,7 @@
 from base import *
 
 class IAuthenticationForm(Interface):
-    returns=SubclassOfParameter("NOCAuthenticationForm")
+    returns=ListOfParameter(element=DictParameter(attrs={
+            "xtype": StringParameter(),
+            "name": StringParameter()
+        }))
