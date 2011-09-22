@@ -21,6 +21,29 @@ Ext.define("NOC.main.desktop.Login", {
             xtype: "form",
             bodyPadding: 4,
             border: false,
+            defaults: {
+                enableKeyEvents: true,
+                listeners: {
+                    specialkey: function(field, key) {
+                        if (field.xtype != "textfield")
+                            return;
+                        var get_button = function(scope, name) {
+                            return scope.up("panel").up("panel").dockedItems.items[1].getComponent(name);
+                        }
+                        switch(key.getKey()) {
+                            case Ext.EventObject.ENTER:
+                                var b = get_button(this, "login");
+                                key.stopEvent();
+                                b.handler.call(b);
+                                break;
+                            case Ext.EventObject.ESC:
+                                var b = get_button(this, "reset");
+                                key.stopEvent();
+                                b.handler.call(b);
+                        }
+                    }
+                }
+            },
             items: [
                 {
                     xtype: "textfield",
@@ -43,6 +66,7 @@ Ext.define("NOC.main.desktop.Login", {
     buttons: [
         {
             text: "Reset",
+            itemId: "reset",
             handler: function() {
                 this.up("window").down("form").getForm().reset();
             }
@@ -50,6 +74,7 @@ Ext.define("NOC.main.desktop.Login", {
 
         {
             text: "Login",
+            itemId: "login",
             // disabled: true,
             // formBind: true,  @todo: Fix
             handler: function() {
