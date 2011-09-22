@@ -27,9 +27,6 @@ div.breadcrumbs ul li:after {
     content: "\00a0\203a";
 }
 
-ul.messagelist {
-    margin-left: 204px;
-}
 
 #changelist table thead th {
     white-space: normal;
