@@ -16,6 +16,29 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                     border: true,
                     padding: 4,
                     bodyPadding: 4,
+                    defaults: {
+                        enableKeyEvents: true,
+                        listeners: {
+                            specialkey: function(field, key) {
+                                if (field.xtype != "textfield")
+                                    return;
+                                var get_button = function(scope, name) {
+                                    return scope.up("panel").dockedItems.items[0].getComponent(name);
+                                }
+                                switch(key.getKey()) {
+                                    case Ext.EventObject.ENTER:
+                                        var b = get_button(this, "build");
+                                        key.stopEvent();
+                                        b.handler.call(b);
+                                        break;
+                                    case Ext.EventObject.ESC:
+                                        var b = get_button(this, "reset");
+                                        key.stopEvent();
+                                        b.handler.call(b);
+                                }
+                            }
+                        }
+                    },
                     items: [
                         {
                             xtype: "textfield",
@@ -37,12 +60,13 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                             name: "as_set",
                             emptyText: "AS or AS-set",
                             allowBlank: false,
-                            regex: /^AS[0-9a-zA-z\-_]+$/
+                            regex: /^AS[0-9a-zA-z\-_:]+$/
                         }
                     ],
                     buttons: [
                         {
                             text: "Build",
+                            itemId: "build",
                             formBind: true,
                             disabled: false,
                             handler: function() {
@@ -69,6 +93,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
         
                         {
                             text: "Reset",
+                            itemId: "reset",
                             disabled: false,
                             handler: function() {
                                 this.up("panel").getForm().reset();
