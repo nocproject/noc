@@ -10,16 +10,17 @@
 ### END INIT INFO
 
 PREFIX=/opt/noc
+LAUNCHER=./scripts/noc-launcher.py
 cd $PREFIX
 
 case "$1" in
     start)
         echo -n "Starting noc-launcher"
-        ./scripts/noc-launcher start
+        $LAUNCHER start
         ;;
     stop)
         echo -n "Stopping noc-launcher"
-        ./scripts/noc-launcher stop
+        $LAUNCHER stop
         ;;
     restart)
         $0 stop
