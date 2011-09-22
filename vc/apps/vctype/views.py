@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## VCType Manager
+## vc.vctype application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.vc.models import VCType
-##
-## VCType admin
-##
-class VCTypeAdmin(admin.ModelAdmin):
-    list_display=["name","min_labels","label1_min","label1_max","label2_min","label2_max"]
-##
-## VCType application
-##
-class VCTypeApplication(ModelApplication):
-    model=VCType
-    model_admin=VCTypeAdmin
-    menu="Setup | VC Types"
+
+
+class VCTypeApplication(ExtModelApplication):
+    """
+    VCType application
+    """
+    title = "VCType"
+    menu = "Setup | VC Types"
+    model = VCType
