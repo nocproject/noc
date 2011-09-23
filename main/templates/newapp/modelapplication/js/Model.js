@@ -31,6 +31,12 @@ Ext.define("NOC.{{module}}.{{app}}.Model", {
             defaultValue: "{{f.default}}"
             {% endif %}
             {% endif %}
+            {% if f.type == "IntegerField" %}
+            type: "int",
+            {% if f.default %}
+            defaultValue: {{f.default}}
+            {% endif %}
+            {% endif %}
             {% if f.type == "BooleanField" %}
             type: "boolean",
             {% if f.default != None %}
