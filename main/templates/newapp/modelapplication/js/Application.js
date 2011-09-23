@@ -34,6 +34,11 @@ Ext.define("NOC.{{module}}.{{app}}.Application", {
             fieldLabel: "{{f.label}}",
             allowBlank: {% if f.null %}true{% else %}false{% endif %}
             {% endif %}
+            {% if f.type == "IntegerField" %}
+            xtype: "numberfield",
+            fieldLabel: "{{f.label}}",
+            allowBlank: {% if f.null %}true{% else %}false{% endif %}
+            {% endif %}
             {% if f.type == "BooleanField" %}
             xtype: "checkboxfield",
             boxLabel: "{{f.label}}"
