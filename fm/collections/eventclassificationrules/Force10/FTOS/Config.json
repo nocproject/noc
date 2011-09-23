@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%RPM0-P:CP %FILEMGR-5-FILESAVED: Copied running-config to startup-config in .+ by (?P<user>.+)$"
+                "value_re": "%FILEMGR-5-FILESAVED: Copied running-config to startup-config in .+ by (?P<user>.+)$"
             }
         ]
     },
