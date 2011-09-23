@@ -38,7 +38,7 @@ class ReportApplication(Application):
         pass
 
     def get_menu(self):
-        return "Reports.|" + unicode(self.title)
+        return "Reports | " + unicode(self.title)
     ##
     ## Render report
     ##
