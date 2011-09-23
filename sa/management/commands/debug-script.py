@@ -228,7 +228,6 @@ class ActivatorStub(object):
         
     def on_script_exit(self, script):
         get_version = ".".join(script.name.split(".")[:-1]) + ".get_version"
-        get_version = repr(get_version)
         if self.to_save_output and get_version in script.call_cache:
             v = script.call_cache[get_version]["{}"]
             self.session_can.set_version(v["platform"], v["version"])
@@ -240,6 +239,16 @@ class ActivatorStub(object):
         profile = profile_registry["%s.%s" % (pv, pos)]()
         script = script_registry[_script_name](profile, self, access_profile, **kwargs)
         self.scripts += [script]
+        if self.to_save_output:
+            platform = None
+            version = None
+            for a in access_profile.attrs:
+                if a.key == "platform":
+                    platform = a.value
+                elif a.key == "version":
+                    version = a.value
+            if platform and version:
+                self.session_can.set_version(platform, version)
         script.start()
     
     def request_call(self, f, *args, **kwargs):
