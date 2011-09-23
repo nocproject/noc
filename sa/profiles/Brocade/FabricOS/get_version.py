@@ -11,7 +11,7 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_version=re.compile(r"Fabric OS:\s+(?P<version>\S+)",re.MULTILINE)
+rx_version=re.compile(r"Fabric OS:\s+v?(?P<version>\S+)",re.MULTILINE)
 rx_platform=re.compile(r"^Part Num:\s+(?P<platform>\S+)",re.MULTILINE)
 
 class Script(noc.sa.script.Script):
