@@ -45,7 +45,8 @@ Ext.define("NOC.main.language.Application", {
         {
             xtype: "checkboxfield",
             boxLabel: "Is Active",
-            name: "is_active"
+            name: "is_active",
+            inputValue: true
         }
     ]
 });
