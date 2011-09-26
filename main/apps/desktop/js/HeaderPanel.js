@@ -64,7 +64,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 {
                     id: "header_menu_logout",
                     text: "Logout",
-                    iconCls: "icon_cross"
+                    iconCls: "icon_door_out"
                 }
             ]
         }),

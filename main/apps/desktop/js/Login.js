@@ -54,6 +54,7 @@ Ext.define("NOC.main.desktop.Login", {
                 {
                     text: "Reset",
                     itemId: "reset",
+                    iconCls: "icon_cancel",
                     handler: function() {
                         this.up("window").down("form").getForm().reset();
                     }
@@ -62,6 +63,7 @@ Ext.define("NOC.main.desktop.Login", {
                 {
                     text: "Login",
                     itemId: "login",
+                    iconCls: "icon_door_in",
                     // disabled: true,
                     // formBind: true,  @todo: Fix
                     handler: function() {
