@@ -51,6 +51,7 @@ class Application(object):
     title = "APPLICATION TITLE"
     icon = "icon_application"
     extra_permissions = []  # List of additional permissions, not related with views
+    implied_permissions = {}  # permission -> list of implied permissions
     ##
     Form = NOCForm # Shortcut for form class
     config = settings.config
@@ -149,8 +150,9 @@ class Application(object):
     ##
     ## Create serialized JSON-encoded response
     ##
-    def render_json(self,obj):
-        return HttpResponse(JSONEncoder(ensure_ascii=False).encode(obj),mimetype="text/json")
+    def render_json(self, obj, status=200):
+        return HttpResponse(JSONEncoder(ensure_ascii=False).encode(obj),
+                            mimetype="text/json", status=status)
     ##
     ## Render "success" page
     ##
