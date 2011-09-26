@@ -211,7 +211,8 @@ class Site(object):
         r = {
             "title": parts[0],
             "app": app,
-            "access": self.site_access(app, v)
+            "access": self.site_access(app, v),
+            "iconCls": app.icon
         }
         self.set_menu_id(r, path)
         root["children"] += [r]
@@ -243,7 +244,8 @@ class Site(object):
         r = {
             "title": parts[0],
             "app": app,
-            "access": lambda user: app.launch_access.check(app, user)
+            "access": lambda user: app.launch_access.check(app, user),
+            "iconCls": app.icon
         }
         self.set_menu_id(r, path)
         root["children"] += [r]
