@@ -9,14 +9,15 @@
 ## Python modules
 import os
 ## Django modules
-from django.contrib.auth import authenticate, SESSION_KEY, BACKEND_SESSION_KEY
+from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
+from django.http import HttpResponse
 ## NOC modules
 from noc.settings import config
 from noc.lib.app import ExtApplication, view, PermitLogged
 from noc.lib.version import get_version
 from noc.lib.middleware import set_user
-from noc.settings import AUTH_FORM_PYRULE, LANGUAGE_CODE
-from noc.main.models import PyRule
+from noc.settings import LANGUAGE_CODE
+from noc.main.auth.backends import backend as auth_backend
 
 
 class DesktopAppplication(ExtApplication):
@@ -82,8 +83,7 @@ class DesktopAppplication(ExtApplication):
         :returns: True or False depending on login status
         :rtype: Bool
         """
-        #raise Exception("Not implemented")
-        user = authenticate(**dict(request.POST.items()))
+        user = auth_backend.authenticate(**dict(request.POST.items()))
         if not user:
             return False
         if SESSION_KEY in request.session:
@@ -92,6 +92,8 @@ class DesktopAppplication(ExtApplication):
                 request.session.flush()
         else:
             request.session.cycle_key()
+        user.backend = "%s.%s" % (auth_backend.__module__,
+                                  auth_backend.__class__.__name__)
         request.session[SESSION_KEY] = user.id
         request.session[BACKEND_SESSION_KEY] = user.backend
         request.user = user
@@ -132,7 +134,8 @@ class DesktopAppplication(ExtApplication):
             "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "theme": "gray"
+            "theme": "gray",
+            "can_change_credentials": auth_backend.can_change_credentials
         }
 
     @view(method=["GET"], url="^navigation/$", access=True, api=True)
@@ -195,14 +198,39 @@ class DesktopAppplication(ExtApplication):
             return self.response_not_found()
         return menu["app"].launch_info
 
-    @view(method=["GET"], url="^login_fields/", access=True, api=True)
+    @view(method=["GET"], url="^login_fields/$", access=True, api=True)
     def api_login_fields(self, request):
         """
         Returns a list of login form form fields, suitable to use as
         ExtJS Ext.form.Panel items
         """
-        pyrule = AUTH_FORM_PYRULE
-        if not pyrule:
-            pyrule = "auth_form_user_password"
-        authentication_form = PyRule.call(pyrule)
-        return authentication_form
+        return auth_backend.get_login_fields()
+
+    @view(method=["GET"], url="^change_credentials_fields/$",
+          access=PermitLogged(), api=True)
+    def api_change_credentials_fields(self, request):
+        """
+        Returns a list of change credentials field, suitable to use as
+        ExtJS Ext.form.Panel items
+        """
+        return auth_backend.get_change_credentials_fields()
+
+    @view(method=["POST"], url="^change_credentials/$",
+          access=PermitLogged(), api=True)
+    def api_change_credentials(self, request):
+        """
+        Change user's credentials if allowed by current backend
+        """
+        if not auth_backend.can_change_credentials:
+            return self.render_json({
+                "status": False,
+                "error": "Cannot change credentials with selected auth method"},
+                status=401)
+        try:
+            auth_backend.change_credentials(request.user,
+                                            **dict(request.POST.items()))
+        except ValueError, why:
+            return self.render_json({
+                "status": False,
+                "error": str(why)},
+                status=401)

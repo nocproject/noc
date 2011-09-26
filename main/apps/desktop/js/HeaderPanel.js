@@ -59,6 +59,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
 
         Ext.create("Ext.Button", {
             id: "user_display_name",
+            itemId: "user_display_name",
             text: "Anonymous",
             scale: "small",
             iconCls: "icon_user",
@@ -68,12 +69,21 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                     text: "Collapse all panels",
                     iconCls: "icon_arrow_out"
                 },
+                "-",
                 {
                     id: "header_menu_profile",
                     text: "User profile ...",
                     disabled: true,
                     iconCls: "icon_user_edit"
                 },
+                {
+                    id: "header_menu_change_password",
+                    itemId: Ext.getCmp("header"),
+                    text: "Change password ...",
+                    disabled: true,
+                    iconCls: "icon_user_green"
+                },
+                "-",
                 {
                     id: "header_menu_logout",
                     text: "Logout",
