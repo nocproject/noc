@@ -55,8 +55,8 @@ class ExtApplication(Application):
         return [p.split(":")[2] for p in
                 qs.filter(name__startswith = ps).values_list("name", flat=True)]
 
-    @view(url="^(?P<path>(?:js|css|img)/[0-9a-zA-Z/]+.js)", url_name="static",
-          access=Permit())
+    @view(url="^(?P<path>(?:js|css|img)/[0-9a-zA-Z_/]+\.(?:js|css|png))$",
+          url_name="static", access=Permit())
     def view_static(self, request, path):
         """
         Static file server
