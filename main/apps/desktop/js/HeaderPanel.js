@@ -10,6 +10,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     extend: "Ext.Panel",
     id: "header",
     region: "north",
+    bodyCls: Ext.baseCSSPrefix + 'tab-bar',
     height: 30,
     maxHeight: 30,
     minHeight: 30,
@@ -23,12 +24,24 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         align: "middle"
     },
     border: false,
+    bodyPadding: 4,
     items: [
+        /*
         Ext.create("Ext.Img",{
             src: NOC.settings.logo_url,
             width: NOC.settings.logo_width,
             height: NOC.settings.logo_height
         }),
+        */
+        {
+            xtype: "container",
+            html: "NOC: ",
+            style: {
+                fontSize: "18px",
+                fontWeight: "bold"
+            },
+            border: false
+        },
 
         {
             xtype: "container",

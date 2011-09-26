@@ -10,6 +10,7 @@ Ext.define("NOC.main.desktop.StatusPanel", {
     extend: "Ext.Panel",
     id: "status",
     region: "south",
+    bodyCls: Ext.baseCSSPrefix + 'tab-bar',
     height: 20,
     maxHeight: 20,
     minHeight: 20,
