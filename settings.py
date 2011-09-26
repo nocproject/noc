@@ -57,26 +57,6 @@ MONTH_DAY_FORMAT = config.get("main","month_day_format")
 YEAR_MONTH_FORMAT= config.get("main","year_month_format")
 DATETIME_FORMAT  = config.get("main","datetime_format")
 
-# Process authentication settings
-AUTH_METHOD = config.get("authentication","method")
-AUTH_FORM_PYRULE = config.get("authentication","form_pyrule")
-
-if AUTH_METHOD=="ldap":
-    # Process LDAP-specific settings
-    AUTH_LDAP_SERVER          = config.get("authentication","ldap_server")
-    AUTH_LDAP_BIND_METHOD     = config.get("authentication","ldap_bind_method")
-    AUTH_LDAP_BIND_DN         = config.get("authentication","ldap_bind_dn")
-    AUTH_LDAP_BIND_PASSWORD   = config.get("authentication","ldap_bind_password")
-    AUTH_LDAP_USERS_BASE      = config.get("authentication","ldap_users_base")
-    AUTH_LDAP_USERS_FILTER    = config.get("authentication","ldap_users_filter")
-    AUTH_LDAP_REQUIRED_GROUP  = config.get("authentication","ldap_required_group")
-    AUTH_LDAP_REQUIRED_FILTER = config.get("authentication","ldap_required_filter")
-    AUTH_LDAP_SUPERUSER_GROUP = config.get("authentication","ldap_superuser_group")
-    AUTH_LDAP_SUPERUSER_FILTER= config.get("authentication","ldap_superuser_filter")
-elif AUTH_METHOD == "pyrule":
-    # Process pyRule-specific settings
-    AUTH_PYRULE_AUTHENTICATION = config.get("authentication","pyrule_authentication")
-
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -98,16 +78,6 @@ ADMIN_MEDIA_PREFIX = "/media/"
 
 # Make this unique, and don"t share it with anybody.
 SECRET_KEY = config.get("main","secret_key")
-
-# Set up authentication backends
-if AUTH_METHOD == "local":
-    AUTHENTICATION_BACKENDS = ["noc.main.auth.backends.localbackend.NOCLocalBackend"]
-elif AUTH_METHOD == "http":
-    AUTHENTICATION_BACKENDS = ["noc.main.auth.backends.httpbackend.NOCHTTPBackend"]
-elif AUTH_METHOD == "ldap":
-    AUTHENTICATION_BACKENDS = ["noc.main.auth.backends.ldapbackend.NOCLDAPBackend"]
-elif AUTH_METHOD == "pyrule":
-    AUTHENTICATION_BACKENDS = ["noc.main.auth.backends.pyrulebackend.NOCPyRuleBackend"]
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = [
@@ -136,7 +106,7 @@ MIDDLEWARE_CLASSES = [
     "noc.lib.middleware.TLSMiddleware", # Thread local storage
 ]
 
-if AUTH_METHOD == "http":
+if config.get("authentication", "method") == "http":
     MIDDLEWARE_CLASSES += ["django.contrib.auth.middleware.RemoteUserMiddleware"]
 
 ROOT_URLCONF = "noc.urls"
@@ -159,7 +129,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.admin",
     "django.contrib.messages",
-    "django.contrib.databrowse",
+    #"django.contrib.databrowse",
     "tagging",
     "south",
     
