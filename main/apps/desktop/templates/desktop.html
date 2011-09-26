@@ -10,6 +10,7 @@
         {% if setup.favicon_mime %}<link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />{% endif %}
         <!-- CSS -->
         <link rel="stylesheet" type="text/css" id="theme" href="/static/resources/css/ext-all.css" />
+        <link rel="stylesheet" type="text/css" id="theme" href="/static/css/icons.css" />
         <!-- JS -->
         <script type="text/javascript" src="/static/js/ext-all.js"></script>
         <!-- page specific -->
@@ -26,6 +27,7 @@
                 enabled: true,
                 paths: {
                     {% for m, a in apps %}"NOC.{{m}}.{{a}}": "/{{m}}/{{a}}/js",{% endfor %}
+                    "NOC.models": "/static/js/noc/models",
                     "NOC.core": "/static/js/noc/core"
                 }});
         </script>
