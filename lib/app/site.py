@@ -44,6 +44,7 @@ class ProxyNode:
 
 HTTP_METHODS = set(["GET", "POST", "PUT", "DELETE"])
 
+
 class URL(object):
     """
     URL Data wrapper
@@ -78,6 +79,11 @@ class Site(object):
     Application site. Registers applications, builds menu and
     handling views
     """
+    folder_icons = {
+        "Setup": "icon_wrench_orange",
+        "Reports": "icon_report"
+    }
+
     def __init__(self):
         self.apps = {}  # app_id -> app instance
         self.urlpatterns = patterns("")
@@ -202,6 +208,8 @@ class Site(object):
                 root = n
             else:
                 r = {"title": p, "children": []}
+                if p in self.folder_icons:
+                    r["iconCls"] = self.folder_icons[p]
                 self.set_menu_id(r, path)
                 root["children"] += [r]
                 root = r
@@ -237,6 +245,8 @@ class Site(object):
                 root = n
             else:
                 r = {"title": p, "children": []}
+                if p == "Setup":
+                    r["iconCls"] = "icon_wrench_orange"
                 self.set_menu_id(r, path)
                 root["children"] += [r]
                 root = r
