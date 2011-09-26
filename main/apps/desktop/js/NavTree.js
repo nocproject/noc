@@ -10,6 +10,7 @@ Ext.define("NOC.main.desktop.NavTree", {
     extend: "Ext.tree.Panel",
     id: "navtree",
     title: "Navigation",
+    iconCls: "icon_world",
     useArrows: true,
     rootVisible: false,
     store: Ext.create("NOC.main.desktop.NavTreeStore")
