@@ -22,6 +22,9 @@ Ext.define("NOC.main.desktop.Controller", {
             "#header_menu_toggle": {
                 click: this.on_panels_toggle
             },
+            "#header_menu_change_password": {
+                click: this.show_change_credentials  
+            },
             "#header_menu_logout": {
                 click: this.do_logout
             },
@@ -71,6 +74,10 @@ Ext.define("NOC.main.desktop.Controller", {
                 if(!display_name)
                     display_name = settings["username"];
                 Ext.getCmp("header").set_user_name(display_name);
+                // Activate/deactivate change credentials menu
+                Ext.getCmp("header").getComponent("user_display_name").menu
+                    .getComponent("header_menu_change_password")
+                    .setDisabled(!settings["can_change_credentials"]);
             }
         });
         // Load menu
@@ -186,5 +193,37 @@ Ext.define("NOC.main.desktop.Controller", {
         this.launch_tab("NOC.main.desktop.IFramePanel",
                         "Search",
                         {url: "/main/search/"});
+    },
+    // Show change credentials form
+    show_change_credentials: function() {
+        Ext.Ajax.request({
+            method: "GET",
+            url: "/main/desktop/change_credentials_fields/",
+            scope: this,
+            success: function(response) {
+                var fields = Ext.decode(response.responseText);
+                this.change_credentials_window = Ext.create("NOC.main.desktop.ChangeCredentials", {
+                    controller: this,
+                    change_credentials_fields: fields
+                });
+            }
+        });
+    },
+    // Change credentials
+    do_change_credentials: function(values) {
+        Ext.Ajax.request({
+            method: "POST",
+            url: "/main/desktop/change_credentials/",
+            params: values,
+            scope: this,
+            success: function(response) {
+                this.change_credentials_window.close();
+                this.change_credentials_window = null;
+            },
+            failure: function(response) {
+                var status = Ext.decode(response.responseText);
+                Ext.Msg.alert("Failed", status["error"]);
+            }
+        });        
     }
 });
