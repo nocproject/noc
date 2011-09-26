@@ -49,6 +49,7 @@ class Application(object):
     """
     __metaclass__ = ApplicationBase
     title = "APPLICATION TITLE"
+    icon = "icon_application"
     extra_permissions = []  # List of additional permissions, not related with views
     ##
     Form = NOCForm # Shortcut for form class

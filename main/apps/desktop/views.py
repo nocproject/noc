@@ -32,21 +32,22 @@ class DesktopAppplication(ExtApplication):
                     if isinstance(self.site.apps[a], ExtApplication)]
         apps = [a.split(".") for a in sorted(ext_apps)]
         # Prepare settings
-        favicon_url=config.get("customization", "favicon_url")
+        favicon_url = config.get("customization", "favicon_url")
         if favicon_url.endswith(".png"):
-            favicon_mime="image/png"
+            favicon_mime = "image/png"
         elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
-            favicon_mime="image/jpeg"
+            favicon_mime = "image/jpeg"
         else:
-            favicon_mime=None
+            favicon_mime = None
 
         setup = {
-            "installation_name" : config.get("customization", "installation_name"),
-            "logo_url"          : config.get("customization", "logo_url"),
-            "logo_width"        : config.get("customization", "logo_width"),
-            "logo_height"       : config.get("customization", "logo_height"),
-            "favicon_url"       : favicon_url,
-            "favicon_mime"      : favicon_mime
+            "installation_name": config.get("customization",
+                                            "installation_name"),
+            "logo_url": config.get("customization", "logo_url"),
+            "logo_width": config.get("customization", "logo_width"),
+            "logo_height": config.get("customization", "logo_height"),
+            "favicon_url": favicon_url,
+            "favicon_mime": favicon_mime
         }
         return self.render(request, "desktop.html", apps=apps, setup=setup)
 
@@ -57,7 +58,7 @@ class DesktopAppplication(ExtApplication):
     def api_version(self, request):
         """
         Return current NOC version
-        
+
         :returns: version string
         :rtype: Str
         """
@@ -67,7 +68,7 @@ class DesktopAppplication(ExtApplication):
     def api_is_logged(self, request):
         """
         Check wrether the session is authenticated.
-        
+
         :returns: True if session authenticated, False otherwise
         :rtype: Bool
         """
@@ -77,7 +78,7 @@ class DesktopAppplication(ExtApplication):
     def api_login(self, request):
         """
         Authenticate session
-        
+
         :returns: True or False depending on login status
         :rtype: Bool
         """
@@ -110,7 +111,7 @@ class DesktopAppplication(ExtApplication):
     def api_logout(self, request):
         """
         Deauthenticate session
-        
+
         :returns: Logout status: True or False
         :rtype: Bool
         """
@@ -138,7 +139,7 @@ class DesktopAppplication(ExtApplication):
     def api_navigation(self, request):
         """
         Return user's navigation menu tree
-        
+
         :param node:
         :returns:
         """
@@ -149,6 +150,8 @@ class DesktopAppplication(ExtApplication):
                     "id": r["id"],
                     "text": r["title"]
                 }
+                if "iconCls" in r:
+                    n["iconCls"] = r["iconCls"]
                 if "children" in r:
                     cld = get_children(r["children"], user)
                     if not cld:
@@ -161,7 +164,7 @@ class DesktopAppplication(ExtApplication):
                         n["leaf"] = True
                         c += [n]
             return c
-        
+
         # Return empty list for unauthenticated user
         if not request.user.is_authenticated():
             return []
@@ -176,7 +179,8 @@ class DesktopAppplication(ExtApplication):
                 return self.response_not_found()
         return get_children(root, request.user)
 
-    @view(method=["GET"], url="^launch_info/$", access=PermitLogged(), api=True)
+    @view(method=["GET"], url="^launch_info/$", access=PermitLogged(),
+          api=True)
     def api_launch_info(self, request):
         """
         Get application launch information

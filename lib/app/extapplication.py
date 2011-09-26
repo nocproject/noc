@@ -17,6 +17,7 @@ from access import Permit, PermitLogged
 
 class ExtApplication(Application):
     menu = None
+    icon = "icon_application_form"
 
     def __init__(self, *args, **kwargs):
         super(ExtApplication, self).__init__(*args, **kwargs)
