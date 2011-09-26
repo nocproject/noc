@@ -48,19 +48,23 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             id: "user_display_name",
             text: "Anonymous",
             scale: "small",
+            iconCls: "icon_user",
             menu: [
                 {
                     id: "header_menu_toggle",
-                    text: "Collapse all panels"
+                    text: "Collapse all panels",
+                    iconCls: "icon_arrow_out"
                 },
                 {
                     id: "header_menu_profile",
                     text: "User profile ...",
-                    disabled: true
+                    disabled: true,
+                    iconCls: "icon_user_edit"
                 },
                 {
                     id: "header_menu_logout",
-                    text: "Logout"
+                    text: "Logout",
+                    iconCls: "icon_cross"
                 }
             ]
         }),
