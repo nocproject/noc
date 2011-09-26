@@ -75,6 +75,8 @@ Ext.define("NOC.main.desktop.Controller", {
         });
         // Load menu
         this.update_menu();
+        // Launch welcome application
+        this.launch_tab("NOC.main.welcome.Application", "Welcome", {});
     },
     // Show login window
     show_login: function() {
@@ -145,6 +147,10 @@ Ext.define("NOC.main.desktop.Controller", {
         var store = Ext.getStore("NOC.main.desktop.NavTreeStore");
         if (store.isLoading())
             return;
+        // Reset store: @todo: Fix, not working
+        store.removeAll();
+        store.rejectChanges();
+        // Reload
         store.load();
     },
     // Search text entered
