@@ -61,6 +61,7 @@ Ext.define("NOC.core.ModelApplication", {
                                 {
                                     id: "create",
                                     text: "Add",
+                                    iconCls: "icon_add",
                                     tooltip: "Add new record",
                                     disabled: true,
                                     handler: function() {
@@ -134,6 +135,7 @@ Ext.define("NOC.core.ModelApplication", {
                             itemId: "save",
                             id: "save",
                             text: "Save",
+                            iconCls: "icon_accept",
                             formBind: true,
                             disabled: true,
                             handler: function() {
@@ -149,6 +151,7 @@ Ext.define("NOC.core.ModelApplication", {
                             itemId: "reset",
                             id: "reset",
                             text: "Reset",
+                            iconCls: "icon_cancel",
                             disabled: true,
                             handler: function() {
                                 this.up("panel").getForm().reset();
@@ -157,6 +160,7 @@ Ext.define("NOC.core.ModelApplication", {
                         {
                             id: "close",
                             text: "Close",
+                            iconCls: "icon_arrow_up",
                             handler: function() {
                                 var app = this.up("panel").up("panel");
                                 app.toggle();
@@ -165,6 +169,7 @@ Ext.define("NOC.core.ModelApplication", {
                         {
                             id: "delete",
                             text: "Delete",
+                            iconCls: "icon_delete",
                             disabled: true,
                             handler: function() {
                                 var app = this.up("panel").up("panel");
