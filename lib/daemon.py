@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 import ConfigParser,sys,logging,os,signal,optparse,datetime,traceback
 import logging.handlers
-from noc.lib.debug import error_report,frame_report,set_crashinfo_context,GCStats
+from noc.lib.debug import error_report,frame_report,set_crashinfo_context
 from noc.lib.validators import is_ipv4, is_int
 from noc.lib.version import get_version
 
@@ -54,8 +54,6 @@ class Daemon(object):
         self.config=None
         self.instance_id=self.options.instance_id
         self.load_config()
-        # GC statistics collector
-        self.gc_stats=GCStats()
         # Register signal handlers if any
         for s in [s for s in dir(self) if s.startswith("SIG")]:
             try:
@@ -306,11 +304,6 @@ class Daemon(object):
     ##
     def SIGHUP(self,signo,frame):
         self.load_config()
-    ##
-    ## Build GC statistics on SIGPROF
-    ##
-    def SIGPROF(self,signo,frame):
-        logging.info(self.gc_stats.report())
     ##
     ##
     ##
