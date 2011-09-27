@@ -13,5 +13,6 @@ Ext.define("NOC.main.desktop.NavTree", {
     iconCls: "icon_world",
     useArrows: true,
     rootVisible: false,
+    singleExpand: true,
     store: Ext.create("NOC.main.desktop.NavTreeStore")
 });
