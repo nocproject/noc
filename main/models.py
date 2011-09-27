@@ -182,16 +182,25 @@ class Permission(models.Model):
     Permissions.
 
     Populated by manage.py sync-perm
+    @todo: Check name format
     """
     class Meta:
         verbose_name = "Permission"
         verbose_name_plural = "Permissions"
+
     name = models.CharField("Name", max_length=128, unique=True)  # module:app:permission
+    implied = models.CharField("Implied", max_length=256, null=True, blank=True)  # comma-separated
     users = models.ManyToManyField(User, related_name="noc_user_permissions")
     groups = models.ManyToManyField(Group, related_name="noc_group_permissions")
 
     def __unicode__(self):
         return self.name
+
+    def get_implied_permissions(self):
+        if not self.implied:
+            return []
+        return [Permission.objects.get(name=p.strip())
+                for p in self.implied.split(",")]
 
     @classmethod
     def has_perm(self, user, perm):
