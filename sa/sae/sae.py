@@ -17,6 +17,7 @@ import logging
 import random
 import cPickle
 import glob
+import sys
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
@@ -76,6 +77,8 @@ class SAE(Daemon):
         #
         self.strip_syslog_facility = False
         self.strip_syslog_severity = False
+        #
+        self.has_getsizeof = hasattr(sys, "getsizeof")
 
     def load_config(self):
         """
@@ -242,22 +245,48 @@ class SAE(Daemon):
             return
         c_d = os.path.dirname(self.config.get("main", "logfile"))
         if not os.path.isdir(c_d):
+            logging.error("No log directory found: '%s'" % c_d)
             return
-        for fn in [fn for fn in os.listdir(c_d) if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]:
+        # Look for crashinfos
+        crashinfos = [fn for fn in os.listdir(c_d)
+                      if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]
+        if not crashinfos:
+            return
+        c = len(crashinfos)
+        logging.info("%d crashinfo files found. Attempting to import" % len(c))
+        for fn in crashinfos:
             path = os.path.join(c_d, fn)
             if not os.access(path, os.R_OK | os.W_OK):
                 # Wait for noc-launcher to fix permissions
+                logging.error("Cannot access crashinfo '%s'."
+                              "Left until noc-launcher will fix permissions" % fn)
                 continue
             try:
                 with open(path, "r") as f:
                     data = cPickle.loads(f.read())
+            except OSError, why:
+                logging.error("Cannot load crashingo '%s': %s" % (fn, why[0]))
+                continue
+            except MemoryError:
+                logging("Failed to allocate memory "
+                        "to import crashinfo '%s'" % fm)
+                continue
             except:
                 logging.error("Cannot import crashinfo: %s" % path)
                 continue
-            ts = data["ts"]
+            ts = datetime.datetime.fromtimestamp(data["ts"])
             del data["ts"]
-            self.write_event(data=data.items(),
-                             timestamp=datetime.datetime.fromtimestamp(ts))
+            if self.has_getsizeof and sys.getsizeof(data) > 1048576:
+                # Check for crashinfo size
+                logging.error("Crashinfo '%s' is too large. Removing" % fn)
+                os.unlink(path)
+                continue
+            try:
+                self.write_event(data=data.items(), timestamp=ts)
+            except Exception, why:
+                logging.error("Failed to create FM event from crashinfo "
+                              "'%s': %s" % (fn, why))
+                continue
             os.unlink(path)
 
     def on_stream_close(self, stream):

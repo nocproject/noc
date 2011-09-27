@@ -1,0 +1,87 @@
+[
+    {
+        "name": "EdgeCore | ES | Network | MAC | MAC Learned (SNMP)",
+        "description": "ES3528MO-MIB::ES3528MO-MIB::macNotificationTrap",
+        "event_class__name": "Network | MAC | MAC Learned",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^EdgeCore\\.ES$" 
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapMacNotifyAction\\.0$",
+                "value_re": "^add$" 
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapMacNotifyMac\\.0$",     
+                "value_re": "^(?P<mac__bin_to_mac>.+)$" 
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapMacNotifyVid\\.0$",     
+                "value_re": "^(?P<vlan>\\d+)$" 
+            },
+            {
+                "key_re": "^RFC1213-MIB::ifIndex\\.\\d+$",
+                "value_re": "^(?P<port>\\d+)$" 
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^ES3528MO-MIB::macNotificationTrap$" 
+            }
+
+        ],
+        "vars": [
+           {
+                "name": "interface",
+                "value": "='Eth %s/%s' % ('1', port)" 
+           }
+        ]
+    },
+    {
+        "name": "EdgeCore | ES | Network | MAC | MAC Aged (SNMP)",
+        "description": "ES3528MO-MIB::ES3528MO-MIB::macNotificationTrap",
+        "event_class__name": "Network | MAC | MAC Aged",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^EdgeCore\\.ES$" 
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapMacNotifyAction\\.0$",
+                "value_re": "^remove$"           
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapMacNotifyMac\\.0$",
+                "value_re": "^(?P<mac__bin_to_mac>.+)$" 
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapMacNotifyVid\\.0$",
+                "value_re": "^(?P<vlan>\\d+)$"         
+            },
+            {
+                "key_re": "^RFC1213-MIB::ifIndex\\.\\d+$",    
+                "value_re": "^(?P<port>\\d+)$" 
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^ES3528MO-MIB::macNotificationTrap$" 
+            }
+        ],
+        "vars": [
+           {
+                "name": "interface",
+                "value": "='Eth %s/%s' % ('1', port)" 
+           }
+        ]
+    }
+]
