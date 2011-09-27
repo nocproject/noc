@@ -25,10 +25,10 @@ class NOCLDAPBackend(NOCAuthBackend):
     """
     def __init__(self):
         super(NOCLDAPBackend, self).__init__()
-        self.server = config.get("authentication","ldap_server")
+        self.server = config.get("authentication", "ldap_server")
         self.bind_method = config.get("authentication", "ldap_bind_method")
         self.bind_dn = config.get("authentication", "ldap_bind_dn")
-        self.bind_password = config.get("authentication"," ldap_bind_password")
+        self.bind_password = config.get("authentication", "ldap_bind_password")
         self.users_base = config.get("authentication", "ldap_users_base")
         self.users_filter = config.get("authentication", "ldap_users_filter")
         self.required_group = config.get("authentication",
@@ -40,7 +40,7 @@ class NOCLDAPBackend(NOCAuthBackend):
         self.superuser_filter = config.get("authentication",
                                            "ldap_superuser_filter")
 
-    def q(self,s):
+    def q(self, s):
         """
         LDAP quoting according to RFC2254
         """
@@ -48,7 +48,7 @@ class NOCLDAPBackend(NOCAuthBackend):
             s = s.replace(c, r"\%02x" % ord(c))
         return s
 
-    def search_to_unicode(self,attrs):
+    def search_to_unicode(self, attrs):
         """
         Convert search attributes to unicode
         """
@@ -66,7 +66,7 @@ class NOCLDAPBackend(NOCAuthBackend):
         r = Template(template).render(Context(context))
         logging.debug("LDAP: Expanding template: '%s' -> '%s'" % (template, r))
         return r
-    
+
     def ldap_bind(self, client, username=None, password=None):
         """
         Bind client (simple mode)
@@ -82,7 +82,7 @@ class NOCLDAPBackend(NOCAuthBackend):
                 client.simple_bind_s(username, password)
             else:
                 logging.error("Invalid ldap bind method: '%s'" % self.bind_method)
-                raise ValueError("Invalid ldap bind method: '%s'"% self.bind_method)
+                raise ValueError("Invalid ldap bind method: '%s'" % self.bind_method)
 
     def authenticate(self, username=None, password=None, **kwargs):
         """
@@ -92,18 +92,18 @@ class NOCLDAPBackend(NOCAuthBackend):
         is_active = True  # User activity flag
         is_superuser = False  # Superuser flag
         # Prepare template context
-        context={
+        context = {
             "username": self.q(username),
             "user": self.q(username)
         }
         if "@" in username:
-            u, d=username.split("@",1)
+            u, d = username.split("@", 1)
             context["user"] = self.q(u)
             context["domain"] = self.q(d)
             context["domain_parts"] = [self.q(p) for p in d.split(".")]
         try:
             # Prepare LDAP client
-            client=ldap.initialize(self.server)
+            client = ldap.initialize(self.server)
             # Bind anonymously or with technical user to resolve username
             self.ldap_bind(client,
                 self.bind_dn if self.bind_dn else None,
@@ -123,7 +123,7 @@ class NOCLDAPBackend(NOCAuthBackend):
                 # Mistake in LDAP schema
                 logging.error("LDAP schema error. More than one user returned for '%s'" % username)
                 return None
-            dn, attrs=ul[0]
+            dn, attrs = ul[0]
             logging.debug("LDAP search returned: %s, %s" % (str(dn), str(attrs)))
             # Populate context with DN
             context["dn"] = dn
@@ -133,7 +133,7 @@ class NOCLDAPBackend(NOCAuthBackend):
             # Check user is in required group
             if self.required_group:
                 base = self.expand_template(self.required_group, context)
-                filter=self.expand_template(self.requred_filter, context)
+                filter = self.expand_template(self.requred_filter, context)
                 logging.debug("LDAP checking user '%s' in group '%s'. filter: %s" % (dn, base, filter))
                 ug = client.search_s(base, ldap.SCOPE_BASE, filter, [])
                 is_active = len(ug) > 0
@@ -142,13 +142,13 @@ class NOCLDAPBackend(NOCAuthBackend):
             # Check user is superuser
             if self.superuser_group:
                 base = self.expand_template(self.superuser_group, context)
-                filter=self.expand_template(self.superuser_filter, context)
+                filter = self.expand_template(self.superuser_filter, context)
                 logging.debug("LDAP checking user '%s' in group '%s'. filter: %s" % (dn, base, filter))
                 ug = client.search_s(base, ldap.SCOPE_BASE, filter, [])
                 is_superuser = len(ug) > 0
                 if is_superuser:
                     logging.debug("Granting superuser access to '%s'" % username)
-        except ldap.LDAPError,why:
+        except ldap.LDAPError, why:
             logging.error("LDAP Error: %s" % str(why))
             return None
         logging.debug("LDAP user '%s' authenticated. User is %s" % (username,
