@@ -130,6 +130,7 @@ Ext.define("NOC.core.ModelApplication", {
                             xtype: "hiddenfield",
                             name: "id"
                         }].concat(this.fields),
+                    buttonAlign: "left",
                     buttons: [
                         {
                             itemId: "save",
