@@ -172,6 +172,10 @@ class Task(PeriodicTask):
         cmd = [config.get("path", "mongodump"),
                "-d", settings.NOSQL_DATABASE_NAME,
                "-o", out]
+	if settings.NOSQL_DATABASE_HOST:
+            cmd += ["-h", settings.NOSQL_DATABASE_HOST]
+	if settings.NOSQL_DATABASE_PORT:
+            cmd += ["--port", settings.NOSQL_DATABASE_PORT]
         if settings.NOSQL_DATABASE_USER:
             cmd += ["-u", settings.NOSQL_DATABASE_USER]
         if settings.NOSQL_DATABASE_PASSWORD:
@@ -183,7 +187,7 @@ class Task(PeriodicTask):
             self.safe_unlink(out)
             return False
         self.info("Archiving dump")
-        self.tar(out + ".tar.gz", ["noc"], cwd=out)
+        self.tar(out + ".tar.gz", [settings.NOSQL_DATABASE_NAME], cwd=out)
         self.safe_unlink(out)
         return True
 
