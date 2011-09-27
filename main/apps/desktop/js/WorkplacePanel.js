@@ -12,6 +12,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     region: "center", // Always required for border layout
     activeTab: 0,
     border: false,
+    layout: "fit",
     items: [],
     // Launch application in tab
     launch_tab: function(panel_class, title, params) {
@@ -19,8 +20,10 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             title: title,
             closable: true,
             autoScroll: true,
+            layout: "fit",
             items: [Ext.create(panel_class, {"noc": params})]
         });
         this.setActiveTab(tab);
+        return tab;
     }
 });
