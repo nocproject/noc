@@ -21,6 +21,8 @@ DONT = chr(254)
 DO   = chr(253)
 WONT = chr(252)
 WILL = chr(251)
+SB = chr(250)
+SE = chr(240)
 IAC_CMD= (DO, DONT, WONT, WILL)
 TELNET_OPTIONS={
     0   : "BINARY",
@@ -72,10 +74,26 @@ class TelnetProtocol(Protocol):
     def __init__(self, parent, callback):
         super(TelnetProtocol, self).__init__(parent, callback)
         self.iac_seq=""
-    
+        self.sb_seq = ""
+
+    def iac_response(self, command, opt):
+        self.debug("Sending IAC %s" % self.iac_repr(command, opt))
+        self.parent.out_buffer += IAC + command + opt
+
     def parse_pdu(self):
         while self.in_buffer:
-            if not self.iac_seq:
+            if self.sb_seq:
+                idx = self.in_buffer.find(IAC + SE)
+                if idx == -1:
+                    self.sb_seq += self.in_buffer
+                    self.in_buffer = ""
+                else:
+                    # IAC + SE found, strip and refuse
+                    s = self.in_buffer[:idx]
+                    self.in_buffer = self.in_buffer[idx + 2:]
+                    self.iac_response(DONT, opt)
+                continue
+            elif not self.iac_seq:
                 idx=self.in_buffer.find(IAC)
                 if idx==-1:
                     # No IACs in the stream
@@ -115,19 +133,29 @@ class TelnetProtocol(Protocol):
                     self.in_buffer=self.in_buffer[1:] # Strip option
                     self.debug("Received IAC %s"%self.iac_repr(cmd, opt))
                     # Refuse options
-                    iac_response=None
                     if cmd in (DO, DONT):
                         if cmd==DO and opt in ACCEPTED_TELNET_OPTIONS:
-                            iac_response=(WILL, opt)
+                            self.iac_response(WILL, opt)
                         else:
-                            iac_response=(WONT, opt)
+                            self.iac_response(WONT, opt)
                     elif cmd in (WILL, WONT):
                         if cmd==WILL and opt in ACCEPTED_TELNET_OPTIONS:
-                            iac_response=(DO, opt)
+                            self.iac_response(DO, opt)
                         else:
-                            iac_response=(DONT, opt)
-                    self.debug("Sending IAC %s"%self.iac_repr(iac_response[0], iac_response[1]))
-                    self.parent.out_buffer += IAC+iac_response[0]+iac_response[1]
+                            self.iac_response(DONT, opt)
+                    elif cmd == SB:
+                        # Subnegotiation for opt begin
+                        idx = self.in_buffer.find(IAC + SE)
+                        if idx == -1:
+                            # No IAC + SE in buffer, store
+                            self.sb_seq = opt + self.in_buffer
+                            self.in_buffer = ""
+                            continue
+                        else:
+                            # IAC + SE found, strip and refuse
+                            s = self.in_buffer[:idx]
+                            self.in_buffer = self.in_buffer[idx + 2:]
+                            self.iac_response(DONT, opt)
     
     ##
     ## Human-readable IAC sequence
