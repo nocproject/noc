@@ -13,6 +13,7 @@ Ext.define("NOC.main.desktop.Controller", {
         console.log("Controller started");
         this.login_window = null;
         this.check_logged();
+        this.launched_tabs = {};
         this.control({
             // Navigation tree events
             "#navtree": {
@@ -156,7 +157,6 @@ Ext.define("NOC.main.desktop.Controller", {
             return;
         // Reset store: @todo: Fix, not working
         store.removeAll();
-        store.rejectChanges();
         // Reload
         store.load();
     },
@@ -164,7 +164,9 @@ Ext.define("NOC.main.desktop.Controller", {
     on_search: function() {
     },
     // Application selected in nav tree
-    on_nav_launch: function(view, record) {
+    on_nav_launch: function(view, record, item, index, event, opts) {
+        var reuse = !event.altKey;
+
         Ext.Ajax.request({
             method: "GET",
             url: "/main/desktop/launch_info/",
@@ -172,15 +174,27 @@ Ext.define("NOC.main.desktop.Controller", {
                 node: record.data.id
             },
             scope: this,
-            success: function(response) {
+            success: function(response, opts) {
                 var data = Ext.decode(response.responseText);
-                this.launch_tab(data["class"], data["title"], data["params"]);
+                this.launch_tab(data["class"], data["title"], data["params"],
+                                opts.params.node, reuse);
             }
         });
     },
     // Launch application in tab
-    launch_tab: function(panel_class, title, params) {
-        Ext.getCmp("workplace").launch_tab(panel_class, title, params);
+    launch_tab: function(panel_class, title, params, node, reuse) {
+        console.log(node, reuse, this.launched_tabs);
+        if(reuse && node && this.launched_tabs[node]) {
+            // Open tab
+            Ext.getCmp("workplace").setActiveTab(this.launched_tabs[node]);
+            return;
+        }
+        var tab = Ext.getCmp("workplace").launch_tab(panel_class, title, params);
+        if(node) {
+            this.launched_tabs[node] = tab;
+            tab.menu_node = node;
+            tab.desktop_controller = this;
+        }
     },
     // Toggle panels
     on_panels_toggle: function() {
@@ -225,5 +239,10 @@ Ext.define("NOC.main.desktop.Controller", {
                 Ext.Msg.alert("Failed", status["error"]);
             }
         });        
+    },
+    //
+    on_close_tab: function(menu_id) {
+        if(this.launched_tabs[menu_id])
+            delete this.launched_tabs[menu_id];
     }
 });
