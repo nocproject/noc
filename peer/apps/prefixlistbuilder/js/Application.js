@@ -63,6 +63,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                             regex: /^AS[0-9a-zA-z\-_:]+$/
                         }
                     ],
+                    buttonAlign: "left",
                     buttons: [
                         {
                             text: "Build",
