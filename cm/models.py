@@ -5,25 +5,34 @@
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
+## Python modules
+import os
+import datetime
+import stat
+import logging
+import random
+import types
+import time
+## Django modules
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.conf import settings
+## NOC modules
 from noc.sa.profiles import profile_registry
 from noc.settings import config
 from noc.lib.url import URL
-from noc.lib.fileutils import rewrite_when_differ,read_file,is_differ,in_dir
+from noc.lib.fileutils import rewrite_when_differ, read_file, is_differ, in_dir
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
-import os,datetime,stat,logging,random,types,time
-from noc.sa.models import Activator,AdministrativeDomain,ManagedObject
+from noc.sa.models import Activator, AdministrativeDomain, ManagedObject
 from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
 from noc.lib.fields import AutoCompleteTagsField
 from tagging.models import TaggedItem
+
 
 profile_registry.register_all()
 vcs_registry.register_all()
