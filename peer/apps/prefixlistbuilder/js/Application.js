@@ -9,6 +9,7 @@ console.debug("Defining NOC.peer.prefixlistbuilder.Application");
 Ext.define("NOC.peer.prefixlistbuilder.Application", {
     extend: "NOC.core.Application",
     requires: ["NOC.peer.peeringpoint.LookupField"],
+    layout: "anchor",
     initComponent: function() {
         Ext.applyIf(this, {
             items: [
@@ -109,6 +110,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                     hidden: true,
                     padding: 4,
                     bodyPadding: 4,
+                    layout: "fit",
                     items: [
                         {
                             xtype: "textareafield",
