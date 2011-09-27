@@ -42,7 +42,7 @@ class ReportApplication(Application):
     ##
     ## Render report
     ##
-    def view_report(self,request,format):
+    def view_report(self,request,format="html"):
         query={}
         # Check format is valid for application
         if format not in self.supported_formats():
@@ -66,7 +66,7 @@ class ReportApplication(Application):
             return self.render(request,"report.html",{"data":rdata,"app":self,"is_report":True})
         else:
             return self.render_response(rdata,content_type=self.content_types[format])
-    view_report.url=r"^(?P<format>\S+)/$"
+    view_report.url=r"^$"
     view_report.url_name="view"
     view_report.access=HasPerm("view")
     view_report.menu=get_menu
