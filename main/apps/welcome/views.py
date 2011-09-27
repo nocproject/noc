@@ -16,6 +16,6 @@ class WelcomeAppplication(ExtApplication):
     """
     title = "Welcome"
 
-    @view(url=r"^$", access=PermitLogged(), api=True)
+    @view(method=["GET"], url=r"^$", access=PermitLogged(), api=True)
     def api_welcome(self, request):
         return self.render_template("welcome.html")
