@@ -50,6 +50,7 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
                     items: this.change_credentials_fields
                 }
             ],
+            buttonAlign: "center",
             buttons: [
                 {
                     text: "Close",

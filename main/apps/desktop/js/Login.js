@@ -50,6 +50,7 @@ Ext.define("NOC.main.desktop.Login", {
                     items: this.login_fields
                 }
             ],
+            buttonAlign: "center",
             buttons: [
                 {
                     text: "Reset",
