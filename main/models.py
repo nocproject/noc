@@ -232,6 +232,11 @@ class Permission(models.Model):
         :param perms: Set of new permissions
         :type perms: Set
         """
+        # Add implied permissions
+        perms = set(perms)  # Copy
+        for p in cls.objects.filter(name__in=list(perms), implied__isnull=False):
+            perms.update([x.strip() for x in p.implied.split(",")])
+        #
         current = cls.get_user_permissions(user)
         # Add new permissions
         for p in perms - current:
@@ -260,6 +265,11 @@ class Permission(models.Model):
         :param perms: Set of permissions
         :type perms: Set
         """
+        # Add implied permissions
+        perms = set(perms)  # Copy
+        for p in cls.objects.filter(name__in=list(perms), implied__isnull=False):
+            perms.update([x.strip() for x in p.implied.split(",")])
+        #
         current = cls.get_group_permissions(group)
         # Add new permissions
         for p in perms - current:
