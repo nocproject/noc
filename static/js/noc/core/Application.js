@@ -7,5 +7,6 @@
 console.debug("Defining NOC.core.Application");
 
 Ext.define("NOC.core.Application", {
-    extend: "Ext.panel.Panel"
+    extend: "Ext.panel.Panel",
+    layout: "fit"
 });
