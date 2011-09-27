@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.test import ApplicationTestCase
+from noc.lib.test import AjaxTestCase
 
 
-class {{app}}TestCase(ApplicationTestCase):
+class {{app}}TestCase(AjaxTestCase):
     pass
