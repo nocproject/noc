@@ -522,6 +522,11 @@ class Classifier(Daemon):
         if FailedEvent.objects.count() == 0:
             return
         logging.info("Recovering failed events")
+        wm = datetime.datetime.now() - datetime.timedelta(seconds=86400)  # @todo: use config
+        dc = FailedEvent.objects.filter(timestamp__lt=wm).count()
+        if dc > 0:
+            logging.info("%d failed events are deprecated and removed" % dc)
+            FailedEvent.objects.filter(timestamp__lt=wm).delete()
         for e in FailedEvent.objects.filter(version__ne=self.version):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             logging.debug("Failed event %s has been recovered" % e.id)
