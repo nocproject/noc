@@ -28,7 +28,7 @@ from noc.sa.models import AdministrativeDomain
 from noc.lib.middleware import get_user
 from noc.lib.crypto import md5crypt
 from noc.lib.app.site import site
-from noc.peer.tree import optimize_prefix_list_maxlen
+from noc.peer.tree import optimize_prefix_list, optimize_prefix_list_maxlen
 from noc.lib import nosql
 
 
@@ -710,21 +710,23 @@ class WhoisCache(object):
     """
     @classmethod
     def resolve_as_set(cls, as_set, seen=None, collection=None):
-        if is_asn(as_set[2:]):
-            # ASN given
-            return set([as_set.upper()])
         members = set()
         if seen is None:
             seen = set()
-        seen.add(as_set)
         if collection is None:
             db = nosql.get_db()
             collection = db.noc.whois.asset.members
-        o = collection.find_one({"as_set": as_set}, fields=["members"])
-        if o:
-            for a in o["members"]:
-                if a not in seen:
-                    members.update(cls.resolve_as_set(a, seen, collection))
+        for a in as_set.split():
+            a = a.upper()
+            seen.add(a)
+            if is_asn(a[2:]):
+                # ASN Given
+                members.update([a.upper()])
+            else:
+                o = collection.find_one({"as_set": a}, fields=["members"])
+                if o:
+                    for m in [x for x in o["members"] if x not in seen]:
+                        members.update(cls.resolve_as_set(m, seen, collection))
         return members
 
     @classmethod
