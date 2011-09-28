@@ -36,5 +36,12 @@ class Profile(noc.sa.profiles.Profile):
         """
         match=self.rx_interface_name.match(s)
         if not match:
-	    return s
-    	return "%s%s"%({"GE": "GigabitEthernet"}[match.group("type")],match.group("number"))
+            return s
+        return "%s%s"%({"GE": "GigabitEthernet"}[match.group("type")],match.group("number"))
+
+    def convert_mac(self, mac):
+        """
+        Convert 00:11:22:33:44:55 style MAC-address to 0011-2233-4455
+        """
+        v = mac.replace(":", "").lower()
+        return "%s-%s-%s" % (v[:4], v[4:8], v[8:])
