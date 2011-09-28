@@ -228,7 +228,7 @@ class DesktopAppplication(ExtApplication):
                 status=401)
         try:
             auth_backend.change_credentials(request.user,
-                                            **dict(request.POST.items()))
+                        **dict([(str(k), v) for k, v in request.POST.items()]))
         except ValueError, why:
             return self.render_json({
                 "status": False,
