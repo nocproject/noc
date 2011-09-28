@@ -124,6 +124,22 @@ class IP(object):
             if (count and n >= count) or (until and a == until):
                 raise StopIteration
 
+    def iter_cover(self, mask):
+        """
+        Generate prefixes of size _mask_ covering basic prefix
+        """
+        if mask < self.mask:
+            raise StopIteration
+        if mask == self.mask:
+            yield self
+            raise StopIteration
+        s = IP.prefix(self.prefix.split("/")[0] + "/%d" % mask)
+        maxmask = 32 if self.afi == "4" else 128
+        dist = long(2 ** (maxmask - mask))
+        for i in range(long(2 ** (mask - self.mask))):
+            yield s
+            s += dist
+
     def iter_free(self, prefixes):
         """
         Return generator of free prefixes.
