@@ -253,6 +253,6 @@ Ext.define("NOC.main.desktop.Controller", {
     on_user_profile: function() {
         this.launch_tab("NOC.main.desktop.IFramePanel",
                         "User Profile",
-                        {url: "/main/userprofile/"});
+                        {url: "/main/userprofile/profile/"});
     }
 });

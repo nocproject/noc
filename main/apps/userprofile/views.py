@@ -38,7 +38,7 @@ class UserProfileApplication(ModelApplication):
     ##
     ## Edit profile
     ##
-    @view(url=r"^$", url_name="change", access=PermitLogged())
+    @view(method=["GET", "POST"], url=r"^profile/$", access=PermitLogged())
     def view_change(self, request, extra_context=None):
         def setup_language():
             # Change session language
