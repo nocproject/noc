@@ -144,7 +144,17 @@ class IPv4TestCase(TestCase):
         for b in self.BITS:
             p=IPv4(b)
             self.assertEquals(IPv4.from_bits(p.iter_bits()),p)
-    
+
+    def test_iter_cover(self):
+        self.assertEquals([repr(x) for x in IPv4("192.168.0.0/24").iter_cover(23)], [])
+        self.assertEquals([repr(x) for x in IPv4("192.168.0.0/24").iter_cover(24)],
+            ["<IPv4 192.168.0.0/24>"])
+        self.assertEquals([repr(x) for x in IPv4("192.168.0.0/23").iter_cover(24)],
+            ["<IPv4 192.168.0.0/24>", "<IPv4 192.168.1.0/24>"])
+        self.assertEquals([repr(x) for x in IPv4("192.168.0.0/22").iter_cover(24)],
+            ["<IPv4 192.168.0.0/24>", "<IPv4 192.168.1.0/24>",
+             "<IPv4 192.168.2.0/24>", "<IPv4 192.168.3.0/24>"])
+
     def test_iter_free(self):
         self.assertEquals([repr(x) for x in IPv4("192.168.0.0/22").iter_free(["192.168.0.0/27","192.168.1.0/24","192.168.2.0/24"])],
             ["<IPv4 192.168.0.32/27>", "<IPv4 192.168.0.64/26>", "<IPv4 192.168.0.128/25>", "<IPv4 192.168.3.0/24>"])
