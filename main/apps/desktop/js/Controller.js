@@ -23,6 +23,9 @@ Ext.define("NOC.main.desktop.Controller", {
             "#header_menu_toggle": {
                 click: this.on_panels_toggle
             },
+            "#header_menu_userprofile": {
+                click: this.on_user_profile
+            },
             "#header_menu_change_password": {
                 click: this.show_change_credentials  
             },
@@ -79,6 +82,10 @@ Ext.define("NOC.main.desktop.Controller", {
                 Ext.getCmp("header").getComponent("user_display_name").menu
                     .getComponent("header_menu_change_password")
                     .setDisabled(!settings["can_change_credentials"]);
+                // Activate user profile menu
+                Ext.getCmp("header").getComponent("user_display_name").menu
+                    .getComponent("header_menu_userprofile")
+                    .setDisabled(false);
             }
         });
         // Load menu
@@ -159,9 +166,6 @@ Ext.define("NOC.main.desktop.Controller", {
         store.removeAll();
         // Reload
         store.load();
-    },
-    // Search text entered
-    on_search: function() {
     },
     // Application selected in nav tree
     on_nav_launch: function(view, record, item, index, event, opts) {
@@ -244,5 +248,11 @@ Ext.define("NOC.main.desktop.Controller", {
     on_close_tab: function(menu_id) {
         if(this.launched_tabs[menu_id])
             delete this.launched_tabs[menu_id];
+    },
+    // Show user profile panel
+    on_user_profile: function() {
+        this.launch_tab("NOC.main.desktop.IFramePanel",
+                        "User Profile",
+                        {url: "/main/userprofile/"});
     }
 });

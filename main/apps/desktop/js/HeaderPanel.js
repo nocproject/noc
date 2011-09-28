@@ -71,7 +71,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 },
                 "-",
                 {
-                    id: "header_menu_profile",
+                    id: "header_menu_userprofile",
                     text: "User profile ...",
                     disabled: true,
                     iconCls: "icon_user_edit"
@@ -111,7 +111,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     ],
     // Change displayed username
     set_user_name: function(username) {
-        //Ext.get("user_display_name").dom.innerHTML = username;
-        Ext.getCmp("user_display_name").setText(username);
+        var b = Ext.getCmp("user_display_name");
+        b.setText(username);
     }
 });
