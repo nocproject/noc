@@ -31,8 +31,9 @@ class SearchApplication(Application):
     @view(url=r"^$", url_name="search", access=PermitLogged())
     def view_search(self,request):
         result=[]
-        if request.POST:
-            form=self.SearchForm(request.POST)
+        rq = request.POST or request.GET
+        if rq:
+            form=self.SearchForm(rq)
             if form.is_valid():
                 result=search_engine(request.user,form.cleaned_data["query"])
         else:
