@@ -83,7 +83,7 @@ class DesktopAppplication(ExtApplication):
         :returns: True or False depending on login status
         :rtype: Bool
         """
-        user = auth_backend.authenticate(**dict(request.POST.items()))
+        user = auth_backend.authenticate(**dict([(str(k), v) for k, v in request.POST.items()]))
         if not user:
             return False
         if SESSION_KEY in request.session:
