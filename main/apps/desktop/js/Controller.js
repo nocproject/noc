@@ -210,7 +210,7 @@ Ext.define("NOC.main.desktop.Controller", {
     on_search: function(value) {
         this.launch_tab("NOC.main.desktop.IFramePanel",
                         "Search",
-                        {url: "/main/search/"});
+                        {url: "/main/search/?" + Ext.urlEncode({query: value})});
     },
     // Show change credentials form
     show_change_credentials: function() {
