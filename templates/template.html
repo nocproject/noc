@@ -5,7 +5,7 @@
 {% endblock %}
 {%block breadcrumbs %}{{block.super}}<li>{{app.module_title}}</li>
 {% if is_report%}
-    <li><a href="{% url main:report:index%}">Reports</a></li>
+    <li>Reports</li>
     <li><a href="{{app.base_url}}html/">{{app.title}}</a></li>
 {%else%}
     <li><a href="{{app.base_url}}">{{app.title}}</a></li>
