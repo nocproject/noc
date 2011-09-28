@@ -733,6 +733,7 @@ class WhoisCache(object):
     def _resolve_as_set_prefixes(cls, as_set):
         db = nosql.get_db()
         collection = db.noc.whois.origin.route
+        # Resolve
         prefixes = set()
         for a in cls.resolve_as_set(as_set):
             o = collection.find_one({"origin": a}, fields=["routes"])
@@ -771,6 +772,18 @@ class WhoisCache(object):
             return [(x.prefix, x.mask, x.mask)
                 for x in sorted([IP.prefix(p) for p in prefixes])
                 if x.mask <= max_len]
+
+    @classmethod
+    def cone_power(cls, as_set, mask):
+        """
+        Returns amount of prefixes of size _mask_ needed to cover as_set
+        """
+        n = 0
+        for p in cls.resolve_as_set_prefixes(as_set, optimize=True):
+            m = int(p.split("/")[1])
+            if m <= mask:
+                n += long(2 * (mask - m))
+        return n
 
 
 class PrefixListCachePrefix(nosql.EmbeddedDocument):
