@@ -61,7 +61,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                             name: "as_set",
                             emptyText: "AS or AS-set",
                             allowBlank: false,
-                            regex: /^AS[0-9a-zA-z\-_:]+$/
+                            regex: /^AS(\d+|-\S+)(\s+AS(\d+|-\S+))*$/
                         }
                     ],
                     buttonAlign: "left",

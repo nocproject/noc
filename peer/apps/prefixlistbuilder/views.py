@@ -8,9 +8,12 @@
 
 ## Django modules
 from django import forms
+from django.core.validators import RegexValidator
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.peer.models import PeeringPoint, WhoisCache
+
+as_set_re = "^AS(?:\d+|-\S+)(?:\s+AS(?:\d+|-\S+))*$"
 
 
 class PrefixListBuilderForm(forms.Form):
@@ -19,18 +22,12 @@ class PrefixListBuilderForm(forms.Form):
     """
     peering_point = forms.ModelChoiceField(queryset=PeeringPoint.objects.all())
     name = forms.CharField(required=False)
-    as_set = forms.CharField()
+    as_set = forms.CharField(validators=[RegexValidator(as_set_re)])
 
     def clean(self):
         if not self.cleaned_data["name"] and "as_set" in self.cleaned_data:
             self.cleaned_data["name"] = self.cleaned_data["as_set"]
         return self.cleaned_data
-
-    def clean_as_set(self):
-        as_set = self.cleaned_data["as_set"]
-        if not as_set.startswith("AS"):
-            raise forms.ValidationError("Invalid AS or as-set")
-        return as_set
 
 
 class PrefixListBuilderAppplication(ExtApplication):
