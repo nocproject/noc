@@ -1058,7 +1058,7 @@ class SocketFactory(object):
         
         :rtype: Bool
         """
-        return False and hasattr(select, "kqueue")
+        return hasattr(select, "kqueue")
     
     def has_poll(self):
         """
@@ -1345,19 +1345,21 @@ class SocketFactory(object):
         """
         # Get read and write candidates
         kqueue = select.kqueue()
-        events = []
+        l = 0
         with self.register_lock:
             for f, s in self.sockets.items():
                 if s.can_write():
-                    events += [select.kevent(f, select.KQ_FILTER_WRITE, select.KQ_EV_ADD)]
+                    kqueue.control([select.kevent(f, select.KQ_FILTER_WRITE,
+                                                  select.KQ_EV_ADD)], 0)
+                    l += 1
                 if s.can_read():
-                    events += [select.kevent(f, select.KQ_FILTER_READ, select.KQ_EV_ADD)]
-        # Register events with kqueue
-        kqueue.control(events, len(events), None)
+                    kqueue.control([select.kevent(f, select.KQ_FILTER_READ,
+                                                  select.KQ_EV_ADD)], 0)
+                    l += 1
         # Poll events
         rset = []
         wset = []
-        for e in kqueue.control(None, len(events), timeout):
+        for e in kqueue.control(None, l, timeout):
             if e.filter & select.KQ_FILTER_WRITE:
                 wset += [e.ident]
             if e.filter & select.KQ_FILTER_READ:
