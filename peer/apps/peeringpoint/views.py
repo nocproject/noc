@@ -7,31 +7,32 @@
 ##----------------------------------------------------------------------
 
 ## Django modules
-from django.utils.translation import ugettext as _
+from django.contrib import admin
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app import ModelApplication
 from noc.peer.models import PeeringPoint
 
 
-class PeeringPointApplication(ExtModelApplication):
-    title = _("Peering Point")
-    menu = "Setup | Peering Points"
-    model = PeeringPoint
+class PeeringPointAdmin(admin.ModelAdmin):
+    """
+    Peering Point admin
+    """
+    list_display = ["hostname", "location", "local_as", "router_id",
+                  "profile_name", "communities"]
+    list_filter = ["profile_name"]
+    search_fields = ["hostname", "router_id"]
+    actions = ["rpsl_for_selected"]
 
-#from django.contrib import admin
-#from noc.lib.app import ModelApplication
-#from noc.peer.models import PeeringPoint
-##
-## PeeringPoint admin
-##
-#class _PeeringPointAdmin(admin.ModelAdmin):
-#    list_display=["hostname","location","local_as","router_id","profile_name","communities"]
-#    list_filter=["profile_name"]
-#    search_fields=["hostname","router_id"]
-#    actions=["rpsl_for_selected"]
-    ##
-    ## Generate RPSL for selected objects
-    ##
-#    def rpsl_for_selected(self,request,queryset):
-#        return self.app.render_plain_text("\n\n".join([o.rpsl for o in queryset]))
-#    rpsl_for_selected.short_description="RPSL for selected objects"
+    def rpsl_for_selected(self, request, queryset):
+        """
+        Generate RPSL for selected objects
+        """
+        rpsl = "\n\n".join([o.rpsl for o in queryset])
+        return self.app.render_plain_text(rpsl)
+    rpsl_for_selected.short_description = "RPSL for selected objects"
+
+
+class PeeringPointApplication(ModelApplication):
+    model = PeeringPoint
+    model_admin = PeeringPointAdmin
+    menu="Setup | Peering Points"
