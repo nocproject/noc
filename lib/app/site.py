@@ -23,6 +23,7 @@ from django.core.urlresolvers import *
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.simplejson.encoder import JSONEncoder
+from django.utils.encoding import smart_str, smart_unicode
 ## NOC modules
 from noc.settings import INSTALLED_APPS
 from noc.lib.debug import get_traceback
@@ -389,7 +390,7 @@ class Site(object):
             m["children"] = sorted_menu(m["children"])
 
     def set_menu_id(self, item, path):
-        menu_id = hashlib.sha1(" | ".join(path)).hexdigest()
+        menu_id = hashlib.sha1(" | ".join(smart_str(path))).hexdigest()
         item["id"] = menu_id
         self.menu_index[menu_id] = item
 
