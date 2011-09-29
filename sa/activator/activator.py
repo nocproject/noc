@@ -178,7 +178,7 @@ class Activator(Daemon, FSM):
         s_pub = read_file(public_path)
         # Check all keys presend
         if s_priv is None or s_pub is None:
-            self.error("Cannot find ssh keys. Generate one by 'python manage.py generate-ssh-keys' command")
+            self.error("Cannot find ssh keys. Generate one by './noc generate-ssh-keys' command")
             os._exit(1)
         self.ssh_public_key = Key.from_string(s_pub)
         self.ssh_private_key = Key.from_string_private_noc(s_priv)
