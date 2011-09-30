@@ -253,7 +253,7 @@ class SAE(Daemon):
         if not crashinfos:
             return
         c = len(crashinfos)
-        logging.info("%d crashinfo files found. Attempting to import" % len(c))
+        logging.info("%d crashinfo files found. Attempting to import" % c)
         for fn in crashinfos:
             path = os.path.join(c_d, fn)
             if not os.access(path, os.R_OK | os.W_OK):
