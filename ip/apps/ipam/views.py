@@ -112,7 +112,7 @@ class IPAMAppplication(Application):
     ##
     ## Display VRF Index
     ##
-    @view(  url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/$",
+    @view(  url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>[0-9a-f.:/]+)/$",
             url_name="vrf_index",
             access=HasPerm("view"))
     def view_vrf_index(self,request,vrf_id,afi,prefix):
