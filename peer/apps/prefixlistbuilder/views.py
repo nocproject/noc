@@ -36,9 +36,9 @@ class PrefixListBuilderAppplication(ExtApplication):
     """
     title = "Prefix List Builder"
     menu = "Prefix List Builder"
-    implied_permissions = {
-        "read": ["peer:peeringpoint:lookup"]
-    }
+    #implied_permissions = {
+    #    "read": ["peer:peeringpoint:lookup"]
+    #}
 
     @view(method=["GET"], url=r"^$", access="read", api=True,
           validate=PrefixListBuilderForm)
