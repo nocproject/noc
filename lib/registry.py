@@ -49,6 +49,7 @@ class Registry(object):
         """
         if self.is_registered:
             return
+        logging.info("Loading %s" % self.name)
         if self.apps is None:
             from django.conf import settings
             apps = [a for a in settings.INSTALLED_APPS if a.startswith("noc.")]
@@ -84,7 +85,6 @@ class Registry(object):
                             f = "." + f
                         __import__(mb + f, {}, {}, self.classname)
         self.is_registered = True
-        logging.debug("%s: Registered %s" % (self.name, ", ".join(sorted(self.classes.keys()))))
 
     def __getitem__(self, name):
         return self.classes[name]
