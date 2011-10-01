@@ -32,6 +32,7 @@ class Daemon(object):
     def __init__(self):
         # Chdir to the root of project
         os.chdir(os.path.join(os.path.dirname(sys.argv[0]),".."))
+        self.prefix = os.getcwd()
         # Parse commandline
         self.opt_parser=optparse.OptionParser()
         self.opt_parser.add_option("-c","--config",action="store",type="string",dest="config",
