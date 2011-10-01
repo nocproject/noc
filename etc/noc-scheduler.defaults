@@ -10,5 +10,5 @@ loglevel = info
 logsize  = 0
 logfiles = 0
 pidfile  = /var/log/noc/noc-scheduler.pid
-heartbeat= true
+heartbeat= false
 
