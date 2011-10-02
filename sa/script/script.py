@@ -104,7 +104,6 @@ class ScriptRegistry(Registry):
                     self.classes[s_name]=c
                     profile_registry[p].scripts[name]=c
                     generics+=[s_name]
-        logging.debug("Registering generics: %s"%", ".join(sorted(generics)))
     
     ##
     ## Register all scripts and generic scripts
