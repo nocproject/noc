@@ -23,7 +23,7 @@ def _simplejson_encode(obj):
 
 
 def _simplejson_decode(s):
-    return simplejson_decoder().decode(s)
+    return simplejson_decoder(encoding="utf-8").decode(s)
 
 ## Install handlers
 if USE_CJSON:
