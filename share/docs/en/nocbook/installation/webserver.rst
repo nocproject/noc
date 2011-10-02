@@ -6,7 +6,7 @@ Setting Up Webserver
 Common Considerations
 =====================
 Common practice is to set up HTTP-server as frontend serving static files and
-routing all dynamic requests to the ``noc-fcgi`` daemon over FastCGI. Static content URLs:
+proxy all dynamic requests to the ``noc-web`` daemon. Static content URLs:
 
 * ``/media/`` must be mapped to ``/opt/noc/contrib/lib/django/contrib/admin/media/`` directory
 * ``/static/`` must be mapped to ``/opt/noc/static/``
@@ -21,18 +21,14 @@ Set up lighttpd.conf::
                                 "mod_redirect",
                                 "mod_alias",
                                 "mod_access",
-                                "mod_fastcgi",
+                                "mod_proxy",
                                 "mod_accesslog" )
     
     static-file.etags = "enable"
     etag.use-mtime = "enable"
     
-    fastcgi.server = (
-        "/noc.fcgi" => (
-                "main" => (
-                        "socket"      => "/tmp/noc.fcgi",
-                        "check-local" => "disable",
-                         )
+    proxy.server = (
+        "/noc.proxy" => (("host" => "127.0.0.1", "port" => 8000))
         )
     )
     
@@ -45,7 +41,7 @@ Set up lighttpd.conf::
         url.rewrite-once=(
             "^(/media.*)$" => "$1",
             "^/static/(.*)$"  => "/static/$1",
-            "^(/.*)$" => "/noc.fcgi$1",
+            "^(/.*)$" => "/noc.proxy$1",
         )
         accesslog.filename="/var/log/lighttpd/yourdomain.access.log"
     }
@@ -62,36 +58,23 @@ Set up nginx.conf::
         include       mime.types;
         default_type  application/octet-stream;
         sendfile        on;
-        keepalive_timeout  65;
+        keepalive_timeout  15;
         server {
             listen       80;
-            server_name  <yourdomain>;
-            error_page   500 502 503 504  /50x.html;
-            location = /50x.html {
-                root   /usr/local/www/nginx-dist;
+            server_name  yourdomain;
+            location /media/ {
+                alias /opt/noc/contrib/lib/django/contrib/admin/media/;
+                gzip on;
+                gzip_types text/css text/x-js;
             }
-              location / {
-                root   html;
-                index  index.html index.htm;
-                fastcgi_pass unix:/tmp/noc.fcgi;
-                fastcgi_param  SERVER_PROTOCOL    $server_protocol;
-                fastcgi_param  SERVER_PORT        $server_port;
-                fastcgi_param  SERVER_NAME        $server_name;
-                fastcgi_param PATH_INFO $fastcgi_script_name;
-                fastcgi_param REQUEST_METHOD $request_method;
-                fastcgi_param QUERY_STRING $query_string;
-                fastcgi_param CONTENT_TYPE $content_type;
-                fastcgi_param CONTENT_LENGTH $content_length;
-                fastcgi_pass_header Authorization;
-                fastcgi_intercept_errors off;
-             }
-            location /media {
-                root /opt/noc/contrib/lib/django/contrib/admin/;
-                }
-            location /static {
-                root /opt/noc/;
-                }
-            rewrite ^/static/(.*)$ /static/$1 last;
+            location /static/ {
+                alias /opt/noc/static/;
+                gzip on;
+                gzip_types text/css text/x-js;
+            }
+            location / {
+                proxy_pass http://127.0.0.1:8000/;
+            }
         }
     }
 

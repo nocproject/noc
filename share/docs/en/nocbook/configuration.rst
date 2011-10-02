@@ -646,28 +646,28 @@ pidfile
 ^^^^^^^
 Pid file path
 
-.. _noc-launcher-conf-noc-fcgi:
+.. _noc-launcher-conf-noc-web:
 
-[noc-fcgi] section
+[noc-web] section
 ++++++++++++++++++
 
-.. _noc-launcher-conf-noc-fcgi-enabled:
+.. _noc-launcher-conf-noc-web-enabled:
 
 enabled
 ^^^^^^^
-true/false. Launch noc-fcgi daemon
+true/false. Launch noc-web daemon
 
-.. _noc-launcher-conf-noc-fcgi-user:
+.. _noc-launcher-conf-noc-web-user:
 
 user
 ^^^^
-Run noc-fcgi daemon with *user* credentials
+Run noc-web daemon with *user* credentials
 
-.. _noc-launcher-conf-noc-fcgi-group:
+.. _noc-launcher-conf-noc-web-group:
 
 group
 ^^^^^
-Run noc-fcgi daemon with *group* credentials
+Run noc-web daemon with *group* credentials
 
 .. _noc-launcher-conf-noc-scheduler:
 
@@ -831,83 +831,62 @@ group
 ^^^^^
 Run noc-probe daemon with *group* credentials
 
-.. _noc-fcgi-conf:
+.. _noc-web-conf:
 
-noc-fcgi.conf
+noc-web.conf
 -------------
-Stores noc-fcgi daemon configuration
+Stores noc-web daemon configuration
 
-.. _noc-fcgi-conf-main:
+.. _noc-web-conf-main:
 
 [main] section
 ++++++++++++++
 
-.. _noc-fcgi-conf-main-logfile:
+.. _noc-web-conf-main-logfile:
  
 logfile
 ^^^^^^^
 Log file path
 
-.. _noc-fcgi-conf-main-loglevel:
+.. _noc-web-conf-main-loglevel:
 
 loglevel
 ^^^^^^^^
 logging level. One of: debug, info, warning, error, critical
 
-.. _noc-fcgi-conf-main-logsize:
+.. _noc-web-conf-main-logsize:
 
 logsize
 ^^^^^^^
 Maximum log file size in bytes. 0 (default) means unlimited size
 
-.. _noc-fcgi-conf-main-logfiles:
+.. _noc-web-conf-main-logfiles:
 
 logfiles
 ^^^^^^^^
 Keep *logfiles* backup copies of log file
 
-.. _noc-fcgi-conf-main-pidfile:
+.. _noc-web-conf-main-pidfile:
 
 pidfile
 ^^^^^^^
 Pid file path
 
-.. _noc-fcgi-conf-fcgi:
+.. _noc-web-conf-web:
 
-[fcgi] section
+[web] section
 ++++++++++++++
 
-.. _noc-fcgi-conf-fcgi-socket:
+.. _noc-web-listen:
 
-socket
+listen
 ^^^^^^
-Path to UNIX socket to communicate with HTTP server
+Listen on _address_:_port_. Use 0.0.0.0 to listen on all ports
 
-.. _noc-fcgi-conf-fcgi-minspare:
-
-minspare
-^^^^^^^^
-Minimum spare worker threads
-
-.. _noc-fcgi-conf-fcgi-maxspare:
-
-maxspare
-^^^^^^^^
-Maximum spare worker threads
-
-.. _noc-fcgi-conf-fcgi-maxrequests:
-
-maxrequests
-^^^^^^^^^^^
-Maximum requests processed by worker threads
-
-.. _noc-fcgi-conf-fcgi-maxchildren:
-
-maxchildren
-^^^^^^^^^^^
-Maximum worker threads
-
-.. _noc-scheduler-conf:
+workers
+^^^^^^^
+Number of worker processes to serve requests. Set to 0 to auto-detect
+number of CPU cores
 
 noc-scheduler.conf
 ------------------
