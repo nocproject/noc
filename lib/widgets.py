@@ -18,7 +18,7 @@ from django.core.validators import EMPTY_VALUES
 from tagging.models import Tag
 # NOC modules
 from lib.nosql import Document, ObjectId
-from noc.lib.serializer import json_encode
+from noc.lib.serialize import json_encode
 
 ##
 ##

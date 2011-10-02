@@ -27,7 +27,7 @@ from django.test.client import Client, MULTIPART_CONTENT
 from django.utils.http import urlencode
 ## NOC modules
 from noc.lib.app import Application, site
-from noc.lib.serializer import json_encode, json_decode
+from noc.lib.serialize import json_encode, json_decode
 from noc.sa.models import script_registry, profile_registry
 from noc.sa.protocols.sae_pb2 import *
 from noc.main.models import User, Permission
