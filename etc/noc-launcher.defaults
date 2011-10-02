@@ -12,11 +12,11 @@ logfiles = 0
 pidfile  = /var/log/noc/noc-launcher.pid
 heartbeat= false
 
-[noc-fcgi]
+[noc-web]
 enabled = true
 user  = noc
 group =
-config = etc/noc-fcgi.conf
+config = etc/noc-web.conf
 
 [noc-scheduler]
 enabled = true

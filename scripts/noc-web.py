@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## noc-fcgi daemon
+## noc-web daemon
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
@@ -13,7 +13,6 @@ import set_env
 set_env.setup(use_django=True)
 
 if __name__ == "__main__":
-    # Run FCGI
-    from noc.main.fcgi import FCGI
-    import noc.lib.nosql
-    FCGI().process_command()
+    # Run Web server
+    from noc.main.web import Web
+    Web().process_command()
