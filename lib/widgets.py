@@ -12,13 +12,13 @@ from django import forms
 from django.forms.widgets import Input, PasswordInput
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
-from django.utils.simplejson.encoder import JSONEncoder
 from django.utils.html import escape
 from django.core.validators import EMPTY_VALUES
 ## Third-party modules
 from tagging.models import Tag
 # NOC modules
 from lib.nosql import Document, ObjectId
+from noc.lib.serializer import json_encode
 
 ##
 ##
@@ -107,7 +107,7 @@ class AutoCompleteTags(Input):
                 v=v.strip()
                 if v:
                     initial+=[{"id":v,"name":v}]
-        initial=JSONEncoder(ensure_ascii=False).encode(initial)
+        initial=json_encode(initial)
         html=super(AutoCompleteTags,self).render(name,value,attrs)
         js="""<script type="text/javascript">
         $(document).ready(function() {
