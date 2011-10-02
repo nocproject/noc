@@ -639,7 +639,7 @@ class IPAMAppplication(Application):
     ##
     ## Change address
     ##
-    @view(  url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>\S+)/change_address/$",
+    @view(  url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>[^/]+)/change_address/$",
             url_name="change_address",
             access=HasPerm("change"))
     def view_change_address(self,request,vrf_id,afi,address):
@@ -703,7 +703,7 @@ class IPAMAppplication(Application):
     ##
     ## Delete address
     ##
-    @view(  url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>\S+)/delete_address/$",
+    @view(  url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>[^/]+)/delete_address/$",
             url_name="delete_address",
             access=HasPerm("change"))
     def view_delete_address(self,request,vrf_id,afi,address):
