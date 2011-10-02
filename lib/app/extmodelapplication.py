@@ -11,12 +11,11 @@ from django.core import serializers
 #from django.http import HttpResponse
 from django.utils.encoding import is_protected_type
 from django.http import HttpResponse
-from django.utils.simplejson.decoder import JSONDecoder
-from django.utils.simplejson.encoder import JSONEncoder
 from django.db.models.fields import CharField
 from django.db.models import Q
 ## NOC modules
 from extapplication import ExtApplication, view
+from noc.lib.serializer import json_encode, json_decode
 
 
 class ExtModelApplication(ExtApplication):
@@ -79,11 +78,11 @@ class ExtModelApplication(ExtApplication):
             return self.model.objects.all()
 
     def deserialize(self, data):
-        return JSONDecoder(encoding="utf8").decode(data)
+        return json_decode(data)
 
     def response(self, content="", status=200):
         if not isinstance(content, basestring):
-            return HttpResponse(JSONEncoder(ensure_ascii=False).encode(content),
+            return HttpResponse(json_encode(content),
                                mimetype="text/json; charset=utf-8",
                                status=status)
         else:

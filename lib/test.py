@@ -25,10 +25,9 @@ from django.core import signals, serializers
 from django.utils import unittest  # unittest2 backport
 from django.test.client import Client, MULTIPART_CONTENT
 from django.utils.http import urlencode
-from django.utils.simplejson.decoder import JSONDecoder
-from django.utils.simplejson.encoder import JSONEncoder
 ## NOC modules
 from noc.lib.app import Application, site
+from noc.lib.serializer import json_encode, json_decode
 from noc.sa.models import script_registry, profile_registry
 from noc.sa.protocols.sae_pb2 import *
 from noc.main.models import User, Permission
@@ -330,13 +329,13 @@ class AjaxTestCase(NOCTestCase):
             kwargs["credentials"] = {"user": user, "password": user}
         # Convert input to JSON
         if "data" in kwargs:
-            kwargs["data"] = JSONEncoder(ensure_ascii=False).encode(kwargs["data"])
+            kwargs["data"] = json_encode(kwargs["data"])
             if method in ("post", "put"):
                 kwargs["content_type"] = "text/json"
         r = getattr(self.client, method)(path, **kwargs)
         if r.has_header("Content-Type") and r["Content-Type"].startswith("text/json"):
             return (r.status_code,
-                    JSONDecoder(encoding="utf8").decode(r.content))
+                    json_decode(r.content))
         else:
             return (r.status_code, r.content)
 
