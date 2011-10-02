@@ -29,6 +29,8 @@ class Command(BaseCommand):
                     help="Skip Coverage report"),
         make_option("--reuse-db", action="store_true", dest="reuse_db",
                     default=False, help="Do not create testing DB when exists"),
+        make_option("--xml-out", action="store", dest="xml_out",
+                    default=None, help="JUnit-compatible XML output")
     )
     help = 'Runs the test suite for the specified applications, or the entire project if no apps are specified.'
     args = '[appname ...]'
@@ -42,6 +44,7 @@ class Command(BaseCommand):
         interactive = options.get("interactive", True)
         coverage = options.get("coverage", True)
         reuse_db = options.get("reuse_db", False)
+        xml_out = options.get("xml_out", None)
 
         if (len(test_labels) == 1 and
             test_labels[0].startswith("noc.sa.profiles")):
@@ -52,6 +55,7 @@ class Command(BaseCommand):
         # Run tests
         failures = TestRunner(test_labels=test_labels, verbosity=verbosity,
                               interactive=interactive,
-                              coverage=coverage, reuse_db=reuse_db).run()
+                              coverage=coverage, reuse_db=reuse_db,
+                              xml_out=xml_out).run()
         if failures:
             sys.exit(1 if failures else 0)
