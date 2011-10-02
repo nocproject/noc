@@ -12,6 +12,8 @@ import unittest
 import sys
 import logging
 import types
+import time
+import StringIO
 ## Django modules
 from django.utils import unittest  # unittest2 backport
 from django.conf import settings
@@ -26,6 +28,122 @@ from south.logger import get_logger
 import psycopg2
 ## NOC modules
 from noc.lib import nosql
+from noc.lib.debug import format_frames, get_traceback_frames
+from noc.lib.fileutils import safe_rewrite
+
+
+class TeeStream(object):
+    """
+    stdout/stderr output collector
+    """
+    def __init__(self, orig):
+        self.orig = orig
+        self.out = StringIO.StringIO()
+
+    def write(self, s):
+        self.orig.write(s)
+        self.out.write(s)
+
+    def get(self):
+        return self.out.getvalue()
+
+
+class NOCTestResult(unittest.TestResult):
+    """
+    Test result with JUnit-compatible XML generator
+    """
+    R_SUCCESS = 0
+    R_ERROR = 1
+    R_FAILURE = 2
+
+    def __init__(self, *args, **kwargs):
+        super(NOCTestResult, self).__init__(*args, **kwargs)
+        self.test_results = []  # (name, test, R_*, err | None)
+        self.test_timings = {}
+        self.stdout = TeeStream(sys.stdout)
+        self.stderr = TeeStream(sys.stderr)
+
+    def startTestRun(self):
+        """
+        Called once before any tests are executed.
+        """
+        sys.stdout = self.stdout
+        sys.stderr = self.stderr
+        self.timestamp = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
+        self.start_time = time.time()
+
+    def stopTestRun(self):
+        """
+        Called once after all tests are executed.
+        """
+        self.stop_time = time.time()
+        sys.stdout = self.stdout.orig
+        sys.stderr = self.stderr.orig
+
+    def addSuccess(self, test):
+        self.test_results += [(test.id(), test, self.R_SUCCESS, None)]
+        super(NOCTestResult, self).addSuccess(test)
+
+    def addError(self, test, err):
+        self.test_results += [(test.id(), test, self.R_ERROR, err)]
+        super(NOCTestResult, self).addError(test, err)
+
+    def addFailure(self, test, err):
+        self.test_results += [(test.id(), test, self.R_FAILURE, err)]
+        super(NOCTestResult, self).addFailure(test, err)
+
+    def startTest(self, test):
+        self.test_timings[test.id()] = time.time()
+
+    def stopTest(self, test):
+        t = test.id()
+        self.test_timings[t] = time.time() - self.test_timings[t]
+
+    def write_xml(self, path):
+        """
+        Generator returning JUnit-compatible XML output
+        """
+        from xml.dom.minidom import Document
+        out = Document()
+        ts = out.createElement("testsuite")
+        out.appendChild(ts)
+        ts.setAttribute("tests", str(self.testsRun))
+        ts.setAttribute("errors", str(len(self.errors)))
+        ts.setAttribute("failures", str(len(self.failures)))
+        #ts.setAttribute("name")
+        ts.setAttribute("time", str(self.stop_time - self.start_time))
+        ts.setAttribute("timestamp", self.timestamp)
+        # Append test cases info
+        for name, test, status, err in sorted(self.test_results,
+                                              key=lambda x: x[0]):
+            p = name.split(".")
+            tc = out.createElement("testcase")
+            ts.appendChild(tc)
+            tc.setAttribute("class_name", ".".join(p[:-1]))
+            tc.setAttribute("name", p[-1])
+            tc.setAttribute("time", "%.6f" % self.test_timings[name])
+            if status in (self.R_ERROR, self.R_FAILURE):
+                e = out.createElement("error" if self.R_ERROR else "failure")
+                tc.appendChild(e)
+                e.setAttribute("type", err[0].__name__)
+                e.setAttribute("message", str(err[1]))
+                ft = out.createCDATASection(
+                    format_frames(get_traceback_frames(err[2])) + "\n")
+                e.appendChild(ft)
+        # Applend system-out and system-err
+        so = out.createElement("system-out")
+        o = out.createCDATASection(self.stdout.get())
+        so.appendChild(o)
+        ts.appendChild(so)
+        se = out.createElement("system-err")
+        o = out.createCDATASection(self.stderr.get())
+        se.appendChild(o)
+        ts.appendChild(se)
+        r = out.toprettyxml(indent=" " * 4)
+        if path == "-":
+            print r
+        else:
+            safe_rewrite(path, r)
 
 
 class ImportTestCase(unittest.TestCase):
@@ -166,8 +284,10 @@ class TestRunner(object):
     Testing engine
     """
     exclude_modules = ["noc.main.pyrules.", "noc.main.templates.", "noc.setup"]
+
     def __init__(self, test_labels, verbosity=1, interactive=True,
-                 extra_tests=[], coverage=True, reuse_db=False):
+                 extra_tests=[], coverage=True, reuse_db=False,
+                 xml_out=None):
         self.test_labels = test_labels
         self.verbosity = verbosity
         self.loglevel = logging.DEBUG if self.verbosity > 1 else logging.INFO
@@ -175,6 +295,8 @@ class TestRunner(object):
         self.extra_tests = extra_tests
         self.enable_coverage = coverage
         self.reuse_db = reuse_db
+        self.xml_out = xml_out
+        self.result = None
         self.coverage_report = []  # List of files to report coverage
 
     def info(self, message):
@@ -243,7 +365,7 @@ class TestRunner(object):
             if m[-1] == "__init__":
                 m = m[:-1]
             return ".".join(m)
-            
+
         def mod_to_path(mod):
             """
             >>> mod_to_path("noc.lib.test_runner")
@@ -354,8 +476,14 @@ class TestRunner(object):
                     # Add as tests
                     suite = self.get_suite(modules, tests)
                     self.info("Running test suite")
-                    runner = unittest.TextTestRunner(verbosity=self.verbosity)
-                    result = runner.run(suite)
+                    runner = unittest.TextTestRunner(verbosity=self.verbosity,
+                                                     resultclass=NOCTestResult)
+                    self.result = runner.run(suite)
                     self.info("Test suite completed")
         # Return summary
-        return len(result.failures) + len(result.errors)
+        if self.result:
+            if self.xml_out:
+                self.result.write_xml(self.xml_out)
+            return len(self.result.failures) + len(self.result.errors)
+        else:
+            return 1
