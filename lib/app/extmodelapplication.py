@@ -15,7 +15,7 @@ from django.db.models.fields import CharField
 from django.db.models import Q
 ## NOC modules
 from extapplication import ExtApplication, view
-from noc.lib.serializer import json_encode, json_decode
+from noc.lib.serialize import json_encode, json_decode
 
 
 class ExtModelApplication(ExtApplication):
