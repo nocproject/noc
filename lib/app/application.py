@@ -15,7 +15,6 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect,\
                         HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import render_to_response
-from django.utils.simplejson.encoder import JSONEncoder
 from django.db import connection
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
@@ -26,6 +25,7 @@ from access import HasPerm, Permit, Deny
 from site import site
 from noc.lib.forms import NOCForm
 from noc import settings
+from noc.lib.serialize import json_encode
 
 
 class ApplicationBase(type):
@@ -151,7 +151,7 @@ class Application(object):
     ## Create serialized JSON-encoded response
     ##
     def render_json(self, obj, status=200):
-        return HttpResponse(JSONEncoder(ensure_ascii=False).encode(obj),
+        return HttpResponse(json_encode(obj),
                             mimetype="text/json", status=status)
     ##
     ## Render "success" page
