@@ -13,9 +13,11 @@ try:
     USE_CJSON = True
 except ImportError:
     from django.utils import simplejson
+    from django.utils.simplejson.encoder import JSONEncoder
+    from django.utils.simplejson.decoder import JSONDecoder
     USE_SIMPLEJSON = True
-    simplejson_encoder = simplejson.encoder.JSONEncoder
-    simplejson_decoder = simplejson.decoder.JSONDecoder
+    simplejson_encoder = JSONEncoder
+    simplejson_decoder = JSONDecoder
 
 
 def _simplejson_encode(obj):
