@@ -17,13 +17,6 @@ site.autodiscover()
 ## Install URL handlers
 ##
 urlpatterns = patterns("",
-    ("^$", "django.views.generic.simple.redirect_to",
-        {"url": "/main/desktop/"}),
     (r"^jsi18n/$", "django.views.i18n.javascript_catalog",
-        {"packages": "django.conf"}),
-    # For debugging purposes only. Overriden by HTTP server directives
-    (r"^static/(?P<path>.*)$", "django.views.static.serve",
-        {"document_root": "static"}),
-    (r"^doc/(?P<path>.*)$", "django.views.static.serve",
-        {"document_root": "share/doc/users_guide/html/"}),
+        {"packages": "django.conf"})
 ) + site.urls
