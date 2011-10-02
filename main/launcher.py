@@ -144,7 +144,7 @@ class Launcher(Daemon):
         self.is_superuser = os.getuid() == 0  # @todo: rewrite
         self.crashinfo_uid = None
         self.crashinfo_dir = None
-        for n in ["scheduler", "fcgi", "sae", "activator", "classifier",
+        for n in ["scheduler", "web", "sae", "activator", "classifier",
                   "correlator", "notifier", "probe"]:
             dn = "noc-%s" % n
             is_enabled = self.config.getboolean(dn, "enabled")
