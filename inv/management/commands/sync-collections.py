@@ -13,11 +13,11 @@ import os
 import pprint
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
-from django.utils import simplejson
 ## NOC modules
 from noc.inv.models import *
 from noc.fm.models import *
 from noc.lib.debug import error_report
+from noc.lib.serialize import json_decode
 
 
 class CollectionSync(object):
@@ -43,7 +43,7 @@ class CollectionSync(object):
         for path in self.paths:
             with open(path, "r") as jf:
                 try:
-                    data = simplejson.JSONDecoder().decode(jf.read())
+                    data = json_decode(jf.read())
                 except ValueError, why:
                     self.die("JSON error in %s: %s" % (path, why))
             # Data must be either dict or list
