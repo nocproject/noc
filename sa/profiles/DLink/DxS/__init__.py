@@ -77,7 +77,7 @@ def DGS3120(v):
 
 ## DGS-3400-series
 def DGS3400(v):
-    return v["platform"].startswith("DGS-34")
+    return "DGS-3420" not in v["platform"] and v["platform"].startswith("DGS-34")
 
 ## DGS-3600-series
 def DGS3600(v):
