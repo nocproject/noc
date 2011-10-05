@@ -49,5 +49,31 @@
                 "recommended_actions": ""
             }
         }
+    },
+
+    {
+        "name": "Network | MPLS | LDP Neighbor Down",
+        "description": "MPLS LDP Neighbor Down",
+        "is_unique": true,
+        "discriminator": ["neighbor"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "neighbor",
+                "description": "LDP Neighbor",
+                "type": "ip_address",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}",
+                "body_template": "MPLS LDP Neighbor Down: {{neighbor}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
     }
 ]

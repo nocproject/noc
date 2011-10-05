@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%(?:Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) status is - not operational.$"
+                "value_re": "%(?:Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) (?:status is|status changed) - not operational.$"
             }
         ]
     },
