@@ -162,6 +162,9 @@ class ModelApplication(Application):
     sort_param = "__sort"
     format_param = "__format"  # List output format
     query_param = "__query"
+    query_fields = []  # Use all unique fields by default
+    query_condition = "startswith"
+
 
     @view(url="^(?P<path>(?:js|css|img)/[0-9a-zA-Z_/]+\.(?:js|css|png))$",
           url_name="static", access=True)
