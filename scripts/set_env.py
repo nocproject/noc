@@ -35,7 +35,7 @@ def setup(use_django=False):
     d = os.path.dirname(sys.argv[0])
     if not d:
         d = os.getcwd()
-    d = os.path.abspath(os.path.join(d, ".."))
+    d = os.path.realpath(os.path.join(d, ".."))
     contrib = os.path.abspath(os.path.join(d, "contrib", "lib"))
     sys.path.insert(0, contrib)
     sys.path.insert(0, os.path.abspath(os.path.join(d, "..")))
