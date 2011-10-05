@@ -507,8 +507,8 @@ class AlarmClass(nosql.Document):
     text = nosql.DictField(required=True)
     # Flap detection
     flap_condition = nosql.StringField(required=False,
-                                       choices=["none",
-                                                "count"],
+                                       choices=[("none", "none"),
+                                                ("count", "count")],
                                        default=None)
     flap_window = nosql.IntField(required=False, default=0)
     flap_threshold = nosql.FloatField(required=False, default=0)
@@ -550,10 +550,10 @@ class EventClassVar(nosql.EmbeddedDocument):
     name = nosql.StringField(required=True)
     description = nosql.StringField(required=False)
     type = nosql.StringField(required=True,
-                             choices=["str", "int",
+                             choices=[(x, x) for x in ("str", "int",
                                       "ipv4_address", "ipv6_address", "ip_address",
                                       "ipv4_prefix", "ipv6_prefix", "ip_prefix",
-                                      "mac", "interface_name", "oid"])
+                                      "mac", "interface_name", "oid")])
     required = nosql.BooleanField(required=True)
     
     def __unicode__(self):
@@ -583,11 +583,11 @@ class EventDispositionRule(nosql.EmbeddedDocument):
     #    clear - clear alarm
     #
     action = nosql.StringField(required=True,
-                               choices=[
-                                    "drop",
+                               choices=[(x, x) for x in 
+                                    ("drop",
                                     "ignore",
                                     "raise",
-                                    "clear"
+                                    "clear")
                                 ])
     # Applicable for actions: raise and clear
     alarm_class = nosql.PlainReferenceField(AlarmClass, required=False)
@@ -595,7 +595,7 @@ class EventDispositionRule(nosql.EmbeddedDocument):
     # will be performed only if additional events occured during time window
     combo_condition = nosql.StringField(required=False,
                                         default="none",
-                                        choices=[
+                                        choices=[(x, x) for x in (
                                             "none",  # Apply action immediately
                                             "frequency", # Apply when event
                                                          # firing rate exceeds
@@ -609,7 +609,7 @@ class EventDispositionRule(nosql.EmbeddedDocument):
                                                     # in no specific order
                                             "any"   # Apply action if event
                                                     # followed by any of combo events
-                                            ])
+                                            )])
     # Time window for combo events in seconds
     combo_window = nosql.IntField(required=False, default=0)
     # Applicable for frequency.
@@ -697,7 +697,9 @@ class EventClass(nosql.Document):
     #     D - Drop
     #     L - Log as processed, do not move to archive
     #     A - Log as processed, move to archive
-    action = nosql.StringField(required=True, choices=["D", "L", "A"])
+    action = nosql.StringField(required=True,choices=[("D", "Drop"),
+                                                       ("L", "Log"),
+                                                       ("A", "Log & Archive")])
     vars = nosql.ListField(nosql.EmbeddedDocumentField(EventClassVar))
     # Text messages
     # alarm_class.text -> locale -> {
