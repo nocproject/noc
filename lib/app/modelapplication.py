@@ -12,6 +12,7 @@ from django.contrib import admin as django_admin
 from django.contrib import admin
 from django.utils.encoding import smart_unicode
 from django.contrib.admin.filterspecs import FilterSpec, ChoicesFilterSpec
+from django.views.static import serve as serve_static
 ## NOC modules
 from access import HasPerm
 from application import Application, view
@@ -150,6 +151,90 @@ class ModelApplication(Application):
         """Display change form"""
         return self.admin.change_view(request, object_id,
                                       self.get_context(extra_context))
+
+    ##
+    ## Backport from ExtApplication/ExtModelApplication for lookup support
+    ##
+    ignored_params = ["_dc"]
+    page_param = "__page"
+    start_param = "__start"
+    limit_param = "__limit"
+    sort_param = "__sort"
+    format_param = "__format"  # List output format
+    query_param = "__query"
+
+    @view(url="^(?P<path>(?:js|css|img)/[0-9a-zA-Z_/]+\.(?:js|css|png))$",
+          url_name="static", access=True)
+    def view_static(self, request, path):
+        """
+        Static file server.
+        """
+        return serve_static(request, path, document_root=self.document_root)
+
+    @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
+    def api_lookup(self, request):
+        return self.list_data(request, self.instance_to_lookup)
+    
+    def instance_to_lookup(self, o):
+        return {
+            "id": o.id,
+            "label": unicode(o)
+        }
+
+    def list_data(self, request, formatter):
+        """
+        Returns a list of requested object objects
+        """
+        q = dict(request.GET.items())
+        limit = q.get(self.limit_param)
+        page = q.get(self.page_param)
+        start = q.get(self.start_param)
+        format = q.get(self.format_param)
+        query = q.get(self.query_param)
+        ordering = []
+        if format == "ext" and self.sort_param in q:
+            for r in self.deserialize(q[self.sort_param]):
+                if r["direction"] == "DESC":
+                    ordering += ["-%s" % r["property"]]
+                else:
+                    ordering += [r["property"]]
+        q = self.cleaned_query(q)
+        data = self.l_queryset(request, query).filter(**q)
+        # Apply sorting
+        if ordering:
+            data = data.order_by(*ordering)
+        if format == "ext":
+            total = data.count()
+        if start is not None and limit is not None:
+            data = data[int(start):int(start) + int(limit)]
+        out = [formatter(o) for o in data]
+        if format == "ext":
+            out = {
+                "total": total,
+                "success": True,
+                "data": out
+            }
+        return out
+
+    def cleaned_query(self, q):
+        q = q.copy()
+        for p in self.ignored_params:
+            if p in q:
+                del q[p]
+        for p in (self.limit_param, self.page_param, self.start_param,
+            self.format_param, self.sort_param, self.query_param):
+            if p in q:
+                del q[p]
+        return q
+
+    def l_queryset(self, request, query=None):
+        """
+        Filter records for lookup
+        """
+        if query and self.query_fields:
+            return self.model.objects.filter(self.get_Q(request, query))
+        else:
+            return self.model.objects.all()
 
 
 class ExistingChoicesFilterSpec(ChoicesFilterSpec):
