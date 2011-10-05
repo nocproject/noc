@@ -12,7 +12,7 @@ import os
 from django.views.static import serve as serve_static
 ## NOC modules
 from application import Application, view, HasPerm
-from access import Permit, PermitLogged
+from access import PermitLogged
 
 
 class ExtApplication(Application):
@@ -56,7 +56,7 @@ class ExtApplication(Application):
                 qs.filter(name__startswith = ps).values_list("name", flat=True)]
 
     @view(url="^(?P<path>(?:js|css|img)/[0-9a-zA-Z_/]+\.(?:js|css|png))$",
-          url_name="static", access=Permit())
+          url_name="static", access=True)
     def view_static(self, request, path):
         """
         Static file server
