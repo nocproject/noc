@@ -13,7 +13,7 @@ from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 from django.http import HttpResponse
 ## NOC modules
 from noc.settings import config
-from noc.lib.app import ExtApplication, view, PermitLogged
+from noc.lib.app import ExtApplication, ModelApplication, view, PermitLogged
 from noc.lib.version import get_version
 from noc.lib.middleware import set_user
 from noc.settings import LANGUAGE_CODE
@@ -30,7 +30,8 @@ class DesktopAppplication(ExtApplication):
         Render application root template
         """
         ext_apps = [a for a in self.site.apps
-                    if isinstance(self.site.apps[a], ExtApplication)]
+                    if isinstance(self.site.apps[a], ExtApplication) or\
+                    isinstance(self.site.apps[a], ModelApplication)]
         apps = [a.split(".") for a in sorted(ext_apps)]
         # Prepare settings
         favicon_url = config.get("customization", "favicon_url")
