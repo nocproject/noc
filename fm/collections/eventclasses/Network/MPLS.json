@@ -132,5 +132,35 @@
                 "alarm_class__name": "Network | MPLS | Path Down"
             }
         ]
+    },
+    
+    {
+        "name": "Network | MPLS | LDP Neighbor Down",
+        "description": "MPLS LDP Neighbor Down",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}",
+                "body_template": "MPLS LDP Neighbor Down: {{neighbor}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "neighbor",
+                "description": "LDP Neighbor",
+                "type": "ip_address",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | MPLS | LDP Neighbor Down"
+            }
+        ]
     }
 ]
