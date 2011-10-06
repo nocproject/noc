@@ -15,7 +15,7 @@ Ext.define("NOC.main.desktop.Login", {
     resizable: false,
     closable: false,
     modal: true,
-    
+
     initComponent: function() {
         console.log(this.fields);
         Ext.applyIf(this, {
@@ -27,11 +27,12 @@ Ext.define("NOC.main.desktop.Login", {
                     defaults: {
                         enableKeyEvents: true,
                         listeners: {
+                            scope: this,
                             specialkey: function(field, key) {
                                 if (field.xtype != "textfield")
                                     return;
                                 var get_button = function(scope, name) {
-                                    return scope.up("panel").up("panel").dockedItems.items[1].getComponent(name);
+                                    return scope.down("panel").dockedItems.items[0].getComponent(name);
                                 }
                                 switch(key.getKey()) {
                                     case Ext.EventObject.ENTER:
@@ -47,43 +48,43 @@ Ext.define("NOC.main.desktop.Login", {
                             }
                         }
                     },
-                    items: this.login_fields
-                }
-            ],
-            buttonAlign: "center",
-            buttons: [
-                {
-                    text: "Reset",
-                    itemId: "reset",
-                    iconCls: "icon_cancel",
-                    handler: function() {
-                        this.up("window").down("form").getForm().reset();
+                    items: this.login_fields,
+                    buttonAlign: "center",
+                    buttons: [
+                        {
+                            text: "Reset",
+                            itemId: "reset",
+                            iconCls: "icon_cancel",
+                            handler: function() {
+                                this.up("form").getForm().reset();
+                            }
+                        },
+
+                        {
+                            text: "Login",
+                            itemId: "login",
+                            iconCls: "icon_door_in",
+                            disabled: true,
+                            formBind: true,
+                            handler: function() {
+                                // Validate form
+                                var win = this.up("window");
+                                var form = this.up("form").getForm();
+                                if(!form.isValid())
+                                    return;
+                                var v = form.getValues();
+                                win.controller.do_login(v);
+                            }
+                        }
+                    ],
+                    listeners: {
+                        afterrender: function() {
+                            this.getForm().getFields().first().focus(false, 100);
+                            return true;
+                        }
                     }
-                },
-        
-                {
-                    text: "Login",
-                    itemId: "login",
-                    iconCls: "icon_door_in",
-                    // disabled: true,
-                    // formBind: true,  @todo: Fix
-                    handler: function() {
-                        // Validate form
-                        var win = this.up("window");
-                        var form = win.down("form").getForm();
-                        if(!form.isValid())
-                            return;
-                        var v = form.getValues();
-                        win.controller.do_login(v);
-                    }
                 }
-            ],
-            listeners: {
-                afterrender: function() {
-                    this.down("form").getForm().getFields().first().focus(false, 100);
-                    return true;
-                }
-            }
+            ]
         });
         this.callParent()
     }
