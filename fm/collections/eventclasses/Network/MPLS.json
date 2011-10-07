@@ -135,6 +135,36 @@
     },
     
     {
+        "name": "Network | MPLS | LDP Neighbor Up",
+        "description": "MPLS LDP Neighbor Up",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "MPLS LDP Neighbor Up: {{neighbor}}",
+                "body_template": "MPLS LDP Neighbor Up: {{neighbor}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "neighbor",
+                "description": "LDP Neighbor",
+                "type": "ip_address",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | MPLS | LDP Neighbor Down"
+            }
+        ]
+    },
+
+    {
         "name": "Network | MPLS | LDP Neighbor Down",
         "description": "MPLS LDP Neighbor Down",
         "action": "A",
