@@ -83,14 +83,14 @@ class Web(Daemon):
             (r"^.*$", tornado.web.FallbackHandler, {"fallback": noc_wsgi})
         ])
         logging.info("Loading site")
-        # Import and autodiscover site
-        # Called within function to prevent import loops
-        import noc.lib.nosql  # Connect to mongodb
-        from noc.lib.app import site
-        site.autodiscover()
         logging.info("Listening %s:%s" % (address, port))
         server = tornado.httpserver.HTTPServer(application)
         server.bind(port, address)
         # Fork multiple instances
         server.start(self.config.getint("web", "workers"))
+        # Import and autodiscover site
+        # Called within function to initialize all process independently
+        import noc.lib.nosql  # Connect to mongodb
+        from noc.lib.app import site
+        site.autodiscover()
         tornado.ioloop.IOLoop.instance().start()
