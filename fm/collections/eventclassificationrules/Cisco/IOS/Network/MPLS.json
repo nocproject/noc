@@ -1,0 +1,43 @@
+[
+    {
+        "name": "Cisco | IOS | Network | MPLS | LDP Neighbor Up (SYSLOG)",
+        "description": "%LDP-5-NBRCHG: LDP Neighbor 172.16.0.1:0 is UP",
+        "event_class__name": "Network | MPLS | LDP Neighbor Up",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%LDP-5-NBRCHG: LDP Neighbor (?P<ip>\\S+):\\d+.+is UP$" 
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | MPLS | LDP Neighbor Down (SYSLOG)",
+        "description": "%LDP-5-NBRCHG: LDP Neighbor 10.10.66.129:0 (4) is DOWN (Received error notification from peer: Holddown time expired)",
+        "event_class__name": "Network | MPLS | LDP Neighbor Down",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$" 
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$" 
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%LDP-5-NBRCHG: LDP Neighbor (?P<ip>\\S+):\\d+.+is DOWN \\((?P<reason>.+)\\)" 
+            }
+        ]
+    }
+]
