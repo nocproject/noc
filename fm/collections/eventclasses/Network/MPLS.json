@@ -170,8 +170,8 @@
         "action": "A",
         "text": {
             "en": {
-                "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}",
-                "body_template": "MPLS LDP Neighbor Down: {{neighbor}}",
+                "subject_template": "MPLS LDP Neighbor Down: {{neighbor}} ({{reason}})",
+                "body_template": "MPLS LDP Neighbor Down: {{neighbor}} ({{reason}})",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -182,6 +182,12 @@
                 "name": "neighbor",
                 "description": "LDP Neighbor",
                 "type": "ip_address",
+                "required": true
+            },
+            {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
                 "required": true
             }
         ],
