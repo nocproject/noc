@@ -5,6 +5,7 @@
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC application");
+Ext.require("NOC.main.desktop.Viewport");
 
 Ext.application({
     name: "NOC",
