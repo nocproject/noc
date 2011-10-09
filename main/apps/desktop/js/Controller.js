@@ -64,8 +64,6 @@ Ext.define("NOC.main.desktop.Controller", {
             scope: this,
             success: function(response) {
                 var settings = Ext.decode(response.responseText);
-                // Change theme
-                this.change_theme(settings["theme"]);
                 // Set username in the header
                 var display_name = "";
                 if(settings["first_name"])
@@ -86,6 +84,8 @@ Ext.define("NOC.main.desktop.Controller", {
                 Ext.getCmp("header").getComponent("user_display_name").menu
                     .getComponent("header_menu_userprofile")
                     .setDisabled(false);
+                // Change theme
+                this.change_theme(settings["theme"]);
                 // Display username button
                 Ext.getCmp("header").getComponent("user_display_name").show();
                 // Load menu
