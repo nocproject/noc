@@ -86,6 +86,8 @@ Ext.define("NOC.main.desktop.Controller", {
                 Ext.getCmp("header").getComponent("user_display_name").menu
                     .getComponent("header_menu_userprofile")
                     .setDisabled(false);
+                // Display username button
+                Ext.getCmp("header").getComponent("user_display_name").show();
                 // Load menu
                 this.update_menu();
             }
@@ -142,6 +144,7 @@ Ext.define("NOC.main.desktop.Controller", {
             url: "/main/desktop/logout/",
             scope: this,
             success: function(response) {
+                Ext.getCmp("header").getComponent("user_display_name").hide();
                 this.show_login();
             },
             failure: function(response) {

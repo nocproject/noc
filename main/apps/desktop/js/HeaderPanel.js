@@ -63,6 +63,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             text: "Anonymous",
             scale: "small",
             iconCls: "icon_user",
+            hidden: true,
             menu: [
                 {
                     id: "header_menu_toggle",
