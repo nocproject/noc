@@ -86,10 +86,12 @@ Ext.define("NOC.main.desktop.Controller", {
                 Ext.getCmp("header").getComponent("user_display_name").menu
                     .getComponent("header_menu_userprofile")
                     .setDisabled(false);
+                // Load menu
+                this.update_menu();
             }
         });
         // Load menu
-        this.update_menu();
+        //this.update_menu();
         // Launch welcome application
         this.launch_tab("NOC.main.welcome.Application", "Welcome", {});
     },
