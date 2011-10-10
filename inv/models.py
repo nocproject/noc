@@ -30,7 +30,7 @@ class Vendor(Document):
 class SocketAttribute(EmbeddedDocument):
     name = StringField()
     required = BooleanField(default=True)
-    type = StringField(choices=["str", "int", "float"])
+    type = StringField(choices=[(x, x) for x in ("str", "int", "float")])
     default = StringField(required=False)
     
     def __unicode__(self):
@@ -144,7 +144,7 @@ class ModelSocket(EmbeddedDocument):
     }
     name = StringField()
     type = PlainReferenceField(Socket)
-    kind = StringField(max_length=1, choices=["M", "F"])
+    kind = StringField(max_length=1, choices=[(x, x) for x in ("M", "F")])
     # Socket range expression
     range = StringField(required=False)
     
@@ -263,7 +263,8 @@ class ForwardingInstance(Document):
         "allow_inheritance": False
     }
     managed_object = ForeignKeyField(ManagedObject)
-    type = StringField(choices=["ip", "bridge", "VRF", "VPLS", "VLL"],
+    type = StringField(choices=[(x, x) for x in ("ip", "bridge", "VRF",
+                                                 "VPLS", "VLL")],
                        default="ip")
     virtual_router = StringField(required=False)
     forwarding_instance = StringField()
@@ -282,8 +283,8 @@ class Interface(Document):
     }
     managed_object = ForeignKeyField(ManagedObject)
     name = StringField()
-    type = StringField(choices=["physical", "SVI", "aggregated",
-                                "loopback", "management"])
+    type = StringField(choices=[(x, x) for x in ("physical", "SVI", "aggregated",
+                                "loopback", "management")])
     description = StringField(required=False)
     mac = StringField(required=False)
     aggregated_interface = PlainReferenceField("self", required=False)
