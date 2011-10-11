@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:WARN:|WARN\\(4\\)|CRIT:|CRIT\\(2\\)) (Unit \\d+, )?(?P<name>.*) failed$"
+                "value_re": "(?:WARN:|WARN\\(4\\)|CRIT:|CRIT\\(2\\)) (Unit \\d+, )?(?P<name>.*Fan) failed$"
             }
         ]
     },
