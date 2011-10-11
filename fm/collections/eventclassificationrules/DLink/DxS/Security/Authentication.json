@@ -291,5 +291,26 @@
                 "value_re": "(?:INFO:|INFO\\(6\\)) (?:Web|Telnet|SSH) session timed out \\(Username: (?P<user>.+?), IP: (?P<ip>\\S+)(?:, MAC: \\S+)?\\)$"
             }
         ]
+    },
+
+    {
+        "name": "DLink | DxS | Security | Authentication | AAA Server Connection Failed (SYSLOG)",
+        "description": "WARN: AAA server 172.16.35.2 (Protocol: RADIUS) connection failed",
+        "event_class__name": "Security | Authentication | Authentication Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(?:WARN:|WARN\\(4\\)) AAA server .+ \\(Protocol: .+\\) connection failed"
+            }
+        ]
     }
 ]
