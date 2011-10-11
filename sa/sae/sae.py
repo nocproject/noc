@@ -505,20 +505,20 @@ class SAE(Daemon):
                 continue
             # Check for global rate limit
             if self.max_mrt_rate_per_sae:
-                if self.sae_mrt_rate > self.shard_mrt_rate:
+                if sae_mrt_rate > self.max_mrt_rate_per_sae:
                     self.log_mrt(logging.INFO, task=mt,
                                  status="throttled",
                                  msg="Per-SAE rate limit exceeded "
                                      "(%d)" % self.max_mrt_rate_per_sae)
                     break
-                self.sae_mrt_rate += 1
+                sae_mrt_rate += 1
             # Check for shard rate limit
-            if self.max_mrt_rate_per_sae:
+            if self.max_mrt_rate_per_shard:
                 s_id = mt.managed_object.activator.shard.id
                 if s_id in throttled_shards:
                     # Shard is throttled, do not log
                     continue
-                sr = self.shard_mrt_rate.get(s_id, 0)
+                sr = shard_mrt_rate.get(s_id, 0)
                 if sr > self.max_mrt_rate_per_shard:
                     # Log and throttle shard
                     self.log_mrt(log_mrt.INFO, task=mt,
