@@ -84,12 +84,12 @@ Ext.define("NOC.main.desktop.Controller", {
                 Ext.getCmp("header").getComponent("user_display_name").menu
                     .getComponent("header_menu_userprofile")
                     .setDisabled(false);
-                // Change theme
-                this.change_theme(settings["theme"]);
                 // Display username button
                 Ext.getCmp("header").getComponent("user_display_name").show();
                 // Load menu
                 this.update_menu();
+                // Change theme
+                this.change_theme(settings["theme"]);
             }
         });
         // Load menu
