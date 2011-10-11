@@ -79,6 +79,9 @@ class SAE(Daemon):
         self.strip_syslog_severity = False
         #
         self.has_getsizeof = hasattr(sys, "getsizeof")
+        # Connection rate throttling
+        self.max_mrt_rate_per_sae = None
+        self.max_mrt_rate_per_shard = None
 
     def load_config(self):
         """
@@ -95,6 +98,10 @@ class SAE(Daemon):
                                                     "strip_syslog_facility")
         self.strip_syslog_severity = self.config.getboolean("event",
                                                     "strip_syslog_severity")
+        self.max_mrt_rate_per_sae = self.config.getint("sae",
+                                                    "max_mrt_rate_per_sae")
+        self.max_mrt_rate_per_shard = self.config.getint("sae",
+                                                    "max_mrt_rate_per_shard")
 
     def build_manifest(self):
         """
@@ -480,16 +487,47 @@ class SAE(Daemon):
                     **kwargs)
 
         t = datetime.datetime.now()
+        # Reset rates
+        sae_mrt_rate = 0
+        shard_mrt_rate = {}  # shard_id -> count
+        throttled_shards = set()  # shard_id
+        # Run tasks
         for mt in MapTask.objects.filter(status="W", next_try__lte=t,
                     managed_object__activator__shard__is_active=True,
                     managed_object__activator__shard__name__in=self.shards):
-            if mt.task.stop_time < t:  # Task timeout
+            # Check for task timeouts
+            if mt.task.stop_time < t:
                 mt.status = "F"
                 mt.script_result = dict(code=ERR_TIMEOUT, text="Timed out")
                 mt.save()
                 self.log_mrt(logging.INFO, task=mt,
                              status="failed", msg="timed out")
                 continue
+            # Check for global rate limit
+            if self.max_mrt_rate_per_sae:
+                if self.sae_mrt_rate > self.shard_mrt_rate:
+                    self.log_mrt(logging.INFO, task=mt,
+                                 status="throttled",
+                                 msg="Per-SAE rate limit exceeded "
+                                     "(%d)" % self.max_mrt_rate_per_sae)
+                    break
+                self.sae_mrt_rate += 1
+            # Check for shard rate limit
+            if self.max_mrt_rate_per_sae:
+                s_id = mt.managed_object.activator.shard.id
+                if s_id in throttled_shards:
+                    # Shard is throttled, do not log
+                    continue
+                sr = self.shard_mrt_rate.get(s_id, 0)
+                if sr > self.max_mrt_rate_per_shard:
+                    # Log and throttle shard
+                    self.log_mrt(log_mrt.INFO, task=mt,
+                                 status="throttled",
+                                 msg="Per-shard rate limit exceeded "
+                                      "(%d)" % self.max_mrt_rate_per_shard)
+                    throttled_shards.add(s_id)
+                else:
+                    shard_mrt_rate[s_id] += 1
             mt.status = "R"
             mt.save()
             exec_script(mt)
