@@ -46,6 +46,15 @@ class SAE(Daemon):
     def __init__(self):
         self.shards = []
         self.force_plaintext = []
+        #
+        self.strip_syslog_facility = False
+        self.strip_syslog_severity = False
+        #
+        self.has_getsizeof = hasattr(sys, "getsizeof")
+        # Connection rate throttling
+        self.max_mrt_rate_per_sae = None
+        self.max_mrt_rate_per_shard = None
+
         Daemon.__init__(self)
         logging.info("Running SAE")
         #
@@ -74,14 +83,6 @@ class SAE(Daemon):
         self.log_cli_sessions = False
         self.script_threads = {}
         self.script_lock = threading.Lock()
-        #
-        self.strip_syslog_facility = False
-        self.strip_syslog_severity = False
-        #
-        self.has_getsizeof = hasattr(sys, "getsizeof")
-        # Connection rate throttling
-        self.max_mrt_rate_per_sae = None
-        self.max_mrt_rate_per_shard = None
 
     def load_config(self):
         """
@@ -518,16 +519,16 @@ class SAE(Daemon):
                 if s_id in throttled_shards:
                     # Shard is throttled, do not log
                     continue
-                sr = shard_mrt_rate.get(s_id, 0)
+                sr = shard_mrt_rate.get(s_id, 0) + 1
                 if sr > self.max_mrt_rate_per_shard:
                     # Log and throttle shard
-                    self.log_mrt(log_mrt.INFO, task=mt,
+                    self.log_mrt(logging.INFO, task=mt,
                                  status="throttled",
                                  msg="Per-shard rate limit exceeded "
                                       "(%d)" % self.max_mrt_rate_per_shard)
                     throttled_shards.add(s_id)
                 else:
-                    shard_mrt_rate[s_id] += 1
+                    shard_mrt_rate[s_id] = sr
             mt.status = "R"
             mt.save()
             exec_script(mt)
