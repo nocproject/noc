@@ -100,6 +100,17 @@ class NOCTestResult(unittest.TestResult):
         t = test.id()
         self.test_timings[t] = time.time() - self.test_timings[t]
 
+    def dump_result(self):
+        if len(self.errors) + len(self.failures):
+            print "Failed tests:"
+            print
+        for name, test, status, err in sorted(self.test_results,
+                                              key=lambda x: x[0]):
+            if status in (self.R_ERROR, self.R_FAILURE):
+                print ">>> %s:" % name
+                print format_frames(get_traceback_frames(err[2]))
+                print
+
     def write_xml(self, path):
         """
         Generator returning JUnit-compatible XML output
@@ -488,6 +499,8 @@ class TestRunner(object):
         if self.result:
             if self.xml_out:
                 self.result.write_xml(self.xml_out)
+            else:
+                self.result.dump_result()
             return len(self.result.failures) + len(self.result.errors)
         else:
             return 1
