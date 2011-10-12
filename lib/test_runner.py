@@ -105,6 +105,8 @@ class NOCTestResult(unittest.TestResult):
         Generator returning JUnit-compatible XML output
         """
         from xml.dom.minidom import Document
+        
+        logging.info("Writing JUnit XML output to '%s'" % path)
         out = Document()
         ts = out.createElement("testsuite")
         out.appendChild(ts)
