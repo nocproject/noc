@@ -15,7 +15,7 @@ _version = None
 
 def get_version():
     """
-    Returns NOC version. Version format is X.Y.Z[rREV]
+    Returns NOC version. Version format is X.Y[.Z][(I)[rREV]]
     >>> len(get_version())>0
     True
     """
@@ -29,9 +29,13 @@ def get_version():
     try:
         from mercurial import ui, localrepo
         try:
-            lr = localrepo.localrepository(ui.ui(), path=".")
-            rev = lr.changelog.rev(lr.changelog.tip())
-            v += "r%s" % rev
+            lr = localrepo.localrepository(ui.ui(), path=".")  # Repo
+            tip = lr.changelog.tip()  # tip revision
+            tags = lr.tags()
+            if tip not in tags.values():
+                # Add changeset if not tagged revision
+                rev = lr.changelog.rev(lr.changelog.tip())
+                v += "r%s" % rev
         except:
             pass
     except ImportError:
