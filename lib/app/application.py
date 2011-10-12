@@ -255,7 +255,7 @@ class Application(object):
     ## Return a set of permissions, used by application
     ##
     def get_permissions(self):
-        p=set()
+        p=set(["%s:launch" % self.get_app_id().replace(".", ":")])
         # View permissions from HasPerm
         for view in self.get_views():
             if isinstance(view.access,HasPerm):
