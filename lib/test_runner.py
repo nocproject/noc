@@ -93,6 +93,7 @@ class NOCTestResult(unittest.TestResult):
         super(NOCTestResult, self).addFailure(test, err)
 
     def startTest(self, test):
+        self.testsRun += 1
         self.test_timings[test.id()] = time.time()
 
     def stopTest(self, test):
