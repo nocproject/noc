@@ -108,6 +108,7 @@ class NOCTestResult(unittest.TestResult):
                                               key=lambda x: x[0]):
             if status in (self.R_ERROR, self.R_FAILURE):
                 print ">>> %s:" % name
+                print "%s: %s" % (err[0].__name__, err[1])
                 print format_frames(get_traceback_frames(err[2]))
                 print
 
