@@ -143,6 +143,7 @@ class NOCTestResult(unittest.TestResult):
                 e.setAttribute("type", err[0].__name__)
                 e.setAttribute("message", str(err[1]))
                 ft = out.createCDATASection(
+                    "%s: %s" % (err[0].__name__, err[1]) + "\n" +
                     format_frames(get_traceback_frames(err[2])) + "\n")
                 e.appendChild(ft)
         # Applend system-out and system-err
