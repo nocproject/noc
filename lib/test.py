@@ -176,6 +176,16 @@ class TestClient(Client):
                     **self.get_headers(headers=extra, credentials=credentials))
 
 
+@unittest.skip("ApplicationTestCase is obsolete")
+class ApplicationTestCase(TestCase):
+    pass
+
+
+@unittest.skip("ModelApplicationTestCase is obsolete")
+class ModelApplicationTestCase(TestCase):
+    pass
+
+
 class NOCTestCase(TestCase):
     """
     Base class for unittests
