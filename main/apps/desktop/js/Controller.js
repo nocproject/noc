@@ -145,6 +145,7 @@ Ext.define("NOC.main.desktop.Controller", {
             scope: this,
             success: function(response) {
                 Ext.getCmp("header").getComponent("user_display_name").hide();
+                Ext.getCmp("workplace").removeAll(true);
                 this.show_login();
             },
             failure: function(response) {
