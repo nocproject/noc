@@ -186,6 +186,11 @@ class ModelApplicationTestCase(TestCase):
     pass
 
 
+@unittest.skip("ReportApplicationTestCase is obsolete")
+class ReportApplicationTestCase(TestCase):
+    pass
+
+
 class NOCTestCase(TestCase):
     """
     Base class for unittests
