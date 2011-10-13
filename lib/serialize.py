@@ -16,17 +16,8 @@ except ImportError:
     from django.utils import simplejson
     from django.utils.simplejson.encoder import JSONEncoder
     from django.utils.simplejson.decoder import JSONDecoder
-    simplejson_encoder = JSONEncoder
-    simplejson_decoder = JSONDecoder
     JSON_TYPE = "django_simplejson"
 
-
-def _simplejson_encode(obj):
-    return simplejson_encoder(ensure_ascii=False).encode(obj)
-
-
-def _simplejson_decode(s):
-    return simplejson_decoder(encoding="utf-8").decode(s)
 
 ## Install handlers
 logging.info("Using JSON library: %s" % JSON_TYPE)
@@ -34,5 +25,7 @@ if JSON_TYPE == "cjson":
     json_encode = cjson.encode
     json_decode = cjson.decode
 elif JSON_TYPE == "django_simplejson":
-    json_encode = _simplejson_encode
-    json_decode = _simplejson_decode
+    json_encode = simplejson.dumps
+    json_decode = simplejson.loads
+else:
+    raise ValueError("Cannot detect proper JSON handler")
