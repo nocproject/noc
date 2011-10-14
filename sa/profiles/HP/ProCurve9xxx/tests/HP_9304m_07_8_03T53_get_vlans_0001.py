@@ -17,33 +17,13 @@ class HP_ProCurve9xxx_get_vlans_Test(ScriptTestCase):
  {'name': '[None]', 'vlan_id': 2},
  {'name': '[None]', 'vlan_id': 4},
  {'name': '[None]', 'vlan_id': 6},
- {'name': '[None]', 'vlan_id': 7},
- {'name': '[None]', 'vlan_id': 16},
- {'name': '[None]', 'vlan_id': 20},
- {'name': '[None]', 'vlan_id': 24},
- {'name': '[None]', 'vlan_id': 25},
- {'name': '[None]', 'vlan_id': 26},
- {'name': '[None]', 'vlan_id': 27},
- {'name': '[None]', 'vlan_id': 28},
- {'name': '[None]', 'vlan_id': 29},
- {'name': '[None]', 'vlan_id': 30},
- {'name': '[None]', 'vlan_id': 31},
- {'name': '[None]', 'vlan_id': 32},
- {'name': '[None]', 'vlan_id': 33},
- {'name': '[None]', 'vlan_id': 34},
- {'name': '[None]', 'vlan_id': 35},
- {'name': '[None]', 'vlan_id': 36},
- {'name': '[None]', 'vlan_id': 37},
- {'name': '[None]', 'vlan_id': 39},
- {'name': '[None]', 'vlan_id': 40},
- {'name': '[None]', 'vlan_id': 45},
- {'name': '[None]', 'vlan_id': 100}]
+ {'name': '[None]', 'vlan_id': 7}]
     motd=' \n'
     cli={
 'terminal length 1000':  'terminal length 1000\n',
 ## 'show vlans'
 'show vlans': """show vlans
-Total PORT-VLAN entries: 26
+Total PORT-VLAN entries: 5
 Maximum PORT-VLAN entries: 32
 
 legend: [S=Slot]
@@ -77,132 +57,6 @@ PORT-VLAN 6, Name [None], Priority level7, Spanning tree On
 PORT-VLAN 7, Name [None], Priority level0, Spanning tree On
  Untagged Ports: (S2) 11 16 
    Tagged Ports: (S2)  1  2  7 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 16, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Tagged Ports: (S2)  8 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 20, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 24, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 25, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 26, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 27, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 28, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Tagged Ports: (S2)  8 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 29, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 30, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 31, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 32, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Tagged Ports: (S2)  7 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 33, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 34, Name [None], Priority level0, Spanning tree On
- Untagged Ports: (S2)  5  6  9 10 12 13 14 15 
-   Tagged Ports: (S2)  1  2  7  8 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 35, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 36, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Tagged Ports: (S2)  7  8 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 37, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 39, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Tagged Ports: (S2)  8 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 40, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 45, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S1)  1  2  3  4 
-   Tagged Ports: (S2)  7 
-   Uplink Ports: None
- DualMode Ports: None
-
-PORT-VLAN 100, Name [None], Priority level0, Spanning tree On
- Untagged Ports: None
-   Tagged Ports: (S2)  8 
    Uplink Ports: None
  DualMode Ports: None
 """,

@@ -29,7 +29,7 @@ class Script(NOCScript):
             if match:
                 name=match.group("name")
                 if name == "[None]":
-                    name = 'VLAN%s' % match.group("vlan_id")
+                    name = ''
                 vlan_id=int(match.group("vlan_id"))
                 r+=[{
                     "vlan_id": vlan_id,
