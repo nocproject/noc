@@ -7,11 +7,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app import {{base_class}}, view
 from noc.{{module}}.models import {{model}}
 
 
-class {{model}}Application(ExtModelApplication):
+class {{model}}Application({{base_class}}):
     """
     {{model}} application
     """
