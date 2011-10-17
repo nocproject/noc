@@ -16,8 +16,10 @@ import re
 from django.core.management.base import BaseCommand, CommandError
 from django.template import Template, Context
 from django.db.models.fields import NOT_PROVIDED
+from django.db.models import Model
 ## NOC modules
 from noc.settings import INSTALLED_APPS
+from noc.lib.nosql import Document
 
 
 class Command(BaseCommand):
@@ -33,6 +35,12 @@ class Command(BaseCommand):
                     help="Create Report"))
 
     rx_empty = re.compile("^ +\n", re.MULTILINE)
+
+    # NoSQL Document <-> Django ORM
+    type_map = {
+        "StringField": "CharField",
+        "BooleanField": "BooleanField"
+    }
 
     def compact(self, s):
         return self.rx_empty.sub("", s)
@@ -94,20 +102,34 @@ class Command(BaseCommand):
                 models = __import__("noc.%s.models" % m, {}, {}, "*")
                 model = getattr(models, tv["model"])
                 fields = []
-                for f in model._meta.fields:
-                    if f.name == "id":
-                        continue
-                    if f.default == NOT_PROVIDED:
-                        d = None
-                    else:
-                        d = f.default
-                    fields += [{
-                        "type": f.__class__.__name__,
-                        "name": f.name,
-                        "label": unicode(f.verbose_name),
-                        "null": f.null,
-                        "default": d
-                    }]
+                if isinstance(model, Model):
+                    for f in model._meta.fields:
+                        if f.name == "id":
+                            continue
+                        if f.default == NOT_PROVIDED:
+                            d = None
+                        else:
+                            d = f.default
+                        fields += [{
+                            "type": f.__class__.__name__,
+                            "name": f.name,
+                            "label": unicode(f.verbose_name),
+                            "null": f.null,
+                            "default": d
+                        }]
+                    tv["base_class"] = "ExtModelApplication"
+                else:
+                    for n, f in model._fields.items():
+                        if n == "id":
+                            continue
+                        fields += [{
+                            "type": self.type_map[f.__class__.__name__],
+                            "name": n,
+                            "label": unicode(n),
+                            "null": not f.required,
+                            "default": f.default
+                        }]
+                    tv["base_class"] = "ExtDocApplication"
                 tv["fields"] = fields
             # Check applications is not exists
             app_root = os.path.join(m, "apps", a)
