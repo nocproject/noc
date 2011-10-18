@@ -47,5 +47,6 @@ class PrefixListBuilderAppplication(ExtApplication):
         pl = peering_point.profile.generate_prefix_list(name, prefixes)
         return {
             "name": name,
-            "prefix_list": pl
+            "prefix_list": pl,
+            "success" : True
         }
