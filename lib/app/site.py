@@ -158,15 +158,20 @@ class Site(object):
                 if (hasattr(v, "validate") and v.validate and
                     issubclass(v.validate, Form)):
                     # Additional validation
-                    f = v.validate(request.GET)
+                    f = v.validate(request.GET)  # @todo: Post
                     if f.is_valid():
                         kwargs.update(f.cleaned_data)
                     else:
+                        # Return error response
+                        ext_format = ("__format=ext"
+                                    in request.META["QUERY_STRING"].split("&"))
                         r = JSONEncoder(ensure_ascii=False).encode({
                             "status": False,
-                            "error": f.errors
+                            "errors": dict([(f, "; ".join(e))
+                                for f, e in f.errors.items()])
                         })
-                        return HttpResponse(r, status=400,  # BAD REQUEST
+                        status = 200 if ext_format else 400  # OK or BAD_REQUEST
+                        return HttpResponse(r, status=status,
                                             mimetype="text/json; charset=utf-8")
                 r = v(request, *args, **kwargs)
             except PermissionDenied, why:
