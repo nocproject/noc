@@ -111,7 +111,7 @@ class ExtDocApplication(ExtApplication):
 
     def instance_to_lookup(self, o):
         return {
-            "id": o.id,
+            "id": str(o.id),
             "label": unicode(o)
         }
 
