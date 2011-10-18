@@ -35,6 +35,6 @@ class Script(noc.sa.script.Script):
         and ser.group("serial") != "Power":
             r["attributes"].update({"Serial Number" : ser.group("serial")})
         fwt=self.rx_fwt.search(s)
-        if ser:
+        if fwt:
             r["attributes"].update({"Firmware Type" : fwt.group("fwt")})
         return r
