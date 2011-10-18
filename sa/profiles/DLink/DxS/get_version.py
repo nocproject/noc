@@ -16,7 +16,9 @@ class Script(noc.sa.script.Script):
     cache=True
     implements=[IGetVersion]
     rx_ver=re.compile(r"Device Type\s+:\s+(?P<platform>\S+).+Boot PROM Version\s+:\s+(?:Build\s+)?(?P<bootprom>\S+).+Firmware Version\s+:\s+(?:Build\s+)?(?P<version>\S+).+Hardware Version\s+:\s+(?P<hardware>\S+)",re.MULTILINE|re.DOTALL)
-    rx_ser=re.compile(r"Serial Number\s+:\s+(?P<serial>\S+)",re.MULTILINE|re.DOTALL)
+    rx_fwt=re.compile(r"Firmware Type\s+:\s+(?P<fwt>\S+)\s*\n",re.MULTILINE|re.DOTALL)
+    rx_ser=re.compile(r"Serial Number\s+:\s+(?P<serial>\S+)\s*\n",re.MULTILINE|re.DOTALL)
+
     def execute(self):
         s=self.cli("show switch", cached=True)
         match=self.re_search(self.rx_ver, s)
@@ -32,4 +34,7 @@ class Script(noc.sa.script.Script):
         if ser and ser.group("serial") != "System" \
         and ser.group("serial") != "Power":
             r["attributes"].update({"Serial Number" : ser.group("serial")})
+        fwt=self.rx_fwt.search(s)
+        if ser:
+            r["attributes"].update({"Firmware Type" : fwt.group("fwt")})
         return r
