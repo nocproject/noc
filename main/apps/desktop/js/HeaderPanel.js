@@ -93,7 +93,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         {
             id: "search",
             xtype: "textfield",
-            padding: "0 0 0 5",
+            padding: "0 0 0 4",
             emptyText: "Search...",
             inputType: "search",
             listeners: {
