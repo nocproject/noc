@@ -60,5 +60,26 @@
                 "value_re": "%Stack-I-STCK-CFG-CHNG: Configuration changed: \\S+$"
             }
         ]
+    },
+
+    {
+        "name": "DLink | DxS | Config | Config Uploaded Cuccessfully (SYSLOG)",
+        "description": "INFO: Configuration successfully uploaded (Username: admin, IP: 172.16.0.1)",
+        "event_class__name": "Config | Config Uploaded Cuccessfully",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "(?:INFO:|INFO\\(6\\)) Configuration successfully uploaded \\(Username: (?P<user>.+), IP: (?P<ip>\\S+)\\)$"
+            }
+        ]
     }
 ]
