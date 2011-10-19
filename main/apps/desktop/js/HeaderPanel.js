@@ -45,6 +45,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
 
         {
             xtype: "container",
+            flex: 1,
             html: NOC.settings.installation_name,
             style: {
                 fontSize: "18px"
@@ -53,12 +54,8 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         },
 
         {
-            xtype: "container",
-            flex: 1
-        },
-
-        Ext.create("Ext.Button", {
             id: "user_display_name",
+            xtype: "button",
             itemId: "user_display_name",
             text: "Anonymous",
             scale: "small",
@@ -91,11 +88,12 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                     iconCls: "icon_door_out"
                 }
             ]
-        }),
-        
+        },
+
         {
             id: "search",
             xtype: "textfield",
+            padding: "0 0 0 5",
             emptyText: "Search...",
             inputType: "search",
             listeners: {
