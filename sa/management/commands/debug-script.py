@@ -35,7 +35,7 @@ from noc.sa.activator import Service, ServersHub
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.rpc import TransactionFactory
 from noc.lib.url import URL
-from noc.lib.nbsocket import SocketFactory
+from noc.lib.nbsocket import SocketFactory, UDPSocket
 from noc.lib.validators import is_int
 from noc.lib.fileutils import read_file
 
@@ -143,6 +143,14 @@ class %(test_name)s_Test(ScriptTestCase):
             f.write(s)
     
 
+class ActivatorStubFactory(SocketFactory):
+    def unregister_socket(self, socket):
+        super(ActivatorStubFactory, self).unregister_socket(socket)
+        if isinstance(socket, UDPSocket):
+            # Reset activator watchdog on UDP socket closing
+            self.controller.reset_wait_ticks()
+
+
 ##
 ## Activator emulation
 ##
@@ -155,7 +163,8 @@ class ActivatorStub(object):
         self.config.read("etc/noc-activator.conf")
         self.script_call_queue = Queue.Queue()
         self.ping_check_results = None
-        self.factory = SocketFactory(tick_callback=self.tick, controller=self)
+        self.factory = ActivatorStubFactory(tick_callback=self.tick,
+                                            controller=self)
         self.servers = ServersHub(self)
         self.log_cli_sessions = None
         self.wait_ticks = self.WAIT_TICKS
@@ -191,7 +200,11 @@ class ActivatorStub(object):
             os._exit(1)
         self.ssh_public_key = Key.from_string(s_pub)
         self.ssh_private_key = Key.from_string_private_noc(s_priv)
-    
+
+    def reset_wait_ticks(self):
+        logging.debug("Resetting wait ticks")
+        self.wait_ticks = self.WAIT_TICKS
+
     def tick(self):
         logging.debug("Tick")
         while not self.script_call_queue.empty():
@@ -224,8 +237,9 @@ class ActivatorStub(object):
                 self.factory.shutdown()
             logging.debug("%d TICKS TO EXIT" % self.wait_ticks)
         else:
-            self.wait_ticks = self.WAIT_TICKS
-        
+            # Sockets left
+            self.reset_wait_ticks()
+
     def on_script_exit(self, script):
         get_version = ".".join(script.name.split(".")[:-1]) + ".get_version"
         if self.to_save_output and get_version in script.call_cache:
