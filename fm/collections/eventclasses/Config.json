@@ -84,8 +84,8 @@
     },
 
     {
-        "name": "Config | Config Uploaded Cuccessfully",
-        "description": "Config Uploaded Cuccessfully",
+        "name": "Config | Config Uploaded Successfully",
+        "description": "Config Uploaded Successfully",
         "action": "L",
         "vars": [
             {
@@ -109,8 +109,8 @@
         ],
         "text" : {
             "en": {
-                "subject_template": "Config upload {% if service %}to {{service}} {% endif %}is cuccess{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-                "body_template": "Config upload {% if service %}to {{service}} {% endif %}is cuccess{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+                "subject_template": "Config upload {% if service %}to {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+                "body_template": "Config upload {% if service %}to {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -161,8 +161,8 @@
     },
 
     {
-        "name": "Config | Config Downloaded Cuccessfully",
-        "description": "Config Downloaded Cuccessfully",
+        "name": "Config | Config Downloaded Successfully",
+        "description": "Config Downloaded Successfully",
         "action": "L",
         "vars": [
             {
@@ -186,8 +186,8 @@
         ],
         "text" : {
             "en": {
-                "subject_template": "Config download {% if service %}from {{service}} {% endif %}is cuccess{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
-                "body_template": "Config download {% if service %}from {{service}} {% endif %}is cuccess{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+                "subject_template": "Config download {% if service %}from {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+                "body_template": "Config download {% if service %}from {{service}} {% endif %}is success{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
