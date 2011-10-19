@@ -61,5 +61,24 @@
                 "recommended_actions": ""
             }
         }
+    },
+
+    {
+        "name": "Environment | UPS | Battery Power Low",
+        "description": "Battery Power Low",
+        "is_unique": true,
+        "discriminator": [],
+        "user_clearable": true,
+        "default_severity__name": "CRITICAL",
+        "vars": [],
+        "text": {
+            "en": {
+                "subject_template": "Battery power low",
+                "body_template": "Battery power low",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "Change old battery"
+            }
+        }
     }
 ]
