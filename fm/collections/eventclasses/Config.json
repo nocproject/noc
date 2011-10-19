@@ -99,12 +99,18 @@
                 "description": "Service name (ftp, tftp)",
                 "type": "str",
                 "required": false
+            },
+            {
+                "name": "user",
+                "description": "User name",
+                "type": "str",
+                "required": false
             }
         ],
         "text" : {
             "en": {
-                "subject_template": "Config upload {% if service %}to {{service}} {% endif %}is cuccess{% if ip %}: {{ip}}{% endif %}",
-                "body_template": "Config upload {% if service %}to {{service}} {% endif %}is cuccess{% if ip %}: {{ip}}{% endif %}",
+                "subject_template": "Config upload {% if service %}to {{service}} {% endif %}is cuccess{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+                "body_template": "Config upload {% if service %}to {{service}} {% endif %}is cuccess{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -128,12 +134,18 @@
                 "description": "Service name (ftp, tftp)",
                 "type": "str",
                 "required": false
+            },
+            {
+                "name": "user",
+                "description": "User name",
+                "type": "str",
+                "required": false
             }
         ],
         "text" : {
             "en": {
-                "subject_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if ip %}: {{ip}}{% endif %}",
-                "body_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if ip %}: {{ip}}{% endif %}",
+                "subject_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+                "body_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -164,12 +176,18 @@
                 "description": "Service name (ftp, tftp)",
                 "type": "str",
                 "required": false
+            },
+            {
+                "name": "user",
+                "description": "User name",
+                "type": "str",
+                "required": false
             }
         ],
         "text" : {
             "en": {
-                "subject_template": "Config download {% if service %}from {{service}} {% endif %}is cuccess{% if ip %}: {{ip}}{% endif %}",
-                "body_template": "Config download {% if service %}from {{service}} {% endif %}is cuccess{% if ip %}: {{ip}}{% endif %}",
+                "subject_template": "Config download {% if service %}from {{service}} {% endif %}is cuccess{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+                "body_template": "Config download {% if service %}from {{service}} {% endif %}is cuccess{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -193,12 +211,18 @@
                 "description": "Service name (ftp, tftp)",
                 "type": "str",
                 "required": false
+            },
+            {
+                "name": "user",
+                "description": "User name",
+                "type": "str",
+                "required": false
             }
         ],
         "text" : {
             "en": {
-                "subject_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if ip %}: {{ip}}{% endif %}",
-                "body_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if ip %}: {{ip}}{% endif %}",
+                "subject_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
+                "body_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if user %}, Username: {{user}}{% endif %}{% if ip %}, IP: {{ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
