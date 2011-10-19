@@ -81,5 +81,135 @@
                 "recommended_actions": "No specific action needed"
             }
         }
+    },
+
+    {
+        "name": "Config | Config Uploaded Cuccessfully",
+        "description": "Config Uploaded Cuccessfully",
+        "action": "L",
+        "vars": [
+            {
+                "name": "ip",
+                "description": "Server IP",
+                "type": "ip_address",
+                "required": false
+            },
+            {
+                "name": "service",
+                "description": "Service name (ftp, tftp)",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text" : {
+            "en": {
+                "subject_template": "Config upload {% if service %}to {{service}} {% endif %}is cuccess{% if ip %}: {{ip}}{% endif %}",
+                "body_template": "Config upload {% if service %}to {{service}} {% endif %}is cuccess{% if ip %}: {{ip}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    },
+
+    {
+        "name": "Config | Config Upload Failed",
+        "description": "Config Upload Failed",
+        "action": "A",
+        "vars": [
+            {
+                "name": "ip",
+                "description": "Server IP",
+                "type": "ip_address",
+                "required": false
+            },
+            {
+                "name": "service",
+                "description": "Service name (ftp, tftp)",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text" : {
+            "en": {
+                "subject_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if ip %}: {{ip}}{% endif %}",
+                "body_template": "Config upload {% if service %}to {{service}} {% endif %}failed{% if ip %}: {{ip}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name" : "Config | Config Upload Failed"
+            }
+        ]
+    },
+
+    {
+        "name": "Config | Config Downloaded Cuccessfully",
+        "description": "Config Downloaded Cuccessfully",
+        "action": "L",
+        "vars": [
+            {
+                "name": "ip",
+                "description": "Server IP",
+                "type": "ip_address",
+                "required": false
+            },
+            {
+                "name": "service",
+                "description": "Service name (ftp, tftp)",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text" : {
+            "en": {
+                "subject_template": "Config download {% if service %}from {{service}} {% endif %}is cuccess{% if ip %}: {{ip}}{% endif %}",
+                "body_template": "Config download {% if service %}from {{service}} {% endif %}is cuccess{% if ip %}: {{ip}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    },
+
+    {
+        "name": "Config | Config Download Failed",
+        "description": "Config Download Failed",
+        "action": "A",
+        "vars": [
+            {
+                "name": "ip",
+                "description": "Server IP",
+                "type": "ip_address",
+                "required": false
+            },
+            {
+                "name": "service",
+                "description": "Service name (ftp, tftp)",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text" : {
+            "en": {
+                "subject_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if ip %}: {{ip}}{% endif %}",
+                "body_template": "Config download {% if service %}from {{service}} {% endif %}failed{% if ip %}: {{ip}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name" : "Config | Config Download Failed"
+            }
+        ]
     }
 ]
