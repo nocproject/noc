@@ -63,9 +63,9 @@
     },
 
     {
-        "name": "DLink | DxS | Config | Config Uploaded Cuccessfully (SYSLOG)",
+        "name": "DLink | DxS | Config | Config Uploaded Successfully (SYSLOG)",
         "description": "INFO: Configuration successfully uploaded (Username: admin, IP: 172.16.0.1)",
-        "event_class__name": "Config | Config Uploaded Cuccessfully",
+        "event_class__name": "Config | Config Uploaded Successfully",
         "preference": 1000,
         "patterns": [
             {
