@@ -81,7 +81,7 @@
                 "value_re": "UPS: (?P<name>A logic power supply) fault no longer exists. 0x16A"
             }
         ]
-    }
+    },
 
     {
         "name": "APC | AOS | Chassis | PSU | PSU Failed #3 (SYSLOG)",
