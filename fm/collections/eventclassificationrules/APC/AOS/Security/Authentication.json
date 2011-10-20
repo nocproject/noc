@@ -20,7 +20,6 @@
         ]
     },
 
-
     {
         "name": "APC | AOS | Security | Authentication | Logout #1 (SYSLOG)",
         "description": "System: Console user 'admin' logged out from 192.168.220.54. 0x001E",
@@ -40,5 +39,27 @@
                 "value_re": "System: Console user '(?P<user>.+?)' logged out from (?P<ip>\\S+). 0x001E"
             }
         ]
+    },
+
+    {
+        "name": "APC | AOS | Security | Authentication | SNMP Authentication Failure (SYSLOG)",
+        "description": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004",
+        "event_class__name": "Security | Authentication | SNMP Authentication Failure",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^APC\\.AOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004"
+            }
+        ]
     }
+
 ]
