@@ -123,5 +123,47 @@
                 "value_re": "UPS: No longer compensating for a low input voltage. 0x010C"
             }
         ]
+    },
+
+    {
+        "name": "APC | AOS | Environment | UPS | Battery Power Low #1 (SYSLOG)",
+        "description": "UPS: The battery power is too low to support the load; if power fails, the UPS will be shut down immediately. 0x0107",
+        "event_class__name": "Environment | UPS | Battery Power Low",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^APC\\.AOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "UPS: The battery power is too low to support the load; if power fails, the UPS will be shut down immediately. 0x0107"
+            }
+        ]
+    },
+
+    {
+        "name": "APC | AOS | Environment | UPS | Battery Power Low #2 (SYSLOG)",
+        "description": "UPS: The battery power is too low to continue to support the load; the UPS will shut down if input power does not return to normal soon. 0x010F",
+        "event_class__name": "Environment | UPS | Battery Power Low",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^APC\\.AOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "UPS: The battery power is too low to continue to support the load; the UPS will shut down if input power does not return to normal soon. 0x010F"
+            }
+        ]
     }
 ]
