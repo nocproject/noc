@@ -9,7 +9,7 @@
 ## Python modules
 import math
 ## Django modules
-
+from django.utils.encoding import smart_str
 ## Third-party modules
 from tagging.models import Tag
 from tagging.utils import calculate_cloud
@@ -55,7 +55,7 @@ class TagsAppplication(Application):
         """
         Display all objects belonging to tag
         """
-        t = self.get_object_or_404(Tag, name=tag)
+        t = self.get_object_or_404(Tag, name=smart_str(tag))
         items = {}  # Type -> itemlist
         for i in t.items.all():
             if i.object is None:
