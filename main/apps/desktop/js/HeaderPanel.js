@@ -26,13 +26,11 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     border: false,
     bodyPadding: 4,
     items: [
-        /*
         Ext.create("Ext.Img",{
             src: NOC.settings.logo_url,
             width: NOC.settings.logo_width,
             height: NOC.settings.logo_height
         }),
-        */
         {
             xtype: "container",
             html: "NOC: ",

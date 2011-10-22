@@ -128,11 +128,11 @@ pyrule_authentication =
 # Installation name. Displayed in top left corner of web interface
 installation_name = Unconfigured Installation
 # Logo url. Absolute or relative path
-logo_url = /static/img/logo.png
+logo_url = /static/img/logo_24x24_black.png
 # Logo width
-logo_width = 43
+logo_width = 24
 # Logo height
-logo_height = 21
+logo_height = 24
 # favicon url
 favicon_url = /static/img/favicon/ocean-32x32.png
 
