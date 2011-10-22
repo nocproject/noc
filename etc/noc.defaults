@@ -134,7 +134,7 @@ logo_width = 24
 # Logo height
 logo_height = 24
 # favicon url
-favicon_url = /static/img/favicon/ocean-32x32.png
+favicon_url = /static/img/logo_24x24_deep_azure.png
 
 #
 # cm module setup
