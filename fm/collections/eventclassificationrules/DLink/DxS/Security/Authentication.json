@@ -204,7 +204,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:INFO:|INFO\\(6\\)) Successful login through (?:Web|Telnet|SSH) from (?P<ip>\\S+) authenticated by AAA .+ method \\(Username: (?P<user>\\S+?)(?:, MAC: \\S+)?\\)"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Successful login through (?:Web|Telnet|SSH) from (?P<ip>\\S+) authenticated by AAA \\S+ \\S+ \\(Username: (?P<user>\\S+?)(?:, MAC: \\S+)?\\)"
             }
         ]
     },
