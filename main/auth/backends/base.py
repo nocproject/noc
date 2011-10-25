@@ -129,6 +129,9 @@ def get_backend():
     elif method == "ldap":
         import ldapbackend
         return ldapbackend.NOCLDAPBackend()
+    elif method == "ad":
+        import adbackend
+        return adbackend.NOCADBackend()
     elif method == "pyrule":
         import pyrulebackend
         return pyrulebackend.NOCPyRuleBackend()
