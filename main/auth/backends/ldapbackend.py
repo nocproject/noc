@@ -128,7 +128,7 @@ class NOCLDAPBackend(NOCAuthBackend):
             # Populate context with DN
             context["dn"] = dn
             # Try to authenticate
-            client = ldap.initialize(settings.AUTH_LDAP_SERVER)
+            client = ldap.initialize(self.server)
             self.ldap_bind(client, dn, password)
             # Check user is in required group
             if self.required_group:
