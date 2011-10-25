@@ -14,8 +14,9 @@ class DLink_DxS_get_version_Test(ScriptTestCase):
     version='1.01.B033'
     input={}
     result={'attributes': {'Boot PROM': '1.00.007',
-                 'HW version': 'A1',
-                 'Serial Number': 'P4UV1A9000301'},
+                'Firmware Type': 'EI',
+                'HW version': 'A1',
+                'Serial Number': 'P4UV1A9000301'},
 'platform': 'DGS-3120-24TC', 'vendor': 'DLink', 'version': '1.01.B033'}
     motd='**********\n\n'
     cli={
