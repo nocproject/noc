@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%FAN-3-FAN_FAILED: (?P<name>Fan \\S+|Fans) had a rotation error reported\\.$"
+                "value_re": "%FAN-3-FAN_FAILED: (?P<name>Fan \\S+|Fans) had a rotation error reported"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%FAN-3-FAN_OK: (?P<name>Fan \\S+) had earlier reported a rotation error\\. It is ok now$"
+                "value_re": "%FAN-3-FAN_OK: (?P<name>Fan \\S+) had earlier reported a rotation error\\. It is ok now"
             }
         ]
     },
@@ -153,7 +153,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%ENVMON-3-FAN_FAILED: (?P<name>Fan \\d+) not rotating."
+                "value_re": "%ENVMON-3-FAN_FAILED: (?P<name>Fan \\d+) not rotating"
             }
         ]
     },
@@ -174,7 +174,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "System detected (?P<name>SYS PS \\d+ fan) fail condition."
+                "value_re": "System detected (?P<name>SYS PS \\d+ fan) fail condition"
             }
         ]
     }
