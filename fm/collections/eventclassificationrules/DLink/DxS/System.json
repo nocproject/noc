@@ -19,30 +19,9 @@
             }
         ]
     },
-    
+
     {
         "name": "DLink | DxS | System | Started #2 (SYSLOG)",
-        "description": "%INIT-I-Startup: Cold Startup",
-        "event_class__name": "System | Started",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^DLink\\.DxS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "%INIT-I-Startup: Cold Startup$"
-            }
-        ]
-    },
-    
-    {
-        "name": "DLink | DxS | System | Started #3 (SYSLOG)",
         "description": "CRIT: System started up",
         "event_class__name": "System | Started",
         "preference": 1000,

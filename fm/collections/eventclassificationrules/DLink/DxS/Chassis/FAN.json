@@ -1,6 +1,6 @@
 [
     {
-        "name": "DLink | DxS | Chassis | Fan | Fan Failed #1 (SYSLOG)",
+        "name": "DLink | DxS | Chassis | Fan | Fan Failed (SYSLOG)",
         "description": "WARN: Unit 1, Back Fan failed",
         "event_class__name": "Chassis | Fan | Fan Failed",
         "preference": 1000,
@@ -21,28 +21,7 @@
     },
 
     {
-        "name": "DLink | DxS | Chassis | Fan | Fan Failed #2 (SYSLOG)",
-        "description": "%Box-A-FAN-STAT-CHNG: FAN# 1 status is - not operational.",
-        "event_class__name": "Chassis | Fan | Fan Failed",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^DLink\\.DxS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "%(?:Environment|Box)-A-FAN-STAT-CHNG: (?P<name>FAN# \\d) status is - not operational.$"
-            }
-        ]
-    },
-
-    {
-        "name": "DLink | DxS | Chassis | Fan | Fan Recovered #1 (SYSLOG)",
+        "name": "DLink | DxS | Chassis | Fan | Fan Recovered (SYSLOG)",
         "description": "INFO: Unit 1, Back Fan recovered",
         "event_class__name": "Chassis | Fan | Fan Recovered",
         "preference": 1000,
@@ -58,27 +37,6 @@
             {
                 "key_re": "^message$",
                 "value_re": "(?:INFO:|INFO\\(6\\)|CRIT:|CRIT\\(2\\)) (Unit \\d+, )?(?P<name>.+) recovered$"
-            }
-        ]
-    },
-
-    {
-        "name": "DLink | DxS | Chassis | Fan | Fan Recovered #2 (SYSLOG)",
-        "description": "%Environment-I-FAN-STAT-CHNG: FAN# 1 status changed - operational.",
-        "event_class__name": "Chassis | Fan | Fan Recovered",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^DLink\\.DxS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "%(?:Environment|Box)-I-FAN-STAT-CHNG: (?P<name>FAN# \\d) status changed - operational.$"
             }
         ]
     }
