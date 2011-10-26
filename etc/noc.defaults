@@ -80,6 +80,7 @@ port =
 # Authentication method. Must be one of:
 # local - use NOC's database to authenticate users
 # ldap - use LDAP server to authenticate users (python-ldap library required)
+# ad - use MS Active Directory (python-ldap library required)
 # http - use HTTP's REMOTE_USER for authentication
 # pyrule - use custom pyRule for authentication
 
@@ -117,6 +118,32 @@ ldap_required_filter = (|(uniqueMember={{dn}})(member={{user}}))
 ldap_superuser_group =
 # Filter to search user in superusers group
 ldap_superuser_filter = (|(uniqueMember={{dn}})(member={{user}}))
+
+# AD server URI (Applicable only for "ad" method)
+ad_server = ldap://ad.example.com/
+# AD bind method:
+#     simple - authenticate user against userPassword
+ad_bind_method = simple
+# technical DN to lookup user and group information
+# leave empty for anonymous bind
+ad_bind_dn =
+# Password for technical DN
+ad_bind_password = 
+# Users search base
+ad_users_base = ou=nocproject,ou=org
+# Filter to search users by username
+ad_users_filter = (&(objectClass=organizationalPerson)(sAMAccountName={{user}}))
+# Groups search base
+ad_groups_base = ou=Groups,ou=nocproject,ou=org
+# Additionaly check user in group, before permitting to log in
+# Set user.is_active flag to false when user is not in a group
+ad_required_group = 
+# Filter to search user in required group
+ad_required_filter = noc_users
+# Grant superuser permissions if user in group
+ad_superuser_group = noc_superusers
+# Filter to search user in superusers group
+ad_superuser_filter =
 
 # Authentication pyrule (for pyrule method)
 pyrule_authentication =
