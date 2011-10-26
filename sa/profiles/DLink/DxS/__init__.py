@@ -67,10 +67,6 @@ class Profile(noc.sa.profiles.Profile):
 def DES3200(v):
     return v["platform"].startswith("DES-3200")
 
-## DGS-3100-series
-def DGS3100(v):
-    return v["platform"].startswith("DGS-3100")
-
 ## DGS-3120-series
 def DGS3120(v):
     return v["platform"].startswith("DGS-3120")

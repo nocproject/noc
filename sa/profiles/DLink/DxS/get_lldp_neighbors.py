@@ -16,7 +16,6 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int,is_ipv4
-from noc.sa.profiles.DLink.DxS import DGS3100
 import re
 
 class Script(NOCScript):
@@ -37,8 +36,6 @@ class Script(NOCScript):
 
     def execute(self):
         r=[]
-        # Use one instance for perfomance
-        dgs3100 = self.match_version(DGS3100)
         try:
             v=self.cli("show lldp remote_ports mode normal")
         except self.CLISyntaxError:
@@ -50,14 +47,12 @@ class Script(NOCScript):
             if not match:
                 continue
             port_id = match.group("port_id")
-            # DGS-3100 Series show only active ports
-            if not dgs3100:
-                match = self.rx_re_ent.search(s)
-                if not match:
-                    continue
-                # Remote Entities Count : 0
-                if match.group("re_ent") == "0":
-                    continue
+            match = self.rx_re_ent.search(s)
+            if not match:
+                continue
+            # Remote Entities Count : 0
+            if match.group("re_ent") == "0":
+                continue
             i={"local_interface":port_id, "neighbors":[]}
             # For each neighbor
             for s1 in self.rx_line1.split(s)[1:]:
