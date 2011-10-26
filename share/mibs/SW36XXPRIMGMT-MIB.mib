@@ -1,0 +1,23 @@
+SW36XXPRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY					FROM SNMPv2-SMI
+        dlink-products,dlink-mgmt		FROM DLINK-ID-REC-MIB;
+						
+
+	dlink-ProjectXStackIISeriesProd	OBJECT IDENTIFIER ::= { dlink-products 70 }
+	dlink-Dgs3650			OBJECT IDENTIFIER ::= { dlink-ProjectXStackIISeriesProd 5 }
+	dlink-Dgs3627				OBJECT IDENTIFIER ::= { dlink-ProjectXStackIISeriesProd 6 }
+	dlink-Dgs3627g				OBJECT IDENTIFIER ::= { dlink-ProjectXStackIISeriesProd 8 }
+	dlink-Dgs3612g				OBJECT IDENTIFIER ::= { dlink-ProjectXStackIISeriesProd 9 }
+	dlink-Dgs3612				OBJECT IDENTIFIER ::= { dlink-ProjectXStackIISeriesProd 10 }	
+
+    dgsProjectXStackIISeriesProd		OBJECT IDENTIFIER ::= { dlink-mgmt 70 }
+    dgs3650       			OBJECT IDENTIFIER ::= { dgsProjectXStackIISeriesProd 5 }
+    dgs3627       			OBJECT IDENTIFIER ::= { dgsProjectXStackIISeriesProd 6 }
+    dgs3627g	       			OBJECT IDENTIFIER ::= { dgsProjectXStackIISeriesProd 8 }
+    dgs3612g	       			OBJECT IDENTIFIER ::= { dgsProjectXStackIISeriesProd 9 }
+    dgs3612	       			OBJECT IDENTIFIER ::= { dgsProjectXStackIISeriesProd 10 }    
+
+
+END
