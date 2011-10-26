@@ -224,6 +224,7 @@ class Command(BaseCommand):
             # Fault management
             ("oidaliases", OIDAlias),
             ("syntaxaliases", SyntaxAlias),
+            ("mibaliases", MIBAlias),
             ("enumerations", Enumeration),
             ("alarmseverities", AlarmSeverity),
             ("alarmclasses", AlarmClass),
