@@ -177,6 +177,16 @@ class SNMPGetSocket(UDPSocket):
     ##
     def oid_to_tuple(self,oid):
         return [int(x) for x in oid.split(".")]
+
+    def debug_value(self, s):
+        """
+        Returns pretty-formated binary value
+        """
+        try:
+            return s.prettyPrint()
+        except UnicodeDecodeError:
+            return " ".join(["%02X" % c for c in s])
+        
     ##
     ## Returns string containing SNMP GET requests to self.oids
     ##
@@ -208,7 +218,9 @@ class SNMPGetSocket(UDPSocket):
                     break
                 else:
                     for oid, val in p_mod.apiPDU.getVarBinds(rsp_pdu):
-                        self.provider.script.debug('%s SNMP GET REPLY: %s %s'%(self.address,oid.prettyPrint(),val.prettyPrint()))
+                        self.provider.script.debug('%s SNMP GET REPLY: %s %s' % (
+                            self.address, oid.prettyPrint(),
+                            self.debug_value(val)))
                         self.got_result=True
                         self.provider.queue.put(str(val))
                         break
@@ -301,9 +313,9 @@ class SNMPGetNextSocket(SNMPGetSocket):
                                 self.provider.queue.put(None)
                                 return
                         if self.bulk:
-                            self.provider.script.debug("SNMP BULK DATA: %s %s"%(oid,str(val)))
+                            self.provider.script.debug("SNMP BULK DATA: %s %s"%(oid,self.debug_value(val)))
                         else:
-                            self.provider.script.debug('%s SNMP GETNEXT REPLY: %s %s'%(self.address,oid,str(val)))
+                            self.provider.script.debug('%s SNMP GETNEXT REPLY: %s %s'%(self.address,oid,self.debug_value(val)))
                         self.provider.queue.put((oid,str(val)))
                         self.got_result=True
                 # Stop on EOM
