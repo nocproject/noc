@@ -42,27 +42,6 @@
     },
 
     {
-        "name": "DLink | DxS | Config | Config Changed #3 (SYSLOG)",
-        "description": "%Stack-I-STCK-CFG-CHNG: Configuration changed: chain",
-        "event_class__name": "Config | Config Changed",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^DLink\\.DxS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "%Stack-I-STCK-CFG-CHNG: Configuration changed: \\S+$"
-            }
-        ]
-    },
-
-    {
         "name": "DLink | DxS | Config | Config Uploaded Successfully (SYSLOG)",
         "description": "INFO: Configuration successfully uploaded (Username: admin, IP: 172.16.0.1)",
         "event_class__name": "Config | Config Uploaded Successfully",

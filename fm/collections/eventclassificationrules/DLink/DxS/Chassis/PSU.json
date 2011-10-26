@@ -1,6 +1,6 @@
 [
     {
-        "name": "DLink | DxS | Chassis | PSU | PSU Failed #1 (SYSLOG)",
+        "name": "DLink | DxS | Chassis | PSU | PSU Failed (SYSLOG)",
         "description": "WARN: Internal Power failed",
         "event_class__name": "Chassis | PSU | PSU Failed",
         "preference": 1000,
@@ -21,28 +21,7 @@
     },
 
     {
-        "name": "DLink | DxS | Chassis | PSU | PSU Failed #2 (SYSLOG)",
-        "description": "%Box-W-PS-STAT-CHNG: PS# 1 status is - not operational.",
-        "event_class__name": "Chassis | PSU | PSU Failed",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^DLink\\.DxS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "%(?:Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) (?:status is|status changed) - not operational.$"
-            }
-        ]
-    },
-
-    {
-        "name": "DLink | DxS | Chassis | PSU | PSU Recovered #1 (SYSLOG)",
+        "name": "DLink | DxS | Chassis | PSU | PSU Recovered (SYSLOG)",
         "description": "INFO: Internal Power is recovered",
         "event_class__name": "Chassis | PSU | PSU Recovered",
         "preference": 1000,
@@ -58,27 +37,6 @@
             {
                 "key_re": "^message$",
                 "value_re": "(?:INFO:|INFO\\(6\\)|CRIT:|CRIT\\(2\\)) (?P<name>Internal) Power is recovered$"
-            }
-        ]
-    },
-
-    {
-        "name": "DLink | DxS | Chassis | PSU | PSU Recovered #2 (SYSLOG)",
-        "description": "%Box-W-PS-STAT-CHNG: PS# 1 status changed - operational.",
-        "event_class__name": "Chassis | PSU | PSU Recovered",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^DLink\\.DxS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "%(?:Environment|Box)-W-PS-STAT-CHNG: (?P<name>PS# \\d) status changed - operational.$"
             }
         ]
     }
