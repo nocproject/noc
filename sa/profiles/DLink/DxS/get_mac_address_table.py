@@ -10,7 +10,6 @@
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetMACAddressTable
 from noc.sa.profiles.DLink.DxS import DES3200
-from noc.sa.profiles.DLink.DxS import DGS3100
 from noc.sa.profiles.DLink.DxS import DGS3120
 from noc.sa.profiles.DLink.DxS import DGS3400
 from noc.sa.profiles.DLink.DxS import DGS3600
@@ -28,7 +27,6 @@ class Script(NOCScript):
             cmd+=" port %s"%interface
         if vlan is not None:
             if self.match_version(DES3200, version__gte="1.33") \
-            or self.match_version(DGS3100, version__gte="3.60.30") \
             or self.match_version(DGS3120, version__gte="1.00.00") \
             or self.match_version(DGS3400, version__gte="2.70") \
             or self.match_version(DGS3420, version__gte="1.00.00") \
