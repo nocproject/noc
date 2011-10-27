@@ -15,7 +15,7 @@ fi
 if [ -z $* ]; then
     CHECK=$MODULES
 else
-    CHECK=$*
+    CHECK="$*"
 fi
 
 $PEP8 -r --statistics --ignore=W293 $CHECK
