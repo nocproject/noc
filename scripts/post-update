@@ -70,8 +70,5 @@ python manage.py sync-collections || error_exit "$LINENO: sync-collections faile
 # Syncronize refbooks
 info "Syncronizing refbooks"
 python manage.py sync-refbooks || error_exit "$LINENO: sync-refbooks failed"
-# Build documentation
-info "Building documentation"
-python manage.py sync-doc nocbook || error_exit "$LINENO: cannot build documentation"
 #
 info "$PROGNAME complete"
