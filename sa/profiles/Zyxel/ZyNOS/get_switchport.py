@@ -26,8 +26,8 @@ class Script(NOCScript):
     rx_vlan_stack = re.compile(r"^(?P<interface>\d+)\s+(?P<role>\S+).+$",
                                re.MULTILINE)
     rx_vlan_ports = re.compile(r"\s+\d+\s+(?P<vid>\d+)\s+\S+\s+\S+\s+" \
-                                "Untagged\s+:(?P<untagged>([0-9,\-])*)." \
-                                "\s+Tagged\s+:(?P<tagged>([0-9,\-])*)",
+                                "Untagged\s+:(?P<untagged>(?:[0-9,\-])*)." \
+                                "\s+Tagged\s+:(?P<tagged>(?:[0-9,\-])*)",
                                 re.MULTILINE | re.DOTALL)
 
     def execute(self):
