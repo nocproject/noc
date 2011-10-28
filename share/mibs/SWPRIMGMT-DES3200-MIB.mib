@@ -1,0 +1,28 @@
+SWPRIMGMT-DES3200-MIB	DEFINITIONS ::= BEGIN
+	IMPORTS
+		MODULE-IDENTITY			FROM SNMPv2-SMI
+		dlink-products,dlink-mgmt	FROM DLINK-ID-REC-MIB;
+	
+	dlink-des3200SeriesProd OBJECT IDENTIFIER ::= {dlink-products 113}
+	dlink-des3200ProdModel			OBJECT IDENTIFIER ::= { dlink-des3200SeriesProd 1 }
+    
+	    
+	dlink-des3200-10Prod	OBJECT IDENTIFIER ::= {dlink-des3200ProdModel 1}
+	dlink-des3200-18Prod	OBJECT IDENTIFIER ::= {dlink-des3200ProdModel 2}
+	dlink-des3200-28Prod	OBJECT IDENTIFIER ::= {dlink-des3200ProdModel 3}
+	dlink-des3200-28fProd	OBJECT IDENTIFIER ::= {dlink-des3200ProdModel 4}
+    dlink-des3200-26Prod	OBJECT IDENTIFIER ::= {dlink-des3200ProdModel 5}
+	dlink-des3200me-28Prod	OBJECT IDENTIFIER ::= {dlink-des3200ProdModel 6}    
+	
+	des3200SeriesProd	OBJECT IDENTIFIER ::= {dlink-mgmt 113}
+	des3200ProdModel	OBJECT IDENTIFIER ::= {des3200SeriesProd 1}
+
+	
+	des3200-10			OBJECT IDENTIFIER ::= {des3200ProdModel 1}
+	des3200-18			OBJECT IDENTIFIER ::= {des3200ProdModel 2}	
+	des3200-28			OBJECT IDENTIFIER ::= {des3200ProdModel 3}	
+	des3200-28f			OBJECT IDENTIFIER ::= {des3200ProdModel 4}
+	des3200-26			OBJECT IDENTIFIER ::= {des3200ProdModel 5}
+	des3200me-28		OBJECT IDENTIFIER ::= {des3200ProdModel 6}	
+
+END
