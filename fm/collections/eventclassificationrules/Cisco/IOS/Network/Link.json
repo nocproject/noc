@@ -1,6 +1,6 @@
 [
     {
-        "name": "Cisco | IOS | Network | Link | Link Down (SNMP)",
+        "name": "Cisco | IOS | Network | Link | Link Down #1 (SNMP)",
         "description": "IF-MIB::linkDown",
         "event_class__name": "Network | Link | Link Down",
         "preference": 1000,
@@ -25,7 +25,7 @@
     },
     
     {
-        "name": "Cisco | IOS | Network | Link | Link Up (SNMP)",
+        "name": "Cisco | IOS | Network | Link | Link Up #1 (SNMP)",
         "description": "IF-MIB::linkUp",
         "event_class__name": "Network | Link | Link Up",
         "preference": 1000,
@@ -99,6 +99,80 @@
         ]
     },
     
+    {
+        "name": "Cisco | IOS | Network | Link | Link Down #3 (SNMP)",
+        "description": "CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix",
+        "event_class__name": "Network | Link | Link Down",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix$"
+            },
+            {
+                "key_re": "^CISCO-SYSLOG-MIB::clogHistSeverity\\.\\d+$",
+                "value_re": "^error$"
+            },
+            {
+                "key_re": "^CISCO-SYSLOG-MIB::clogHistFacility\\.\\d+$",
+                "value_re": "^LINK-SP$"
+            },
+            {
+                "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgName\\.\\d+$",
+                "value_re": "^UPDOWN$"
+            },
+            {
+                "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgText\\.\\d+$",
+                "value_re": "^Interface (?P<interface>\\S+), changed state to down$"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | Link | Link Up #3 (SNMP)",
+        "description": "CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix",
+        "event_class__name": "Network | Link | Link Up",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix$"
+            },
+            {
+                "key_re": "^CISCO-SYSLOG-MIB::clogHistSeverity\\.\\d+$",
+                "value_re": "^error$"
+            },
+            {
+                "key_re": "^CISCO-SYSLOG-MIB::clogHistFacility\\.\\d+$",
+                "value_re": "^LINK-SP$"
+            },
+            {
+                "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgName\\.\\d+$",
+                "value_re": "^UPDOWN$"
+            },
+            {
+                "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgText\\.\\d+$",
+                "value_re": "^Interface (?P<interface>\\S+), changed state to up$"
+            }
+        ]
+    },
+
     {
         "name": "Cisco | IOS | Network | Link | Link Up (SYSLOG)",
         "description": "%LINK-3-UPDOWN: Interface GigabitEthernet4/0/45, changed state to up",
