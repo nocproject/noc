@@ -1,0 +1,27 @@
+#!/bin/sh
+##----------------------------------------------------------------------
+## Prepare config files
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+##
+## Prepare sed script for path auto-discovery
+##
+sed_script=`mktemp tmp.XXXXXX`
+rm $sed_script
+for cmd in ssh rsync pg_dump tar gzip smidump smilint fping dig gpg mongodump; do
+    echo 's@^\\($cmd *\\)=.*\$@\\1 = '`which $cmd`'@' >> $sed_script
+done
+
+##
+## Create configs and set up paths
+##
+for d in etc/*.defaults; do
+    conf=`echo $d|sed 's/.defaults$/.conf/'`
+    if [ ! -f $conf ]; then
+        sed -f $sed_script < $d > $conf
+    fi
+done
+rm $sed_script
