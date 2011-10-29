@@ -1,0 +1,27 @@
+#!/bin/sh
+##----------------------------------------------------------------------
+## Continuous integration run script
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+cd `dirname $0`/..
+
+error_exit ( ) {
+    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo "Terminating" 1>&2
+    exit 1
+}
+
+echo "Running CI scripts ..."
+echo "Installing .conf files"
+./scripts/install-conf && error_exit "$LINENO: Failed to install .conf"
+
+echo "Synchronizing contrib/"
+./scripts/sync-contrib && error_exit "$LINENO: contrib/ synch failed"
+
+echo "Running tests"
+./noc test --xml-out=test-out.xml
+
+echo "done"
+
