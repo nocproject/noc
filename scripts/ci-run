@@ -21,7 +21,7 @@ echo "Synchronizing contrib/"
 ./scripts/sync-contrib || error_exit "$LINENO: contrib/ synch failed"
 
 echo "Running tests"
-./noc test --xml-out=test-out.xml
+./noc test --xml-out=test-out.xml --no-coverage
 
 echo "done"
 
