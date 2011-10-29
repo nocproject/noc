@@ -134,7 +134,7 @@ class NOCTestResult(unittest.TestResult):
             p = name.split(".")
             tc = out.createElement("testcase")
             ts.appendChild(tc)
-            tc.setAttribute("class_name", ".".join(p[:-1]))
+            tc.setAttribute("classname", ".".join(p[:-1]))
             tc.setAttribute("name", p[-1])
             tc.setAttribute("time", "%.6f" % self.test_timings[name])
             if status in (self.R_ERROR, self.R_FAILURE):
