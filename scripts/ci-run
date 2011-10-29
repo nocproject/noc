@@ -15,10 +15,10 @@ error_exit ( ) {
 
 echo "Running CI scripts ..."
 echo "Installing .conf files"
-./scripts/install-conf && error_exit "$LINENO: Failed to install .conf"
+./scripts/install-conf || error_exit "$LINENO: Failed to install .conf"
 
 echo "Synchronizing contrib/"
-./scripts/sync-contrib && error_exit "$LINENO: contrib/ synch failed"
+./scripts/sync-contrib || error_exit "$LINENO: contrib/ synch failed"
 
 echo "Running tests"
 ./noc test --xml-out=test-out.xml
