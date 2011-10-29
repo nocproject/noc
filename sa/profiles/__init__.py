@@ -48,6 +48,10 @@ class Profile(object):
     __metaclass__ = ProfileBase
     # Profile name
     name = None
+    # Access schemes
+    TELNET = 0
+    SSH = 1
+    HTTP = 2
     #
     # Device capabilities
     #
