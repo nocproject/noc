@@ -9,35 +9,14 @@ PREFIX=/opt/noc
 
 cd $PREFIX
 
-##
-## Prepare sed script for path auto-discovery
-##
-sed_script=`mktemp tmp.XXXXXX`
-rm $sed_script
-for cmd in ssh rsync pg_dump tar gzip smidump smilint fping dig gpg mongodump; do
-    echo 's@^\\($cmd *\\)=.*\$@\\1 = '`which $cmd`'@' >> $sed_script
-done
-
-##
-## Create configs and set up paths
-##
-for d in etc/*.defaults; do
-    conf=`echo $d|sed 's/.defaults$/.conf/'`
-    if [ ! -f $conf ]; then
-        sed -f $sed_script < $d > $conf
-    fi
-done
-rm $sed_script
+./scripts/install-conf
 chmod 640 etc/*.conf
 chown noc:noc etc/*.conf
 ##
 ## Create required directories
 ##
-for d in local static/doc /var/repo /var/backup /var/log/noc; do
+for d in local etc/ssh static/doc /var/repo /var/backup /var/log/noc; do
     [ ! -d $d ] && mkdir $d
     chown noc:noc $d
 done
 chmod 700 etc/ssh
-chown noc:noc etc/ssh
-
-# Perform post-update to syncronize the rest
