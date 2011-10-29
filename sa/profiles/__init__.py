@@ -215,7 +215,6 @@ class Profile(object):
         >>> Profile().get_linecard("Gi 4/15")
         4
         >>> Profile().get_linecard("Lo")
-        None
         >>> Profile().get_linecard("ge-1/1/0")
         1
         """
