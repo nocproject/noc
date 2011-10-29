@@ -13,7 +13,7 @@ from noc.lib.nbsocket import *
 ##
 ## TCP Ping server
 ##
-TCP_TEST_SIZE = 4 * 1024 * 1024
+TCP_TEST_SIZE = 128 * 1024
 TCP_TEST_DATA = "X" * TCP_TEST_SIZE
 
 
@@ -74,13 +74,13 @@ class NBSocketTestCase(TestCase):
     """
     Non-blocking sockets test
     """
-    TCP_CLIENTS = 10
+    TCP_CLIENTS = 5
     POPEN_CLIENTS = 0
     PTY_CLIENTS = 0
     IPv4_ADDRESS = "127.0.0.1"
     TCP_PORT = 65028
     POPEN_CMD = ["/bin/dd", "if=/dev/zero", "of=/dev/stdout",
-                 "bs=4096", "count=1024"]
+                 "bs=4096", "count=10"]
 
     ## Prepare test sockets
     def set_up_sockets(self, factory, port):
