@@ -181,9 +181,12 @@ class CoverageContext(object):
     """
     Coverage context manager
     """
-    def __init__(self, runner, enable):
+    def __init__(self, runner, xml_out=None, html_out=None):
         self.runner = runner
-        if enable:
+        self.enable = xml_out is not None or html_out is not None
+        self.xml_out = xml_out
+        self.html_out = html_out
+        if self.enable:
             self.coverage = Coverage(config_file=False,
                                      source=self.runner.coverage_report)
             self.coverage.exclude(r"^\s*$")  # Exclude empty lines
@@ -204,9 +207,13 @@ class CoverageContext(object):
         if self.coverage:
             self.info("Stopping coverage")
             self.coverage.stop()
-            r_path = settings.COVERAGE_REPORT_PATH
-            self.info("Writting coverage report to %s" % r_path)
-            self.coverage.html_report(directory=r_path)
+            if self.xml_out:
+                self.info("Writing Cobertura-compatible XML coverage report "
+                          " to %s" % self.xml_out)
+                self.coverage.xml_report(outfile=self.xml_out)
+            if self.html_out:
+                self.info("Writing HTML coverage report to %s" % self.html_out)
+                self.coverage.html_report(directory=self.html_out)
 
 
 class DatabaseContext(object):
@@ -302,18 +309,20 @@ class TestRunner(object):
     exclude_modules = ["noc.main.pyrules.", "noc.main.templates.", "noc.setup"]
 
     def __init__(self, test_labels, verbosity=1, interactive=True,
-                 extra_tests=[], coverage=True, reuse_db=False,
-                 xml_out=None):
+                 extra_tests=[], reuse_db=False,
+                 junit_xml_out=None, coverage_xml_out=None,
+                 coverage_html_out=None):
         self.test_labels = test_labels
         self.verbosity = verbosity
         self.loglevel = logging.DEBUG if self.verbosity > 1 else logging.INFO
         self.interactive = interactive
         self.extra_tests = extra_tests
-        self.enable_coverage = coverage
         self.reuse_db = reuse_db
-        self.xml_out = xml_out
         self.result = None
         self.coverage_report = []  # List of files to report coverage
+        self.junit_xml_out = junit_xml_out
+        self.coverage_xml_out = coverage_xml_out
+        self.coverage_html_out = coverage_html_out
 
     def info(self, message):
         logging.info(message)
@@ -324,11 +333,12 @@ class TestRunner(object):
     def error(self, message):
         logging.error(message)
 
-    def coverage(self, enable):
+    def coverage(self):
         """
         Get coverage context
         """
-        return CoverageContext(self, enable=enable)
+        return CoverageContext(self, xml_out=self.coverage_xml_out,
+                               html_out=self.coverage_html_out)
 
     def databases(self, reuse=False):
         """
@@ -428,7 +438,7 @@ class TestRunner(object):
         modules = [f for f in manifest if f not in st]
         n_unittests = len(tests)
         n_mods = len(modules)
-        self.info("Found modules: %d unittests, %d python" % (
+        self.info("Found: %d unittest modules, %d python modules" % (
             n_unittests, n_mods))
         return modules, tests
 
@@ -483,7 +493,7 @@ class TestRunner(object):
                 self.info("No modules to test. Exiting")
                 return 0
             # Run test suite in database and coverage context
-            with self.coverage(enable=self.enable_coverage):
+            with self.coverage():
                 with self.databases(reuse=self.reuse_db):
                     # Initialize database: Wrap as tests
                     if not self.reuse_db:
@@ -499,8 +509,8 @@ class TestRunner(object):
                     self.info("Test suite completed")
         # Return summary
         if self.result:
-            if self.xml_out:
-                self.result.write_xml(self.xml_out)
+            if self.junit_xml_out:
+                self.result.write_xml(self.junit_xml_out)
             else:
                 self.result.dump_result()
             return len(self.result.failures) + len(self.result.errors)

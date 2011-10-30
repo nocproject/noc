@@ -169,10 +169,7 @@ IS_WEB = ((len(sys.argv) >= 2 and sys.argv[0] == "manage.py" and
           sys.argv[1] in ["runserver", "test", "sync-perm"])
     or sys.argv[0].endswith("noc-web.py"))
 IS_TEST = len(sys.argv) >= 2 and sys.argv[:2] == ["manage.py", "test"]
-##
-## Coverage wrapper
-##
-COVERAGE_REPORT_PATH="local/coverage_report"
+
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True
 ##
