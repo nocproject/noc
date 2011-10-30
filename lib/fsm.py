@@ -14,7 +14,7 @@ def check_state(*sargs):
     def check_returns(f):
         def new_f(self,*args, **kwds):
             assert self._current_state in sargs,\
-                "Function '%s' cannot be called from state '%s' ('%s' required)"%(f.func_name,self._current_state,state)
+                "Function '%s' cannot be called from state '%s' (%s required)"%(f.func_name,self._current_state,sargs)
             return f(self,*args, **kwds)
         new_f.func_name = f.func_name
         return new_f
