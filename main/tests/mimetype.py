@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+from __future__ import with_statement
 ## NOC modules
 from noc.lib.test import ModelTestCase
 from noc.main.models import MIMEType
