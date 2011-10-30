@@ -13,7 +13,10 @@ import types
 ## Django modules
 from django.template import Context, Template
 ## Third-party modules
-import ldap
+try:
+    import ldap
+except ImportError:
+    pass
 ## NOC modules
 from base import NOCAuthBackend
 from noc.settings import config
