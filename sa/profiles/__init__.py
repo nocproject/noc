@@ -31,8 +31,7 @@ profile_registry = ProfileRegistry()
 
 class ProfileBase(type):
     """
-    Metaclass for Profile. Register created Profile class
-    with profile_registry
+    Metaclass for Profile. Register created Profile class with profile_registry
     """
     def __new__(cls, name, bases, attrs):
         m = type.__new__(cls, name, bases, attrs)
