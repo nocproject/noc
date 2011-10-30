@@ -68,7 +68,7 @@ class CodeTest(TestCase):
         failures = []
         for d in [app[4:] for app in INSTALLED_APPS if app.startswith("noc.")]+["lib"]:
             for root, dirs, files in os.walk(d):
-                if "templates" in dirs.split(os.sep):
+                if "templates" in root.split(os.sep):
                     continue
                 for fn in [f for f in files if f.endswith(".py")]:
                     path = os.path.join(root,fn)
