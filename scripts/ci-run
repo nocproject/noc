@@ -5,7 +5,9 @@
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-cd `dirname $0`/..
+
+JUNIT_REPORT=test-out.xml
+COVERAGE_REPORT=test-coverage.xml
 
 error_exit ( ) {
     echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
@@ -13,6 +15,11 @@ error_exit ( ) {
     exit 1
 }
 
+## Jump to NOC
+cd `dirname $0`/..
+rm -f $JUNIT_REPORT $COVERAGE_REPORT
+
+## Run
 echo "Running CI scripts ..."
 echo "Installing .conf files"
 ./scripts/install-conf || error_exit "$LINENO: Failed to install .conf"
@@ -21,7 +28,6 @@ echo "Synchronizing contrib/"
 ./scripts/sync-contrib || error_exit "$LINENO: contrib/ synch failed"
 
 echo "Running tests"
-./noc test --xml-out=test-out.xml --no-coverage
+./noc test --junit-xml-out=$JUNIT_REPORT --coverage-xml-out=$COVERAGE_REPORT
 
 echo "done"
-
