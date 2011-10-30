@@ -36,11 +36,13 @@ class CodeTest(TestCase):
     ## Check every module with "with" statement
     ## has "from __future__ import with_statement"
     ##
-    rx_with=re.compile(r"^\s*with\s+")
+    rx_with=re.compile(r"^\s*with\s+\S+")
+    rx_ml_str = re.compile(r'""".*?"""', re.MULTILINE | re.DOTALL)
     def check_with(self,path,data):
         failures=[]
         # Check code has "with" statement
         has_with=False
+        data = self.rx_ml_str.sub("", data)
         for l in data.splitlines():
             if self.rx_with.search(l):
                 has_with=True
