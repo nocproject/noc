@@ -13,7 +13,7 @@ class DLink_DxS_Cisco_CLI_ping_Test(ScriptTestCase):
     platform='DGS-3610-26G'
     version='10.3(5T16)'
     input={'address': '10.111.0.18'}
-    result="{'count': '5', 'max': '10', 'avg': '2', 'success': '5', 'min': '1'}"
+    result={'count': 5, 'max': '10', 'avg': '2', 'success': 5, 'min': '1'}
     motd='\n\n'
     cli={
 'terminal length 0':  'terminal length 0\n',

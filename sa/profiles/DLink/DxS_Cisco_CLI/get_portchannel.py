@@ -22,7 +22,7 @@ class Script(NOCScript):
         for match in self.rx_line.finditer(data):
             port = int(match.group("port"))
             members=[]
-            data1 = self.cli("show int AggregatePort %i | i Link Status:"%port)
+            data1 = self.cli("show interfaces AggregatePort %i | i Link Status:"%port)
             for match1 in self.rx_line1.finditer(data1):
                 members+=[match1.group("interface")]
             r+=[{

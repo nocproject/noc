@@ -221,7 +221,7 @@ GigabitEthernet 0/24     enabled    ACCESS    1      1      Disabled  ALL
 AggregatePort 1          enabled    TRUNK     1      1      Disabled  2-3""",
 'show interfaces status | i AggregatePort':  'show interfaces status | i AggregatePort\nAggregatePort 1          down      1     Unknown  Unknown   fiber\n',
 'terminal length 0':  'terminal length 0\n',
-'show int AggregatePort 1 | i Link Status:':  'show int AggregatePort 1 | i Link Status:\n        GigabitEthernet 0/1 Link Status: Down\n        GigabitEthernet 0/2 Link Status: Down\n',
+'show interfaces AggregatePort 1 | i Link Status:':  'show interfaces AggregatePort 1 | i Link Status:\n        GigabitEthernet 0/1 Link Status: Down\n        GigabitEthernet 0/2 Link Status: Down\n',
 }
     snmp_get={}
     snmp_getnext={}
