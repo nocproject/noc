@@ -29,14 +29,18 @@ class Profile(NOCProfile):
         """
         Generate prefix list _name_. pl is a list of (prefix, min_len, max_len)
         """
-        me = "ip prefix-list %s permit %%s" % name
-        mne = "ip prefix-list %s permit %%s le %%d" % name
+        me = "    seq %d permit %s"
+        mne = "    seq %d permit %s le %d"
         r = ["no ip prefix-list %s" % name]
+        r += ["ip prefix-list %s" % name]
+        seq = 5
         for prefix, min_len, max_len in pl:
             if min_len == max_len:
-                r += [me % prefix]
+                r += [me % (seq, prefix)]
             else:
-                r += [mne % (prefix, max_len)]
+                r += [mne % (seq, prefix, max_len)]
+            seq += 5
+        r += ["    exit"]
         return "\n".join(r)
 
     @classmethod

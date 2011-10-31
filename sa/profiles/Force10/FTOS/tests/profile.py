@@ -19,8 +19,14 @@ class Force10FTOSTestCase(TestCase):
         self.assertEqual(Profile.cmp_version("8.3.1.3d","8.3.1.5"),-1)
     
     def test_prefix_list(self):
-        self.assertEqual(Profile().generate_prefix_list("pl1",["10.0.0.0/8","192.168.0.0/16"]),'no ip prefix-list pl1\nip prefix-list pl1\n    permit 10.0.0.0/8\n    permit 192.168.0.0/16\nexit\n')
-        self.assertEqual(Profile().generate_prefix_list("pl1",["10.0.0.0/8","192.168.0.0/16"],False),'no ip prefix-list pl1\nip prefix-list pl1\n    permit 10.0.0.0/8 le 32\n    permit 192.168.0.0/16 le 32\nexit\n')
+        self.assertEqual(Profile().generate_prefix_list("pl1",
+                                                        [("10.0.0.0/8", 8, 8),
+                                                         ("192.168.0.0/16", 16, 16)]),
+                        'no ip prefix-list pl1\nip prefix-list pl1\n    seq 5 permit 10.0.0.0/8\n    seq 10 permit 192.168.0.0/16\n    exit')
+        self.assertEqual(Profile().generate_prefix_list("pl1",
+                                                        [("10.0.0.0/8", 8, 8),
+                                                         ("192.168.0.0/16", 16, 24)]),
+                         'no ip prefix-list pl1\nip prefix-list pl1\n    seq 5 permit 10.0.0.0/8\n    seq 10 permit 192.168.0.0/16 le 24\n    exit')
     
     def test_matchers(self):
         # get_version, E, C, S
