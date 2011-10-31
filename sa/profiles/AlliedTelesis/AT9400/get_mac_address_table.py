@@ -26,7 +26,6 @@ class Script(NOCScript):
             cmd += " port(s)=%s" % interface
         if vlan is not None:
             cmd += " vlan=%s" % vlan
-        self.cli("terminal datadump")
         vlans = self.cli(cmd)
         vlans = self.strip_first_lines(vlans, 4)
         r = []
