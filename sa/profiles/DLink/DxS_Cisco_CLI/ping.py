@@ -39,8 +39,8 @@ class Script(NOCScript):
         if not match:
             raise self.NotSupportedError()
         return {
-                "success": match.group("success"),
-                "count"  : match.group("count"),
+                "success": int(match.group("success")),
+                "count"  : int(match.group("count")),
                 "min"    : match.group("min"),
                 "avg"    : match.group("avg"),
                 "max"    : match.group("max"),
