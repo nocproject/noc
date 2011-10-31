@@ -14,10 +14,10 @@ class HP_ProCurve9xxx_get_vlans_Test(ScriptTestCase):
     version='07.8.03T53'
     input={}
     result=[{'name': 'DEFAULT-VLAN', 'vlan_id': 1},
- {'name': '[None]', 'vlan_id': 2},
- {'name': '[None]', 'vlan_id': 4},
- {'name': '[None]', 'vlan_id': 6},
- {'name': '[None]', 'vlan_id': 7}]
+ {'name': '', 'vlan_id': 2},
+ {'name': '', 'vlan_id': 4},
+ {'name': '', 'vlan_id': 6},
+ {'name': '', 'vlan_id': 7}]
     motd=' \n'
     cli={
 'terminal length 1000':  'terminal length 1000\n',
