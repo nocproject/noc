@@ -104,7 +104,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
     },
     {
         xtype: "textarea",
-        fieldStyle: {"padding-left": "4px"},
+        fieldStyle: {"padding-left": "7px"},
         flex: 1
     }
     ]
