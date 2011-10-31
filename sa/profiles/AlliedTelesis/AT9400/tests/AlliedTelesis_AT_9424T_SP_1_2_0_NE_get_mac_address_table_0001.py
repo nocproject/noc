@@ -45,7 +45,6 @@ class AlliedTelesis_AT9400_get_mac_address_table_Test(ScriptTestCase):
  {'interfaces': ['20'], 'mac': '00:19:55:E0:C9:42', 'type': 'D', 'vlan_id': 1}]
     motd = ' ********          Allied Telesyn Ethernet Switch AT-9424T/SP - ATS63 v1.2.0 NE\n                                      Switch\n'
     cli = {
-'terminal datadump':  ' terminal datadump\nERROR CODE = CLI_COMMAND_NOT_FOUND_OR_AMBIGUOUS\n', 
 ## 'show switch fdb'
 'show switch fdb': """ show switch fdb
 Reading MAC addresses... Please wait                                    
