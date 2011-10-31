@@ -13,7 +13,7 @@ class DLink_DxS_ping_Test(ScriptTestCase):
     platform='DGS-3627G'
     version='2.82.B20'
     input={'address': '10.110.0.1'}
-    result="{'count': '5', 'success': '5'}"
+    result={'count': 5, 'success': 5}
     motd='********\n\n'
     cli={
 ## 'disable clipaging'
