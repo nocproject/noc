@@ -16,13 +16,15 @@ class RIRTestCase(RestModelTestCase):
     scenario = [
         {
             "GET": {
-                # key: value
+                "name": "NOC RIR"
             },
             "POST": {
-                # key: value
+                "name": "NOC RIR",
+                "whois": "nocproject.org"
             },
             "PUT": {
-                # key: value
+                "name": "NOC RIR",
+                "whois": "whois.nocproject.org"
             }
         }
     ]
