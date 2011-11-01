@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Usage: debug-script <profile> <script> <stream-url>
-##
-## WARNING!!!
-## This module implements part of activator functionality.
-## Sometimes via dirty hacks
+## Usage: debug-script <script> <object> [ <args> ]
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 from __future__ import with_statement
 import logging
@@ -39,13 +34,13 @@ from noc.lib.nbsocket import SocketFactory, UDPSocket
 from noc.lib.validators import is_int
 from noc.lib.fileutils import read_file
 
+
 class Controller(object):
     pass
 
-##
-## Canned beef output
-##
+
 class SessionCan(object):
+    """Canned beef output"""
     def __init__(self, script_name, input={}):
         self.cli = {}  # Command -> result
         self.input = input
@@ -56,35 +51,33 @@ class SessionCan(object):
         self.snmp_getnext = {}
         self.platform = "<<<INSERT YOUR PLATFORM HERE>>>"
         self.version = "<<<INSERT YOUR VERSION HERE>>>"
-    
+
     def set_version(self, platform, version):
         self.platform = platform
         self.version = version
-    
-    ## Store data
+
     def save_interaction(self, provider, cmd, data):
+        """Store data"""
         if provider == "cli":
             self.cli[cmd] = data
-    
-    ##
+
     def save_snmp_get(self, oid, result):
         self.snmp_get[oid] = result
-    
-    ##
+
     def save_snmp_getnext(self, oid, result):
         self.snmp_getnext[oid] = result
-    
-    ## Save final result
+
     def save_result(self, result, motd=""):
+        """Save final result"""
         self.result = result
         self.motd = motd
-    
-    ## Dump canned data
+
     def dump(self, output):
+        """Dump canned data"""
         def format_stringdict(d):
             def lrepr(s):
                 return repr(s)[1:-1]
-            
+
             out = ["{"]
             for k, v in d.items():
                 lines = v.splitlines()
@@ -97,7 +90,7 @@ class SessionCan(object):
                     out += ["%s\"\"\", " % lrepr(lines[-1])]
             out += ["}"]
             return "\n".join(out)
-        
+
         vendor, profile, script = self.script_name.split(".")
         date = str(datetime.datetime.now()).split(".")[0]
         s = """# -*- coding: utf-8 -*-
@@ -125,23 +118,23 @@ class %(test_name)s_Test(ScriptTestCase):
     snmp_get = %(snmp_get)s
     snmp_getnext = %(snmp_getnext)s
 """ % {
-            "test_name"    : self.script_name.replace(".", "_"),
-            "script"       : self.script_name,
-            "vendor"       : vendor,
-            "year"         : datetime.datetime.now().year,
-            "date"         : date,
-            "input"        : pprint.pformat(self.input),
-            "result"       : pprint.pformat(self.result),
-            "cli"          : format_stringdict(self.cli),
-            "snmp_get"     : pprint.pformat(self.snmp_get),
-            "snmp_getnext" : pprint.pformat(self.snmp_getnext),
-            "motd"         : pprint.pformat(self.motd),
-            "platform"     : self.platform,
-            "version"      : self.version
+            "test_name": self.script_name.replace(".", "_"),
+            "script": self.script_name,
+            "vendor": vendor,
+            "year": datetime.datetime.now().year,
+            "date": date,
+            "input": pprint.pformat(self.input),
+            "result": pprint.pformat(self.result),
+            "cli": format_stringdict(self.cli),
+            "snmp_get": pprint.pformat(self.snmp_get),
+            "snmp_getnext": pprint.pformat(self.snmp_getnext),
+            "motd": pprint.pformat(self.motd),
+            "platform": self.platform,
+            "version": self.version
         }
         with open(output, "w") as f:
             f.write(s)
-    
+
 
 class ActivatorStubFactory(SocketFactory):
     def unregister_socket(self, socket):
@@ -151,11 +144,12 @@ class ActivatorStubFactory(SocketFactory):
             self.controller.reset_wait_ticks()
 
 
-##
-## Activator emulation
-##
 class ActivatorStub(object):
+    """
+    Activator emulation
+    """
     WAIT_TICKS = 4
+
     def __init__(self, script_name, values=[], output=None):
         # Simple config stub
         self.config = ConfigParser.SafeConfigParser()
@@ -182,11 +176,9 @@ class ActivatorStub(object):
         self.ssh_public_key = None
         self.ssh_private_key = None
         self.load_ssh_keys()
-    
-    ##
-    ## Initialize ssh keys
-    ##
+
     def load_ssh_keys(self):
+        """Initialize ssh keys"""
         private_path = self.config.get("ssh", "key")
         public_path = private_path + ".pub"
         # Load keys
@@ -247,7 +239,7 @@ class ActivatorStub(object):
             self.session_can.set_version(v["platform"], v["version"])
         if script.parent is None:
             self.servers.close()
-        
+
     def run_script(self, _script_name, access_profile, callback, timeout=0, **kwargs):
         pv, pos, sn = _script_name.split(".", 2)
         profile = profile_registry["%s.%s" % (pv, pos)]()
@@ -264,55 +256,53 @@ class ActivatorStub(object):
             if platform and version:
                 self.session_can.set_version(platform, version)
         script.start()
-    
+
     def request_call(self, f, *args, **kwargs):
         logging.debug("Requesting call: %s(*%s, **%s)" % (f, args, kwargs))
         self.script_call_queue.put((f, args, kwargs))
-    
+
     def can_run_script(self):
         return True
-    ##
-    ## Handler to accept canned input
-    ##
+
     def save_interaction(self, provider, cmd, data):
+        """Handler to accept canned input"""
         self.session_can.save_interaction(provider, cmd, data)
-    ##
-    ## Handler to save final result
-    ##
+
     def save_result(self, result, motd=""):
+        """Handler to save final result"""
         self.session_can.save_result(result, motd)
-    ##
+
     def save_snmp_get(self, oid, result):
         self.session_can.save_snmp_get(oid, result)
-    ##
+
     def save_snmp_getnext(self, oid, result):
         self.session_can.save_snmp_getnext(oid, result)
-    ##
+
     def error(self, msg):
         logging.error(msg)
 
-##
-## debug-script handler
-##
+
 class Command(BaseCommand):
+    """
+    debug-script handler
+    """
     help = "Debug SA Script"
     option_list = BaseCommand.option_list + (
         make_option("-c", "--read-community", dest="snmp_ro"),
         make_option("-o", "--output", dest="output"),
         make_option("-p", "--profile", dest="profile", action="store_true")
-    )
-    
-    ##
-    ## Gentle SIGINT handler
-    ##
+        )
+
     def SIGINT(self, signo, frame):
+        """Gentler SIGINT handler"""
         logging.info("SIGINT")
         os._exit(0)
-    
-    ##
-    ## Print usage and exit
-    ##
+
     def _usage(self):
+        """
+        Print usage and exit
+        @todo: Must be a gentler way
+        """
         print "USAGE:"
         print "%s debug-script [-c <community>] [-o <output>] <script> <obj1> [ .. <objN>] [<key1>=<value1> [ .. <keyN>=<valueN>]]" % sys.argv[0]
         print "Where:"
@@ -320,11 +310,9 @@ class Command(BaseCommand):
         print "\t-o <output>    - Canned beef output"
         print "\t--profile      - Run through python profiler"
         return
-    
-    ##
-    ## Create access profile from URL
-    ##
+
     def set_access_profile_url(self, access_profile, obj, profile, snmp_ro_community):
+        """Create access profile from URL string"""
         if profile is None:
             raise CommandError("Script name must contain profile when using URLs")
         url = URL(obj)
@@ -344,14 +332,12 @@ class Command(BaseCommand):
         access_profile.path = url.path
         if snmp_ro_community:
             access_profile.snmp_ro = snmp_ro_community
-    
-    ##
-    ## Create access profile from Database
-    ##
+
     def set_access_profile_name(self, access_profile, obj, profile, snmp_ro_community):
+        """Create access profile from database object"""
         from noc.sa.models import ManagedObject
         from django.db.models import Q
-        
+
         # Prepare query
         if is_int(obj):
             q = Q(id=int(obj)) | Q(name=obj)  # Integers can be object id or name
@@ -384,11 +370,9 @@ class Command(BaseCommand):
             a = access_profile.attrs.add()
             a.key = str(k)
             a.value = v
-    
-    ##
-    ## Prepare script request
-    ##
+
     def get_request(self, script, obj, snmp_ro_community, values):
+        """Prepare script request"""
         vendor = None
         os_name = None
         profile = None
@@ -397,7 +381,7 @@ class Command(BaseCommand):
         if "." in script:
             vendor, os_name, script = script.split(".", 2)
             profile = "%s.%s" % (vendor, os_name)
-        # Fill access profile and script name
+            # Fill access profile and script name
         if "://" in obj:
             # URL
             self.set_access_profile_url(r.access_profile, obj, profile, snmp_ro_community)
@@ -408,21 +392,19 @@ class Command(BaseCommand):
             if profile and r.access_profile.profile != profile:
                 raise CommandError("Profile mismatch for '%s'" % obj)
             r.script = "%s.%s" % (r.access_profile.profile, script)
-        ## Fill values
+            ## Fill values
         for k, v in values:
             a = r.kwargs.add()
             a.key = k
             a.value = v
         return r
-    
-    ##
-    ## Expand names starting with "selector:"
-    ##
+
     def expand_selectors(self, objects):
+        """Expand names starting with "selector:"""
         if [o for o in objects if o.startswith("selector:")]:
             # Has selectors
             from noc.sa.models import ManagedObjectSelector
-            
+
             r = set()
             for o in objects:
                 if o.startswith("selector:"):
@@ -438,8 +420,7 @@ class Command(BaseCommand):
         else:
             # No selectors. Nothing to expand
             return objects
-    
-    ##
+
     def run_script(self, service, request):
         def handle_callback(controller, response=None, error=None):
             if error:
@@ -447,15 +428,14 @@ class Command(BaseCommand):
             if response:
                 logging.debug("Script completed")
                 logging.debug(response.config)
+
         logging.debug("Running script thread")
         controller = Controller()
         controller.transaction = self.tf.begin()
         service.script(controller=controller, request=request, done=handle_callback)
-    
-    ##
-    ## Handle command
-    ##
+
     def handle(self, *args, **options):
+        """Process debug-script command"""
         if len(args) < 2:
             return self._usage()
         script_name = args[0]
@@ -489,20 +469,20 @@ class Command(BaseCommand):
         self.tf = TransactionFactory()
         service = Service()
         service.activator = ActivatorStub(requests[0].script if output else None, values, output)
-        
+
         ## Run scripts
         def run():
             for r in requests:
                 print r
                 t = threading.Thread(target=self.run_script, args=(service, r))
                 t.start()
-            # Finally give control to activator's factory
+                # Finally give control to activator's factory
             service.activator.factory.run(run_forever=True)
-        
+
         if options.get("profile", True):
             logging.debug("Enabling python profiler")
             import cProfile
+
             cProfile.runctx("run()", globals(), locals())
         else:
             run()
-    
