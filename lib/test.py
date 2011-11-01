@@ -31,6 +31,7 @@ from noc.lib.serialize import json_encode, json_decode
 from noc.sa.models import script_registry, profile_registry
 from noc.sa.protocols.sae_pb2 import *
 from noc.main.models import User, Permission
+from noc.lib.nbsocket import SocketTimeoutError
 
 
 class TestClient(Client):
@@ -580,11 +581,12 @@ class RestModelTestCase(AjaxTestCase):
                     self.assertEquals(status, self.HTTP_FORBIDDEN)
 
 
-##
-## Activator emulation
-##
 class ActivatorStub(object):
-    def __init__(self,test):
+    """
+    Activator emulation using canned beef
+    """
+    TimeOutError = SocketTimeoutError
+    def __init__(self, test):
         self.to_save_output=None
         self.servers=None
         self.factory=None
@@ -592,7 +594,7 @@ class ActivatorStub(object):
         self.test=test
         self.use_canned_session=True
     
-    def on_script_exit(self,script):
+    def on_script_exit(self, script):
         pass
     
     def cli(self,cmd):
@@ -605,13 +607,13 @@ class ActivatorStub(object):
         try:
             return self.test.snmp_get[oid]
         except KeyError:
-            raise Exception("SNMP oid not found in canned session: %s"%oid)
+            raise self.TimeOutError()
     
     def snmp_getnext(self,oid):
         try:
             return self.test.snmp_getnext[oid]
         except KeyError:
-            raise Exception("SNMP oid not found in canned session: %s"%oid)
+            raise self.TimeOutError()
     
     def get_motd(self):
         return self.test.motd
