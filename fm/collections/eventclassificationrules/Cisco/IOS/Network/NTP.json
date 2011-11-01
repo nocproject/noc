@@ -39,5 +39,26 @@
                 "value_re": "%NTP-5-PEERSYNC: NTP synced to peer (?P<server_address>\\S+)$"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | NTP | NTP Server Unreachable (SYSLOG)",
+        "description": "%NTP-4-PEERUNREACH: Peer 192.168.100.253 is unreachable",
+        "event_class__name": "Network | NTP | NTP Server Unreachable",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%NTP-4-PEERUNREACH: Peer (?P<server_address>\\S+) is unreachable$"
+            }
+        ]
     }
 ]
