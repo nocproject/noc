@@ -42,27 +42,6 @@
     },
     
     {
-        "name": "Cisco | IOS | Config | Config Changed (SYSLOG)",
-        "description": "%SYS-5-CONFIG_I: Configured from console by noc-sa on vty0 (10.10.10.10)",
-        "event_class__name": "Config | Config Changed",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^Cisco\\.IOS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "%SYS-5-CONFIG_I: Configured from .+ by (?P<user>.+) on"
-            }
-        ]
-    },
-    
-    {
         "name": "Cisco | IOS | Config | Config Synced #1 (SYSLOG)",
         "description": "%C4K_REDUNDANCY-5-CONFIGSYNC: The startup-config has been successfully synchronized to the standby supervisor",
         "event_class__name": "Config | Config Synced",
@@ -105,9 +84,9 @@
     },
     
     {
-        "name": "Cisco | IOS | Config | Entering Configuration Mode (SYSLOG)",
-        "description": "164: 6w6d: %SYS-5-CONFIG_I: Configured from console by vty0 (172.17.1.51)",
-        "event_class__name": "Config | Entering Configuration Mode",
+        "name": "Cisco | IOS | Config | Exiting Configuration Mode #1 (SYSLOG)",
+        "description": "%SYS-5-CONFIG_I: Configured from console by vty0 (172.17.1.51)",
+        "event_class__name": "Config | Exiting Configuration Mode",
         "preference": 1000,
         "patterns": [
             {
@@ -121,6 +100,69 @@
             {
                 "key_re": "^message$",
                 "value_re": "%SYS-5-CONFIG_I: Configured from console by \\S+ \\(\\S+\\)$"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Config | Exiting Configuration Mode #2 (SYSLOG)",
+        "description": "%SYS-5-CONFIG_I: Configured from console by noc-sa on vty0 (10.10.10.10)",
+        "event_class__name": "Config | Exiting Configuration Mode",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-5-CONFIG_I: Configured from console by (?P<user>.+) on"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Config | Config Downloaded Successfully (SYSLOG)",
+        "description": "%SYS-5-CONFIG_I: Configured from tftp://10.20.30.40/201108041053RNQOzn.hb by rancid on vty0 (10.0.0.253)",
+        "event_class__name": "Config | Config Downloaded Successfully",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-5-CONFIG_I: Configured from (?P<service>tftp|ftp)://(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)/\\S+ by (?P<user>.+) on\\s*vty\\d+"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Config | Config Download Failed (SYSLOG)",
+        "description": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from (tftp://255.255.255.255/network-confg) failed",
+        "event_class__name": "Config | Config Download Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from \\((?P<service>tftp|ftp)://(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)/\\S+\\) failed"
             }
         ]
     }
