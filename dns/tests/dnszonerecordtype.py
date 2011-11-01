@@ -50,6 +50,6 @@ class DNSZoneRecordTypeModelTestCase(ModelTestCase):
         """
         Check default RR types created during migration
         """
-        self.assertEquals(DNSZoneRecordType.objects.count(), 34)
+        self.assertEquals(DNSZoneRecordType.objects.count(), 33)
         self.assertEquals(DNSZoneRecordType.objects.filter(is_active=True).count(), 10)
-        self.assertEquals(DNSZoneRecordType.objects.filter(is_active=False).count(), 24)
+        self.assertEquals(DNSZoneRecordType.objects.filter(is_active=False).count(), 23)
