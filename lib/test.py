@@ -46,7 +46,7 @@ class TestClient(Client):
         :param follow: Auto-follow HTTP 3xx responses
         :type follow: bool
         :param credentials: User credentials with optional
-                            _user_ and _password_ keys    
+                            _user_ and _password_ keys
         :type credentials: dict
         :param nocache: Generate query URL variable with random value for
                         every request
@@ -123,7 +123,7 @@ class TestClient(Client):
         """
         to_json = self.json if json is None else json
         r = super(TestClient, self).get(self.get_path(path, query=query),
-                  follow = self.to_follow(follow),
+                  follow=self.to_follow(follow),
                   **self.get_headers(headers=extra, credentials=credentials))
         return r
 
@@ -140,7 +140,7 @@ class TestClient(Client):
         """
         return super(TestClient, self).post(self.get_path(path, query=query),
                     data=data,
-                    follow = self.to_follow(follow),
+                    follow=self.to_follow(follow),
                     content_type=content_type,
                     **self.get_headers(headers=extra, credentials=credentials))
 
@@ -157,7 +157,7 @@ class TestClient(Client):
         """
         return super(TestClient, self).put(self.get_path(path, query=query),
                     data=data,
-                    follow = self.to_follow(follow),
+                    follow=self.to_follow(follow),
                     content_type=content_type,
                     **self.get_headers(headers=extra, credentials=credentials))
 
@@ -173,7 +173,7 @@ class TestClient(Client):
         """
         return super(TestClient, self).delete(self.get_path(path, query=query),
                     data=data,
-                    follow = self.to_follow(follow),
+                    follow=self.to_follow(follow),
                     **self.get_headers(headers=extra, credentials=credentials))
 
 
@@ -196,7 +196,7 @@ class NOCTestCase(TestCase):
     """
     Base class for unittests
     """
-    fixtures=[]  # A list of texture files
+    fixtures = []  # A list of texture files
 
     def __init__(self, methodName="runTest"):
         p = self.__class__.__module__.split(".")
@@ -258,11 +258,11 @@ class ModelTestCase(NOCTestCase):
         # Find nullable fields
         null_fields = [f.attname for f in self.model._meta.fields if f.null]
         # Find related fields
-        rel_fields = dict([(f.attname,f.rel.to)
+        rel_fields = dict([(f.attname, f.rel.to)
             for f in self.model._meta.fields if f.rel])
         ## Unicode object labels.
         ## Check all objects generate unique labels
-        unicodes=set()
+        unicodes = set()
         # Perform test loop
         for rd in self.get_data():
             # Resolve related objects
@@ -448,7 +448,7 @@ class RestModelTestCase(AjaxTestCase):
             self.assertEquals(status, self.HTTP_OK)
             self.assertDictIn(s["POST"], data)
             # Get paged objects list (ExtJS format)
-            query={
+            query = {
                 "__format": "ext",
                 "__limit": 10,
                 "__start": 0,
@@ -482,7 +482,6 @@ class RestModelTestCase(AjaxTestCase):
             # Try to delete again and get 404
             status, data = self.delete(path, user="superuser")
             self.assertEquals(status, self.HTTP_NOT_FOUND)
-
 
     def test_rest_user(self):
         """
@@ -586,6 +585,7 @@ class ActivatorStub(object):
     Activator emulation using canned beef
     """
     TimeOutError = SocketTimeoutError
+
     def __init__(self, test):
         self.to_save_output = None
         self.servers = None
@@ -597,19 +597,19 @@ class ActivatorStub(object):
     def on_script_exit(self, script):
         pass
     
-    def cli(self,cmd):
+    def cli(self, cmd):
         try:
             return self.test.cli[cmd]
         except KeyError:
-            raise Exception("Command not found in canned session: %s"%cmd)
+            raise Exception("Command not found in canned session: %s" % cmd)
     
-    def snmp_get(self,oid):
+    def snmp_get(self, oid):
         try:
             return self.test.snmp_get[oid]
         except KeyError:
             raise self.TimeOutError()
     
-    def snmp_getnext(self,oid):
+    def snmp_getnext(self, oid):
         try:
             return self.test.snmp_getnext[oid]
         except KeyError:
@@ -669,15 +669,15 @@ class ScriptTestCase(unittest.TestCase):
         script = script_registry[self.script](profile(), ActivatorStub(self),
                                               a, **self.input)
         # Install mock get_version into cache, if necessary
-        s=self.script.split(".")
-        if self.mock_get_version and s[-1]!="get_version":
+        s = self.script.split(".")
+        if self.mock_get_version and s[-1] != "get_version":
             # Install version info into script call cache
-            version={"vendor": self.vendor, "platform": self.platform, "version": self.version}
+            version = {"vendor": self.vendor, "platform": self.platform, "version": self.version}
             script.set_cache("%s.%s.get_version" % (s[0], s[1]), {}, version)
         script.run()
         # Parse script result
         if script.result:
-            result=cPickle.loads(script.result)
+            result = cPickle.loads(script.result)
             if self.ignore_timestamp_mismatch:
                 self.assertEquals(self.clean_timestamp(result),
                                   self.clean_timestamp(self.result))
