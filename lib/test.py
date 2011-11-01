@@ -447,13 +447,15 @@ class RestModelTestCase(AjaxTestCase):
             self.assertEquals(status, self.HTTP_OK)
             self.assertDictIn(s["POST"], data)
             # Get paged objects list (ExtJS format)
+            query={
+                "__format": "ext",
+                "__limit": 10,
+                "__start": 0,
+                "__page": 0
+            }
+            query.update(s["POST"])
             status, data = self.get("/", user="superuser",
-                                    query={
-                                        "__format": "ext",
-                                        "__limit": 10,
-                                        "__start": 0,
-                                        "__page": 0
-                                    })
+                                    query=query)
             self.assertEquals(status, self.HTTP_OK)
             self.assertIn("total", data)
             self.assertIn("success", data)
