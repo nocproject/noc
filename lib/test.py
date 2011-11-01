@@ -367,6 +367,13 @@ class AjaxTestCase(NOCTestCase):
         return self.request("delete", path, **kwargs)
 
     def assertDictIn(self, a, b, msg=None):
+        """
+        Check all fields of dict a presents in b
+        :param a: Dict of fields to check
+        :type a: dict
+        :param b: List or dict
+        :type b: dict or list
+        """
         def match(a, b):
             for f in a:
                 if a[f] != b[f]:
@@ -376,7 +383,7 @@ class AjaxTestCase(NOCTestCase):
         if type(b) == dict:
             m = match(a, b)
         elif type(b) == list:
-            ma = False
+            m = False
             for c in b:
                 if match(a, c):
                     m = True
