@@ -19,6 +19,11 @@ from south.management.commands import MigrateAndSyncCommand
 from noc.lib.test_runner import TestRunner
 
 
+class NoFlushCommand(BaseCommand):
+    def handle(self, *args, **kwargs):
+        pass
+
+
 class Command(BaseCommand):
     """
     Customized version of django's test
@@ -65,6 +70,8 @@ class Command(BaseCommand):
         # Install south migrations hook
         management.get_commands()
         management._commands["syncdb"] = MigrateAndSyncCommand()
+        # Disable database flush
+        management._commands["flush"] = NoFlushCommand()
         # Run tests
         failures = TestRunner(test_labels=test_labels, verbosity=verbosity,
                               interactive=interactive,
