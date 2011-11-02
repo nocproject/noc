@@ -15,6 +15,7 @@ from pyasn1.codec.ber import encoder, decoder
 from pysnmp.proto import api
 ## NOC modules
 from noc.lib.nbsocket import UDPSocket, SocketTimeoutError
+from noc.lib.debug import BQ
 
 
 class SNMPProvider(object):
@@ -169,15 +170,6 @@ class SNMPGetSocket(UDPSocket):
         """Convert oid from string to a list of integers"""
         return [int(x) for x in oid.split(".")]
 
-    def debug_value(self, s):
-        """
-        Returns pretty-formated binary value
-        """
-        try:
-            return s.prettyPrint()
-        except UnicodeDecodeError:
-            return " ".join(["%02X" % c for c in s])
-
     def get_snmp_request(self):
         """Returns string containing SNMP GET requests to self.oids"""
         self.provider.script.debug("%s SNMP GET %s" % (self.address, self.oid))
@@ -213,7 +205,7 @@ class SNMPGetSocket(UDPSocket):
                     for oid, val in p_mod.apiPDU.getVarBinds(rsp_pdu):
                         self.provider.script.debug('%s SNMP GET REPLY: %s %s' % (
                             self.address, oid.prettyPrint(),
-                            self.debug_value(val)))
+                            BQ(val.prettyPrint())))
                         self.got_result = True
                         self.provider.queue.put(str(val))
                         break
@@ -302,10 +294,10 @@ class SNMPGetNextSocket(SNMPGetSocket):
                                 self.provider.queue.put(None)
                                 return
                         if self.bulk:
-                            self.provider.script.debug("SNMP BULK DATA: %s %s" % (oid, self.debug_value(val)))
+                            self.provider.script.debug("SNMP BULK DATA: %s %s" % (oid, BQ(val.prettyPrint())))
                         else:
                             self.provider.script.debug(
-                                '%s SNMP GETNEXT REPLY: %s %s' % (self.address, oid, self.debug_value(val)))
+                                '%s SNMP GETNEXT REPLY: %s %s' % (self.address, oid, BQ(val.prettyPrint())))
                         self.provider.queue.put((oid, str(val)))
                         self.got_result = True
                     # Stop on EOM
