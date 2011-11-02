@@ -187,6 +187,7 @@ def format_frames(frames):
     r += [u"END OF TRACEBACK"]
     return u"\n".join(r)
 
+
 def get_traceback():
     t, v, tb = sys.exc_info()
     now = datetime.datetime.now()
@@ -195,6 +196,7 @@ def get_traceback():
     r += [str(t), str(v)]
     r += [format_frames(get_traceback_frames(tb))]
     return "\n".join(r)
+
 
 def error_report():
     r = get_traceback()
@@ -225,3 +227,19 @@ def frame_report(frame, caption=None):
     r += ["Working directory: %s" % os.getcwd()]
     r += [format_frames(get_execution_frames(frame))]
     logging.error("\n".join(r))
+
+def BQ(s):
+    """
+    Pretty-format binary string
+    :param s: String to format
+    :return: Formatted string
+
+    >>> BQ("test")
+    u'test'
+    >>> BQ("\\xa8\\xf9\\x80")
+    '(A8 F9 80)'
+    """
+    try:
+        return unicode(s)
+    except UnicodeDecodeError:
+        return "(%s)" % " ".join(["%02X" % ord(c) for c in s])
