@@ -8,11 +8,13 @@
 -- MODIFICTION HISTORY:
 -- -----------------------------------------------------------------------------
  
--- Version 1.12, 2010/11/15, Jack Wei-- Description:
+-- Version 1.12, 2010/11/15, Jack Wei
+-- Description:
 --  [Modification]
 -- Add swL2DevCtrlCFMMaTable and swL2DevCtrlCFMMepTable to support CFM hardware mode.
 
--- Version 1.11, 2010/10/13, Jok Long-- Description:
+-- Version 1.11, 2010/10/13, Jok Long
+-- Description:
 --  [Modification]
 -- Update the module name   
 

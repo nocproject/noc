@@ -20,7 +20,8 @@
 -- Add agentFirmwareType to display the firmware type.
 -- Notes: Requested by Green Zhu for DGS3620.
 --  
--- Version 2.31 2010/10/14,Jok Long-- Description:
+-- Version 2.31 2010/10/14,Jok Long
+-- Description:
 -- [New Object]
 -- Add node agentBscFileSystemIncrement.
 -- Notes: Requested by Jok Long for DGS-3620.

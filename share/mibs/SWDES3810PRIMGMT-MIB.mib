@@ -1,0 +1,25 @@
+-- ------------------------------------------------------------------------------
+-- SW3810PRIMGMT-MIB
+-- ------------------------------------------------------------------------------
+-- Version 1.01, 2011/01/20, LiangFeng
+-- 2011/01/20
+-- Add DES-3810-28-L2MGMT-MIB support for Projext DES-3810-52
+-- ------------------------------------------------------------------------------  
+-- Version 1.00
+-- 2009/05/24   
+-- Requset By LiangFeng for project DES3810, portping from project DGS3700, and according with format of project DGS3700.
+-- ------------------------------------------------------------------------------       
+
+SW3810PRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY					FROM SNMPv2-SMI
+        dlink-products,dlink-mgmt		FROM DLINK-ID-REC-MIB;
+        
+    dlink-Des3810Series   OBJECT IDENTIFIER ::= { dlink-mgmt 114 }
+    des3810    		  OBJECT IDENTIFIER ::= { dlink-Des3810Series 1 }
+    des3810-28    	  OBJECT IDENTIFIER ::= { des3810 1 }
+    des3810-28DC      OBJECT IDENTIFIER ::= { des3810 2 }
+    des3810-52    	  OBJECT IDENTIFIER ::= { des3810 3 }
+
+END

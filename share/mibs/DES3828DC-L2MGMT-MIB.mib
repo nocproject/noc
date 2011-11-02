@@ -1,0 +1,2429 @@
+-- Version 0.01, 2008/05/22, Shan Lu
+--  [Modification]
+--    [1]To add the objects "swL2BroadcastSegFilterPorts".
+--    [2]To add the objects "swL2BroadcastSegARPForwardPorts".
+-- Notes: Requested by D-Link, DES3800
+--
+-- Version 0.01, 2008/05/12, Ronald
+--  [Modification]
+--    [1]To add the objects "swL2QOSBandwidthRadiusRxRate".
+--    [2]To add the objects "swL2QOSBandwidthRadiusTxRate".
+--    [3]To add the objects "swL2QOS8021pRadiusPriority".
+-- Notes: Requested by D-Link, DES3800
+
+DES3828DC-L2MGMT-MIB DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        Counter32,TimeTicks,NOTIFICATION-TYPE,MODULE-IDENTITY,
+        OBJECT-TYPE,IpAddress, Unsigned32
+                                        FROM SNMPv2-SMI
+        SnmpAdminString                 FROM SNMP-FRAMEWORK-MIB
+        MacAddress, RowStatus           FROM SNMPv2-TC
+        des3828DC                       FROM SW3800PRIMGMT-MIB
+        DisplayString                   FROM RFC1213-MIB;
+
+    swL2MgmtMIB MODULE-IDENTITY
+	    LAST-UPDATED "0805220000Z"
+	    ORGANIZATION "D-Link Corp."
+	    CONTACT-INFO
+                    "http://support.dlink.com"
+	    DESCRIPTION
+		    "The Structure of Layer 2 Network Management Information for the
+		    proprietary enterprise."
+        ::= { des3828DC 2 }
+
+    PortList                ::= OCTET STRING(SIZE (0..127))
+    VlanIndex               ::= Unsigned32
+    VlanId                  ::= INTEGER (1..4094)
+
+    swL2DevMgmt                 OBJECT IDENTIFIER ::= { swL2MgmtMIB 1 }
+--    swL2UnitMgmt                OBJECT IDENTIFIER ::= { swL2MgmtMIB 2 }
+    swL2VlanMgmt                OBJECT IDENTIFIER ::= { swL2MgmtMIB 3 }
+    swL2PortMgmt                OBJECT IDENTIFIER ::= { swL2MgmtMIB 4 }
+    swL2QOSMgmt 	        OBJECT IDENTIFIER ::= { swL2MgmtMIB 6 }
+    swL2TrunkMgmt               OBJECT IDENTIFIER ::= { swL2MgmtMIB 8 }
+    swL2MirrorMgmt              OBJECT IDENTIFIER ::= { swL2MgmtMIB 9 }
+    swL2IGMPMgmt                OBJECT IDENTIFIER ::= { swL2MgmtMIB 10 }
+--    swL2PriorityMgmt            OBJECT IDENTIFIER ::= { swL2MgmtMIB 11 }
+--    swL2LoopDetectMgmt          OBJECT IDENTIFIER ::= { swL2MgmtMIB 12 }
+    swL2TrafficSegMgmt          OBJECT IDENTIFIER ::= { swL2MgmtMIB 13 }
+    swL2PortSecurityMgmt        OBJECT IDENTIFIER ::= { swL2MgmtMIB 14 }
+    swL2MgmtMIBTraps            OBJECT IDENTIFIER ::= { swL2MgmtMIB 15 }
+
+-- ----------------------------------------------------------------------------
+--  swL2DevMgmt             OBJECT IDENTIFIER ::= { swL2MgmtMIB 1 }
+-- ----------------------------------------------------------------------------
+
+    swL2DevInfo             OBJECT IDENTIFIER ::= { swL2DevMgmt 1 }
+
+    swDevInfoSystemUpTime OBJECT-TYPE
+        SYNTAX  TimeTicks
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "The value of sysUpTime at the time the switch entered its
+            current operational state. If the current state was entered
+            prior to the last re-initialization, then this object contains
+            a zero value. This value is in the units of seconds."
+        ::= { swL2DevInfo 1 }
+
+    swDevInfoTotalNumOfPort OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "The number of ports within this switch. This value is the sum
+             of the ports within this switch."
+        ::= { swL2DevInfo 2 }
+
+    swDevInfoNumOfPortInUse OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "The number of ports in this switch connected to the segment or
+             the end stations."
+        ::= { swL2DevInfo 3 }
+
+    swDevInfoConsoleInUse   OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               in-use(2),
+               not-in-use(3)
+               }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "The usage indication of the console system."
+        ::= { swL2DevInfo 4 }
+
+    swDevInfoModuleType OBJECT-TYPE
+        SYNTAX  OCTET STRING
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+        "This object indicates the module type of this port."
+        ::= { swL2DevInfo 5 }
+
+    swDevInfoFrontPanelLedMode OBJECT-TYPE
+        SYNTAX  INTEGER {
+               portStatusMode(1),
+               poeStatusMode(2)
+               }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the mode of current device
+             front panel LEDs .
+             The front panel LED mode could be changed only by a push
+             button  on the  device front panel .
+             PortStatusMode : the LEDs respresent ports status.
+             PoEStatusMode :  the LEDs respresent POE status."
+        ::= { swL2DevInfo 6 }
+
+    swDevInfoPowerTable OBJECT-TYPE
+        SYNTAX          SEQUENCE OF SwDevInfoPowerEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "A list of the temperature."
+        ::= { swL2DevInfo 8 }
+
+    swDevInfoPowerEntry OBJECT-TYPE
+        SYNTAX          SwDevInfoPowerEntry
+        MAX-ACCESS      not-accessible
+        STATUS          current
+        DESCRIPTION     "An entry for Power information."
+        INDEX           { swDevInfoPowerUnitIndex,swDevInfoPowerID }
+        ::= { swDevInfoPowerTable 1 }
+
+    SwDevInfoPowerEntry ::= SEQUENCE {
+                swDevInfoPowerUnitIndex	  INTEGER,
+                swDevInfoPowerID          INTEGER,
+                swDevInfoPowerStatus   	  INTEGER
+                }
+
+    swDevInfoPowerUnitIndex OBJECT-TYPE
+        SYNTAX INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS current
+        DESCRIPTION
+            "Indicates the ID of the unit in the System"
+        ::= { swDevInfoPowerEntry 1 }
+
+    swDevInfoPowerID OBJECT-TYPE
+        SYNTAX INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS current
+        DESCRIPTION
+            "Indicates ID of the power "
+        ::= { swDevInfoPowerEntry 2 }
+
+    swDevInfoPowerStatus OBJECT-TYPE
+           SYNTAX  INTEGER {
+              other(0),
+              lowVoltage(1),
+              overCurrent(2),
+              working(3),
+              fail(4),
+              connect(5),
+              disconnect(6)
+     }
+
+        MAX-ACCESS  read-only
+        STATUS current
+        DESCRIPTION
+            "Indicates status of the power "
+        ::= { swDevInfoPowerEntry 3 }
+
+-- ----------------------------------------------------------------------------
+    swL2DevCtrl             OBJECT IDENTIFIER ::= { swL2DevMgmt 2 }
+
+    swL2DevCtrlStpState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object can enable or disable the spanning tree algorithm
+            during the runtime of the system."
+        ::= { swL2DevCtrl 1 }
+
+    swL2DevCtrlIGMPSnooping OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates if the layer 2 Internet Group Management
+            Protocol (IGMP) capture function has been enabled or disabled."
+        ::= { swL2DevCtrl 2 }
+
+    swL2DevCtrlRmonState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object can be enable or disable RMON."
+        ::= { swL2DevCtrl 3 }
+
+    swL2DevCtrlCleanAllStatisticCounter OBJECT-TYPE
+        SYNTAX  INTEGER {
+               normal(1),
+               active(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "If the object is set to active, all the statistic counters will
+            be cleared. If set to normal, do nothing."
+        ::= { swL2DevCtrl 4 }
+
+    swL2DevCtrlVlanIdOfFDBTbl OBJECT-TYPE
+        SYNTAX      VlanId
+        MAX-ACCESS  read-write
+        STATUS      current
+        DESCRIPTION
+            "Indicates the VLAN ID which the Dot1dTpFdbTable belongs to ;
+            The default value is the DEFAULT_VLAN_ID of the system."
+        ::= { swL2DevCtrl 5 }
+
+    swL2MACNotifyState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object can enable or disable MAC Notification."
+        ::= { swL2DevCtrl 6 }
+
+    swL2MACNotifyHistorySize OBJECT-TYPE
+	    SYNTAX  INTEGER (1..500)
+	    MAX-ACCESS  read-write
+	    STATUS  current
+	    DESCRIPTION
+            "This object indicates the history size of variation MAC in the address table.
+	         The default value is 1 ."
+    ::= { swL2DevCtrl 7 }
+
+    swL2MACNotifyInterval OBJECT-TYPE
+	    SYNTAX  INTEGER (1..2147483647)
+	    MAX-ACCESS  read-write
+	    STATUS  current
+	    DESCRIPTION
+	        "This object indicates the time interval in seconds for triggering the MAC notify message. "
+	    ::= { swL2DevCtrl 8 }
+
+--    swL2DevCtrlAsymVlanState OBJECT-TYPE
+--        SYNTAX  INTEGER {
+--               other(1),
+--               disabled(2),
+--               enabled(3)
+--               }
+--        MAX-ACCESS  read-write
+--        STATUS  current
+--        DESCRIPTION
+--            "This object can enable or disable asymmetric VLANs
+--            during the runtime of the system."
+--        ::= { swL2DevCtrl 9 }
+
+    swL2DevCtrlTelnet   OBJECT IDENTIFIER ::= { swL2DevCtrl 10 }
+
+    swL2DevCtrlTelnetState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object controls the Telnet status."
+        ::= { swL2DevCtrlTelnet 1 }
+
+    swL2DevCtrlTelnetTcpPort OBJECT-TYPE
+        SYNTAX  INTEGER (1..65535)
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object can designate a TCP port.
+             When Telnet is disabled this object isn't accessible."
+        ::= { swL2DevCtrlTelnet 2 }
+
+-- ----------------------------------------------------------------------------
+    swL2DevAlarm             OBJECT IDENTIFIER ::= { swL2DevMgmt 3 }
+
+    swL2DevAlarmNewRoot OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "When the device has become the new root of Spanning Tree,
+            this object decides whether to send a new root trap."
+        ::= { swL2DevAlarm 1 }
+
+    swL2DevAlarmTopologyChange OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object determines whether to send a trap or not when the switch
+            topology has changed. If the object is enabled(3),
+            the topology change trap is sent by the device when any of its
+            configured ports transition from the Learning state to the
+            Forwarding state, or from the Forwarding state to the Blocking
+            state. For the same port transition, the device doesn't send the
+            trap if this object value is set to disabled or other."
+        ::= { swL2DevAlarm 2 }
+
+    swL2DevAlarmLinkChange OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object determines whether to send a trap or not when the link
+             has changed. If the object is enabled (3), the Link Change
+             trap is sent by the device when any of its port links change.
+             The device doesn't send the trap if this object value is set to
+             disabled or other."
+        ::= { swL2DevAlarm 3 }
+
+-- ----------------------------------------------------------------------------
+--  swL2VlanMgmt            OBJECT IDENTIFIER ::= { swL2MgmtMIB 3 }
+-- ----------------------------------------------------------------------------
+
+    swL2VlanAdvertisementTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2VlanAdvertisementEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "A table containing the advertisement state for each
+             VLAN configured into the device by (local or
+             network) management."
+        ::= { swL2VlanMgmt 1 }
+
+    swL2VlanAdvertisementEntry OBJECT-TYPE
+        SYNTAX  SwL2VlanAdvertisementEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "Advertisement state for each VLAN configured
+             in the device."
+        INDEX  { swL2VlanIndex }
+        ::= { swL2VlanAdvertisementTable 1 }
+
+    SwL2VlanAdvertisementEntry ::=
+        SEQUENCE {
+            swL2VlanIndex
+                INTEGER,
+            swL2VlanName
+                DisplayString,
+            swL2VlanAdvertiseState
+                INTEGER
+        }
+
+    swL2VlanIndex OBJECT-TYPE
+        SYNTAX      INTEGER (1..4094)
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+            "The VLAN-ID or other identifier referring to this VLAN."
+        ::= { swL2VlanAdvertisementEntry 1 }
+
+    swL2VlanName OBJECT-TYPE
+        SYNTAX      DisplayString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+            "An administratively assigned string, which may be used
+             to identify the VLAN."
+        ::= { swL2VlanAdvertisementEntry 2 }
+
+    swL2VlanAdvertiseState OBJECT-TYPE
+        SYNTAX      INTEGER {
+                      other(1),
+                      disabled(2),
+                      enabled(3)
+                    }
+        MAX-ACCESS  read-write
+        STATUS      current
+        DESCRIPTION
+            "This object indicates the advertised status of this VLAN entry."
+        ::= { swL2VlanAdvertisementEntry 3 }
+
+-- ----------------------------------------------------------------------------
+--  swL2PortMgmt            OBJECT IDENTIFIER ::= { swL2MgmtMIB 4 }
+-- ----------------------------------------------------------------------------
+
+    swL2PortInfoTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2PortInfoEntry
+        MAX-ACCESS  not-accessible
+        STATUS      obsolete
+        DESCRIPTION
+            "A table that contains information about every port."
+        ::= { swL2PortMgmt 1 }
+
+    swL2PortInfoEntry OBJECT-TYPE
+        SYNTAX  SwL2PortInfoEntry
+        MAX-ACCESS  not-accessible
+        STATUS      obsolete
+        DESCRIPTION
+            "A list of information for each port of the device."
+        INDEX   { swL2PortInfoPortIndex }
+        ::= { swL2PortInfoTable 1 }
+
+    SwL2PortInfoEntry ::=
+        SEQUENCE {
+            swL2PortInfoPortIndex
+                INTEGER,
+            swL2PortInfoUnitIndex
+                INTEGER,
+            swL2PortInfoType
+                INTEGER,
+            swL2PortInfoLinkStatus
+                INTEGER,
+            swL2PortInfoNwayStatus
+                INTEGER,
+            swL2PortInfoModuleType
+                INTEGER,
+            swL2PortInfoErrorDisabled
+                INTEGER
+        }
+
+    swL2PortInfoPortIndex OBJECT-TYPE
+	    SYNTAX  INTEGER (0..65535)
+	    MAX-ACCESS  read-only
+	    STATUS      obsolete
+	    DESCRIPTION
+	        "This object indicates the module's port number.(1..Max port
+	        number in the module)."
+    	::= { swL2PortInfoEntry 1 }
+
+    swL2PortInfoUnitIndex OBJECT-TYPE
+        SYNTAX INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS      obsolete
+        DESCRIPTION
+            "Indicates ID of the unit in the device"
+        ::= { swL2PortInfoEntry 2 }
+
+    swL2PortInfoType OBJECT-TYPE
+        SYNTAX  INTEGER {
+               portType-100Base-TX(1),
+               portType-100Base-FX(2),
+               portType-100Base-FL(3),
+               portType-1000Base-TX(4),
+               portType-1000Base-SX(5),
+               portType-1000Base-LX(6),
+               none(7)
+               }
+        MAX-ACCESS  read-only
+        STATUS      obsolete
+        DESCRIPTION
+            "This object indicates the connector type of this port."
+        ::= { swL2PortInfoEntry 3 }
+
+    swL2PortInfoLinkStatus OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               link-pass(2),
+               link-fail(3)
+               }
+        MAX-ACCESS  read-only
+        STATUS      obsolete
+        DESCRIPTION
+            "This object indicates the port link status."
+        ::= { swL2PortInfoEntry 4 }
+
+    swL2PortInfoNwayStatus OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               auto(2),
+               half-10Mbps(3),
+               full-10Mbps(4),
+               half-100Mbps(5),
+               full-100Mbps(6),
+               half-1Gigabps(7),
+               full-1Gigabps(8)
+               }
+        MAX-ACCESS  read-only
+        STATUS      obsolete
+        DESCRIPTION
+            "This object indicates the port speed and duplex mode."
+        ::= { swL2PortInfoEntry 5 }
+
+     swL2PortInfoModuleType OBJECT-TYPE
+        SYNTAX  INTEGER {
+        	   none(0),
+        	   moduleType-COMBO(1),
+    		   moduleType-1000T(2),
+		       moduleType-BaseModule(3)
+               }
+        MAX-ACCESS  read-only
+        STATUS      obsolete
+        DESCRIPTION
+            "This object indicates the module type of this port."
+        ::= { swL2PortInfoEntry 6 }
+
+    swL2PortInfoErrorDisabled OBJECT-TYPE
+        SYNTAX  INTEGER {
+               none(0),
+               storm(1),
+               lbd(2),
+               unknow(3)
+               }
+        MAX-ACCESS  read-only
+        STATUS      obsolete
+        DESCRIPTION
+            "This object indicates the blocking type of this port."
+        ::= { swL2PortInfoEntry 7 }
+
+-- ----------------------------------------------------------------------------
+
+    swL2PortCtrlTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2PortCtrlEntry
+        MAX-ACCESS  not-accessible
+        STATUS      obsolete
+        DESCRIPTION
+            "A table that contains control information about every port."
+        ::= { swL2PortMgmt 2 }
+
+    swL2PortCtrlEntry OBJECT-TYPE
+        SYNTAX  SwL2PortCtrlEntry
+        MAX-ACCESS  not-accessible
+        STATUS      obsolete
+        DESCRIPTION
+            "A list of control information for each port of the device."
+        INDEX  { swL2PortCtrlPortIndex }
+        ::= { swL2PortCtrlTable 1 }
+
+    SwL2PortCtrlEntry ::=
+        SEQUENCE {
+            swL2PortCtrlPortIndex
+                INTEGER,
+            swL2PortCtrlUnitIndex
+                INTEGER,
+            swL2PortCtrlAdminState
+                INTEGER,
+            swL2PortCtrlNwayState
+                INTEGER,
+            swL2PortCtrlFlowCtrlState
+                INTEGER,
+            swL2PortCtrlLockState
+                INTEGER,
+            swL2PortCtrlMACNotifyState
+                INTEGER
+--            swL2PortCtrlMulticastfilter
+--                INTEGER
+        }
+
+    swL2PortCtrlPortIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS      obsolete
+        DESCRIPTION
+            "This object indicates the module's port number.(1..Max port
+            number in the module)"
+        ::= { swL2PortCtrlEntry 1 }
+
+    swL2PortCtrlUnitIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS      obsolete
+        DESCRIPTION
+            "Indicates the ID of the unit in the device"
+        ::= { swL2PortCtrlEntry 2 }
+
+    swL2PortCtrlAdminState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS      obsolete
+        DESCRIPTION
+            "This object decides whether the port is enabled or disabled."
+        ::= { swL2PortCtrlEntry 3 }
+
+    swL2PortCtrlNwayState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               nway-enabled(2),
+               nway-disabled-10Mbps-Half(3),
+               nway-disabled-10Mbps-Full(4),
+               nway-disabled-100Mbps-Half(5),
+               nway-disabled-100Mbps-Full(6),
+               nway-disabled-1Gigabps-Half(7),
+               nway-disabled-1Gigabps-Full(8)
+               }
+        MAX-ACCESS  read-write
+        STATUS      obsolete
+        DESCRIPTION
+            "Choose the port speed, duplex mode, and N-Way function mode."
+        ::= { swL2PortCtrlEntry 4 }
+
+    swL2PortCtrlFlowCtrlState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS      obsolete
+        DESCRIPTION
+            "The flow control mechanism is different between full duplex
+            mode and half duplex mode. For half duplex mode, the jamming
+            signal is asserted. For full duplex mode, IEEE 802.3x flow
+            control function sends PAUSE frames and receives PAUSE frames."
+        ::= { swL2PortCtrlEntry 5 }
+
+    swL2PortCtrlLockState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS      obsolete
+        DESCRIPTION
+            "This object decides whether the port is locked or not."
+        ::= { swL2PortCtrlEntry 6 }
+
+    swL2PortCtrlMACNotifyState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS      obsolete
+        DESCRIPTION
+            "This object decides whether MAC notification  is enabled or not."
+        ::= { swL2PortCtrlEntry 7 }
+
+--    swL2PortCtrlMulticastfilter OBJECT-TYPE
+--        SYNTAX  INTEGER {
+--    		   other(0),
+--               forward-all-groups(1),
+--               forward-unregistered-groups(2),
+--               filter-unregistered-groups(3)
+--
+--               }
+--        MAX-ACCESS  read-write
+--        STATUS      obsolete
+--        DESCRIPTION
+--            "This object decides the multicast packets filtering mode on this port . "
+--          ::= { swL2PortCtrlEntry 8 }
+
+-- ----------------------------------------------------------------------------
+
+    swL2PortCtrlJumboFrame OBJECT-TYPE
+        SYNTAX  INTEGER {
+				other(1),
+				disabled(2),
+				enabled(3)
+              }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object configure the switch's jumbo frame settings."
+          ::= { swL2PortMgmt 3 }
+
+-- ----------------------------------------------------------------------------
+
+    swL2PortInformationTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2PortInformationEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "A table that contains information about every port."
+        ::= { swL2PortMgmt 4 }
+
+    swL2PortInformationEntry OBJECT-TYPE
+        SYNTAX  SwL2PortInformationEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "A list of information for each port of the device."
+        INDEX   { swL2PortInformationPortIndex,swL2PortInformationMediumType }
+        ::= { swL2PortInformationTable 1 }
+
+    SwL2PortInformationEntry ::=
+        SEQUENCE {
+            swL2PortInformationPortIndex
+                INTEGER,
+            swL2PortInformationMediumType
+                INTEGER,
+            swL2PortInformationUnitID
+                INTEGER,
+            swL2PortInformationType
+                INTEGER,
+            swL2PortInformationLinkStatus
+                INTEGER,
+            swL2PortInformationNwayStatus
+                INTEGER,
+            swL2PortInformationModuleType
+                INTEGER,
+            swL2PortInformationErrorDisabled
+                INTEGER
+        }
+
+    swL2PortInformationPortIndex OBJECT-TYPE
+	    SYNTAX  INTEGER (0..65535)
+	    MAX-ACCESS  read-only
+	    STATUS  current
+	    DESCRIPTION
+	        "This object indicates the module's port number.(1..Max port
+	        number in the module)"
+    	::= { swL2PortInformationEntry 1 }
+
+    swL2PortInformationMediumType OBJECT-TYPE
+        SYNTAX INTEGER{
+        	copper(1),
+        	fiber(2)
+        }
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION
+        	"Indicates medium type of the port number."
+        ::={swL2PortInformationEntry 2}
+
+    swL2PortInformationUnitID OBJECT-TYPE
+        SYNTAX INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS current
+        DESCRIPTION
+        	"Indicates ID of the unit in the system"
+        ::= { swL2PortInformationEntry 3 }
+
+    swL2PortInformationType OBJECT-TYPE
+        SYNTAX  INTEGER {
+               portType-100Base-TX(1),
+               portType-100Base-FX(2),
+               portType-100Base-FL(3),
+               portType-1000Base-TX(4),
+               portType-1000Base-SX(5),
+               portType-1000Base-LX(6),
+               portType-1000Base-SX-GBIC(7),
+               portType-1000Base-LX-GBIC(8),
+               portType-1000Base-TX-GBIC(9),
+               portType-1000Base-1394(10),
+               portType-1000Base-TX-GBIC-COMBO(11),
+               portType-1000Base-none-GBIC(12),
+               portType-1000Base-SX-MGBIC(13),
+               portType-1000Base-LX-MGBIC(14),
+               portType-1000Base-TX-MGBIC(15),
+               portType-1000Base-none-MGBIC(16),
+               portType-SIO(17),
+               portType-10G(18),
+               portType-10G-xenpak-1310nm(19),
+               portType-10G-xenpak-850nm(20),
+               portType-10G-xenpak-empty(21),
+               portType-10G-xfp-1310nm(22),
+               portType-10G-xfp-850nm(23),
+               portType-10G-xfp-empty(24),
+               portType-none(25)
+              }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the connector type of this port."
+        ::= { swL2PortInformationEntry 4 }
+
+    swL2PortInformationLinkStatus OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               link-pass(2),
+               link-fail(3)
+               }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the port link status."
+        ::= { swL2PortInformationEntry 5 }
+
+    swL2PortInformationNwayStatus OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(0),
+               empty(1),
+               link-down(2),
+               half-10Mbps(3),
+               full-10Mbps(4),
+               half-100Mbps(5),
+               full-100Mbps(6),
+               half-1Gigabps(7),
+               full-1Gigabps(8),
+               full-10Gigabps(9)
+               }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the port speed and duplex mode."
+        ::= { swL2PortInformationEntry 6 }
+
+    swL2PortInformationModuleType OBJECT-TYPE
+        SYNTAX  INTEGER {
+             none(0),
+             moduleType-COMBO(1),
+           moduleType-1394(2),
+           moduleType-1000T(3),
+           moduleType-MGBIC(4),
+           moduleType-1P-SC-SX(5),
+           moduleType-2P-SC-SX(6),
+           moduleType-1P-SC-LX(7),
+           moduleType-2P-SC-LX(8),
+           moduleType-1P-TX(9),
+           moduleType-2P-TX(10),
+           moduleType-1P-MTRJ-SX(11),
+           moduleType-2P-MTRJ-SX(12),
+           moduleType-1P-MTRJ-LX(13),
+           moduleType-2P-MTRJ-LX(14),
+           moduleType-1P-GBIC(15),
+           moduleType-2P-GBIC(16),
+           moduleType-1P-GBIC-1P-TX(17),
+           moduleType-1P-GBIC-1P-STACK(18),
+           moduleType-2P-STACK(19),
+           moduleType-2P-100FX(20),
+           moduleType-1P-100FX(21),
+           moduleType-2P-100FX-NEW(22),
+           moduleType-1P-100FL(23),
+           moduleType-2P-100FL(24),
+           moduleType-2P-100TX(25),
+           moduleType-BaseModule-24PORT(26)
+               }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the module type of this port."
+        ::= { swL2PortInformationEntry 7 }
+
+    swL2PortInformationErrorDisabled OBJECT-TYPE
+        SYNTAX  INTEGER {
+               none(0),
+               storm(1),
+               lbd(2),
+               unknow(3)
+               }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the blocking type of this port."
+        ::= { swL2PortInformationEntry 8 }
+
+-- -----------------------------------------------------------------------------
+
+    swL2PortControlTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2PortControlEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "A table that contains control information about every port."
+        ::= { swL2PortMgmt 5 }
+
+    swL2PortControlEntry OBJECT-TYPE
+        SYNTAX  SwL2PortControlEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "A list of control information for each port of the device."
+        INDEX  { swL2PortControlPortIndex,swL2PortControlMediumType}
+        ::= { swL2PortControlTable 1 }
+
+    SwL2PortControlEntry ::=
+        SEQUENCE {
+            swL2PortControlPortIndex
+                INTEGER,
+            swL2PortControlMediumType
+            	INTEGER,
+            swL2PortControlUnitIndex
+                INTEGER,
+            swL2PortControlAdminState
+                INTEGER,
+            swL2PortControlNwayState
+                INTEGER,
+            swL2PortControlFlowCtrlState
+                INTEGER,
+            swL2PortControlLearningState
+                INTEGER,
+            swL2PortControlMACNotifyState
+                INTEGER,
+            swL2PortControlMulticastfilter
+                INTEGER
+        }
+
+    swL2PortControlPortIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the module's port number.(1..Max port
+            number in the module)"
+        ::= { swL2PortControlEntry 1 }
+
+    swL2PortControlMediumType OBJECT-TYPE
+        SYNTAX INTEGER{
+        	copper(1),
+        	fiber(2)
+        }
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION
+        	"Indicates the medium type of the port number."
+        ::={ swL2PortControlEntry 2 }
+
+    swL2PortControlUnitIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "Indicates ID of the unit in the device"
+        ::= { swL2PortControlEntry 3 }
+
+    swL2PortControlAdminState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object decides if the port is enabled or disabled."
+        ::= { swL2PortControlEntry 4 }
+
+    swL2PortControlNwayState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               nway-enabled(2),
+               nway-disabled-10Mbps-Half(3),
+               nway-disabled-10Mbps-Full(4),
+               nway-disabled-100Mbps-Half(5),
+               nway-disabled-100Mbps-Full(6),
+               nway-disabled-1Gigabps-Half(7),
+               nway-disabled-1Gigabps-Full(8),
+               nway-disabled-1Gigabps-Full-master(9),
+               nway-disabled-1Gigabps-Full-slave(10)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "Choose the port speed, duplex mode, and N-Way function mode."
+        ::= { swL2PortControlEntry 5 }
+
+    swL2PortControlFlowCtrlState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "The flow control mechanism is different between full duplex
+            mode and half duplex mode. For half duplex mode, the jamming
+            signal is asserted. For full duplex mode, IEEE 802.3x flow
+            control function sends PAUSE frames and receives PAUSE frames."
+        ::= { swL2PortControlEntry 6 }
+
+    swL2PortControlLearningState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object decides whether the port is locked or not."
+        ::= { swL2PortControlEntry 7 }
+
+    swL2PortControlMACNotifyState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object sets each port's MAC notification state."
+        ::= { swL2PortControlEntry 8 }
+
+    swL2PortControlMulticastfilter OBJECT-TYPE
+        SYNTAX  INTEGER {
+    		   other(0),
+               forward-all-groups(1),
+               forward-unregistered-groups(2),
+               filter-unregistered-groups(3)
+
+              }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object controls the multicast port filtering mode for a specified port. "
+          ::= { swL2PortControlEntry 9 }
+
+
+-- ----------------------------------------------------------------------------
+--        swL2QOSMgmt               OBJECT IDENTIFIER ::= { swL2MgmtMIB 6 }
+-- ----------------------------------------------------------------------------
+
+	swL2QOSBandwidthControlTable OBJECT-TYPE
+		SYNTAX  SEQUENCE OF SwL2QOSBandwidthControlEntry
+		MAX-ACCESS  not-accessible
+		STATUS  current
+		DESCRIPTION
+		      "."
+		::= { swL2QOSMgmt 1 }
+
+	swL2QOSBandwidthControlEntry OBJECT-TYPE
+		SYNTAX  SwL2QOSBandwidthControlEntry
+		MAX-ACCESS  not-accessible
+		STATUS  current
+		DESCRIPTION
+		      "A list of information contained in swL2QOSBandwidthControlTable."
+		INDEX   { swL2QOSBandwidthPortIndex }
+		::= { swL2QOSBandwidthControlTable 1 }
+
+	SwL2QOSBandwidthControlEntry ::=
+		SEQUENCE {
+		  swL2QOSBandwidthPortIndex
+		      INTEGER,
+		  swL2QOSBandwidthRxRate
+		      INTEGER,
+		  swL2QOSBandwidthTxRate
+                      INTEGER,
+	          swL2QOSBandwidthRadiusRxRate
+	              INTEGER,
+	          swL2QOSBandwidthRadiusTxRate
+		      INTEGER
+		}
+
+	swL2QOSBandwidthPortIndex OBJECT-TYPE
+		SYNTAX  INTEGER (1..650)
+		MAX-ACCESS  read-only
+		STATUS  current
+		DESCRIPTION
+		      "Indicates the port."
+		::= { swL2QOSBandwidthControlEntry 1 }
+
+	swL2QOSBandwidthRxRate OBJECT-TYPE
+		SYNTAX  INTEGER (0..1000000)
+		MAX-ACCESS  read-write
+		STATUS  current
+		DESCRIPTION
+		      "Indicates the RX Rate(kbit/sec) of the specifed port. Value 0 means no limit."
+		::= { swL2QOSBandwidthControlEntry 2 }
+
+	swL2QOSBandwidthTxRate OBJECT-TYPE
+		SYNTAX  INTEGER (0..1000000)
+		MAX-ACCESS  read-write
+		STATUS  current
+		DESCRIPTION
+		      "Indicates the TX Rate(kbit/sec) of the specifed port. Value 0 means no limit."
+		::= { swL2QOSBandwidthControlEntry 3 }
+
+        swL2QOSBandwidthRadiusRxRate OBJECT-TYPE
+		SYNTAX  INTEGER
+		MAX-ACCESS  read-only
+		STATUS  current
+		DESCRIPTION
+      		      "The Rx Rate value comes from the RADIUS server,
+		       If an 802.1X port is authenticated, this value
+		       will overwrite the locally configured Rx Rate. "
+		::= { swL2QOSBandwidthControlEntry 4 }	
+	swL2QOSBandwidthRadiusTxRate OBJECT-TYPE
+		SYNTAX  INTEGER
+		MAX-ACCESS  read-only
+		STATUS  current
+		DESCRIPTION
+      		      "The Tx Rate value comes from the RADIUS server,
+      		       If an 802.1X port is authenticated, this value
+      		       will overwrite the locally configured Tx Rate. "
+		::= { swL2QOSBandwidthControlEntry 5 }
+
+-- ----------------------------------------------------------------------------
+
+	swL2QOSSchedulingTable OBJECT-TYPE
+		SYNTAX  SEQUENCE OF SwL2QOSSchedulingEntry
+		MAX-ACCESS  not-accessible
+		STATUS  current
+		DESCRIPTION
+		      "."
+		::= { swL2QOSMgmt 2 }
+
+	swL2QOSSchedulingEntry OBJECT-TYPE
+		SYNTAX  SwL2QOSSchedulingEntry
+		MAX-ACCESS  not-accessible
+		STATUS  current
+		DESCRIPTION
+		      "A list of information contained in swL2QOSSchedulingTable."
+		INDEX   { swL2QOSSchedulingClassIndex }
+		::= { swL2QOSSchedulingTable 1 }
+
+	SwL2QOSSchedulingEntry ::=
+		SEQUENCE {
+		  swL2QOSSchedulingClassIndex
+		      INTEGER,
+		  swL2QOSSchedulingMaxPkts
+		      INTEGER
+--		  swL2QOSSchedulingMaxLatency
+--		      INTEGER
+		}
+
+	swL2QOSSchedulingClassIndex OBJECT-TYPE
+		SYNTAX  INTEGER (0..7)
+		MAX-ACCESS  read-only
+		STATUS  current
+		DESCRIPTION
+		      "Indicates the hardware queue number."
+		::= { swL2QOSSchedulingEntry 1 }
+
+	swL2QOSSchedulingMaxPkts OBJECT-TYPE
+		SYNTAX  INTEGER (0..15)
+		MAX-ACCESS  read-write
+		STATUS  current
+		DESCRIPTION
+		      "Indicates the maximum number of packets the hardware priority queue will be allowed
+		      to transmit before allowing the next lowest priority queue  to transmit its packets.
+		      a value between 0 and 255 can be specified."
+		::= { swL2QOSSchedulingEntry 2 }
+
+--	swL2QOSSchedulingMaxLatency OBJECT-TYPE
+--		SYNTAX  INTEGER (0..255)
+--		MAX-ACCESS  read-write
+--		STATUS  current
+--		DESCRIPTION
+--		      "Indicates the maximum amount of time the hardware priority queue will be allowed
+--		       to transmit packets before allowing the next lowest priority queue to begin transmit
+--		       its packets. A value between 0 and 255 can be specified- with this value multiplied
+--		       by 16 ms to arrive at the total allowed time for queue to transmit packets.
+--		       For example, a value of 3 specifies 3*16=48 ms. The queue will continue transmitting
+--		       the last packet until it is finished when the max_latency timer expires. "
+--		::= { swL2QOSSchedulingEntry 3 }
+
+-- ----------------------------------------------------------------------------
+
+	swL2QOS8021pUserPriorityTable OBJECT-TYPE
+		SYNTAX  SEQUENCE OF SwL2QOS8021pUserPriorityEntry
+		MAX-ACCESS  not-accessible
+		STATUS  current
+		DESCRIPTION
+		      "."
+		::= { swL2QOSMgmt 3 }
+
+	swL2QOS8021pUserPriorityEntry OBJECT-TYPE
+		SYNTAX  SwL2QOS8021pUserPriorityEntry
+		MAX-ACCESS  not-accessible
+		STATUS  current
+		DESCRIPTION
+		      "A list of information contained in swL2QOS8021pUserPriorityTable."
+		INDEX   { swL2QOS8021pUserPriorityIndex }
+		::= { swL2QOS8021pUserPriorityTable 1 }
+
+	SwL2QOS8021pUserPriorityEntry ::=
+		SEQUENCE {
+		  swL2QOS8021pUserPriorityIndex
+		      INTEGER,
+		  swL2QOS8021pUserPriorityClass
+		      INTEGER
+		}
+
+	swL2QOS8021pUserPriorityIndex OBJECT-TYPE
+		SYNTAX  INTEGER (0..7)
+		MAX-ACCESS  read-only
+		STATUS  current
+		DESCRIPTION
+		      "The 802.1p user priority  ."
+		::= { swL2QOS8021pUserPriorityEntry 1 }
+
+	swL2QOS8021pUserPriorityClass OBJECT-TYPE
+		SYNTAX  INTEGER (0..7)
+		MAX-ACCESS  read-write
+		STATUS  current
+		DESCRIPTION
+		      "The number of the switch's hardware priority queue. The switch has four hardware
+		       priority queues available. They are numbered between 0 (the lowest priority)
+		        and 6 (the highest priority)."
+		::= { swL2QOS8021pUserPriorityEntry 2 }
+
+-- ----------------------------------------------------------------------------
+
+	swL2QOS8021pDefaultPriorityTable OBJECT-TYPE
+		SYNTAX  SEQUENCE OF SwL2QOS8021pDefaultPriorityEntry
+		MAX-ACCESS  not-accessible
+		STATUS  current
+		DESCRIPTION
+		      "."
+		::= { swL2QOSMgmt 4 }
+
+	swL2QOS8021pDefaultPriorityEntry OBJECT-TYPE
+		SYNTAX  SwL2QOS8021pDefaultPriorityEntry
+		MAX-ACCESS  not-accessible
+		STATUS  current
+		DESCRIPTION
+		      "A list of information contained in swL2QOS8021pDefaultPriorityTable."
+		INDEX   { swL2QOS8021pDefaultPriorityIndex }
+		::= { swL2QOS8021pDefaultPriorityTable 1 }
+
+	SwL2QOS8021pDefaultPriorityEntry ::=
+		SEQUENCE {
+		  swL2QOS8021pDefaultPriorityIndex
+		      INTEGER,
+		  swL2QOS8021pDefaultPriority
+		      INTEGER,
+		  swL2QOS8021pRadiusPriority
+		      INTEGER
+		}
+
+	swL2QOS8021pDefaultPriorityIndex OBJECT-TYPE
+		SYNTAX  INTEGER (1..650)
+		MAX-ACCESS  read-only
+		STATUS  current
+		DESCRIPTION
+		      "Indicates the port number."
+		::= { swL2QOS8021pDefaultPriorityEntry 1 }
+
+	swL2QOS8021pDefaultPriority OBJECT-TYPE
+		SYNTAX  INTEGER (0..7)
+		MAX-ACCESS  read-write
+		STATUS  current
+		DESCRIPTION
+		      "The priority value to assign to untagged packets received by the
+		       switch ports on the switch."
+		::= { swL2QOS8021pDefaultPriorityEntry 2 }
+
+	swL2QOS8021pRadiusPriority OBJECT-TYPE
+		SYNTAX  INTEGER
+		MAX-ACCESS  read-only
+		STATUS  current
+		DESCRIPTION
+		      "Indicates the value of 802.1p comes from RADIUS server.
+		       If an 802.1X port is authenticated,
+		       this value will overwrite the local configured value."
+		::= { swL2QOS8021pDefaultPriorityEntry 3 }	
+
+-- ----------------------------------------------------------------------------
+--  swL2TrunkMgmt           OBJECT IDENTIFIER ::= { swL2MgmtMIB 8 }
+-- ----------------------------------------------------------------------------
+
+    swL2TrunkMaxSupportedEntries OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "Maximum number of entries in the trunk configuration table
+            (swL2TrunkCtrlTable)."
+        ::= { swL2TrunkMgmt 1 }
+
+    swL2TrunkCurrentNumEntries OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "Current active number of entries in the trunk configuration
+            table."
+        ::= { swL2TrunkMgmt 2 }
+
+    swL2TrunkCtrlTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2TrunkCtrlEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "This table specifies which ports are grouped as a set of ports(up to 8)
+            into a single logical link."
+        ::= { swL2TrunkMgmt 3 }
+
+    swL2TrunkCtrlEntry OBJECT-TYPE
+        SYNTAX  SwL2TrunkCtrlEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "A list of information specifies which ports are grouped as a set of
+            ports(up to 8) into a single logical link."
+        INDEX  { swL2TrunkIndex }
+        ::= { swL2TrunkCtrlTable 1 }
+
+    SwL2TrunkCtrlEntry ::=
+        SEQUENCE {
+            swL2TrunkIndex
+                INTEGER,
+            swL2TrunkName
+                DisplayString,
+            swL2TrunkMasterPort
+                INTEGER,
+            swL2TrunkMember
+                PortList,
+            swL2TrunkFloodingPort
+                INTEGER,
+            swL2TrunkType
+                INTEGER,
+            swL2TrunkState
+                RowStatus
+        }
+
+    swL2TrunkIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "The index of logical port trunk. The trunk group number depends
+            on the existence of the unit and module."
+        ::= { swL2TrunkCtrlEntry 1 }
+
+    swL2TrunkName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..12))
+        MAX-ACCESS  read-create
+        STATUS  current
+        DESCRIPTION
+            "The name of logical port trunk."
+        ::= { swL2TrunkCtrlEntry 2 }
+
+
+    swL2TrunkMasterPort OBJECT-TYPE
+        SYNTAX  INTEGER (1..65535)
+        MAX-ACCESS  read-create
+        STATUS  current
+        DESCRIPTION
+            "The object indicates the master port number of the port trunk
+            entry. When using Port Trunk, you can not configure the other
+            ports of the group except the master port.
+            Their configuration must be the same as the master port (e.g. speed,
+            duplex, enabled/disabled, flow control, and so on)."
+        ::= { swL2TrunkCtrlEntry 3 }
+
+    swL2TrunkMember OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-create
+        STATUS  current
+        DESCRIPTION
+            "Indicates how many ports are included in this Trunk.
+            The trunk port number depends on the existence of module.
+            The maximum number of ports is 8 for one trunks."
+        ::= { swL2TrunkCtrlEntry 4 }
+
+    swL2TrunkFloodingPort OBJECT-TYPE
+        SYNTAX  INTEGER (1..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "The object indicates the flooding port number of the port trunk
+            entry. The first port of the trunk is implicitly configured to
+            be the flooding port."
+        ::= { swL2TrunkCtrlEntry 5 }
+
+    swL2TrunkType OBJECT-TYPE
+        SYNTAX  INTEGER {
+                other(1),
+                static(2),
+                lacp(3)
+          	  }
+       	MAX-ACCESS  read-create
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the type of the trunk group.
+            static : is static trunk group
+            lacp : is LACP trunk group . "
+        ::= { swL2TrunkCtrlEntry 6 }
+
+    swL2TrunkState OBJECT-TYPE
+        SYNTAX  RowStatus
+        MAX-ACCESS  read-create
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the status of this entry."
+        ::= { swL2TrunkCtrlEntry 7 }
+
+    swL2TrunkAlgorithm OBJECT-TYPE
+        SYNTAX  INTEGER {
+                other(1),
+                mac-source(2),
+                mac-destination(3),
+                mac-source-dest(4),
+                ip-source(5),
+                ip-destination(6),
+                ip-source-dest(7)
+            }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object configures the part of the packet examined by the
+            switch when selecting the egress port for transmitting
+            load-sharing data."
+        ::= { swL2TrunkMgmt 4 }
+
+-- ----------------------------------------------------------------------------
+--  swL2MirrorMgmt          OBJECT IDENTIFIER ::= { swL2MgmtMIB 9 }
+-- ----------------------------------------------------------------------------
+
+    swL2MirrorLogicTargetPort OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates which port will sniff another
+            port to the switch. A trunk port member cannot be configured as a target
+            Snooping port. The port number is the sequential (logical)
+            number which is also applied to bridge MIB, etc."
+        ::= { swL2MirrorMgmt 1 }
+
+    swL2MirrorPortSourceIngress OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This represents the ingress of the source port packet to be
+            sniffed."
+        ::= { swL2MirrorMgmt 2 }
+
+    swL2MirrorPortSourceEgress OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This represents the egress of the source port packet to be
+            sniffed."
+        ::= { swL2MirrorMgmt 3 }
+
+    swL2MirrorPortState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the port mirroring state.
+
+            other(1) - this entry is currently in use but the conditions
+                under which it will remain so are different for each of the
+                following values.
+            disabled(2) - writing this value to the object will remove the 
+                corresponding entry from the table.
+            enabled(3) - this entry will reside in the table."
+        ::= { swL2MirrorMgmt 4 }
+
+-- ----------------------------------------------------------------------------
+--  swL2IGMPMgmt            OBJECT IDENTIFIER ::= { swL2MgmtMIB 10 }
+-- ----------------------------------------------------------------------------
+
+    swL2IGMPMaxSupportedVlans OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "Maximum number of VLANs in the layer 2 IGMP control table
+            (swL2IGMPCtrlTable)."
+        ::= { swL2IGMPMgmt 1 }
+
+--    swL2IGMPMaxIpGroupNumPerVlan OBJECT-TYPE
+--        SYNTAX  INTEGER (0..65535)
+--        MAX-ACCESS  read-only
+--        STATUS  obsolete
+--        DESCRIPTION
+--            "Maximum number of multicast IP groups per VLAN in the layer 2
+--            IGMP information table (swL2IGMPQueryInfoTable)."
+--        ::= { swL2IGMPMgmt 2 }
+
+--    swL2IGMPLastQueryIPAddr OBJECT-TYPE
+--        SYNTAX  IpAddress
+--        MAX-ACCESS  read-only
+--        STATUS  current
+--        DESCRIPTION
+--            "This object indicates the IP address of the last sent IGMP query
+--            packet."
+--        ::= { swL2IGMPMgmt 3 }
+
+    swL2IGMPCtrlTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2IGMPCtrlEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "This table controls the VLAN's IGMP function. Its scale depends
+            on the current VLAN state (swL2VlanInfoStatus). If VLAN is in disabled
+            mode, there is only one entry in the table, with index 1. If
+            VLAN is in Port-Base or 802.1q mode, the number of entries can
+            be up to 12, with an index range from 1 to 12."
+        ::= { swL2IGMPMgmt 3 }
+
+    swL2IGMPCtrlEntry OBJECT-TYPE
+        SYNTAX  SwL2IGMPCtrlEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The entry in IGMP control table (swL2IGMPCtrlTable). The entry
+            is effective only when IGMP capture switch
+            (swL2DevCtrlIGMPSnooping) is enabled."
+        INDEX  { swL2IGMPCtrlVid }
+        ::= { swL2IGMPCtrlTable 1 }
+
+    SwL2IGMPCtrlEntry ::=
+        SEQUENCE {
+--            swL2IGMPCtrlIndex
+--                INTEGER,
+            swL2IGMPCtrlVid
+                INTEGER,
+            swL2IGMPQueryInterval
+                INTEGER,
+            swL2IGMPMaxResponseTime
+                INTEGER,
+            swL2IGMPRobustness
+                INTEGER,
+            swL2IGMPLastMemberQueryInterval
+                INTEGER,
+            swL2IGMPHostTimeout
+                INTEGER,
+            swL2IGMPRouteTimeout
+                INTEGER,
+            swL2IGMPLeaveTimer
+                INTEGER,
+            swL2IGMPQueryState
+                INTEGER,
+            swL2IGMPCurrentState
+                INTEGER,
+            swL2IGMPCtrlState
+                INTEGER,
+            swL2IGMPFastLeaveState
+                INTEGER
+        }
+
+--    swL2IGMPCtrlIndex OBJECT-TYPE
+--        SYNTAX  INTEGER (1..12)
+--        MAX-ACCESS  read-only
+--        STATUS  current
+--        DESCRIPTION
+--            "This object indicates the IGMP control entry number. Its scale
+--            depends on current VLAN state (swL2VlanInfoStatus). If VLAN is
+--            disabled, there is only one entry in the table, with index 1.
+--            If VLAN is in Port-Base or 802.1q mode, the number of entries
+--            is 12, with index range from 1 to 12."
+--        ::= { swL2IGMPCtrlEntry 1 }
+
+    swL2IGMPCtrlVid OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the IGMP control entry's VLAN ID. If VLAN
+            is disabled, the VID is always 0 and cannot be changed by
+            management users. If VLAN is in Port-Base mode, the VID is
+            arranged from 1 to 12, fixed form. If VLAN is in 802.1q mode,
+            the VID setting can vary from 1 to 4094 by management user, and
+            the Vid in each entry must be unique in the IGMP Control Table."
+        ::= { swL2IGMPCtrlEntry 1 }
+
+    swL2IGMPQueryInterval OBJECT-TYPE
+        SYNTAX INTEGER (1..65535)
+        MAX-ACCESS read-write
+        STATUS current
+        DESCRIPTION
+            "The frequency at which the IGMP Host-Query packets are
+             transmitted on this switch."
+        DEFVAL      { 125 }
+        ::= { swL2IGMPCtrlEntry 2 }
+
+    swL2IGMPMaxResponseTime OBJECT-TYPE
+        SYNTAX INTEGER (1..25)
+        MAX-ACCESS read-write
+        STATUS current
+        DESCRIPTION
+            "The maximum query response time on this switch."
+        DEFVAL      { 10 }
+        ::= { swL2IGMPCtrlEntry 3 }
+
+    swL2IGMPRobustness OBJECT-TYPE
+        SYNTAX INTEGER (1..255)
+        MAX-ACCESS read-write
+        STATUS current
+        DESCRIPTION
+            "The Robustness Variable allows tuning for the expected
+             packet loss on a subnet. If a subnet is expected to have a high
+             loss, the Robustness Variable may be increased. IGMP is
+             robust to (Robustness Variable-1) packet losses."
+        DEFVAL      { 2 }
+        ::= { swL2IGMPCtrlEntry 4 }
+
+    swL2IGMPLastMemberQueryInterval OBJECT-TYPE
+        SYNTAX INTEGER (1..25)
+        MAX-ACCESS read-write
+        STATUS current
+        DESCRIPTION
+            "The Last Member Query Interval is the Max Response Time
+            inserted into Group-Specific Queries sent in response to
+            Leave Group messages, and is also the amount of time between
+            Group-Specific Query messages."
+        DEFVAL      { 1 }
+        ::= { swL2IGMPCtrlEntry 5 }
+
+    swL2IGMPHostTimeout OBJECT-TYPE
+        SYNTAX  INTEGER (1..16711450)
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "The timer value for sending IGMP query packet when none was
+            sent by the host in the LAN. The timer works in per-VLAN basis.
+            Our device will be activated to send the query message if the
+            timer has expired. Please reference RFC2236-1997."
+        DEFVAL  { 260 }
+        ::= { swL2IGMPCtrlEntry 6 }
+
+    swL2IGMPRouteTimeout OBJECT-TYPE
+        SYNTAX  INTEGER (1..16711450)
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "The Router Timeout is how long a host must wait after hearing
+            a Query before it may send any IGMPv2 messages."
+        DEFVAL  { 260 }
+        ::= { swL2IGMPCtrlEntry 7 }
+
+    swL2IGMPLeaveTimer OBJECT-TYPE
+        SYNTAX  INTEGER (0..16711450)
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "When a query receives a Leave Group message for a group that
+            has group members on the reception interface, it sends
+            Group-Specific Queries every swL2IGMPLeaveTimer to the group
+            being left."
+        DEFVAL  { 1 }
+        ::= { swL2IGMPCtrlEntry 8 }
+
+    swL2IGMPQueryState OBJECT-TYPE
+        SYNTAX INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS read-write
+        STATUS current
+        DESCRIPTION
+            "This object decides if the IGMP query is enabled or disabled."
+        ::= { swL2IGMPCtrlEntry 9 }
+
+    swL2IGMPCurrentState OBJECT-TYPE
+        SYNTAX INTEGER {
+               other(1),
+               querier(2),
+               non-querier(3)
+               }
+        MAX-ACCESS read-only
+        STATUS current
+        DESCRIPTION
+            "This object indicates the current IGMP query state."
+        ::= { swL2IGMPCtrlEntry 10 }
+
+    swL2IGMPCtrlState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disable(2),
+               enable(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the status of this entry.
+
+            other(1) - this entry is currently in use but the conditions under
+                which it will remain so are different for each of the following
+                values.
+            disable(2) - IGMP funtion is disabled for this entry.
+            enable(3) -  IGMP funtion is enabled for this entry."
+        ::= { swL2IGMPCtrlEntry 11 }
+
+    swL2IGMPFastLeaveState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disable(2),
+               enable(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the fast_leave status of this entry.
+
+            other(1) - this entry is currently in use but the conditions under
+                which it will remain so are different from each of the following
+                values.
+            disable(2) - IGMP fast-leave funtion is disabled for this entry.
+            enable(3) -  IGMP fast-leave funtion is enabled for this entry."
+        ::= { swL2IGMPCtrlEntry 12 }
+
+
+    swL2IGMPQueryInfoTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2IGMPQueryInfoEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The table contains the current number of IGMP query packets which
+            have been captured by this device, as well as the IGMP query packets
+            sent by the device."
+        ::= { swL2IGMPMgmt 4 }
+
+    swL2IGMPQueryInfoEntry OBJECT-TYPE
+        SYNTAX  SwL2IGMPQueryInfoEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "Information about current IGMP query information, provided that
+            swL2DevCtrlIGMPSnooping and swL2IGMPCtrState of associated VLAN
+            entires are all enabled."
+        INDEX  { swL2IGMPInfoVid }
+        ::= { swL2IGMPQueryInfoTable 1 }
+
+    SwL2IGMPQueryInfoEntry ::=
+        SEQUENCE {
+--            swL2IGMPInfoIndex
+--                INTEGER,
+            swL2IGMPInfoVid
+                INTEGER,
+            swL2IGMPInfoQueryCount
+                INTEGER,
+            swL2IGMPInfoTxQueryCount
+                INTEGER
+        }
+
+--    swL2IGMPInfoIndex OBJECT-TYPE
+--        SYNTAX  INTEGER (1..12)
+--        MAX-ACCESS  read-only
+--        STATUS  current
+--        DESCRIPTION
+--            "This object indicates the IGMP query information entry
+--            number. It could be up to 12 entries, depending on the current
+--            number of VLAN entries."
+--        ::= { swL2IGMPQueryInfoEntry 1 }
+
+    swL2IGMPInfoVid OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the VID of the associated IGMP info table
+            entry. It follows swL2IGMPCtrlVid in the associated entry of the
+            IGMP control table (swL2IGMPCtrlTable)."
+        ::= { swL2IGMPQueryInfoEntry 1 }
+
+    swL2IGMPInfoQueryCount OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the number of query packets received
+            since the IGMP function has been enabled, on a per-VLAN basis."
+        ::= { swL2IGMPQueryInfoEntry 2 }
+
+    swL2IGMPInfoTxQueryCount OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the send count of IGMP query messages, on a
+            per-VLAN basis. In case of the IGMP timer expiration, the switch
+            sends IGMP query packets to related VLAN member ports and
+            increments this object by 1."
+        ::= { swL2IGMPQueryInfoEntry 3 }
+
+    swL2IGMPInfoTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2IGMPInfoEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The table containing current IGMP information which have been captured by
+            this device, provided that swL2DevCtrlIGMPSnooping and
+            swL2IGMPCtrlState of associated VLAN entries are all enabled. Note
+            that the priority of IGMP table entries is lower than the Filtering
+            Table, i.e. if there is a table hash collision between the
+            entries of the IGMP Table and the Filtering Table inside the switch H/W
+            address table, the Filtering Table entry will overwrite the
+            colliding entry of the IGMP Table. See swL2FilterMgmt description
+            also."
+        ::= { swL2IGMPMgmt 5 }
+
+    swL2IGMPInfoEntry OBJECT-TYPE
+        SYNTAX  SwL2IGMPInfoEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "Information about current IGMP information which was captured by
+            this device, provided that swL2DevCtrlIGMPSnooping and
+            swL2IGMPCtrlState of associated VLAN entries are all enabled."
+        INDEX  { swL2IGMPVid , swL2IGMPGroupIpAddr }
+        ::= { swL2IGMPInfoTable 1 }
+
+    SwL2IGMPInfoEntry ::=
+        SEQUENCE {
+            swL2IGMPVid
+                INTEGER,
+            swL2IGMPGroupIpAddr
+                IpAddress,
+            swL2IGMPMacAddr
+                MacAddress,
+            swL2IGMPPortMap
+                PortList,
+            swL2IGMPIpGroupReportCount
+                INTEGER
+        }
+
+    swL2IGMPVid OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the VID of individual IGMP table entries.
+            It shows the VID of IGMP report information captured on
+            the network."
+        ::= { swL2IGMPInfoEntry 1 }
+
+    swL2IGMPGroupIpAddr OBJECT-TYPE
+        SYNTAX  IpAddress
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object identifies group ip address which have been captured from the
+            IGMP packet, on a per-Vlan basis."
+        ::= { swL2IGMPInfoEntry 2 }
+
+    swL2IGMPMacAddr OBJECT-TYPE
+        SYNTAX  MacAddress
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object identifies mac addresses which correspond
+            to swL2IGMPGroupIpAddr, on a per-Vlan basis."
+        ::= { swL2IGMPInfoEntry 3 }
+
+    swL2IGMPPortMap OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates which ports belong to the same
+            multicast group, on a per-Vlan basis. Each multicast group has a
+            octect string to indicate with port map. The most significant
+            bit represents the lowest numbered port, and the least
+            significant bit represents the highest numbered port. Thus, each
+            port of the switch is represented by a single bit within the
+            value of this object. If that bit has a value of '1' then that
+            port is included in the set of ports; the port is not included
+            if its bit has a value of '0'(Note that the setting of the bit
+            corresponding to the port from which a frame is received is
+            irrelevant). The 4 octets represent one unit port according to
+            its logic port. If the unit has less then 32 port, the other ports don't
+            care and just fill in zero."
+        ::= { swL2IGMPInfoEntry 4 }
+
+    swL2IGMPIpGroupReportCount OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates how many report packets were received by the
+            device corresponding with this entry where the IGMP function is enabled,
+            on a per-Vlan basis."
+        ::= { swL2IGMPInfoEntry 5 }
+
+    swL2IGMPMulticastVlanTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2IGMPMulticastVlanEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The information of the IGMP snooping multicast VLAN table."
+        ::= { swL2IGMPMgmt 6 }
+
+    swL2IGMPMulticastVlanEntry OBJECT-TYPE
+        SYNTAX  SwL2IGMPMulticastVlanEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The entry of swL2IGMPMulticastVlanTable."
+        INDEX  { swL2IGMPMulticastVlanid}
+        ::= { swL2IGMPMulticastVlanTable 1 }
+
+    SwL2IGMPMulticastVlanEntry ::=
+        SEQUENCE {
+            swL2IGMPMulticastVlanid
+                INTEGER,
+            swL2IGMPMulticastVlanName
+                SnmpAdminString,
+            swL2IGMPMulticastVlanSourcePort
+                PortList,
+            swL2IGMPMulticastVlanMemberPort
+                PortList,
+            swL2IGMPMulticastVlanRowStatus
+                RowStatus
+        }
+
+    swL2IGMPMulticastVlanid OBJECT-TYPE
+        SYNTAX  INTEGER (2..4094)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the VLAN id of the IGMP snooping multicast
+             VLAN entry."
+        ::= { swL2IGMPMulticastVlanEntry 1 }
+
+    swL2IGMPMulticastVlanName OBJECT-TYPE
+        SYNTAX  SnmpAdminString (SIZE (0..32))
+        MAX-ACCESS  read-create
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the VLAN name of the IGMP snooping multicast
+             VLAN entry."
+        ::= { swL2IGMPMulticastVlanEntry 2 }
+
+    swL2IGMPMulticastVlanSourcePort OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-create
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the portlist of the source ports of IGMP
+             snooping multicast VLAN. The source ports will be set as tag ports
+             of the VLAN entry and the IGMP control messages received from the
+             member ports would be forwarded to the source ports. "
+        ::= { swL2IGMPMulticastVlanEntry 3 }
+
+    swL2IGMPMulticastVlanMemberPort OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-create
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the portlist of the member ports of IGMP
+             snooping multicast VLAN. The source ports will be set to untag ports
+             of the vlan entry and the IGMP control messages received from the
+             member ports would be forwarded to the source ports. "
+        ::= { swL2IGMPMulticastVlanEntry 4 }
+
+    swL2IGMPMulticastVlanRowStatus OBJECT-TYPE
+        SYNTAX  RowStatus
+        MAX-ACCESS  read-create
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the status of this entry."
+        ::= { swL2IGMPMulticastVlanEntry 5 }
+
+    swL2IGMPRouterPortTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2IGMPRouterPortEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The information of the router port table."
+        ::= { swL2IGMPMgmt 7 }
+
+    swL2IGMPRouterPortEntry OBJECT-TYPE
+        SYNTAX  SwL2IGMPRouterPortEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The entry of swL2IGMPRouterPortTable."
+        INDEX  { swL2IGMPRouterPortVlanid }
+        ::= { swL2IGMPRouterPortTable 1 }
+
+    SwL2IGMPRouterPortEntry ::=
+        SEQUENCE {
+            swL2IGMPRouterPortVlanid
+                INTEGER,
+            swL2IGMPRouterPortVlanName
+                SnmpAdminString,
+            swL2IGMPRouterPortStaticPortList
+                PortList,
+            swL2IGMPRouterPortDynamicPortList
+                PortList,
+            swL2IGMPRouterPortForbiddenPortList
+                PortList
+        }
+
+    swL2IGMPRouterPortVlanid OBJECT-TYPE
+        SYNTAX  INTEGER (1..4094)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the VLAN id of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 1 }
+
+    swL2IGMPRouterPortVlanName OBJECT-TYPE
+        SYNTAX  SnmpAdminString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the VLAN name of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 2 }
+
+    swL2IGMPRouterPortStaticPortList OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the static portlist of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 3 }
+
+    swL2IGMPRouterPortDynamicPortList OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the dynamic portlist of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 4 }
+
+    swL2IGMPRouterPortForbiddenPortList OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the forbidden portlist of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 5 }
+
+-- ----------------------------------------------------------------------------
+--  swL2LoopDetectMgmt           OBJECT IDENTIFIER ::= { swL2MgmtMIB 12 }
+-- ----------------------------------------------------------------------------
+--
+--    swL2LoopDetectCtrl           OBJECT IDENTIFIER ::= { swL2LoopDetectMgmt 1 }
+--
+--    swL2LoopDetectAdminState OBJECT-TYPE
+--        SYNTAX      INTEGER {
+--                       enabled(1),
+--                       disabled(2)
+--                    }
+--        MAX-ACCESS  read-write
+--        STATUS      current
+--        DESCRIPTION
+--            "This object indicates the loopback detection status for the system."
+--        ::= { swL2LoopDetectCtrl 1 }
+--
+--    swL2LoopDetectInterval OBJECT-TYPE
+--        SYNTAX      INTEGER (1..32767)
+--        MAX-ACCESS  read-write
+--        STATUS      current
+--        DESCRIPTION
+--            "This object indicates the interval value, the range is from 1 to 32767 seconds."
+--        ::= { swL2LoopDetectCtrl 2 }
+--
+--    swL2LoopDetectRecoverTime OBJECT-TYPE
+--        SYNTAX      INTEGER (0..1000000)
+--        MAX-ACCESS  read-write
+--        STATUS      current
+--        DESCRIPTION
+--            "This object indicates the recover time, the range is from 60 to 1000000.
+--             The value of 0 disables the recover function."
+--        ::= { swL2LoopDetectCtrl 3 }
+--
+--    swL2LoopDetectMode OBJECT-TYPE
+--        SYNTAX      INTEGER {
+--                       vlan-based(1),
+--                       port-based(2)
+--                    }
+--        MAX-ACCESS  read-write
+--        STATUS      current
+--        DESCRIPTION
+--            "This object indicates the loopback detection mode for the system."
+--        ::= { swL2LoopDetectCtrl 4 }
+--
+--
+-- ----------------------------------------------------------------------------
+--    swL2LoopDetectPortMgmt       OBJECT IDENTIFIER ::= { swL2LoopDetectMgmt 2 }
+--
+--    swL2LoopDetectPortTable OBJECT-TYPE
+--        SYNTAX      SEQUENCE OF SwL2LoopDetectPortEntry
+--        MAX-ACCESS  not-accessible
+--        STATUS      current
+--        DESCRIPTION
+--            "The table specifies the loopback detection function specified by port."
+--        ::= { swL2LoopDetectPortMgmt 1 }
+--
+--    swL2LoopDetectPortEntry OBJECT-TYPE
+--        SYNTAX      SwL2LoopDetectPortEntry
+--        MAX-ACCESS  not-accessible
+--        STATUS      current
+--        DESCRIPTION
+--            "The table specifies the loopback detection function specified by port."
+--        INDEX  { swL2LoopDetectPortIndex }
+--        ::= { swL2LoopDetectPortTable 1 }
+--
+--    SwL2LoopDetectPortEntry ::=
+--        SEQUENCE {
+--            swL2LoopDetectPortIndex
+--                INTEGER,
+--            swL2LoopDetectPortState
+--                INTEGER,
+--            swL2LoopDetectPortLoopVLAN
+--                DisplayString,
+--            swL2LoopDetectPortLoopStatus
+--                INTEGER
+--        }
+--
+--    swL2LoopDetectPortIndex OBJECT-TYPE
+--        SYNTAX      INTEGER (1..65535)
+--        MAX-ACCESS  read-only
+--        STATUS      current
+--        DESCRIPTION
+--            "This object indicates the module's port number. The range is from 1 to
+--             the maximum port number specified in the module"
+--        ::= { swL2LoopDetectPortEntry 1 }
+--
+--    swL2LoopDetectPortState OBJECT-TYPE
+--        SYNTAX      INTEGER {
+--                       enabled(1),
+--                       disabled(2)
+--                    }
+--        MAX-ACCESS  read-write
+--        STATUS      current
+--        DESCRIPTION
+--            "This object indicates the loopback detection function state on the port."
+--        ::= { swL2LoopDetectPortEntry 2 }
+--
+--    swL2LoopDetectPortLoopVLAN OBJECT-TYPE
+--        SYNTAX      DisplayString
+--        MAX-ACCESS  read-only
+--        STATUS      current
+--        DESCRIPTION
+--            "This object indicates the VLAN list that has detected a loopback."
+--        ::= { swL2LoopDetectPortEntry 3 }
+--
+--    swL2LoopDetectPortLoopStatus OBJECT-TYPE
+--        SYNTAX      INTEGER {
+--                       normal(1),
+--                       loop(2),
+--                       error(3)
+--                    }
+--        MAX-ACCESS  read-only
+--        STATUS      current
+--        DESCRIPTION
+--            "This object indicates the port status."
+--        ::= { swL2LoopDetectPortEntry 4 }
+
+-- ----------------------------------------------------------------------------
+--  swL2TrafficSegMgmt           OBJECT IDENTIFIER ::= { swL2MgmtMIB 13 }
+-- ----------------------------------------------------------------------------
+
+    swL2TrafficSegTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2TrafficSegEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "This table specifies that the port can just forward traffic to the
+            specific port list."
+        ::= { swL2TrafficSegMgmt 1 }
+
+    swL2TrafficSegEntry OBJECT-TYPE
+        SYNTAX  SwL2TrafficSegEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "A list of information specifying the port with its traffic
+            forward list."
+        INDEX  { swL2TrafficSegPort }
+        ::= { swL2TrafficSegTable 1 }
+
+    SwL2TrafficSegEntry ::=
+        SEQUENCE {
+            swL2TrafficSegPort
+                INTEGER,
+            swL2TrafficSegForwardPorts
+                PortList
+        }
+
+    swL2TrafficSegPort OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "The port number of the logical port."
+        ::= { swL2TrafficSegEntry 1 }
+
+    swL2TrafficSegForwardPorts OBJECT-TYPE
+        SYNTAX PortList
+        MAX-ACCESS  read-write
+        STATUS current
+        DESCRIPTION
+            "The port list that the specific port can forward traffic to."
+        ::= { swL2TrafficSegEntry 2 }
+
+-- ----------------------------------------------------------------------------
+    swL2BroadcastSegCtrl          OBJECT IDENTIFIER ::= { swL2TrafficSegMgmt 2 }
+
+    swL2BroadcastSegFilterPorts OBJECT-TYPE
+        SYNTAX PortList
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "The port list that the specific port can filter broadcast packets from."
+        ::= { swL2BroadcastSegCtrl 1 }
+
+    swL2BroadcastSegARPForwardPorts OBJECT-TYPE
+        SYNTAX PortList
+        MAX-ACCESS  read-write
+        STATUS current
+        DESCRIPTION
+            "The port list that the specific port can forward broadcast ARP packets to."
+        ::= { swL2BroadcastSegCtrl 2 }
+-- ----------------------------------------------------------------------------
+
+-- ----------------------------------------------------------------------------
+--  swL2PortSecurityMgmt           OBJECT IDENTIFIER ::= { swL2MgmtMIB 14 }
+-- ----------------------------------------------------------------------------
+
+          swL2PortSecurityControlTable OBJECT-TYPE
+              SYNTAX  SEQUENCE OF SwL2PortSecurityControlEntry
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "The port security feature controls the address learning capability and the
+                      traffic forwarding decision. Each port can have this function enabled or disabled.
+                      When it is enabled and a number is given said N, which allows N addresses to be
+                      learned at this port, the first N learned addresses are locked at this port as a
+                      static entry. When the learned addresses number reaches N, any incoming packet that
+                      has not learned a source address is discarded (e.g. dropped) and no more new addresses
+                      can be learned on this port."
+              ::= { swL2PortSecurityMgmt 1 }
+
+          swL2PortSecurityControlEntry OBJECT-TYPE
+              SYNTAX  SwL2PortSecurityControlEntry
+              MAX-ACCESS  not-accessible
+              STATUS  current
+              DESCRIPTION
+                      "A list of information contained in the swL2PortSecurityControlTable."
+              INDEX   { swL2PortSecurityPortIndex }
+              ::= { swL2PortSecurityControlTable 1 }
+
+          SwL2PortSecurityControlEntry ::=
+              SEQUENCE {
+                  swL2PortSecurityPortIndex
+                      INTEGER,
+                  swL2PortSecurityMaxLernAddr
+                      INTEGER,
+                  swL2PortSecurityMode
+                      INTEGER,
+                  swL2PortSecurityAdmState
+                      INTEGER
+              }
+
+          swL2PortSecurityPortIndex OBJECT-TYPE
+              SYNTAX  INTEGER (1..255)
+              MAX-ACCESS  read-only
+              STATUS  current
+              DESCRIPTION
+                      "Indicates the secured port to lock address learning."
+              ::= { swL2PortSecurityControlEntry 1 }
+
+          swL2PortSecurityMaxLernAddr OBJECT-TYPE
+              SYNTAX  INTEGER (0..65535)
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Indicates allowable number of addresses to be learned at this port."
+              ::= { swL2PortSecurityControlEntry 2 }
+
+          swL2PortSecurityMode OBJECT-TYPE
+              SYNTAX  INTEGER {
+                          other(1),
+                          permanent(2),
+                          deleteOnTimeout(3),
+                          deleteOnReset(4)
+                      }
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Indicates the mode of locking address.
+                      In deleteOnTimeout (3) mode, the locked addresses can be aged out after the aging timer
+                                                   has expired. In this mode, when the locked address has aged
+                                                   out, the number of addresses that can be learned has to
+                                                   increase by one.
+                      In deleteOnReset (4) mode, the locked addresses are not aged out unless the system is restarted.
+                                                   This is to prevent port movement or intrusion."
+              ::= { swL2PortSecurityControlEntry 3 }
+
+          swL2PortSecurityAdmState OBJECT-TYPE
+              SYNTAX  INTEGER {
+                          other(1),
+                          enable(2),
+                          disable(3)
+                      }
+              MAX-ACCESS  read-write
+              STATUS  current
+              DESCRIPTION
+                      "Indicates the administration state of the locking address."
+              ::= { swL2PortSecurityControlEntry 4 }
+
+
+    		swL2PortSecurityTrapLogState OBJECT-TYPE
+        	SYNTAX  INTEGER {
+                    other(1),
+                    enable(2),
+                    disable(3)
+                }
+        	MAX-ACCESS  read-write
+        	STATUS  current
+        	DESCRIPTION
+                "When enable (2) is selected, whenever there's a new MAC that violates the pre-defined
+                  port security configuration, a trap will be sent out and the relevant information
+                  will be logged by the system."
+            ::= { swL2PortSecurityMgmt 2 }
+
+-- ----------------------------------------------------------------------------
+--  Layer 2  Trap
+-- ----------------------------------------------------------------------------
+    swL2MgmtMIBTrapPrefix   OBJECT IDENTIFIER ::= { swL2MgmtMIBTraps 0 }
+
+--    swL2RPSConnectedAndWorking NOTIFICATION-TYPE
+--        STATUS  current
+--        DESCRIPTION
+--            "The trap is sent whenever the RPS is connected and working. "
+--
+--        ::= { swL2MgmtMIBTrapPrefix 1 }
+
+--    swL2RPSDisconnectOrMalfunction NOTIFICATION-TYPE
+--        STATUS  current
+--        DESCRIPTION
+--            "The trap is sent whenever the RPS is disconnected or has malfunctioned. "
+
+--        ::= { swL2MgmtMIBTrapPrefix 2 }
+
+    swL2macNotification NOTIFICATION-TYPE
+        OBJECTS {
+              swL2macNotifyInfo
+        		}
+        STATUS  current
+        DESCRIPTION
+            " This trap indicate the MAC addresses variation in the address table . "
+
+		::= { swL2MgmtMIBTrapPrefix 3 }
+
+	swL2porttypechgNotification NOTIFICATION-TYPE
+        OBJECTS {
+              swL2PortInfoPortIndex,
+              swL2PortInfoType
+        		}
+        STATUS  current
+        DESCRIPTION
+            " This trap indicates the port type change. "
+
+		::= { swL2MgmtMIBTrapPrefix 4 }
+
+    swPowerStatusChg  NOTIFICATION-TYPE
+        OBJECTS         {   swDevInfoPowerUnitIndex,
+        					swDevInfoPowerID,
+        					swDevInfoPowerStatus
+                        }
+        STATUS          current
+        DESCRIPTION     "Power Status change notification."
+        ::= { swL2MgmtMIBTrapPrefix  5 }
+
+
+    swPowerFailure  NOTIFICATION-TYPE
+        OBJECTS         {   swDevInfoPowerUnitIndex,
+        					swDevInfoPowerID,
+        					swDevInfoPowerStatus
+                        }
+        STATUS          current
+        DESCRIPTION     "Power Failure notification."
+        ::= { swL2MgmtMIBTrapPrefix  6 }
+
+    swPowerRecover NOTIFICATION-TYPE
+        OBJECTS         {    swDevInfoPowerUnitIndex,
+        					 swDevInfoPowerID,
+        					 swDevInfoPowerStatus
+                        }
+        STATUS          current
+        DESCRIPTION     "Power Recover notification."
+        ::= { swL2MgmtMIBTrapPrefix  7 }
+
+	swl2NotificationBidings OBJECT IDENTIFIER ::= { swL2MgmtMIBTraps 1 }
+
+    swL2macNotifyInfo   OBJECT-TYPE
+        SYNTAX  OCTET STRING(SIZE (0..1024))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates information about the last time the system rebooted.
+            "
+        ::= { swl2NotificationBidings 1 }
+
+-- ----------------------------------------------------------------------------
+  swl2NotifyPortSecurity OBJECT IDENTIFIER ::= { swL2MgmtMIBTraps 2 }
+-- ----------------------------------------------------------------------------
+
+    swL2PortSecurityViolationMac OBJECT-TYPE
+        SYNTAX  MacAddress
+        MAX-ACCESS  accessible-for-notify
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the MAC address that violated the port security configuration."
+        ::= { swl2NotifyPortSecurity 1 }
+
+    swL2PortSecurityViolationTrap NOTIFICATION-TYPE
+        OBJECTS         { swL2PortSecurityPortIndex,
+        		  		  swL2PortSecurityViolationMac
+                        }
+        STATUS  current
+        DESCRIPTION
+            "When the port_security trap is enabled, if there's a new MAC that violates the pre-defined
+            port security configuration, a trap will be sent out "
+        ::= { swl2NotifyPortSecurity 2 }
+
+
+END
