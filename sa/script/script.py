@@ -18,7 +18,6 @@ import Queue
 import cPickle
 import ctypes
 import datetime
-##
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.registry import Registry
@@ -29,6 +28,7 @@ from noc.sa.script.telnet import CLITelnetSocket
 from noc.sa.script.ssh import CLISSHSocket
 from noc.sa.script.http import HTTPProvider
 from noc.sa.script.snmp import SNMPProvider
+from noc.lib.debug import BQ
 
 
 class ScriptProxy(object):
@@ -456,9 +456,9 @@ class Script(threading.Thread):
             result = i.script_clean_result(self.profile, result)
             # Cache result when required
         if self.cache and self.parent is not None:
-            self.debug("Write to call cache: %s, %s, %s" % (self.name, self.kwargs, result))
+            self.debug("Write to call cache: %s, %s, %s" % (self.name, self.kwargs, BQ(result)))
             self.set_cache(self.name, self.kwargs, result)
-        self.debug("Script returns with result: %s" % result)
+        self.debug("Script returns with result: %r" % BQ(result))
         return result
 
     def serialize_result(self, result):
