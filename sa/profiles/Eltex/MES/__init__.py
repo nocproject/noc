@@ -9,11 +9,11 @@
 
 ## NOC modules
 from noc.sa.profiles import Profile as NOCProfile
-
+from noc.sa.protocols.sae_pb2 import TELNET,SSH
 
 class Profile(NOCProfile):
     name = "Eltex.MES"
-    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
+    supported_schemes = [TELNET, SSH]
     pattern_username = r"^User Name:"
     pattern_password = r"^Password:"
     pattern_more = [

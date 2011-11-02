@@ -34,7 +34,9 @@ class Script(NOCScript):
         "38": "MES-3116",
         "39": "MES-3116F",
         "40": "MES-3224",
-        "41": "MES-3224F" 
+        "41": "MES-3224F",
+        "42": "MES-2124",
+        "43": "MES-1024",
     }
 
     def execute(self):
@@ -43,7 +45,7 @@ class Script(NOCScript):
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
                 platform = platform.split(', ')[8]
-                platform = self.platforms.get(platform, "MES3124F")
+                platform = self.platforms.get(platform.split(')')[0])
                 version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992",
                                         cached=True)
                 bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.67108992",
@@ -70,7 +72,7 @@ class Script(NOCScript):
         match = self.re_search(self.rx_platform, plat)
         platform = match.group("platform")
         platform = platform.split(".")[8]
-        platform = self.platforms.get(platform, "MES3124F")
+        platform = self.platforms.get(platform)
 
         ver = self.cli("show version", cached=True)
         version = self.re_search(self.rx_version, ver)
