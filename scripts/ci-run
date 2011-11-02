@@ -8,6 +8,7 @@
 
 JUNIT_REPORT=test-out.xml
 COVERAGE_REPORT=test-coverage.xml
+TEST_DB=test_noc
 
 error_exit ( ) {
     echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
@@ -18,6 +19,12 @@ error_exit ( ) {
 ## Jump to NOC
 cd `dirname $0`/..
 rm -f $JUNIT_REPORT $COVERAGE_REPORT
+
+## Destroy hanging test db
+if [ `psql -l | grep $TEST_DB | wc -l` -ne 0 ]; then
+    echo "Dropping hanging test db"
+    dropdb $TEST_DB
+fi
 
 ## Run
 echo "Running CI scripts ..."
