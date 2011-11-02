@@ -12,12 +12,11 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVlans
 
-rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+\S+\s+\S+\s+\S", re.MULTILINE)
-rx_vlan_icmp = re.compile(r'^SNMPv2-SMI::mib-2\.17\.7\.1\.4\.3\.1\.1\.+(?P<vlan>\d+)+ = STRING: "+(?P<name>.+?)"', re.MULTILINE)
-
 class Script(NOCScript):
     name = "Eltex.MES.get_vlans"
     implements = [IGetVlans]
+
+    rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+\S+\s+\S+\s+\S", re.MULTILINE)
 
     def execute(self):
         r=[]
@@ -31,6 +30,6 @@ class Script(NOCScript):
                 pass
 
         # Fallback to CLI
-        for match in rx_vlan.finditer(self.cli("show vlan")):
+        for match in self.rx_vlan.finditer(self.cli("show vlan")):
             r.append( {"vlan_id" : int(match.group("vlan")), "name" : match.group("name")} )
         return r

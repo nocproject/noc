@@ -16,7 +16,7 @@ class Script(noc.sa.script.Script):
     name = "Eltex.MES.add_vlan"
     implements = [IAddVlan]
 
-    def execute(self,vlan_id,name,tagged_ports):
+    def execute(self, vlan_id, name, tagged_ports):
         a = ''
         if not self.scripts.has_vlan(vlan_id=vlan_id):
             a = 1;
@@ -40,5 +40,5 @@ class Script(noc.sa.script.Script):
 #                self.cli("switchport general allowed vlan add %d tagged"%vlan_id)
 ## trunk
                 self.cli("switchport trunk allowed vlan add  %d"%vlan_id)
-#        self.save_config()
+        self.save_config()
         return True

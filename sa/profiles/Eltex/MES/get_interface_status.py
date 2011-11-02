@@ -10,13 +10,13 @@ import noc.sa.script
 from noc.sa.interfaces import IGetInterfaceStatus
 import re
 
-rx_interface_status = re.compile(r"^(?P<interface>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(?P<status>Up|Down)\s+\S+\s+\S.*$", re.MULTILINE)
-
 class Script(noc.sa.script.Script):
     name = "Eltex.MES.get_interface_status"
     implements = [IGetInterfaceStatus]
 
-    def execute(self,interface=None):
+    rx_interface_status = re.compile(r"^(?P<interface>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(?P<status>Up|Down)\s+\S+\s+\S.*$", re.MULTILINE)
+
+    def execute(self, interface=None):
         r = []
         # Try snmp first
         if self.snmp and self.access_profile.snmp_ro:
@@ -33,7 +33,7 @@ class Script(noc.sa.script.Script):
             cmd = "show interfaces status %s"%interface
         else:
             cmd = "show interfaces status"
-        for match in rx_interface_status.finditer(self.cli(cmd)):
+        for match in self.rx_interface_status.finditer(self.cli(cmd)):
             r.append({
                     "interface" : match.group("interface"),
                     "status"    : match.group("status") == "Up"
