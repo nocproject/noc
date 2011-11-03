@@ -54,6 +54,7 @@ Ext.define("NOC.core.ModelApplication", {
                     store: store,
                     columns: this.columns,
                     border: false,
+                    autoScroll: true,
                     plugins : [ Ext.create('Ext.ux.grid.AutoSize') ],
                     dockedItems: [
                         {
