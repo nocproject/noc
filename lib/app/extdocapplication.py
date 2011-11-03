@@ -12,7 +12,8 @@ from django.http import HttpResponse
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
-from noc.lib.nosql import StringField
+from noc.lib.nosql import StringField, BooleanField
+from noc.sa.interfaces import BooleanParameter
 
 
 class ExtDocApplication(ExtApplication):
@@ -47,6 +48,12 @@ class ExtDocApplication(ExtApplication):
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
         self.pk_field_name = "id"  # @todo: detect properly
+        # Prepare field converters
+        self.clean_fields = {}  # name -> Parameter
+        for name, f in self.model._fields.items():
+            if isinstance(f, BooleanField):
+                self.clean_fields[name] = BooleanParameter()
+        #
         if not self.query_fields:
             self.query_fields = ["%s__%s" % (n, self.query_condition)
                                  for n, f in self.model._fields.items()
@@ -96,6 +103,10 @@ class ExtDocApplication(ExtApplication):
             self.format_param, self.sort_param, self.query_param):
             if p in q:
                 del q[p]
+        # Normalize parameters
+        for p in q:
+            if p in self.clean_fields:
+                q[p] = self.clean_fields[p].clean(q[p])
         return q
 
     def instance_to_dict(self, o):
@@ -176,7 +187,8 @@ class ExtDocApplication(ExtApplication):
             o.save()
             return self.response(self.instance_to_dict(o), status=self.CREATED)
 
-    @view(method=["GET"], url="^(?P<id>[0-9a-f]{24})/?$", access="read", api=True)
+    @view(method=["GET"], url="^(?P<id>[0-9a-f]{24})/?$",
+          access="read", api=True)
     def api_read(self, request, id):
         """
         Returns dict with object's fields and values
@@ -187,7 +199,8 @@ class ExtDocApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         return self.response(self.instance_to_dict(o), status=self.OK)
 
-    @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24})/?$", access="update", api=True)
+    @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24})/?$",
+          access="update", api=True)
     def api_update(self, request, id):
         try:
             attrs = self.deserialize(request.raw_post_data)
@@ -202,7 +215,8 @@ class ExtDocApplication(ExtApplication):
         o.save()
         return self.response(status=self.OK)
 
-    @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24})/?$", access="delete", api=True)
+    @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24})/?$",
+          access="delete", api=True)
     def api_delete(self, request, id):
         try:
             o = self.queryset(request).get(id=id)
