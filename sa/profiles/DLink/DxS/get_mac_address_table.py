@@ -44,6 +44,6 @@ class Script(NOCScript):
                 "vlan_id"   : match.group("vlan_id"),
                 "mac"       : match.group("mac"),
                 "interfaces": [match.group("interfaces")],
-                "type"      : {"dynamic":"D","static":"S","deleteontimeout":"D","deleteonreset":"D","permanent":"S","self":"S"}[match.group("type").lower()],
+                "type"      : {"dynamic":"D","static":"S","deleteontimeout":"D","del_on_timeout":"D","deleteonreset":"D","permanent":"S","self":"S"}[match.group("type").lower()],
             }]
         return r
