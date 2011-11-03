@@ -7,7 +7,6 @@
 ##----------------------------------------------------------------------
 
 ## Django moules
-from django.utils.encoding import is_protected_type
 from django.http import HttpResponse
 from django.db.models.fields import CharField, BooleanField
 from django.db.models import Q
@@ -131,7 +130,7 @@ class ExtModelApplication(ExtApplication):
         """
         q = dict(request.GET.items())
         limit = q.get(self.limit_param)
-        page = q.get(self.page_param)
+        # page = q.get(self.page_param)
         start = q.get(self.start_param)
         format = q.get(self.format_param)
         query = q.get(self.query_param)
@@ -177,7 +176,7 @@ class ExtModelApplication(ExtApplication):
         if "id" in attrs:
             del attrs["id"]
         try:
-            o = self.queryset(request).get(**attrs)
+            self.queryset(request).get(**attrs)
             return self.response(status=self.DUPLICATE_ENTRY)
         except self.model.MultipleObjectsReturned:
             return self.response(status=self.DUPLICATE_ENTRY)
