@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## ExtApplication implementation
+## ExtModelApplication implementation
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Django moules
-from django.core import serializers
-#from django.http import HttpResponse
 from django.utils.encoding import is_protected_type
 from django.http import HttpResponse
-from django.db.models.fields import CharField
+from django.db.models.fields import CharField, BooleanField
 from django.db.models import Q
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
+from noc.sa.interfaces import BooleanParameter
 
 
 class ExtModelApplication(ExtApplication):
@@ -50,6 +49,12 @@ class ExtModelApplication(ExtApplication):
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
         self.pk_field_name = self.model._meta.pk.name
+        # Prepare field converters
+        self.clean_fields = {}  # name -> Parameter
+        for f in self.model._meta.fields:
+            if isinstance(f, BooleanField):
+                self.clean_fields[f.name] = BooleanParameter()
+        #
         if not self.query_fields:
             self.query_fields = ["%s__%s" % (f.name, self.query_condition)
                                  for f in self.model._meta.fields
@@ -83,12 +88,12 @@ class ExtModelApplication(ExtApplication):
     def response(self, content="", status=200):
         if not isinstance(content, basestring):
             return HttpResponse(json_encode(content),
-                               mimetype="text/json; charset=utf-8",
-                               status=status)
+                                mimetype="text/json; charset=utf-8",
+                                status=status)
         else:
             return HttpResponse(content,
-                               mimetype="text/plain; charset=utf-8",
-                               status=status)
+                                mimetype="text/plain; charset=utf-8",
+                                status=status)
 
     def cleaned_query(self, q):
         q = q.copy()
@@ -96,9 +101,13 @@ class ExtModelApplication(ExtApplication):
             if p in q:
                 del q[p]
         for p in (self.limit_param, self.page_param, self.start_param,
-            self.format_param, self.sort_param, self.query_param):
+                  self.format_param, self.sort_param, self.query_param):
             if p in q:
                 del q[p]
+        # Normalize parameters
+        for p in q:
+            if p in self.clean_fields:
+                q[p] = self.clean_fields[p].clean(q[p])
         return q
 
     def instance_to_dict(self, o):
@@ -150,7 +159,7 @@ class ExtModelApplication(ExtApplication):
                 "data": out
             }
         return self.response(out, status=self.OK)
-        
+
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
