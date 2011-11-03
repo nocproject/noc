@@ -47,19 +47,20 @@ class Script(noc.sa.script.Script):
                     match = self.rx_bridge_int.search(br[i])
 
 ### TODO :)
-#        cmd = "show mac address-table"
+#        cmd = "brctl show"
 #        if mac is not None:
-#            cmd += " address %s"%self.profile.convert_mac(mac)
+#            cmd = "brctl show %s"%self.profile.convert_mac(mac)
 #        if interface is not None:
 #            cmd += " interface %s"%interface
 #        if vlan is not None:
-#            cmd += " vlan %s"%vlan
+#            bridge = 'br' + vlan
+#            cmd = "brctl showmacs %s"%bridge
 
         r = []
         for vlan_id in vlans:
-# работает только если имя бриджа составлено как: "'br'+vlan_id"
-# надо найти в линуксе универсальную таблицу VLAN <-> bridge как???
-# конфиги лежат в каждого дистра по разному, команди или записи в proc я не нашол...
+# This will work only when name of bridge looks like: "'br'+vlan_id"
+# We need found more universal way for bind VLAN to bridge, but how???
+# Configuration file for vlans is in difirent place in eche Linux distribution. Also I don't find any commands or records in /proc...
             bridge = 'br' + vlan_id
             for match in self.rx_showmacs.finditer(self.cli("brctl showmacs %s"%bridge)):
                 if match.group("type") == "0.00":
