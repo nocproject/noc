@@ -1,6 +1,8 @@
 Ext.define('Ext.ux.grid.AutoSize', {
     alias : 'plugin.autosizegrid',
 
+    rowHeight: 0,
+
     constructor :  function(config) {
         Ext.apply(this, config);
     },
@@ -15,19 +17,23 @@ Ext.define('Ext.ux.grid.AutoSize', {
     },
 
     onRefresh: function(view) {
-        this.update_content(view);
-    },
-
-    update_content: function(view) {
         var e = view.all.item(0);
 
         if(!e) { return; }
 
-        var new_pageSize = Math.floor(view.getHeight()/e.getHeight());
+        this.rowHeight = e.getHeight();
+        this.update_content(view);
+        view.un('refresh', this.onRefresh, this);
+    },
 
-        if (view.store.pageSize != new_pageSize) {
-            view.store.pageSize = new_pageSize;
-            view.store.load();
+    update_content: function(view) {
+        if (this.rowHeight != 0) {
+            var new_pageSize = Math.floor(view.getHeight()/this.rowHeight);
+
+            if (view.store.pageSize != new_pageSize) {
+                view.store.pageSize = new_pageSize;
+                view.store.load();
+            }
         }
     }
 });
