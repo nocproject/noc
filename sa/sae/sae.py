@@ -450,12 +450,13 @@ class SAE(Daemon):
                 if error.code in TIMEOUTS:
                     # Any of non-fatal reasons require retry
                     timeout = TIMEOUTS[error.code]
-                    variation = 10
+                    variation = 2
                     timeout = random.randint(-timeout / variation,
                                              timeout / variation)
                     next_try = (datetime.datetime.now() +
                                 datetime.timedelta(seconds=timeout))
-                    if error.code == ERR_OVERLOAD:
+                    if error.code in (ERR_OVERLOAD,
+                                      ERR_ACTIVATOR_NOT_AVAILABLE):
                         next_retries = mt.retries_left
                     else:
                         next_retries = mt.retries_left - 1
