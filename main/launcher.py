@@ -13,7 +13,6 @@ import subprocess
 import sys
 import os
 import logging
-import stat
 import ConfigParser
 import pwd
 import grp
@@ -243,7 +242,7 @@ class Launcher(Daemon):
                         pid = 0
                         status = 0
                     if pid == d.pid:
-                        logging.info("%s daemon is terminated with status %d" % (d.logname, d.pid))
+                        logging.info("%s daemon is terminated with status %d" % (d.logname, os.WEXITSTATUS(status)))
                         d.pid = None
             time.sleep(1)
             t = time.time()
@@ -272,7 +271,7 @@ class Launcher(Daemon):
                 try:
                     logging.info("Stopping daemon: %s (PID %d)" % (d.logname,
                                                                    d.pid))
-                    os.kill(d.pid, signal.SIGKILL)
+                    os.kill(d.pid, signal.SIGTERM)
                     d.pid = None
                 except OSError:
                     pass
