@@ -368,7 +368,7 @@ class Config(Object):
         nf = self.managed_object.config_diff_filter_rule
         if nf:
             old_data = nf(old_data)
-            new_data = ng(new_data)
+            new_data = nf(new_data)
             if old_data == new_data:
                 return None
         return self.diff(old_data, new_data)
