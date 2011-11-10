@@ -33,6 +33,7 @@ from noc.lib.fields import PickledField, INETField, AutoCompleteTagsField
 from noc.lib.app.site import site
 from noc.lib.validators import check_re
 from noc.lib.db import SQL
+from noc.lib import nosql
 ##
 ## Register objects
 ##
@@ -92,7 +93,41 @@ class Activator(models.Model):
         :rtype: Bool
         """
         return Activator.objects.filter(ip__gte=ip, to_ip__lte=ip).exists()
-    
+
+    @property
+    def capabilities(self):
+        """
+        Get current activator pool capabilities in form of dict or None
+        """
+        c = ActivatorCapabilitiesCache.objects.filter(activator_id=self.id).first()
+        if c is None:
+            return {
+                "members": 0,
+                "max_scripts": 0
+            }
+        else:
+            return {
+                "members": c.members,
+                "max_scripts": c.max_scripts
+            }
+
+    def update_capabilities(self, members, max_scripts):
+        """
+        Update activator pool capabilities
+
+        :param members: Active members in pool. Pool considered inactive when
+                        members == 0
+        :param max_scripts: Maximum amount of concurrent scripts in pool
+        """
+        c = ActivatorCapabilitiesCache.objects.filter(activator_id=self.id).first()
+        if c:
+            c.members = members
+            c.max_scripts = max_scripts
+            c.save()
+        else:
+            ActivatorCapabilitiesCache(activator_id=self.id, members=members,
+                                       max_scripts=max_scripts).save()
+
 
 class ManagedObject(models.Model):
     """
@@ -239,7 +274,7 @@ class ManagedObject(models.Model):
     def granted_users(self):
         """
         Get list of user granted access to object
-        
+
         :rtype: List of User instancies
         """
         return [u for u in User.objects.filter(is_active=True)
@@ -278,7 +313,7 @@ class ManagedObject(models.Model):
         try:
             # self.config is OneToOne field created by Config
             config = self.config 
-        except:
+        except:  # @todo: specify exact exception
             config = None
         if config is None: # No related Config object
             if self.is_configuration_managed:
@@ -304,11 +339,9 @@ class ManagedObject(models.Model):
         Delete related Config
         """
         try:
-            config = self.config
-        except:
-            config = None
-        if config:
-            config.delete()
+            self.config.delete()
+        except ManagedObject.DoesNotExist:
+            pass
         super(ManagedObject, self).delete()
     
     @classmethod
@@ -682,7 +715,7 @@ class ReduceTask(models.Model):
     
     def __unicode__(self):
         if self.id:
-            return u"%d" % (self.id)
+            return u"%d" % self.id
         else:
             return u"New: %s" % id(self)
     ##
@@ -728,7 +761,6 @@ class ReduceTask(models.Model):
         Create Map/Reduce task
         
         :param object_selector: One of:
-                                
                                 * ManagedObjectSelector instance
                                 * List of ManagedObject instances or names
                                 * ManagedObject's name
@@ -792,13 +824,42 @@ class ReduceTask(models.Model):
         # Auto-detect reduce task timeout, if not set
         if not timeout:
             timeout = 0
+            # Split timeouts to pools
+            pool_timeouts = {}  # activator_id -> [timeouts]
+            pc = {}  # Pool capabilities:  activator_id -> caps
             for o in objects:
+                pool = o.activator.id
+                ts = pool_timeouts.get(pool, [])
+                if pool not in pc:
+                    pc[pool] = o.activator.capabilities
                 for ms, p in msp:
                     if ms not in o.profile.scripts:
                         continue
                     s = o.profile.scripts[ms]
-                    timeout = max(timeout, s.TIMEOUT)
-            timeout += 3 # Add guard time
+                    ts += [s.TIMEOUT]
+                pool_timeouts[pool] = ts
+            # Calculate timeouts by pools
+            for pool in pool_timeouts:
+                t = 0
+                # Get pool capacity
+                c = pc[pool]
+                if c["members"] > 0:
+                    # Add timeouts by generations
+                    ms = c["max_scripts"]
+                    ts = sorted(pool_timeouts[pool])
+                    lts = len(ts) - 1
+                    i = ms - 1
+                    while True:
+                        i = min(ms, lts)
+                        t += ts[i]
+                        if i >= lts:
+                            break
+                        i += ms
+                else:
+                    # Give a try when cannot detect pool capabilities
+                    t = max(pool_timeouts[pool])
+                timeout = max(timeout, t)
+            timeout += 3  # Add guard time
         # Use dumb reduce function if reduce task is none
         if reduce_script is None:
             reduce_script = reduce_dumb
@@ -811,8 +872,31 @@ class ReduceTask(models.Model):
             script_params=reduce_script_params if reduce_script_params else {},
         )
         r_task.save()
+        # Caculate number of generations
+        pc = {}  # Pool capabilities: activator id -> caps
+        ngs = {}  # pool_id -> sessions requested
+        for o in objects:
+            for ms, p in msp:
+                a = o.activator
+                a_id = a.id
+                if a_id not in pc:
+                    pc[a_id] = o.activator.capabilities
+                try:
+                    ngs[a_id] += 1
+                except KeyError:
+                    ngs[a_id] = 1
+        for p in ngs:
+            ms = pc[p]["max_scripts"]
+            if ms:
+                ngs[p] = round(ngs[p] / ms + 0.5)
+            else:
+                ngs[p] = 0
         # Run map task for each object
         for o in objects:
+            ng = ngs[o.activator.id]
+            if not ng:
+                # No sessions available
+                continue
             for ms, p in msp:
                 # Set status to "F" if script not found
                 status = "W" if ms in o.profile.scripts else "F"
@@ -821,13 +905,18 @@ class ReduceTask(models.Model):
                 # Expand parameter, if callable
                 if callable(p):
                     p = p(o)
+                # Redistribute tasks
+                if ng == 1:
+                    delay = 0
+                else:
+                    delay = random.randint(0, min(ng * 3, timeout / 2))
                 #
                 m = MapTask(
                     task=r_task,
                     managed_object=o,
                     map_script=msn,
                     script_params=p,
-                    next_try=start_time,
+                    next_try=start_time + datetime.timedelta(seconds=delay),
                     status=status
                 )
                 if status == "F":
@@ -967,6 +1056,35 @@ class CommandSnippet(models.Model):
                 Permission.objects.get(name=self.effective_permission_name)
             except Permission.DoesNotExist:
                 Permission(name=self.effective_permission_name).save()
+
+
+class ActivatorCapabilitiesCache(nosql.Document):
+    meta = {
+        "collection": "noc.activatorcapscache",
+        "allow_inheritance": False
+    }
+
+    activator_id = nosql.IntField()
+    members = nosql.IntField()
+    max_scripts = nosql.IntField()
+
+    def __unicode__(self):
+        return u"Activator Caps (%d)" % self.activator_id
+
+    @classmethod
+    def reset_cache(self, shards):
+        """
+        Reset caches for shards
+        :param shard: List of shard names or ids
+        """
+        ids = set()
+        for shard in shards:
+            if isinstance(shard, basestring):
+                s = Shard.objects.get(name=shard)
+            else:
+                s = Shard.objects.get(pk=shard)
+            ids.union(set(s.activator_set.values_list("id", flat=True)))
+        ActivatorCapabilitiesCache.objects(activator_id__in=ids).delete()
 
 
 ##
