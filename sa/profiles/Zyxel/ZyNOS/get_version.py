@@ -17,6 +17,7 @@ from noc.sa.interfaces import IGetVersion
 ##
 FW_OIDS = {
     "GS-3012": 10,
+    "GS-3012F": 11,
     "ES-3124": 12,
     "GS-4024": 13,
     "GS-2024": 15,
@@ -24,6 +25,8 @@ FW_OIDS = {
     "ES-2108": 18,
     "ES-2108-G": 19,
     "GS-4012F": 20,
+    "ES-4124": 24,
+    "XGS-4728F": 46
 }
 
 
@@ -77,5 +80,4 @@ class Script(NOCScript):
         match = self.rx_prom.search(cmd)
         if match:
             r["attributes"] = {"Boot PROM": match.group("bootprom")}
-
         return r
