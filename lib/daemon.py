@@ -283,6 +283,20 @@ class Daemon(object):
         """
         getattr(self, self.args[0])()
 
+    def guarded_run(self):
+        """
+        Run daemon and catch common exceptions
+        :return:
+        """
+        try:
+            self.run()
+        except KeyboardInterrupt:
+            pass
+        except MemoryError:
+            logging.error("Out of memory. Exiting.")
+        except:
+            error_report()
+
     def start(self):
         """
         "start" command handler
@@ -291,12 +305,7 @@ class Daemon(object):
         # Daemonize
         if self.options.daemonize:
             self.become_daemon()
-        try:
-            self.run()
-        except KeyboardInterrupt:
-            pass
-        except:
-            error_report()
+        self.guarded_run()
 
     def stop(self):
         """
@@ -334,12 +343,7 @@ class Daemon(object):
         os.dup2(e.fileno(), sys.stderr.fileno())
         sys.stdout = o
         sys.stderr = e
-        try:
-            self.run()
-        except KeyboardInterrupt:
-            pass
-        except:
-            error_report()
+        self.guarded_run()
 
     def refresh(self):
         """
