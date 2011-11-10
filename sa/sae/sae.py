@@ -24,7 +24,7 @@ from django.db import reset_queries
 from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
 from noc.sa.models import Activator, ManagedObject, MapTask, script_registry,\
-                          profile_registry
+                          profile_registry, ActivatorCapabilitiesCache
 from noc.fm.models import NewEvent, IgnoreEventRules
 from noc.sa.rpc import RPCSocket, file_hash
 from noc.sa.protocols.sae_pb2 import *
@@ -164,6 +164,18 @@ class SAE(Daemon):
         """
         return Activator.check_ip_access(address)
 
+    def update_activator_capabilities(self, pool):
+        """
+        Update activator cabapilities cache
+        :param pool: Pool name
+        """
+        members = len(self.activators[pool])
+        max_scripts = 0
+        for s in self.activators[pool]:
+            max_scripts += s.max_scripts
+        a = Activator.objects.get(name=pool)
+        a.update_capabilities(members=members, max_scripts=max_scripts)
+
     def join_activator_pool(self, name, stream):
         """
         Add registered activator stream to pool
@@ -181,6 +193,7 @@ class SAE(Daemon):
         if name in self.activators and stream in self.activators[name]:
             logging.info("%s is leaving activator pool '%s'" % (repr(stream), name))
             self.activators[name].remove(stream)
+            self.update_activator_capabilities(name)
 
     def get_pool_info(self, name):
         """
@@ -197,6 +210,8 @@ class SAE(Daemon):
         if not self.build_manifest():
             logging.error("Inconsistent MANIFEST-ACTIVATOR file. Exiting")
             os._exit(1)
+        logging.info("Cleaning activator capabilities cache")
+        ActivatorCapabilitiesCache.reset_cache(self.shards)
         self.start_listeners()
         self.factory.run(run_forever=True)
 

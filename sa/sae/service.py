@@ -173,6 +173,7 @@ class Service(SAEService):
             return
         r = AuthResponse()
         controller.stream.is_authenticated = True
+        controller.stream.pool_name = request.name
         self.sae.join_activator_pool(request.name, controller.stream)
         done(controller, response=r)
 
@@ -204,11 +205,13 @@ class Service(SAEService):
         """
         if not controller.stream.is_authenticated:
             done(controller,
-                 error=Error(code=ERR_AUTH_REQUIRED, text="Authentication required"))
+                 error=Error(code=ERR_AUTH_REQUIRED,
+                             text="Authentication required"))
             return
         logging.debug("Set capabilities: max_scripts=%d" % request.max_scripts)
         controller.stream.max_scripts = request.max_scripts
         controller.stream.current_scripts = 0
+        self.sae.update_activator_capabilities(controller.stream.pool_name)
         r = SetCapsResponse()
         done(controller, response=r)
 
