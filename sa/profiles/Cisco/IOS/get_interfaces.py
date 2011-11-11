@@ -40,20 +40,23 @@ class Script(NOCScript):
     rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?)$", re.IGNORECASE)
 
     types = {
-           "Lo": 'loopback',
-           "Et": 'physical',
-           "Gi": 'physical',
-           "Fa": 'physical',
-           "Se": 'physical',
+           "Lo": 'loopback',   # Loopback
+           "Et": 'physical',   # Ethernet
+           "Fa": 'physical',   # FastEthernet
+           "Gi": 'physical',   # GigabitEthernet
+           "Gi": 'physical',   # TenGigabitEthernet
+           "Se": 'physical',   # Serial
            "M": 'management',
            "R": 'aggregated',
            "Tu": 'tunnel',
            "C": 'physical',
-           "Vl": 'SVI',
-           "Ca": 'physical',
-           "As": 'physical',
-           "BV": 'aggregated',
-           "Bu": 'aggregated'
+           "Vl": 'SVI',        # Vlan
+           "Ca": 'physical',   # Cable
+           "As": 'physical',   # Async
+           "BV": 'aggregated', # BVI
+           "Bu": 'aggregated', # Bundle
+           "Gr": 'physical',   # Group-Async
+           "Po": 'aggregated'  # Port-channel/Portgroup
            }
 
     def get_ospfint(self):
