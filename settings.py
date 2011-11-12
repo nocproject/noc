@@ -1,15 +1,16 @@
 # Django settings for noc project.
 # Do not modify this file directly
 # Edit etc/noc.conf instead
-import ConfigParser, sys
+import ConfigParser
+import sys
 
-config=ConfigParser.SafeConfigParser()
-config.read(["etc/noc.defaults","etc/noc.conf"])
+config = ConfigParser.SafeConfigParser()
+config.read(["etc/noc.defaults", "etc/noc.conf"])
 if not config.sections():
     # Called from autodoc
-    config.read(["../../../../etc/noc.defaults","../../../../etc/noc.conf"])
+    config.read(["../../../../etc/noc.defaults", "../../../../etc/noc.conf"])
 
-DEBUG = config.get("main","debug")
+DEBUG = config.get("main", "debug")
 TEMPLATE_DEBUG = DEBUG
 
 ## Set up admins
@@ -24,18 +25,18 @@ for a in config.get("main", "admin_emails").split(","):
 
 MANAGERS = ADMINS
 
-SERVER_EMAIL      = config.get("main", "server_email")
+SERVER_EMAIL = config.get("main", "server_email")
 
 ## RDBMS settings
-DATABASE_ENGINE   = config.get("database", "engine")
-DATABASES={
-    "default" : {
-        "ENGINE"   : "django.db.backends." + config.get("database", "engine"),
-        "NAME"     : config.get("database","name"),
-        "USER"     : config.get("database","user"),
-        "PASSWORD" : config.get("database","password"),
-        "HOST"     : config.get("database","host"),
-        "PORT"     : config.get("database","port"),
+DATABASE_ENGINE = config.get("database", "engine")
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends." + config.get("database", "engine"),
+        "NAME": config.get("database", "name"),
+        "USER": config.get("database", "user"),
+        "PASSWORD": config.get("database", "password"),
+        "HOST": config.get("database", "host"),
+        "PORT": config.get("database", "port"),
         "TEST_NAME": "test_" + config.get("database", "name")
     }
 }
@@ -48,14 +49,14 @@ NOSQL_DATABASE_PASSWORD = config.get("nosql_database", "password")
 NOSQL_DATABASE_HOST = config.get("nosql_database", "host")
 NOSQL_DATABASE_PORT = config.get("nosql_database", "port")
 
-TIME_ZONE = config.get("main","timezone")
-LANGUAGE_CODE = config.get("main","language_code")
+TIME_ZONE = config.get("main", "timezone")
+LANGUAGE_CODE = config.get("main", "language_code")
 # Set up date and time formats
-DATE_FORMAT      = config.get("main","date_format")
-TIME_FORMAT      = config.get("main","time_format")
-MONTH_DAY_FORMAT = config.get("main","month_day_format")
-YEAR_MONTH_FORMAT= config.get("main","year_month_format")
-DATETIME_FORMAT  = config.get("main","datetime_format")
+DATE_FORMAT = config.get("main", "date_format")
+TIME_FORMAT = config.get("main", "time_format")
+MONTH_DAY_FORMAT = config.get("main", "month_day_format")
+YEAR_MONTH_FORMAT = config.get("main", "year_month_format")
+DATETIME_FORMAT = config.get("main", "datetime_format")
 
 SITE_ID = 1
 
@@ -77,7 +78,7 @@ MEDIA_URL = ""
 ADMIN_MEDIA_PREFIX = "/media/"
 
 # Make this unique, and don"t share it with anybody.
-SECRET_KEY = config.get("main","secret_key")
+SECRET_KEY = config.get("main", "secret_key")
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = [
@@ -85,7 +86,7 @@ TEMPLATE_LOADERS = [
     "django.template.loaders.app_directories.Loader"
 ]
 # 
-TEMPLATE_CONTEXT_PROCESSORS= (
+TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
@@ -118,7 +119,7 @@ TEMPLATE_DIRS = (
     "local",
     ".",
     "templates"
-)
+    )
 
 CACHE_BACKEND = "locmem:///"
 
@@ -132,7 +133,7 @@ INSTALLED_APPS = [
     #"django.contrib.databrowse",
     "tagging",
     "south",
-    
+
     "noc.main",
     "noc.inv",
     "noc.sa",
@@ -146,7 +147,7 @@ INSTALLED_APPS = [
     "noc.kb"
 ]
 # Populate list of locally-installed apps
-apps = config.get("main","installed_apps").strip()
+apps = config.get("main", "installed_apps").strip()
 if apps:
     INSTALLED_APPS += [app.strip() for app in apps.split(",")]
 
@@ -166,16 +167,16 @@ AUTH_PROFILE_MODULE = "main.UserProfile"
 ## Determine WEB process
 ##
 IS_WEB = ((len(sys.argv) >= 2 and sys.argv[0] == "manage.py" and
-          sys.argv[1] in ["runserver", "test", "sync-perm"])
-    or sys.argv[0].endswith("noc-web.py"))
+           sys.argv[1] in ["runserver", "test", "sync-perm"])
+          or sys.argv[0].endswith("noc-web.py"))
 IS_TEST = len(sys.argv) >= 2 and sys.argv[:2] == ["manage.py", "test"]
 
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True
 ##
-LOGIN_URL="/main/auth/login/"  # @todo: remove
+LOGIN_URL = "/main/auth/login/"  # @todo: remove
 ## Do not enforce lowercase tags
-FORCE_LOWERCASE_TAGS=False
+FORCE_LOWERCASE_TAGS = False
 ## Message application setup
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 ## Store sessions in mongodb
