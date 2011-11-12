@@ -172,9 +172,12 @@ class SAE(Daemon):
         members = len(self.activators[pool])
         max_scripts = 0
         for s in self.activators[pool]:
-            max_scripts += s.max_scripts
+            if hasattr(s, "max_scripts"):
+                max_scripts += s.max_scripts
         a = Activator.objects.get(name=pool)
         a.update_capabilities(members=members, max_scripts=max_scripts)
+        logging.info("Activator pool '%s' capability: %d script threads" % (
+            pool, max_scripts))
 
     def join_activator_pool(self, name, stream):
         """
