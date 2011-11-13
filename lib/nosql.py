@@ -118,8 +118,9 @@ class ForeignKeyField(BaseField):
                                   "must be a Model class")
         self.document_type = model
         super(ForeignKeyField, self).__init__(**kwargs)
-        django.db.models.signals.pre_delete.connect(self.on_ref_delete,
-                                                    sender=model)
+        if not settings.IS_TEST:
+            django.db.models.signals.pre_delete.connect(self.on_ref_delete,
+                                                        sender=model)
 
     def on_ref_delete(self, sender, instance, **kwargs):
         """
