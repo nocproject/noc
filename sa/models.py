@@ -338,9 +338,11 @@ class ManagedObject(models.Model):
         """
         Delete related Config
         """
+        from noc.cm.models import Config
         try:
-            self.config.delete()
-        except ManagedObject.DoesNotExist:
+            if self.config.id:
+                self.config.delete()
+        except Config.DoesNotExist:
             pass
         super(ManagedObject, self).delete()
     

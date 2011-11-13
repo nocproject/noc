@@ -8,6 +8,8 @@
 
 ## Django modules
 from django.db.models import Model
+from django.db import IntegrityError
+import django.db.models.signals
 ## Third-party modules
 import pymongo
 from mongoengine.base import *
@@ -116,6 +118,21 @@ class ForeignKeyField(BaseField):
                                   "must be a Model class")
         self.document_type = model
         super(ForeignKeyField, self).__init__(**kwargs)
+        django.db.models.signals.pre_delete.connect(self.on_ref_delete,
+                                                    sender=model)
+
+    def on_ref_delete(self, sender, instance, **kwargs):
+        """
+        Check referenced object is not deleted
+        :param sender:
+        :param instance:
+        :param using:
+        :return:
+        """
+        doc = self.owner_document
+        if doc.objects.filter(**{self.name: instance.id}).first() is not None:
+            raise IntegrityError("%r object is referenced from %r" % (instance,
+                                                                      doc))
 
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
@@ -186,5 +203,6 @@ class Sequence(object):
 def create_test_db(verbosity, autoclobber):
     connect(**connection_args)
 
+    
 def destroy_test_db(verbosity):
-    get_connection().drop_database(settings.NOSQL_DATABASE_TEST_NAME)  
+    get_connection().drop_database(settings.NOSQL_DATABASE_TEST_NAME)
