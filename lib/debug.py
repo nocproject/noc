@@ -15,9 +15,9 @@ import os
 import tempfile
 import cPickle
 import time
-import gc
-import random
 import stat
+## NOC modules
+from noc.settings import CRASHINFO_LIMIT
 
 #
 # Error reporting context
@@ -202,6 +202,7 @@ def error_report():
     r = get_traceback()
     logging.error(r)
     if DEBUG_CTX_COMPONENT and DEBUG_CTX_CRASH_DIR:
+        # Build crashinfo file
         c = {
             "source": "system",
             "type": "Unhandled Exception",
@@ -209,10 +210,15 @@ def error_report():
             "component": DEBUG_CTX_COMPONENT,
             "traceback": r,
         }
+        crashinfo = cPickle.dumps(c)
+        # Check crashinfo is inside limits
+        if len(crashinfo) > CRASHINFO_LIMIT:
+            return
+        # Write crashinfo
         h, p = tempfile.mkstemp(suffix="", prefix=DEBUG_CTX_CRASH_PREFIX,
                                 dir=DEBUG_CTX_CRASH_DIR)
         f = os.fdopen(h, "w")
-        f.write(cPickle.dumps(c))
+        f.write(crashinfo)
         f.close()
         if DEBUG_CTX_SET_UID:  # Change crashinfo userid to directory"s owner
             os.chown(p, DEBUG_CTX_SET_UID, -1)

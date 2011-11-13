@@ -45,6 +45,8 @@ server_email = root@localhost
 polling_method = select
 # Comma-separated list of additionally installed applications
 installed_apps =
+# Maximum crashinfo size (in bytes)
+crashinfo_limit = 1000000
 
 [database]
 # postgresql_psycopg2
