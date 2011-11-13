@@ -20,6 +20,7 @@ import re
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
+from django.db import IntegrityError
 from django.contrib.auth.models import User, Group
 ## Third-party modules
 from tagging.models import TaggedItem
@@ -339,6 +340,9 @@ class ManagedObject(models.Model):
         Delete related Config
         """
         from noc.cm.models import Config
+        # Deny to delete "SAE" object
+        if self.name == "SAE":
+            raise IntegrityError("Cannot delete SAE object")
         try:
             if self.config.id:
                 self.config.delete()
