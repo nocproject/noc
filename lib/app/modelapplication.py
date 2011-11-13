@@ -9,10 +9,10 @@
 ## Django modules
 from django.utils.translation import ugettext as _
 from django.contrib import admin as django_admin
-from django.contrib import admin
 from django.utils.encoding import smart_unicode
 from django.contrib.admin.filterspecs import FilterSpec, ChoicesFilterSpec
 from django.views.static import serve as serve_static
+from django.db import IntegrityError
 ## NOC modules
 from access import HasPerm
 from application import Application, view
@@ -143,8 +143,12 @@ class ModelApplication(Application):
     @view(url=r"^(\d+)/delete/$", url_name="delete", access=HasPerm("delete"))
     def view_delete(self, request, object_id, extra_context=None):
         """Delete object"""
-        return self.admin.delete_view(request, object_id,
-                                      self.get_context(extra_context))
+        try:
+            return self.admin.delete_view(request, object_id,
+                                          self.get_context(extra_context))
+        except IntegrityError, why:
+            self.message_user(request, "Integrity Error: %s" % why)
+            return self.response_redirect("..")
     
     @view(url=r"^(\d+)/$", url_name="change", access=HasPerm("change"))
     def view_change(self,request,object_id,extra_context=None):
