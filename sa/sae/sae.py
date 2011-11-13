@@ -74,7 +74,6 @@ class SAE(Daemon):
         self.activator_manifest_files = None
         #
         t = time.time()
-        self.last_crashinfo_check = t
         self.last_mrtask_check = t
         # Activator interface implementation
         self.servers = None
@@ -224,9 +223,6 @@ class SAE(Daemon):
         and runs pending Map/Reduce tasks
         """
         t = time.time()
-        if t - self.last_crashinfo_check >= 60:
-            self.collect_crashinfo()
-            self.last_crashinfo_check = time.time()
         reset_queries()  # Clear debug SQL log
         if t - self.last_mrtask_check >= 1:
             # Check Map/Reduce task status
@@ -262,58 +258,6 @@ class SAE(Daemon):
             raw_vars=data,
             log=[]
             ).save()
-
-    def collect_crashinfo(self):
-        """
-        Collect crashinfo and write as FM events
-        """
-        if not self.config.get("main", "logfile"):
-            return
-        c_d = os.path.dirname(self.config.get("main", "logfile"))
-        if not os.path.isdir(c_d):
-            logging.error("No log directory found: '%s'" % c_d)
-            return
-        # Look for crashinfos
-        crashinfos = [fn for fn in os.listdir(c_d)
-                      if fn.startswith(DEBUG_CTX_CRASH_PREFIX)]
-        if not crashinfos:
-            return
-        c = len(crashinfos)
-        logging.info("%d crashinfo files found. Attempting to import" % c)
-        for fn in crashinfos:
-            path = os.path.join(c_d, fn)
-            if not os.access(path, os.R_OK | os.W_OK):
-                # Wait for noc-launcher to fix permissions
-                logging.error("Cannot access crashinfo '%s'."
-                              "Left until noc-launcher will fix permissions" % fn)
-                continue
-            try:
-                with open(path, "r") as f:
-                    data = cPickle.loads(f.read())
-            except OSError, why:
-                logging.error("Cannot load crashingo '%s': %s" % (fn, why[0]))
-                continue
-            except MemoryError:
-                logging("Failed to allocate memory "
-                        "to import crashinfo '%s'" % fm)
-                continue
-            except:
-                logging.error("Cannot import crashinfo: %s" % path)
-                continue
-            ts = datetime.datetime.fromtimestamp(data["ts"])
-            del data["ts"]
-            if self.has_getsizeof and sys.getsizeof(data) > 1048576:
-                # Check for crashinfo size
-                logging.error("Crashinfo '%s' is too large. Removing" % fn)
-                os.unlink(path)
-                continue
-            try:
-                self.write_event(data=data.items(), timestamp=ts)
-            except Exception, why:
-                logging.error("Failed to create FM event from crashinfo "
-                              "'%s': %s" % (fn, why))
-                continue
-            os.unlink(path)
 
     def on_stream_close(self, stream):
         self.streams.unregister(stream)
