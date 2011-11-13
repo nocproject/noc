@@ -181,6 +181,8 @@ FORCE_LOWERCASE_TAGS = False
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 ## Store sessions in mongodb
 SESSION_ENGINE = "mongoengine.django.sessions"
+## Set up crashinfo limit
+CRASHINFO_LIMIT = config.getint("main", "crashinfo_limit")
 ## Set up logging
 ## Disable SQL statement logging
 import logging
