@@ -169,7 +169,7 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     // Application selected in nav tree
     on_nav_launch: function(view, record, item, index, event, opts) {
-        var reuse = !event.altKey;
+        var reuse = !event.shiftKey;
 
         Ext.Ajax.request({
             method: "GET",
