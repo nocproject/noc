@@ -34,7 +34,7 @@ class Parameter(object):
     """
     def __init__(self, required=True, default=None):
         self.required = required
-        self.default = None
+        self.default = default
         if default is not None:
             self.default = self.clean(default)
     
@@ -628,11 +628,11 @@ class DictParameter(Parameter):
         out_value = {}
         for a_name, attr in self.attrs.items():
             if a_name not in in_value and attr.required:
-                if attr.default:
+                if attr.default is not None:
                     out_value[a_name] = attr.default
                 else:
                     self.raise_error(value,
-                                     "Attribute '%s' is required in %s" % (a_name, in_value))
+                                     "Attribute '%s' is required in %s" % (a_name, value))
             if a_name in in_value:
                 try:
                     out_value[a_name] = attr.clean(in_value[a_name])
