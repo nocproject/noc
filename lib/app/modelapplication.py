@@ -12,6 +12,8 @@ from django.contrib import admin as django_admin
 from django.utils.encoding import smart_unicode
 from django.contrib.admin.filterspecs import FilterSpec, ChoicesFilterSpec
 from django.views.static import serve as serve_static
+from django.db.models.fields import CharField
+from django.db.models import Q
 from django.db import IntegrityError
 ## NOC modules
 from access import HasPerm
@@ -42,8 +44,14 @@ class ModelApplication(Application):
         self.admin.app = self
         self.title = self.model._meta.verbose_name_plural
         # Set up template paths
-        self.admin.change_form_template = self.get_template_path("change_form.html")+["admin/change_form.html"]
-        self.admin.change_list_template = self.get_template_path("change_list.html")+["admin/change_list.html"]
+        self.admin.change_form_template = (
+            self.get_template_path("change_form.html") +
+            ["admin/change_form.html"]
+            )
+        self.admin.change_list_template = (
+            self.get_template_path("change_list.html") +
+            ["admin/change_list.html"]
+            )
         # Set up permissions
         self.granular_access = hasattr(self.model, "user_objects")
         self.admin.has_change_permission = self.has_change_permission
@@ -51,7 +59,11 @@ class ModelApplication(Application):
         self.admin.has_delete_permission = self.has_delete_permission
         ## Set up row-based access
         self.admin.queryset = self.queryset
-    
+        if not self.query_fields:
+            self.query_fields = ["%s__%s" % (f.name, self.query_condition)
+                                 for f in self.model._meta.fields
+                                 if f.unique and isinstance(f, CharField)]
+
     def display_tags(self, o):
         """Render neat tags list"""
         return tags_list(o)
@@ -169,7 +181,6 @@ class ModelApplication(Application):
     query_fields = []  # Use all unique fields by default
     query_condition = "startswith"
 
-
     @view(url="^(?P<path>(?:js|css|img)/[0-9a-zA-Z_/]+\.(?:js|css|png))$",
           url_name="static", access=True)
     def view_static(self, request, path):
@@ -187,6 +198,19 @@ class ModelApplication(Application):
             "id": o.id,
             "label": unicode(o)
         }
+
+    def get_Q(self, request, query):
+        """
+        Prepare Q statement for query
+        """
+        def get_q(f):
+            if "__" not in f:
+                return "%s__%s" % (f, self.query_condition)
+            else:
+                return f
+
+        return reduce(lambda x, y: x | Q(get_q(y)), self.query_fields[1:],
+                      Q(**{get_q(self.query_fields[0]): query}))
 
     def list_data(self, request, formatter):
         """
