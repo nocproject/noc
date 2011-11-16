@@ -6,11 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import types
-## Django modules
-from django import forms
-from django.shortcuts import get_object_or_404
 ## NOC modules
 from application import Application, view
 from noc.sa.models import *
