@@ -732,6 +732,7 @@ class ConnectedTCPSocket(TCPSocket):
     * close(self)        - close socket (Also implies on_close(self) event)
     
     """
+    CONNECTION_TTL = 5  # Timeout for TCP 3-way handshake
     def __init__(self, factory, address, port, local_address=None):
         super(ConnectedTCPSocket, self).__init__(factory)
         self.address = address
@@ -741,6 +742,7 @@ class ConnectedTCPSocket(TCPSocket):
     def create_socket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         super(ConnectedTCPSocket, self).create_socket()
+        self.set_timeout(self.CONNECTION_TTL)
         if self.local_address:
             self.socket.bind((self.local_address, 0))
         self.debug("Connecting %s:%s" % (self.address, self.port))
@@ -755,6 +757,7 @@ class ConnectedTCPSocket(TCPSocket):
     def handle_read(self):
         if not self.is_connected:
             self.debug("Connected")
+            self.set_timeout(self.TTL)
             self.handle_connect()
             return
         try:
