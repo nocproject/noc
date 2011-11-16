@@ -211,6 +211,7 @@ class Service(SAEService):
         logging.debug("Set capabilities: max_scripts=%d" % request.max_scripts)
         controller.stream.max_scripts = request.max_scripts
         controller.stream.current_scripts = 0
+        controller.stream.instance = request.instance
         self.sae.update_activator_capabilities(controller.stream.pool_name)
         r = SetCapsResponse()
         done(controller, response=r)

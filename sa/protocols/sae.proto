@@ -1,4 +1,6 @@
 package sae;
+// Options
+option py_generic_services = true;
 
 //
 // RPC Transport
@@ -170,6 +172,7 @@ message AuthResponse {
 //
 message SetCapsRequest {
     required int32 max_scripts = 1;
+    required string instance = 2;
 }
 
 message SetCapsResponse {
