@@ -18,6 +18,7 @@ import random
 import cPickle
 import glob
 import sys
+import csv
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
@@ -34,7 +35,6 @@ from noc.lib.debug import error_report, DEBUG_CTX_CRASH_PREFIX
 from noc.lib.nbsocket import ListenTCPSocket, AcceptedTCPSocket,\
                              AcceptedTCPSSLSocket, SocketFactory, Protocol
 from noc.lib.ip import IP
-
 
 
 class SAE(Daemon):
@@ -54,7 +54,10 @@ class SAE(Daemon):
         # Connection rate throttling
         self.max_mrt_rate_per_sae = None
         self.max_mrt_rate_per_shard = None
-
+        #
+        self.mrt_log = False
+        self.mrt_log_dir = None
+        # Initialize daemon
         Daemon.__init__(self)
         logging.info("Running SAE")
         #
@@ -102,6 +105,13 @@ class SAE(Daemon):
                                                     "max_mrt_rate_per_sae")
         self.max_mrt_rate_per_shard = self.config.getint("sae",
                                                     "max_mrt_rate_per_shard")
+        self.mrt_log = (self.options.daemonize and
+                        self.config.getboolean("main", "mrt_log"))
+        if self.mrt_log:
+            ld = os.path.dirname(self.config.get("main", "logfile"))
+            self.mrt_log_dir = os.path.join(ld, "mrt")
+            if not os.path.isdir(self.mrt_log_dir):
+                os.mkdir(self.mrt_log_dir)
 
     def build_manifest(self):
         """
@@ -113,7 +123,6 @@ class SAE(Daemon):
         self.activator_manifest = ManifestResponse()
         self.activator_manifest_files = set()
         has_errors = False
-
         files = set()
         for f in manifest:
             if "*" in f:
@@ -378,6 +387,7 @@ class SAE(Daemon):
         """
         Map/Reduce task logging
         """
+        # Log into logfile
         r = [u"MRT task=%d/%d object=%s(%s) script=%s status=%s" % (
                 task.task.id, task.id, task.managed_object.name,
                 task.managed_object.address, task.map_script, status)]
@@ -391,6 +401,24 @@ class SAE(Daemon):
             for k in kwargs:
                 r += [u"%s=%s" % (k, kwargs[k])]
         logging.log(level, u" ".join(r))
+        # Log into mrt log
+        # timestamp, map task id, object id, object name, object addres,
+        # object profile, script, status
+        if self.mrt_log:
+            fn = os.path.join(self.mrt_log_dir, str(task.task.id) + ".csv")
+            data = [
+                time.strftime(time.time(), "%Y-%m-%dT%H:%M:%S%Z"),
+                str(task.id),
+                str(task.managed_object.id),
+                task.managed_object.name.encode("utf-8"),
+                task.managed_object.address,
+                task.managed_object.profile_name,
+                task.map_script,
+                status
+            ]
+            with open(fn, "a") as f:
+                w = csv.writer(f)
+                w.writerow(data)
 
     def process_mrtasks(self):
         """
