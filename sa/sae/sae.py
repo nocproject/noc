@@ -407,7 +407,7 @@ class SAE(Daemon):
         if self.mrt_log:
             fn = os.path.join(self.mrt_log_dir, str(task.task.id) + ".csv")
             data = [
-                time.strftime(time.time(), "%Y-%m-%dT%H:%M:%S%Z"),
+                time.strftime("%Y-%m-%dT%H:%M:%S%Z"),
                 str(task.id),
                 str(task.managed_object.id),
                 task.managed_object.name.encode("utf-8"),
