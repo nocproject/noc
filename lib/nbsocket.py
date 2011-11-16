@@ -43,11 +43,13 @@ class SocketNotImplemented(Exception):
 
 
 class ProtocolNotSupportedError(SocketError):
-    message = "The protocol type or the specified protocol is not supported within this domain"
+    message = "The protocol type or the specified protocol "\
+              "is not supported within this domain"
 
 
 class AccessError(SocketError):
-    message = "Permission to create a socket of the specified type and/or protocol is denied"
+    message = "Permission to create a socket "\
+              "of the specified type and/or protocol is denied"
 
 
 class NoFilesError(SocketError):
@@ -55,7 +57,9 @@ class NoFilesError(SocketError):
 
 
 class NoBuffersError(SocketError):
-    message = "Insufficient buffer space is available.  The socket cannot be created until sufficient resources are freed."
+    message = "Insufficient buffer space is available. "\
+              "The socket cannot be created until sufficient "\
+              "resources are freed."
 
 
 class ConnectionRefusedError(SocketError):
@@ -63,7 +67,8 @@ class ConnectionRefusedError(SocketError):
 
 
 class NotConnectedError(SocketError):
-    message = "The socket is associated with a connection-oriented protocol and has not been connected"
+    message = "The socket is associated with a connection-oriented protocol "\
+              "and has not been connected"
 
 
 class BrokenPipeError(SocketError):
@@ -112,27 +117,27 @@ class AddressInUse(SocketError):
 ##
 SOCKET_ERRORS = [
     ("EPROTONOSUPPORT", ProtocolNotSupportedError),
-    ("EACCESS",         AccessError),
-    ("EMFILE",          NoFilesError),
-    ("ENFILE",          NoFilesError),
-    ("ENOBUFS",         NoBuffersError),
-    ("ECONNREFUSED",    ConnectionRefusedError),
-    ("ENOTCONN",        NotConnectedError),
-    ("EPIPE",           BrokenPipeError),
-    ("EACCES",          AccessError),
-    ("EBADF",           BadFileError),
-    ("EADDRINUSE",      AddressInUse),
+    ("EACCESS", AccessError),
+    ("EMFILE", NoFilesError),
+    ("ENFILE", NoFilesError),
+    ("ENOBUFS", NoBuffersError),
+    ("ECONNREFUSED", ConnectionRefusedError),
+    ("ENOTCONN", NotConnectedError),
+    ("EPIPE", BrokenPipeError),
+    ("EACCES", AccessError),
+    ("EBADF", BadFileError),
+    ("EADDRINUSE", AddressInUse),
 ]
 
 SOCKET_GAIERROR = [
     ("EAI_ADDRFAMILY", AddressFamilyError),
-    ('EAI_AGAIN',      TemporaryResolutionError),
+    ('EAI_AGAIN', TemporaryResolutionError),
     #('EAI_BADFLAGS',),
-    ('EAI_FAIL',       NonRecoverableResolutionError),
+    ('EAI_FAIL', NonRecoverableResolutionError),
     #('EAI_FAMILY',),
-    ('EAI_MEMORY',     NoMemoryError),
+    ('EAI_MEMORY', NoMemoryError),
     #('EAI_NODATA',),
-    ('EAI_NONAME',     NameNotKnownError),
+    ('EAI_NONAME', NameNotKnownError),
     #('EAI_SERVICE',),
     #('EAI_SOCKTYPE',),
     #('EAI_SYSTEM',),
@@ -163,7 +168,7 @@ for error_name, exception_class in SOCKET_GAIERROR:
 def get_socket_error():
     """
     Check wrether the exception was caused by socket error
-    
+
     :returns: SocketException instance or None if it is not an socket error
     """
     t, v, tb = sys.exc_info()
@@ -184,16 +189,13 @@ def get_socket_error():
     return None
 
 
-##
-## Abstract non-blocking socket wrapper.
-##
 class Socket(object):
     """
     Abstract non-blocking socket wrapper
     """
     TTL = None  # maximum time to live in seconds
-    READ_CHUNK = 65536
-    
+    READ_CHUNK = 65536  # @todo: configuration parameter
+
     def __init__(self, factory, socket=None):
         self.factory = factory
         self.socket = socket
@@ -203,7 +205,7 @@ class Socket(object):
         self.ttl = self.TTL
         self.set_timeout(self.TTL)
         self.factory.register_socket(self)
-    
+
     def create_socket(self):
         """
         Performs actial socket creation and initialization
@@ -213,85 +215,85 @@ class Socket(object):
             raise SocketNotImplemented()
         self.socket.setblocking(0)
         self.last_read = time.time()
-    
+
     def set_timeout(self, ttl):
         """
         Change socket timeout
-        
+
         :param ttl: Timeout in seconds
         :type ttl: Int
         """
         if ttl and ttl != self.ttl:
             self.debug("Set timeout to %s secs" % ttl)
             self.ttl = ttl
-    
+
     def socket_is_ready(self):
         """
         Check socket is created and ready for operation
-        
+
         :rtype: Bool
         """
         return self.socket is not None
-    
+
     def fileno(self):
         """
         Get socket system file id
-        
+
         :return: file id or None
         :rtype: Int or None
         """
         return self.socket.fileno() if socket else None
-    
+
     def can_read(self):
         """
         Check socket can be read. If can_read returns True, socket
         will be polled for read event. handle_read() will be called
         when some data will be available for reading
-        
+
         :rtype: Bool
         """
         return self.socket_is_ready()
-    
+
     def can_write(self):
         """
         Check socket can be written. If can_write returns True, socket
         will be polled for write events. handle_write() will be called
         when some data can be sent via socket
-        
+
         :trype bool:
         """
         return self.socket_is_ready()
-        
+
     def handle_read(self):
         """
         Read handler. Called every time when socket has data available
         to be reading.
         """
         pass
-        
+
     def handle_write(self):
         """
         Read handler. Called every time when socket has data available
         to be written.
         """
         pass
-    
+
     def on_close(self):
         """
         Close handler. Called on socket close.
         """
         pass
-    
+
     def on_error(self, exc):
         """
         Error handler. Called on eny socket error.
         Default behavior is to emit error message and close the socket
-        
+
         :param exc: SocketException instance
         """
         self.error(exc.message)
         self.close()
-    
+
     def close(self):
         """
         Close socket and unregister from factory
@@ -300,74 +302,74 @@ class Socket(object):
             self.factory.unregister_socket(self)
             try:
                 self.socket.close()  # Can raise EBADF/EINTR
-            except:
+            except socket.error, why:
                 pass
             self.socket = None
             self.on_close()
-    
+
     def log_label(self):
         """
         Returns a prefix for log messages
-        
+
         :rtype: Str
         """
         return "%s(0x%x)" % (self.__class__.__name__, id(self))
-    
+
     def debug(self, msg):
         """
         Emit debug-level log message.
-        
+
         :param msg: Message
         :type msg: String
         """
         logging.debug("[%s] %s" % (self.log_label(), msg))
-    
+
     def info(self, msg):
         """
         Emit info-level log message.
-        
+
         :param msg: Message
         :type msg: String
         """
         logging.info("[%s] %s" % (self.log_label(), msg))
-    
+
     def error(self, msg):
         """
         Emit error-level log message.
-        
+
         :param msg: Message
         :type msg: String
         """
-        
+
         logging.error("[%s] %s" % (self.log_label(), msg))
-    
+
     def set_name(self, name):
         """
         Set socket name.
-        
+
         :param name: Name
         :type name: Str
         """
         self.name = name
         self.factory.register_socket(self, name)
-    
+
     def update_status(self):
         """
         Update socket status to indicate socket still active
         """
         self.last_read = time.time()
-    
+
     def is_stale(self):
         """
         Check socket is stale.
         Called by SocketFactory.close_stale to determine
         should socket be closed forcefully
-        
+
         :rtype: Bool
         """
         return (self.socket_is_ready() and self.ttl
                 and time.time() - self.last_read >= self.ttl)
-        
+
 
 class Protocol(object):
     """
@@ -382,29 +384,29 @@ class Protocol(object):
         self.parent = parent
         self.callback = callback
         self.in_buffer = ""
-    
+
     def feed(self, data):
         """
         Feed raw data into protocols. Calls callback for each
         completed PDU.
-        
+
         :param data: Raw data portion
         :type data: Str
         """
         self.in_buffer += data
         for pdu in self.parse_pdu():
             self.callback(pdu)
-    
+
     def parse_pdu(self):
         """
         Scan self.in_buffer, detect all completed PDUs, then remove
         them from buffer and return as list or yield them
-        
+
         :return: List of PDUs
         :rtype: List of Str
         """
         return []
-    
+
 
 class LineProtocol(Protocol):
     """
@@ -433,7 +435,7 @@ class ListenTCPSocket(Socket):
         :type port: Int
         :param socket_class: Socket class to spawn on each new connect
         :type socket_class: AcceptedTCPSocket
-        :param backlog: listen() backlog (default 100)
+        :param backlog: listen() backlog (default 100)  @todo: get from config
         :type backlog: Int
         :param nconnects: Close socket after _nconnects_ connections, if set
         :type nconnects: Int or None
@@ -618,23 +620,14 @@ class TCPSocket(Socket):
     def adjust_buffers(self):
         """
         Adjust socket buffer size
+
+        @todo: get from configuration parameters
         """
         #self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1048576)
         #self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1048576)
         pass
     
 
-##
-## A socket wrapping accepted TCP connection.
-## Following methods can be overrided for desired behavior:
-## check_access(cls, address) - called before object creation
-## on_connect(self)   - called when socket connected (just after creation)
-## on_close(self)     - called when socket closed. Last method called
-## on_read(self,data) - called when new portion of data available when protocol=None or when new PDU available
-## Following methods used for operation:
-## write(self,data)   - send data (Buffered, can be delayed or split into several send)
-## close(self)        - close socket (Also implies on_close(self) event)
-##
 class AcceptedTCPSocket(TCPSocket):
     """
     A socket wrapping accepted TCP connection. Usually spawned by
@@ -795,7 +788,8 @@ class ConnectedTCPSocket(TCPSocket):
                 self.socket.send("")
             except socket.error, why:
                 err_code = why[0]
-                if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT, EHOSTUNREACH, ENETUNREACH):
+                if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT,
+                                EHOSTUNREACH, ENETUNREACH):
                     self.on_conn_refused()
                     self.close()
                     return
@@ -895,11 +889,6 @@ class FileWrapper(object):
     def close(self):
         os.close(self._fileno)
     
-    ##
-    ## Set blocking status
-    ## 0 - non-blocking mode
-    ## 1 - blocking mode
-    ##
     def setblocking(self, status):
         """
         Set blocking status
@@ -1425,4 +1414,3 @@ class SocketFactory(object):
             if t - last_stale > 3:
                 self.close_stale()
                 last_stale = t
-    
