@@ -20,7 +20,7 @@ class Script(NOCScript):
     implements = [IGetVersion]
 
     rx_ver = re.compile(r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (?P<platform>.+?) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),", re.MULTILINE | re.DOTALL)
-    rx_snmp_ver = re.compile(r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (?P<platform>.+?) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),")
+    rx_snmp_ver = re.compile(r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (?P<platform>.+?) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
