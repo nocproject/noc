@@ -459,7 +459,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                 NS("publickey") +
                 "\xff" +
                 NS(pub_k.ssh_type()) +
-                NS(pub_k_blob())
+                NS(pub_k_blob)
             )
             signature = NS(signature)
         else:
@@ -468,7 +468,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         self.send_auth("publickey", (
             ("\xff" if sign else "\x00") +
             NS(pub_k.ssh_type()) +
-            NS(pub_k_blob()) +
+            NS(pub_k_blob) +
             signature
             ))
 
