@@ -856,7 +856,7 @@ class ReduceTask(models.Model):
                     lts = len(ts) - 1
                     i = ms - 1
                     while True:
-                        i = min(ms, lts)
+                        i = min(i, lts)
                         t += ts[i]
                         if i >= lts:
                             break
