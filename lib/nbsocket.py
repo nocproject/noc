@@ -214,7 +214,7 @@ class Socket(object):
         if not self.socket_is_ready():  # Socket was not created
             raise SocketNotImplemented()
         self.socket.setblocking(0)
-        self.last_read = time.time()
+        self.update_status()
 
     def set_timeout(self, ttl):
         """
@@ -301,7 +301,8 @@ class Socket(object):
         if self.socket:
             self.factory.unregister_socket(self)
             try:
-                self.socket.close()  # Can raise EBADF/EINTR
+                if self.socket:
+                    self.socket.close()  # Can raise EBADF/EINTR
             except socket.error, why:
                 pass
             self.socket = None
@@ -546,14 +547,13 @@ class TCPSocket(Socket):
         :param socket: Optional socket.socket instance
         :type socket: socket.socket
         """
-        super(TCPSocket, self).__init__(factory, socket)
         self.is_connected = False
-        #self.s=socket
         self.out_buffer = ""
         if self.protocol_class:
             self.protocol = self.protocol_class(self, self.on_read)
         self.in_shutdown = False
-    
+        super(TCPSocket, self).__init__(factory, socket)
+
     def create_socket(self):
         """
         Create socket and adjust buffers
@@ -587,6 +587,7 @@ class TCPSocket(Socket):
         self.out_buffer = self.out_buffer[sent:]
         if self.in_shutdown and len(self.out_buffer) == 0:
             self.close()
+        self.update_status()
     
     def handle_connect(self):
         """
