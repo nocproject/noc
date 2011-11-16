@@ -72,8 +72,9 @@ class Command(BaseCommand):
             else:
                 try:
                     s = ManagedObject.objects.get(name=o)
-                except ManagedObjectSelector.DoesNotExist:
+                except ManagedObject.DoesNotExist:
                     raise CommandError("Object '%s' not found" % o)
+                objects.add(s.id)
         # Run MRT
         t = ReduceTask.create_task(list(objects), reduce_script, {},
                                    "get_version", {}, 0)
