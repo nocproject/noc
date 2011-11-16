@@ -68,13 +68,13 @@ class Command(BaseCommand):
                     s = ManagedObjectSelector.objects.get(name=o[1:])
                 except ManagedObjectSelector.DoesNotExist:
                     raise CommandError("Selector '%s' not found" % o[1:])
-                objects.update([mo.id for mo in s.managed_objects])
+                objects.update([mo.name for mo in s.managed_objects])
             else:
                 try:
                     s = ManagedObject.objects.get(name=o)
                 except ManagedObject.DoesNotExist:
                     raise CommandError("Object '%s' not found" % o)
-                objects.add(s.id)
+                objects.add(s.name)
         # Run MRT
         t = ReduceTask.create_task(list(objects), reduce_script, {},
                                    "get_version", {}, 0)
