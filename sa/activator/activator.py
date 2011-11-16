@@ -659,6 +659,7 @@ class Activator(Daemon, FSM):
 
         r = SetCapsRequest()
         r.max_scripts = self.max_script_threads
+        r.instance = str(self.instance_id)
         self.sae_stream.proxy.set_caps(r, send_caps_callback)
 
     @check_state("ESTABLISHED")
