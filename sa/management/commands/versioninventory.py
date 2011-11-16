@@ -37,9 +37,10 @@ def reduce_script(task):
         row = [o.name, o.address]
         for h in headers:
             if h in v:
-                row += [str(v)]
+                row += [str(v[h])]
             else:
                 row += [""]
+        data += [row]
     data = sorted(data, key=lambda x: x[0])
     writer = csv.writer(sys.stdout)
     writer.writerow(headers)
