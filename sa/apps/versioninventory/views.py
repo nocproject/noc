@@ -5,11 +5,17 @@
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## NOC modules
 from noc.lib.app.saapplication import SAApplication
-##
-## Reduce handler to show version report
-##
+
+
 def reduce(task):
+    """
+    Reduce handler to show version report
+    :param task: ReduceTask instance
+    :return:
+    """
     from noc.lib.app.simplereport import Report, TableSection, SectionRow
     # Fetch data
     ad = {}  # administrative domain -> data
@@ -52,7 +58,7 @@ def reduce(task):
             ad[adn] += [s]
         else:
             # Failed tasks
-            ad[adn]+=[(mt.managed_object.name,) + a_fail]
+            ad[adn] += [(mt.managed_object.name,) + a_fail]
     # Prepare data
     data = []
     for adn in sorted(ad.keys()):
@@ -67,19 +73,17 @@ def reduce(task):
                      data=data, enumerate=True)
     report.append_section(t)
     # Version summary
-    summary=sorted([(vp[0], vp[1], vp[2], c) for vp, c in summary.items()],
-                   lambda x, y: -cmp(x[3], y[3]))
-    t=TableSection(name="summary",
-                   columns=["Vendor", "Platform", "Version", "Count"],
-                   data=summary, enumerate=True)
+    summary = sorted([(vp[0], vp[1], vp[2], c) for vp, c in summary.items()],
+                     lambda x, y: -cmp(x[3], y[3]))
+    t = TableSection(name="summary",
+                     columns=["Vendor", "Platform", "Version", "Count"],
+                     data=summary, enumerate=True)
     report.append_section(t)
     return report
-##
-##
-##
+
+
 class VersionInventoryApplication(SAApplication):
     title = "Version Inventory"
     menu = "Tasks | Version Inventory"
     reduce_task = reduce
     map_task = "get_version"
-    timeout = 60
