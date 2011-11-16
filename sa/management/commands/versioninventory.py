@@ -24,10 +24,16 @@ def reduce_script(task):
     r = []
     for mt in task.maptask_set.all():
         if mt.status == "C":
-            r += [(mt.managed_object, mt.script_result)]
-            for h in mt.script_result:
-                if h not in d_headers:
+            sr = mt.script_result
+            rr = {}
+            for h in d_headers:
+                if h in sr:
+                    rr[h] = sr[h]
+            if "attributes" in sr:
+                for h in sr["attributes"]:
                     a_headers.add(h)
+                    rr[h] = sr["attributes"][h]
+            r += [(mt.managed_object, rr)]
         else:
             r += [(mt.managed_object, {})]
     # Format result
