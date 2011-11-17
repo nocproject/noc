@@ -1017,6 +1017,8 @@ class CommandSnippet(models.Model):
     timeout = models.IntegerField(_("Timeout (sec)"), default=60)
     require_confirmation = models.BooleanField(_("Require Confirmation"),
             default=False)
+    ignore_cli_errors = models.BooleanField(_("Ignore CLI errors"),
+            default=False)
     # Restrict access to snippet if set
     # effective permission name will be sa:runsnippet:<permission_name>
     permission_name = models.CharField(_("Permission Name"), max_length=64,
