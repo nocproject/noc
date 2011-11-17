@@ -2,13 +2,17 @@
 ##----------------------------------------------------------------------
 ## Interface to execute series of commands and return a list of results
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from base import *
+
+## NOC modules
+from base import Interface, BooleanParameter, StringListParameter
+
 
 class ICommands(Interface):
-    commands=StringListParameter()
-    returns=StringListParameter()
+    # List of commands
+    commands = StringListParameter()
+    # Do not stop on CLI errors
+    ignore_cli_errors = BooleanParameter(default=False)
+    returns = StringListParameter()
