@@ -59,7 +59,10 @@ class RunSnippetApplication(Application):
             def inner(obj):
                 v = data.copy()
                 v["object"] = obj
-                return {"commands": snippet.expand(v).splitlines()}
+                return {
+                    "commands": snippet.expand(v).splitlines(),
+                    "ignore_cli_errors": snippet.ignore_cli_errors
+                }
             return inner
         
         map_task = self.get_map_script(snippet)
