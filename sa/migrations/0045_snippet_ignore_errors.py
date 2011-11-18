@@ -15,8 +15,7 @@ from noc.sa.models import *
 class Migration:
     def forwards(self):
         db.add_column("sa_commandsnippet", "ignore_cli_errors",
-                      models.BooleanField(_("Ignore CLI errors"),
-                                          default=False))
+                      models.BooleanField("Ignore CLI errors", default=False))
 
     def backwards(self):
         db.delete_column("sa_commandsnippet", "ignore_cli_errors")
