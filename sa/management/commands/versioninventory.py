@@ -40,7 +40,7 @@ def reduce_script(task):
     data = []
     headers = d_headers + sorted(a_headers)
     for o, v in r:
-        row = [o.name, o.address, o.profile_name]
+        row = [o.name.encode("utf-8"), o.address, o.profile_name]
         for h in headers:
             if h in v:
                 row += [str(v[h])]
