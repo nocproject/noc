@@ -14,16 +14,13 @@ import os
 import urllib
 import hashlib
 ## Django modules
-from django.http import HttpResponse, HttpResponseRedirect,\
-                        HttpResponseNotFound, HttpResponseForbidden,\
-                        HttpResponseServerError
-from django.utils.http import urlquote
+from django.http import HttpResponse, HttpResponseNotFound,\
+                        HttpResponseForbidden, HttpResponseServerError
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import *
 from django.conf import settings
-from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.simplejson.encoder import JSONEncoder
-from django.utils.encoding import smart_str, smart_unicode
+from django.utils.encoding import smart_str
 ## NOC modules
 from noc.settings import INSTALLED_APPS
 from noc.lib.debug import get_traceback
