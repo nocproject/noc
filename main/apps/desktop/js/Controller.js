@@ -86,6 +86,8 @@ Ext.define("NOC.main.desktop.Controller", {
                     .setDisabled(false);
                 // Display username button
                 Ext.getCmp("header").getComponent("user_display_name").show();
+                // Reset opened tabs
+                this.launched_tabs = {};
                 // Load menu
                 this.update_menu();
                 // Change theme
