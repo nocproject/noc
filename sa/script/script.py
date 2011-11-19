@@ -299,7 +299,7 @@ class Script(threading.Thread):
         :rtype: String or None
         """
         if cls.template:
-            return template
+            return cls.template
         if cls.implements and cls.implements[0].template:
             return cls.implements[0].template
         return None
@@ -565,7 +565,8 @@ class Script(threading.Thread):
             self.cli_queue_get()
             self.debug("CLI Provider is ready")
             # Set up session when necessary
-            if self.profile.setup_session and not self.activator.use_canned_session:
+            if (self.profile.setup_session and
+                not self.activator.use_canned_session):
                 self.debug("Setting up session")
                 self.profile.setup_session(self)
             # Disable pager when necessary
