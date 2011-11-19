@@ -77,7 +77,7 @@ class RunSnippetApplication(Application):
         return task.id
     
     @view(url=r"^$", url_name="index", menu="Tasks | Run Snippet",
-        access=HasPerm("run"))
+          access="launch")
     def view_index(self, request):
         """ Display all available snippets"""
         # @todo: check permissions
@@ -88,7 +88,7 @@ class RunSnippetApplication(Application):
         return self.render(request, "snippets.html", snippets=snippets)
     
     @view(url=r"^(?P<snippet_id>\d+)/$", url_name="snippet",
-        access=HasPerm("run"))
+        access="launch")
     def view_snippet(self, request, snippet_id):
         """
         Snippet parameters and object selection form
@@ -140,7 +140,7 @@ class RunSnippetApplication(Application):
                 objects=objects, form=form)
     
     @view(url=r"^(?P<snippet_id>\d+)/task/(?P<task_id>\d+)/$",
-        url_name="task", access=HasPerm("run"))
+        url_name="task", access="launch")
     def view_task(self, request, snippet_id, task_id):
         """
         Wait for task completion and render result
