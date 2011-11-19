@@ -53,3 +53,4 @@ class GroupApplication(ModelApplication):
     model=Group
     model_admin=GroupAdmin
     menu="Setup | Groups"
+    icon = "icon_group"

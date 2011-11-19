@@ -67,6 +67,7 @@ class UserApplication(ModelApplication):
     model=User
     model_admin=UserAdmin
     menu="Setup | Users"
+    icon = "icon_user"
     ##
     ## Change password view
     ##

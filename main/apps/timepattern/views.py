@@ -52,6 +52,7 @@ class TimePatternApplication(ModelApplication):
     model=TimePattern
     model_admin=TimePatternAdmin
     menu="Setup | Time Patterns"
+    icon = "icon_time"
     ##
     ## Test Selected Time Patterns
     ##
