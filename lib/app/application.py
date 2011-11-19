@@ -32,6 +32,7 @@ class ApplicationBase(type):
     """
     Application metaclass. Registers application class to site
     """
+
     def __new__(cls, name, bases, attrs):
         global site
         m = type.__new__(cls, name, bases, attrs)
@@ -52,18 +53,19 @@ class Application(object):
     icon = "icon_application"
     extra_permissions = []  # List of additional permissions, not related with views
     implied_permissions = {}  # permission -> list of implied permissions
-    ##
-    Form = NOCForm # Shortcut for form class
+
+    Form = NOCForm  # Shortcut for form class
     config = settings.config
-    ##
-    def __init__(self,site):
-        self.site=site
-        parts=self.__class__.__module__.split(".")
-        self.module=parts[1]
-        self.app=parts[3]
-        self.module_title=__import__("noc.%s"%self.module,{},{},["MODULE_NAME"]).MODULE_NAME
-        self.app_id="%s.%s"%(self.module,self.app)
-        self.menu_url = None  # Set by site.autodiscover()
+
+    def __init__(self, site):
+        self.site = site
+        parts = self.__class__.__module__.split(".")
+        self.module = parts[1]
+        self.app = parts[3]
+        self.module_title = __import__("noc.%s" % self.module, {}, {},
+            ["MODULE_NAME"]).MODULE_NAME
+        self.app_id = "%s.%s" % (self.module, self.app)
+        self.menu_url = None   # Set by site.autodiscover()
 
     @property
     def launch_info(self):
@@ -81,31 +83,32 @@ class Application(object):
         """
         Returns application id
         """
-        parts=cls.__module__.split(".")
-        return "%s.%s"%(parts[1],parts[3])
+        parts = cls.__module__.split(".")
+        return "%s.%s" % (parts[1], parts[3])
 
     @property
     def base_url(self):
         """
         Application's base URL
         """
-        return "/%s/%s/"%(self.module,self.app)
-    ##
-    ## Reverse URL
-    ##
-    def reverse(self,url,*args,**kwargs):
-        return self.site.reverse(url,*args,**kwargs)
+        return "/%s/%s/" % (self.module, self.app)
 
-    ##
-    ## Send a message to user
-    ##
+    def reverse(self, url, *args, **kwargs):
+        """
+        Reverse URL name to URL
+        """
+        return self.site.reverse(url, *args, **kwargs)
+
     def message_user(self, request, message):
+        """
+        Send a message to user
+        """
         messages.info(request, unicode(message))
-    
-    ##
-    ## Return path to named template
-    ##
+
     def get_template_path(self, template):
+        """
+        Return path to named template
+        """
         if isinstance(template, basestring):
             template = [template]
         r = []
@@ -117,148 +120,174 @@ class Application(object):
             ]
         return r
 
-    ##
-    ## Shortcut to get_object_or_404
-    ##
-    def get_object_or_404(self,*args,**kwargs):
-        return get_object_or_404(*args,**kwargs)
-    
-    ##
-    ## Render template within context
-    ##
-    def render(self,request,template,dict={},**kwargs):
-        return render_to_response(self.get_template_path(template),dict if dict else kwargs,
-            context_instance=RequestContext(request,dict={"app":self}))
+    def get_object_or_404(self, *args, **kwargs):
+        """
+        Shortcut to get_object_or_404
+        """
+        return get_object_or_404(*args, **kwargs)
 
-    ##
-    ## Render template to string
-    ##
+    def render(self, request, template, dict={}, **kwargs):
+        """
+        Render template within context
+        """
+        return render_to_response(self.get_template_path(template),
+                                  dict if dict else kwargs,
+                                  context_instance=RequestContext(request,
+                                                                  dict={
+                                                                      "app": self}))
+
     def render_template(self, template, dict={}, **kwargs):
+        """
+        Render template to string
+        """
         tp = self.get_template_path(template)
         return loader.render_to_string(tp, dict or kwargs)
 
-    ##
-    ## Render arpitrary Content-Type response
-    ##
-    def render_response(self,data,content_type="text/plain"):
-        return HttpResponse(data,content_type=content_type)
-    ##
-    ## Create plain text response
-    ##
-    def render_plain_text(self,text,mimetype="text/plain"):
-        return HttpResponse(text,mimetype=mimetype)
-    ##
-    ## Create serialized JSON-encoded response
-    ##
+    def render_response(self, data, content_type="text/plain"):
+        """
+        Render arbitrary Content-Type response
+        """
+        return HttpResponse(data, content_type=content_type)
+
+    def render_plain_text(self, text, mimetype="text/plain"):
+        """
+        Render plain/text response
+        """
+        return HttpResponse(text, mimetype=mimetype)
+
     def render_json(self, obj, status=200):
+        """
+        Create serialized JSON-encoded response
+        """
         return HttpResponse(json_encode(obj),
                             mimetype="text/json", status=status)
-    ##
-    ## Render "success" page
-    ##
-    def render_success(self,request,subject=None,text=None):
-        return self.site.views.main.message.success(request,subject=subject,text=text)
-    ##
-    ## Render "failure" page
-    ##
-    def render_failure(self,request,subject=None,text=None):
-        return self.site.views.main.message.failure(request,subject=subject,text=text)
-    ##
-    ## Render wait page
-    ##
-    def render_wait(self,request,subject=None,text=None,url=None,timeout=5,progress=None):
-        return self.site.views.main.message.wait(request,subject=subject,text=text,timeout=timeout,url=url,progress=progress)
-    ##
-    ## Redirect to URL
-    ##
-    def response_redirect(self,url,*args,**kwargs):
-        return HttpResponseRedirect(self.reverse(url,*args,**kwargs))
-    ##
-    ## Redirect to referrer
-    ##
-    def response_redirect_to_referrer(self,request,back_url=None):
+
+    def render_success(self, request, subject=None, text=None):
+        """
+        Render "success" page
+        """
+        return self.site.views.main.message.success(request, subject=subject,
+                                                    text=text)
+
+    def render_failure(self, request, subject=None, text=None):
+        """
+        Render "failure" page
+        """
+        return self.site.views.main.message.failure(request, subject=subject,
+                                                    text=text)
+
+    def render_wait(self, request, subject=None, text=None, url=None, timeout=5,
+                    progress=None):
+        """
+        Render wait page
+        """
+        return self.site.views.main.message.wait(request, subject=subject,
+                                                 text=text, timeout=timeout,
+                                                 url=url, progress=progress)
+
+    def response_redirect(self, url, *args, **kwargs):
+        """
+        Redirect to URL
+        """
+        return HttpResponseRedirect(self.reverse(url, *args, **kwargs))
+
+    def response_redirect_to_referrer(self, request, back_url=None):
+        """
+        Redirect to referrer page
+        """
         if back_url is None:
-            back_url=self.base_url
-        return self.response_redirect(request.META.get("HTTP_REFERER",back_url))
-    ##
-    ## Redirect to object: {{base.url}}/{{object.id}}/
-    ##
-    def response_redirect_to_object(self,object):
-        return self.response_redirect("%s%d/"%(self.base_url,object.id))
-    ##
-    ## Render Forbidden response
-    ##
-    def response_forbidden(self,text=None):
+            back_url = self.base_url
+        return self.response_redirect(
+            request.META.get("HTTP_REFERER", back_url))
+
+    def response_redirect_to_object(self, object):
+        """
+        Redirect to object: {{base.url}}/{{object.id}}/
+        """
+        return self.response_redirect("%s%d/" % (self.base_url, object.id))
+
+    def response_forbidden(self, text=None):
+        """
+        Render Forbidden response
+        """
         return HttpResponseForbidden(text)
-    ##
-    ## Render Not Found response
-    ##
-    def response_not_found(self,text=None):
+
+    def response_not_found(self, text=None):
+        """
+        Render Not Found response
+        """
         return HttpResponseNotFound(text)
-    
-    ##
-    ## Render javescript closing popup window
-    ##
+
     def close_popup(self, request):
+        """
+        Render javascript closing popup window
+        """
         return self.render(request, "close_popup.html")
-    
-    ##
-    ## Escape HTML
-    ##
+
     def html_escape(self, s):
+        """
+        Escape HTML
+        """
         return escape(s)
+
     ##
     ## Logging
     ##
-    def debug(self,message):
+    def debug(self, message):
         logging.debug(message)
-    ##
-    ## Returns cursor
-    ##
+
     def cursor(self):
+        """
+        Returns db cursor
+        """
         return connection.cursor()
-    ##
-    ## Execute SQL query
-    ##
-    def execute(self,sql,args=[]):
-        cursor=self.cursor()
-        cursor.execute(sql,args)
+
+    def execute(self, sql, args=[]):
+        """
+        Execute SQL query
+        """
+        cursor = self.cursor()
+        cursor.execute(sql, args)
         return cursor.fetchall()
-    ##
-    ## AJAX lookup wrapper
-    ##
-    def lookup(self,request,func):
-        result=[]
+
+    def lookup(self, request, func):
+        """
+        AJAX lookup wrapper
+        @todo: Remove
+        """
+        result = []
         if request.GET and "q" in request.GET:
-            q=request.GET["q"]
-            if len(q)>2: # Ignore requests shorter than 3 letters
-                result=list(func(q))
+            q = request.GET["q"]
+            if len(q) > 2:  # Ignore requests shorter than 3 letters
+                result = list(func(q))
         return self.render_plain_text("\n".join(result))
-    ##
-    ## Ajax lookup wrapper, returns JSON list of hashes
-    ##
-    def lookup_json(self,request,func,id_field="id",name_field="name"):
-        result=[]
+
+    def lookup_json(self, request, func, id_field="id", name_field="name"):
+        """
+        Ajax lookup wrapper, returns JSON list of hashes
+        """
+        result = []
         if request.GET and "q" in request.GET:
-            q=request.GET["q"]
+            q = request.GET["q"]
             for r in func(q):
-                result+=[{id_field:r,name_field:r}]
+                result += [{id_field: r, name_field: r}]
         return self.render_json(result)
-        
-    ##
-    ## Iterator returning application views
-    ##
+
     def get_views(self):
+        """
+        Iterator returning application views
+        """
         for n in [v for v in dir(self) if hasattr(getattr(self, v), "url")]:
-            yield getattr(self,n)
-    ##
-    ## Return a set of permissions, used by application
-    ##
+            yield getattr(self, n)
+
     def get_permissions(self):
-        p=set(["%s:launch" % self.get_app_id().replace(".", ":")])
+        """
+        Return a set of permissions, used by application
+        """
+        p = set(["%s:launch" % self.get_app_id().replace(".", ":")])
         # View permissions from HasPerm
         for view in self.get_views():
-            if isinstance(view.access,HasPerm):
+            if isinstance(view.access, HasPerm):
                 p.add(view.access.get_permission(self))
         # extra_permissions
         if callable(self.extra_permissions):
@@ -268,26 +297,31 @@ class Application(object):
         for e in extra:
             p.add(HasPerm(e).get_permission(self))
         return p
-    ##
-    ## Return a list of user access entries
-    ##
-    def user_access_list(self,user):
+
+    def user_access_list(self, user):
+        """
+        Return a list of user access entries
+        """
         return []
-    ##
-    ## Return a list of group access entries
-    ##
-    def group_access_list(self,group):
+
+    def group_access_list(self, group):
+        """
+        Return a list of group access entries
+        """
         return []
-    ##
-    ## Return an URL to change user access
-    ##
-    def user_access_change_url(self,user):
+
+    def user_access_change_url(self, user):
+        """
+        Return an URL to change user access
+        """
         return None
-    ##
-    ## Return an URL to change group access
-    ##
-    def group_access_change_url(self,group):
+
+    def group_access_change_url(self, group):
+        """
+        Return an URL to change group access
+        """
         return None
+
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
          api=False):
@@ -301,6 +335,7 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None,
     :param validate: Form class or callable to check input
     :param api: Does the view exposed as API function
     """
+
     def decorate(f):
         f.url = url
         f.url_name = url_name
@@ -316,4 +351,5 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None,
         f.api = api
         f.validate = validate
         return f
+
     return decorate
