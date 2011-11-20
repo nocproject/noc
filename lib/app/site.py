@@ -28,11 +28,12 @@ from noc.lib.debug import get_traceback
 
 class DynamicMenu(object):
     title = "DYNAMIC MENU"
+    icon = "icon_folder"
 
     @property
     def items(self):
         """
-        Generator yielding (title, url, access)
+        Generator yielding (title, app, access)
         """
         raise StopIteration
 
@@ -325,14 +326,18 @@ class Site(object):
         r = {"title": mod_name, "children": []}
         self.set_menu_id(r, [m])
         self.menu += [r]
+        return r
 
     def autodiscover(self):
         """
         Auto-load and initialize all application classes
         """
+        if self.apps:
+            # Do not discover site twice
+            return
         for app in [a for a in INSTALLED_APPS if a.startswith("noc.")]:
             m = app.split(".")[1]
-            self.add_module_menu(app)
+            root = self.add_module_menu(app)
             # Initialize application
             for f in glob.glob("%s/apps/*/views.py" % m):
                 d = os.path.split(f)[0]
@@ -341,7 +346,6 @@ class Site(object):
                     continue
                 __import__(".".join(["noc"] + f[:-3].split(os.path.sep)),
                            {}, {}, "*")
-            continue
             # Try to install dynamic menus
             menu = None
             try:
@@ -349,7 +353,28 @@ class Site(object):
             except ImportError:
                 continue
             if menu:
-                self.app_menu[m].submenus += menu.DYNAMIC_MENUS
+                for d_menu in menu.DYNAMIC_MENUS:
+                    # Add dynamic menu folder
+                    dm = {
+                        "title": d_menu.title,
+                        "iconCls": d_menu.icon,
+                        "children": []
+                    }
+                    path = [m, d_menu.title]
+                    self.set_menu_id(dm, path)
+                    root["children"] += [dm]
+                    # Add items
+                    for title, app_id, access in d_menu.items:
+                        app = self.apps[app_id]
+                        r = {
+                            "title": title,
+                            "app": app,
+                            "access": access,
+                            "iconCls": app.icon,
+                        }
+                        self.set_menu_id(r, path + [title])
+                        dm["children"] += [r]
+        # Finally, order the menu
         self.sort_menu()
 
     def application_by_class(self, app_class):

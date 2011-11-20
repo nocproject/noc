@@ -6,11 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import os
 ## Django modules
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
-from django.http import HttpResponse
 ## NOC modules
 from noc.settings import config
 from noc.lib.app import ExtApplication, ModelApplication, view, PermitLogged
@@ -163,10 +160,9 @@ class DesktopAppplication(ExtApplication):
                     n["leaf"] = False
                     n["children"] = cld
                     c += [n]
-                else:
-                    if r["access"](user):
-                        n["leaf"] = True
-                        c += [n]
+                elif r["access"](user):
+                    n["leaf"] = True
+                    c += [n]
             return c
 
         # Return empty list for unauthenticated user
