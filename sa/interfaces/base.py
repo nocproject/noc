@@ -975,12 +975,21 @@ class MACAddressParameter(StringParameter):
     'AA:BB:CC:DD:EE:FF'
     >>> MACAddressParameter().clean("\\xa8\\xf9K\\x80\\xb4\\xc0")
     'A8:F9:4B:80:B4:C0'
+    >>> MACAddressParameter(accept_bin=False).clean("\\xa8\\xf9K\\x80\\xb4\\xc0") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: MACAddressParameter: '\xa8\xf9K\x80\xb4\xc0'.
     """
+    def __init__(self, required=True, default=None, accept_bin=True):
+        self.accept_bin = accept_bin
+        super(MACAddressParameter, self).__init__(required=required,
+                                                  default=default)
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
         value = super(MACAddressParameter, self).clean(value)
-        if len(value) == 6:
+        if len(value) == 6 and self.accept_bin:
             # MAC address in binary form
             return ":".join(["%02X" % ord(c) for c in value])
         value = value.upper()
