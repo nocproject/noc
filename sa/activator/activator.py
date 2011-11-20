@@ -24,7 +24,7 @@ from threading import Lock
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
 from noc.sa.script.ssh.keys import Key
-from noc.sa.rpc import RPCSocket, file_hash, get_digest,\
+from noc.sa.rpc import file_hash, get_digest,\
                        PROTOCOL_NAME, PROTOCOL_VERSION, PUBLIC_KEYS,\
                        CIPHERS, MACS, COMPRESSIONS, KEY_EXCHANGES
 from noc.sa.protocols.sae_pb2 import *
@@ -32,7 +32,7 @@ from noc.sa.activator.servers import ServersHub
 from noc.lib.fileutils import safe_rewrite, read_file
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM, check_state
-from noc.lib.nbsocket import SocketFactory, ListenUDPSocket
+from noc.lib.nbsocket import SocketFactory
 from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 from noc.sa.activator.service import Service
 from noc.sa.activator.activator_socket import ActivatorSocket
