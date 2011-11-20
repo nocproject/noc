@@ -27,7 +27,8 @@ class Script(NOCScript):
                                re.MULTILINE | re.IGNORECASE)
     rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)",
                            re.MULTILINE | re.IGNORECASE)
-    rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
+    rx_mac = re.compile(r"^(?:[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})|(?:[0-9af]{2}(?::[0-9af]{2}){5})$",
+                        re.IGNORECASE)
 
     def execute(self):
         r = []
