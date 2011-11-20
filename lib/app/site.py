@@ -176,7 +176,8 @@ class Site(object):
                 return HttpResponseForbidden(why)
             except:
                 # Generate 500
-                r = HttpResponseServerError(content=get_traceback())
+                r = HttpResponse(content=get_traceback(), status=500,
+                                 mimetype="text/plain; charset=utf-8")
             if not isinstance(r, HttpResponse):
                 try:
                     return HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),
