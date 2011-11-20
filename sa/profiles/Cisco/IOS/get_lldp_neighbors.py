@@ -27,8 +27,7 @@ class Script(NOCScript):
                                re.MULTILINE | re.IGNORECASE)
     rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)",
                            re.MULTILINE | re.IGNORECASE)
-    rx_mac = re.compile(r"^(?:[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})|(?:[0-9af]{2}(?::[0-9af]{2}){5})$",
-                        re.IGNORECASE)
+    rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 
     def execute(self):
         r = []
@@ -65,8 +64,8 @@ class Script(NOCScript):
                 remote_port_subtype = 7
             n = {
                 "remote_port": remote_port,
-                 "remote_port_subtype": remote_port_subtype,
-                 "remote_chassis_id_subtype": 4
+                "remote_port_subtype": remote_port_subtype,
+                "remote_chassis_id_subtype": 4
             }
             # Get capability
             cap = 0
