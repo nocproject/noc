@@ -39,7 +39,7 @@ class Script(NOCScript):
                     "edge": "edge" in settings.lower(),
                     "role": {
                         "dis": "disabled",
-                        "?": "alternate",
+                        "altn": "alternate",
                         "back": "backup",
                         "root": "root",
                         "desg": "designated",
