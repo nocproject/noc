@@ -35,6 +35,9 @@ class Script(NOCScript):
             v = self.cli("show lldp neighbors")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
+        if v.startswith("%"):
+            # % LLDP is not enabled
+            return []
         v = self.rx_summary_split.split(v)[1]
         for l in v.splitlines():
             l = l.strip()
