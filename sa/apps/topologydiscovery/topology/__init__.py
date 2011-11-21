@@ -204,16 +204,16 @@ class TopologyDiscovery(object):
         :return:
         """
         nl = []
-        # Resolve portchannels
+        # Resolve portchannels with only one unresolved link
         for l in [l for l in self.links if
                   l.is_portchannel and l.unresolved_link_count() == 1]:
             o1set = set(self.portchannels[l.o1][l.i1])
             o2set = set(self.portchannels[l.o2][l.i2])
-            for ld in l.details:
+            for l2 in l.details:
                 o1set.remove(l2.i1)
                 o2set.remove(l2.i2)
             Link(self, l.o1, o1set.pop(), l.o2, o2set.pop(), l)
-            # Remove fully resolved portchannels
+        # Remove fully resolved portchannels
         self.links = [l for l in self.links if
                       not l.is_portchannel or l.unresolved_link_count()]
         # Rename partially resolved portchannels
@@ -222,7 +222,7 @@ class TopologyDiscovery(object):
             # Convert interface names
             o1set = set(self.portchannels[l.o1][l.i1])
             o2set = set(self.portchannels[l.o2][l.i2])
-            for ld in l.details:
+            for l2 in l.details:
                 o1set.remove(l2.i1)
                 o2set.remove(l2.i2)
             l.i1 = l.i1 + ": " + ", ".join(o1set)
