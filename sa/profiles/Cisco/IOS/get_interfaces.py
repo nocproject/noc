@@ -55,6 +55,7 @@ class Script(NOCScript):
            "As": 'physical',   # Async
            "BV": 'aggregated', # BVI
            "Bu": 'aggregated', # Bundle
+           "MF": 'aggregated', # Multilink Frame Relay
            "Gr": 'physical',   # Group-Async
            "Po": 'aggregated'  # Port-channel/Portgroup
            }
@@ -134,7 +135,7 @@ class Script(NOCScript):
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
             ifname = match.group('interface')
-            if ifname[:2] in ['Vi', 'Tu']:
+            if ifname[:2] in ['Vi', 'Tu', 'Di']:
                 continue
             if ifname.find(':') > 0:
                 inm = ifname.split(':')[0]
