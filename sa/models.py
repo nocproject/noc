@@ -597,10 +597,13 @@ class ManagedObjectSelector(models.Model):
     ##
     def match(self, managed_object):
         return self.managed_objects.filter(id=managed_object.id).exists()
-    ##
-    ## Returns queryset containing managed objects supporting scripts
-    ##
-    def objects_with_scripts(self, scripts):
+
+    def scripts_profiles(self, scripts):
+        """
+        Returns a list of profile names supporting scripts
+        :param scripts: List of script names
+        :return: List of profile names
+        """
         sp = set()
         for p in profile_registry.classes:
             skip = False
@@ -610,8 +613,28 @@ class ManagedObjectSelector(models.Model):
                     continue
             if not skip:
                 sp.add(p)
-        return self.managed_objects.filter(profile_name__in=sp)
-    
+        return list(sp)
+
+    ##
+    ## Returns queryset containing managed objects supporting scripts
+    ##
+    def objects_with_scripts(self, scripts):
+        return self.managed_objects.filter(
+            profile_name__in=self.scripts_profiles(scripts))
+
+    def objects_for_user(self, user, scripts=None):
+        """
+        Returns queryset containing selector objects accessible to user,
+        optionally restricted to ones having scripts
+        :param user: User
+        :param scripts: optional list of scripts
+        :return:
+        """
+        q = UserAccess.Q(user)
+        if scripts:
+            q &= Q(profile_name__in=self.scripts_profiles(scripts))
+        return self.managed_objects.filter(q)
+
 
 ##
 ## 
