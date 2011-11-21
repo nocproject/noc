@@ -146,13 +146,14 @@ class Script(NOCScript):
             o_stat = match.group('oper_status').lower() == "up"
             hw = match.group('hardw')
             sub = {
-                            "name": ifname,
-                            "admin_status": a_stat,
-                            "oper_status": o_stat,
+                    "name": ifname,
+                    "admin_status": a_stat,
+                    "oper_status": o_stat,
                     }
             if 'alias' in match.groups():
                 sub['description'] = match.group('alias')
-
+            if match.group('desc'):
+                sub["description"] = match.group('desc')
             matchmac = self.rx_mac.search(hw)
             if matchmac:
                 sub['mac'] = matchmac.group('mac')
@@ -194,6 +195,8 @@ class Script(NOCScript):
                     "type": self.types[ifname[:2]],
                     'subinterfaces': [sub]
                 }
+                if match.group('desc'):
+                    iface["description"] = match.group('desc')
                 if 'mac' in sub.keys():
                     iface['mac'] = sub['mac']
                 if 'alias' in sub.keys():
