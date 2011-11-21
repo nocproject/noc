@@ -9,7 +9,7 @@
 ## Django modules
 from django import forms
 ## NOC modules
-from noc.lib.app import Application, HasPerm, view, NOCForm
+from noc.lib.app import Application, view, NOCForm
 from noc.sa.models import CommandSnippet, ReduceTask, ManagedObject
 from noc.main.models import Permission
 
@@ -80,11 +80,11 @@ class RunSnippetApplication(Application):
           access="launch")
     def view_index(self, request):
         """ Display all available snippets"""
-        # @todo: check permissions
         user = request.user
         snippets = [s for s in
                     CommandSnippet.objects.filter(is_enabled=True).order_by("name")
-                    if s.permission_name is None or Permission.has_perm(user, s.effective_permission_name)]
+                    if (s.permission_name is None or
+                        Permission.has_perm(user, s.effective_permission_name))]
         return self.render(request, "snippets.html", snippets=snippets)
     
     @view(url=r"^(?P<snippet_id>\d+)/$", url_name="snippet",
@@ -94,13 +94,16 @@ class RunSnippetApplication(Application):
         Snippet parameters and object selection form
         """
         snippet = self.get_object_or_404(CommandSnippet, id=int(snippet_id))
-        if snippet.permission_name and not Permission.has_perm(request.user, snippet.effective_permission_name):
+        if (snippet.permission_name and
+            not Permission.has_perm(request.user,
+                                    snippet.effective_permission_name)):
             return self.response_forbidden("Forbidden")
         vars = snippet.vars
         if "object" in vars:
             vars.remove("object")
         map_task = self.get_map_script(snippet)
-        objects = list(snippet.selector.objects_with_scripts([map_task]))
+        objects = list(snippet.selector.objects_for_user(request.user,
+                                                         [map_task]))
         form = None
         if request.POST:
             objects = ManagedObject.objects.filter(id__in=[
@@ -114,7 +117,8 @@ class RunSnippetApplication(Application):
             else:
                 data = {}
             if data is not None:
-                if not snippet.require_confirmation or "__confirmed" in request.POST:
+                if (not snippet.require_confirmation or
+                    "__confirmed" in request.POST):
                     task = self.run_task(snippet, objects, data)
                     return self.response_redirect("sa:runsnippet:task",
                                                   snippet.id, task)
