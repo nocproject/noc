@@ -45,7 +45,7 @@ if [ $? -ne 0 ]; then
 fi
 # Check configuration files
 info "Checking configuration files"
-python manage.py check-conf || error_exit "$LINENO: configuration check failed"
+./scripts/check-conf || error_exit "$LINENO: configuration check failed"
 # Syncronize database
 info "Syncronizing database"
 python manage.py syncdb || error_exit "$LINENO: syncdb failed"
