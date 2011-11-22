@@ -1,0 +1,21 @@
+SW3800PRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY             FROM SNMPv2-SMI
+        dlink-products,dlink-mgmt   FROM DLINK-ID-REC-MIB;
+
+
+    dlink-des3800SeriesProd   OBJECT IDENTIFIER ::= { dlink-products 69 }
+    dlink-des3828Prod         OBJECT IDENTIFIER ::= { dlink-des3800SeriesProd 1 }
+    dlink-des3828DCProd       OBJECT IDENTIFIER ::= { dlink-des3800SeriesProd 2 }
+    dlink-des3828PProd        OBJECT IDENTIFIER ::= { dlink-des3800SeriesProd 3 }
+    dlink-des3852Prod         OBJECT IDENTIFIER ::= { dlink-des3800SeriesProd 4 }
+    dlink-des3852PProd        OBJECT IDENTIFIER ::= { dlink-des3800SeriesProd 5 }
+
+    des3800SeriesProd   OBJECT IDENTIFIER ::= { dlink-mgmt 69 }
+    des3828       OBJECT IDENTIFIER ::= { des3800SeriesProd 1 }
+    des3828DC     OBJECT IDENTIFIER ::= { des3800SeriesProd 2 }
+    des3828P      OBJECT IDENTIFIER ::= { des3800SeriesProd 3 }
+	  des3852       OBJECT IDENTIFIER ::= { des3800SeriesProd 4 }
+	  des3852P      OBJECT IDENTIFIER ::= { des3800SeriesProd 5 }
+END
