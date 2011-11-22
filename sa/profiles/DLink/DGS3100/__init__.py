@@ -19,7 +19,10 @@ class Profile(noc.sa.profiles.Profile):
     supported_schemes = [TELNET, SSH]
     pattern_username = "[Uu]ser[Nn]ame:"
     pattern_password = "[Pp]ass[Ww]ord:"
-    pattern_more = "CTRL\+C.+?a ALL"
+    pattern_more = [
+                    (r"CTRL\+C.+?a ALL", "a"),
+                    (r"\[Yes/press any key for no\]", "Y")
+                   ]
     pattern_unpriveleged_prompt = r"^\S+:(3|6|user|operator)#"
     pattern_syntax_error = r"(Command: .+|Invalid input detected at)"
     pattern_prompt = r"^(?P<hostname>\S+)#"
