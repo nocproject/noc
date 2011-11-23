@@ -27,5 +27,5 @@ class Profile(NOCProfile):
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
-    pattern_prompt = r"^\S+# "
+    pattern_prompt = r"^\S+#"
 #    convert_interface_name = NOCProfile.convert_interface_name_cisco
