@@ -51,6 +51,7 @@ class Script(NOCScript):
            "Tu": 'tunnel',
            "C": 'physical',
            "Vl": 'SVI',        # Vlan
+           "VL": 'SVI',        # VLAN, found on C3500XL
            "Ca": 'physical',   # Cable
            "As": 'physical',   # Async
            "BV": 'aggregated', # BVI
