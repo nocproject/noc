@@ -36,11 +36,11 @@ class Script(NOCScript):
         "40": "MES-3224",
         "41": "MES-3224F",
         "42": "MES-2124",
-        "43": "MES-1024",
+        "10": "MES-1024",
     }
 
     def execute(self):
-        # Try snmp first
+        # Try SNMP first
         if self.snmp and self.access_profile.snmp_ro:
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
