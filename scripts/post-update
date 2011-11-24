@@ -35,6 +35,11 @@ info "Checking contrib/"
 ./scripts/sync-contrib -c
 if [ $? -ne 0 ]; then
     info "Contrib is out-of-date. Rebuilding"
+    # Create contrib/lib if there is enough permissions
+    if [ -d ./contrib/lib ] && [ -w ./contrib ]; then
+        echo "Creating contrib/lib"
+        mkdir ./contrib/lib
+    fi
     # Change user when necessary
     if [ -w ./contrib/lib/ ]; then
         ./scripts/sync-contrib || error_exit "$LINENO: contrib sync failed"
