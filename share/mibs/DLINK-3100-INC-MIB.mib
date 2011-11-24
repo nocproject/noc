@@ -1,0 +1,16 @@
+
+DLINK-3100-INC-MIB DEFINITIONS ::= BEGIN
+    IMPORTS
+        enterprises FROM RFC1155-SMI;
+
+dlink                   OBJECT IDENTIFIER ::= { enterprises             171 }
+dlink-products          OBJECT IDENTIFIER ::= { dlink                   10  }
+dlink-Dgs3100SeriesProd        OBJECT IDENTIFIER ::= { dlink-products          94  }
+dgs3124-Prod                OBJECT IDENTIFIER ::= { dlink-Dgs3100SeriesProd        1   }
+dgs3124p-Prod                OBJECT IDENTIFIER ::= { dlink-Dgs3100SeriesProd        2   }
+dgs3148-Prod                OBJECT IDENTIFIER ::= { dlink-Dgs3100SeriesProd        3   }
+dgs3148p-Prod                OBJECT IDENTIFIER ::= { dlink-Dgs3100SeriesProd        4   }
+dgs3124tg-Prod                OBJECT IDENTIFIER ::= { dlink-Dgs3100SeriesProd        5   }
+dgs3100-SWL2MGMT-MIB    OBJECT IDENTIFIER ::= { dlink-Dgs3100SeriesProd 89  }
+rnd                    OBJECT IDENTIFIER ::= { dgs3100-SWL2MGMT-MIB 89  }
+END
