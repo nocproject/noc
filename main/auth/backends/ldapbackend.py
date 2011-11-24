@@ -163,6 +163,6 @@ class NOCLDAPBackend(NOCAuthBackend):
                                           is_superuser=is_superuser,
                                           first_name=attrs.get("givenName"),
                                           last_name=attrs.get("sn"),
-                                          email=attrs.get("email"))
+                                          email=attrs.get("mail"))
         # Authentication passed
         return user
