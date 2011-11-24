@@ -36,7 +36,7 @@ info "Checking contrib/"
 if [ $? -ne 0 ]; then
     info "Contrib is out-of-date. Rebuilding"
     # Create contrib/lib if there is enough permissions
-    if [ -d ./contrib/lib ] && [ -w ./contrib ]; then
+    if [ ! -d ./contrib/lib ] && [ -w ./contrib ]; then
         echo "Creating contrib/lib"
         mkdir ./contrib/lib
     fi
