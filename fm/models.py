@@ -11,11 +11,9 @@
 from __future__ import with_statement
 import imp
 import subprocess
-import tempfile
 import os
 import datetime
 import re
-import random
 import hashlib
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
@@ -618,7 +616,7 @@ class EventDispositionRule(nosql.EmbeddedDocument):
     #    clear - clear alarm
     #
     action = nosql.StringField(required=True,
-                               choices=[(x, x) for x in 
+                               choices=[(x, x) for x in
                                     ("drop",
                                     "ignore",
                                     "raise",
@@ -632,13 +630,13 @@ class EventDispositionRule(nosql.EmbeddedDocument):
                                         default="none",
                                         choices=[(x, x) for x in (
                                             "none",  # Apply action immediately
-                                            "frequency", # Apply when event
-                                                         # firing rate exceeds
-                                                         # combo_count times
-                                                         # during combo_window
-                                            "sequence",  # Apply action if event
-                                                         # followed by all combo events
-                                                         # in strict order
+                                            "frequency",  # Apply when event
+                                                          # firing rate exceeds
+                                                          # combo_count times
+                                                          # during combo_window
+                                            "sequence",   # Apply action if event
+                                                          # followed by all combo events
+                                                          # in strict order
                                             "all",  # Apply action if event
                                                     # followed by all combo events
                                                     # in no specific order
@@ -649,7 +647,7 @@ class EventDispositionRule(nosql.EmbeddedDocument):
     combo_window = nosql.IntField(required=False, default=0)
     # Applicable for frequency.
     combo_count = nosql.IntField(required=False, default=0)
-    # Applicable for sequence, all and any combo_condition 
+    # Applicable for sequence, all and any combo_condition
     combo_event_classes = nosql.ListField(nosql.PlainReferenceField("EventClass"),
                                           required=False,
                                           default=[])
@@ -732,9 +730,9 @@ class EventClass(nosql.Document):
     #     D - Drop
     #     L - Log as processed, do not move to archive
     #     A - Log as processed, move to archive
-    action = nosql.StringField(required=True,choices=[("D", "Drop"),
-                                                       ("L", "Log"),
-                                                       ("A", "Log & Archive")])
+    action = nosql.StringField(required=True, choices=[("D", "Drop"),
+                                                        ("L", "Log"),
+                                                        ("A", "Log & Archive")])
     vars = nosql.ListField(nosql.EmbeddedDocumentField(EventClassVar))
     # Text messages
     # alarm_class.text -> locale -> {
@@ -840,7 +838,7 @@ class EventClassificationRule(nosql.Document):
     name = nosql.StringField(required=True, unique=True)
     is_builtin = nosql.BooleanField(required=True)
     description = nosql.StringField(required=False)
-    event_class=nosql.PlainReferenceField(EventClass, required=True)
+    event_class = nosql.PlainReferenceField(EventClass, required=True)
     preference = nosql.IntField(required=True, default=1000)
     patterns = nosql.ListField(nosql.EmbeddedDocumentField(EventClassificationPattern))
     datasources = nosql.ListField(nosql.EmbeddedDocumentField(DataSource))
@@ -1523,20 +1521,21 @@ class ArchivedAlarm(nosql.Document):
     def set_root(self, root_alarm):
         pass
 
+
 class IgnoreEventRules(models.Model):
     class Meta:
         verbose_name = "Ignore Event Rule"
         verbose_name_plural = "Ignore Event Rules"
         unique_together = [("left_re", "right_re")]
 
-    name = models.CharField("Name", max_length=64,unique=True)
+    name = models.CharField("Name", max_length=64, unique=True)
     left_re = models.CharField("Left RE", max_length=256)
     right_re = models.CharField("Right Re", max_length=256)
     is_active = models.BooleanField("Is Active", default=True)
     description = models.TextField("Description", null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s (%s,%s)"%(self.name, self.left_re, self.right_re)
+        return u"%s (%s, %s)" % (self.name, self.left_re, self.right_re)
 
 
 class EventTrigger(models.Model):
