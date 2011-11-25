@@ -7,12 +7,18 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 import os
-from optparse import OptionParser, make_option
+from optparse import make_option
+import gzip
+import re
+import datetime
+import time
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.fm.models import MIB, MIBRequiredException
+from noc.fm.models import MIB, MIBData
+from noc.lib.serialize import json_decode
 
 
 class Command(BaseCommand):
@@ -23,42 +29,87 @@ class Command(BaseCommand):
                     default=False, help="Force reload"),
     )
 
+    rx_last_updated = re.compile(r"\"last_updated\": \"([^\"]+)\"",
+                                 re.MULTILINE)
+
     def handle(self, *args, **options):
+        print "Synchnonizing MIBs"
         self.sync_mibs(force=options["force"])
+
+    def get_bundled_mibs(self):
+        """
+        Generator returning bundled MIBs list
+        :returns: Yields (MIB Name, path)
+        """
+        for root, dirs, files in os.walk("fm/collections/mibs/"):
+            for f in files:
+                if (not f.startswith(".") and
+                    (f.endswith(".json.gz") or f.endswith(".json"))):
+                    mib_name = f.split(".", 1)[0]
+                    yield mib_name, os.path.join(root, f)
 
     def sync_mibs(self, force=False):
         """
         Upload bundled MIBs
         """
-        # Loaded MIBs cache
-        if force:
-            loaded_mibs = set()
-        else:
-            loaded_mibs = set([m.name for m in MIB.objects.all()])
-        # Enumerate local stored MIBs
-        prefix = os.path.join("share", "mibs")
-        new_mibs = {}
-        for m in os.listdir(prefix):
-            mib_name, ext = os.path.splitext(m)
-            if mib_name not in loaded_mibs:
-                # Try to upload new MIB
-                try:
-                    MIB.load(os.path.join(prefix, m))
-                    loaded_mibs.add(mib_name)
-                    print "UPLOAD MIB %s" % mib_name
-                except MIBRequiredException, x:
-                    new_mibs[mib_name] = x.requires_mib
-        # Try to load new MIBs
-        while new_mibs:
-            l_new_mibs = len(new_mibs)
-            for mib_name, requires_mib in new_mibs.items():
-                if requires_mib in loaded_mibs:
-                    try:
-                        MIB.load(os.path.join(prefix, mib_name + ".mib"))
-                        loaded_mibs.add(mib_name)
-                        print "UPLOAD MIB %s" % mib_name
-                        del new_mibs[mib_name]
-                    except MIBRequiredException, x:
-                        new_mibs[mib_name] = x.requires_mib
-            if len(new_mibs) == l_new_mibs:  # No new MIBs loaded
-                raise CommandError("Following builtin MIBs cannot be loaded: %s" % " ".join(new_mibs))
+        for mib_name, path in self.get_bundled_mibs():
+            mib = MIB.objects.filter(name=mib_name).first()
+            if path.endswith(".gz"):
+                f = gzip.GzipFile(path, "r")
+            else:
+                f = open(path, "r")
+            if mib:
+                data = f.read(4096)
+                match = self.rx_last_updated.search(data)
+                if not match:
+                    # Not in first chunk. Read rest
+                    data += f.read()
+                    match = self.rx_last_updated.search(data)
+                last_updated = self.decode_date(match.group(1))
+                if (last_updated > mib.last_updated) or force:
+                    print "    updating %s" % mib_name
+                    self.update_mib(mib, data + f.read())
+            else:
+                print "    creating %s" % mib_name
+                self.create_mib(f.read())
+            f.close()
+
+    def decode_date(self, s):
+        """
+        Convert YYYY-MM-DD date to DateTime
+        """
+        ts = time.strptime(s, "%Y-%m-%d")
+        return datetime.datetime(year=ts.tm_year, month=ts.tm_mon,
+                                 day=ts.tm_mday)
+
+    def update_mib(self, data):
+        # Deserealize
+        d = json_decode(data)
+        # Update timestamp
+        mib.last_updated = data["last_updated"]
+        mib.save()
+        # Upload
+        self.upload_mib(mib, d, clean=True)
+
+    def create_mib(self, data):
+        # Deserialze
+        d = json_decode(data)
+        # Create MIB
+        mib = MIB(name=d["name"], description=d["description"],
+                  last_updated=self.decode_date(d["last_updated"]),
+                  depends_on=d["depends_on"])
+        mib.save()
+        # Upload
+        self.upload_mib(mib, d)
+
+    def upload_mib(self, mib, data, clean=False):
+        # Prepare new data
+        mib_id = mib.id
+        for x in data["data"]:
+            x["mib"] = mib_id
+        if clean:
+            # Delete old data
+            MIBData.objects.filter(mib=mib_id).delete()
+        # Upload new data
+        if data["data"]:
+            MIBData._get_collection().insert(data["data"])
