@@ -19,10 +19,9 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
         var tab = this.add({
             title: title,
             closable: true,
-            autoScroll: true,
-            layout: "fit",
-            items: [Ext.create(panel_class, {"noc": params})]
+            layout: "fit"
         });
+        tab.add(Ext.create(panel_class, {"noc": params}));
         this.setActiveTab(tab);
         tab.on("beforeclose", function(tab) {
             if(tab.menu_node && tab.desktop_controller)
