@@ -8,14 +8,20 @@ Ext.define('Ext.ux.grid.AutoSize', {
     },
 
     init : function(gridpanel) {
-        gridpanel.on('resize', this.onResize, this);
         gridpanel.getView().on('refresh', this.onRefresh, this);
+        gridpanel.on('added', this.onAdded, this);
     },
 
-    onResize: function(gridpanel) {
-        this.update_content(gridpanel.getView());
+    // listen parent's 'resize' event
+    onAdded : function(gridpanel) {
+        gridpanel.ownerCt.on('resize', this.onResize, this);
     },
 
+    onResize: function(panel) {
+        this.update_content(panel.down('gridpanel').getView());
+    },
+
+    // calculate row size when grid displayed first time
     onRefresh: function(view) {
         var e = view.all.item(0);
 
