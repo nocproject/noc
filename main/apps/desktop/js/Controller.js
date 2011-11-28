@@ -94,8 +94,6 @@ Ext.define("NOC.main.desktop.Controller", {
                 this.change_theme(settings["theme"]);
             }
         });
-        // Load menu
-        //this.update_menu();
         // Launch welcome application
         this.launch_tab("NOC.main.welcome.Application", "Welcome", {});
     },
@@ -148,6 +146,7 @@ Ext.define("NOC.main.desktop.Controller", {
             success: function(response) {
                 Ext.getCmp("header").getComponent("user_display_name").hide();
                 Ext.getCmp("workplace").removeAll(true);
+                this.update_menu();
                 this.show_login();
             },
             failure: function(response) {
