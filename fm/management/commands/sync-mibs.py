@@ -82,7 +82,7 @@ class Command(BaseCommand):
         return datetime.datetime(year=ts.tm_year, month=ts.tm_mon,
                                  day=ts.tm_mday)
 
-    def update_mib(self, data):
+    def update_mib(self, mib, data):
         # Deserealize
         d = json_decode(data)
         # Update timestamp
