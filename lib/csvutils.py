@@ -13,6 +13,12 @@ import cStringIO
 from django.db import models
 
 
+# CSV import conflict resolution constants
+IR_FAIL = 0  # Fail on first conflict
+IR_SKIP = 1  # Skip conflicted records
+IR_UPDATE = 2  # Overwrite conflicted records
+
+
 def get_model_fields(model):
     # Detect fields
     fields = []
@@ -70,7 +76,7 @@ IGNORED_REQUIRED = {
     }
 
 
-def csv_import(model, f):
+def csv_import(model, f, resolution=IR_FAIL):
     """
     Import from CSV
     :returns: (record_count,error_message).
@@ -84,13 +90,8 @@ def csv_import(model, f):
     # Process model fields
     field_names = set()
     required_fields = set()
+    unique_fields = set([f.name for f in model._meta.fields if f.unique])
     fk = {}  # Foreign keys: name->(model,field)
-    # Try to find index field
-    index_field = "id"
-    for f in model._meta.fields:
-        if f.name != index_field and f.unique:
-            index_field = f.name
-            break
     # find boolean fields
     booleans = set([f.name for f in model._meta.fields if
                     isinstance(f, models.BooleanField)])
@@ -107,6 +108,9 @@ def csv_import(model, f):
     # Read and validate header
     header = reader.next()
     left = field_names.copy()
+    u_fields = [h for h in header if h in unique_fields]
+    ut_fields = [fs for fs in model._meta.unique_together
+                 if len(fs) == len([f for f in fs if f in header])]
     # Check field names
     for h in header:
         if h not in field_names:
@@ -117,9 +121,10 @@ def csv_import(model, f):
         if h in required_fields:
             return None, "Required field '%s' is missed" % h
     # Load data
-    count = 1
+    count = 0
     l_header = len(header)
     for row in reader:
+        count += 1
         if len(row) != l_header:
             return None, "Invalid row size. line %d" % count
         vars = dict(zip(header, row))
@@ -131,46 +136,69 @@ def csv_import(model, f):
             # Delete empty values
             if not v:
                 del vars[h]
-            # reference foreign keys
-            if h in fk and v:
-                rel, rname = fk[h]
-                try:
-                    ro = rel.objects.get(**{rname: v})
-                except rel.DoesNotExist:
-                    # Failed to reference by name, fallback to id
+            else:
+                if h in fk:
+                    # reference foreign keys
+                    rel, rname = fk[h]
                     try:
-                        id = int(v)
-                    except:
-                        return None, "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count)
-                    try:
-                        ro = rel.objects.get(**{"id": id})
+                        ro = rel.objects.get(**{rname: v})
                     except rel.DoesNotExist:
-                        return None, "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count)
-                vars[h] = ro
-        # Load or create new object
-        if index_field != "id":
+                        # Failed to reference by name, fallback to id
+                        try:
+                            id = int(v)
+                        except ValueError:
+                            return None, "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count)
+                        try:
+                            ro = rel.objects.get(**{"id": id})
+                        except rel.DoesNotExist:
+                            return None, "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count)
+                    vars[h] = ro
+                elif h in booleans:
+                    # Convert booleans
+                    vars[h] = v.lower() in ["t", "true", "yes", "y"]
+                elif h in integers:
+                    # Convert integers
+                    try:
+                        vars[h] = int(v)
+                    except ValueError, why:
+                        raise ValueError("Invalid integer: %s" % why)
+        # Find object
+        o = None
+        for f in u_fields:
+            # Find by unique fields
             try:
-                o = model.objects.get(**{index_field: vars[index_field]})
+                o = model.objects.get(**{f: vars[f]})
+                break
             except model.DoesNotExist:
-                o = model()
+                pass
+        if o is None and ut_fields:
+            # Find by composite unique keys
+            for fs in ut_fields:
+                try:
+                    o = model.objects.get(**dict([(f, vars[f]) for f in fs]))
+                    break
+                except model.DoesNotExist:
+                    pass
+        if o:
+            # Object exists, behave according the resolution order
+            if resolution == IR_FAIL:
+                # Fail
+                return None, "Failed to save line %d: Object %s is already exists" % (
+                    count, repr(vars))
+            elif resolution == IR_SKIP:
+                # Skip line
+                count -= 1
+                continue
         else:
+            # Create object
             o = model()
         # Set attributes
         for k, v in vars.items():
-            if k in booleans:
-                # Convert boolean
-                v = v.lower() in ["t", "true", "yes", "y"]
-            elif k in integers:
-                try:
-                    v = int(v)
-                except:
-                    raise Exception("Invalid integer: %s" % v)
             setattr(o, k, v)
         # Save
         try:
             o.save()
-            count += 1
         except Exception, why:
-            return None, "Failed to save line %d: %s. %s" % (
-            count, str(why), repr(vars))
-    return count - 1, None
+            return None, "Failed to save line %d: %s. %s" % (count, str(why),
+                                                             repr(vars))
+    return count, None
