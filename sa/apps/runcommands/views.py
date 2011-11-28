@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Parallel command execution
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -42,6 +42,8 @@ class RunCommandsAppplication(SAApplication):
     class CommandsForm(forms.Form):
         commands = forms.CharField(widget=forms.Textarea,
                                    help_text="Enter a list of commands to execute. One command per a line.")
+        ignore_cli_errors = forms.BooleanField(required=False,
+            help_text="Ignore CLI errors and continue execution")
 
     form = CommandsForm
 
@@ -52,7 +54,8 @@ class RunCommandsAppplication(SAApplication):
         :return:
         """
         return {
-            "commands": [c for c in data["commands"].splitlines()]
+            "commands": [c for c in data["commands"].splitlines()],
+            "ignore_cli_errors": data["ignore_cli_errors"]
         }
 
     def clean_reduce(self, data):
