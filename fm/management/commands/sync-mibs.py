@@ -86,7 +86,7 @@ class Command(BaseCommand):
         # Deserealize
         d = json_decode(data)
         # Update timestamp
-        mib.last_updated = data["last_updated"]
+        mib.last_updated = d["last_updated"]
         mib.save()
         # Upload
         self.upload_mib(mib, d, clean=True)
