@@ -74,6 +74,6 @@ info "Syncronizing refbooks"
 python manage.py sync-refbooks || error_exit "$LINENO: sync-refbooks failed"
 # Syncronize MIBS
 info "Syncronize MIBs"
-python manage.py sync-mibs
+python manage.py sync-mibs || error_exit "$LINENO: sync-mibs failed"
 #
 info "$PROGNAME complete"
