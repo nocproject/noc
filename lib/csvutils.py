@@ -76,6 +76,10 @@ def csv_import(model, f):
     :returns: (record_count,error_message).
               record_count is None if error_message set
     """
+    ## Detect UTF8 BOM (EF BB BF)
+    if not f.read(3) == "\xef\xbb\xbf":
+        # No BOM found, seek to start
+        f.seek(0)
     reader = csv.reader(f)
     # Process model fields
     field_names = set()
