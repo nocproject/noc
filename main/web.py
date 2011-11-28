@@ -11,6 +11,7 @@ import logging
 import os
 import errno
 import signal
+import socket
 ## Django modules
 import django.core.handlers.wsgi
 ## Third-party modules
@@ -89,7 +90,11 @@ class Web(Daemon):
         logging.info("Listening %s:%s" % (address, port))
         # Create tornado server
         self.server = tornado.httpserver.HTTPServer(application)
-        self.server.bind(port, address)
+        try:
+            self.server.bind(port, address)
+        except socket.error, why:
+            logging.error(str(why))
+            os._exit(1)
         # Run children
         nc = self.config.getint("web", "workers")
         if nc == 0:
@@ -101,6 +106,8 @@ class Web(Daemon):
                 pid = os.fork()
                 if pid == 0:
                     self.children_loop()
+                elif pid < 0:
+                    logging.error("Unable to fork child")
                 else:
                     logging.info("Running child %d" % pid)
                     self.t_children.add(pid)
