@@ -39,5 +39,63 @@
                 "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) link up"
             }
         ]
+    },
+
+    {
+        "name": "DLink | DxS | Network | Link | Link Down (SNMP)",
+        "description": "SW36XXPRIMGMT-MIB::d.+",
+        "event_class__name": "Network | Link | Link Down",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^SW36XXPRIMGMT-MIB::[Dd].+$"
+            },
+            {
+                "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
+                "value_re": "down$"
+            },
+            {
+                "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+                "value_re": "(?P<interface>\\d+)$"
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS | Network | Link | Link Up (SNMP)",
+        "description": "SW36XXPRIMGMT-MIB::d.+",
+        "event_class__name": "Network | Link | Link Up",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^SW36XXPRIMGMT-MIB::[Dd].+$"
+            },
+            {
+                "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
+                "value_re": "up$"
+            },
+            {
+                "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+                "value_re": "(?P<interface>\\d+)$"
+            }
+        ]
     }
 ]
