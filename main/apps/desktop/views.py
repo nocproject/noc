@@ -24,6 +24,7 @@ class DesktopApplication(ExtApplication):
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         # Parse themes
+        self.default_theme = config.get("customization", "default_theme")
         self.themes = {}  # id -> {name: , css:}
         for o in config.options("themes"):
             if o.endswith(".name"):
@@ -68,7 +69,8 @@ class DesktopApplication(ExtApplication):
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime
         }
-        return self.render(request, "desktop.html", apps=apps, setup=setup)
+        return self.render(request, "desktop.html", apps=apps, setup=setup,
+                           theme_css=self.themes[self.default_theme]["css"])
 
     ##
     ## Exposed Public API
@@ -152,7 +154,7 @@ class DesktopApplication(ExtApplication):
             "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "theme": config.get("customization", "default_theme"),
+            "theme": self.default_theme,
             "can_change_credentials": auth_backend.can_change_credentials
         }
 
