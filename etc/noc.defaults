@@ -166,6 +166,26 @@ logo_height = 24
 favicon_url = /static/img/logo_24x24_deep_azure.png
 
 #
+# UI themes
+#
+[themes]
+blue.name = Blue
+blue.css = /static/resources/css/ext-all.css
+blue.enabled = true
+
+gray.name = Gray
+gray.css = /static/resources/css/ext-all-gray.css
+gray.enabled = true
+
+access.name = Access
+access.css = /static/resources/css/ext-all-access.css
+access.enabled = true
+
+scoped.name = Scoped
+scoped.css = /static/resources/css/ext-all-scoped.css
+scoped.enabled = true
+
+#
 # cm module setup
 #
 [cm]
