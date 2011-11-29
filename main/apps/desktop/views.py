@@ -154,7 +154,7 @@ class DesktopApplication(ExtApplication):
             profile = user.get_profile()
         except:
             profile = None
-        if profile and profile.theme:
+        if profile and profile.theme and profile.theme in self.themes:
             theme = profile.theme
         else:
             theme = self.default_theme
