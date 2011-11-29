@@ -1,22 +1,53 @@
 #!/bin/sh
 ##----------------------------------------------------------------------
 ## NOC post-install script
+##
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 PREFIX=/opt/noc
+REPO=/var/repo
+BACKUP=/var/backup
+LOG=/var/log/noc
+NOCUSER=noc
+NOCGROUP=noc
 
+## Parse arguments
+while getopts hp:r:b:l:u:g: o
+do case "$o" in
+    h)
+        echo "Usage: $0 [-p <prefix>] [-r <repo>] [-b <backup>] [-l <log>] [-u <user>] [-g <group>]"
+        exit 0
+    ;;
+    p) PREFIX="$OPTARG";;
+    r) REPO="$OPTARG";;
+    b) BACKUP="$OPTARG";;
+    l) LOG="$OPTARG";;
+    u) NOCUSER="$OPTARG";;
+    g) NOCGROUP="$OPTARG";;
+esac done
+
+if [ ! -d "$PREFIX" ]; then
+    echo "Directory $PREFIX is not found"
+    exit 1
+fi
+exit 1
 cd $PREFIX
-
+##
+## Set up configuration files
+##
+echo "Set up configuration files"
 ./scripts/install-conf
 chmod 640 etc/*.conf
 chown noc:noc etc/*.conf
 ##
 ## Create required directories
 ##
-for d in local etc/ssh static/doc /var/repo /var/backup /var/log/noc; do
+echo "Create directories"
+for d in local etc/ssh static/doc $REPO $BACKUP $NOC; do
     [ ! -d $d ] && mkdir $d
-    chown noc:noc $d
+    chown $NOCUSER:$NOCGROUP $d
 done
 chmod 700 etc/ssh
+echo "post-install completed"
