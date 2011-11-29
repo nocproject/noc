@@ -150,11 +150,19 @@ class DesktopApplication(ExtApplication):
         Get user settings
         """
         user = request.user
+        try:
+            profile = user.get_profile()
+        except:
+            profile = None
+        if profile and profile.theme:
+            theme = profile.theme
+        else:
+            theme = self.default_theme
         return {
             "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "theme": self.default_theme,
+            "theme": theme,
             "can_change_credentials": auth_backend.can_change_credentials
         }
 

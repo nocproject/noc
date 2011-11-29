@@ -26,7 +26,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     inlines = [UserProfileContactAdmin]
     fieldsets = (
         (None, {
-            "fields": ("preferred_language",),
+            "fields": ("preferred_language", "theme"),
         }),
     )
 ##
