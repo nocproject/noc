@@ -912,6 +912,26 @@ class EventClassificationRule(nosql.Document):
         r += ["}"]
         return "\n".join(r)
 
+
+class CloneClassificationRule(nosql.Document):
+    """
+    Classification rules cloning
+    """
+    meta = {
+        "collection": "noc.cloneclassificationrules",
+        "allow_inheritance": False
+    }
+
+    name = nosql.StringField(unique=True)
+    key_re = nosql.StringField(default="^.*$")
+    value_re = nosql.StringField(default="^.*$")
+    is_builtin = nosql.BooleanField(default=False)
+    rewrite_from = nosql.StringField()
+    rewrite_to = nosql.StringField()
+
+    def __unicode__(self):
+        return self.name
+
 ##
 ## Events.
 ## Events are divided to 4 statuses:
