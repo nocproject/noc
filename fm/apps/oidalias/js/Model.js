@@ -28,6 +28,11 @@ Ext.define("NOC.fm.oidalias.Model", {
             name: "is_builtin",
             type: "boolean",
             defaultValue: false
+        },
+
+        {
+            name: "description",
+            type: "string"
         }
     ]
 });

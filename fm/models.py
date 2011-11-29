@@ -88,6 +88,7 @@ class OIDAlias(nosql.Document):
     rewrite_oid = nosql.StringField(unique=True)
     to_oid = nosql.StringField()
     is_builtin = nosql.BooleanField(default=False)
+    description = nosql.StringField(required=False)
     
     ## Lookup cache
     cache = None

@@ -22,6 +22,10 @@ Ext.define("NOC.fm.oidalias.Application", {
         {
             text: "Is Builtin",
             dataIndex: "is_builtin"
+        },
+        {
+            text: "Description",
+            dataIndex: "description"
         }
     ],
     fields: [
@@ -43,6 +47,12 @@ Ext.define("NOC.fm.oidalias.Application", {
             name: "is_builtin",
             xtype: "checkboxfield",
             boxLabel: "Is Builtin"
+        },
+        {
+            name: "description",
+            xtype: "textfield",
+            fieldLabel: "description",
+            allowBlank: true
         }
     ]
 });
