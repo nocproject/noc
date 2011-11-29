@@ -38,8 +38,10 @@ class Script(noc.sa.script.Script):
         else:
             cmd = "show interfaces status"
         for match in self.rx_interface_status.finditer(self.cli(cmd)):
-            r.append({
-                    "interface" : match.group("interface"),
-                    "status"    : match.group("status") == "Up"
-                    })
+            iface = match.group("interface")
+            if iface[:2] == 'fa' or iface[:2] == 'gi' or iface[:2] == 'te':
+                r.append({
+                        "interface" : match.group("interface"),
+                        "status"    : match.group("status") == "Up"
+                        })
         return r
