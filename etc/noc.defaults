@@ -164,6 +164,8 @@ logo_width = 24
 logo_height = 24
 # favicon url
 favicon_url = /static/img/logo_24x24_deep_azure.png
+# Default theme
+default_theme = gray
 
 #
 # UI themes

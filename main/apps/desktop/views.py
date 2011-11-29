@@ -152,7 +152,7 @@ class DesktopApplication(ExtApplication):
             "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "theme": "gray",
+            "theme": config.get("customization", "default_theme"),
             "can_change_credentials": auth_backend.can_change_credentials
         }
 
