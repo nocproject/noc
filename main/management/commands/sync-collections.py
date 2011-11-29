@@ -229,7 +229,8 @@ class Command(BaseCommand):
             ("alarmseverities", AlarmSeverity),
             ("alarmclasses", AlarmClass),
             ("eventclasses", EventClass),
-            ("eventclassificationrules", EventClassificationRule)
+            ("eventclassificationrules", EventClassificationRule),
+            ("cloneclassificationrules", CloneClassificationRule)
             ])
     ]
 

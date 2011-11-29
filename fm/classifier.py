@@ -19,7 +19,7 @@ from django.db import reset_queries
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
-                          EventClass, MIB, EventLog,\
+                          EventClass, MIB, EventLog, CloneClassificationRule,\
                           ActiveEvent, EventTrigger, Enumeration
 from noc.sa.models import profile_registry
 from noc.lib.version import get_version
@@ -88,6 +88,47 @@ class Trigger(object):
             self.pyrule(event=event)
 
 
+class CloningRule(object):
+    class Pattern(object):
+        def __init__(self, key_re, value_re):
+            self.key_re = key_re
+            self.value_re = value_re
+
+        def __unicode__(self):
+            return u"%s : %s" % (self.key_re, self.value_re)
+
+    def __init__(self, rule):
+        self.name = rule.name
+        try:
+            self.key_re = re.compile(rule.key_re)
+        except Exception, why:
+            raise InvalidPatternException("Error in '%s': %s" % (rule.key_re,
+                                          why))
+        try:
+            self.value_re = re.compile(rule.value_re)
+        except Exception, why:
+            raise InvalidPatternException("Error in '%s': %s" % (rule.value_re,
+                                          why))
+        try:
+            self.rewrite_from = re.compile(rule.rewrite_from)
+        except Exception, why:
+            raise InvalidPatternException("Error in '%s': %s" % (
+                                          rule.rewrite_from, why))
+        self.rewrite_to = rule.rewrite_to
+
+    def match(self, rule):
+        for x in rule.rule.patterns:
+            if (self.key_re.search(x.key_re) and
+                self.value_re.search(x.value_re)):
+                return True
+        return False
+
+    def rewrite(self, pattern):
+        return CloningRule.Pattern(
+            self.rewrite_from.sub(self.rewrite_to, pattern.key_re),
+            self.rewrite_from.sub(self.rewrite_to, pattern.value_re))
+
+
 class Rule(object):
     """
     In-memory rule representation
@@ -97,10 +138,12 @@ class Rule(object):
     rx_exact = re.compile(r"^\^[a-zA-Z0-9%: \-_]+\$$")
     rx_hex = re.compile(r"(?<!\\)\\x([0-9a-f][0-9a-f])", re.IGNORECASE)
     
-    def __init__(self, classifier, rule):
+    def __init__(self, classifier, rule, clone_rule=None):
         self.classifier = classifier
         self.rule = rule
         self.name = rule.name
+        if clone_rule:
+            self.name += "(Clone %s)" % clone_rule.name
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
         self.is_unknown = self.event_class_name.startswith("Unknown | ")
@@ -129,6 +172,9 @@ class Rule(object):
         self.fixups = set()
         self.profile = None
         for x in rule.patterns:
+            if clone_rule:
+                # Rewrite, when necessary
+                x = clone_rule.rewrite(x)
             x_key = None
             rx_key = None
             x_value = None
@@ -288,6 +334,12 @@ class Rule(object):
         exec code in {"rule": self, "new": new,
                       "logging": logging, "fm_unescape": fm_unescape}
 
+    def clone(self, rules):
+        """
+        Factory returning clone rules
+        """
+        pass
+
     def fixup_int_to_ip(self, v):
         v = long(v)
         return "%d.%d.%d.%d" % (
@@ -369,28 +421,53 @@ class Classifier(Daemon):
         """
         logging.info("Loading rules")
         n = 0
+        cn = 0
         profiles = list(profile_registry.classes)
         self.rules = {}
+        # Initialize profiles
         for p in profiles:
             self.rules[p] = []
+        # Load cloning rules
+        cloning_rules = []
+        for cr in CloneClassificationRule.objects.all():
+            try:
+                cloning_rules += [CloningRule(cr)]
+            except InvalidPatternException, why:
+                logging.error("Failed to load cloning rule '%s': Invalid pattern: %s" % (cr.name, why))
+                continue
+        logging.info("%d cloning rules found" % len(cloning_rules))
+        # Initialize rules
         for r in EventClassificationRule.objects.order_by("preference"):
             try:
                 rule = Rule(self, r)
             except InvalidPatternException, why:
                 logging.error("Failed to load rule '%s': Invalid patterns: %s" % (r.name, why))
                 continue
-            # Find profile restriction
-            if rule.profile:
-                profile_re = rule.profile
-            else:
-                profile_re = r"^.*$"
-            rx = re.compile(profile_re)
-            for p in profiles:
-                if rx.search(p):
-                    self.rules[p] += [rule]
-            n += 1
-        logging.info("%d rules are loaded in the %d profiles" % (n,
-                                                            len(self.rules)))
+            # Apply cloning rules
+            rs = [rule]
+            for cr in cloning_rules:
+                if cr.match(rule):
+                    try:
+                        rs += [Rule(self, r, cr)]
+                        cn += 1
+                    except InvalidPatternException, why:
+                        logging.error("Failed to clone rule '%s': Invalid patterns: %s" % (r.name, why))
+                        continue
+            for rule in rs:
+                # Find profile restriction
+                if rule.profile:
+                    profile_re = rule.profile
+                else:
+                    profile_re = r"^.*$"
+                rx = re.compile(profile_re)
+                for p in profiles:
+                    if rx.search(p):
+                        self.rules[p] += [rule]
+                n += 1
+        if cn:
+            logging.info("%d rules are cloned" % cn)
+        logging.info("%d rules are loaded in the %d profiles" % (
+            n, len(self.rules)))
     
     def load_triggers(self):
         logging.info("Loading triggers")
