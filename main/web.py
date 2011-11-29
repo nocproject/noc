@@ -22,6 +22,7 @@ import tornado.httpserver
 from tornado.process import cpu_count
 ## NOC modules
 from noc.lib.daemon import Daemon
+from noc.lib.version import get_version
 
 
 class AppStaticFileHandler(tornado.web.StaticFileHandler):
@@ -86,6 +87,7 @@ class Web(Daemon):
             # Pass to NOC
             (r"^.*$", tornado.web.FallbackHandler, {"fallback": noc_wsgi})
         ])
+        logging.info("Running NOC %s webserver" % get_version())
         logging.info("Loading site")
         logging.info("Listening %s:%s" % (address, port))
         # Create tornado server
