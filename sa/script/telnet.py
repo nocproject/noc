@@ -219,3 +219,10 @@ class CLITelnetSocket(CLI, ConnectedTCPSocket):
         if self.get_state() == "START":
             self.motd = "Connection timeout"
             self.set_state("FAILURE")
+
+    def on_connect(self):
+        super(CLITelnetSocket, self).on_connect()
+        r = self.script.profile.telnet_send_on_connect
+        if r is not None:
+            self.debug("Sending %s on connect" % repr(r))
+            self.write(r)
