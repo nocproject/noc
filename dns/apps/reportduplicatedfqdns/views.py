@@ -17,7 +17,7 @@ class Reportreportduplicatedfqdns(SimpleReport):
     def get_data(self, **kwargs):
         vrf_id = VRF.get_global().id
         return self.from_query(title=self.title,
-                               columns=["FQDN", "N", "Addresses"],
+                               columns=["FQDN", "AFI"," N", "Addresses"],
                                query="""
 SELECT fqdn, afi, COUNT(*),
     array_to_string(ARRAY(SELECT address
