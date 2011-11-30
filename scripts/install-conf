@@ -49,7 +49,10 @@ done
 for d in etc/*.defaults; do
     conf=`echo $d|sed 's/.defaults$/.conf/'`
     if [ ! -f $conf ]; then
+        echo "    creating $conf"
         sed -f $sed_script < $d > $conf
+    else
+        echo "    $conf is already exists. skipping..."
     fi
 done
 rm $sed_script
