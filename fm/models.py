@@ -923,6 +923,7 @@ class CloneClassificationRule(nosql.Document):
     }
 
     name = nosql.StringField(unique=True)
+    re = nosql.StringField(default="^.*$")
     key_re = nosql.StringField(default="^.*$")
     value_re = nosql.StringField(default="^.*$")
     is_builtin = nosql.BooleanField(default=False)
