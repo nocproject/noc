@@ -10,20 +10,22 @@ PREFIX=/opt/noc
 REPO=/var/repo
 BACKUP=/var/backup
 LOG=/var/log/noc
+PIDDIR=$LOG
 NOCUSER=noc
 NOCGROUP=noc
 
 ## Parse arguments
-while getopts hp:r:b:l:u:g: o
+while getopts hp:r:b:l:P:u:g: o
 do case "$o" in
     h)
-        echo "Usage: $0 [-p <prefix>] [-r <repo>] [-b <backup>] [-l <log>] [-u <user>] [-g <group>]"
+        echo "Usage: $0 [-p <prefix>] [-r <repo>] [-b <backup>] [-l <log>] [-P <pid_dir>] [-u <user>] [-g <group>]"
         exit 0
     ;;
     p) PREFIX="$OPTARG";;
     r) REPO="$OPTARG";;
     b) BACKUP="$OPTARG";;
     l) LOG="$OPTARG";;
+    P) PIDDIR="$OPTARG";;
     u) NOCUSER="$OPTARG";;
     g) NOCGROUP="$OPTARG";;
 esac done
@@ -37,7 +39,7 @@ cd $PREFIX
 ## Set up configuration files
 ##
 echo "Set up configuration files"
-./scripts/install-conf -r "$REPO" -b "$BACKUP" -l "$LOG"
+./scripts/install-conf -r "$REPO" -b "$BACKUP" -l "$LOG" -P "$PIDDIR"
 chmod 640 etc/*.conf
 chown noc:noc etc/*.conf
 ##
