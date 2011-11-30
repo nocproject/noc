@@ -50,6 +50,10 @@ class ScriptProxy(object):
         """Check profile has script name"""
         return name in self._parent.profile.scripts
 
+    def __contains__(self, name):
+        """Check profile has script name"""
+        return self.has_script(name)
+
 
 class ScriptCallProxy(object):
     """
