@@ -7,4 +7,5 @@
 ##----------------------------------------------------------------------
 
 from noc.lib.nbsocket.exceptions import *
-from lib.nbsocket.basesocket import *
+from noc.lib.nbsocket.basesocket import *
+from noc.lib.nbsocket.socketfactory import *
