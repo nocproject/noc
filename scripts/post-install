@@ -3,7 +3,7 @@
 ## NOC post-install script
 ##
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 PREFIX=/opt/noc
@@ -37,7 +37,7 @@ cd $PREFIX
 ## Set up configuration files
 ##
 echo "Set up configuration files"
-./scripts/install-conf
+./scripts/install-conf -r "$REPO" -b "$BACKUP" -l "$LOG"
 chmod 640 etc/*.conf
 chown noc:noc etc/*.conf
 ##

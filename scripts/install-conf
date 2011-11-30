@@ -6,6 +6,25 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+D_REPO=/var/repo
+D_BACKUP=/var/backup
+D_LOG=/var/log/noc
+REPO=$D_REPO
+BACKUP=$D_BACKUP
+LOG=$D_LOG
+
+## Parse arguments
+while getopts hr:b:l o
+do case "$o" in
+    h)
+        echo "Usage: $0 [-r <repo>] [-b <backup>] [-l <log>]"
+        exit 0
+    ;;
+    r) REPO="$OPTARG";;
+    b) BACKUP="$OPTARG";;
+    l) LOG="$OPTARG";;
+esac done
+
 ##
 ## Prepare sed script for path auto-discovery
 ##
@@ -14,6 +33,10 @@ rm $sed_script
 for cmd in ssh rsync pg_dump tar gzip smidump smilint fping dig gpg mongodump; do
     echo "s@^\\($cmd *\\)=.*\$@\\1 = "`which $cmd`'@' >> $sed_script
 done
+## Adjust paths in sed script
+[ "$REPO" != "$D_REPO" ] || echo "s@$REPO@$D_REPO@" >> $sed_script
+[ "$BACKUP" != "$D_BACKUP" ] || echo "s@$BACKUP@$D_BACKUP@" >> $sed_script
+[ "$LOG" != "$D_LOG" ] || echo "s@$LOG@$D_LOG@" >> $sed_script
 
 ##
 ## Create configs and set up paths
