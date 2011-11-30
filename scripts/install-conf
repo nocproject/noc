@@ -37,10 +37,10 @@ for cmd in ssh rsync pg_dump tar gzip smidump smilint fping dig gpg mongodump; d
     echo "s@^\\($cmd *\\)=.*\$@\\1 = "`which $cmd`'@' >> $sed_script
 done
 ## Adjust paths in sed script
-[ "$PIDDIR" != "$D_PIDDIR" ] || echo "s@pidfile = $D_PIDDIR@pidfile = $PIDDIR@" >> $sed_script
-[ "$REPO" != "$D_REPO" ] || echo "s@$REPO@$D_REPO@" >> $sed_script
-[ "$BACKUP" != "$D_BACKUP" ] || echo "s@$BACKUP@$D_BACKUP@" >> $sed_script
-[ "$LOG" != "$D_LOG" ] || echo "s@$LOG@$D_LOG@" >> $sed_script
+[ "$PIDDIR" != "$D_PIDDIR" ] && echo "s@pidfile = $D_PIDDIR@pidfile = $PIDDIR@" >> $sed_script
+[ "$REPO" != "$D_REPO" ] && echo "s@$REPO@$D_REPO@" >> $sed_script
+[ "$BACKUP" != "$D_BACKUP" ] && echo "s@$BACKUP@$D_BACKUP@" >> $sed_script
+[ "$LOG" != "$D_LOG" ] && echo "s@$LOG@$D_LOG@" >> $sed_script
 
 
 ##
