@@ -100,6 +100,10 @@ class CloningRule(object):
     def __init__(self, rule):
         self.name = rule.name
         try:
+            self.re = re.compile(rule.re)
+        except Exception, why:
+            raise InvalidPatternException("Error in '%s': %s" % (rule.re, why))
+        try:
             self.key_re = re.compile(rule.key_re)
         except Exception, why:
             raise InvalidPatternException("Error in '%s': %s" % (rule.key_re,
@@ -118,7 +122,9 @@ class CloningRule(object):
 
     def match(self, rule):
         for x in rule.rule.patterns:
-            if (self.key_re.search(x.key_re) and
+            if (self.re.search(x.key_re) and
+                self.re.search(x.value_re) and
+                self.key_re.search(x.key_re) and
                 self.value_re.search(x.value_re)):
                 return True
         return False
