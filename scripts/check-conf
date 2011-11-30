@@ -18,7 +18,8 @@ import sys
 CONFIGS = ["noc.conf", "noc-sae.conf", "noc-activator.conf",
            "noc-classifier.conf", "noc-correlator.conf",
            "noc-notifier.conf"]
-EXECUTABLES = ["ssh", "pg_dump", "tar", "gzip", "smidump", "smilint"]
+EXECUTABLES = ["ssh", "pg_dump", "tar", "gzip", "smidump", "smilint",
+               "mongodump"]
 
 
 def check_config():
