@@ -124,10 +124,11 @@ class Profile(object):
     # before checking any regular expressions
     # (when Action.CLEAN_INPUT==True)
     rogue_chars = ["\r"]
+    # String to send just after telnet connect is established
+    telnet_send_on_connect = None
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
     requires_netmask_conversion = False
-
     #
     # Converts ip prefix to the format acceptable by router
     #
