@@ -19,7 +19,7 @@ PIDDIR=$D_PIDDIR
 while getopts hr:b:l:P: o
 do case "$o" in
     h)
-        echo "Usage: $0 [-r <repo>] [-b <backup>] [-l <log>]"
+        echo "Usage: $0 [-r <repo>] [-b <backup>] [-l <log>] [-P <pid_dir>]"
         exit 0
     ;;
     r) REPO="$OPTARG";;
