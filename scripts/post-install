@@ -45,8 +45,8 @@ chown noc:noc etc/*.conf
 ## Create required directories
 ##
 echo "Create directories"
-for d in local etc/ssh static/doc $REPO $BACKUP $NOC; do
-    [ ! -d $d ] && mkdir $d
+for d in local etc/ssh static/doc $REPO $BACKUP $LOG; do
+    [ ! -d $d ] && mkdir -p $d
     chown $NOCUSER:$NOCGROUP $d
 done
 chmod 700 etc/ssh
