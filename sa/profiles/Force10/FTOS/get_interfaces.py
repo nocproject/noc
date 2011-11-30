@@ -30,7 +30,7 @@ class Script(NOCScript):
     implements = [IGetInterfaces]
 
     rx_sh_int = re.compile(
-        r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)",
+        r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down|not present)",
         re.MULTILINE | re.IGNORECASE)
     rx_int_alias = re.compile(
         r"^(Description|Vlan alias name is):\s*(?P<alias>.*?)$",
@@ -73,7 +73,8 @@ class Script(NOCScript):
                 raise self.UnexpectedResultError(
                     "Cannot determine interface type for: '%s'" % ifname)
             admin_status = match.group("admin_status").lower() == "up"
-            oper_status = match.group("oper_status").lower() == "up"
+            oper_status = match.group("oper_status").lower() in ("up",
+                                                                 "not present")
             iface = {
                 "name": ifname,
                 "admin_status": admin_status,
