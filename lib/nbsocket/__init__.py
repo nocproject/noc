@@ -6,4 +6,5 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.lib.nbsocket.exceptions import *
 from lib.nbsocket.basesocket import *
