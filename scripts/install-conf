@@ -31,7 +31,7 @@ esac done
 ##
 ## Prepare sed script for path auto-discovery
 ##
-sed_script=`mktemp tmp.XXXXXX`
+sed_script=`mktemp /tmp/noc-sed.XXXXXX`
 rm $sed_script
 for cmd in ssh rsync pg_dump tar gzip smidump smilint fping dig gpg mongodump; do
     echo "s@^\\($cmd *\\)=.*\$@\\1 = "`which $cmd`'@' >> $sed_script
