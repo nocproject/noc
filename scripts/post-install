@@ -32,7 +32,6 @@ if [ ! -d "$PREFIX" ]; then
     echo "Directory $PREFIX is not found"
     exit 1
 fi
-exit 1
 cd $PREFIX
 ##
 ## Set up configuration files
