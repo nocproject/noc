@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 import logging
 import select
 import time
