@@ -23,22 +23,25 @@ class Script(NOCScript):
     requires = []
 
     def execute(self, get_mac=False, get_arp=False, get_lldp=False,
-                get_stp=False, get_cdp=False, get_fdp=False):
+                get_stp=False, get_cdp=False, get_fdp=False,
+                get_interfaces=False):
         data = {
-            "has_mac" : False,
-            "mac"     : None,
-            "has_arp" : False,
-            "arp"     : None,
+            "has_mac": False,
+            "mac": None,
+            "has_arp": False,
+            "arp": None,
             "has_lldp": False,
-            "lldp_neighbors" : None,
-            "has_cdp" : False,
-            "cdp_neighbors"  : None,
-            "has_fdp" : False,
-            "fdp_neighbors" : None,
-            "has_stp" : False,
-            "stp"     : None,
+            "lldp_neighbors": None,
+            "has_cdp": False,
+            "cdp_neighbors": None,
+            "has_fdp": False,
+            "fdp_neighbors": None,
+            "has_stp": False,
+            "stp": None,
             "portchannels": [],
-        }
+            "has_interfaces": False,
+            "interfaces": None
+            }
         x_list = (self.CLISyntaxError, self.NotSupportedError,
                   self.UnexpectedResultError)
         with self.cached():
@@ -94,4 +97,11 @@ class Script(NOCScript):
             if self.scripts.has_script("get_portchannel"):
                 with self.ignored_exceptions(x_list):
                     data["portchannels"] = self.scripts.get_portchannel()
+            # get interfaces
+            if get_interfaces:
+                if "get_interfaces" in self.scripts:
+                    with self.ignored_exceptions(x_list):
+                        interfaces = self.scripts.get_interfaces()
+                        data["has_interfaces"] = bool(interfaces)
+                        data["interfaces"] = interfaces
         return data
