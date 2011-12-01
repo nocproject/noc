@@ -22,7 +22,11 @@
     <B>Event ID: </B>
     <input type="text" name="event" value="{{event}}" size="40"/>
     <input type="submit" value="Test" />
-    {% if result %}{{result|bool_icon}} Matched {% endif %}
+    {%  if not_found  %}
+        Event not found!!!
+    {%  else  %}
+        {% if result %}{{result|bool_icon}} Matched {% endif %}
+    {% endif %}
 </form>
 {% if r %}
     <div style="clear: both"></div>
