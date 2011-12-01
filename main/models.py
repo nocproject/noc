@@ -211,7 +211,10 @@ class Permission(models.Model):
             return False
         if user.is_superuser:
             return True
-        p = Permission.objects.get(name=perm)
+        try:
+            p = Permission.objects.get(name=perm)
+        except Permission.DoesNotExist:
+            return False  # Permission not found
         return (p.users.filter(id=user.id).exists() or
                 p.groups.filter(id__in=user.groups.all()).exists())
 
