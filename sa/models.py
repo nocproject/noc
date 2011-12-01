@@ -1077,7 +1077,7 @@ class CommandSnippet(models.Model):
         if self.permission_name:
             return "sa:runsnippet:" + self.permission_name
         else:
-            return None
+            return "sa:runsnippet:default"
 
     def save(self, *args, **kwargs):
         super(CommandSnippet, self).save(*args, **kwargs)
