@@ -35,6 +35,7 @@ class ClassificationRuleApplication(TreeApplication):
     rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
     rx_heading = re.compile(r"^\^.+?(?=%[A-Z0-9])")
     rx_ip = re.compile(r"[0-9]{,3}\\\.[0-9]{,3}\\\.[0-9]{,3}\\\.[0-9]{,3}")
+    rx_object_id = re.compile("^[0-9a-f]{24}$")
     
     @view(url="^(?P<rule_id>[0-9a-f]{24})/to_json/$",
           url_name="to_json", access=HasPerm("to_json"))
@@ -283,8 +284,13 @@ class ClassificationRuleApplication(TreeApplication):
         r = []  # style, key, value, key_re, value_re
         rv = {}
         result = None
+        not_found = False
         if request.POST and "event" in request.POST:
-            event = get_event(request.POST["event"])
+            event_oid = request.POST["event"].strip()
+            if self.rx_object_id.match(event_oid):
+                event = get_event(event_oid)
+            else:
+                event = ""
             if event:
                 vars = event.raw_vars.copy()
                 if hasattr(event, "resolved_vars"):
@@ -311,5 +317,7 @@ class ClassificationRuleApplication(TreeApplication):
                 # Mismatched vars
                 for k, v in vars.items():
                     r += [["rest", k, v, "", ""]]
+            else:
+                not_found = True
         return self.render(request, "test_event.html", event=event, r=r, rv=rv,
-                           result=result)
+                           result=result, not_found=not_found)
