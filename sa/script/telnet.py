@@ -15,14 +15,14 @@ from noc.sa.script.cli import CLI
 ##
 ## Telnet protocol parser
 ##
-IAC = chr(255)  # Interpret As Command
+IAC = chr(0xFF)  # Interpret As Command
 D_IAC = IAC + IAC  # Doubled IAC
-DONT = chr(254)
-DO = chr(253)
-WONT = chr(252)
-WILL = chr(251)
-SB = chr(250)
-SE = chr(240)
+DONT = chr(0xFE)
+DO = chr(0xFD)
+WONT = chr(0xFC)
+WILL = chr(0xFB)
+SB = chr(0xFA)
+SE = chr(0xF0)
 IAC_CMD = (DO, DONT, WONT, WILL)
 TELNET_OPTIONS = {
     0: "BINARY",
@@ -68,96 +68,81 @@ TELNET_OPTIONS = {
     255: "EXOPL",
 }
 
-ACCEPTED_TELNET_OPTIONS = set([chr(c) for c in (1, 3)])  # ECHO+SGA
+ACCEPTED_TELNET_OPTIONS = set([chr(c) for c in (1, 3, 24)])  # ECHO+SGA+TTYPE
+IS = "\x00"
+SEND = "\x01"
 
 
 class TelnetProtocol(Protocol):
     def __init__(self, parent, callback):
         super(TelnetProtocol, self).__init__(parent, callback)
         self.iac_seq = ""
-        self.sb_seq = ""
+        self.sb_seq = None
 
     def iac_response(self, command, opt):
         self.debug("Sending IAC %s" % self.iac_repr(command, opt))
         self.parent.out_buffer += IAC + command + opt
 
+    def sb_response(self, command, opt, data=None):
+        sb = IAC + SB + command + opt
+        if data:
+            sb += data
+        sb += IAC + SE
+        self.debug("Sending SB %s" % sb)
+        self.parent.out_buffer += sb
+
+    def process_sb(self, sb):
+        self.debug("Received SB %s" % repr(sb))
+        if sb == "\x18\x01":  # TTYPE SEND
+            self.sb_response("\x18", "\x00", "XTERM")  # TTYPE IS XTERM
+
+    def process_iac(self, cmd, opt):
+        self.debug("Received IAC %s" % self.iac_repr(cmd, opt))
+        if cmd == DO:
+            r = WILL if opt in ACCEPTED_TELNET_OPTIONS else WONT
+        elif cmd == DONT:
+            r = WONT
+        elif cmd == WILL:
+            r = DO if opt in ACCEPTED_TELNET_OPTIONS else DONT
+        elif cmd == WONT:
+            r = DONT
+        self.iac_response(r, opt)
+
     def parse_pdu(self):
+        def tc(s):
+            return s.replace("\000", "").replace("\021", "")
+
         while self.in_buffer:
-            if self.sb_seq:
-                idx = self.in_buffer.find(IAC + SE)
-                if idx == -1:
-                    self.sb_seq += self.in_buffer
-                    self.in_buffer = ""
-                else:
-                    # IAC + SE found, strip and refuse
-                    s = self.in_buffer[:idx]
-                    self.in_buffer = self.in_buffer[idx + 2:]
-                    self.iac_response(DONT, opt)
-                continue
-            elif not self.iac_seq:
-                idx = self.in_buffer.find(IAC)
-                if idx == -1:
-                    # No IACs in the stream
-                    r = self.in_buffer.replace("\000", "").replace("\021", "")
-                    self.in_buffer = ""
-                    yield r
-                    continue
-                elif idx == 0:
-                    # IAC is the first character in the stream
-                    self.iac_seq = IAC
-                    self.in_buffer = self.in_buffer[1:]
-                    continue
-                else:
-                    r = self.in_buffer[:idx].replace("\000", "")\
-                        .replace("\021", "")
-                    self.in_buffer = self.in_buffer[idx + 1:]
-                    self.iac_seq = IAC
-                    yield r
-                    continue
-            else:
-                # Process IACs
-                if self.iac_seq == IAC:
-                    c = self.in_buffer[0]
-                    if c in IAC_CMD:
-                        self.iac_seq += c
-                        self.in_buffer = self.in_buffer[1:]
-                        continue
+            if self.sb_seq is not None:  # Continue SB sequence processing
+                left, seq, self.in_buffer = self.in_buffer.partition(IAC + SE)
+                self.sb_seq += left
+                if seq:
+                    self.process_sb(self.sb_seq)
+                    self.sb_seq = None
+            elif self.iac_seq == IAC:  # Parse IAC command
+                cmd = self.in_buffer[0]
+                self.in_buffer = self.in_buffer[1:]
+                if cmd == IAC:
+                    yield IAC
                     self.iac_seq = ""
-                    if c == IAC:
-                        # Doubled IAC
-                        self.in_buffer = self.in_buffer[1:]
-                        yield IAC
-                        continue
-                else:
-                    cmd = self.iac_seq[1]
-                    opt = self.in_buffer[0]
+                elif cmd == SB:
+                    self.sb_seq = ""
                     self.iac_seq = ""
-                    self.in_buffer = self.in_buffer[1:]  # Strip option
-                    self.debug("Received IAC %s" % self.iac_repr(cmd, opt))
-                    # Refuse options
-                    if cmd in (DO, DONT):
-                        if cmd == DO and opt in ACCEPTED_TELNET_OPTIONS:
-                            self.iac_response(WILL, opt)
-                        else:
-                            self.iac_response(WONT, opt)
-                    elif cmd in (WILL, WONT):
-                        if cmd == WILL and opt in ACCEPTED_TELNET_OPTIONS:
-                            self.iac_response(DO, opt)
-                        else:
-                            self.iac_response(DONT, opt)
-                    elif cmd == SB:
-                        # Subnegotiation for opt begin
-                        idx = self.in_buffer.find(IAC + SE)
-                        if idx == -1:
-                            # No IAC + SE in buffer, store
-                            self.sb_seq = opt + self.in_buffer
-                            self.in_buffer = ""
-                            continue
-                        else:
-                            # IAC + SE found, strip and refuse
-                            s = self.in_buffer[:idx]
-                            self.in_buffer = self.in_buffer[idx + 2:]
-                            self.iac_response(DONT, opt)
+                else:
+                    self.iac_seq += cmd
+            elif self.iac_seq:
+                opt = self.in_buffer[0]
+                self.in_buffer = self.in_buffer[1:]
+                self.process_iac(self.iac_seq[1], opt)
+                self.iac_seq = ""
+            else:  # No IAC/SB context
+                left, seq, self.in_buffer = self.in_buffer.partition(IAC)
+                if seq:  # IAC found
+                    if left:
+                        yield tc(left)  # Yield all before IAC
+                    self.iac_seq = IAC
+                else:
+                    yield tc(left)  # No IAC found, yield and break
 
     def iac_repr(self, cmd, opt):
         """
