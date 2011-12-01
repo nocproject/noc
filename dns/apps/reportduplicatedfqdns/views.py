@@ -24,6 +24,7 @@ SELECT fqdn, afi, COUNT(*),
                          FROM ip_address
                          WHERE fqdn=a.fqdn
                             AND vrf_id=%s
+                            AND afi=a.afi
                         ORDER BY address),', ')
 FROM ip_address a
 WHERE vrf_id=%s
