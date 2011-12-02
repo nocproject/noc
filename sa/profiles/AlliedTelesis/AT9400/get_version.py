@@ -16,10 +16,10 @@ class Script(NOCScript):
     name = "AlliedTelesis.AT9400.get_version"
     cache = True
     implements = [IGetVersion]
-    rx_platform = re.compile(r"Model Name ...... (?P<platform>AT\S+)", re.MULTILINE | re.DOTALL)
-    rx_version = re.compile(r"^Application ..... ATS63 v(?P<version>\S+(\s\S+)*)\s\s", re.MULTILINE | re.DOTALL)
-    rx_serial = re.compile(r"^Serial Number ... (?P<serial>\S+)", re.MULTILINE | re.DOTALL)
-    rx_bootprom = re.compile(r"^Bootloader ...... ATS63_LOADER v(?P<bootprom>\d+\.\d+\.\d+)", re.MULTILINE | re.DOTALL)
+    rx_platform = re.compile(r"Model Name \.+ (?P<platform>AT\S+)", re.MULTILINE | re.DOTALL)
+    rx_version = re.compile(r"^Application \.+ ATS63 v(?P<version>\S+(\s\S+)*)\s\s", re.MULTILINE | re.DOTALL)
+    rx_serial = re.compile(r"^Serial Number \.+ (?P<serial>\S+)", re.MULTILINE | re.DOTALL)
+    rx_bootprom = re.compile(r"^Bootloader \.+ ATS63_LOADER v(?P<bootprom>\d+\.\d+\.\d+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
