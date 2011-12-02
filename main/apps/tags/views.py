@@ -20,8 +20,7 @@ from noc.lib.app import Application, PermitLogged, view
 class TagsAppplication(Application):
     title = "Tags"
 
-    @view(url=r"^$", url_name="index", menu="Tags",
-          access=PermitLogged())
+    @view(url=r"^$", url_name="index", menu="Tags", access="launch")
     def view_index(self, request):
         """
         Tags cloud
