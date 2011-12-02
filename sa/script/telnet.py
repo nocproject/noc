@@ -88,7 +88,7 @@ class TelnetProtocol(Protocol):
         if data:
             sb += data
         sb += IAC + SE
-        self.debug("Sending SB %s" % sb)
+        self.debug("Sending SB %s" % repr(sb))
         self.parent.out_buffer += sb
 
     def process_sb(self, sb):
