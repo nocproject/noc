@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 import ConfigParser
 import sys
 import logging
@@ -35,6 +36,7 @@ class Daemon(object):
     daemon_name = "daemon"
     defaults_config_path = "etc/%(daemon_name)s.defaults"
     config_path = "etc/%(daemon_name)s.conf"
+    create_piddir = False
 
     LOG_LEVELS = {
         "debug": logging.DEBUG,
@@ -137,6 +139,21 @@ class Daemon(object):
                 logging.root.addHandler(rf_handler)
             self.pidfile = self.config.get("main", "pidfile").replace(
                 "{{instance}}", self.instance_id)
+            if self.pidfile and self.create_piddir:
+                piddir = os.path.dirname(self.pidfile)
+                if not os.path.exists(piddir):
+                    try:
+                        os.makedirs(piddir)
+                    except OSError, why:
+                        logging.error("Cannot create PIDfile directory %s: %s" % (
+                            piddir, why))
+                        sys.exit(1)
+                elif not os.path.isdir(piddir):
+                    logging.error("'%s' is not a directory" % piddir)
+                    sys.exit(1)
+                elif not os.access(piddir, os.W_OK):
+                    logging.error("'%s' is not writable" % piddir)
+                    sys.exit(1)
         else:
             logging.basicConfig(level=logging.DEBUG,
                                 format='%(asctime)s %(message)s')
@@ -176,9 +193,8 @@ class Daemon(object):
             os._exit(1)
         if pid:
             if self.pidfile:
-                f = open(self.pidfile, "w")
-                f.write(str(pid))
-                f.close()
+                with open(self.pidfile, "w") as f:
+                    f.write(str(pid))
             os._exit(0)
         # In daemon process, redirect stdin/stdout/stderr to /dev/null
         i = open("/dev/null", "r")
@@ -331,9 +347,8 @@ class Daemon(object):
         """
         # Write pidfile
         pid = os.getpid()
-        f = open(self.pidfile, "w")
-        f.write(str(pid))
-        f.close()
+        with open(self.pidfile, "w") as f:
+            f.write(str(pid))
         # Close stdin/stdout/stderr
         i = open("/dev/null", "r")
         o = open("/dev/null", "a+")

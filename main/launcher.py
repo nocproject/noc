@@ -134,6 +134,7 @@ class Launcher(Daemon):
     noc-launcher daemon
     """
     daemon_name = "noc-launcher"
+    create_piddir = True
 
     def __init__(self):
         super(Launcher, self).__init__()
