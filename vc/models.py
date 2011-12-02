@@ -242,6 +242,12 @@ class VC(models.Model):
     def get_absolute_url(self):
         return site.reverse("vc:vc:change", self.id)
 
+    @classmethod
+    def convert_name(cls, name):
+        name = rx_vc_underline.sub("_", name)
+        name = rx_vc_empty.sub("", name)
+        return name
+
     def save(self):
         """
         Enforce additional checks
@@ -256,9 +262,7 @@ class VC(models.Model):
             raise InvalidLabelException("Invalid value for L2")
         # Format name
         if self.name:
-            name = rx_vc_underline.sub("_", self.name)
-            name = rx_vc_empty.sub("", name)
-            self.name = name
+            self.name = self.convert_name(self.name)
         else:
             self.name = "VC_%04d" % self.l1
         super(VC, self).save()
