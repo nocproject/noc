@@ -93,7 +93,7 @@ class ConfigAdmin(admin.ModelAdmin):
         task = ReduceTask.create_task(objects,
                                       reduce_get_now, {},
                                       "get_config", {},
-                                      120)  # @todo: make configurable
+                                      None)
         return self.app.response_redirect("cm:config:get_now", task.id)
 
     def get_actions(self, request):
