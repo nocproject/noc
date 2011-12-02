@@ -172,7 +172,7 @@ class CLI(StreamFSM):
             (self.profile.pattern_password, "PASSWORD"),
             (self.profile.pattern_prompt, "PROMPT"),
         ])
-        self.submit(self.access_profile.user)
+        self.submit(self.access_profile.user, self.profile.username_submit)
 
     def on_PASSWORD_enter(self):
         """
@@ -191,7 +191,7 @@ class CLI(StreamFSM):
         ]
         p += [(self.pager_patterns, "PAGER")]
         self.set_patterns(p)
-        self.submit(self.access_profile.password)
+        self.submit(self.access_profile.password, self.profile.password_submit)
 
     def on_UNPRIVELEGED_PROMPT_enter(self):
         """
