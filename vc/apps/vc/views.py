@@ -47,20 +47,20 @@ def reduce_vlan_import(task, vc_domain):
     if mt.status != "C":
         return 0
     count = 0
+    max_name_len = VC._meta.get_field_by_name("name")[0].max_length
     for v in mt.script_result:
         vlan_id = v["vlan_id"]
         name = v.get("name", "VLAN%d" % vlan_id)
         try:
-            vc = VC.objects.get(vc_domain=vc_domain, l1=vlan_id)
+            VC.objects.get(vc_domain=vc_domain, l1=vlan_id)
         except VC.DoesNotExist:
             # Generate unique name
             n = 0
-            nm = name
-            ml = VC._meta.get_field_by_name("name")[0].max_length
+            nm = VC.convert_name(name)
             while VC.objects.filter(vc_domain=vc_domain, name=nm).exists():
                 n += 1
                 nm = "_%d" % n
-                nm = name[:ml - len(nm)] + nm
+                nm = name[:max_name_len - len(nm)] + nm
             # Save
             vc = VC(vc_domain=vc_domain, l1=vlan_id, l2=0, name=nm,
                     description=name)
