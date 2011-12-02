@@ -89,8 +89,11 @@ class Profile(object):
     # If pattern_more is string and is matched
     command_more = "\n"
     # Sequence to be send at the end of all CLI commands
-    #
     command_submit = "\n"
+    # Sequence to submit username. Use command_submit if None
+    username_submit = None
+    # Sequence to submit password. Use command_submit if None
+    password_submit = None
     # Callable accepting script instance
     # to set up additional script attributes
     # and methods. Use Profile.add_script_method()
