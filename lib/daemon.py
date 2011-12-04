@@ -279,11 +279,12 @@ class Daemon(object):
         :return:
         """
         if self.pidfile and self.heartbeat_enable:
+            logging.debug("Touching pidfile: %s" % self.pidfile)
             try:
-                logging.debug("Touching pidfile: %s" % self.pidfile)
                 os.utime(self.pidfile, None)
-            except:
-                logging.error("Unable to touch pidfile")
+            except OSError, why:
+                logging.error("Unable to touch pidfile %s: %s" % (self.pidfile,
+                                                                  why))
 
     def setup_opt_parser(self):
         """
