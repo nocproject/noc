@@ -8,9 +8,11 @@
 
 ## Python modules
 import re
+import datetime
 ## NOC modules
 from noc.lib.nosql import *
-from noc.sa.models import ManagedObject
+from noc.sa.models import ManagedObject, ManagedObjectSelector
+from noc.sa.interfaces import MACAddressParameter
 
 
 class Vendor(Document):
@@ -260,7 +262,8 @@ class ForwardingInstance(Document):
     """
     meta = {
         "collection": "noc.forwardinginstances",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "indexes": ["managed_object"]
     }
     managed_object = ForeignKeyField(ManagedObject)
     type = StringField(choices=[(x, x) for x in ("ip", "bridge", "VRF",
@@ -279,21 +282,77 @@ class Interface(Document):
     """
     meta = {
         "collection": "noc.interfaces",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "indexes": [
+            ("managed_object", "name"),
+            "mac"
+        ]
     }
     managed_object = ForeignKeyField(ManagedObject)
-    name = StringField()
-    type = StringField(choices=[(x, x) for x in ("physical", "SVI", "aggregated",
-                                "loopback", "management")])
+    name = StringField()  # Normalized via Profile.convert_interface_name
+    type = StringField(choices=[(x, x) for x in ("physical", "SVI",
+                                                 "aggregated", "loopback",
+                                                 "management")])
     description = StringField(required=False)
+    ifindex = IntField(required=False)
     mac = StringField(required=False)
     aggregated_interface = PlainReferenceField("self", required=False)
     is_lacp = BooleanField(default=False)
     # admin status + oper status
-    # is_ignored
+    is_ignored = BooleanField(default=False)
     
     def __unicode__(self):
-        return u"%s: %s" % (self.management.name, name)
+        return u"%s: %s" % (self.managed_object.name, name)
+
+    def save(self, *args, **kwargs):
+        self.name = self.managed_object.profile.convert_interface_name(self.name)
+        if self.mac:
+            self.mac = MACAddressParameter().clean(self.mac)
+        super(Interface, self).save(*args, **kwargs)
+
+    @property
+    def is_linked(self):
+        """
+        Check interface is linked
+        :returns: True if interface is linked, False otherwise
+        """
+        return False  # @todo: Check Link
+
+
+class SubInterface(Document):
+    meta = {
+        "collection": "noc.subinterfaces",
+        "allow_inheritance": False,
+        "indexes": [
+            "interface"
+        ]
+    }
+    interface = PlainReferenceField(Interface)
+    name = StringField()
+    description = StringField(required=False)
+    mac = StringField(required=False)
+    vlan_ids = ListField(IntField(), default=[])
+    is_ipv4 = BooleanField(default=False)
+    is_ipv6 = BooleanField(default=False)
+    is_mpls = BooleanField(default=False)
+    is_bridge = BooleanField(default=False)
+    ipv4_addresses = ListField(default=[])
+    ipv6_addresses = ListField(default=[])
+    iso_addresses = ListField(default=[])
+    is_isis = BooleanField(default=False)
+    is_ospf = BooleanField(default=False)
+    is_rsvp = BooleanField(default=False)
+    is_ldp = BooleanField(default=False)
+    is_rip = BooleanField(default=False)
+    is_bgp = BooleanField(default=False)
+    is_eigrp = BooleanField(default=False)
+    untagged_vlan = IntField(required=False)
+    tagged_vlans = ListField(IntField(), default=[])
+    # ip_unnumbered_subinterface
+    ifindex = IntField(required=False)
+
+    def __unicode__(self):
+        return "%s %s" % (self.interface.managed_object.name, self.name)
 
 
 class Link(Document):
@@ -313,3 +372,39 @@ class Link(Document):
 
     def __unicode__(self):
         return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])
+
+
+class DiscoveryStatusInterface(Document):
+    meta = {
+        "collection": "noc.discovery.status.interface",
+        "allow_inheritance": False,
+        "indexes": [
+            "managed_object",
+            "next_check"
+        ]
+    }
+    managed_object = ForeignKeyField(ManagedObject)
+    last_check = DateTimeField(required=False)
+    last_status = BooleanField(default=False)
+    next_check = DateTimeField()
+
+    @classmethod
+    def reschedule(cls, object, ts, status=None):
+        """
+        Reschedule next interface check of object to time ts
+        :param object: managed object
+        :type object: ManagedObject
+        :param ts: next check time
+        :type ts: datetime.datetime
+        """
+        if isinstance(ts, int) or isinstance(ts, long):
+            ts = datetime.datetime.now() + datetime.timedelta(seconds=ts)
+        s = cls.objects.filter(managed_object=object.id).first()
+        if s:
+            s.next_check = ts
+        else:
+            s = cls(managed_object=object, next_check=ts)
+        if status is not None:
+            s.last_status = status
+            s.last_check = datetime.datetime.now()
+        s.save()
