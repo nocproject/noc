@@ -111,7 +111,7 @@ msg_names = dict([(L[n], n) for n in l if n.startswith("MSG_")])
 disconnects = dict([(L[n], n[11:]) for n in l if n.startswith("DISCONNECT_")])
 del l
 del L
-quiet_message_types = set(MSG_CHANNEL_DATA)
+quiet_message_types = set([MSG_CHANNEL_DATA])
 
 
 class CLISSHSocket(CLI, ConnectedTCPSocket):
