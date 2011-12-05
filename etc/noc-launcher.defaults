@@ -59,3 +59,9 @@ enabled = true
 user = noc
 group =
 config = etc/noc-probe.conf
+
+[noc-discover]
+enabled = true
+user = noc
+group =
+config = etc/noc-discover.conf
