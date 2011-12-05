@@ -111,6 +111,7 @@ msg_names = dict([(L[n], n) for n in l if n.startswith("MSG_")])
 disconnects = dict([(L[n], n[11:]) for n in l if n.startswith("DISCONNECT_")])
 del l
 del L
+quiet_message_types = set(MSG_CHANNEL_DATA)
 
 
 class CLISSHSocket(CLI, ConnectedTCPSocket):
@@ -198,8 +199,9 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                         repr(p)))
                     self.send_uniplemented()
                     continue
-                self.debug("Receiving message type %s (%d)" % (
-                msg_names[msg_type], msg_type))
+                if msg_type not in quiet_message_types:
+                    self.debug("Receiving message type %s (%d)" % (
+                        msg_names[msg_type], msg_type))
                 h(self, p[1:])
 
     def raw_write(self, msg):
