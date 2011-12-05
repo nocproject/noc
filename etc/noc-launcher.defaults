@@ -64,4 +64,4 @@ config = etc/noc-probe.conf
 enabled = true
 user = noc
 group =
-config = etc/noc-discover.conf
+config = etc/noc-discovery.conf
