@@ -9,7 +9,7 @@ logfile  = /var/log/noc/noc-sae.log
 loglevel = info
 logsize  = 0
 logfiles = 0
-pidfile  = /var/log/noc/noc-sae.pid
+pidfile  = /var/run/noc/noc-sae.pid
 heartbeat= false
 mrt_log = false
 

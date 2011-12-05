@@ -9,7 +9,7 @@ logfile  = /var/log/noc/noc-web.log
 loglevel = info
 logsize  = 0
 logfiles = 0
-pidfile  = /var/log/noc/noc-web.pid
+pidfile  = /var/run/noc/noc-web.pid
 heartbeat= off
 
 [web]

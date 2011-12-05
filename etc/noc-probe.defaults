@@ -9,7 +9,7 @@ logfile  = /var/log/noc/noc-probe.log
 loglevel = info
 logsize  = 0
 logfiles = 0
-pidfile  = /var/log/noc/noc-probe.pid
+pidfile  = /var/run/noc/noc-probe.pid
 heartbeat= true
 
 [path]
