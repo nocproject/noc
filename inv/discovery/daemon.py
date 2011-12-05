@@ -19,6 +19,7 @@ from noc.lib.daemon import Daemon
 from noc.sa.models import ManagedObject, profile_registry, ReduceTask
 from noc.inv.models import Interface, ForwardingInstance, SubInterface,\
                            DiscoveryStatusInterface
+from noc.lib.debug import error_report
 
 
 class DiscoveryDaemon(Daemon):
@@ -60,7 +61,10 @@ class DiscoveryDaemon(Daemon):
                 r = task.get_result(block=True)
                 for o, status, result in r:
                     if status == "C":
-                        self.import_interfaces(o, result)
+                        try:
+                            self.import_interfaces(o, result)
+                        except:
+                            error_report()
                         DiscoveryStatusInterface.reschedule(o,
                             random.randint(*i_success_retry_range), True)
                     else:
