@@ -9,7 +9,7 @@ logfile  = /var/log/noc/noc-notifier.log
 loglevel = info
 logsize  = 0
 logfiles = 0
-pidfile  = /var/log/noc/noc-notifier.pid
+pidfile  = /var/run/noc/noc-notifier.pid
 heartbeat= false
 ##
 ## Notifier settings
