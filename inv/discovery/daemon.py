@@ -57,7 +57,7 @@ class DiscoveryDaemon(Daemon):
                 r = task.get_result(block=True)
                 for o, status, result in r:
                     if status == "C":
-                        self.import_interfaces(result)
+                        self.import_interfaces(o, result)
                         DiscoveryStatusInterface.reschedule(o,
                             random.randint(*i_success_retry_range), True)
                     else:
@@ -102,138 +102,137 @@ class DiscoveryDaemon(Daemon):
             self.o_info(o, "%s: %s" % (msg, ", ".join(["%s = %s" % (k, v)
                                                        for k, v in changes])))
 
-    def import_interfaces(self, data):
-        for o, interfaces in data:
-            si_count = 0
-            found_interfaces = set()
-            for fi in interfaces:
-                ## Process forwarding instance
-                if fi["forwarding_instance"] == "default":
-                    forwarding_instance = None
+    def import_interfaces(self, o, interfaces):
+        si_count = 0
+        found_interfaces = set()
+        for fi in interfaces:
+            ## Process forwarding instance
+            if fi["forwarding_instance"] == "default":
+                forwarding_instance = None
+            else:
+                forwarding_instance = ForwardingInstance.objects.filter(
+                    managed_object=o.id,
+                    name=fi["forwarding_instance"]).first()
+                if forwarding_instance:
+                    changes = self.update_if_changed(forwarding_instance, {
+                        "type": fi["type"],
+                        "forwarding_instance": fi["forwarding_instance"]
+                    })
+                    self.log_changes(o, "Forwarding instance '%s' has been changed" % forwarding_instance,
+                                     changes)
                 else:
-                    forwarding_instance = ForwardingInstance.objects.filter(
+                    # Create forwarding instance
+                    self.o_info(o, "Creating forwarding instance '%s'" % fi["forwarding_instance"])
+                    forwarding_instance = ForwardingInstance(
                         managed_object=o.id,
-                        name=fi["forwarding_instance"]).first()
-                    if forwarding_instance:
-                        changes = self.update_if_changed(forwarding_instance, {
-                            "type": fi["type"],
-                            "forwarding_instance": fi["forwarding_instance"]
+                        forwarding_instance=fi["forwarding_instance"],
+                        type=fi["type"],
+                        virtual_router=fi["virtual_router"])
+                    forwarding_instance.save()
+            ## Process physical interfaces
+            icache = {}  # name -> interface instance
+            ifaces = sorted(fi["interfaces"],
+                            key=lambda x: ("aggregated_interface" in x
+                                            and bool(x["aggregated_interface"])))
+            for i in ifaces:
+                iface = Interface.objects.filter(managed_object=o.id,
+                    name=i["name"]).first()
+                if ("aggregated_interface" in i and
+                    bool(i["aggregated_interface"])):
+                    agg = icache[i["aggregated_interface"]]
+                else:
+                    agg = None
+                if iface:
+                    # Interface exists
+                    changes = self.update_if_changed(iface, {
+                        "type": i["type"],
+                        "mac": i["mac"],
+                        "aggregated_interface": agg,
+                        "is_lacp": "is_lacp" in i and i["is_lacp"]
+                    })
+                    self.log_changes(o, "Interface '%s' has been changed" % i["name"],
+                                     changes)
+                else:
+                    # Create interface
+                    self.o_info(o, "Creating interface '%s'" % i["name"])
+                    iface = Interface(
+                        managed_object=o.id,
+                        name=i["name"],
+                        type=i["type"],
+                        mac=i["mac"],
+                        aggregated_interface=agg,
+                        is_lacp="is_lacp" in i and i["is_lacp"]
+                    )
+                    iface.save()
+                icache[i["name"]] = iface
+                found_interfaces.add(i["name"])
+                # Install subinterfaces
+                for si in i["subinterfaces"]:
+                    s_iface = SubInterface.objects.filter(interface=iface.id,
+                            name=si["name"]).first()
+                    if s_iface:
+                        changes = self.update_if_changed(s_iface, {
+                            "description": si.get("description"),
+                            "mac": si.get("mac"),
+                            "vlan_ids": si.get("vlan_ids", []),
+                            "is_ipv4": si.get("is_ipv4", False),
+                            "is_ipv6": si.get("is_ipv6", False),
+                            "is_mpls": si.get("is_mpls", False),
+                            "is_bridge": si.get("is_bridge", False),
+                            "ipv4_addresses": si.get("ipv4_addresses", []),
+                            "ipv6_addresses": si.get("ipv6_addresses", []),
+                            "iso_addresses": si.get("iso_addresses", []),
+                            "is_isis": si.get("is_isis", False),
+                            "is_ospf": si.get("is_ospf", False),
+                            "is_rsvp": si.get("is_rsvp", False),
+                            "is_ldp": si.get("is_ldp", False),
+                            "is_rip": si.get("is_rip", False),
+                            "is_bgp": si.get("is_bgp", False),
+                            "is_eigrp": si.get("is_eigrp", False),
+                            "untagged_vlan": si.get("untagged_vlan"),
+                            "tagged_vlans": si.get("tagged_vlans", []),
+                            # ip_unnumbered_subinterface
+                            "ifindex": si.get("snmp_ifindex")
                         })
-                        self.log_changes(o, "Forwarding instance '%s' has been changed" % forwarding_instance,
+                        self.log_changes(o, "Subinterface '%s' has been changed" % si["name"],
                                          changes)
                     else:
-                        # Create forwarding instance
-                        self.o_info(o, "Creating forwarding instance '%s'" % fi["forwarding_instance"])
-                        forwarding_instance = ForwardingInstance(
-                            managed_object=o.id,
-                            forwarding_instance=fi["forwarding_instance"],
-                            type=fi["type"],
-                            virtual_router=fi["virtual_router"])
-                        forwarding_instance.save()
-                ## Process physical interfaces
-                icache = {}  # name -> interface instance
-                ifaces = sorted(fi["interfaces"],
-                                key=lambda x: ("aggregated_interface" in x
-                                                and bool(x["aggregated_interface"])))
-                for i in ifaces:
-                    iface = Interface.objects.filter(managed_object=o.id,
-                        name=i["name"]).first()
-                    if ("aggregated_interface" in i and
-                        bool(i["aggregated_interface"])):
-                        agg = icache[i["aggregated_interface"]]
-                    else:
-                        agg = None
-                    if iface:
-                        # Interface exists
-                        changes = self.update_if_changed(iface, {
-                            "type": i["type"],
-                            "mac": i["mac"],
-                            "aggregated_interface": agg,
-                            "is_lacp": "is_lacp" in i and i["is_lacp"]
-                        })
-                        self.log_changes(o, "Interface '%s' has been changed" % i["name"],
-                                         changes)
-                    else:
-                        # Create interface
-                        self.o_info(o, "Creating interface '%s'" % i["name"])
-                        iface = Interface(
-                            managed_object=o.id,
-                            name=i["name"],
-                            type=i["type"],
-                            mac=i["mac"],
-                            aggregated_interface=agg,
-                            is_lacp="is_lacp" in i and i["is_lacp"]
+                        self.o_info(o, "Creating subinterface '%s'" % si["name"])
+                        s_iface = SubInterface(
+                            interface=iface.id,
+                            name=si["name"],
+                            description=si.get("description"),
+                            mac=si.get("mac"),
+                            vlan_ids=si.get("vlan_ids", []),
+                            is_ipv4=si.get("is_ipv4", False),
+                            is_ipv6=si.get("is_ipv6", False),
+                            is_mpls=si.get("is_mpls", False),
+                            is_bridge=si.get("is_bridge", False),
+                            ipv4_addresses=si.get("ipv4_addresses", []),
+                            ipv6_addresses=si.get("ipv6_addresses", []),
+                            iso_addresses=si.get("iso_addresses", []),
+                            is_isis=si.get("is_isis", []),
+                            is_ospf=si.get("is_ospf", []),
+                            is_rsvp=si.get("is_rsvp", []),
+                            is_ldp=si.get("is_ldp", []),
+                            is_rip=si.get("is_rip", []),
+                            is_bgp=si.get("is_bgp", []),
+                            is_eigrp=si.get("is_eigrp", []),
+                            untagged_vlan=si.get("untagged_vlan"),
+                            tagged_vlans=si.get("tagged_vlans", []),
+                            # ip_unnumbered_subinterface
+                            ifindex=si.get("snmp_ifindex")
                         )
-                        iface.save()
-                    icache[i["name"]] = iface
-                    found_interfaces.add(i["name"])
-                    # Install subinterfaces
-                    for si in i["subinterfaces"]:
-                        s_iface = SubInterface.objects.filter(interface=iface.id,
-                                name=si["name"]).first()
-                        if s_iface:
-                            changes = self.update_if_changed(s_iface, {
-                                "description": si.get("description"),
-                                "mac": si.get("mac"),
-                                "vlan_ids": si.get("vlan_ids", []),
-                                "is_ipv4": si.get("is_ipv4", False),
-                                "is_ipv6": si.get("is_ipv6", False),
-                                "is_mpls": si.get("is_mpls", False),
-                                "is_bridge": si.get("is_bridge", False),
-                                "ipv4_addresses": si.get("ipv4_addresses", []),
-                                "ipv6_addresses": si.get("ipv6_addresses", []),
-                                "iso_addresses": si.get("iso_addresses", []),
-                                "is_isis": si.get("is_isis", False),
-                                "is_ospf": si.get("is_ospf", False),
-                                "is_rsvp": si.get("is_rsvp", False),
-                                "is_ldp": si.get("is_ldp", False),
-                                "is_rip": si.get("is_rip", False),
-                                "is_bgp": si.get("is_bgp", False),
-                                "is_eigrp": si.get("is_eigrp", False),
-                                "untagged_vlan": si.get("untagged_vlan"),
-                                "tagged_vlans": si.get("tagged_vlans", []),
-                                # ip_unnumbered_subinterface
-                                "ifindex": si.get("snmp_ifindex")
-                            })
-                            self.log_changes(o, "Subinterface '%s' has been changed" % si["name"],
-                                             changes)
-                        else:
-                            self.o_info(o, "Creating subinterface '%s'" % si["name"])
-                            s_iface = SubInterface(
-                                interface=iface.id,
-                                name=si["name"],
-                                description=si.get("description"),
-                                mac=si.get("mac"),
-                                vlan_ids=si.get("vlan_ids", []),
-                                is_ipv4=si.get("is_ipv4", False),
-                                is_ipv6=si.get("is_ipv6", False),
-                                is_mpls=si.get("is_mpls", False),
-                                is_bridge=si.get("is_bridge", False),
-                                ipv4_addresses=si.get("ipv4_addresses", []),
-                                ipv6_addresses=si.get("ipv6_addresses", []),
-                                iso_addresses=si.get("iso_addresses", []),
-                                is_isis=si.get("is_isis", []),
-                                is_ospf=si.get("is_ospf", []),
-                                is_rsvp=si.get("is_rsvp", []),
-                                is_ldp=si.get("is_ldp", []),
-                                is_rip=si.get("is_rip", []),
-                                is_bgp=si.get("is_bgp", []),
-                                is_eigrp=si.get("is_eigrp", []),
-                                untagged_vlan=si.get("untagged_vlan"),
-                                tagged_vlans=si.get("tagged_vlans", []),
-                                # ip_unnumbered_subinterface
-                                ifindex=si.get("snmp_ifindex")
-                            )
-                            s_iface.save()
-                        si_count += 1
-            # Remove hanging interfaces
-            db_interfaces = set([x.name for x in
-                    Interface.objects.filter(managed_object=o.id).only("name")])
-            for i in db_interfaces - found_interfaces:
-                Interface.objects.filter(managed_object=o.id, name=i).delete()
-            # @todo: Remove hanging forwarding instances
-            self.o_info(o, "summary: %d forwarding instances, %d interfaces, %d subinterfaces" % (
-                len(interfaces), len(found_interfaces), si_count))
+                        s_iface.save()
+                    si_count += 1
+        # Remove hanging interfaces
+        db_interfaces = set([x.name for x in
+                Interface.objects.filter(managed_object=o.id).only("name")])
+        for i in db_interfaces - found_interfaces:
+            Interface.objects.filter(managed_object=o.id, name=i).delete()
+        # @todo: Remove hanging forwarding instances
+        self.o_info(o, "summary: %d forwarding instances, %d interfaces, %d subinterfaces" % (
+            len(interfaces), len(found_interfaces), si_count))
 
     def schedule_interface_discovery(self):
         logging.info("Rescheduling interface discovery")
