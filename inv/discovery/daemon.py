@@ -51,8 +51,9 @@ class DiscoveryDaemon(Daemon):
                         .filter(next_check__lte=datetime.datetime.now())\
                         .only("managed_object").limit(i_concurrency)]
             if ido:
-                task = ReduceTask.create_task(ido, get_result, {},
-                                              "get_interfaces", {})
+                logging.info("Running interface discovery for %s" % ", ".join([o.name for o in ido]))
+                task = ReduceTask.create_task(ido, interface_discovery_reduce,
+                        {}, "get_interfaces", {})
                 r = task.get_result(block=True)
                 for o, status, result in r:
                     if status == "C":

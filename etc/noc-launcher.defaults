@@ -60,7 +60,7 @@ user = noc
 group =
 config = etc/noc-probe.conf
 
-[noc-discover]
+[noc-discovery]
 enabled = true
 user = noc
 group =
