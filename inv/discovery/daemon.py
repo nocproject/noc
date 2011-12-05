@@ -149,7 +149,7 @@ class DiscoveryDaemon(Daemon):
                     # Interface exists
                     changes = self.update_if_changed(iface, {
                         "type": i["type"],
-                        "mac": i["mac"],
+                        "mac": i.get("mac"),
                         "aggregated_interface": agg,
                         "is_lacp": "is_lacp" in i and i["is_lacp"]
                     })
@@ -162,7 +162,7 @@ class DiscoveryDaemon(Daemon):
                         managed_object=o.id,
                         name=i["name"],
                         type=i["type"],
-                        mac=i["mac"],
+                        mac=i.get("mac"),
                         aggregated_interface=agg,
                         is_lacp="is_lacp" in i and i["is_lacp"]
                     )
