@@ -9,7 +9,7 @@ logfile  = /var/log/noc/noc-correlator.log
 loglevel = info
 logsize  = 0
 logfiles = 0
-pidfile  = /var/log/noc/noc-correlator.pid
+pidfile  = /var/run/noc/noc-correlator.pid
 heartbeat= false
 
 [correlator]

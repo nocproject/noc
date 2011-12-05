@@ -9,7 +9,7 @@ logfile  = /var/log/noc/noc-launcher.log
 loglevel = info
 logsize  = 0
 logfiles = 0
-pidfile  = /var/log/noc/noc-launcher.pid
+pidfile  = /var/run/noc/noc-launcher.pid
 heartbeat= false
 
 [noc-web]

@@ -9,6 +9,6 @@ logfile  = /var/log/noc/noc-scheduler.log
 loglevel = info
 logsize  = 0
 logfiles = 0
-pidfile  = /var/log/noc/noc-scheduler.pid
+pidfile  = /var/run/noc/noc-scheduler.pid
 heartbeat= false
 
