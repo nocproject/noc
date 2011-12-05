@@ -12,6 +12,8 @@ import logging
 import random
 import time
 import datetime
+## Django modules
+from django.db import reset_queries
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.sa.models import ManagedObject, profile_registry, ReduceTask
@@ -42,6 +44,7 @@ class DiscoveryDaemon(Daemon):
                                 int(i_failed_retry * 1.1))
         last_i_check = 0
         while True:
+            reset_queries()
             now = time.time()
             if now - last_i_check >= i_reschedule_interval:
                 self.schedule_interface_discovery()
