@@ -13,7 +13,6 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
 from noc.sa.interfaces import base
-from noc.sa.script import Script as NOCScript
 from noc.sa.profiles.Cisco.IOS import uBR
 
 
@@ -30,7 +29,7 @@ class Script(NOCScript):
     name = "Cisco.IOS.get_interfaces"
     implements = [IGetInterfaces]
 
-    rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is(\sadministratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)\s(\((?:connected|notconnect)\))?\n\s+Hardware is (?P<hardw>[^\n]+)\n(\s+Description:\s(?P<desc>[^\n]+)\n)?(\s+Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})\n)?[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
+    rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)\s(?:\((?:connected|notconnect)\)\s*)?\n\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?(?:\s+Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})\n)?[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
                            re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})", re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
