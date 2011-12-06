@@ -236,7 +236,11 @@ class DiscoveryDaemon(Daemon):
         db_interfaces = set([x.name for x in
                 Interface.objects.filter(managed_object=o.id).only("name")])
         for i in db_interfaces - found_interfaces:
-            Interface.objects.filter(managed_object=o.id, name=i).delete()
+            iface = Interface.objects.filter(managed_object=o.id, name=i).first()
+            if iface:
+                self.o_info(o, "Delete interface '%s'" % i.name)
+                SubInterface.objects.filter(interface=iface.id).delete()
+                iface.delete()
         # @todo: Remove hanging forwarding instances
         self.o_info(o, "summary: %d forwarding instances, %d interfaces, %d subinterfaces" % (
             len(interfaces), len(found_interfaces), si_count))
