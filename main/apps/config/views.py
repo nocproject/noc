@@ -15,7 +15,8 @@ class ConfigApplication(Application):
     title="Configs"
     CONFIGS=["noc.conf", "noc-launcher.conf", "noc-scheduler.conf",
              "noc-web.conf", "noc-sae.conf", "noc-activator.conf",
-             "noc-classifier.conf", "noc-correlator.conf", "noc-notifier.conf"]
+             "noc-classifier.conf", "noc-correlator.conf", "noc-notifier.conf",
+             "noc-discovery.conf"]
     ##
     ## Display config index
     ##
