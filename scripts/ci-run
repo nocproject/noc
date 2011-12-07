@@ -39,6 +39,6 @@ echo "Running tests"
 ./noc test --junit-xml-out=$JUNIT_REPORT --coverage-xml-out=$COVERAGE_REPORT
 
 echo "Running violations tests"
-./script/check_pep8 > $PEP8_VIOLATIONS_REPORT
+./scripts/check_pep8 > $PEP8_VIOLATIONS_REPORT
 
 echo "done"
