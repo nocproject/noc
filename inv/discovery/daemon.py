@@ -32,8 +32,9 @@ class DiscoveryDaemon(Daemon):
 
     def load_config(self):
         super(DiscoveryDaemon, self).load_config()
-        self.enable_interface_discovery = self.config.getbool("interface_discovery",
-                                                              "enabled")
+        self.enable_interface_discovery = self.config.getboolean(
+                                                        "interface_discovery",
+                                                        "enabled")
         self.i_reschedule_interval = self.config.getint("interface_discovery",
                                                         "reschedule_interval")
         self.i_concurrency = self.config.getint("interface_discovery",
