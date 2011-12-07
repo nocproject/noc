@@ -1,0 +1,36 @@
+-- *****************************************************************************
+-- proprietary management MIB
+-- *****************************************************************************
+
+
+
+SWDGS3420PRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY             FROM SNMPv2-SMI
+        dlink-mgmt,dlink-products   FROM DLINK-ID-REC-MIB;
+
+    
+    
+-- 
+--   DGS3420 series Product 
+-- 
+
+    dlink-Dgs3420Prod			OBJECT IDENTIFIER ::= { dlink-products 119 }
+    dlink-Dgs3420Prod-Dgs3420-28TC			OBJECT IDENTIFIER ::= { dlink-Dgs3420Prod 1 }
+    dlink-Dgs3420Prod-Dgs3420-28SC			OBJECT IDENTIFIER ::= { dlink-Dgs3420Prod 2 }
+    dlink-Dgs3420Prod-Dgs3420-28PC			OBJECT IDENTIFIER ::= { dlink-Dgs3420Prod 3 }
+    dlink-Dgs3420Prod-Dgs3420-52T			OBJECT IDENTIFIER ::= { dlink-Dgs3420Prod 4 }
+    dlink-Dgs3420Prod-Dgs3420-52P			OBJECT IDENTIFIER ::= { dlink-Dgs3420Prod 5 }
+    dlink-Dgs3420Prod-Dgs3420-26SC			OBJECT IDENTIFIER ::= { dlink-Dgs3420Prod 6 }
+
+
+    dlink-Dgs3420Proj			OBJECT IDENTIFIER ::= { dlink-mgmt 119 }
+    dlink-Dgs3420Proj-Dgs3420-28TC			OBJECT IDENTIFIER ::= { dlink-Dgs3420Proj 1 }
+    dlink-Dgs3420Proj-Dgs3420-28SC			OBJECT IDENTIFIER ::= { dlink-Dgs3420Proj 2 }
+    dlink-Dgs3420Proj-Dgs3420-28PC			OBJECT IDENTIFIER ::= { dlink-Dgs3420Proj 3 }
+    dlink-Dgs3420Proj-Dgs3420-52T			OBJECT IDENTIFIER ::= { dlink-Dgs3420Proj 4 }
+    dlink-Dgs3420Proj-Dgs3420-52P			OBJECT IDENTIFIER ::= { dlink-Dgs3420Proj 5 }
+    dlink-Dgs3420Proj-Dgs3420-26SC			OBJECT IDENTIFIER ::= { dlink-Dgs3420Proj 6 }   
+
+END

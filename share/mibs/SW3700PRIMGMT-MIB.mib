@@ -1,0 +1,22 @@
+-- ----------------------------------------------------------------------------
+-- proprietary management MIB
+-- ----------------------------------------------------------------------------
+
+SW3700PRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY             FROM SNMPv2-SMI
+        dlink-mgmt,dlink-products   FROM DLINK-ID-REC-MIB;
+
+    	dlink-Dgs3700Series   	OBJECT IDENTIFIER ::= { dlink-mgmt 102 }
+    	dgs3700         OBJECT IDENTIFIER ::= { dlink-Dgs3700Series 1 }
+    	dgs3712		OBJECT IDENTIFIER ::= { dgs3700 1 }
+	dgs3712g	OBJECT IDENTIFIER ::= { dgs3700 2 }
+
+-- DGS3700 series Product
+ 
+    	dlink-Dgs3700SeriesProd		OBJECT IDENTIFIER ::= { dlink-products 102 }
+    	dgs3712Prod		OBJECT IDENTIFIER ::= { dlink-Dgs3700SeriesProd 1 }
+	dgs3712pProd		OBJECT IDENTIFIER ::= { dlink-Dgs3700SeriesProd 2 }
+
+END
