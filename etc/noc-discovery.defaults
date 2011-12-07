@@ -13,6 +13,7 @@ pidfile  = /var/run/noc/noc-discovery.pid
 heartbeat= false
 
 [interface_discovery]
+enabled = true
 concurrency = 20
 success_retry = 86400
 failed_retry = 900

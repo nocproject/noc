@@ -30,49 +30,46 @@ class DiscoveryDaemon(Daemon):
         self.pmap_interfaces = [p for p in profile_registry.classes
                     if "get_interfaces" in profile_registry.classes[p].scripts]
 
+    def load_config(self):
+        super(DiscoveryDaemon, self).load_config()
+        self.enable_interface_discovery = self.config.getbool("interface_discovery",
+                                                              "enabled")
+        self.i_reschedule_interval = self.config.getint("interface_discovery",
+                                                        "reschedule_interval")
+        self.i_concurrency = self.config.getint("interface_discovery",
+                                                "concurrency")
+        self.i_success_retry = self.config.getint("interface_discovery",
+                                                  "success_retry")
+        self.i_failed_retry = self.config.getint("interface_discovery",
+                                                 "failed_retry")
+        self.i_success_retry_range = (int(self.i_success_retry * 0.9),
+                                      int(self.i_success_retry * 1.1))
+        self.i_failed_retry_range = (int(self.i_failed_retry * 0.9),
+                                     int(self.i_failed_retry * 1.1))
+
+
     def run(self):
-        i_reschedule_interval = self.config.getint("interface_discovery",
-                                                   "reschedule_interval")
-        i_concurrency = self.config.getint("interface_discovery",
-                                           "concurrency")
-        i_success_retry = self.config.getint("interface_discovery",
-                                             "success_retry")
-        i_failed_retry = self.config.getint("interface_discovery",
-                                            "failed_retry")
-        i_success_retry_range = (int(i_success_retry * 0.9),
-                                 int(i_success_retry * 1.1))
-        i_failed_retry_range = (int(i_failed_retry * 0.9),
-                                int(i_failed_retry * 1.1))
         last_i_check = 0
+        interface_discovery_task = None
         while True:
             reset_queries()
             now = time.time()
-            if now - last_i_check >= i_reschedule_interval:
-                self.schedule_interface_discovery()
-                last_i_check = time.time()
-            ido = [s.managed_object
-                   for s in DiscoveryStatusInterface.objects\
-                        .filter(next_check__lte=datetime.datetime.now())\
-                        .only("managed_object").limit(i_concurrency)]
-            if ido:
-                logging.info("Running interface discovery for %s" % ", ".join([o.name for o in ido]))
-                task = ReduceTask.create_task(ido, interface_discovery_reduce,
-                        {}, "get_interfaces", {})
-                r = task.get_result(block=True)
-                for o, status, result in r:
-                    if status == "C":
-                        try:
-                            self.import_interfaces(o, result)
-                        except:
-                            error_report()
-                        DiscoveryStatusInterface.reschedule(o,
-                            random.randint(*i_success_retry_range), True)
-                    else:
-                        self.o_info(o, "get_interfaces failed: %s" % result)
-                        DiscoveryStatusInterface.reschedule(o,
-                            random.randint(*i_failed_retry_range), False)
-            else:
-                time.sleep(3)
+            if self.enable_interface_discovery:
+                # Interface discovery
+                if now - last_i_check >= self.i_reschedule_interval:
+                    # Schedule new objects to discover
+                    self.schedule_interface_discovery()
+                    last_i_check = time.time()
+                if interface_discovery_task is None:
+                    # Start new interface discovery round
+                    interface_discovery_task = self.run_interface_discovery()
+                else:
+                    # Check discovery is completed
+                    r = interface_discovery_task.get_result(block=False)
+                    if r:
+                        self.process_interface_discovery(r)
+                        interface_discovery_task = None
+            time.sleep(1)
 
     def o_info(self, managed_object, msg):
         logging.info("[%s] %s" % (managed_object.name, msg))
@@ -108,6 +105,41 @@ class DiscoveryDaemon(Daemon):
         if changes:
             self.o_info(o, "%s: %s" % (msg, ", ".join(["%s = %s" % (k, v)
                                                        for k, v in changes])))
+
+    def run_interface_discovery(self):
+        """
+        Run interface discovery round
+        :rtype: ReduceTask
+        """
+        ido = [s.managed_object
+               for s in DiscoveryStatusInterface.objects\
+                    .filter(next_check__lte=datetime.datetime.now())\
+                    .only("managed_object").limit(self.i_concurrency)]
+        if ido:
+            logging.info("Running interface discovery for %s" % ", ".join([o.name for o in ido]))
+            task = ReduceTask.create_task(ido,
+                    interface_discovery_reduce, {},
+                    "get_interfaces", {})
+            return task
+        else:
+            return None
+
+    def process_interface_discovery(self, r):
+        """
+        Process interface discovery results
+        """
+        for o, status, result in r:
+            if status == "C":
+                try:
+                    self.import_interfaces(o, result)
+                except:
+                    error_report()
+                DiscoveryStatusInterface.reschedule(o,
+                    random.randint(*self.i_success_retry_range), True)
+            else:
+                self.o_info(o, "get_interfaces failed: %s" % result)
+                DiscoveryStatusInterface.reschedule(o,
+                    random.randint(*self.i_failed_retry_range), False)
 
     def import_interfaces(self, o, interfaces):
         si_count = 0
