@@ -25,7 +25,7 @@ class Profile(noc.sa.profiles.Profile):
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S*?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
     config_volatile = ["^ntp clock-period .*?^"]
