@@ -66,7 +66,10 @@ class DiscoveryDaemon(Daemon):
                     interface_discovery_task = self.run_interface_discovery()
                 else:
                     # Check discovery is completed
-                    r = interface_discovery_task.get_result(block=False)
+                    try:
+                        r = interface_discovery_task.get_result(block=False)
+                    except ReduceTask.NotReady:
+                        r = None
                     if r:
                         self.process_interface_discovery(r)
                         interface_discovery_task = None
