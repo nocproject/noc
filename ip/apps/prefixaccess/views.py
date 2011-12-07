@@ -19,7 +19,7 @@ class PrefixAccessAdmin(admin.ModelAdmin):
     """
     list_display = ["user", "vrf", "afi", "prefix", "can_view", "can_change"]
     list_filter = ["user", "vrf", "can_view", "can_change"]
-    search_fields = ["user", "prefix"]
+    search_fields = ["user__username", "prefix"]
 
 
 class PrefixAccessApplication(ModelApplication):
