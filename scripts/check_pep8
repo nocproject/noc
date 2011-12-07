@@ -18,4 +18,4 @@ else
     CHECK="$*"
 fi
 
-$PEP8 -r --ignore=W293 $CHECK
+$PEP8 -r --exclude=tests --ignore=W293 $CHECK
