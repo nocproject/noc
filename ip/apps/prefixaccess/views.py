@@ -2,25 +2,31 @@
 ##----------------------------------------------------------------------
 ## PrefixAccess Manager
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+
+## Django modules
 from django.contrib import admin
+## NOC modules
 from noc.lib.app import ModelApplication
 from noc.ip.models import PrefixAccess
-##
-## PrefixAccess admin
-##
-class PrefixAccessAdmin(admin.ModelAdmin):
-    list_display=["user","vrf","afi","prefix","can_view","can_change"]
-    list_filter=["user","vrf","can_view","can_change"]
-    search_fields=["user","prefix"]
 
-##
-## PrefixAccess application
-##
+
+class PrefixAccessAdmin(admin.ModelAdmin):
+    """
+    PrefixAccess admin
+    """
+    list_display = ["user", "vrf", "afi", "prefix", "can_view", "can_change"]
+    list_filter = ["user", "vrf", "can_view", "can_change"]
+    search_fields = ["user", "prefix"]
+
+
 class PrefixAccessApplication(ModelApplication):
-    title="Prefix Access"
-    model=PrefixAccess
-    model_admin=PrefixAccessAdmin
-    menu="Setup | Prefix Access"
+    """
+    PrefixAccess application
+    """
+    title = "Prefix Access"
+    model = PrefixAccess
+    model_admin = PrefixAccessAdmin
+    menu = "Setup | Prefix Access"
