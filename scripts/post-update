@@ -23,6 +23,9 @@ info "Jumping to '$PREFIX'"
 cd $PREFIX || error_exit "$LINENO: Cannot chdir to '$PREFIX'"
 info "Landing at '$PWD'"
 
+# Check for hanging .pyc files
+info "Looking for hanging .pyc files"
+./scripts/check-pyc.py || error_exit "$LINENO: Inconsistent .pyc files found"
 # Check system python modules
 info "Checking system python modules"
 ./scripts/sync-contrib -s
