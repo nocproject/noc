@@ -56,7 +56,7 @@ class Script(NOCScript):
             if interface not in port_vlans:
                 port_vlans.update({ interface : {
                                                 "tagged"    : [],
-                                                "untagged"  : [],
+                                                "untagged"  : '',
                                                 }
                                 })
             for vlans in self.cli("show interfaces switchport %s"%interface).splitlines():
@@ -67,7 +67,7 @@ class Script(NOCScript):
                     if rule == "Tagged":
                         port_vlans[interface]["tagged"].append(vlan_id)
                     elif rule == "Untagged" and vlan_id != '1':
-                        port_vlans[interface]["untagged"].append(vlan_id)
+                        port_vlans[interface]["untagged"] = vlan_id
 
         # Why portchannels=[] ???????
         # Get portchannels onse more!!!
