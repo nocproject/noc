@@ -69,7 +69,7 @@ class SessionCan(object):
         self.snmp_getnext[oid] = result
 
     def save_http_get(self, path,result):
-        self.save_http_get[path] = result
+        self.http_get[path] = result
 
     def save_result(self, result, motd=""):
         """Save final result"""
