@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^SW36XXPRIMGMT-MIB::[Dd].+$"
+                "value_re": "^(?:SW36XXPRIMGMT-MIB::[Dd].+|IF-MIB::linkDown)$"
             },
             {
                 "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
@@ -86,7 +86,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^SW36XXPRIMGMT-MIB::[Dd].+$"
+                "value_re": "^(?:SW36XXPRIMGMT-MIB::[Dd].+|IF-MIB::linkUp)$"
             },
             {
                 "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
