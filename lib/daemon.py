@@ -144,6 +144,7 @@ class Daemon(object):
                 if not os.path.exists(piddir):
                     try:
                         os.makedirs(piddir)
+                        os.chmod(piddir, 01777)
                     except OSError, why:
                         logging.error("Cannot create PIDfile directory %s: %s" % (
                             piddir, why))
