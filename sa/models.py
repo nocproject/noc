@@ -775,20 +775,13 @@ class ReduceTask(models.Model):
         return self.stop_time <= datetime.datetime.now()\
             or (self.maptask_set.all().count() == self.maptask_set.filter(status__in=["C", "F"]).count())
     
-    ##
-    ## Create map/reduce tasks
-    ##
-    ## object_selector must be either of ManagedObjectSelector instance or of list type
-    ## map_script can be string or list.
-    ## If map string is a list, map_string_params may be a list too, or it will be replicated for
-    ## each kind of map task
-    ##
+
     @classmethod
     def create_task(self, object_selector, reduce_script, reduce_script_params,
                     map_script, map_script_params, timeout=None):
         """
         Create Map/Reduce task
-        
+
         :param object_selector: One of:
                                 * ManagedObjectSelector instance
                                 * List of ManagedObject instances or names
@@ -799,20 +792,20 @@ class ReduceTask(models.Model):
                               * PyRule
                               
         :param reduce_script_params: Reduce script parameters
-        :type reduce_script_params: Dict
+        :type reduce_script_params: dict
         :param map_script: Script name either in form of Vendor.OS.script
                            or script
-        :type map_script: String
+        :type map_script: str
         :param map_script_params: One of:
                                   
                                   * List of dicts or callables
                                   * Dict
-        :type map_script_params: Dict
+        :type map_script_params: dict
         :param timeout: Task timeout, if None, timeout will be set
                         according to longest map task timeout
         :type timeout: Int or None
         :return: Task
-        :rtype: ReduceTask instance
+        :rtype: ReduceTask
         """
         # Normalize map scripts to a list
         if type(map_script) in (types.ListType, types.TupleType):
@@ -905,15 +898,14 @@ class ReduceTask(models.Model):
         pc = {}  # Pool capabilities: activator id -> caps
         ngs = {}  # pool_id -> sessions requested
         for o in objects:
-            for ms, p in msp:
-                a = o.activator
-                a_id = a.id
-                if a_id not in pc:
-                    pc[a_id] = o.activator.capabilities
-                try:
-                    ngs[a_id] += 1
-                except KeyError:
-                    ngs[a_id] = 1
+            n = len(msp)
+            a_id = o.activator.id
+            if a_id not in pc:
+                pc[a_id] = o.activator.capabilities
+            try:
+                ngs[a_id] += n
+            except KeyError:
+                ngs[a_id] = n
         for p in ngs:
             ms = pc[p]["max_scripts"]
             if ms:
@@ -923,7 +915,7 @@ class ReduceTask(models.Model):
         # Run map task for each object
         for o in objects:
             ng = ngs[o.activator.id]
-            if not ng:
+            if not ng and o.profile_name != "NOC.SAE":
                 # No sessions available
                 continue
             for ms, p in msp:
@@ -1128,7 +1120,7 @@ def reduce_object_script(task):
     else:
         return None
 
-def reduce_dump(task):
+def reduce_dumb(task):
     pass
 
 ##
