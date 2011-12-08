@@ -211,53 +211,6 @@ class Socket(object):
                 and time.time() - self.last_read >= self.ttl)
 
 
-class Protocol(object):
-    """
-    Abstract protocol parser. Accepts raw data via feed() method,
-    populating internal buffer and calling parse_pdu()
-    """
-    def __init__(self, parent, callback):
-        """
-        :param parent: Socket instance
-        :param callback: Callable accepting single pdu argument
-        """
-        self.parent = parent
-        self.callback = callback
-        self.in_buffer = ""
-
-    def feed(self, data):
-        """
-        Feed raw data into protocols. Calls callback for each
-        completed PDU.
-
-        :param data: Raw data portion
-        :type data: Str
-        """
-        self.in_buffer += data
-        for pdu in self.parse_pdu():
-            self.callback(pdu)
-
-    def parse_pdu(self):
-        """
-        Scan self.in_buffer, detect all completed PDUs, then remove
-        them from buffer and return as list or yield them
-
-        :return: List of PDUs
-        :rtype: List of Str
-        """
-        return []
-
-
-class LineProtocol(Protocol):
-    """
-    Simple line-based protocols. PDUs are separated by "\n"
-    """
-    def parse_pdu(self):
-        pdus = self.in_buffer.split("\n")
-        self.in_buffer = pdus.pop(-1)
-        return pdus
-    
-
 class ListenTCPSocket(Socket):
     """
     TCP Listener. Waits for connection and creates socket_class instance.
