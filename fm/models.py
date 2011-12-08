@@ -213,9 +213,9 @@ class MIB(nosql.Document):
                 env={"SMIPATH": ":".join(smipath)})
             # Add coding string
             with open(p) as f:
-                data = f.read()
+                data = unicode(f.read(), "ascii", "ignore").encode("ascii")
             with open(p, "w") as f:
-                f.write("# -*- coding: utf-8 -*-\n" + data)
+                f.write(data)
             m = imp.load_source("mib", p)
         mib_name = m.MIB["moduleName"]
         # Check module dependencies
