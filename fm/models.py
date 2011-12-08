@@ -194,6 +194,8 @@ class MIB(nosql.Document):
 
     @classmethod
     def load(cls, path):
+        if not os.path.exists(path):
+            raise ValueError("File not found: %s" % path)
         # Build SMIPATH variable for smidump to exclude locally installed MIBs
         smipath = ["share/mibs", "local/share/mibs"]
         # Pass MIB through smilint to detect missed modules
@@ -209,6 +211,11 @@ class MIB(nosql.Document):
             subprocess.check_call([config.get("path", "smidump"), "-k", "-q",
                                    "-f", "python", "-o", p, path],
                 env={"SMIPATH": ":".join(smipath)})
+            # Add coding string
+            with open(p) as f:
+                data = f.read()
+            with open(p, "w") as f:
+                f.write("# -*- coding: utf-8 -*-\n" + data)
             m = imp.load_source("mib", p)
         mib_name = m.MIB["moduleName"]
         # Check module dependencies
@@ -249,7 +256,7 @@ class MIB(nosql.Document):
             mib.typedefs = typedefs
             mib.save()
             # Delete all MIB Data
-            MIBData.objects.filter(mib=mib).delete()
+            MIBData.objects.filter(mib=mib.id).delete()
         else:
             # Create MIB
             mib = MIB(name=mib_name, description=mib_description,
