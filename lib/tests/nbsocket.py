@@ -9,6 +9,8 @@
 from unittest import TestCase
 ## NOC modules
 from noc.lib.nbsocket import *
+from noc.lib.nbsocket.popen import PopenSocket
+from noc.lib.nbsocket.ptysocket import PTYSocket
 
 ##
 ## TCP Ping server

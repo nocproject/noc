@@ -10,7 +10,7 @@
 import os
 import tempfile
 ## NOC modules
-from noc.lib.nbsocket import PTYSocket
+from noc.lib.nbsocket.ptysocket import PTYSocket
 
 
 class FPingProbeSocket(PTYSocket):
