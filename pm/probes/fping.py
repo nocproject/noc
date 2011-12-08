@@ -8,7 +8,6 @@
 """
 """
 from noc.pm.probes.popen import *
-from noc.lib.nbsocket import PopenSocket
 
 ##
 ## Returns:

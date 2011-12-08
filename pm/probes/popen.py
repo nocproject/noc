@@ -8,7 +8,7 @@
 """
 """
 from noc.pm.probes import *
-from noc.lib.nbsocket import PopenSocket
+from noc.lib.nbsocket.popen import PopenSocket
 import time,logging
 
 ##
