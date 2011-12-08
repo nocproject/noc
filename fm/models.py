@@ -675,6 +675,12 @@ class EventDispositionRule(nosql.EmbeddedDocument):
                 return False
             if hasattr(self, a) and getattr(self, a) != getattr(other, a):
                 return False
+        if (self.alarm_class is None and other.alarm_class is None):
+            return True
+        if (self.alarm_class is None or
+            other.alarm_class is None or
+            self.alarm_class.name != other.alarm_class.name):
+            return False
         return True
 
 
