@@ -64,7 +64,7 @@ class Task(noc.lib.periodic.Task):
                 if o:
                     tasks += [ReduceTask.create_task(
                         "SAE",
-                        reduce_ping, {"periodic", self},
+                        reduce_ping, {"periodic": self},
                         "ping_check", {"activator_name": a, "addresses": o},
                          t * 2)]
             time.sleep(t)
