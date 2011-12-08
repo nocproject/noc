@@ -614,7 +614,10 @@ class ActivatorStub(object):
             return self.test.snmp_getnext[oid]
         except KeyError:
             raise self.TimeOutError()
-    
+
+    def http_get(self, path):
+        return self.test.http_get[path]
+
     def get_motd(self):
         return self.test.motd
 
@@ -666,6 +669,8 @@ class ScriptTestCase(unittest.TestCase):
         a.profile = profile.name
         if self.snmp_get or self.snmp_getnext:
             a.snmp_ro = "public"
+        if self.http_get:
+            a.scheme = 2
         # Run script.
         script = script_registry[self.script](profile(), ActivatorStub(self),
                                               a, **self.input)

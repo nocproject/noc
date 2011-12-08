@@ -228,7 +228,7 @@ class HTTPProvider(object):
         """
         to_save = self.script.activator.to_save_output
         if self.script.activator.use_canned_session:
-            r = self.script.activator["path"]
+            r = self.script.activator.http_get(path)
             if isinstance(r, basestring):
                 return r
             else:
