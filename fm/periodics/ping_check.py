@@ -59,19 +59,14 @@ class Task(noc.lib.periodic.Task):
         # Run tasks every t seconds
         for i in range(I):
             # Prepare task parameters
-            params = []
             for a in objects:
                 o = objects[a].pop(0)
                 if o:
-                    params += [{"activator_name": a, "addresses": o}]
-            if params:
-                # Run task
-                task = ReduceTask.create_task("SAE", reduce_ping,
-                        {"periodic": self},
-                        ["ping_check"] * len(params),
-                        params,
-                        self.timeout - 3)
-                tasks += [task]
+                    tasks += [ReduceTask.create_task(
+                        "SAE",
+                        reduce_ping, {"periodic", self},
+                        "ping_check", {"activator_name": a, "addresses": o},
+                         t * 2)]
             time.sleep(t)
         # Collect task results
         r = True
