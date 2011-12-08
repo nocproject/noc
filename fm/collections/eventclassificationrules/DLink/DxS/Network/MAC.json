@@ -18,5 +18,34 @@
                 "value_re": "(?:WARN:|WARN\\(4\\)) The flooding MAC is detected \\(VID: (?P<vlan>\\d+), MAC: (?P<mac>\\S+)\\)"
             }
         ]
+    },
+
+    {
+        "name": "DLink | DxS | Network | MAC | MAC Flood (SNMP)",
+        "description": "DES3028-L2MGMT-MIB::swL2FloodMacDetectedTrap",
+        "event_class__name": "Network | MAC | MAC Flood",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^D[EG]S-?\d{4}.+-MIB::swL2FloodMacDetectedTrap$"
+            },
+            {
+                "key_re": "^D[EG]S-?\d{4}.+-MIB::swL2FloodMacDetectedMacAddress(\\.\\d+)?$",
+                "value_re": "^(?P<mac__bin_to_mac>.+)$"
+            },
+            {
+                "key_re": "^D[EG]S-?\d{4}.+-MIB::swL2FloodMacDetectedMacVid(\\.\\d+)?$",
+                "value_re": "^(?P<vlan>\\d+)$"
+            }
+        ]
     }
 ]
