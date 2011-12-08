@@ -783,7 +783,7 @@ class Script(threading.Thread):
         if (not self.cli_provider and
             self.access_profile.scheme in (SSH, TELNET)):
             self.request_cli_provider()
-           return self.cli_provider.motd
+            return self.cli_provider.motd
         return ""
 
     def re_search(self, rx, s, flags=0):
