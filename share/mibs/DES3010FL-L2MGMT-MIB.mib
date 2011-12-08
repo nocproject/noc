@@ -1,3 +1,32 @@
+-- firmware version 4.3
+-- 2009/07.8
+-- Request By Vic Li
+-- [Modify Object]
+-- [New Object]
+-- add object sswL2DevCtrlVlanIdOfFDBTbl
+--*****************************************************************************************
+-- firmware version 4.3
+-- 2009/05.31
+-- Request By Wenxia yang
+-- [Modify Object]
+-- [New Object]
+-- add object swL2DevCtrlLLDPState and swL2DevCtrlLLDPForwardMessageState
+--*****************************************************************************************
+-- firmware version 4.3
+-- 2009/05.18
+-- Request By Vic Li
+-- [Modify Object]
+-- [New Object]
+-- add swL2IGMPRouterPortTable
+--*****************************************************************************************
+-- firmware version 4.3
+-- 2008/12/24
+-- Request By Robinson Yan for project DES30XXR4.3
+-- [Modify Object]
+-- Modify the range of the object "swL2StpPortAdminEdgePort" from TruthValue to (0-2)
+-- [New Object]
+-- add swL2STPPortRestrictedTCN swL2STPPortRestrictedTCN in swL2StpPortTable
+--***************************************************************************************** 
 -- firmware version 4.2 
 -- 2008/8/13
 -- Request By Maxvel Li for project DES30XXR4.2
@@ -240,6 +269,23 @@ DES3010FL-L2MGMT-MIB DEFINITIONS ::= BEGIN
                 (very busy)."
                 ::= { swL2CPUutilization 3 } 
  
+-- -----------------------------------------------------------------------------
+    swL2DevAlarm             OBJECT IDENTIFIER ::= { swL2DevMgmt 4 }
+    
+    swL2DevAlarmLinkChange OBJECT-TYPE
+        SYNTAX  INTEGER {
+               other(1),
+               disabled(2),
+               enabled(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object determines whether or not to send a trap message when the link
+              changes. If the object is enabled (3), the Link Change trap is sent by
+             the device when any of its port links change. The device does not send the
+             trap if this object value is disabled or in another state."
+        ::= { swL2DevAlarm 3 }
 
     -- *******************************************************
 
@@ -509,7 +555,50 @@ DES3010FL-L2MGMT-MIB DEFINITIONS ::= BEGIN
         STATUS current
         DESCRIPTION
                "This indicates the global state of the VLAN trunking feature of the device."
-        ::={swL2DevCtrl 22}                   
+        ::={swL2DevCtrl 22}  
+        
+    swL2DevCtrlLLDPState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               enabled(1),
+               disabled(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "Specifies the state of the LLDP function. 
+             When this function is enabled, the switch can start to transmit 
+             LLDP packets and receive and process the LLDP packets.
+	     The specific function of each port will depend on the per port 
+	     LLDP setting.
+	     For the advertisement of LLDP packets, the switch announces the 
+	     information to its neighbor through ports. For receiving
+	     LLDP packets, the switch will learn the information from the LLDP 
+	     packets advertised from the neighbor in the neighbor table."
+        ::= { swL2DevCtrl 23 }
+        
+     swL2DevCtrlLLDPForwardMessageState OBJECT-TYPE
+        SYNTAX  INTEGER{
+                 enabled(1),
+                 disabled(2)
+                 }
+        MAX-ACCESS  read-write
+        STATUS   current
+        DESCRIPTION
+             "When lldp is disabled and lldp forward_message's are enabled, the 
+              LLDP Data Unit packets received by the switch will be forwarded. "
+        DEFVAL  {disabled}
+       ::={swL2DevCtrl 24}
+
+    swL2DevCtrlVlanIdOfFDBTbl OBJECT-TYPE
+        SYNTAX      VlanId
+        MAX-ACCESS  read-write
+        STATUS      current
+        DESCRIPTION
+            "Indicates the VLAN ID to which the Dot1dTpFdbTable belongs;
+             The default value is DEFAULT_VLAN_ID of the system."
+        ::= { swL2DevCtrl 25 }
+         	
+	                     
 -- ********************************************************************
 --  swL2PortMgmt            OBJECT IDENTIFIER ::= { swL2MgmtMIB 6 }
 -- ********************************************************************
@@ -1965,6 +2054,82 @@ DES3010FL-L2MGMT-MIB DEFINITIONS ::= BEGIN
             device corresponding with this entry from IGMP function enabled,
             in per-Vlan basis." 
         ::= { swL2IGMPInfoEntry 5 }
+        
+--------------------------------------------------
+-- IGMP Router Port Table
+--------------------------------------------------
+    swL2IGMPRouterPortTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2IGMPRouterPortEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The information of the router port table."
+        ::= { swIGMPPackage 6 }
+
+    swL2IGMPRouterPortEntry OBJECT-TYPE
+        SYNTAX  SwL2IGMPRouterPortEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The entry of swL2IGMPRouterPortTable."
+        INDEX  { swL2IGMPRouterPortVlanid }
+        ::= { swL2IGMPRouterPortTable 1 }
+
+    SwL2IGMPRouterPortEntry ::=
+        SEQUENCE {
+            swL2IGMPRouterPortVlanid
+                INTEGER,
+            swL2IGMPRouterPortVlanName
+                DisplayString,
+            swL2IGMPRouterPortStaticPortList
+                PortList,
+            swL2IGMPRouterPortDynamicPortList
+                PortList,
+            swL2IGMPRouterPortForbiddenPortList
+                PortList
+        }
+
+    swL2IGMPRouterPortVlanid OBJECT-TYPE
+        SYNTAX  INTEGER (1..4094)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the vlan id of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 1 }
+
+    swL2IGMPRouterPortVlanName OBJECT-TYPE
+        SYNTAX  DisplayString (SIZE (0..32))
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the vlan name of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 2 }
+
+    swL2IGMPRouterPortStaticPortList OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicate the static portlist of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 3 }
+
+    swL2IGMPRouterPortDynamicPortList OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicate the dynamic portlist of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 4 }
+
+
+    swL2IGMPRouterPortForbiddenPortList OBJECT-TYPE
+        SYNTAX  PortList
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicate the forbidden portlist of the router port entry."
+        ::= { swL2IGMPRouterPortEntry 5 }
+
 -- -----------------------------------------------------------------------------
 --  swIGMPPackage	OBJECT IDENTIFIER ::= { swL2IGMPMgmt 7 }
 -- -----------------------------------------------------------------------------
@@ -2832,19 +2997,23 @@ DES3010FL-L2MGMT-MIB DEFINITIONS ::= BEGIN
                 swL2StpPortProtocolMigration
             	TruthValue,
         	swL2StpPortAdminEdgePort
-            	TruthValue,          			
+            	INTEGER,          			
         	swL2StpPortOperEdgePort
             	TruthValue,
         	swL2StpPortAdminPointToPoint
             	INTEGER,
         	swL2StpPortOperPointToPoint
             	TruthValue,
-                swL2StpPortAdminPathCost
+            swL2StpPortAdminPathCost
             	Unsigned32,            	
-                swL2StpPortPriority
+            swL2StpPortPriority
                 INTEGER, 	
-                swL2STPPortState
-                INTEGER
+            swL2STPPortState
+                INTEGER,
+            swL2StpPortRestrictedRole
+                TruthValue,
+            swL2StpPortRestrictedTCN
+                TruthValue
                 }
 	
 	swL2StpPort OBJECT-TYPE
@@ -2958,13 +3127,17 @@ DES3010FL-L2MGMT-MIB DEFINITIONS ::= BEGIN
     ::= { swL2StpPortEntry 7 }
 
 	swL2StpPortAdminEdgePort OBJECT-TYPE
-    SYNTAX      TruthValue
+    SYNTAX      INTEGER {
+                    forceTrue(0),
+                    forceFalse(1),
+                    auto(2)
+                }
     MAX-ACCESS  read-write
     STATUS      current
     DESCRIPTION
         "The administrative value of the Edge Port parameter.  A
-         value of TRUE(1) indicates that this port should be
-         assumed as an edge-port and a value of FALSE(2) indicates
+         value of TRUE(0) indicates that this port should be
+         assumed as an edge-port and a value of FALSE(1) indicates
          that this port should be assumed as a non-edge-port."
     REFERENCE
         "IEEE 802.1t clause 14.8.2, 18.3.3"
@@ -3073,7 +3246,24 @@ DES3010FL-L2MGMT-MIB DEFINITIONS ::= BEGIN
 	           to this port."                      
 	       ::= { swL2StpPortEntry 14 }             
 
-
+         swL2StpPortRestrictedRole OBJECT-TYPE
+	        SYNTAX  TruthValue         
+            MAX-ACCESS  read-write
+            STATUS  current 
+            DESCRIPTION	
+                "If TRUE causes the port not to be selected as Root Port, 
+                    even it has the best spanning tree priotiry vector."
+        ::= { swL2StpPortEntry 15 }
+            
+        swL2StpPortRestrictedTCN OBJECT-TYPE
+	        SYNTAX  TruthValue         
+            MAX-ACCESS  read-write
+            STATUS  current 
+            DESCRIPTION	
+                "If TRUE causes the port not to propagate received topology
+	             change notifications and topology changes to other Ports."
+        ::= { swL2StpPortEntry 16 }
+               
 -- ********************************************************************
 --        swL2CosMgmt               OBJECT IDENTIFIER ::= { swL2MgmtMIB 17 }
 -- ********************************************************************
