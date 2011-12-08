@@ -45,11 +45,11 @@ class Task(noc.lib.periodic.Task):
         t = (self.timeout - 5) / I
         # Schedule
         for a in objects:
-            o = objects[a.name]
+            o = objects[a]
             s = int(math.ceil(float(len(o)) / I))
             x = [o[s * i:s * (i + 1)] for i in range(I)]
             random.shuffle(x)
-            objects[a.name] = x
+            objects[a] = x
         tasks = []
         # Run tasks every t seconds
         for i in range(I):
