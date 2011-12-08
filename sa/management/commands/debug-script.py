@@ -49,6 +49,7 @@ class SessionCan(object):
         self.script_name = script_name
         self.snmp_get = {}
         self.snmp_getnext = {}
+        self.http_get = {}
         self.platform = "<<<INSERT YOUR PLATFORM HERE>>>"
         self.version = "<<<INSERT YOUR VERSION HERE>>>"
 
@@ -66,6 +67,9 @@ class SessionCan(object):
 
     def save_snmp_getnext(self, oid, result):
         self.snmp_getnext[oid] = result
+
+    def save_http_get(self, path,result):
+        self.save_http_get[path] = result
 
     def save_result(self, result, motd=""):
         """Save final result"""
@@ -117,6 +121,7 @@ class %(test_name)s_Test(ScriptTestCase):
     cli = %(cli)s
     snmp_get = %(snmp_get)s
     snmp_getnext = %(snmp_getnext)s
+    http_get = %(http_get)s
 """ % {
             "test_name": self.script_name.replace(".", "_"),
             "script": self.script_name,
@@ -128,6 +133,7 @@ class %(test_name)s_Test(ScriptTestCase):
             "cli": format_stringdict(self.cli),
             "snmp_get": pprint.pformat(self.snmp_get),
             "snmp_getnext": pprint.pformat(self.snmp_getnext),
+            "http_get": pprint.pformat(self.http_get),
             "motd": pprint.pformat(self.motd),
             "platform": self.platform,
             "version": self.version
@@ -206,9 +212,9 @@ class ActivatorStub(object):
                 break
             logging.debug("Calling delayed %s(*%s, **%s)" % (f, args, kwargs))
             apply(f, args, kwargs)
-        if len(self.factory.sockets) == 0:
+        if not self.factory.sockets:
             self.wait_ticks -= 1
-            if self.wait_ticks == 0:
+            if not self.wait_ticks:
                 logging.debug("EXIT")
                 if self.to_save_output:
                     if self.session_can.result:
@@ -277,6 +283,9 @@ class ActivatorStub(object):
 
     def save_snmp_getnext(self, oid, result):
         self.session_can.save_snmp_getnext(oid, result)
+
+    def save_http_get(self, path, result):
+        self.session_can.save_http_get(path, result)
 
     def error(self, msg):
         logging.error(msg)

@@ -634,6 +634,7 @@ class ScriptTestCase(unittest.TestCase):
     cli = None
     snmp_get = {}
     snmp_getnext = {}
+    http_get = {}
     mock_get_version = False  # Emulate get_version_call
     ignore_timestamp_mismatch = False
 

@@ -226,6 +226,14 @@ class HTTPProvider(object):
         :param path: Path or list of paths
         :type path: String or List of string
         """
+        to_save = self.script.activator.to_save_output
+        if self.script.activator.use_canned_session:
+            r = self.script.activator["path"]
+            if isinstance(r, basestring):
+                return r
+            else:
+                raise HTTPError(r)
+
         if type(path) in (types.ListType, types.TupleType):
             last_code = None
             for p in path:
@@ -237,12 +245,17 @@ class HTTPProvider(object):
                         continue
                     else:
                         break
+            if to_save:
+                self.script.activator.save_http_get(path, last_code)
             raise self.HTTPError(last_code)
         else:
             try:
-                return self.request("GET", path, params, headers)
+                r = self.request("GET", path, params, headers)
             except socket.error, why:
                 raise self.script.LoginError(why[1])
+            if to_save:
+                self.script.activator.save_http_get(path, r)
+            return r
 
     def post(self, path, params=None, headers={}):
         if params:
