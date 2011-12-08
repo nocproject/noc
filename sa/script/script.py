@@ -780,12 +780,11 @@ class Script(threading.Thread):
         """Return message of the day"""
         if self.activator.use_canned_session:
             return self.activator.get_motd()
-        if not self.cli_provider:
-            if self.access_profile.scheme in (SSH, TELNET):
-                self.request_cli_provider()
-        else:
-            return ""
-        return self.cli_provider.motd
+        if (not self.cli_provider and
+            self.access_profile.scheme in (SSH, TELNET)):
+            self.request_cli_provider()
+           return self.cli_provider.motd
+        return ""
 
     def re_search(self, rx, s, flags=0):
         """
