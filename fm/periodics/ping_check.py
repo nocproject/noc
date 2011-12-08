@@ -14,12 +14,17 @@ import time
 import noc.lib.periodic
 
 
-def reduce_ping(task):
+def reduce_ping(task, periodic):
     """Reduce script for ping_check"""
+    r = False
     for mt in task.maptask_set.all():
         if mt.status == "C":
-            return True
-    return False
+            r = True
+        else:
+            periodic.error("Ping failed on activator '%s': %s" % (
+                mt.script_params["activator_name"], mt.script_result
+            ))
+    return r
 
 
 class Task(noc.lib.periodic.Task):
@@ -61,10 +66,11 @@ class Task(noc.lib.periodic.Task):
                     params += [{"activator_name": a, "addresses": o}]
             if params:
                 # Run task
-                task = ReduceTask.create_task("SAE", reduce_ping, {},
-                                           ["ping_check"] * len(params),
-                                           params,
-                                           self.timeout - 3)
+                task = ReduceTask.create_task("SAE", reduce_ping,
+                        {"periodic": self},
+                        ["ping_check"] * len(params),
+                        params,
+                        self.timeout - 3)
                 tasks += [task]
             time.sleep(t)
         # Collect task results
