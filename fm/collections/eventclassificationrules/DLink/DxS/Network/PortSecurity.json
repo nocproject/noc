@@ -60,11 +60,11 @@
                 "value_re": "^D[EG]S-?\\d{4}.+-MIB::sw(?:L2PortSecurityViolationTrap|l2NotifyPortSecurity.+)$"
             },
             {
-                "key_re": "^D[EG]S-?\d{4}.+-MIB::swL2PortSecurityPortIndex(\\.\\d+)?$",
+                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swL2PortSecurityPortIndex(\\.\\d+)?$",
                 "value_re": "^(?P<interface>\\S+)$"
             },
             {
-                "key_re": "^D[EG]S-?\d{4}.+-MIB::swL2PortSecurityViolationMac(\\.\\d+)?$",
+                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swL2PortSecurityViolationMac(\\.\\d+)?$",
                 "value_re": "^(?P<mac__bin_to_mac>.+)$"
             }
         ]
