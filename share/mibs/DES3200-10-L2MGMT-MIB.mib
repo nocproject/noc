@@ -1,8 +1,8 @@
 -- -----------------------------------------------------------------------------
 -- MIB NAME : L2 Management MIB
 -- FILE NAME: L2mgmtDes3200.mib
--- DATE     : 2009/12/16
--- VERSION  : 2.33
+-- DATE     : 2010/10/04
+-- VERSION  : 2.36
 -- PURPOSE  : To construct the MIB structure for L2 Management of the switch
 --            for proprietary enterprise
 -- -----------------------------------------------------------------------------
@@ -13,6 +13,21 @@
 --  [New Object]
 --  [Modification]
 -- Notes: (Requested by who and which project)
+-- -----------------------------------------------------------------------------
+-- Version 2.36, 2010/10/04, Marco Visaya
+-- [New Object]
+--  Add swL2FloodMAC
+-- -----------------------------------------------------------------------------
+-- Version 2.35, 2010/07/20,Marco Visaya
+-- Description:
+-- [New Object]
+--  Add DDM to swL2PortErrPortReason
+-- -----------------------------------------------------------------------------
+-- Version 2.34, 2010/07/20,Marco Visaya
+-- Description:
+--  [New Object]
+-- Add swL2FloodMacDetectedTrap, swL2FloodMacDetectedMacVid
+-- Add swL2FloodMacDetectedMacAddress
 -- -----------------------------------------------------------------------------
 -- Version 2.33, 2009/12/16,Eli Lin
 -- Description:
@@ -211,7 +226,7 @@ DES3200-10-L2MGMT-MIB DEFINITIONS ::= BEGIN
 	des3200-10					FROM SWPRIMGMT-DES3200-MIB;
 		
 	swL2MgmtMIB MODULE-IDENTITY
-		LAST-UPDATED "0912160000Z"
+		LAST-UPDATED "1010040000Z"
 	  	ORGANIZATION "D-Link, Inc."
 	  	CONTACT-INFO
 	   		"http://support.dlink.com"
@@ -251,7 +266,8 @@ swL2LoopDetectMgmt          OBJECT IDENTIFIER ::= { swL2MgmtMIB 21 }
 swL2MultiFilter             OBJECT IDENTIFIER ::= { swL2MgmtMIB 22 }
 swL2VlanMgmt                OBJECT IDENTIFIER ::= { swL2MgmtMIB 23 }
 swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
-	  		
+swL2FloodMAC        OBJECT IDENTIFIER ::= { swL2MgmtMIB 25 }
+
 --*****************************
 -- add by ynot for lag
 -- dot3adAggrPortMgmt	OBJECT IDENTIFIER ::= { lagMIBObjects 1 }
@@ -1234,12 +1250,13 @@ swL2DevAlarm             OBJECT IDENTIFIER ::= { swL2DevMgmt 3 }
                      stp-lbd(1),
                      storm-control(2),
                      storm-control-lbd(3),
-                     loopdetect(4)
+                     loopdetect(4),
+                     ddm(5)
                      }
               MAX-ACCESS  read-only
               STATUS  current
               DESCRIPTION
-                  "This object decides whether the PortStatus STP is LBD or Storm control."
+                  "This object indicates the module which disabled the port."
               ::= { swL2PortErrEntry 4 }
               
           swL2PortErrDescription OBJECT-TYPE
@@ -4720,7 +4737,17 @@ learned source addresses are discarded (e.g. dropped) and no more new addresses
         DESCRIPTION
                "The trap is sent when a Port with a VID loop restarts after the interval time."
         ::={swL2MgmtMIBTrapPrefix 6}
-		  
+
+    swL2FloodMacDetectedTrap  NOTIFICATION-TYPE
+        OBJECTS {
+              swL2FloodMacDetectedMacVid,
+              swL2FloodMacDetectedMacAddress
+        		}
+        STATUS  current        		
+        DESCRIPTION
+            " If there¡¦s a new flooding MAC is detected, a trap will be sent out."
+		::= { swL2MgmtMIBTrapPrefix 7 }  
+		        		  
     swl2PortSecurityBindings OBJECT IDENTIFIER ::= { swL2MgmtMIBTraps 1 }	
     	     
     swL2PortSecurityViolationMac OBJECT-TYPE
@@ -4750,6 +4777,21 @@ learned source addresses are discarded (e.g. dropped) and no more new addresses
              "This object indicates the VID that detected a loopback."
         ::= { swl2NotificationBindings 2 }
         
+   swL2FloodMacDetectedMacVid   OBJECT-TYPE
+        SYNTAX  INTEGER (1..4094)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the VID of the flooding MAC."
+        ::= { swl2NotificationBindings 3 }  
+        
+   swL2FloodMacDetectedMacAddress   OBJECT-TYPE
+        SYNTAX  MacAddress
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the MAC address of the flooding MAC"
+        ::= { swl2NotificationBindings 4 }          
 -- ********************************************************************
 --  swL2LoopDetectMgmt           OBJECT IDENTIFIER ::= { swL2MgmtMIB 21 }
 -- ********************************************************************
@@ -5344,6 +5386,271 @@ learned source addresses are discarded (e.g. dropped) and no more new addresses
             "This object indicates the status of the DHCP relay function 
             of the VLAN."
         ::= { swL2DhcpLocalRelayVLANEntry 2 }
+        
+        
+-- ********************************************************************
+-- swL2FloodMAC        OBJECT IDENTIFIER ::= { swL2MgmtMIB 25 }
+-- ********************************************************************
+                
+swL2FloodMACMgmt  OBJECT IDENTIFIER ::= { swL2FloodMAC 1 }   
+swL2FloodMACGlobalSettings OBJECT IDENTIFIER ::= { swL2FloodMACMgmt 1 }   
+
+swL2FloodMACState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               enabled(1),
+               disabled(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the status of Flooding MAC function."
+        ::= { swL2FloodMACGlobalSettings 1 }
+        
+
+swL2FloodMACLogState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               enabled(1),
+               disabled(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates whether logs are generated when a flooding MAC is detected."
+        ::= { swL2FloodMACGlobalSettings 2 }
+        
+swL2FloodMACTrapState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               enabled(1),
+               disabled(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates whether traps are generated when a flooding MAC is detected."
+        ::= { swL2FloodMACGlobalSettings 3 }
+        
+        
+swL2FloodMACClearFDB OBJECT-TYPE
+        SYNTAX  INTEGER {
+               no-action(1),
+               start(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "When set to start(2), this object will clear the entries of swL2FloodMACFDBTable.
+            After the device finishes clearing the entries, it will return to its default value, no-action(1).
+            Setting this object to no-action(1) will not have any effect."
+        ::= { swL2FloodMACGlobalSettings 4 }        
+        
+        
+swL2FloodMACAutoFDBCtrlTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SwL2FloodMACAutoFDBCtrlEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table containing a list of configured IP addresses to which the Auto FDB function 
+        will discover the corresponding VLAN, MAC address and port and have a corresponding
+        static FDB entry created automatically."
+    ::= { swL2FloodMACMgmt 2 }
+        
+
+swL2FloodMACAutoFDBCtrlEntry OBJECT-TYPE
+    SYNTAX      SwL2FloodMACAutoFDBCtrlEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Information containing the configured Auto FDB IP address."
+    INDEX   {
+        swL2FloodMACAutoFDBIPAddress
+    }
+    ::= { swL2FloodMACAutoFDBCtrlTable 1 }
+
+  
+SwL2FloodMACAutoFDBCtrlEntry ::=
+    SEQUENCE {
+        swL2FloodMACAutoFDBIPAddress
+        	IpAddress,
+		swL2FloodMACAutoFDBRowStatus
+			RowStatus
+    }
+    
+swL2FloodMACAutoFDBIPAddress OBJECT-TYPE
+	SYNTAX  IpAddress
+	MAX-ACCESS  not-accessible
+	STATUS  current
+	DESCRIPTION
+	  "The Auto FDB IP address."
+	::= { swL2FloodMACAutoFDBCtrlEntry 1 }
+    
+swL2FloodMACAutoFDBRowStatus OBJECT-TYPE
+    SYNTAX RowStatus
+    MAX-ACCESS read-create
+    STATUS current
+    DESCRIPTION
+        "This object indicates the status of this entry."
+    ::= { swL2FloodMACAutoFDBCtrlEntry 2 }    
+
+swL2FloodMACInfo  OBJECT IDENTIFIER ::= { swL2FloodMAC 2 }   
+
+swL2FloodMACFDBTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SwL2FloodMACFDBEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table containing a list of current and historical flooding MAC entries."
+    ::= { swL2FloodMACInfo 1 }
+
+
+swL2FloodMACFDBEntry OBJECT-TYPE
+    SYNTAX      SwL2FloodMACFDBEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Information containing the flooding MAC address."
+    INDEX   {
+        swL2FloodMACFDBIndex,
+        swL2FloodMACFDBVID,
+        swL2FloodMACFDBMacAddress
+    }
+    ::= { swL2FloodMACFDBTable 1 }
+
+
+SwL2FloodMACFDBEntry ::=
+    SEQUENCE {
+    	swL2FloodMACFDBIndex
+    		INTEGER,
+    	swL2FloodMACFDBVID
+    		INTEGER,
+        swL2FloodMACFDBMacAddress
+            MacAddress,
+        swL2FloodMACFDBStatus
+            INTEGER,
+        swL2FloodMACFDBTimestamp
+            INTEGER
+    }
+
+swL2FloodMACFDBIndex OBJECT-TYPE
+        SYNTAX  INTEGER 
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The hardware address table index of the flooding MAC entry."
+        ::= { swL2FloodMACFDBEntry 1 }    
+    
+        
+swL2FloodMACFDBVID OBJECT-TYPE
+        SYNTAX  INTEGER (1..4094)
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "The VLAN identifier of the flooding MAC entry."
+        ::= { swL2FloodMACFDBEntry 2 }  
+        
+                
+swL2FloodMACFDBMacAddress OBJECT-TYPE
+    SYNTAX      MacAddress
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "The MAC address of the flooding MAC entry."
+    ::= { swL2FloodMACFDBEntry 3 }
+
+
+swL2FloodMACFDBStatus OBJECT-TYPE
+        SYNTAX  INTEGER {
+               active(1),
+               inactive(2)
+               }
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "The status of the flooding MAC entry. When the value is 'active', this means
+            the entry is currently present in the hardware address table,
+            otherwise, the value is 'inactive'."
+        ::= { swL2FloodMACFDBEntry 4 }   
+        
+swL2FloodMACFDBTimestamp OBJECT-TYPE
+        SYNTAX  INTEGER 
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "A number that correlates to a relative time the entry was detected by the Flooding MAC function."
+        ::= { swL2FloodMACFDBEntry 5 }           
+                             
+swL2FloodMACAutoFDBTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SwL2FloodMACAutoFDBEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table containing the discovered VLAN, MAC address and port of the host 
+        with an IP address created in swL2FloodMACAutoFDBCtrlTable."
+    ::= { swL2FloodMACInfo 2 }
+        
+
+swL2FloodMACAutoFDBEntry OBJECT-TYPE
+    SYNTAX      SwL2FloodMACAutoFDBEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Information containing the discovered VLAN, MAC address and port of an Auto FDB entry."
+    INDEX   {
+        swL2FloodMACAutoFDBIPAddress
+    }
+    ::= { swL2FloodMACAutoFDBTable 1 }
+
+  
+SwL2FloodMACAutoFDBEntry ::=
+    SEQUENCE {
+        swL2FloodMACAutoFDBVID
+        	INTEGER,
+        swL2FloodMACAutoFDBMacAddress
+        	MacAddress,
+        swL2FloodMACAutoFDBPort
+        	INTEGER,
+        swL2FloodMACAutoFDBTimestamp
+        	INTEGER
+    }
+            
+    
+        
+swL2FloodMACAutoFDBVID OBJECT-TYPE
+        SYNTAX  INTEGER (1..4094)
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "The VLAN identifier of Auto FDB entry."
+        ::= { swL2FloodMACAutoFDBEntry 1 }  
+        
+                
+swL2FloodMACAutoFDBMacAddress OBJECT-TYPE
+    SYNTAX      MacAddress
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The MAC address of the Auto FDB entry."
+    ::= { swL2FloodMACAutoFDBEntry 2 }    
+    
+swL2FloodMACAutoFDBPort OBJECT-TYPE
+    SYNTAX      INTEGER
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The port number of the Auto FDB entry."
+    ::= { swL2FloodMACAutoFDBEntry 3 }        
+       
+swL2FloodMACAutoFDBTimestamp OBJECT-TYPE
+    SYNTAX      INTEGER
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "A number that represents the relative time when the Auto FDB learned this entry."
+    ::= { swL2FloodMACAutoFDBEntry 4 }   
+    
+    
+
+            
+               
         
 END
 

@@ -1,3 +1,84 @@
+-- Version 0.35, 2011/4/29, Ping Chen
+--  [Modification]
+--    Add "swL2LoopDetectActiveVlan/swL2LoopDetectActiveVlanRangeList1to64"
+--        "swL2LoopDetectActiveVlanRangeList65to128"
+--        "swL2LoopDetectActiveVlanRangeList129to192"
+--        "swL2LoopDetectActiveVlanRangeList193to256"
+--        "swL2LoopDetectActiveVlanRangeList257to320"
+--        "swL2LoopDetectActiveVlanRangeList321to384"
+--        "swL2LoopDetectActiveVlanRangeList385to448"
+--        "swL2LoopDetectActiveVlanRangeList449to512"  
+--   Add "swL2DevCtrlLLDPAdviseSystemIP"
+--   Add "swL2DevCtrPasswordRecoveryState"
+--   Add "swL2IGMPGroupActive"
+--
+-- Version 0.34, 2011/4/21, Garnet Tang
+--  [Modification]
+--    Add "swL2LimitedMulticastMgmt" again (backward compitible)
+--    Add "swL2DhcpLocalRelayOption82Table"
+--        "swL2DhcpLocalRelayOption82RemoteIDType"
+--        "swL2DhcpLocalRelayOption82RemoteID" (backward compitible)
+--
+-- Version 0.33, 2011/2/21, Ping Chen
+--  [Modification]
+--    To add "swL2IpMacBindingARPInspectionState"(swL2IpMacBindingMgmt(6))
+--
+-- Version 0.32, 2011/2/10, Ping Chen
+--  [Modification]
+--    To add "swL2IGMPAccessAuthTable" : add "swL2IGMPMgmt(8)"
+--
+-- Version 0.31, 2010/9/20, Garnet Tang
+--  [Modification]
+--    To modify "swL2PortInfoErrorDisabled" : add "ddm(3)"
+--    To modify "swL2PortInformationErrorDisabled" : add "ddm(3)"
+--
+-- Version 0.30, 2008/11/19, Moun Lu
+--  [Modification]
+--    [1]To add the objects "swL2IGMPMulticastVlanUntagSourcePort".
+--    [2]To add the objects "swL2IGMPMulticastVlanRemapPriority".
+--    [3]To add the objects "swL2IGMPMulticastVlanReplacePriority".
+-- Notes: Requested by D-Link, DES3500
+--
+-- Version 0.29, 2010/4/21, Garnet Tang
+--  [Modification]
+--    To remove "swL2LimitedMulticastMgmt"
+--
+-- Version 0.28, 2010/4/7, Ping Chen
+--  [Modification]
+--    To add table "swL2PortSecurityDelCtrl"
+--
+-- Version 0.27, 2010/3/5, Ping Chen
+--  [Modification]
+--    To remove the objects "swL2MulticastRangeIndex" and "swL2MulticastRangeName"
+--
+-- Version 0.26, 2010/2/1, Ping Chen
+--  [Modification]
+--    [1]To add the objects "swL2MulticastRangeIndex"
+--    [2]To modify the objects "swL2MulticastRangeName" read-create
+-- Notes: BTD2010011610  DES-3526/3550 series - TSD Switch  82
+--
+-- Version 0.25, 2008/04/02, Ronald Hsu
+--  [Modification]
+--    [1]To modify the object "swL2PPPoECirIDinsertState" status to obsolete.
+-- Notes: Requested by D-Link, DES3500
+--
+-- Version 0.24, 2008/12/15, Moun Lu
+--  [Modification]
+--    [1]To add the object "swL2IpMacBindingPortLearningMode".
+-- Notes: Requested by D-Link, DES3500
+--
+-- Version 0.23, 2008/10/08, Moun Lu
+--  [Modification]
+--    [1]To add the object "swL2PPPoECirIDinsertState".
+-- Notes: Requested by D-Link, DES3500
+--
+-- Version 0.22, 2008/08/01, Shan lu
+--  [Modification]
+--    [1]To add the object "swL2IpMacBindingPortStopLearningThreshold".
+--    [2]To add the object "swL2IpMacBindingPortRecoverLearning".
+--    [3]To add the notification "swL2IpMacBindingStopLearningTrap".
+--    [4]To add the notification "swL2IpMacBindingRecoverLearningTrap".
+-- Notes: Requested by D-Link, DES3500
 --
 -- Version 0.21, 2008/05/19, Ronald Hsu
 --  [Modification]
@@ -162,7 +243,7 @@ DES3526-L2MGMT-MIB DEFINITIONS ::= BEGIN
         DisplayString                       FROM RFC1213-MIB;
 
     swL2MgmtMIB MODULE-IDENTITY
-      LAST-UPDATED "0805190000Z"
+      LAST-UPDATED "0904020000Z"
       ORGANIZATION "D-Link Corp."
       CONTACT-INFO
           "http://support.dlink.com"
@@ -190,7 +271,8 @@ DES3526-L2MGMT-MIB DEFINITIONS ::= BEGIN
     swL2TrafficSegMgmt          OBJECT IDENTIFIER ::= { swL2MgmtMIB 13 }
     swL2PortSecurityMgmt        OBJECT IDENTIFIER ::= { swL2MgmtMIB 14 }
     swL2MgmtMIBTraps            OBJECT IDENTIFIER ::= { swL2MgmtMIB 15 }
-swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
+    swL2DhcpLocalRelayMgmt      OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
+    swL2PPPoEMgmt               OBJECT IDENTIFIER ::= { swL2MgmtMIB 25 }
 
 -- ********************************************************************
 --  swL2DevMgmt             OBJECT IDENTIFIER ::= { swL2MgmtMIB 1 }
@@ -622,6 +704,17 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
     	    "
         ::= { swL2DevCtrl 16 }
 
+    swL2DevCtrlLLDPAdviseSystemIP OBJECT-TYPE
+        SYNTAX  INTEGER {
+               none(1),
+               advise(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "Used to advise system ip to all port"
+        ::= { swL2DevCtrl 19 }
+
     swL2DevCtrlWeb   OBJECT IDENTIFIER ::= { swL2DevCtrl 17 }
 
     swL2DevCtrlWebState OBJECT-TYPE
@@ -657,6 +750,18 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
               received LLDP Data Unit packets will be forwarded. "
         DEFVAL  {disabled}
        ::= { swL2DevCtrl 18 }
+        
+    swL2DevCtrPasswordRecoveryState OBJECT-TYPE
+        SYNTAX  INTEGER{
+                 enabled(1),
+                 disabled(2)
+                 }
+        MAX-ACCESS  read-write
+        STATUS   current
+        DESCRIPTION
+             "This object controls Password Recovery status."
+        DEFVAL  {enabled}
+       ::= { swL2DevCtrl 20 }
         
     -- ***************************************************
     swL2DevAlarm             OBJECT IDENTIFIER ::= { swL2DevMgmt 3 }
@@ -982,7 +1087,8 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
                none(0),
                storm(1),
                lbd(2),
-               unknow(3)
+               ddm(3),
+               unknow(4)
                }
         MAX-ACCESS  read-only
         STATUS  obsolete
@@ -1372,7 +1478,8 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
                none(0),
                storm(1),
                lbd(2),
-               unknow(3)
+               ddm(3),
+               unknow(4)
                }
         MAX-ACCESS  read-only
         STATUS      current
@@ -2191,7 +2298,13 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
       swL2IpMacBindingPortDHCPSnoopMaxEntry
         INTEGER,
       swL2IpMacBindingPortDHCPSnoopEntryClearAction
-        INTEGER
+        INTEGER,
+      swL2IpMacBindingPortStopLearningThreshold
+        INTEGER,
+      swL2IpMacBindingPortRecoverLearning
+        INTEGER,
+      swL2IpMacBindingPortLearningMode
+      	INTEGER       
        }
 
   swL2IpMacBindingPortIndex OBJECT-TYPE
@@ -2246,9 +2359,9 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
     ::= { swL2IpMacBindingPortEntry 4 }
 
   swL2IpMacBindingPortDHCPSnoopMaxEntry OBJECT-TYPE
-    SYNTAX		INTEGER(0..10)
+    SYNTAX    INTEGER(0..10)
     MAX-ACCESS	read-write
-    STATUS		current
+    STATUS    current
     DESCRIPTION
     	"This object indicates the max entry created by DHCP packets on the
     	 specified port.
@@ -2258,19 +2371,57 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
     ::= { swL2IpMacBindingPortEntry 5 }
 
   swL2IpMacBindingPortDHCPSnoopEntryClearAction OBJECT-TYPE
-	SYNTAX		INTEGER{
-					other(1),
-					start(2)
-					}
-	MAX-ACCESS	read-write
-	STATUS		current
-	DESCRIPTION
-		"When set to start(2), the address binding entries learned
-		 for the specified ports will be cleared.
-		 When get, it always returns other (1).
-		"
-	::= { swL2IpMacBindingPortEntry 6 }
+    SYNTAX    INTEGER{
+            other(1),
+            start(2)
+            }
+    MAX-ACCESS	read-write
+    STATUS    current
+    DESCRIPTION
+        "When set to start (2), the address binding entries learned
+         for the specified ports will be cleared.
+         When get, it always returns other (1).
+        "
+    ::= { swL2IpMacBindingPortEntry 6 }
 
+  swL2IpMacBindingPortStopLearningThreshold OBJECT-TYPE
+    SYNTAX    INTEGER
+    MAX-ACCESS	read-write
+    STATUS    current
+    DESCRIPTION
+        "This object indicates the threshold to stop learning new MAC addresses on 
+         the specified port. When the number of blocked entries exceeds the threshold,
+         the port will stop learning new addresses. The packet with a new address will be 
+         dropped.
+         Note:
+    	 When 0 is set on the specified port, it means no limit."
+    ::= { swL2IpMacBindingPortEntry 7 }
+
+  swL2IpMacBindingPortRecoverLearning OBJECT-TYPE
+    SYNTAX    INTEGER{
+            other(1),
+            start(2)
+            }
+    MAX-ACCESS	read-write
+    STATUS    current
+    DESCRIPTION
+        "When set to start (2), it will change the stop_learning state to a normal state
+         on the specified port.
+         When get, it always returns other (1).
+        "
+    ::= { swL2IpMacBindingPortEntry 8 }
+
+  swL2IpMacBindingPortLearningMode OBJECT-TYPE
+    SYNTAX    INTEGER{
+            normal(1),
+            stop(2)
+            }
+    MAX-ACCESS	read-only
+    STATUS    current
+    DESCRIPTION
+        "When set to Stop(2), it will end the learning state.
+        "
+    ::= { swL2IpMacBindingPortEntry 9 }
 
   swL2IpMacBindingTable OBJECT-TYPE
     SYNTAX    SEQUENCE OF SwL2IpMacBindingEntry
@@ -2285,7 +2436,7 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
     MAX-ACCESS  not-accessible
     STATUS    current
     DESCRIPTION
-          "IP-MAC binding entry used to add\delete\configure the address
+          "This IP-MAC binding entry is used to add/delete/configure the address
         pair to the switch's authorized user database."
     INDEX { swL2IpMacBindingIpIndex }
     ::= { swL2IpMacBindingTable 1 }
@@ -2497,6 +2648,19 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
               Ip Mac Binding configuration, the trap will be sent out and the relevant information
               will be logged into the system."
         ::= { swL2IpMacBindingMgmt 5 }
+
+	swL2IpMacBindingARPInspectionState OBJECT-TYPE
+    	SYNTAX  INTEGER {
+                other(1),
+                enable(2),
+                disable(3)
+            }
+    	MAX-ACCESS  read-write
+    	STATUS  current
+    	DESCRIPTION
+			"Used to set ARP inspection state."
+
+        ::= { swL2IpMacBindingMgmt 11 }
 
    swL2IpMacBindingACLMode OBJECT-TYPE
     	SYNTAX  INTEGER {
@@ -3236,6 +3400,8 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
             swL2IGMPPortMap
                 PortList,
             swL2IGMPIpGroupReportCount
+                INTEGER,
+            swL2IGMPGroupActive
                 INTEGER
         }
 
@@ -3297,6 +3463,18 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
             on a per-Vlan basis."
         ::= { swL2IGMPInfoEntry 5 }
 
+  swL2IGMPGroupActive OBJECT-TYPE
+      SYNTAX  INTEGER {
+                  none(1),
+                  avtive(2)
+              }
+      MAX-ACCESS  read-only
+      STATUS  current
+      DESCRIPTION
+             "This object indicates that the entry added the multicast table."
+      ::= { swL2IGMPInfoEntry 6 }
+
+
     swL2IGMPMulticastVlanTable OBJECT-TYPE
         SYNTAX  SEQUENCE OF SwL2IGMPMulticastVlanEntry
         MAX-ACCESS  not-accessible
@@ -3327,7 +3505,13 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
             swL2IGMPMulticastVlanRowStatus
                 RowStatus,
             swL2IGMPMulticastVlanReplaceSourceIP
-                IpAddress
+                IpAddress,
+            swL2IGMPMulticastVlanUntagSourcePort
+       	        PortList,        	
+       	    swL2IGMPMulticastVlanRemapPriority
+   	        		INTEGER,
+            swL2IGMPMulticastVlanReplacePriority
+                INTEGER
         }
 
     swL2IGMPMulticastVlanid OBJECT-TYPE
@@ -3386,6 +3570,38 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
             "This object is used to replace the source IP address in the IP header for
              IGMP control packets."
         ::= { swL2IGMPMulticastVlanEntry 6 }
+
+    swL2IGMPMulticastVlanUntagSourcePort   OBJECT-TYPE
+        SYNTAX PortList
+        MAX-ACCESS read-write
+        STATUS current
+        DESCRIPTION
+            "This indicates the untagged member ports to add to the multicast VLAN."
+        ::={ swL2IGMPMulticastVlanEntry 7}               
+
+    swL2IGMPMulticastVlanRemapPriority   OBJECT-TYPE
+        SYNTAX INTEGER (-1|0..7)
+        MAX-ACCESS read-create
+        STATUS current
+        DESCRIPTION
+            "This is the priority value (0 to 7) to be associated with the data traffic
+            to be forwarded on the multicast VLAN.
+            When set to -1, the packet's original priority will be used."
+        DEFVAL {-1}
+        ::={ swL2IGMPMulticastVlanEntry 8}
+
+    swL2IGMPMulticastVlanReplacePriority  OBJECT-TYPE
+        SYNTAX INTEGER {
+                   enabled(1),
+                   disabled(2)
+                   }
+        MAX-ACCESS read-create
+        STATUS current
+        DESCRIPTION
+            "This specifies that a packet's priority will be changed by the switch
+            based on the remap priority. This flag will only take effect
+            when remap priority is set."
+        ::={ swL2IGMPMulticastVlanEntry 9}
 
     swL2IGMPRouterPortTable OBJECT-TYPE
         SYNTAX  SEQUENCE OF SwL2IGMPRouterPortEntry
@@ -3457,6 +3673,56 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
         DESCRIPTION
             "This object indicates the forbidden portlist of the router port entry."
         ::= { swL2IGMPRouterPortEntry 5 }
+
+--------------------------------------------------
+-- IGMP Access Authentication Table
+--------------------------------------------------         
+    swL2IGMPAccessAuthTable OBJECT-TYPE
+        SYNTAX  SEQUENCE OF SwL2IGMPAccessAuthEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "This table is used to manage the IGMP Access Authentication 
+            configurations of the device."
+        ::= { swL2IGMPMgmt 8 }
+
+    swL2IGMPAccessAuthEntry OBJECT-TYPE
+        SYNTAX  SwL2IGMPAccessAuthEntry
+        MAX-ACCESS  not-accessible
+        STATUS  current
+        DESCRIPTION
+            "A list of manageable entities for IGMP Access Authentication.
+            The configuration is done per port."
+        INDEX  { swL2IGMPAccessAuthPort }
+        ::= { swL2IGMPAccessAuthTable 1 }
+        
+    SwL2IGMPAccessAuthEntry ::= 
+        SEQUENCE {
+        	swL2IGMPAccessAuthPort
+        		INTEGER,
+        	swL2IGMPAccessAuthState
+        		INTEGER
+        }
+        
+   swL2IGMPAccessAuthPort OBJECT-TYPE
+      SYNTAX INTEGER
+       MAX-ACCESS read-only
+       STATUS current
+       DESCRIPTION
+           "The index of the swL2IGMPAccessAuthTable. 
+           This object corresponds to the port being configured."
+       ::= { swL2IGMPAccessAuthEntry 1 }  
+       
+   swL2IGMPAccessAuthState OBJECT-TYPE
+      SYNTAX INTEGER {
+				disabled(1),
+				enabled(2)
+		}
+       MAX-ACCESS read-write
+       STATUS current
+       DESCRIPTION
+           "This object denotes the status of IGMP Access Authentication of the port."
+       ::= { swL2IGMPAccessAuthEntry 2 } 
 
 -- ********************************************************************
 --  swL2PriorityMgmt        OBJECT IDENTIFIER ::= { swL2MgmtMIB 11 }
@@ -3877,6 +4143,80 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
             "This object indicates the loopback detection mode for the system."
         ::= { swL2LoopDetectCtrl 4 }
 
+	swL2LoopDetectActiveVlan           OBJECT IDENTIFIER ::= { swL2LoopDetectCtrl 5 }
+
+    swL2LoopDetectActiveVlanRangeList1to64 OBJECT-TYPE
+        SYNTAX     OCTET STRING (SIZE (64))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+			"This object indicates the VLAN range (1-512)
+			 that added the multicast table."
+        ::= { swL2LoopDetectActiveVlan 1 }
+
+    swL2LoopDetectActiveVlanRangeList65to128 OBJECT-TYPE
+        SYNTAX     OCTET STRING (SIZE (64))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+			"This object indicates the VLAN range (513-1024)
+			 that added the multicast table."
+        ::= { swL2LoopDetectActiveVlan 2 }
+
+    swL2LoopDetectActiveVlanRangeList129to192 OBJECT-TYPE
+        SYNTAX     OCTET STRING (SIZE (64))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+			"This object indicates the VLAN range (1025-1536)
+			 that added the multicast table."
+        ::= { swL2LoopDetectActiveVlan 3 }
+        
+    swL2LoopDetectActiveVlanRangeList193to256 OBJECT-TYPE
+        SYNTAX     OCTET STRING (SIZE (64))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+			"This object indicates the VLAN range (1537-2048)
+			 that added the multicast table."
+        ::= { swL2LoopDetectActiveVlan 4 }
+        
+    swL2LoopDetectActiveVlanRangeList257to320 OBJECT-TYPE
+        SYNTAX     OCTET STRING (SIZE (64))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+			"This object indicates the VLAN range (2049-2560)
+			 that added the multicast table."
+        ::= { swL2LoopDetectActiveVlan 5 }
+
+    swL2LoopDetectActiveVlanRangeList321to384 OBJECT-TYPE
+        SYNTAX     OCTET STRING (SIZE (64))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+			"This object indicates the VLAN range (2561-3072)
+			 that added the multicast table."
+        ::= { swL2LoopDetectActiveVlan 6 }
+
+    swL2LoopDetectActiveVlanRangeList385to448 OBJECT-TYPE
+        SYNTAX     OCTET STRING (SIZE (64))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+			"This object indicates the VLAN range (3073-3584)
+			 that added the multicast table."
+        ::= { swL2LoopDetectActiveVlan 7 }
+
+    swL2LoopDetectActiveVlanRangeList449to512 OBJECT-TYPE
+        SYNTAX     OCTET STRING (SIZE (64))
+        MAX-ACCESS  read-only
+        STATUS      current
+        DESCRIPTION
+			"This object indicates the VLAN range (3585-4096)
+			 that added the multicast table."
+        ::= { swL2LoopDetectActiveVlan 8 }
+
 
 --***************************************************************************
     swL2LoopDetectPortMgmt       OBJECT IDENTIFIER ::= { swL2LoopDetectMgmt 2 }
@@ -4093,11 +4433,48 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
         	MAX-ACCESS  read-write
         	STATUS  current
         	DESCRIPTION
-                "when enable(2),whenever there's a new MAC that violates the pre-defined
+                "when enable(2)is selected,whenever there's a new MAC that violates the pre-defined
                   port security configuration, a trap will be sent out and the relevant information
                   will be logged in system."
             ::= { swL2PortSecurityMgmt 2 }
 
+-- -----------------------------------------------------------------------------
+	swL2PortSecurityDelCtrl OBJECT IDENTIFIER ::= { swL2PortSecurityMgmt 3 }
+	
+	swL2PortSecurityDelVlanName OBJECT-TYPE
+		SYNTAX	DisplayString (SIZE (0..32))  
+		MAX-ACCESS  read-write
+		STATUS  current
+		DESCRIPTION
+		      "Indicates VLAN name."
+		::= { swL2PortSecurityDelCtrl 1 }	
+	        
+    swL2PortSecurityDelPort OBJECT-TYPE
+		SYNTAX  INTEGER (1..768)
+		MAX-ACCESS  read-write
+		STATUS  current
+		DESCRIPTION
+		      "Indicates the port."
+		::= { swL2PortSecurityDelCtrl 2 }    
+	
+	swL2PortSecurityDelMacAddress OBJECT-TYPE
+        SYNTAX  MacAddress
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "Specifies a MAC address."
+        ::= { swL2PortSecurityDelCtrl 3 }   	
+        
+    swL2PortSecurityDelActivity  OBJECT-TYPE
+		SYNTAX INTEGER  {
+			none(1),
+			start(2)
+        }
+		MAX-ACCESS  read-write
+		STATUS      current
+		DESCRIPTION
+			"."
+        ::= { swL2PortSecurityDelCtrl 4 }   
 -- ********************************************************************
 --  swL2DhcpLocalRelayMgmt        OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
 -- ********************************************************************
@@ -4162,6 +4539,95 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
             of the VLAN."
         ::= { swL2DhcpLocalRelayVLANEntry 2 }
 
+    swL2DhcpLocalRelayOption82Table OBJECT-TYPE
+     	SYNTAX SEQUENCE OF SwL2DhcpLocalRelayOption82Entry
+	    MAX-ACCESS not-accessible
+	    STATUS current
+	    DESCRIPTION
+	 		"This table is used to manage the DHCP local relay option 82 policy
+	 		for each port."
+	    ::={ swL2DhcpLocalRelayMgmt 3}
+
+    swL2DhcpLocalRelayOption82Entry OBJECT-TYPE
+	    SYNTAX SwL2DhcpLocalRelayOption82Entry
+	    MAX-ACCESS not-accessible
+	    STATUS current
+	    DESCRIPTION
+	    	"This object lists the current ports in the switch and their
+	    	corresponding DHCP local relay option 82 policy."
+		INDEX { swL2DhcpLocalRelayOption82PortIndex }
+	    ::={ swL2DhcpLocalRelayOption82Table 1 }
+
+    SwL2DhcpLocalRelayOption82Entry ::=
+        SEQUENCE{
+	    swL2DhcpLocalRelayOption82PortIndex
+     	    INTEGER,
+     	swL2DhcpLocalRelayOption82Policy
+     	    INTEGER		
+     }
+
+    swL2DhcpLocalRelayOption82PortIndex OBJECT-TYPE
+        SYNTAX  INTEGER (0..65535)
+        MAX-ACCESS not-accessible
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the module's port number.(1..Max port number in the module)"
+        ::= { swL2DhcpLocalRelayOption82Entry 1 }
+
+    swL2DhcpLocalRelayOption82Policy OBJECT-TYPE
+        SYNTAX  INTEGER {
+               replace(1),
+               drop(2),
+               keep(3)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the policy of the DHCP local relay option 82
+            of each port."
+        ::= { swL2DhcpLocalRelayOption82Entry 2 }	
+
+    swL2DhcpLocalRelayOption82RemoteIDType OBJECT-TYPE
+        SYNTAX  INTEGER {
+               default(1),
+               user-defined(2)
+              }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object indicates the type of remote ID for DHCP Local Relay.
+            If the type is default, the remote ID will be the MAC address of the device.
+            If the type is user-defined, the remote ID can be defined by writing to the
+            swL2DhcpLocalRelayOption82RemoteID object."
+        ::= { swL2DhcpLocalRelayMgmt 4 }
+
+    swL2DhcpLocalRelayOption82RemoteID OBJECT-TYPE
+        SYNTAX  DisplayString
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This object displays the current remote ID of the device for DHCP Local Relay.
+            If swL2DhcpRelayOption82RemoteIDType is set to default, the value will be the
+            MAC address of the device, and this object cannot be modified. If
+            swL2DhcpRelayOption82RemoteIDType is set to user-defined, a new value can
+            be written to this object."
+        ::= { swL2DhcpLocalRelayMgmt 5 }
+
+-- ********************************************************************
+--  swL2PPPoEMgmt               OBJECT IDENTIFIER ::= { swL2MgmtMIB 25 }
+-- ********************************************************************
+    swL2PPPoECirIDinsertState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               enabled(1),  
+               disabled(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  obsolete
+        DESCRIPTION
+            "This object indicates the status of the PPPoE circuit ID 
+            insertion state of the switch."
+        ::= { swL2PPPoEMgmt 1 }
+
 -- ********************************************************************
 --  Layer 2  Trap
 -- ********************************************************************
@@ -4177,7 +4643,7 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
 --    swL2RPSDisconnectOrMalfunction NOTIFICATION-TYPE
 --        STATUS  current
 --        DESCRIPTION
---            "The trap is sent whenever the RPS is  disconnected or has malfunctioned. "
+--            "The trap is sent whenever the RPS is disconnected or has malfunctioned. "
 
 --        ::= { swL2MgmtMIBTrapPrefix 2 }
 
@@ -4296,7 +4762,7 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
         DESCRIPTION
             "When the port_security trap is enabled, if there's a new MAC that violates the pre-defined
             port security configuration a trap will be sent out "
-        ::= { swl2NotifyPortSecurity 2 }
+        ::= { swL2MgmtMIBTrapPrefix 8 }
 
 -- ********************************************************************
     swl2NotifyIpMacBinding OBJECT IDENTIFIER ::= { swL2MgmtMIBTraps 3 }
@@ -4327,8 +4793,23 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
         DESCRIPTION
             "When the IP-Mac Binding trap is enabled, if there's a new MAC that violates the pre-defined
             port security configuration a trap will be sent out "
-        ::= { swl2NotifyIpMacBinding 3 }
+        ::= { swL2MgmtMIBTrapPrefix 9 }
 
+    swL2IpMacBindingStopLearningTrap NOTIFICATION-TYPE
+        OBJECTS         { swL2IpMacBindingPortIndex}
+        STATUS  current
+        DESCRIPTION
+            "When the IP-MAC Binding trap is enabled, if the specific port changes from a 
+             normal state to a stop_learning state, a trap will be sent out."
+        ::= { swL2MgmtMIBTrapPrefix 10 }
+
+    swL2IpMacBindingRecoverLearningTrap NOTIFICATION-TYPE
+        OBJECTS         { swL2IpMacBindingPortIndex}
+        STATUS  current
+        DESCRIPTION
+            "When the IP-MAC Binding trap is enabled, if the specific port changes from a 
+             stop_learning state to a normal state, a trap will be sent out."
+        ::= { swL2MgmtMIBTrapPrefix 11 }
 -- ********************************************************************
     swl2NotifyLoopDetect OBJECT IDENTIFIER ::= { swL2MgmtMIBTraps 4 }
 -- ********************************************************************
@@ -4349,7 +4830,7 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
         STATUS  current
         DESCRIPTION
                "The trap is sent when a Port loop occurs."
-        ::= { swl2NotifyLoopDetect 2 }
+        ::= { swL2MgmtMIBTrapPrefix 12 }
 
     swL2PortLoopRestart  NOTIFICATION-TYPE
         OBJECTS
@@ -4359,7 +4840,7 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
         STATUS  current
         DESCRIPTION
               "The trap is sent when a Port loop restarts after the interval time."
-        ::= { swl2NotifyLoopDetect 3 }
+        ::= { swL2MgmtMIBTrapPrefix 13 }
 
     swL2VlanLoopOccurred  NOTIFICATION-TYPE
         OBJECTS
@@ -4370,7 +4851,7 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
         STATUS  current
         DESCRIPTION
                "The trap is sent when a Port with a VID loop occurs."
-        ::= { swl2NotifyLoopDetect 4 }
+        ::= { swL2MgmtMIBTrapPrefix 14 }
 
     swL2VlanLoopRestart NOTIFICATION-TYPE
         OBJECTS
@@ -4381,6 +4862,6 @@ swL2DhcpLocalRelayMgmt       	OBJECT IDENTIFIER ::= { swL2MgmtMIB 24 }
         STATUS  current
         DESCRIPTION
                "The trap is sent when a Port with a VID loop restarts after the interval time."
-        ::= { swl2NotifyLoopDetect 5 }
+        ::= { swL2MgmtMIBTrapPrefix 15 }
 
 END
