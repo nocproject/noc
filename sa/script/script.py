@@ -781,7 +781,10 @@ class Script(threading.Thread):
         if self.activator.use_canned_session:
             return self.activator.get_motd()
         if not self.cli_provider:
-            self.request_cli_provider()
+            if self.access_profile.scheme in (SSH, TELNET):
+                self.request_cli_provider()
+        else:
+            return ""
         return self.cli_provider.motd
 
     def re_search(self, rx, s, flags=0):
