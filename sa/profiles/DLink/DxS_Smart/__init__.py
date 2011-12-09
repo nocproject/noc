@@ -18,9 +18,12 @@ class Profile(noc.sa.profiles.Profile):
     supported_schemes=[TELNET]
     pattern_username="([Uu]ser ?[Nn]ame|[Ll]ogin):"
     pattern_password="[Pp]ass[Ww]ord:"
-    pattern_more="--More--"
+    pattern_more=[
+    ("--More--"," "),
+    ("CTRL\+C.+?(a All)|(r Refresh)", "a")
+    ]
     pattern_unpriveleged_prompt=r"^\S+:(3|6|user|operator)#"
-    pattern_syntax_error=r"% Invalid (Command|input detected at)"
+    pattern_syntax_error=r"(% Invalid (Command|input detected at))|((Available commands|Next possible completions):)"
     command_super="enable admin"
     pattern_prompt=r"(?P<hostname>\S+(:\S+)*)[#>]"
     command_disable_pager=""
