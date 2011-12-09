@@ -76,8 +76,7 @@ class Script(NOCScript):
                 if (mac is not None and
                     match.group("mac").replace("-", ":") != mac):
                     skip = 1
-                if (interface is not None and
-                   int(match.group("port")) != int(interface)):
+                if interface is not None and match.group("port") != interface:
                     skip = 1
                 if (vlan is not None and
                    int(pvids.get(match.group("port"))) != int(vlan)):
