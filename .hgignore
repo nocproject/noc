@@ -19,3 +19,4 @@ contrib/bin/*
 contrib/share/*
 MANIFEST
 .*
+atlassian-ide-plugin.xml
