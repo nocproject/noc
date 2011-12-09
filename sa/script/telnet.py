@@ -109,7 +109,7 @@ class TelnetProtocol(Protocol):
         self.iac_response(r, opt)
         # Process NAWS
         if cmd == DO and opt == 31:  # NAWS
-            self.sb_response("\x1f\xff\xff\xff\xff")  # NAWS FF FF FF FF
+            self.sb_response("\x1f", "\xff\xff\xff\xff")  # NAWS FF FF FF FF
 
     def parse_pdu(self):
         def tc(s):
