@@ -67,8 +67,8 @@ TELNET_OPTIONS = {
     39: "NEW_ENVIRON",
     255: "EXOPL",
 }
-
-ACCEPTED_TELNET_OPTIONS = set([chr(c) for c in (1, 3, 24)])  # ECHO+SGA+TTYPE
+# ECHO+SGA+TTYPE+NAWS
+ACCEPTED_TELNET_OPTIONS = set([chr(c) for c in (1, 3, 24, 31)])
 IS = "\x00"
 SEND = "\x01"
 
@@ -107,6 +107,9 @@ class TelnetProtocol(Protocol):
         elif cmd == WONT:
             r = DONT
         self.iac_response(r, opt)
+        # Process NAWS
+        if cmd == DO and opt == 31:  # NAWS
+            self.sb_response("\x1f\xff\xff\xff\xff")  # NAWS FF FF FF FF
 
     def parse_pdu(self):
         def tc(s):
