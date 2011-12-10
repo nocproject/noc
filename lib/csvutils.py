@@ -42,7 +42,7 @@ def get_model_fields(model):
     return fields
 
 
-def csv_export(model, queryset=None):
+def csv_export(model, queryset=None, first_row_only=False):
     """
     Export to CSV
     """
@@ -51,6 +51,8 @@ def csv_export(model, queryset=None):
     fields = get_model_fields(model)
     # Write header
     writer.writerow([f[0] for f in fields])
+    if first_row_only:
+        return io.getvalue()
     # Build queryset
     if queryset is None:
         queryset = model.objects.all()
