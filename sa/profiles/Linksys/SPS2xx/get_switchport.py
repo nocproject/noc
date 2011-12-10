@@ -12,14 +12,20 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetSwitchport
 
+
 class Script(NOCScript):
     name = "Linksys.SPS2xx.get_switchport"
     implements = [IGetSwitchport]
 
-    rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(?P<rule>\S+)\s+(?P<type>\S+)\s*", re.IGNORECASE)
-    rx_description = re.compile(r"^(?P<interface>(e|g|t)\S+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-    rx_channel_description = re.compile(r"^(?P<interface>ch\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-    rx_vlan_stack = re.compile(r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE) #TODO
+    rx_vlan = re.compile(
+        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(?P<rule>\S+)\s+(?P<type>\S+)\s*",
+        re.IGNORECASE)
+    rx_description = re.compile(
+        r"^(?P<interface>(e|g|t)\S+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+    rx_channel_description = re.compile(
+        r"^(?P<interface>ch\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+    rx_vlan_stack = re.compile(
+        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
 
     def execute(self):
         # Get portchannels
@@ -37,7 +43,8 @@ class Script(NOCScript):
         # Get 802.1ad status if supported
         vlan_stack_status = {}
         try:
-            for match in self.rx_vlan_stack.finditer(self.cli("show vlan-stacking")):
+            stack = self.cli("show vlan-stacking")
+            for match in self.rx_vlan_stack.finditer(stack):
                 if match.group("role").lower() == "tunnel":
                     vlan_stack_status[int(match.group("interface"))] = True
         except self.CLISyntaxError:
@@ -51,16 +58,19 @@ class Script(NOCScript):
                 for p in port_channels:
                     if interface in p["members"]:
                         interface = p["interface"]
-                        vlan_list = self.cli("show interfaces switchport port-channel %s"%interface).splitlines()
+                        vlan_list = self.cli(
+                            "show interfaces switchport port-channel %s"
+                            % interface).splitlines()
                         port_channels.remove(p)
                         break
             else:
-                vlan_list = self.cli("show interfaces switchport ethernet %s"%interface).splitlines()
+                cmd = "show interfaces switchport ethernet %s" % interface
+                vlan_list = self.cli(cmd).splitlines()
             if interface not in port_vlans:
-                port_vlans.update({ interface : {
-                                                "tagged"    : [],
-                                                "untagged"  : '',
-                                                }
+                port_vlans.update({interface: {
+                                        "tagged": [],
+                                        "untagged": '',
+                                        }
                                 })
             for vlans in vlan_list:
                 vlan = self.rx_vlan.match(vlans)
@@ -79,7 +89,8 @@ class Script(NOCScript):
         r = []
         swp = {}
         write = False
-        for match in self.rx_description.finditer(self.cli("show interfaces description")):
+        int_desc = self.cli("show interfaces description")
+        for match in self.rx_description.finditer(int_desc):
             name = match.group("interface")
             if name in portchannel_members:
                 for p in portchannels:
@@ -89,7 +100,8 @@ class Script(NOCScript):
                         for interface in p["members"]:
                             if interface_status.get(interface):
                                 status = True
-                        desc = self.cli("show interfaces description port-channel %s"%name)
+                        cmd = "show interfaces description port-channel %s" % name
+                        desc = self.cli(cmd)
                         match = self.rx_channel_description.search(desc)
                         if match:
                             description = match.group("description")
