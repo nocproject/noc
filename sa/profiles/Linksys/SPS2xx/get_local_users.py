@@ -18,7 +18,8 @@ class Script(NOCScript):
     name = "Linksys.SPS2xx.get_local_users"
     implements = [IGetLocalUsers]
 
-    rx_name = re.compile(r"^username\s+(?P<username>\S+)\s+password .* level (?P<privilege>\d+) encrypted$")
+    rx_name = re.compile(
+        r"^username\s+(?P<username>\S+)\s+password .* level (?P<privilege>\d+) encrypted$")
 
     def execute(self):
         data = self.cli("show running-config")
