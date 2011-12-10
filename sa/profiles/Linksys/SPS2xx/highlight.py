@@ -10,9 +10,7 @@
 from pygments.lexer import RegexLexer, bygroups
 from pygments.token import *
 
-##
-## Linksys SPS2xx configuration lexer
-##
+
 class ConfigLexer(RegexLexer):
     name = "Linksys.SPS2xx"
     tokens = {
