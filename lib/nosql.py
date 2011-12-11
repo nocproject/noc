@@ -6,6 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import logging
+import sys
 ## Django modules
 from django.db.models import Model
 from django.db import IntegrityError
@@ -35,8 +38,12 @@ if settings.NOSQL_DATABASE_HOST:
 if settings.NOSQL_DATABASE_PORT:
     connection_args["port"] = settings.NOSQL_DATABASE_PORT
 
-#if not settings.IS_TEST:
-connect(**connection_args)
+## Connect to the database
+try:
+    connect(**connection_args)
+except mongoengine.connection.ConnectionError, why:
+    logging.error("Cannot connect to mongodb: %s" % why)
+    sys.exit(1)
 
 ## Shortcut to ObjectId
 ObjectId = pymongo.objectid.ObjectId
