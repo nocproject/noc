@@ -17,8 +17,9 @@ from errno import EBADF, EINTR
 ## NOC modules
 from noc.lib.debug import error_report
 from noc.lib.nbsocket.exceptions import get_socket_error
-from noc.lib.nbsocket.basesocket import ListenTCPSocket, ConnectedTCPSocket,\
-                                        AcceptedTCPSocket
+from noc.lib.nbsocket.listentcpsocket import ListenTCPSocket
+from noc.lib.nbsocket.connectedtcpsocket import ConnectedTCPSocket
+from noc.lib.nbsocket.acceptedtcpsocket import AcceptedTCPSocket
 
 
 class SocketFactory(object):
