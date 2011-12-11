@@ -9,4 +9,5 @@
 from noc.lib.nbsocket.exceptions import *
 from noc.lib.nbsocket.protocols import *
 from noc.lib.nbsocket.basesocket import *
+from noc.lib.nbsocket.udpsocket import *
 from noc.lib.nbsocket.socketfactory import *
