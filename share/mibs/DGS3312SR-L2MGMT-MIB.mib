@@ -20,7 +20,7 @@
 --
 -- The DGS3312 proprietary MIB Ver 1.7                2002/06/05
 
-DGS3312SR-MIB	DEFINITIONS ::= BEGIN
+DGS3312SR-L2MGMT-MIB	DEFINITIONS ::= BEGIN
 
     IMPORTS
         IpAddress , TimeTicks , Integer32, 
@@ -31,7 +31,7 @@ DGS3312SR-MIB	DEFINITIONS ::= BEGIN
 	    dgs3312SR    	           			    FROM SW3x12SRPRIMGMT-MIB;
 	    
 	  swL2MgmtMIB MODULE-IDENTITY
-	    LAST-UPDATED "0007150000Z"
+	    LAST-UPDATED "0007150001Z"
 	    ORGANIZATION "D-Link, Inc."
 	    CONTACT-INFO
 	        "   D-Link Customer Service
