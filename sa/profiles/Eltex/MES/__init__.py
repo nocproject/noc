@@ -9,7 +9,8 @@
 
 ## NOC modules
 from noc.sa.profiles import Profile as NOCProfile
-from noc.sa.protocols.sae_pb2 import TELNET,SSH
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
 
 class Profile(NOCProfile):
     name = "Eltex.MES"
