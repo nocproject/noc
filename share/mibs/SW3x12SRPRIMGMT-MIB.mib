@@ -1,0 +1,18 @@
+SW3x12SRPRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY					FROM SNMPv2-SMI
+        dlink-products,dlink-mgmt		FROM DLINK-ID-REC-MIB;
+						
+
+	dlink-Dgs3x12SRSeriesProd   OBJECT IDENTIFIER ::= { dlink-products 55 }
+	dlink-Dgs3212SR				OBJECT IDENTIFIER ::= { dlink-Dgs3x12SRSeriesProd 1 }
+	dlink-Dgs3312SR				OBJECT IDENTIFIER ::= { dlink-Dgs3x12SRSeriesProd 2 }
+
+
+    dgs3x12SRSeriesProd		OBJECT IDENTIFIER ::= { dlink-mgmt 55 }
+    dgs3212SR       		OBJECT IDENTIFIER ::= { dgs3x12SRSeriesProd 1 }
+	dgs3312SR       		OBJECT IDENTIFIER ::= { dgs3x12SRSeriesProd 2 }
+
+
+END

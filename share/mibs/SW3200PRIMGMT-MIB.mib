@@ -1,0 +1,22 @@
+-- ----------------------------------------------------------------------------
+-- proprietary management MIB
+-- ----------------------------------------------------------------------------
+
+SW3200PRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY             FROM SNMPv2-SMI
+        dlink-mgmt,dlink-products   FROM DLINK-ID-REC-MIB;
+
+    	dlink-Dgs3200Series   	OBJECT IDENTIFIER ::= { dlink-mgmt 101 }
+    	dgs3200		OBJECT IDENTIFIER ::= { dlink-Dgs3200Series 1 }
+	dgs3216 	OBJECT IDENTIFIER ::= { dlink-Dgs3200Series 2 }
+	dgs3224 	OBJECT IDENTIFIER ::= { dlink-Dgs3200Series 3 }
+        	
+-- DES3200 series Product
+ 
+    	dlink-Dgs3200SeriesProd		OBJECT IDENTIFIER ::= { dlink-products 101 }
+    	dgs3200-Prod		OBJECT IDENTIFIER ::= { dlink-Dgs3200SeriesProd 1 }
+	dgs3216-Prod		OBJECT IDENTIFIER ::= { dlink-Dgs3200SeriesProd 2 }
+	dgs3224-Prod		OBJECT IDENTIFIER ::= { dlink-Dgs3200SeriesProd 3 }
+END
