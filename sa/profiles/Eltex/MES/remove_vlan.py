@@ -12,6 +12,7 @@ from __future__ import with_statement
 import noc.sa.script
 from noc.sa.interfaces import IRemoveVlan
 
+
 class Script(noc.sa.script.Script):
     name = "Eltex.MES.remove_vlan"
     implements = [IRemoveVlan]
@@ -21,6 +22,6 @@ class Script(noc.sa.script.Script):
             return False
         with self.configure():
             self.cli("vlan database")
-            self.cli("no vlan %d"%vlan_id)
+            self.cli("no vlan %d" % vlan_id)
         self.save_config()
         return True
