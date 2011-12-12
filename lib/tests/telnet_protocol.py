@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Unittests for Telnet client protoocl
+## Unittests for Telnet client protocol
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.test import NOCTestCase
-from noc.sa.script.telnet import *
+from noc.lib.nbsocket.protocols.telnet import *
 
 
 class TelnetTestCase(NOCTestCase):
