@@ -70,10 +70,15 @@ class TelnetTestCase(NOCTestCase):
                     r = DO if opt in ACCEPTED_TELNET_OPTIONS else DONT
                 elif cmd == WONT:
                     r = DONT
-                self.assertResponse([IAC + cmd + opt], IAC + r + opt)
-                self.assertResponse([IAC, cmd + opt], IAC + r + opt)
-                self.assertResponse([IAC + cmd, opt], IAC + r + opt)
-                self.assertResponse([IAC, cmd, opt], IAC + r + opt)
+                sb = ""
+                if cmd == DO and opt == "\x1f":
+                    # Negotiate NAWS NAWS
+                    # IAC SB NAWS FF FF FF FF IAC SE
+                    sb = "\xff\xfa\x1f\xff\xff\xff\xff\xff\xf0"
+                self.assertResponse([IAC + cmd + opt], IAC + r + opt + sb)
+                self.assertResponse([IAC, cmd + opt], IAC + r + opt + sb)
+                self.assertResponse([IAC + cmd, opt], IAC + r + opt + sb)
+                self.assertResponse([IAC, cmd, opt], IAC + r + opt + sb)
 
     def test_sb(self):
         TTYPE = "\x18"
