@@ -76,7 +76,7 @@ class ConnectedTCPSocket(TCPSocket):
             self.on_read(data)
 
     def can_write(self):
-        return len(self.out_buffer) > 0 or not self.is_connected
+        return self.out_buffer or not self.is_connected
 
     def handle_write(self):
         if not self.is_connected:

@@ -31,6 +31,7 @@ class TCPSocket(Socket):
         if self.protocol_class:
             self.protocol = self.protocol_class(self, self.on_read)
         self.in_shutdown = False
+        self.character_mode = False  # Send one character per packet
         super(TCPSocket, self).__init__(factory, socket)
 
     def create_socket(self):
@@ -48,7 +49,7 @@ class TCPSocket(Socket):
                       or discard them
         :type flush: Bool
         """
-        if flush and len(self.out_buffer) > 0:
+        if flush and self.out_buffer:
             self.in_shutdown = True
         else:
             super(TCPSocket, self).close()
@@ -58,13 +59,14 @@ class TCPSocket(Socket):
         Try to send portion or all buffered data
         """
         try:
-            sent = self.socket.send(self.out_buffer)
+            sent = self.socket.send(self.out_buffer[:1] if self.character_mode
+                                                       else self.out_buffer)
         except socket.error, why:
             self.error("Socket error: %s" % repr(why))
             self.close()
             return
         self.out_buffer = self.out_buffer[sent:]
-        if self.in_shutdown and len(self.out_buffer) == 0:
+        if self.in_shutdown and not self.out_buffer:
             self.close()
         self.update_status()
 
@@ -106,3 +108,11 @@ class TCPSocket(Socket):
         #self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1048576)
         #self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1048576)
         pass
+
+    def set_character_mode(self, status=True):
+        """
+        Set character mode
+        """
+        self.debug("%s character mode" % {
+            True: "Entering", False: "Leaving"}[status])
+        self.character_mode = status
