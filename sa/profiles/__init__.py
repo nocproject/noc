@@ -129,6 +129,10 @@ class Profile(object):
     rogue_chars = ["\r"]
     # String to send just after telnet connect is established
     telnet_send_on_connect = None
+    # Password sending mode for telnet
+    # False - send password at once
+    # True - send password by characters
+    telnet_slow_send_password = False
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
     requires_netmask_conversion = False

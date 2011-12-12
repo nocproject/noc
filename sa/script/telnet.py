@@ -214,3 +214,12 @@ class CLITelnetSocket(CLI, ConnectedTCPSocket):
         if r is not None:
             self.debug("Sending %s on connect" % repr(r))
             self.write(r)
+
+    def on_PASSWORD_enter(self):
+        if self.script.profile.telnet_slow_send_password:
+            self.set_character_mode(True)
+        super(CLITelnetSocket, self).on_PASSWORD_enter()
+
+    def on_PASSWORD_exit(self):
+        if self.script.profile.telnet_slow_send_password:
+            self.set_character_mode(False)
