@@ -12,12 +12,14 @@ import noc.sa.script
 ## NOC modules
 from noc.sa.interfaces import IGetFQDN
 
+
 class Script(noc.sa.script.Script):
     name = "Eltex.MES.get_fqdn"
     implements = [IGetFQDN]
 
     rx_hostname = re.compile(r"^hostname (?P<hostname>\S+)$", re.MULTILINE)
-    rx_domain_name = re.compile(r"^ip domain name (?P<domain>\S+)$", re.MULTILINE)
+    rx_domain_name = re.compile(
+        r"^ip domain name (?P<domain>\S+)$", re.MULTILINE)
 
     def execute(self):
         fqdn = ''

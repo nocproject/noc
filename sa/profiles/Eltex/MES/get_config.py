@@ -10,6 +10,7 @@
 import noc.sa.script
 from noc.sa.interfaces import IGetConfig
 
+
 class Script(noc.sa.script.Script):
     name = "Eltex.MES.get_config"
     implements = [IGetConfig]
