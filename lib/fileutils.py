@@ -130,7 +130,8 @@ def urlopen(url, auto_deflate=False):
     else:
         r = url
     if auto_deflate and url.endswith(".gz"):
-        f = cStringIO.StringIO(urllib2.urlopen(r).read())
+        u = urllib2.urlopen(r)
+        f = cStringIO.StringIO(u.read())
         return gzip.GzipFile(fileobj=f)
     else:
         return urllib2.urlopen(r)
