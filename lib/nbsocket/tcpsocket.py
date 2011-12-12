@@ -32,6 +32,7 @@ class TCPSocket(Socket):
             self.protocol = self.protocol_class(self, self.on_read)
         self.in_shutdown = False
         self.character_mode = False  # Send one character per packet
+        self.so_sndbuf = None  # Save SO_SNDBUF after entering character mode
         super(TCPSocket, self).__init__(factory, socket)
 
     def create_socket(self):
@@ -59,6 +60,8 @@ class TCPSocket(Socket):
         Try to send portion or all buffered data
         """
         try:
+            if self.character_mode:
+                self.debug("Character send: %s" % repr(self.out_buffer[:1]))
             sent = self.socket.send(self.out_buffer[:1] if self.character_mode
                                                        else self.out_buffer)
         except socket.error, why:
@@ -113,6 +116,20 @@ class TCPSocket(Socket):
         """
         Set character mode
         """
-        self.debug("%s character mode" % {
-            True: "Entering", False: "Leaving"}[status])
-        self.character_mode = status
+        if status:
+            # Entering character mode
+            self.debug("Entering character mode")
+            self.character_mode = True
+            # Save SNDBUF size
+            self.so_sndbuf = self.socket.getsockopt(socket.SOL_SOCKET,
+                                                    socket.SO_SNDBUF)
+            # Change SNDBUF to 1
+            # To disable buffering
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1)
+        else:
+            # Leaving character mode
+            self.debug("Leaving character mode")
+            self.character_mode = False
+            # Restore SNDBUF
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,
+                                   self.so_sndbuf)
