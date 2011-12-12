@@ -7,16 +7,18 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import re,datetime
+import re
 ## NOC modules
 import noc.sa.script
 from noc.sa.interfaces import IGetLocalUsers
+
 
 class Script(noc.sa.script.Script):
     name = "Eltex.MES.get_local_users"
     implements = [IGetLocalUsers]
 
-    rx_name = re.compile(r"^username\s+(?P<username>\S+)\s+password encrypted (\S+\s+privilege\s+(?P<privilege>\d+)|.*)")
+    rx_name = re.compile(
+        r"^username\s+(?P<username>\S+)\s+password encrypted (\S+\s+privilege\s+(?P<privilege>\d+)|.*)")
     rx_priv = re.compile(r"^(\S+\s|\s+\S+\s|\S+\s+\S+\s)+(?P<privilege>\d+)")
 
     def execute(self):
@@ -38,8 +40,8 @@ class Script(noc.sa.script.Script):
                 else:
                     user_class = privilege
                 r.append({
-                    "username" : name.group("username"),
-                    "class"    : user_class,
+                    "username": name.group("username"),
+                    "class": user_class,
                     "is_active": True
                     })
         return r

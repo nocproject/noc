@@ -12,14 +12,21 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetSwitchport
 
+
 class Script(NOCScript):
     name = "Eltex.MES.get_switchport"
     implements = [IGetSwitchport]
 
-    rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(?P<rule>\S+)\s+(?P<type>\S+)\s*", re.IGNORECASE)
-    rx_description = re.compile(r"^(?P<interface>(fa|gi|te)\S+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-    rx_channel_description = re.compile(r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-    rx_vlan_stack = re.compile(r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE) #TODO
+    rx_vlan = re.compile(
+        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(?P<rule>\S+)\s+(?P<type>\S+)\s*",
+        re.IGNORECASE)
+    rx_description = re.compile(
+        r"^(?P<interface>(fa|gi|te)\S+)\s+((?P<description>\S+)|)$",
+        re.MULTILINE)
+    rx_channel_description = re.compile(
+        r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+    rx_vlan_stack = re.compile(
+        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
 
     def execute(self):
         # Get portchannels
@@ -37,7 +44,8 @@ class Script(NOCScript):
         # Get 802.1ad status if supported
         vlan_stack_status = {}
         try:
-            for match in self.rx_vlan_stack.finditer(self.cli("show vlan-stacking")):
+            cmd = self.cli("show vlan-stacking")
+            for match in self.rx_vlan_stack.finditer(cmd):
                 if match.group("role").lower() == "tunnel":
                     vlan_stack_status[int(match.group("interface"))] = True
         except self.CLISyntaxError:
@@ -54,12 +62,13 @@ class Script(NOCScript):
                         port_channels.remove(p)
                         break
             if interface not in port_vlans:
-                port_vlans.update({ interface : {
-                                                "tagged"    : [],
-                                                "untagged"  : '',
-                                                }
+                port_vlans.update({interface: {
+                                        "tagged": [],
+                                        "untagged": '',
+                                        }
                                 })
-            for vlans in self.cli("show interfaces switchport %s"%interface).splitlines():
+            cmd = "show interfaces switchport %s" % interface
+            for vlans in self.cli(cmd).splitlines():
                 vlan = self.rx_vlan.match(vlans)
                 if vlan:
                     vlan_id = vlan.group("vlan")
@@ -76,7 +85,8 @@ class Script(NOCScript):
         r = []
         swp = {}
         write = False
-        for match in self.rx_description.finditer(self.cli("show interfaces description")):
+        cmd = self.cli("show interfaces description")
+        for match in self.rx_description.finditer(cmd):
             name = match.group("interface")
             if name in portchannel_members:
                 for p in portchannels:
@@ -86,7 +96,8 @@ class Script(NOCScript):
                         for interface in p["members"]:
                             if interface_status.get(interface):
                                 status = True
-                        desc = self.cli("show interfaces description %s"%name)
+                        cmd = "show interfaces description %s" % name
+                        desc = self.cli(cmd)
                         match = self.rx_channel_description.search(desc)
                         if match:
                             description = match.group("description")

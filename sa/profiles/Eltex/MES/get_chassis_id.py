@@ -12,6 +12,7 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetChassisID
 
+
 class Script(NOCScript):
     name = "Eltex.MES.get_chassis_id"
     implements = [IGetChassisID]
@@ -29,5 +30,5 @@ class Script(NOCScript):
                 pass
 
         # Fallback to CLI
-        match = self.re_search(self.rx_mac, self.cli("show system", cached=True))
+        match = self.rx_mac.search(self.cli("show system", cached=True))
         return match.group("mac")

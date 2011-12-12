@@ -18,12 +18,17 @@ class Script(NOCScript):
     implements = [IGetVersion]
     cache = True
 
-    rx_version = re.compile(r"^SW version+\s+(?P<version>\S+)", re.MULTILINE)
-    rx_bootprom = re.compile(r"^Boot version+\s+(?P<bootprom>\S+)", re.MULTILINE)
-    rx_hardware = re.compile(r"^HW version+\s+(?P<hardware>\S+)$", re.MULTILINE)
+    rx_version = re.compile(
+        r"^SW version+\s+(?P<version>\S+)", re.MULTILINE)
+    rx_bootprom = re.compile(
+        r"^Boot version+\s+(?P<bootprom>\S+)", re.MULTILINE)
+    rx_hardware = re.compile(
+        r"^HW version+\s+(?P<hardware>\S+)$", re.MULTILINE)
 
-    rx_serial = re.compile(r"^Serial number :\s+(?P<serial>\S+)$", re.MULTILINE)
-    rx_platform = re.compile(r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
+    rx_serial = re.compile(
+        r"^Serial number :\s+(?P<serial>\S+)$", re.MULTILINE)
+    rx_platform = re.compile(
+        r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
 
     platforms = {
         "24": "MES-3124",

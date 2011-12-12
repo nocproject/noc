@@ -7,16 +7,20 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import re,datetime
+import datetime
+import re
 ## NOC modules
 import noc.sa.script
 from noc.sa.interfaces import IGetDHCPBinding
+
 
 class Script(noc.sa.script.Script):
     name = "Eltex.MES.get_dhcp_binding"
     implements = [IGetDHCPBinding]
 
-    rx_line = re.compile(r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<expire>.+?)\s+(?P<type>Automatic|Manual)$", re.IGNORECASE)
+    rx_line = re.compile(
+        r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<expire>.+?)\s+(?P<type>Automatic|Manual)$",
+        re.IGNORECASE)
 
     def execute(self):
         data = self.cli("show ip dhcp binding")
@@ -28,11 +32,11 @@ class Script(noc.sa.script.Script):
                 if d == "infinite":
                     expire = d
                 else:
-                    expire = datetime.datetime.strptime(d,"%b %d %Y %I:%M %p")
+                    expire = datetime.datetime.strptime(d, "%b %d %Y %I:%M %p")
                 r.append({
-                    "ip"         : match.group("ip"),
-                    "mac"        : match.group("mac"),
-                    "expiration" : expire,
-                    "type"       : match.group("type")[0].upper(),
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "expiration": expire,
+                    "type": match.group("type")[0].upper(),
                 })
         return r
