@@ -174,7 +174,7 @@ class MIB(nosql.Document):
                 if mib is None:
                     raise MIBNotFoundException(syntax["module"])
                 if not mib.typedefs or syntax["name"] not in mib.typedefs:
-                    raise InvalidTypedef()
+                    return {}
                 td = mib.typedefs[syntax["name"]]
                 for k in ["base_type", "display_hint", "enum_map"]:
                     if k in td:
