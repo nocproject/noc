@@ -57,13 +57,15 @@ class IGetCopperTDRDiag(Interface):
             "status": StringParameter(choices=[
                 "T",  # Terminated
                 "O",  # Open
-                "S"   # Short
+                "S",  # Short
+                "N"   # N/A
             ]),
             # Measured distance in centimeters.
             # Interpretation depends on status.
             # T - cable length
             # O - always 0
             # S - distance to short-circuit
+            # N - always 0
             "distance_cm": IntParameter(),
             # Optional measurement variance
             "variance_cm": IntParameter(required=False)
