@@ -193,7 +193,7 @@ class MIB(nosql.Document):
         return s
 
     @classmethod
-    def load(cls, path):
+    def load(cls, path, force=False):
         if not os.path.exists(path):
             raise ValueError("File not found: %s" % path)
         # Build SMIPATH variable for smidump to exclude locally installed MIBs
@@ -246,6 +246,11 @@ class MIB(nosql.Document):
         # Check mib already uploaded
         mib_description = m.MIB[mib_name].get("description", None)
         mib = MIB.objects.filter(name=mib_name).first()
+        if force and mib:
+            # Delete mib to forceful update
+            MIBData.objects.filter(mib=mib.id).delete()
+            mib.delete()
+            mib = None
         if mib is not None:
             # Skip same version
             if mib.last_updated >= last_updated:
