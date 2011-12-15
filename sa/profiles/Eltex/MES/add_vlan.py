@@ -38,7 +38,8 @@ class Script(noc.sa.script.Script):
                         ports = port
                 self.cli("interface range %s" % ports)
 ### 802.1q
-#                self.cli("switchport general allowed vlan add %d tagged" % vlan_id)
+#                self.cli("switchport general allowed vlan add %d tagged"
+#                    % vlan_id)
 ## trunk
                 self.cli("switchport trunk allowed vlan add  %d" % vlan_id)
         self.save_config()
