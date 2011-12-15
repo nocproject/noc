@@ -50,9 +50,9 @@ class Script(NOCScript):
                     mem2 += mem[j] + '/'
                 for i in mem1:
                     members.append(mem2 + str(i))
-            r += [{"interface" : match.group("port"),
+            r += [{"interface": match.group("port"),
                     # TODO batter type detection
-                    "type"     : "L" if typ == "Non-candidate" else "S",
-                    "members"  : members,
+                    "type": "L" if typ == "Non-candidate" else "S",
+                    "members": members,
                 }]
         return r

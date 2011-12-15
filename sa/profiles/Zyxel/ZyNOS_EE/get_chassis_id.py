@@ -12,13 +12,15 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetChassisID
 
+
 class Script(NOCScript):
     name = "Zyxel.ZyNOS_EE.get_chassis_id"
     implements = [IGetChassisID]
     cache = True
 
-    rx_ver = re.compile(r"^\sMAC Address\s:\s+(?P<id>\S+).",
-                        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(
+        r"^\sMAC Address\s:\s+(?P<id>\S+).",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def execute(self):
         # Try SNMP first
@@ -30,5 +32,5 @@ class Script(NOCScript):
                 pass
 
         # Fallback to CLI
-        match = self.re_search(self.rx_ver, self.cli("sys mrd atsh", cached=True))
+        match = self.rx_ver.search(self.cli("sys mrd atsh", cached=True))
         return match.group("id")

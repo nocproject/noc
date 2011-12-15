@@ -16,15 +16,17 @@ from noc.sa.script import Script as NOCScript
 class Script(NOCScript):
     name = "Zyxel.ZyNOS_EE.get_arp"
     implements = [IGetARP]
-    rx_arp = re.compile(r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+\S+\s+\d+\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)", re.MULTILINE)
+    rx_arp = re.compile(
+        r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+\S+\s+\d+\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)",
+        re.MULTILINE)
 
     def execute(self):
         arp = self.cli("ip arp status")
         r = []
         for match in self.rx_arp.finditer(arp):
-            r += [{
+            r.append({
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
                 "interface": match.group("interface")
-            }]
+                })
         return r
