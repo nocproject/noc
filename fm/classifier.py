@@ -98,6 +98,7 @@ class CloningRule(object):
             return u"%s : %s" % (self.key_re, self.value_re)
 
     def __init__(self, rule):
+        self.re_mode = rule.re != r"^.*$"  # Search by "re"
         self.name = rule.name
         try:
             self.re = re.compile(rule.re)
@@ -121,13 +122,17 @@ class CloningRule(object):
         self.rewrite_to = rule.rewrite_to
 
     def match(self, rule):
-        for x in rule.rule.patterns:
-            if (self.re.search(x.key_re) and
-                self.re.search(x.value_re) and
-                self.key_re.search(x.key_re) and
-                self.value_re.search(x.value_re)):
-                return True
-        return False
+        """
+        Check cloning rule matches classification rule
+        :rtype: bool
+        """
+        if self.re_mode:
+            c = lambda x: (self.re.search(x.key_re) or
+                           self.re.search(x.value_re))
+        else:
+            c = lambda x: (self.key_re.search(x.key_re) and
+                           self.value_re.search(x.value_re))
+        return any(x for x in rule.rule.patterns if c(x))
 
     def rewrite(self, pattern):
         return CloningRule.Pattern(
