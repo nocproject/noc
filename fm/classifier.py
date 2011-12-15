@@ -155,6 +155,14 @@ class Rule(object):
         self.name = rule.name
         if clone_rule:
             self.name += "(Clone %s)" % clone_rule.name
+            if classifier.dump_clone:
+                # Dump cloned rule
+                logging.debug("Rule '%s' cloned by rule '%s'" % (
+                    rule.name, clone_rule.name))
+                p0 = [(x.key_re, x.value_re) for x in rule.patterns]
+                p1 = [(y.key_re, y.value_re) for y in [
+                                clone_rule.rewrite(x) for x in rule.patterns]]
+                logging.debug("%s -> %s" % (p0, p1))
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
         self.is_unknown = self.event_class_name.startswith("Unknown | ")
@@ -413,13 +421,20 @@ class Classifier(Daemon):
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
         self.enumerations = {}  # name -> value -> enumerated
         self.suppression = {}  # event_class_id -> (condition, suppress)
+        self.dump_clone = False
         Daemon.__init__(self)
         logging.info("Running Classifier version %s" % self.version)
+
+    def setup_opt_parser(self):
+        self.opt_parser.add_option("-d", "--dump", action="append",
+                                   dest="dump")
 
     def load_config(self):
         """
         Load rules from database after loading config
         """
+        self.dump_clone = (self.options.dump is not None and
+                           "clone" in self.options.dump)
         super(Classifier, self).load_config()
         self.load_enumerations()
         self.load_rules()
