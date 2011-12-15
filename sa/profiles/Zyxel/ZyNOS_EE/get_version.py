@@ -17,15 +17,16 @@ class Script(NOCScript):
     name = "Zyxel.ZyNOS_EE.get_version"
     cache = True
     implements = [IGetVersion]
-    rx_ver = re.compile(r"^\sZyNOS version\s:\s+V?(?P<version>\S+).+^\sbootbase version\s:\s+V?(?P<bootprom>\S+).+^\sProduct Model\s:\s+(?P<platform>\S+).",
-                        re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(
+        r"^\sZyNOS version\s:\s+V?(?P<version>\S+).+^\sbootbase version\s:\s+V?(?P<bootprom>\S+).+^\sProduct Model\s:\s+(?P<platform>\S+).",
+        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         ver = self.cli("sys mrd atsh")
         match = self.re_search(self.rx_ver, ver)
         r = {
             "vendor": "Zyxel",
-            "platform": match.group("platform")+'EE',
+            "platform": match.group("platform") + 'EE',
             "version": match.group("version"),
             "attributes": {
                 "Boot PROM": match.group("bootprom"),
