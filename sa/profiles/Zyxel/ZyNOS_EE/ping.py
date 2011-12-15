@@ -16,7 +16,9 @@ from noc.sa.interfaces import IPing
 class Script(NOCScript):
     name = "Zyxel.ZyNOS_EE.ping"
     implements = [IPing]
-    rx_result = re.compile(r"^\s+(?P<count>\d+)\s+(?P<success>\d+)\s+\d+\s+\d+\s+(?P<avg>\d+)\s+\d+\s+(?P<max>\d+)\s+(?P<min>\d+)", re.MULTILINE)
+    rx_result = re.compile(
+        r"^\s+(?P<count>\d+)\s+(?P<success>\d+)\s+\d+\s+\d+\s+(?P<avg>\d+)\s+\d+\s+(?P<max>\d+)\s+(?P<min>\d+)",
+        re.MULTILINE)
 
     def execute(self, address, count=None, source_address=None,
                 size=None, df=None):
@@ -33,9 +35,9 @@ class Script(NOCScript):
             avg = match.group("avg")
             max = match.group("max")
         return {
-            "success" : success,
-            "count"   : count,
-            "min"     : min,
-            "avg"     : avg,
-            "max"     : max,
-        }
+            "success": success,
+            "count": count,
+            "min": min,
+            "avg": avg,
+            "max": max,
+            }
