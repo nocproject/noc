@@ -24,7 +24,9 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option("-o", "--output", dest="output", default=""),
-        make_option("-l", "--list", dest="list", default="")
+        make_option("-l", "--list", dest="list", default=""),
+        make_option("-b", "--bump", dest="bump", action="store_true",
+                    default=False)
     )
 
     def handle(self, *args, **options):
@@ -49,9 +51,9 @@ class Command(BaseCommand):
                 mib = MIB.objects.get(name=mib_name)
             except MIB.DoesNotExist:
                 raise CommandError("MIB not loaded: '%s'" % mib_name)
-            self.compile_mib(mib, path)
+            self.compile_mib(mib, path, bump=options.get("bump"))
 
-    def compile_mib(self, mib, out_path):
+    def compile_mib(self, mib, out_path, bump=False):
         sys.stderr.write("%s -> %s\n" % (mib.name, out_path))
         if out_path:
             d = os.path.dirname(out_path)
@@ -90,10 +92,14 @@ class Command(BaseCommand):
             last_updated = mib.last_updated.strftime("%Y-%m-%d")
         else:
             last_updated = "1970-01-01"
+        version = mib.version
+        if bump:  # Bump to next version
+            version += 1
         data = {
             "name": mib.name,
             "description": mib.description,
             "last_updated": last_updated,
+            "version": version,
             "depends_on": mib.depends_on,
             "typedefs": mib.typedefs,
             "data": mib_data
