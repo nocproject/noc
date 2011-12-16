@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport
 
+
 class {{app}}Application(SimpleReport):
     title = "{{app}}"
 
