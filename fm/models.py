@@ -380,8 +380,9 @@ class MIB(nosql.Document):
                                        "Equal preferences")
                 if mib_preference < o_preference:
                     # Replace existing
-                    o.aliases += [o.name]
+                    o.aliases = sorted(o.aliases + [o.name])
                     o.name = oid_name
+                    o.mib = self.id
                     if description:
                         o.description = description
                     syntax = v.get("syntax")
@@ -391,7 +392,7 @@ class MIB(nosql.Document):
                 else:
                     # Append to aliases
                     if oid_name not in o.aliases:
-                        o.aliases += [oid_name]
+                        o.aliases = sorted(o.aliases + [oid_name])
                         o.save()
             else:
                 # No OID collision found, save
