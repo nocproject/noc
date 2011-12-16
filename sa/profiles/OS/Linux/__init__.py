@@ -9,11 +9,12 @@
 
 ## NOC modules
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET,SSH
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
 
 class Profile(noc.sa.profiles.Profile):
     name = "OS.Linux"
-    supported_schemes = [TELNET,SSH]
+    supported_schemes = [TELNET, SSH]
     pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
     pattern_password = "^[Pp]assword:"
     pattern_unpriveleged_prompt = r"^\w+.+\w+.~ ?\$"
