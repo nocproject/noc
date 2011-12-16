@@ -31,6 +31,7 @@ class Command(BaseCommand):
 
     rx_last_updated = re.compile(r"\"last_updated\": \"([^\"]+)\"",
                                  re.MULTILINE)
+    rx_version = re.compile(r"\"version\":\s*(\d+)", re.MULTILINE)
 
     def handle(self, *args, **options):
         print "Synchnonizing MIBs"
@@ -68,7 +69,23 @@ class Command(BaseCommand):
                 last_updated = self.decode_date(match.group(1))
                 if (last_updated > mib.last_updated) or force:
                     print "    updating %s" % mib_name
-                    self.update_mib(mib, data + f.read())
+                    self.update_mib(mib, data + f.read(), version=0)
+                elif last_updated == mib.last_updated:
+                    # Check internal version
+                    match = self.rx_version.search(data)
+                    if match:
+                        version = int(match.group(1))
+                    else:
+                        # Read rest
+                        data += f.read()
+                        match = self.rx_version.search(data)
+                        if match:
+                            version = int(match.group(1))
+                        else:
+                            version = 0
+                    if version > mib.version:
+                        print "    updating %s" % mib_name
+                        self.update_mib(mib, data + f.read(), version=version)
             else:
                 print "    creating %s" % mib_name
                 self.create_mib(f.read())
@@ -82,14 +99,19 @@ class Command(BaseCommand):
         return datetime.datetime(year=ts.tm_year, month=ts.tm_mon,
                                  day=ts.tm_mday)
 
-    def update_mib(self, mib, data):
+    def update_mib(self, mib, data, version=None):
         # Deserealize
         d = json_decode(data)
         # Update timestamp
         mib.last_updated = self.decode_date(d["last_updated"])
+        # Update version
+        if version is not None:
+            mib.version = version
         mib.save()
         # Upload
-        self.upload_mib(mib, d, clean=True)
+        mib.clean()
+        if d["data"]:
+            mib.load_data(d["data"])
 
     def create_mib(self, data):
         # Deserialze
@@ -97,15 +119,9 @@ class Command(BaseCommand):
         # Create MIB
         mib = MIB(name=d["name"], description=d["description"],
                   last_updated=self.decode_date(d["last_updated"]),
+                  version=d.get("version", 0),
                   depends_on=d["depends_on"])
         mib.save()
         # Upload
-        self.upload_mib(mib, d)
-
-    def upload_mib(self, mib, data, clean=False):
-        if clean:
-            # Delete old data
-            mib.clean()
-        if data["data"]:
-            # Upload new data
-            mib.load_data(data["data"])
+        if d["data"]:
+            mib.load_data(d["data"])
