@@ -55,13 +55,24 @@ class MIBApplication(TreeApplication):
         """
         Collect additional data for preview
         """
-        r = [{
+        r = sorted(
+            [
+                {
                 "oid": x.oid,
                 "name": x.name,
                 "description": x.description,
-                "syntax": self.get_syntax(x)
-            } for x in MIBData.objects.filter(mib=obj.id)]
-        r = sorted(r, key=lambda x: [int(y) for y in x["oid"].split(".")])
+                "syntax": self.get_syntax(x),
+                "aliases": x.aliases
+            } for x in MIBData.objects.filter(mib=obj.id)] +
+            [
+                {
+                "oid": x.oid,
+                "name": x.name,
+                "description": x.description,
+                "syntax": self.get_syntax(x),
+                "aliases": x.aliases
+            } for x in MIBData.objects.filter(aliases__startswith=obj.name)],
+            key=lambda x: [int(y) for y in x["oid"].split(".")])
         # Calculate indent
         min_l = 0
         for x in r:

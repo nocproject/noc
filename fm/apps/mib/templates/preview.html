@@ -44,7 +44,7 @@
             {% for r in extra.data %}
             <tr class="{% cycle "row1" "row2" %}">
                 <td style="padding-left: {{r.offset}}px;">{{r.oid}}</td>
-                <td>{{r.name}}</td>
+                <td>{{r.name}}{% if r.aliases %}<br/><i>({{ r.aliases|join:", " }})</i>{% endif %}</td>
                 <td>{% if r.description %}<pre>{{r.description}}</pre>{% endif %}</td>
                 <td>{% for s in r.syntax %}{{s}}<br/>{% endfor %}</td>
             </tr>
