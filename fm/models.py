@@ -55,6 +55,22 @@ class MIBNotFoundException(Exception):
 class InvalidTypedef(Exception):
     pass
 
+
+class OIDCollision(Exception):
+    def __init__(self, oid, name1, name2, msg=None):
+        self.oid = oid
+        self.name1 = name1
+        self.name2 = name2
+        self.msg = msg
+
+    def __str__(self):
+        s = "Cannot resolve OID %s collision between %s and %s" % (
+            self.oid, self.name1, self.name2)
+        if self.msg:
+            s += ". %s" % self.msg
+        return s
+
+
 ##
 ## Regular expressions
 ##
@@ -141,6 +157,20 @@ class SyntaxAlias(nosql.Document):
         return cls.cache.get(name, syntax)
 
 
+class MIBPreference(nosql.Document):
+    meta = {
+        "collection": "noc.mibpreferences",
+        "allow_inheritance": False
+    }
+    mib = nosql.StringField(required=True, unique=True)
+    preference = nosql.IntField(required=True,
+                                unique=True)  # The less is the better
+    is_builtin = nosql.BooleanField(required=True, default=False)
+
+    def __unicode__(self):
+        return u"%s(%d)" % (self.mib, self.preference)
+
+
 class MIB(nosql.Document):
     meta = {
         "collection": "noc.mibs",
@@ -164,6 +194,8 @@ class MIB(nosql.Document):
         s = {}
         if "basetype" in syntax:
             s["base_type"] = syntax["basetype"]
+        elif "base_type" in syntax:
+            s["base_type"] = syntax["base_type"]
         if "name" in syntax and "module" in syntax:
             if syntax["module"] == "":
                 # Empty module -> builitin types
@@ -194,6 +226,12 @@ class MIB(nosql.Document):
 
     @classmethod
     def load(cls, path, force=False):
+        """
+        Load MIB from file
+        :param path: MIB path
+        :param force: Load anyways
+        :return: MIB object
+        """
         if not os.path.exists(path):
             raise ValueError("File not found: %s" % path)
         # Build SMIPATH variable for smidump to exclude locally installed MIBs
@@ -249,6 +287,7 @@ class MIB(nosql.Document):
         if force and mib:
             # Delete mib to forceful update
             MIBData.objects.filter(mib=mib.id).delete()
+            mib.clean()
             mib.delete()
             mib = None
         if mib is not None:
@@ -261,7 +300,7 @@ class MIB(nosql.Document):
             mib.typedefs = typedefs
             mib.save()
             # Delete all MIB Data
-            MIBData.objects.filter(mib=mib.id).delete()
+            mib.clean()
         else:
             # Create MIB
             mib = MIB(name=mib_name, description=mib_description,
@@ -270,19 +309,17 @@ class MIB(nosql.Document):
                       typedefs=typedefs)
             mib.save()
         # Upload MIB data
+        data = []
         for i in ["nodes", "notifications"]:
             if i in m.MIB:
-                for node, v in m.MIB[i].items():
-                    oid = v["oid"]
-                    # Do not save duplicated OIDs
-                    if MIBData.objects.filter(oid=oid).first() is None:
-                        syntax = {}
-                        if "syntax" in v:
-                            syntax = cls.parse_syntax(v["syntax"]["type"])
-                        MIBData(mib=mib, oid=oid,
-                                name="%s::%s" % (mib_name, node),
-                                description=v.get("description", None),
-                                syntax=syntax).save()
+                data += [
+                    {
+                    "name": "%s::%s" % (mib_name, node),
+                    "oid": v["oid"],
+                    "description": v.get("description"),
+                    "syntax": v["syntax"]["type"] if "syntax" in v else None
+                } for node, v in m.MIB[i].items()]
+        mib.load_data(data)
         # Save MIB to cache if not uploaded from cache
         lcd = os.path.join("local", "share", "mibs")
         if not os.path.isdir(lcd):  # Ensure directory exists
@@ -299,6 +336,72 @@ class MIB(nosql.Document):
         safe_rewrite(local_cache_path, data)
         return mib
 
+    def load_data(self, data):
+        """
+        Load mib data from list of {oid:, name:, description:, syntax:}
+        :param data:
+        :return:
+        """
+        # Get MIB preference
+        mp = MIBPreference.objects.filter(mib=self.name).first()
+        mib_preference = mp.preference if mp else None
+        prefs = {}  # MIB Preferences cache
+        # Load data
+        for v in data:
+            oid = v["oid"]
+            oid_name = v["name"]
+            description = v.get("description", None)
+            o = MIBData.objects.filter(oid=oid).first()
+            if o is not None:
+                if o.name == oid_name:
+                    # Same oid, same name: duplicated declaration.
+                    # Silently skip
+                    continue
+                # Try to resolve collision
+                if not mib_preference:
+                    # No preference for target MIB
+                    raise OIDCollision(oid, oid_name, o.name,
+                                    "No preference for %s" % self.name)
+                o_mib = o.name.split("::")[0]
+                if o_mib not in prefs:
+                    mp = MIBPreference.objects.filter(
+                        mib=o_mib).first()
+                    if not mp:
+                        # No preference for destination MIB
+                        raise OIDCollision(oid, oid_name, o.name,
+                                        "No preference for %s" % o_mib)
+                    prefs[o_mib] = mp.preference  # Add to cache
+                o_preference = prefs[o_mib]
+                if mib_preference == o_preference:
+                    # Equal preferences, collision
+                    raise OIDCollision(oid, oid_name, o.name,
+                                       "Equal preferences")
+                if mib_preference < o_preference:
+                    # Replace existing
+                    o.aliases += [o.name]
+                    o.name = oid_name
+                    if description:
+                        o.description = description
+                    syntax = v.get("syntax")
+                    if syntax:
+                        o.syntax = MIB.parse_syntax(syntax)
+                    o.save()
+                else:
+                    # Append to aliases
+                    if oid_name not in o.aliases:
+                        o.aliases += [oid_name]
+                        o.save()
+            else:
+                # No OID collision found, save
+                syntax = v.get("syntax")
+                if syntax:
+                    syntax = MIB.parse_syntax(syntax)
+                MIBData(mib=self.id,
+                        oid=oid,
+                        name=oid_name,
+                        description=description,
+                        syntax=syntax).save()
+
     @classmethod
     def get_oid(cls, name):
         """
@@ -308,7 +411,11 @@ class MIB(nosql.Document):
         match = rx_tailing_numbers.match(name)
         if match:
             name, tail = match.groups()
+        # Search by primary name
         d = MIBData.objects.filter(name=name).first()
+        if not d:
+            # Search by aliases
+            d = MIBData.objects.filter(aliases=name).first()
         if d:
             return d.oid + tail
         return None
@@ -355,18 +462,54 @@ class MIB(nosql.Document):
     def depended_by(self):
         return MIB.objects.filter(depends_on=self.name)
 
+    def clean(self):
+        """
+        Gracefully wipe out MIB data
+        """
+        # Delete data without aliases
+        MIBData.objects.filter(mib=self.id, aliases=[]).delete()
+        # Dereference aliases
+        prefs = {}  # MIB -> Preference
+        for o in MIBData.objects.filter(mib=self.id, aliases__ne=[]):
+            if not o.aliases:  # NO aliases
+                o.delete()
+            if len(o.aliases) == 1:  # Only one alias
+                ba = o.aliases[0]
+            else:
+                # Find preferable alias
+                ba = None
+                lp = None
+                for a in o.aliases:
+                    am = a.split("::")[0]
+                    # Find MIB preference
+                    if am not in prefs:
+                        p = MIBPreference(mib=am).first()
+                        if p is None:
+                            raise Exception("No preference for %s" % am)
+                        prefs[am] = p.preference
+                    p = prefs[am]
+                    if lp is None or p < lp:
+                        # Better
+                        ba = a
+                        lp = p
+            # Promote preferrable alias
+            o.name = ba
+            o.aliases = [a for a in o.aliases if a != ba]
+            o.save()
+
 
 class MIBData(nosql.Document):
     meta = {
         "collection": "noc.mibdata",
         "allow_inheritance": False,
-        "indexes": ["oid", "name", "mib"]
+        "indexes": ["oid", "name", "mib", "aliases"]
     }
     mib = nosql.PlainReferenceField(MIB)
-    oid = nosql.StringField(required=True)
+    oid = nosql.StringField(required=True, unique=True)
     name = nosql.StringField(required=True)
     description = nosql.StringField(required=False)
     syntax = nosql.DictField(required=False)
+    aliases = nosql.ListField(nosql.StringField(), default=[])
 
     def __unicode__(self):
         return self.name

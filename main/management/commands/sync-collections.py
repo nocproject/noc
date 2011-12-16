@@ -225,6 +225,7 @@ class Command(BaseCommand):
             ("oidaliases", OIDAlias),
             ("syntaxaliases", SyntaxAlias),
             ("mibaliases", MIBAlias),
+            ("mibpreferences", MIBPreference),
             ("enumerations", Enumeration),
             ("alarmseverities", AlarmSeverity),
             ("alarmclasses", AlarmClass),

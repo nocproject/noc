@@ -103,13 +103,9 @@ class Command(BaseCommand):
         self.upload_mib(mib, d)
 
     def upload_mib(self, mib, data, clean=False):
-        # Prepare new data
-        mib_id = mib.id
-        for x in data["data"]:
-            x["mib"] = mib_id
         if clean:
             # Delete old data
-            MIBData.objects.filter(mib=mib_id).delete()
-        # Upload new data
+            mib.clean()
         if data["data"]:
-            MIBData._get_collection().insert(data["data"])
+            # Upload new data
+            mib.load_data(data["data"])
