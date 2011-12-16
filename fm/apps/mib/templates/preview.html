@@ -8,7 +8,11 @@
             {% if o.description %}
                 <tr><td><b>Description:</b></td><td><pre>{{o.description}}</pre></td></tr>
             {% endif %}
-                <tr><td><b>Last revision:</b></td><td>{{o.last_updated}}</td></tr>            
+                <tr><td><b>Last revision:</b></td>
+                    <td>
+                        {{o.last_updated}}
+                        {%  if o.version %}(Rev {{ o.version }}){% endif %}
+                    </td></tr>
             {% if o.depends_on %}
             <tr>
                 <td><b>Depends on:</b></td>
