@@ -182,6 +182,8 @@ class MIB(nosql.Document):
     depends_on = nosql.ListField(nosql.StringField())
     # TC definitions: name -> SYNTAX
     typedefs = nosql.DictField(required=False)
+    # Compiled MIB version
+    version = nosql.IntField(required=False, default=0)
 
     def __unicode__(self):
         return self.name
