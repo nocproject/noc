@@ -11,6 +11,7 @@ import noc.sa.script
 ## NOC modules
 from noc.sa.interfaces import IGetConfig
 
+
 class Script(noc.sa.script.Script):
     name = "OS.Linux.get_config"
     implements = [IGetConfig]
@@ -21,13 +22,16 @@ class Script(noc.sa.script.Script):
             if i.startswith('config'):
                 files = {}
                 files['name'] = self.attrs[i]
-                conf=str(self.cli("/bin/cat " + str(self.attrs[i])))
+                conf = str(self.cli("/bin/cat " + str(self.attrs[i])))
                 files['config'] = conf
                 config.append(files)
         if not config:
             config = self.cli("cat /tmp/system.cfg 2>/dev/null")
         if not config:
-            config = self.cli("for i in `du -a /etc/ 2>/dev/null |awk '{print $2}' 2>/dev/null`; do echo ''; echo $i; if [ -f $i ];then cat $i; fi; done")
+            cmd = "for i in `du -a /etc/ 2>/dev/null |awk '{print $2}' "
+            cmd += "2>/dev/null`; do echo ''; echo $i; if [ -f $i ];"
+            cmd += "then cat $i; fi; done"
+            config = self.cli(cmd)
         if not config:
             raise Exception("Not implemented")
         config = self.cleaned_config(config)

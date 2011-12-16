@@ -10,6 +10,7 @@
 import noc.sa.script
 from noc.sa.interfaces import IGetLocalUsers
 
+
 class Script(noc.sa.script.Script):
     name = "OS.Linux.get_local_users"
     implements = [IGetLocalUsers]
@@ -30,8 +31,8 @@ class Script(noc.sa.script.Script):
                 else:
                     user_class = "operator"
                 r.append({
-                        "username" : name,
-                        "class"    : user_class,
+                        "username": name,
+                        "class": user_class,
                         "is_active": True
                         })
         if not r:

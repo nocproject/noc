@@ -12,6 +12,7 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaceStatus
 
+
 class Script(NOCScript):
     name = "OS.Linux.get_interface_status"
     implements = [IGetInterfaceStatus]
@@ -37,10 +38,11 @@ class Script(NOCScript):
                         status = self.rx_if_status.search(l)
                         if status:
                             r = [{
-                                "interface" : if_name,
-                                "status"    : 'RUNNING' in status.group("status"),
+                                "interface": if_name,
+                                "status": 'RUNNING' in status.group("status"),
                                 }]
-                elif '.' not in if_name and ( if_name[:3] == 'eth' or if_name[:3] == 'ath' ):
+                elif '.' not in if_name and (if_name[:3] == 'eth' or\
+                        if_name[:3] == 'ath'):
                     i += 1
                     l = s[i]
                     while l.strip()[:4] == 'inet':
@@ -49,8 +51,8 @@ class Script(NOCScript):
                     status = self.rx_if_status.search(l)
                     if status:
                         r += [{
-                            "interface" : if_name,
-                            "status"    : 'RUNNING' in status.group("status"),
+                            "interface": if_name,
+                            "status": 'RUNNING' in status.group("status"),
                             }]
         if not r:
             raise Exception("Not implemented")

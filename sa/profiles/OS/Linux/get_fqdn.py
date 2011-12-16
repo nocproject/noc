@@ -12,6 +12,7 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetFQDN
 
+
 class Script(NOCScript):
     name = "OS.Linux.get_fqdn"
     implements = [IGetFQDN]
@@ -19,7 +20,9 @@ class Script(NOCScript):
     rx_hostname = re.compile(r"^(?P<hostname>\S+)$", re.MULTILINE)
 
     def execute(self):
-        hostname = self.cli("hostname -f 2>/dev/null; domainname -f 2>/dev/null; uname -n 2>/dev/null; hostname 2>/dev/null")
+        cmd = "hostname -f 2>/dev/null; domainname -f 2>/dev/null; "
+        cmd += "uname -n 2>/dev/null; hostname 2>/dev/null"
+        hostname = self.cli(cmd)
         match = self.rx_hostname.search(hostname)
         if not match:
             raise Exception("Not implemented")
