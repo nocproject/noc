@@ -24,25 +24,27 @@ class Script(NOCScript):
 
     def execute(self):
         r = []
-        # BUG http://bt.nocproject.org/browse/NOC-36
         # Try SNMP first
-#        if self.snmp and self.access_profile.snmp_ro:
-#            try:
-#                mac_ip = {}
-#                for mac, ip in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.2",
-#                    "1.3.6.1.2.1.4.22.1.3", bulk=True, cached=True):  # IP-MIB
-#                    mac_ip[mac] = ip
-#                for i, mac in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.1",
-#                    "1.3.6.1.2.1.4.22.1.2", bulk=True, cached=True):
-#                    interface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + i,
-#                        cached=True)  # IF-MIB
-#                    r.append({"ip"        : mac_ip[mac],
-#                              "mac"       : mac,
-#                              "interface" : interface
-#                             })
-#                return r
-#            except self.snmp.TimeOutError:
-#                pass
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                mac_ip = {}
+                for mac, ip in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.2",
+                    "1.3.6.1.2.1.4.22.1.3", bulk=True, cached=True):  # IP-MIB
+                    mac = ":".join(["%02x" % ord(c) for c in mac])
+                    ip = ["%02x" % ord(c) for c in ip]
+                    mac_ip[mac] = ".".join(str(int(c, 16)) for c in ip)
+                for i, mac in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.1",
+                    "1.3.6.1.2.1.4.22.1.2", bulk=True, cached=True):  # IP-MIB
+                    mac = ":".join(["%02x" % ord(c) for c in mac])
+                    interface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + i,
+                        cached=True)  # IF-MIB
+                    r.append({"ip": mac_ip[mac],
+                        "mac": mac,
+                        "interface": interface,
+                        })
+                return r
+            except self.snmp.TimeOutError:
+                pass
 
         # Fallback to CLI
         for match in self.rx_line.finditer(self.cli("show arp", cached=True)):
