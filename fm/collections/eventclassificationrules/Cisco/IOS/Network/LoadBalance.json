@@ -99,15 +99,15 @@
             },
             {
                 "key_re": "^CISCO-SLB-MIB::slbRealState.+",
-                "value_re": "^(?P<state>outOfService|failed)$"
+                "value_re": "^(?P<state>outOfService|failed|maxConnsThrottle)?"
             },
             {
                 "key_re": "^CISCO-SLB-MIB::slbInetAddressType.+",
                 "value_re": "^ipv4$"
             },
             {
-                "key_re": "^CISCO-SLB-MIB::slbInetAddress.+",
-                "value_re": "^(?P<real__bin_to_ip>.+)$"
+                "key_re": "^CISCO-SLB-MIB::slbInetAddress\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.(?P<real>\\d+\\.\\d+\\.\\d+\\.\\d+)\\.\\d+",
+                "value_re": "^.+$"
             },
             {
                 "key_re": "^CISCO-SLB-MIB::slbName.+",
@@ -142,8 +142,8 @@
                 "value_re": "^ipv4$"
             },
             {
-                "key_re": "^CISCO-SLB-MIB::slbInetAddress.+",
-                "value_re": "^(?P<real__bin_to_ip>.+)$"
+                "key_re": "^CISCO-SLB-MIB::slbInetAddress\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.(?P<real>\\d+\\.\\d+\\.\\d+\\.\\d+)\\.\\d+",
+                "value_re": "^.+$"
             },
             {
                 "key_re": "^CISCO-SLB-MIB::slbName.+",
