@@ -65,14 +65,26 @@ class Command(BaseCommand):
             out = sys.stdout
 
         # Prepare MIB data
-        mib_data = []
-        for d in MIBData.objects.filter(mib=mib.id).order_by("oid"):
-            mib_data += [{
-                "oid": d.oid,
-                "name": d.name,
-                "description": d.description,
-                "syntax": d.syntax
-            }]
+        mib_data = sorted(
+            [
+                {
+                    "oid": d.oid,
+                    "name": d.name,
+                    "description": d.description,
+                    "syntax": d.syntax
+                } for d in MIBData.objects.filter(mib=mib.id)
+            ] +
+            [
+                {
+                    "oid": d.oid,
+                    "name": (a for a in d.aliases
+                             if a.startswith(mib.name + "::")).next(),
+                    "description": d.description,
+                    "syntax": d.syntax
+                } for d in MIBData.objects.filter(
+                    aliases__startswith="%s::" % mib.name)
+            ], key=lambda x: x["oid"]
+        )
         # Prepare MIB
         if mib.last_updated:
             last_updated = mib.last_updated.strftime("%Y-%m-%d")
