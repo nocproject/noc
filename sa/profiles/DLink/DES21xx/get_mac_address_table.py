@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## DLink.DES2108.get_mac_address_table
+## DLink.DES21xx.get_mac_address_table
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
@@ -13,7 +13,7 @@ from noc.sa.interfaces.base import MACAddressParameter
 import re
 
 class Script(noc.sa.script.Script):
-    name="DLink.DES2108.get_mac_address_table"
+    name="DLink.DES21xx.get_mac_address_table"
     implements=[IGetMACAddressTable]
     rx_line=re.compile(r"^\d+\s+(?P<interfaces>\S+)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)$")
     def execute(self,interface=None,vlan=None,mac=None):
@@ -22,9 +22,9 @@ class Script(noc.sa.script.Script):
             cmd+="%s"%interface
             macs=self.cli(cmd)
         else:
-            macs=""
-            for i in ["1", "2", "3", "4", "5", "6", "7", "8"]:
-                macs+=self.cli(cmd+"%s"%i)
+            macs = ""
+            for s in self.scripts.get_interface_status():
+                macs += self.cli(cmd + "%s" % s["interface"])
         r=[]
         for l in macs.split("\n"):
             match=self.rx_line.match(l.strip())
