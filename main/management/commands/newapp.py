@@ -39,7 +39,8 @@ class Command(BaseCommand):
     # NoSQL Document <-> Django ORM
     type_map = {
         "StringField": "CharField",
-        "BooleanField": "BooleanField"
+        "BooleanField": "BooleanField",
+        "IntField": "IntegerField"
     }
 
     def compact(self, s):
