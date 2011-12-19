@@ -476,6 +476,7 @@ class MIB(nosql.Document):
         for o in MIBData.objects.filter(mib=self.id, aliases__ne=[]):
             if not o.aliases:  # NO aliases
                 o.delete()
+                continue
             if len(o.aliases) == 1:  # Only one alias
                 ba = o.aliases[0]
             else:
