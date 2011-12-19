@@ -193,6 +193,9 @@ class MIB(nosql.Document):
         """
         Process part of smidump output and convert to syntax structure
         """
+        if "base_type" in syntax:
+            # Already compiled
+            return syntax
         s = {}
         if "basetype" in syntax:
             s["base_type"] = syntax["basetype"]
