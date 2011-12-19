@@ -447,10 +447,11 @@ class Script(threading.Thread):
         if self.cache and self.parent is not None:
             try:
                 result = self.get_cache(self.name, self.kwargs)
-                self.debug("Script returns with cached result: %s" % result)
+                self.debug("Script returns with cached result: %r" % result)
                 return result
             except KeyError:
-                self.debug("Not in call cache: %s, %s" % (self.name, self.kwargs))
+                self.debug("Not in call cache: %r, %r" % (self.name,
+                                                          self.kwargs))
                 pass
             # Calling script body
         self._thread_id = thread.get_ident()
@@ -458,11 +459,13 @@ class Script(threading.Thread):
         # Enforce interface result checking
         for i in self.implements:
             result = i.script_clean_result(self.profile, result)
-            # Cache result when required
+        # Cache result when required
         if self.cache and self.parent is not None:
-            self.debug("Write to call cache: %s, %s, %s" % (self.name, self.kwargs, BQ(result)))
+            self.debug("Write to call cache: %s, %s, %r" % (self.name,
+                                                            self.kwargs,
+                                                            result))
             self.set_cache(self.name, self.kwargs, result)
-        self.debug("Script returns with result: %r" % BQ(result))
+        self.debug("Script returns with result: %r" % result)
         return result
 
     def serialize_result(self, result):
