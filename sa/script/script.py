@@ -442,7 +442,7 @@ class Script(threading.Thread):
         # Enforce interface type checking
         for i in self.implements:
             self.kwargs = i.script_clean_input(self.profile, **self.kwargs)
-        self.debug("Running script: %s (%s)" % (self.name, self.kwargs))
+        self.debug("Running script: %s (%r)" % (self.name, self.kwargs))
         # Use cached result when available
         if self.cache and self.parent is not None:
             try:
