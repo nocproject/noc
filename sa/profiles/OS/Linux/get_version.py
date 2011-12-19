@@ -8,7 +8,6 @@
 
 ## Python modules
 import re
-from django.utils.encoding import smart_str, smart_unicode
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVersion
