@@ -18,6 +18,7 @@ lib/fileutils.py
 lib/fsm.py
 lib/ip.py
 lib/nbsocket/*.py
+lib/nbsocket/protocols/*.py
 lib/pmhash.py
 lib/pyquote.py
 lib/registry.py
