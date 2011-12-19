@@ -37,10 +37,13 @@ class Script(NOCScript):
                     mac = ":".join(["%02x" % ord(c) for c in mac])
                     interface = self.snmp.get("1.3.6.1.2.1.2.2.1.1." + i,
                         cached=True)  # IF-MIB
-                    r.append({"ip": mac_ip[mac],
-                        "mac": mac,
-                        "interface": interface,
-                        })
+                    try:
+                        r.append({"ip": mac_ip[mac],
+                            "mac": mac,
+                            "interface": interface,
+                            })
+                    except KeyError:
+                        pass
                 return r
             except self.snmp.TimeOutError:
                 pass
