@@ -26,6 +26,10 @@ class Command(BaseCommand):
     def lookup_mib(self, v):
         if self.rx_oid.match(v):
             # oid -> name
-            print MIB.get_name(v)
+            r = MIB.get_name(v)
         else:
-            print MIB.get_oid(v)
+            r = MIB.get_oid(v)
+        if r:
+            print r
+        else:
+            raise CommandError("Not found: %s" % v)
