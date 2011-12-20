@@ -57,7 +57,8 @@ class Script(NOCScript):
            "Bu": 'aggregated', # Bundle
            "MF": 'aggregated', # Multilink Frame Relay
            "Gr": 'physical',   # Group-Async
-           "Po": 'aggregated'  # Port-channel/Portgroup
+           "Po": 'aggregated', # Port-channel/Portgroup
+           "Ce": 'physical'    # Cellular
            }
 
     def get_ospfint(self):
