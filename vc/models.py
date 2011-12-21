@@ -66,6 +66,9 @@ class VCDomain(models.Model):
                                               default=False)
     enable_vc_bind_filter = models.BooleanField("Enable VC Bind filter",
                                                 default=False)
+    selector = models.ForeignKey(ManagedObjectSelector,
+                                 verbose_name="Selector",
+                                 null=True, blank=True)
 
     def __unicode__(self):
         return u"%s: %s" % (self.name, unicode(self.type))
