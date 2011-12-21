@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection, source (?P<ip>\\S+) destination \\S+\\s+REJECTED"
+                "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection, source (?P<ip>\\S+) destination\\s+\\S+\\s+REJECTED"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+\\s+REJECTED"
+                "value_re": "%AAA-W-REJECT: New (?:web|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination\\s+\\S+\\s+REJECTED"
             }
         ]
     },
@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-I-CONNECT: User CLI session for user (?P<user>.+?) over (?:telnet|ssh)\\s*, source (?P<ip>\\S+) destination \\S+ ACCEPTED"
+                "value_re": "%AAA-I-CONNECT: User CLI session for user (?P<user>.+?) over (?:telnet|ssh)\\s*, source (?P<ip>\\S+) destination\\s+\\S+\\s+ACCEPTED"
             }
         ]
     },
@@ -78,7 +78,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-I-CONNECT: New http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+ ACCEPTED"
+                "value_re": "%AAA-I-CONNECT: New http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination\\s+\\S+\\s+ACCEPTED"
             }
         ]
     },
@@ -99,7 +99,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-I-DISCONNECT: User CLI session for user (?P<user>\\S+) over (web|telnet|ssh) , source (?P<ip>\\S+) destination \\S+ TERMINATED. The Telnet/SSH session may still be connected."
+                "value_re": "%AAA-I-DISCONNECT: User CLI session for user (?P<user>\\S+) over (web|telnet|ssh)\\s*, source (?P<ip>\\S+) destination\\s+\\S+\\s+TERMINATED. The Telnet/SSH session may still be connected."
             }
         ]
     },
@@ -120,7 +120,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%AAA-I-DISCONNECT: (?:http|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+ TERMINATED"
+                "value_re": "%AAA-I-DISCONNECT: (?:http|telnet|ssh) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination\\s+\\S+\\s+TERMINATED"
             }
         ]
     }
