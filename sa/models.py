@@ -145,7 +145,8 @@ class ManagedObject(models.Model):
     administrative_domain = models.ForeignKey(AdministrativeDomain,
             verbose_name=_("Administrative Domain"))
     activator = models.ForeignKey(Activator,
-            verbose_name=_("Activator"))
+            verbose_name=_("Activator"),
+            limit_choices_to={"is_active": True})
     profile_name = models.CharField(_("Profile"),
             max_length=128, choices=profile_registry.choices)
     description = models.CharField(_("Description"),
