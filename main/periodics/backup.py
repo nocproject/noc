@@ -172,9 +172,9 @@ class Task(PeriodicTask):
         cmd = [config.get("path", "mongodump"),
                "-d", settings.NOSQL_DATABASE_NAME,
                "-o", out]
-	if settings.NOSQL_DATABASE_HOST:
+        if settings.NOSQL_DATABASE_HOST:
             cmd += ["-h", settings.NOSQL_DATABASE_HOST]
-	if settings.NOSQL_DATABASE_PORT:
+        if settings.NOSQL_DATABASE_PORT:
             cmd += ["--port", settings.NOSQL_DATABASE_PORT]
         if settings.NOSQL_DATABASE_USER:
             cmd += ["-u", settings.NOSQL_DATABASE_USER]
@@ -182,7 +182,7 @@ class Task(PeriodicTask):
             cmd += ["-p", settings.NOSQL_DATABASE_PASSWORD]
         self.info("Dumping MongoDB database into %s" % out)
         retcode = subprocess.call(cmd)
-        if retcode != 0:
+        if retcode:
             self.error("dump failed. Removing broken dump %s" % out)
             self.safe_unlink(out)
             return False
@@ -214,8 +214,12 @@ class Task(PeriodicTask):
                                     now.month, now.day, now.hour, now.minute)
         etc_out = os.path.join(config.get("path", "backup_dir"), etc_out)
         self.info("dumping etc/ into %s" % etc_out)
-        self.tar(etc_out, [os.path.join("etc", f) for f in os.listdir("etc")
-                           if f.endswith(".conf") and not f.startswith(".")])
+        files = [os.path.join("etc", f) for f in os.listdir("etc")
+                 if f.endswith(".conf") and not f.startswith(".")]
+        files += [os.path.join("etc", "ssh", f)
+                  for f in os.listdir(os.path.join("etc", "ssh)"))
+                  if not f.startswith(".")]
+        self.tar(etc_out, files)
         return True
 
     def execute(self):
