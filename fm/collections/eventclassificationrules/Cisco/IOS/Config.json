@@ -78,7 +78,28 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the startup configuration to the standby Router."
+                "value_re": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the (?:startup|private) configuration to the standby Router."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Config | Config Sync Failed (SYSLOG)",
+        "description": "%PFINIT-SP-1-CONFIG_SYNC_FAIL: Sync'ing the startup configuration to the standby Router FAILED",
+        "event_class__name": "Config | Config Synced",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PFINIT-SP-1-CONFIG_SYNC_FAIL(?:_RETRY)?: Sync'ing the (?P<config>startup|private) configuration to the standby Router FAILED.*"
             }
         ]
     },
