@@ -26,7 +26,7 @@ class VCDomainAdmin(admin.ModelAdmin):
     VC Domain Admin
     """
     list_display = ["name", "type", "enable_provisioning",
-                    "enable_vc_bind_filter", "description"]
+                    "enable_vc_bind_filter", "selector", "description"]
     search_fields = ["name"]
     list_filter = ["type", "enable_provisioning", "enable_vc_bind_filter"]
     inlines = [VCDomainProvisioningConfigAdmin]
