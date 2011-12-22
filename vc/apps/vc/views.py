@@ -13,7 +13,7 @@ from django import forms
 from noc.lib.app import ModelApplication, view
 from noc.vc.models import VC, VCDomain, VCFilter
 from noc.sa.models import ManagedObject, ReduceTask
-from noc.inv.models import SubInterface
+from noc.inv.models import SubInterface, Q
 from noc.sa.models import profile_registry
 
 
@@ -37,20 +37,13 @@ def vc_interfaces(obj):
         return "-"
     objects = set(obj.vc_domain.selector.managed_objects.values_list("id",
                                                                 flat=True))
-    n = 0
     l1 = obj.l1
-    # Untagged
-    n += len([si for si in
-              SubInterface.objects.filter(untagged_vlan=l1, is_bridge=True)
-              if si.interface.managed_object.id in objects])
-    # Tagged
-    n += len([si for si in
-              SubInterface.objects.filter(tagged_vlans=l1, is_bridge=True)
-              if si.interface.managed_object.id in objects])
-    # L3
-    n += len([si for si in
-              SubInterface.objects.filter(vlan_ids=l1)
-              if si.interface.managed_object.id in objects])
+    n = sum(1 for si in
+             SubInterface.objects.filter(
+                 Q(untagged_vlan=l1, is_bridge=True) |
+                 Q(tagged_vlans=l1, is_bridge=True) |
+                 Q(vlan_ids=l1)).only("interface")
+             if si.interface.managed_object.id in objects)
     if n:
         return "<a href='%d/interfaces/'>%d</a>" % (obj.id, n)
     else:
