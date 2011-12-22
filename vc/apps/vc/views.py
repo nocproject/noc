@@ -27,12 +27,45 @@ def vc_prefixes(obj):
 vc_prefixes.short_description = "Prefixes"
 
 
+def vc_interfaces(obj):
+    """
+    Link to interfaces
+    :param obj:
+    :return:
+    """
+    if not obj.vc_domain.selector:
+        return "-"
+    objects = set(obj.vc_domain.selector.managed_objects.values_list("id",
+                                                                flat=True))
+    n = 0
+    l1 = obj.l1
+    # Untagged
+    n += len([si for si in
+              SubInterface.objects.filter(untagged_vlan=l1, is_bridge=True)
+              if si.interface.managed_object.id in objects])
+    # Tagged
+    n += len([si for si in
+              SubInterface.objects.filter(tagged_vlans=l1, is_bridge=True)
+              if si.interface.managed_object.id in objects])
+    # L3
+    n += len([si for si in
+              SubInterface.objects.filter(vlan_ids=l1)
+              if si.interface.managed_object.id in objects])
+    if n:
+        return "<a href='%d/interfaces/'>%d</a>" % (obj.id, n)
+    else:
+        return "0"
+
+vc_interfaces.short_description = "Interfaces"
+vc_interfaces.allow_tags = True
+
+
 class VCAdmin(admin.ModelAdmin):
     """
     VC Admin
     """
     list_display = ["vc_domain", "name", "l1", "l2",
-                    "description", vc_prefixes]
+                    "description", vc_interfaces, vc_prefixes]
     search_fields = ["name", "l1", "l2", "description"]
     list_filter = ["vc_domain"]
 
