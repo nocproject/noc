@@ -17,9 +17,9 @@ class Cisco_IOS_get_vlans_Test(ScriptTestCase):
     platform = '7200'
     version = '12.2(33)SRD3'
     input = {}
-    result = [{'name': 'VLAN0001', 'vlan_id': 1},
- {'name': 'VLAN0102', 'vlan_id': 102},
- {'name': 'VLAN0600', 'vlan_id': 600}]
+    result = [{'vlan_id': 1},
+ {'vlan_id': 102},
+ {'vlan_id': 600}]
     motd = '\n'
     cli = {
 ## 'show version'
