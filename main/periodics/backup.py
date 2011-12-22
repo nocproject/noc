@@ -217,7 +217,7 @@ class Task(PeriodicTask):
         files = [os.path.join("etc", f) for f in os.listdir("etc")
                  if f.endswith(".conf") and not f.startswith(".")]
         files += [os.path.join("etc", "ssh", f)
-                  for f in os.listdir(os.path.join("etc", "ssh)"))
+                  for f in os.listdir(os.path.join("etc", "ssh"))
                   if not f.startswith(".")]
         self.tar(etc_out, files)
         return True
