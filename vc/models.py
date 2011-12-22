@@ -73,6 +73,30 @@ class VCDomain(models.Model):
     def __unicode__(self):
         return u"%s: %s" % (self.name, unicode(self.type))
 
+    def get_free_label(self, vc_filter=None):
+        """
+        Find free label in VC Domain
+        :param vc_filter: Optional VC Filter to restrict labels
+        :type vc_filter: VCFilter
+        :returns: Free label or None
+        :rtype: int or None
+        """
+        l_min = self.type.label1_min
+        l_max = self.type.label1_max
+        # Get valid ranges
+        if vc_filter is None:
+            chunks = [(l_min, l_max)]  # No filter
+        else:
+            chunks = VCFilter.compile(vc_filter.expression)
+        # Find first free
+        for x, y in chunks:
+            if x > y or y < l_min or x > l_max:
+                continue  # Skip chunk outside of type's range
+            for l in range(l_min, l_max + 1):
+                if not VC.objects.filter(vc_domain=self, l1=l).exists():
+                    return l  # Return first free found
+        return None  # Nothing found
+
 rx_vc_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
 
 
