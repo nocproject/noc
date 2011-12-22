@@ -138,7 +138,7 @@ class Script(NOCScript):
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
             ifname = match.group('interface')
-            if ifname[:2] in ['Vi', 'Tu', 'Di']:
+            if ifname[:2] in ['Vi', 'Tu', 'Di', 'GM']:
                 continue
             if ifname.find(':') > 0:
                 inm = ifname.split(':')[0]
