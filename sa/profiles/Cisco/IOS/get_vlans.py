@@ -48,7 +48,7 @@ class Script(NOCScript):
     ## 18xx/28xx/38xx/72xx with EtherSwitch module
     ##
     rx_vlan_dot1q=re.compile(r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):", re.MULTILINE)
-    @NOCScript.match(platform__regex=r"^([123]8[0-9]{2}|72[0-9]{2})")
+    @NOCScript.match(platform__regex=r"^([123]8[0-9]{2}|72[0-9]{2}|IOS-XE)")
     def execute_vlan_switch(self):
         try:
             vlans=self.cli("show vlan-switch")
@@ -61,8 +61,7 @@ class Script(NOCScript):
             for match in self.rx_vlan_dot1q.finditer(vlans):
                 vlan_id = int(match.group("vlan_id"))
                 r+=[{
-                    "vlan_id": vlan_id,
-                     "name": "VLAN%04d" % vlan_id
+                    "vlan_id": vlan_id
                 }]
             return r
         vlans, _=vlans.split("\nVLAN Type", 1)
