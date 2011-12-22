@@ -3,4 +3,5 @@
 {% if user.is_superuser %}
 <li><a href="{% url vc:vc:import_sa %}" class="addlink">Import VLANs from switch</a></li>
 {% endif %}
+    <li><a href="#" class="addlink" onclick="return show_popup('Add Free VC', '{% url vc:vc:add_free %}');">Add Free VC</a></li>
 {% endblock %}
