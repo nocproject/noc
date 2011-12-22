@@ -11,7 +11,7 @@ from django.contrib import admin
 from django import forms
 ## NOC modules
 from noc.lib.app import ModelApplication, view
-from noc.vc.models import VC, VCDomain
+from noc.vc.models import VC, VCDomain, VCFilter
 from noc.sa.models import ManagedObject, ReduceTask
 from noc.inv.models import SubInterface
 from noc.sa.models import profile_registry
@@ -193,3 +193,28 @@ class VCApplication(ModelApplication):
         l3 = get_interfaces(SubInterface.objects.filter(vlan_ids=l1))
         return self.render(request, "interfaces.html",
                            vc=vc, untagged=untagged, tagged=tagged, l3=l3)
+
+    class AddFreeForm(forms.Form):
+        vc_domain = forms.ModelChoiceField(label="VC Domain",
+                                           queryset=VCDomain.objects)
+        vc_filter = forms.ModelChoiceField(label="VC Filter",
+                                            queryset=VCFilter.objects,
+                                            required=False)
+
+    @view(url="^add_free/$", url_name="add_free", access="change")
+    def view_add_free(self, request):
+        if request.POST:
+            form = self.AddFreeForm(request.POST)
+            if form.is_valid():
+                vc_domain = form.cleaned_data["vc_domain"]
+                l1 = vc_domain.get_free_label(form.cleaned_data["vc_filter"])
+                if l1:
+                    return self.render(request, "add_free.html",
+                                       location="%s?vc_domain=%d&l1=%d" % (
+                                           self.reverse("vc:vc:add"),
+                                           vc_domain.id, l1)
+                    )
+                self.message_user(request, "No free VC found")
+        else:
+            form = self.AddFreeForm()
+        return self.render(request, "add_free.html", form=form)
