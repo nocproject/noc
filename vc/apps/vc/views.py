@@ -13,6 +13,7 @@ from django import forms
 from noc.lib.app import ModelApplication, view
 from noc.vc.models import VC, VCDomain
 from noc.sa.models import ManagedObject, ReduceTask
+from noc.inv.models import SubInterface
 from noc.sa.models import profile_registry
 
 
@@ -120,3 +121,42 @@ class VCApplication(ModelApplication):
                                     text="Import in progress. Please wait ...")
         self.message_user(request, "%d VLANs are imported" % result)
         return self.response_redirect("vc:vc:changelist")
+
+    @view(url="^(?P<vc_id>\d+)/interfaces/$", url_name="interfaces",
+          access="change")
+    def view_interfaces(self, request, vc_id):
+        def get_interfaces(queryset):
+            """
+            Returns a list of (managed object, [subinterfaces])
+            :param queryset:
+            :return:
+            """
+            si_objects = {}  # object -> [subinterfaces]
+            for si in queryset:
+                if si.interface.managed_object.id in objects:
+                    try:
+                        si_objects[si.interface.managed_object] += [si]
+                    except KeyError:
+                        si_objects[si.interface.managed_object] = [si]
+            return sorted([(o, sorted(si_objects[o], key=lambda x: x.name))
+                           for o in si_objects], key=lambda x: x[0].name)
+
+        vc = self.get_object_or_404(VC, id=int(vc_id))
+        l1 = vc.l1
+        # Check VC domain has selector
+        if not vc.vc_domain.selector:
+            return self.render(request, "interfaces.html",
+                               no_selector=True, vc=vc)
+        # Managed objects in selector
+        objects = set(vc.vc_domain.selector.managed_objects.values_list("id",
+                                                                    flat=True))
+        # Find untagged interfaces
+        untagged = get_interfaces(SubInterface.objects.filter(untagged_vlan=l1,
+                                                              is_bridge=True))
+        # Find tagged interfaces
+        tagged = get_interfaces(SubInterface.objects.filter(tagged_vlans=l1,
+                                                            is_bridge=True))
+        # Find l3 interfaces
+        l3 = get_interfaces(SubInterface.objects.filter(vlan_ids=l1))
+        return self.render(request, "interfaces.html",
+                           vc=vc, untagged=untagged, tagged=tagged, l3=l3)
