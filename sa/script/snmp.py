@@ -45,7 +45,7 @@ class SNMPProvider(object):
         s = SNMPGetSocket(self, oid)
         try:
             r = self.queue.get(block=True)
-            if not r:
+            if r is None:
                 if self.script.activator.to_save_output:
                     self.script.activator.save_snmp_get(oid, None)
                 raise self.TimeOutError()
