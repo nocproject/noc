@@ -29,6 +29,7 @@ class Socket(object):
         self.start_time = time.time()
         self.last_read = self.start_time + 100  # @todo: Meaningful value
         self.name = None
+        self.closing = False  # In closing state
         self.ttl = self.TTL
         self.set_timeout(self.TTL)
         self.factory.register_socket(self)
@@ -125,6 +126,9 @@ class Socket(object):
         """
         Close socket and unregister from factory
         """
+        if self.closing:
+            return
+        self.closing = True
         if self.socket:
             self.factory.unregister_socket(self)
             try:
