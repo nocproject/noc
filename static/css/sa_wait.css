@@ -1,0 +1,41 @@
+.complete {
+    background-color: green;
+}
+
+.failed {
+    background-color: red;
+}
+
+.running {
+    background-color: blue;
+}
+
+.waiting {
+    background-color: yellow;
+}
+
+.scol {
+    width: 200px;
+}
+
+.more {
+    text-align: right;
+    color: blue;
+}
+
+#progress {
+    width: 804px;
+    height: 24px;
+    border: 1px solid gray;
+    margin: 0px;
+    padding: 0px;
+    clear: both;
+}
+
+#progress div {
+    display: inline-block;
+    position: relative;
+    margin: 0px;
+    padding: 0px;
+    height: 20px;
+}
