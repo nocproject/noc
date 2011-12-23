@@ -31,6 +31,7 @@ class Script(NOCScript):
         r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
 
     platforms = {
+        "10": "MES-1024",
         "24": "MES-3124",
         "26": "MES-5148",
         "30": "MES-3124F",
@@ -41,7 +42,6 @@ class Script(NOCScript):
         "40": "MES-3224",
         "41": "MES-3224F",
         "42": "MES-2124",
-        "10": "MES-1024",
     }
 
     def execute(self):
@@ -49,7 +49,7 @@ class Script(NOCScript):
         if self.snmp and self.access_profile.snmp_ro:
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
-                platform = platform.split(', ')[8]
+                platform = platform.split('.')[8]
                 platform = self.platforms.get(platform.split(')')[0])
                 version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992",
                                         cached=True)

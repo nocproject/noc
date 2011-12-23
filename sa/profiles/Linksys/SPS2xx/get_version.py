@@ -40,7 +40,7 @@ class Script(NOCScript):
         if self.snmp and self.access_profile.snmp_ro:
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
-                platform = platform.split(', ')
+                platform = platform.split('.')
                 platform = platform[8] + '.' + platform[9] + '.' + platform[10]
                 platform = self.platforms.get(platform.split(')')[0], '????')
                 version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992",
