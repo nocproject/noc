@@ -194,8 +194,7 @@ class Daemon(object):
             os._exit(1)
         if pid:
             if self.pidfile:
-                with open(self.pidfile, "w") as f:
-                    f.write(str(pid))
+                self.write_pidfile()
             os._exit(0)
         # In daemon process, redirect stdin/stdout/stderr to /dev/null
         i = open("/dev/null", "r")
@@ -274,6 +273,22 @@ class Daemon(object):
             raise Exception("Cannot resolve address '%s'" % x)
         return r
 
+    def write_pidfile(self):
+        """
+        Write pidfile
+        :return:
+        """
+        if not self.pidfile:
+            return
+        pid = os.getpid()
+        try:
+            with open(self.pidfile, "w") as f:
+                f.write(str(pid))
+        except IOError, why:
+            logging.error("Unable to write PIDfile '%s': %s" % (self.pidfile,
+                                                                why))
+            sys.exit(1)
+
     def heartbeat(self):
         """
         Touch pidfile
@@ -348,9 +363,7 @@ class Daemon(object):
         :return:
         """
         # Write pidfile
-        pid = os.getpid()
-        with open(self.pidfile, "w") as f:
-            f.write(str(pid))
+        self.write_pidfile()
         # Close stdin/stdout/stderr
         i = open("/dev/null", "r")
         o = open("/dev/null", "a+")
