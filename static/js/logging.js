@@ -1,11 +1,12 @@
 //
 // Create console.* stub if missed
 //
-if (typeof(console) == "undefined") {
+if (!window.console) {
     console = {
         log: function(message) {},
+        debug: function(message) {},
         info: function(message) {},
-        ward: function(message) {},
+        warn: function(message) {},
         error: function(message) {alert(message);}
     }
 }
