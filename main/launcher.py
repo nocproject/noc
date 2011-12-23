@@ -147,8 +147,13 @@ class Launcher(Daemon):
         for n in ["scheduler", "web", "sae", "activator", "classifier",
                   "correlator", "notifier", "probe", "discovery"]:
             dn = "noc-%s" % n
-            is_enabled = self.config.getboolean(dn, "enabled")
-            if not is_enabled:
+            # Check daemon is enabled
+            if not self.config.getboolean(dn, "enabled"):
+                logging.info("%s daemon is disabled" % dn)
+                continue
+            # Check daemon has config (for cloned activators)
+            if not os.access("etc/%s.defaults" % dn, os.R_OK):
+                logging.info("Missed config for %s. Skipping" % dn)
                 continue
             # Resolve group name
             group_name = self.config.get(dn, "group")
@@ -195,7 +200,7 @@ class Launcher(Daemon):
                 self.daemons += [
                     DaemonData(dn,
                         is_superuser=self.is_superuser,
-                        enabled=is_enabled,
+                        enabled=True,
                         user=user_name,
                         uid=uid,
                         group=group_name,
@@ -203,7 +208,7 @@ class Launcher(Daemon):
                         instance_id=instance_id,
                         config_path=config)]
             # Set crashinfo uid
-            if self.is_superuser and dn == "noc-sae" and is_enabled:
+            if self.is_superuser and dn == "noc-sae":
                 self.crashinfo_uid = uid
                 self.crashinfo_dir = os.path.dirname(self.config.get("main", "logfile"))
         #
