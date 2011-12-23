@@ -1,0 +1,42 @@
+{% extends "template.html" %}
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="/static/css/sa_wait.css" />
+    <meta http-equiv="refresh" content="3" />
+{% endblock %}
+{% block content %}
+<h1>Running task: #{{ task.id }}</h1>
+    <div id="progress">
+        {% if c_width %}<div class="complete" style="width: {{ c_width }}px">&nbsp;</div>{% endif %}
+        {% if f_width %}<div class="failed" style="width: {{ f_width }}px">&nbsp;</div>{% endif %}
+        {% if r_width %}<div class="running" style="width: {{ r_width }}px">&nbsp;</div>{% endif %}
+        {% if w_width %}<div class="waiting" style="width: {{ w_width }}px">&nbsp;</div>{% endif %}
+    </div>
+    <br/>
+    <table border="0">
+        <tr>
+            <th class="complete scol">Complete: {{ c_count }}</th>
+            <th class="failed scol">Failed: {{ f_count }}</th>
+            <th class="running scol">Running: {{ r_count }}</th>
+            <th class="waiting scol">Waiting: {{ w_count }}</th>
+        </tr>
+        <tr>
+            <td>
+                {% for t in c_list %}{{ t }}<br/>{% endfor %}
+                {% if c_more %}<div class="more">{{ c_more }} more ...</div>{% endif %}
+            </td>
+            <td>
+                {% for t in f_list %}{{ t }}<br/>{% endfor %}
+                {% if f_more %}<div class="more">{{ f_more }} more ...</div>{% endif %}
+            </td>
+            <td>
+                {% for t in r_list %}{{ t }}<br/>{% endfor %}
+                {% if r_more %}<div class="more">{{ r_more }} more ...</div>{% endif %}
+            </td>
+            <td>
+                {% for t in w_list %}{{ t }}<br/>{% endfor %}
+                {% if t_more %}<div class="more">{{ t_more }} more ...</div>{% endif %}
+            </td>
+        </tr>
+    </table>
+{% endblock %}

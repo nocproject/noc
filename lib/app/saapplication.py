@@ -6,8 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Django modules
+from django.db.models import Count
 ## NOC modules
-from application import Application, view
+from noc.lib.app.application import Application, view
 from noc.sa.models import *
 from simplereport import *
 
@@ -127,17 +129,58 @@ class SAApplication(Application):
         :param task_id:
         :return:
         """
+        def get_list(status):
+            return ["%s(%s)" % (t.managed_object.name, t.map_script)
+                    for t in task.maptask_set.filter(
+                        status=status).order_by("-next_try")[:MAX_LIST]]
+
+        def width(w):
+            if not w or not total_tasks:
+                return 0
+            return MAX_WIDTH * w / total_tasks
+
         task = get_object_or_404(ReduceTask, id=int(task_id))
         try:
             result = task.get_result(block=False)
         except ReduceTask.NotReady:
             # Task not ready, refresh
-            total_tasks = task.maptask_set.count()
-            complete_task = task.maptask_set.filter(status="C").count()
-            progress = float(complete_task) * 100.0 / float(total_tasks)
-            return self.render_wait(request, subject="Task",
-                                    text="Processing task. Please wait ...",
-                                    progress=progress)
+            # Get counts into status -> count dict
+            s = task.maptask_set.values("status").annotate(Count("status"))
+            counts = dict([(r["status"], r["status__count"]) for r in s])
+            total_tasks = sum(counts.values())
+            c_count = counts.get("C", 0)
+            w_count = counts.get("W", 0)
+            f_count = counts.get("F", 0)
+            r_count = counts.get("R", 0)
+            # Task lists
+            MAX_LIST = 10
+            c_list = get_list("C")
+            w_list = get_list("W")
+            f_list = get_list("F")
+            r_list = get_list("R")
+            # More
+            c_more = c_count - len(c_list)
+            w_more = w_count - len(w_list)
+            f_more = f_count - len(f_list)
+            r_more = r_count - len(r_list)
+            # Widths
+            MAX_WIDTH = 800
+            c_width = width(c_count)
+            w_width = width(w_count)
+            f_width = width(f_count)
+            r_width = width(r_count)
+            # Render
+            return self.render(request, "sa_app_wait.html", task=task,
+                               total_tasks=total_tasks,
+                               c_count=c_count, w_count=w_count,
+                               f_count=f_count, r_count=r_count,
+                               c_list=c_list, w_list=w_list,
+                               f_list=f_list, r_list=r_list,
+                               c_more=c_more, w_more=w_more,
+                               f_more=f_more, r_more=r_more,
+                               c_width=c_width, w_width=w_width,
+                               f_width=f_width, r_width=r_width
+                               )
         if isinstance(result, Report):
             # Convert report instance to HTML
             result = result.to_html()
