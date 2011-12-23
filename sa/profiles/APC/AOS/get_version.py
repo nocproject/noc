@@ -20,18 +20,12 @@ class Script(NOCScript):
 
     rx_fwver = re.compile(r"Network Management Card AOS\s+v(?P<version>\S+)$",
                           re.MULTILINE)
-    rx_platform = re.compile(r"^(?P<platform>.+)named.*$",
-                             re.MULTILINE)
+    rx_platform = re.compile(r"^(?P<platform>.+?)\s+named\s+", re.MULTILINE)
 
     def execute(self):
         m = self.motd
-        r = {
+        return {
             "vendor": "APC",
+            "platform": self.re_search(self.rx_platform, m).group("platform"),
+            "version": self.re_search(self.rx_fwver, m).group("version")
             }
-        match = self.rx_fwver.search(m)
-        if match:
-            r["version"] = match.group("version")
-        match = self.rx_platform.search(m)
-        if match:
-            r["platform"] = match.group("platform").strip()
-        return r
