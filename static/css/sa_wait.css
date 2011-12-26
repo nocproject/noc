@@ -24,9 +24,9 @@
 }
 
 #progress {
-    width: 804px;
-    height: 24px;
-    border: 1px solid gray;
+    width: 800px;
+    height: 20px;
+    border: none;
     margin: 0px;
     padding: 0px;
     clear: both;
@@ -38,4 +38,5 @@
     margin: 0px;
     padding: 0px;
     height: 20px;
+    border: none;
 }
