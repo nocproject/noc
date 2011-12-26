@@ -45,7 +45,8 @@ class Script(NOCScript):
         # Get 802.1ad status if supported
         vlan_stack_status = {}
         try:
-            for match in self.rx_vlan_stack.finditer(self.cli("show vlan-stacking")):
+            for match in self.rx_vlan_stack.finditer(self.cli("show " \
+                                                        "vlan-stacking")):
                 if match.group("role").lower() == "tunnel":
                     vlan_stack_status[int(match.group("interface"))] = True
         except self.CLISyntaxError:
@@ -75,12 +76,13 @@ class Script(NOCScript):
         # Get switchport data and overall result
         r = []
         swp = {}
-        for match in self.rx_portinfo.finditer(self.cli("show interface config *")):
+        for match in self.rx_portinfo.finditer(self.cli("show interface " \
+                                                        "config *")):
             name = match.group("interface")
             swp = {
                 "status": interface_status.get(name, False),
                 "description": match.group("description"),
-                "802.1Q Enabled": len(port_tags.get(name, None)) > 0,
+                "802.1Q Enabled": len(port_tags[name].get("tags", None)) > 0,
                 "802.1ad Tunnel": vlan_stack_status.get(int(name), False),
                 "tagged": port_tags[name]["tags"],
             }
