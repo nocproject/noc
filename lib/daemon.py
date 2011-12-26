@@ -194,7 +194,7 @@ class Daemon(object):
             os._exit(1)
         if pid:
             if self.pidfile:
-                self.write_pidfile()
+                self.write_pidfile(pid)
             os._exit(0)
         # In daemon process, redirect stdin/stdout/stderr to /dev/null
         i = open("/dev/null", "r")
@@ -273,14 +273,15 @@ class Daemon(object):
             raise Exception("Cannot resolve address '%s'" % x)
         return r
 
-    def write_pidfile(self):
+    def write_pidfile(self, pid=None):
         """
         Write pidfile
         :return:
         """
         if not self.pidfile:
             return
-        pid = os.getpid()
+        if pid is None:
+            pid = os.getpid()  # Process' pid
         try:
             with open(self.pidfile, "w") as f:
                 f.write(str(pid))
