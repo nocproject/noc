@@ -79,7 +79,15 @@ class Script(NOCScript):
                     }[c]
             n["remote_capabilities"] = cap
             # Get neighbor detail
-            v = self.cli("show lldp neighbors %s detail" % local_if)
+            try:
+                v = self.cli("show lldp neighbors %s detail" % local_if)
+            except self.CLISyntaxError:
+                """
+                Found strange CLI syntax on Catalyst 4900
+                Allow ONLY interface name or "detail"
+                Need testing...
+                """
+                raise self.NotSupportedError()
             # Get remote chassis id
             match = self.rx_chassis_id.search(v)
             if not match:
