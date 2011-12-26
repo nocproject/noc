@@ -166,9 +166,9 @@ class SAApplication(Application):
             # Widths
             MAX_WIDTH = 800
             c_width = width(c_count)
-            w_width = width(w_count)
             f_width = width(f_count)
             r_width = width(r_count)
+            w_width = MAX_WIDTH - c_width - f_width - r_width
             # Render
             return self.render(request, "sa_app_wait.html", task=task,
                                total_tasks=total_tasks,
