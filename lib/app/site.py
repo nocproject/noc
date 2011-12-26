@@ -15,7 +15,7 @@ import urllib
 import hashlib
 ## Django modules
 from django.http import HttpResponse, HttpResponseNotFound,\
-                        HttpResponseForbidden, HttpResponseServerError
+                        HttpResponseForbidden, Http404
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import *
 from django.conf import settings
@@ -174,6 +174,8 @@ class Site(object):
                 r = v(request, *args, **kwargs)
             except PermissionDenied, why:
                 return HttpResponseForbidden(why)
+            except Http404, why:
+                return HttpResponseNotFound(why)
             except:
                 # Generate 500
                 r = HttpResponse(content=get_traceback(), status=500,
