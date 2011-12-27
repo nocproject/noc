@@ -226,6 +226,17 @@ class Application(object):
         """
         return HttpResponse(text, status=400)
 
+    def response_accepted(self, location=None):
+        """
+        Render 202 Accepted
+        :param location:
+        :return:
+        """
+        r = HttpResponse("", status=202)
+        if location:
+            r["Location"] = location
+        return r
+
     def close_popup(self, request):
         """
         Render javascript closing popup window
