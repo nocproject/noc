@@ -206,6 +206,26 @@
                 "value_re": "^(?P<user>\\S+)$"
             }
         ]
-    }
+    },
 
+    {
+        "name": "Cisco | IOS | Security | Authentication | SSH - Unexpected message type (SYSLOG)",
+        "description": "%SSH-4-SSH2_UNEXPECTED_MSG: Unexpected message type has arrived. Terminating the connection",
+        "event_class__name": "Security | Authentication | Login Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SSH-4-SSH2_UNEXPECTED_MSG: Unexpected message type"
+            }
+        ]
+    }
 ]
