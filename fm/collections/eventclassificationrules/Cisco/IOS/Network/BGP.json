@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+) Down (BGP Notification sent|Peer closed the session)"
+                "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+) Down"
             }
         ]
     },
