@@ -9,24 +9,20 @@
 ## Python modules
 import os
 import datetime
-import stat
 import logging
-import random
 import types
-import time
+import difflib
 ## Django modules
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
-from django.conf import settings
 ## NOC modules
 from noc.sa.profiles import profile_registry
 from noc.settings import config
-from noc.lib.url import URL
 from noc.lib.fileutils import rewrite_when_differ, read_file, is_differ, in_dir
 from noc.lib.validators import is_int
 from noc.cm.vcs import vcs_registry
-from noc.sa.models import Activator, AdministrativeDomain, ManagedObject
+from noc.sa.models import AdministrativeDomain, ManagedObject
 from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
@@ -417,10 +413,17 @@ class Config(Object):
         """
         nf = self.managed_object.config_diff_filter_rule
         if nf:
-            old_data = nf(old_data)
-            new_data = nf(new_data)
+            old_data = nf(managed_object=self.managed_object, config=old_data)
+            new_data = nf(managed_object=self.managed_object, config=new_data)
             if old_data == new_data:
                 return None
+            # Calculate diff
+            return "".join(difflib.unified_diff(
+                old_data.splitlines(True),
+                new_data.splitlines(True),
+                fromfile=os.path.join("a", self.repo_path),
+                tofile=os.path.join("b", self.repo_path)
+            ))
         return self.diff(old_data, new_data)
 
     @property
