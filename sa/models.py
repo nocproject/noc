@@ -636,6 +636,41 @@ class ManagedObjectSelector(models.Model):
             q &= Q(profile_name__in=self.scripts_profiles(scripts))
         return self.managed_objects.filter(q)
 
+    @classmethod
+    def resolve_expression(cls, s):
+        """
+        Resolve expression to a list of object.
+
+        Expression must be string or list.
+        Elements must be one of:
+        * string starting with @ - treated as selector name
+        * string containing numbers - treated as object's id
+        * string - managed object name.
+
+        Raises ManagedObject.DoesNotExists if object is not found.
+        Raises ManagedObjectSelector.DoesNotExists if selector is not found
+        :param cls:
+        :param s:
+        :return:
+        """
+        if isinstance(s, basestring):
+            s = [s]
+        if type(s) != list:
+            raise ValueError("list required")
+        objects = set()
+        for so in s:
+            if not isinstance(so, basestring):
+                so = str(so)
+            if so.startswith("@"):
+                o = ManagedObjectSelector.objects.get(name=so[1:])
+                objects |= set(o.managed_objects)
+            else:
+                try:
+                    o = ManagedObject.objects.get(id=int(so))
+                except ValueError:
+                    o = ManagedObject.objects.get(name=so)
+                objects |= set([o])
+        return list(objects)
 
 ##
 ## 
@@ -1109,6 +1144,24 @@ class ActivatorCapabilitiesCache(nosql.Document):
                 s = Shard.objects.get(pk=shard)
             ids.union(set(s.activator_set.values_list("id", flat=True)))
         ActivatorCapabilitiesCache.objects(activator_id__in=ids).delete()
+
+
+class MRTConfig(nosql.Document):
+    meta = {
+        "collection": "noc.mrtconfig",
+        "allow_inheritance": False
+    }
+    name = nosql.StringField(unique=True)
+    is_active = nosql.BooleanField(default=True)
+    description = nosql.StringField(required=False)
+    permission_name = nosql.StringField(required=True)
+    selector = nosql.ForeignKeyField(ManagedObjectSelector, required=True)
+    reduce_pyrule = nosql.ForeignKeyField(PyRule, required=True)
+    map_script = nosql.StringField(required=True)
+    timeout = nosql.IntField(required=False)
+
+    def __unicode__(self):
+        return self.name
 
 
 ##
