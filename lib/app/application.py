@@ -218,6 +218,14 @@ class Application(object):
         """
         return HttpResponseNotFound(text)
 
+    def response_bad_request(self, text=None):
+        """
+        Render 400 Bad Request
+        :param text:
+        :return:
+        """
+        return HttpResponse(text, status=400)
+
     def close_popup(self, request):
         """
         Render javascript closing popup window
