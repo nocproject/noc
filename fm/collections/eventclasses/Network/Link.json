@@ -158,5 +158,77 @@
                 "stop_disposition": false
             }
         ]
+    },
+
+    {
+        "name": "Network | Link | Link Flap Error Detected",
+        "description": "Link-flap error detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Link-flap error detected on {{interface}}",
+                "body_template": "Link-flap error detected on {{interface}}",
+                "symptoms": "Connection lost",
+                "probable_causes": "Cable damage, hardware or software error either from this or from another side",
+                "recommended_actions": "Check both sides of links and hardware"
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Affected interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "ignore",
+                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+                "action": "ignore"
+            },
+
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | Link | Err-Disable"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | Link | Link Flap Error Recovery",
+        "description": "Link-flap error recovery",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Link-flap error detected on {{interface}}",
+                "body_template": "Link-flap error recovery on {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Affected interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "ignore",
+                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+                "action": "ignore"
+            },
+
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | Link | Err-Disable"
+            }
+        ]
     }
 ]
