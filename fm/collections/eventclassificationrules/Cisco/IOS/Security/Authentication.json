@@ -194,15 +194,15 @@
                 "value_re": "^CISCO-SMI::cisco$"
             },
             {
-                "key_re": "^OLD-CISCO-TS-MIB::tslineSesType\\.(?:1|2)\\.1$",
-                "value_re": "^(?:tcp|telnet)$"
+                "key_re": "^OLD-CISCO-TS-MIB::tslineSesType\\.(?:[1-4])\\.1$",
+                "value_re": "^(?:tcp|telnet|rlogin|rshell)$"
             },
             {
                 "key_re": "^RFC1213-MIB::tcpConnState\\.\\d+\\.\\d+\\.\\d+\\.\\d+\\.(?:22|23|80)\\.(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)\\.\\d+$",
-                "value_re": "^(?:synReceived|finWait2)$"
+                "value_re": "^(?:synReceived|finWait1|closed|finWait2|closeWait|timeWait)$"
             },
             {
-                "key_re": "^OLD-CISCO-TS-MIB::tsLineUser\\.(?:1|2)$",
+                "key_re": "^OLD-CISCO-TS-MIB::tsLineUser\\.(?:[1-4])$",
                 "value_re": "^(?P<user>\\S+)$"
             }
         ]
