@@ -1,0 +1,109 @@
+[
+    {
+        "name": "Chassis | Hardware | Hardware Error",
+        "description": "Hardware error occured",
+        "action": "A",
+        "vars": [
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Hardware error occured",
+                "body_template": "Hardware error occured",
+                "symptoms": "Device becomes unstable or is not responding",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | Hardware | Hardware Error"
+            }
+        ]
+    },
+
+    {
+        "name": "Chassis | Hardware | Hardware Warning",
+        "description": "Hardware warning occured",
+        "action": "A",
+        "vars": [
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Hardware warning occured",
+                "body_template": "Hardware warning occured",
+                "symptoms": "Device becomes unstable or is not responding",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | Hardware | Hardware Warning"
+            }
+        ]
+    },
+
+    {
+        "name": "Chassis | Hardware | Hardware Port Error",
+        "description": "Hardware port or slot error occured",
+        "action": "A",
+        "vars": [
+            {
+                "name": "port",
+                "description": "Hardware port",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Hardware port error occured: {{port}}",
+                "body_template": "Hardware port or slot error occured: {{port}}",
+                "symptoms": "Link becomes unstable or is not responding",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | Hardware | Hardware Port Error"
+            }
+        ]
+    },
+
+    {
+        "name": "Chassis | Hardware | Hardware Port Warning",
+        "description": "Hardware port or slot warning occured",
+        "action": "A",
+        "vars": [
+            {
+                "name": "port",
+                "description": "Hardware port or slot",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Hardware port or slot warning occured: {{port}}",
+                "body_template": "Hardware port or slot warning occured: {{port}}",
+                "symptoms": "Link becomes unstable or is not responding",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | Hardware | Hardware Port Warning"
+            }
+        ]
+    }
+]
