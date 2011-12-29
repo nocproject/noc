@@ -101,6 +101,101 @@
                     "managed_object": "alarm.managed_object.id",
                     "vars__interface": "alarm.vars['interface']"
                 }
+            },
+
+            {
+                "name": "Alarm: Out of Threshold",
+                "root__name": "Network | Link | DOM | Alarm: Out of Threshold",
+                "window": 10,
+                "match_condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__interface": "alarm.vars['port']"
+                }
+            },
+
+            {
+                "name": "Hardware Port Error",
+                "root__name": "Chassis | Hardware | Hardware Port Error",
+                "window": 10,
+                "match_condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__interface": "alarm.vars['port']"
+                }
+            }
+        ]
+    },
+
+    {
+        "name": "Network | Link | DOM | Warning: Out of Threshold",
+        "description": "DOM above or below threshold",
+        "is_unique": true,
+        "discriminator": ["port"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "port",
+                "description": "Physical port"
+                "type": "str",
+                "required": true
+            },
+            {
+                "name": "threshold",
+                "description": "Threshold type"
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{port}}",
+                "body_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{port}}",
+                "symptoms": "Connection lost",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    },
+
+    {
+        "name": "Network | Link | DOM | Alarm: Out of Threshold",
+        "description": "DOM above or below threshold",
+        "is_unique": true,
+        "discriminator": ["port"],
+        "user_clearable": true,
+        "default_severity__name": "CRITICAL",
+        "vars": [
+            {
+                "name": "port",
+                "description": "Physical port"
+                "type": "str",
+                "required": true
+            },
+            {
+                "name": "threshold",
+                "description": "Threshold type"
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{port}}",
+                "body_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{port}}",
+                "symptoms": "Connection lost",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+        "root_cause": [
+            {
+                "name": "Warning: Out of Threshold",
+                "root__name": "Network | Link | DOM | Warning: Out of Threshold",
+                "window": 30,
+                "match_condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__port": "alarm.vars['port']"
+                }
             }
         ]
     }
