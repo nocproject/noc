@@ -135,13 +135,13 @@
         "vars": [
             {
                 "name": "port",
-                "description": "Physical port"
+                "description": "Physical port",
                 "type": "str",
                 "required": true
             },
             {
                 "name": "threshold",
-                "description": "Threshold type"
+                "description": "Threshold type",
                 "type": "str",
                 "required": false
             }
@@ -167,13 +167,13 @@
         "vars": [
             {
                 "name": "port",
-                "description": "Physical port"
+                "description": "Physical port",
                 "type": "str",
                 "required": true
             },
             {
                 "name": "threshold",
-                "description": "Threshold type"
+                "description": "Threshold type",
                 "type": "str",
                 "required": false
             }
@@ -186,7 +186,7 @@
                 "probable_causes": "",
                 "recommended_actions": ""
             }
-        }
+        },
         "root_cause": [
             {
                 "name": "Warning: Out of Threshold",
