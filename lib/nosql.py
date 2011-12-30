@@ -152,7 +152,7 @@ class ForeignKeyField(BaseField):
         value = instance._data.get(self.name)
         # Dereference
         if isinstance(value, int):
-            value = self.document_type.objects.get(id=value)
+            value = self.document_type.objects.get(pk=value)
             if value is not None:
                 instance._data[self.name] = value
         return super(ForeignKeyField, self).__get__(instance, owner)
@@ -160,7 +160,7 @@ class ForeignKeyField(BaseField):
     def to_mongo(self, document):
         if isinstance(document, Model):
             # We need the id from the saved object to create the DBRef
-            id_ = document.id
+            id_ = document.pk
             if id_ is None:
                 raise ValidationError("You can only reference models once "
                                       "they have been saved to the database")
