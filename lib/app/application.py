@@ -189,7 +189,9 @@ class Application(object):
         """
         Redirect to URL
         """
-        return HttpResponseRedirect(self.reverse(url, *args, **kwargs))
+        if ":" in url:
+            url = self.reverse(url, *args, **kwargs)
+        return HttpResponseRedirect(url)
 
     def response_redirect_to_referrer(self, request, back_url=None):
         """
