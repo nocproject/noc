@@ -135,3 +135,19 @@ def urlopen(url, auto_deflate=False):
         return gzip.GzipFile(fileobj=f)
     else:
         return urllib2.urlopen(r)
+
+
+def search_path(file):
+    """
+    Search for executable file in $PATH
+    :param file: File name
+    :return: path or None
+    :rtype: str or None
+    """
+    if os.path.exists(file):
+        return file  # Found
+    for d in os.environ["PATH"].split(os.pathsep):
+        f = os.path.join(d, file)
+        if os.path.exists(f):
+            return f
+    return None
