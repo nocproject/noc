@@ -51,3 +51,17 @@ def check_postgis():
     c = connection.cursor()
     c.execute("SELECT COUNT(*) FROM pg_class WHERE relname='geometry_columns'")
     return c.fetchall()[0][0] == 1
+
+def check_srs():
+    """
+    Check spatial reference systems are loaded into database
+    :return: True if spatial_ref_sys table is present and not-empty
+    :rtype: bool
+    """
+    c = connection.cursor()
+    c.execute("SELECT COUNT(*) FROM pg_class WHERE relname='spatial_ref_sys'")
+    if c.fetchall()[0][0] == 0:
+        return False
+    c.execute("SELECT COUNT(*) FROM spatial_ref_sys")
+    return c.fetchall()[0][0] > 0
+
