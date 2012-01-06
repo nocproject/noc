@@ -2,13 +2,14 @@
 ##----------------------------------------------------------------------
 ## Various database utilities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Django modules
 from django.utils import tree
 from django.db.models import Q
+from django.db import connection
 
 
 class SQLExpression(object):
@@ -39,3 +40,14 @@ def SQL(sql):
     together with Q
     """
     return Q(SQLNode(sql))
+
+
+def check_postgis():
+    """
+    Check PostGIS is enabled on NOC's database
+    :return: True if PostGIS enabled, False otherwise
+    :rtype: bool
+    """
+    c = connection.cursor()
+    c.execute("SELECT COUNT(*) FROM pg_class WHERE relname='geometry_columns'")
+    return c.fetchall()[0][0] == 1
