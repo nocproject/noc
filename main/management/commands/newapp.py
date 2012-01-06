@@ -103,7 +103,7 @@ class Command(BaseCommand):
                 models = __import__("noc.%s.models" % m, {}, {}, "*")
                 model = getattr(models, tv["model"])
                 fields = []
-                if isinstance(model, Model):
+                if issubclass(model, Model):
                     for f in model._meta.fields:
                         if f.name == "id":
                             continue
