@@ -157,7 +157,7 @@ def get_execution_frames(frame):
     return frames
 
 
-def format_frames(frames):
+def format_frames(frames, reverse=True):
     def format_source(lineno, lines):
         r = []
         for l in lines:
@@ -169,7 +169,8 @@ def format_frames(frames):
     r += [u"START OF TRACEBACK"]
     r += [u"-" * 72]
     fr = frames[:]
-    fr.reverse()
+    if reverse:
+        fr.reverse()
     for f in fr:
         r += [u"File: %s (Line: %d)" % (f["filename"], f["lineno"])]
         r += [u"Function: %s" % (f["function"])]
@@ -188,18 +189,18 @@ def format_frames(frames):
     return u"\n".join(r)
 
 
-def get_traceback():
+def get_traceback(reverse=True):
     t, v, tb = sys.exc_info()
     now = datetime.datetime.now()
     r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
     r += ["Working directory: %s" % os.getcwd()]
     r += [str(t), str(v)]
-    r += [format_frames(get_traceback_frames(tb))]
+    r += [format_frames(get_traceback_frames(tb), reverse=reverse)]
     return "\n".join(r)
 
 
-def error_report():
-    r = get_traceback()
+def error_report(reverse=True):
+    r = get_traceback(reverse=reverse)
     logging.error(r)
     if DEBUG_CTX_COMPONENT and DEBUG_CTX_CRASH_DIR:
         # Build crashinfo file
