@@ -121,7 +121,7 @@ class Command(BaseCommand):
         if not os.access(path, os.R_OK):
             raise CommandError("Cannot read file '%s'" % path)
             # Run osm2pgsql
-        args = [osm2pgsql, "-m", "-p", "gis_osm", "-G",
+        args = [osm2pgsql, "-m", "-k", "-p", "gis_osm", "-G",
                 "-S", "share/osm2pgsql/default.style",
                 "-d", config.get("database", "name")]
         if config.get("database", "user"):
