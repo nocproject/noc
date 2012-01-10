@@ -111,10 +111,10 @@ class ExtDocApplication(ExtApplication):
     def instance_to_dict(self, o):
         r = {}
         for n, f in o._fields.items():
-            v = f.to_python(getattr(o, n))
-            if type(v) in (str, unicode, int, long, bool):
-                v = v
-            else:
+            v = getattr(o, n)
+            if v is not None:
+                v = f.to_python(v)
+            if v is not None and type(v) not in (str, unicode, int, long, bool):
                 v = unicode(v)
             r[n] = v
         return r
