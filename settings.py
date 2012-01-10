@@ -135,6 +135,7 @@ INSTALLED_APPS = [
     "south",
 
     "noc.main",
+    "noc.gis",
     "noc.inv",
     "noc.sa",
     "noc.fm",
