@@ -36,8 +36,10 @@ class Migration:
                 self.fail()
             self.exec_file(os.path.join(sd, "contrib", "postgis-1.5",
                                        "postgis.sql"))
-            self.exec_file(os.path.join(sd, "contrib", "postgis-1.5",
-                                       "postgis_comments.sql"))
+            comments = os.path.join(sd, "contrib", "postgis-1.5",
+                                    "postgis_comments.sql")
+            if os.path.exists(comments):
+                self.exec_file(comments)
         if not check_srs():
             print "Trying to install spatial_ref_sys"
             self.exec_file(os.path.join(sd, "contrib", "postgis-1.5",
