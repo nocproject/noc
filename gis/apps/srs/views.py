@@ -1,0 +1,20 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## gis.srs application
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.lib.app import ExtModelApplication
+from noc.gis.models import SRS
+
+
+class SRSApplication(ExtModelApplication):
+    """
+    SRS application
+    """
+    title = "SRS"
+    menu = "Setup | SRS"
+    model = SRS
