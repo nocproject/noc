@@ -238,7 +238,7 @@ class Command(BaseCommand):
                 symbolizers = []
                 for cctag, ccattrs, ccchildren, cccdata in cchildren:
                     if cctag == "maxscaledenominator":
-                        minscale_zoom = int(cccdata)
+                        maxscale_zoom = int(cccdata)
                     elif cctag == "minscaledenominator":
                         minscale_zoom = int(cccdata)
                     elif cctag == "filter":
