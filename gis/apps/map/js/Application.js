@@ -18,8 +18,30 @@ Ext.define("NOC.gis.map.Application", {
                 dock: "top",
                 items: [
                     {
-                        xtype: "button",
-                        text: "Button!!!"
+                        text: "Area"
+                    },
+                    {
+                        xtype: "textfield"
+                    },
+                    {
+                        text: "Base Layer"
+                    },
+                    {
+                        xtype: "textfield"
+                    },
+                    "->",
+                    {
+                        xtype: "checkboxfield",
+                        boxLabel: "Show Grid",
+                        listeners: {
+                            change: function(cb, new_value, old_value, o) {
+                                var m = this.up().up().ol_map;
+                                if (m) {
+                                    var l = m.getLayersByName("Graticule")[0];
+                                    l.setVisibility(new_value);
+                                }
+                            }
+                        }
                     }
                 ]
             }],
