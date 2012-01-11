@@ -29,18 +29,22 @@ class Migration:
         c.execute(sql)
 
     def forwards(self):
-        if not check_postgis():
-            print "PostGIS is not installed. Trying to install ..."
+        need_postgis = check_postgis()
+        need_srs = check_srs()
+        if need_postgis or need_srs:
             sd = pg_sharedir()
             if not sd:
                 self.fail()
+        if need_postgis:
+            print "PostGIS is not installed. Trying to install ..."
+
             self.exec_file(os.path.join(sd, "contrib", "postgis-1.5",
                                        "postgis.sql"))
             comments = os.path.join(sd, "contrib", "postgis-1.5",
                                     "postgis_comments.sql")
             if os.path.exists(comments):
                 self.exec_file(comments)
-        if not check_srs():
+        if need_srs:
             print "Trying to install spatial_ref_sys"
             self.exec_file(os.path.join(sd, "contrib", "postgis-1.5",
                                        "spatial_ref_sys.sql"))
