@@ -109,7 +109,7 @@
                 "window": 10,
                 "match_condition": {
                     "managed_object": "alarm.managed_object.id",
-                    "vars__interface": "alarm.vars['port']"
+                    "vars__interface": "alarm.vars['interface']"
                 }
             },
 
@@ -119,7 +119,7 @@
                 "window": 10,
                 "match_condition": {
                     "managed_object": "alarm.managed_object.id",
-                    "vars__interface": "alarm.vars['port']"
+                    "vars__interface": "alarm.vars['interface']"
                 }
             }
         ]
@@ -129,12 +129,12 @@
         "name": "Network | Link | DOM | Warning: Out of Threshold",
         "description": "DOM above or below threshold",
         "is_unique": true,
-        "discriminator": ["port"],
+        "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
         "vars": [
             {
-                "name": "port",
+                "name": "interface",
                 "description": "Physical port",
                 "type": "str",
                 "required": true
@@ -148,8 +148,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{port}}",
-                "body_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{port}}",
+                "subject_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{interface}}",
+                "body_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{interface}}",
                 "symptoms": "Connection lost",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -161,12 +161,12 @@
         "name": "Network | Link | DOM | Alarm: Out of Threshold",
         "description": "DOM above or below threshold",
         "is_unique": true,
-        "discriminator": ["port"],
+        "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "CRITICAL",
         "vars": [
             {
-                "name": "port",
+                "name": "interface",
                 "description": "Physical port",
                 "type": "str",
                 "required": true
@@ -180,8 +180,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{port}}",
-                "body_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{port}}",
+                "subject_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{interface}}",
+                "body_template": "DOM exceeded the{% if threshold %}{{threshold}}{% endif %}treshold: {{interface}}",
                 "symptoms": "Connection lost",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -194,7 +194,7 @@
                 "window": 30,
                 "match_condition": {
                     "managed_object": "alarm.managed_object.id",
-                    "vars__port": "alarm.vars['port']"
+                    "vars__interface": "alarm.vars['interface']"
                 }
             }
         ]

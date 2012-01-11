@@ -43,12 +43,12 @@
         "name": "Chassis | Hardware | Hardware Port Error",
         "description": "Hardware port or slot error occured",
         "is_unique": true,
-        "discriminator": ["port"],
+        "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "CRITICAL",
         "vars": [
             {
-                "name": "port",
+                "name": "interface",
                 "description": "Hardware port",
                 "type": "str",
                 "required": true
@@ -56,8 +56,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "Hardware port error occured: {{port}}",
-                "body_template": "Hardware port or slot error occured: {{port}}",
+                "subject_template": "Hardware port error occured: {{interface}}",
+                "body_template": "Hardware port or slot error occured: {{interface}}",
                 "symptoms": "Link becomes unstable or is not responding",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -69,12 +69,12 @@
         "name": "Chassis | Hardware | Hardware Port Warning",
         "description": "Hardware port or slot warning occured",
         "is_unique": true,
-        "discriminator": ["port"],
+        "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
         "vars": [
             {
-                "name": "port",
+                "name": "interface",
                 "description": "Hardware port or slot",
                 "type": "str",
                 "required": true
@@ -82,8 +82,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "Hardware port or slot warning occured: {{port}}",
-                "body_template": "Hardware port or slot warning occured: {{port}}",
+                "subject_template": "Hardware port or slot warning occured: {{interface}}",
+                "body_template": "Hardware port or slot warning occured: {{interface}}",
                 "symptoms": "Link becomes unstable or is not responding",
                 "probable_causes": "",
                 "recommended_actions": ""
