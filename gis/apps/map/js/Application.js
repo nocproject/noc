@@ -12,6 +12,12 @@ Ext.define("NOC.gis.map.Application", {
     //requires: [],
 
     initComponent: function() {
+        // Create layer store
+        this.layer_store = Ext.create("Ext.data.Store", {
+            fields: ["layer"],
+            data: []
+        })
+        // Create times
         Ext.apply(this, {
             dockedItems: [{
                 xtype: "toolbar",
@@ -23,12 +29,21 @@ Ext.define("NOC.gis.map.Application", {
                     {
                         xtype: "textfield"
                     },
-                    {
-                        text: "Base Layer"
-                    },
-                    {
-                        xtype: "textfield"
-                    },
+                    Ext.create("Ext.form.ComboBox", {
+                        fieldLabel: "Base Layer",
+                        store: this.layer_store,
+                        queryMode: "local",
+                        displayField: "layer",
+                        valueField: "layer",
+                        itemId: "layer-combo",
+                        listeners: {
+                            select: function(combo, records, opts) {
+                                var m = this.up().up().ol_map;
+                                var l = m.getLayersByName(records[0].data.layer)[0];
+                                m.setBaseLayer(l);
+                            }
+                        }
+                    }),
                     "->",
                     {
                         xtype: "checkboxfield",
@@ -49,6 +64,7 @@ Ext.define("NOC.gis.map.Application", {
             items: [
                 {
                     xtype: "panel",
+                    // Generate unique id
                     html: "<div id='ol-map-" + this.id + "' style='width: 100%; height: 100%;'></div>"
                 }
             ],
@@ -91,19 +107,17 @@ Ext.define("NOC.gis.map.Application", {
                 case "XYZ":
                     l = new OpenLayers.Layer.XYZ(layer.name, layer.url, {
                         sphericalMercator: true,
-                        isBaseLayer: true
+                        isBaseLayer: layer.base
                     });
                     break;
                 // TMS type
                 case "TMS":
-                    l = new OpenLayers.Layer.TMS(layer.name, layer.url,
-                        {
-                            layername: layer.layername,
-                            type: "png",
-                            sphericalMercator: true,
-                            isBaseLayer: true
-                        }
-                    );
+                    l = new OpenLayers.Layer.TMS(layer.name, "/gis/tms/", {
+                        layername: layer.layername,
+                        type: "png",
+                        sphericalMercator: true,
+                        isBaseLayer: layer.base
+                    });
                     break;
                 // OpenStreetMap
                 case "OSM":
@@ -120,16 +134,25 @@ Ext.define("NOC.gis.map.Application", {
         this.ol_map.addControls([
             new OpenLayers.Control.Navigation(),
             new OpenLayers.Control.PanZoomBar(),
-            new OpenLayers.Control.LayerSwitcher({}),
+            //new OpenLayers.Control.LayerSwitcher({}),
             new OpenLayers.Control.KeyboardDefaults(),
-            new OpenLayers.Control.ScaleLine({
-                geodesic: true
-            }),
+            new OpenLayers.Control.ScaleLine({geodesic: true}),
             // new OpenLayers.Control.MousePosition({}),
             new OpenLayers.Control.Graticule({visible: false})
         ]);
-        //
+        // Center map
         if(!this.ol_map.getCenter())
             this.ol_map.zoomToMaxExtent();
+        // Select layer in combobox
+        var ld = [];
+        for(var i=0; i < layers.length; i++) {
+            var layer = layers[i];
+            if(layer.base)
+                ld = ld.concat([{layer: layer.name}]);
+        }
+        this.layer_store.loadData(ld);
+        // Switch layer combo to active layer
+        var layer_combo = this.dockedItems.items[0].getComponent("layer-combo");
+        layer_combo.select(this.ol_map.baseLayer.name);
     }
 });
