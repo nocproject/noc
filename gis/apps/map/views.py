@@ -36,20 +36,23 @@ class MapAppplication(ExtApplication):
                 layers += [{
                     "name": "%s (XYZ)" % m.name,
                     "type": "XYZ",
-                    "url": "/gis/tms/%s/${z}/${x}/${y}.png" % m.id
+                    "url": "/gis/tms/%s/${z}/${x}/${y}.png" % m.id,
+                    "base": True
                 }]
             # TMS layer
             if enable_tms:
                 layers += [{
                     "name": "%s (TMS)" % m.name,
                     "type": "TMS",
-                    "layername": "%s" % m.id
+                    "layername": "%s" % m.id,
+                    "base": True
                 }]
         # OSM layer
         if config.getboolean("gis", "enable_osm_maps"):
             layers += [{
                 "name": "OpenStreetMap",
-                "type": "OSM"
+                "type": "OSM",
+                "base": True
             }]
         return layers
 
