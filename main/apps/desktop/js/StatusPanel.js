@@ -28,7 +28,7 @@ Ext.define("NOC.main.desktop.StatusPanel", {
 
         {
             xtype: "container",
-            html: "&copy;2007-2011, <A HREF='http://nocproject.org/'>nocproject.org</A>"
+            html: "&copy;2007-2012, <A HREF='http://nocproject.org/'>nocproject.org</A>"
         },
 
         {
