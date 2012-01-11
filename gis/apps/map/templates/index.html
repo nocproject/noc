@@ -41,6 +41,9 @@
             // OSM Layer
             map.addLayer(new OpenLayers.Layer.OSM("OpenStreetMap"));
             // Google layers
+            map.addLayer(new OpenLayers.Layer.Google("Google Roadmap", {
+                type: google.maps.MapTypeId.ROADMAP
+            }));
             map.addLayer(new OpenLayers.Layer.Google("Google Satellite", {
                 type: google.maps.MapTypeId.SATELLITE
             }));
