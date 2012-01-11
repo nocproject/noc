@@ -53,7 +53,7 @@
         "action": "A",
         "vars": [
             {
-                "name": "port",
+                "name": "interface",
                 "description": "Hardware port",
                 "type": "str",
                 "required": true
@@ -61,8 +61,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "Hardware port error occured: {{port}}",
-                "body_template": "Hardware port or slot error occured: {{port}}",
+                "subject_template": "Hardware port error occured: {{interface}}",
+                "body_template": "Hardware port or slot error occured: {{interface}}",
                 "symptoms": "Link becomes unstable or is not responding",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -83,7 +83,7 @@
         "action": "A",
         "vars": [
             {
-                "name": "port",
+                "name": "interface",
                 "description": "Hardware port or slot",
                 "type": "str",
                 "required": true
@@ -91,8 +91,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "Hardware port or slot warning occured: {{port}}",
-                "body_template": "Hardware port or slot warning occured: {{port}}",
+                "subject_template": "Hardware port or slot warning occured: {{interface}}",
+                "body_template": "Hardware port or slot warning occured: {{interface}}",
                 "symptoms": "Link becomes unstable or is not responding",
                 "probable_causes": "",
                 "recommended_actions": ""
