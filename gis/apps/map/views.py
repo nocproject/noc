@@ -18,6 +18,7 @@ class MapAppplication(ExtApplication):
     """
     title = "Map"
     menu = "Map"
+    icon = "icon_map"
 
     @view("^layers/$", access="view", api=True)
     def api_layers(self, request):
@@ -44,6 +45,12 @@ class MapAppplication(ExtApplication):
                     "type": "TMS",
                     "layername": "%s" % m.id
                 }]
+        # OSM layer
+        if config.getboolean("gis", "enable_osm_maps"):
+            layers += [{
+                "name": "OpenStreetMap",
+                "type": "OSM"
+            }]
         return layers
 
     @view(url="^$", access="view")
