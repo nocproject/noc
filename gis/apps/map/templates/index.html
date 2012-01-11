@@ -2,6 +2,7 @@
 <head>
     <title>Test Map</title>
     <meta http-equiv="text/html; charset=utf-8" />
+    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
     <script type="text/javascript" src="/static/js/ol/OpenLayers.js"></script>
     <script type="text/javascript">
         var map;
@@ -39,6 +40,11 @@
             {% endfor %}
             // OSM Layer
             map.addLayer(new OpenLayers.Layer.OSM("OpenStreetMap"));
+            // Google layers
+            map.addLayer(new OpenLayers.Layer.Google("Google Satellite", {
+                type: google.maps.MapTypeId.SATELLITE
+            }));
+            // Controls
             map.addControls([
                 new OpenLayers.Control.Navigation(),
                 new OpenLayers.Control.PanZoomBar(),
