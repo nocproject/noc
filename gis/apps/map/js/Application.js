@@ -50,6 +50,10 @@ Ext.define("NOC.gis.map.Application", {
     },
 
     create_map: function(layers) {
+        if(!layers.length) {
+            Ext.Msg.alert("Error", "Incomplete GIS setup");
+            return;
+        }
         var map_div = "ol-map-" + this.id;
         // Create OpenLayers map
         this.ol_map = new OpenLayers.Map(map_div, {
