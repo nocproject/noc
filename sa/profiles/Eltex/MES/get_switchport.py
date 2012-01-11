@@ -41,11 +41,6 @@ class Script(NOCScript):
         port_vlans = {}
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
-            port_vlans.update({s["interface"]: {
-                                    "tagged": [],
-                                    "untagged": '',
-                                    }
-                            })
 
         #TODO
         # Get 802.1ad status if supported
@@ -75,9 +70,11 @@ class Script(NOCScript):
                 return p
             try:
                 # Make a list of tags for each interface or portchannel
+                port_vlans = {}
                 for vlan, name in self.snmp.join_tables(
                     "1.3.6.1.2.1.17.7.1.4.2.1.3", "1.3.6.1.2.1.17.7.1.4.3.1.1",
                     bulk=True):
+
                     oid = "1.3.6.1.2.1.17.7.1.4.2.1.5.0." + str(vlan)
                     ports = self.snmp.get(oid)
                     s = hex2bin(ports)
@@ -95,10 +92,10 @@ class Script(NOCScript):
                                     })
                             port_vlans[iface]["untagged"] = vlan
                             un += [str(i + 1)]
+
                     oid = "1.3.6.1.2.1.17.7.1.4.2.1.4.0." + str(vlan)
                     ports = self.snmp.get(oid)
                     s = hex2bin(ports)
-                    tagged = []
                     for i in range(len(s)):
                         if s[i] == '1' and str(i + 1) not in un:
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
