@@ -21,7 +21,8 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             closable: true,
             layout: "fit"
         });
-        tab.add(Ext.create(panel_class, {"noc": params}));
+        var app = Ext.create(panel_class, {"noc": params});
+        tab.add(app);
         this.setActiveTab(tab);
         tab.on("beforeclose", function(tab) {
             if(tab.menu_node && tab.desktop_controller)

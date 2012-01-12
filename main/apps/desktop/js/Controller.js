@@ -188,7 +188,6 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     // Launch application in tab
     launch_tab: function(panel_class, title, params, node, reuse) {
-        console.log(node, reuse, this.launched_tabs);
         if(reuse && node && this.launched_tabs[node]) {
             // Open tab
             Ext.getCmp("workplace").setActiveTab(this.launched_tabs[node]);
