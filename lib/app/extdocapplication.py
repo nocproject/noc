@@ -11,7 +11,7 @@ from django.http import HttpResponse
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
-from noc.lib.nosql import StringField, BooleanField
+from noc.lib.nosql import StringField, BooleanField, GeoPointField
 from noc.sa.interfaces import BooleanParameter
 
 
@@ -114,8 +114,11 @@ class ExtDocApplication(ExtApplication):
             v = getattr(o, n)
             if v is not None:
                 v = f.to_python(v)
-            if v is not None and type(v) not in (str, unicode, int, long, bool):
-                v = unicode(v)
+            if v is not None:
+                if isinstance(f, GeoPointField):
+                    pass
+                elif type(v) not in (str, unicode, int, long, bool):
+                    v = unicode(v)
             r[n] = v
         return r
 
