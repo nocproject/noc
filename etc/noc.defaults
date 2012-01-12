@@ -306,9 +306,7 @@ enable_xyz_maps = true
 enable_tms_maps = true
 # Enable OpenStreetMap external tile maps
 enable_osm_maps = true
-# Google API key
-google_api_key =
-# Enable Google Streets external maps
-enable_google_streets = false
+# Enable Google Roadmap external maps
+enable_google_roadmap_maps = false
 # Enable Google Sattelite external maps
-enable_google_satellite = false
+enable_google_satellite_maps = false

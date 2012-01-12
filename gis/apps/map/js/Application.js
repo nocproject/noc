@@ -92,7 +92,7 @@ Ext.define("NOC.gis.map.Application", {
     //
     init_map: function(layers) {
         var init_GoogleAPI = false;
-        var urls = ["/static/js/ol/OpenLayers.js"];
+        var urls = [];
 
         for(var i=0; i < layers.length; i++) {
             var layer = layers[i];
@@ -105,6 +105,7 @@ Ext.define("NOC.gis.map.Application", {
                     break;
             }
         }
+        urls.push("/static/js/ol/OpenLayers.js");
         load_scripts(urls, this, function() {this.create_map(layers);});
     },
     //
@@ -146,6 +147,12 @@ Ext.define("NOC.gis.map.Application", {
                 // OpenStreetMap
                 case "OSM":
                     l = new OpenLayers.Layer.OSM(layer.name);
+                    break;
+                // Google Maps
+                case "Google":
+                    l = new OpenLayers.Layer.Google(layer.name, {
+                        type: layer.google_type
+                    });
                     break;
                 // Error
                 default:
