@@ -9,7 +9,7 @@ console.debug("Defining NOC.gis.map.Application");
 Ext.define("NOC.gis.map.Application", {
     extend: "NOC.core.Application",
     layout: "fit",
-    //requires: [],
+    requires: ["NOC.gis.area.LookupField"],
 
     initComponent: function() {
         // Create layer store
@@ -24,10 +24,16 @@ Ext.define("NOC.gis.map.Application", {
                 dock: "top",
                 items: [
                     {
-                        text: "Area"
-                    },
-                    {
-                        xtype: "textfield"
+                        xtype: "gis.area.LookupField",
+                        fieldLabel: "Area",
+                        name: "area",
+                        allowBlank: true,
+                        listeners: {
+                            select: function(combo, records, opts) {
+                                var area_id = records[0].data.id;
+                                this.up().up().zoom_to_area(area_id);
+                            }
+                        }
                     },
                     Ext.create("Ext.form.ComboBox", {
                         fieldLabel: "Base Layer",
@@ -184,5 +190,29 @@ Ext.define("NOC.gis.map.Application", {
         // Switch layer combo to active layer
         var layer_combo = this.dockedItems.items[0].getComponent("layer-combo");
         layer_combo.select(this.ol_map.baseLayer.name);
+    },
+    //
+    // Zoom and center to area
+    //
+    zoom_to_area: function(area_id) {
+        Ext.Ajax.request({
+            method: "GET",
+            url: "/gis/area/" + area_id + "/",
+            scope: this,
+            success: function(response) {
+                var area = Ext.decode(response.responseText);
+                if(area.name == "World") {
+                    this.ol_map.zoomToMaxExtent();
+                    return;
+                }
+                var proj = new OpenLayers.Projection("EPSG:4326");
+                var bounds = new OpenLayers.Bounds();
+                bounds.extend(new OpenLayers.LonLat(area.SW[0], area.SW[1]));
+                bounds.extend(new OpenLayers.LonLat(area.NE[0], area.NE[1]));
+                bounds.transform(proj, this.ol_map.getProjectionObject());
+                console.log(bounds);
+                this.ol_map.zoomToExtent(bounds, true);
+            }
+        });
     }
 });
