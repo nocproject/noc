@@ -146,7 +146,7 @@ class Area(nosql.Document):
     NE = nosql.GeoPointField()
 
     def __unicode__(self):
-        return u"%s (%s - %s)" % (self.name, self.SW, self.NE)
+        return self.name
 
 
 class TileCache(nosql.Document):
