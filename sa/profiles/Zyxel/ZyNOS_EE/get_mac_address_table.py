@@ -28,15 +28,48 @@ class Script(NOCScript):
             cmd = "sys sw mac search %s %s" % (mac, vlan)
         else:
             cmd = "sys sw mac list all"
+
         macs = self.cli(cmd)
         r = []
-        for l in macs.split("\n"):
-            match = self.rx_line.match(l.strip())
-            if match:
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [match.group("interfaces")],
-                    "type": {"01": "D", "00": "S"}[match.group("type")],
-                })
+        if mac is not None:
+            mac = mac.replace(':', '').lower()
+            for l in macs.split("\n"):
+                match = self.rx_line.match(l.strip())
+                if match:
+                    mac_address = match.group("mac")
+                    vlan_id = match.group("vlan_id")
+                    if mac_address == mac:
+                        r.append({
+                            "vlan_id": vlan_id,
+                            "mac": mac_address,
+                            "interfaces": [match.group("interfaces")],
+                            "type": {"01": "D", "00": "S"}[match.group("type")]
+                            })
+        elif vlan is not None:
+            for l in macs.split("\n"):
+                match = self.rx_line.match(l.strip())
+                if match:
+                    mac_address = match.group("mac")
+                    vlan_id = match.group("vlan_id")
+                    vlan_id = str(int(vlan_id))
+                    if vlan_id == str(vlan):
+                        r.append({
+                            "vlan_id": vlan_id,
+                            "mac": mac_address,
+                            "interfaces": [match.group("interfaces")],
+                            "type": {"01": "D", "00": "S"}[match.group("type")]
+                            })
+        else:
+            for l in macs.split("\n"):
+                match = self.rx_line.match(l.strip())
+                if match:
+                    mac_address = match.group("mac")
+                    vlan_id = match.group("vlan_id")
+                    r.append({
+                        "vlan_id": vlan_id,
+                        "mac": mac_address,
+                        "interfaces": [match.group("interfaces")],
+                        "type": {"01": "D", "00": "S"}[match.group("type")],
+                        })
+
         return r
