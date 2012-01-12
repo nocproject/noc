@@ -54,6 +54,22 @@ class MapAppplication(ExtApplication):
                 "type": "OSM",
                 "base": True
             }]
+        # Google Roadmap Maps
+        if config.getboolean("gis", "enable_google_roadmap_maps"):
+            layers += [{
+                "name": "Google Roadmap",
+                "type": "Google",
+                "base": True,
+                "google_type": "roadmap"
+            }]
+        # Google Satellite Maps
+        if config.getboolean("gis", "enable_google_satellite_maps"):
+            layers += [{
+                "name": "Google Satellite",
+                "type": "Google",
+                "base": True,
+                "google_type": "satellite"
+            }]
         return layers
 
     @view(url="^$", access="view")
