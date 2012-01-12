@@ -77,7 +77,7 @@ Ext.define("NOC.gis.map.Application", {
                         url: "/gis/map/layers/",
                         scope: this,
                         success: function(response) {
-                            this.create_map(Ext.decode(response.responseText));
+                            this.init_map(Ext.decode(response.responseText));
                         }
                     });
                 }
@@ -87,6 +87,29 @@ Ext.define("NOC.gis.map.Application", {
         this.callParent(arguments);
     },
 
+    //
+    // Initialize all required javascript libraries
+    //
+    init_map: function(layers) {
+        var init_GoogleAPI = false;
+        var urls = ["/static/js/ol/OpenLayers.js"];
+
+        for(var i=0; i < layers.length; i++) {
+            var layer = layers[i];
+            switch(layer.type) {
+                case "Google":
+                    if(!init_GoogleAPI) {
+                        init_GoogleAPI = true;
+                        urls.push("http://maps.google.com/maps/api/js?sensor=false");
+                    }
+                    break;
+            }
+        }
+        load_scripts(urls, this, function() {this.create_map(layers);});
+    },
+    //
+    // Create and populate OpenLayers map
+    //
     create_map: function(layers) {
         if(!layers.length) {
             Ext.Msg.alert("Error", "Incomplete GIS setup");
@@ -96,7 +119,8 @@ Ext.define("NOC.gis.map.Application", {
         // Create OpenLayers map
         this.ol_map = new OpenLayers.Map(map_div, {
             projection: "EPSG:900913",
-            displayProjection: "EPSG:900913"
+            displayProjection: "EPSG:900913",
+            controls: []
         });
         //
         for(var i=0; i < layers.length; i++) {
@@ -134,7 +158,6 @@ Ext.define("NOC.gis.map.Application", {
         this.ol_map.addControls([
             new OpenLayers.Control.Navigation(),
             new OpenLayers.Control.PanZoomBar(),
-            //new OpenLayers.Control.LayerSwitcher({}),
             new OpenLayers.Control.KeyboardDefaults(),
             new OpenLayers.Control.ScaleLine({geodesic: true}),
             // new OpenLayers.Control.MousePosition({}),
@@ -148,7 +171,7 @@ Ext.define("NOC.gis.map.Application", {
         for(var i=0; i < layers.length; i++) {
             var layer = layers[i];
             if(layer.base)
-                ld = ld.concat([{layer: layer.name}]);
+                ld.push({layer: layer.name});
         }
         this.layer_store.loadData(ld);
         // Switch layer combo to active layer
