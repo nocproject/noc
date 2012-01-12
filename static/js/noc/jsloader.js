@@ -18,7 +18,10 @@ function load_scripts(urls, scope, callback) {
                 var head = document.getElementsByTagName("head")[0];
                 head.appendChild(script_node);
                 var next = function() {load(u, cb);}
-                script_node.onreadystatechange = next;
+                script_node.onreadystatechange = function() {
+                    if(this.readyState == "complete")
+                        cb.call(scope);
+                };
                 script_node.onload = next;
                 _noc_loaded_scripts[url] = true;
             }
