@@ -267,5 +267,26 @@
                 "value_re": "%.+-NOCARR: (?P<interface>\\S+) cable/connector problem?"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | Link | Link Flap Error Detected (SYSLOG)",
+        "description": "%PM-4-ERR_DISABLE: link-flap error detected on Te1/6, putting Te1/6 in err-disable state",
+        "event_class__name": "Network | Link | Link Flap Error Detected",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PM-4-ERR_DISABLE: link-flap error detected on (?P<interface>\\S+), putting Te1/6 in err-disable state"
+            }
+        ]
     }
 ]
