@@ -1,6 +1,6 @@
 [
     {
-        "name": "Cisco | IOS | Security | Audit | Command (SYSLOG)",
+        "name": "Cisco | IOS | Security | Audit | Command #1 (SYSLOG)",
         "description": "1079: Aug 22 17:08:11.347: %PARSER-5-CFGLOG_LOGGEDCMD: User:tech  logged command:!exec: enable",
         "event_class__name": "Security | Audit | Command",
         "preference": 1000,
@@ -56,7 +56,7 @@
     },
 
     {
-        "name": "Cisco | IOS | Security | Audit | Command (SYSLOG)",
+        "name": "Cisco | IOS | Security | Audit | Command #2 (SYSLOG)",
         "description": "%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
         "event_class__name": "Security | Audit | Command",
         "preference": 1000,
