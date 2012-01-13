@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%\S+ASIC-\S+WARN: .+"
+                "value_re": "%\\S+ASIC-\\S+WARN: .+"
             }
         ]
     }
