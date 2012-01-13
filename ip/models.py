@@ -56,7 +56,7 @@ class VRFGroup(models.Model):
         return unicode(self.name)
 
     def get_absolute_url(self):
-        return site.reverse("ip:vrfgroup:change")
+        return site.reverse("ip:vrfgroup:change", self.id)
 
 
 class VRF(models.Model):
@@ -779,7 +779,7 @@ class AddressRange(models.Model):
     ##
     ##
     def get_absolute_url(self):
-        return site.reverse("ip:addressrange:change")
+        return site.reverse("ip:addressrange:change", self.id)
 
     ##
     ## Save instance
