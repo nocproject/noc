@@ -1057,7 +1057,42 @@ class OIDParameter(Parameter):
         if bool([v for v in value.split(".") if is_false(v)]):
             self.raise_error(value)
         return value
-    
+
+
+class GeoPointParameter(Parameter):
+    """
+    >>> GeoPointParameter().clean([180, 90])
+    [180, 90]
+    >>> GeoPointParameter().clean([75.5, "90"])
+    [75.5, 90]
+    >>> GeoPointParameter().clean("[180, 85.5]")
+    [180, 85.5]
+    >>> GeoPointParameter().clean([1])  #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    InterfaceTypeError: GeoPointParameter: [1]
+    """
+    def clean(self, value):
+        if type(value) in (list, tuple):
+            # List or tuple
+            if len(value) != 2:
+                self.raise_error(value)
+            try:
+                return [float(x) for x in value]
+            except ValueError:
+                self.raise_error(value)
+        elif isinstance(value, basestring):
+            v = value.replace(" ", "")
+            if not v or "," not in v:
+                self.raise_error(value)
+            s = v[0]
+            if (s not in ("(", "[") or (s == "(" and v[-1] != ")") or
+                (s == "[" and v[-1]) != "]"):
+                self.raise_error(value)
+            return self.clean(v[1:-1].split(","))
+        else:
+            self.raise_error(value)
+
 
 ## Stub for interface registry
 interface_registry = {}
