@@ -16,13 +16,19 @@ class AreaTestCase(RestModelTestCase):
     scenario = [
         {
             "GET": {
-                # key: value
+                "name": "Moscow2012"
             },
             "POST": {
-                # key: value
+                "name": "Moscow2012",
+                "is_active": True,
+                "min_zoom": 0,
+                "max_zoom": 18,
+                "NE": [37.97562, 56.05624],
+                "SW": [37.11831, 55.42577]
             },
             "PUT": {
-                # key: value
+                "name": "Moscow2012",
+                "min_zoom": 17
             }
         }
     ]
