@@ -12,7 +12,7 @@ from django.http import HttpResponse
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
 from noc.lib.nosql import StringField, BooleanField, GeoPointField
-from noc.sa.interfaces import BooleanParameter
+from noc.sa.interfaces import BooleanParameter, GeoPointParameter
 
 
 class ExtDocApplication(ExtApplication):
@@ -52,6 +52,8 @@ class ExtDocApplication(ExtApplication):
         for name, f in self.model._fields.items():
             if isinstance(f, BooleanField):
                 self.clean_fields[name] = BooleanParameter()
+            elif isinstance(f, GeoPointField):
+                self.clean_fields[name] = GeoPointParameter()
         #
         if not self.query_fields:
             self.query_fields = ["%s__%s" % (n, self.query_condition)
