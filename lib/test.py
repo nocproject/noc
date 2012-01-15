@@ -121,7 +121,8 @@ class TestClient(Client):
                        if empty
         :param extra: Additional HTTP request headers
         """
-        r = super(TestClient, self).get(self.get_path(path, query=query),
+        r = super(TestClient, self).get(self.get_path(path,
+                  query=dict((k, str(query[k])) for k in query)),
                   follow=self.to_follow(follow),
                   **self.get_headers(headers=extra, credentials=credentials))
         return r
