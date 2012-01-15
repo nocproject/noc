@@ -121,7 +121,6 @@ class TestClient(Client):
                        if empty
         :param extra: Additional HTTP request headers
         """
-        to_json = self.json if json is None else json
         r = super(TestClient, self).get(self.get_path(path, query=query),
                   follow=self.to_follow(follow),
                   **self.get_headers(headers=extra, credentials=credentials))
@@ -353,7 +352,7 @@ class AjaxTestCase(NOCTestCase):
             return (r.status_code,
                     json_decode(r.content))
         else:
-            return (r.status_code, r.content)
+            return r.status_code, r.content
 
     def get(self, path, **kwargs):
         return self.request("get", path, **kwargs)
