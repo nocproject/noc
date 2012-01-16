@@ -3,7 +3,7 @@
 ## Vendor: Alentis
 ## OS:     NetPing
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
