@@ -1199,7 +1199,37 @@ class Interface(object):
             f.fields[n] = p.get_form_field(n)
             setattr(f, "clean_%s" % n, get_clean_field_wrapper(f, n, p))
         return f
-    
+
+
+def iparam(**params):
+    """
+    Function parameters decorator. Usage:
+
+        @iparam(mac=MACAddressParameter(), count=IntParameter(default=3))
+        def iparam_test(mac, count):
+            return (mac, count)
+
+        iparam_test(mac="1:2:3:4:5:6", count="7")
+        ("01:02:03:04:05:06", 7)
+    """
+    def decorate(f):
+        def check_params(*args, **kwargs):
+            # Clean parameters
+            for n in params:
+                p = params[n]
+                if n in kwargs:
+                    kwargs[n] = p.clean(kwargs[n])
+                elif p.default:
+                    kwargs[n] = p.default
+                elif p.required:
+                    p.raise_error(None)
+            # Call
+            return f(*args, **kwargs)
+
+        check_params.func_name = f.func_name
+        return check_params
+
+    return decorate
 
 ##
 ## Module Test
