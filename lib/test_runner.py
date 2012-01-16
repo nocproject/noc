@@ -500,7 +500,7 @@ class TestRunner(object):
                     if not self.reuse_db:
                         management.call_command("sync-perm")
                         #management.call_command("sync-pyrules")
-                        #management.call_command("sync-collections")
+                        management.call_command("sync-collections")
                     # Add as tests
                     suite = self.get_suite(modules, tests)
                     self.info("Running test suite")
