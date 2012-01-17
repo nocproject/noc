@@ -7,9 +7,10 @@
 from __future__ import with_statement
 import sys
 import os
-from django.db import connection
 from south.db import db
 from noc.lib.db import *
+from noc.settings import config
+
 
 class Migration:
     def fail(self, msg=None):
@@ -63,6 +64,13 @@ class Migration:
     def forwards(self):
         if not check_postgis():
             print "PostGIS is not installed. Trying to install ..."
+            if not check_pg_superuser():
+                # Superuser required
+                dbuser = config.get("database", "user")
+                print "PostgreSQL superuser permissions required to install PostGIS"
+                print "Temporary grant superuser permissions to '%s'" % dbuser
+                print "Or install PostGIS manually"
+                sys.exit(1)
             self.exec_file(os.path.join(self.get_postgis_root(),
                                         "postgis.sql"))
             comments = os.path.join(self.get_postgis_root(),
