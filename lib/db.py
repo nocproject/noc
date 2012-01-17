@@ -82,4 +82,16 @@ def pg_sharedir():
     return p.stdout.read().strip()
 
 
-
+def check_pg_superuser():
+    """
+    Check NOC's PostgreSQL user is superuser
+    :return: True if superuser, False otherwise
+    :rtype: bool
+    """
+    c = connection.cursor()
+    c.execute("""
+        SELECT COUNT(*)
+        FROM pg_user
+        WHERE usename = USER
+            AND usesuper=true""")
+    return c.fetchall()[0][0] == 1
