@@ -3,21 +3,23 @@
 ## Vendor: Cisco
 ## OS:     IOS
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import re
 ## NOC modules
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.sa.profiles import Profile as NOCProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(NOCProfile):
     name = "Cisco.IOS"
-    supported_schemes = [TELNET, SSH]
-    pattern_more = "^ --More--"
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
+    pattern_more = [
+        (r"^ --More--", "\n"),
+        (r"\?\s*\[confirm\]", "\n")
+    ]
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:"
     command_disable_pager = "terminal length 0"
@@ -27,7 +29,7 @@ class Profile(noc.sa.profiles.Profile):
     command_save_config = "copy running-config startup-config\n"
     pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S*?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
-    convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
+    convert_mac = NOCProfile.convert_mac_to_cisco
     config_volatile = ["^ntp clock-period .*?^"]
 
     rx_cable_if = re.compile(r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE)
