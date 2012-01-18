@@ -905,6 +905,8 @@ class ReduceTask(models.Model):
                     # Add timeouts by generations
                     ms = c["max_scripts"]
                     ts = sorted(pool_timeouts[pool])
+                    if not ts:
+                        continue
                     lts = len(ts) - 1
                     i = ms - 1
                     while True:
