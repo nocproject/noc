@@ -27,6 +27,17 @@ for d in range(0, MAX_ZOOM + 1):
     c <<= 1
 
 
+def bounded(v, l, u):
+    """
+    Returns bounded value: l if v < i, u if v > u, l otherwise
+    :param v: Value
+    :param l: Lower bound
+    :param u: Upper bound
+    :return:
+    """
+    return min(max(v, l), u)
+
+
 def xy_to_ll(zoom, px):
     """
     Convert tile index to EPSG:4326 lon/lat pair
@@ -53,3 +64,15 @@ def ll_to_xy(zoom, ll):
     f = min(max(math.sin(math.radians(ll[1])), -0.9999), 0.9999)
     g = round(d[1] + 0.5 * math.log((1 + f) / (1 - f)) * -Cc[zoom])
     return int(e / TS), int(g / TS)
+
+
+def inverse_mercator(xy):
+    """
+    Convert EPSG:900913 to EPSG:4326 lon/lat pair
+    :param xy:
+    :return:
+    """
+    lon = (xy[0] / 20037508.34) * 180
+    lat = (xy[1] / 20037508.34) * 180
+    lat = 180 / PI * (2 * math.atan(math.exp(lat * PI / 180)) - PI / 2)
+    return bounded(lon, -180, 179.99999), bounded(lat, -90, 90)
