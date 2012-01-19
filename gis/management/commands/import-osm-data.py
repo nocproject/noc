@@ -19,8 +19,9 @@ from django.core.management.base import BaseCommand, CommandError
 from noc.settings import config
 from noc.lib.db import check_postgis, check_srs
 from noc.lib.fileutils import search_path, temporary_file
-from noc.gis.models import Map, Area
+from noc.gis.models import Area
 from noc.gis.geo import MIN_ZOOM, MAX_ZOOM
+from noc.gis.utils import parse_osm_bounds
 
 
 class Command(BaseCommand):
@@ -34,10 +35,7 @@ class Command(BaseCommand):
 
     OSM_API_URL = "http://api.openstreetmap.org/api/0.6/map?bbox="
 
-    rx_bounds = re.compile(r'<bounds\s+minlat="(?P<minlat>[^\"]+)"\s+'\
-                           r'minlon="(?P<minlon>[^\"]+)"\s+'\
-                           r'maxlat="(?P<maxlat>[^\"]+)"\s+'\
-                           r'maxlon="(?P<maxlon>[^\"]+)"/>', re.MULTILINE)
+    rx_bounds = re.compile(r"(<bounds\s+(.+?)\s*/>)", re.MULTILINE)
     rx_bound_box = re.compile(r'<bound\s+box="([^\"]+)"')
 
     def handle(self, *args, **options):
@@ -138,13 +136,12 @@ class Command(BaseCommand):
         # Calculate and return bounding box
         with open(path) as f:
             d = f.read(4096)
-            match = self.rx_bounds.search(d)
-            if match:
-                return tuple(float(match.group(g))
-                for g in ("minlon", "minlat", "maxlon", "maxlat"))
-            match = self.rx_bound_box.search(d)
-            if match:
-                b = match.group(1).split(",")
-                return tuple(float(x) for x in (b[1], b[0], b[3], b[2]))
-            else:
-                raise CommandError("Cannot find bounding box")
+        match = self.rx_bounds.search(d)
+        if match:
+            return parse_osm_bounds(match.group(1))
+        match = self.rx_bound_box.search(d)
+        if match:
+            b = match.group(1).split(",")
+            return tuple(float(x) for x in (b[1], b[0], b[3], b[2]))
+        else:
+            raise CommandError("Cannot find bounding box")
