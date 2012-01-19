@@ -37,7 +37,7 @@ class Script(NOCScript):
     rx_log_name = re.compile(r"^(?P<name>\S+).+?SNMP ifIndex (?P<ifindex>\d+)",
                              re.IGNORECASE)
     rx_log_protocol = re.compile(r"^\s+Protocol\s+", re.MULTILINE)
-    rx_log_pname = re.compile(r"^(?P<proto>\S+?),")
+    rx_log_pname = re.compile(r"^(?P<proto>[a-zA-Z0-9\-]+)")
     rx_log_address = re.compile(r"^\s+Local:\s+(?P<address>\S+)", re.MULTILINE)
     rx_log_netaddress = re.compile(r"^\s+Destination: (?P<dest>\S+?),\s+Local: (?P<local>\S+?),",
         re.MULTILINE)
@@ -107,8 +107,6 @@ class Script(NOCScript):
                 if match:
                     si["description"] = match.group("description")
                 # Process protocols
-                ipv4 = []
-                iso = []
                 for p in self.rx_log_protocol.split(s)[1:]:
                     match = self.re_search(self.rx_log_pname, p)
                     proto = match.group("proto")
