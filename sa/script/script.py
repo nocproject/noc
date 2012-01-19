@@ -512,6 +512,9 @@ class Script(threading.Thread):
                 r += [format_frames(get_traceback_frames(tb))]
                 self.error_traceback = "\n".join(r)
                 self.debug("Script traceback:\n%s" % self.error_traceback)
+                if self.activator.to_save_output:
+                    # Save fake result
+                    self.activator.save_result(self.error_traceback)
         else:
             # Shutdown session
             if self.profile.shutdown_session and not self.activator.use_canned_session:
