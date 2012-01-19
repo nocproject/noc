@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Linksys.SPS2xx.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -32,7 +32,11 @@ class Script(NOCScript):
 
     platforms = {
         "9.224.1": "SPS-224G4",
+        "1.208.1": "SRW-208",
+        "1.208.2": "SRW-208G",
         "1.2016.1": "SRW-2016",
+        "1.2048.1": "SRW-2048",
+        "3955.6.5048": "SRW-248G",
         }
 
     def execute(self):
@@ -41,7 +45,9 @@ class Script(NOCScript):
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
                 platform = platform.split('.')
-                platform = platform[8] + '.' + platform[9] + '.' + platform[10]
+                N = len(platform)
+                platform = platform[N - 3] + '.' + platform[N - 2] + '.' \
+                    + platform[N - 1]
                 platform = self.platforms.get(platform.split(')')[0], '????')
                 version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992",
                                         cached=True)
@@ -68,7 +74,9 @@ class Script(NOCScript):
         plat = self.cli("show system", cached=True)
         match = self.re_search(self.rx_platform, plat)
         platform = match.group("platform").split('.')
-        platform = platform[8] + '.' + platform[9] + '.' + platform[10]
+        N = len(platform)
+        platform = platform[N - 3] + '.' + platform[N - 2] + '.' \
+            + platform[N - 1]
         platform = self.platforms.get(platform.split(')')[0], '????')
 
         ver = self.cli("show version", cached=True)
