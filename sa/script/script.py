@@ -28,7 +28,15 @@ from noc.sa.script.telnet import CLITelnetSocket
 from noc.sa.script.ssh import CLISSHSocket
 from noc.sa.script.http import HTTPProvider
 from noc.sa.script.snmp import SNMPProvider
-from noc.lib.debug import BQ
+
+## Module constants
+rx_nohex = re.compile("[^0-9a-f]+")  # non-hexadecimal
+hexbin = {
+    "0": "0000", "1": "0001", "2": "0010", "3": "0011",
+    "4": "0100", "5": "0101", "6": "0110", "7": "0111",
+    "8": "1000", "9": "1001", "a": "1010", "b": "1011",
+    "c": "1100", "d": "1101", "e": "1110", "f": "1111"
+}
 
 
 class ScriptProxy(object):
@@ -66,8 +74,9 @@ class ScriptCallProxy(object):
 
     def __call__(self, **kwargs):
         """Call script"""
-        s = self.script(self.parent.profile, self.parent.activator, self.parent.access_profile,
-                        parent=self.parent, **kwargs)
+        s = self.script(self.parent.profile, self.parent.activator,
+                        self.parent.access_profile, parent=self.parent,
+                        **kwargs)
         return s.guarded_run()
 
 
@@ -826,6 +835,17 @@ class Script(threading.Thread):
             if r.search(s):
                 return r
         raise self.UnexpectedResultError()
+
+    def hex_to_bin(self, s):
+        """
+        Convert hexadecimal string to boolean string.
+        All non-hexadecimal characters are ignored
+        :param s: Input string
+        :return: Boolean string
+        :rtype: str
+        """
+        s = rx_nohex.sub("", s.lower())
+        return "".join([hexbin[c] for c in s])
 
     @classmethod
     def get_scheme_id(self, scheme):
