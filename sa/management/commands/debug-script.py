@@ -12,7 +12,6 @@ import logging
 import sys
 import ConfigParser
 import Queue
-import time
 import cPickle
 import threading
 import signal
@@ -217,11 +216,8 @@ class ActivatorStub(object):
             if not self.wait_ticks:
                 logging.debug("EXIT")
                 if self.to_save_output:
-                    if self.session_can.result:
-                        logging.debug("Writing session test to %s" % self.output)
-                        self.session_can.dump(self.output)
-                    else:
-                        logging.error("Cannot write session test due to errors")
+                    logging.debug("Writing session test to %s" % self.output)
+                    self.session_can.dump(self.output)
                 # Finally dump results
                 for s in self.scripts:
                     if s.result:
