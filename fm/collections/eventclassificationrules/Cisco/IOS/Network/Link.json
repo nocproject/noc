@@ -285,7 +285,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PM-4-ERR_DISABLE: link-flap error detected on (?P<interface>\\S+), putting Te1/6 in err-disable state"
+                "value_re": "%PM-4-ERR_DISABLE: link-flap error detected on (?P<interface>\\S+), putting \\S+ in err-disable state"
             }
         ]
     },
