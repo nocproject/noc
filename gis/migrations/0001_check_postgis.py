@@ -18,7 +18,8 @@ class Migration:
             print "Failed to install PostGIS: %s" % msg
         else:
             print "Failed to install PostGIS."
-        print "Install PostGIS according to your operation system procedure"
+        dbname = config.get("database", "name")
+        print "Install PostGIS into database '%s' according to your operation system's procedure" % dbname
         print "Stopping..."
         sys.exit(1)
 
@@ -47,6 +48,8 @@ class Migration:
         u = os.uname()
         if u[0] == "FreeBSD":
             root = "/usr/local/share/postgis/contrib/postgis-1.5"
+        elif u[0] == "SunOS":
+            pass
         # Check hardcoded path exists
         if root and os.path.exists(root):
             self.postgis_root = root
@@ -54,7 +57,8 @@ class Migration:
         # Try $PGSHARE/contrib/postgis-1.5
         sd = pg_sharedir()
         if not sd:
-            self.fail("pg_config is not found")
+            self.fail("pg_config is not found.\n"\
+                      "Ensure pg_config is in the current user's $PATH")
         root = os.path.join(sd, "contrib", "postgis-1.5")
         if not os.path.exists(root):
             self.fail("Not found: %s" % root)
@@ -66,10 +70,11 @@ class Migration:
             print "PostGIS is not installed. Trying to install ..."
             if not check_pg_superuser():
                 # Superuser required
+                dbname = config.get("database", "name")
                 dbuser = config.get("database", "user")
                 print "PostgreSQL superuser permissions required to install PostGIS"
                 print "Temporary grant superuser permissions to '%s'" % dbuser
-                print "Or install PostGIS manually"
+                print "Or install PostGIS into database '%s' manually" % dbname
                 sys.exit(1)
             self.exec_file(os.path.join(self.get_postgis_root(),
                                         "postgis.sql"))
