@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+) Up"
+                "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+)( vpn vrf (?P<vrf>\\S+))? Up"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+) Down"
+                "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+)( vpn vrf (?P<vrf>\\S+))? Down"
             }
         ]
     },
