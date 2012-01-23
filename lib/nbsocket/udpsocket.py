@@ -29,13 +29,14 @@ class UDPSocket(Socket):
         return bool(self.out_buffer)
 
     def handle_write(self):
-        msg, addr = self.out_buffer.pop(0)
-        try:
-            self.socket.sendto(msg, addr)
-        except socket.error, why:  # ENETUNREACH
-            self.debug("Socket error: %s" % why)
-            self.close()
-            return
+        while self.out_buffer:
+            msg, addr = self.out_buffer.pop(0)
+            try:
+                self.socket.sendto(msg, addr)
+            except socket.error, why:  # ENETUNREACH
+                self.debug("Socket error: %s" % why)
+                self.close()
+                return
         self.update_status()
 
     def handle_read(self):
