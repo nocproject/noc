@@ -788,8 +788,12 @@ class Classifier(Daemon):
         n_name = None
         n_suppress = False
         for r, name, suppress in self.suppression[event_class.id]:
-            q = eval(r, {}, {"event": event, "ObjectId": ObjectId,
-                             "datetime": datetime})
+            q = eval(r, {}, {
+                "event": event,
+                "ObjectId": ObjectId,
+                "datetime": datetime,
+                "vars": vars
+            })
             e = ActiveEvent.objects.filter(**q).order_by("-timestamp").first()
             if e:
                 d = ts - e.timestamp
