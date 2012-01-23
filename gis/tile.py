@@ -123,10 +123,20 @@ class TileTask(object):
                 # Get area tiles
                 SW = ll_to_xy(zoom, area.SW)
                 NE = ll_to_xy(zoom, area.NE)
-                for x in range(max(SW[0] - PAD_TILES, 0),
-                               min(NE[0] + PAD_TILES, M) + 1):
-                    for y in range(max(NE[1] - PAD_TILES, 0),
-                                   min(SW[1] + PAD_TILES, M) + 1):
+                left = max(SW[0] - PAD_TILES, 0)
+                right = min(NE[0] + PAD_TILES, M)
+                top = max(NE[1] - PAD_TILES, 0)
+                bottom = min(SW[1] + PAD_TILES, M)
+                a_size = (right - left + 1) * (bottom - top + 1)
+                self.log("Checking area '%s' at zoom level %d "\
+                         " (%d x %d = %d tiles)" % (area.name, zoom,
+                                                    right - left + 1,
+                                                    bottom - top + 1,
+                                                    a_size))
+                seen |= set((tc.x, tc.y) for tc in TileCache.objects.filter(
+                    map=self.map.id, zoom=zoom).only("x", "y"))
+                for x in range(left, right + 1):
+                    for y in range(top, bottom + 1):
                         c = (x, y)
                         if c in seen:
                             continue
