@@ -25,7 +25,7 @@ class Script(NOCScript):
     implements = [IGetInterfaces]
 
     rx_phy_split = re.compile(r"^Physical interface:\s+", re.MULTILINE)
-    rx_phy_name = re.compile(r"^(?P<ifname>\S+), (?P<admin>Enabled|Disabled), Physical link is (?P<oper>Up|Down)",
+    rx_phy_name = re.compile(r"^(?P<ifname>\S+), (?P<admin>Enabled|Disabled|Administratively down), Physical link is (?P<oper>Up|Down)",
                              re.MULTILINE | re.IGNORECASE)
     rx_phy_description = re.compile(r"^\s+Description:\s+(?P<description>.+?)\s*$",
                                     re.MULTILINE)
@@ -62,7 +62,7 @@ class Script(NOCScript):
             # Skip internal interfaces
             if internal.search(name):
                 continue
-                # Detect interface type
+            # Detect interface type
             if name.startswith("lo"):
                 iftype = "loopback"
             elif name.startswith("fxp"):
