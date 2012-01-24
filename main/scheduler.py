@@ -98,7 +98,7 @@ class Scheduler(Daemon):
         Write FM event
 
         :param data: List of (left, right)
-        :type data: List
+        :type data: list
         """
         if timestamp is None:
             timestamp = datetime.datetime.now()
