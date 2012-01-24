@@ -140,6 +140,37 @@ class SNMPProvider(object):
             except KeyError:
                 pass
 
+    def get_tables(self, oids, community_suffix=None, bulk=False,
+                      min_index=None, max_index=None, cached=False):
+        """
+        Query list of SNMP tables referenced by oids and yields
+        tuples of (key, value1, ..., valueN)
+
+        :param oids: List of OIDs
+        :param community_suffix: Optional suffix to be added to community
+        :param bulk: Use BULKGETNEXT if true
+        :param min_index:
+        :param max_index:
+        :param cached:
+        :return:
+        """
+        def gen_table(oid):
+            l = len(oid) + 1
+            for o, v in self.getnext(oid, community_suffix=community_suffix,
+                                     bulk=bulk, min_index=min_index,
+                                     max_index=max_index, cached=cached):
+                yield tuple([int(x) for x in o[l:].split(".")]), v
+
+        # Retrieve tables
+        tables = [dict(gen_table(oid)) for oid in oids]
+        # Generate index
+        index = set()
+        for t in tables:
+            index.update(t)
+        # Yield result
+        for i in sorted(index):
+            yield [".".join([str(x) for x in i])] + [t.get(i) for t in tables]
+
     def close(self):
         """Close all UDP sockets"""
         if self.getnext_socket:
