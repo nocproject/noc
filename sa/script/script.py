@@ -795,7 +795,7 @@ class Script(threading.Thread):
         return "".join([hexbin[c] for c in s])
 
     @classmethod
-    def get_scheme_id(self, scheme):
+    def get_scheme_id(cls, scheme):
         """Return scheme id by string name"""
         try:
             return {
