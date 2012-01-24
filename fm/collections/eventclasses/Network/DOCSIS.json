@@ -404,7 +404,7 @@
                 "required": true
             }
         ],
-        "disposition": [ ]
+        "disposition": [ ],
         "repeat_suppression": [
             {
                 "name": "Do not suppress after cable modem has been deleted",
@@ -414,7 +414,7 @@
                     "managed_object": "event.managed_object.id",
                     "vars__mac": "vars['mac']"
                 },
-                "suppress": false
+                "suppress": true
             }
         ]
     },
