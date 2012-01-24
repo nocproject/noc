@@ -82,7 +82,11 @@ class Scheduler(Daemon):
             logging.error("CWD changed by periodic '%s' ('%s' -> '%s'). Restoring old cwd" % (unicode(task), cwd, new_cwd))
             os.chdir(cwd)
         # Mark task results
-        task.mark_run(t, status)
+        try:
+            nt = Schedule.objects.get(id=task.id)
+            nt.mark_run(t, status)
+        except Schedule.DoesNotExist:
+            pass  # Scheule deleted during task run
         with self.running_lock:
             self.running.remove(task.periodic_name)
         # Create appropriative FM event
