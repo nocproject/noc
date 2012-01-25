@@ -43,10 +43,13 @@ class Script(NOCScript):
         re.MULTILINE)
     rx_log_ae = re.compile(r"AE bundle: (?P<bundle>\S+?)\.\d+", re.MULTILINE)
 
-    internal_interfaces = re.compile(r"^(lc-|cbp|demux|dsc|em|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip)")
+    internal_interfaces = re.compile(r"^(lc-|cbp|demux|dsc|em|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|bme|jsrv)")
     internal_interfaces_olive = re.compile(r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip)")
 
     def execute(self):
+        untagged = {}
+        tagged = {}
+        vlans_requested = False
         interfaces = []
         version = self.scripts.get_version()
         if version["platform"] == "olive":
@@ -69,6 +72,8 @@ class Script(NOCScript):
                 iftype = "management"
             elif name.startswith("ae"):
                 iftype = "aggregated"
+            elif name.startswith("vlan"):
+                iftype = "SVI"
             else:
                 iftype = "physical"
             # Get interface parameters
@@ -131,6 +136,27 @@ class Script(NOCScript):
                         match = self.re_search(self.rx_log_ae, p)
                         bundle = match.group("bundle")
                         iface["aggregated_interface"] = bundle
+                    elif proto.lower() == "eth-switch":
+                        if not vlans_requested:
+                            # Request vlans port mapping
+                            untagged, tagged = self.get_vlan_port_mapping()
+                            print "\n\n\n!!!!!!!"
+                            print untagged
+                            print tagged
+                            vlans_requested = True
+                        # Set untagged
+                        try:
+                            si["untagged_vlans"] = untagged[si["name"]]
+                        except KeyError:
+                            pass
+                        # Set tagged
+                        try:
+                            si["tagged_vlans"] = sorted(tagged[si["name"]])
+                        except KeyError:
+                            pass
+                        x = untagged.get(si["name"])
+                        if x:
+                            si["untagged_vlans"]
                 # Append to subinterfaces list
                 subs += [si]
             # Append to collected interfaces
@@ -141,3 +167,62 @@ class Script(NOCScript):
             "type": "ip",
             "interfaces": interfaces,
             }]
+
+    rx_vlan_sep = re.compile(r"^VLAN:", re.MULTILINE)
+    rx_802_1Q_tag = re.compile(r"802.1Q\s+Tag:\s+(?P<tag>\d+)",
+                               re.IGNORECASE | re.MULTILINE)
+    rx_vlan_untagged = re.compile(r"\s+Untagged interfaces:\s*(.+)",
+                                  re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_vlan_tagged = re.compile(r"\s+Tagged interfaces:\s*(.+)",
+                                re.MULTILINE | re.DOTALL | re.IGNORECASE)
+
+    def get_vlan_port_mapping(self):
+        """
+        Get Vlan to port mappings for Juniper EX series.
+        Returns two dicts: port -> untagged vlan, port -> tagged vlans
+        :return: tagged map, untagged map
+        :rtype: tuple
+        """
+        def clean_interface(s):
+            """
+            Clean interface name
+            :param s: Interface name
+            :returns: Cleaned interface name
+            """
+            o = s
+            s = s.strip()
+            if s.endswith("*"):
+                s = s[:-1]
+            if s.lower() == "none":
+                s = ""
+            return s
+
+        untagged = {}  # port -> vlan id
+        tagged = {}  # port -> [vlan_id, ...]
+        v = self.cli("show vlans detail")
+        for vdata in self.rx_vlan_sep.split(v):
+            match = self.rx_802_1Q_tag.search(vdata)
+            if match:
+                # 802.1Q VLAN
+                tag = int(match.group("tag"))
+                # Process tagged interfaces
+                match = self.rx_vlan_tagged.search(vdata)
+                if match:
+                    for i in match.group(1).split(","):
+                        i = clean_interface(i)
+                        try:
+                            tagged[i] += [tag]
+                        except KeyError:
+                            tagged[i] = [tag]
+                    vdata = vdata[:match.start()]
+                # Process untagged interfaces
+                match = self.rx_vlan_untagged.search(vdata)
+                if match:
+                    for i in match.group(1).split(","):
+                        i = clean_interface(i)
+                        if i:
+                            untagged[i] = tag
+                continue
+            # @todo: Q-in-Q handling
+        self.debug("VLANS: %s %s" % (untagged, tagged))
+        return untagged, tagged
