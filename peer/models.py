@@ -203,7 +203,17 @@ class AS(models.Model):
 
     @classmethod
     def default_as(cls):
-        return AS.objects.get(asn=0)
+        try:
+            return AS.objects.get(asn=0)
+        except AS.DoesNotExist:
+            # Try to create AS0
+            rir = RIR.objects.all()[0]
+            org = Organisation.objects.all()[0]
+            a = AS(asn=0, as_name="Default",
+                   description="Default AS, do not delete",
+                   rir=rir, organisation=org)
+            a.save()
+            return a
 
     @property
     def rpsl(self):
