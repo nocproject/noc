@@ -40,7 +40,8 @@ class Command(BaseCommand):
     type_map = {
         "StringField": "CharField",
         "BooleanField": "BooleanField",
-        "IntField": "IntegerField"
+        "IntField": "IntegerField",
+        "GeoPointField": "CharField"
     }
 
     def compact(self, s):
