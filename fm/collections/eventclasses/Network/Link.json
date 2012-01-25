@@ -70,7 +70,7 @@
         ],
         "repeat_suppression": [
             {
-                "name": "Do not suppress after cable modem has been deleted",
+                "name": "Workaround for console flood on some Cisco routers",
                 "event_class__name": "Network | Link | Connection Problem",
                 "window": 30,
                 "match_condition": {
