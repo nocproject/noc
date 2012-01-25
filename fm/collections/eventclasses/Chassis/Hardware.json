@@ -70,6 +70,11 @@
         },
         "disposition": [
             {
+                "name": "ignore",
+                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+                "action": "ignore"
+            },
+            {
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Chassis | Hardware | Hardware Port Error"
@@ -99,6 +104,11 @@
             }
         },
         "disposition": [
+            {
+                "name": "ignore",
+                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+                "action": "ignore"
+            },
             {
                 "name": "dispose",
                 "action": "raise",
