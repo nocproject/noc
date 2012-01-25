@@ -19,7 +19,6 @@
                 "type": "interface_name",
                 "required": true
             },
-            
             {
                 "name": "reason",
                 "description": "err-disable reason",
@@ -33,7 +32,6 @@
                 "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
                 "action": "ignore"
             },
-
             {
                 "name": "dispose",
                 "action": "raise",
@@ -69,6 +67,18 @@
                 "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
                 "action": "ignore"
             }
+        ],
+        "repeat_suppression": [
+            {
+                "name": "Do not suppress after cable modem has been deleted",
+                "event_class__name": "Network | DOCSIS | Unregistered Modem Deleted",
+                "window": 30,
+                "match_condition": {
+                    "managed_object": "event.managed_object.id",
+                    "vars__interface": "vars['interface']"
+                },
+                "suppress": true
+            }
         ]
     },
 
@@ -99,7 +109,6 @@
                 "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
                 "action": "ignore"
             },
-
             {
                 "name": "dispose",
                 "action": "raise",
@@ -136,21 +145,18 @@
                 "alarm_class__name": "Network | Link | Link Down",
                 "stop_disposition": false
             },
-
             {
                 "name": "Clear Err-Disable",
                 "action": "clear",
                 "alarm_class__name": "Network | Link | Err-Disable",
                 "stop_disposition": false
             },
-
             {
                 "name": "Clear BPDU Guard Violation",
                 "action": "clear",
                 "alarm_class__name": "Network | STP | BPDU Guard Violation",
                 "stop_disposition": false
             },
-            
             {
                 "name": "Clear Root Guard Violation",
                 "action": "clear",
@@ -187,7 +193,6 @@
                 "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
                 "action": "ignore"
             },
-
             {
                 "name": "dispose",
                 "action": "raise",
@@ -223,11 +228,174 @@
                 "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
                 "action": "ignore"
             },
-
             {
                 "name": "dispose",
                 "action": "clear",
                 "alarm_class__name": "Network | Link | Err-Disable"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | Link | DOM | Warning: Out of Threshold",
+        "description": "DOM above or below threshold exceeded",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "DOM exceeded the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "body_template": "DOM exceeded the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "symptoms": "Connection lost",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Physical port",
+                "type": "str",
+                "required": true
+            },
+            {
+                "name": "threshold",
+                "description": "Threshold type",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "ignore",
+                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+                "action": "ignore"
+            },
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | Link | DOM | Warning: Out of Threshold"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | Link | DOM | Warning: Out of Threshold Recovered",
+        "description": "DOM above or below threshold recovered",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "DOM recovered the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "body_template": "DOM recovered the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Physical port",
+                "type": "str",
+                "required": true
+            },
+            {
+                "name": "threshold",
+                "description": "Threshold type",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "ignore",
+                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+                "action": "ignore"
+            },
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | Link | DOM | Warning: Out of Threshold"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | Link | DOM | Alarm: Out of Threshold",
+        "description": "DOM above or below threshold exceeded",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "DOM exceeded the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "body_template": "DOM exceeded the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "symptoms": "Connection lost",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Physical port",
+                "type": "str",
+                "required": true
+            },
+            {
+                "name": "threshold",
+                "description": "Threshold type",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "ignore",
+                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+                "action": "ignore"
+            },
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | Link | DOM | Alarm: Out of Threshold"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | Link | DOM | Alarm: Out of Threshold Recovered",
+        "description": "DOM above or below threshold recovered",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "DOM recovered the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "body_template": "DOM recovered the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Physical port",
+                "type": "str",
+                "required": true
+            },
+            {
+                "name": "threshold",
+                "description": "Threshold type",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "ignore",
+                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+                "action": "ignore"
+            },
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | Link | DOM | Alarm: Out of Threshold"
             }
         ]
     }
