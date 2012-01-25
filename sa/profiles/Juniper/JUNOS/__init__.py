@@ -15,7 +15,7 @@ from noc.sa.protocols.sae_pb2 import TELNET,SSH
 class Profile(noc.sa.profiles.Profile):
     name = "Juniper.JUNOS"
     supported_schemes = [TELNET,SSH]
-    pattern_prompt = r"^(({master}\n)?\S+>)|(({master})?\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
+    pattern_prompt = r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
     pattern_more = r"^---\(more.*?\)---"
     command_more = " "
     command_disable_pager = "set cli screen-length 0"
