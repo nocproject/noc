@@ -17,12 +17,17 @@ class VendorTestCase(RestModelTestCase):
         {
             "GET": {
                 # key: value
+                "name": "MyVendor"
             },
             "POST": {
                 # key: value
+                "name": "MyVendor",
+                "is_builtin": False,
+                "site": "http://example.com/"
             },
             "PUT": {
                 # key: value
+                "site": "http://myexample.com/"
             }
         }
     ]
