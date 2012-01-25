@@ -71,7 +71,7 @@
         "repeat_suppression": [
             {
                 "name": "Do not suppress after cable modem has been deleted",
-                "event_class__name": "Network | DOCSIS | Unregistered Modem Deleted",
+                "event_class__name": "Network | Link | Connection Problem",
                 "window": 30,
                 "match_condition": {
                     "managed_object": "event.managed_object.id",
