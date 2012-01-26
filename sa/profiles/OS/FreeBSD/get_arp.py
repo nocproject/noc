@@ -11,16 +11,18 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetARP
 import re
 
+
 class Script(NOCScript):
-    name="OS.FreeBSD.get_arp"
-    implements=[IGetARP]
-    rx_line=re.compile(r"^\S+\s+\((?P<ip>\S+)\)\s+\S+\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)",re.MULTILINE|re.DOTALL)
+    name = "OS.FreeBSD.get_arp"
+    implements = [IGetARP]
+    rx_line = re.compile(r"^\S+\s+\((?P<ip>\S+)\)\s+\S+\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)", re.MULTILINE | re.DOTALL)
+
     def execute(self):
-        r=[]
+        r = []
         for match in self.rx_line.finditer(self.cli("arp -an")):
-            r+=[{
-                "ip"        :match.group("ip"),
-                "mac"       :match.group("mac"),
-                "interface" :match.group("interface")
+            r += [{
+                "ip": match.group("ip"),
+                "mac": match.group("mac"),
+                "interface": match.group("interface")
                 }]
         return r

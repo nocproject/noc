@@ -11,13 +11,15 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetFQDN
 import re
 
+
 class Script(NOCScript):
-    name="OS.FreeBSD.get_fqdn"
-    implements=[IGetFQDN]
-    rx_hostname=re.compile(r"^(?P<hostname>\S+)")
+    name = "OS.FreeBSD.get_fqdn"
+    implements = [IGetFQDN]
+    rx_hostname = re.compile(r"^(?P<hostname>\S+)")
+
     def execute(self):
-        fqdn=[]
-        match=self.rx_hostname.search(self.cli("hostname"))
+        fqdn = []
+        match = self.rx_hostname.search(self.cli("hostname"))
         if match:
-            fqdn+=[match.group("hostname")]
+            fqdn += [match.group("hostname")]
         return fqdn
