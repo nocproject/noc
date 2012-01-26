@@ -237,6 +237,10 @@ use_ripe = on
 # Update whois cache from ARIN database
 #
 use_arin = on
+#
+# Update whois cache from RADb database
+#
+use_radb = on
 
 #
 # DNS Module setup
