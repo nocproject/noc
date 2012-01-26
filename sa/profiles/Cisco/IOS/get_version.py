@@ -28,11 +28,11 @@ class Script(NOCScript):
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)  # sysDescr.0
                 match = self.re_search(self.rx_snmp_ver, v)
                 return {
-                    "vendor"     : "Cisco",
-                    "platform"   : match.group("platform"),
-                    "version"    : match.group("version"),
-                    "attributes" : {
-                        "image"     : match.group("image"),
+                    "vendor": "Cisco",
+                    "platform": match.group("platform"),
+                    "version": match.group("version"),
+                    "attributes": {
+                        "image": match.group("image"),
                     }
                 }
             except self.snmp.TimeOutError:
@@ -40,10 +40,10 @@ class Script(NOCScript):
         v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
         return {
-            "vendor"    : "Cisco",
-            "platform"  : match.group("platform"),
-            "version"   : match.group("version"),
-            "attributes" : {
-                "image"     : match.group("image"),
+            "vendor": "Cisco",
+            "platform": match.group("platform"),
+            "version": match.group("version"),
+            "attributes": {
+                "image": match.group("image"),
             }
         }

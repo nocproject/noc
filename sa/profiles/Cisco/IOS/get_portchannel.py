@@ -13,24 +13,25 @@ import re
 
 
 class Script(noc.sa.script.Script):
-    name="Cisco.IOS.get_portchannel"
-    implements=[IGetPortchannel]
+    name = "Cisco.IOS.get_portchannel"
+    implements = [IGetPortchannel]
+
     def execute(self):
-        r=[]
+        r = []
         try:
             s = self.cli("show interfaces status | i ^Po[0-9]+")
         except self.CLISyntaxError:
             return []
         for l in s.splitlines():
-            pc,rest=l.split(" ",1)
-            pc=pc[2:]
-            v=self.cli("show interfaces port-channel %s | i Members in this channel"%pc).strip()
+            pc, rest = l.split(" ", 1)
+            pc = pc[2:]
+            v = self.cli("show interfaces port-channel %s | i Members in this channel" % pc).strip()
             if not v:
                 continue
-            x,y=v.split(":",1)
-            r+=[{
-                "interface" : "Po %s"%pc,
-                "members"   : y.strip().split(),
-                "type"      : "L", #<!> TODO: port-channel type detection
+            x, y = v.split(":", 1)
+            r += [{
+                "interface": "Po %s" % pc,
+                "members": y.strip().split(),
+                "type": "L",  # <!> TODO: port-channel type detection
             }]
         return r
