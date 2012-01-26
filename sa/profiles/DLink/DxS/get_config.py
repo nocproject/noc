@@ -11,17 +11,19 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
 from noc.sa.profiles.DLink.DxS import DGS3600
 
+
 class Script(NOCScript):
-    name="DLink.DxS.get_config"
-    implements=[IGetConfig]
+    name = "DLink.DxS.get_config"
+    implements = [IGetConfig]
     TIMEOUT = 360
+
     ##
     ## DGS-3612, DGS-3612G, DGS-3627, DGS-3627G, DGS-3650
     ##
     @NOCScript.match(DGS3600)
     def execute_config_active(self):
-        config=self.cli("show config active")
-        config=self.strip_first_lines(config,1)
+        config = self.cli("show config active")
+        config = self.strip_first_lines(config, 1)
         return self.cleaned_config(config)
 
     ##
@@ -57,6 +59,6 @@ class Script(NOCScript):
     ##
     @NOCScript.match()
     def execute_config_current_config(self):
-        config=self.cli("show config current_config")
-        config=self.strip_first_lines(config,1)
+        config = self.cli("show config current_config")
+        config = self.strip_first_lines(config, 1)
         return self.cleaned_config(config)

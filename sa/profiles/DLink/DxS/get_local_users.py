@@ -9,18 +9,25 @@
 """
 import noc.sa.script
 from noc.sa.interfaces import IGetLocalUsers
-import re,datetime
+import re
+import datetime
+
 
 class Script(noc.sa.script.Script):
-    name="DLink.DxS.get_local_users"
-    implements=[IGetLocalUsers]
-    rx_line=re.compile(r"^\s*(?P<username>\S+)\s+(?P<privilege>Admin|Operator|User|Power_User)\s*$",re.MULTILINE)
+    name = "DLink.DxS.get_local_users"
+    implements = [IGetLocalUsers]
+    rx_line = re.compile(r"^\s*(?P<username>\S+)\s+(?P<privilege>Admin|Operator|User|Power_User)\s*$", re.MULTILINE)
+
     def execute(self):
-        r=[]
+        r = []
         for match in self.rx_line.finditer(self.cli("show account")):
-            r+=[{
-                "username" : match.group("username"),
-                "class"    : {"Admin":"superuser","Operator":"operator","User":"operator","Power_User":"operator"}[match.group("privilege")],
+            r += [{
+                "username": match.group("username"),
+                "class": {
+                    "Admin": "superuser",
+                    "Operator": "operator",
+                    "User": "operator",
+                    "Power_User": "operator"}[match.group("privilege")],
                 "is_active": True
                 }]
         return r
