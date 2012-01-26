@@ -31,7 +31,7 @@ class Script(NOCScript):
             match = self.rx_descr_if.match(l.strip())
             if not match:
                 continue
-            r+=[{
+            r += [{
                 "interface": self.profile.convert_interface_name(match.group("interface")),
                 "description": match.group("description")
             }]
@@ -73,11 +73,11 @@ class Script(NOCScript):
                         members = p["members"]
 
             iface = {
-                "interface"     : interface,
-                "status"        : match.group("omode").strip() != "down",
-                "tagged"        : tagged,
-                "untagged"      : int(untagged),
-                "members"       : members,
+                "interface": interface,
+                "status": match.group("omode").strip() != "down",
+                "tagged": tagged,
+                "untagged": int(untagged),
+                "members": members,
                 "802.1Q Enabled": trunk,
                 "802.1ad Tunnel": False,
             }

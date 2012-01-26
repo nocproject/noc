@@ -9,29 +9,31 @@
 """
 import noc.sa.script
 from noc.sa.interfaces import IGetLocalUsers
-import re,datetime
+import re
+import datetime
 
-rx_line=re.compile(r"^username\s+(?P<username>\S+)(?:\s+.*privilege\s+(?P<privilege>\d+))?.*$")
 
 class Script(noc.sa.script.Script):
-    name="Cisco.IOS.get_local_users"
-    implements=[IGetLocalUsers]
+    name = "Cisco.IOS.get_local_users"
+    implements = [IGetLocalUsers]
+    rx_line = re.compile(r"^username\s+(?P<username>\S+)(?:\s+.*privilege\s+(?P<privilege>\d+))?.*$")
+
     def execute(self):
-        data=self.cli("show running-config | include ^username")
-        r=[]
+        data = self.cli("show running-config | include ^username")
+        r = []
         for l in data.split("\n"):
-            match=rx_line.match(l.strip())
+            match = self.rx_line.match(l.strip())
             if match:
-                user_class="operator"
-                privilege=match.group("privilege")
+                user_class = "operator"
+                privilege = match.group("privilege")
                 if privilege:
-                    if privilege=="15":
-                        user_class="superuser"
+                    if privilege == "15":
+                        user_class = "superuser"
                     else:
-                        user_class=privilege
+                        user_class = privilege
                 r.append({
-                    "username" : match.group("username"),
-                    "class"    : user_class,
+                    "username": match.group("username"),
+                    "class": user_class,
                     "is_active": True
                     })
         return r
