@@ -30,9 +30,9 @@ class Script(NOCScript):
                 n += int(match.group("resp"))
         avg1 = int(n / len(r))
         return {
-                "success" : len(r),
-                "count" : 4,
-                "min" : min(r),
-                "avg" : avg1,
+                "success": len(r),
+                "count": 4,
+                "min": min(r),
+                "avg": avg1,
                 "max": max(r)
                }

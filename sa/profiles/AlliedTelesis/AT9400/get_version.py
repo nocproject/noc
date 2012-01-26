@@ -12,6 +12,7 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVersion
 
+
 class Script(NOCScript):
     name = "AlliedTelesis.AT9400.get_version"
     cache = True
@@ -27,9 +28,9 @@ class Script(NOCScript):
                 pl = self.snmp.get("1.3.6.1.4.1.207.8.17.1.3.1.6.1")
                 ver = self.snmp.get("1.3.6.1.4.1.207.8.17.1.3.1.5.1")
                 return {
-                    "vendor"    : "Allied Telesis",
-                    "platform"  : pl,
-                    "version"   : string.lstrip(ver, "v"),
+                    "vendor": "Allied Telesis",
+                    "platform": pl,
+                    "version": string.lstrip(ver, "v"),
                 }
             except self.snmp.TimeOutError:
                 pass
@@ -44,11 +45,11 @@ class Script(NOCScript):
         serial = match.group("serial")
 
         return {
-            "vendor"  : "Allied Telesis",
+            "vendor": "Allied Telesis",
             "platform": platform,
-            "version" : version,
-            "attributes" : {
-                "Boot PROM" : bootprom,
-                "serial"    : serial
+            "version": version,
+            "attributes": {
+                "Boot PROM": bootprom,
+                "serial": serial
             }
         }
