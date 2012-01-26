@@ -10,13 +10,12 @@
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
-##
-## MikroTik.RouterOS.get_config
-##
+
+
 class Script(NOCScript):
-    name="MikroTik.RouterOS.get_config"
-    implements=[IGetConfig]
+    name = "MikroTik.RouterOS.get_config"
+    implements = [IGetConfig]
+
     def execute(self):
-        config=self.cli("export")
+        config = self.cli("export")
         return self.cleaned_config(config)
-    
