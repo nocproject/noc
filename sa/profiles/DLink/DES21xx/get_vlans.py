@@ -11,10 +11,12 @@ from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVlans
 import re
 
+
 class Script(NOCScript):
-    name="DLink.DES21xx.get_vlans"
-    implements=[IGetVlans]
-    rx_vlan=re.compile(r"VLAN_ID:(?P<vlanid>\d+)\n(VLAN name:(?P<vlanname>\S+)\n)*", re.MULTILINE|re.DOTALL)
+    name = "DLink.DES21xx.get_vlans"
+    implements = [IGetVlans]
+    rx_vlan = re.compile(r"VLAN_ID:(?P<vlanid>\d+)\n(VLAN name:(?P<vlanname>\S+)\n)*", re.MULTILINE | re.DOTALL)
+
     def execute(self):
         r = []
         for match in self.rx_vlan.finditer(self.cli("show vlan")):
