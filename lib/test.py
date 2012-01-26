@@ -16,17 +16,11 @@ import base64
 import random
 ## Django modules
 from django.test import TestCase
-from django.conf import settings
-from django.http import HttpResponseServerError
-from django.core.handlers.wsgi import WSGIHandler
-from django.core.servers.basehttp import AdminMediaHandler
-from django.db import close_connection
-from django.core import signals, serializers
+from django.core import serializers
 from django.utils import unittest  # unittest2 backport
 from django.test.client import Client, MULTIPART_CONTENT
 from django.utils.http import urlencode
 ## NOC modules
-from noc.lib.app import Application, site
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.models import script_registry, profile_registry
 from noc.sa.protocols.sae_pb2 import *
