@@ -242,8 +242,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "DOM exceeded the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
-                "body_template": "DOM exceeded the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
                 "symptoms": "Connection lost",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -259,6 +259,12 @@
             {
                 "name": "threshold",
                 "description": "Threshold type",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "sensor",
+                "description": "Measured name",
                 "type": "str",
                 "required": false
             }
@@ -283,8 +289,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "DOM recovered the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
-                "body_template": "DOM recovered the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -300,6 +306,12 @@
             {
                 "name": "threshold",
                 "description": "Threshold type",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "sensor",
+                "description": "Measured name",
                 "type": "str",
                 "required": false
             }
@@ -324,8 +336,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "DOM exceeded the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
-                "body_template": "DOM exceeded the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
                 "symptoms": "Connection lost",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -341,6 +353,12 @@
             {
                 "name": "threshold",
                 "description": "Threshold type",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "sensor",
+                "description": "Measured name",
                 "type": "str",
                 "required": false
             }
@@ -365,8 +383,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "DOM recovered the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
-                "body_template": "DOM recovered the{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -382,6 +400,12 @@
             {
                 "name": "threshold",
                 "description": "Threshold type",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "sensor",
+                "description": "Measured name",
                 "type": "str",
                 "required": false
             }
