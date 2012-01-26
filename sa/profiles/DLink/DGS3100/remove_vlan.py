@@ -20,7 +20,7 @@ class Script(NOCScript):
         for v in  self.scripts.get_vlans():
             if v["vlan_id"] == vlan_id:
                 with self.configure():
-                    self.cli("delete vlan %s"%v["name"])
+                    self.cli("delete vlan %s" % v["name"])
                 self.save_config()
                 return True
         return False
