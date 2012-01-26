@@ -13,19 +13,21 @@ import re
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVlans
 
+
 class Script(NOCScript):
     name = "MikroTik.RouterOS.get_vlans"
     implements = [IGetVlans]
     rx_vlan = re.compile(r"switch=\S+ vlan-id=(?P<vlanid>\d+) ports=(?P<port>\S+)", re.MULTILINE)
+
     def execute(self):
         try:
             v = self.cli("interface ethernet switch vlan print terse")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
 
-        r=[]
+        r = []
         for match in self.rx_vlan.finditer(v):
             vlan = match.group('vlanid')
-            name = "%s.%s"%match.group('port'), vlan
-            r.append({"vlan_id" : int(vlan), "name": name})
+            name = "%s.%s" % match.group('port'), vlan
+            r.append({"vlan_id": int(vlan), "name": name})
         return r
