@@ -26,7 +26,7 @@ class Script(NOCScript):
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
                                                   "1.3.6.1.2.1.2.2.1.8",
                                                    bulk=True):
-                    if '802.1Q Encapsulation Tag' not in n
+                    if '802.1Q Encapsulation Tag' not in n \
                     and 'System' not in n:
                         iface = n.split('/')[1]
                         if interface is not None:
