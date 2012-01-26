@@ -17,16 +17,18 @@ from noc.sa.profiles.DLink.DxS import DGS3600
 from noc.sa.profiles.DLink.DxS import DGS3620
 import re
 
+
 class Script(NOCScript):
-    name="DLink.DxS.get_mac_address_table"
-    implements=[IGetMACAddressTable]
-    rx_line=re.compile(r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)\s*(\S*\s*)?$",re.MULTILINE)
-    def execute(self,interface=None,vlan=None,mac=None):
-        cmd="show fdb"
+    name = "DLink.DxS.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+    rx_line = re.compile(r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)\s*(\S*\s*)?$", re.MULTILINE)
+
+    def execute(self, interface=None, vlan=None, mac=None):
+        cmd = "show fdb"
         if mac is not None:
-            cmd+=" mac_address %s"%mac
+            cmd += " mac_address %s" % mac
         if interface is not None:
-            cmd+=" port %s"%interface
+            cmd += " port %s" % interface
         if vlan is not None:
             if self.match_version(DES3200, version__gte="1.33") \
             or self.match_version(DGS3120, version__gte="1.00.00") \
@@ -34,18 +36,25 @@ class Script(NOCScript):
             or self.match_version(DGS3420, version__gte="1.00.00") \
             or self.match_version(DGS3600, version__gte="2.52") \
             or self.match_version(DGS3620, version__gte="1.00.00"):
-                cmd+=" vlanid %d"%vlan
+                cmd += " vlanid %d" % vlan
             else:
                 for v in self.scripts.get_vlans():
-                    if v["vlan_id"]==vlan:
-                        cmd+=" vlan %s"%v["name"]
+                    if v["vlan_id"] == vlan:
+                        cmd += " vlan %s" % v["name"]
                         break
-        r=[]
+        r = []
         for match in self.rx_line.finditer(self.cli(cmd)):
-            r+=[{
-                "vlan_id"   : match.group("vlan_id"),
-                "mac"       : match.group("mac"),
+            r += [{
+                "vlan_id": match.group("vlan_id"),
+                "mac": match.group("mac"),
                 "interfaces": [match.group("interfaces")],
-                "type"      : {"dynamic":"D","static":"S","deleteontimeout":"D","del_on_timeout":"D","deleteonreset":"D","permanent":"S","self":"S"}[match.group("type").lower()],
+                "type": {
+                    "dynamic":"D",
+                    "static":"S",
+                    "deleteontimeout":"D",
+                    "del_on_timeout":"D",
+                    "deleteonreset":"D",
+                    "permanent":"S",
+                    "self":"S"}[match.group("type").lower()],
             }]
         return r

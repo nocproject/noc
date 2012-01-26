@@ -5,8 +5,8 @@
 ## Copyright (C) 2007-2011 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-""" 
-""" 
+"""
+"""
 ##
 ##  This is a draft variant
 ##  I need to find some missing values
@@ -15,35 +15,36 @@
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int,is_ipv4
+from noc.lib.validators import is_int, is_ipv4
 import re
 
-class Script(NOCScript):
-    name="DLink.DxS.get_lldp_neighbors"
-    implements=[IGetLLDPNeighbors]
 
-    rx_line=re.compile(r"\n\nPort ID\s+:\s+",re.MULTILINE)
-    rx_id=re.compile(r"^(?P<port_id>\S+)",re.MULTILINE)
-    rx_re_ent=re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",re.MULTILINE|re.IGNORECASE)
-    rx_line1=re.compile(r"\s*Entity\s+\d+")
-    rx_remote_chassis_id_subtype=re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
-    rx_remote_chassis_id=re.compile(r"Chassis ID\s+: (?P<id>.+)",re.MULTILINE|re.IGNORECASE)
-    rx_remote_port_id_subtype=re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)",re.MULTILINE|re.IGNORECASE)
-    rx_remote_port_id=re.compile(r"Port ID\s+: (.*[:/])*(?P<port>.+)",re.MULTILINE|re.IGNORECASE)
-    rx_remote_port_id2=re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)",re.IGNORECASE)
-    rx_remote_system_name=re.compile(r"System Name\s+: (?P<name>.+)",re.MULTILINE|re.IGNORECASE)
-    rx_remote_capabilities=re.compile(r"System Capabilities\s+: (?P<capabilities>.+)",re.MULTILINE|re.IGNORECASE)
+class Script(NOCScript):
+    name = "DLink.DxS.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+
+    rx_line = re.compile(r"\n\nPort ID\s+:\s+", re.MULTILINE)
+    rx_id = re.compile(r"^(?P<port_id>\S+)", re.MULTILINE)
+    rx_re_ent = re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)", re.MULTILINE | re.IGNORECASE)
+    rx_line1 = re.compile(r"\s*Entity\s+\d+")
+    rx_remote_chassis_id_subtype = re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_chassis_id = re.compile(r"Chassis ID\s+: (?P<id>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_port_id_subtype = re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_port_id = re.compile(r"Port ID\s+: (.*[:/])*(?P<port>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_port_id2 = re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)", re.IGNORECASE)
+    rx_remote_system_name = re.compile(r"System Name\s+: (?P<name>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_capabilities = re.compile(r"System Capabilities\s+: (?P<capabilities>.+)", re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
-        r=[]
+        r = []
         try:
-            v=self.cli("show lldp remote_ports mode normal")
+            v = self.cli("show lldp remote_ports mode normal")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        v="\n"+v
+        v = "\n" + v
         # For each interface
         for s in self.rx_line.split(v)[1:]:
-            match=self.rx_id.search(s)
+            match = self.rx_id.search(s)
             if not match:
                 continue
             port_id = match.group("port_id")
@@ -53,13 +54,13 @@ class Script(NOCScript):
             # Remote Entities Count : 0
             if match.group("re_ent") == "0":
                 continue
-            i={"local_interface":port_id, "neighbors":[]}
+            i = {"local_interface": port_id, "neighbors": []}
             # For each neighbor
             for s1 in self.rx_line1.split(s)[1:]:
-                n={}
+                n = {}
 
                 # remote_chassis_id_subtype
-                match=self.rx_remote_chassis_id_subtype.search(s1)
+                match = self.rx_remote_chassis_id_subtype.search(s1)
                 if not match:
                     # Debug string
                     print "\n\n\n\n\nremote_chassis_id_subtype\n\n\n\n\n"
@@ -86,7 +87,7 @@ class Script(NOCScript):
                 # 8-255 are reserved
 
                 # remote_chassis_id
-                match=self.rx_remote_chassis_id.search(s1)
+                match = self.rx_remote_chassis_id.search(s1)
                 if not match:
                     # Debug string
                     print "\n\n\n\n\nremote_chassis_id\n\n\n\n\n"
@@ -94,7 +95,7 @@ class Script(NOCScript):
                 n["remote_chassis_id"] = match.group("id").strip()
 
                 # remote_port_subtype
-                match=self.rx_remote_port_id_subtype.search(s1)
+                match = self.rx_remote_port_id_subtype.search(s1)
                 if not match:
                     # Debug string
                     print "\n\n\n\n\nremote_port_id_subtype\n\n\n\n\n"
@@ -119,7 +120,7 @@ class Script(NOCScript):
                 # 8-255 are reserved
 
                 # remote_port
-                match=self.rx_remote_port_id.search(s1)
+                match = self.rx_remote_port_id.search(s1)
                 if not match:
                     # Debug string
                     print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
@@ -139,7 +140,7 @@ class Script(NOCScript):
                 '''
                 if n["remote_port_subtype"] == 7 \
                 and n["remote_port"].lower().startswith("rmon port"):
-                    match=self.rx_remote_port_id2.search(n["remote_port"])
+                    match = self.rx_remote_port_id2.search(n["remote_port"])
                     if not match:
                         # Debug string
                         print "\n\n\n\n\nInvalid remote_port_id\n\n\n\n\n"
@@ -147,7 +148,7 @@ class Script(NOCScript):
                     n["remote_port"] = match.group("port")
 
                 # remote_system_name
-                match=self.rx_remote_system_name.search(s1)
+                match = self.rx_remote_system_name.search(s1)
                 if match:
                     remote_system_name = match.group("name").strip()
                     if remote_system_name != "":
@@ -155,7 +156,7 @@ class Script(NOCScript):
 
                 # remote_capabilities
                 caps = 0
-                match=self.rx_remote_capabilities.search(s1)
+                match = self.rx_remote_capabilities.search(s1)
                 if match:
                     remote_capabilities = match.group("capabilities").strip()
                     # TODO: Find other capabilities
@@ -178,6 +179,6 @@ class Script(NOCScript):
                 # 8-15 bits are reserved
                 n["remote_capabilities"] = caps
 
-                i["neighbors"]+=[n]
-            r+=[i]
+                i["neighbors"] += [n]
+            r += [i]
         return r
