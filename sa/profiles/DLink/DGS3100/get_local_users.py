@@ -21,8 +21,8 @@ class Script(noc.sa.script.Script):
         r = []
         for match in self.rx_line.finditer(self.cli("show account")):
             r += [{
-                "username" : match.group("username"),
-                "class"    : {"Admin": "superuser", "Operator": "operator", "User": "operator", "Power_User": "operator"}[match.group("privilege")],
+                "username": match.group("username"),
+                "class": {"Admin": "superuser", "Operator": "operator", "User": "operator", "Power_User": "operator"}[match.group("privilege")],
                 "is_active": True
                 }]
         return r

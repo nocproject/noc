@@ -25,15 +25,15 @@ class Script(NOCScript):
 
     rx_line = re.compile(r"\n\nPort ID\s+:\s+", re.MULTILINE)
     rx_id = re.compile(r"^(?P<port_id>\S+)", re.MULTILINE)
-    rx_re_ent = re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)", re.MULTILINE|re.IGNORECASE)
+    rx_re_ent = re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)", re.MULTILINE | re.IGNORECASE)
     rx_line1 = re.compile(r"\s*Entity\s+\d+")
-    rx_remote_chassis_id_subtype = re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE|re.IGNORECASE)
-    rx_remote_chassis_id = re.compile(r"Chassis ID\s+: (?P<id>.+)", re.MULTILINE|re.IGNORECASE)
-    rx_remote_port_id_subtype = re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE|re.IGNORECASE)
-    rx_remote_port_id = re.compile(r"Port ID\s+: (.*[:/])*(?P<port>.+)", re.MULTILINE|re.IGNORECASE)
+    rx_remote_chassis_id_subtype = re.compile(r"Chassis ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_chassis_id = re.compile(r"Chassis ID\s+: (?P<id>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_port_id_subtype = re.compile(r"Port ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_port_id = re.compile(r"Port ID\s+: (.*[:/])*(?P<port>.+)", re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id2 = re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)", re.IGNORECASE)
-    rx_remote_system_name = re.compile(r"System Name\s+: (?P<name>.+)", re.MULTILINE|re.IGNORECASE)
-    rx_remote_capabilities = re.compile(r"System Capabilities\s+: (?P<capabilities>.+)", re.MULTILINE|re.IGNORECASE)
+    rx_remote_system_name = re.compile(r"System Name\s+: (?P<name>.+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_capabilities = re.compile(r"System Capabilities\s+: (?P<capabilities>.+)", re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
         r = []
@@ -41,7 +41,7 @@ class Script(NOCScript):
             v = self.cli("show lldp remote_ports mode normal")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        v = "\n"+v
+        v = "\n" + v
         # For each interface
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_id.search(s)

@@ -18,26 +18,26 @@ class Script(NOCScript):
     implements = [IGetMACAddressTable]
     rx_line = re.compile(r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)\s*(\S*\s*)?$", re.MULTILINE)
 
-    def execute(self, interface = None, vlan = None, mac = None):
+    def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show fdb"
         if mac is not None:
-            cmd += " mac_address %s"%mac
+            cmd += " mac_address %s" % mac
         if interface is not None:
-            cmd += " port %s"%interface
+            cmd += " port %s" % interface
         if vlan is not None:
-            if self.match_version(DGS3100, version__gte = "3.60.30"):
-                cmd += " vlanid %d"%vlan
+            if self.match_version(DGS3100, version__gte="3.60.30"):
+                cmd += " vlanid %d" % vlan
             else:
                 for v in self.scripts.get_vlans():
                     if v["vlan_id"] == vlan:
-                        cmd += " vlan %s"%v["name"]
+                        cmd += " vlan %s" % v["name"]
                         break
         r = []
         for match in self.rx_line.finditer(self.cli(cmd)):
             r += [{
-                "vlan_id"   : match.group("vlan_id"),
-                "mac"       : match.group("mac"),
+                "vlan_id": match.group("vlan_id"),
+                "mac": match.group("mac"),
                 "interfaces": [match.group("interfaces")],
-                "type"      : {"dynamic": "D", "static": "S", "deleteontimeout": "D", "deleteonreset": "D", "permanent": "S", "self": "S"}[match.group("type").lower()],
+                "type": {"dynamic": "D", "static": "S", "deleteontimeout": "D", "deleteonreset": "D", "permanent": "S", "self": "S"}[match.group("type").lower()],
             }]
         return r
