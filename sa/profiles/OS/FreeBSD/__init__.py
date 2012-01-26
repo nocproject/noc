@@ -10,12 +10,13 @@
 """
 """
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET,SSH
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
 
 class Profile(noc.sa.profiles.Profile):
-    name="OS.FreeBSD"
-    supported_schemes=[TELNET,SSH]
-    command_super="su"
-    pattern_unpriveleged_prompt=r"^\S*?(%|\$)"
-    pattern_prompt=r"^\S*?#"
-    pattern_syntax_error=r": Command not found\."
+    name = "OS.FreeBSD"
+    supported_schemes = [TELNET, SSH]
+    command_super = "su"
+    pattern_unpriveleged_prompt = r"^\S*?(%|\$)"
+    pattern_prompt = r"^\S*?#"
+    pattern_syntax_error = r": Command not found\."
