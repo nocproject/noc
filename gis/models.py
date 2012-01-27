@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import inspect
 ## Django modules
 from django.db import models
 ## NOC modules
@@ -158,11 +160,43 @@ class TileCache(nosql.Document):
 
     map = nosql.ObjectIdField()
     zoom = nosql.IntField(min_value=0, max_value=18)
-    x = nosql.IntField()
-    y = nosql.IntField()
-    ready = nosql.BooleanField()
+    x = nosql.IntField(required=True)
+    y = nosql.IntField(required=True)
+    ready = nosql.BooleanField(default=False)
     last_updated = nosql.DateTimeField()
     data = nosql.BinaryField()
 
     def __unicode__(self):
-        return "%s/%d/%d/%d" % (self.map.name, self.zoom, self.x, self.y)
+        return "%s/%s/%s/%s" % (self.map, self.zoom, self.x, self.y)
+
+
+class Overlay(nosql.Document):
+    meta = {
+        "collection": "noc.gis.overlays",
+        "allow_inheritance": False
+    }
+
+    name = nosql.StringField(required=True)
+    gate_id = nosql.StringField(unique=True)
+    is_active = nosql.BooleanField(required=True, default=True)
+    permission_name = nosql.StringField(required=True)
+    overlay = nosql.StringField(required=True)
+    config = nosql.DictField()
+
+    _overlay_cache = {}  # name -> Overlay
+
+    def __unicode__(self):
+        return self.name
+
+    def get_overlay(self):
+        if self.overlay not in self._overlay_cache:
+            from noc.gis.overlays.base import OverlayHandler
+            m = __import__("noc.gis.overlays.%s" % self.overlay, {}, {}, "*")
+            for n in dir(m):
+                o = getattr(m, n)
+                if (inspect.isclass(o) and o != OverlayHandler and
+                    issubclass(o, OverlayHandler)):
+                    self._overlay_cache[self.overlay] = o
+                    break
+        h = self._overlay_cache[self.overlay]
+        return h(**self.config)
