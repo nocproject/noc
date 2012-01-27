@@ -166,7 +166,10 @@ Ext.define("NOC.main.desktop.Controller", {
     // Update menu
     update_menu: function() {
         console.log("Update menu");
-        Ext.getStore("NOC.main.desktop.NavTreeStore").load();
+        var store = Ext.getStore("NOC.main.desktop.NavTreeStore");
+        if (!store.isLoading()) {
+            store.load()
+        }
     },
     // Application selected in nav tree
     on_nav_launch: function(view, record, item, index, event, opts) {
