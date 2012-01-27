@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:WARN:|WARN\\(4\\)) Safeguard Engine enters EXHAUSTED mode$"
+                "value_re": "(?:WARN:|WARN\\(4\\))( Unit (?P<unit>\\d+),)? Safeguard Engine enters EXHAUSTED mode$"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:INFO:|INFO\\(6\\)) Safeguard Engine enters NORMAL mode$"
+                "value_re": "(?:INFO:|INFO\\(6\\))( Unit (?P<unit>\\d+),)? Safeguard Engine enters NORMAL mode$"
             }
         ]
     },
