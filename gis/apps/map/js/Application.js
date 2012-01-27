@@ -42,7 +42,7 @@ Ext.define("NOC.gis.map.Application", {
                     },
                     Ext.create("Ext.form.ComboBox", {
                         fieldLabel: "Base Layer",
-                        labelWidth: 60,
+                        labelWidth: 65,
                         store: this.layer_store,
                         queryMode: "local",
                         displayField: "layer",
