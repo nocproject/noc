@@ -21,6 +21,27 @@
     },
 
     {
+        "name": "DLink | DGS3100 | Config | Config Sync Failed (SYSLOG)",
+        "description": "%SNMP-W-UNITUPDFAIL: Configuration update of unit 2 failed. Reason:",
+        "event_class__name": "Config | Config Sync Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DGS3100$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SNMP-W-UNITUPDFAIL: Configuration update of (?P<config>.+) failed. Reason:"
+            }
+        ]
+    },
+
+    {
         "name": "DLink | DGS3100 | Config | Config Changed (SNMP)",
         "description": "RFC1155-SMI::enterprises.89 (RND MIB. Why? I don't know!)",
         "event_class__name": "Config | Config Changed",

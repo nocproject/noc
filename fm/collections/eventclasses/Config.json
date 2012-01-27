@@ -52,7 +52,7 @@
         "text": {
             "en": {
                 "subject_template": "Configuration Synchronization Failed",
-                "body_template": "Configuration synchronization failed{% if service %}: {{config}} config{% endif %}.",
+                "body_template": "Configuration synchronization failed{% if config %}: {{config}} config{% endif %}.",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
