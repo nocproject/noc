@@ -15,7 +15,9 @@ import re
 class Script(NOCScript):
     name = "OS.FreeBSD.get_arp"
     implements = [IGetARP]
-    rx_line = re.compile(r"^\S+\s+\((?P<ip>\S+)\)\s+\S+\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)", re.MULTILINE | re.DOTALL)
+    rx_line = re.compile(
+    r"^\S+\s+\((?P<ip>\S+)\)\s+\S+\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)",
+     re.MULTILINE | re.DOTALL)
 
     def execute(self):
         r = []
@@ -24,5 +26,5 @@ class Script(NOCScript):
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
                 "interface": match.group("interface")
-                }]
+            }]
         return r
