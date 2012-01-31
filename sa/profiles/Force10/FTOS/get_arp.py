@@ -11,10 +11,13 @@ import noc.sa.script
 from noc.sa.interfaces import IGetARP
 import re
 
-rx_line=re.compile(r"^Internet\s+(?P<ip>\S+)\s+\d+\s+(?P<mac>\S+)\s+(?P<interface>\S+\s+\S+)")
+rx_line = re.compile(
+    r"^Internet\s+(?P<ip>\S+)\s+\d+\s+(?P<mac>\S+)\s+(?P<interface>\S+\s+\S+)")
+
 
 class Script(noc.sa.script.Script):
-    name="Force10.FTOS.get_arp"
-    implements=[IGetARP]
+    name = "Force10.FTOS.get_arp"
+    implements = [IGetARP]
+
     def execute(self):
-        return self.cli("show arp",list_re=rx_line)
+        return self.cli("show arp", list_re=rx_line)
