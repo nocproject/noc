@@ -13,11 +13,12 @@ import urlparse
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetHTTPGet
 
+
 class Script(NOCScript):
-    name="Generic.get_http_get"
-    implements=[IGetHTTPGet]
-    requires=[]
-    
+    name = "Generic.get_http_get"
+    implements = [IGetHTTPGet]
+    requires = []
+
     def execute(self, url):
         u = urlparse.urlparse(url)
         return self.http.get(u.path, u.params or {})
