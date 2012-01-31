@@ -23,15 +23,17 @@ class Script(NOCScript):
         Get port attributes (Link type and edge status)
         :param cli_stp:
         :param instance_sep:
-        :return: hash of instance_id -> port -> {link_type: , edge, role, status}
+        :return: hash of instance_id -> port -> {link_type: , edge, role,
+            status}
         """
-        ports = {} # instance -> port -> attributes
+        ports = {}  # instance -> port -> attributes
         for I in cli_stp.split(instance_sep)[1:]:
             instance_id, _ = I.split("\n", 1)
             instance_id = int(instance_id)
             ports[instance_id] = {}
             for R in parse_table(
-                I.replace("---\n\n", "---\n")):  # Skip empty first line on 3750
+                # Skip empty first line on 3750
+                I.replace("---\n\n", "---\n")):
                 interface = self.profile.convert_interface_name(R[0])
                 settings = R[-1]
                 ports[instance_id][interface] = {
@@ -52,7 +54,7 @@ class Script(NOCScript):
                         "blk": "discarding",
                         "??": "learning",
                         "fwd": "forwarding"
-                    }[R[2].lower()], # @todo: refine states
+                    }[R[2].lower()],  # @todo: refine states
                 }
         return ports
 
@@ -61,14 +63,14 @@ class Script(NOCScript):
     ##
     rx_pvst_bridge = re.compile(
         r"Bridge Identifier has priority (?P<bridge_priority>\d+)(?:, sysid \d+)?, address (?P<bridge_id>\S+).*?"
-        r"(Current root has priority (?P<root_priority>\d+), address (?P<root_id>\S+)|We are the root of the spanning tree)"
-        , re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        r"(Current root has priority (?P<root_priority>\d+), address (?P<root_id>\S+)|We are the root of the spanning tree)",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_pvst_interfaces = re.compile(
         r"Port \d+ \((?P<interface>\S+)\) of VLAN(?P<instance_id>\d+) is \S+.+?"
         r"Port path cost (?P<cost>\d+), Port priority (?P<priority>\d+), Port Identifier (?P<port_id>\S+)\..+?"
         r"Designated bridge has priority (?P<designated_bridge_priority>\d+), address (?P<designated_bridge_id>\S+).+?"
-        r"Designated port id is (?P<designated_port_id>\S+), designated path cost \d+"
-        , re.DOTALL | re.IGNORECASE | re.MULTILINE)
+        r"Designated port id is (?P<designated_port_id>\S+), designated path cost \d+",
+        re.DOTALL | re.IGNORECASE | re.MULTILINE)
 
     def process_pvst(self, cli_stp, proto):
         # Save port attributes
@@ -125,13 +127,13 @@ class Script(NOCScript):
         re.DOTALL | re.MULTILINE | re.IGNORECASE)
     rx_mstp_instance = re.compile(r"^\s*(\d+)\s+(\S+)", re.MULTILINE)
     rx_mstp_bridge = re.compile(
-        "Bridge\s+address\s+(?P<bridge_id>\S+)\s+priority\s+(?P<bridge_priority>\d+).+?Root\s+address\s+(?P<root_id>\S+)\s+priority\s+(?P<root_priority>\d+)"
-        , re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        "Bridge\s+address\s+(?P<bridge_id>\S+)\s+priority\s+(?P<bridge_priority>\d+).+?Root\s+address\s+(?P<root_id>\S+)\s+priority\s+(?P<root_priority>\d+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_mstp_interfaces = re.compile(
         r"^(?P<interface>\S+)\s+of\s+MST(?P<instance_id>\d+)\s+is\s+(?P<role>\S+)\s+(?P<status>\S+).+?"
         r"Port\s+info\s+port\s+id\s+(?P<port_id>\S+)\s+priority\s+(?P<priority>\d+)\s+cost\s+(?P<cost>\d+).+?"
-        r"Designated\s+bridge\s+address\s+(?P<designated_bridge_id>\S+)\s+priority\s+(?P<designated_bridge_priority>\d+)\s+port\s+id\s+(?P<designated_port_id>\S+)"
-        , re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"Designated\s+bridge\s+address\s+(?P<designated_bridge_id>\S+)\s+priority\s+(?P<designated_bridge_priority>\d+)\s+port\s+id\s+(?P<designated_port_id>\S+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def process_mstp(self, cli_stp):
         # Save port attributes
@@ -197,5 +199,6 @@ class Script(NOCScript):
             return self.process_pvst(v, proto="rapid-PVST+")
         elif "Spanning tree enabled protocol mstp" in v:
             return self.process_mstp(v)
-        elif "No spanning tree instance exists" in v or "No spanning tree instances exist" in v:
+        elif "No spanning tree instance exists" in v \
+        or "No spanning tree instances exist" in v:
             return {"mode": "None", "instances": []}

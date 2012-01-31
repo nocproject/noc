@@ -23,7 +23,8 @@ class Script(NOCScript):
     ## Catalyst 2960/3560/3750/3120 on IOS SE
     ## Catalyst 2950 on IOS EA
     ##
-    rx_small_cat = re.compile(r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
+    rx_small_cat = re.compile(r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
+        re.IGNORECASE | re.MULTILINE)
 
     @NOCScript.match(version__regex=r"SE|EA")
     def execute_small_cat(self):
@@ -34,7 +35,8 @@ class Script(NOCScript):
     ##
     ## Cisco Catalyst 4000/4500 Series
     ##
-    rx_cat4000 = re.compile(r"MAC Base =\s+(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
+    rx_cat4000 = re.compile(r"MAC Base =\s+(?P<id>\S+)",
+        re.IGNORECASE | re.MULTILINE)
 
     @NOCScript.match(version__regex=r"SG")
     def execute_cat4000(self):
@@ -45,7 +47,8 @@ class Script(NOCScript):
     ##
     ## Cisco Catalyst 6500 Series or Cisco router 7600 Series
     ##
-    rx_cat6000 = re.compile(r"chassis MAC addresses:.+from\s+(?P<id>\S+)\s+to", re.IGNORECASE | re.MULTILINE)
+    rx_cat6000 = re.compile(r"chassis MAC addresses:.+from\s+(?P<id>\S+)\s+to",
+        re.IGNORECASE | re.MULTILINE)
 
     @NOCScript.match(version__regex=r"S[XR]")
     def execute_cat6000(self):
