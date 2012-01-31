@@ -17,7 +17,8 @@ class Script(NOCScript):
     implements = [IPing]
     rx_result = re.compile(r"^\s*Packets: Sent =\s*(?P<count>\d+), Received =\s*(?P<success>\d+), Lost =\s*\d+", re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
-    def execute(self, address, count=None, source_address=None, size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None,
+    df=None):
         cmd = "ping %s" % address
         if count:
             cmd += " times %d" % int(count)
