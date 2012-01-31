@@ -11,14 +11,14 @@
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetSNMPGet
 
+
 class Script(NOCScript):
-    name="Generic.get_snmp_get"
-    implements=[IGetSNMPGet]
-    requires=[]
-    
+    name = "Generic.get_snmp_get"
+    implements = [IGetSNMPGet]
+    requires = []
+
     def execute(self, oid, community_suffix=None):
         try:
             return self.snmp.get(oid, community_suffix)
         except self.snmp.TimeOutError:
             return None
-    
