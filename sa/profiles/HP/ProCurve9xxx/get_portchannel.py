@@ -12,23 +12,22 @@ import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetPortchannel
-##
-## HP.ProCurve9xxx.get_portchannel
-##
+
+
 class Script(NOCScript):
-    name="HP.ProCurve9xxx.get_portchannel"
-    implements=[IGetPortchannel]
-    
-    rx_trunk=re.compile(r"Trunk\sID\:\s(\d+)\nType:\s(\S+)\n.*\n.*\n.*\nPorts((\s+\d\/\d)+)",re.MULTILINE)
+    name = "HP.ProCurve9xxx.get_portchannel"
+    implements = [IGetPortchannel]
+
+    rx_trunk = re.compile(r"Trunk\sID\:\s(\d+)\nType:\s(\S+)\n.*\n.*\n.*\nPorts((\s+\d\/\d)+)", re.MULTILINE)
+
     def execute(self):
-        r=[]
+        r = []
         # Get trunks
-        st=self.cli("show trunk")
+        st = self.cli("show trunk")
         for trunk in self.rx_trunk.findall(st):
-            r+=[{
-                "interface" : trunk[0],
-                "members"   : trunk[2].split(),
-                "type"      : trunk[1]
+            r += [{
+                "interface": trunk[0],
+                "members": trunk[2].split(),
+                "type": trunk[1]
             }]
         return r
-    
