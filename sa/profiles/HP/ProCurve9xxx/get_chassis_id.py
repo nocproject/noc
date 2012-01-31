@@ -12,15 +12,15 @@ import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetChassisID
-##
-## HP.ProCurve9xxx.get_chassis_id
-##
+
+
 class Script(NOCScript):
-    name="HP.ProCurve9xxx.get_chassis_id"
-    implements=[IGetChassisID]
-    rx_mac=re.compile(r"([0-9a-f]{4}.[0-9a-f]{4}.[0-9a-f]{4})", re.IGNORECASE|re.MULTILINE|re.DOTALL)
+    name = "HP.ProCurve9xxx.get_chassis_id"
+    implements = [IGetChassisID]
+    rx_mac = re.compile(r"([0-9a-f]{4}.[0-9a-f]{4}.[0-9a-f]{4})",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+
     def execute(self):
-        v=self.cli("show chassis")
-        match=self.re_search(self.rx_mac, v)
+        v = self.cli("show chassis")
+        match = self.re_search(self.rx_mac, v)
         return match.group(1)
-    
