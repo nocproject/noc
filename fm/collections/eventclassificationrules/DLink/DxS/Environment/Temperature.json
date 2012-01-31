@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:WARN:|WARN\\(4\\)) (?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) enter alarm state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)"
+                "value_re": "(?:WARN:|WARN\\(4\\))( Unit \\d+)? (?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) enter alarm state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:INFO:|INFO\\(6\\)) (?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) recovers to normal state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)"
+                "value_re": "(?:INFO:|INFO\\(6\\))( Unit \\d+)? (?P<name>Temperat(?:ur|ru)e Sensor:\\s*\\d+) recovers to normal state.\\s*\\(current temperat(?:ur|ru)e:\\s*(?P<measure>\\d+)\\)"
             }
         ]
     }
