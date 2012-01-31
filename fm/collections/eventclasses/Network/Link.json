@@ -280,6 +280,18 @@
                 "action": "raise",
                 "alarm_class__name": "Network | Link | DOM | Warning: Out of Threshold"
             }
+        ],
+        "repeat_suppression": [
+            {
+                "name": "Warning: Out of Threshold",
+                "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
+                "window": 600,
+                "match_condition": {
+                    "managed_object": "event.managed_object.id",
+                    "vars__interface": "vars['interface']"
+                },
+                "suppress": true
+            }
         ]
     },
 
