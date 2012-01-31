@@ -32,8 +32,9 @@ class Script(NOCScript):
     TIMEOUT = 240
 
     rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)\s(?:\((?:connected|notconnect)\)\s*)?\n\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?(?:\s+Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})\n)?[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
-                           re.MULTILINE | re.IGNORECASE)
-    rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})", re.MULTILINE | re.IGNORECASE)
+       re.MULTILINE | re.IGNORECASE)
+    rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
+        re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
     rx_sec_ip = re.compile(r"Secondary address (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
     rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
@@ -41,26 +42,26 @@ class Script(NOCScript):
     rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?)$", re.IGNORECASE)
 
     types = {
-           "Lo": 'loopback',   # Loopback
-           "Et": 'physical',   # Ethernet
-           "Fa": 'physical',   # FastEthernet
-           "Gi": 'physical',   # GigabitEthernet
-           "Te": 'physical',   # TenGigabitEthernet
-           "Se": 'physical',   # Serial
+           "Lo": 'loopback',    # Loopback
+           "Et": 'physical',    # Ethernet
+           "Fa": 'physical',    # FastEthernet
+           "Gi": 'physical',    # GigabitEthernet
+           "Te": 'physical',    # TenGigabitEthernet
+           "Se": 'physical',    # Serial
            "M": 'management',
            "R": 'aggregated',
            "Tu": 'tunnel',
            "C": 'physical',
-           "Vl": 'SVI',        # Vlan
-           "VL": 'SVI',        # VLAN, found on C3500XL
-           "Ca": 'physical',   # Cable
-           "As": 'physical',   # Async
-           "BV": 'aggregated', # BVI
-           "Bu": 'aggregated', # Bundle
-           "MF": 'aggregated', # Multilink Frame Relay
-           "Gr": 'physical',   # Group-Async
-           "Po": 'aggregated', # Port-channel/Portgroup
-           "Ce": 'physical'    # Cellular
+           "Vl": 'SVI',         # Vlan
+           "VL": 'SVI',         # VLAN, found on C3500XL
+           "Ca": 'physical',    # Cable
+           "As": 'physical',    # Async
+           "BV": 'aggregated',  # BVI
+           "Bu": 'aggregated',  # Bundle
+           "MF": 'aggregated',  # Multilink Frame Relay
+           "Gr": 'physical',    # Group-Async
+           "Po": 'aggregated',  # Port-channel/Portgroup
+           "Ce": 'physical'     # Cellular
            }
 
     def get_ospfint(self):
@@ -92,7 +93,8 @@ class Script(NOCScript):
     ##
     ## Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
     ##
-    rx_vlan_ubr = re.compile(r"^\w{4}\.\w{4}\.\w{4}\s(?P<port>\S+)\s+(?P<vlan_id>\d{1,4})")
+    rx_vlan_ubr = re.compile(
+        r"^\w{4}\.\w{4}\.\w{4}\s(?P<port>\S+)\s+(?P<vlan_id>\d{1,4})")
 
     def get_ubr_pvm(self):
         vlans = self.cli("show cable l2-vpn dot1q-vc-map")
@@ -100,12 +102,12 @@ class Script(NOCScript):
         for l in vlans.split('\n'):
             match = self.rx_vlan_ubr.search(l)
             if match:
-                    port = match.group("port")
-                    vlan_id = int(match.group("vlan_id"))
-                    if not port in pvm.keys():
-                            pvm[port] = ['%s' % vlan_id]
-                    else:
-                            pvm[port] += ['%s' % vlan_id]
+                port = match.group("port")
+                vlan_id = int(match.group("vlan_id"))
+                if not port in pvm.keys():
+                    pvm[port] = ['%s' % vlan_id]
+                else:
+                    pvm[port] += ['%s' % vlan_id]
         return pvm
 
     def execute(self):
@@ -143,7 +145,10 @@ class Script(NOCScript):
             if ifname.find(':') > 0:
                 inm = ifname.split(':')[0]
                 if inm != interfaces[-1]['name']:
-                    iface = {'name': inm, 'admin_status': True, 'oper_status': True, 'type': 'physical'}
+                    iface = {
+                        'name': inm, 'admin_status': True,
+                        'oper_status': True, 'type': 'physical'
+                    }
                     interfaces.append(iface)
             a_stat = match.group('admin_status').lower() == "up"
             o_stat = match.group('oper_status').lower() == "up"

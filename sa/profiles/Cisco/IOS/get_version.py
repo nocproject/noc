@@ -25,7 +25,8 @@ class Script(NOCScript):
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
             try:
-                v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)  # sysDescr.0
+                # sysDescr.0
+                v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 match = self.re_search(self.rx_snmp_ver, v)
                 return {
                     "vendor": "Cisco",
