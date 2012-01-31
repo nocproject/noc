@@ -30,4 +30,3 @@ class Script(noc.sa.script.Script):
                     self.cli("switchport allowed vlan remove %d" % vlan_id)
                     self.cli("end")
         return True
-

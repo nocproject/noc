@@ -11,20 +11,20 @@
 import re
 ## NOC modules
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET,SSH
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
 
 
 class Profile(noc.sa.profiles.Profile):
     name = "EdgeCore.ES"
-    supported_schemes = [TELNET,SSH]
+    supported_schemes = [TELNET, SSH]
     pattern_unpriveleged_prompt = r"^(?P<hostname>[^\n]+)>"
     pattern_syntax_error = r"% Invalid input detected at|% Incomplete command"
     command_super = "enable"
     pattern_prompt = r"^(?P<hostname>[^\n]+)(?:\(config[^)]*\))?#"
     pattern_more = [
-		(r"---?More---?", " "),
-		(r"Startup configuration file name", "\n")
-		]
+        (r"---?More---?", " "),
+        (r"Startup configuration file name", "\n")
+    ]
     config_volatile = ["\x08+"]
     rogue_chars = ["\r"]
     command_submit = "\r"
@@ -32,7 +32,7 @@ class Profile(noc.sa.profiles.Profile):
     command_leave_config = "exit"
     command_save_config = "copy running-config startup-config"
     convert_mac = noc.sa.profiles.Profile.convert_mac_to_dashed
-    
+
     def convert_interface_name(self, s):
         s = s.replace("  ", " ")
         return s.replace("/ ", "/")

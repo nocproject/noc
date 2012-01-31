@@ -9,33 +9,36 @@
 """
 import noc.sa.script
 from noc.sa.interfaces import IGetDHCPBinding
-import re,datetime,time
+import re
+import datetime
+import time
 
-rx_line=re.compile(r"^(?P<mac>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<expire>.+?)\s+(?P<type>dhcp-snooping)\s+(?P<vlan>\d+)\s+(?P<interface>.+?)$",re.IGNORECASE)
 
 class Script(noc.sa.script.Script):
-    name="EdgeCore.ES.get_dhcp_binding"
-    implements=[IGetDHCPBinding]
+    name = "EdgeCore.ES.get_dhcp_binding"
+    implements = [IGetDHCPBinding]
+    rx_line = re.compile(r"^(?P<mac>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<expire>.+?)\s+(?P<type>dhcp-snooping)\s+(?P<vlan>\d+)\s+(?P<interface>.+?)$", re.IGNORECASE)
+
     def execute(self):
-	try:
-    	    data=self.cli("show ip dhcp snooping binding")
-	except self.CLISyntaxError:
-	    raise self.NotSupportedError()
-	now=datetime.datetime.now()
-	basetimestamp=int(time.mktime(now.timetuple()))
-        r=[]
+        try:
+            data = self.cli("show ip dhcp snooping binding")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
+        now = datetime.datetime.now()
+        basetimestamp = int(time.mktime(now.timetuple()))
+        r = []
         for l in data.split("\n"):
-            match=rx_line.match(l.strip().lower())
+            match = self.rx_line.match(l.strip().lower())
             if match:
-                d=match.group("expire")
-                if d=="infinite":
-                    expire=d
+                d = match.group("expire")
+                if d == "infinite":
+                    expire = d
                 else:
-		    expire=datetime.datetime.fromtimestamp(basetimestamp+int(d))
+                    expire = datetime.datetime.fromtimestamp(basetimestamp + int(d))
                 r.append({
-                    "ip"         : match.group("ip"),
-                    "mac"        : match.group("mac"),
-                    "expiration" : expire,
-		    "type"       : "A", # Automatic
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "expiration": expire,
+                    "type": "A"  # Automatic
                 })
         return r
