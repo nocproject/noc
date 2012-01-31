@@ -21,18 +21,15 @@ class Script(NOCScript):
     implements = [IGetInterfaceStatus]
     cache = True
 
-    rx_interface_status = re.compile(
-        r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*?index is (?P<ifindex>\d+).*?address is (?P<mac>\S+).*?"
-        , re.IGNORECASE | re.DOTALL)
+    rx_interface_status = re.compile(r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*?index is (?P<ifindex>\d+).*?address is (?P<mac>\S+).*?",
+        re.IGNORECASE | re.DOTALL)
     rx_interface_descr = re.compile(r".*?alias name is (?P<descr>[^,]+?),.*?", re.IGNORECASE | re.DOTALL)
-    rx_interface_status_3526 = re.compile(
-        r"Information of (?P<interface>[^\n]+?)\n.*?Mac Address:\s+(?P<mac>[^\n]+?)\n(?P<block>.*)",
+    rx_interface_status_3526 = re.compile(r"Information of (?P<interface>[^\n]+?)\n.*?Mac Address:\s+(?P<mac>[^\n]+?)\n(?P<block>.*)",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
-    rx_interface_intstatus_3526 = re.compile(
-        r".*?Name:[^\n]* (?P<descr>[^\n]*?)\n.*?Link Status:\s+(?P<intstatus>up|down)\n",
+    rx_interface_intstatus_3526 = re.compile(r".*?Name:[^\n]* (?P<descr>[^\n]*?)\n.*?Link Status:\s+(?P<intstatus>up|down)\n",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_interface_linestatus_3526 = re.compile(r"Port Operation Status:\s+(?P<linestatus>up|down)\n",
-                                              re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     def execute(self, interface=None):
         if self.snmp and self.access_profile.snmp_ro:
@@ -41,18 +38,16 @@ class Script(NOCScript):
                 r = []
                  # IF-MIB::ifName, IF-MIB::ifOperStatus, IF-MIB::ifAlias, IF-MIB::ifPhysAddress
                 for i, n, s, d, m in self.join_four_tables(self.snmp,
-                                                           "1.3.6.1.2.1.31.1.1.1.1",
-                                                           "1.3.6.1.2.1.2.2.1.8",
-                                                           "1.3.6.1.2.1.31.1.1.1.18",
-                                                           "1.3.6.1.2.1.2.2.1.6",
-                                                           bulk=True):
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8",
+                    "1.3.6.1.2.1.31.1.1.1.18", "1.3.6.1.2.1.2.2.1.6",
+                    bulk=True):
                     if not n.startswith("Port-Channel"):
                         n = n.replace("Port", "Eth 1/")
                         if n == "":
                             continue
                     r += [{"snmp_ifindex": i, "interface": n,
                            "status": int(s) == 1, "description": d,
-                           "mac": m}] # ifOperStatus up(1)
+                           "mac": m}]  # ifOperStatus up(1)
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -113,16 +108,17 @@ class Script(NOCScript):
     ##
     ## Generator returning a rows of 4 snmp tables joined by index
     ##
-    def join_four_tables(self, snmp, oid1, oid2, oid3, oid4, community_suffix=None, bulk=False, min_index=None,
-                         max_index=None, cached=False):
-        t1 = snmp.get_table(oid1, community_suffix=community_suffix, bulk=bulk, min_index=min_index, max_index=max_index
-                            , cached=cached)
-        t2 = snmp.get_table(oid2, community_suffix=community_suffix, bulk=bulk, min_index=min_index, max_index=max_index
-                            , cached=cached)
-        t3 = snmp.get_table(oid3, community_suffix=community_suffix, bulk=bulk, min_index=min_index, max_index=max_index
-                            , cached=cached)
-        t4 = snmp.get_table(oid4, community_suffix=community_suffix, bulk=bulk, min_index=min_index, max_index=max_index
-                            , cached=cached)
+    def join_four_tables(self, snmp, oid1, oid2, oid3, oid4,
+        community_suffix=None, bulk=False, min_index=None, max_index=None,
+        cached=False):
+        t1 = snmp.get_table(oid1, community_suffix=community_suffix, bulk=bulk,
+            min_index=min_index, max_index=max_index, cached=cached)
+        t2 = snmp.get_table(oid2, community_suffix=community_suffix, bulk=bulk,
+            min_index=min_index, max_index=max_index, cached=cached)
+        t3 = snmp.get_table(oid3, community_suffix=community_suffix, bulk=bulk,
+            min_index=min_index, max_index=max_index, cached=cached)
+        t4 = snmp.get_table(oid4, community_suffix=community_suffix, bulk=bulk,
+            min_index=min_index, max_index=max_index, cached=cached)
         for k1, v1 in t1.items():
             try:
                 yield (k1, v1, t2[k1], t3[k1], t4[k1])

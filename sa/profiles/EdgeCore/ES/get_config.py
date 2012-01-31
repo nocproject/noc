@@ -10,14 +10,13 @@
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
-##
-## EdgeCore.ES.get_config
-##
+
+
 class Script(NOCScript):
-    name="EdgeCore.ES.get_config"
-    implements=[IGetConfig]
+    name = "EdgeCore.ES.get_config"
+    implements = [IGetConfig]
+
     def execute(self):
-        config=self.cli("show running-config")
-        config=self.strip_first_lines(config,1)
+        config = self.cli("show running-config")
+        config = self.strip_first_lines(config, 1)
         return self.cleaned_config(config)
-    
