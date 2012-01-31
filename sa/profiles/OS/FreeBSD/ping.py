@@ -17,7 +17,8 @@ class Script(NOCScript):
     implements = [IPing]
     rx_result = re.compile(r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+\.\d+% packet loss\nround-trip min/avg/max/stddev = (?P<min>\d+\.\d+)/(?P<avg>\d+\.\d+)/(?P<max>\d+\.\d+)/\d+\.\d+ ms", re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
-    def execute(self, address, count=None, source_address=None, size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None,
+    df=None):
         cmd = "ping -q"
         if count:
             cmd += " -c %d" % int(count)
