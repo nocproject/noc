@@ -130,7 +130,7 @@ class Command(BaseCommand):
                 SubInterface.objects.filter(interface=i.id).delete()
                 # Wipe links
                 # @todo: Remove aggregated links correctly
-                Link.objects.filter(interface=i.id).delete()
+                Link.objects.filter(interfaces=i.id).delete()
                 # Wipe interface
                 i.delete()
         # Unbind from IPAM
