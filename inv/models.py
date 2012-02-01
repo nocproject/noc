@@ -16,6 +16,9 @@ from noc.sa.interfaces import MACAddressParameter
 
 
 class Vendor(Document):
+    """
+    Equipment vendor
+    """
     meta = {
         "collection": "noc.vendors",
         "allow_inheritance": False,
@@ -302,7 +305,7 @@ class Interface(Document):
     is_ignored = BooleanField(default=False)
     
     def __unicode__(self):
-        return u"%s: %s" % (self.managed_object.name, name)
+        return u"%s: %s" % (self.managed_object.name, self.name)
 
     def save(self, *args, **kwargs):
         self.name = self.managed_object.profile.convert_interface_name(self.name)
