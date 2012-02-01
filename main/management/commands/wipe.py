@@ -96,7 +96,8 @@ class Command(BaseCommand):
         from noc.sa.models import ManagedObjectAttribute
         from noc.inv.models import Interface, SubInterface, Link
         from noc.fm.models import NewEvent, FailedEvent,\
-                                  ActiveEvent, ArchivedEvent
+                                  ActiveEvent, ArchivedEvent,\
+                                  ActiveAlarm, ArchivedAlarm
         from noc.ip.models import Address
 
         if o.profile_name.startswith("NOC."):
@@ -110,6 +111,18 @@ class Command(BaseCommand):
             ActiveEvent.objects.filter(managed_object=o.id).delete()
         with self.log("Deleting archived events"):
             ArchivedEvent.objects.filter(managed_object=o.id).delete()
+        # Wiping alarms
+        with self.log("Deleting alarms"):
+            for ac in (ActiveAlarm, ArchivedAlarm):
+                for a in ac.objects.filter(managed_object=o.id):
+                    # Relink root causes
+                    my_root = a.root
+                    for iac in (ActiveAlarm, ArchivedAlarm):
+                        for ia in iac.objects.filter(root=a.id):
+                            ia.root = my_root
+                            ia.save()
+                    # Delete alarm
+                    a.delete()
         # Wiping interfaces, subs and links
         with self.log("Deleting interfaces, subinterfaces and links"):
             for i in Interface.objects.filter(managed_object=o.id):
