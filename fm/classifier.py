@@ -335,7 +335,7 @@ class Rule(object):
                 r = name.split("__")
                 if len(r) == 2:
                     c += ["e_vars[\"%s\"] = self.fixup_%s(fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
-                else:                
+                else:
                     c += ["args = [%s, fm_unescape(e_vars[\"%s\"])]" % (", ".join(["\"%s\"" % x for x in r[2:]]), name)]
                     c += ["e_vars[\"%s\"] = self.fixup_%s(*args)" % (r[0], r[1])]
                 c += ["del e_vars[\"%s\"]" % name]
@@ -403,6 +403,7 @@ CR_UNKNOWN = 3
 CR_CLASSIFIED = 4
 CR_DISPOSED = 5
 CR = ["failed", "deleted", "suppressed", "unknown", "classified", "disposed"]
+
 
 class Classifier(Daemon):
     """
@@ -780,7 +781,7 @@ class Classifier(Daemon):
         """
         Check wrether event must be suppressed
         
-        :returns: (bool, rule name)
+        :returns: (bool, rule name, event)
         """
         ts = event.timestamp
         n_delta = None
@@ -802,7 +803,7 @@ class Classifier(Daemon):
                     nearest = e
                     n_name = name
                     n_suppress = suppress
-        return n_suppress, n_name
+        return n_suppress, n_name, nearest
 
     def classify_event(self, event):
         """
@@ -840,10 +841,14 @@ class Classifier(Daemon):
         vars = self.eval_rule_variables(event, event_class, vars)
         # Suppress repeats
         if event_class.id in self.suppression:
-            suppress, name = self.to_suppress(event, event_class, vars)
+            suppress, name, nearest = self.to_suppress(event, event_class,
+                                                       vars)
             if suppress:
                 logging.debug("Event %s was suppressed by rule %s" % (
                     event.id, name))
+                # Update suppressing event
+                nearest.log_suppression(event.timestamp)
+                # Delete suppressed event
                 event.delete()
                 return CR_SUPPRESSED
         # Activate event
@@ -857,6 +862,8 @@ class Classifier(Daemon):
             timestamp=event.timestamp,
             managed_object=event.managed_object,
             event_class=event_class,
+            start_timestamp=event.timestamp,
+            repeats=1,
             raw_vars=event.raw_vars,
             resolved_vars=resolved_vars,
             vars=vars,

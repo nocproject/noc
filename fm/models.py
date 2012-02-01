@@ -986,6 +986,9 @@ class EventClassificationRuleCategory(nosql.Document):
 
 
 class EventClassificationPattern(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
     key_re = nosql.StringField(required=True)
     value_re = nosql.StringField(required=True)
     
@@ -1238,6 +1241,8 @@ class ActiveEvent(nosql.Document):
     timestamp = nosql.DateTimeField(required=True)
     managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
     event_class = nosql.PlainReferenceField(EventClass, required=True)
+    start_timestamp = nosql.DateTimeField(required=True)
+    repeats = nosql.IntField(required=True)
     raw_vars = nosql.RawDictField()
     resolved_vars = nosql.RawDictField()
     vars = nosql.DictField()
@@ -1289,6 +1294,8 @@ class ActiveEvent(nosql.Document):
             timestamp=self.timestamp,
             managed_object=self.managed_object,
             event_class=self.event_class,
+            start_timestamp=self.start_timestamp,
+            repeats=self.repeats,
             raw_vars=self.raw_vars,
             resolved_vars=self.resolved_vars,
             vars=self.vars,
@@ -1319,6 +1326,22 @@ class ActiveEvent(nosql.Document):
                      from_status=self.status, to_status=self.status,
                      message=message)]
         self.save()
+
+    def log_suppression(self, timestamp):
+        """
+        Increate repeat count and update timestamp, if required
+        """
+        self.repeats += 1
+        if timestamp > self.timestamp:
+            self.timestamp = timestamp
+        self.save()
+
+    @property
+    def duration(self):
+        """
+        Logged event duration in seconds
+        """
+        return (self.timestamp - self.start_timestamp).total_seconds
 
     def dispose_event(self):
         EventDispositionQueue(timestamp=datetime.datetime.now(),
@@ -1378,6 +1401,8 @@ class ArchivedEvent(nosql.Document):
     timestamp = nosql.DateTimeField(required=True)
     managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
     event_class = nosql.PlainReferenceField(EventClass, required=True)
+    start_timestamp = nosql.DateTimeField(required=True)
+    repeats = nosql.IntField(required=True)
     raw_vars = nosql.RawDictField()
     resolved_vars = nosql.RawDictField()
     vars = nosql.DictField()
@@ -1386,6 +1411,13 @@ class ArchivedEvent(nosql.Document):
 
     def __unicode__(self):
         return u"%s" % self.id
+
+    @property
+    def duration(self):
+        """
+        Logged event duration in seconds
+        """
+        return (self.timestamp - self.start_timestamp).total_seconds
 
     def get_template_vars(self):
         """
