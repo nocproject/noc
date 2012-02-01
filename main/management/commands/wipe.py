@@ -94,7 +94,8 @@ class Command(BaseCommand):
         :return: None
         """
         from noc.sa.models import ManagedObjectAttribute
-        from noc.inv.models import Interface, SubInterface, Link
+        from noc.inv.models import Interface, SubInterface, Link,\
+                                   DiscoveryStatusInterface
         from noc.fm.models import NewEvent, FailedEvent,\
                                   ActiveEvent, ArchivedEvent,\
                                   ActiveAlarm, ArchivedAlarm
@@ -133,6 +134,9 @@ class Command(BaseCommand):
                 Link.objects.filter(interfaces=i.id).delete()
                 # Wipe interface
                 i.delete()
+        # Delete interface discovery status
+        with self.log("Cleaning interface discovery status"):
+            DiscoveryStatusInterface.objects.filter(managed_object=o.id).delete()
         # Unbind from IPAM
         with self.log("Unbinding from IPAM"):
             for a in Address.objects.filter(managed_object=o):
