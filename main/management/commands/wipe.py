@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 import sys
 from contextlib import contextmanager
 ## Django modules
@@ -23,7 +24,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if len(args) < 1:
-            self.usage()
+            print "USAGE: %s <model> <object id> [.. <object id>]" % sys.argv[0]
+            sys.exit(1)
         m = args[0].replace("-", "_")
         if m not in self.models:
             raise CommandError("Invalid model '%s'. Valid models are: %s" % (
