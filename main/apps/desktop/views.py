@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## NOC modules
+import datetime
 ## Django modules
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 ## NOC modules
@@ -127,6 +129,9 @@ class DesktopApplication(ExtApplication):
             if profile and profile.preferred_language:
                 lang = profile.preferred_language
             request.session["django_language"] = lang
+        # Update last login
+        user.last_login = datetime.datetime.now()
+        user.save()
         return r
 
     @view(method=["POST"], url="^logout/$", access=PermitLogged(), api=True)
