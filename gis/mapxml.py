@@ -53,8 +53,8 @@ def map_to_xml(m, pretty_xml=False):
                 styles += [s]
                 for r in s.rules:
                     for sm in r.symbolizers:
-                        if "fontset_name" in sm:
-                            fsn = sm["fontset_name"]
+                        if "fontset-name" in sm:
+                            fsn = sm["fontset-name"]
                             fs = FontSet.objects.filter(name=fsn).first()
                             if fs and fs not in fontsets:
                                 fontsets += [fs]
