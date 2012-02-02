@@ -41,7 +41,7 @@ def map_to_xml(m, pretty_xml=False):
     doc.appendChild(root)
     root.setAttribute("background-color", "#b5d0d0")
     root.setAttribute("srs", m.srs.proj4text)
-    root.setAttribute("minimum-version", "0.7.1")
+    root.setAttribute("minimum-version", "2.0.0")
     # Get styles and fontsets used
     layers = m.active_layers
     styles = []
@@ -98,6 +98,8 @@ def map_to_xml(m, pretty_xml=False):
                         if "[" not in ek:
                             ek = "[%s]" % ek
                         t.appendChild(doc.createTextNode(ek))
+                    elif k == "cdata":
+                        t.appendChild(doc.createTextNode(sm[k]))
                     elif k != "type":
                         ek = k.replace("_", "-")
                         t.setAttribute(SYM_PMAP.get(ek, ek), sm[k])
