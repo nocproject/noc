@@ -191,6 +191,11 @@ class Command(BaseCommand):
         fl = []
         if os.path.exists(fp):
             fl = [path]
+        elif "[length]" in path:
+            fl = [name
+                  for name in [path.replace("[length]", str(i))
+                               for i in range(1, 9)]
+                  if os.path.exists(os.path.join(self.parser.GetBase(), name))]
         elif ext:
             fl = [path + e for e in ext if os.path.exists(fp + e)]
         if not fl:
