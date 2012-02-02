@@ -20,7 +20,7 @@ class Command(BaseCommand):
     args = "<model> <object id> [.. <object id>]"
     help = "Completely wipe object and related data"
 
-    models = ["managed_object"]
+    models = ["managed_object", "user"]
 
     def handle(self, *args, **options):
         if len(args) < 1:
@@ -40,9 +40,13 @@ class Command(BaseCommand):
                 raise CommandError("Object '%s' is not found" % o_id)
             objects += [o]
         # Wipe objects
+        from noc.lib.debug import error_report
         for o in objects:
             with self.log("Wiping '%s':" % unicode(o), True):
-                wiper(o)
+                try:
+                    wiper(o)
+                except:
+                    error_report()
 
     @contextmanager
     def log(self, message, newline=False):
@@ -147,4 +151,79 @@ class Command(BaseCommand):
             ManagedObjectAttribute.objects.filter(managed_object=o).delete()
         # Finally delete object and config
         with self.log("Deleting managed object and config"):
+            o.delete()
+
+    def get_user(self, u_id):
+            """
+            Get User by id or name
+            :param o_id: Object's id or name
+            :return: ManagedObject
+            :rtype: ManagedObject
+            """
+            from django.contrib.auth.models import User
+
+            # Try to get object by id
+            if is_int(u_id):
+                try:
+                    return User.objects.get(id=int(u_id))
+                except User.DoesNotExist:
+                    pass
+            # Try to get object by name
+            try:
+                return User.objects.get(username=u_id)
+            except User.DoesNotExist:
+                return None
+
+    def wipe_user(self, o):
+        """
+        Wipe User
+        :param o: User
+        :type o: User
+        :return: None
+        """
+        from noc.main.models import AuditTrail, NotificationGroupUser,\
+                                    UserProfile, Checkpoint
+        from noc.sa.models import UserAccess
+        from noc.fm.models import ActiveAlarm
+        from noc.ip.models import PrefixAccess, PrefixBookmark
+        from noc.kb.models import KBEntryPreviewLog, KBUserBookmark
+        # Clean NotificationGroupUser
+        with self.log("Cleaning audit trail"):
+            AuditTrail.objects.filter(user=o).delete()
+        # Clean NotificationGroupUser
+        with self.log("Cleaning notification groups"):
+            NotificationGroupUser.objects.filter(user=o).delete()
+        # Clean User profile
+        with self.log("Cleaning user profile"):
+            UserProfile.objects.filter(user=o).delete()
+        # Clean Checkpoint
+        with self.log("Cleaning checkpoints"):
+            Checkpoint.objects.filter(user=o).delete()
+        # Clean user access
+        with self.log("Cleaning management object access"):
+            UserAccess.objects.filter(user=o).delete()
+        # Reset owned alarms
+        with self.log("Revoking assigned alarms"):
+            for a in ActiveAlarm.objects.filter(owner=o.id):
+                a.owner = None
+                a.save()
+        # Unsubscribe from alarms
+        with self.log("Unsubscribing from alarms"):
+            for a in ActiveAlarm.objects.filter(subscribers=o.id):
+                a.subscribers = [s for s in a.subscribers if s != o]
+                a.save()
+        # Revoke prefix access
+        with self.log("Revoking prefix access"):
+            PrefixAccess.objects.filter(user=o).delete()
+        # Clean Prefix Bookmarks
+        with self.log("Cleaning prefix bookmarks"):
+            PrefixBookmark.objects.filter(user=o).delete()
+        # Clean KB Preview log
+        with self.log("Cleaning KB preview log"):
+            KBEntryPreviewLog.objects.filter(user=o).delete()
+        # Clean KB User Bookmarks
+        with self.log("Cleaning KB user bookmarks"):
+            KBUserBookmark.objects.filter(user=o).delete()
+        # Finally delete user
+        with self.log("Deleting user"):
             o.delete()
