@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import os
 import logging
 import threading
 import Queue
@@ -81,7 +82,11 @@ class TileWorker(object):
     def run(self):
         self.log("Loading map XML")
         self.m = mapnik2.Map(TS, TS)
-        mapnik2.load_map_from_string(self.m, self.xml)
+        try:
+            mapnik2.load_map_from_string(self.m, self.xml)
+        except RuntimeError, why:
+            logging.error("Cannot load map: %s" % why)
+            os._exit(1)
         self.prj = mapnik2.Projection(self.m.srs)
         self.log("Waiting for tasks")
         while True:
