@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:INFO:|INFO\\(6\\)) Topology changed\\s+\\(Instance:(?P<instance>\\d+), Port:(?P<interface>\\S+),.+\\)"
+                "value_re": "(?:INFO:|INFO\\(6\\))?\\s*Topology changed\\s+\\(Instance:(?P<instance>\\d+),? [Pp]ort:(?P<interface>\\S+?)(,.+)?\\)"
             }
         ]
     },
