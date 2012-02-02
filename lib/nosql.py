@@ -137,6 +137,8 @@ class ForeignKeyField(BaseField):
         :param using:
         :return:
         """
+        if not self.name:
+            return
         doc = self.owner_document
         if doc.objects.filter(**{self.name: instance.id}).first() is not None:
             raise IntegrityError("%r object is referenced from %r" % (instance,
