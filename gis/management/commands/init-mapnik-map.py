@@ -258,7 +258,8 @@ class Command(BaseCommand):
                             if ccctag == "cssparameter":
                                 s[cccattrs["name"]] = ccccdata
                         for k, v in ccattrs.items():
-                            if k in ("fontset_name", "fontset-name"):
+                            k = k.replace("_", "-")
+                            if k == "fontset-name":
                                 v = self.prefixed_name(v)
                             elif k == "file":
                                 v = self.install_file(v)
