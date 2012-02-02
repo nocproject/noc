@@ -251,12 +251,14 @@ class Command(BaseCommand):
                             rule_filter = cccdata
                     elif cctag.endswith("symbolizer"):
                         s = {"type": cctag[:-10]}
+                        if cccdata:
+                            s["cdata"] = cccdata
                         for ccctag, cccattrs, cccchildren,\
                                 ccccdata in ccchildren:
                             if ccctag == "cssparameter":
                                 s[cccattrs["name"]] = ccccdata
                         for k, v in ccattrs.items():
-                            if k == "fontset_name":
+                            if k in ("fontset_name", "fontset-name"):
                                 v = self.prefixed_name(v)
                             elif k == "file":
                                 v = self.install_file(v)
