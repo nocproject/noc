@@ -15,6 +15,7 @@ from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.gis.models import Map
 from noc.gis.tile import TileTask
+from noc.lib.sysutils import get_cpu_cores
 
 
 class Command(BaseCommand):
@@ -25,7 +26,7 @@ class Command(BaseCommand):
                    default=False),
         make_option("-m", "--map", dest="maps", action="append", default=[]),
         make_option("-w", "--workers", dest="workers", action="store",
-                    default=4),  # @todo: N-cores *2
+                    default=get_cpu_cores() * 2),
         make_option("-l", "--log", dest="log", action="store"),
         make_option("-f", "--force", dest="force", action="store_true",
                     default=False)
