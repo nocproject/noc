@@ -10,9 +10,11 @@
 import noc.sa.script
 from noc.sa.interfaces import IGetConfig
 
+
 class Script(noc.sa.script.Script):
-    name="Cisco.CatOS.get_config"
-    implements=[IGetConfig]
+    name = "Cisco.CatOS.get_config"
+    implements = [IGetConfig]
+
     def execute(self):
-        config=self.cli("show config")
+        config = self.cli("show config")
         return self.cleaned_config(config)
