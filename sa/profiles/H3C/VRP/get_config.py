@@ -10,15 +10,14 @@
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
-##
-## H3C.VRP.get_config
-##
+
+
 class Script(NOCScript):
     name = "H3C.VRP.get_config"
     implements = [IGetConfig]
+
     def execute(self):
-        self.cli("undo terminal monitor");
+        self.cli("undo terminal monitor")
         config = self.cli("display current-configuration")
         config = self.profile.clean_spaces(config)
         return self.cleaned_config(config)
-    
