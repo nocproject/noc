@@ -10,13 +10,13 @@
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
-##
-## Alcatel.TIMOS.get_config
-##
+
+
 class Script(NOCScript):
-    name="Alcatel.TIMOS.get_config"
-    implements=[IGetConfig]
+    name = "Alcatel.TIMOS.get_config"
+    implements = [IGetConfig]
+
     def execute(self):
-        config=self.cli("admin display")
-        config=self.strip_first_lines(config,6)
+        config = self.cli("admin display")
+        config = self.strip_first_lines(config, 6)
         return self.cleaned_config(config)
