@@ -36,7 +36,7 @@ connection_args = {
 if settings.NOSQL_DATABASE_HOST:
     connection_args["host"] = settings.NOSQL_DATABASE_HOST
 if settings.NOSQL_DATABASE_PORT:
-    connection_args["port"] = settings.NOSQL_DATABASE_PORT
+    connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
 
 ## Connect to the database
 try:
