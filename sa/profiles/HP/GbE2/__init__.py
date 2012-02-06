@@ -9,15 +9,16 @@
 """
 """
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET,SSH
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
 
 class Profile(noc.sa.profiles.Profile):
-    name="HP.GbE2"
-    supported_schemes=[TELNET,SSH]
-    pattern_more="Press q to quit, any other key to continue"
-    pattern_prompt=r"^>> [^#]+# "
-    command_more=" "
-    command_leave_config="apply"
-    command_save_config="save\ny\n"
-    config_volatile=[r"^/\* Configuration dump taken.*?$"]
-    rogue_chars=["\x08"]
+    name = "HP.GbE2"
+    supported_schemes = [TELNET, SSH]
+    pattern_more = "Press q to quit, any other key to continue"
+    pattern_prompt = r"^>> [^#]+# "
+    command_more = " "
+    command_leave_config = "apply"
+    command_save_config = "save\ny\n"
+    config_volatile = [r"^/\* Configuration dump taken.*?$"]
+    rogue_chars = ["\x08"]
