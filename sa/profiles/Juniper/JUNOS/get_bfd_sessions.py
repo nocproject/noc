@@ -16,8 +16,9 @@ from noc.sa.interfaces import IGetBFDSessions
 class Script(NOCScript):
     name = "Juniper.JUNOS.get_bfd_sessions"
     implements = [IGetBFDSessions]
-    
+
     rx_session = re.compile(r"^(?P<peer>\d+\.\d+\.\d+\.\d+)\s+(?P<state>Up|Down)\s+(?P<interface>\S+)\s+(?P<detect>\S+)\s+(?P<tx>\S+)\s+(?P<multi>\S+)", re.MULTILINE)
+
     def execute(self):
         r = []
         s = self.cli("show bfd session")
