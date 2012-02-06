@@ -9,12 +9,12 @@
 
 ## NOC modules
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET,SSH
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
 
 
 class Profile(noc.sa.profiles.Profile):
     name = "Juniper.JUNOS"
-    supported_schemes = [TELNET,SSH]
+    supported_schemes = [TELNET, SSH]
     pattern_prompt = r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
     pattern_more = r"^---\(more.*?\)---"
     command_more = " "
@@ -25,18 +25,18 @@ class Profile(noc.sa.profiles.Profile):
     def cmp_version(self, x, y):
         """
         Compare versions.
-        
+
         Version format:
         <major>.<minor>R<h>.<l>
         """
         def c(v):
-            v=v.upper()
-            l, r=v.split("R")
-            return [int(x) for x in l.split(".")]+[int(x) for x in r.split(".")]
-        
+            v = v.upper()
+            l, r = v.split("R")
+            return [int(x) for x in l.split(".")] + [int(x) for x in r.split(".")]
+
         return cmp(c(x), c(y))
-    
-    def generate_prefix_list(self,name, pl):
+
+    def generate_prefix_list(self, name, pl):
         """
         prefix-list generator. _pl_ is a list of (prefix, min_len, max_len)
         """
