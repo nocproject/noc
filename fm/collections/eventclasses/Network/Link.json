@@ -72,7 +72,7 @@
             {
                 "name": "Workaround for console flood on some Cisco routers",
                 "event_class__name": "Network | Link | Connection Problem",
-                "window": 30,
+                "window": 45,
                 "match_condition": {
                     "managed_object": "event.managed_object.id",
                     "vars__interface": "vars['interface']"
@@ -285,7 +285,7 @@
             {
                 "name": "Warning: Out of Threshold",
                 "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
-                "window": 600,
+                "window": 900,
                 "match_condition": {
                     "managed_object": "event.managed_object.id",
                     "vars__interface": "vars['interface']"

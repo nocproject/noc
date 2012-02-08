@@ -49,7 +49,7 @@
             {
                 "name": "Workaround for console flood on some Cisco routers",
                 "event_class__name": "Network | MAC | MAC Flap",
-                "window": 15,
+                "window": 22,
                 "match_condition": {
                     "managed_object": "event.managed_object.id",
                     "vars__mac": "vars['mac']"
