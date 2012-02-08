@@ -1,0 +1,27 @@
+-- ----------------------------------------------------------------------------
+-- proprietary management MIB
+-- ----------------------------------------------------------------------------
+
+SW3528PRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY             FROM SNMPv2-SMI
+        dlink-mgmt,dlink-products   FROM DLINK-ID-REC-MIB;
+
+    	dlink-Des3528Series   	OBJECT IDENTIFIER ::= { dlink-mgmt 105 }
+    	des3528		OBJECT IDENTIFIER ::= { dlink-Des3528Series 1 }
+	des3528p		OBJECT IDENTIFIER ::= { dlink-Des3528Series 2 }
+	des3552		OBJECT IDENTIFIER ::= { dlink-Des3528Series 3 }
+	des3552p		OBJECT IDENTIFIER ::= { dlink-Des3528Series 4 }
+	des3528dc		OBJECT IDENTIFIER ::= { dlink-Des3528Series 5 }
+	
+-- DES3528 series Product 
+ 
+    	dlink-Des3528SeriesProd		OBJECT IDENTIFIER ::= { dlink-products 105 }
+    	des3528Prod		OBJECT IDENTIFIER ::= { dlink-Des3528SeriesProd 1 }
+	des3528pProd		OBJECT IDENTIFIER ::= { dlink-Des3528SeriesProd 2 }
+	des3552Prod		OBJECT IDENTIFIER ::= { dlink-Des3528SeriesProd 3 }
+	des3552pProd		OBJECT IDENTIFIER ::= { dlink-Des3528SeriesProd 4 }
+	des3528dcProd		OBJECT IDENTIFIER ::= { dlink-Des3528SeriesProd 5 }
+
+END
