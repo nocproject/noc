@@ -409,7 +409,7 @@
             {
                 "name": "Do not suppress after cable modem has been deleted",
                 "event_class__name": "Network | DOCSIS | Unregistered Modem Deleted",
-                "window": 300,
+                "window": 450,
                 "match_condition": {
                     "managed_object": "event.managed_object.id",
                     "vars__mac": "vars['mac']"
