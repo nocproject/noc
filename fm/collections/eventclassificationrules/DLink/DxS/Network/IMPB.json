@@ -77,20 +77,20 @@
                 "value_re": "^DLink\\.DxS$" 
             },
             {
-                "key_re": "^DES3526-L2MGMT-MIB::swL2IpMacBindingPortIndex\\.\\d+$",
+                "key_re": "^DES35(?:26|50)-L2MGMT-MIB::swL2IpMacBindingPortIndex\\.\\d+$",
                 "value_re": "^(?P<interface>.+)$" 
             },
             {
-                "key_re": "^DES3526-L2MGMT-MIB::swL2IpMacBindingViolationIP$",
+                "key_re": "^DES35(?:26|50)-L2MGMT-MIB::swL2IpMacBindingViolationIP$",
                 "value_re": "^(?P<ip>.+)$" 
             },
             {
-                "key_re": "^DES3526-L2MGMT-MIB::swL2IpMacBindingViolationMac$",
+                "key_re": "^DES35(?:26|50)-L2MGMT-MIB::swL2IpMacBindingViolationMac$",
                 "value_re": "^(?P<mac>.+)$" 
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
-                "value_re": "^DES3526-L2MGMT-MIB::swl2NotifyIpMacBinding\\.0\\.3$"
+                "value_re": "^DES35(?:26|50)-L2MGMT-MIB::swl2NotifyIpMacBinding\\.0\\.3$"
             }
         ]
     }
