@@ -18,4 +18,5 @@ class Script(NOCScript):
 
     def execute(self):
         config = self.cli("export")
+        config = self.cli("export")
         return self.cleaned_config(config)

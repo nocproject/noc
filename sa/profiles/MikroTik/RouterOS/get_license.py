@@ -21,7 +21,9 @@ class Script(NOCScript):
     rx_lic = re.compile(r"^\s*software-id: (?P<sid>\S+).+upgradable-to: (?P<upto>\S+).+nlevel: (?P<nlevel>\d+).+features:.*(?P<features>\.*)$", re.MULTILINE | re.DOTALL)
 
     def execute(self):
-        match = self.re_search(self.rx_lic, self.cli("system license print"))
+        v = self.cli("system license print")
+        v = self.cli("system license print")
+        match = self.re_search(self.rx_lic, v)
         r = {
             "software-id": match.group("sid"),
             "upgradable-to": match.group("upto"),

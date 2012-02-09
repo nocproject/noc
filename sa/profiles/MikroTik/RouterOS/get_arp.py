@@ -19,7 +19,9 @@ class Script(NOCScript):
 
     def execute(self):
         r = []
-        for match in self.rx_line.finditer(self.cli("ip arp print terse")):
+        v = self.cli("ip arp print terse")
+        v = self.cli("ip arp print terse")
+        for match in self.rx_line.finditer(v):
             r += [{
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
