@@ -22,6 +22,7 @@ class Script(NOCScript):
     def execute(self):
         try:
             v = self.cli("interface ethernet switch vlan print terse")
+            v = self.cli("interface ethernet switch vlan print terse")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
 

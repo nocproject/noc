@@ -23,6 +23,7 @@ class Script(NOCScript):
 
     def execute(self):
         v = self.cli("system resource print")
+        v = self.cli("system resource print")
         match = self.re_search(self.rx_ver, v)
         r = {
             "vendor": "MikroTik",
@@ -31,8 +32,10 @@ class Script(NOCScript):
         }
         if r["platform"] != "x86":
             v = self.cli("system routerboard print")
+            v = self.cli("system routerboard print")
             rb = self.re_search(self.rx_rb, v)
             if rb:
+                r.update({"attributes": { }})
                 r["attributes"].update({"Serial Number": rb.group("serial")})
                 r["attributes"].update({"Boot PROM": rb.group("boot")})
         return r
