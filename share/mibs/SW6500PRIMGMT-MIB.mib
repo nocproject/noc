@@ -1,0 +1,14 @@
+SW6500PRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY				FROM SNMPv2-SMI
+        dlink-products,dlink-mgmt		FROM DLINK-ID-REC-MIB;	
+	
+	dlink-Des6500SeriesProd		OBJECT IDENTIFIER ::= { dlink-products 78 }
+        dlink-Des6500			OBJECT IDENTIFIER ::= { dlink-Des6500SeriesProd 1 }
+        
+        
+          
+        des6500SeriesProd		OBJECT IDENTIFIER ::= { dlink-mgmt 78 }
+        des6500			        OBJECT IDENTIFIER ::= { des6500SeriesProd 1 } 
+END
