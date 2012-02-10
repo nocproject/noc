@@ -11,21 +11,23 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVlans
 import re
 
-rx_vlan_line=re.compile(r"^(?P<name>\S+)\s+(?P<vlan_id>\d{1,4})\s")
+rx_vlan_line = re.compile(r"^(?P<name>\S+)\s+(?P<vlan_id>\d{1,4})\s")
+
 
 class Script(noc.sa.script.Script):
-    name="Extreme.XOS.get_vlans"
-    implements=[IGetVlans]
+    name = "Extreme.XOS.get_vlans"
+    implements = [IGetVlans]
+
     def execute(self):
-        vlans=self.cli("show vlan")
-        r=[]
+        vlans = self.cli("show vlan")
+        r = []
         for l in vlans.split("\n"):
-            match=rx_vlan_line.match(l.strip())
+            match = rx_vlan_line.match(l.strip())
             if match:
-                name=match.group("name")
-                vlan_id=int(match.group("vlan_id"))
+                name = match.group("name")
+                vlan_id = int(match.group("vlan_id"))
                 r.append({
                     "vlan_id": vlan_id,
-                    "name"   : name
+                    "name": name
                     })
         return r

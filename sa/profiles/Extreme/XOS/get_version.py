@@ -11,19 +11,23 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_platform=re.compile(r"Card type:\s+(?P<platform>\S+)",re.MULTILINE|re.DOTALL)
-rx_version=re.compile(r"EXOS version:\s+(?P<version>\S+)",re.MULTILINE|re.DOTALL)
+rx_platform = re.compile(r"Card type:\s+(?P<platform>\S+)",
+    re.MULTILINE | re.DOTALL)
+rx_version = re.compile(r"EXOS version:\s+(?P<version>\S+)",
+    re.MULTILINE | re.DOTALL)
+
 
 class Script(noc.sa.script.Script):
-    name="Extreme.XOS.get_version"
-    cache=True
-    implements=[IGetVersion]
+    name = "Extreme.XOS.get_version"
+    cache = True
+    implements = [IGetVersion]
+
     def execute(self):
-        v=self.cli("debug hal show version")
-        platform=rx_platform.search(v).group("platform")
-        version=rx_version.search(v).group("version")
+        v = self.cli("debug hal show version")
+        platform = rx_platform.search(v).group("platform")
+        version = rx_version.search(v).group("version")
         return {
-            "vendor"    : "Extreme",
-            "platform"  : platform,
-            "version"   : version,
+            "vendor": "Extreme",
+            "platform": platform,
+            "version": version
         }
