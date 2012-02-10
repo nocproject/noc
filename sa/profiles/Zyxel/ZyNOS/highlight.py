@@ -7,22 +7,21 @@
 ##----------------------------------------------------------------------
 from pygments.lexer import RegexLexer, bygroups
 from pygments.token import *
-##
-## ZyXEL ZyNOS configuration lexer
-##
+
+
 class ConfigLexer(RegexLexer):
-    name="Zyxel.ZyNOS"
-    tokens={
-        "root" : [
-            (r"\"",             String.Double, "string"),
-            (r"(name)(.*?)$",   bygroups(Keyword,Comment)),
-            (r"^(interface\s+\S+|vlan\s+)(.*?)$", bygroups(Keyword,Name.Attribute)),
+    name = "Zyxel.ZyNOS"
+    tokens = {
+        "root": [
+            (r"\"", String.Double, "string"),
+            (r"(name)(.*?)$", bygroups(Keyword, Comment)),
+            (r"^(interface\s+\S+|vlan\s+)(.*?)$", bygroups(Keyword, Name.Attribute)),
             (r"^(?:no\s+)?\S+", Keyword),
-            (r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(/\d{1,2})?", Number), # IPv4 Address/Prefix
+            (r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(/\d{1,2})?", Number),  # IPv4 Address/Prefix
             (r"\d+", Number),
-            (r".",   Text),
+            (r".", Text)
         ],
-        "string" : [
-            (r".*\"", String.Double, "#pop"),
+        "string": [
+            (r".*\"", String.Double, "#pop")
         ]
     }
