@@ -11,17 +11,21 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"(?P<platform>\S+) System software Revision (?P<version>\S+)",re.MULTILINE|re.DOTALL|re.IGNORECASE)
+rx_ver = re.compile(
+    r"(?P<platform>\S+) System software Revision (?P<version>\S+)",
+    re.MULTILINE | re.DOTALL | re.IGNORECASE)
+
 
 class Script(noc.sa.script.Script):
-    name="AddPac.APOS.get_version"
-    cache=True
-    implements=[IGetVersion]
+    name = "AddPac.APOS.get_version"
+    cache = True
+    implements = [IGetVersion]
+
     def execute(self):
-        v=self.cli("show version")
-        match=rx_ver.search(v)
+        v = self.cli("show version")
+        match = rx_ver.search(v)
         return {
-            "vendor"    : "AddPac",
-            "platform"  : match.group("platform"),
-            "version"   : match.group("version"),
+            "vendor": "AddPac",
+            "platform": match.group("platform"),
+            "version": match.group("version")
         }
