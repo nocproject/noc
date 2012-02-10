@@ -7,16 +7,15 @@
 ##----------------------------------------------------------------------
 from pygments.lexer import RegexLexer
 from pygments.token import *
-##
-## Audiocodes Mediant2000 configuration lexer
-##
+
+
 class ConfigLexer(RegexLexer):
-    name="Brocade.FabricOS"
-    tokens={
-        "root" : [
+    name = "Brocade.FabricOS"
+    tokens = {
+        "root": [
             #(r"^;.*", Comment),
             (r"^\[.+\]", Keyword),
             (r"^.+(?=:)", Name.Attribute),
-            (r".*\n", Text),
+            (r".*\n", Text)
         ]
     }
