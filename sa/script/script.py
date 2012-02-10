@@ -791,7 +791,10 @@ class Script(threading.Thread):
         :return: Boolean string
         :rtype: str
         """
-        s = rx_nohex.sub("", s.lower())
+        s = s.lower()
+        if s.startswith("0x"):
+            s = s[2:]
+        s = rx_nohex.sub("", s)
         return "".join([hexbin[c] for c in s])
 
     @classmethod
