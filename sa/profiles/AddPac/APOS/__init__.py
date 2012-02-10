@@ -9,15 +9,15 @@
 """
 """
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET,SSH
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
 
 class Profile(noc.sa.profiles.Profile):
-    name="AddPac.APOS"
-    supported_schemes=[TELNET,SSH]
-    pattern_more="^-- more --"
-    pattern_prompt=r"^\S+?#"
-    command_more=" \n"
-    command_submit="\r"
-    pattern_unpriveleged_prompt=r"^\S+?>"
-    command_super="enable"
-
+    name = "AddPac.APOS"
+    supported_schemes = [TELNET, SSH]
+    pattern_more = "^-- more --"
+    pattern_prompt = r"^\S+?#"
+    command_more = " \n"
+    command_submit = "\r"
+    pattern_unpriveleged_prompt = r"^\S+?>"
+    command_super = "enable"
