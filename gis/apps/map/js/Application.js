@@ -142,9 +142,7 @@ Ext.define("NOC.gis.map.Application", {
                 case "Google":
                     if(!init_GoogleAPI) {
                         init_GoogleAPI = true;
-                        urls.push("http://maps.google.com/maps/api/js?sensor=false");
-                        // Dirty hack to ensure Google Maps API is loaded
-                        urls.push("http://maps.gstatic.com/intl/en_us/mapfiles/api-3/7/9/main.js");
+                        urls.push("@http://maps.google.com/maps/api/js?sensor=false&callback=_noc_load_callback");
                     }
                     break;
             }
