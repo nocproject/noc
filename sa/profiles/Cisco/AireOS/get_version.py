@@ -11,22 +11,26 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"^Product Version\.+\s+(?P<version>\S+)",re.MULTILINE|re.DOTALL)
-rx_inv=re.compile("^PID:\s+(?P<platform>\S+)",re.MULTILINE|re.DOTALL)
+rx_ver = re.compile(r"^Product Version\.+\s+(?P<version>\S+)",
+    re.MULTILINE | re.DOTALL)
+rx_inv = re.compile("^PID:\s+(?P<platform>\S+)",
+    re.MULTILINE | re.DOTALL)
+
 
 class Script(noc.sa.script.Script):
-    name="Cisco.AireOS.get_version"
-    cache=True
-    implements=[IGetVersion]
+    name = "Cisco.AireOS.get_version"
+    cache = True
+    implements = [IGetVersion]
+
     def execute(self):
-        v=self.cli("show sysinfo")
-        match=rx_ver.search(v)
-        version=match.group("version")
-        v=self.cli("show inventory")
-        match=rx_inv.search(v)
-        platform=match.group("platform")
+        v = self.cli("show sysinfo")
+        match = rx_ver.search(v)
+        version = match.group("version")
+        v = self.cli("show inventory")
+        match = rx_inv.search(v)
+        platform = match.group("platform")
         return {
-            "vendor"    : "Cisco",
-            "platform"  : platform,
-            "version"   : version,
+            "vendor": "Cisco",
+            "platform": platform,
+            "version": version,
         }
