@@ -9,9 +9,10 @@
 """
 """
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET,SSH
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
 
 class Profile(noc.sa.profiles.Profile):
-    name="Brocade.FabricOS"
-    supported_schemes=[TELNET,SSH]
-    pattern_prompt=r"\S+:\S+>"
+    name = "Brocade.FabricOS"
+    supported_schemes = [TELNET, SSH]
+    pattern_prompt = r"\S+:\S+>"
