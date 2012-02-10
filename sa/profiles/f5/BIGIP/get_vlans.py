@@ -12,21 +12,20 @@ import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVlans
-##
-## f5.BIGIP.get_vlans
-##
+
+
 class Script(NOCScript):
-    name="f5.BIGIP.get_vlans"
-    cache=True
-    implements=[IGetVlans]
-    
-    rx_vlan=re.compile(r"^VLAN\s+(?P<name>.+?)(?:\s+\([^)]+\))?\s+tag\s+(?P<tag>\d+)", re.MULTILINE)
+    name = "f5.BIGIP.get_vlans"
+    cache = True
+    implements = [IGetVlans]
+
+    rx_vlan = re.compile(r"^VLAN\s+(?P<name>.+?)(?:\s+\([^)]+\))?\s+tag\s+(?P<tag>\d+)", re.MULTILINE)
+
     def execute(self):
-        r=[]
+        r = []
         for match in self.rx_vlan.finditer(self.cli("b vlan show")):
-            r+=[{
-                "name":    match.group("name"),
+            r += [{
+                "name": match.group("name"),
                 "vlan_id": match.group("tag")
             }]
         return r
-    

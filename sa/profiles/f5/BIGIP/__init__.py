@@ -11,22 +11,23 @@
 import noc.sa.profiles
 from noc.sa.protocols.sae_pb2 import SSH
 
+
 class Profile(noc.sa.profiles.Profile):
-    name="f5.BIGIP"
-    supported_schemes=[SSH]
-    pattern_username="^([Uu]sername|[Ll]ogin):"
-    pattern_prompt=r"^(\[(?P<hostprompt>[^\]]+)\]\s\S+\s#\s)|(.+?\(tmos\)# )"
-    pattern_more=[
-            (r"^(/var/tmp/shell\.out\.\S+|:)"," "),
-            (r"^\(END\) ","q"),
+    name = "f5.BIGIP"
+    supported_schemes = [SSH]
+    pattern_username = "^([Uu]sername|[Ll]ogin):"
+    pattern_prompt = r"^(\[(?P<hostprompt>[^\]]+)\]\s\S+\s#\s)|(.+?\(tmos\)# )"
+    pattern_more = [
+            (r"^(/var/tmp/shell\.out\.\S+|:)", " "),
+            (r"^\(END\) ", "q"),
             (r"^Display all \d+ items\? \(y/n\)\s+", "y"),
             (r"^---\(less \d+%\)---", " "),
             (r"^\(END\)", "q"),
             ]
-    
-    def cleaned_input(self,input):
-        input=input.replace("\x1b[24;1H\x1b[K","\n")
-        return super(Profile,self).cleaned_input(input)
+
+    def cleaned_input(self, input):
+        input = input.replace("\x1b[24;1H\x1b[K", "\n")
+        return super(Profile, self).cleaned_input(input)
 
     def setup_script(self, script):
         self.add_script_method(script, "tmsh", lambda: TMSHContextManager(script))
@@ -40,8 +41,8 @@ class TMSHContextManager(object):
         self.cli(....)
     """
     def __init__(self, script):
-        self.script=script
-    
+        self.script = script
+
     ##
     ## Entering context
     ##

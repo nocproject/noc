@@ -18,14 +18,15 @@ class Script(NOCScript):
     name = "f5.BIGIP.get_license"
     cache = True
     implements = [IGetLicense]
-    
+
     rx_lic = re.compile(r"^(.+?)\s+(\d+)$")
+
     def execute(self):
-        v=self.cli("b version")
+        v = self.cli("b version")
         _, v = v.split("Enabled Features:\n")
         r = {}
         for l in v.splitlines():
-            l=l.strip()
+            l = l.strip()
             if not l:
                 continue
             match = self.rx_lic.match(l)
