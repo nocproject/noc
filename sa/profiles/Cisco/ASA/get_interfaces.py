@@ -20,9 +20,12 @@ class Script(NOCScript):
     implements = [IGetInterfaces]
 
     rx_int = re.compile(r"(?P<interface>\S+)\s\"(?P<alias>\w*)\"\,\sis(\sadministratively)?\s(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)", re.MULTILINE | re.IGNORECASE)
-    rx_mac = re.compile(r"MAC\saddress\s(?P<mac>\w{4}\.\w{4}\.\w{4})", re.MULTILINE | re.IGNORECASE)
-    rx_vlan = re.compile(r"VLAN\sIdentifier\s(?P<vlan>\w+)", re.MULTILINE | re.IGNORECASE)
-    rx_ospf = re.compile(r"^(?P<name>\w+)\sis\sup|down\,", re.MULTILINE | re.IGNORECASE)
+    rx_mac = re.compile(r"MAC\saddress\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
+        re.MULTILINE | re.IGNORECASE)
+    rx_vlan = re.compile(r"VLAN\sIdentifier\s(?P<vlan>\w+)",
+        re.MULTILINE | re.IGNORECASE)
+    rx_ospf = re.compile(r"^(?P<name>\w+)\sis\sup|down\,",
+        re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"IP\saddress\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\, subnet mask (?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})", re.MULTILINE | re.IGNORECASE)
 
     def get_ospfint(self):
@@ -39,11 +42,11 @@ class Script(NOCScript):
         subinterfaces = []
         ospfs = self.get_ospfint()
         types = {
-               "L" : 'loopback',
-               "E" : 'physical',
-               "G" : 'physical',
-               "M" : 'management',
-               "R" : 'aggregated',
+               "L": 'loopback',
+               "E": 'physical',
+               "G": 'physical',
+               "M": 'management',
+               "R": 'aggregated',
                }
         self.cli("terminal pager 0")
         v = self.cli("show interface")
@@ -60,11 +63,11 @@ class Script(NOCScript):
                 if match:
                     mac = match.group('mac')
                 sub = {
-                        "name"         : ifname,
-                        "admin_status" : a_stat,
-                        "oper_status"  : o_stat,
-                        "description"  : alias,
-                        "mac"           : mac,
+                        "name": ifname,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        "description": alias,
+                        "mac": mac,
                         }
                 match = self.rx_ip.search(s)
                 if match:
@@ -80,13 +83,13 @@ class Script(NOCScript):
                 phys = ifname.find('.') == -1
                 if phys:
                         iface = {
-                            "name"         : ifname,
-                            "admin_status" : a_stat,
-                            "oper_status"  : o_stat,
-                            "description"  : alias ,
-                            "type"         : types[ifname[0]],
-                            "mac"           : mac,
-                            'subinterfaces'   : [sub]
+                            "name": ifname,
+                            "admin_status": a_stat,
+                            "oper_status": o_stat,
+                            "description": alias,
+                            "type": types[ifname[0]],
+                            "mac": mac,
+                            'subinterfaces': [sub]
                         }
                         interfaces.append(iface)
                 else:
