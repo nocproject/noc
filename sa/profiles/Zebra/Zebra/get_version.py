@@ -26,7 +26,7 @@ class Script(NOCScript):
         v = self.cli("show version", cached=True)
         match = self.rx_ver.search(v)
         return {
-            "vendor"    : "Zebra",
-            "platform"  : match.group("platfrom"),
-            "version"   : match.group("version"),
+            "vendor": "Zebra",
+            "platform": match.group("platfrom"),
+            "version": match.group("version"),
         }
