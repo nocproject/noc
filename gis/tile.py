@@ -157,6 +157,23 @@ class TileTask(object):
 
     def run(self):
         t0 = time.time()
+        # Look for active areas
+        self.log("Looking for areas:")
+        n = 0
+        for a in Area.objects.order_by("name"):
+            self.log("    %s [%s - %s] %s Zoom %d - %d" %(
+                a.name, a.NW, a.SE,
+                "(active)" if a.is_active else "(disabled)",
+                a.min_zoom, a.max_zoom
+            ))
+            if a.is_active:
+                n += 1
+        if n:
+            self.log("%d active areas found" % n)
+        else:
+            self.log("No active areas found. Exiting")
+            return
+        #
         self.log("Processing map '%s'" % self.map.name)
         self.log("Preparing map.xml")
         xml = str(map_to_xml(self.map))
