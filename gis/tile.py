@@ -162,7 +162,7 @@ class TileTask(object):
         n = 0
         for a in Area.objects.order_by("name"):
             self.log("    %s [%s - %s] %s Zoom %d - %d" %(
-                a.name, a.NW, a.SE,
+                a.name, a.SW, a.NE,
                 "(active)" if a.is_active else "(disabled)",
                 a.min_zoom, a.max_zoom
             ))
