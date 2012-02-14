@@ -622,7 +622,7 @@ class Address(models.Model):
                 relevancy = 1.0
             elif query in o.fqdn:
                 relevancy = float(len(query)) / float(len(o.fqdn))
-            elif query in o.description:
+            elif o.description and query in o.description:
                 relevancy = float(len(query)) / float(len(o.description))
             else:
                 relevancy = 0
