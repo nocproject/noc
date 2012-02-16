@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## OS.Linux.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -53,14 +53,12 @@ class Script(noc.sa.script.Script):
                     i = i + 1
                     match = self.rx_bridge_int.search(br[i])
 
-### TODO :)
-#        if mac is not None:
-#            cmd = "brctl show %s"%self.profile.convert_mac(mac)
 ### This will work only when name of bridge looks like: "'br'+vlan_id"
 ### We need found more universal way for bind VLAN to bridge, but how???
 ### Configuration file for vlans is in difirent place in eche
 ### Linux distribution. Also I don't find any commands or records in /proc...
         r = []
+        mac = mac.lower()
         if vlan is not None:
             bridge = 'br' + str(vlan)
             cmd = self.cli("brctl showmacs %s" % bridge)
@@ -75,21 +73,21 @@ class Script(noc.sa.script.Script):
                     interfaces = interfaces[0]
                 if interface is not None:
                     if interface == interfaces:
-                        r.append({
-                            "vlan_id": vlan,
-                            "mac": match.group("mac"),
-                            "interfaces": [interfaces],
-                            "type": typ,
-                            })
-                else:
-                    r.append({
-                        "vlan_id": vlan,
-                        "mac": match.group("mac"),
-                        "interfaces": [interfaces],
-                        "type": typ,
-                        })
-#            if not r:
-#                raise Exception("Not implemented")
+                        pass
+                    else:
+                        continue
+                chassis = match.group("mac")
+                if mac is not None:
+                    if chassis == mac:
+                        pass
+                    else:
+                        continue
+                r.append({
+                    "vlan_id": vlan,
+                    "mac": chassis,
+                    "interfaces": [interfaces],
+                    "type": typ,
+                    })
             return r
 
         for vlan_id in vlans:
@@ -106,20 +104,19 @@ class Script(noc.sa.script.Script):
                     interfaces = interfaces[0]
                 if interface is not None:
                     if interface == interfaces:
-                        r.append({
-                            "vlan_id": vlan_id,
-                            "mac": match.group("mac"),
-                            "interfaces": [interfaces],
-                            "type": typ,
-                            })
-                else:
-                    r.append({
-                        "vlan_id": vlan_id,
-                        "mac": match.group("mac"),
-                        "interfaces": [interfaces],
-                        "type": typ,
-                        })
-
-#        if not r:
-#            raise Exception("Not implemented")
+                        pass
+                    else:
+                        continue
+                chassis = match.group("mac")
+                if mac is not None:
+                    if chassis == mac:
+                        pass
+                    else:
+                        continue
+                r.append({
+                    "vlan_id": vlan_id,
+                    "mac": match.group("mac"),
+                    "interfaces": [interfaces],
+                    "type": typ,
+                    })
         return r
