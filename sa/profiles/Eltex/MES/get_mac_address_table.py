@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Eltex.MES.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -23,21 +23,57 @@ class Script(noc.sa.script.Script):
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
-# BUG http://bt.nocproject.org/browse/NOC-36
-        # Try snmp first
-#        if self.snmp and self.access_profile.snmp_ro:
-#            try:
-#                for vlan, mac, interfaces, typ in self.snmp.join_tables("1.3.6.1.2.1.17.7.1.2.2.1.2", "1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2", "1.3.6.1.2.1.17.4.3.1.3", bulk=True, cached=True): #
-#                    r.append( {
-#                        "vlan_id"   : vlan,
-#                        "mac"       : mac,
-#                        "interfaces": [interfaces],
-#                        "type"      : {"3":"D","2":"S","1":"S"}[typ],
-#                    } )
-#                return r
-#            except self.snmp.TimeOutError:
-#                pass
+        # Try SNMP first
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                vlan_oid = []
+                if mac is not None:
+                    mac = mac.lower()
+                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"],
+                        bulk=True):
+                        vlan_oid.append(v[0])
+                # mac iface type
+                for v in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2",
+                    "1.3.6.1.2.1.17.4.3.1.3"], bulk=True):
+                    if v[1]:
+                        chassis = ":".join(["%02x" % ord(c) for c in v[1]])
+                        if mac is not None:
+                            if chassis == mac:
+                                pass
+                            else:
+                                continue
+                    else:
+                        continue
+                    if int(v[3]) > 3 or int(v[3]) < 1:
+                        continue
+                    iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + v[2],
+                            cached=True)  # IF-MIB
+                    if interface is not None:
+                        if iface == interface:
+                            pass
+                        else:
+                            continue
+                    for i in vlan_oid:
+                        if v[0] in i:
+                            vlan_id = int(i.split('.')[0])
+                            break
+                    if vlan is not None:
+                        if vlan_id == vlan:
+                            pass
+                        else:
+                            continue
 
+                    r.append({
+                        "interfaces": [iface],
+                        "mac": chassis,
+                        "type": {"3": "D", "2": "S", "1": "S"}[v[3]],
+                        "vlan_id": vlan_id,
+                        })
+                return r
+            except self.snmp.TimeOutError:
+                pass
+ 
         # Fallback to CLI
         cmd = "show mac address-table"
         if mac is not None:
