@@ -123,8 +123,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "Link Up: {{interface}}",
-                "body_template": "Link Up: {{interface}}",
+                "subject_template": "Link Up: {{interface}}{% if speed %}, Speed: {{speed}}{% endif %}{% if duplex %}, Duplex: {{duplex}}{% endif %}",
+                "body_template": "Link Up: {{interface}}{% if speed %}, Speed: {{speed}}{% endif %}{% if duplex %}, Duplex: {{duplex}}{% endif %}",
                 "symptoms": "Connection restored",
                 "probable_causes": "Administrative action, cable or hardware replacement",
                 "recommended_actions": "Check interfaces on both sides for possible errors"
@@ -136,6 +136,18 @@
                 "description": "Affected interface",
                 "type": "interface_name",
                 "required": true
+            },
+            {
+                "name": "speed",
+                "description": "Link speed",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "duplex",
+                "description": "Duplex mode",
+                "type": "str",
+                "required": false
             }
         ],
         "disposition": [
