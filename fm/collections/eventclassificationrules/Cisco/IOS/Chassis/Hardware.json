@@ -21,7 +21,7 @@
     },
 
     {
-        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error (SYSLOG)",
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #1 (SYSLOG)",
         "description": "%PM_SCP-SP-3-GBIC_BAD: GBIC integrity check on port 1/2 failed: bad key",
         "event_class__name": "Chassis | Hardware | Module | Module Error",
         "preference": 1000,
@@ -39,5 +39,75 @@
                 "value_re": "%PM_SCP-SP-3-GBIC_BAD: (?P<module>\\S+) integrity check on port (?P<interface>\\S+) failed: .+"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #2 (SYSLOG)",
+        "description": "%PM_SCP-SP-3-TRANSCEIVER_BAD_EEPROM: Integrity check on transceiver in LAN port 5/1 failed: bad key",
+        "event_class__name": "Chassis | Hardware | Module | Module Error",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "module",
+                "value": "GBIC"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PM_SCP-SP-3-TRANSCEIVER_BAD_EEPROM: Integrity check on transceiver in LAN port (?P<interface>\\S+) failed: .+"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #3 (SYSLOG)",
+        "description": "%CONST_DIAG-SP-4-ERROR_COUNTER_WARNING: Module 4 Error counter exceeds threshold",
+        "event_class__name": "Chassis | Hardware | Module | Module Error",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%CONST_DIAG-(\\S+)?SP-4-ERROR_COUNTER_WARNING: (?P<module>Module \\S+) Error counter exceeds threshold"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #4 (SYSLOG)",
+        "description": "%DIAG-SP-3-MINOR_HW: Module 1: Online Diagnostics detected Minor Hardware Error",
+        "event_class__name": "Chassis | Hardware | Module | Module Error",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%DIAG-SP-3-(?:MINOR|MAJOR)_HW: (?P<module>Module \\S+) Online Diagnostics detected (?:Minor|Major) Hardware Error"
+            }
+        ]
     }
+
 ]
