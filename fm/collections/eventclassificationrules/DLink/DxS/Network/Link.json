@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) link up"
+                "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) link up, (?P<speed>\\S+)\\s+(?P<duplex>.+duplex)"
             }
         ]
     },
