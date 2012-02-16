@@ -17,12 +17,15 @@ Ext.define("NOC.main.shard.Application", {
         },
         {
             text: "Active",
-            dataIndex: "is_active"
+            dataIndex: "is_active",
+            width: 50,
+            renderer: noc_renderBool
         },
         {
             text: "Description",
-            dataIndex: "description"
-        },
+            dataIndex: "description",
+            flex: true
+        }
     ],
     fields: [
         {
