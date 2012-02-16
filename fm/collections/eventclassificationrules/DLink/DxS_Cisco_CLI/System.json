@@ -18,5 +18,26 @@
                 "value_re": "%DEVICE-5-CHANGED: Device .+ changed state to up"
             }
         ]
+    },
+
+    {
+        "name": "DLink | DxS_Cisco_CLI | System | Insufficient Memory (SYSLOG)",
+        "description": "%BGP-4-MEM_WARNING_START: BGP down due to insufficient memory and will be restarting in 120s",
+        "event_class__name": "System | Insufficient Memory",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS_Cisco_CLI$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%(?:BGP-4-MEM_WARNING_START|NSM-4-MEM_WARNING):"
+            }
+        ]
     }
 ]
