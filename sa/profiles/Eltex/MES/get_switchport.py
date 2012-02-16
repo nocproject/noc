@@ -71,13 +71,15 @@ class Script(NOCScript):
             try:
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
-                for vlan, name in self.snmp.join_tables(
-                    "1.3.6.1.2.1.17.7.1.4.2.1.3", "1.3.6.1.2.1.17.7.1.4.3.1.1",
-                    bulk=True):
+                for v in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.17.7.1.4.2.1.3",
+                    "1.3.6.1.2.1.17.7.1.4.2.1.4",
+                    "1.3.6.1.2.1.17.7.1.4.2.1.5"], bulk=True):
+                    tagged = v[2]
+                    untagged = v[3]
 
-                    oid = "1.3.6.1.2.1.17.7.1.4.2.1.5.0." + str(vlan)
-                    ports = self.snmp.get(oid)
-                    s = hex2bin(ports)
+#                    s = self.hex_to_bin(untagged)
+                    s = hex2bin(untagged)
                     un = []
                     for i in range(len(s)):
                         if s[i] == '1':
@@ -90,12 +92,11 @@ class Script(NOCScript):
                                         "untagged": '',
                                         }
                                     })
-                            port_vlans[iface]["untagged"] = vlan
+                            port_vlans[iface]["untagged"] = v[1]
                             un += [str(i + 1)]
 
-                    oid = "1.3.6.1.2.1.17.7.1.4.2.1.4.0." + str(vlan)
-                    ports = self.snmp.get(oid)
-                    s = hex2bin(ports)
+#                    s = self.hex_to_bin(tagged)
+                    s = hex2bin(tagged)
                     for i in range(len(s)):
                         if s[i] == '1' and str(i + 1) not in un:
                             oid = "1.3.6.1.2.1.31.1.1.1.1." + str(i + 1)
@@ -107,7 +108,7 @@ class Script(NOCScript):
                                         "untagged": '',
                                         }
                                     })
-                            port_vlans[iface]["tagged"].append(vlan)
+                            port_vlans[iface]["tagged"].append(v[1])
 
                 # Get switchport description
                 port_descr = {}
@@ -154,8 +155,10 @@ class Script(NOCScript):
                         swp = {
                                 "status": status,
                                 "description": description,
-                                "802.1Q Enabled": len(port_vlans.get(name, '')) > 0,
-                                "802.1ad Tunnel": vlan_stack_status.get(name, False),
+                                "802.1Q Enabled": len(port_vlans.get(name,
+                                                '')) > 0,
+                                "802.1ad Tunnel": vlan_stack_status.get(name,
+                                                False),
                                 "tagged": tagged,
                                 }
                         if name in port_vlans:

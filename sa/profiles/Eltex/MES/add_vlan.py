@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Eltex.MES.add_vlan
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -21,6 +21,42 @@ class Script(noc.sa.script.Script):
         a = ''
         if not self.scripts.has_vlan(vlan_id=vlan_id):
             a = 1
+        if tagged_ports:
+            ports = ''
+            for port in tagged_ports:
+                if ports:
+                    ports = ports + ',' + port
+                else:
+                    ports = port
+            tagged = ports
+
+        # Try snmp first
+        #
+        #
+        # See bug NOC-291: http://bt.nocproject.org/browse/NOC-291
+        #
+        #
+#        if self.snmp and self.access_profile.snmp_rw:
+#            try:
+#                if a:
+#                    oid = "1.3.6.1.2.1.17.7.1.4.3.1.1." + str(vlan_id)
+#                    self.snmp.set(oid, name)
+#                    oid = "1.3.6.1.2.1.17.7.1.4.3.1.5." + str(vlan_id)
+#                    self.snmp.set(oid, 1)  # or 4
+#                if tagged:
+#                    oid = "1.3.6.1.2.1.17.7.1.4.3.1.1." + str(vlan_id)
+#                    binports = ''
+#                    for i in range(len(max(tagged))):
+#                        if i in tagged:
+#                            binports = binports + '1'
+#                        else:
+#                            binports = binports + '0'
+#                    # TODO: bin_to_hex
+#                    self.snmp.set(oid, self.bin_to_hex(binports))
+#            except self.snmp.TimeOutError:
+#                pass
+
+        # Fallback to CLI
         with self.configure():
             if a:
                 self.cli("vlan database")
@@ -30,13 +66,7 @@ class Script(noc.sa.script.Script):
                 self.cli("name %s" % name)
                 self.cli("exit")
             if tagged_ports:
-                ports = ''
-                for port in tagged_ports:
-                    if ports:
-                        ports = ports + ',' + port
-                    else:
-                        ports = port
-                self.cli("interface range %s" % ports)
+                self.cli("interface range %s" % tagged)
 ### 802.1q
 #                self.cli("switchport general allowed vlan add %d tagged"
 #                    % vlan_id)
