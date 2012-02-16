@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?P<interface>\\S+) link up "
+                "value_re": "(?P<interface>\\S+) link up \\(speed (?P<speed>\\S+), (?P<duplex>\\S+ duplex)\\)"
             }
         ]
     }
