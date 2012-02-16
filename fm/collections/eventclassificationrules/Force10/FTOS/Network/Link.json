@@ -51,7 +51,7 @@
 
     {
         "name": "Force10 | FTOS | Network | Link | Link Up #1 (SNMP)",
-        "description": "Link Down",
+        "description": "Link Up",
         "event_class__name": "Network | Link | Link Up",
         "preference": 1000,
         "patterns": [
