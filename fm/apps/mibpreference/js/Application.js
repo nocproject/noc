@@ -13,7 +13,8 @@ Ext.define("NOC.fm.mibpreference.Application", {
     columns: [
         {
             text: "MIB",
-            dataIndex: "mib"
+            dataIndex: "mib",
+            width: 300
         },
         {
             text: "Pref.",
@@ -21,7 +22,8 @@ Ext.define("NOC.fm.mibpreference.Application", {
         },
         {
             text: "Builtin",
-            dataIndex: "is_builtin"
+            dataIndex: "is_builtin",
+            renderer: noc_renderBool
         }
     ],
     fields: [
