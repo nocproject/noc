@@ -58,7 +58,8 @@ class Script(noc.sa.script.Script):
 ### Configuration file for vlans is in difirent place in eche
 ### Linux distribution. Also I don't find any commands or records in /proc...
         r = []
-        mac = mac.lower()
+        if mac is not None:
+            mac = mac.lower()
         if vlan is not None:
             bridge = 'br' + str(vlan)
             cmd = self.cli("brctl showmacs %s" % bridge)
