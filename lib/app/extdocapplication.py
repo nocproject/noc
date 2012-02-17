@@ -11,7 +11,7 @@ from django.http import HttpResponse
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
-from noc.lib.nosql import StringField, BooleanField, GeoPointField
+from noc.lib.nosql import StringField, BooleanField, GeoPointField, Q
 from noc.sa.interfaces import BooleanParameter, GeoPointParameter
 
 
