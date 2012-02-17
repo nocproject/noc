@@ -9,6 +9,7 @@ console.debug("Defining NOC.core.ModelApplication");
 Ext.define("NOC.core.ModelApplication", {
     extend: "NOC.core.Application",
     layout: "fit",
+    search: false,
 
     initComponent: function() {
         // Permissions
@@ -23,7 +24,9 @@ Ext.define("NOC.core.ModelApplication", {
         var store = Ext.create("Ext.data.Store", {
             model: this.model,
             autoLoad: true,
-            pageSize: 10
+            pageSize: 10,
+            remoteSort: true,
+            remoteFilter: true
         });
         // Setup REST proxy
         store.setProxy(Ext.create("Ext.data.RestProxy", {
@@ -45,6 +48,41 @@ Ext.define("NOC.core.ModelApplication", {
                 type: "json"
             }
         }));
+        // Setup Grid toolbar
+        var grid_toolbar = [];
+        if (this.search) {
+            grid_toolbar = grid_toolbar.concat([
+                {
+                    xtype: "textfield",
+                    name: "search_field",
+                    itemId: "search_field",
+                    emptyText: "Search...",
+                    inputType: "search",
+                    hideLabel: true,
+                    width: 200,
+                    listeners: {
+                        change: {
+                            fn: this.on_search,
+                            scope: this,
+                            buffer: 200
+                        }
+                    }
+                }
+            ]);
+        }
+        grid_toolbar = grid_toolbar.concat([
+            {
+                itemId: "create",
+                text: "Add",
+                iconCls: "icon_add",
+                tooltip: "Add new record",
+                disabled: true,
+                handler: function() {
+                    var app = this.up("panel").up("panel");
+                    app.new_record();
+                }
+            }
+        ]);
         // Initialize panels
         Ext.apply(this, {
             items: [
@@ -59,19 +97,7 @@ Ext.define("NOC.core.ModelApplication", {
                     dockedItems: [
                         {
                             xtype: "toolbar",
-                            items: [
-                                {
-                                    itemId: "create",
-                                    text: "Add",
-                                    iconCls: "icon_add",
-                                    tooltip: "Add new record",
-                                    disabled: true,
-                                    handler: function() {
-                                        var app = this.up("panel").up("panel");
-                                        app.new_record();
-                                    }
-                                }
-                            ]
+                            items: grid_toolbar
                         },
                         {
                             xtype: "pagingtoolbar",
@@ -88,7 +114,7 @@ Ext.define("NOC.core.ModelApplication", {
                                 return;
                             app.edit_record(record);
                         }
-                    },
+                    }
                 },
                 // Form
                 {
@@ -147,8 +173,8 @@ Ext.define("NOC.core.ModelApplication", {
                                     var form = this.up("panel").getForm();
                                     if(!form.isValid())
                                         return;
-                                    var v = form.getValues(),
-                                        app = this.up("panel").up("panel");
+                                    var v = form.getFieldValues();
+                                    var app = this.up("panel").up("panel");
                                     app.save_record(v);
                                 }
                             },
@@ -217,6 +243,15 @@ Ext.define("NOC.core.ModelApplication", {
                 var permissions = Ext.decode(response.responseText);
                 this.set_permissions(permissions);
             }});
+    },
+    // Add shortcuts references
+    afterRender: function() {
+        this.callParent(arguments);
+        var gridpanel = this.items.items[0];
+        var gridtoolbar = gridpanel.dockedItems.items[1];
+        if(this.search) {
+            this.search_field = gridtoolbar.getComponent("search_field");
+        }
     },
     // Toggle Grid/Form
     toggle: function() {
@@ -295,5 +330,16 @@ Ext.define("NOC.core.ModelApplication", {
         store.remove(record);
         store.sync();
         this.toggle();
+    },
+    // Search
+    on_search: function() {
+        var grid = this.down('gridpanel'),
+                   store = grid.store
+        var v = this.search_field.getValue();
+        if(v) {
+            store.load({params: {"__query": v}});
+        } else {
+            store.load();
+        }
     }
 });
