@@ -10,6 +10,7 @@ Ext.define("NOC.fm.mibpreference.Application", {
     extend: "NOC.core.ModelApplication",
     uses: ["NOC.fm.mibpreference.Model"],
     model: "NOC.fm.mibpreference.Model",
+    search: true,
     columns: [
         {
             text: "MIB",
