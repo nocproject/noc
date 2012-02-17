@@ -10,6 +10,7 @@ Ext.define("NOC.gis.srs.Application", {
     extend: "NOC.core.ModelApplication",
     uses: ["NOC.gis.srs.Model"],
     model: "NOC.gis.srs.Model",
+    search: true,
     columns: [
         {
             text: "Auth.",
@@ -21,7 +22,8 @@ Ext.define("NOC.gis.srs.Application", {
         },
         {
             text: "Description",
-            dataIndex: "proj4text"
+            dataIndex: "proj4text",
+            flex: true
         }
     ],
     fields: [
