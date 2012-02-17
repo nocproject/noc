@@ -13,6 +13,7 @@ import glob
 import os
 import urllib
 import hashlib
+import logging
 ## Django modules
 from django.http import HttpResponse, HttpResponseNotFound,\
                         HttpResponseForbidden, Http404
@@ -22,8 +23,9 @@ from django.conf import settings
 from django.utils.simplejson.encoder import JSONEncoder
 from django.utils.encoding import smart_str
 ## NOC modules
-from noc.settings import INSTALLED_APPS
+from noc.settings import INSTALLED_APPS, config
 from noc.lib.debug import get_traceback
+from noc.lib.serialize import json_decode
 
 
 class DynamicMenu(object):
@@ -92,6 +94,8 @@ class Site(object):
         self.reports = []  # app_id -> title
         self.views = ProxyNode()  # Named views proxy
         self.testing_mode = hasattr(settings, "IS_TEST")
+        self.log_api_calls = (config.has_option("main", "log_api_calls") and
+                              config.getboolean("main", "log_api_calls"))
 
     @property
     def urls(self):
@@ -153,6 +157,7 @@ class Site(object):
             if not request.user or not v.access.check(app, request.user):
                 return HttpResponseForbidden()
             try:
+                # Validate requests
                 if (hasattr(v, "validate") and v.validate and
                     issubclass(v.validate, Form)):
                     # Additional validation
@@ -171,6 +176,21 @@ class Site(object):
                         status = 200 if ext_format else 400  # OK or BAD_REQUEST
                         return HttpResponse(r, status=status,
                                             mimetype="text/json; charset=utf-8")
+                # Log API call
+                if v.api and self.log_api_calls:
+                    a = {}
+                    if request.method in ("POST", "PUT"):
+                        ct = request.META.get("CONTENT_TYPE")
+
+                        if ct and ("text/json" in ct or
+                                   "application/json" in ct):
+                            a = json_decode(request.raw_post_data)
+                        else:
+                            a = dict([(k, request.POST[k])
+                                     for k in request.POST])
+                    logging.debug("API %s %s %s" % (request.method,
+                                                    request.path, a))
+                # Call handler
                 r = v(request, *args, **kwargs)
             except PermissionDenied, why:
                 return HttpResponseForbidden(why)
@@ -180,6 +200,7 @@ class Site(object):
                 # Generate 500
                 r = HttpResponse(content=get_traceback(), status=500,
                                  mimetype="text/plain; charset=utf-8")
+            # Serialize response when necessary
             if not isinstance(r, HttpResponse):
                 try:
                     return HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),
