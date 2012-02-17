@@ -14,13 +14,15 @@ from django.db.models import Q
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import BooleanParameter
+from noc.lib.validators import is_int
 
 
 class ExtModelApplication(ExtApplication):
     model = None  # Django model to expose
     icon = "icon_application_view_list"
     query_fields = []  # Use all unique fields by default
-    query_condition = "startswith"
+    query_condition = "startswith"  # Match method for string fields
+    int_query_fields = []  # Query integer fields for exact match
 
     pk_field_name = None  # Set by constructor
 
@@ -55,9 +57,11 @@ class ExtModelApplication(ExtApplication):
                 self.clean_fields[f.name] = BooleanParameter()
         #
         if not self.query_fields:
+            # By default - search in unique text fields
             self.query_fields = ["%s__%s" % (f.name, self.query_condition)
                                  for f in self.model._meta.fields
                                  if f.unique and isinstance(f, CharField)]
+
 
     def get_Q(self, request, query):
         """
@@ -69,8 +73,14 @@ class ExtModelApplication(ExtApplication):
             else:
                 return f
 
-        return reduce(lambda x, y: x | Q(get_q(y)), self.query_fields[1:],
-                      Q(**{get_q(self.query_fields[0]): query}))
+        q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
+                   self.query_fields[1:],
+                   Q(**{get_q(self.query_fields[0]): query}))
+        if self.int_query_fields and is_int(query):
+            v = int(query)
+            for f in self.int_query_fields:
+                q |= Q(**{f: v})
+        return q
 
     def queryset(self, request, query=None):
         """
