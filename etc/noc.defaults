@@ -47,6 +47,8 @@ polling_method = select
 installed_apps =
 # Maximum crashinfo size (in bytes)
 crashinfo_limit = 1000000
+# Log REST API calls and input parameters
+log_api_calls = false
 
 [database]
 # postgresql_psycopg2
