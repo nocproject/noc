@@ -17,3 +17,4 @@ class LanguageApplication(ExtModelApplication):
     title = _("Languages")
     model = Language
     menu = "Setup | Languages"
+    query_fields = ["name__icontains", "native_name__icontains"]
