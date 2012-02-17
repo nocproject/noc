@@ -41,7 +41,8 @@ class Command(BaseCommand):
         "StringField": "CharField",
         "BooleanField": "BooleanField",
         "IntField": "IntegerField",
-        "GeoPointField": "CharField"
+        "GeoPointField": "CharField",
+        "URLField": "CharField"
     }
 
     def compact(self, s):
