@@ -15,10 +15,18 @@ _noc_bool_img = {
 };
 
 //
-// renderBool(v)
+// noc_renderBool(v)
 //     Grid field renderer for boolean values
 //     Displays icons depending on true/false status
 //
 function noc_renderBool(v) {
     return _noc_bool_img[v];
+}
+
+//
+// noc_renderURL(v)
+//      Grid field renderer for URLs
+//
+function noc_renderURL(v) {
+    return "<a href =' " + v + "' target='_'>" + v + "</a>";
 }
