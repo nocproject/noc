@@ -18,3 +18,4 @@ class VendorApplication(ExtDocApplication):
     title = "Vendor"
     menu = "Setup | Vendors"
     model = Vendor
+    query_fields = ["name__icontains", "site__icontains"]

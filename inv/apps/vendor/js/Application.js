@@ -10,6 +10,8 @@ Ext.define("NOC.inv.vendor.Application", {
     extend: "NOC.core.ModelApplication",
     uses: ["NOC.inv.vendor.Model"],
     model: "NOC.inv.vendor.Model",
+    search: true,
+
     columns: [
         {
             text: "Name",
@@ -17,29 +19,33 @@ Ext.define("NOC.inv.vendor.Application", {
         },
         {
             text: "Builtin",
-            dataIndex: "is_builtin"
+            dataIndex: "is_builtin",
+            renderer: noc_renderBool,
+            width: 50
         },
         {
             text: "Site",
-            dataIndex: "site"
+            dataIndex: "site",
+            flex: true,
+            renderer: noc_renderURL
         }
     ],
     fields: [
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "name",
+            fieldLabel: "Name",
             allowBlank: false
         },
         {
             name: "is_builtin",
             xtype: "checkboxfield",
-            boxLabel: "is_builtin"
+            boxLabel: "Is Builtin"
         },
         {
             name: "site",
             xtype: "textfield",
-            fieldLabel: "site",
+            fieldLabel: "Site",
             allowBlank: true
         }
     ]
