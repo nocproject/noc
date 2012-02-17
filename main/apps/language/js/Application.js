@@ -11,6 +11,7 @@ Ext.define("NOC.main.language.Application", {
     uses: ["NOC.main.language.Model"],
     
     model: "NOC.main.language.Model",
+    search: true,
     
     columns: [
         {
@@ -23,7 +24,8 @@ Ext.define("NOC.main.language.Application", {
         },
         {
             text: "Active",
-            dataIndex: "is_active"
+            dataIndex: "is_active",
+            renderer: noc_renderBool
         }
     ],
     
