@@ -13,6 +13,7 @@ from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
 from noc.lib.nosql import StringField, BooleanField, GeoPointField, Q
 from noc.sa.interfaces import BooleanParameter, GeoPointParameter
+from noc.lib.validators import is_int
 
 
 class ExtDocApplication(ExtApplication):
@@ -20,6 +21,7 @@ class ExtDocApplication(ExtApplication):
     icon = "icon_application_view_list"
     query_fields = []  # Use all unique fields by default
     query_condition = "startswith"
+    int_query_fields = []  # Integer fields for exact match
 
     pk_field_name = None  # Set by constructor
 
@@ -70,8 +72,14 @@ class ExtDocApplication(ExtApplication):
             else:
                 return f
 
-        return reduce(lambda x, y: x | Q(get_q(y)), self.query_fields[1:],
-                      Q(**{get_q(self.query_fields[0]): query}))
+        q = reduce(lambda x, y: x | Q(**{get_q(y):query}),
+                   self.query_fields[1:],
+                   Q(**{get_q(self.query_fields[0]): query}))
+        if self.int_query_fields and is_int(query):
+            v = int(query)
+            for f in self.int_query_fields:
+                q |= Q(**{f: v})
+        return q
 
     def queryset(self, request, query=None):
         """
