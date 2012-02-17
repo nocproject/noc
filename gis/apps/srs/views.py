@@ -18,3 +18,5 @@ class SRSApplication(ExtModelApplication):
     title = "SRS"
     menu = "Setup | SRS"
     model = SRS
+    query_fields = ["auth_name__contains", "proj4text__contains"]
+    int_query_fields = ["auth_srid"]
