@@ -156,6 +156,8 @@ class Site(object):
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
             if not request.user or not v.access.check(app, request.user):
                 return HttpResponseForbidden()
+            to_log_api_call = (self.log_api_calls and
+                               hasattr(v, "api") and v.api)
             try:
                 # Validate requests
                 if (hasattr(v, "validate") and v.validate and
@@ -177,7 +179,7 @@ class Site(object):
                         return HttpResponse(r, status=status,
                                             mimetype="text/json; charset=utf-8")
                 # Log API call
-                if self.log_api_calls and hasattr(v, "api") and v.api:
+                if to_log_api_call:
                     a = {}
                     if request.method in ("POST", "PUT"):
                         ct = request.META.get("CONTENT_TYPE")
@@ -197,8 +199,11 @@ class Site(object):
             except Http404, why:
                 return HttpResponseNotFound(why)
             except:
+                tb = get_traceback()
+                if to_log_api_call:
+                    logging.error(tb)
                 # Generate 500
-                r = HttpResponse(content=get_traceback(), status=500,
+                r = HttpResponse(content=tb, status=500,
                                  mimetype="text/plain; charset=utf-8")
             # Serialize response when necessary
             if not isinstance(r, HttpResponse):
