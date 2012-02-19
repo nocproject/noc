@@ -1,0 +1,13 @@
+/*
+ * NOC ExtJS extensions CSS
+ */
+
+/*
+ * GeoField
+ */
+.noc-geo-wrap {
+}
+
+.noc-geo-lon, .noc-geo-lat {
+    display: inline-block;
+}
