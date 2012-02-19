@@ -8,7 +8,10 @@ console.debug("Defining NOC.gis.area.Application");
 
 Ext.define("NOC.gis.area.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.gis.area.Model"],
+    uses: [
+        "NOC.gis.area.Model",
+        "Ext.ux.form.GeoField"
+    ],
     model: "NOC.gis.area.Model",
     columns: [
         {
@@ -45,23 +48,23 @@ Ext.define("NOC.gis.area.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "name",
+            fieldLabel: "Name",
             allowBlank: true
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "is_active"
+            boxLabel: "Active"
         },
         {
             name: "SW",
-            xtype: "textfield",
+            xtype: "geofield",
             fieldLabel: "SW",
             allowBlank: true
         },
         {
             name: "NE",
-            xtype: "textfield",
+            xtype: "geofield",
             fieldLabel: "NE",
             allowBlank: true
         },
