@@ -177,7 +177,7 @@ class Site(object):
                         return HttpResponse(r, status=status,
                                             mimetype="text/json; charset=utf-8")
                 # Log API call
-                if v.api and self.log_api_calls:
+                if self.log_api_calls and hasattr(v, "api") and v.api:
                     a = {}
                     if request.method in ("POST", "PUT"):
                         ct = request.META.get("CONTENT_TYPE")
