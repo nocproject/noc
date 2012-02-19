@@ -20,6 +20,8 @@ Ext.define("NOC.core.ModelApplication", {
         // set base_url
         var n = this.self.getName().split(".");
         this.base_url = "/" + n[1] + "/" + n[2] + "/";
+        // Variables
+        this.current_query = {};
         // Create store
         var store = Ext.create("Ext.data.Store", {
             model: this.model,
@@ -247,9 +249,11 @@ Ext.define("NOC.core.ModelApplication", {
     // Add shortcuts references
     afterRender: function() {
         this.callParent(arguments);
-        var gridpanel = this.items.items[0];
-        var gridtoolbar = gridpanel.dockedItems.items[1];
+        this.grid = this.down("gridpanel");
+        this.store = this.grid.store;
+        //var gridpanel = this.items.items[0];
         if(this.search) {
+            var gridtoolbar = this.grid.dockedItems.items[1];
             this.search_field = gridtoolbar.getComponent("search_field");
         }
     },
@@ -324,22 +328,22 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Delete record
     delete_record: function() {
-        var grid = this.down('gridpanel'),
-            store = grid.store,
-            record = grid.getSelectionModel().getLastSelected();
-        store.remove(record);
-        store.sync();
+        var record = this.grid.getSelectionModel().getLastSelected();
+        this.store.remove(record);
+        this.store.sync();
         this.toggle();
+    },
+    // Reload store with current query
+    refresh_store: function() {
+        this.store.load(this.current_query);
     },
     // Search
     on_search: function() {
-        var grid = this.down('gridpanel'),
-                   store = grid.store
         var v = this.search_field.getValue();
-        if(v) {
-            store.load({params: {"__query": v}});
-        } else {
-            store.load();
-        }
+        if(v)
+            this.current_query = {params: {"__query": v}};
+        else
+            this.current_query = {};
+        this.refresh_store();
     }
 });
