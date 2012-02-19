@@ -22,7 +22,7 @@ Ext.define("NOC.gis.area.Model", {
         },
         {
             name: "NE",
-            type: "string"
+            type: "auto"
         },
         {
             name: "name",
@@ -30,7 +30,7 @@ Ext.define("NOC.gis.area.Model", {
         },
         {
             name: "SW",
-            type: "string"
+            type: "auto"
         },
         {
             name: "min_zoom",
