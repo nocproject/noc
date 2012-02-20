@@ -35,7 +35,7 @@ class Script(NOCScript):
         re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id_subtype = re.compile(
         r"Port ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id = re.compile(r"Port ID\s+: (.*[:/])*(?P<port>.+)",
+    rx_remote_port_id = re.compile(r"Port ID\s+: (\d+[:/])?(?P<port>.+)",
         re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id2 = re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)",
         re.IGNORECASE)
@@ -122,6 +122,8 @@ class Script(NOCScript):
                 elif remote_port_subtype == "Network Address":
                     n["remote_port_subtype"] = 4
                 elif remote_port_subtype == "Interface Name":
+                    n["remote_port_subtype"] = 5
+                elif remote_port_subtype == "INTERFACE_NAME":
                     n["remote_port_subtype"] = 5
                 elif remote_port_subtype == "Agent Circuit ID":
                     n["remote_port_subtype"] = 6
