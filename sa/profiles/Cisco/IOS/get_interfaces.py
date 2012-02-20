@@ -62,7 +62,8 @@ class Script(NOCScript):
            "Gr": 'physical',    # Group-Async
            "Po": 'aggregated',  # Port-channel/Portgroup
            "Ce": 'physical',    # Cellular
-           "SR": 'physical'     # Spatial Reuse Protocol
+           "SR": 'physical',    # Spatial Reuse Protocol
+           "PO": 'physical'     # Packet OC-3 Port Adapter
            }
 
     def get_ospfint(self):
