@@ -55,7 +55,10 @@ Ext.define("NOC.main.pyrule.Application", {
             xtype: "textareafield",
             fieldLabel: "Text",
             allowBlank: false,
-            anchor: "100%"
+            anchor: "100%",
+            fieldStyle: {
+                fontFamily: "Courier"
+            }
         },
         {
             name: "is_builtin",
