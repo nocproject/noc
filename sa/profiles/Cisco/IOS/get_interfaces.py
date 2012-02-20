@@ -61,7 +61,8 @@ class Script(NOCScript):
            "MF": 'aggregated',  # Multilink Frame Relay
            "Gr": 'physical',    # Group-Async
            "Po": 'aggregated',  # Port-channel/Portgroup
-           "Ce": 'physical'     # Cellular
+           "Ce": 'physical',    # Cellular
+           "SR": 'physical'     # Spatial Reuse Protocol
            }
 
     def get_ospfint(self):
