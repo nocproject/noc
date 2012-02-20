@@ -123,7 +123,10 @@ class ExtModelApplication(ExtApplication):
         r = {}
         for f in o._meta.local_fields:
             if f.rel is None:
-                r[f.name] = f._get_val_from_obj(o)
+                v = f._get_val_from_obj(o)
+                if type(v) not in (str, unicode, int, long, bool):
+                    v = unicode(v)
+                r[f.name] = v
             else:
                 r[f.name] = getattr(o, f.name)._get_pk_val()
         return r
