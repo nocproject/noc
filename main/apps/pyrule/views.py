@@ -18,3 +18,4 @@ class PyRuleApplication(ExtModelApplication):
     title = "PyRule"
     menu = "Setup | PyRule"
     model = PyRule
+    query_fields = ["name__icontains"]
