@@ -115,6 +115,11 @@ class Script(NOCScript):
                 # 0 is reserved
                 if remote_port_subtype == "Interface Alias":
                     n["remote_port_subtype"] = 1
+                if remote_port_subtype == "INTERFACE_ALIAS":
+                    n["remote_port_subtype"] = 1
+                # DES-3526 6.00 B48 and DES-3526 6.00 B49
+                if remote_port_subtype == "NTERFACE_ALIAS":
+                    n["remote_port_subtype"] = 1
                 elif remote_port_subtype == "Port Component":
                     n["remote_port_subtype"] = 2
                 elif remote_port_subtype == "MAC Address":
