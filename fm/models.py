@@ -1121,6 +1121,9 @@ EVENT_STATUS_NAME = {
 
 
 class EventLog(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False,
+    }
     timestamp = nosql.DateTimeField()
     from_status = nosql.StringField(max_length=1,
                                     regex=r"^[NFAS]$", required=True)
