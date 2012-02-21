@@ -189,27 +189,6 @@
     },
 
     {
-        "name": "DLink | DxS | Security | Authentication | AAA Server Connection Failed (SYSLOG)",
-        "description": "WARN: AAA server 172.16.35.2 (Protocol: RADIUS) connection failed",
-        "event_class__name": "Security | Authentication | Authentication Failed",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^DLink\\.DxS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "(?:WARN:|WARN\\(4\\)) AAA server .+ \\(Protocol: .+\\) connection failed"
-            }
-        ]
-    },
-
-    {
         "name": "DLink | DxS | Security | Authentication | Privilege Level Changed (SYSLOG)",
         "description": "INFO: Successful Enable Admin through Telnet from 192.168.133.100 authenticated by AAA local_enable method (Username: admin)",
         "event_class__name": "Security | Authentication | Privilege Level Changed",
