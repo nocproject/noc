@@ -166,7 +166,9 @@ class Rule(object):
                 except KeyError:
                     pass
             # Calculate dynamic defaults
-            context = dict([(k, v(vars)) for k, v in self.datasources.items()])
+            ds_vars = vars.copy()
+            ds_vars["managed_object"] = e.managed_object
+            context = dict([(k, v(ds_vars)) for k, v in self.datasources.items()])
             context.update(vars)
             for k, v in self.d_defaults.items():
                 x = eval(v, {}, context)
