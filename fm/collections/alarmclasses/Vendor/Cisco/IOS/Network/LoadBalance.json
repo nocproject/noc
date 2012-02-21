@@ -18,12 +18,18 @@
                 "description": "vserver name",
                 "type": "str",
                 "required": true
+            },
+            {
+                "name": "farm",
+                "description": "serverfarm name",
+                "type": "str",
+                "required": false
             }
         ],
         "text": {
             "en": {
-                "subject_template": "SLB vserver {{name}} is out of service at module {{module}}",
-                "body_template": "SLB vserver {{name}} is out of service at module {{module}}",
+                "subject_template": "SLB vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
+                "body_template": "SLB vserver {{name}} is out of service at module {{module}}{% if farm %}, serverfarm {{farm}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
