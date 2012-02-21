@@ -35,9 +35,9 @@ class Script(NOCScript):
         re.MULTILINE | re.IGNORECASE)
     rx_remote_port_id_subtype = re.compile(
         r"Port ID Subtype\s+: (?P<subtype>.+)", re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id = re.compile(r"Port ID\s+: (\d+[:/])?(?P<port>.+)",
+    rx_remote_port_id = re.compile(r"Port ID\s+: (\d+[/])?(?P<port>.+)",
         re.MULTILINE | re.IGNORECASE)
-    rx_remote_port_id2 = re.compile(r"RMON Port (.*[:/])*(?P<port>\d+)",
+    rx_remote_port_id2 = re.compile(r"RMON Port (.*[/])*(?P<port>\d+)",
         re.IGNORECASE)
     rx_remote_system_name = re.compile(r"System Name\s+: (?P<name>.+)",
         re.MULTILINE | re.IGNORECASE)
