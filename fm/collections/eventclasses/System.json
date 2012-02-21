@@ -142,6 +142,13 @@
                 "probable_causes": "",
                 "recommended_actions": ""
             }
-        }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name" : "System | Insufficient Memory"
+            }
+        ]
     }
 ]
