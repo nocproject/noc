@@ -89,5 +89,37 @@
                 "recommended_actions": ""
             }
         }
+    },
+
+    {
+        "name": "Chassis | Hardware | Module | Module Error",
+        "description": "Hardware module error",
+        "is_unique": true,
+        "discriminator": ["module"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "module",
+                "description": "Module type",
+                "type": "str",
+                "required": true
+            },
+            {
+                "name": "interface",
+                "description": "Hardware port or slot",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Hardware module {{module}} error{% if interface %}, interface {{interface}}{% endif %}",
+                "body_template": "Hardware module {{module}} error{% if interface %}, interface {{interface}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
     }
 ]
