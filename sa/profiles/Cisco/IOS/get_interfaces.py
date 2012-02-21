@@ -42,29 +42,32 @@ class Script(NOCScript):
     rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?)$", re.IGNORECASE)
 
     types = {
-           "Lo": 'loopback',    # Loopback
+           "As": 'physical',    # Async
+           "AT": 'physical',    # ATM
+           "BV": 'aggregated',  # BVI
+           "Bu": 'aggregated',  # Bundle
+           "C": 'physical',
+           "Ca": 'physical',    # Cable
+           "CD": 'physical',    # CDMA Ix
+           "Ce": 'physical',    # Cellular
            "Et": 'physical',    # Ethernet
            "Fa": 'physical',    # FastEthernet
            "Gi": 'physical',    # GigabitEthernet
-           "Te": 'physical',    # TenGigabitEthernet
-           "Se": 'physical',    # Serial
-           "M": 'management',
-           "R": 'aggregated',
-           "Tu": 'tunnel',
-           "C": 'physical',
-           "Vl": 'SVI',         # Vlan
-           "VL": 'SVI',         # VLAN, found on C3500XL
-           "Ca": 'physical',    # Cable
-           "As": 'physical',    # Async
-           "BV": 'aggregated',  # BVI
-           "Bu": 'aggregated',  # Bundle
-           "MF": 'aggregated',  # Multilink Frame Relay
            "Gr": 'physical',    # Group-Async
-           "Po": 'aggregated',  # Port-channel/Portgroup
-           "Ce": 'physical',    # Cellular
-           "SR": 'physical',    # Spatial Reuse Protocol
+           "Lo": 'loopback',    # Loopback
+           "M": 'management',
+           "MF": 'aggregated',  # Multilink Frame Relay
+           "Mu": 'aggregated',  # Multilink-group interface
            "PO": 'physical',    # Packet OC-3 Port Adapter
-           "AT": 'physical'     # ATM
+           "Po": 'aggregated',  # Port-channel/Portgroup
+           "R": 'aggregated',
+           "SR": 'physical',    # Spatial Reuse Protocol
+           "Se": 'physical',    # Serial
+           "Te": 'physical',    # TenGigabitEthernet
+           "Tu": 'tunnel',      # Tunnel
+           "VL": 'SVI',         # VLAN, found on C3500XL
+           "Vl": 'SVI',         # Vlan
+           "XT": 'SVI'          # Extended Tag ATM
            }
 
     def get_ospfint(self):
