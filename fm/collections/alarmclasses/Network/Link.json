@@ -47,16 +47,34 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+                {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
                 "description": "interface name"
+            },
+
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Link down: {{interface}}",
-                "body_template": "Link down: {{interface}}",
+                "subject_template": "Link down: {{interface}}{% if description %} ({{description}}){% endif %}",
+                "body_template": "Link down: {{interface}}{% if description %} ({{description}}){% endif %}",
                 "symptoms": "Connection lost",
                 "probable_causes": "Administrative action, cable damage, hardware or software error either from this or from another side",
                 "recommended_actions": "Check configuration, both sides of links and hardware"
