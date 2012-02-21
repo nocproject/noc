@@ -35,6 +35,8 @@ def get_version():
             lr = localrepo.localrepository(ui.ui(), path=".")  # Repo
             tip = lr.changelog.tip()  # tip revision
             tags = lr.tags()
+            if "tip" in tags:
+                del tags["tip"]
             if tip not in tags.values():
                 # Add changeset if not tagged revision
                 rev = lr.changelog.rev(lr.changelog.tip())
