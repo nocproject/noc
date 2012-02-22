@@ -26,12 +26,19 @@ class Script(noc.sa.script.Script):
             pc, rest = l.split(" ", 1)
             pc = pc[2:]
             v = self.cli("show interfaces port-channel %s | i Members in this channel" % pc).strip()
-            if not v or not v.startswith("Members in this channel"):
+            if not v:
                 continue
-            x, y = v.split(":", 1)
-            r += [{
-                "interface": "Po %s" % pc,
-                "members": y.strip().split(),
-                "type": "L",  # <!> TODO: port-channel type detection
-            }]
+            if v.startswith("Members in this channel"):
+                x, y = v.split(":", 1)
+                r += [{
+                    "interface": "Po %s" % pc,
+                    "members": y.strip().split(),
+                    "type": "L",  # <!> TODO: port-channel type detection
+                }]
+            else:
+                r += [{
+                    "interface": "Po %s" % pc,
+                    "members": [],
+                    "type": "L",  # <!> TODO: port-channel type detection
+                }]
         return r
