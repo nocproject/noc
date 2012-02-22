@@ -21,7 +21,7 @@ class Profile(NOCProfile):
         (r"\?\s*\[confirm\]", "\n")
     ]
     pattern_unpriveleged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:"
+    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure terminal"
