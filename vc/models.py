@@ -92,7 +92,7 @@ class VCDomain(models.Model):
         for x, y in chunks:
             if x > y or y < l_min or x > l_max:
                 continue  # Skip chunk outside of type's range
-            for l in range(l_min, l_max + 1):
+            for l in range(max(l_min, x), min(l_max, y) + 1):
                 if not VC.objects.filter(vc_domain=self, l1=l).exists():
                     return l  # Return first free found
         return None  # Nothing found
