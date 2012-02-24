@@ -82,5 +82,15 @@
     {
         "mib": "FOUNDRY-SN-IP-VRRP-MIB",
         "preference": 3350
+    },
+
+    {
+        "mib": "SWPRIMGMT-MIB",
+        "preference": 4500
+    },
+
+    {
+        "mib": "SWPRIMGMT-DES30XXP-MIB",
+        "preference": 4600
     }
 ]
