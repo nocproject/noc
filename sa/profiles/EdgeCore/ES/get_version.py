@@ -33,11 +33,17 @@ class Script(NOCScript):
                 oid = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
                 if oid == "":
                     raise self.snmp.TimeOutError  # Fallback to CLI
-                oid = oid[1: -1].replace(", ", ".")
-                # 3526-Style OID
-                v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
+                if ", " in oid:
+                    oid = oid[1: -1].replace(", ", ".")
+                if oid[-3:] == "2.4":
+                    # 3528M-SFP OID (v1.4.x.x)
+                    v = self.snmp.get(oid[: -3] + "1.4.1.1.3.1.6.1",
+                        cached=True)
+                else:
+                    # 3526-Style OID
+                    v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
                 if v == "":
-                # 4626-Style OID
+                    # 4626-Style OID
                     v = self.snmp.get(oid + ".100.1.3.0", cached=True)
                     if v == "":
                         raise self.snmp.TimeOutError  # Fallback to CLI
@@ -58,8 +64,12 @@ class Script(NOCScript):
     ##
     ## 35xx
     ##
-    rx_sys_35 = re.compile(r"^\s*System description\s*:\s(?P<platform>.+?)\s*$", re.MULTILINE | re.IGNORECASE)
-    rx_ver_35 = re.compile(r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$", re.MULTILINE | re.IGNORECASE)
+    rx_sys_35 = re.compile(
+        r"^\s*System description\s*:\s(?P<platform>.+?)\s*$",
+        re.MULTILINE | re.IGNORECASE)
+    rx_ver_35 = re.compile(
+        r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$",
+        re.MULTILINE | re.IGNORECASE)
 
     def get_version_35xx(self, show_system, version):
         # Detect version
@@ -103,8 +113,11 @@ class Script(NOCScript):
     ##
     ## ES4626
     ##
-    rx_sys_4 = re.compile(r"BootRom Version\s+.*?(?P<platform>ES.+?)_", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_ver_4 = re.compile(r"SoftWare (Package )?Version.*?_(?P<version>\d.+?)$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_sys_4 = re.compile(r"BootRom Version\s+.*?(?P<platform>ES.+?)_",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ver_4 = re.compile(
+        r"SoftWare (Package )?Version.*?_(?P<version>\d.+?)$",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def get_version_4xxx(self, v, version):
         if not v:
