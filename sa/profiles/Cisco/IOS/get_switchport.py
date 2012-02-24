@@ -19,7 +19,7 @@ class Script(NOCScript):
     cache = True
     implements = [IGetSwitchport]
 
-    rx_line = re.compile(r"\n\nName:\s+", re.MULTILINE)
+    rx_line = re.compile(r"\n+Name:\s+", re.MULTILINE)
     rx_body = re.compile(r"^(?P<interface>\S+).+^Administrative Mode: (?P<amode>.+).+^Operational Mode: (?P<omode>.+).+^Administrative Trunking Encapsulation:.+^Access Mode VLAN: (?P<avlan>\d+) \(.+\).+Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+Trunking VLANs Enabled: (?P<vlans>.+)Pruning VLANs Enabled:", re.MULTILINE | re.DOTALL)
 
     rx_descr_if = re.compile(r"^(?P<interface>\S+)\s+(?:up|down|admin down|deleted)\s+(?:up|down)\s+(?P<description>.+)")
@@ -49,20 +49,20 @@ class Script(NOCScript):
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_body.search(s)
             if not match:
-                raise self.NotSupportedError()
+                continue  #raise self.NotSupportedError()
 
             interface = match.group("interface")
             trunk = match.group("amode").strip() == "trunk"
 
             if trunk:
-                untagged = match.group("nvlan")
+                untagged = int(match.group("nvlan"))
                 vlans = match.group("vlans").strip()
                 if vlans == "ALL":
                     tagged = range(1, 4095)
                 else:
                     tagged = self.expand_rangelist(vlans)
             else:
-                untagged = match.group("avlan")
+                untagged = int(match.group("avlan"))
                 tagged = []
 
             shortname = self.profile.convert_interface_name(interface)
@@ -76,11 +76,12 @@ class Script(NOCScript):
                 "interface": interface,
                 "status": match.group("omode").strip() != "down",
                 "tagged": tagged,
-                "untagged": int(untagged),
                 "members": members,
                 "802.1Q Enabled": trunk,
                 "802.1ad Tunnel": False,
             }
+            if untagged:
+                iface[untagged] = untagged
 
             for p in self.get_description():
                 if p["interface"] == shortname:
