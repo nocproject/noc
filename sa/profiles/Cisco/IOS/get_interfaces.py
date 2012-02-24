@@ -9,10 +9,10 @@
 """
 # Python modules
 import re
+from collections import defaultdict
 # NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
-from noc.sa.interfaces import base
 from noc.sa.profiles.Cisco.IOS import uBR
 
 
@@ -33,41 +33,44 @@ class Script(NOCScript):
 
     rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)\s(?:\((?:connected|notconnect)\)\s*)?\n\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?(?:\s+Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})\n)?[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
        re.MULTILINE | re.IGNORECASE)
+    rx_sh_ip_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+",
+           re.IGNORECASE)
     rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
         re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
     rx_sec_ip = re.compile(r"Secondary address (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
     rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
+    rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?)$", re.IGNORECASE)
 
     types = {
-           "As": 'physical',    # Async
-           "AT": 'physical',    # ATM
-           "BV": 'aggregated',  # BVI
-           "Bu": 'aggregated',  # Bundle
-           "C": 'physical',
-           "Ca": 'physical',    # Cable
-           "CD": 'physical',    # CDMA Ix
-           "Ce": 'physical',    # Cellular
-           "Et": 'physical',    # Ethernet
-           "Fa": 'physical',    # FastEthernet
-           "Gi": 'physical',    # GigabitEthernet
-           "Gr": 'physical',    # Group-Async
-           "Lo": 'loopback',    # Loopback
-           "M": 'management',
-           "MF": 'aggregated',  # Multilink Frame Relay
-           "Mu": 'aggregated',  # Multilink-group interface
-           "PO": 'physical',    # Packet OC-3 Port Adapter
-           "Po": 'aggregated',  # Port-channel/Portgroup
-           "R": 'aggregated',
-           "SR": 'physical',    # Spatial Reuse Protocol
-           "Se": 'physical',    # Serial
-           "Te": 'physical',    # TenGigabitEthernet
-           "Tu": 'tunnel',      # Tunnel
-           "VL": 'SVI',         # VLAN, found on C3500XL
-           "Vl": 'SVI',         # Vlan
-           "XT": 'SVI'          # Extended Tag ATM
+           "As": "physical",    # Async
+           "AT": "physical",    # ATM
+           "BV": "aggregated",  # BVI
+           "Bu": "aggregated",  # Bundle
+           "C": "physical",     # @todo: fix
+           "Ca": "physical",    # Cable
+           "CD": "physical",    # CDMA Ix
+           "Ce": "physical",    # Cellular
+           "Et": "physical",    # Ethernet
+           "Fa": "physical",    # FastEthernet
+           "Gi": "physical",    # GigabitEthernet
+           "Gr": "physical",    # Group-Async
+           "Lo": "loopback",    # Loopback
+           "M": "management",   # @todo: fix
+           "MF": "aggregated",  # Multilink Frame Relay
+           "Mu": "aggregated",  # Multilink-group interface
+           "PO": "physical",    # Packet OC-3 Port Adapter
+           "Po": "aggregated",  # Port-channel/Portgroup
+           "R": "aggregated",   # @todo: fix
+           "SR": "physical",    # Spatial Reuse Protocol
+           "Se": "physical",    # Serial
+           "Te": "physical",    # TenGigabitEthernet
+           "Tu": "tunnel",      # Tunnel
+           "VL": "SVI",         # VLAN, found on C3500XL
+           "Vl": "SVI",         # Vlan
+           "XT": "SVI"          # Extended Tag ATM
            }
 
     def get_ospfint(self):
@@ -79,46 +82,31 @@ class Script(NOCScript):
         for s in v.split("\n"):
             match = self.rx_ospf.search(s)
             if match:
-                ospfs.append(match.group('name'))
+                ospfs += [match.group("name")]
         return ospfs
 
-    def map_vlans_to_ports(self, data):
-        pvm = {}
-        for l in data.split('\n'):
-            match = self.rx_vlan_line.search(l)
-            if match:
-                ports = match.group("ports")
-                vlan_id = int(match.group("vlan_id"))
-                for i in ports.split(', '):
-                    if not i in pvm.keys():
-                        pvm[i] = ['%s' % vlan_id]
-                    else:
-                        pvm[i] += '%s' % vlan_id
-        return pvm
-
-    ##
     ## Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
-    ##
     rx_vlan_ubr = re.compile(
         r"^\w{4}\.\w{4}\.\w{4}\s(?P<port>\S+)\s+(?P<vlan_id>\d{1,4})")
 
     def get_ubr_pvm(self):
         vlans = self.cli("show cable l2-vpn dot1q-vc-map")
         pvm = {}
-        for l in vlans.split('\n'):
+        for l in vlans.split("\n"):
             match = self.rx_vlan_ubr.search(l)
             if match:
                 port = match.group("port")
                 vlan_id = int(match.group("vlan_id"))
-                if not port in pvm.keys():
-                    pvm[port] = ['%s' % vlan_id]
+                if port not in pvm:
+                    pvm[port] = ["%s" % vlan_id]
                 else:
-                    pvm[port] += ['%s' % vlan_id]
+                    pvm[port] += ["%s" % vlan_id]
         return pvm
 
     def execute(self):
         # Get port-to-vlan mappings
         pvm = {}
+        switchports = {}  # interface -> (untagged, tagged)
         if self.match_version(uBR):
             # uBR series
             pvm = self.get_ubr_pvm()
@@ -130,7 +118,11 @@ class Script(NOCScript):
                 except self.CLISyntaxError:
                     continue
             if vlans:
-                pvm = self.map_vlans_to_ports(vlans)
+                for sp in self.scripts.get_switchport():
+                    switchports[sp["interface"]] = (
+                        sp["untagged"] if "untagged" in sp else None,
+                        sp["tagged"]
+                    )
         # Get portchannels
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
@@ -138,90 +130,119 @@ class Script(NOCScript):
             t = pc["type"] == "L"
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
+        # Get IP interfaces
+        ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
+        ipv6_interfaces = defaultdict(list)  # interface -> [ipv6 addresses]
+        c_iface = None
+        for l in self.cli("show ip interface").splitlines():
+            match = self.rx_sh_ip_int.search(l)
+            if match:
+                c_iface = self.profile.convert_interface_name(
+                    match.group("interface"))
+                continue
+            # Primary ip
+            match = self.rx_ip.search(l)
+            if not match:
+                # Secondary ip
+                match = self.rx_sec_ip.search(l)
+                if not match:
+                    continue
+            ip = match.group("ip")
+            if ":" in ip:
+                ipv6_interfaces[c_iface] += [ip]
+            else:
+                ipv4_interfaces[c_iface] += [ip]
+        #
         interfaces = []
-        subinterfaces = []
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
 
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
-            ifname = match.group('interface')
-            if ifname[:2] in ['Vi', 'Tu', 'Di', 'GM']:
+            ifname = self.profile.convert_interface_name(
+                match.group("interface"))
+            if ifname[:2] in ["Vi", "Tu", "Di", "GM"]:
                 continue
-            if ifname.find(':') > 0:
-                inm = ifname.split(':')[0]
-                if inm != interfaces[-1]['name']:
+            if ":" in ifname:
+                inm = ifname.split(":")[0]
+                if inm != interfaces[-1]["name"]:
                     iface = {
-                        'name': inm, 'admin_status': True,
-                        'oper_status': True, 'type': 'physical'
+                        "name": inm,
+                        "admin_status": True,
+                        "oper_status": True,
+                        "type": "physical"
                     }
-                    interfaces.append(iface)
-            a_stat = match.group('admin_status').lower() == "up"
-            o_stat = match.group('oper_status').lower() == "up"
-            hw = match.group('hardw')
+                    interfaces += [iface]
+            a_stat = match.group("admin_status").lower() == "up"
+            o_stat = match.group("oper_status").lower() == "up"
+            hw = match.group("hardw")
             sub = {
-                    "name": ifname,
-                    "admin_status": a_stat,
-                    "oper_status": o_stat,
-                    }
-            if 'alias' in match.groups():
-                sub['description'] = match.group('alias')
-            if match.group('desc'):
-                sub["description"] = match.group('desc')
+                "name": ifname,
+                "admin_status": a_stat,
+                "oper_status": o_stat,
+            }
+            if "alias" in match.groups():
+                sub["description"] = match.group("alias")
+            if match.group("desc"):
+                sub["description"] = match.group("desc")
             matchmac = self.rx_mac.search(hw)
             if matchmac:
-                sub['mac'] = matchmac.group('mac')
+                sub["mac"] = matchmac.group("mac")
             if ifname in portchannel_members:
                 iface["aggregated_interface"] = portchannel_members[ifname][0]
                 iface["is_lacp"] = portchannel_members[ifname][1]
+            elif ifname in switchports:
+                sub["is_bridge"] = True
+                u, t = switchports[ifname]
+                if u:
+                    sub["untagged_vlan"] = u
+                if t:
+                    sub["tagged_vlans"] = t
 
-            #Static vlans
-            if match.group('encaps'):
-                encaps = match.group('encaps')
-                if encaps[:6] == '802.1Q':
-                    sub['vlan_ids'] = [encaps.split(',')[1].split()[2][:-1]]
-            #vtp
+            # Static vlans
+            if match.group("encaps"):
+                encaps = match.group("encaps")
+                if encaps[:6] == "802.1Q":
+                    sub["vlan_ids"] = [encaps.split(",")[1].split()[2][:-1]]
+            # vtp
+            # uBR ?
             if ifname in pvm:
-                sub['vlan_ids'] = pvm[ifname]
-
-            if match.group('ip'):
-                    ip = match.group('ip')
-                    sub['ipv4_addresses'] = [base.IPv4PrefixParameter().clean(ip)]
-                    sub['is_ipv4'] = True
-            #Have to check for the secondary ip via 'show ip interface'
-                    sh_ip = self.cli("show ip interface %s" % ifname)
-                    for i in sh_ip.split('\n'):
-                        matchsec = self.rx_sec_ip.search(i)
-                        if matchsec:
-                            ip = matchsec.group('ip')
-                            sub['ipv4_addresses'] += [base.IPv4PrefixParameter().clean(ip)]
-
+                sub["vlan_ids"] = pvm[ifname]
+            # IPv4/Ipv6
+            if match.group("ip"):
+                if ifname in ipv4_interfaces:
+                    sub["is_ipv4"] = True
+                    sub["ipv4_addresses"] = ipv4_interfaces[ifname]
+                if ifname in ipv6_interfaces:
+                    sub["is_ipv6"] = True
+                    sub["ipv6_addresses"] = ipv6_interfaces[ifname]
             matchifn = self.rx_cisco_interface_name.match(ifname)
-            shotn = matchifn.group("type").capitalize() + matchifn.group("number")
+            shotn = (matchifn.group("type").capitalize() +
+                     matchifn.group("number"))
             if shotn in ospfs:
-                    sub['is_ospf'] = True
-            phys = len(ifname.split('.')) + len(ifname.split(':'))
+                sub["is_ospf"] = True
+            phys = len(ifname.split(".")) + len(ifname.split(":"))
             if phys == 2:
                 iface = {
                     "name": ifname,
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "type": self.types[ifname[:2]],
-                    'subinterfaces': [sub]
+                    "subinterfaces": [sub]
                 }
-                if match.group('desc'):
-                    iface["description"] = match.group('desc')
-                if 'mac' in sub.keys():
-                    iface['mac'] = sub['mac']
-                if 'alias' in sub.keys():
-                    iface['alias'] = sub['alias']
+                if match.group("desc"):
+                    iface["description"] = match.group("desc")
+                if "mac" in sub:
+                    iface["mac"] = sub["mac"]
+                if "alias" in sub:
+                    iface["alias"] = sub["alias"]
                 # Set VLAN IDs for SVI
-                if iface['type'] == "SVI":
+                if iface["type"] == "SVI":
                     sub["vlan_ids"] = [int(shotn[2:].strip())]
                 interfaces += [iface]
             else:
-                if 'subinterfaces' in interfaces[-1].keys():
-                    interfaces[-1]['subinterfaces'].append(sub)
-                else:
-                    interfaces[-1]['subinterfaces'] = [sub]
+                try:
+                    interfaces[-1]["subinterfaces"] += [sub]
+                except KeyError:
+                    interfaces[-1]["subinterfaces"] = [sub]
         return [{"interfaces": interfaces}]
