@@ -9,9 +9,6 @@
 ## Python modules
 from __future__ import with_statement
 import os
-import types
-import re
-import cPickle
 import base64
 import random
 ## Django modules
@@ -22,10 +19,7 @@ from django.test.client import Client, MULTIPART_CONTENT
 from django.utils.http import urlencode
 ## NOC modules
 from noc.lib.serialize import json_encode, json_decode
-from noc.sa.models import script_registry, profile_registry
-from noc.sa.protocols.sae_pb2 import *
 from noc.main.models import User, Permission
-from noc.lib.nbsocket import SocketTimeoutError
 
 
 class TestClient(Client):
@@ -573,122 +567,4 @@ class RestModelTestCase(AjaxTestCase):
                 else:
                     self.assertEquals(status, self.HTTP_FORBIDDEN)
 
-
-class ActivatorStub(object):
-    """
-    Activator emulation using canned beef
-    """
-    TimeOutError = SocketTimeoutError
-
-    def __init__(self, test):
-        self.to_save_output = None
-        self.servers = None
-        self.factory = None
-        self.log_cli_sessions = None
-        self.test = test
-        self.use_canned_session = True
-    
-    def on_script_exit(self, script):
-        pass
-    
-    def cli(self, cmd):
-        try:
-            return self.test.cli[cmd]
-        except KeyError:
-            raise Exception("Command not found in canned session: %s" % cmd)
-    
-    def snmp_get(self, oid):
-        try:
-            return self.test.snmp_get[oid]
-        except KeyError:
-            raise self.TimeOutError()
-    
-    def snmp_getnext(self, oid):
-        try:
-            return self.test.snmp_getnext[oid]
-        except KeyError:
-            raise self.TimeOutError()
-
-    def http_get(self, path):
-        return self.test.http_get[path]
-
-    def get_motd(self):
-        return self.test.motd
-
-
-class ScriptTestCase(unittest.TestCase):
-    """
-    Canned beef base class
-    """
-    maxDiff = None
-    script = None
-    vendor = None
-    platform = None
-    version = None
-    input = {}
-    result = None
-    motd = ""
-    cli = None
-    snmp_get = {}
-    snmp_getnext = {}
-    http_get = {}
-    mock_get_version = False  # Emulate get_version call
-    ignore_timestamp_mismatch = False
-
-    rx_timestamp = re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?$")
-
-    def clean_timestamp(self, r):
-        if isinstance(r, basestring):
-            # Process strings
-            if self.rx_timestamp.match(r):
-                # Fill timestamp by zeroes
-                return "0000-00-00T00:00:00.000000"
-            else:
-                return r
-        elif type(r) in (types.ListType, types.TupleType):
-            # Iterate lists
-            return [self.clean_timestamp(x) for x in r]
-        elif type(r) == types.DictType:
-            # Iterate hashes
-            return dict([(k, self.clean_timestamp(v)) for k, v in r.items()])
-        else:
-            # Return unprocessed
-            return r
-    
-    def test_script(self):
-        p = self.script.split(".")
-        profile = profile_registry[".".join(p[:2])]
-        # Prepare access profile
-        a = AccessProfile()
-        a.profile = profile.name
-        if self.snmp_get or self.snmp_getnext:
-            a.snmp_ro = "public"
-        if self.http_get:
-            a.scheme = 2
-        # Run script.
-        script = script_registry[self.script](profile(), ActivatorStub(self),
-                                              a, **self.input)
-        # Install mock get_version into cache, if necessary
-        s = self.script.split(".")
-        if self.mock_get_version and s[-1] != "get_version":
-            # Install version info into script call cache
-            version = {
-                "vendor": self.vendor,
-                "platform": self.platform,
-                "version": self.version
-            }
-            script.set_cache("%s.%s.get_version" % (s[0], s[1]), {}, version)
-        script.run()
-        # Parse script result
-        if script.result:
-            # Script completed successfully
-            result = cPickle.loads(script.result)
-            if self.ignore_timestamp_mismatch:
-                self.assertEquals(self.clean_timestamp(result),
-                                  self.clean_timestamp(self.result))
-            else:
-                self.assertEquals(result, self.result)
-        else:
-            # Exception raised
-            print script.error_traceback
-            self.assertEquals(script.error_traceback, None)
+from noc.lib.test.scripttestcase import ScriptTestCase
