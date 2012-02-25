@@ -22,3 +22,5 @@ class CancelledError(Exception): pass
 class UnexpectedPagerPattern(Exception): pass
 ## Unknown access schema
 class UnknownAccessScheme(Exception): pass
+## Invalid pager pattern
+class InvalidPagerPattern(Exception): pass
