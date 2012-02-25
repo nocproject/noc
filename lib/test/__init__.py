@@ -632,7 +632,7 @@ class ScriptTestCase(unittest.TestCase):
     snmp_get = {}
     snmp_getnext = {}
     http_get = {}
-    mock_get_version = False  # Emulate get_version_call
+    mock_get_version = False  # Emulate get_version call
     ignore_timestamp_mismatch = False
 
     rx_timestamp = re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?$")
@@ -672,11 +672,16 @@ class ScriptTestCase(unittest.TestCase):
         s = self.script.split(".")
         if self.mock_get_version and s[-1] != "get_version":
             # Install version info into script call cache
-            version = {"vendor": self.vendor, "platform": self.platform, "version": self.version}
+            version = {
+                "vendor": self.vendor,
+                "platform": self.platform,
+                "version": self.version
+            }
             script.set_cache("%s.%s.get_version" % (s[0], s[1]), {}, version)
         script.run()
         # Parse script result
         if script.result:
+            # Script completed successfully
             result = cPickle.loads(script.result)
             if self.ignore_timestamp_mismatch:
                 self.assertEquals(self.clean_timestamp(result),
@@ -684,5 +689,6 @@ class ScriptTestCase(unittest.TestCase):
             else:
                 self.assertEquals(result, self.result)
         else:
+            # Exception raised
             print script.error_traceback
             self.assertEquals(script.error_traceback, None)
