@@ -47,6 +47,7 @@ class Script(NOCScript):
     types = {
            "As": "physical",    # Async
            "AT": "physical",    # ATM
+           "At": "physical",    # ATM
            "BV": "aggregated",  # BVI
            "Bu": "aggregated",  # Bundle
            "C": "physical",     # @todo: fix
