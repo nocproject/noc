@@ -31,6 +31,7 @@ import psycopg2
 from noc.lib import nosql
 from noc.lib.debug import format_frames, get_traceback_frames
 from noc.lib.fileutils import safe_rewrite
+import noc.settings
 
 
 class TeeStream(object):
@@ -312,7 +313,7 @@ class TestRunner(object):
     def __init__(self, test_labels, verbosity=1, interactive=True,
                  extra_tests=[], reuse_db=False,
                  junit_xml_out=None, coverage_xml_out=None,
-                 coverage_html_out=None):
+                 coverage_html_out=None, fixed_beef_base=None):
         self.test_labels = test_labels
         self.verbosity = verbosity
         self.loglevel = logging.DEBUG if self.verbosity > 1 else logging.INFO
@@ -324,6 +325,8 @@ class TestRunner(object):
         self.junit_xml_out = junit_xml_out
         self.coverage_xml_out = coverage_xml_out
         self.coverage_html_out = coverage_html_out
+        if fixed_beef_base:
+            noc.settings.TEST_FIXED_BEEF_BASE = fixed_beef_base
 
     def info(self, message):
         logging.info(message)

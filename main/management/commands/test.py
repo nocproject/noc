@@ -38,7 +38,10 @@ class Command(BaseCommand):
                     help="Write Cobertura-compatible XML coverage report"),
         make_option("--coverage-html-out", action="store",
                     dest="coverage_html_out", default=None,
-                    help="Write HTML coverage report")
+                    help="Write HTML coverage report"),
+        make_option("--fixed-beef-base", action="store",
+                    dest="fixed_beef_base", default=None,
+                    help="Write fixed beefs into directory")
     )
     help = 'Runs the test suite for the specified applications, or the entire project if no apps are specified.'
     args = '[appname ...]'
@@ -46,14 +49,13 @@ class Command(BaseCommand):
     requires_model_validation = False
 
     def handle(self, *test_labels, **options):
-        from django.conf import settings
-
         verbosity = int(options.get("verbosity", 1))
         interactive = options.get("interactive", True)
         reuse_db = options.get("reuse_db", False)
         junit_xml_out = options.get("junit_xml_out")
         coverage_xml_out = options.get("coverage_xml_out")
         coverage_html_out = options.get("coverage_html_out")
+        fixed_beef_base = options.get("fixed_beef_base")
         
         # Check directory for HTML coverage report exists
         if coverage_html_out:
@@ -78,6 +80,7 @@ class Command(BaseCommand):
                               reuse_db=reuse_db,
                               junit_xml_out=junit_xml_out,
                               coverage_xml_out=coverage_xml_out,
-                              coverage_html_out=coverage_html_out).run()
+                              coverage_html_out=coverage_html_out,
+                              fixed_beef_base=fixed_beef_base).run()
         if failures:
             sys.exit(1 if failures else 0)
