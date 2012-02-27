@@ -5,16 +5,19 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
+## NOC modules
 from base import *
 
-##
-## Port-channel information
-##
+
 class IGetPortchannel(Interface):
-    returns=ListOfParameter(element=DictParameter(attrs={
-        "interface" : InterfaceNameParameter(), # Port-channel name
-        "members"   : ListOfParameter(element=InterfaceNameParameter()), # List of port-channel members
-        "type"      : StringParameter(), # choices=["S","L"]. S - for static, L for LACP
+    """
+    Get port-channel information
+    """
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "interface": InterfaceNameParameter(),  # Port-channel name
+        # List of port-channel members
+        "members": ListOfParameter(element=InterfaceNameParameter()),
+        "type": StringParameter()
+        # choices=["S","L"]. S - for static, L for LACP
     }))
