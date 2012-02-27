@@ -11,13 +11,15 @@
 import cPickle
 import re
 import types
+import datetime
+import os
 ## Django modules
 from django.utils import unittest  # unittest2 backport
 ## NOC lib modules
+from noc.sa.models import script_registry, profile_registry
 from noc.lib.test.activatorstub import ActivatorStub
-from noc.sa.profiles import profile_registry
 from noc.sa.protocols.sae_pb2 import AccessProfile
-from noc.sa.script import script_registry
+from noc.settings import TEST_FIXED_BEEF_BASE
 
 
 class ScriptTestCase(unittest.TestCase):
@@ -41,6 +43,56 @@ class ScriptTestCase(unittest.TestCase):
 
     rx_timestamp = re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?$")
 
+    @classmethod
+    def save_beef(cls, path, **kwargs):
+        """
+        Save canned beef to file
+        :param cls:
+        :param path:
+        :param kwargs:
+        :return:
+        """
+        def format_stringdict(d):
+            def lrepr(s):
+                return repr(s)[1:-1]
+
+            out = ["{"]
+            for k, v in d.items():
+                lines = v.splitlines()
+                if len(lines) < 4:
+                    out += ["%s:  %s, " % (repr(k), repr(v))]
+                else:
+                    out += ["## %s" % repr(k)]
+                    out += ["%s: \"\"\"%s" % (repr(k), lrepr(lines[0]))]
+                    out += [lrepr(l) for l in lines[1:-1]]
+                    out += ["%s\"\"\", " % lrepr(lines[-1])]
+            out += ["}"]
+            return "\n".join(out)
+
+        import pprint
+        from django.template import loader
+        from noc.lib.fileutils import safe_rewrite
+
+        script = kwargs.get("script", cls.script)
+
+        beef = loader.render_to_string("sa/templates/beef.py.tpl", {
+            "script": script,
+            "test_name": script.replace(".", "_") + "_Test",
+            "vendor": kwargs.get("vendor", cls.vendor),
+            "platform": kwargs.get("platform", cls.platform),
+            "version": kwargs.get("version", cls.version),
+            "date": datetime.datetime.now(),
+            "input": pprint.pformat(kwargs.get("input", cls.input)),
+            "result": pprint.pformat(kwargs.get("result", cls.result)),
+            "cli": format_stringdict(kwargs.get("cli", cls.cli)),
+            "snmp_get": pprint.pformat(kwargs.get("snmp_get", cls.snmp_get)),
+            "snmp_getnext": pprint.pformat(kwargs.get("snmp_getnext",
+                                                     cls.snmp_getnext)),
+            "http_get": pprint.pformat(kwargs.get("http_get", cls.http_get)),
+            "motd": pprint.pformat(kwargs.get("motd", cls.motd))
+        })
+        safe_rewrite(path, beef)
+
     def clean_timestamp(self, r):
         if isinstance(r, basestring):
             # Process strings
@@ -59,9 +111,19 @@ class ScriptTestCase(unittest.TestCase):
             # Return unprocessed
             return r
 
+    def fix_beef(self, new_result):
+        """
+        Save fixed beef
+        :param new_result:
+        :return:
+        """
+        l = [TEST_FIXED_BEEF_BASE] + self.__class__.__module__.split(".")[1:]
+        path = os.path.join(*l) + ".py"
+        self.save_beef(path, result=new_result)
+
     def test_script(self):
         p = self.script.split(".")
-        profile = profile_registry[".".join(p[:2])]
+        profile = profile_registry[".".join(p[:2])]()
         # Prepare access profile
         a = AccessProfile()
         a.profile = profile.name
@@ -70,7 +132,7 @@ class ScriptTestCase(unittest.TestCase):
         if self.http_get:
             a.scheme = 2
         # Run script.
-        script = script_registry[self.script](profile(), ActivatorStub(self),
+        script = script_registry[self.script](profile, ActivatorStub(self),
                                               a, **self.input)
         # Install mock get_version into cache, if necessary
         s = self.script.split(".")
@@ -88,11 +150,14 @@ class ScriptTestCase(unittest.TestCase):
             # Script completed successfully
             result = cPickle.loads(script.result)
             if self.ignore_timestamp_mismatch:
-                self.assertEquals(self.clean_timestamp(result),
-                                  self.clean_timestamp(self.result))
+                new_result = self.clean_timestamp(result)
+                old_result = self.clean_timestamp(self.result)
             else:
-                self.assertEquals(result, self.result)
+                new_result = result
+                old_result = self.result
+            if TEST_FIXED_BEEF_BASE and old_result != new_result:
+                self.fix_beef(new_result)
+            self.assertEquals(new_result, old_result)
         else:
             # Exception raised
-            print script.error_traceback
             self.assertEquals(script.error_traceback, None)
