@@ -70,6 +70,9 @@ class Script(NOCScript):
                     tagged = range(1, 4095)
                 else:
                     tagged = self.expand_rangelist(vlans)
+                if untagged in tagged:
+                    # Exclude native vlan from tagged
+                    tagged.remove(untagged)
             else:
                 untagged = int(match.group("avlan"))
                 tagged = []
