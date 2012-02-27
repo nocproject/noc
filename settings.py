@@ -184,6 +184,9 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 SESSION_ENGINE = "mongoengine.django.sessions"
 ## Set up crashinfo limit
 CRASHINFO_LIMIT = config.getint("main", "crashinfo_limit")
+## Fixed beefs directory
+## Set up by test runner
+TEST_FIXED_BEEF_BASE = None
 ## Set up logging
 ## Disable SQL statement logging
 import logging
