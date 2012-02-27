@@ -20,7 +20,15 @@ class Script(NOCScript):
     implements = [IGetSwitchport]
 
     rx_line = re.compile(r"\n+Name:\s+", re.MULTILINE)
-    rx_body = re.compile(r"^(?P<interface>\S+).+^Administrative Mode: (?P<amode>.+).+^Operational Mode: (?P<omode>.+).+^Administrative Trunking Encapsulation:.+^Access Mode VLAN: (?P<avlan>\d+) \(.+\).+Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+Trunking VLANs Enabled: (?P<vlans>.+)Pruning VLANs Enabled:", re.MULTILINE | re.DOTALL)
+    rx_body = re.compile(r"^(?P<interface>\S+).+"
+                         "^Administrative Mode: (?P<amode>.+).+"
+                         "^Operational Mode: (?P<omode>.+).+"
+                         "^Administrative Trunking Encapsulation:.+"
+                         "^Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
+                         "^Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
+                         "^Trunking VLANs Enabled: (?P<vlans>.+?)$",
+                         #"Pruning VLANs Enabled:",
+                         re.MULTILINE | re.DOTALL)
 
     rx_descr_if = re.compile(r"^(?P<interface>\S+)\s+(?:up|down|admin down|deleted)\s+(?:up|down)\s+(?P<description>.+)")
 
