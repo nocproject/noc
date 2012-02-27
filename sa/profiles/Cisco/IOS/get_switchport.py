@@ -45,16 +45,25 @@ class Script(NOCScript):
             raise self.NotSupportedError()
         v = "\n" + v
 
+        # Get portchannel members
+        portchannels = {}  # portchannel name -> [members]
+        for p in self.scripts.get_portchannel():
+            portchannels[p["interface"]] = p["members"]
+        # Get descriptions
+        descriptions = {}  # interface name -> description
+        for p in self.get_description():
+            descriptions[p["interface"]] = p["description"]
         # For each interface
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_body.search(s)
             if not match:
                 continue  #raise self.NotSupportedError()
 
-            interface = match.group("interface")
-            trunk = match.group("amode").strip() == "trunk"
+            interface = self.profile.convert_interface_name(
+                match.group("interface"))
+            is_trunk = match.group("amode").strip() == "trunk"
 
-            if trunk:
+            if is_trunk:
                 untagged = int(match.group("nvlan"))
                 vlans = match.group("vlans").strip()
                 if vlans == "ALL":
@@ -65,27 +74,18 @@ class Script(NOCScript):
                 untagged = int(match.group("avlan"))
                 tagged = []
 
-            shortname = self.profile.convert_interface_name(interface)
-            members = []
-            if interface.startswith("Po"):
-                for p in self.scripts.get_portchannel():
-                    if p["interface"] == shortname:
-                        members = p["members"]
-
             iface = {
                 "interface": interface,
                 "status": match.group("omode").strip() != "down",
                 "tagged": tagged,
-                "members": members,
-                "802.1Q Enabled": trunk,
+                "members": portchannels.get(interface, []),
+                "802.1Q Enabled": is_trunk,
                 "802.1ad Tunnel": False,
             }
             if untagged:
-                iface[untagged] = untagged
-
-            for p in self.get_description():
-                if p["interface"] == shortname:
-                    iface["description"] = p["description"]
+                iface["untagged"] = untagged
+            if interface in descriptions:
+                iface["description"] = descriptions[interface]
 
             r += [iface]
         return r
