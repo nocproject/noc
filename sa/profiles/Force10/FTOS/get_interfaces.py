@@ -29,6 +29,16 @@ class Script(NOCScript):
     name = "Force10.FTOS.get_interfaces"
     implements = [IGetInterfaces]
 
+    types = {
+        "gi": "physical",
+        "te": "physical",
+        "fa": "physical",
+        "vl": "SVI",
+        "po": "aggregated",
+        "lo": "loopback",
+        "ma": "management"
+    }
+
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down|not present)",
         re.MULTILINE | re.IGNORECASE)
@@ -66,9 +76,7 @@ class Script(NOCScript):
             ifname = self.profile.convert_interface_name(
                 match.group("interface"))
             try:
-                ift = {"gi": "physical", "te": "physical", "fa": "physical",
-                       "vl": "SVI", "po": "aggregated", "lo": "loopback",
-                       "ma": "management"}[ifname.lower()[:2]]
+                ift = self.types[ifname.lower()[:2]]
             except KeyError:
                 raise self.UnexpectedResultError(
                     "Cannot determine interface type for: '%s'" % ifname)
@@ -123,8 +131,9 @@ class Script(NOCScript):
                         sub["untagged_vlan"] = u
                     if t:
                         sub["tagged_vlans"] = t
-                if sub.get("is_ipv4") or sub.get("is_ipv6") or sub.get(
-                    "is_iso") or sub.get("is_mpls") or sub.get("is_bridge"):
+                if (sub.get("is_ipv4") or sub.get("is_ipv6") or
+                    sub.get("is_iso") or sub.get("is_mpls") or
+                    sub.get("is_bridge")):
                     subinterfaces += [sub]
             # Append to interfaces
             iface["subinterfaces"] = subinterfaces
