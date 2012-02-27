@@ -61,6 +61,9 @@ class Script(NOCScript):
         descriptions = {}  # interface name -> description
         for p in self.get_description():
             descriptions[p["interface"]] = p["description"]
+        # Get vlans
+        known_vlans = set([vlan["vlan_id"] for vlan in
+                           self.scripts.get_vlans()])
         # For each interface
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_body.search(s)
@@ -88,7 +91,7 @@ class Script(NOCScript):
             iface = {
                 "interface": interface,
                 "status": match.group("omode").strip() != "down",
-                "tagged": tagged,
+                "tagged": [v for v in tagged if v in known_vlans],
                 "members": portchannels.get(interface, []),
                 "802.1Q Enabled": is_trunk,
                 "802.1ad Tunnel": False,
