@@ -12,12 +12,14 @@ import re
 import logging
 import datetime
 import os
-import tempfile
 import cPickle
 import time
 import stat
+import hashlib
 ## NOC modules
 from noc.settings import CRASHINFO_LIMIT
+from noc.lib.version import get_version
+from noc.lib.fileutils import safe_rewrite
 
 #
 # Error reporting context
@@ -150,10 +152,10 @@ def get_execution_frames(frame):
     if not frames:
         frames = [{
             "filename": "unknown",
-                    "function": "?",
-                    "lineno": "?",
-                    "context_line": "???",
-                }]
+            "function": "?",
+            "lineno": "?",
+            "context_line": "???"
+        }]
     return frames
 
 
@@ -216,13 +218,11 @@ def error_report(reverse=True):
         if len(crashinfo) > CRASHINFO_LIMIT:
             return
         # Write crashinfo
-        h, p = tempfile.mkstemp(suffix="", prefix=DEBUG_CTX_CRASH_PREFIX,
-                                dir=DEBUG_CTX_CRASH_DIR)
-        f = os.fdopen(h, "w")
-        f.write(crashinfo)
-        f.close()
+        fp = error_fingerprint()
+        path = os.path.join(DEBUG_CTX_CRASH_DIR, DEBUG_CTX_CRASH_PREFIX + fp)
+        safe_rewrite(path, crashinfo)
         if DEBUG_CTX_SET_UID:  # Change crashinfo userid to directory"s owner
-            os.chown(p, DEBUG_CTX_SET_UID, -1)
+            os.chown(path, DEBUG_CTX_SET_UID, -1)
 
 
 def frame_report(frame, caption=None):
@@ -234,6 +234,27 @@ def frame_report(frame, caption=None):
     r += ["Working directory: %s" % os.getcwd()]
     r += [format_frames(get_execution_frames(frame))]
     logging.error("\n".join(r))
+
+
+def error_fingerprint():
+    """
+    Generate error fingerprint.
+    :return:
+    """
+    tb = sys.exc_info()[2]
+    # Generate fingerprint seed
+    s = ":".join([str(x) for x in [
+            DEBUG_CTX_COMPONENT,  # Component
+            get_version(),  # NOC version
+            tb.tb_frame.f_code.co_filename,  # Filename
+            tb.tb_frame.f_globals.get("__name__"),  # Module
+            tb.tb_frame.f_code.co_name,  # Function
+            tb.tb_lineno - 1  # Line
+        ]
+    ])
+    return hashlib.sha1(s).hexdigest()
+
+
 
 def BQ(s):
     """
