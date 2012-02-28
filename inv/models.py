@@ -327,7 +327,7 @@ class SubInterface(Document):
         "collection": "noc.subinterfaces",
         "allow_inheritance": False,
         "indexes": [
-            "interface"
+            "interface", "untagged_vlan", "tagged_vlans"
         ]
     }
     interface = PlainReferenceField(Interface)
