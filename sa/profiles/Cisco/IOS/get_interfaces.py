@@ -61,6 +61,7 @@ class Script(NOCScript):
            "Lo": "loopback",    # Loopback
            "M": "management",   # @todo: fix
            "MF": "aggregated",  # Multilink Frame Relay
+           "Mf": "aggregated",  # Multilink Frame Relay
            "Mu": "aggregated",  # Multilink-group interface
            "PO": "physical",    # Packet OC-3 Port Adapter
            "Po": "aggregated",  # Port-channel/Portgroup
