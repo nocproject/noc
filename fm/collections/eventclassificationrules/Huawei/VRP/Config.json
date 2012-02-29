@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "Exit from configure mode\\.$"
+                "value_re": "Exit from configure mode\\."
             }
         ]
     }
