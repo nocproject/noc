@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "VTY logout from (?P<ip>\\S+)\\.$"
+                "value_re": "VTY logout from (?P<ip>\\S+)\\."
             }
         ]
     },
@@ -35,7 +35,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "VTY login from (?P<ip>\\S+)\\.$"
+                "value_re": "VTY login from (?P<ip>\\S+)\\."
             }
         ]
     },
@@ -55,7 +55,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "Failed to login through telnet\\. \\(Ip=(?P<ip>\\S+), UserName=(?P<user>.*), Times=\\d+\\)$"
+                "value_re": "Failed to login through telnet\\. \\(Ip=(?P<ip>\\S+), UserName=(?P<user>.*), Times=\\d+\\)"
             }
         ]
     }
