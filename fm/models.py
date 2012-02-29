@@ -28,6 +28,7 @@ from noc.lib.fileutils import safe_rewrite
 import noc.lib.nosql as nosql
 from noc.lib.fileutils import temporary_file
 from noc.lib.escape import json_escape as jq
+from noc.lib.dateutils import total_seconds
 
 
 ##
@@ -1344,7 +1345,7 @@ class ActiveEvent(nosql.Document):
         """
         Logged event duration in seconds
         """
-        return (self.timestamp - self.start_timestamp).total_seconds()
+        return total_seconds(self.timestamp - self.start_timestamp)
 
     def dispose_event(self):
         EventDispositionQueue(timestamp=datetime.datetime.now(),
@@ -1420,7 +1421,7 @@ class ArchivedEvent(nosql.Document):
         """
         Logged event duration in seconds
         """
-        return (self.timestamp - self.start_timestamp).total_seconds()
+        return total_seconds(self.timestamp - self.start_timestamp)
 
     def get_template_vars(self):
         """
