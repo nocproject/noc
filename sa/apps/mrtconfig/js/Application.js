@@ -8,8 +8,9 @@ console.debug("Defining NOC.sa.mrtconfig.Application");
 
 Ext.define("NOC.sa.mrtconfig.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.sa.mrtconfig.Model"],
+    requires: ["NOC.sa.mrtconfig.Model", "NOC.main.pyrule.LookupField"],
     model: "NOC.sa.mrtconfig.Model",
+    search: true,
     columns: [
         {
             text: "Name",
@@ -18,7 +19,20 @@ Ext.define("NOC.sa.mrtconfig.Application", {
 
         {
             text: "Active",
-            dataIndex: "is_active"
+            dataIndex: "is_active",
+            renderer: noc_renderBool,
+            width: 70
+        },
+
+        {
+            text: "Map Script",
+            dataIndex: "map_script"
+        },
+
+        {
+            text: "Description",
+            dataIndex: "description",
+            flex: true
         }
     ],
     fields: [
@@ -43,6 +57,19 @@ Ext.define("NOC.sa.mrtconfig.Application", {
             name: "permission_name",
             xtype: "textfield",
             fieldLabel: "Permission",
+            allowBlank: false,
+            regex: /^[a-zA-Z0-9_]+$/
+        },
+        {
+            name: "reduce_pyrule",
+            xtype: "main.pyrule.LookupField",
+            fieldLabel: "Reduce PyRule",
+            allow_blank: false
+        },
+        {
+            name: "map_script",
+            xtype: "textfield",
+            fieldLabel: "Map Script",
             allowBlank: false
         },
         {
@@ -50,12 +77,6 @@ Ext.define("NOC.sa.mrtconfig.Application", {
             xtype: "numberfield",
             fieldLabel: "Timeout",
             allowBlank: true
-        },
-        {
-            name: "map_script",
-            xtype: "textfield",
-            fieldLabel: "Map Script",
-            allowBlank: false
         }
     ]
 });

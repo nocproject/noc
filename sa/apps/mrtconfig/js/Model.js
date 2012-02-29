@@ -18,7 +18,7 @@ Ext.define("NOC.sa.mrtconfig.Model", {
 
         {
             name: "description",
-            type: "string",
+            type: "string"
         },
         {
             name: "is_active",
@@ -27,19 +27,19 @@ Ext.define("NOC.sa.mrtconfig.Model", {
         },
         {
             name: "permission_name",
-            type: "string",
+            type: "string"
         },
         {
             name: "timeout",
-            type: "int",
+            type: "int"
         },
         {
             name: "map_script",
-            type: "string",
+            type: "string"
         },
         {
             name: "name",
-            type: "string",
+            type: "string"
         }
     ]
 });
