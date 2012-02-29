@@ -63,7 +63,7 @@ Ext.define("NOC.sa.mrtconfig.Application", {
         {
             name: "reduce_pyrule",
             xtype: "main.pyrule.LookupField",
-            fieldLabel: "Reduce PyRule",
+            fieldLabel: "Reduce pyRule",
             allow_blank: false
         },
         {
