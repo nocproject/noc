@@ -1344,7 +1344,7 @@ class ActiveEvent(nosql.Document):
         """
         Logged event duration in seconds
         """
-        return (self.timestamp - self.start_timestamp).total_seconds
+        return (self.timestamp - self.start_timestamp).total_seconds()
 
     def dispose_event(self):
         EventDispositionQueue(timestamp=datetime.datetime.now(),
@@ -1420,7 +1420,7 @@ class ArchivedEvent(nosql.Document):
         """
         Logged event duration in seconds
         """
-        return (self.timestamp - self.start_timestamp).total_seconds
+        return (self.timestamp - self.start_timestamp).total_seconds()
 
     def get_template_vars(self):
         """
