@@ -79,6 +79,8 @@ class Script(NOCScript):
                 vlans = match.group("vlans").strip()
                 if vlans == "ALL":
                     tagged = range(1, 4095)
+                elif vlans.upper() == "NONE":
+                    tagged = []
                 else:
                     tagged = self.expand_rangelist(vlans)
                 if untagged in tagged:
