@@ -17,8 +17,11 @@ import re
 class Profile(noc.sa.profiles.Profile):
     name = "Huawei.VRP"
     supported_schemes = [TELNET, SSH]
-    pattern_more = "^  ---- More ----"
-    pattern_prompt = r"^[<#]\S+?[>#]"
+    pattern_more = [
+        (r"^  ---- More ----", " "),
+        (r"[Cc]ontinue?\S+", "y\n\r")
+    ]
+    pattern_prompt = r"^[<#\[]\S+?[>#\]]"
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "screen-length 0 temporary"
