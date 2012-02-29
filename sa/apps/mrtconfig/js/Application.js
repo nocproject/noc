@@ -8,7 +8,11 @@ console.debug("Defining NOC.sa.mrtconfig.Application");
 
 Ext.define("NOC.sa.mrtconfig.Application", {
     extend: "NOC.core.ModelApplication",
-    requires: ["NOC.sa.mrtconfig.Model", "NOC.main.pyrule.LookupField"],
+    requires: [
+        "NOC.sa.mrtconfig.Model",
+        "NOC.main.pyrule.LookupField",
+        "NOC.sa.managedobjectselector.LookupField"
+    ],
     model: "NOC.sa.mrtconfig.Model",
     search: true,
     columns: [
@@ -59,6 +63,12 @@ Ext.define("NOC.sa.mrtconfig.Application", {
             fieldLabel: "Permission",
             allowBlank: false,
             regex: /^[a-zA-Z0-9_]+$/
+        },
+        {
+            name: "selector",
+            xtype: "sa.managedobjectselector.LookupField",
+            fieldLabel: "Selector",
+            allow_blank: false
         },
         {
             name: "reduce_pyrule",
