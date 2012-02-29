@@ -42,6 +42,10 @@ Ext.define("NOC.sa.mrtconfig.Model", {
             type: "int"
         },
         {
+            name: "selector",
+            type: "int"
+        },
+        {
             name: "name",
             type: "string"
         }
