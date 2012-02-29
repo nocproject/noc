@@ -11,16 +11,17 @@ import datetime
 ## Django modules
 from django.utils.translation import ugettext as _
 
+
 def humanize_timedelta(delta):
     def round(x):
         return int(x + 0.5)
     
     d = delta.days
     s = delta.seconds
-    if d == 0:
+    if not d:
         if   s < 30:
             return _("less than a minute")
-        elif s < 90: # 1:30
+        elif s < 90:  # 1:30
             return _("1 minute")
         elif s < 2670:  # 44:30
             return _("%d minutes") % round(float(s) / 60.0)
@@ -55,5 +56,18 @@ def humanize_timedelta(delta):
             else:
                 return _("almost %d years") % (n + 1)
 
+
 def humanize_distance(d):
     return humanize_timedelta(datetime.datetime.now() - d)
+
+
+def total_seconds(td):
+    """
+    Return total seconds in timedelta object
+    :param td: timedelta
+    :type td: datetime.timedelta
+    :return: seconds
+    :rtype: float
+    """
+    return (td.microseconds +
+            (td.seconds + td.days * 86400) * 1000000) / 1000000.0
