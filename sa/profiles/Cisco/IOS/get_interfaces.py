@@ -167,6 +167,7 @@ class Script(NOCScript):
                 continue
             if ":" in ifname:
                 inm = ifname.split(":")[0]
+                # Create root interface if not exists yet
                 if inm != interfaces[-1]["name"]:
                     iface = {
                         "name": inm,
@@ -190,10 +191,7 @@ class Script(NOCScript):
             matchmac = self.rx_mac.search(hw)
             if matchmac:
                 sub["mac"] = matchmac.group("mac")
-            if ifname in portchannel_members:
-                iface["aggregated_interface"] = portchannel_members[ifname][0]
-                iface["is_lacp"] = portchannel_members[ifname][1]
-            elif ifname in switchports:
+            if ifname in switchports and ifname not in portchannel_members:
                 sub["is_bridge"] = True
                 u, t = switchports[ifname]
                 if u:
@@ -223,8 +221,7 @@ class Script(NOCScript):
                      matchifn.group("number"))
             if shotn in ospfs:
                 sub["is_ospf"] = True
-            phys = len(ifname.split(".")) + len(ifname.split(":"))
-            if phys == 2:
+            if "." not in ifname and ":" not in ifname:
                 iface = {
                     "name": ifname,
                     "admin_status": a_stat,
@@ -241,8 +238,14 @@ class Script(NOCScript):
                 # Set VLAN IDs for SVI
                 if iface["type"] == "SVI":
                     sub["vlan_ids"] = [int(shotn[2:].strip())]
+                # Portchannel member
+                if ifname in portchannel_members:
+                    ai, is_lacp = portchannel_members[ifname]
+                    iface["aggregated_interface"] = ai
+                    iface["is_lacp"] = is_lacp
                 interfaces += [iface]
             else:
+                # Append additional subinterface
                 try:
                     interfaces[-1]["subinterfaces"] += [sub]
                 except KeyError:
