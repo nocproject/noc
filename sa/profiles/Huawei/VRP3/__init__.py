@@ -19,7 +19,10 @@ class Profile(noc.sa.profiles.Profile):
     supported_schemes = [TELNET, SSH]
     pattern_username = r"^> User name \(<\d+ chars\): "
     pattern_password = r"^> Password \(<\d+ chars\): "
-    pattern_more = [(r"^--More\(Enter: next line, spacebar: next page, any other key: quit\)--", " ")]
+    pattern_more = [
+        (r"^--More\(Enter: next line, spacebar: next page, any other key: quit\)--", " "),
+        (r"\[<frameId/slotId>\]", "\n")
+    ]
     pattern_unpriveleged_prompt = r"^\S+?>"
     command_more = " "
     config_volatile = ["^%.*?$"]
