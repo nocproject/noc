@@ -68,13 +68,20 @@ Ext.define("NOC.sa.mrtconfig.Application", {
             name: "selector",
             xtype: "sa.managedobjectselector.LookupField",
             fieldLabel: "Selector",
-            allow_blank: false
+            allowBlank: false,
+            query: {
+                is_enabled: true
+            }
+
         },
         {
             name: "reduce_pyrule",
             xtype: "main.pyrule.LookupField",
             fieldLabel: "Reduce pyRule",
-            allow_blank: false
+            allowBlank: false,
+            query: {
+                interface: "IReduceTask"
+            }
         },
         {
             name: "map_script",
