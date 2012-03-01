@@ -17,12 +17,16 @@ Ext.define("NOC.core.LookupField", {
     minChars: 2,
     typeAhead: true,
     editable: true,
+    query: {},
     initComponent: function() {
         var sclass = this.__proto__.$className.replace("LookupField", "Lookup");
         Ext.applyIf(this, {
             store: Ext.create(sclass)
         });
-        this.callParent();
+        if(this.query) {
+            Ext.apply(this.store.proxy.extraParams, this.query);
+        }
         console.log(this);
+        this.callParent();
     }
 });
