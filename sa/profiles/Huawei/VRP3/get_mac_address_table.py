@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Huawei.VRP3.get_mac_address_table.get_mac_address_table
+## Huawei.VRP3.get_mac_address_table
 ## sergey.sadovnikov@gmail.com
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
+from __future__ import with_statement
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetMACAddressTable
 import re
