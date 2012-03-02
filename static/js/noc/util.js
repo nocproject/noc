@@ -9,8 +9,8 @@
 // Setup
 //
 _noc_bool_img = {
-    true: "<img src='/static/img/fam/silk/accept.png' />",
-    false: "<img src='/static/img/fam/silk/cancel.png' />",
+    true: "<img src='/static/img/fam/silk/tick.png' />",
+    false: "<img src='/static/img/fam/silk/cross.png' />",
     null: "<img src='/static/img/fam/silk/bullet_black.png' />"
 };
 
