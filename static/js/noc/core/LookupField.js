@@ -28,5 +28,42 @@ Ext.define("NOC.core.LookupField", {
         }
         console.log(this);
         this.callParent();
+    },
+
+    setValue: function(value) {
+        if(Ext.isDefined(value)) {
+            if(this.store.loading) {
+                // do not set value until store is loaded
+                return this;
+            }
+            if(!this.store.data.length) {
+                // store not ready. load
+                // @todo: check for loop
+                this.store.on(
+                    "load",
+                    Ext.bind(this.setValue, this, arguments),
+                    this,
+                    {single: true}
+                );
+                this.store.load({
+                    params: {
+                        id: value
+                    }
+                });
+            }
+        }
+        return this.callParent([value]);
     }
+
+    //,
+//
+//    setValue: function(value) {
+//        if(Ext.isDefined(value)) {
+//            if(typeof value === "object") {
+//                console.log(value);
+//                this.store.loadData([value]);
+//            }
+//        }
+//        return this.callParent([value]);
+//    }
 });
