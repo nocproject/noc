@@ -251,6 +251,8 @@ Ext.define("NOC.core.ModelApplication", {
         this.callParent(arguments);
         this.grid = this.down("gridpanel");
         this.store = this.grid.store;
+        this.form = this.down("form").getForm();
+
         //var gridpanel = this.items.items[0];
         if(this.search) {
             var gridtoolbar = this.grid.dockedItems.items[1];
@@ -269,8 +271,6 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Save changed data
     save_record: function(data) {
-        var grid = this.down('gridpanel'),
-            store = grid.store;
         var mv = Ext.create(this.model, data).validate();
 
         if(!mv.isValid()) {
@@ -279,13 +279,13 @@ Ext.define("NOC.core.ModelApplication", {
         }
         if (data["id"]) {
             // Change
-            var record = grid.getSelectionModel().getLastSelected();
+            var record = this.grid.getSelectionModel().getLastSelected();
             record.set(data);
-            store.sync();
+            this.store.sync();
         } else {
             // Create
-            store.insert(0, [data]);
-            store.sync();
+            this.store.insert(0, [data]);
+            this.store.sync();
         }
         this.toggle();
     },
@@ -303,10 +303,9 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // New record. Hide grid and open form
     new_record: function() {
-        var form = this.up('panel').down('form').getForm();
-        form.reset();
+        this.form.reset();
         this.toggle();
-        form.getFields().first().focus(false, 100);
+        this.form.getFields().first().focus(false, 100);
         // Activate delete button
         this.delete_button.setDisabled(true);
         this.save_button.setDisabled(!this.can_create);
@@ -315,12 +314,11 @@ Ext.define("NOC.core.ModelApplication", {
     // Edit record. Hide grid and open form
     edit_record: function(record) {
         // Show edit form
-        var form = this.down('form').getForm();
         this.toggle();
         // Load records
-        form.loadRecord(record);
+        this.form.loadRecord(record);
         // Focus on first field
-        form.getFields().first().focus(false, 100);
+        this.form.getFields().first().focus(false, 100);
         // Activate delete button
         this.delete_button.setDisabled(!this.can_delete);
         this.save_button.setDisabled(!this.can_update);
