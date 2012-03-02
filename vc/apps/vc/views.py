@@ -40,10 +40,12 @@ def vc_interfaces(obj):
     l1 = obj.l1
     n = sum(1 for si in
              SubInterface.objects.filter(
-                 Q(untagged_vlan=l1, is_bridge=True) |
-                 Q(tagged_vlans=l1, is_bridge=True) |
-                 Q(vlan_ids=l1)).only("interface")
-             if si.interface.managed_object.id in objects)
+                 Q(managed_object__in=objects) &
+                 (
+                     Q(untagged_vlan=l1, is_bridge=True) |
+                     Q(tagged_vlans=l1, is_bridge=True) |
+                     Q(vlan_ids=l1)).only("interface")
+                 ))
     if n:
         return "<a href='%d/interfaces/'>%d</a>" % (obj.id, n)
     else:
@@ -177,13 +179,19 @@ class VCApplication(ModelApplication):
         objects = set(vc.vc_domain.selector.managed_objects.values_list("id",
                                                                     flat=True))
         # Find untagged interfaces
-        untagged = get_interfaces(SubInterface.objects.filter(untagged_vlan=l1,
-                                                              is_bridge=True))
+        untagged = get_interfaces(SubInterface.objects.filter(
+            managed_object__in=objects,
+            untagged_vlan=l1,
+            is_bridge=True))
         # Find tagged interfaces
-        tagged = get_interfaces(SubInterface.objects.filter(tagged_vlans=l1,
-                                                            is_bridge=True))
+        tagged = get_interfaces(SubInterface.objects.filter(
+            managed_object__in=objects,
+            tagged_vlans=l1,
+            is_bridge=True))
         # Find l3 interfaces
-        l3 = get_interfaces(SubInterface.objects.filter(vlan_ids=l1))
+        l3 = get_interfaces(SubInterface.objects.filter(
+            managed_object__in=objects,
+            vlan_ids=l1))
         return self.render(request, "interfaces.html",
                            vc=vc, untagged=untagged, tagged=tagged, l3=l3)
 
