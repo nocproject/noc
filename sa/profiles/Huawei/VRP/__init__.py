@@ -15,7 +15,7 @@ import re
 
 
 class Profile(noc.sa.profiles.Profile):
-    name = "Huawei.VRP3"
+    name = "Huawei.VRP"
     supported_schemes = [TELNET, SSH]
     pattern_username = r"^> User name \(<\d+ chars\): "
     pattern_password = r"^> Password \(<\d+ chars\): "
