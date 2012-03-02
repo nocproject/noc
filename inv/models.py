@@ -327,10 +327,11 @@ class SubInterface(Document):
         "collection": "noc.subinterfaces",
         "allow_inheritance": False,
         "indexes": [
-            "interface", "untagged_vlan", "tagged_vlans"
+            "interface", "managed_object", "untagged_vlan", "tagged_vlans"
         ]
     }
     interface = PlainReferenceField(Interface)
+    managed_object = ForeignKeyField(ManagedObject)
     name = StringField()
     description = StringField(required=False)
     mac = StringField(required=False)

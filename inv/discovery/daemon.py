@@ -243,6 +243,7 @@ class DiscoveryDaemon(Daemon):
                         self.o_info(o, "Creating subinterface '%s'" % si["name"])
                         s_iface = SubInterface(
                             interface=iface.id,
+                            managed_object=o.id,
                             name=si["name"],
                             description=si.get("description"),
                             mac=si.get("mac"),
