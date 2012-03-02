@@ -128,7 +128,10 @@ class ExtDocApplication(ExtApplication):
                 if isinstance(f, GeoPointField):
                     pass
                 elif type(v) not in (str, unicode, int, long, bool):
-                    v = unicode(v)
+                    if hasattr(v, "id"):
+                        v = v.id
+                    else:
+                        v = unicode(v)
             r[n] = v
         return r
 
