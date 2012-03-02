@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "Loopback does exist on interface\\(\\d+)(?P<interface>\\S+) \\(\\s*VLAN (?P<vlan>\\d+)\\s*)\\s*, loopback detect status: (2|3|4|5)\\.\\s*\\(1:normal; 2:block; 3:shutdown; 4:trap; 5:nolearn\\)"
+                "value_re": "Loopback does exist on interface\\(\\d+\\)(?P<interface>\\S+) \\(\\s*VLAN (?P<vlan>\\d+)\\s*\\)\\s*, loopback detect status: (2|3|4|5)\\.\\s*\\(1:normal; 2:block; 3:shutdown; 4:trap; 5:nolearn\\)"
             }
         ]
     },
@@ -78,7 +78,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "Loopback does exist on interface\\(\\d+)(?P<interface>\\S+) \\(\\s*VLAN (?P<vlan>\\d+)\\s*)\\s*, loopback detect status: 1\\.\\s*\\(1:normal; 2:block; 3:shutdown; 4:trap; 5:nolearn\\)"
+                "value_re": "Loopback does exist on interface\\(\\d+\\)(?P<interface>\\S+) \\(\\s*VLAN (?P<vlan>\\d+)\\s*\\)\\s*, loopback detect status: 1\\.\\s*\\(1:normal; 2:block; 3:shutdown; 4:trap; 5:nolearn\\)"
             }
         ]
     },
