@@ -209,6 +209,17 @@ class DiscoveryDaemon(Daemon):
                     iface.save()
                 icache[i["name"]] = iface
                 found_interfaces.add(i["name"])
+                # Remove hanging subinterfaces
+                e_subs = set(s.name for s in
+                             SubInterface.objects.filter(
+                                 interface=iface.id).only("name"))
+                f_subs = set(x["name"] for x in i["subinterfaces"])
+                for si_name in e_subs - f_subs:
+                    self.o_info(o, "Deleting subinterface '%s'" % si_name)
+                    x = SubInterface.objects.filter(interface=iface.id,
+                                                    name=si_name).first()
+                    if x:
+                        x.delete()
                 # Install subinterfaces
                 for si in i["subinterfaces"]:
                     s_iface = SubInterface.objects.filter(interface=iface.id,
