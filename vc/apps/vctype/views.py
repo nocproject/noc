@@ -18,3 +18,5 @@ class VCTypeApplication(ExtModelApplication):
     title = "VCType"
     menu = "Setup | VC Types"
     model = VCType
+    query_fields = ["name"]
+    query_condition = "icontains"
