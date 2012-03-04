@@ -43,9 +43,9 @@ class Script(NOCScript):
     cache = True
     implements = [IGetVersion]
 
-    rx_ver = re.compile(r"^Force10 Networks .*Force10 Application Software Version: (?P<version>\S+).*(?:System|Chassis) Type: (?P<platform>\S+)", re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(r"Force10 Application Software Version: (?P<version>\S+).*(?:System|Chassis) Type: (?P<platform>\S+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(
-        r"^Force10 Application Software Version:\s*(?P<version>\S+)",
+        r"Force10 Application Software Version:\s*(?P<version>\S+)",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
