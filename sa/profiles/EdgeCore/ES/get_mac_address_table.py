@@ -19,13 +19,34 @@ class Script(NOCScript):
     implements = [IGetMACAddressTable]
 
     # ES3526 mac-address-table
-    rx_line1 = re.compile(r"^\s*(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
+    rx_line1 = re.compile(r"^\s*(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+"
+                          r"(?P<mac>\S+)\s+"
+                          r"(?P<vlan_id>\d+)\s+"
+                          r"(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
     # ES3526 mac-address-table vlan <vlan_id>
-    rx_line2 = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
+    rx_line2 = re.compile(r"^\s*(?P<vlan_id>\d+)\s+"
+                          r"(?P<mac>\S+)\s+"
+                          r"(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+"
+                          r"(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
     # ES3526 mac-address-table address <mac>
-    rx_line3 = re.compile(r"^\s*(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
+    rx_line3 = re.compile(r"^\s*(?P<mac>\S+)\s+"
+                          r"(?P<vlan_id>\d+)\s+"
+                          r"(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+"
+                          r"(?P<type>\S+)(?:\s+Delete on.*?)?$", re.MULTILINE)
     # ES4626 mac-address-table
-    rx_line4 = re.compile(r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?:\S+)\s+(?P<interface>.+)$", re.MULTILINE)
+    rx_line4 = re.compile(r"^(?P<vlan_id>\d+)\s+"
+                          r"(?P<mac>\S+)\s+"
+                          r"(?P<type>\S+)\s+(?:\S+)\s+"
+                          r"(?P<interface>.+)$", re.MULTILINE)
+
+    types = {
+        "learned": "D",
+        "permanent": "S",
+        "dynamic": "D",
+        "static": "S",
+        "learn": "D",
+        "cpu": "S"
+    }
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac-address-table"
@@ -37,13 +58,14 @@ class Script(NOCScript):
             cmd += " vlan %s" % vlan
         macs = self.cli(cmd)
         r = []
-        rx = self.find_re([self.rx_line1, self.rx_line2, self.rx_line3, self.rx_line4], macs)
+        rx = self.find_re([self.rx_line1, self.rx_line2,
+                           self.rx_line3, self.rx_line4], macs)
         for match in rx.finditer(macs):
             v = match.groupdict()
             r += [{
                 "vlan_id": v["vlan_id"],
                 "mac": v["mac"],
                 "interfaces": [v["interface"]],
-                "type": {"learned":"D", "permanent":"S", "dynamic":"D", "static":"S", "learn":"D", "cpu":"S"}[v["type"].lower()],
+                "type": self.types[v["type"].lower()]
             }]
         return r
