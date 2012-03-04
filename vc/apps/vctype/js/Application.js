@@ -10,35 +10,28 @@ Ext.define("NOC.vc.vctype.Application", {
     extend: "NOC.core.ModelApplication",
     uses: ["NOC.vc.vctype.Model"],
     model: "NOC.vc.vctype.Model",
+    search: true,
     columns: [
         {
             text: "Name",
-            dataIndex: "name"
+            dataIndex: "name",
+            width: 200
         },
 
         {
             text: "Min. Labels",
-            dataIndex: "min_labels"
+            dataIndex: "min_labels",
+            width: 70
         },
 
         {
-            text: "L1 (min)",
-            dataIndex: "label1_min"
+            text: "L1",
+            dataIndex: "l1"
         },
 
         {
-            text: "L1 (max)",
-            dataIndex: "label1_max"
-        },
-
-        {
-            text: "L2 (min)",
-            dataIndex: "label2_min"
-        },
-
-        {
-            text: "L2 (max)",
-            dataIndex: "label2_max"
+            text: "L2",
+            dataIndex: "l2"
         }
     ],
     fields: [
