@@ -38,14 +38,14 @@ def vc_interfaces(obj):
     objects = set(obj.vc_domain.selector.managed_objects.values_list("id",
                                                                 flat=True))
     l1 = obj.l1
-    n = sum(1 for si in
-             SubInterface.objects.filter(
-                 Q(managed_object__in=objects) &
-                 (
-                     Q(untagged_vlan=l1, is_bridge=True) |
-                     Q(tagged_vlans=l1, is_bridge=True) |
-                     Q(vlan_ids=l1)).only("interface")
-                 ))
+    n = SubInterface.objects.filter(
+        Q(managed_object__in=objects) &
+        (
+            Q(untagged_vlan=l1, is_bridge=True) |
+            Q(tagged_vlans=l1, is_bridge=True) |
+            Q(vlan_ids=l1)
+        )
+    ).count()
     if n:
         return "<a href='%d/interfaces/'>%d</a>" % (obj.id, n)
     else:
