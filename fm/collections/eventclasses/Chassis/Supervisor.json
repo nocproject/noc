@@ -5,8 +5,8 @@
         "action": "A",
         "text": {
             "en": {
-                "subject_template": "Supervisor {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
-                "body_template": "Supervisor {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
+                "subject_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
+                "body_template": "Supervisor {{name}} Failed{% if reason %}: {{reason}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -41,8 +41,8 @@
         "action": "A",
         "text": {
             "en": {
-                "subject_template": "Supervisor {{number}} Up{% if reason %}: {{reason}}{% endif %}",
-                "body_template": "Supervisor {{number}} Up{% if reason %}: {{reason}}{% endif %}",
+                "subject_template": "Supervisor {{name}} Up{% if reason %}: {{reason}}{% endif %}",
+                "body_template": "Supervisor {{name}} Up{% if reason %}: {{reason}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
