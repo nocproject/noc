@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "Record command information\\. \\(Task=VT0 , Ip=(:?\\S+), User=(?P<user>.+), Command=\"(?P<command>.+)\"\\)"
+                "value_re": "Record command information\\. \\(Task=VT\\d+ , Ip=(:?\\S+), User=(?P<user>.+), Command=\"(?P<command>.+)\"\\)"
             }
         ]
     }
