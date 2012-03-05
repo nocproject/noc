@@ -10,7 +10,7 @@
             {
                 "name": "name",
                 "description": "Supervisor name",
-                "type": "int",
+                "type": "str",
                 "required": true
             },
             {
