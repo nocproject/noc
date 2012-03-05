@@ -1094,6 +1094,25 @@ class GeoPointParameter(Parameter):
             self.raise_error(value)
 
 
+class ModelParameter(Parameter):
+    """
+    Model reference parameter
+    """
+    def __init__(self, model, required=True):
+        super(ModelParameter, self).__init__(required=True)
+        self.model = model
+
+    def clean(self, value):
+        try:
+            value = int(value)
+        except ValueError:
+            self.raise_error(value)
+        try:
+            return self.model.objects.get(pk=value)
+        except self.model.DoesNotExist:
+            self.raise_error("Not found: %d" % value)
+
+
 ## Stub for interface registry
 interface_registry = {}
 
