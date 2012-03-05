@@ -8,13 +8,16 @@
 
 ## Django moules
 from django.http import HttpResponse
-from django.db.models.fields import CharField, BooleanField
+from django.db.models.fields import CharField, BooleanField, IntegerField,\
+                                    FloatField, related
 from django.db.models import Q
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
-from noc.sa.interfaces import BooleanParameter
+from noc.sa.interfaces import BooleanParameter, IntParameter, FloatParameter,\
+                              ModelParameter
 from noc.lib.validators import is_int
+from noc.sa.interfaces import InterfaceTypeError
 
 
 class ExtModelApplication(ExtApplication):
@@ -46,6 +49,7 @@ class ExtModelApplication(ExtApplication):
     sort_param = "__sort"
     format_param = "__format"  # List output format
     query_param = "__query"
+    clean_fields = {}  # field name -> Parameter instance
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
@@ -53,8 +57,16 @@ class ExtModelApplication(ExtApplication):
         # Prepare field converters
         self.clean_fields = {}  # name -> Parameter
         for f in self.model._meta.fields:
+            if f.name in self.clean_fields:
+                continue  # Overriden behavior
             if isinstance(f, BooleanField):
                 self.clean_fields[f.name] = BooleanParameter()
+            elif isinstance(f, IntegerField):
+                self.clean_fields[f.name] = IntParameter()
+            elif isinstance(f, FloatField):
+                self.clean_fields[f.name] = FloatParameter()
+            elif isinstance(f, related.ForeignKey):
+                self.clean_fields[f.name] = ModelParameter(f.rel.to)
         #
         if not self.query_fields:
             # By default - search in unique text fields
@@ -104,6 +116,21 @@ class ExtModelApplication(ExtApplication):
                                 mimetype="text/plain; charset=utf-8",
                                 status=status)
 
+    def clean(self, data):
+        """
+        Clean up input data
+        :param data: dict of parameters
+        :type data: dict
+        :return: dict of cleaned parameters of raised InterfaceTypeError
+        :rtype: dict
+        """
+        if "id" in data:
+            del data["id"]
+        for f in data:
+            if f in self.clean_fields:
+                data[f] = self.clean_fields[f].clean(data[f])
+        return data
+
     def cleaned_query(self, q):
         q = q.copy()
         for p in self.ignored_params:
@@ -128,7 +155,9 @@ class ExtModelApplication(ExtApplication):
                     v = unicode(v)
                 r[f.name] = v
             else:
-                r[f.name] = getattr(o, f.name)._get_pk_val()
+                v = getattr(o, f.name)
+                r[f.name] = v._get_pk_val()
+                r["%s__label" % f.name] = unicode(v)
         return r
 
     def instance_to_lookup(self, o):
@@ -183,11 +212,11 @@ class ExtModelApplication(ExtApplication):
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
         try:
-            attrs = self.deserialize(request.raw_post_data)
+            attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
             return self.response(str(why), status=self.BAD_REQUEST)
-        if "id" in attrs:
-            del attrs["id"]
+        except InterfaceTypeError, why:
+            return self.response(str(why), status=self.BAD_REQUEST)
         try:
             self.queryset(request).get(**attrs)
             return self.response(status=self.DUPLICATE_ENTRY)
@@ -212,13 +241,16 @@ class ExtModelApplication(ExtApplication):
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
         try:
-            attrs = self.deserialize(request.raw_post_data)
+            attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
+            return self.response(str(why), status=self.BAD_REQUEST)
+        except InterfaceTypeError, why:
             return self.response(str(why), status=self.BAD_REQUEST)
         try:
             o = self.queryset(request).get(id=int(id))
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
+        print attrs
         for k, v in attrs.items():
             setattr(o, k, v)
         o.save()
