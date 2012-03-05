@@ -1,5 +1,4 @@
 [
-        
     {
         "name": "Network | Link | Err-Disable",
         "description": "Link in err-disable state",
@@ -12,7 +11,6 @@
                 "name": "interface",
                 "description": "interface name"
             },
-            
             {
                 "name": "reason",
                 "description": "err-disable reason"
@@ -62,7 +60,6 @@
                 "name": "interface",
                 "description": "interface name"
             },
-
             {
                 "name": "description",
                 "description": "Interface description",
@@ -90,7 +87,6 @@
                     "vars__number": "alarm.managed_object.profile.get_linecard(alarm.vars['interface'])"
                 }
             },
-
             {
                 "name": "LBD Loop",
                 "root__name": "Network | LBD | Loop Detected",
@@ -100,7 +96,6 @@
                     "vars__interface": "alarm.vars['interface']"
                 }
             },
-
             {
                 "name": "STP Loop Detected",
                 "root__name": "Network | STP | STP Loop Detected",
@@ -110,7 +105,6 @@
                     "vars__interface": "alarm.vars['interface']"
                 }
             },
-
             {
                 "name": "err-disable",
                 "root__name": "Network | Link | Err-Disable",
@@ -120,7 +114,6 @@
                     "vars__interface": "alarm.vars['interface']"
                 }
             },
-
             {
                 "name": "Alarm: Out of Threshold",
                 "root__name": "Network | Link | DOM | Alarm: Out of Threshold",
@@ -130,10 +123,18 @@
                     "vars__interface": "alarm.vars['interface']"
                 }
             },
-
             {
                 "name": "Hardware Port Error",
                 "root__name": "Chassis | Hardware | Hardware Port Error",
+                "window": 10,
+                "match_condition": {
+                    "managed_object": "alarm.managed_object.id",
+                    "vars__interface": "alarm.vars['interface']"
+                }
+            },
+            {
+                "name": "DOM Out of Threshold",
+                "root__name": "Network | Link | DOM | Alarm: Out of Threshold",
                 "window": 10,
                 "match_condition": {
                     "managed_object": "alarm.managed_object.id",
