@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) System (cold|warm) start$"
+                "value_re": "(CRIT:|CRIT\\(2\\))( Unit (?P<unit>\\d+),)? System (cold|warm) start$"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(CRIT:|CRIT\\(2\\)) System started up$"
+                "value_re": "(CRIT:|CRIT\\(2\\))( Unit (?P<unit>\\d+),)? System started up$"
             }
         ]
     }
