@@ -53,17 +53,8 @@ Ext.define("NOC.core.LookupField", {
             }
         }
         return this.callParent([value]);
+    },
+    getLookupData: function() {
+        return this.getDisplayValue();
     }
-
-    //,
-//
-//    setValue: function(value) {
-//        if(Ext.isDefined(value)) {
-//            if(typeof value === "object") {
-//                console.log(value);
-//                this.store.loadData([value]);
-//            }
-//        }
-//        return this.callParent([value]);
-//    }
 });
