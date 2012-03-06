@@ -99,8 +99,9 @@ Ext.define("NOC.core.ModelApplication", {
                 title: "Filter",
                 items: this.filters.map(function(f) {
                     var fg = Ext.create({
-                        "boolean": "NOC.core.modelfilter.Boolean"
-                    }[f.ftype], f);
+                        "boolean": "NOC.core.modelfilter.Boolean",
+                        "lookup": "NOC.core.modelfilter.Lookup"
+                    }[f.ftype], Ext.Object.merge(f, {url: store.proxy.url}));
                     fg.handler = fh;
                     me.filter_getters = me.filter_getters.concat(
                         Ext.bind(fg.getFilter, fg)
