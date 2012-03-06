@@ -1,41 +1,23 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## VCDomain Manager
+## vc.vcdomain application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib import admin
 ## NOC modules
-from noc.lib.app import ModelApplication
-from noc.vc.models import VCDomain, VCDomainProvisioningConfig
+from noc.lib.app import ExtModelApplication, view
+from noc.vc.models import VCDomain
 
 
-class VCDomainProvisioningConfigAdmin(admin.TabularInline):
+class VCDomainApplication(ExtModelApplication):
     """
-    Inline admin for VC Domain
+    VCDomain application
     """
-    model = VCDomainProvisioningConfig
-    extra = 3
-
-
-class VCDomainAdmin(admin.ModelAdmin):
-    """
-    VC Domain Admin
-    """
-    list_display = ["name", "type", "enable_provisioning",
-                    "enable_vc_bind_filter", "selector", "description"]
-    search_fields = ["name"]
-    list_filter = ["type", "enable_provisioning", "enable_vc_bind_filter"]
-    inlines = [VCDomainProvisioningConfigAdmin]
-
-
-class VCDomainApplication(ModelApplication):
-    """
-    VC Domain application
-    """
-    model = VCDomain
-    model_admin = VCDomainAdmin
+    title = "VCDomain"
     menu = "Setup | VC Domains"
+    model = VCDomain
+    icon = "icon_world_link"
+    query_fields = ["name", "description"]
+    query_condition = "icontains"
