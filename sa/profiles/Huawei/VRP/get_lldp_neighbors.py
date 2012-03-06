@@ -28,7 +28,9 @@ class Script(NOCScript):
     ##
     ## Other (VRP5 style)
     ##
-    rx_ifc_line = re.compile(r"(?P<local_if>[^\n]+) has \d*[1-9]+\d* neighbor[^\n]+\n(?P<tail>.*)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ifc_line = re.compile(
+        r"(?P<local_if>[^\n]+) has \d*[1-9]+\d* neighbor[^\n]+\n(?P<tail>.*)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     @NOCScript.match()
     def execute_other(self):
@@ -56,8 +58,12 @@ class Script(NOCScript):
 
 
 def parse_neighbor(text):
-    rx_ngh_line = re.compile(r"Neighbor[^\n]+\n(?P<neighbor>.*?Expired time[^\n]+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_neigh = re.compile(r"Chassis\s*ID\s*:\s*(?P<id>\S+).*?Port\s*ID\s*(sub)*type\s*:\s*(?P<p_type>\S+).*?Port\s*ID\s*:\s*(?P<p_id>\S+).*?Sys.*?name\s*:\s*(?P<name>[^\n]+).*?Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)", re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_ngh_line = re.compile(
+        r"Neighbor[^\n]+\n(?P<neighbor>.*?Expired time[^\n]+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_neigh = re.compile(
+        r"Chassis\s*ID\s*:\s*(?P<id>\S+).*?Port\s*ID\s*(sub)*type\s*:\s*(?P<p_type>\S+).*?Port\s*ID\s*:\s*(?P<p_id>\S+).*?Sys.*?name\s*:\s*(?P<name>[^\n]+).*?Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
     n = []
     for match_n in rx_ngh_line.finditer(text):
         for match_data in rx_neigh.finditer(match_n.group("neighbor")):
