@@ -3,18 +3,18 @@
 ## Vendor: DLink
 ## OS:     DxS_Cisco_CLI
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.sa.profiles import Profile as NOCProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(NOCProfile):
     name = "DLink.DxS_Cisco_CLI"
-    supported_schemes = [TELNET, SSH]
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = "^ --More--"
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at"
@@ -27,7 +27,7 @@ class Profile(noc.sa.profiles.Profile):
     # Don't sure. Below this line obtained from Cisco.IOS profile
     requires_netmask_conversion = True
     convert_mac = noc.sa.profiles.Profile.convert_mac_to_cisco
-    convert_interface_name = noc.sa.profiles.Profile.convert_interface_name_cisco
+    convert_interface_name = NOCProfile.convert_interface_name_cisco
     config_volatile = ["^ntp clock-period .*?^"]
 
     def generate_prefix_list(self, name, pl):

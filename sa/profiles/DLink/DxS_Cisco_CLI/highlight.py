@@ -20,11 +20,11 @@ class ConfigLexer(RegexLexer):
             (r"^(interface|controller|router \S+|voice translation-\S+|voice-port)(.*?)$", bygroups(Keyword, Name.Attribute)),
             (r"^(dial-peer\s+\S+\s+)(\S+)(.*?)$", bygroups(Keyword, Name.Attribute, Keyword)),
             (r"^(vlan\s+)(\d+)$", bygroups(Keyword, Name.Attribute)),
-            (r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(/\d{1,2})?", Number), # IPv4 Address/Prefix
-            (r"49\.\d{4}\.\d{4}\.\d{4}\.\d{4}\.\d{2}", Number), # NSAP
-            (r"(\s+[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}\s+)", Number), # MAC Address
+            (r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(/\d{1,2})?", Number),  # IPv4 Address/Prefix
+            (r"49\.\d{4}\.\d{4}\.\d{4}\.\d{4}\.\d{2}", Number),  # NSAP
+            (r"(\s+[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}\s+)", Number),  # MAC Address
             (r"^(?:no\s+)?\S+", Keyword),
             (r"\s+\d+\s+\d*|,\d+|-\d+", Number),
-            (r".", Text),
-        ],
+            (r".", Text)
+        ]
     }
