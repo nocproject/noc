@@ -10,9 +10,11 @@
 import noc.sa.script
 from noc.sa.interfaces import IGetConfig
 
+
 class Script(noc.sa.script.Script):
-    name="InfiNet.WANFlexX.get_config"
-    implements=[IGetConfig]
+    name = "InfiNet.WANFlexX.get_config"
+    implements = [IGetConfig]
+
     def execute(self):
-        config=self.cli("config show")
+        config = self.cli("config show")
         return self.cleaned_config(config)
