@@ -26,7 +26,6 @@ Ext.define("NOC.core.LookupField", {
         if(this.query) {
             Ext.apply(this.store.proxy.extraParams, this.query);
         }
-        console.log(this);
         this.callParent();
     },
 
