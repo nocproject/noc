@@ -10,9 +10,11 @@
 import noc.sa.script
 from noc.sa.interfaces import IGetConfig
 
+
 class Script(noc.sa.script.Script):
-    name="Ubiquiti.AirOS.get_config"
-    implements=[IGetConfig]
+    name = "Ubiquiti.AirOS.get_config"
+    implements = [IGetConfig]
+
     def execute(self):
-        config=self.cli("cat /tmp/system.cfg")
+        config = self.cli("cat /tmp/system.cfg")
         return self.cleaned_config(config)
