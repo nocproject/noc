@@ -7,8 +7,7 @@
 ##----------------------------------------------------------------------
 from pygments.lexers import XmlLexer
 from pygments.token import *
-##
-## ZTE ZXDSL531 Configuration lexer
-##
+
+
 class ConfigLexer(XmlLexer):
     pass
