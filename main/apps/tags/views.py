@@ -54,6 +54,12 @@ class TagsAppplication(Application):
         """
         Display all objects belonging to tag
         """
+        def lookup_function(q):
+            for m in Tag.objects.filter(name__istartswith=q):
+                yield m.name
+        if tag == "lookup":
+            return self.lookup_json(request, lookup_function)
+
         t = self.get_object_or_404(Tag, name=smart_str(tag))
         items = {}  # Type -> itemlist
         for i in t.items.all():
@@ -66,13 +72,3 @@ class TagsAppplication(Application):
                 items[itype] = [i.object]
         items = sorted(items.items(), key=lambda x: x[0])
         return self.render(request, "tag.html", tag=t, items=items)
-
-    @view(url=r"^lookup/$", url_name="lookup", access=PermitLogged())
-    def view_lookup(self, request):
-        """
-        AJAX lookup
-        """
-        def lookup_function(q):
-            for m in Tag.objects.filter(name__istartswith=q):
-                yield m.name
-        return self.lookup_json(request, lookup_function)
