@@ -130,7 +130,7 @@ class AutoCompleteTags(Input):
                 });
             });
         </script>
-        """%(attrs["id"],site.reverse("main:tags:lookup"),initial)
+        """%(attrs["id"], "/main/tags/lookup/", initial)
         return mark_safe("\n".join([html,js]))
 
 
