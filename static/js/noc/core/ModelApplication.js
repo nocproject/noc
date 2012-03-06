@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -10,8 +10,10 @@ Ext.define("NOC.core.ModelApplication", {
     extend: "NOC.core.Application",
     layout: "fit",
     search: false,
+    filters: null,
 
     initComponent: function() {
+        var me = this;
         // Permissions
         this.can_read = false;
         this.can_create = false;
@@ -86,150 +88,176 @@ Ext.define("NOC.core.ModelApplication", {
             }
         ]);
         // Initialize panels
-        Ext.apply(this, {
-            items: [
-                // Grid
+        // Filters
+        var grid_rbar = null;
+        me.filter_getters = [];
+        if(this.filters) {
+            var fh = Ext.bind(this.on_filter, this);
+            grid_rbar = {
+                xtype: "panel",
+                width: 208,
+                title: "Filter",
+                items: this.filters.map(function(f) {
+                    var fg = Ext.create({
+                        "boolean": "NOC.core.modelfilter.Boolean"
+                    }[f.ftype], f);
+                    fg.handler = fh;
+                    me.filter_getters = me.filter_getters.concat(
+                        Ext.bind(fg.getFilter, fg)
+                    );
+                    return fg;
+                })
+            };
+        }
+        // Grid
+        var grid_panel = {
+            xtype: 'gridpanel',
+            store: store,
+            columns: this.columns,
+            border: false,
+            autoScroll: true,
+            plugins : [ Ext.create('Ext.ux.grid.AutoSize') ],
+            dockedItems: [
                 {
-                    xtype: 'gridpanel',
+                    xtype: "toolbar",
+                    items: grid_toolbar
+                },
+                {
+                    xtype: "pagingtoolbar",
                     store: store,
-                    columns: this.columns,
-                    border: false,
-                    autoScroll: true,
-                    plugins : [ Ext.create('Ext.ux.grid.AutoSize') ],
-                    dockedItems: [
-                        {
-                            xtype: "toolbar",
-                            items: grid_toolbar
-                        },
-                        {
-                            xtype: "pagingtoolbar",
-                            store: store,
-                            dock: "bottom",
-                            displayInfo: true
-                        }
-                    ],
+                    dock: "bottom",
+                    displayInfo: true
+                }
+            ],
+            rbar: grid_rbar,
+            listeners: {
+                itemclick: function(view, record) {
+                    var app = this.up("panel");
+                    // Check permissions
+                    if (!app.can_read && !app.can_update)
+                        return;
+                    app.edit_record(record);
+                }
+            }
+        };
+        // Form
+        var form_panel = {
+            xtype: 'container',
+            layout: 'anchor',
+            items: {
+                xtype: 'form',
+                border: true,
+                padding: 4,
+                bodyPadding: 4,
+                defaults: {
+                    enableKeyEvents: true,
                     listeners: {
-                        itemclick: function(view, record) {
-                            var app = this.up("panel");
-                            // Check permissions
-                            if (!app.can_read && !app.can_update)
+                        specialkey: function(field, key) {
+                            if (field.xtype != "textfield")
                                 return;
-                            app.edit_record(record);
+                            var get_button = function(scope, name) {
+                                return scope.up("panel").dockedItems.items[0].getComponent(name);
+                            }
+                            switch(key.getKey()) {
+                                case Ext.EventObject.ENTER:
+                                    var b = get_button(this, "save");
+                                    key.stopEvent();
+                                    b.handler.call(b);
+                                    break;
+                                case Ext.EventObject.ESC:
+                                    var b = get_button(this, "reset");
+                                    key.stopEvent();
+                                    b.handler.call(b);
+                            }
                         }
                     }
                 },
-                // Form
-                {
-                    xtype: 'container',
-                    layout: 'anchor',
-                    items: {
-                        xtype: 'form',
-                        border: true,
+                items: [
+                    {
+                        xtype: "container",
+                        html: "Change",
                         padding: 4,
-                        bodyPadding: 4,
-                        defaults: {
-                            enableKeyEvents: true,
-                            listeners: {
-                                specialkey: function(field, key) {
-                                    if (field.xtype != "textfield")
-                                        return;
-                                    var get_button = function(scope, name) {
-                                        return scope.up("panel").dockedItems.items[0].getComponent(name);
-                                    }
-                                    switch(key.getKey()) {
-                                        case Ext.EventObject.ENTER:
-                                            var b = get_button(this, "save");
-                                            key.stopEvent();
-                                            b.handler.call(b);
-                                            break;
-                                        case Ext.EventObject.ESC:
-                                            var b = get_button(this, "reset");
-                                            key.stopEvent();
-                                            b.handler.call(b);
-                                    }
+                        style: {
+                            fontWeight: "bold"
+                        }
+                    },
+                    {
+                        xtype: "hiddenfield",
+                        name: "id"
+                    }].concat(this.fields),
+                buttonAlign: "left",
+                buttons: [
+                    {
+                        itemId: "save",
+                        text: "Save",
+                        iconCls: "icon_accept",
+                        formBind: true,
+                        disabled: true,
+                        scope: this,
+                        handler: function() {
+                            if(!this.form.isValid())
+                                return;
+                            var v = this.form.getFieldValues();
+                            // Fetch comboboxes labels
+                            this.form.getFields().each(function(field) {
+                                if(Ext.isDefined(field.getLookupData))
+                                    v[field.name + "__label"] = field.getLookupData();
+                            });
+                            this.save_record(v);
+                        }
+                    },
+                    {
+                        itemId: "reset",
+                        text: "Reset",
+                        iconCls: "icon_cancel",
+                        disabled: true,
+                        scope: this,
+                        handler: function() {
+                            this.form.reset();
+                        }
+                    },
+                    {
+                        itemId: "close",
+                        text: "Close",
+                        iconCls: "icon_arrow_up",
+                        scope: this,
+                        handler: function() {
+                            this.toggle();
+                        }
+                    },
+                    {
+                        itemId: "delete",
+                        text: "Delete",
+                        iconCls: "icon_delete",
+                        disabled: true,
+                        scope: this,
+                        handler: function() {
+                            Ext.Msg.show({
+                                title: "Delete record?",
+                                msg: "Do you wish to delete record? This operation cannot be undone!",
+                                buttons: Ext.Msg.YESNO,
+                                icon: Ext.window.MessageBox.QUESTION,
+                                modal: true,
+                                fn: function(button) {
+                                    if (button == "yes")
+                                        this.delete_record();
                                 }
-                            }
-                        },
-                        items: [
-                            {
-                                xtype: "container",
-                                html: "Change",
-                                padding: 4,
-                                style: {
-                                    fontWeight: "bold"
-                                }
-                            },
-                            {
-                                xtype: "hiddenfield",
-                                name: "id"
-                            }].concat(this.fields),
-                        buttonAlign: "left",
-                        buttons: [
-                            {
-                                itemId: "save",
-                                text: "Save",
-                                iconCls: "icon_accept",
-                                formBind: true,
-                                disabled: true,
-                                handler: function() {
-                                    var form = this.up("panel").getForm();
-                                    if(!form.isValid())
-                                        return;
-                                    var v = form.getFieldValues();
-                                    var app = this.up("panel").up("panel");
-                                    app.save_record(v);
-                                }
-                            },
-                            {
-                                itemId: "reset",
-                                text: "Reset",
-                                iconCls: "icon_cancel",
-                                disabled: true,
-                                handler: function() {
-                                    this.up("panel").getForm().reset();
-                                }
-                            },
-                            {
-                                itemId: "close",
-                                text: "Close",
-                                iconCls: "icon_arrow_up",
-                                handler: function() {
-                                    var app = this.up("panel").up("panel");
-                                    app.toggle();
-                                }
-                            },
-                            {
-                                itemId: "delete",
-                                text: "Delete",
-                                iconCls: "icon_delete",
-                                disabled: true,
-                                handler: function() {
-                                    var app = this.up("panel").up("panel");
-                                    Ext.Msg.show({
-                                        title: "Delete record?",
-                                        msg: "Do you wish to delete record? This operation cannot be undone!",
-                                        buttons: Ext.Msg.YESNO,
-                                        icon: Ext.window.MessageBox.QUESTION,
-                                        modal: true,
-                                        fn: function(button) {
-                                            if (button == "yes")
-                                                app.delete_record();
-                                        }
-                                    });
-                                }
-                            }
-                        ]
+                            });
+                        }
                     }
-                }
-            ]
-        });
+                ]
+            }
+        };
 
+        Ext.apply(this, {
+            items: [grid_panel, form_panel]
+        });
 
         // Initialize component
         this.callParent(arguments);
         // Create shortcuts
         var grid = this.items.items[0],
-            form = this.down('form'),
+            form = this.down("form"),
             grid_toolbar = grid.dockedItems.items[1],
             form_toolbar = form.dockedItems.first();
         this.create_button = grid_toolbar.getComponent("create");
@@ -333,15 +361,30 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Reload store with current query
     refresh_store: function() {
-        this.store.load(this.current_query);
+        if(this.current_query)
+            this.store.load({params: this.current_query});
+        else
+            this.store.load();
     },
     // Search
     on_search: function() {
         var v = this.search_field.getValue();
         if(v)
-            this.current_query = {params: {"__query": v}};
+            this.current_query["__query"] = v;
         else
-            this.current_query = {};
+            delete this.current_query["__query"];
+        this.refresh_store();
+    },
+    // Filter
+    on_filter: function() {
+        var me = this,
+            fexp = {};
+        Ext.each(me.filter_getters, function(g) {
+            fexp = Ext.Object.merge(fexp, g());
+        });
+        if(this.current_query["__query"])
+            fexp["__query"] = this.current_query["__query"];
+        this.current_query = fexp;
         this.refresh_store();
     }
 });
