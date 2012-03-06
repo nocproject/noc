@@ -264,3 +264,15 @@ class ExtModelApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         o.delete()
         return HttpResponse(status=self.DELETED)
+
+    @view(method=["GET"], url="^filter/(?P<var>[^/]+)/$",
+          access="read", api=True)
+    def api_filter(self, request, var):
+        q = request.GET.get(self.query_param).lower()
+        g = lambda o: getattr(o, var)
+        d = [{"id": g(o).id, "label": unicode(g(o))}
+                for o in self.model.objects.distinct(var)]
+        if q:
+            d = [x for x in d if q in x["label"].lower()]
+        d = sorted(d, key=lambda x: x["label"])
+        return d
