@@ -11,17 +11,19 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"SP firmware (?P<version>\S+)")
+rx_ver = re.compile(r"SP firmware (?P<version>\S+)")
+
 
 class Script(noc.sa.script.Script):
-    name="Sun.iLOM3.get_version"
-    cache=True
-    implements=[IGetVersion]
+    name = "Sun.iLOM3.get_version"
+    cache = True
+    implements = [IGetVersion]
+
     def execute(self):
-        v=self.cli("version")
-        match=rx_ver.search(v)
+        v = self.cli("version")
+        match = rx_ver.search(v)
         return {
-            "vendor"    : "Sun",
-            "platform"  : "iLOM3",
-            "version"   : match.group("version"),
+            "vendor": "Sun",
+            "platform": "iLOM3",
+            "version": match.group("version")
         }
