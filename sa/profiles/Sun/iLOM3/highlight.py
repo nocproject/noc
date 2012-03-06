@@ -7,8 +7,7 @@
 ##----------------------------------------------------------------------
 from pygments.lexers import XmlLexer
 from pygments.token import *
-##
-## Sun iLOM3 Configuration lexer
-##
+
+
 class ConfigLexer(XmlLexer):
-    name="Sun.iLOM3"
+    name = "Sun.iLOM3"
