@@ -9,17 +9,21 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"ProductCode (?P<version>\S+) build.*Hardware type: (?P<platform>\S+)",re.MULTILINE|re.DOTALL)
+rx_ver = re.compile(
+    r"ProductCode (?P<version>\S+) build.*Hardware type: (?P<platform>\S+)",
+    re.MULTILINE | re.DOTALL)
+
 
 class Script(noc.sa.script.Script):
-    name="Protei.MediaGateway.get_version"
-    cache=True
-    implements=[IGetVersion]
+    name = "Protei.MediaGateway.get_version"
+    cache = True
+    implements = [IGetVersion]
+
     def execute(self):
-        v=self.cli("_version full")
-        match=rx_ver.search(v)
+        v = self.cli("_version full")
+        match = rx_ver.search(v)
         return {
-            "vendor"    : "Protei",
-            "platform"  : match.group("platform"),
-            "version"   : match.group("version"),
+            "vendor": "Protei",
+            "platform": match.group("platform"),
+            "version": match.group("version")
         }
