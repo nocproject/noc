@@ -11,17 +11,19 @@ import noc.sa.script
 from noc.sa.interfaces import IGetVersion
 import re
 
-rx_ver=re.compile(r"Firmware Version : (?P<version>\S+)",re.MULTILINE)
+rx_ver = re.compile(r"Firmware Version : (?P<version>\S+)", re.MULTILINE)
+
 
 class Script(noc.sa.script.Script):
-    name="Raritan.DominionSX.get_version"
-    cache=True
-    implements=[IGetVersion]
+    name = "Raritan.DominionSX.get_version"
+    cache = True
+    implements = [IGetVersion]
+
     def execute(self):
-        v=self.cli("show version")
-        match=rx_ver.search(v)
+        v = self.cli("show version")
+        match = rx_ver.search(v)
         return {
-            "vendor"    : "Raritan",
-            "platform"  : "SX",
-            "version"   : match.group("version"),
+            "vendor": "Raritan",
+            "platform": "SX",
+            "version": match.group("version")
         }
