@@ -97,6 +97,7 @@ Ext.define("NOC.core.ModelApplication", {
                 xtype: "panel",
                 width: 208,
                 title: "Filter",
+                padding: 4,
                 items: this.filters.map(function(f) {
                     var fg = Ext.create({
                         "boolean": "NOC.core.modelfilter.Boolean",
