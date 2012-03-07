@@ -66,7 +66,8 @@ class ExtModelApplication(ExtApplication):
             elif isinstance(f, FloatField):
                 self.clean_fields[f.name] = FloatParameter()
             elif isinstance(f, related.ForeignKey):
-                self.clean_fields[f.name] = ModelParameter(f.rel.to)
+                self.clean_fields[f.name] = ModelParameter(f.rel.to,
+                                                           required=not f.null)
         #
         if not self.query_fields:
             # By default - search in unique text fields
