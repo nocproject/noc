@@ -165,6 +165,9 @@ class Script(NOCScript):
                 match.group("interface"))
             if ifname[:2] in ["Vi", "Tu", "Di", "GM"]:
                 continue
+            # NOC-378 - Dirty hack for interface like ATM0/IMA0
+            if "/ima" in match.group("interface").lower():
+                continue
             if ":" in ifname:
                 inm = ifname.split(":")[0]
                 # Create root interface if not exists yet
