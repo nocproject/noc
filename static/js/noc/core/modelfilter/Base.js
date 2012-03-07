@@ -11,6 +11,7 @@ Ext.define("NOC.core.modelfilter.Base", {
     extend: "Ext.form.FieldSet",
     ftype: "base",
     name: null,
+    collapsible: true,
     handler: undefined,
 
     onChange: function() {
