@@ -74,7 +74,6 @@ class ExtModelApplication(ExtApplication):
                                  for f in self.model._meta.fields
                                  if f.unique and isinstance(f, CharField)]
 
-
     def get_Q(self, request, query):
         """
         Prepare Q statement for query
@@ -151,13 +150,18 @@ class ExtModelApplication(ExtApplication):
         for f in o._meta.local_fields:
             if f.rel is None:
                 v = f._get_val_from_obj(o)
-                if type(v) not in (str, unicode, int, long, bool):
+                if (v is not None and
+                    type(v) not in (str, unicode, int, long, bool)):
                     v = unicode(v)
                 r[f.name] = v
             else:
                 v = getattr(o, f.name)
-                r[f.name] = v._get_pk_val()
-                r["%s__label" % f.name] = unicode(v)
+                if v:
+                    r[f.name] = v._get_pk_val()
+                    r["%s__label" % f.name] = unicode(v)
+                else:
+                    r[f.name] = None
+                    r["%s__label" % f.name] = ""
         return r
 
     def instance_to_lookup(self, o):
