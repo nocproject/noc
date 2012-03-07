@@ -6,21 +6,38 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Operation timed out
-class TimeOutError(Exception): pass
-## Login Failed
-class LoginError(Exception): pass
-## CLI reports syntax error
-class CLISyntaxError(Exception): pass
-## Feature is not supported on current platform/software/feature set
-class NotSupportedError(Exception): pass
-## Commands returns result that cannot be parsed
-class UnexpectedResultError(Exception): pass
-## Script cancelled
-class CancelledError(Exception): pass
-## Invalid pager pattern occured
-class UnexpectedPagerPattern(Exception): pass
-## Unknown access schema
-class UnknownAccessScheme(Exception): pass
-## Invalid pager pattern
-class InvalidPagerPattern(Exception): pass
+
+class TimeOutError(Exception):
+    """Operation timed out"""
+
+
+class LoginError(Exception):
+    """Login Failed"""
+
+
+class CLISyntaxError(Exception):
+    """CLI reports syntax error"""
+
+
+class NotSupportedError(Exception):
+    """Feature is not supported on current platform/software/feature set"""
+
+
+class UnexpectedResultError(Exception):
+    """Command returns result that cannot be parsed"""
+
+
+class CancelledError(Exception):
+    """Script cancelled"""
+
+
+class UnexpectedPagerPattern(Exception):
+    """Invalid pager pattern set"""
+
+
+class UnknownAccessScheme(Exception):
+    """Unknown access schema"""
+
+
+class InvalidPagerPattern(Exception):
+    """Invalid pager pattern"""
