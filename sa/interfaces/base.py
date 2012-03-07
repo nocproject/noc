@@ -1099,10 +1099,15 @@ class ModelParameter(Parameter):
     Model reference parameter
     """
     def __init__(self, model, required=True):
-        super(ModelParameter, self).__init__(required=True)
+        super(ModelParameter, self).__init__(required=required)
         self.model = model
 
     def clean(self, value):
+        if not value:
+            if self.required:
+                self.raise_error("Value required")
+            else:
+                return None
         try:
             value = int(value)
         except ValueError:
