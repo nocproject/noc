@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Profile base class
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 # Python Modules
 import re
 # NOC Modules
@@ -37,6 +36,16 @@ class ProfileBase(type):
     def __new__(cls, name, bases, attrs):
         m = type.__new__(cls, name, bases, attrs)
         m.scripts = {}
+        # Compile patterns
+        if m.pattern_syntax_error:
+            m.rx_pattern_syntax_error = re.compile(m.pattern_syntax_error)
+        else:
+            m.rx_pattern_syntax_error = None
+        if m.pattern_operation_error:
+            m.rx_pattern_operation_error = re.compile(m.pattern_operation_error)
+        else:
+            m.rx_pattern_operation_error = None
+        # Register
         profile_registry.register(m.name, m)
         return m
 
@@ -85,6 +94,10 @@ class Profile(object):
     # If CLI output matches pattern_syntax_error,
     # then CLISyntaxError exception raised
     pattern_syntax_error = None
+    # Regular expression to catch the CLI commands errors in cli output.
+    # If CLI output matches pattern_syntax_error and not matches
+    # pattern_syntax_error, then CLIOperationError exception raised
+    pattern_operation_error = None
     # Sequence to be send to list forward pager
     # If pattern_more is string and is matched
     command_more = "\n"
