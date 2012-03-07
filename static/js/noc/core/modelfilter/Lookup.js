@@ -24,6 +24,7 @@ Ext.define("NOC.core.modelfilter.Lookup", {
                     queryMode: "remote",
                     queryParam: "__query",
                     forceSelection: true,
+                    minChars: 2,
                     typeAhead: true,
                     editable: true,
                     store: Ext.create("Ext.data.Store", {
