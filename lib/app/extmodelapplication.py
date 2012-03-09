@@ -15,9 +15,16 @@ from django.db.models import Q
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import BooleanParameter, IntParameter, FloatParameter,\
-                              ModelParameter
+                              ModelParameter, StringParameter
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
+
+
+class DjangoTagsParameter(StringParameter):
+    def clean(self, value):
+        if not value:
+            return ""
+        return ",".join(value)
 
 
 class ExtModelApplication(ExtApplication):
@@ -59,7 +66,10 @@ class ExtModelApplication(ExtApplication):
         for f in self.model._meta.fields:
             if f.name in self.clean_fields:
                 continue  # Overriden behavior
-            if isinstance(f, BooleanField):
+            if f.name == "tags":
+                self.clean_fields[f.name] = DjangoTagsParameter(
+                    required=not f.null)
+            elif isinstance(f, BooleanField):
                 self.clean_fields[f.name] = BooleanParameter()
             elif isinstance(f, IntegerField):
                 self.clean_fields[f.name] = IntParameter()
@@ -149,7 +159,11 @@ class ExtModelApplication(ExtApplication):
     def instance_to_dict(self, o):
         r = {}
         for f in o._meta.local_fields:
-            if f.rel is None:
+            if f.name == "tags":
+                # Send tags as a list
+                r[f.name] = [x for x in
+                             getattr(o, f.name).split(",") if x]
+            elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if (v is not None and
                     type(v) not in (str, unicode, int, long, bool)):
