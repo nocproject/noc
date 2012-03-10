@@ -30,3 +30,17 @@ function noc_renderBool(v) {
 function noc_renderURL(v) {
     return "<a href =' " + v + "' target='_'>" + v + "</a>";
 }
+
+//
+// noc_renderTags(v)
+//      Grid field renderer for tags
+//
+function noc_renderTags(v) {
+    if(v) {
+        return v.map(function(x) {
+            return "<span class='x-boxselect-item'>" + x + "</span>";
+        }).join(" ");
+    } else {
+        return "";
+    }
+}
