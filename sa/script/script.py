@@ -163,6 +163,7 @@ class Script(threading.Thread):
     #
     LoginError = LoginError
     CLISyntaxError = CLISyntaxError
+    CLIOperationError = CLIOperationError
     NotSupportedError = NotSupportedError
     UnexpectedResultError = UnexpectedResultError
     #
@@ -582,8 +583,13 @@ class Script(threading.Thread):
             # Exception captured
             raise data
         # Check for syntax error
-        if self.profile.pattern_syntax_error and re.search(self.profile.pattern_syntax_error, data):
+        if (self.profile.rx_pattern_syntax_error and
+            self.profile.rx_pattern_syntax_error.search(data)):
             raise self.CLISyntaxError(data)
+        # Then check for operaion error
+        if (self.profile.rx_pattern_operation_error and
+            self.profile.rx_pattern_operation_error.search(data)):
+            raise self.CLIOperationError(data)
         # Echo cancelation
         if self.strip_echo and data.lstrip().startswith(cmd):
             data = data.lstrip()
