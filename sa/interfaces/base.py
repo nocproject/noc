@@ -1147,6 +1147,7 @@ class Interface(object):
     ## Clean up all parameters except "returns"
     ##
     def clean(self, __profile=None, **kwargs):
+        print 2, __profile, kwargs
         in_kwargs = kwargs.copy()
         out_kwargs = {}
         for n, p in self.gen_parameters():
@@ -1185,7 +1186,8 @@ class Interface(object):
     ## Clean up script input
     ##
     def script_clean_input(self, __profile, **kwargs):
-        return self.clean(__profile=__profile, **kwargs)
+        print 1, __profile, kwargs
+        return self.clean(__profile, **kwargs)
     
     ##
     def script_clean_result(self, __profile, result):
