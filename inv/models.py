@@ -327,7 +327,8 @@ class SubInterface(Document):
         "collection": "noc.subinterfaces",
         "allow_inheritance": False,
         "indexes": [
-            "interface", "managed_object", "untagged_vlan", "tagged_vlans"
+            "interface", "managed_object", "untagged_vlan", "tagged_vlans",
+            "is_bridge", "is_ipv4", "is_ipv6"
         ]
     }
     interface = PlainReferenceField(Interface)
