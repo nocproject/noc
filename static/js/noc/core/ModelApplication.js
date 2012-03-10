@@ -133,7 +133,7 @@ Ext.define("NOC.core.ModelApplication", {
             ],
             rbar: grid_rbar,
             listeners: {
-                itemclick: function(view, record) {
+                select: function(view, record) {
                     var app = this.up("panel");
                     // Check permissions
                     if (!app.can_read && !app.can_update)
