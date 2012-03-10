@@ -57,6 +57,7 @@ class ExtModelApplication(ExtApplication):
     format_param = "__format"  # List output format
     query_param = "__query"
     clean_fields = {}  # field name -> Parameter instance
+    custom_fields = {}  # name -> handler, populated automatically
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
@@ -78,6 +79,12 @@ class ExtModelApplication(ExtApplication):
             elif isinstance(f, related.ForeignKey):
                 self.clean_fields[f.name] = ModelParameter(f.rel.to,
                                                            required=not f.null)
+        # Find field_* and populate custom fields
+        self.custom_fields = {}
+        for fn in [n for n in dir(self) if n.startswith("field_")]:
+            h = getattr(self, fn)
+            if callable(h):
+                self.custom_fields[fn[6:]] = h
         #
         if not self.query_fields:
             # By default - search in unique text fields
@@ -177,6 +184,9 @@ class ExtModelApplication(ExtApplication):
                 else:
                     r[f.name] = None
                     r["%s__label" % f.name] = ""
+        # Add custom fields
+        for f in self.custom_fields:
+            r[f] = self.custom_fields[f](o)
         return r
 
     def instance_to_lookup(self, o):
