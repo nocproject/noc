@@ -19,6 +19,10 @@ class CLISyntaxError(Exception):
     """CLI reports syntax error"""
 
 
+class CLIOperationError(Exception):
+    """CLI Operation returns error (Except of Syntax Error)"""
+
+
 class NotSupportedError(Exception):
     """Feature is not supported on current platform/software/feature set"""
 
