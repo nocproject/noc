@@ -26,6 +26,7 @@ from site import site
 from noc.lib.forms import NOCForm
 from noc import settings
 from noc.lib.serialize import json_encode
+from noc.sa.interfaces import DictParameter
 
 
 class ApplicationBase(type):
@@ -370,7 +371,10 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None,
         f.menu = menu
         f.method = method
         f.api = api
-        f.validate = validate
+        if type(validate) == dict:
+            f.validate = DictParameter(attrs=validate)
+        else:
+            f.validate = validate
         return f
 
     return decorate

@@ -160,20 +160,31 @@ class Site(object):
                                hasattr(v, "api") and v.api)
             try:
                 # Validate requests
-                if (hasattr(v, "validate") and v.validate and
-                    issubclass(v.validate, Form)):
+                if (hasattr(v, "validate") and v.validate):
                     # Additional validation
-                    f = v.validate(request.GET)  # @todo: Post
-                    if f.is_valid():
-                        kwargs.update(f.cleaned_data)
-                    else:
+                    errors = None
+                    if isinstance(v.validate, DictParameter):
+                        # Validate via NOC interfaces
+                        g = dict((k, request.GET[k]) for k in request.GET)
+                        try:
+                            kwargs.update(v.validate.clean(g))
+                        except InterfaceTypeError, why:
+                            errors = str(why)
+                    elif issubclass(v.validate, Form):
+                        # Validate via django forms
+                        f = v.validate(request.GET)  # @todo: Post
+                        if f.is_valid():
+                            kwargs.update(f.cleaned_data)
+                        else:
+                            errors = dict([(f, "; ".join(e))
+                                           for f, e in f.errors.items()])
+                    if errors:
                         # Return error response
                         ext_format = ("__format=ext"
                                     in request.META["QUERY_STRING"].split("&"))
                         r = JSONEncoder(ensure_ascii=False).encode({
                             "status": False,
-                            "errors": dict([(f, "; ".join(e))
-                                for f, e in f.errors.items()])
+                            "errors": errors
                         })
                         status = 200 if ext_format else 400  # OK or BAD_REQUEST
                         return HttpResponse(r, status=status,
@@ -190,6 +201,9 @@ class Site(object):
                         else:
                             a = dict([(k, request.POST[k])
                                      for k in request.POST])
+                    elif request.method == "GET":
+                        a = dict([(k, request.GET[k])
+                                 for k in request.GET])
                     logging.debug("API %s %s %s" % (request.method,
                                                     request.path, a))
                 # Call handler
@@ -217,6 +231,7 @@ class Site(object):
 
         from access import PermissionDenied
         from django.forms import Form
+        from noc.sa.interfaces import DictParameter, InterfaceTypeError
         return inner
 
     def add_to_menu(self, app, v):
