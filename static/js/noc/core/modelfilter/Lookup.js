@@ -27,6 +27,8 @@ Ext.define("NOC.core.modelfilter.Lookup", {
                     minChars: 2,
                     typeAhead: true,
                     editable: true,
+                    pageSize: 10,
+                    width: 180,
                     store: Ext.create("Ext.data.Store", {
                         fields: ["id", "label"],
                         proxy: Ext.create("Ext.data.RestProxy", {
