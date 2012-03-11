@@ -12,6 +12,7 @@ from __future__ import with_statement
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import ISetSwitchport
 from noc.lib.text import list_to_ranges
+from noc.sa.profiles.Cisco.IOS import MESeries
 
 
 class Script(NOCScript):
@@ -40,6 +41,8 @@ class Script(NOCScript):
                 "status": False,
                 "message": ".\n".join(errors)
             }
+        # Check wrether edge ports can be configured
+        skip_edge_port = self.match_version(MESeries)
         # Prepare scenario
         commands = []
         for c in configs:
@@ -90,17 +93,18 @@ class Script(NOCScript):
                     # Change untagged vlans
                     ic += [" switchport trunk allowed vlan %s" % cv]
             # Configure edge-port
-            ept = {
-                True: "spanning-tree portfast",
-                False: "spanning-tree portfast trunk"
-            }
-            if is_access(c) != is_access(p):
-                # access <-> trunk. Remove old edgeport settings
-                ic += [" no %s" % ept[not is_access(c)]]
-            if c["edge_port"]:
-                ic += [" %s" % ept[is_access(c)]]
-            else:
-                ic += [" no %s" % ept[is_access(c)]]
+            if not skip_edge_port:
+                ept = {
+                    True: "spanning-tree portfast",
+                    False: "spanning-tree portfast trunk"
+                }
+                if is_access(c) != is_access(p):
+                    # access <-> trunk. Remove old edgeport settings
+                    ic += [" no %s" % ept[not is_access(c)]]
+                if c["edge_port"]:
+                    ic += [" %s" % ept[is_access(c)]]
+                else:
+                    ic += [" no %s" % ept[is_access(c)]]
             #
             if ic:
                 commands += ["interface %s" % iface] + ic + [" exit"]
