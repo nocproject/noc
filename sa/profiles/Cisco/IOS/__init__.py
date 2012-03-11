@@ -82,3 +82,14 @@ def uBR(v):
     uBR series selector
     """
     return "BC" in v["version"]
+
+
+def MESeries(v):
+    """
+    MExxxx series selector
+    :param v:
+    :type v: dict
+    :return:
+    :rtype: bool
+    """
+    return v["platform"].startswith("ME")
