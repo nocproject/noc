@@ -38,6 +38,11 @@ Ext.define("NOC.vc.vcbindfilter.Application", {
         {
             text: "VC Filter",
             dataIndex: "vc_filter__label"
+        },
+        {
+            text: "VC Filter Expression",
+            dataIndex: "vc_filter_expression",
+            flex: 1
         }
     ],
     fields: [

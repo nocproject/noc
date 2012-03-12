@@ -18,3 +18,12 @@ class VCBindFilterApplication(ExtModelApplication):
     title = "VC Bind Filters"
     menu = "Setup | VC Bind Filters"
     model = VCBindFilter
+
+    def field_vc_filter_expression(self, obj):
+        """
+        Build vc_filter_expression parameter
+        :param obj:
+        :return:
+        """
+        return obj.vc_filter.expression
+
