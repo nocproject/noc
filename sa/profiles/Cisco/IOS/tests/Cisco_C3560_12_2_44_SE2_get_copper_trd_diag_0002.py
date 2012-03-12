@@ -36,13 +36,13 @@ class Cisco_IOS_get_copper_tdr_diag_Test(ScriptTestCase):
              'variance_cm': 400}]}]
     motd = ''
     cli = {
-## 'test cable-diagnostics tdr interface gigabitEthernet 0/5'
-'test cable-diagnostics tdr interface gigabitEthernet 0/5': """test cable-diagnostics tdr interface gigabitEthernet 0/5
+## 'test cable-diagnostics tdr interface Gi 0/5'
+'test cable-diagnostics tdr interface Gi 0/5': """test cable-diagnostics tdr interface Gi 0/5
 TDR test started on interface Gi0/5
 A TDR test can take a few seconds to run on an interface
 Use 'show cable-diagnostics tdr' to read the TDR results.""", 
-## 'show cable-diagnostics tdr interface gigabitEthernet 0/5'
-'show cable-diagnostics tdr interface gigabitEthernet 0/5': """show cable-diagnostics tdr interface gigabitEthernet 0/5
+## 'show cable-diagnostics tdr interface Gi 0/5'
+'show cable-diagnostics tdr interface Gi 0/5': """show cable-diagnostics tdr interface Gi 0/5
 TDR test last run on: February 22 15:09:28
 
 Interface Speed Local pair Pair length        Remote pair Pair status
