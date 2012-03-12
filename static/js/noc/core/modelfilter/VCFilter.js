@@ -1,25 +1,20 @@
 //---------------------------------------------------------------------
 // NOC.core.modelfilter.Combo
-// Combo lookup model filter
+// VC Filter
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.modelfilter.Lookup");
+console.debug("Defining NOC.core.modelfilter.VCFilter");
 
-Ext.define("NOC.core.modelfilter.Lookup", {
+Ext.define("NOC.core.modelfilter.VCFilter", {
     extend: "NOC.core.modelfilter.Base",
-    lookup: null,  // module.app
     referrer: null, // Referrer application id
 
     initComponent: function() {
         var me = this,
-            wn = "NOC." + me.lookup + ".LookupField",
-            w = Ext.create(wn, {
+            w = Ext.create("NOC.vc.vcfilter.LookupField", {
                 width: 180,
-                query: {
-                    "id__referred": me.referrer + "__" + me.name
-                },
                 listeners: {
                     select: {
                         scope: me,
@@ -38,7 +33,7 @@ Ext.define("NOC.core.modelfilter.Lookup", {
             v = me.combo.getValue(),
             r = {};
         if(v)
-            r[me.name] = v;
+            r[me.name + "__vcfilter"] = v;
         return r;
     }
 });
