@@ -163,7 +163,7 @@ class ExtModelApplication(ExtApplication):
             v = q[p]
             # Pass through interface cleaners
             if lt == "referred":
-                # Unroll referrer
+                # Unroll __referrer
                 if np == "id":
                     np = "pk"
                 p = "%s__in" % np
@@ -178,6 +178,10 @@ class ExtModelApplication(ExtApplication):
                     nq[None] += [extra_where]
                 else:
                     nq[None] = [extra_where]
+                continue
+            elif lt and hasattr(self, "lookup_%s" % lt):
+                # Custom lookup
+                getattr(self, "lookup_%s" % lt)(nq, np, v)
                 continue
             elif np in self.clean_fields:  # @todo: Check for valid lookup types
                 v = self.clean_fields[np].clean(v)
