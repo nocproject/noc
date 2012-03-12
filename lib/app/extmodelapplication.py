@@ -149,19 +149,41 @@ class ExtModelApplication(ExtApplication):
         return data
 
     def cleaned_query(self, q):
-        q = q.copy()
-        for p in self.ignored_params:
-            if p in q:
-                del q[p]
-        for p in (self.limit_param, self.page_param, self.start_param,
-                  self.format_param, self.sort_param, self.query_param):
-            if p in q:
-                del q[p]
-        # Normalize parameters
+        nq = {}
         for p in q:
-            if p in self.clean_fields:
-                q[p] = self.clean_fields[p].clean(q[p])
-        return q
+            if "__" in p:
+                np, lt = p.split("__", 1)
+            else:
+                np, lt = p, None
+            # Skip ignored params
+            if np in self.ignored_params or p in (
+                self.limit_param, self.page_param, self.start_param,
+                self.format_param, self.sort_param, self.query_param):
+                continue
+            v = q[p]
+            # Pass through interface cleaners
+            if lt == "referred":
+                # Unroll referrer
+                if np == "id":
+                    np = "pk"
+                p = "%s__in" % np
+                app, fn = v.split("__", 1)
+                model = self.site.apps[app].model
+                extra_where = "\"%s\" IN (SELECT \"%s\" FROM %s)" % (
+                    self.model._meta.pk.name,
+                    model._meta.get_field_by_name(fn)[0].attname,
+                    model._meta.db_table
+                )
+                if None in nq:
+                    nq[None] += [extra_where]
+                else:
+                    nq[None] = [extra_where]
+                continue
+            elif np in self.clean_fields:  # @todo: Check for valid lookup types
+                v = self.clean_fields[np].clean(v)
+            # Write back
+            nq[p] = v
+        return nq
 
     def instance_to_dict(self, o):
         r = {}
@@ -213,7 +235,11 @@ class ExtModelApplication(ExtApplication):
                 else:
                     ordering += [r["property"]]
         q = self.cleaned_query(q)
-        data = self.queryset(request, query).filter(**q)
+        if None in q:
+            ew = q.pop(None)
+            data = self.queryset(request, query).filter(**q).extra(where=ew)
+        else:
+            data = self.queryset(request, query).filter(**q)
         # Apply sorting
         if ordering:
             data = data.order_by(*ordering)
@@ -293,15 +319,3 @@ class ExtModelApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         o.delete()
         return HttpResponse(status=self.DELETED)
-
-    @view(method=["GET"], url="^filter/(?P<var>[^/]+)/$",
-          access="read", api=True)
-    def api_filter(self, request, var):
-        q = request.GET.get(self.query_param).lower()
-        g = lambda o: getattr(o, var)
-        d = [{"id": g(o).id, "label": unicode(g(o))}
-                for o in self.model.objects.distinct(var)]
-        if q:
-            d = [x for x in d if q in x["label"].lower()]
-        d = sorted(d, key=lambda x: x["label"])
-        return d

@@ -11,16 +11,18 @@ Ext.define("NOC.core.ModelApplication", {
     layout: "fit",
     search: false,
     filters: null,
+    toolbar: [],  // Additional toolbar buttons
 
     initComponent: function() {
         var me = this;
         // Permissions
-        this.can_read = false;
-        this.can_create = false;
-        this.can_update = false;
-        this.can_delete = false;
+        me.can_read = false;
+        me.can_create = false;
+        me.can_update = false;
+        me.can_delete = false;
         // set base_url
-        var n = this.self.getName().split(".");
+        var n = this.self.getName().split("."),
+            app_name = n[1] + "." + n[2];
         this.base_url = "/" + n[1] + "/" + n[2] + "/";
         // Variables
         this.current_query = {};
@@ -28,7 +30,7 @@ Ext.define("NOC.core.ModelApplication", {
         var store = Ext.create("Ext.data.Store", {
             model: this.model,
             autoLoad: true,
-            pageSize: 10,
+            pageSize: 1,  // Increased by AutoSize plugin
             remoteSort: true,
             remoteFilter: true
         });
@@ -86,7 +88,7 @@ Ext.define("NOC.core.ModelApplication", {
                     app.new_record();
                 }
             }
-        ]);
+        ], me.toolbar);
         // Initialize panels
         // Filters
         var grid_rbar = null;
@@ -99,10 +101,14 @@ Ext.define("NOC.core.ModelApplication", {
                 title: "Filter",
                 padding: 4,
                 items: this.filters.map(function(f) {
-                    var fg = Ext.create({
+                    var ft = {
                         "boolean": "NOC.core.modelfilter.Boolean",
                         "lookup": "NOC.core.modelfilter.Lookup"
-                    }[f.ftype], Ext.Object.merge(f, {url: store.proxy.url}));
+                    }[f.ftype];
+                    var fc = Ext.Object.merge(f, {
+                        referrer: app_name
+                    });
+                    var fg = Ext.create(ft, fc);
                     fg.handler = fh;
                     me.filter_getters = me.filter_getters.concat(
                         Ext.bind(fg.getFilter, fg)
@@ -118,7 +124,7 @@ Ext.define("NOC.core.ModelApplication", {
             columns: this.columns,
             border: false,
             autoScroll: true,
-            plugins : [ Ext.create('Ext.ux.grid.AutoSize') ],
+            plugins : [Ext.create("Ext.ux.grid.AutoSize")],  // @todo: delete Ext.create
             dockedItems: [
                 {
                     xtype: "toolbar",
@@ -332,14 +338,19 @@ Ext.define("NOC.core.ModelApplication", {
         this.can_delete = permissions.indexOf("delete") >= 0;
     },
     // New record. Hide grid and open form
-    new_record: function() {
-        this.form.reset();
-        this.toggle();
-        this.form.getFields().first().focus(false, 100);
+    new_record: function(defaults) {
+        var me = this;
+        me.form.reset();
+        if(defaults) {
+            me.form.setValues(defaults);
+        }
+        console.log(me.title);
+        me.toggle();
+        me.form.getFields().first().focus(false, 100);
         // Activate delete button
-        this.delete_button.setDisabled(true);
-        this.save_button.setDisabled(!this.can_create);
-        this.reset_button.setDisabled(!this.can_create);
+        me.delete_button.setDisabled(true);
+        me.save_button.setDisabled(!this.can_create);
+        me.reset_button.setDisabled(!this.can_create);
     },
     // Edit record. Hide grid and open form
     edit_record: function(record) {
