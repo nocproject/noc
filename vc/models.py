@@ -143,16 +143,34 @@ class VCFilter(models.Model):
             r += [(f, t)]
         return r
 
+    def get_compiled(self):
+        if not hasattr(self, "_compiled_expression"):
+            self._compiled_expression = VCFilter.compile(self.expression)
+        return self._compiled_expression
+
     def check(self, vc):
         """
         Check filter matches VC
         """
-        if not hasattr(self, "_compiled_expression"):
-            self._compiled_expression = VCFilter.compile(self.expression)
-        for f, t in self._compiled_expression:
+        for f, t in self.get_compiled():
             if f <= vc <= t:
                 return True
         return False
+
+    def to_sql(self, name):
+        """
+        Compile VCFilter as SQL WHERE statement
+        :param name: Field name
+        :return: SQL WHERE part
+        """
+        s = []
+        name = name.replace("\"", "\"\"")
+        for f, t in self.get_compiled():
+            if f == t:
+                s += ["(\"%s\" = %d)" % (name, f)]
+            else:
+                s += ["(\"%s\" BETWEEN %d AND %d)" % (name, f, t)]
+        return "(%s)" % " OR ".join(s)
 
 
 class VCBindFilter(models.Model):
