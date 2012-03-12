@@ -12,7 +12,7 @@ class Zyxel_ZyNOS_get_interface_status_Test(ScriptTestCase):
     vendor = "Zyxel"
     platform='ES-2024A'
     version='3.90(TX.1)'
-    input = {'interface': 10}
+    input = {'interface': '10'}
     result = [{'interface': '10', 'status': True}]
     motd = ' **********\nCopyright (c) 1994 - 2007 ZyXEL Communications Corp.\n'
     cli = {
