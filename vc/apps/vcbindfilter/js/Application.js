@@ -77,5 +77,12 @@ Ext.define("NOC.vc.vcbindfilter.Application", {
             fieldLabel: "VC Filter",
             allowBlank: false
         }
+    ],
+    filters: [
+        {
+            name: "afi",
+            title: "By Address Family",
+            ftype: "afi"
+        }
     ]
 });
