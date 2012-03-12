@@ -50,6 +50,11 @@ Ext.define("NOC.vc.vcbindfilter.Model", {
             name: "vc_filter__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "vc_filter_expression",
+            type: "string",
+            persist: false
         }
     ]
 });
