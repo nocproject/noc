@@ -102,8 +102,9 @@ Ext.define("NOC.core.ModelApplication", {
                 padding: 4,
                 items: this.filters.map(function(f) {
                     var ft = {
-                        "boolean": "NOC.core.modelfilter.Boolean",
-                        "lookup": "NOC.core.modelfilter.Lookup"
+                        boolean: "NOC.core.modelfilter.Boolean",
+                        lookup: "NOC.core.modelfilter.Lookup",
+                        vcfilter: "NOC.core.modelfilter.VCFilter"
                     }[f.ftype];
                     var fc = Ext.Object.merge(f, {
                         referrer: app_name
