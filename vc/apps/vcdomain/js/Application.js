@@ -92,7 +92,8 @@ Ext.define("NOC.vc.vcdomain.Application", {
         {
             title: "By VC Type",
             name: "type",
-            ftype: "lookup"
+            ftype: "lookup",
+            lookup: "vc.vctype"
         },
         {
             title: "By Provisioning",
