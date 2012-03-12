@@ -9,56 +9,27 @@ console.debug("Defining NOC.core.modelfilter.Lookup");
 
 Ext.define("NOC.core.modelfilter.Lookup", {
     extend: "NOC.core.modelfilter.Base",
-    url: null,
+    lookup: null,  // module.app
+    referrer: null, // Referrer application id
 
     initComponent: function() {
-        var me = this;
-        Ext.apply(me, {
-            items: [
-                {
-                    xtype: "combobox",
-                    emptyText: "All",
-                    allowBlank: true,
-                    displayField: "label",
-                    valueField: "id",
-                    queryMode: "remote",
-                    queryParam: "__query",
-                    forceSelection: true,
-                    minChars: 2,
-                    typeAhead: true,
-                    editable: true,
-                    pageSize: 10,
-                    width: 180,
-                    store: Ext.create("Ext.data.Store", {
-                        fields: ["id", "label"],
-                        proxy: Ext.create("Ext.data.RestProxy", {
-                            url: me.url + "filter/" + me.name + "/",
-                            pageParam: "__page",
-                            startParam: "__start",
-                            limitParam: "__limit",
-                            sortParam: "__sort",
-                            extraParams: {
-                                "__format": "ext"
-                            },
-                            reader: {
-                                type: "json",
-                                root: "data",
-                                totalProperty: "total",
-                                successProperty: "success"
-                            }
-                        })
-                    }),
-                    listeners: {
-                        select: {
-                            scope: me,
-                            fn: me.onChange
-                        }
+        var me = this,
+            wn = "NOC." + me.lookup + ".LookupField",
+            w = Ext.create(wn, {
+                query: {
+                    "id__referred": me.referrer + "__" + me.name
+                },
+                listeners: {
+                    select: {
+                        scope: me,
+                        fn: me.onChange
                     }
                 }
-            ]
-        });
+            });
+
+        Ext.apply(me, {items: [w]});
         me.callParent();
-        me.combo = me.items.items[0];
+        me.combo = w;
     },
 
     getFilter: function() {
@@ -66,7 +37,7 @@ Ext.define("NOC.core.modelfilter.Lookup", {
             v = me.combo.getValue(),
             r = {};
         if(v)
-            r[this.name] = v;
+            r[me.name] = v;
         return r;
     }
 });
