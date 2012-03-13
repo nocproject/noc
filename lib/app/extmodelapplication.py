@@ -166,7 +166,6 @@ class ExtModelApplication(ExtApplication):
                 # Unroll __referrer
                 if np == "id":
                     np = "pk"
-                p = "%s__in" % np
                 app, fn = v.split("__", 1)
                 model = self.site.apps[app].model
                 extra_where = "\"%s\" IN (SELECT \"%s\" FROM %s)" % (
