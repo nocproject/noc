@@ -10,6 +10,7 @@
 from __future__ import with_statement
 import logging
 import os
+import datetime
 ## Django modules
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect,\
@@ -25,8 +26,43 @@ from access import HasPerm, Permit, Deny
 from site import site
 from noc.lib.forms import NOCForm
 from noc import settings
-from noc.lib.serialize import json_encode
+from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import DictParameter
+
+
+def view(url, access, url_name=None, menu=None, method=None, validate=None,
+         api=False):
+    """
+    @view decorator
+    :param url: URL relative to application root
+    :param access:
+    :param url_name:
+    :param menu:
+    :param method:
+    :param validate: Form class or callable to check input
+    :param api: Does the view exposed as API function
+    """
+
+    def decorate(f):
+        f.url = url
+        f.url_name = url_name
+        # Process access
+        if type(access) == bool:
+            f.access = Permit() if access else Deny()
+        elif isinstance(access, basestring):
+            f.access = HasPerm(access)
+        else:
+            f.access = access
+        f.menu = menu
+        f.method = method
+        f.api = api
+        if type(validate) == dict:
+            f.validate = DictParameter(attrs=validate)
+        else:
+            f.validate = validate
+        return f
+
+    return decorate
 
 
 class ApplicationBase(type):
@@ -344,37 +380,76 @@ class Application(object):
         """
         return None
 
-
-def view(url, access, url_name=None, menu=None, method=None, validate=None,
-         api=False):
-    """
-    @view decorator
-    :param url: URL relative to application root
-    :param access:
-    :param url_name:
-    :param menu:
-    :param method:
-    :param validate: Form class or callable to check input
-    :param api: Does the view exposed as API function
-    """
-
-    def decorate(f):
-        f.url = url
-        f.url_name = url_name
-        # Process access
+    def check_mrt_access(self, request, name):
+        mc = self.mrt_config[name]
+        if "access" not in mc:
+            return True
+        access = mc["access"]
         if type(access) == bool:
-            f.access = Permit() if access else Deny()
+            access = Permit() if access else Deny()
         elif isinstance(access, basestring):
-            f.access = HasPerm(access)
+            access = HasPerm(access)
         else:
-            f.access = access
-        f.menu = menu
-        f.method = method
-        f.api = api
-        if type(validate) == dict:
-            f.validate = DictParameter(attrs=validate)
-        else:
-            f.validate = validate
-        return f
+            access = access
+        return access.check(self, request.user)
 
-    return decorate
+    @view(url="^mrt/(?P<name>[^/]+)/$", method=["POST"],
+          access=True, api=True)
+    def api_run_mrt(self, request, name):
+        from noc.sa.models import ReduceTask, ManagedObjectSelector
+
+        # Check MRT configured
+        if name not in self.mrt_config:
+            return self.response_not_found("MRT %s is not found" % name)
+        # Check MRT access
+        if not self.check_mrt_access(request, name):
+            return self.response_forbidden("Forbidden")
+        #
+        data = json_decode(request.raw_post_data)
+        if "selector" not in data:
+            return self.response_bad_request("'selector' is missed")
+        # Run MRT
+        mc = self.mrt_config[name]
+        task = ReduceTask.create_task(
+            ManagedObjectSelector.resolve_expression(data["selector"]),
+            "pyrule:mrt_result", {},
+            mc["map_script"], {},
+            mc.get("timeout", 0)
+        )
+        return task.id
+
+    @view(url="^mrt/(?P<name>[^/]+)/(?P<task>\d+)/$", method=["GET"],
+          access=True, api=True)
+    def api_get_mrt_result(self, request, name, task):
+        from noc.sa.models import ReduceTask, ManagedObjectSelector
+
+        # Check MRT configured
+        if name not in self.mrt_config:
+            return self.response_not_found("MRT %s is not found" % name)
+        # Check MRT access
+        if not self.check_mrt_access(request, name):
+            return self.response_forbidden("Forbidden")
+        #
+        t = self.get_object_or_404(ReduceTask, id=int(task))
+        try:
+            r = t.get_result(block=False)
+        except ReduceTask.NotReady:
+            # Not ready
+            completed = t.maptask_set.filter(status__in=("C", "F")).count()
+            total = t.maptask_set.count()
+            return {
+                "ready": False,
+                "progress": int(completed * 100 / total),
+                "max_timeout": (t.stop_time - datetime.datetime.now()).seconds,
+                "result": None
+            }
+        # Return result
+        return {
+            "ready": True,
+            "progress": 100,
+            "max_timeout": 0,
+            "result": r
+        }
+
+    # name -> {access: ..., map_script: ..., timeout: ...}
+    mrt_config = []
