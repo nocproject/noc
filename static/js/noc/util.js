@@ -5,6 +5,8 @@
 // See LICENSE for details
 //----------------------------------------------------------------------
 
+// NOC namespace
+Ext.namespace("NOC", "NOC.render");
 //
 // Setup
 //
@@ -43,4 +45,59 @@ function noc_renderTags(v) {
     } else {
         return "";
     }
+}
+
+NOC.render.Bool = noc_renderBool;
+NOC.render.URL = noc_renderURL;
+NOC.render.Tags = noc_renderTags;
+
+//
+// Run new Map/Reduce task
+// Usage:
+// NOC.mrt({
+//      url: ...,
+//      selector: ...,
+//      scope: ...,
+//      success: ...,
+//      failure: ...,
+// });
+//
+NOC.mrt = function(config) {
+    var scope = config.scope || this,
+        checkMRT = function(task) {
+            Ext.Ajax.request({
+                url: config.url + task + "/",
+                method: "GET",
+                success: function(response) {
+                    var r = Ext.decode(response.responseText);
+                    if(r.ready) {
+                        // MRT finished
+                        if(config.success)
+                            config.success.call(scope, r.result);
+                    } else {
+                        // Wait and recheck
+                        Ext.defer(Ext.bind(checkMRT, this, [task]), 1000);
+                    }
+                },
+                failure: function() {
+                    if (config.failure)
+                        config.failure.call(scope);
+                }
+            });
+        };
+
+    Ext.Ajax.request({
+        url: config.url,
+        method: "POST",
+        jsonData: {
+            selector: config.selector
+        },
+        success: function(response) {
+            checkMRT(Ext.decode(response.responseText));
+        },
+        failure: function() {
+            if(config.failure)
+                config.failure.call(scope);
+        }
+    });
 }
