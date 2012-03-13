@@ -13,7 +13,7 @@ from django.core.validators import RegexValidator
 from noc.lib.app import ExtApplication, view
 from noc.peer.models import PeeringPoint, WhoisCache
 
-as_set_re = "^AS(?:\d+|-\S+)(?:\s+AS(?:\d+|-\S+))*$"
+as_set_re = "^AS(?:\d+|-\S+)(:\S+)?(?:\s+AS(?:\d+|-\S+)(:\S+)?)*$"
 
 
 class PrefixListBuilderForm(forms.Form):
