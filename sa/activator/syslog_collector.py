@@ -30,7 +30,9 @@ class SyslogCollector(ListenUDPSocket, EventCollector):
 
     def on_read(self, msg, address, port):
         self.debug(msg)
-        if not self.check_source_address(address):
+        object = self.map_event(address)
+        if not object:
+            # Ignore events from unknown sources
             return
         # Parse priority
         priority = 0
@@ -40,7 +42,7 @@ class SyslogCollector(ListenUDPSocket, EventCollector):
                 return
             try:
                 priority = int(msg[1:idx])
-            except:
+            except ValueError:
                 pass
             msg = msg[idx + 1:].strip()
         # Parse HEADER if exists
@@ -53,4 +55,4 @@ class SyslogCollector(ListenUDPSocket, EventCollector):
             "severity" : priority & 7,
             "message"  : msg
         }
-        self.process_event(ts, address, body)
+        self.process_event(ts, object, body)

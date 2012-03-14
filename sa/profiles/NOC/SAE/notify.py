@@ -10,7 +10,7 @@
 ## NOC module
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import INotifySAE
-from noc.sa.protocols.sae_pb2 import RefreshEventFilterRequest
+from noc.sa.protocols.sae_pb2 import RefreshObjectMappingsRequest
 
 
 class Script(NOCScript):
@@ -20,9 +20,9 @@ class Script(NOCScript):
     def empty_callback(self, transaction,response=None,error=None):
         pass
     
-    def refresh_event_filter(self, object_id):
+    def refresh_object_mappings(self, object_id):
         """
-        Send refresh_event_filter messages
+        Send refresh_object_mappings messages
         To all activators serving managed object
         """
         from noc.sa.models import ManagedObject
@@ -31,13 +31,13 @@ class Script(NOCScript):
         o = ManagedObject.objects.get(id=object_id)
         a_name = o.activator.name
         if a_name in self.sae.activators:
-            r = RefreshEventFilterRequest()
+            r = RefreshObjectMappingsRequest()
             for a in self.sae.activators[a_name]:
                 self.debug("Requesting refresh on %r" % a)
-                a.proxy.refresh_event_filter(r, self.empty_callback)
+                a.proxy.refresh_object_mappings(r, self.empty_callback)
         return True
     
     def execute(self, event, **kwargs):
         self.debug("Event: %s" % event)
-        if event == "refresh_event_filter" and "object_id" in kwargs:
-            return self.refresh_event_filter(kwargs["object_id"])
+        if event == "refresh_object_mappings" and "object_id" in kwargs:
+            return self.refresh_object_mappings(kwargs["object_id"])
