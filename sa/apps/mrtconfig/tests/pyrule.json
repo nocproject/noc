@@ -1,0 +1,10 @@
+[
+    {
+        "pk": 777,
+        "model": "main.pyrule",
+        "fields": {
+            "name": "My Test pyRule",
+            "text": "@rule\ndef myrule(task):\n    return []\n\n"
+        }
+    }
+]
