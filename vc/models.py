@@ -161,16 +161,25 @@ class VCFilter(models.Model):
         """
         Compile VCFilter as SQL WHERE statement
         :param name: Field name
+        :type name: str or unicode or int or long
         :return: SQL WHERE part
         """
         s = []
-        name = name.replace("\"", "\"\"")
+        if isinstance(name, basestring):
+            name = "\"%s\"" % name.replace("\"", "\"\"")
+        elif type(name) in (int, long):
+            name = "%d" % name
+        else:
+            raise ValueError("Invalid type for 'name'")
         for f, t in self.get_compiled():
             if f == t:
-                s += ["(\"%s\" = %d)" % (name, f)]
+                s += ["(%s = %d)" % (name, f)]
             else:
-                s += ["(\"%s\" BETWEEN %d AND %d)" % (name, f, t)]
-        return "(%s)" % " OR ".join(s)
+                s += ["(%s BETWEEN %d AND %d)" % (name, f, t)]
+        if not s:
+            return "TRUE"
+        else:
+            return "(%s)" % " OR ".join(s)
 
 
 class VCBindFilter(models.Model):
