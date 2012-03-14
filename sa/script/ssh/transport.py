@@ -330,7 +330,7 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         ms = self.transform.verify_digest_size
         while self.buffer:
             if len(self.buffer) < bs:
-                raise StopIteration
+                raise StopIteration  # Less than one block in buffer
             if self.d_buffer:
                 head = self.d_buffer
                 self.d_buffer = ""
@@ -341,18 +341,20 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
                 self.send_disconnect(DISCONNECT_PROTOCOL_ERROR,
                                      "Bad packet length %d" % packet_len)
                 raise StopIteration
-            if len(self.buffer) < packet_len + 4 + ms:
+            plen = packet_len + 4
+            if len(self.buffer) < plen + ms:
+                # Incomplete packet in buffer
                 self.d_buffer = head
                 raise StopIteration
-            if (packet_len + 4) % bs != 0:
+            if plen % bs:
                 self.send_disconnect(DISCONNECT_PROTOCOL_ERROR,
                                      "Bad packet mod (%i%%%i == %i)" % (
-                                     packet_len + 4, bs, (packetLen + 4) % bs))
+                                     plen, bs, plen % bs))
                 raise StopIteration
-            enc_data = self.buffer[:4 + packet_len]
-            self.buffer = self.buffer[4 + packet_len:]
+            enc_data = self.buffer[:plen]
+            self.buffer = self.buffer[plen:]
             packet = head + self.transform.decrypt(enc_data[bs:])
-            if len(packet) != 4 + packet_len:
+            if len(packet) != plen:
                 self.send_disconnect(DISCONNECT_PROTOCOL_ERROR,
                                      "Bad decryption")
                 raise StopIteration
