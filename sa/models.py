@@ -653,7 +653,7 @@ class ManagedObjectSelector(models.Model):
         :param s:
         :return:
         """
-        if isinstance(s, basestring):
+        if type(s) in (int, long, str, unicode):
             s = [s]
         if type(s) != list:
             raise ValueError("list required")
