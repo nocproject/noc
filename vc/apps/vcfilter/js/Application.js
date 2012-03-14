@@ -12,6 +12,7 @@ Ext.define("NOC.vc.vcfilter.Application", {
         "NOC.vc.vcfilter.Model"
     ],
     model: "NOC.vc.vcfilter.Model",
+    search: true,
     columns: [
         {
             text: "Name",
@@ -40,6 +41,13 @@ Ext.define("NOC.vc.vcfilter.Application", {
             xtype: "textarea",
             fieldLabel: "Description",
             allowBlank: true
+        }
+    ],
+    filters: [
+        {
+            title: "By VC",
+            name: "expression",
+            ftype: "vc"
         }
     ]
 });
