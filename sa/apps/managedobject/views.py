@@ -377,8 +377,8 @@ class ManagedObjectApplication(ModelApplication):
     ##
     ## AJAX lookup
     ##
-    @view(url=r"^lookup/$", url_name="lookup", access=Permit())
-    def view_lookup(self, request):
+    @view(url=r"^lookup1/$", url_name="lookup1", access=Permit())
+    def view_lookup1(self, request):
         def lookup_function(q):
             for m in ManagedObject.objects.filter(name__istartswith=q):
                 yield m.name
