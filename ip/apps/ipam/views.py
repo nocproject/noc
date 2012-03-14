@@ -594,7 +594,7 @@ class IPAMAppplication(Application):
             managed_object = forms.CharField(label="Managed Object",
                                              required=False,
                                              widget=AutoCompleteTextInput(
-                                                 "sa:managedobject:lookup"),
+                                                 "sa:managedobject:lookup1"),
                                              help_text=_(
                                                  "Set if address belong to managed object's interface"))
             description = forms.CharField(label=_("Description"),
