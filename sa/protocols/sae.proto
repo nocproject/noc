@@ -226,22 +226,26 @@ message SoftwareUpgradeResponse {
 //
 // Event processing
 //
-message RefreshEventFilterRequest{
+message RefreshObjectMappingsRequest{
 }
 
-message RefreshEventFilterResponse{
+message RefreshObjectMappingsResponse{
 }
 
-message EventFilterRequest {
+message ObjectMappingsRequest {
 }
 
-message EventFilterResponse {
+message ObjectMappingsResponse {
     message EventIgnoreRuleItem {
         required string left_re  = 1;
         required string right_re = 2;
     }
-    required int32  expire  = 1;
-    repeated string sources = 2;
+    message ObjectMappingItem {
+        required string source = 1;
+        required string object = 2;
+    }
+    required int32 expire  = 1;
+    repeated ObjectMappingItem mappings = 2;
     repeated EventIgnoreRuleItem ignore_rules = 3;
 }
 
@@ -251,7 +255,7 @@ message EventRequest {
         required bytes value = 2;
     }
     required int32         timestamp = 1;
-    required string        ip        = 2;
+    required string        object    = 2;
     repeated EventBodyItem body      = 3;
 }
 
@@ -312,8 +316,8 @@ service SAEService {
     rpc software_upgrade (SoftwareUpgradeRequest) returns (SoftwareUpgradeResponse);
     rpc set_caps         (SetCapsRequest)         returns (SetCapsResponse);
     rpc script           (ScriptRequest)          returns (ScriptResponse);
-    rpc refresh_event_filter (RefreshEventFilterRequest) returns (RefreshEventFilterResponse);
-    rpc event_filter     (EventFilterRequest)     returns (EventFilterResponse);
+    rpc refresh_object_mappings (RefreshObjectMappingsRequest) returns (RefreshObjectMappingsResponse);
+    rpc object_mappings  (ObjectMappingsRequest)  returns (ObjectMappingsResponse);
     rpc event            (EventRequest)           returns (EventResponse);
     rpc ping_check       (PingCheckRequest)       returns (PingCheckResponse);
     rpc pm_data          (PMDataRequest)          returns (PMDataResponse);

@@ -26,14 +26,12 @@ from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
 from noc.sa.models import Activator, ManagedObject, MapTask, script_registry,\
                           profile_registry, ActivatorCapabilitiesCache
-from noc.fm.models import NewEvent, IgnoreEventRules
+from noc.fm.models import NewEvent
 from noc.sa.rpc import RPCSocket, file_hash
 from noc.sa.protocols.sae_pb2 import *
 from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
-from noc.lib.debug import error_report, DEBUG_CTX_CRASH_PREFIX
-from noc.lib.nbsocket import ListenTCPSocket, AcceptedTCPSocket,\
-                             AcceptedTCPSSLSocket, SocketFactory, Protocol
+from noc.lib.nbsocket import SocketFactory
 from noc.lib.ip import IP
 
 
@@ -75,6 +73,8 @@ class SAE(Daemon):
         #
         self.activator_manifest = None
         self.activator_manifest_files = None
+        #
+        self.mo_cache = {}  # object_id -> Managed Object
         #
         t = time.time()
         self.last_mrtask_check = t
@@ -560,6 +560,24 @@ class SAE(Daemon):
         Called after config is reloaded by SIGHUP
         """
         self.start_listeners()
+
+    def map_object(self, object_id):
+        """
+        Get object by id
+        :param object_id: Managed object id
+        :type object_id: str
+        :return: managed object
+        :rtype: ManagedObject or None
+        """
+        o = self.mo_cache.get(object_id)
+        if not o:
+            # Not found
+            try:
+                o = ManagedObject.objects.get(id=int(object_id))
+            except ManagedObject.DoesNotExist:
+                o = None
+            self.mo_cache[object_id] = o
+        return o
 
     ##
     ## Signal handlers

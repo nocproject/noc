@@ -28,15 +28,19 @@ class EventCollector(object):
     def error(self, msg):
         logging.error("[%s] %s" % (self.name, msg))
 
-    def check_source_address(self, ip):
+    def map_event(self, ip):
+        """
+        Map event source to object
+        :param ip: event source
+        :return: object id
+        """
         t = int(time.time())
-        r = True
         # Append to invalid sources if not passed the check
-        if not self.activator.check_event_source(ip):
+        object = self.activator.map_event(ip)
+        if not object:
             self.invalid_sources.add(ip)
-            r = False
-
-        # Flush all pending invalid event sources when INVALID_EVENT_SOURCE_DELAY interval is expired
+        # Flush all pending invalid event sources
+        # when INVALID_EVENT_SOURCE_DELAY interval is expired
         if (self.invalid_sources and
             t - self.invalid_sources_flush >= self.INVALID_EVENT_SOURCE_DELAY):
             self.error("Invalid event sources in last %d seconds: %s" % (
@@ -54,7 +58,7 @@ class EventCollector(object):
                     })
             self.invalid_sources = set()
             self.invalid_sources_flush = t
-        return r
+        return object
 
-    def process_event(self, timestamp, ip, body={}):
-        self.activator.on_event(timestamp, ip, body)
+    def process_event(self, timestamp, object, body={}):
+        self.activator.on_event(timestamp, object, body)

@@ -104,9 +104,9 @@ class Service(SAEService):
         self.activator.ping_check([a for a in request.addresses],
                                   ping_check_callback)
 
-    def refresh_event_filter(self, controller, request, done):
+    def refresh_object_mappings(self, controller, request, done):
         """
         Request event filter refresh
         """
-        self.activator.refresh_event_filter()
+        self.activator.refresh_object_mappings()
         done(controller, response=RefreshEventFilterResponse())

@@ -56,14 +56,16 @@ class TrapCollector(ListenUDPSocket, EventCollector):
                 return c
 
             v = unchain(val)
-            if len(v) == 0:
+            if not v:
                 return ""
             v = v[-1]
             if type(v) == tuple:
                 return oid_to_str(v)
             return fm_escape(v)
 
-        if not self.check_source_address(address):
+        object = self.map_event(address)
+        if not object:
+            # Skip events from unknown sources
             return
         while whole_msg:
             msg_version = int(api.decodeMessageVersion(whole_msg))
@@ -90,4 +92,4 @@ class TrapCollector(ListenUDPSocket, EventCollector):
                 ts = int(time.time())
                 for o, v in var_binds:
                     body[oid_to_str(o._value)] = extract(v)
-                self.process_event(ts, address, body)
+                self.process_event(ts, object, body)

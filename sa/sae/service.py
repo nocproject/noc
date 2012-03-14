@@ -216,7 +216,7 @@ class Service(SAEService):
         r = SetCapsResponse()
         done(controller, response=r)
 
-    def event_filter(self, controller, request, done):
+    def object_mappings(self, controller, request, done):
         """
         Handle RPC event_filter request
         """
@@ -226,11 +226,14 @@ class Service(SAEService):
                              text="Authentication required"))
             return
         activator = self.get_controller_activator(controller)
-        r = EventFilterResponse()
+        r = ObjectMappingsResponse()
         r.expire = self.sae.config.getint("sae", "refresh_event_filter")
         # Build source filter
-        for c in ManagedObject.objects.filter(activator=activator, trap_source_ip__isnull=False):
-            r.sources.append(c.trap_source_ip)
+        for c in ManagedObject.objects.filter(activator=activator,
+                    trap_source_ip__isnull=False).only("id", "trap_source_ip"):
+            s = r.mappings.add()
+            s.source = c.trap_source_ip
+            s.object = str(c.id)
         # Build event filter
         for ir in IgnoreEventRules.objects.filter(is_active=True):
             i = r.ignore_rules.add()
@@ -251,15 +254,12 @@ class Service(SAEService):
         activator = self.get_controller_activator(controller)
         # Resolve managed object by request's IP
         # @todo: Speed optimization
-        if request.ip:
-            mo = ManagedObject.objects.filter(activator=activator,
-                        trap_source_ip=request.ip).order_by("-remote_path")[:1]
-            if mo:
-                mo = mo[0]
-            else:
+        if request.object:
+            mo = self.sae.map_object(request.object)
+            if not mo:
                 done(controller,
                      error=Error(code=ERR_UNKNOWN_EVENT_SOURCE,
-                                 text="Unknown event source '%s'" % request.ip))
+                                 text="Unknown object '%s'" % request.object))
                 return
         else:
             mo = None

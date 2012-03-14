@@ -11,14 +11,11 @@
 from __future__ import with_statement
 import os
 import logging
-import signal
 import time
 import re
 import sys
-import signal
 import Queue
 import cPickle
-from errno import ECONNREFUSED
 from threading import Lock
 ## NOC modules
 from noc.sa.profiles import profile_registry
@@ -128,7 +125,7 @@ class Activator(Daemon, FSM):
         self.children = {}
         self.sae_stream = None
         self.to_listen = False  # To start or not to start collectors
-        self.event_sources = set()
+        self.object_mappings = {}  # source -> object_id
         self.ignore_event_rules = []  # [(left_re,right_re)]
         self.trap_collectors = []  # List of SNMP Trap collectors
         self.syslog_collectors = []  # List of SYSLOG collectors
@@ -140,7 +137,7 @@ class Activator(Daemon, FSM):
         script_registry.register_all()
         self.nonce = None
         FSM.__init__(self)
-        self.next_filter_update = None
+        self.next_mappings_update = None
         self.next_crashinfo_check = None
         self.next_heartbeat = None
         self.script_threads = {}
@@ -277,7 +274,7 @@ class Activator(Daemon, FSM):
         Entering ESTABLISHED state
         """
         to_refresh_filters = False
-        self.next_filter_update = None
+        self.next_mappings_update = None
         # Check does our instance is designated to listen
         self.to_listen = self.config.get("activator", "listen_instance") == self.instance_id
         if self.to_listen:
@@ -291,7 +288,7 @@ class Activator(Daemon, FSM):
                 self.start_pm_data_collectors()
                 to_refresh_filters = True
         if to_refresh_filters:
-            self.get_event_filter()
+            self.get_object_mappings()
         if self.stand_alone_mode:
             self.check_crashinfo()
 
@@ -435,8 +432,15 @@ class Activator(Daemon, FSM):
             FPingProbeSocket(self.factory, fping6, ipv6_addresses,
                              lambda x: cb("6", afi_left, result, x))
 
-    def check_event_source(self, address):
-        return address in self.event_sources
+    def map_event(self, source):
+        """
+        Map event source to object id
+        :param source: Event source
+        :type source: str
+        :return: object id or None
+        :rtype: str or None
+        """
+        return self.object_mappings.get(source)
 
     def run(self):
         """
@@ -450,9 +454,9 @@ class Activator(Daemon, FSM):
         """
         t = time.time()
         # Request filter updates
-        if (self.get_state() == "ESTABLISHED" and self.next_filter_update and
-            t > self.next_filter_update):
-            self.get_event_filter()
+        if (self.get_state() == "ESTABLISHED" and self.next_mappings_update and
+            t > self.next_mappings_update):
+            self.get_object_mappings()
         # Check for pending crashinfos
         if (self.stand_alone_mode  and self.get_state() == "ESTABLISHED" and
             self.next_crashinfo_check and t > self.next_crashinfo_check):
@@ -663,22 +667,24 @@ class Activator(Daemon, FSM):
         self.sae_stream.proxy.set_caps(r, send_caps_callback)
 
     @check_state("ESTABLISHED")
-    def refresh_event_filter(self):
-        self.get_event_filter()
+    def refresh_object_mappings(self):
+        self.get_object_mappings()
 
     @check_state("ESTABLISHED")
-    def get_event_filter(self):
-        def event_filter_callback(transaction, response=None, error=None):
+    def get_object_mappings(self):
+        def object_mappings_callback(transaction, response=None, error=None):
             if error:
-                logging.error("get_event_filter error: %s" % error.text)
+                logging.error("get_object_mappings error: %s" % error.text)
                 return
-            self.event_sources = set(response.sources)
+            self.object_mappings = dict((x.source, x.object)
+                                        for x in response.mappings)
             self.compile_ignore_event_rules(response.ignore_rules)
-            logging.debug("Setting event source filter to: %s" % str(self.event_sources))
-            self.next_filter_update = time.time() + response.expire
-        logging.info("Requesting event source filter")
-        r = EventFilterRequest()
-        self.sae_stream.proxy.event_filter(r, event_filter_callback)
+            logging.debug("Setting object mappings to: %s" % self.object_mappings)
+            self.next_mappings_update = time.time() + response.expire
+
+        logging.info("Requesting object mappings")
+        r = ObjectMappingsRequest()
+        self.sae_stream.proxy.object_mappings(r, object_mappings_callback)
 
     @check_state("ESTABLISHED")
     def check_crashinfo(self):
@@ -704,16 +710,19 @@ class Activator(Daemon, FSM):
         # Next check - after 60 seconds timeout
         self.next_crashinfo_check = time.time() + 60
 
-    def on_event(self, timestamp, ip, body):
+    def on_event(self, timestamp, object, body):
         """
         Send FM event to SAE
+        :param timestamp: Event timestamp
+        :param object: Object id
+        :param body: Event content
         """
         def on_event_callback(transaction, response=None, error=None):
             if error:
                 logging.error("event_proxy failed: %s" % error)
         r = EventRequest()
         r.timestamp = timestamp
-        r.ip = ip
+        r.object = object
         for k, v in body.items():
             # Check ignore rules
             for lr, rr in self.ignore_event_rules:
