@@ -1,0 +1,10 @@
+[
+    {
+        "pk": 777,
+        "model": "sa.managedobjectselector",
+        "fields": {
+            "name": "My Test Selector",
+            "is_enabled": true
+        }
+    }
+]
