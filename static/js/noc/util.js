@@ -100,4 +100,13 @@ NOC.mrt = function(config) {
                 config.failure.call(scope);
         }
     });
-}
+};
+//
+NOC.error = function(msg) {
+    Ext.MessageBox.show({
+        title: "Error!",
+        msg: Ext.String.format.apply(this, arguments),
+        buttons: Ext.MessageBox.OK,
+        icon: Ext.MessageBox.ERROR
+    });
+};
