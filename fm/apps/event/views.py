@@ -52,7 +52,7 @@ class EventAppplication(Application):
                                       input_formats=["%d.%m.%Y %H:%M:%S"])
         managed_object = forms.CharField(label="Managed Object",
                                          required=False,
-                                         widget=AutoCompleteTextInput("sa:managedobject:lookup"))
+                                         widget=AutoCompleteTextInput("sa:managedobject:lookup1"))
         status = forms.ChoiceField(label="Status",
                                    required=False,
                                    choices=[("N", "New"),
