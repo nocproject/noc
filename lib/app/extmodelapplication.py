@@ -11,6 +11,9 @@ from django.http import HttpResponse
 from django.db.models.fields import CharField, BooleanField, IntegerField,\
                                     FloatField, related
 from django.db.models import Q
+from django.contrib.contenttypes.models import ContentType
+## Third-party modules
+from tagging.models import Tag
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
@@ -224,7 +227,10 @@ class ExtModelApplication(ExtApplication):
         """
         Returns a list of requested object objects
         """
-        q = dict(request.GET.items())
+        # Todo: Fix
+        q = dict((k, v[0] if len(v) == 1 else v)
+                 for k, v in request.GET.lists())
+        print "!!!!", q
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
@@ -258,6 +264,37 @@ class ExtModelApplication(ExtApplication):
                 "data": out
             }
         return self.response(out, status=self.OK)
+
+    def lookup_tags(self, q, name, value):
+        if not value:
+            return
+        if isinstance(value, basestring):
+            value = [value]
+        a, m = self.model._meta.db_table.split("_", 1)
+        tags = Tag.objects.filter(name__in=value).values_list("id", flat=True)
+        if len(tags) != len(value):
+            s = "FALSE"
+        else:
+            ct_id = ContentType.objects.get(app_label=a, model=m).id
+            s = """
+                (id IN (
+                    SELECT object_id
+                    FROM tagging_taggeditem
+                    WHERE
+                        content_type_id = %(ct_id)d
+                        AND tag_id in (%(tags)s)
+                    GROUP BY object_id
+                    HAVING COUNT(object_id) = %(t_len)s
+                ))""" % {
+                "ct_id": ct_id,
+                "tags": ", ".join(str(t) for t in tags),
+                "t_len": len(value)
+            }
+        if None in q:
+            q[None] += [s]
+        else:
+            q[None] = [s]
+        print q
 
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):

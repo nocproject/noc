@@ -106,7 +106,8 @@ Ext.define("NOC.core.ModelApplication", {
                         lookup: "NOC.core.modelfilter.Lookup",
                         vcfilter: "NOC.core.modelfilter.VCFilter",
                         afi: "NOC.core.modelfilter.AFI",
-                        vc: "NOC.core.modelfilter.VC"
+                        vc: "NOC.core.modelfilter.VC",
+                        tag: "NOC.core.modelfilter.Tag"
                     }[f.ftype];
                     var fc = Ext.Object.merge(f, {
                         referrer: app_name

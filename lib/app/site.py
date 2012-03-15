@@ -194,16 +194,15 @@ class Site(object):
                     a = {}
                     if request.method in ("POST", "PUT"):
                         ct = request.META.get("CONTENT_TYPE")
-
                         if ct and ("text/json" in ct or
                                    "application/json" in ct):
                             a = json_decode(request.raw_post_data)
                         else:
-                            a = dict([(k, request.POST[k])
-                                     for k in request.POST])
+                            a = dict((k, v[0] if len(v) == 1 else v)
+                                       for k, v in request.POST.lists())
                     elif request.method == "GET":
-                        a = dict([(k, request.GET[k])
-                                 for k in request.GET])
+                        a = dict((k, v[0] if len(v) == 1 else v)
+                                 for k, v in request.GET.lists())
                     logging.debug("API %s %s %s" % (request.method,
                                                     request.path, a))
                 # Call handler
