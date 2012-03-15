@@ -230,7 +230,6 @@ class ExtModelApplication(ExtApplication):
         # Todo: Fix
         q = dict((k, v[0] if len(v) == 1 else v)
                  for k, v in request.GET.lists())
-        print "!!!!", q
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
@@ -294,7 +293,6 @@ class ExtModelApplication(ExtApplication):
             q[None] += [s]
         else:
             q[None] = [s]
-        print q
 
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
