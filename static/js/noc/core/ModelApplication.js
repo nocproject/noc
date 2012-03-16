@@ -8,6 +8,7 @@ console.debug("Defining NOC.core.ModelApplication");
 
 Ext.define("NOC.core.ModelApplication", {
     extend: "NOC.core.Application",
+    requires: ["NOC.core.ModelStore"],
     layout: "fit",
     search: false,
     filters: null,
@@ -27,7 +28,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Variables
         me.current_query = {};
         // Create store
-        var store = Ext.create("Ext.data.Store", {
+        var store = Ext.create("NOC.core.ModelStore", {
             model: me.model,
             autoLoad: true,
             pageSize: 1,  // Increased by AutoSize plugin
@@ -380,17 +381,10 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Reload store with current query
     refresh_store: function() {
-        var me = this,
-            p = {
-                scope: me,
-                callback: function(records, operation, success) {
-                    if(!success)
-                        NOC.error("Failed to fetch data!");
-                }
-            };
+        var me = this;
         if(me.current_query)
-            p["params"] = me.current_query;
-        me.store.load(p);
+            me.store.setExtraParams(me.current_query);
+        me.store.load();
     },
     // Search
     on_search: function() {
