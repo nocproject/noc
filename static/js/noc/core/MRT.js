@@ -15,6 +15,8 @@ Ext.define("NOC.core.MRT", {
     taskId: null,
     success: null,
     failure: null,
+    showProgress: true,
+    loadMask: false,
 
     constructor: function(config) {
         config = config || {};
@@ -31,6 +33,7 @@ Ext.define("NOC.core.MRT", {
     run: function() {
         var me = this;
 
+        me.mask();
         if(me.fireEvent("beforetask", me) !== false ) {
             Ext.Ajax.request({
                 url: me.url,
@@ -44,6 +47,7 @@ Ext.define("NOC.core.MRT", {
                     me.checkMRT();
                 },
                 failure: function() {
+                    me.unmask();
                     this.fireEvent("taskexception", this);
                     Ext.callback(me.failure, me.scope, []);
                 }
@@ -62,6 +66,7 @@ Ext.define("NOC.core.MRT", {
                 var r = Ext.decode(response.responseText);
                 if(r.ready) {
                     // MRT Finished
+                    me.unmask();
                     this.fireEvent("taskcomplete", this, [r.result]);
                     Ext.callback(me.success, me.scope, [r.result]);
                 } else
@@ -69,9 +74,27 @@ Ext.define("NOC.core.MRT", {
                     Ext.defer(Ext.bind(me.checkMRT, me), 1000);
             },
             failure: function() {
+                me.unmask();
                 this.fireEvent("taskexception", this);
                 Ext.callback(me.failure, me.scope);
             }
         });
+    },
+    // Show wait... mask
+    mask: function() {
+        var me = this;
+
+        if(me.showProgress) {
+            me.loadMask = new Ext.LoadMask(Ext.getBody(), {
+                msg: "Running task. Please wait ..."});
+            me.loadMask.show();
+        }
+    },
+    // Hide wait... mask
+    unmask: function() {
+        var me = this;
+        if(me.loadMask) {
+            me.loadMask.hide();
+        }
     }
 });
