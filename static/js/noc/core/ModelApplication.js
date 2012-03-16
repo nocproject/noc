@@ -251,10 +251,10 @@ Ext.define("NOC.core.ModelApplication", {
                                 buttons: Ext.Msg.YESNO,
                                 icon: Ext.window.MessageBox.QUESTION,
                                 modal: true,
-                                fn: function(button) {
+                                fn: Ext.bind(function(button) {
                                     if (button == "yes")
                                         this.delete_record();
-                                }
+                                }, this)
                             });
                         }
                     }
