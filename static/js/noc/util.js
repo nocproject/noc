@@ -62,7 +62,12 @@ NOC.render.Tags = noc_renderTags;
 //      failure: ...,
 // });
 //
-NOC.mrt = function(config) {
+NOC.mrt = function(options) {
+    var m = Ext.create("NOC.core.MRT", options);
+    m.run();
+}
+
+NOC.mrt1 = function(config) {
     var scope = config.scope || this,
         checkMRT = function(task) {
             Ext.Ajax.request({
