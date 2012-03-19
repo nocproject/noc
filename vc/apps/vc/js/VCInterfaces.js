@@ -18,6 +18,7 @@ Ext.define("NOC.vc.vc.VCInterfaces", {
     autoShow: true,
     closable: true,
     autoScroll: "auto",
+    maximizable: true,
 
     initComponent: function() {
         var me = this,
