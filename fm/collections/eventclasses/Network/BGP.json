@@ -23,7 +23,7 @@
                 "name": "vrf",
                 "description": "VRF",
                 "type": "str",
-                "required": true
+                "required": false
             },
             {
                 "name": "as",
@@ -94,7 +94,7 @@
                 "name": "vrf",
                 "description": "VRF",
                 "type": "str",
-                "required": true
+                "required": false
             },
             {
                 "name": "as",
@@ -136,7 +136,7 @@
                 "name": "vrf",
                 "description": "VRF",
                 "type": "str",
-                "required": true
+                "required": false
             },
             {
                 "name": "as",
@@ -186,7 +186,7 @@
                 "name": "vrf",
                 "description": "VRF",
                 "type": "str",
-                "required": true
+                "required": false
             },
             {
                 "name": "as",
@@ -228,7 +228,7 @@
                 "name": "vrf",
                 "description": "VRF",
                 "type": "str",
-                "required": true
+                "required": false
             },
             {
                 "name": "as",
