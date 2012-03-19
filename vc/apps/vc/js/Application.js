@@ -263,6 +263,8 @@ Ext.define("NOC.vc.vc.Application", {
         me.callParent([permissions]);
         // Set import permissions
         me.can_import = permissions.indexOf("import") >= 0;
-        // @todo: enable when has permissions
+        var i_menu = me.grid.dockedItems.items[1].getComponent("import");
+        if(!me.can_import)
+            i_menu.hide();
     }
 });
