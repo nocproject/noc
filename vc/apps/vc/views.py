@@ -33,7 +33,8 @@ class VCApplication(ExtModelApplication):
     mrt_config = {
         "get_vlans": {
             "map_script": "get_vlans",
-            "timeout": 120
+            "timeout": 120,
+            "access": "import"
         }
     }
 
