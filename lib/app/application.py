@@ -342,11 +342,20 @@ class Application(object):
         """
         Return a set of permissions, used by application
         """
-        p = set(["%s:launch" % self.get_app_id().replace(".", ":")])
+        prefix = self.get_app_id().replace(".", ":")
+        p = set(["%s:launch" % prefix])
         # View permissions from HasPerm
         for view in self.get_views():
             if isinstance(view.access, HasPerm):
                 p.add(view.access.get_permission(self))
+        # mrt_config permissions
+        for mrt in self.mrt_config:
+            c = self.mrt_config[mrt]
+            if "access" in c:
+                if isinstance(c["access"], HasPerm):
+                    p.add(c["access"].get_permission(self))
+                elif isinstance(c["access"], basestring):
+                    p.add("%s:%s" % (prefix, c["access"]))
         # extra_permissions
         if callable(self.extra_permissions):
             extra = self.extra_permissions()
@@ -452,4 +461,4 @@ class Application(object):
         }
 
     # name -> {access: ..., map_script: ..., timeout: ...}
-    mrt_config = []
+    mrt_config = {}
