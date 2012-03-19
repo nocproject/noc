@@ -19,6 +19,7 @@ class Script(NOCScript):
     cache = True
     implements = [IGetSwitchport]
 
+    rx_cont = re.compile(r",\s*$\s+", re.MULTILINE)
     rx_line = re.compile(r"\n+Name:\s+", re.MULTILINE)
     rx_body = re.compile(r"^(?P<interface>\S+).+"
                          "^Administrative Mode: (?P<amode>.+).+"
@@ -52,7 +53,7 @@ class Script(NOCScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         v = "\n" + v
-
+        v = self.rx_cont.sub(",", v)  # Unwind continuation lines
         # Get portchannel members
         portchannels = {}  # portchannel name -> [members]
         for p in self.scripts.get_portchannel():
