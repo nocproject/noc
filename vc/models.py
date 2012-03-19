@@ -71,7 +71,7 @@ class VCDomain(models.Model):
                                  null=True, blank=True)
 
     def __unicode__(self):
-        return u"%s: %s" % (self.name, unicode(self.type))
+        return self.name
 
     def get_free_label(self, vc_filter=None):
         """
