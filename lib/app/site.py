@@ -165,7 +165,17 @@ class Site(object):
                     errors = None
                     if isinstance(v.validate, DictParameter):
                         # Validate via NOC interfaces
-                        g = dict((k, request.GET[k]) for k in request.GET)
+                        if request.method == "GET":
+                            g = dict((k, v[0] if len(v) == 1 else v)
+                                     for k, v in request.GET.lists())
+                        else:
+                            ct = request.META.get("CONTENT_TYPE")
+                            if ct and ("text/json" in ct or
+                                       "application/json" in ct):
+                                g = json_decode(request.raw_post_data)
+                            else:
+                                g = dict((k, v[0] if len(v) == 1 else v)
+                                           for k, v in request.POST.lists())
                         try:
                             kwargs.update(v.validate.clean(g))
                         except InterfaceTypeError, why:
@@ -179,6 +189,9 @@ class Site(object):
                             errors = dict([(f, "; ".join(e))
                                            for f, e in f.errors.items()])
                     if errors:
+                        #
+                        if to_log_api_call:
+                            logging.debug("ERROR: %s" % errors)
                         # Return error response
                         ext_format = ("__format=ext"
                                     in request.META["QUERY_STRING"].split("&"))
