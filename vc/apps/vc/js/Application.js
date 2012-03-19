@@ -256,5 +256,13 @@ Ext.define("NOC.vc.vc.Application", {
                 NOC.error("Failed to get interfaces");
             }
         });
+    },
+    // Parse additional permissions
+    set_permissions: function(permissions) {
+        var me = this;
+        me.callParent([permissions]);
+        // Set import permissions
+        me.can_import = permissions.indexOf("import") >= 0;
+        // @todo: enable when has permissions
     }
 });

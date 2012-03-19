@@ -17,34 +17,40 @@ Ext.define("NOC.vc.vc.VCInterfaces", {
     modal: true,
     autoShow: true,
     closable: true,
+    autoScroll: "auto",
 
     initComponent: function() {
         var me = this,
             tpl = new Ext.XTemplate(
-                // Unagged
-                '<b><u>Untagged interfaces</u></b><br/>',
-                '<tpl for="untagged">',
-                    '<b>{managed_object_name}:</b> ',
-                    '<tpl for="interfaces">{name}, </tpl>',
-                    '<br/>',
-                '</tpl>',
-                // Tagged
-                '<b><u>Tagged interfaces</u></b><br/>',
-                '<tpl for="tagged">',
-                    '<b>{managed_object_name}:</b> ',
-                    '<tpl for="interfaces">{name}, </tpl>',
-                    '<br/>',
-                '</tpl>',
-                // L3
-                '<b><u>L3</u></b><br/>',
-                '<tpl for="l3">',
-                    '<b>{managed_object_name}:</b> ',
-                    '<tpl for="interfaces">{name} (',
-                    '{ipv4_addresses}',
-                    '{ipv6_addresses}',
-                    ')</tpl>',
-                    '<br/>',
-                '</tpl>'
+                '<table border="1">',
+                    // Untagged
+                    '<tr><td colspan="2" align="center"><b>Untagged interfaces</b></td></tr>',
+                    '<tpl for="untagged">',
+                        '<tr>',
+                            '<td>{managed_object_name}</td>',
+                            '<td><tpl for="interfaces">{name}, </tpl></td>',
+                        '</tr>',
+                    '</tpl>',
+                    // Tagged
+                    '<tr><td colspan="2" align="center"><b>Tagged interfaces</b></td></tr>',
+                    '<tpl for="tagged">',
+                        '<tr>',
+                            '<td>{managed_object_name}</td>',
+                            '<td><tpl for="interfaces">{name}, </tpl></td>',
+                        '</tr>',
+                    '</tpl>',
+                    // L3
+                    '<tr><td colspan="2" align="center"><b>L3</b></td></tr>',
+                    '<tpl for="l3">',
+                        '<tr>',
+                            '<td>{managed_object_name}</td>',
+                            '<td><tpl for="interfaces">{name} (',
+                                '{ipv4_addresses}',
+                                '{ipv6_addresses}',
+                            ')</tpl></td>',
+                        '</tr>',
+                    '</tpl>',
+                '</table>'
             );
         Ext.apply(me, {
             title: Ext.String.format("Interfaces in VC {0} ({1})",
@@ -52,6 +58,7 @@ Ext.define("NOC.vc.vc.VCInterfaces", {
             items: [
                 {
                     xtype: "panel",
+                    padding: 4,
                     html: tpl.apply(me.interfaces),
                     layout: "fit"
                 }
