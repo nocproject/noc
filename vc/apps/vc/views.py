@@ -1,177 +1,140 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## VC Manager
+## vc.vc application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib import admin
-from django import forms
+## Python modules
+from collections import defaultdict
 ## NOC modules
-from noc.lib.app import ModelApplication, view
+from noc.lib.app import ExtModelApplication, view
 from noc.vc.models import VC, VCDomain, VCFilter
-from noc.sa.models import ManagedObject, ReduceTask
 from noc.inv.models import SubInterface, Q
-from noc.sa.models import profile_registry
+from noc.lib.ip import IP
+from noc.sa.interfaces import DictParameter, ModelParameter, ListOfParameter,\
+    IntParameter, StringParameter
 
 
-def vc_prefixes(obj):
-    """
-    Prefixes bind to VC
-    """
-    return ", ".join([p.prefix for p in
-                      obj.prefix_set.order_by("vrf__name", "afi", "prefix")])
-
-vc_prefixes.short_description = "Prefixes"
-
-
-def vc_interfaces(obj):
-    """
-    Link to interfaces
-    :param obj:
-    :return:
-    """
-    if not obj.vc_domain.selector:
-        return "-"
-    objects = set(obj.vc_domain.selector.managed_objects.values_list("id",
-                                                                flat=True))
-    l1 = obj.l1
-    n = SubInterface.objects.filter(
-        Q(managed_object__in=objects) &
-        (
-            Q(untagged_vlan=l1, is_bridge=True) |
-            Q(tagged_vlans=l1, is_bridge=True) |
-            Q(vlan_ids=l1)
-        )
-    ).count()
-    if n:
-        return "<a href='%d/interfaces/'>%d</a>" % (obj.id, n)
-    else:
-        return "0"
-
-vc_interfaces.short_description = "Interfaces"
-vc_interfaces.allow_tags = True
-
-
-class VCAdmin(admin.ModelAdmin):
-    """
-    VC Admin
-    """
-    list_display = ["vc_domain", "name", "l1", "l2",
-                    "description", vc_interfaces, vc_prefixes]
-    search_fields = ["name", "l1", "l2", "description"]
-    list_filter = ["vc_domain"]
-
-
-def reduce_vlan_import(task, vc_domain):
-    """
-    Reduce task for VLAN import.
-    Create vlans which not exist in database
-    """
-    from noc.vc.models import VC
-
-    mt = task.maptask_set.all()[0]
-    if mt.status != "C":
-        return 0
-    count = 0
-    max_name_len = VC._meta.get_field_by_name("name")[0].max_length
-    for v in mt.script_result:
-        vlan_id = v["vlan_id"]
-        name = v.get("name", "VLAN%d" % vlan_id)
-        try:
-            VC.objects.get(vc_domain=vc_domain, l1=vlan_id)
-        except VC.DoesNotExist:
-            # Generate unique name
-            n = 0
-            nm = VC.convert_name(name)
-            while VC.objects.filter(vc_domain=vc_domain, name=nm).exists():
-                n += 1
-                nm = "_%d" % n
-                nm = name[:max_name_len - len(nm)] + nm
-            # Save
-            vc = VC(vc_domain=vc_domain, l1=vlan_id, l2=0, name=nm,
-                    description=name)
-            vc.save()
-            count += 1
-    return count
-
-
-class VCApplication(ModelApplication):
+class VCApplication(ExtModelApplication):
     """
     VC application
     """
-    model = VC
-    model_admin = VCAdmin
+    title = "VC"
     menu = "Virtual Circuits"
+    model = VC
+    icon = "icon_link"
 
-    class SAImportVLANsForm(forms.Form):
-        """
-        Import VLANs Form
-        """
-        vc_domain = forms.ModelChoiceField(label="VC Domain",
-                                           queryset=VCDomain.objects)
-        managed_object = forms.ModelChoiceField(label="Managed Object",
-            queryset=ManagedObject.objects.filter(profile_name__in=[
-                p.name for p in profile_registry.classes.values()
-                if "get_vlans" in p.scripts]).order_by("name"))
+    query_fields = ["name", "description"]
+    query_condition = "icontains"
+    int_query_fields = ["l1", "l2"]
 
-    @view(url=r"^import_sa/$", url_name="import_sa", access="import")
-    def view_import_sa(self, request):
-        """
-        Import VLANs via service activation
-        """
-        if request.POST:
-            form = self.SAImportVLANsForm(request.POST)
-            if form.is_valid():
-                task = ReduceTask.create_task(
-                    [form.cleaned_data["managed_object"]],
-                                                         reduce_vlan_import,
-                        {"vc_domain": form.cleaned_data["vc_domain"]},
-                                                         "get_vlans", None, 60)
-                return self.response_redirect("vc:vc:import_sa_task", task.id)
-        else:
-            form = self.SAImportVLANsForm()
-        return self.render(request, "import_vlans.html", {"form": form})
+    mrt_config = {
+        "get_vlans": {
+            "map_script": "get_vlans",
+            "timeout": 120
+        }
+    }
 
-    @view(url=r"^import_sa/(?P<task_id>\d+)/$", url_name="import_sa_task",
-          access="import")
-    def view_import_sa_task(self, request, task_id):
+    def lookup_vcfilter(self, q, name, value):
         """
-        Wait for import task to complete
+        Resolve __vcflter lookups
+        :param q:
+        :param name:
+        :param value:
+        :return:
         """
-        task = self.get_object_or_404(ReduceTask, id=int(task_id))
+        value = ModelParameter(VCFilter).clean(value)
+        x = value.to_sql(name)
         try:
-            result = task.get_result(block=False)
-        except ReduceTask.NotReady:
-            return self.render_wait(request, subject="Vlan import",
-                                    text="Import in progress. Please wait ...")
-        self.message_user(request, "%d VLANs are imported" % result)
-        return self.response_redirect("vc:vc:changelist")
+            q[None] += [x]
+        except KeyError:
+            q[None] = [x]
 
-    @view(url="^(?P<vc_id>\d+)/interfaces/$", url_name="interfaces",
-          access="change")
-    def view_interfaces(self, request, vc_id):
-        def get_interfaces(queryset):
-            """
-            Returns a list of (managed object, [subinterfaces])
-            :param queryset:
-            :return:
-            """
-            si_objects = {}  # object -> [subinterfaces]
-            for si in queryset:
-                if si.interface.managed_object.id in objects:
-                    try:
-                        si_objects[si.interface.managed_object] += [si]
-                    except KeyError:
-                        si_objects[si.interface.managed_object] = [si]
-            return sorted([(o, sorted(si_objects[o], key=lambda x: x.name))
-                           for o in si_objects], key=lambda x: x[0].name)
+    def field_interfaces_count(self, obj):
+        if not obj.vc_domain.selector:
+            return "-"
+        objects = set(obj.vc_domain.selector.managed_objects.values_list("id",
+                                                                    flat=True))
+        l1 = obj.l1
+        n = SubInterface.objects.filter(
+            Q(managed_object__in=objects) &
+            (
+                Q(untagged_vlan=l1, is_bridge=True) |
+                Q(tagged_vlans=l1, is_bridge=True) |
+                Q(vlan_ids=l1)
+            )
+        ).count()
+        return str(n)
 
+    def field_prefixes(self, obj):
+        if not obj.vc_domain.selector:
+            return "-"
+        objects = set(obj.vc_domain.selector.managed_objects.values_list("id",
+                                                                    flat=True))
+        ipv4 = set()
+        ipv6 = set()
+        # @todo: Exact match on vlan_ids
+        for si in SubInterface.objects.filter(
+            Q(managed_object__in=objects) &
+            Q(vlan_ids=obj.l1) &
+            (Q(is_ipv4=True) | Q(is_ipv6=True))
+        ):
+            if si.is_ipv4:
+                ipv4.update([IP.prefix(ip).first
+                          for ip in si.ipv4_addresses])
+            if si.is_ipv6:
+                ipv6.update([IP.prefix(ip).first
+                          for ip in si.ipv6_addresses])
+        p = [str(x.first) for x in sorted(ipv4)]
+        p += [str(x.first) for x in sorted(ipv6)]
+        return p
+
+    @view(url="^find_free/$", method=["GET"], access="read", api=True,
+          validate={
+              "vc_domain": ModelParameter(VCDomain),
+              "vc_filter": ModelParameter(VCFilter)
+          })
+    def api_find_free(self, request, vc_domain, vc_filter, **kwargs):
+        return vc_domain.get_free_label(vc_filter)
+
+    @view(url="^bulk/import/", method=["POST"], access="import", api=True,
+          validate={
+              "vc_domain": ModelParameter(VCDomain),
+              "items": ListOfParameter(element=DictParameter(attrs={
+                  "l1": IntParameter(),
+                  "l2": IntParameter(),
+                  "name": StringParameter(),
+                  "description": StringParameter(default="")
+              }))
+          })
+    def api_bulk_import(self, request, vc_domain, items):
+        n = 0
+        for i in items:
+            if not VC.objects.filter(vc_domain=vc_domain,
+                                     l1=i["l1"], l2=i["l2"]).exists():
+                # Add only not-existing
+                VC(vc_domain=vc_domain, l1=i["l1"], l2=i["l2"],
+                   name=i["name"], description=i["description"]).save()
+                n += 1
+        return {
+            "status": True,
+            "imported": n
+        }
+
+    @view(url=r"^(?P<vc_id>\d+)/interfaces/$", method=["GET"],
+          access="read", api=True)
+    def api_interfaces(self, request, vc_id):
+        """
+        Returns a dict of {untagged: ..., tagged: ...., l3: ...}
+        :param request:
+        :param vc_id:
+        :return:
+        """
         vc = self.get_object_or_404(VC, id=int(vc_id))
         l1 = vc.l1
-        # Check VC domain has selector
+                # Check VC domain has selector
         if not vc.vc_domain.selector:
             return self.render(request, "interfaces.html",
                                no_selector=True, vc=vc)
@@ -179,43 +142,46 @@ class VCApplication(ModelApplication):
         objects = set(vc.vc_domain.selector.managed_objects.values_list("id",
                                                                     flat=True))
         # Find untagged interfaces
-        untagged = get_interfaces(SubInterface.objects.filter(
+        si_objects = defaultdict(list)
+        for si in SubInterface.objects.filter(
             managed_object__in=objects,
             untagged_vlan=l1,
-            is_bridge=True))
+            is_bridge=True):
+            si_objects[si.managed_object] += [{"name": si.name}]
+        untagged = [{
+            "managed_object_id": o.id,
+            "managed_object_name": o.name,
+            "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
+        } for o in si_objects]
         # Find tagged interfaces
-        tagged = get_interfaces(SubInterface.objects.filter(
+        si_objects = defaultdict(list)
+        for si in SubInterface.objects.filter(
             managed_object__in=objects,
             tagged_vlans=l1,
-            is_bridge=True))
+            is_bridge=True):
+            si_objects[si.managed_object] += [{"name": si.name}]
+        tagged = [{
+            "managed_object_id": o.id,
+            "managed_object_name": o.name,
+            "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
+        } for o in si_objects]
         # Find l3 interfaces
-        l3 = get_interfaces(SubInterface.objects.filter(
+        si_objects = defaultdict(list)
+        for si in SubInterface.objects.filter(
             managed_object__in=objects,
-            vlan_ids=l1))
-        return self.render(request, "interfaces.html",
-                           vc=vc, untagged=untagged, tagged=tagged, l3=l3)
-
-    class AddFreeForm(forms.Form):
-        vc_domain = forms.ModelChoiceField(label="VC Domain",
-                                           queryset=VCDomain.objects)
-        vc_filter = forms.ModelChoiceField(label="VC Filter",
-                                            queryset=VCFilter.objects,
-                                            required=False)
-
-    @view(url="^add_free/$", url_name="add_free", access="change")
-    def view_add_free(self, request):
-        if request.POST:
-            form = self.AddFreeForm(request.POST)
-            if form.is_valid():
-                vc_domain = form.cleaned_data["vc_domain"]
-                l1 = vc_domain.get_free_label(form.cleaned_data["vc_filter"])
-                if l1:
-                    return self.render(request, "add_free.html",
-                                       location="%s?vc_domain=%d&l1=%d" % (
-                                           self.reverse("vc:vc:add"),
-                                           vc_domain.id, l1)
-                    )
-                self.message_user(request, "No free VC found")
-        else:
-            form = self.AddFreeForm()
-        return self.render(request, "add_free.html", form=form)
+            vlan_ids=l1):
+            si_objects[si.managed_object] += [{
+                "name": si.name,
+                "ipv4_addresses": si.ipv4_addresses,
+                "ipv6_addresses": si.ipv6_addresses
+            }]
+        l3 = [{"managed_object_id": o.id,
+               "managed_object_name": o.name,
+               "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
+        } for o in si_objects]
+        return {
+            "untagged": sorted(untagged,
+                               key=lambda x: x["managed_object_name"]),
+            "tagged": sorted(tagged, key=lambda x: x["managed_object_name"]),
+            "l3": sorted(l3, key=lambda x: x["managed_object_name"])
+        }
