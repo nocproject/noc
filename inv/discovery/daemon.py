@@ -226,6 +226,7 @@ class DiscoveryDaemon(Daemon):
                             name=si["name"]).first()
                     if s_iface:
                         changes = self.update_if_changed(s_iface, {
+                            "managed_object": o.id,
                             "description": si.get("description"),
                             "mac": si.get("mac"),
                             "vlan_ids": si.get("vlan_ids", []),
