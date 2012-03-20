@@ -31,6 +31,18 @@ Ext.define("NOC.vc.vc.Application", {
             width: 50
         },
         {
+            text: "L1",
+            dataIndex: "l1",
+            width: 25,
+            hidden: true
+        },
+        {
+            text: "L2",
+            dataIndex: "l2",
+            width: 25,
+            hidden: true
+        },
+        {
             text: "Int.",
             dataIndex: "interfaces_count",
             width: 50
