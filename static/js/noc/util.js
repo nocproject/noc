@@ -51,6 +51,17 @@ NOC.render.Bool = noc_renderBool;
 NOC.render.URL = noc_renderURL;
 NOC.render.Tags = noc_renderTags;
 
+NOC.render.Lookup = function(name) {
+    var l = name + "__label";
+    return function(value, meta, record) {
+        if(value) {
+            return record.get(l)
+        } else {
+            return "";
+        }
+    };
+};
+
 //
 // Run new Map/Reduce task
 // Usage:
@@ -60,6 +71,7 @@ NOC.render.Tags = noc_renderTags;
 //      scope: ...,
 //      success: ...,
 //      failure: ...,
+//      mapParams: ...,
 // });
 //
 NOC.mrt = function(options) {
