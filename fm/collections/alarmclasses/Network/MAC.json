@@ -34,8 +34,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "MAC Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
-                "body_template": "MAC Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
+                "subject_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
+                "body_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
