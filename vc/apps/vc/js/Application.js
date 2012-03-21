@@ -29,7 +29,8 @@ Ext.define("NOC.vc.vc.Application", {
         {
             text: "Label",
             dataIndex: "label",
-            width: 50
+            width: 50,
+            sortable: false
         },
         {
             text: "L1",
@@ -46,12 +47,14 @@ Ext.define("NOC.vc.vc.Application", {
         {
             text: "Int.",
             dataIndex: "interfaces_count",
-            width: 50
+            width: 50,
+            sortable: false
         },
         {
             text: "Prefixes",
             dataIndex: "prefixes",
-            width: 100
+            width: 100,
+            sortable: false
         },
         {
             text: "Description",
