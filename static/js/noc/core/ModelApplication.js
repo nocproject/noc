@@ -145,11 +145,11 @@ Ext.define("NOC.core.ModelApplication", {
             rbar: grid_rbar,
             listeners: {
                 itemclick: function(view, record) {
-                    var app = this.up("panel");
+                    var me = this.up("panel");
                     // Check permissions
-                    if (!app.can_read && !app.can_update)
+                    if (!me.can_read && !me.can_update)
                         return;
-                    app.edit_record(record);
+                    me.edit_record(record);
                 }
             }
         };
@@ -273,6 +273,7 @@ Ext.define("NOC.core.ModelApplication", {
             form = me.down("form"),
             grid_toolbar = grid.dockedItems.items[1],
             form_toolbar = form.dockedItems.first();
+        me.grid_toolbar = grid_toolbar;
         me.create_button = grid_toolbar.getComponent("create");
         me.save_button = form_toolbar.getComponent("save");
         me.reset_button = form_toolbar.getComponent("reset");
