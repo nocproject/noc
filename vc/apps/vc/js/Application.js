@@ -19,7 +19,8 @@ Ext.define("NOC.vc.vc.Application", {
     columns: [
         {
             text: "VC Domain",
-            dataIndex: "vc_domain__label"
+            dataIndex: "vc_domain",
+            renderer: NOC.render.Lookup("vc_domain")
         },
         {
             text: "Name",
@@ -278,5 +279,7 @@ Ext.define("NOC.vc.vc.Application", {
         var i_menu = me.grid.dockedItems.items[1].getComponent("import");
         if(!me.can_import)
             i_menu.hide();
+        // Set set_untagged permission
+        me.set_untagged = permissions.indexOf("set_untagged") >= 0;
     }
 });
