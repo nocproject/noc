@@ -8,7 +8,10 @@ console.debug("Defining NOC.{{module}}.{{app}}.Application");
 
 Ext.define("NOC.{{module}}.{{app}}.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.{{module}}.{{app}}.Model"],
+    requires: [
+        {%for r in requires%}"{{r}}"{% if forloop.last %}{%else%},
+        {%endif%}{%endfor%}
+    ],
     
     model: "NOC.{{module}}.{{app}}.Model",
     
@@ -20,30 +23,5 @@ Ext.define("NOC.{{module}}.{{app}}.Application", {
         }*/
     ],
     
-    fields: [
-        {% for f in fields %}
-        {
-            name: "{{f.name}}",
-            {% if f.type == "CharField" %}
-            xtype: "textfield",
-            fieldLabel: "{{f.label}}",
-            allowBlank: {% if f.null %}true{% else %}false{% endif %}
-            {% endif %}
-            {% if f.type == "TextField" %}
-            xtype: "textfield",
-            fieldLabel: "{{f.label}}",
-            allowBlank: {% if f.null %}true{% else %}false{% endif %}
-            {% endif %}
-            {% if f.type == "IntegerField" %}
-            xtype: "numberfield",
-            fieldLabel: "{{f.label}}",
-            allowBlank: {% if f.null %}true{% else %}false{% endif %}
-            {% endif %}
-            {% if f.type == "BooleanField" %}
-            xtype: "checkboxfield",
-            boxLabel: "{{f.label}}"
-            {% endif %}
-        }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ]
+    fields: {{js_form_fields|safe}}
 });

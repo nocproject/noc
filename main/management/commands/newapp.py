@@ -36,13 +36,30 @@ class Command(BaseCommand):
 
     rx_empty = re.compile("^ +\n", re.MULTILINE)
 
-    # NoSQL Document <-> Django ORM
-    type_map = {
-        "StringField": "CharField",
-        "BooleanField": "BooleanField",
-        "IntField": "IntegerField",
-        "GeoPointField": "CharField",
-        "URLField": "CharField"
+    # Model -> (Ext model type, widget)
+    model_map = {
+        "CharField": ("string", "textfield"),
+        "BooleanField": ("boolean", "checkboxfield"),
+        "IntegerField": ("int", "numberfield"),
+        "TextField": ("string", "textarea"),
+        "CIDRField": ("string", "textfield")
+    }
+
+    # Document -> Ext type maps
+    document_ext_type = {
+        "StringField": "string",
+        "BooleanField": "boolean",
+        "IntField": "int",
+        "GeoPointField": "auto",
+        "URLField": "string"
+    }
+    # Document -> Ext type widgets
+    document_ext_widget = {
+        "StringField": "textfield",
+        "BooleanField": "checkboxfield",
+        "IntField": "numberfield",
+        "GeoPointField": "geofield",
+        "URLField": "textfield"
     }
 
     def compact(self, s):
@@ -66,6 +83,51 @@ class Command(BaseCommand):
         except OSError, why:
             print "failed:", why
             raise CommandError("Failed to write file")
+
+    def to_js(self, data, indent=0):
+        """
+        Convert list of lists to JS list of dict
+        :param data:
+        :return:
+        """
+        def js_f(data):
+            """
+            Convert list of pairs to JS dict
+            :param data:
+            :type data: list
+            :return:
+            """
+            def js_v(s):
+                """
+                Convert python value to js
+                :param s:
+                :return:
+                """
+                if isinstance(s, basestring):
+                    return "\"%s\"" % s
+                elif isinstance(s, bool):
+                    return "true" if s else "false"
+                else:
+                    return str(s)
+
+            n = len(data)
+            r = ["{"]
+            for k, v in data:
+                r += ["    %s: %s%s" % (k, js_v(v), "," if n > 1 else "")]
+                n -= 1
+            r += ["}"]
+            return r
+
+        n = len(data)
+        r = []
+        for d in data:
+            r += js_f(d)
+            if n > 1:
+                r[-1] += ","
+            n -= 1
+        s = "    " * (indent + 1)
+        r = ["["] + [s + x for x in r] + ["    " * indent + "]"]
+        return "\n".join(r)
 
     def handle(self, *args, **options):
         # Template variables
@@ -100,40 +162,97 @@ class Command(BaseCommand):
             tv = vars.copy()
             tv["module"] = m
             tv["app"] = a
+            tv["requires"] = ["NOC.%s.%s.Model" % (m, tv["model"].lower())]
             # Initialize model if necessary
             if tv["model"]:
                 models = __import__("noc.%s.models" % m, {}, {}, "*")
                 model = getattr(models, tv["model"])
-                fields = []
                 if issubclass(model, Model):
+                    # Model
+                    fields = [{
+                        "type": "int",
+                        "name": "id"
+                    }]
                     for f in model._meta.fields:
                         if f.name == "id":
                             continue
-                        if f.default == NOT_PROVIDED:
-                            d = None
+                        fc = f.__class__.__name__
+                        if fc == "ForeignKey":
+                            # Foreign key
+                            fr = f.rel.to
+                            rc = "%s.%s" % (fr.__module__.split(".")[1],
+                                            fr.__name__.lower())
+                            fd = {
+                                "type": "int",
+                                "name": f.name,
+                                "label": unicode(f.verbose_name),
+                                "blank": f.null,
+                                "widget": "%s.LookupField" % rc
+                            }
+                            fields += [fd]
+                            fd = {
+                                "type": "string",
+                                "name": "%s__label" % f.name,
+                                "persist": False
+                            }
+                            fields += [fd]
+                            tv["requires"] += ["NOC.%s.LookupField" % rc]
                         else:
-                            d = f.default
-                        fields += [{
-                            "type": f.__class__.__name__,
-                            "name": f.name,
-                            "label": unicode(f.verbose_name),
-                            "null": f.null,
-                            "default": d
-                        }]
+                            fd = {
+                                "type": self.model_map[fc][0],
+                                "name": f.name,
+                                "label": unicode(f.verbose_name),
+                                "blank": f.null,
+                                "widget": self.model_map[fc][1]
+                            }
+                            if f.default != NOT_PROVIDED:
+                                fd["default"] = f.default
+                            fields += [fd]
                     tv["base_class"] = "ExtModelApplication"
                 else:
+                    # Document
+                    fields = [{
+                        "type": "string",
+                        "name": "id"
+                    }]
                     for n, f in model._fields.items():
                         if n == "id":
                             continue
-                        fields += [{
-                            "type": self.type_map[f.__class__.__name__],
+                        fc = f.__class__.__name__
+                        fd = {
+                            "type": self.document_ext_type[fc],
                             "name": n,
                             "label": unicode(n),
-                            "null": not f.required,
-                            "default": f.default
-                        }]
+                            "blank": not f.required
+                        }
+                        if f.default:
+                            fd["default"] = f.default
+                        fields += [fd]
                     tv["base_class"] = "ExtDocApplication"
                 tv["fields"] = fields
+            # Format fields for models
+            if "fields" in tv:
+                # Model fields
+                fields = []
+                for f in tv["fields"]:
+                    ff = [("name", f["name"]), ("type", f["type"])]
+                    if "default" in f:
+                        ff += [("defaultValue", f["default"])]
+                    if "persist" in f:
+                        ff += [("persist", f["persist"])]
+                    fields += [ff]
+                tv["js_fields"] = self.to_js(fields, 1)
+                # Form fields
+                form_fields = []
+                for f in [x for x in tv["fields"] if "widget" in x]:
+                    ff = [("name", f["name"]), ("xtype", f["widget"])]
+                    if f["widget"] == "checkboxfield":
+                        ff += [("boxLabel", f["label"])]
+                    else:
+                        ff += [("fieldLabel", f["label"])]
+                    ff += [("allowBlank", f["blank"])]
+                    form_fields += [ff]
+                tv["js_form_fields"] = self.to_js(form_fields, 1)
             # Check applications is not exists
             app_root = os.path.join(m, "apps", a)
             if os.path.exists(app_root):
