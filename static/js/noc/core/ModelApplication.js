@@ -12,21 +12,21 @@ Ext.define("NOC.core.ModelApplication", {
     layout: "fit",
     search: false,
     filters: null,
-    toolbar: [],  // Additional toolbar buttons
+    gridToolbar: [],  // Additional grid toolbar buttons
+    formToolbar: [],  // Additional form toolbar buttons
+    currentRecord: null,
+    appTitle: null,
+    createTitle: "Create {0}",
+    changeTitle: "Change {0}",
 
     initComponent: function() {
         var me = this;
-        // Permissions
-        me.can_read = false;
-        me.can_create = false;
-        me.can_update = false;
-        me.can_delete = false;
         // set base_url
         var n = this.self.getName().split("."),
             app_name = n[1] + "." + n[2];
         me.base_url = "/" + n[1] + "/" + n[2] + "/";
         // Variables
-        me.current_query = {};
+        me.currentQuery = {};
         // Create store
         var store = Ext.create("NOC.core.ModelStore", {
             model: me.model,
@@ -56,46 +56,40 @@ Ext.define("NOC.core.ModelApplication", {
             }
         }));
         // Setup Grid toolbar
-        var grid_toolbar = [];
-        if (me.search) {
-            grid_toolbar = grid_toolbar.concat([
-                {
-                    xtype: "textfield",
-                    name: "search_field",
-                    itemId: "search_field",
-                    emptyText: "Search...",
-                    inputType: "search",
-                    hideLabel: true,
-                    width: 200,
-                    listeners: {
-                        change: {
-                            fn: me.on_search,
-                            scope: me,
-                            buffer: 200
-                        }
+        var gridToolbar = [
+            {
+                xtype: "textfield",
+                name: "search_field",
+                itemId: "search_field",
+                emptyText: "Search...",
+                inputType: "search",
+                hideLabel: true,
+                width: 200,
+                hasAccess: function(app) { return app.search === true;},
+                listeners: {
+                    change: {
+                        fn: me.onSearch,
+                        scope: me,
+                        buffer: 200
                     }
                 }
-            ]);
-        }
-        grid_toolbar = grid_toolbar.concat([
+            },
             {
                 itemId: "create",
                 text: "Add",
                 iconCls: "icon_add",
                 tooltip: "Add new record",
-                disabled: true,
+                hasAccess: NOC.hasPermission("create"),
                 scope: me,
-                handler: function() {
-                    this.new_record();
-                }
+                handler: me.onNewRecord
             }
-        ], me.toolbar);
+        ].concat(me.gridToolbar);
         // Initialize panels
         // Filters
         var grid_rbar = null;
         me.filter_getters = [];
         if(me.filters) {
-            var fh = Ext.bind(me.on_filter, me);
+            var fh = Ext.bind(me.onFilter, me);
             grid_rbar = {
                 xtype: "panel",
                 width: 208,
@@ -124,7 +118,8 @@ Ext.define("NOC.core.ModelApplication", {
         }
         // Grid
         var grid_panel = {
-            xtype: 'gridpanel',
+            xtype: "gridpanel",
+            itemId: "grid",
             store: store,
             columns: this.columns,
             border: false,
@@ -133,7 +128,7 @@ Ext.define("NOC.core.ModelApplication", {
             dockedItems: [
                 {
                     xtype: "toolbar",
-                    items: grid_toolbar
+                    items: me.applyPermissions(gridToolbar)
                 },
                 {
                     xtype: "pagingtoolbar",
@@ -144,18 +139,51 @@ Ext.define("NOC.core.ModelApplication", {
             ],
             rbar: grid_rbar,
             listeners: {
-                itemclick: function(view, record) {
-                    var me = this.up("panel");
-                    // Check permissions
-                    if (!me.can_read && !me.can_update)
-                        return;
-                    me.edit_record(record);
-                }
+                itemdblclick: me.onEditRecord,
+                select: me.onEditRecord
             }
         };
         // Form
+        var formToolbar = [
+            {
+                itemId: "save",
+                text: "Save",
+                iconCls: "icon_accept",
+                formBind: true,
+                disabled: true,
+                scope: me,
+                // @todo: check access
+                handler: me.onSave
+            },
+            {
+               itemId: "reset",
+               text: "Reset",
+               iconCls: "icon_cancel",
+               disabled: true,
+               scope: me,
+               handler: me.onReset
+            },
+            {
+                itemId: "close",
+                text: "Close",
+                iconCls: "icon_arrow_up",
+                scope: me,
+                handler: me.toggle
+            },
+            {
+               itemId: "delete",
+               text: "Delete",
+               iconCls: "icon_delete",
+               disabled: true,
+               hasAccess: NOC.hasPermission("delete"),
+               scope: me,
+               handler: me.onDelete
+            }
+        ].concat(me.formToolbar);
+
         var form_panel = {
             xtype: 'container',
+            itemId: "form",
             layout: 'anchor',
             items: {
                 xtype: 'form',
@@ -165,30 +193,18 @@ Ext.define("NOC.core.ModelApplication", {
                 defaults: {
                     enableKeyEvents: true,
                     listeners: {
-                        specialkey: function(field, key) {
-                            if (field.xtype != "textfield")
-                                return;
-                            var get_button = function(scope, name) {
-                                return scope.up("panel").dockedItems.items[0].getComponent(name);
-                            }
-                            switch(key.getKey()) {
-                                case Ext.EventObject.ENTER:
-                                    var b = get_button(this, "save");
-                                    key.stopEvent();
-                                    b.handler.call(b);
-                                    break;
-                                case Ext.EventObject.ESC:
-                                    var b = get_button(this, "reset");
-                                    key.stopEvent();
-                                    b.handler.call(b);
-                            }
+                        specialkey: {
+                            scope: me,
+                            fn: me.onFormSpecialKey
                         }
                     }
                 },
                 items: [
                     {
                         xtype: "container",
-                        html: "Change",
+
+                        html: "Title",
+                        itemId: "form_title",
                         padding: 4,
                         style: {
                             fontWeight: "bold"
@@ -198,67 +214,7 @@ Ext.define("NOC.core.ModelApplication", {
                         xtype: "hiddenfield",
                         name: "id"
                     }].concat(me.fields),
-                buttonAlign: "left",
-                buttons: [
-                    {
-                        itemId: "save",
-                        text: "Save",
-                        iconCls: "icon_accept",
-                        formBind: true,
-                        disabled: true,
-                        scope: this,
-                        handler: function() {
-                            if(!this.form.isValid())
-                                return;
-                            var v = this.form.getFieldValues();
-                            // Fetch comboboxes labels
-                            this.form.getFields().each(function(field) {
-                                if(Ext.isDefined(field.getLookupData))
-                                    v[field.name + "__label"] = field.getLookupData();
-                            });
-                            this.save_record(v);
-                        }
-                    },
-                    {
-                        itemId: "reset",
-                        text: "Reset",
-                        iconCls: "icon_cancel",
-                        disabled: true,
-                        scope: me,
-                        handler: function() {
-                            this.form.reset();
-                        }
-                    },
-                    {
-                        itemId: "close",
-                        text: "Close",
-                        iconCls: "icon_arrow_up",
-                        scope: me,
-                        handler: function() {
-                            this.toggle();
-                        }
-                    },
-                    {
-                        itemId: "delete",
-                        text: "Delete",
-                        iconCls: "icon_delete",
-                        disabled: true,
-                        scope: me,
-                        handler: function() {
-                            Ext.Msg.show({
-                                title: "Delete record?",
-                                msg: "Do you wish to delete record? This operation cannot be undone!",
-                                buttons: Ext.Msg.YESNO,
-                                icon: Ext.window.MessageBox.QUESTION,
-                                modal: true,
-                                fn: Ext.bind(function(button) {
-                                    if (button == "yes")
-                                        this.delete_record();
-                                }, this)
-                            });
-                        }
-                    }
-                ]
+                tbar: me.applyPermissions(formToolbar)
             }
         };
 
@@ -268,54 +224,40 @@ Ext.define("NOC.core.ModelApplication", {
 
         // Initialize component
         me.callParent(arguments);
+        me.currentRecord = null;
         // Create shortcuts
-        var grid = me.items.items[0],
-            form = me.down("form"),
-            grid_toolbar = grid.dockedItems.items[1],
-            form_toolbar = form.dockedItems.first();
-        me.grid_toolbar = grid_toolbar;
-        me.create_button = grid_toolbar.getComponent("create");
-        me.save_button = form_toolbar.getComponent("save");
-        me.reset_button = form_toolbar.getComponent("reset");
-        me.delete_button = form_toolbar.getComponent("delete");
-        // Request permissions
-        Ext.Ajax.request({
-            method: "GET",
-            url: this.base_url + "permissions/",
-            scope: me,
-            success: function(response) {
-                var permissions = Ext.decode(response.responseText);
-                this.set_permissions(permissions);
-            }});
-    },
-    // Add shortcuts references
-    afterRender: function() {
-        var me = this;
-        me.callParent(arguments);
-        me.grid = me.down("gridpanel");
+        var grid = me.getComponent("grid"),
+            form = me.getComponent("form").items.first(),
+            gt = grid.dockedItems.items[1],
+            ft = form.dockedItems.first();
+        me.grid = grid;
+        me.form = form.getForm();
         me.store = me.grid.store;
-        me.form = me.down("form").getForm();
-        me.grid_toolbar = me.grid.dockedItems.items[1];
-
-        //var gridpanel = this.items.items[0];
-        if(me.search) {
-            me.search_field = me.grid_toolbar.getComponent("search_field");
-        }
+        me.search_field = gt.getComponent("search_field");
+        me.create_button = gt.getComponent("create");
+        me.saveButton = ft.getComponent("save");
+        me.resetButton = ft.getComponent("reset");
+        me.deleteButton = ft.getComponent("delete");
+        me.formTitle = form.getComponent("form_title");
     },
     // Toggle Grid/Form
     toggle: function() {
         // swap items. Because 'fit' layout accept only 1 item
-        var me = this,
-            tmp = me.items.items[0];
-        me.items.items[0] = this.items.items[1];
-        me.items.items[1] = tmp;
-
+        var me = this;
+        me.items.items = [me.items.last(), me.items.first()];
+        // Apply changes to form toolbar
+        if(me.items.first().itemId === "form") {
+            // Switched to form
+            console.log("Switched to form");
+        }
+        // Layout
         me.doLayout();
         me.doComponentLayout();
     },
     // Save changed data
-    save_record: function(data) {
-        var mv = Ext.create(this.model, data).validate();
+    saveRecord: function(data) {
+        var me = this,
+            mv = Ext.create(this.model, data).validate();
 
         if(!mv.isValid()) {
             // @todo: Error report
@@ -323,90 +265,145 @@ Ext.define("NOC.core.ModelApplication", {
         }
         if (data["id"]) {
             // Change
-            var record = this.grid.getSelectionModel().getLastSelected();
+            var record = me.grid.getSelectionModel().getLastSelected();
             record.set(data);
-            this.store.sync();
+            me.store.sync();
         } else {
             // Create
-            this.store.insert(0, [data]);
-            this.store.sync();
+            me.store.insert(0, [data]);
+            me.store.sync();
         }
-        this.toggle();
+        me.toggle();
     },
-    // Set application permissions
-    set_permissions: function(permissions) {
-        // Set read permission
-        this.can_read = permissions.indexOf("read") >= 0;
-        // Set create permission
-        this.can_create = permissions.indexOf("create") >= 0;
-        this.create_button.setDisabled(!this.can_create);
-        // Set update permission
-        this.can_update = permissions.indexOf("update") >= 0;
-        // Set delete permission
-        this.can_delete = permissions.indexOf("delete") >= 0;
+    // Show Form
+    onEditRecord: function(view, record) {
+        var me = this.up("panel");
+        // Check permissions
+        if (!me.hasPermission("read") && !me.hasPermission("update"))
+            return;
+        me.editRecord(record);
     },
     // New record. Hide grid and open form
-    new_record: function(defaults) {
+    onNewRecord: function(defaults) {
         var me = this;
         me.form.reset();
         if(defaults) {
             me.form.setValues(defaults);
         }
-        console.log(me.title);
+        me.currentRecord = null;
+        me.setFormTitle(me.createTitle);
         me.toggle();
         me.form.getFields().first().focus(false, 100);
         // Activate delete button
-        me.delete_button.setDisabled(true);
-        me.save_button.setDisabled(!this.can_create);
-        me.reset_button.setDisabled(!this.can_create);
+        me.deleteButton.setDisabled(true);
+        me.saveButton.setDisabled(!me.hasPermission("create"));
+        me.resetButton.setDisabled(!me.hasPermission("create"));
     },
     // Edit record. Hide grid and open form
-    edit_record: function(record) {
+    editRecord: function(record) {
+        var me = this;
+        me.currentRecord = record;
+        me.setFormTitle(me.changeTitle);
         // Show edit form
-        this.toggle();
+        me.toggle();
         // Load records
-        this.form.loadRecord(record);
+        me.form.loadRecord(record);
         // Focus on first field
-        this.form.getFields().first().focus(false, 100);
+        me.form.getFields().first().focus(false, 100);
         // Activate delete button
-        this.delete_button.setDisabled(!this.can_delete);
-        this.save_button.setDisabled(!this.can_update);
-        this.reset_button.setDisabled(!this.can_update);
+        me.deleteButton.setDisabled(!me.hasPermission("delete"));
+        me.saveButton.setDisabled(!me.hasPermission("update"));
+        me.resetButton.setDisabled(!me.hasPermission("update"));
     },
     // Delete record
-    delete_record: function() {
-        var record = this.grid.getSelectionModel().getLastSelected();
-        this.store.remove(record);
-        this.store.sync();
-        this.toggle();
+    deleteRecord: function() {
+        var me = this,
+            record = me.grid.getSelectionModel().getLastSelected();
+        me.store.remove(record);
+        me.store.sync();
+        me.toggle();
     },
     // Reload store with current query
-    refresh_store: function() {
+    reloadStore: function() {
         var me = this;
-        if(me.current_query)
-            me.store.setExtraParams(me.current_query);
+        if(me.currentQuery)
+            me.store.setExtraParams(me.currentQuery);
         me.store.load();
     },
     // Search
-    on_search: function() {
+    onSearch: function() {
         var me = this,
             v = me.search_field.getValue();
         if(v)
-            me.current_query["__query"] = v;
+            me.currentQuery["__query"] = v;
         else
-            delete me.current_query["__query"];
-        me.refresh_store();
+            delete me.currentQuery["__query"];
+        me.reloadStore();
     },
     // Filter
-    on_filter: function() {
+    onFilter: function() {
         var me = this,
             fexp = {};
         Ext.each(me.filter_getters, function(g) {
             fexp = Ext.Object.merge(fexp, g());
         });
-        if(me.current_query["__query"])
-            fexp["__query"] = me.current_query["__query"];
-        me.current_query = fexp;
-        me.refresh_store();
+        if(me.currentQuery["__query"])
+            fexp["__query"] = me.currentQuery["__query"];
+        me.currentQuery = fexp;
+        me.reloadStore();
+    },
+    // Save button pressed
+    onSave: function() {
+        var me = this;
+        if(!me.form.isValid())
+            return;
+        var v = this.form.getFieldValues();
+        // Fetch comboboxes labels
+        me.form.getFields().each(function(field) {
+            if(Ext.isDefined(field.getLookupData))
+                v[field.name + "__label"] = field.getLookupData();
+        });
+        me.saveRecord(v);
+    },
+    // Reset button pressed
+    onReset: function() {
+        this.form.reset();
+    },
+    // Delete button pressed
+    onDelete: function() {
+        var me = this;
+        Ext.Msg.show({
+            title: "Delete record?",
+            msg: "Do you wish to delete record? This operation cannot be undone!",
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.window.MessageBox.QUESTION,
+            modal: true,
+            fn: function(button) {
+                if (button == "yes")
+                    me.deleteRecord();
+            }
+        });
+    },
+    // Form hotkeys processing
+    onFormSpecialKey: function(field, key) {
+        var me = this;
+        if (field.xtype != "textfield")
+            return;
+        switch(key.getKey()) {
+            case Ext.EventObject.ENTER:
+                key.stopEvent();
+                me.onSave();
+                break;
+            case Ext.EventObject.ESC:
+                key.stopEvent();
+                me.onReset();
+                break;
+        }
+    },
+    // Set form title
+    setFormTitle: function(tpl) {
+        var me = this;
+        console.log("SET ", tpl, me.formTitle);
+        me.formTitle.html = Ext.String.format(tpl, me.appTitle);
     }
 });
