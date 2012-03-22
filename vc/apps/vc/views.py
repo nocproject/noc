@@ -35,6 +35,11 @@ class VCApplication(ExtModelApplication):
             "map_script": "get_vlans",
             "timeout": 120,
             "access": "import"
+        },
+        "set_switchport": {
+            "map_script": "set_switchport",
+            "timeout": 120,
+            "access": "set_untagged"
         }
     }
 

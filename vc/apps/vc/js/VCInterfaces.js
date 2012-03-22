@@ -25,7 +25,7 @@ Ext.define("NOC.vc.vc.VCInterfaces", {
             tpl = new Ext.XTemplate(
                 '<table border="1">',
                     // Untagged
-                    '<tr><td colspan="2" align="center"><b>Untagged interfaces</b></td></tr>',
+                    '<tr><td colspan="2">Untagged interfaces</td></tr>',
                     '<tpl for="untagged">',
                         '<tr>',
                             '<td>{managed_object_name}</td>',
@@ -33,7 +33,7 @@ Ext.define("NOC.vc.vc.VCInterfaces", {
                         '</tr>',
                     '</tpl>',
                     // Tagged
-                    '<tr><td colspan="2" align="center"><b>Tagged interfaces</b></td></tr>',
+                    '<tr><td colspan="2">Tagged interfaces</td></tr>',
                     '<tpl for="tagged">',
                         '<tr>',
                             '<td>{managed_object_name}</td>',
@@ -41,7 +41,7 @@ Ext.define("NOC.vc.vc.VCInterfaces", {
                         '</tr>',
                     '</tpl>',
                     // L3
-                    '<tr><td colspan="2" align="center"><b>L3</b></td></tr>',
+                    '<tr><td colspan="2">L3</td></tr>',
                     '<tpl for="l3">',
                         '<tr>',
                             '<td>{managed_object_name}</td>',
