@@ -96,3 +96,9 @@ NOC.info = function(msg) {
         icon: Ext.MessageBox.INFO
     });
 };
+//
+NOC.hasPermission = function(perm) {
+    return function(app) {
+        return app.hasPermission(perm);
+    }
+};
