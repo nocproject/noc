@@ -178,6 +178,10 @@ Ext.define("NOC.core.ModelApplication", {
                hasAccess: NOC.hasPermission("delete"),
                scope: me,
                handler: me.onDelete
+            },
+            {
+                xtype: "tbseparator",
+                itemId: "custom_sep"
             }
         ].concat(me.formToolbar);
 
@@ -236,6 +240,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.search_field = gt.getComponent("search_field");
         me.create_button = gt.getComponent("create");
         me.saveButton = ft.getComponent("save");
+        me.closeButton = ft.getComponent("close");
         me.resetButton = ft.getComponent("reset");
         me.deleteButton = ft.getComponent("delete");
         me.formTitle = form.getComponent("form_title");
@@ -298,6 +303,8 @@ Ext.define("NOC.core.ModelApplication", {
         me.deleteButton.setDisabled(true);
         me.saveButton.setDisabled(!me.hasPermission("create"));
         me.resetButton.setDisabled(!me.hasPermission("create"));
+        // Disable custom form toolbar
+        me.activateCustomFormToolbar(false);
     },
     // Edit record. Hide grid and open form
     editRecord: function(record) {
@@ -314,6 +321,8 @@ Ext.define("NOC.core.ModelApplication", {
         me.deleteButton.setDisabled(!me.hasPermission("delete"));
         me.saveButton.setDisabled(!me.hasPermission("update"));
         me.resetButton.setDisabled(!me.hasPermission("update"));
+        // Enable custom form toolbar
+        me.activateCustomFormToolbar(true);
     },
     // Delete record
     deleteRecord: function() {
@@ -404,5 +413,22 @@ Ext.define("NOC.core.ModelApplication", {
     setFormTitle: function(tpl) {
         var me = this;
         me.formTitle.update(Ext.String.format(tpl, me.appTitle));
+    },
+    //
+    activateCustomFormToolbar: function(status) {
+        var me = this,
+            tb = me.saveButton.ownerCt,
+            afterSep = false;
+        tb.items.each(function(i) {
+            if(afterSep) {
+                if(i.setDisabled) {
+                    i.setDisabled(!status);
+                }
+            } else {
+                if(i.itemId === "custom_sep") {
+                    afterSep = true;
+                }
+            }
+        });
     }
 });
