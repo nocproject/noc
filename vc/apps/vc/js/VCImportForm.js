@@ -20,7 +20,6 @@ Ext.define("NOC.vc.vc.VCImportForm", {
     vc_domain: null,
     vc_filter: null,
     vc_filter_expression: null,
-    app: null,
 
     initComponent: function() {
         var me = this,
@@ -74,11 +73,9 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             items: [
                                 {
                                     text: "Save",
-                                    iconCls: "icon_database_save",
+                                    iconCls: "icon_disk",
                                     scope: me,
-                                    handler: function() {
-                                        this.onSave();
-                                    }
+                                    handler: me.onSave
                                 }
                             ]
                         }

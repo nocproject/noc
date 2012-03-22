@@ -142,8 +142,7 @@ class VCApplication(ExtModelApplication):
         l1 = vc.l1
                 # Check VC domain has selector
         if not vc.vc_domain.selector:
-            return self.render(request, "interfaces.html",
-                               no_selector=True, vc=vc)
+            return [{"untagged": [], "tagged": [], "l3": []}]
         # Managed objects in selector
         objects = set(vc.vc_domain.selector.managed_objects.values_list("id",
                                                                     flat=True))

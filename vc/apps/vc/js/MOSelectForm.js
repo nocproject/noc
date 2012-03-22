@@ -15,7 +15,7 @@ Ext.define("NOC.vc.vc.MOSelectForm", {
     ],
     title: "Select Object To Import",
     autoShow: true,
-    closable: false,
+    closable: true,
     modal: true,
     app: null,
 
@@ -59,16 +59,6 @@ Ext.define("NOC.vc.vc.MOSelectForm", {
                 }
             ],
             buttons: [
-                {
-                    text: "Cancel",
-                    itemId: "reset",
-                    iconCls: "icon_cancel",
-                    scope: me,
-                    handler: function() {
-                        this.close();
-                    }
-                },
-
                 {
                     text: "Import",
                     itemId: "import",
