@@ -148,7 +148,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 itemId: "save",
                 text: "Save",
-                iconCls: "icon_accept",
+                iconCls: "icon_disk",
                 formBind: true,
                 disabled: true,
                 scope: me,
@@ -403,7 +403,6 @@ Ext.define("NOC.core.ModelApplication", {
     // Set form title
     setFormTitle: function(tpl) {
         var me = this;
-        console.log("SET ", tpl, me.formTitle);
-        me.formTitle.html = Ext.String.format(tpl, me.appTitle);
+        me.formTitle.update(Ext.String.format(tpl, me.appTitle));
     }
 });
