@@ -92,9 +92,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                             text: "Apply",
                             iconCls: "icon_tick",
                             scope: me,
-                            handler: function() {
-                                me.apply();
-                            }
+                            handler: me.applyChanges
                         }
                     ]
                 }
@@ -103,7 +101,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
         me.callParent();
     },
     // Run tasks
-    apply: function() {
+    applyChanges: function() {
         var me = this,
             mo = {};
         // Prepare data
@@ -139,17 +137,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                         configs: me.mo[o]
                     },
                     scope: me,
-                    success: function(result) {
-                        if(result.status.result.status) {
-                            // Delete all successful interfaces from store
-                        } else {
-
-                        }
-
-                        console.log("RESULT", result);
-                        delete me.mo[o];
-                        this.runTasks();
-                    },
+                    success: me.processTaskResult,
                     failure: function() {
                         NOC.error("Failed to apply VC settings");
                     }
@@ -160,5 +148,30 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
             Ext.info("All interface settings are applied successfully");
             me.close();
         }
+    },
+    // Process MRT result
+    processTaskResult: function(result) {
+        var me = this;
+        console.log(result);
+        Ext.each(result, function(r) {
+            if(r.status) {
+                // Filter out successfull objects
+                me.store.filterBy(function(record, id) {
+                    return record.get("managed_object") != r.object_id;
+                });
+            } else {
+                // Write Error Message
+                var m = r.result.text;
+                me.store.each(function(record) {
+                    if((record.get("managed_object") == r.object_id) &&
+                        record.get("interface")) {
+                        record.set("error", m);
+                    }
+                });
+            }
+            delete me.mo[r.object_id];
+        });
+        // me.runTasks();
+        console.log(me.store);
     }
 });
