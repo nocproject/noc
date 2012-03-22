@@ -30,21 +30,22 @@ Ext.define("NOC.core.LookupField", {
     },
 
     setValue: function(value) {
+        var me = this;
         if(Ext.isDefined(value)) {
-            if(this.store.loading) {
+            if(me.store.loading) {
                 // do not set value until store is loaded
-                return this;
+                return me;
             }
-            if(!this.store.data.length) {
+            if(!me.store.data.length && value) {
                 // store not ready. load
                 // @todo: check for loop
-                this.store.on(
+                me.store.on(
                     "load",
-                    Ext.bind(this.setValue, this, arguments),
+                    Ext.bind(me.setValue, me, arguments),
                     this,
                     {single: true}
                 );
-                this.store.load({
+                me.store.load({
                     params: {
                         id: value
                     }
