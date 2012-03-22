@@ -105,14 +105,30 @@ class Application(object):
         self.menu_url = None   # Set by site.autodiscover()
 
     @property
-    def launch_info(self):
+    def js_app_class(self):
+        return "NOC.main.desktop.IFramePanel"
+
+    def get_launch_info(self, user):
         """
         Return desktop launch information
         """
+        from noc.main.models import Permission
+
+        ps = self.get_app_id().replace(".", ":") + ":"
+        if user.is_superuser:
+            qs = Permission.objects
+        else:
+            qs = user.noc_user_permissions
+        perms = [p.split(":")[2] for p in
+                 qs.filter(name__startswith = ps).values_list("name",
+                                                              flat=True)]
         return {
-            "class": "NOC.main.desktop.IFramePanel",
+            "class": self.js_app_class,
             "title": unicode(self.title),
-            "params": {"url": self.menu_url}
+            "params": {
+                "url": self.menu_url,
+                "permissions": perms
+            }
         }
 
     @classmethod
@@ -422,7 +438,7 @@ class Application(object):
         task = ReduceTask.create_task(
             ManagedObjectSelector.resolve_expression(data["selector"]),
             "pyrule:mrt_result", {},
-            mc["map_script"], {},
+            mc["map_script"], data.get("map_params", {}),
             mc.get("timeout", 0)
         )
         return task.id
