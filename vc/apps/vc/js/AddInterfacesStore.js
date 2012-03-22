@@ -12,7 +12,9 @@ Ext.define("NOC.vc.vc.AddInterfacesStore", {
         "managed_object",
         "managed_object__label",
         "interface",
-        "description" /*,
+        "description",
+        "error"
+         /*,
         "tagged"  // @todo: boolean
         */
     ],
