@@ -155,7 +155,10 @@ Ext.define("NOC.vc.vc.Application", {
                             }
                         ],
                         listeners: {
-                            click: me.onImportVLANSFromSwitch
+                            click: {
+                                scope: me,
+                                fn: me.onImportVLANSFromSwitch
+                            }
                         }
                     }
                 }
@@ -227,6 +230,11 @@ Ext.define("NOC.vc.vc.Application", {
     processImportFromSwitch: function(result) {
         var me = this,
             r = result[0];
+        console.log("R", result, r);
+        if(!Ext.isDefined(r)) {
+            NOC.error("Failed to import VLANs.<br/>No result returned");
+            return;
+        }
         if(r.status) {
             // VLANS Fetched
             // r.code
@@ -258,11 +266,15 @@ Ext.define("NOC.vc.vc.Application", {
             scope: me,
             success: function(response) {
                 var r = Ext.decode(response.responseText);
-                Ext.create("NOC.vc.vc.VCInterfaces", {
-                    app: me,
-                    vc: vc,
-                    interfaces: r
-                });
+                if(!r.tagged && !r.untagged && !r.l3) {
+                    NOC.info("No interfaces found");
+                } else {
+                    Ext.create("NOC.vc.vc.VCInterfaces", {
+                        app: me,
+                        vc: vc,
+                        interfaces: r
+                    });
+                }
             },
             failure: function() {
                 NOC.error("Failed to get interfaces");
