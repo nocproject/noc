@@ -156,19 +156,22 @@ Ext.define("NOC.core.ModelApplication", {
                 handler: me.onSave
             },
             {
+                itemId: "close",
+                text: "Close",
+                iconCls: "icon_arrow_undo",
+                scope: me,
+                handler: me.toggle
+            },
+            {
+                xtype: "tbseparator",
+            },
+            {
                itemId: "reset",
                text: "Reset",
                iconCls: "icon_cancel",
                disabled: true,
                scope: me,
                handler: me.onReset
-            },
-            {
-                itemId: "close",
-                text: "Close",
-                iconCls: "icon_arrow_up",
-                scope: me,
-                handler: me.toggle
             },
             {
                itemId: "delete",
