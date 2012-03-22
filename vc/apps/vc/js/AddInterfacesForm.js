@@ -19,6 +19,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
     width: 600,
     height: 400,
     autoScroll: true,
+    layout: "fit",
 
     initComponent: function() {
         var me = this;
@@ -31,17 +32,34 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                     xtype: "gridpanel",
                     itemId: "grid",
                     store: me.store,
+                    layout: "fit",
                     columns: [
+                        {
+                            xtype: "actioncolumn",
+                            itemId: "error",
+                            width: 25,
+                            hidden: true,
+                            items: [
+                                {
+                                    icon: "/static/img/fam/silk/error.png",
+                                    sortable: false,
+                                    scope: me,
+                                    handler: me.onShowError
+                                }
+                            ]
+                        },
                         {
                             header: "Managed Object",
                             dataIndex: "managed_object",
                             editor: "sa.managedobject.LookupField",
-                            renderer: NOC.render.Lookup("managed_object")
+                            renderer: NOC.render.Lookup("managed_object"),
+                            width: 200
                         },
                         {
                             header: "Interface",
                             dataIndex: "interface",
-                            editor: "textfield"
+                            editor: "textfield",
+                            width: 100
                         },
                         {
                             header: "Description",
@@ -58,14 +76,15 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                         },*/
                         {
                             xtype: "actioncolumn",
-                            width: 20,
-                            items: [{
-                                icon: "/static/img/fam/silk/delete.png",
-                                tooltip: "Delete",
-                                handler: function(grid, rowIndex, colIndex) {
-                                    grid.getStore().removeAt(rowIndex);
+                            width: 25,
+                            items: [
+                                {
+                                    icon: "/static/img/fam/silk/delete.png",
+                                    tooltip: "Delete",
+                                    sortable: false,
+                                    handler: me.onDeleteRecord
                                 }
-                            }]
+                            ]
                         }
                     ],
                     selType: "rowmodel",
@@ -99,6 +118,8 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
             ]
         });
         me.callParent();
+        me.grid = me.getComponent("grid");
+        me.errorColumn = me.grid.dockedItems.first().getComponent("error");
     },
     // Run tasks
     applyChanges: function() {
@@ -152,7 +173,6 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
     // Process MRT result
     processTaskResult: function(result) {
         var me = this;
-        console.log(result);
         Ext.each(result, function(r) {
             if(r.status) {
                 // Filter out successfull objects
@@ -166,12 +186,24 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                     if((record.get("managed_object") == r.object_id) &&
                         record.get("interface")) {
                         record.set("error", m);
+                        me.showErrors();
                     }
                 });
             }
             delete me.mo[r.object_id];
         });
         // me.runTasks();
-        console.log(me.store);
+    },
+    onDeleteRecord: function(grid, rowIndex, colIndex) {
+        var me = this;
+        me.store.removeAt(rowIndex);
+    },
+    onShowError: function(grid, rowIndex, colIndex) {
+        var me = this,
+            error = me.store.getAt(rowIndex).get("error");
+        Ext.create("NOC.core.LogWindow", {title: "Error!", msg: error});
+    },
+    showErrors: function() {
+        this.errorColumn.show();
     }
 });
