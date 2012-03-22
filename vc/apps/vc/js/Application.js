@@ -136,7 +136,7 @@ Ext.define("NOC.vc.vc.Application", {
                     tooltip: "Add first free VC",
                     checkAccess: NOC.hasPermission("create"),
                     scope: me,
-                    handler: me.firstNewRecord
+                    handler: me.onFirstNewRecord
                 },
                 {
                     itemId: "import",
@@ -164,7 +164,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "interfaces",
                     text: "VC Interfaces",
-                    iconCls: "",
+                    iconCls: "icon_page_link",
                     tooltip: "Show VC interfaces",
                     checkAccess: NOC.hasPermission("read"),
                     scope: me,
@@ -173,7 +173,7 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     itemId: "add_interfaces",
                     text: "Add Interfaces",
-                    iconCls: "",
+                    iconCls: "icon_page_add",
                     tooltip: "Add interfaces to VC",
                     checkAccess: NOC.hasPermission("set_untagged"),
                     scope: me,
@@ -184,18 +184,9 @@ Ext.define("NOC.vc.vc.Application", {
 
         me.callParent();
     },
-    firstNewRecord: function() {
+    onFirstNewRecord: function() {
         var me = this;
-        Ext.create("NOC.vc.vc.AddFirstFreeForm", {
-            callback: Ext.bind(me.onFirstNewRecord, me),
-            renderTo: me.el
-        });
-    },
-    //
-    onFirstNewRecord: function(vc_domain, vc) {
-        var me = this;
-        console.log(vc_domain, vc);
-        me.onNewRecord({vc_domain: vc_domain, l1: vc});
+        Ext.create("NOC.vc.vc.AddFirstFreeForm", {app: me});
     },
     //
     onImportVLANSFromSwitch: function() {
