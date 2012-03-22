@@ -31,17 +31,18 @@ Ext.define("NOC.core.MRT", {
     },
     // Run new MRT
     run: function() {
-        var me = this;
+        var me = this,
+            data = {selector: me.selector};
 
+        if(me.mapParams)
+            data.map_params = me.mapParams;
         me.mask();
         if(me.fireEvent("beforetask", me) !== false ) {
             Ext.Ajax.request({
                 url: me.url,
                 method: "POST",
                 scope: me,
-                jsonData: {
-                    selector: me.selector
-                },
+                jsonData: data,
                 success: function(response) {
                     this.taskId = Ext.decode(response.responseText);
                     me.checkMRT();
