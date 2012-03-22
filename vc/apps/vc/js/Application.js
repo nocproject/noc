@@ -64,22 +64,7 @@ Ext.define("NOC.vc.vc.Application", {
         {
             text: "Tags",
             dataIndex: "tags",
-            renderer: noc_renderTags
-        },
-        {
-            xtype: "actioncolumn",
-            width: 50,
-            items: [
-                {
-                    icon: "/static/img/fam/silk/information.png",
-                    tooltip: "Show Interfaces",
-                    handler: function(grid, rowIndex, colIndex) {
-                        var me = grid.up("panel").up("panel"),
-                            vc = grid.getStore().getAt(rowIndex);
-                        me.showInterfaces(vc.data);
-                    }
-                }
-            ]
+            renderer: NOC.render.Tags
         }
     ],
     fields: [
@@ -139,59 +124,78 @@ Ext.define("NOC.vc.vc.Application", {
             ftype: "tag"
         }
     ],
-    toolbar: [
-        {
-            itemId: "create_first",
-            text: "Add First Free",
-            iconCls: "icon_application_form_add",
-            tooltip: "Add first free VC",
-            handler: function() {
-                var app = this.up("panel").up("panel");
-                app.first_new_record();
-            }
-        },
-        {
-            itemId: "import",
-            text: "Import",
-            iconCls: "icon_door_in",
-            tooltip: "Import VCs",
-            menu: {
-                xtype: "menu",
-                plain: true,
-                items: [
-                    {
-                        text: "VLANs From Switch",
-                        itemId: "vlans_from_switch",
-                        iconCls: "icon_arrow_right"
-                    }
-                ]
-            }
-        }
-    ],
     //
-    afterRender: function() {
+    initComponent: function() {
         var me = this;
-        me.callParent();
-        // Set up import menu
-        var importMenu = me.grid_toolbar.getComponent("import").menu,
-            VLANSFromSwitchItem = importMenu.getComponent("vlans_from_switch");
+        Ext.apply(me, {
+            gridToolbar: [
+                {
+                    itemId: "create_first",
+                    text: "Add First Free",
+                    iconCls: "icon_application_form_add",
+                    tooltip: "Add first free VC",
+                    checkAccess: NOC.hasPermission("create"),
+                    scope: me,
+                    handler: me.firstNewRecord
+                },
+                {
+                    itemId: "import",
+                    text: "Import",
+                    iconCls: "icon_door_in",
+                    tooltip: "Import VCs",
+                    checkAccess: NOC.hasPermission("import"),
+                    menu: {
+                        xtype: "menu",
+                        plain: true,
+                        items: [
+                            {
+                                text: "VLANs From Switch",
+                                itemId: "vlans_from_switch",
+                                iconCls: "icon_arrow_right"
+                            }
+                        ],
+                        listeners: {
+                            click: me.onImportVLANSFromSwitch
+                        }
+                    }
+                }
+            ],
+            formToolbar: [
+                {
+                    itemId: "interfaces",
+                    text: "VC Interfaces",
+                    iconCls: "",
+                    tooltip: "Show VC interfaces",
+                    checkAccess: NOC.hasPermission("read"),
+                    scope: me,
+                    handler: me.onVCInterfaces
+                },
+                {
+                    itemId: "add_interfaces",
+                    text: "Add Interfaces",
+                    iconCls: "",
+                    tooltip: "Add interfaces to VC",
+                    checkAccess: NOC.hasPermission("set_untagged"),
+                    scope: me,
+                    handler: me.onAddVCInterfaces
+                }
+            ]
+        });
 
-        VLANSFromSwitchItem.mon(VLANSFromSwitchItem, "click",
-                                me.onImportVLANSFromSwitch, me);
+        me.callParent();
     },
-    //
-    first_new_record: function() {
+    firstNewRecord: function() {
         var me = this;
         Ext.create("NOC.vc.vc.AddFirstFreeForm", {
-            callback: Ext.bind(me.on_first_new_record, me),
+            callback: Ext.bind(me.onFirstNewRecord, me),
             renderTo: me.el
         });
     },
     //
-    on_first_new_record: function(vc_domain, vc) {
+    onFirstNewRecord: function(vc_domain, vc) {
         var me = this;
         console.log(vc_domain, vc);
-        me.new_record({vc_domain: vc_domain, l1: vc});
+        me.onNewRecord({vc_domain: vc_domain, l1: vc});
     },
     //
     onImportVLANSFromSwitch: function() {
@@ -251,11 +255,12 @@ Ext.define("NOC.vc.vc.Application", {
     // Called when import complete
     onImportSuccess: function(result) {
         var me = this;
-        me.refresh_store();
+        me.reloadStore();
     },
     // Show interfaces window
-    showInterfaces: function(vc) {
-        var me = this;
+    onVCInterfaces: function() {
+        var me = this,
+            vc = me.currentRecord.data;
         Ext.Ajax.request({
             url: "/vc/vc/" + vc.id + "/interfaces/",
             method: "GET",
@@ -273,16 +278,13 @@ Ext.define("NOC.vc.vc.Application", {
             }
         });
     },
-    // Parse additional permissions
-    set_permissions: function(permissions) {
-        var me = this;
-        me.callParent([permissions]);
-        // Set import permissions
-        me.can_import = permissions.indexOf("import") >= 0;
-        var i_menu = me.grid.dockedItems.items[1].getComponent("import");
-        if(!me.can_import)
-            i_menu.hide();
-        // Set set_untagged permission
-        me.set_untagged = permissions.indexOf("set_untagged") >= 0;
+    //
+    onAddVCInterfaces: function() {
+        var me = this,
+            vc = me.currentRecord.data;
+        Ext.create("NOC.vc.vc.AddInterfacesForm", {
+            app: me,
+            vc: vc
+        });
     }
 });
