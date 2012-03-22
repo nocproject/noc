@@ -228,7 +228,7 @@ class DesktopApplication(ExtApplication):
                 raise KeyError
         except KeyError:
             return self.response_not_found()
-        return menu["app"].launch_info
+        return menu["app"].get_launch_info(request.user)
 
     @view(method=["GET"], url="^login_fields/$", access=True, api=True)
     def api_login_fields(self, request):
