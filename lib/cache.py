@@ -50,6 +50,19 @@ class Cache(object):
         """
         raise NotImplementedError
 
+    def set(self, value, *args, **kwargs):
+        key = self.get_key(*args, **kwargs)
+        c = self.get_collection()
+        c.update({"key": key},
+                {
+                    "$set": {
+                        "key": key,
+                        "value": cPickle.dumps(value),
+                        "expire": time.time() + self.ttl
+                    }
+                },
+                upsert=True)
+
     def get(self, *args, **kwargs):
         key = self.get_key(*args, **kwargs)
         c = self.get_collection()
