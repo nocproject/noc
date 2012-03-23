@@ -321,3 +321,4 @@ enable_google_satellite_maps = false
 #
 [cache]
 sa_managedobjectselector_object_ids = 60
+vc_vcinterfacescount = 3600
