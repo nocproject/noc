@@ -16,6 +16,7 @@ from noc.lib.ip import IP
 from noc.sa.interfaces import DictParameter, ModelParameter, ListOfParameter,\
     IntParameter, StringParameter
 from noc.sa.caches import managedobjectselector_object_ids
+from noc.vc.caches import vcinterfacescount
 
 
 class VCApplication(ExtModelApplication):
@@ -63,19 +64,8 @@ class VCApplication(ExtModelApplication):
             q[None] = [x]
 
     def field_interfaces_count(self, obj):
-        if not obj.vc_domain.selector:
-            return "-"
-        objects = self.get_vc_domain_objects(obj.vc_domain)
-        l1 = obj.l1
-        n = SubInterface.objects.filter(
-            Q(managed_object__in=objects) &
-            (
-                Q(untagged_vlan=l1, is_bridge=True) |
-                Q(tagged_vlans=l1, is_bridge=True) |
-                Q(vlan_ids=l1)
-            )
-        ).count()
-        return str(n)
+        n = vcinterfacescount.get(obj)
+        return str(n) if n else "-"
 
     def field_prefixes(self, obj):
         if not obj.vc_domain.selector:
@@ -88,7 +78,7 @@ class VCApplication(ExtModelApplication):
             Q(managed_object__in=objects) &
             Q(vlan_ids=obj.l1) &
             (Q(is_ipv4=True) | Q(is_ipv6=True))
-        ):
+        ).only("is_ipv4", "is_ipv6", "ipv4_addresses", "ipv6_addresses"):
             if si.is_ipv4:
                 ipv4.update([IP.prefix(ip).first
                           for ip in si.ipv4_addresses])
@@ -186,6 +176,8 @@ class VCApplication(ExtModelApplication):
                "managed_object_name": o.name,
                "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
         } for o in si_objects]
+        # Update caches
+        vcinterfacescount.set(len(untagged) + len(tagged) + len(l3), vc)
         return {
             "untagged": sorted(untagged,
                                key=lambda x: x["managed_object_name"]),
