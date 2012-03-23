@@ -15,6 +15,7 @@ from noc.inv.models import SubInterface, Q
 from noc.lib.ip import IP
 from noc.sa.interfaces import DictParameter, ModelParameter, ListOfParameter,\
     IntParameter, StringParameter
+from noc.sa.caches import managedobjectselector_object_ids
 
 
 class VCApplication(ExtModelApplication):
@@ -43,6 +44,9 @@ class VCApplication(ExtModelApplication):
         }
     }
 
+    def get_vc_domain_objects(self, vc_domain):
+        return managedobjectselector_object_ids.get(vc_domain.selector)
+
     def lookup_vcfilter(self, q, name, value):
         """
         Resolve __vcflter lookups
@@ -61,8 +65,7 @@ class VCApplication(ExtModelApplication):
     def field_interfaces_count(self, obj):
         if not obj.vc_domain.selector:
             return "-"
-        objects = set(obj.vc_domain.selector.managed_objects.values_list("id",
-                                                                    flat=True))
+        objects = self.get_vc_domain_objects(obj.vc_domain)
         l1 = obj.l1
         n = SubInterface.objects.filter(
             Q(managed_object__in=objects) &
@@ -77,8 +80,7 @@ class VCApplication(ExtModelApplication):
     def field_prefixes(self, obj):
         if not obj.vc_domain.selector:
             return "-"
-        objects = set(obj.vc_domain.selector.managed_objects.values_list("id",
-                                                                    flat=True))
+        objects = self.get_vc_domain_objects(obj.vc_domain)
         ipv4 = set()
         ipv6 = set()
         # @todo: Exact match on vlan_ids
