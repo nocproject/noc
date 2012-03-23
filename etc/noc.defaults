@@ -316,3 +316,8 @@ enable_osm_maps = true
 enable_google_roadmap_maps = false
 # Enable Google Sattelite external maps
 enable_google_satellite_maps = false
+#
+# Cache settings
+#
+[cache]
+sa_managedobjectselector_object_ids = 60
