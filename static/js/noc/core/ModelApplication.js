@@ -81,7 +81,7 @@ Ext.define("NOC.core.ModelApplication", {
                 tooltip: "Add new record",
                 hasAccess: NOC.hasPermission("create"),
                 scope: me,
-                handler: me.onNewRecord
+                handler: function() {me.onNewRecord();}
             }
         ].concat(me.gridToolbar);
         // Initialize panels
@@ -271,7 +271,7 @@ Ext.define("NOC.core.ModelApplication", {
             // @todo: Error report
             return;
         }
-        if (data["id"]) {
+        if (data.id) {
             // Change
             var record = me.grid.getSelectionModel().getLastSelected();
             record.set(data);
