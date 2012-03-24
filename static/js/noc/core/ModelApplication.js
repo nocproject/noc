@@ -87,7 +87,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Initialize panels
         // Filters
         var grid_rbar = null;
-        me.filter_getters = [];
+        me.filterGetters = [];
         if(me.filters) {
             var fh = Ext.bind(me.onFilter, me);
             grid_rbar = {
@@ -109,7 +109,7 @@ Ext.define("NOC.core.ModelApplication", {
                     });
                     var fg = Ext.create(ft, fc);
                     fg.handler = fh;
-                    me.filter_getters = me.filter_getters.concat(
+                    me.filterGetters = me.filterGetters.concat(
                         Ext.bind(fg.getFilter, fg)
                     );
                     return fg;
@@ -339,7 +339,7 @@ Ext.define("NOC.core.ModelApplication", {
     reloadStore: function() {
         var me = this;
         if(me.currentQuery)
-            me.store.setExtraParams(me.currentQuery);
+            me.store.setFilterParams(me.currentQuery);
         me.store.load();
     },
     // Search
@@ -356,7 +356,7 @@ Ext.define("NOC.core.ModelApplication", {
     onFilter: function() {
         var me = this,
             fexp = {};
-        Ext.each(me.filter_getters, function(g) {
+        Ext.each(me.filterGetters, function(g) {
             fexp = Ext.Object.merge(fexp, g());
         });
         if(me.currentQuery["__query"])
