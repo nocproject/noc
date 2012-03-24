@@ -8,7 +8,7 @@ console.debug("Defining NOC.core.ModelStore");
 
 Ext.define("NOC.core.ModelStore", {
     extend: "Ext.data.Store",
-    extraParams: undefined,
+    filterParams: undefined,
 
     initComponent: function() {
         var me = this;
@@ -26,15 +26,15 @@ Ext.define("NOC.core.ModelStore", {
         me.callParent();
     },
 
-    setExtraParams: function(config) {
+    setFilterParams: function(config) {
         var me = this;
-        me.extraParams = config;
+        me.filterParams = Ext.Object.merge({}, config);
     },
 
     load: function(config) {
-        var me = this,
-            config = Ext.Object.merge({
-                params: me.extraParams
+        var me = this;
+        config = Ext.Object.merge({
+                params: Ext.Object.merge({}, me.filterParams)
             }, config);
         // Override callback
         // @todo: Call original callback
