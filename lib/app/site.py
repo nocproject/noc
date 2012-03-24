@@ -96,6 +96,8 @@ class Site(object):
         self.testing_mode = hasattr(settings, "IS_TEST")
         self.log_api_calls = (config.has_option("main", "log_api_calls") and
                               config.getboolean("main", "log_api_calls"))
+        self.log_sql_statements = config.getboolean("main",
+                                                    "log_sql_statements")
 
     @property
     def urls(self):
@@ -220,6 +222,12 @@ class Site(object):
                                                     request.path, a))
                 # Call handler
                 r = v(request, *args, **kwargs)
+                # Dump SQL statements
+                if self.log_sql_statements:
+                    from django.db import connections
+                    for conn in connections.all():
+                        for q in conn.queries:
+                            logging.debug("SQL %(sql)s %(time)ss" % q)
             except PermissionDenied, why:
                 return HttpResponseForbidden(why)
             except Http404, why:
