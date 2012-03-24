@@ -16,6 +16,7 @@ import cPickle
 import time
 import types
 import re
+from collections import defaultdict
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -934,16 +935,13 @@ class ReduceTask(models.Model):
         r_task.save()
         # Caculate number of generations
         pc = {}  # Pool capabilities: activator id -> caps
-        ngs = {}  # pool_id -> sessions requested
+        ngs = defaultdict(int)  # pool_id -> sessions requested
         for o in objects:
             n = len(msp)
             a_id = o.activator.id
             if a_id not in pc:
                 pc[a_id] = o.activator.capabilities
-            try:
-                ngs[a_id] += n
-            except KeyError:
-                ngs[a_id] = n
+            ngs[a_id] += n
         for p in ngs:
             ms = pc[p]["max_scripts"]
             if ms:
@@ -953,19 +951,20 @@ class ReduceTask(models.Model):
         # Run map task for each object
         for o in objects:
             ng = ngs[o.activator.id]
-            if not ng and o.profile_name != "NOC.SAE":
-                # No sessions available
-                continue
+            no_sessions = not ng and o.profile_name != "NOC.SAE"
             for ms, p in msp:
                 # Set status to "F" if script not found
-                status = "W" if ms in o.profile.scripts else "F"
+                if no_sessions or ms not in o.profile.scripts:
+                    status = "F"
+                else:
+                    status = "W"
                 # Build full map script name
                 msn = "%s.%s" % (o.profile_name, ms)
                 # Expand parameter, if callable
                 if callable(p):
                     p = p(o)
                 # Redistribute tasks
-                if ng == 1:
+                if ng <= 1:
                     delay = 0
                 else:
                     delay = random.randint(0, min(ng * 3, timeout / 2))
@@ -979,8 +978,12 @@ class ReduceTask(models.Model):
                     status=status
                 )
                 if status == "F":
-                    m.script_result = dict(code=ERR_INVALID_SCRIPT, 
-                                         text="Invalid script %s" % msn)
+                    if no_sessions:
+                        m.script_result = dict(code=ERR_ACTIVATOR_NOT_AVAILABLE,
+                                               text="Activator pool is down")
+                    else:
+                        m.script_result = dict(code=ERR_INVALID_SCRIPT,
+                                               text="Invalid script %s" % msn)
                 m.save()
         return r_task
     
