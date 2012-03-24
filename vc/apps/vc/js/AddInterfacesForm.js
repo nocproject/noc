@@ -59,6 +59,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                             header: "Interface",
                             dataIndex: "interface",
                             editor: "textfield",
+                            itemId: "interface",
                             width: 100
                         },
                         {
@@ -90,7 +91,13 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                     selType: "rowmodel",
                     plugins: [
                         Ext.create("Ext.grid.plugin.RowEditing", {
-                            clicksToEdit: 1
+                            clicksToEdit: 1,
+                            listeners: {
+                                edit: {
+                                    scope: me,
+                                    fn: me.onRowEdit
+                                }
+                            }
                         })
                     ],
                     listeners: {
@@ -145,29 +152,44 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
         }, me);
         // Run tasks
         me.mo = mo;
+        console.log(mo);
         me.runTasks();
     },
     runTasks: function() {
-        var me = this;
-        if(me.mo) {
-            for(var o in me.mo) {
-                NOC.mrt({
-                    url: "/vc/vc/mrt/set_switchport/",
-                    selector: o,
-                    mapParams: {
-                        configs: me.mo[o]
-                    },
-                    scope: me,
-                    success: me.processTaskResult,
-                    failure: function() {
-                        NOC.error("Failed to apply VC settings");
-                    }
-                });
-                break;
+        var me = this,
+            stopped = true;
+        console.log("runTasks", me.store);
+        for(var o in me.mo) {
+            NOC.mrt({
+                url: "/vc/vc/mrt/set_switchport/",
+                selector: o,
+                mapParams: {
+                    configs: me.mo[o]
+                },
+                scope: me,
+                success: me.processTaskResult,
+                failure: function() {
+                    NOC.error("Failed to apply interface settings");
+                }
+            });
+            stopped = false;
+            break;
+        }
+        console.log(stopped);
+        if(stopped) {
+            console.log("Stopped", me.store);
+            var success = true;
+            me.store.each(function(r) {
+                if(r.get("interface"))
+                    success = false;
+            });
+            if(success) {
+                NOC.info("All interface settings has been applied successfully");
+                me.close();
+            } else {
+                NOC.error("Failed to apply some interfaces settings");
+                me.showErrors();
             }
-        } else {
-            Ext.info("All interface settings are applied successfully");
-            me.close();
         }
     },
     // Process MRT result
@@ -176,9 +198,11 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
         Ext.each(result, function(r) {
             if(r.status) {
                 // Filter out successfull objects
-                me.store.filterBy(function(record, id) {
+                me.store.filterBy(function(record) {
                     return record.get("managed_object") != r.object_id;
                 });
+                // dirty hack to apply filter permanently
+                delete me.store.snapshot;
             } else {
                 // Write Error Message
                 var m = r.result.text;
@@ -192,7 +216,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
             }
             delete me.mo[r.object_id];
         });
-        // me.runTasks();
+        me.runTasks();
     },
     onDeleteRecord: function(grid, rowIndex, colIndex) {
         var me = this;
@@ -205,5 +229,17 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
     },
     showErrors: function() {
         this.errorColumn.show();
+    },
+    onRowEdit: function(editor) {
+        var me = this,
+            r = editor.record;
+        r.commit();
+        if(me.store.last() == r) {
+            me.store.add({
+                managed_object: r.get("managed_object"),
+                managed_object__label: r.get("managed_object__label")
+            });
+            // editor.startEdit(me.store.last(), me.grid.columns[2]);
+        }
     }
 });

@@ -18,16 +18,5 @@ Ext.define("NOC.vc.vc.AddInterfacesStore", {
         "tagged"  // @todo: boolean
         */
     ],
-    data: [{}],
-    listeners: {
-        update: function(store, record, operation, opts) {
-            if(store.last() == record) {
-                console.log("X");
-                store.add({
-                    managed_object: record.get("managed_object"),
-                    managed_object__label: record.get("managed_object__label")
-                });
-            }
-        }
-    }
+    data: [{}]
 });
