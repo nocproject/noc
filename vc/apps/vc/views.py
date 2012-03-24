@@ -177,7 +177,11 @@ class VCApplication(ExtModelApplication):
                "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
         } for o in si_objects]
         # Update caches
-        vcinterfacescount.set(len(untagged) + len(tagged) + len(l3), vc)
+        ic = sum(len(x["interfaces"]) for x in untagged)
+        ic += sum(len(x["interfaces"]) for x in tagged)
+        ic += sum(len(x["interfaces"]) for x in l3)
+        vcinterfacescount.set(ic, vc)
+        #
         return {
             "untagged": sorted(untagged,
                                key=lambda x: x["managed_object_name"]),
