@@ -12,9 +12,11 @@ Ext.define("NOC.core.LogWindow", {
     closable: true,
     maximizable: true,
     modal: true,
-    msg: null,
+    msg: "",
     layout: "fit",
     padding: 4,
+    minHeight: 400,
+    minWidth: 600,
 
     initComponent: function() {
         var me = this;
