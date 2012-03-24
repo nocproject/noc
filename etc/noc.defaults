@@ -49,6 +49,8 @@ installed_apps =
 crashinfo_limit = 1000000
 # Log REST API calls and input parameters
 log_api_calls = false
+# Log SQL statements
+log_sql_statements = false
 
 [database]
 # postgresql_psycopg2
