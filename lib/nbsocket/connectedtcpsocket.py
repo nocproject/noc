@@ -29,10 +29,10 @@ class ConnectedTCPSocket(TCPSocket):
 
     """
     def __init__(self, factory, address, port, local_address=None):
-        super(ConnectedTCPSocket, self).__init__(factory)
         self.address = address
         self.port = port
         self.local_address = local_address
+        super(ConnectedTCPSocket, self).__init__(factory)
 
     def create_socket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
