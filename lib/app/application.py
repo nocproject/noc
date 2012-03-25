@@ -435,10 +435,12 @@ class Application(object):
             return self.response_bad_request("'selector' is missed")
         # Run MRT
         mc = self.mrt_config[name]
+        map_params = data.get("map_params", {})
+        map_params = dict((str(k), v) for k, v in map_params.iteritems())
         task = ReduceTask.create_task(
             ManagedObjectSelector.resolve_expression(data["selector"]),
             "pyrule:mrt_result", {},
-            mc["map_script"], data.get("map_params", {}),
+            mc["map_script"], map_params,
             mc.get("timeout", 0)
         )
         return task.id
