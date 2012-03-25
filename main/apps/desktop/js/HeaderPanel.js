@@ -38,7 +38,7 @@
             }),
             {
                 xtype: "container",
-                html: "NOC: ",
+                html: "NOC:&nbsp;",
                 style: {
                     fontSize: "18px",
                     fontWeight: "bold"
