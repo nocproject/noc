@@ -10,22 +10,28 @@ Ext.define("NOC.fm.oidalias.Application", {
     extend: "NOC.core.ModelApplication",
     uses: ["NOC.fm.oidalias.Model"],
     model: "NOC.fm.oidalias.Model",
+    search: true,
     columns: [
         {
             text: "Rewrite OID",
-            dataIndex: "rewrite_oid"
+            dataIndex: "rewrite_oid",
+            width: 200
         },
         {
             text: "To OID",
-            dataIndex: "to_oid"
+            dataIndex: "to_oid",
+            width: 200
         },
         {
             text: "Is Builtin",
-            dataIndex: "is_builtin"
+            dataIndex: "is_builtin",
+            renderer: NOC.render.Bool,
+            width: 50
         },
         {
             text: "Description",
-            dataIndex: "description"
+            dataIndex: "description",
+            flex: 1
         }
     ],
     fields: [
@@ -53,6 +59,13 @@ Ext.define("NOC.fm.oidalias.Application", {
             xtype: "textfield",
             fieldLabel: "description",
             allowBlank: true
+        }
+    ],
+    filters: [
+        {
+            title: "By Is Builtin",
+            name: "is_builtin",
+            ftype: "boolean"
         }
     ]
 });
