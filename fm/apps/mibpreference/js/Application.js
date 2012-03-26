@@ -19,12 +19,14 @@ Ext.define("NOC.fm.mibpreference.Application", {
         },
         {
             text: "Pref.",
-            dataIndex: "preference"
+            dataIndex: "preference",
+            width: 100
         },
         {
             text: "Builtin",
             dataIndex: "is_builtin",
-            renderer: noc_renderBool
+            renderer: noc_renderBool,
+            width: 50
         }
     ],
     fields: [
@@ -44,6 +46,13 @@ Ext.define("NOC.fm.mibpreference.Application", {
             name: "is_builtin",
             xtype: "checkboxfield",
             boxLabel: "Builtin"
+        }
+    ],
+    filters: [
+        {
+            title: "By Is Builtin",
+            name: "is_builtin",
+            ftype: "boolean"
         }
     ]
 });
