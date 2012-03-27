@@ -25,9 +25,9 @@ Ext.define("NOC.main.pyrule.Application", {
 
         {
             dataIndex: "is_builtin",
-            text: "Is Builtin",
-            renderer: noc_renderBool,
-            width: 70
+            text: "Builtin",
+            renderer: NOC.render.Bool,
+            width: 50
         }
     ],
     fields: [
@@ -56,6 +56,7 @@ Ext.define("NOC.main.pyrule.Application", {
             fieldLabel: "Text",
             allowBlank: false,
             anchor: "100%",
+            height: 200,
             fieldStyle: {
                 fontFamily: "Courier"
             }
@@ -64,6 +65,13 @@ Ext.define("NOC.main.pyrule.Application", {
             name: "is_builtin",
             xtype: "checkboxfield",
             boxLabel: "Is Builtin"
+        }
+    ],
+    filters: [
+        {
+            title: "By Is Builtin",
+            name: "is_builtin",
+            ftype: "boolean"
         }
     ]
 });
