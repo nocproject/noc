@@ -8,7 +8,10 @@ console.debug("Defining NOC.main.pyrule.Application");
 
 Ext.define("NOC.main.pyrule.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.main.pyrule.Model"],
+    requires: [
+        "NOC.main.pyrule.Model",
+        "NOC.main.ref.interface.LookupField"
+    ],
     model: "NOC.main.pyrule.Model",
     search: true,
     columns: [
@@ -39,7 +42,7 @@ Ext.define("NOC.main.pyrule.Application", {
         },
         {
             name: "interface",
-            xtype: "textfield",
+            xtype: "main.ref.interface.LookupField",
             fieldLabel: "Interface",
             allowBlank: false
         },
