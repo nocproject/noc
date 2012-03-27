@@ -169,9 +169,8 @@ class ORParameter(Parameter):
             return self.left.script_clean_result(profile, value)
         except InterfaceTypeError:
             return self.right.script_clean_result(profile, value)
-##
-##
-##
+
+
 class NoneParameter(Parameter):
     """
     >>> NoneParameter().clean(None)
@@ -182,13 +181,13 @@ class NoneParameter(Parameter):
     """
     def __init__(self, required=True):
         super(NoneParameter, self).__init__(required=required)
+
     def clean(self, value):
         if value is not None:
             self.raise_error(value)
         return value
-##
-##
-##
+
+
 class StringParameter(Parameter):
     """
     >>> StringParameter().clean("Test")
@@ -1059,6 +1058,38 @@ class OIDParameter(Parameter):
         return value
 
 
+class RDParameter(Parameter):
+    def clean(self, value):
+        """
+        >>> RDParameter().clean("100:4294967295")
+        '100:4294967295'
+        >>> RDParameter().clean("10.10.10.10:10")
+        '10.10.10.10:10'
+        """
+        try:
+            l, r = value.split(":")
+            r = long(r)
+        except ValueError:
+            self.raise_error(value)
+        if "." in l:
+            # IP:N
+            try:
+                l = IPv4Parameter().clean(l)
+            except InterfaceTypeError:
+                self.raise_error(value)
+            if r < 0 or r > 65535:
+                self.raise_error(value)
+        else:
+            # ASN:N
+            try:
+                l = int(l)
+            except ValueError:
+                self.raise_error(value)
+            if l < 0 or l > 65535 or r < 0 or r > 0xFFFFFFFFL:
+                self.raise_error(value)
+        return "%s:%s" % (l,r)
+
+
 class GeoPointParameter(Parameter):
     """
     >>> GeoPointParameter().clean([180, 90])
@@ -1121,6 +1152,7 @@ class ModelParameter(Parameter):
 ## Stub for interface registry
 interface_registry = {}
 
+
 class InterfaceBase(type):
     def __new__(cls, name, bases, attrs):
         m = type.__new__(cls, name, bases, attrs)
@@ -1143,10 +1175,11 @@ class Interface(object):
         for n, p in self.__class__.__dict__.items():
             if issubclass(p.__class__, Parameter) and n not in ("returns", "template"):
                 yield (n, p)
-    ##
-    ## Clean up all parameters except "returns"
-    ##
+
     def clean(self, __profile=None, **kwargs):
+        """
+        Clean up all parameters except "returns"
+        """
         in_kwargs = kwargs.copy()
         out_kwargs = {}
         for n, p in self.gen_parameters():
@@ -1181,13 +1214,10 @@ class Interface(object):
         except AttributeError:
             return result  # No return result restriction
         return rp.clean(result)
-    ##
-    ## Clean up script input
-    ##
+
     def script_clean_input(self, __profile, **kwargs):
         return self.clean(__profile, **kwargs)
     
-    ##
     def script_clean_result(self, __profile, result):
         try:
             rp = self.returns
@@ -1195,13 +1225,9 @@ class Interface(object):
             return result
         return rp.script_clean_result(__profile, result)
     
-    ##
-    ## Clean result to render via template
-    ##
     def template_clean_result(self, __profile, result):
         return result
     
-    ##
     def requires_input(self):
         for n, p in self.gen_parameters():
             return True
