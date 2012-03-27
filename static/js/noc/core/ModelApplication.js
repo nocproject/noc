@@ -191,7 +191,7 @@ Ext.define("NOC.core.ModelApplication", {
         var form_panel = {
             xtype: 'container',
             itemId: "form",
-            layout: 'anchor',
+            layout: "fit",
             items: {
                 xtype: 'form',
                 border: true,
@@ -256,7 +256,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Apply changes to form toolbar
         if(me.items.first().itemId === "form") {
             // Switched to form
-            console.log("Switched to form");
+            // console.log("Switched to form");
         }
         // Layout
         me.doLayout();
