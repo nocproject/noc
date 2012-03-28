@@ -32,6 +32,12 @@ Ext.define("NOC.ip.vrfgroup.Application", {
             }
         },
         {
+            text: "VRFs",
+            dataIndex: "vrf_count",
+            sortable: false,
+            width: 50
+        },
+        {
             text: "Description",
             dataIndex: "description",
             flex: 1

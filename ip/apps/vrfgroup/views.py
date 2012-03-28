@@ -19,3 +19,6 @@ class VRFGroupApplication(ExtModelApplication):
     menu = "Setup | VRF Groups"
     model = VRFGroup
     query_condition = "icontains"
+
+    def field_vrf_count(self, obj):
+        return obj.vrf_set.count()
