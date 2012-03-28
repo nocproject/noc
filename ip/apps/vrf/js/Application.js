@@ -122,5 +122,23 @@ Ext.define("NOC.ip.vrf.Application", {
             fieldLabel: "Allocated till",
             allowBlank: true
         }
+    ],
+    filters: [
+        {
+            title: "By VRF Group",
+            name: "vrf_group",
+            ftype: "lookup",
+            lookup: "ip.vrfgroup"
+        },
+        {
+            title: "By IPv4",
+            name: "afi_ipv4",
+            ftype: "boolean"
+        },
+        {
+            title: "By IPv6",
+            name: "afi_ipv6",
+            ftype: "boolean"
+        }
     ]
 });
