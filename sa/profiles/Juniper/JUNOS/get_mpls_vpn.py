@@ -18,8 +18,9 @@ class Script(NOCScript):
     implements = [IGetMPLSVPN]
 
     rx_ri = re.compile(r"(?P<name>\S+?):\n"
+                       r"(?:  Description: (?P<description>.+?)\n)?"
                        r"  Router ID: \S+\n"
-                       r"  Type: (?P<type>\S+)\s+State:\s+(?P<status>Active|Inactive)\s*\n"
+                       r"  Type: (?P<type>\S+)\s+\S+\s+State:\s+(?P<status>Active|Inactive)\s*\n"
                        r"  Interfaces:\n"
                        r"(?P<ifaces>(?:    \S+\n)*)"
                        r"  Route-distinguisher: (?P<rd>\S+)",
@@ -43,11 +44,15 @@ class Script(NOCScript):
                           for x in match.group("ifaces").splitlines()]
             interfaces = [x for x in interfaces
                           if x and not x.startswith("lsi.")]
-            vpns += [{
+            vpn = {
                 "type": self.type_map[rt],
                 "status": match.group("status").lower() == "active",
                 "name": name,
                 "rd": match.group("rd"),
                 "interfaces": interfaces
-            }]
+            }
+            description = match.group("description")
+            if description:
+                vpn["description"] = description.strip()
+            vpns += [vpn]
         return vpns
