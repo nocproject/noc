@@ -31,6 +31,11 @@ Ext.define("NOC.ip.vrfgroup.Model", {
         {
             name: "tags",
             type: "auto"
+        },
+        {
+            name: "vrf_count",
+            type: "int",
+            persist: false
         }
     ]
 });
