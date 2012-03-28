@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## VRF Manager
+## ip.vrf application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.ip.models import VRF
-##
-## VRF admin
-##
-class VRFAdmin(admin.ModelAdmin):
-    list_display=["rd","name","vrf_group","afi_ipv4","afi_ipv6","description"]
-    search_fields=["name","rd","description"]
-    list_filter=["afi_ipv4","afi_ipv6","vrf_group"]
-##
-## VRF application
-##
-class VRFApplication(ModelApplication):
-    model=VRF
-    model_admin=VRFAdmin
-    menu="Setup | VRFs"
+
+
+class VRFApplication(ExtModelApplication):
+    """
+    VRF application
+    """
+    title = "VRFs"
+    menu = "VRFs"
+    model = VRF
+    query_fields = ["name", "rd", "description"]
