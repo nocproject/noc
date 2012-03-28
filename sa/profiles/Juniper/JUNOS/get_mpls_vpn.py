@@ -20,7 +20,7 @@ class Script(NOCScript):
     rx_ri = re.compile(r"(?P<name>\S+?):\n"
                        r"(?:  Description: (?P<description>.+?)\n)?"
                        r"  Router ID: \S+\n"
-                       r"  Type: (?P<type>\S+)\s+\S+\s+State:\s+(?P<status>Active|Inactive)\s*\n"
+                       r"  Type: (?P<type>\S+)\s+\S*\s+State:\s+(?P<status>Active|Inactive)\s*\n"
                        r"  Interfaces:\n"
                        r"(?P<ifaces>(?:    \S+\n)*)"
                        r"  Route-distinguisher: (?P<rd>\S+)",
