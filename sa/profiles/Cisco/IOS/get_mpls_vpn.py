@@ -18,7 +18,7 @@ class Script(NOCScript):
     implements = [IGetMPLSVPN]
 
     rx_line = re.compile(r"^\s+(?P<vrf>.+?)\s+"
-                         r"(?P<rd>\S+:\S+)\s+(?P<iface>.+?)\s*$")
+                         r"(?P<rd>\S+:\S+)\s+(?P<iface>.*?)\s*$")
     rx_cont = re.compile("^\s{6,}(?P<iface>.+?)\s*$")
 
     def execute(self, **kwargs):
@@ -27,12 +27,17 @@ class Script(NOCScript):
         for l in v.splitlines():
             match = self.rx_line.match(l)
             if match:
+                iface = match.group("iface").strip()
+                if iface:
+                    interfaces = [iface]
+                else:
+                    interfaces = []
                 vpns += [{
                     "type": "VRF",
                     "status": True,
                     "name": match.group("vrf"),
                     "rd": match.group("rd"),
-                    "interfaces": [match.group("iface")]
+                    "interfaces": interfaces
                 }]
             elif vpns:
                 match = self.rx_cont.match(l)
