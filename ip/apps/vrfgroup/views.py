@@ -1,23 +1,21 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## VRFGroup Manager
+## ip.vrfgroup application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.ip.models import VRFGroup
-##
-## VRFGroup admin
-##
-class VRFGroupAdmin(admin.ModelAdmin):
-    list_display=["name","address_constraint","description"]
-    search_fields=["name","description"]
-##
-## VRFGroup application
-##
-class VRFGroupApplication(ModelApplication):
-    model=VRFGroup
-    model_admin=VRFGroupAdmin
-    menu="Setup | VRF Groups"
+
+
+class VRFGroupApplication(ExtModelApplication):
+    """
+    VRFGroup application
+    """
+    title = "VRF Groups"
+    menu = "Setup | VRF Groups"
+    model = VRFGroup
+    query_condition = "icontains"
