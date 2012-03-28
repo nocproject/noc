@@ -59,6 +59,7 @@ class Script(NOCScript):
            "Gi": "physical",    # GigabitEthernet
            "Gr": "physical",    # Group-Async
            "Lo": "loopback",    # Loopback
+           "In": "physical",    # Integrated-service-engine
            "M": "management",   # @todo: fix
            "MF": "aggregated",  # Multilink Frame Relay
            "Mf": "aggregated",  # Multilink Frame Relay
