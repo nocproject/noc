@@ -19,7 +19,7 @@ class IGetMPLSVPN(Interface):
         # Unique VPN name
         "name": StringParameter(),
         # Optional description
-        "description": StringParameter(required=False)
+        "description": StringParameter(required=False),
         # RD, may be omitted for VRF-lite
         "rd": RDParameter(required=False),
         # List of interfaces
