@@ -25,3 +25,4 @@ class IGetMPLSVPN(Interface):
         # List of interfaces
         "interfaces": ListOfParameter(element=InterfaceNameParameter())
     }))
+    template = "interfaces/igetmplsvpn.html"
