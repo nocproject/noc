@@ -12,11 +12,10 @@ from collections import defaultdict
 from noc.lib.app import ExtModelApplication, view
 from noc.vc.models import VC, VCDomain, VCFilter
 from noc.inv.models import SubInterface, Q
-from noc.lib.ip import IP
 from noc.sa.interfaces import DictParameter, ModelParameter, ListOfParameter,\
     IntParameter, StringParameter
 from noc.sa.caches import managedobjectselector_object_ids
-from noc.vc.caches import vcinterfacescount
+from noc.vc.caches import vcinterfacescount, vcprefixes
 
 
 class VCApplication(ExtModelApplication):
@@ -68,26 +67,11 @@ class VCApplication(ExtModelApplication):
         return str(n) if n else "-"
 
     def field_prefixes(self, obj):
-        if not obj.vc_domain.selector:
+        p = vcprefixes.get(obj)
+        if p:
+            return ", ".join(p)
+        else:
             return "-"
-        objects = self.get_vc_domain_objects(obj.vc_domain)
-        ipv4 = set()
-        ipv6 = set()
-        # @todo: Exact match on vlan_ids
-        for si in SubInterface.objects.filter(
-            Q(managed_object__in=objects) &
-            Q(vlan_ids=obj.l1) &
-            (Q(is_ipv4=True) | Q(is_ipv6=True))
-        ).only("is_ipv4", "is_ipv6", "ipv4_addresses", "ipv6_addresses"):
-            if si.is_ipv4:
-                ipv4.update([IP.prefix(ip).first
-                          for ip in si.ipv4_addresses])
-            if si.is_ipv6:
-                ipv6.update([IP.prefix(ip).first
-                          for ip in si.ipv6_addresses])
-        p = [str(x.first) for x in sorted(ipv4)]
-        p += [str(x.first) for x in sorted(ipv6)]
-        return p
 
     @view(url="^find_free/$", method=["GET"], access="read", api=True,
           validate={
