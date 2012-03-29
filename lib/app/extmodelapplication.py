@@ -149,7 +149,7 @@ class ExtModelApplication(ExtApplication):
         for f in data:
             if f in self.clean_fields:
                 data[f] = self.clean_fields[f].clean(data[f])
-        return data
+        return dict((str(k), data[k]) for k in data)
 
     def cleaned_query(self, q):
         nq = {}
