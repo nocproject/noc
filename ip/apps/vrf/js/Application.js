@@ -140,5 +140,77 @@ Ext.define("NOC.ip.vrf.Application", {
             name: "afi_ipv6",
             ftype: "boolean"
         }
-    ]
+    ],
+
+    initComponent: function() {
+        var me = this;
+
+        Ext.apply(me, {
+            gridToolbar: [
+                {
+                    "itemId": "import",
+                    text: "Import",
+                    iconCls: "icon_door_in",
+                    tooltip: "Import VRFs",
+                    checkAccess: NOC.hasPermission("import"),
+                    menu: {
+                        xtype: "menu",
+                        plain: true,
+                        items: [
+                            {
+                                text: "From Router",
+                                itemId: "from_router",
+                                iconCls: "icon_arrow_right"
+                            }
+                        ],
+                        listeners: {
+                            click: {
+                                scope: me,
+                                fn: me.onImportFromRouter
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+        me.callParent();
+    },
+    //
+    onImportFromRouter: function() {
+        Ext.create("NOC.ip.vrf.MOSelectForm", {app: this});
+    },
+    //
+    runImportFromRouter: function(managed_object) {
+        var me = this;
+
+        NOC.mrt({
+            url: "/ip/vrf/mrt/get_vrfs/",
+            selector: managed_object,
+            scope: me,
+            success: me.processImportFromRouter,
+            failure: function() {
+                NOC.error("Failed to import VRFs");
+            }
+        });
+    },
+    //
+    processImportFromRouter: function(result) {
+        var me = this,
+            r = result[0];
+        if(!Ext.isDefined(r)) {
+            NOC.error("Failed to import VRFs:<br/>No result returned");
+            return;
+        }
+        if(r.status) {
+            var w = Ext.create("NOC.ip.vrf.VRFImportForm", {app: me});
+            w.loadVRFsFromRouter(r.result);
+        } else {
+            NOC.error("Failed to import VRFs from {0}:<br/>{1}",
+                      r.object_name, r.result.text);
+        }
+    },
+    //
+    onImportSuccess: function() {
+        this.reloadStore();
+    }
 });
