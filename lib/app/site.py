@@ -24,7 +24,7 @@ from django.utils.simplejson.encoder import JSONEncoder
 from django.utils.encoding import smart_str
 ## NOC modules
 from noc.settings import INSTALLED_APPS, config
-from noc.lib.debug import get_traceback
+from noc.lib.debug import get_traceback, error_report
 from noc.lib.serialize import json_decode
 
 
@@ -235,7 +235,7 @@ class Site(object):
             except:
                 tb = get_traceback()
                 if to_log_api_call:
-                    logging.error(tb)
+                    error_report()
                 # Generate 500
                 r = HttpResponse(content=tb, status=500,
                                  mimetype="text/plain; charset=utf-8")
