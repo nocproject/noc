@@ -29,6 +29,8 @@ Ext.define("NOC.core.ModelStore", {
     setFilterParams: function(config) {
         var me = this;
         me.filterParams = Ext.Object.merge({}, config);
+        // Forcefully go to first page
+        me.currentPage = 1;
     },
 
     load: function(config) {
