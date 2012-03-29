@@ -91,10 +91,19 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.filters) {
             var fh = Ext.bind(me.onFilter, me);
             grid_rbar = {
-                xtype: "panel",
+                xtype: "form",
+                itemId: "filters",
                 width: 208,
                 title: "Filter",
                 padding: 4,
+                tools: [
+                    {
+                        type: "close",
+                        tooltip: "Reset filters",
+                        scope: me,
+                        handler: me.onResetFilters
+                    }
+                ],
                 items: me.filters.map(function(f) {
                     var ft = {
                         boolean: "NOC.core.modelfilter.Boolean",
@@ -247,6 +256,10 @@ Ext.define("NOC.core.ModelApplication", {
         me.resetButton = ft.getComponent("reset");
         me.deleteButton = ft.getComponent("delete");
         me.formTitle = form.getComponent("form_title");
+        if(me.filters) {
+            me.filterPanel = me.grid.getComponent("filters");
+            console.log("Filters", me.filterPanel);
+        }
     },
     // Toggle Grid/Form
     toggle: function() {
@@ -433,5 +446,11 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             }
         });
+    },
+    //
+    onResetFilters: function() {
+        var me = this;
+        me.filterPanel.getForm().reset();
+        me.onFilter();
     }
 });
