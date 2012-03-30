@@ -98,7 +98,7 @@ class Notify(object):
                 self.parent.on_task_complete(task_id, False)
                 continue
             s = {True: "OK", False: "ERROR"}[status]
-            self.info("SENDING id=%s status=%s to='%s' subject='%s'" % (
+            self.info("SENDING id=%s status=%s to=%s subject=%s" % (
                 task_id, s, params, subject))
             if status:
                 self.parent.on_task_complete(task_id, status)
