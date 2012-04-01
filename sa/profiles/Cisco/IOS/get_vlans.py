@@ -50,7 +50,7 @@ class Script(NOCScript):
     ##
     rx_vlan_dot1q = re.compile(r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):", re.MULTILINE)
 
-    @NOCScript.match(platform__regex=r"^([123][78][0-9]{2}|72[0-9]{2}|IOS-XE)")
+    @NOCScript.match(platform__regex=r"^([123][78]\d\d|72\d\d|IOS-XE)")
     def execute_vlan_switch(self):
         try:
             vlans = self.cli("show vlan-switch")
