@@ -84,3 +84,8 @@ class Cache(object):
                 },
                 upsert=True)
         return v
+
+    def refresh(self, *args, **kwargs):
+        v = self.get(*args, **kwargs)
+        self.set(v, *args, **kwargs)
+        return v
