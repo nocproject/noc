@@ -18,5 +18,5 @@ class Profile(noc.sa.profiles.Profile):
     supported_schemes = [TELNET, SSH]
     command_super = "su"
     pattern_unpriveleged_prompt = r"^\S*?(%|\$)"
-    pattern_prompt = r"^\S*?#"
+    pattern_prompt = r"^(?P<hostname>\S*)#"
     pattern_syntax_error = r": Command not found\."
