@@ -23,8 +23,8 @@ Ext.define("NOC.vc.vc.VCInterfaces", {
     initComponent: function() {
         var me = this,
             style = {
-                t_style: "border: 1px solid gray",
-                h_style: "padding: 4px; border: 1px solid gray; text-align: center; font-weight: bold",
+                t_style: "border: 1px solid gray; font-size: 10pt",
+                h_style: "padding: 4px; border: 1px solid gray; text-align: center; font-weight: bold; background-color: #e0e0e0;",
                 o_style: "font-weight: bold; padding: 4px; border: 1px solid gray",
                 i_style: "padding: 4px; border: 1px solid gray"
             },
