@@ -193,7 +193,7 @@ class Profile(object):
         return s
 
     # Cisco-like translation
-    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(\.\d+)?)?(:\d+(\.\d+)*)?)$", re.IGNORECASE)
+    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?)$", re.IGNORECASE)
 
     def convert_interface_name_cisco(self, s):
         """
