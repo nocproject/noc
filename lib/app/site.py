@@ -242,12 +242,12 @@ class Site(object):
             # Serialize response when necessary
             if not isinstance(r, HttpResponse):
                 try:
-                    return HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),
-                                        mimetype="text/json; charset=utf-8")
+                    r = HttpResponse(JSONEncoder(ensure_ascii=False).encode(r),
+                        mimetype="text/json; charset=utf-8")
                 except:
-                    return HttpResponse(get_traceback(), status=500)
-            else:
-                return r
+                    r = HttpResponse(get_traceback(), status=500)
+            r["Cache-Control"] = "no-cache"
+            return r
 
         from access import PermissionDenied
         from django.forms import Form
