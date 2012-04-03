@@ -1,5 +1,7 @@
 [main]
 debug = false
+# Load non-minified versions of js libraries, if not false
+debug_js = false
 # Comma-separated list of emails to send error reports
 admin_emails =
 # Local time zone for this installation. Choices can be found here:
