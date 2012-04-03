@@ -69,7 +69,8 @@ class DesktopApplication(ExtApplication):
             "logo_width": config.get("customization", "logo_width"),
             "logo_height": config.get("customization", "logo_height"),
             "favicon_url": favicon_url,
-            "favicon_mime": favicon_mime
+            "favicon_mime": favicon_mime,
+            "debug_js": config.getboolean("main", "debug_js")
         }
         return self.render(request, "desktop.html", apps=apps, setup=setup,
                            theme_css=self.themes[self.default_theme]["css"])
