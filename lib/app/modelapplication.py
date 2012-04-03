@@ -212,6 +212,15 @@ class ModelApplication(Application):
         return reduce(lambda x, y: x | Q(get_q(y)), self.query_fields[1:],
                       Q(**{get_q(self.query_fields[0]): query}))
 
+    def l_queryset(self, request, query=None):
+        """
+        Filter records for lookup
+        """
+        if query and self.query_fields:
+            return self.model.objects.filter(self.get_Q(request, query))
+        else:
+            return self.model.objects.all()
+
     def list_data(self, request, formatter):
         """
         Returns a list of requested object objects
@@ -230,7 +239,11 @@ class ModelApplication(Application):
                 else:
                     ordering += [r["property"]]
         q = self.cleaned_query(q)
-        data = self.l_queryset(request, query).filter(**q)
+        if None in q:
+            ew = q.pop(None)
+            data = self.l_queryset(request, query).filter(**q).extra(where=ew)
+        else:
+            data = self.l_queryset(request, query).filter(**q)
         # Apply sorting
         if ordering:
             data = data.order_by(*ordering)
@@ -248,15 +261,42 @@ class ModelApplication(Application):
         return out
 
     def cleaned_query(self, q):
-        q = q.copy()
-        for p in self.ignored_params:
-            if p in q:
-                del q[p]
-        for p in (self.limit_param, self.page_param, self.start_param,
-            self.format_param, self.sort_param, self.query_param):
-            if p in q:
-                del q[p]
-        return q
+        nq = {}
+        for p in q:
+            if "__" in p:
+                np, lt = p.split("__", 1)
+            else:
+                np, lt = p, None
+            # Skip ignored params
+            if np in self.ignored_params or p in (
+                self.limit_param, self.page_param, self.start_param,
+                self.format_param, self.sort_param, self.query_param):
+                continue
+            v = q[p]
+            # Pass through interface cleaners
+            if lt == "referred":
+                # Unroll __referred
+                app, fn = v.split("__", 1)
+                model = self.site.apps[app].model
+                extra_where = "\"%s\" IN (SELECT \"%s\" FROM %s)" % (
+                    self.model._meta.pk.name,
+                    model._meta.get_field_by_name(fn)[0].attname,
+                    model._meta.db_table
+                )
+                if None in nq:
+                    nq[None] += [extra_where]
+                else:
+                    nq[None] = [extra_where]
+                continue
+            elif lt and hasattr(self, "lookup_%s" % lt):
+                # Custom lookup
+                getattr(self, "lookup_%s" % lt)(nq, np, v)
+                continue
+            elif np in self.clean_fields:  # @todo: Check for valid lookup types
+                v = self.clean_fields[np].clean(v)
+            # Write back
+            nq[p] = v
+        return nq
 
     def l_queryset(self, request, query=None):
         """
