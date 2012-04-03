@@ -85,12 +85,18 @@ class AccessWidget(forms.Widget):
                     r+=["</ul></td><td>"]
                     # Granular access
                     if mode=="user":
-                        user_access=a.user_access_list(user)
-                        change_link=a.user_access_change_url(user)
-                        if user_access:
-                            r+=["<br/>".join(sorted(user_access))]
-                        if change_link:
-                            r+=["<br/><a href='%s'>Change...</a>"%change_link]
+                        try:
+                            user_access=a.user_access_list(user)
+                            if user_access:
+                                r+=["<br/>".join(sorted(user_access))]
+                        except:
+                            pass
+                        try:
+                            change_link=a.user_access_change_url(user)
+                            if change_link:
+                                r+=["<br/><a href='%s'>Change...</a>"%change_link]
+                        except:
+                            pass
                     elif mode=="group":
                         group_access=a.group_access_list(group)
                         change_link=a.group_access_change_url(group)
