@@ -166,9 +166,7 @@ class ExtModelApplication(ExtApplication):
             v = q[p]
             # Pass through interface cleaners
             if lt == "referred":
-                # Unroll __referrer
-                if np == "id":
-                    np = "pk"
+                # Unroll __referred
                 app, fn = v.split("__", 1)
                 model = self.site.apps[app].model
                 extra_where = "\"%s\" IN (SELECT \"%s\" FROM %s)" % (
@@ -343,7 +341,6 @@ class ExtModelApplication(ExtApplication):
             o = self.queryset(request).get(id=int(id))
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        print attrs
         for k, v in attrs.items():
             setattr(o, k, v)
         o.save()
