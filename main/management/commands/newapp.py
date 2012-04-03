@@ -36,13 +36,15 @@ class Command(BaseCommand):
 
     rx_empty = re.compile("^ +\n", re.MULTILINE)
 
-    # Model -> (Ext model type, widget)
+    # Model -> (Ext model type, widget, grid renderer)
     model_map = {
-        "CharField": ("string", "textfield"),
-        "BooleanField": ("boolean", "checkboxfield"),
-        "IntegerField": ("int", "numberfield"),
-        "TextField": ("string", "textarea"),
-        "CIDRField": ("string", "textfield")
+        "CharField": ("string", "textfield", None),
+        "BooleanField": ("boolean", "checkboxfield", "NOC.render.Bool"),
+        "IntegerField": ("int", "numberfield", None),
+        "TextField": ("string", "textarea", None),
+        "DateField": ("date", "datefield", None),
+        "CIDRField": ("string", "textfield", None),
+        "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags")
     }
 
     # Document -> Ext type maps
@@ -162,9 +164,9 @@ class Command(BaseCommand):
             tv = vars.copy()
             tv["module"] = m
             tv["app"] = a
-            tv["requires"] = ["NOC.%s.%s.Model" % (m, tv["model"].lower())]
             # Initialize model if necessary
             if tv["model"]:
+                tv["requires"] = ["NOC.%s.%s.Model" % (m, tv["model"].lower())]
                 models = __import__("noc.%s.models" % m, {}, {}, "*")
                 model = getattr(models, tv["model"])
                 if issubclass(model, Model):
