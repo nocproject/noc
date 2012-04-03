@@ -410,7 +410,7 @@ function on_mynetworks(n)
         <!-- End VC -->
         <tr class="row2">
             <td><b>Maintainers</b></td>
-            <td>{{prefix.maintainers|join:", "}} {%if can_change_maintainers %}<a href="{% url ip:prefixaccess:add %}?vrf={{vrf.id}}&afi={{prefix.afi}}&prefix={{prefix.prefix}}" class="changelink">Change...</a>{%endif%}</td>
+            <td>{{prefix.maintainers|join:", "}} {% comment %}{%if can_change_maintainers %}<a href="{% url ip:prefixaccess:add %}?vrf={{vrf.id}}&afi={{prefix.afi}}&prefix={{prefix.prefix}}" class="changelink">Change...</a>{%endif%}{% endcomment %}</td>
         </tr>
         {% for k,v in prefix_info %}
             <tr class="{%cycle 'row1' 'row2'%}"><td style="width: 10pt"><b>{{k}}</b></td><td>{{v}}</td></tr>
