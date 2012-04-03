@@ -1,0 +1,30 @@
+{% load adminmedia %}
+{% load noctags %}
+<h1>{{object.name}} ({{object.address}}) interfaces DOM status</h1>
+
+{% noctable %}
+<table>
+    <thead>
+        <tr>
+            <th>Interface</th>
+            <th>Temp<br/>C</th>
+            <th>Voltage<br/>V</th>
+            <th>Current<br/>mA</th>
+            <th>Optical RX<br/>dBm</th>
+            <th>Optical TX<br/>dBm</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in result %}
+        <tr class="{%cycle 'row1' 'row2'%}">
+            <td>{{r.interface}}</td>
+            <td>{{r.temp_c}}</td>
+            <td>{{r.voltage_v}}</td>
+            <td>{{r.current_ma}}</td>
+            <td>{{r.optical_rx_dbm}}</td>
+            <td>{{r.optical_tx_dbm}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endnoctable %}
