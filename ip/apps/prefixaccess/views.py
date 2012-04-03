@@ -1,32 +1,22 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## PrefixAccess Manager
+## ip.prefixaccess application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib import admin
 ## NOC modules
-from noc.lib.app import ModelApplication
+from noc.lib.app import ExtModelApplication, view
 from noc.ip.models import PrefixAccess
 
 
-class PrefixAccessAdmin(admin.ModelAdmin):
-    """
-    PrefixAccess admin
-    """
-    list_display = ["user", "vrf", "afi", "prefix", "can_view", "can_change"]
-    list_filter = ["user", "vrf", "can_view", "can_change"]
-    search_fields = ["user__username", "prefix"]
-
-
-class PrefixAccessApplication(ModelApplication):
+class PrefixAccessApplication(ExtModelApplication):
     """
     PrefixAccess application
     """
     title = "Prefix Access"
-    model = PrefixAccess
-    model_admin = PrefixAccessAdmin
     menu = "Setup | Prefix Access"
+    model = PrefixAccess
+    query_fields = ["user__username", "prefix"]
+    query_condition = "icontains"
