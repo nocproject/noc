@@ -32,7 +32,7 @@ class TMSApplication(ExtApplication):
         """
         return "http://%s/gis/tms/" % (request.META["HTTP_HOST"])
 
-    @view(url=r"^$", access="view", api=True)
+    @view(url=r"^$", method=["GET"], access="view", api=True)
     def api_services(self, request):
         """
         Render Services description XML
@@ -49,7 +49,7 @@ class TMSApplication(ExtApplication):
         doc.appendChild(services)
         return self.render_response(doc.toxml(), "text/xml")
 
-    @view(url="^1.0.0/$", access="view", api=True)
+    @view(url="^1.0.0/$", method=["GET"], access="view", api=True)
     def api_tms100(self, request):
         """
         Render TileMapService XML
@@ -85,7 +85,7 @@ class TMSApplication(ExtApplication):
         return self.render_response(doc.toxml(), "text/xml")
 
     @view(url=r"^1.0.0/(?P<map>[0-9a-f]{24})/(?P<zoom>\d\d?)/(?P<x>\d+)/(?P<y>\d+).png",
-          url_name="tms_tile", access="view", api=True)
+          method=["GET"], url_name="tms_tile", access="view", api=True)
     def api_tms_tile(self, request, map, zoom, x, y):
         """
         Feed pre-rendered tile (with TMS Y-axis flip)
@@ -107,7 +107,7 @@ class TMSApplication(ExtApplication):
         return self.render_tile(map, zoom, x, y)
 
     @view(url=r"^(?P<map>[0-9a-f]{24})/(?P<zoom>\d\d?)/(?P<x>\d+)/(?P<y>\d+).png",
-          url_name="tile", access="view", api=True)
+          method=["GET"], url_name="tile", access="view", api=True)
     def api_tile(self, request, map, zoom, x, y):
         """
         Feed pre-rendered tile (XYZ-style)
