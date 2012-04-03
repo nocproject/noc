@@ -423,7 +423,7 @@ class IPAMAppplication(Application):
             if form.is_valid():
                 # Create prefix
                 p = Prefix(vrf=vrf, afi=afi,
-                           prefix=form.cleaned_data["prefix"],
+                           prefix=form.cleaned_data["prefix"].strip(),
                            asn=form.cleaned_data["asn"],
                            description=form.cleaned_data["description"],
                            tags=form.cleaned_data["tags"],
