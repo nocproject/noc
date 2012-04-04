@@ -292,8 +292,6 @@ class ModelApplication(Application):
                 # Custom lookup
                 getattr(self, "lookup_%s" % lt)(nq, np, v)
                 continue
-            elif np in self.clean_fields:  # @todo: Check for valid lookup types
-                v = self.clean_fields[np].clean(v)
             # Write back
             nq[p] = v
         return nq
