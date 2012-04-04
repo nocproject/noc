@@ -23,6 +23,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt = r"^(?P<hostname>[^\n]+)(?:\(config[^)]*\))?#"
     pattern_more = [
         (r"---?More---?", " "),
+        (r"--- \[Space\] Next page, \[Enter\] Next line, \[A\] All, Others to exit ---", " "),
         (r"Startup configuration file name", "\n")
     ]
     config_volatile = ["\x08+"]
