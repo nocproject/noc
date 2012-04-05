@@ -41,6 +41,8 @@ class Script(NOCScript):
     rx_log_address = re.compile(r"^\s+Local:\s+(?P<address>\S+)", re.MULTILINE)
     rx_log_netaddress = re.compile(r"^\s+Destination: (?P<dest>\S+?),\s+Local: (?P<local>\S+?),",
         re.MULTILINE)
+    rx_log_netaddress6 = re.compile(r"^\s+Destination: (?P<dest>\S+?),[ \r\n]+Local: (?P<local>\S+?)$",
+        re.MULTILINE)
     rx_log_ae = re.compile(r"AE bundle: (?P<bundle>\S+?)\.\d+", re.MULTILINE)
 
     internal_interfaces = re.compile(r"^(lc-|cbp|demux|dsc|em|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|bme|jsrv)")
@@ -131,6 +133,16 @@ class Script(NOCScript):
                             net, addr = match.groups()
                             n, m = net.split("/")
                             si["ipv4_addresses"] += ["%s/%s" % (addr, m)]
+                    elif proto == "inet6":
+                        # Protocol IPv6
+                        si["is_ipv6"] = True
+                        si["ipv6_addresses"] = ["%s/128" % a for a in
+                                                local_addresses]
+                        # Find connected networks
+                        for match in self.rx_log_netaddress6.finditer(p):
+                            net, addr = match.groups()
+                            n, m = net.split("/")
+                            si["ipv6_addresses"] += ["%s/%s" % (addr, m)]
                     elif proto == "aenet":
                         # Aggregated
                         match = self.re_search(self.rx_log_ae, p)
@@ -162,11 +174,38 @@ class Script(NOCScript):
             # Append to collected interfaces
             iface["subinterfaces"] = subs
             interfaces += [iface]
-        return [{
-            "forwarding_instance": "default",
-            "type": "ip",
-            "interfaces": interfaces,
-            }]
+        # Process VRFs
+        vrfs = {
+            "default": {
+                "forwarding_instance": "default",
+                "type": "ip",
+                "interfaces": []
+            }
+        }
+        imap = {}  # interface -> VRF
+        try:
+            r = self.scripts.get_mpls_vpn()
+        except self.CLISyntaxError:
+            r = []
+        for v in r:
+            if v["type"] == "VRF":
+                vrfs[v["name"]] = {
+                    "forwarding_instance": v["name"],
+                    "type": "VRF",
+                    "rd": v["rd"],
+                    "interfaces": []
+                }
+                for i in v["interfaces"]:
+                    imap[i] = v["name"]
+        for i in interfaces:
+            subs = i["subinterfaces"]
+            for vrf in set(imap.get(si["name"], "default") for si in subs):
+                c = i.copy()
+                c["subinterfaces"] = [si for si in subs
+                                      if imap.get(si["name"], "default") == vrf]
+                vrfs[vrf]["interfaces"] += [c]
+        return vrfs.values()
+
 
     rx_vlan_sep = re.compile(r"^VLAN:", re.MULTILINE)
     rx_802_1Q_tag = re.compile(r"802.1Q\s+Tag:\s+(?P<tag>\d+)",
