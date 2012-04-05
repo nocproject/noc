@@ -176,6 +176,9 @@ class ManagedObject(models.Model):
             default=True)
     repo_path = models.CharField(_("Repo Path"),
             max_length=128, blank=True, null=True)
+    # Default VRF
+    vrf = models.ForeignKey("ip.VRF", verbose_name=_("VRF"),
+                            blank=True, null=True)
     # pyRules
     config_filter_rule = models.ForeignKey(PyRule,
             verbose_name="Config Filter pyRule", 

@@ -27,10 +27,13 @@ from noc.lib.fileutils import in_dir
 from noc.lib.widgets import PasswordWidget
 from noc.lib.ip import IP
 from noc.fm.models import get_object_status, ActiveAlarm, AlarmSeverity
-##
-## Validating form for managed object
-##
+from noc.inv.models import DiscoveryStatusInterface, DiscoveryStatusIP
+
+
 class ManagedObjectAdminForm(forms.ModelForm):
+    """
+    Validating form for managed object
+    """
     class Meta:
         model = ManagedObject
     
@@ -81,10 +84,13 @@ def action_links(obj):
 action_links.short_description = "Actions"
 action_links.allow_tags = True
 
-##
-## Display profile and platform
-##
+
 def profile(obj):
+    """
+    Display profile and platform
+    :param obj:
+    :return:
+    """
     r = ["<a href='?profile_name__exact=%s'>%s</a>" % (obj.profile_name, obj.profile_name)]
     p = " ".join([x for x in [obj.get_attr("vendor"), obj.get_attr("platform")] if x])
     if p:
@@ -93,10 +99,13 @@ def profile(obj):
 profile.short_description = SafeString("Profile<br/>Platform")
 profile.allow_tags = True
 
-##
-## Display object status
-##
+
 def object_status(o):
+    """
+    Display object status
+    :param o:
+    :return:
+    """
     s = []
     status = get_object_status(o)
     if status is None:
@@ -188,7 +197,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
                        "activator", "profile_name", "description")
         }),
         ("Access", {
-            "fields": ("scheme", "address", "port", "remote_path")
+            "fields": ("scheme", "address", "port", "remote_path", "vrf")
         }),
         ("Credentials", {
             "fields": ("user", "password", "super_password")
@@ -210,15 +219,15 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             "fields": ("tags",)
         }),
     )
-    list_display = ["name", object_status, alarms, profile, "address",
+    list_display = ["name", object_status, alarms, profile, "vrf", "address",
                     domain_activator,
                     "description", "repo_path", action_links]
-    list_filter = ["is_managed", "is_configuration_managed", 
+    list_filter = ["is_managed", "is_configuration_managed",
                    "activator__shard", "activator",
-                   "administrative_domain", "profile_name"]
+                   "administrative_domain", "vrf", "profile_name"]
     search_fields = ["name", "address", "repo_path", "description"]
     object_class = ManagedObject
-    actions = ["test_access", "bulk_change_activator"]
+    actions = ["test_access", "bulk_change_activator", "reschedule_discovery"]
     ##
     ## Dirty hack to display PasswordInput in admin form
     ##
@@ -267,6 +276,17 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         return self.app.response_redirect("sa:managedobject:change_activator",
                                     ",".join([str(p.id) for p in queryset]))
     bulk_change_activator.short_description = _("Change activator for selected objects")
+
+    def reschedule_discovery(self, request, queryset):
+        """
+        Reschedule interface discovery
+        """
+        self.app.message_user(request, "Interface discovery has been rescheduled")
+        for o in queryset:
+            DiscoveryStatusInterface.reschedule(o, 0, True)
+            DiscoveryStatusIP.reschedule(o, 0, True)
+        return self.app.response_redirect("sa:managedobject:changelist")
+    reschedule_discovery.short_description = _("Run interface discovery now")
 
 
 ##
@@ -373,7 +393,8 @@ class ManagedObjectApplication(ModelApplication):
                          "result": result}).encode("utf8"))
         return self.render(request, "script_result.html", object=object,
                            script=script, result=result, refresh=refresh,
-                           display_box = display_box)
+                           display_box=display_box)
+
     ##
     ## AJAX lookup
     ##
@@ -392,9 +413,9 @@ class ManagedObjectApplication(ModelApplication):
         r = []
         for mo in [ManagedObject.objects.get(id=int(x)) for x in objects.split(",")]:
             r += [{
-                  "object" : mo,
-                  "users"  : sorted([u.username for u in mo.granted_users]),
-                  "groups" : sorted([g.name for g in mo.granted_groups]),
+                  "object": mo,
+                  "users": sorted([u.username for u in mo.granted_users]),
+                  "groups": sorted([g.name for g in mo.granted_groups]),
                   }]
         return self.render(request, "test.html", data=r)
 
@@ -489,4 +510,3 @@ class ManagedObjectApplication(ModelApplication):
     def group_access_change_url(self, group):
         return self.site.reverse("sa:groupaccess:changelist",
                                  QUERY={"group__id__exact": group.id})
-
