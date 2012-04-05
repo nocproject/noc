@@ -386,7 +386,7 @@ class RPCSocket(object):
         msg = Message()
         msg.ParseFromString(data)
         # Process message
-        logging.debug("rpc_handle_message:\n%s" % msg)
+        # logging.debug("rpc_handle_message:\n%s" % msg)
         if msg.error.ByteSize():
             self.stat_rpc_errors += 1
             self.rpc_handle_error(msg.id, msg.error)
@@ -401,13 +401,13 @@ class RPCSocket(object):
         logging.debug("rpc_handle_request")
         if id in self.transactions:
             self.send_error(id, ERR_TRANSACTION_EXISTS,
-                            "Transaction %s is alreasy exists" % id)
+                            "Transaction %s is already exists" % id)
             return
         method = self.service.GetDescriptor().FindMethodByName(request.method)
         if method:
             req = self.service.GetRequestClass(method)()
             req.ParseFromString(request.serialized_request)
-            logging.debug("Request accepted:\nid: %s\n%s" % (id, str(req)))
+            # logging.debug("Request accepted:\nid: %s\n%s" % (id, str(req)))
             controller = Controller(self)
             controller.transaction = self.transactions.begin(id=id,
                                                         method=request.method)
@@ -423,7 +423,7 @@ class RPCSocket(object):
                             "Invalid method '%s'" % request.method)
 
     def rpc_handle_response(self, id, response):
-        logging.debug("rpc_handle_response:\nid: %s\n%s" % (id, str(response)))
+        # logging.debug("rpc_handle_response:\nid: %s\n%s" % (id, str(response)))
         if id not in self.transactions:
             logging.error("Invalid transaction: %s" % id)
             return
@@ -479,8 +479,8 @@ class RPCSocket(object):
 
     def send_response(self, controller, response=None, error=None):
         id = controller.transaction.id
-        logging.debug("send_response:\nid: %d\nresponse:\n%s\nerror:\n%s" % (
-                        id, str(response), str(error)))
+        # logging.debug("send_response:\nid: %d\nresponse:\n%s\nerror:\n%s" % (
+        #                id, str(response), str(error)))
         if id not in self.transactions:
             raise Exception("Invalid transaction")
         m = Message()
