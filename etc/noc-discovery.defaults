@@ -18,3 +18,15 @@ concurrency = 20
 success_retry = 86400
 failed_retry = 900
 reschedule_interval = 900
+
+[prefix_discovery]
+enabled = false
+save = true
+
+[ip_discovery]
+enabled = false
+save = true
+concurrency = 20
+success_retry = 86400
+failed_retry = 900
+reschedule_interval = 900
