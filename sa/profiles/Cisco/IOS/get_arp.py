@@ -17,8 +17,11 @@ class Script(noc.sa.script.Script):
     implements = [IGetARP]
     rx_line = re.compile(r"^Internet\s+(?P<ip>\S+)\s+\d+\s+(?P<mac>\S+)\s+\S+(?:\s+(?P<interface>\S+))")
 
-    def execute(self):
-        s = self.cli("show arp")
+    def execute(self, vrf=None):
+        if vrf:
+            s = self.cli("show ip arp vrf %s" % vrf)
+        else:
+            s = self.cli("show ip arp")
         r = []
         for l in s.split("\n"):
             match = self.rx_line.match(l.strip())
