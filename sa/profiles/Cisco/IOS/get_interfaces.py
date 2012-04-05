@@ -12,7 +12,7 @@ import re
 from collections import defaultdict
 # NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetInterfaces
+from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError
 from noc.sa.profiles.Cisco.IOS import uBR
 
 
@@ -39,6 +39,7 @@ class Script(NOCScript):
         re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
     rx_sec_ip = re.compile(r"Secondary address (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
+    rx_ipv6 = re.compile("(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)", re.MULTILINE | re.IGNORECASE)
     rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
     rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
@@ -133,9 +134,8 @@ class Script(NOCScript):
             t = pc["type"] == "L"
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
-        # Get IP interfaces
+        # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
-        ipv6_interfaces = defaultdict(list)  # interface -> [ipv6 addresses]
         c_iface = None
         for l in self.cli("show ip interface").splitlines():
             match = self.rx_sh_ip_int.search(l)
@@ -151,10 +151,32 @@ class Script(NOCScript):
                 if not match:
                     continue
             ip = match.group("ip")
-            if ":" in ip:
-                ipv6_interfaces[c_iface] += [ip]
-            else:
-                ipv4_interfaces[c_iface] += [ip]
+            ipv4_interfaces[c_iface] += [ip]
+        # Get IPv6 interfaces
+        ipv6_interfaces = defaultdict(list)  # interface -> [ipv6 addresses]
+        c_iface = None
+        try:
+            v = self.cli("show ipv6 interface")
+        except self.CLISyntaxError:
+            v = ""
+        for l in v.splitlines():
+            match = self.rx_sh_ip_int.search(l)
+            if match:
+                iface = match.group("interface")
+                try:
+                    c_iface = self.profile.convert_interface_name(iface)
+                except InterfaceTypeError:
+                    c_iface = None
+                continue
+            if not c_iface:
+                continue  # Skip wierd interfaces
+            # Primary ip
+            match = self.rx_ipv6.search(l)
+            if not match:
+                # Secondary ip?
+                continue
+            ip = "%s/%s" % (match.group("address"), match.group("mask"))
+            ipv6_interfaces[c_iface] += [ip]
         #
         interfaces = []
         # Get OSPF interfaces
