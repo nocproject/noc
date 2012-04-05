@@ -19,9 +19,13 @@ class Script(NOCScript):
     r"^\S+\s+\((?P<ip>\S+)\)\s+\S+\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)",
      re.MULTILINE | re.DOTALL)
 
-    def execute(self):
+    def execute(self, vrf=None):
+        if vrf:
+            s = self.cli("setfib %d arp -an" % vrf)
+        else:
+            s = self.cli("arp -an")
         r = []
-        for match in self.rx_line.finditer(self.cli("arp -an")):
+        for match in self.rx_line.finditer(s):
             r += [{
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
