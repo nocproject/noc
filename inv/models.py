@@ -273,7 +273,8 @@ class ForwardingInstance(Document):
                                                  "VPLS", "VLL")],
                        default="ip")
     virtual_router = StringField(required=False)
-    forwarding_instance = StringField()
+    name = StringField()
+    # VRF
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, forwarding_instance)
@@ -333,6 +334,7 @@ class SubInterface(Document):
     }
     interface = PlainReferenceField(Interface)
     managed_object = ForeignKeyField(ManagedObject)
+    forwarding_instance = PlainReferenceField(ForwardingInstance, required=False)
     name = StringField()
     description = StringField(required=False)
     mac = StringField(required=False)
@@ -382,6 +384,41 @@ class Link(Document):
 class DiscoveryStatusInterface(Document):
     meta = {
         "collection": "noc.discovery.status.interface",
+        "allow_inheritance": False,
+        "indexes": [
+            "managed_object",
+            "next_check"
+        ]
+    }
+    managed_object = ForeignKeyField(ManagedObject)
+    last_check = DateTimeField(required=False)
+    last_status = BooleanField(default=False)
+    next_check = DateTimeField()
+
+    @classmethod
+    def reschedule(cls, object, ts, status=None):
+        """
+        Reschedule next interface check of object to time ts
+        :param object: managed object
+        :type object: ManagedObject
+        :param ts: next check time
+        :type ts: datetime.datetime
+        """
+        if isinstance(ts, int) or isinstance(ts, long):
+            ts = datetime.datetime.now() + datetime.timedelta(seconds=ts)
+        s = cls.objects.filter(managed_object=object.id).first()
+        if s:
+            s.next_check = ts
+        else:
+            s = cls(managed_object=object, next_check=ts)
+        if status is not None:
+            s.last_status = status
+            s.last_check = datetime.datetime.now()
+        s.save()
+
+class DiscoveryStatusIP(Document):
+    meta = {
+        "collection": "noc.discovery.status.ip",
         "allow_inheritance": False,
         "indexes": [
             "managed_object",
