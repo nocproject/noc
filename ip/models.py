@@ -94,7 +94,7 @@ class VRF(models.Model):
         if self.rd == "0:0":
             return u"global"
         else:
-            return self.rd
+            return self.name
 
     def get_absolute_url(self):
         return site.reverse("ip:vrf:change", self.id)
@@ -575,12 +575,46 @@ class Address(models.Model):
         return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi,
                             self.prefix.prefix)
 
+    @classmethod
+    def get_afi(cls, address):
+        return "6" if ":" in address else "4"
+
+    @classmethod
+    def get_collision(cls, vrf, address):
+        """
+        Check VRFGroup restrictions
+        :param vrf:
+        :param address:
+        :return: VRF already containing address or None
+        :rtype: VRF or None
+        """
+        if vrf.vrf_group.address_constraint != "G":
+            return None
+        afi = cls.get_afi(address)
+        try:
+            a = Address.objects.get(afi=afi, address=address,
+                vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id))
+            return a.vrf
+        except Address.DoesNotExist:
+            return None
+
     ##
     ## Save address
     ##
     def save(self, **kwargs):
+        """
+        Override default save() method to set AFI,
+        parent prefix, and check VRF group restrictions
+        :param kwargs:
+        :return:
+        """
+        # Check VRF group restrictions
+        cv = self.get_collision(self.vrf, self.address)
+        if cv:
+            # Collision detected
+            raise ValidationError("Address already exists in VRF %s" % cv)
         # Detect AFI
-        self.afi = "6" if ":" in self.address else "4"
+        self.afi = self.get_afi(self.address)
         # Set proper prefix
         self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
         super(Address, self).save(**kwargs)
