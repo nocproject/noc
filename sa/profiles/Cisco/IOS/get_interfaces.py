@@ -254,4 +254,34 @@ class Script(NOCScript):
                     interfaces[-1]["subinterfaces"] += [sub]
                 except KeyError:
                     interfaces[-1]["subinterfaces"] = [sub]
-        return [{"interfaces": interfaces}]
+        # Process VRFs
+        vrfs = {
+            "default": {
+                "forwarding_instance": "default",
+                "type": "ip",
+                "interfaces": []
+            }
+        }
+        imap = {}  # interface -> VRF
+        try:
+            r = self.scripts.get_mpls_vpn()
+        except self.CLISyntaxError:
+            r = []
+        for v in r:
+            if v["type"] == "VRF":
+                vrfs[v["name"]] = {
+                    "forwarding_instance": v["name"],
+                    "type": "VRF",
+                    "rd": v["rd"],
+                    "interfaces": []
+                }
+                for i in v["interfaces"]:
+                    imap[i] = v["name"]
+        for i in interfaces:
+            subs = i["subinterfaces"]
+            for vrf in set(imap.get(si["name"], "default") for si in subs):
+                c = i.copy()
+                c["subinterfaces"] = [si for si in subs
+                                      if imap.get(si["name"], "default") == vrf]
+                vrfs[vrf]["interfaces"] += [c]
+        return vrfs.values()
