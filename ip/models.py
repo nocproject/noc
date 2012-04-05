@@ -159,6 +159,7 @@ class Prefix(models.Model):
                             help_text=_(
                                 "Authonomous system granted with prefix"))
     vc = models.ForeignKey(VC, verbose_name=_("VC"), null=True, blank=True,
+                           on_delete=models.SET_NULL,
                            help_text=_("VC bound to prefix"))
     description = models.TextField(_("Description"), blank=True, null=True)
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
@@ -557,6 +558,7 @@ class Address(models.Model):
                                        verbose_name=_("Managed Object"),
                                        null=True, blank=True,
                                        related_name="address_set",
+                                       on_delete=models.SET_NULL,
                                        help_text=_(
                                            "Set if address belongs to the Managed Object's interface"))
     description = models.TextField(_("Description"), blank=True, null=True)
