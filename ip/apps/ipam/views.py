@@ -673,7 +673,15 @@ class IPAMAppplication(Application):
                         "address": form.cleaned_data["address"]})
                     return self.response_redirect("ip:ipam:vrf_index", vrf.id,
                                                   afi, prefix.prefix)
-                    # Create address
+                # Check for collisions
+                cv = Address.get_collision(vrf, form.cleaned_data["address"])
+                if cv:
+                    self.message_user(request, _("Address already present in VRF %(vrf)s") % {
+                        "vrf": cv
+                    })
+                    return self.response_redirect("ip:ipam:vrf_index", vrf.id,
+                                                  afi, prefix.prefix)
+                # Create address
                 a = Address(vrf=vrf, afi=afi,
                             address=form.cleaned_data["address"],
                             fqdn=form.cleaned_data["fqdn"],
