@@ -59,11 +59,12 @@ class Migration:
         if not sd:
             self.fail("pg_config is not found.\n"\
                       "Ensure pg_config is in the current user's $PATH")
-        root = os.path.join(sd, "contrib", "postgis-1.5")
-        if not os.path.exists(root):
-            self.fail("Not found: %s" % root)
-        self.postgis_root = root
-        return root
+        for v in ["2.0", "1.5"]:
+            root = os.path.join(sd, "contrib", "postgis-%s" % v)
+            if os.path.exists(root):
+                self.postgis_root = root
+                return root
+        self.fail("Not found: %s" % root)
 
     def forwards(self):
         if not check_postgis():
