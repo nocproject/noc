@@ -20,7 +20,8 @@ Ext.define("NOC.vc.vcfilter.Application", {
         },
         {
             text: "Expression",
-            dataIndex: "expression"
+            dataIndex: "expression",
+            flex: 1
         }
     ],
     fields: [
