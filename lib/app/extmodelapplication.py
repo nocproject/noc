@@ -12,6 +12,7 @@ from django.db.models.fields import CharField, BooleanField, IntegerField,\
                                     FloatField, related
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
+from django.db.utils import IntegrityError
 ## Third-party modules
 from tagging.models import Tag
 ## NOC modules
@@ -46,7 +47,7 @@ class ExtModelApplication(ExtApplication):
     BAD_REQUEST = 400
     FORBIDDEN = 401
     NOT_FOUND = 404
-    DUPLICATE_ENTRY = 409
+    CONFLICT = 409
     NOT_HERE = 410
     INTERNAL_ERROR = 500
     NOT_IMPLEMENTED = 501
@@ -310,12 +311,15 @@ class ExtModelApplication(ExtApplication):
             return self.response(str(why), status=self.BAD_REQUEST)
         try:
             self.queryset(request).get(**attrs)
-            return self.response(status=self.DUPLICATE_ENTRY)
+            return self.response(status=self.CONFLICT)
         except self.model.MultipleObjectsReturned:
-            return self.response(status=self.DUPLICATE_ENTRY)
+            return self.response(status=self.CONFLICT)
         except self.model.DoesNotExist:
             o = self.model(**attrs)
-            o.save()
+            try:
+                o.save()
+            except IntegrityError:
+                return self.response(status=self.CONFLICT)
             return self.response(self.instance_to_dict(o), status=self.CREATED)
 
     @view(method=["GET"], url="^(?P<id>\d+)/?$", access="read", api=True)
