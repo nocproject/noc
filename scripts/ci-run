@@ -22,7 +22,7 @@ cd `dirname $0`/..
 rm -f $JUNIT_REPORT $COVERAGE_REPORT
 
 ## Destroy hanging test db
-if [ `psql -l | grep $TEST_DB | wc -l` -ne 0 ]; then
+if [ `psql -l | grep -c $TEST_DB` -ne "0" ]; then
     echo "Dropping hanging test db"
     dropdb $TEST_DB
 fi
