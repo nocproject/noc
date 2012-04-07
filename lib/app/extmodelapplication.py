@@ -9,7 +9,7 @@
 ## Django moules
 from django.http import HttpResponse
 from django.db.models.fields import CharField, BooleanField, IntegerField,\
-                                    FloatField, related
+    FloatField, related
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 from django.db.utils import IntegrityError
@@ -19,7 +19,7 @@ from tagging.models import Tag
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import BooleanParameter, IntParameter, FloatParameter,\
-                              ModelParameter, StringParameter
+    ModelParameter, StringParameter
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
 
@@ -82,14 +82,14 @@ class ExtModelApplication(ExtApplication):
                 self.clean_fields[f.name] = FloatParameter()
             elif isinstance(f, related.ForeignKey):
                 self.clean_fields[f.name] = ModelParameter(f.rel.to,
-                                                           required=not f.null)
-        # Find field_* and populate custom fields
+                    required=not f.null)
+            # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
             h = getattr(self, fn)
             if callable(h):
                 self.custom_fields[fn[6:]] = h
-        #
+            #
         if not self.query_fields:
             # By default - search in unique text fields
             self.query_fields = ["%s__%s" % (f.name, self.query_condition)
@@ -100,6 +100,7 @@ class ExtModelApplication(ExtApplication):
         """
         Prepare Q statement for query
         """
+
         def get_q(f):
             if "__" not in f:
                 return "%s__%s" % (f, self.query_condition)
@@ -107,8 +108,8 @@ class ExtModelApplication(ExtApplication):
                 return f
 
         q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
-                   self.query_fields[1:],
-                   Q(**{get_q(self.query_fields[0]): query}))
+            self.query_fields[1:],
+            Q(**{get_q(self.query_fields[0]): query}))
         if self.int_query_fields and is_int(query):
             v = int(query)
             for f in self.int_query_fields:
@@ -130,12 +131,12 @@ class ExtModelApplication(ExtApplication):
     def response(self, content="", status=200):
         if not isinstance(content, basestring):
             return HttpResponse(json_encode(content),
-                                mimetype="text/json; charset=utf-8",
-                                status=status)
+                mimetype="text/json; charset=utf-8",
+                status=status)
         else:
             return HttpResponse(content,
-                                mimetype="text/plain; charset=utf-8",
-                                status=status)
+                mimetype="text/plain; charset=utf-8",
+                status=status)
 
     def clean(self, data):
         """
@@ -159,7 +160,7 @@ class ExtModelApplication(ExtApplication):
                 np, lt = p.split("__", 1)
             else:
                 np, lt = p, None
-            # Skip ignored params
+                # Skip ignored params
             if np in self.ignored_params or p in (
                 self.limit_param, self.page_param, self.start_param,
                 self.format_param, self.sort_param, self.query_param):
@@ -174,7 +175,7 @@ class ExtModelApplication(ExtApplication):
                     self.model._meta.pk.name,
                     model._meta.get_field_by_name(fn)[0].attname,
                     model._meta.db_table
-                )
+                    )
                 if None in nq:
                     nq[None] += [extra_where]
                 else:
@@ -186,7 +187,7 @@ class ExtModelApplication(ExtApplication):
                 continue
             elif np in self.clean_fields:  # @todo: Check for valid lookup types
                 v = self.clean_fields[np].clean(v)
-            # Write back
+                # Write back
             nq[p] = v
         return nq
 
@@ -211,7 +212,7 @@ class ExtModelApplication(ExtApplication):
                 else:
                     r[f.name] = None
                     r["%s__label" % f.name] = ""
-        # Add custom fields
+            # Add custom fields
         for f in self.custom_fields:
             r[f] = self.custom_fields[f](o)
         return r
@@ -228,7 +229,7 @@ class ExtModelApplication(ExtApplication):
         """
         # Todo: Fix
         q = dict((str(k), v[0] if len(v) == 1 else v)
-                 for k, v in request.GET.lists())
+        for k, v in request.GET.lists())
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
@@ -247,7 +248,7 @@ class ExtModelApplication(ExtApplication):
             data = self.queryset(request, query).filter(**q).extra(where=ew)
         else:
             data = self.queryset(request, query).filter(**q)
-        # Apply sorting
+            # Apply sorting
         if ordering:
             data = data.order_by(*ordering)
         if format == "ext":
@@ -311,15 +312,28 @@ class ExtModelApplication(ExtApplication):
             return self.response(str(why), status=self.BAD_REQUEST)
         try:
             self.queryset(request).get(**attrs)
-            return self.response(status=self.CONFLICT)
+            return self.render_json(
+                    {
+                    "status": False,
+                    "message": "Duplicated record"
+                },
+                status=self.CONFLICT)
         except self.model.MultipleObjectsReturned:
-            return self.response(status=self.CONFLICT)
+            return self.render_json(
+                    {
+                    "status": False,
+                    "message": "Duplicated record"
+                }, status=self.CONFLICT)
         except self.model.DoesNotExist:
             o = self.model(**attrs)
             try:
                 o.save()
             except IntegrityError:
-                return self.response(status=self.CONFLICT)
+                return self.render_json(
+                        {
+                        "status": False,
+                        "message": "Integrity error"
+                    }, status=self.CONFLICT)
             return self.response(self.instance_to_dict(o), status=self.CREATED)
 
     @view(method=["GET"], url="^(?P<id>\d+)/?$", access="read", api=True)
@@ -338,16 +352,33 @@ class ExtModelApplication(ExtApplication):
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
-            return self.response(str(why), status=self.BAD_REQUEST)
+            return self.render_json(
+                    {
+                    "status": False,
+                    "message": "Bad request",
+                    "traceback": str(why)
+                }, status=self.BAD_REQUEST)
         except InterfaceTypeError, why:
-            return self.response(str(why), status=self.BAD_REQUEST)
+            return self.render_json(
+                    {
+                    "status": False,
+                    "message": "Bad request",
+                    "traceback": str(why)
+                }, status=self.BAD_REQUEST)
         try:
             o = self.queryset(request).get(id=int(id))
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         for k, v in attrs.items():
             setattr(o, k, v)
-        o.save()
+        try:
+            o.save()
+        except IntegrityError:
+            return self.render_json(
+                    {
+                    "status": False,
+                    "message": "Integrity error"
+                }, status=self.CONFLICT)
         return self.response(status=self.OK)
 
     @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
@@ -355,6 +386,9 @@ class ExtModelApplication(ExtApplication):
         try:
             o = self.queryset(request).get(id=int(id))
         except self.model.DoesNotExist:
-            return HttpResponse("", status=self.NOT_FOUND)
-        o.delete()
+            return self.render_json({
+                "status": False,
+                "message": "Not found"
+            }, status=self.NOT_FOUND)
+        o.delete()  # @todo: Detect errors
         return HttpResponse(status=self.DELETED)
