@@ -28,33 +28,11 @@ Ext.define("NOC.core.ModelApplication", {
         // Variables
         me.currentQuery = {};
         // Create store
-        var store = Ext.create("NOC.core.ModelStore", {
+        me.store = Ext.create("NOC.core.ModelStore", {
             model: me.model,
             autoLoad: true,
-            pageSize: 1,  // Increased by AutoSize plugin
-            remoteSort: true,
-            remoteFilter: true
+            pageSize: 1  // Increased by AutoSize plugin
         });
-        // Setup REST proxy
-        store.setProxy(Ext.create("Ext.data.RestProxy", {
-            url: store.model.prototype.rest_url,
-            pageParam: "__page",
-            startParam: "__start",
-            limitParam: "__limit",
-            sortParam: "__sort",
-            extraParams: {
-                "__format": "ext"
-            },
-            reader: {
-                type: "json",
-                root: "data",
-                totalProperty: "total",
-                successProperty: "success"
-            },
-            writer: {
-                type: "json"
-            }
-        }));
         // Setup Grid toolbar
         var gridToolbar = [
             {
@@ -129,8 +107,8 @@ Ext.define("NOC.core.ModelApplication", {
         var grid_panel = {
             xtype: "gridpanel",
             itemId: "grid",
-            store: store,
-            columns: this.columns,
+            store: me.store,
+            columns: me.columns,
             border: false,
             autoScroll: true,
             plugins: [Ext.create("Ext.ux.grid.AutoSize")],
@@ -141,7 +119,7 @@ Ext.define("NOC.core.ModelApplication", {
                 },
                 {
                     xtype: "pagingtoolbar",
-                    store: store,
+                    store: me.store,
                     dock: "bottom",
                     displayInfo: true
                 }
@@ -172,7 +150,7 @@ Ext.define("NOC.core.ModelApplication", {
                 handler: me.toggle
             },
             {
-                xtype: "tbseparator",
+                xtype: "tbseparator"
             },
             {
                itemId: "reset",
@@ -248,7 +226,6 @@ Ext.define("NOC.core.ModelApplication", {
             ft = form.dockedItems.first();
         me.grid = grid;
         me.form = form.getForm();
-        me.store = me.grid.store;
         me.search_field = gt.getComponent("search_field");
         me.create_button = gt.getComponent("create");
         me.saveButton = ft.getComponent("save");
@@ -278,23 +255,35 @@ Ext.define("NOC.core.ModelApplication", {
     // Save changed data
     saveRecord: function(data) {
         var me = this,
-            mv = Ext.create(this.model, data).validate();
+            mv = Ext.create(this.model, data).validate(),
+            record;
 
         if(!mv.isValid()) {
             // @todo: Error report
             return;
         }
-        if (data.id) {
+        if (data.id) { // @todo: phantom?
             // Change
-            var record = me.grid.getSelectionModel().getLastSelected();
+            record = me.grid.getSelectionModel().getLastSelected();
             record.set(data);
-            me.store.sync();
         } else {
             // Create
-            me.store.insert(0, [data]);
-            me.store.sync();
+            record = me.store.add([data])[0];
         }
-        me.toggle();
+        me.store.sync({
+            scope: me,
+            success: function() {
+                this.toggle();
+            },
+            failure: function(response, op, status) {
+                console.log("YOPTA", record);
+                if(record.phantom) {
+                    // Remove from store
+                    me.store.remove(record);
+                }
+                this.showOpError("save", op, status);
+            }
+        });
     },
     // Show Form
     onEditRecord: function(view, record) {
@@ -452,5 +441,14 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         me.filterPanel.getForm().reset();
         me.onFilter();
+    },
+    //
+    showOpError: function(action, op, status) {
+        var text = Ext.String.format("Failed to {0}", action);
+        if(status) {
+            text = Ext.String.format("Failed to {0}!<br>{1}",
+                action, status.message);
+        }
+        NOC.error(text);
     }
 });
