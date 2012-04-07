@@ -147,7 +147,7 @@ Ext.define("NOC.core.ModelApplication", {
                 text: "Close",
                 iconCls: "icon_arrow_undo",
                 scope: me,
-                handler: me.toggle
+                handler: me.onClose
             },
             {
                 xtype: "tbseparator"
@@ -450,5 +450,11 @@ Ext.define("NOC.core.ModelApplication", {
                 action, status.message);
         }
         NOC.error(text);
+    },
+    // "close" button pressed
+    onClose: function() {
+        var me = this;
+        me.toggle();
+        me.reloadStore();
     }
 });
