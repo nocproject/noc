@@ -61,13 +61,15 @@ class DiscoveryDaemon(Daemon):
         self.p_enabled = self.config.getboolean("prefix_discovery",
                                                 "enabled")
         self.asn = AS.default_as()
-        self.p_save = self.config.getboolean("prefix_discovery",
-                                             "save")
+        self.p_save = (self.p_enabled and
+                       self.config.getboolean("prefix_discovery",
+                                              "save"))
         self.ip_enabled = self.config.getboolean("ip_discovery",
                                                 "enabled")
         self.asn = AS.default_as()
-        self.ip_save = self.config.getboolean("ip_discovery",
-                                             "save")
+        self.ip_save = (self.ip_enabled and
+                        self.config.getboolean("ip_discovery",
+                                               "save"))
         self.ip_reschedule_interval = self.config.getint("ip_discovery",
                                                         "reschedule_interval")
         self.ip_concurrency = self.config.getint("ip_discovery",
@@ -275,8 +277,7 @@ class DiscoveryDaemon(Daemon):
                         virtual_router=vr)
                     forwarding_instance.save()
                     # Create VRF if necessary
-                    if (fi["type"] == "VRF" and self.p_enabled and
-                        self.p_save and "rd" in fi):
+                    if (fi["type"] == "VRF" and self.p_save and "rd" in fi):
                         if not VRF.objects.filter(rd=fi["rd"]).exists():
                             self.o_info(o, "Discovered VRF %s (%s)" % (
                                 fi["forwarding_instance"], fi["rd"]))
