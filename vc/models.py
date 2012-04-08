@@ -16,6 +16,7 @@ from django.db.models import Q
 from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.sa.models import ManagedObjectSelector
+from noc.main.models import Style
 from noc.lib.validators import is_int
 from noc.lib.fields import CIDRField, AutoCompleteTagsField
 from noc.lib.app.site import site
@@ -69,6 +70,8 @@ class VCDomain(models.Model):
     selector = models.ForeignKey(ManagedObjectSelector,
                                  verbose_name="Selector",
                                  null=True, blank=True)
+    style = models.ForeignKey(Style, verbose_name="Style", blank=True,
+                              null=True)
 
     def __unicode__(self):
         return self.name
@@ -284,6 +287,8 @@ class VC(models.Model):
     l2 = models.IntegerField("Label 2", default=0)
     description = models.CharField("Description", max_length=256, null=True,
                                    blank=True)
+    style = models.ForeignKey(Style, verbose_name="Style", blank=True,
+                              null=True)
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
