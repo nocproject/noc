@@ -42,6 +42,11 @@ Ext.define("NOC.gis.area.Application", {
         {
             text: "Max. Zoom",
             dataIndex: "max_zoom"
+        },
+        {
+            text: "Description",
+            dataIndex: "description",
+            flex: 1
         }
     ],
     fields: [
@@ -49,7 +54,7 @@ Ext.define("NOC.gis.area.Application", {
             name: "name",
             xtype: "textfield",
             fieldLabel: "Name",
-            allowBlank: true
+            allowBlank: false
         },
         {
             name: "is_active",
@@ -60,13 +65,13 @@ Ext.define("NOC.gis.area.Application", {
             name: "SW",
             xtype: "geofield",
             fieldLabel: "SW",
-            allowBlank: true
+            allowBlank: false
         },
         {
             name: "NE",
             xtype: "geofield",
             fieldLabel: "NE",
-            allowBlank: true
+            allowBlank: false
         },
         {
             name: "min_zoom",
@@ -85,6 +90,12 @@ Ext.define("NOC.gis.area.Application", {
             defaultValue: 18,
             minValue: 0,
             maxValue: 18
+        },
+        {
+            name: "description",
+            xtype: "textfield",
+            fieldLabel: "Description",
+            allowBlank: true
         }
     ]
 });
