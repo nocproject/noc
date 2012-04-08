@@ -117,7 +117,7 @@ Ext.define("Ext.ux.form.GeoField", {
         if(this.allowBlank !== false) {
             return true;
         } else {
-            if(Ext.defined(value) && value != "") {
+            if(Ext.isDefined(value) && value != "") {
                 this.clearInvalid();
                 return true;
             } else {
