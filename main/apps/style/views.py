@@ -9,7 +9,7 @@
 ## Django modules
 from django.contrib import admin
 ## NOC modules
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication, view
 from noc.main.models import Style
 ##
 ## Style sample
@@ -35,3 +35,8 @@ class StyleApplication(ModelApplication):
     model = Style
     model_admin = StyleAdmin
     menu = "Setup | Styles"
+
+    @view(url=r"^css/$", method=["GET"], access=True)
+    def view_css(self, request):
+        text = "\n\n".join([s.css for s in Style.objects.all()])
+        return self.render_plain_text(text, mimetype="text/css")

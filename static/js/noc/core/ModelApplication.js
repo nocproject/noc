@@ -18,6 +18,7 @@ Ext.define("NOC.core.ModelApplication", {
     appTitle: null,
     createTitle: "Create {0}",
     changeTitle: "Change {0}",
+    rowClassField: undefined,
 
     initComponent: function() {
         var me = this;
@@ -125,6 +126,9 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             ],
             rbar: grid_rbar,
+            viewConfig: {
+                getRowClass: Ext.bind(me.getRowClass, me)
+            },
             listeners: {
                 itemdblclick: me.onEditRecord,
                 select: me.onEditRecord
@@ -456,5 +460,20 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         me.toggle();
         me.reloadStore();
+    },
+    // Return Grid's row classes
+    getRowClass: function(record, index, params, store) {
+        var me = this;
+        if(me.rowClassField) {
+            var c = record.get(me.rowClassField);
+            console.log(record, c);
+            if(c) {
+                return c;
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
     }
 });
