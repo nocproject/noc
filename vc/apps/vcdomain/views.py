@@ -21,3 +21,6 @@ class VCDomainApplication(ExtModelApplication):
     icon = "icon_world_link"
     query_fields = ["name", "description"]
     query_condition = "icontains"
+
+    def field_row_class(self, o):
+        return o.style.css_class_name if o.style else ""

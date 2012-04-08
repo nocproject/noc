@@ -10,11 +10,13 @@ Ext.define("NOC.vc.vcdomain.Application", {
     extend: "NOC.core.ModelApplication",
     model: "NOC.vc.vcdomain.Model",
     requires: [
+        "NOC.main.style.LookupField",
         "NOC.vc.vcdomain.Model",
         "NOC.vc.vctype.LookupField",
         "NOC.sa.managedobjectselector.LookupField"
     ],
     search: true,
+    rowClassField: "row_class",
     columns: [
         {
             text: "Name",
@@ -86,6 +88,12 @@ Ext.define("NOC.vc.vcdomain.Application", {
             query: {
                 is_enabled: true
             }
+        },
+        {
+            name: "style",
+            xtype: "main.style.LookupField",
+            fieldLabel: "Style",
+            allowBlank: true
         }
     ],
     filters: [
