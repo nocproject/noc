@@ -37,12 +37,21 @@ Ext.define("NOC.vc.vc.Model", {
             type: "string"
         },
         {
+            name: "style",
+            type: "int"
+        },
+        {
             name: "tags",
             type: "auto"
         },
         // Foreign keys
         {
             name: "vc_domain__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "style__label",
             type: "string",
             persist: false
         },
@@ -55,6 +64,11 @@ Ext.define("NOC.vc.vc.Model", {
         {
             name: "prefixes",
             type: "auto",
+            persist: false
+        },
+        {
+            name: "row_class",
+            type: "string",
             persist: false
         },
         {
