@@ -18,7 +18,7 @@ class Migration:
                 "min_zoom": 0,
                 "max_zoom": 5,
                 "SW": [-180.0, -90.0],
-                "NE": [179.999999, 90.0]
+                "NE": [179.999999, 89.999999]
             }, safe=True)
 
     def backwards(self):
