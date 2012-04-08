@@ -11,10 +11,12 @@ Ext.define("NOC.vc.vc.Application", {
     requires: [
         "NOC.vc.vc.Model",
         "NOC.core.TagsField",
+        "NOC.main.style.LookupField",
         "NOC.vc.vcdomain.LookupField"
     ],
     model: "NOC.vc.vc.Model",
     search: true,
+    rowClassField: "row_class",
 
     columns: [
         {
@@ -97,6 +99,12 @@ Ext.define("NOC.vc.vc.Application", {
             name: "description",
             xtype: "textfield",
             fieldLabel: "Description",
+            allowBlank: true
+        },
+        {
+            name: "style",
+            xtype: "main.style.LookupField",
+            fieldLabel: "Style",
             allowBlank: true
         },
         {

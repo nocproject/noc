@@ -73,6 +73,9 @@ class VCApplication(ExtModelApplication):
         else:
             return "-"
 
+    def field_row_class(self, o):
+        return o.style.css_class_name if o.style else ""
+
     @view(url="^find_free/$", method=["GET"], access="read", api=True,
           validate={
               "vc_domain": ModelParameter(VCDomain),
