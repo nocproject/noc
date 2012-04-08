@@ -42,6 +42,10 @@ Ext.define("NOC.vc.vcdomain.Model", {
             name: "selector",
             type: "int"
         },
+        {
+            name: "style",
+            type: "int"
+        },
         // Foreign keys
         {
             name: "type__label",
@@ -50,6 +54,17 @@ Ext.define("NOC.vc.vcdomain.Model", {
         },
         {
             name: "selector__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "style__label",
+            type: "string",
+            persist: false
+        },
+        // Virtual fields
+        {
+            name: "row_class",
             type: "string",
             persist: false
         }
