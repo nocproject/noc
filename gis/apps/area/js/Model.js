@@ -41,6 +41,10 @@ Ext.define("NOC.gis.area.Model", {
             name: "max_zoom",
             type: "int",
             defaultValue: 18
+        },
+        {
+            name: "description",
+            type: "string"
         }
     ]
 });

@@ -146,6 +146,7 @@ class Area(nosql.Document):
     # (EPSG:4326) coordinates
     SW = nosql.GeoPointField()
     NE = nosql.GeoPointField()
+    description = nosql.StringField(required=False)
 
     def __unicode__(self):
         return self.name
