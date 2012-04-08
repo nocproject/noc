@@ -21,7 +21,9 @@ Ext.define("NOC.gis.area.Application", {
 
         {
             text: "Active",
-            dataIndex: "is_active"
+            dataIndex: "is_active",
+            renderer: NOC.render.Bool,
+            width: 50
         },
 
         {
