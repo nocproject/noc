@@ -9,5 +9,6 @@
 """
 from base import *
 
+
 class IEvent(Interface):
-    event=InstanceOfParameter("Event")
+    event = InstanceOfParameter("Event")
