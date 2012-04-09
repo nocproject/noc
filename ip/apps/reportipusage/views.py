@@ -34,7 +34,7 @@ class ReportIPUsageApplication(SimpleReport):
             p = IP.prefix(prefix)
             if afi == "4":
                 total = p.size
-                if p.mask < 31:
+                if p.mask < 31 and total - used >= 2:
                     # Exclude network and broadcast
                     total = p.size - 2
                 free = total - used
