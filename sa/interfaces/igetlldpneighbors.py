@@ -9,6 +9,7 @@
 """
 from base import *
 
+
 ##
 ## LLDP neighbor information
 ##
@@ -41,16 +42,21 @@ from base import *
 ## For local(7) - convert to integer and return untouched
 ##
 class IGetLLDPNeighbors(Interface):
-    returns=ListOfParameter(element=DictParameter(attrs={
-        "local_interface"    : InterfaceNameParameter(),
-        "local_interface_id" : IntParameter(required=False)|MACAddressParameter(required=False)|IPv4Parameter(required=False), # Should be set when platform advertises not LldpPortIdSubtype==5
-        "neighbors"       : ListOfParameter(element=DictParameter(attrs={
-            "remote_chassis_id_subtype" : IntParameter(default=4), # LldpChassisIdSubtype TC, macAddress(4)
-            "remote_chassis_id"         : MACAddressParameter(accept_bin=False) | IPv4Parameter() | StringParameter() , # Remote chassis ID
-            "remote_port_subtype"       : IntParameter(default=5), # LldpPortIdSubtype TC, interfaceName(5)
-            "remote_port"               : MACAddressParameter(accept_bin=False) | IPv4Parameter() | StringParameter(),
-            "remote_system_name"        : StringParameter(required=False),
-            "remote_capabilities"       : IntParameter(default=0), # LldpSystemCapabilitiesMap TC bitmask
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "local_interface": InterfaceNameParameter(),
+        # Should be set when platform advertises not LldpPortIdSubtype==5
+        "local_interface_id": IntParameter(required=False) | MACAddressParameter(required=False) | IPv4Parameter(required=False),
+        "neighbors": ListOfParameter(element=DictParameter(attrs={
+            # LldpChassisIdSubtype TC, macAddress(4)
+            "remote_chassis_id_subtype": IntParameter(default=4),
+            # Remote chassis ID
+            "remote_chassis_id": MACAddressParameter(accept_bin=False) | IPv4Parameter() | StringParameter(),
+            # LldpPortIdSubtype TC, interfaceName(5)
+            "remote_port_subtype": IntParameter(default=5),
+            "remote_port": MACAddressParameter(accept_bin=False) | IPv4Parameter() | StringParameter(),
+            "remote_system_name": StringParameter(required=False),
+            # LldpSystemCapabilitiesMap TC bitmask
+            "remote_capabilities": IntParameter(default=0),
         }))
     }))
     template = "interfaces/igetlldpneighbors.html"

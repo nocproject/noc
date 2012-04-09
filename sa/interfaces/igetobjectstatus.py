@@ -9,8 +9,9 @@
 """
 from base import *
 
+
 class IGetObjectStatus(Interface):
-    returns=ListOfParameter(element=DictParameter(attrs={
-        "name"  : StringParameter(),
-        "status": BooleanParameter(),
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "name": StringParameter(),
+        "status": BooleanParameter()
     }))

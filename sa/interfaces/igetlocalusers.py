@@ -9,14 +9,15 @@
 """
 from base import *
 
+
 ##
 ## Commonly accepted classes are:
 ## superuser, operator
-## 
+##
 ##
 class IGetLocalUsers(Interface):
-    returns=ListOfParameter(element=DictParameter(attrs={
-        "username" : StringParameter(),
-        "class"    : StringParameter(),
-        "is_active": BooleanParameter(default=True),
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "username": StringParameter(),
+        "class": StringParameter(),
+        "is_active": BooleanParameter(default=True)
         }))

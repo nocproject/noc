@@ -7,13 +7,15 @@
 """
 from base import *
 
+
 class IGetMACAddressTable(Interface):
-    interface=InterfaceNameParameter(required=False)
-    vlan=VLANIDParameter(required=False)
-    mac=MACAddressParameter(required=False)
-    returns=ListOfParameter(element=DictParameter(attrs={"vlan_id"    : VLANIDParameter(),
-                                                         "mac"        : MACAddressParameter(),
-                                                         "interfaces" : ListOfParameter(element=InterfaceNameParameter()),
-                                                         "type"       : StringParameter(), # choices=["D","S"]
-                                                         }))
+    interface = InterfaceNameParameter(required=False)
+    vlan = VLANIDParameter(required=False)
+    mac = MACAddressParameter(required=False)
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "vlan_id": VLANIDParameter(),
+        "mac": MACAddressParameter(),
+        "interfaces": ListOfParameter(element=InterfaceNameParameter()),
+        "type": StringParameter()  # choices=["D","S"]
+    }))
     template = "interfaces/igetmacaddresstable.html"

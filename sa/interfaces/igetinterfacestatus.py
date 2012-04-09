@@ -8,14 +8,16 @@
 """
 """
 from base import *
+
+
 ##
 ## Returns a list of interfaces status (up/down),
 ## including port-channels and SVIs
 ##
 class IGetInterfaceStatus(Interface):
-    interface=InterfaceNameParameter(required=False)
-    returns=ListOfParameter(element=DictParameter(attrs={
-        "interface" : InterfaceNameParameter(),
-        "status"    : BooleanParameter(),
+    interface = InterfaceNameParameter(required=False)
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "interface": InterfaceNameParameter(),
+        "status": BooleanParameter()
     }))
     template = "interfaces/igetinterfacestatus.html"

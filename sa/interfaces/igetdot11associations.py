@@ -7,8 +7,9 @@
 """
 from base import *
 
+
 class IGetDot11Associations(Interface):
-    returns=ListOfParameter(element=DictParameter(attrs={
-        "mac" : MACAddressParameter(),
-        "ip"  : IPv4Parameter(required=False),
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "mac": MACAddressParameter(),
+        "ip": IPv4Parameter(required=False)
     }))
