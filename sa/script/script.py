@@ -541,7 +541,7 @@ class Script(threading.Thread):
         return self.cli_provider
 
     def cli(self, cmd, command_submit=None, bulk_lines=None, list_re=None,
-            cached=False):
+            cached=False, file=None):
         """
         Execute CLI command and return a result.
         if list_re is None, return a string
@@ -556,8 +556,6 @@ class Script(threading.Thread):
         if self.activator.use_canned_session:
             data = self.activator.cli(cmd)
         else:
-            # Check CLI provider is ready
-            self.request_cli_provider()
             # Check result is cached
             cc = "CLI:" + cmd  # Cache key
             cache = self.root.cmd_cache
@@ -566,7 +564,13 @@ class Script(threading.Thread):
                 # Get result from cache
                 data = cache[cc]
                 from_cache = True
+            elif file:
+                # Read file instead of executing command
+                with open(file) as f:
+                    data = f.read()
             else:
+                # Check CLI provider is ready
+                self.request_cli_provider()
                 # Execute command
                 self.cli_provider.submit(cmd, command_submit=command_submit, bulk_lines=bulk_lines)
                 data = self.cli_queue_get()
@@ -607,9 +611,12 @@ class Script(threading.Thread):
                 if match:
                     r += [match.groupdict()]
             data = r
-        self.debug("cli(%s) returns%s:\n---------\n%s\n---------" % (cmd,
-                                                                     " cached result" if from_cache else "",
-                                                                     repr(data)))
+        dm = ["cli(%s) returns%s:" % (cmd, " cached result" if from_cache else "")]
+        l = "===[ %s ]" % cmd
+        dm += [l + "=" * max(0, 72 - len(l))]
+        dm += [repr(data)]
+        dm += ["=" * 72]
+        self.debug("\n".join(dm))
         self.cli_debug(data, "<")
         return data
 
