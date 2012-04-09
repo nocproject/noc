@@ -112,12 +112,16 @@ def is_ipv6(v):
     False
     >>> is_ipv6("100:0:")
     False
+    >>> is_ipv6("2a00:1118:f00f:fffe:c143:3284:1000::")
+    True
     """
     if v == "::":
         return True
     parts = v.split(":")
     if len(parts) != 8 and "::" not in v:
         return False
+    if len(parts) == 9 and not parts[-1] and not parts[-2]:
+        parts = parts[:-1]
     # Process IPv4 at the end
     if parts and "." in parts[-1]:
         if not is_ipv4(parts[-1]):
@@ -137,7 +141,6 @@ def is_ipv6(v):
         except ValueError:
             return False
         h = []
-        t = []
         if i > 0:
             h = parts[:i]
         if i + 1 < len(parts) and not parts[i + 1]:
