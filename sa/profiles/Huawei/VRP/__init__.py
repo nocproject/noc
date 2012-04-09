@@ -35,7 +35,7 @@ class Profile(noc.sa.profiles.Profile):
             p += " le 32"
         return "undo ip ip-prefix %s\n" % name + "\n".join([p % x.replace("/", " ") for x in pl])
 
-    rx_interface_name = re.compile(r"^(?P<type>[A-Z]+E)(?P<number>[\d/]+)$")
+    rx_interface_name = re.compile(r"^(?P<type>[A-Z]+E)(?P<number>[\d/]+(\.\d+)?)$")
 
     def convert_interface_name(self, s):
         """
