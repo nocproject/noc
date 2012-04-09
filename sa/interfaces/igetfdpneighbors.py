@@ -8,17 +8,18 @@
 """
 """
 from base import *
-##
+
+
 class IGetFDPNeighbors(Interface):
-    returns=DictParameter(attrs={
+    returns = DictParameter(attrs={
         # Local device id: FQDN or serial number
-        "device_id" : StringParameter(),
-        "neighbors" : ListOfParameter(element=DictParameter(attrs={
+        "device_id": StringParameter(),
+        "neighbors": ListOfParameter(element=DictParameter(attrs={
             # Remote device id: FQDN or serial number
-            "device_id"       : StringParameter(),
+            "device_id": StringParameter(),
             # Local interface
-            "local_interface" : InterfaceNameParameter(),
+            "local_interface": InterfaceNameParameter(),
             # Remote interface
-            "remote_interface": StringParameter(),
+            "remote_interface": StringParameter()
         }))
     })

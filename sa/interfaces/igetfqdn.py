@@ -9,5 +9,6 @@
 """
 from base import *
 
+
 class IGetFQDN(Interface):
-    returns=StringParameter()
+    returns = StringParameter()
