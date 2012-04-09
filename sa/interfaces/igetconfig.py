@@ -7,9 +7,10 @@
 """
 from base import *
 
+
 class IGetConfig(Interface):
-    returns=ListOfParameter(element=DictParameter(attrs={
-                "name"  : StringParameter(),
-                "config": StringParameter(),
-            })) | StringParameter()
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "name": StringParameter(),
+        "config": StringParameter()
+    })) | StringParameter()
     template = "interfaces/igetconfig.html"

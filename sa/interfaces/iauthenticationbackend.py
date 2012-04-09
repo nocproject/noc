@@ -9,5 +9,6 @@
 """
 from base import *
 
+
 class IAuthenticationBackend(Interface):
-    returns=InstanceOfParameter("User",required=False)
+    returns = InstanceOfParameter("User", required=False)
