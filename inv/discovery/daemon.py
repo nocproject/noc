@@ -450,6 +450,10 @@ class DiscoveryDaemon(Daemon):
                 self.o_info("Skipping unknown VRF '%s'" % v["name"])
                 continue
             for a in v["addresses"]:
+                # Skip broadcast MACs
+                if a.get("mac") == "FF:FF:FF:FF:FF:FF":
+                    continue
+                # Check address in IPAM
                 if not Address.objects.filter(vrf=vrf, afi=a["afi"],
                                               address=a["ip"]).exists():
                     self.notify_new_address(vrf=vrf, address=a["ip"],
