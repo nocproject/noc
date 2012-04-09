@@ -9,6 +9,7 @@
 """
 from base import *
 
+
 class IDBPostDelete(Interface):
-    model=SubclassOfParameter("Model")
-    instance=Parameter()
+    model = SubclassOfParameter("Model")
+    instance = Parameter()

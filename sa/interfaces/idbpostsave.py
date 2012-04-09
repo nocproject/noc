@@ -9,7 +9,8 @@
 """
 from base import *
 
+
 class IDBPostSave(Interface):
-    model=SubclassOfParameter("Model")
-    instance=Parameter()
-    created=BooleanParameter()
+    model = SubclassOfParameter("Model")
+    instance = Parameter()
+    created = BooleanParameter()
