@@ -8,10 +8,9 @@
 """
 """
 from base import *
-##
-## IConfigDiffFilter interface
-##
+
+
 class IConfigDiffFilter(Interface):
-    managed_object=InstanceOfParameter("ManagedObject")
-    config=StringParameter()
-    returns=StringParameter()
+    managed_object = InstanceOfParameter("ManagedObject")
+    config = StringParameter()
+    returns = StringParameter()

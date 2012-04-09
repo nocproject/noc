@@ -8,10 +8,9 @@
 """
 """
 from base import *
-##
-## IConfigValidator interface
-##
+
+
 class IConfigValidator(Interface):
-    managed_object=InstanceOfParameter("ManagedObject")
-    config=StringParameter()
-    returns=StringListParameter()
+    managed_object = InstanceOfParameter("ManagedObject")
+    config = StringParameter()
+    returns = StringListParameter()
