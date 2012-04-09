@@ -341,7 +341,10 @@ class TableColumn(ReportNode):
             return "0"
         if type(f) == types.FloatType:
             f = str(f)
-        f = decimal.Decimal(f)
+        try:
+            f = decimal.Decimal(f)
+        except decimal.InvalidOperation:
+            return "-"
         sign, digits, exp = f.as_tuple()
         if exp:
             r = "." + "".join(map(str, digits[-exp:]))
