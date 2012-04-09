@@ -9,5 +9,6 @@
 """
 from base import *
 
+
 class IGetDictList(Interface):
-    returns=DictListParameter()
+    returns = DictListParameter()

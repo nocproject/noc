@@ -9,10 +9,11 @@
 """
 from base import *
 
+
 class IGetDHCPBinding(Interface):
-    returns=ListOfParameter(element=DictParameter(attrs={
-        "ip"         : IPv4Parameter(),
-        "mac"        : MACAddressParameter(),
-        "expiration" : DateTimeParameter(),
-        "type"       : StringParameter(), # Choices=["A","M"]
-        }))
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "ip": IPv4Parameter(),
+        "mac": MACAddressParameter(),
+        "expiration": DateTimeParameter(),
+        "type": StringParameter()  # Choices=["A","M"]
+    }))
