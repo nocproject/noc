@@ -9,9 +9,7 @@
 """
 from base import *
 
-##
-## Get chassis MAC address
-##
+
 class IGetChassisID(Interface):
-    returns=MACAddressParameter()
+    returns = MACAddressParameter()
     template = "interfaces/igetchassisid.html"

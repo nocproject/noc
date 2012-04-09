@@ -9,8 +9,9 @@
 """
 from base import *
 
+
 class IAuthenticationForm(Interface):
-    returns=ListOfParameter(element=DictParameter(attrs={
-            "xtype": StringParameter(),
-            "name": StringParameter()
-        }))
+    returns = ListOfParameter(element=DictParameter(attrs={
+        "xtype": StringParameter(),
+        "name": StringParameter()
+    }))

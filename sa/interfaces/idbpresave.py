@@ -9,6 +9,7 @@
 """
 from base import *
 
+
 class IDBPreSave(Interface):
-    model=SubclassOfParameter("Model")
-    instance=Parameter()
+    model = SubclassOfParameter("Model")
+    instance = Parameter()
