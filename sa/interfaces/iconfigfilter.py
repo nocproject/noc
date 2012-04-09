@@ -8,10 +8,9 @@
 """
 """
 from base import *
-##
-## IConfigFilter interface
-##
+
+
 class IConfigFilter(Interface):
-    managed_object=InstanceOfParameter("ManagedObject")
-    config=StringParameter()
-    returns=StringParameter()
+    managed_object = InstanceOfParameter("ManagedObject")
+    config = StringParameter()
+    returns = StringParameter()
