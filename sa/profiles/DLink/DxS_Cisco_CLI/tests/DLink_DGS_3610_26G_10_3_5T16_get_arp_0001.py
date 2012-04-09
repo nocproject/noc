@@ -13,9 +13,9 @@ class DLink_DxS_Cisco_CLI_get_arp_Test(ScriptTestCase):
     platform='DGS-3610-26G'
     version='10.3(5T16)'
     input={}
-    result=[{'interface': 'VLAN 1', 'ip': '10.111.0.18', 'mac': '00:1F:C6:C8:DE:7B'},
- {'interface': 'VLAN 1', 'ip': '10.111.0.14', 'mac': '00:E0:81:40:8D:56'},
- {'interface': 'VLAN 1', 'ip': '10.111.0.144', 'mac': '00:21:91:C7:D6:7C'}]
+    result=[{'interface': 'Vl 1', 'ip': '10.111.0.18', 'mac': '00:1F:C6:C8:DE:7B'},
+ {'interface': 'Vl 1', 'ip': '10.111.0.14', 'mac': '00:E0:81:40:8D:56'},
+ {'interface': 'Vl 1', 'ip': '10.111.0.144', 'mac': '00:21:91:C7:D6:7C'}]
     motd='\n\n'
     cli={
 ## 'show arp'
