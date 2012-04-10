@@ -125,18 +125,37 @@ class Daemon(object):
         self.heartbeat_enable = (self.options.daemonize and
                                  self.config.getboolean("main", "heartbeat"))
         if self.options.daemonize:
-            if self.config.get("main", "logfile"):
+            # Set up logging
+            logfile = self.config.get("main", "logfile")
+            syslog_host = self.config.get("main", "syslog_host")
+            if logfile or syslog_host:
                 loglevel = self.LOG_LEVELS[self.config.get("main", "loglevel")]
                 logging.root.setLevel(loglevel)
+            if logfile:
+                # Log to file
                 rf_handler = logging.handlers.RotatingFileHandler(
-                    filename=self.config.get("main", "logfile").replace(
+                    filename=logfile.replace(
                         "{{instance}}", self.instance_id),
                     maxBytes=self.config.getint("main", "logsize"),
                     backupCount=self.config.getint("main", "logfiles")
                 )
+                # @todo: Configurable parameter
                 rf_handler.setFormatter(
                     logging.Formatter('%(asctime)s %(message)s', None))
                 logging.root.addHandler(rf_handler)
+            if syslog_host:
+                # Log to remote host
+                for host in syslog_host.split(","):
+                    host = host.strip()
+                    if not host:
+                        continue
+                    syslog_handler = logging.handlers.SysLogHandler(
+                        address=(host, 514)
+                    )
+                    # @todo: Configurable parameter
+                    syslog_handler.setFormatter(
+                        logging.Formatter('%(asctime)s %(message)s', None))
+                    logging.root.addHandler(syslog_handler)
             self.pidfile = self.config.get("main", "pidfile").replace(
                 "{{instance}}", self.instance_id)
             if self.pidfile and self.create_piddir:
