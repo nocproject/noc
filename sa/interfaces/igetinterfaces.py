@@ -176,7 +176,7 @@ class IGetInterfaces(Interface):
             "name": InterfaceNameParameter(),
             "type": StringParameter(choices=["physical", "SVI", "aggregated",
                                              "loopback", "management",
-                                             "null", "tunnel", "other"]),
+                                             "null", "tunnel", "other", "unknown"]),
             "admin_status": BooleanParameter(default=False),
             "oper_status": BooleanParameter(default=False),
             "aggregated_interface": InterfaceNameParameter(required=False), # Not empty for portchannel members

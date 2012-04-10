@@ -25,6 +25,7 @@ class Script(NOCScript):
         "packet over sonet/sdh": "physical",
         "gigabitethernet/ieee 802.3 interface(s)": "physical",
         "tengige": "physical",
+        "gigabitethernet": "physical",
         "management ethernet": "management",
         "aggregated ethernet interface(s)": "aggregated",
         "loopback interface(s)": "loopback",
@@ -86,10 +87,10 @@ class Script(NOCScript):
             match = self.rx_hw.match(l)
             if match:
                 hw = match.group("hw").lower()
-                if hw not in self.types:
+                t = self.types.get(hw, "unknown")
+                if t == "unknown":
                     self.error("Unknown hardware type: %s" % hw)
-                    continue
-                ifaces[current]["type"] = self.types[hw]
+                ifaces[current]["type"] = t
                 mac = match.group("mac")
                 if mac:
                     ifaces[current]["mac"] = mac
