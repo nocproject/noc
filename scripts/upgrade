@@ -1,0 +1,33 @@
+#!/bin/sh
+
+PREFIX=$(dirname $0)/../
+cd $PREFIX
+PREFIX=$PWD
+PROGNAME=$(basename $0)
+REV=${1:-tip}
+
+# Include configs
+[ -f $PREFIX/etc/upgrade.defaults ] && . $PREFIX/etc/upgrade.defaults
+[ -f $PREFIX/etc/upgrade.conf ] && . $PREFIX/etc/upgrade.conf
+
+error_exit ( ) {
+    echo "$PROGNAME: ${1:-'Unknown error'}" 1>&2
+    echo "Terminating" 1>&2
+    exit 1
+}
+
+info ( ) {
+    echo $1 1>&2
+}
+
+## Pull repo
+info "Pulling $REV"
+$HG pull -r "$REV" -u || error_exit "Failed to pull $REV"
+## Sync contrib
+info "Syncing contrib/"
+$PREFIX/scripts/sync-contrib || error_exit "Failed to sync contrib/"
+## Run post-update
+info "Running post-update"
+$SUDO -u $NOCUSER $PREFIX/scripts/post-update || error_exit "Failed to post-update"
+
+
