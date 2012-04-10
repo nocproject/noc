@@ -9,5 +9,6 @@ logfile  = /var/log/noc/noc-classifier.log
 loglevel = info
 logsize  = 0
 logfiles = 0
+syslog_host =
 pidfile  = /var/run/noc/noc-classifier.pid
 heartbeat= false
