@@ -1,0 +1,10 @@
+#!/bin/sh
+
+## NOC username
+NOCUSER=noc
+
+## sudo path
+HG=$(which hg)
+
+## sudo path
+SUDO=$(which sudo)
