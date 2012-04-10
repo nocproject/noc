@@ -26,5 +26,5 @@ class Script(NOCScript):
 
         match = self.re_search(self.rx_line, c)
         if match:
-            return match.group("index")
+            return int(match.group("index"))
         return None
