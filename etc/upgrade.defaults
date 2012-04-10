@@ -3,7 +3,7 @@
 ## NOC username
 NOCUSER=noc
 
-## sudo path
+## hg path
 HG=$(which hg)
 
 ## sudo path
