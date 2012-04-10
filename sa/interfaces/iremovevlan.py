@@ -7,6 +7,7 @@
 """
 from base import *
 
+
 class IRemoveVlan(Interface):
-    vlan_id=VLANIDParameter()
-    returns=BooleanParameter()
+    vlan_id = VLANIDParameter()
+    returns = BooleanParameter()

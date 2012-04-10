@@ -8,6 +8,7 @@
 
 from base import *
 
+
 class ISetSwitchport(Interface):
     # Port configuration
     configs = ListOfParameter(element=DictParameter(attrs={

@@ -7,10 +7,11 @@
 """
 from base import *
 
+
 class IPing(Interface):
-    address=IPParameter()
-    returns=DictParameter(attrs={
-        "success":IntParameter(),
-        "count":IntParameter(),
+    address = IPParameter()
+    returns = DictParameter(attrs={
+        "success": IntParameter(),
+        "count": IntParameter()
     })
     template = "interfaces/iping.html"

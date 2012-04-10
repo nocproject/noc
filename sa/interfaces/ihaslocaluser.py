@@ -9,6 +9,7 @@
 """
 from base import *
 
+
 class IHasLocalUser(Interface):
-    username=StringParameter()
-    returns=BooleanParameter()
+    username = StringParameter()
+    returns = BooleanParameter()

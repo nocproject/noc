@@ -9,6 +9,7 @@
 """
 from base import *
 
+
 class INotifySAE(Interface):
     event = StringParameter()
-    returns=BooleanParameter()
+    returns = BooleanParameter()
