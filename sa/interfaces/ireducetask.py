@@ -9,5 +9,6 @@
 """
 from base import *
 
+
 class IReduceTask(Interface):
-    task=InstanceOfParameter("ReduceTask")
+    task = InstanceOfParameter("ReduceTask")
