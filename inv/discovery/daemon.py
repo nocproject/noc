@@ -15,6 +15,7 @@ import datetime
 import re
 ## Django modules
 from django.db import reset_queries
+from django.template import Template, Context
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.sa.models import ManagedObject, profile_registry, ReduceTask
@@ -22,7 +23,6 @@ from noc.inv.models import Interface, ForwardingInstance, SubInterface,\
                            DiscoveryStatusInterface, DiscoveryStatusIP
 from noc.lib.debug import error_report
 from noc.lib.ip import IP
-from noc.lib.validators import is_fqdn
 from noc.ip.models import VRF, Prefix, AS, Address
 from noc.main.models import SystemNotification
 
@@ -82,6 +82,11 @@ class DiscoveryDaemon(Daemon):
                                       int(self.ip_success_retry * 1.1))
         self.ip_failed_retry_range = (int(self.ip_failed_retry * 0.9),
                                      int(self.ip_failed_retry * 1.1))
+        # Templates
+        self.fqdn_template = self.config.get("ip_discovery",
+                                             "fqdn_template")
+        if self.fqdn_template:
+            self.fqdn_template = Template(self.fqdn_template)
 
     def run(self):
         last_i_check = 0
@@ -428,6 +433,7 @@ class DiscoveryDaemon(Daemon):
             len(interfaces), len(found_interfaces), si_count))
 
     def import_ip(self, o, result):
+        octx = self.get_object_context(o)
         for v in result:
             vrf = None
             if v["name"] == "default":
@@ -474,7 +480,7 @@ class DiscoveryDaemon(Daemon):
                         if self.check_address_constraint(vrf, a["afi"],
                             a["ip"], o, a["interface"]):
                             Address(vrf=vrf, afi=a["afi"],
-                                fqdn=self.fqdn_from_ip(o, a["ip"]),
+                                fqdn=self.get_fqdn(octx, a["interface"], a["ip"]),
                                 mac=a["mac"], address=a["ip"],
                                 description="Seen at %s:%s" % (o, a["interface"])
                             ).save()
@@ -512,6 +518,7 @@ class DiscoveryDaemon(Daemon):
         :type si: dict
         :return:
         """
+        octx = self.get_object_context(o)
         addresses = si.get("ipv4_addresses", []) + si.get("ipv6_addresses", [])
         if vrf is None:
             p = set(str(IP.prefix(a).normalized) for a in addresses)
@@ -548,7 +555,7 @@ class DiscoveryDaemon(Daemon):
                     if self.check_address_constraint(vrf, p.afi, p.address,
                         o, si["name"]):
                         Address(vrf=vrf, afi=p.afi,
-                            fqdn=self.fqdn_from_interface(o, si["name"], p.address),
+                            fqdn=self.get_fqdn(octx, si["name"], p.address),
                             mac=si.get("mac"), address=p.address,
                             managed_object=o, description="%s:%s" % (o, si["name"])
                         ).save()
@@ -557,7 +564,7 @@ class DiscoveryDaemon(Daemon):
                     # Rebind
                     self.o_info(o, "Bind to %s: %s" % (vrf, p.address))
                     a.managed_object = o
-                    a.description="%s:%s" % (o, si["name"])
+                    a.description = "%s:%s" % (o, si["name"])
                     a.save()
 
     def check_address_constraint(self, vrf, afi, address, o, i):
@@ -644,33 +651,41 @@ class DiscoveryDaemon(Daemon):
         SystemNotification.notify("inv.prefix_discovery", subject=subject,
             body="\n".join(body))
 
-
-    def fqdn_from_interface(self, o, interface, address):
+    def get_object_context(self, o):
         """
-        Generate address' FQDN from interface
+        Generate object part of context for get_fqdn
         :param o:
-        :param si:
-        :param address:
         :return:
         """
-        if is_fqdn(o.name):
-            prefix, suffix = o.name.lower().split(".", 1)
+        name = o.name
+        if "." in name:
+            host, domain = name.split(".", 1)
         else:
-            suffix = "example.com"
-            prefix = ""
-        n = self.rx_address.sub("-", interface.lower())
-        prefix = "-".join([x for x in [prefix, n] if x])
-        return "%s.%s" % (prefix, suffix)
+            host = name
+            domain = None
+        return {
+            "object": o,
+            "name": name,
+            "host": host,
+            "domain": domain
+        }
 
-    def fqdn_from_ip(self, o, address):
+    def get_fqdn(self, octx, interface, address):
         """
-        Generate address' FQDN from address
-        :param o:
-        :param si:
-        :param address:
+        Generate FQDN for address
         :return:
         """
-        return "%s.example.com" % address.replace(".", "-")
+        afi = "6" if ":" in address else "4"
+        ip = [str(x) for x in IP.prefix(address)._get_parts()]
+        rip = list(reversed(ip))
+        c = octx.copy()
+        c.update({
+            "afi": afi,
+            "IP": ip,
+            "rIP": rip,
+            "interface": interface,
+        })
+        return self.fqdn_template.render(Context(c))
 
 
 def interface_discovery_reduce(task):
