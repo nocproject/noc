@@ -31,3 +31,17 @@ concurrency = 20
 success_retry = 86400
 failed_retry = 900
 reschedule_interval = 900
+#
+# Django template to generate discovered Address'es FQDN.
+# Available context variables are:
+#   object - Managed object instance
+#   name - Managed object's name
+#   host - host part of managed object's name
+#   domain - domain part of managed object's name
+#   interface - interface, on which address have been discovered
+#   afi - address family, "4" or "6"
+#   ip - ip address
+#   IP - list of octets for IPv4 of 16-bit blocks for IPv6
+#   rIP - IP in reversed order
+#
+fqdn_template = ip-{{ IP|join:"-" }}.{%% if domain %%}{{ domain }}{%% else %%}example.com{%% endif %%}
