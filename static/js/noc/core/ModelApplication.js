@@ -239,7 +239,6 @@ Ext.define("NOC.core.ModelApplication", {
         me.formTitle = form.getComponent("form_title");
         if(me.filters) {
             me.filterPanel = me.grid.getComponent("filters");
-            console.log("Filters", me.filterPanel);
         }
     },
     // Toggle Grid/Form
@@ -280,7 +279,6 @@ Ext.define("NOC.core.ModelApplication", {
                 this.toggle();
             },
             failure: function(response, op, status) {
-                console.log("YOPTA", record);
                 if(record.phantom) {
                     // Remove from store
                     me.store.remove(record);
@@ -466,7 +464,6 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         if(me.rowClassField) {
             var c = record.get(me.rowClassField);
-            console.log(record, c);
             if(c) {
                 return c;
             } else {

@@ -29,7 +29,9 @@ Ext.define("NOC.core.LookupField", {
         if(me.query) {
             Ext.apply(me.store.proxy.extraParams, me.query);
         }
+        me.addEvents("clear");
         me.callParent();
+        // @todo: clear event
         me.on("specialkey", me.onSpecialKey, me);
         me.on("blur", me.onBlur, me);
     },
@@ -69,13 +71,17 @@ Ext.define("NOC.core.LookupField", {
         var me = this;
         if(e.ESC) {
             me.clearValue();
+            me.fireEvent("clear");
         }
     },
 
     onBlur: function(field, e) {
         var me = this;
+        console.log("BLUR", field, me.getDisplayValue(), me.getRawValue());
         if(!me.getRawValue()) {
+            console.log("CLEAR");
             me.clearValue();
+            me.fireEvent("clear");
         }
     }
 });
