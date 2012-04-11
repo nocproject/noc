@@ -537,11 +537,11 @@ class Script(threading.Thread):
             if self.to_disable_pager:
                 self.debug("Disable paging")
                 self.to_disable_pager = False
-                self.cli(self.profile.command_disable_pager)
+                self.cli(self.profile.command_disable_pager, ignore_errors=True)
         return self.cli_provider
 
     def cli(self, cmd, command_submit=None, bulk_lines=None, list_re=None,
-            cached=False, file=None):
+            cached=False, file=None, ignore_errors=False):
         """
         Execute CLI command and return a result.
         if list_re is None, return a string
@@ -586,14 +586,15 @@ class Script(threading.Thread):
         if isinstance(data, Exception):
             # Exception captured
             raise data
-        # Check for syntax error
-        if (self.profile.rx_pattern_syntax_error and
-            self.profile.rx_pattern_syntax_error.search(data)):
-            raise self.CLISyntaxError(data)
-        # Then check for operaion error
-        if (self.profile.rx_pattern_operation_error and
-            self.profile.rx_pattern_operation_error.search(data)):
-            raise self.CLIOperationError(data)
+        if not ignore_errors:
+            # Check for syntax error
+            if (self.profile.rx_pattern_syntax_error and
+                self.profile.rx_pattern_syntax_error.search(data)):
+                raise self.CLISyntaxError(data)
+            # Then check for operaion error
+            if (self.profile.rx_pattern_operation_error and
+                self.profile.rx_pattern_operation_error.search(data)):
+                raise self.CLIOperationError(data)
         # Echo cancelation
         if self.strip_echo and data.lstrip().startswith(cmd):
             data = data.lstrip()
