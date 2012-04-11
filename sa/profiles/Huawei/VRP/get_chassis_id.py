@@ -21,8 +21,17 @@ class Script(noc.sa.script.Script):
 
     rx_mac = re.compile(r"MAC address[^:]*?:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
+    rx_mac1 = re.compile(r"CIST Bridge\s+:\d+\.(?P<id>\S+)",
+        re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
         v = self.cli("display stp")
-        match = self.re_search(self.rx_mac, v)
-        return match.group("id")
+        match = self.rx_mac.search(v)
+        if match:
+            return match.group("id")
+        else:
+            match = self.rx_mac1.search(v)
+            if match:
+                return match.group("id")
+
+        raise self.NotSupportedError()
