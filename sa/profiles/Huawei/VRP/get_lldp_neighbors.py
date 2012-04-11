@@ -36,7 +36,10 @@ class Script(NOCScript):
     def execute_other(self):
         r = []
         i = {}
-        lldp = self.cli("display lldp neighbor")
+        try:
+            lldp = self.cli("display lldp neighbor")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
         while True:
             match = self.rx_ifc_line.search(lldp)
             if not match:
