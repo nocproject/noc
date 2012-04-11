@@ -2,21 +2,20 @@
 ##----------------------------------------------------------------------
 ## Vendor: Huawei
 ## OS:     VRP
-## Compatible: 3.1
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
 import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.sa.profiles import Profile as NOCProfile
 import re
 
 
 class Profile(noc.sa.profiles.Profile):
     name = "Huawei.VRP"
-    supported_schemes = [TELNET, SSH]
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_more = [
         (r"^  ---- More ----", " "),
         (r"[Cc]ontinue?\S+", "y\n\r")
@@ -28,6 +27,7 @@ class Profile(noc.sa.profiles.Profile):
     command_enter_config = "system-view"
     command_leave_config = "return"
     command_save_config = "save"
+    command_exit = "quit"
 
     def generate_prefix_list(self, name, pl, strict=True):
         p = "ip ip-prefix %s permit %%s" % name
@@ -35,17 +35,30 @@ class Profile(noc.sa.profiles.Profile):
             p += " le 32"
         return "undo ip ip-prefix %s\n" % name + "\n".join([p % x.replace("/", " ") for x in pl])
 
-    rx_interface_name = re.compile(r"^(?P<type>[A-Z]+E)(?P<number>[\d/]+(\.\d+)?)$")
+    rx_interface_name = re.compile(
+        r"^(?P<type>XGE|GE|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$")
 
     def convert_interface_name(self, s):
         """
+        >>> Profile().convert_interface_name("XGE2/0/0")
+        'XGigabitEthernet2/0/0'
         >>> Profile().convert_interface_name("GE2/0/0")
         'GigabitEthernet2/0/0'
+        >>> Profile().convert_interface_name("Eth2/0/0")
+        'Ethernet2/0/0'
+        >>> Profile().convert_interface_name("MEth2/0/0")
+        'M-Ethernet2/0/0'
         """
         match = self.rx_interface_name.match(s)
         if not match:
             return s
-        return "%s%s" % ({"GE": "GigabitEthernet"}[match.group("type")], match.group("number"))
+        return "%s%s" % ({
+            "XGE": "XGigabitEthernet",
+            "GE": "GigabitEthernet",
+            "Eth": "Ethernet",
+            "MEth": "M-Ethernet",
+            # "Vlanif": "Vlan-interface" - need testing
+        }[match.group("type")], match.group("number"))
 
     def convert_mac(self, mac):
         """
