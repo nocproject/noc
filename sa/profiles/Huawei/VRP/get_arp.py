@@ -23,9 +23,13 @@ class Script(noc.sa.script.Script):
     def execute_vrp5(self):
         return self.cli("display arp all", list_re=self.rx_arp_line_vrp5)
 
-    rx_arp_line_vrp3 = re.compile(r"^\s*(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)\s+(?P<interface>\d+)\s+", re.IGNORECASE | re.DOTALL | re.MULTILINE)
+    rx_arp_line_vrp3 = re.compile(r"^\s*(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+\d+\s+(?P<type>D|S)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
     @NOCScript.match()
     def execute_vrp3(self):
         arp = self.cli("display arp")
-        return [{"ip": match.group("ip"), "interface": "Vlan" + match.group("interface"), "mac": match.group("mac")} for match in self.rx_arp_line_vrp3.finditer(arp)]
+        return [{
+            "ip": match.group("ip"),
+            "interface": match.group("interface"),
+            "mac": match.group("mac")
+        } for match in self.rx_arp_line_vrp3.finditer(arp)]
