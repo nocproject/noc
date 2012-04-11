@@ -18,19 +18,25 @@ Ext.define("NOC.core.LookupField", {
     typeAhead: true,
     editable: true,
     query: {},
+
     initComponent: function() {
-        var sclass = this.__proto__.$className.replace("LookupField", "Lookup");
-        Ext.applyIf(this, {
+        var me = this,
+            sclass = me.__proto__.$className.replace("LookupField",
+                                                     "Lookup");
+        Ext.applyIf(me, {
             store: Ext.create(sclass)
         });
-        if(this.query) {
-            Ext.apply(this.store.proxy.extraParams, this.query);
+        if(me.query) {
+            Ext.apply(me.store.proxy.extraParams, me.query);
         }
-        this.callParent();
+        me.callParent();
+        me.on("specialkey", me.onSpecialKey, me);
+        me.on("blur", me.onBlur, me);
     },
 
     setValue: function(value) {
         var me = this;
+
         if(Ext.isDefined(value)) {
             if(me.store.loading) {
                 // do not set value until store is loaded
@@ -42,7 +48,7 @@ Ext.define("NOC.core.LookupField", {
                 me.store.on(
                     "load",
                     Ext.bind(me.setValue, me, arguments),
-                    this,
+                    me,
                     {single: true}
                 );
                 me.store.load({
@@ -52,9 +58,24 @@ Ext.define("NOC.core.LookupField", {
                 });
             }
         }
-        return this.callParent([value]);
+        return me.callParent([value]);
     },
+
     getLookupData: function() {
         return this.getDisplayValue();
+    },
+
+    onSpecialKey: function(field, e) {
+        var me = this;
+        if(e.ESC) {
+            me.clearValue();
+        }
+    },
+
+    onBlur: function(field, e) {
+        var me = this;
+        if(!me.getRawValue()) {
+            me.clearValue();
+        }
     }
 });
