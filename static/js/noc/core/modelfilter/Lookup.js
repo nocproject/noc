@@ -24,6 +24,10 @@ Ext.define("NOC.core.modelfilter.Lookup", {
                     select: {
                         scope: me,
                         fn: me.onChange
+                    },
+                    clear: {
+                        scope: me,
+                        fn: me.onChange
                     }
                 }
             });
