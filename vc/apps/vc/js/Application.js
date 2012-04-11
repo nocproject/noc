@@ -130,6 +130,12 @@ Ext.define("NOC.vc.vc.Application", {
             title: "By Tags",
             name: "tags",
             ftype: "tag"
+        },
+        {
+            title: "By Style",
+            name: "style",
+            ftype: "lookup",
+            lookup: "main.style"
         }
     ],
     //
