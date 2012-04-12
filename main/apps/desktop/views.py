@@ -17,6 +17,7 @@ from noc.lib.version import get_version
 from noc.lib.middleware import set_user
 from noc.settings import LANGUAGE_CODE
 from noc.main.auth.backends import backend as auth_backend
+from noc.main.models import Group, UserSession
 
 
 class DesktopApplication(ExtApplication):
@@ -25,6 +26,7 @@ class DesktopApplication(ExtApplication):
     """
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
+        #
         # Parse themes
         self.default_theme = config.get("customization", "default_theme")
         self.themes = {}  # id -> {name: , css:}
@@ -43,6 +45,27 @@ class DesktopApplication(ExtApplication):
                         "name": config.get("themes", nk).strip(),
                         "css": config.get("themes", ck).strip()
                     }
+        # Login restrictions
+        self.restrict_to_group = self.get_group(
+            config.get("authentication","restrict_to_group"))
+        self.single_session_group = self.get_group(
+            config.get("authentication","single_session_group"))
+        self.mutual_exclusive_group = self.get_group(
+            config.get("authentication","mutual_exclusive_group"))
+
+    def get_group(self, name):
+        """
+        Get group by name
+        :param name: group name
+        :return: Group
+        """
+        if not name:
+            return None
+        try:
+            return Group.objects.get(name=name)
+        except Group.DoesNotExist:
+            self.error("Group '%s' is not found" % name)
+            return None
 
     @view(method=["GET"], url="^$", url_name="desktop", access=True)
     def view_desktop(self, request):
@@ -103,18 +126,51 @@ class DesktopApplication(ExtApplication):
         """
         Authenticate session
 
-        :returns: True or False depending on login status
-        :rtype: Bool
+        :returns: {status: <bool>, message: ....}
+        :rtype: dict
         """
-        user = auth_backend.authenticate(**dict([(str(k), v) for k, v in request.POST.items()]))
+        user = auth_backend.authenticate(
+            **dict([(str(k), v) for k, v in request.POST.items()]))
         if not user:
-            return False
+            # Not authenticated
+            return {
+                "status": False,
+                "message": "Invalid Login!"
+            }
         if SESSION_KEY in request.session:
             if request.session[SESSION_KEY] != user.id:
                 # User changed. Flush session
                 request.session.flush()
         else:
             request.session.cycle_key()
+        # Check additional login restrictions
+        if (self.restrict_to_group and
+            not user.groups.filter(name=self.restrict_to_group.name).exists()):
+            return {
+                "status": False,
+                "message": "Access temporary denied!"
+            }
+        if (self.single_session_group and
+            self.single_session_group.user_set.filter(id=user.id).exists() and
+            UserSession.active_sessions(user=user) > 0):
+            return {
+                "status": False,
+                "message": "Only single session per user allowed!"
+            }
+        if (self.mutual_exclusive_group and
+            self.mutual_exclusive_group.user_set.filter(id=user.id).exists() and
+            UserSession.active_sessions(group=self.mutual_exclusive_group) > 0):
+            return {
+                "status": False,
+                "message": "Exclusively locked!"
+            }
+        # Register session
+        UserSession.register(request.session.session_key, user)
+        # Check additional login restrictions
+        if self.mutual_exclusive_group:
+            # Check we're only session
+            pass
+        #
         user.backend = "%s.%s" % (auth_backend.__module__,
                                   auth_backend.__class__.__name__)
         request.session[SESSION_KEY] = user.id
@@ -133,7 +189,10 @@ class DesktopApplication(ExtApplication):
         # Update last login
         user.last_login = datetime.datetime.now()
         user.save()
-        return r
+        return {
+            "status": r,
+            "message": "Ok" if r else "Not authenticated!"
+        }
 
     @view(method=["POST"], url="^logout/$", access=PermitLogged(), api=True)
     def api_logout(self, request):
@@ -144,6 +203,7 @@ class DesktopApplication(ExtApplication):
         :rtype: Bool
         """
         if request.user.is_authenticated():
+            UserSession.unregister(request.session.session_key)
             request.session.flush()
             from django.contrib.auth.models import AnonymousUser
             request.user = AnonymousUser()

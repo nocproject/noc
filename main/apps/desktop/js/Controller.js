@@ -121,15 +121,15 @@ Ext.define("NOC.main.desktop.Controller", {
             params: values,
             scope: this,
             success: function(response) {
-                var status = Ext.decode(response.responseText);
-                if(status) {
+                var r = Ext.decode(response.responseText);
+                if(r.status) {
                     // Login successfull
                     this.login_window.close();
                     this.login_window = null;
                     this.on_login();
                 } else {
                     // Login failed
-                    Ext.Msg.alert("Failed", "Login failed!");
+                    Ext.Msg.alert("Failed", r.message);
                 }
             },
             failure: function(response) {

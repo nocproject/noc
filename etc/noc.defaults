@@ -156,6 +156,15 @@ ad_superuser_filter =
 # Authentication pyrule (for pyrule method)
 pyrule_authentication =
 
+# If group name given, permit logins only from specified group
+restrict_to_group =
+
+# If group name given, only one active session per group member is allowed
+single_session_group =
+
+# If group name given, only one active session per all group member is allowed
+mutual_exclusive_group =
+
 #
 # Site customization
 #
