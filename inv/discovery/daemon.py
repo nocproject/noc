@@ -453,7 +453,7 @@ class DiscoveryDaemon(Daemon):
                             vrf_group=VRF.get_global().vrf_group)
                         vrf.save()
             if vrf is None:
-                self.o_info("Skipping unknown VRF '%s'" % v["name"])
+                self.o_info(o, "Skipping unknown VRF '%s'" % v["name"])
                 continue
             for a in v["addresses"]:
                 # Skip broadcast MACs
