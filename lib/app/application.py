@@ -310,6 +310,9 @@ class Application(object):
     def debug(self, message):
         logging.debug(message)
 
+    def error(self, message):
+        logging.error(message)
+
     def cursor(self):
         """
         Returns db cursor
