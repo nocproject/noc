@@ -37,11 +37,13 @@ class Script(NOCScript):
                 r = []
             for v in r:
                 if v["status"] and v["type"] == "VRF":
-                    vrfs[v["name"]] = {
+                    vrf = {
                         "name": v["name"],
-                        "rd": v["rd"],
                         "addresses": []
                     }
+                    if "rd" in v:
+                        vrf["rd"] = v["rd"]
+                    vrfs[v["name"]] = vrf
         # Get IPv6 neighbors (global?)
         if self.scripts.has_script("get_ipv6_neighbor"):
             try:
