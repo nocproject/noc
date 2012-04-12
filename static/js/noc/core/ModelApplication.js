@@ -277,6 +277,7 @@ Ext.define("NOC.core.ModelApplication", {
             scope: me,
             success: function() {
                 this.toggle();
+                this.reloadStore();
             },
             failure: function(response, op, status) {
                 if(record.phantom) {
