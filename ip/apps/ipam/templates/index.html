@@ -14,6 +14,10 @@ th[class="addresses"] {
     width: 50px;
 }
 
+th[class=state] {
+    width: 70px;
+}
+
 th[class=rd] {
     width: 50px;
 }
@@ -47,6 +51,7 @@ function on_mynetworks(n)
             <thead>
                 <tr>
                     <th class="vrf">VRF</th>
+                    <th class="state">State</th>
                     <th class="rd">RD</th>
                     <th class="addresses">IPv4</th>
                     <th class="addresses">IPv6</th>
@@ -58,6 +63,7 @@ function on_mynetworks(n)
             {% for vrf in g.1 %}
                 <TR class="{%cycle 'row1' 'row2'%}">
                     <td>{{vrf.name}}</td>
+                    <td>{{vrf.state}}</td>
                     <td>{{vrf.rd}}</td>
                     <td>{% if vrf.afi_ipv4 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '4' '0.0.0.0/0' %}">View</a>{% endif %}</td>
                     <td>{% if vrf.afi_ipv6 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '6' '::/0' %}">View</a>{% endif %}</td>
