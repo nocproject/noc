@@ -137,7 +137,8 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
     SSH_COMPRESSIONS = ["none", "zlib"]
     SSH_MACS = ["hmac-sha1", "hmac-md5"]
     SSH_LANGUAGES = []
-    SSH_AUTH_METHODS = ["publickey", "password", "keyboard-interactive", "none"]
+    # SSH_AUTH_METHODS = ["publickey", "password", "keyboard-interactive", "none"]
+    SSH_AUTH_METHODS = ["none", "publickey", "password", "keyboard-interactive"]
 
     rx_ssh_version = re.compile(r"^SSH-(?P<version>\d+\.\d+)-(?P<soft>.+$)")
 
