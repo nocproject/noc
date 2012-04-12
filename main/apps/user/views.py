@@ -66,7 +66,7 @@ class UserApplication(ModelApplication):
     icon = "icon_user"
     title = "Users"
 
-    @view(url=r"^(\d+)/password/$", method=["GET"], access="change")
+    @view(url=r"^(\d+)/password/$", method=["GET", "POST"], access="change")
     def view_change_password(self, request, object_id):
         """
         Change user's password
