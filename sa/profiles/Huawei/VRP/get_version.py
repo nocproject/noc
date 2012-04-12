@@ -11,8 +11,7 @@ import re
 
 rx_ver = re.compile(r"^VRP.+Software, Version (?P<version>[^ ,]+),? .*?Quidway (?P<platform>(?:NetEngine\s+)?\S+)[^\n]+uptime", re.MULTILINE | re.DOTALL | re.IGNORECASE)
 rx_ver_snmp = re.compile(r"Versatile Routing Platform Software.*?Version (?P<version>[^ ,]+),? .*?Quidway (?P<platform>(?:NetEngine\s+)?[^ \t\n\r\f\v\-]+)[^\n]+", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-rx_ver_snmp2 = re.compile(r"(?P<platform>S\d+[A-Z]+-[A-Z]+)\s+Huawei\sVersatile\sRouting\sPlatform\sSoftware.*Version\s(?P<version>\d+\.\d+)\s\(S\d+\s(?P<image>\S+)+\).*", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-
+rx_ver_snmp2 = re.compile(r"(?P<platform>(?:\S+\s+)?S\d+(?:[A-Z]+-[A-Z]+)?(?:\d+\S+)?)\s+Huawei\sVersatile\sRouting\sPlatform\sSoftware.*Version\s(?P<version>\d+\.\d+)\s\(S\d+\s(?P<image>\S+)+\).*", re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
 class Script(noc.sa.script.Script):
     name = "Huawei.VRP.get_version"
