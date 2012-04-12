@@ -14,9 +14,9 @@ import os
 import re
 
 rx_script = re.compile(r"^\s+script\s*=\s*\"(?P<script>.+?)\"", re.MULTILINE)
-rx_q = re.compile(r"[^0-9a-zA-Z_]")
-rx_platform = re.compile(r"platform\s*=\s*'([^']+)'")
-rx_version = re.compile(r"version\s*=\s*'([^']+)'")
+rx_q = re.compile(r"[^0-9a-zA-Z_]+")
+rx_platform = re.compile(r"platform\s*=\s*['\"]([^']+)['\"]")
+rx_version = re.compile(r"version\s*=\s*['\"]([^']+)['\"]")
 
 
 def install_can(path, platform, version):
@@ -40,11 +40,11 @@ def install_can(path, platform, version):
         print "Creating %s" % init
         with open(init, "w"):
             pass
-    data = re.sub(r"platform\s*=\s*'<<<INSERT YOUR PLATFORM HERE>>>'",
-                  "platform = '%s'" % platform,
+    data = re.sub(r"platform\s*=\s*['\"]<<<INSERT YOUR PLATFORM HERE>>>['\"]",
+                  "platform = \"%s\"" % platform,
                   data)
-    data = re.sub(r"version\s*=\s*'<<<INSERT YOUR VERSION HERE>>>'",
-                  "version = '%s'" % version,
+    data = re.sub(r"version\s*=\s*['\"]<<<INSERT YOUR VERSION HERE>>>['\"]",
+                  "version = \"%s\"" % version,
                   data)
     mask = os.path.join(p,"%s_%s_%s_%s_%%04d.py" % (v, rx_q.sub("_", platform),
                                                     rx_q.sub("_", version), s))
