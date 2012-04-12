@@ -493,6 +493,19 @@ class PyRule(models.Model):
             raise SyntaxError("Rule is not callable")
         return rule
 
+    @classmethod
+    def lookup(cls, name):
+        if name.startswith("noc_"):
+            l = [name]
+        else:
+            l = [name, "noc_%s" % name]
+        for n in l:
+            try:
+                return cls.objects.get(name=n)
+            except cls.DoesNotExist:
+                pass
+        raise cls.NoPyRule
+
     ##
     ## Call pyRule
     ##
@@ -523,11 +536,7 @@ class PyRule(models.Model):
         """
         Call pyRule by name
         """
-        try:
-            rule = PyRule.objects.get(name=py_rule_name)
-        except PyRule.DoesNotExist:
-            raise cls.NoPyRule
-        return rule(**kwargs)
+        return cls.lookup(py_rule_name)(**kwargs)
 
 ##
 ## Search patters
