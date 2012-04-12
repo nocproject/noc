@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Database models for main module
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python Modules
 from __future__ import with_statement
 import os
@@ -26,12 +25,13 @@ from django.template import Template as DjangoTemplate
 from django.template import Context
 ## Third-party modules
 from tagging.models import Tag
+from mongoengine.django.sessions import MongoSession
 ## NOC Modules
 from noc import settings
 from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 from noc.main.refbooks.downloaders import downloader_registry
-from noc.lib.fields import TextArrayField, PickledField, ColorField, CIDRField
+from noc.lib.fields import TextArrayField, ColorField, CIDRField
 from noc.lib.middleware import get_user
 from noc.lib.timepattern import TimePattern as TP
 from noc.lib.timepattern import TimePatternList
@@ -40,6 +40,7 @@ from noc.lib.periodic import periodic_registry
 from noc.lib.app.site import site
 from noc.lib.ip import IP
 from noc.lib.validators import check_extension, check_mimetype
+from noc.lib import nosql
 ## Register periodics
 periodic_registry.register_all()
 ##
@@ -282,6 +283,50 @@ class Permission(models.Model):
             Permission.objects.get(name=p).groups.remove(group)
 
 
+class UserSession(nosql.Document):
+    meta = {
+        "collection": "noc.user_sessions",
+        "allow_inheritance": False
+    }
+    session_key = nosql.StringField(primary_key=True)
+    user_id = nosql.IntField()
+
+    @classmethod
+    def register(cls, session_key, user):
+        UserSession(session_key=session_key,
+                    user_id=user.id).save(force_insert=True)
+
+    @classmethod
+    def unregister(cls, session_key):
+        UserSession.objects.filter(session_key=session_key).delete()
+
+    @classmethod
+    def active_sessions(cls, user=None, group=None):
+        """
+        Calculate current active sessions for user and group
+        """
+        ids = []
+        if user:
+            ids += [user.id]
+        if group:
+            ids += group.user_set.values_list("id", flat=True)
+        n = 0
+        now = datetime.datetime.now()
+        for us in UserSession.objects.filter(user_id__in=ids):
+            s = MongoSession.objects.filter(session_key=us.session_key).first()
+            if s:
+                # Session exists
+                if s.expire_date < now:
+                    # Expired session
+                    s.delete()
+                else:
+                    n += 1  # Count as active
+            else:
+                # Hanging session, schedule to kill
+                us.delete()
+        return n
+
+
 class Style(models.Model):
     """
     CSS Style
@@ -418,12 +463,6 @@ class MIMEType(models.Model):
             return "application/octet-stream"
 
 
-class NoPyRuleException(Exception):
-    pass
-
-rx_coding = re.compile(r"^#\s*-\*-\s*coding:\s*\S+\s*-\*-\s*$", re.MULTILINE)
-
-
 class ResourceState(models.Model):
     class Meta:
         verbose_name = "Resource State"
@@ -465,6 +504,12 @@ class ResourceState(models.Model):
     @classmethod
     def get_default(cls):
         return cls.objects.get(is_default=True)
+
+
+class NoPyRuleException(Exception):
+    pass
+
+rx_coding = re.compile(r"^#\s*-\*-\s*coding:\s*\S+\s*-\*-\s*$", re.MULTILINE)
 
 
 class PyRule(models.Model):
