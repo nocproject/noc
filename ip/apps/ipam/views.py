@@ -374,6 +374,11 @@ class IPAMAppplication(Application):
                 prefix = forms.CharField(label=_("Prefix"),
                                          help_text=_("IPv%(afi)s prefix") % {
                                              "afi": afi})
+                state = forms.ModelChoiceField(label=_("State"),
+                    queryset=ResourceState.objects.filter(is_starting=True,
+                        is_active=True).order_by("name"),
+                    help_text=_("Prefix state")
+                )
                 asn = forms.ModelChoiceField(label=_("ASN"),
                                              queryset=AS.objects.order_by("asn"),
                                              help_text=_("AS Number"))
@@ -424,6 +429,7 @@ class IPAMAppplication(Application):
                 # Create prefix
                 p = Prefix(vrf=vrf, afi=afi,
                            prefix=form.cleaned_data["prefix"].strip(),
+                           state=form.cleaned_data["state"],
                            asn=form.cleaned_data["asn"],
                            description=form.cleaned_data["description"],
                            tags=form.cleaned_data["tags"],
@@ -443,14 +449,20 @@ class IPAMAppplication(Application):
                 return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
                                               p.prefix)
         else:
-            initial = {"asn": parent.asn.id}
+            initial = {
+                "asn": parent.asn.id,
+                "state": ResourceState.get_default()
+            }
             if request.GET and "prefix" in request.GET:
                 # Prefix set via querystring
                 initial["prefix"] = request.GET["prefix"]
             else:
                 # Display beginning of prefix
-                initial = {"prefix": self.get_common_prefix_part(afi, parent),
-                           "asn": parent.asn.id}
+                initial = {
+                    "prefix": self.get_common_prefix_part(afi, parent),
+                    "state": ResourceState.get_default(),
+                    "asn": parent.asn.id
+                }
             form = form_class(initial=initial)
             # Suggest blocks of different sizes
         suggestions = []
@@ -484,6 +496,10 @@ class IPAMAppplication(Application):
                 asn = forms.ModelChoiceField(label=_("ASN"),
                                              queryset=AS.objects.order_by("asn"),
                                              help_text=_("AS Number"))
+                state = forms.ModelChoiceField(label=_("State"),
+                    queryset=ResourceState.objects.filter(is_active=True).order_by("name"),
+                    help_text=_("Prefix state")
+                )
                 if can_bind_vc:
                     vc = forms.ModelChoiceField(label=_("VC"),
                                                 queryset=VCBindFilter.get_vcs(
@@ -533,7 +549,9 @@ class IPAMAppplication(Application):
                                               prefix.prefix)
         else:
             form = form_class(initial={
-                "asn": prefix.asn.id, "vc": prefix.vc.id if prefix.vc else None,
+                "asn": prefix.asn.id,
+                "state": prefix.state.id,
+                "vc": prefix.vc.id if prefix.vc else None,
                 "description": prefix.description,
                 "tags": prefix.tags, "tt": prefix.tt,
                 "style": prefix.style.id if prefix.style else None
@@ -585,6 +603,17 @@ class IPAMAppplication(Application):
             address = forms.CharField(label=_("Address"),
                                       help_text=_("IPv%(afi)s address") % {
                                           "afi": afi})
+            if create:
+                state = forms.ModelChoiceField(label=_("State"),
+                    queryset=ResourceState.objects.filter(is_starting=True,
+                        is_active=True).order_by("name"),
+                    help_text=_("Prefix state")
+                )
+            else:
+                state = forms.ModelChoiceField(label=_("State"),
+                    queryset=ResourceState.objects.filter(is_active=True).order_by("name"),
+                    help_text=_("Prefix state")
+                )
             fqdn = forms.CharField(label=_("FQDN"), validators=[check_fqdn])
             mac = forms.CharField(label=_("MAC"), required=False)
             auto_update_mac = forms.BooleanField(label=_("Auto-update MAC"),
@@ -684,6 +713,7 @@ class IPAMAppplication(Application):
                 # Create address
                 a = Address(vrf=vrf, afi=afi,
                             address=form.cleaned_data["address"],
+                            state=form.cleaned_data["state"],
                             fqdn=form.cleaned_data["fqdn"],
                             mac=form.cleaned_data["mac"],
                             auto_update_mac=form.cleaned_data["auto_update_mac"],
@@ -710,7 +740,9 @@ class IPAMAppplication(Application):
                 return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
                                               a.prefix.prefix)
         else:
-            initial = {}
+            initial = {
+                "state": ResourceState.get_default()
+            }
             if "address" in request.GET and (
             (afi == "4" and is_ipv4(request.GET["address"])) or (
             afi == "6" and is_ipv6(request.GET["address"]))):
@@ -788,6 +820,7 @@ class IPAMAppplication(Application):
                     managed_object = self.get_object_or_404(ManagedObject,
                                     name=form.cleaned_data["managed_object"])
                 address.address = form.cleaned_data["address"]
+                address.state = form.cleaned_data["state"]
                 address.fqdn = form.cleaned_data["fqdn"]
                 address.mac = form.cleaned_data["mac"]
                 address.auto_update_mac = form.cleaned_data["auto_update_mac"]
@@ -811,6 +844,7 @@ class IPAMAppplication(Application):
         else:
             initial = {
                 "address": address.address,
+                "state": address.state,
                 "fqdn": address.fqdn,
                 "mac": address.mac,
                 "auto_update_mac": address.auto_update_mac,

@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.template import Template, Context
 # NOC Modules
-from noc.main.models import Style
+from noc.main.models import Style, ResourceState
 from noc.peer.models import AS
 from noc.vc.models import VC
 from noc.sa.models import ManagedObject
@@ -86,6 +86,8 @@ class VRF(models.Model):
     tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
     style = models.ForeignKey(Style, verbose_name=_("Style"), blank=True,
                               null=True)
+    state = models.ForeignKey(ResourceState, verbose_name=_("State"),
+                              default=ResourceState.get_default)
     allocated_till = models.DateField(_("Allocated till"), null=True,
                                       blank=True,
                                       help_text=_("VRF temporary allocated till the date"))
@@ -167,6 +169,8 @@ class Prefix(models.Model):
                              help_text=_("Ticket #"))
     style = models.ForeignKey(Style, verbose_name=_("Style"), blank=True,
                               null=True)
+    state = models.ForeignKey(ResourceState, verbose_name=_("State"),
+                              default=ResourceState.get_default)
     allocated_till = models.DateField(_("Allocated till"), null=True,
                                       blank=True,
                                       help_text=_("VRF temporary allocated till the date"))
@@ -567,6 +571,8 @@ class Address(models.Model):
                              help_text=_("Ticket #"))
     style = models.ForeignKey(Style, verbose_name=_("Style"), blank=True,
                               null=True)
+    state = models.ForeignKey(ResourceState, verbose_name=_("State"),
+                              default=ResourceState.get_default)
     allocated_till = models.DateField(_("Allocated till"), null=True, blank=True,
                                       help_text=_("VRF temporary allocated till the date"))
 

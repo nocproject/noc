@@ -39,6 +39,10 @@ th[class=ip] {
     width: 7em;
 }
 
+th[class=status] {
+    width: 3em;
+}
+
 th[class=range] {
     width: 1em;
 }
