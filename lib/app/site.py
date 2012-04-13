@@ -246,7 +246,9 @@ class Site(object):
                         mimetype="text/json; charset=utf-8")
                 except:
                     r = HttpResponse(get_traceback(), status=500)
-            r["Cache-Control"] = "no-cache, must-revalidate"
+            r["Pragme"] = "no-cache"
+            r["Cache-Control"] = "no-cache"
+            r["Expires"] = "0"
             return r
 
         from access import PermissionDenied
