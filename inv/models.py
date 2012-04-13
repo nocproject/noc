@@ -294,9 +294,10 @@ class Interface(Document):
     }
     managed_object = ForeignKeyField(ManagedObject)
     name = StringField()  # Normalized via Profile.convert_interface_name
-    type = StringField(choices=[(x, x) for x in ("physical", "SVI",
-                                                 "aggregated", "loopback",
-                                                 "management")])
+    type = StringField(choices=[(x, x) for x in
+                                    ["physical", "SVI", "aggregated",
+                                     "loopback", "management",
+                                     "null", "tunnel", "other", "unknown"]])
     description = StringField(required=False)
     ifindex = IntField(required=False)
     mac = StringField(required=False)
@@ -415,6 +416,7 @@ class DiscoveryStatusInterface(Document):
             s.last_status = status
             s.last_check = datetime.datetime.now()
         s.save()
+
 
 class DiscoveryStatusIP(Document):
     meta = {
