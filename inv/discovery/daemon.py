@@ -282,11 +282,17 @@ class DiscoveryDaemon(Daemon):
                         virtual_router=vr)
                     forwarding_instance.save()
                     # Create VRF if necessary
-                    if (fi["type"] == "VRF" and self.p_save and "rd" in fi):
+                    if fi["type"] == "VRF" and self.p_save and "rd" in fi:
                         if not VRF.objects.filter(rd=fi["rd"]).exists():
                             self.o_info(o, "Discovered VRF %s (%s)" % (
                                 fi["forwarding_instance"], fi["rd"]))
-                            VRF(name=fi["forwarding_instance"],
+                            # Generate unique VRF in case of names clash
+                            vrf_name = fi["forwarding_instance"]
+                            if VRF.objects.filter(name=vrf_name).exists():
+                                # Name clash, generate new name by appending RD
+                                vrf_name += "_%s" % fi["rd"]
+                                self.o_info(o, "Conflicting names for VRF %s. Using fallback name %s" % (f["forwarding_instance"], vrf_name))
+                            VRF(name=vrf_name,
                                 rd=fi["rd"],
                                 vrf_group=VRF.get_global().vrf_group
                             ).save()
