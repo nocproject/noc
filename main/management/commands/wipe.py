@@ -98,7 +98,8 @@ class Command(BaseCommand):
         :return: None
         """
         from noc.sa.models import ManagedObjectAttribute
-        from noc.inv.models import Interface, SubInterface, Link,\
+        from noc.inv.models import ForwardingInstance,\
+                                   Interface, SubInterface, Link,\
                                    DiscoveryStatusInterface,\
                                    DiscoveryStatusIP
         from noc.fm.models import NewEvent, FailedEvent,\
@@ -130,15 +131,16 @@ class Command(BaseCommand):
                     # Delete alarm
                     a.delete()
         # Wiping interfaces, subs and links
-        with self.log("Deleting interfaces, subinterfaces and links"):
+        with self.log("Deleting forwarding instances, "
+                      "interfaces, subinterfaces and links"):
+            # Wipe links
             for i in Interface.objects.filter(managed_object=o.id):
-                # Wipe subinterfaces
-                SubInterface.objects.filter(interface=i.id).delete()
-                # Wipe links
                 # @todo: Remove aggregated links correctly
                 Link.objects.filter(interfaces=i.id).delete()
-                # Wipe interface
-                i.delete()
+            #
+            ForwardingInstance.objects.filter(managed_object=o.id).delete()
+            Interface.objects.filter(managed_object=o.id).delete()
+            SubInterface.objects.filter(managed_object=o.id).delete()
         # Delete interface discovery status
         with self.log("Cleaning interface discovery status"):
             DiscoveryStatusInterface.objects.filter(managed_object=o.id).delete()
