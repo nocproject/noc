@@ -75,7 +75,7 @@ class IPAMAppplication(Application):
         @todo: Display only VRFs accessible by user
         """
         # Check only one active VRF with only one active address family exists
-        vl = list(VRF.objects.filter(is_active=True))
+        vl = list(VRF.objects.filter(state__is_provisioned=True))
         if len(vl) == 1:
             vrf = vl.pop()
             if vrf.afi_ipv4 ^ vrf.afi_ipv6:
@@ -100,8 +100,7 @@ class IPAMAppplication(Application):
         q_afi = Q(afi_ipv4=True) | Q(afi_ipv6=True)
         groups = []
         for vg in VRFGroup.objects.all().order_by("name"):
-            vrfs = list(vg.vrf_set.filter(is_active=True).filter(q_afi).filter(
-                q).order_by("name"))
+            vrfs = list(vg.vrf_set.filter(state__is_provisioned=True).filter(q_afi).filter(q).order_by("name"))
             if len(vrfs):
                 # Set up bookmarks
                 for v in vrfs:
@@ -134,7 +133,8 @@ class IPAMAppplication(Application):
         short_description = prefix.short_description
         long_description = prefix.description if prefix.description != short_description else None
         # List of nested prefixes
-        prefixes = list(prefix.children_set.order_by("prefix"))
+        # @todo: prefetch_related
+        prefixes = list(prefix.children_set.select_related().order_by("prefix"))
         # Get permissions
         user = request.user
         can_view = prefix.can_view(user)
@@ -151,7 +151,8 @@ class IPAMAppplication(Application):
             ([(True, IP.prefix(p.prefix), p) for p in prefixes] +
              [(False, p) for p in free_prefixes]), key=lambda x: x[1])
         # List of nested addresses
-        addresses = list(prefix.address_set.order_by("address"))
+        # @todo: prefetch_related
+        addresses = list(prefix.address_set.select_related().order_by("address"))
         # Prepare block info
         prefix_info = [
             ("Network", prefix.prefix)
