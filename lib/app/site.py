@@ -14,6 +14,7 @@ import os
 import urllib
 import hashlib
 import logging
+from collections import defaultdict
 ## Django modules
 from django.http import HttpResponse, HttpResponseNotFound,\
                         HttpResponseForbidden, Http404
@@ -225,9 +226,19 @@ class Site(object):
                 # Dump SQL statements
                 if self.log_sql_statements:
                     from django.db import connections
+                    tsc = 0
+                    sc = defaultdict(int)
                     for conn in connections.all():
                         for q in conn.queries:
+                            stmt = q["sql"].strip().split(" ", 1)[0].upper()
+                            sc[stmt] += 1
+                            tsc += 1
                             logging.debug("SQL %(sql)s %(time)ss" % q)
+                    x = ", ".join(["%s: %d" % (k, v)
+                                   for k, v in sc.iteritems()])
+                    if x:
+                        x = " (%s)" % x
+                    logging.debug("SQL statements: %d%s" % (tsc, x))
             except PermissionDenied, why:
                 return HttpResponseForbidden(why)
             except Http404, why:
