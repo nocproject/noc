@@ -17,12 +17,14 @@ from noc.ip.models import VRF, Prefix
 from noc.lib.validators import *
 from noc.lib.ip import *
 
-##
-## Report Form
-##
+
 class ReportForm(forms.Form):
-    vrf = forms.ModelChoiceField(label=_("VRF"), queryset=VRF.objects.filter(is_active=True).order_by("name"))
-    afi = forms.ChoiceField(label=_("Address Family"), choices=[("4", _("IPv4"))])
+    vrf = forms.ModelChoiceField(
+        label=_("VRF"),
+        queryset=VRF.objects.filter(
+            state__is_provisioned=True).order_by("name"))
+    afi = forms.ChoiceField(label=_("Address Family"),
+                            choices=[("4", _("IPv4"))])
     prefix = forms.CharField(label=_("Prefix"))
 
     def clean_prefix(self):
@@ -39,9 +41,6 @@ class ReportForm(forms.Form):
             raise ValidationError(_("Prefix not found"))
 
 
-##
-##
-##
 class ReportSummary(SimpleReport):
     title = "Block Summary"
     form = ReportForm
@@ -58,15 +57,19 @@ class ReportSummary(SimpleReport):
             free_size = sum([a.size for a in free])
             total = p.size
             data = [
-                ("Allocated addresses", allocated_size, float(allocated_size) * 100 / float(total)),
-                (".... in /30", allocated_30_size, float(allocated_30_size) * 100 / float(total)),
-                ("Free addresses", free_size, float(free_size) * 100 / float(total)),
+                ("Allocated addresses", allocated_size,
+                 float(allocated_size) * 100 / float(total)),
+                (".... in /30", allocated_30_size,
+                 float(allocated_30_size) * 100 / float(total)),
+                ("Free addresses", free_size,
+                 float(free_size) * 100 / float(total)),
                 ("Total addresses", total, 1.0)
             ]
             a_s = len(allocated)
             if a_s:
                 avg_allocated_size = allocated_size / a_s
-                avg_allocated_mask = 32 - int(math.ceil(math.log(avg_allocated_size, 2)))
+                avg_allocated_mask = 32 - int(
+                    math.ceil(math.log(avg_allocated_size, 2)))
                 data += [
                     ("Average allocated block", avg_allocated_size, ""),
                     ("Average allocated mask", avg_allocated_mask, "")
@@ -77,7 +80,9 @@ class ReportSummary(SimpleReport):
                     "afi": afi,
                     "prefix": p.prefix
                 },
-                columns=["", TableColumn(_("Size"), format="numeric", align="right"),
+                columns=["",
+                         TableColumn(_("Size"),
+                                     format="numeric", align="right"),
                          TableColumn(_("%"), format="percent", align="right")],
                 data=data)
 
