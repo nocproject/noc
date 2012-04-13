@@ -291,7 +291,7 @@ class DiscoveryDaemon(Daemon):
                             if VRF.objects.filter(name=vrf_name).exists():
                                 # Name clash, generate new name by appending RD
                                 vrf_name += "_%s" % fi["rd"]
-                                self.o_info(o, "Conflicting names for VRF %s. Using fallback name %s" % (f["forwarding_instance"], vrf_name))
+                                self.o_info(o, "Conflicting names for VRF %s. Using fallback name %s" % (fi["forwarding_instance"], vrf_name))
                             VRF(name=vrf_name,
                                 rd=fi["rd"],
                                 vrf_group=VRF.get_global().vrf_group
