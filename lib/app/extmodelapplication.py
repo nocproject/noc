@@ -171,8 +171,8 @@ class ExtModelApplication(ExtApplication):
                 # Unroll __referred
                 app, fn = v.split("__", 1)
                 model = self.site.apps[app].model
-                extra_where = "\"%s\" IN (SELECT \"%s\" FROM %s)" % (
-                    self.model._meta.pk.name,
+                extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
+                    self.model._meta.db_table, self.model._meta.pk.name,
                     model._meta.get_field_by_name(fn)[0].attname,
                     model._meta.db_table
                     )
