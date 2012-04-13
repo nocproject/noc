@@ -306,9 +306,9 @@ class DiscoveryDaemon(Daemon):
                     vrf = VRF.get_global()
             elif fi["type"] == "VRF" and "rd" in fi and fi["rd"]:
                 try:
-                    vrf = VRF.objects.get(name=fi["forwarding_instance"])
+                    vrf = VRF.objects.get(rd=fi["rd"])
                 except VRF.DoesNotExist:
-                    pass
+                    self.o_info(o, "Cannot find VRF %s" % fi["rd"])
             ## Process physical interfaces
             icache = {}  # name -> interface instance
             ifaces = sorted(fi["interfaces"],
