@@ -21,12 +21,6 @@ error_exit ( ) {
 cd `dirname $0`/..
 rm -f $JUNIT_REPORT $COVERAGE_REPORT
 
-## Destroy hanging test db
-if [ `psql -l | grep -c $TEST_DB` -ne "0" ]; then
-    echo "Dropping hanging test db"
-    dropdb $TEST_DB
-fi
-
 ## Run
 echo "Running CI scripts ..."
 echo "Installing .conf files"
@@ -36,7 +30,8 @@ echo "Synchronizing contrib/"
 ./scripts/sync-contrib || error_exit "$LINENO: contrib/ synch failed"
 
 echo "Running tests"
-./noc test --junit-xml-out=$JUNIT_REPORT --coverage-xml-out=$COVERAGE_REPORT
+./noc test --no-interactive --junit-xml-out=$JUNIT_REPORT\
+    --coverage-xml-out=$COVERAGE_REPORT
 
 echo "Running violations tests"
 ./scripts/check_pep8 > $PEP8_VIOLATIONS_REPORT
