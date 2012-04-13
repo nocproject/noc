@@ -20,11 +20,6 @@ Ext.define("NOC.ip.vrf.Model", {
             type: "string"
         },
         {
-            name: "is_active",
-            type: "boolean",
-            defaultValue: true
-        },
-        {
             name: "vrf_group",
             type: "int"
         },

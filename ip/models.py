@@ -70,7 +70,6 @@ class VRF(models.Model):
 
     name = models.CharField(_("VRF"), unique=True, max_length=64,
                             help_text=_("Unique VRF Name"))
-    is_active = models.BooleanField(_("Is Active"), default=True)
     vrf_group = models.ForeignKey(VRFGroup, verbose_name=_("VRF Group"))
     rd = models.CharField(_("RD"), unique=True, max_length=21,
                           validators=[check_rd],

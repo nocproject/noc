@@ -68,12 +68,6 @@ Ext.define("NOC.ip.vrf.Application", {
             allowBlank: false
         },
         {
-            name: "is_active",
-            xtype: "checkboxfield",
-            boxLabel: "Is Active",
-            allowBlank: false
-        },
-        {
             name: "state",
             xtype: "main.resourcestate.LookupField",
             fieldLabel: "State",
