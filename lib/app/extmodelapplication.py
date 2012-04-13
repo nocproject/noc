@@ -248,7 +248,8 @@ class ExtModelApplication(ExtApplication):
             data = self.queryset(request, query).filter(**q).extra(where=ew)
         else:
             data = self.queryset(request, query).filter(**q)
-            # Apply sorting
+        data = data.select_related()
+        # Apply sorting
         if ordering:
             data = data.order_by(*ordering)
         if format == "ext":
