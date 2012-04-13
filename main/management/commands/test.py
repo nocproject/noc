@@ -42,6 +42,11 @@ class Command(BaseCommand):
         make_option("--fixed-beef-base", action="store",
                     dest="fixed_beef_base", default=None,
                     help="Write fixed beefs into directory")
+        make_option("--interactive", action="store_true", dest="interactive",
+                    default=True, help="Ask before dropping database")
+        make_option("--no-interactive", action="store_false",
+                    dest="interactive",
+                    default=True, help="Do not ask before dropping database")
     )
     help = 'Runs the test suite for the specified applications, or the entire project if no apps are specified.'
     args = '[appname ...]'
