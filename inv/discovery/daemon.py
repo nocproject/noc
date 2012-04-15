@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## noc-discovery daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -93,6 +93,7 @@ class DiscoveryDaemon(Daemon):
         last_ip_check = 0
         interface_discovery_task = None
         ip_discovery_task = None
+        self.reset_vrf_cache()
         while True:
             if self.new_prefixes:
                 self.report_new_prefixes()
@@ -253,6 +254,62 @@ class DiscoveryDaemon(Daemon):
                 DiscoveryStatusIP.reschedule(o,
                     random.randint(*self.ip_failed_retry_range), False)
 
+    def reset_vrf_cache(self):
+        """
+        Cleanup VRF cache
+        :return:
+        """
+        self.cache_vrf_by_rd = {}
+        self.cache_vrf_by_name = {}
+
+    def get_or_create_VRF(self, object, name, rd):
+        """
+
+        :param object:
+        :param name:
+        :param rd:
+        :return:
+        """
+        def set_cache(vrf):
+            self.cache_vrf_by_rd[vrf.rd] = vrf
+            self.cache_vrf_by_name[vrf.name] = vrf
+            return vrf
+
+        if name == "default":
+            if object.vrf:
+                # Use object's VRF is set
+                return object.vrf
+            # Get default VRF
+            try:
+                return self.cache_vrf_by_name["default"]
+            except KeyError:
+                return set_cache(VRF.get_global())
+        # Non-default VRF
+        # Lookup RD cache
+        try:
+            return self.cache_vrf_by_rd[rd]
+        except KeyError:
+            pass
+        # Lookup database
+        try:
+            return set_cache(VRF.objects.get(rd=rd))
+        except VRF.DoesNotExist:
+            pass
+        # VRF Not found, create
+        # Generate unique VRF in case of names clash
+        vrf_name = name
+        if VRF.objects.filter(name=vrf_name).exists():
+            # Name clash, generate new name by appending RD
+            vrf_name += "_%s" % rd
+            self.o_info(object, "Conflicting names for VRF %s. Using fallback name %s" % (name, vrf_name))
+        # Create VRF
+        vrf = VRF(name=vrf_name,
+            rd=rd,
+            vrf_group=VRF.get_global().vrf_group
+        )
+        vrf.save()
+        return set_cache(vrf)
+
     def import_interfaces(self, o, interfaces):
         si_count = 0
         found_interfaces = set()
@@ -281,34 +338,6 @@ class DiscoveryDaemon(Daemon):
                         type=fi["type"],
                         virtual_router=vr)
                     forwarding_instance.save()
-                    # Create VRF if necessary
-                    if fi["type"] == "VRF" and self.p_save and "rd" in fi:
-                        if not VRF.objects.filter(rd=fi["rd"]).exists():
-                            self.o_info(o, "Discovered VRF %s (%s)" % (
-                                fi["forwarding_instance"], fi["rd"]))
-                            # Generate unique VRF in case of names clash
-                            vrf_name = fi["forwarding_instance"]
-                            if VRF.objects.filter(name=vrf_name).exists():
-                                # Name clash, generate new name by appending RD
-                                vrf_name += "_%s" % fi["rd"]
-                                self.o_info(o, "Conflicting names for VRF %s. Using fallback name %s" % (fi["forwarding_instance"], vrf_name))
-                            VRF(name=vrf_name,
-                                rd=fi["rd"],
-                                vrf_group=VRF.get_global().vrf_group
-                            ).save()
-            ## Get VRF instance
-            vrf = None
-            if fi["forwarding_instance"] == "default":
-                if o.vrf:
-                    # Use object's VRF if set
-                    vrf = o.vrf
-                else:
-                    vrf = VRF.get_global()
-            elif fi["type"] == "VRF" and "rd" in fi and fi["rd"]:
-                try:
-                    vrf = VRF.objects.get(rd=fi["rd"])
-                except VRF.DoesNotExist:
-                    self.o_info(o, "Cannot find VRF %s" % fi["rd"])
             ## Process physical interfaces
             icache = {}  # name -> interface instance
             ifaces = sorted(fi["interfaces"],
@@ -424,7 +453,8 @@ class DiscoveryDaemon(Daemon):
                     # Run prefix discovery when necessary
                     if (self.p_save and refreshed and
                         (si.get("is_ipv4") or si.get("is_ipv6"))):
-                        self.refresh_prefix(o, vrf, si)
+                        self.refresh_prefix(o, fi["forwarding_instance"],
+                                            fi.get("rd", "0:0"), si)
         # Remove hanging interfaces
         db_interfaces = set([x.name for x in
                 Interface.objects.filter(managed_object=o.id).only("name")])
@@ -441,23 +471,7 @@ class DiscoveryDaemon(Daemon):
     def import_ip(self, o, result):
         octx = self.get_object_context(o)
         for v in result:
-            vrf = None
-            if v["name"] == "default":
-                if o.vrf:
-                    vrf = o.vrf
-                else:
-                    vrf = VRF.get_global()
-            else:
-                try:
-                    vrf = VRF.objects.get(name=v["name"])
-                except VRF.DoesNotExist:
-                    # Try to create VRF
-                    if self.ip_save and "rd" in v and v["rd"]:
-                        self.o_info(o, "Discovered VRF %s (%s)" % (
-                            v["name"], v["rd"]))
-                        vrf = VRF(name=v["name"], rd=v["rd"],
-                            vrf_group=VRF.get_global().vrf_group)
-                        vrf.save()
+            vrf = self.get_or_create_VRF(o, v["name"], v.get("rd", "0:0"))
             if vrf is None:
                 self.o_info(o, "Skipping unknown VRF '%s'" % v["name"])
                 continue
@@ -513,7 +527,7 @@ class DiscoveryDaemon(Daemon):
                     random.randint(0, self.config.getint("ip_discovery",
                                                          "failed_retry")))
 
-    def refresh_prefix(self, o, vrf, si):
+    def refresh_prefix(self, o, vrf_name, rd, si):
         """
         Refresh IPAM address and prefixes
         :param o: Managed Object instance
@@ -524,6 +538,7 @@ class DiscoveryDaemon(Daemon):
         :type si: dict
         :return:
         """
+        vrf = self.get_or_create_VRF(o, vrf_name, rd)
         octx = self.get_object_context(o)
         addresses = si.get("ipv4_addresses", []) + si.get("ipv6_addresses", [])
         if vrf is None:
