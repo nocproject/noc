@@ -30,7 +30,7 @@ def do_python(parser, token):
 ##
 class PythonNode(template.Node):
     def __init__(self, nodelist):
-        py_code = nodelist.render({})
+        py_code = nodelist.render({}).replace("\r", "")
         self.code = compile(py_code, "string", "exec")
 
     def t_render(self, s):
