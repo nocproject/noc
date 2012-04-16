@@ -277,7 +277,7 @@ class ExtModelApplication(ExtApplication):
         else:
             ct_id = ContentType.objects.get(app_label=a, model=m).id
             s = """
-                (id IN (
+                (%(table)s.id IN (
                     SELECT object_id
                     FROM tagging_taggeditem
                     WHERE
@@ -286,6 +286,7 @@ class ExtModelApplication(ExtApplication):
                     GROUP BY object_id
                     HAVING COUNT(object_id) = %(t_len)s
                 ))""" % {
+                "table": self.model._meta.db_table,
                 "ct_id": ct_id,
                 "tags": ", ".join(str(t) for t in tags),
                 "t_len": len(value)
