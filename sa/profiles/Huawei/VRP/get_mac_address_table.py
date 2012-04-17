@@ -13,6 +13,7 @@ import re
 
 rx_vrp3line = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>Learned|Config static)\s+(?P<interfaces>[^ ]+)\s{2,}")
 rx_vrp5line = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?:\S+)\s+(?:\S+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)\s+")
+rx_vrp53line = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)\s+")
 
 
 class Script(noc.sa.script.Script):
@@ -27,6 +28,8 @@ class Script(noc.sa.script.Script):
         version = self.scripts.get_version()["version"].split(".")[0]
         if version == "3":
             rx_line = rx_vrp3line
+        elif self.match_version(version__startswith="5.3"):
+            rx_line = rx_vrp53line
         elif version == "5":
             rx_line = rx_vrp5line
         r = []

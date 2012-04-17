@@ -21,7 +21,11 @@ class Script(noc.sa.script.Script):
 
     @NOCScript.match(version__startswith="5.")
     def execute_vrp5(self):
-        return self.cli("display arp all", list_re=self.rx_arp_line_vrp5)
+        if self.match_version(version__startswith="5.3"):
+            displayarp = "display arp"
+        else:
+            displayarp = "display arp all"
+        return self.cli(displayarp, list_re=self.rx_arp_line_vrp5)
 
     rx_arp_line_vrp3 = re.compile(r"^\s*(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+\d+\s+(?P<type>D|S)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
 

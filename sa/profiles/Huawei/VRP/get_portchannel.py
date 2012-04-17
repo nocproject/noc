@@ -26,10 +26,17 @@ class Script(noc.sa.script.Script):
     @NOCScript.match()
     def execute_other(self):
         r = []
-        for match in self.rx_chan_line_vrp5.finditer(self.cli("display eth-trunk")):
+        try:
+            trunk = self.cli("display eth-trunk")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
+        for match in self.rx_chan_line_vrp5.finditer(trunk):
             r += [{
                 "interface": match.group("interface"),
                 "members": [l.split(" ", 1)[0] for l in match.group("members").lstrip("\n").splitlines()],
-                "type": {"normal": "S", "static": "L"}[match.group("mode").lower()],
+                "type": {
+                    "normal": "S",
+                     "static": "L"
+                }[match.group("mode").lower()]
             }]
         return r
