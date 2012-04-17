@@ -54,7 +54,7 @@ class Script(NOCScript):
                     "local_interface": match.group("local_if"),
                     "neighbors": []
                 }
-        if lldp:
+        if lldp and "neighbors" in i:
             i["neighbors"] += [parse_neighbor(lldp)]
             r += [i]
         return r
@@ -72,7 +72,11 @@ def parse_neighbor(text):
         for match_data in rx_neigh.finditer(match_n.group("neighbor")):
             n = {"remote_chassis_id_subtype": 4}
             if match_data:
-                n["remote_port_subtype"] = {"macAddress": 3, "interfaceName": 5, "local": 7}[match_data.group("p_type")]
+                n["remote_port_subtype"] = {
+                    "macAddress": 3,
+                    "interfaceName": 5,
+                    "local": 7
+                }[match_data.group("p_type")]
                 if n["remote_port_subtype"] == 3:
                     n["remote_port"] = MACAddressParameter().clean(match_data.group("p_id"))
                 else:
