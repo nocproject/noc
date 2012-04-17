@@ -1093,14 +1093,22 @@ class CommandSnippet(models.Model):
         return site.reverse("sa:commandsnippet:change", self.id)
     
     rx_var = re.compile(r"{{\s*([^|}]+)\s*(?:\|.+?)?}}", re.MULTILINE)
+    rx_vartag = re.compile(r"\{%\s*var\s+(?P<name>\S+)\s+(?P<type>\S+)\s*%\}",
+                           re.MULTILINE)
+
     @property
     def vars(self):
         """
         List of variables used in template
         """
+        internal = set()
+        for match in self.rx_vartag.finditer(self.snippet):
+            name, type = match.groups()
+            if type == "internal":
+                internal.add(name)
         return set([v for v in self.rx_var.findall(self.snippet)
-                    if not v.startswith("object.")])
-    
+                    if not v.startswith("object.") and v not in internal])
+
     def expand(self, data):
         """
         Expand snippet with variables

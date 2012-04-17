@@ -51,6 +51,24 @@ Line #2
 
 """
 
+PYTHON3_TPL = """
+{% load python %}
+{% var v1 internal %}
+v={{v}}
+{% python %}
+context["v1"] = 2 * context["v"] + 3
+{% endpython %}
+v1={{v1}}
+"""
+
+PYTHON3_OUT = """
+
+
+v=2
+
+v1=7
+"""
+
 class TemplateTestCase(NOCTestCase):
     def render(self, tpl, context={}):
         ctx = template.Context(context)
@@ -65,3 +83,5 @@ class TemplateTestCase(NOCTestCase):
                           PYTHON1_OUT)
         self.assertEquals(self.render(PYTHON2_TPL, {"n": 3}),
                           PYTHON2_OUT)
+        self.assertEquals(self.render(PYTHON3_TPL, {"v": 2}),
+                          PYTHON3_OUT)
