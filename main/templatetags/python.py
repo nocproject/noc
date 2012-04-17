@@ -11,6 +11,21 @@ from django import template
 ##
 ## Parsers
 ##
+def do_var(parser, token):
+    """
+    {% var <name> internal %}
+    :param parser:
+    :param token:
+    :return:
+    """
+    try:
+        tag, name, vartype = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError("%s tag requires two arguments" % (
+            token.contents.split()[0]))
+    return VarNode(name, vartype)
+
+
 def do_python(parser, token):
     """
     {% python %}
@@ -22,12 +37,24 @@ def do_python(parser, token):
     """
     nodelist = parser.parse(("endpython",))
     parser.delete_first_token()
-    return PythonNode(nodelist)
+    try:
+        return PythonNode(nodelist)
+    except SyntaxError, why:
+        raise template.TemplateSyntaxError("Python syntax error: %s" % why)
 
 
 ##
 ## Renderers
 ##
+class VarNode(template.Node):
+    def __init__(self, name, vartype):
+        self.name = name
+        self.vartype = vartype
+
+    def render(self, context):
+        return ""
+
+
 class PythonNode(template.Node):
     def __init__(self, nodelist):
         py_code = nodelist.render({}).replace("\r", "")
@@ -54,4 +81,5 @@ class PythonNode(template.Node):
 
 
 register = template.Library()
+register.tag("var", do_var)
 register.tag("python", do_python)
