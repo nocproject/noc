@@ -1,3 +1,4 @@
+/* FAM set */
 .icon_accept {
     background-image: url(/static/img/fam/silk/accept.png) !important;
 }
@@ -3996,5 +3997,9 @@
 
 .icon_zoom_out {
     background-image: url(/static/img/fam/silk/zoom_out.png) !important;
+}
+/* Custom icons */
+.icon_py {
+    background-image: url(/static/img/other/py.png) !important;
 }
 
