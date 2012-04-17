@@ -16,7 +16,7 @@ class PyRuleApplication(ExtModelApplication):
     PyRule application
     """
     title = "PyRule"
+    icon = "icon_py"
     menu = "Setup | PyRule"
     model = PyRule
-    icon = "icon_script_edit"
     query_fields = ["name__icontains"]
