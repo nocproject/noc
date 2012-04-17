@@ -21,7 +21,7 @@ class Script(noc.sa.script.Script):
 
     rx_mac = re.compile(r"MAC address[^:]*?:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
-    rx_mac1 = re.compile(r"CIST Bridge\s+:\d+\.(?P<id>\S+)",
+    rx_mac1 = re.compile(r"CIST Bridge\s+:\d+\s*\.(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
