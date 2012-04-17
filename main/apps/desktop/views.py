@@ -47,11 +47,11 @@ class DesktopApplication(ExtApplication):
                     }
         # Login restrictions
         self.restrict_to_group = self.get_group(
-            config.get("authentication","restrict_to_group"))
+            config.get("authentication", "restrict_to_group"))
         self.single_session_group = self.get_group(
-            config.get("authentication","single_session_group"))
+            config.get("authentication", "single_session_group"))
         self.mutual_exclusive_group = self.get_group(
-            config.get("authentication","mutual_exclusive_group"))
+            config.get("authentication", "mutual_exclusive_group"))
 
     def get_group(self, name):
         """
