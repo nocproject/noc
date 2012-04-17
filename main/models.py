@@ -204,7 +204,7 @@ class Permission(models.Model):
                 for p in self.implied.split(",")]
 
     @classmethod
-    def has_perm(self, user, perm):
+    def has_perm(cls, user, perm):
         """
         Check user has permission either directly either via groups
         """
