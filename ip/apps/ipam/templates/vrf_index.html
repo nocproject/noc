@@ -403,10 +403,22 @@ function on_mynetworks(n)
 <div class="module">
     <table width="100%">
         <caption>{{prefix.prefix}} Info</caption>
-        <tr class="row1">
+        <tr class="row2">
             <td><b>State</b></td>
             <td>{{ prefix.state }}</td>
         </tr>
+        {%  if prefix.afi == "4" and prefix.ipv6_transition %}
+            <tr class="row1">
+                <td><b>Dual-stack allocation</b></td>
+                <td><a href="{% url ip:ipam:vrf_index prefix.vrf.id "6" prefix.ipv6_transition.prefix %}">{{ prefix.ipv6_transition.prefix }}</a></td>
+            </tr>
+        {%  endif %}
+        {%  if prefix.afi == "6" and prefix.ipv4_transition %}
+            <tr class="row1">
+                <td><b>Dual-stack allocation</b></td>
+                <td><a href="{% url ip:ipam:vrf_index prefix.vrf.id "4" prefix.ipv4_transition.prefix %}">{{ prefix.ipv4_transition.prefix }}</a></td>
+            </tr>
+        {%  endif %}
         {% if prefix.tags %}
             <tr class="row2"><td><b>Tags</b></td><td>{% tags prefix %}</td></tr>
         {% endif %}
