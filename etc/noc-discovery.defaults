@@ -23,6 +23,11 @@ reschedule_interval = 900
 [prefix_discovery]
 enabled = false
 save = true
+# Change prefix state when found
+# Format: from state -> to state; ...; from state -> to state
+# Example:
+# change_state = PLANNED -> ALLOCATED; RESERVED -> ALLOCATED
+change_state =
 
 [ip_discovery]
 enabled = false
@@ -31,6 +36,11 @@ concurrency = 20
 success_retry = 86400
 failed_retry = 900
 reschedule_interval = 900
+# Change address state when found
+# Format: from state -> to state; ...; from state -> to state
+# Example:
+# change_state = PLANNED -> ALLOCATED; RESERVED -> ALLOCATED
+change_state =
 #
 # Django template to generate discovered Address'es FQDN.
 # Available context variables are:
