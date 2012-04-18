@@ -22,7 +22,7 @@ class Script(NOCScript):
     name = "Extreme.XOS.get_interfaces"
     implements = [IGetInterfaces]
 
-    rx_vlan = re.compile(r"^VLAN Interface.+\s+with\s+name\s+\"(?P<name>[^\"]+)\"\s+created.+$",
+    rx_vlan = re.compile(r"^VLAN Interface.+\s+with\s+name\s+(?P<name>.+?)\s+created.+$",
         re.IGNORECASE | re.MULTILINE)
     rx_untag = re.compile(r"^Tagging:\s+Untagged.*$",
         re.IGNORECASE | re.MULTILINE)
@@ -52,8 +52,11 @@ class Script(NOCScript):
                 if current:
                     vlans += [current]
                 # New VLAN
+                name = match.group("name").strip()
+                if name[0] == name[-1] and name[0] == "\"":
+                    name = name[1:-1].strip()
                 current = {
-                    "name": match.group("name"),
+                    "name": name,
                     "tagged": [],
                     "untagged": []
                 }
