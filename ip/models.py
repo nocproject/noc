@@ -172,7 +172,14 @@ class Prefix(models.Model):
                               default=ResourceState.get_default)
     allocated_till = models.DateField(_("Allocated till"), null=True,
                                       blank=True,
-                                      help_text=_("VRF temporary allocated till the date"))
+                                      help_text=_("Prefix temporary allocated till the date"))
+    ipv6_transition = models.OneToOneField("self",
+                                           related_name="ipv4_transition",
+                                           null=True, blank=True,
+                                           limit_choices_to={
+                                               "afi": "6"
+                                           },
+                                           on_delete=models.SET_NULL)
 
     def __unicode__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.prefix)
@@ -180,6 +187,30 @@ class Prefix(models.Model):
     def get_absolute_url(self):
         return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi,
                             self.prefix)
+
+    @property
+    def has_transition(self):
+        """
+        Check prefix has ipv4/ipv6 transition
+        :return:
+        """
+        if self.afi == "4":
+            return bool(self.ipv6_transition)
+        else:
+            try:
+                self.ipv4_transition
+                return True
+            except Prefix.DoesNotExist:
+                return False
+
+    def clear_transition(self):
+        if self.has_transition:
+            if self.afi == "4":
+                self.ipv6_transition = None
+                self.save()
+            else:
+                self.ipv4_transition.ipv6_transition = None
+                self.ipv4_transition.save()
 
     @classmethod
     def get_parent(cls, vrf, afi, prefix):
@@ -266,6 +297,8 @@ class Prefix(models.Model):
         self.children_set.update(parent=self.parent)
         # Reconnect children addresses
         self.address_set.update(prefix=self.parent)
+        # Unlink dual-stack allocations
+        self.clear_transition()
         # Finally delete
         super(Prefix, self).delete(*args, **kwargs)
 
@@ -273,6 +306,9 @@ class Prefix(models.Model):
         """
         Delete prefix and all descendancies
         """
+        # Unlink dual-stack allocations
+        self.clear_transition()
+        # Recursive delete
         c = connection.cursor()
         # Delete nested addresses
         c.execute("""
@@ -573,7 +609,14 @@ class Address(models.Model):
     state = models.ForeignKey(ResourceState, verbose_name=_("State"),
                               default=ResourceState.get_default)
     allocated_till = models.DateField(_("Allocated till"), null=True, blank=True,
-                                      help_text=_("VRF temporary allocated till the date"))
+                                      help_text=_("Address temporary allocated till the date"))
+    ipv6_transition = models.OneToOneField("self",
+                                           related_name="ipv4_transition",
+                                           null=True, blank=True,
+                                           limit_choices_to={
+                                               "afi": "6"
+                                           },
+                                           on_delete=models.SET_NULL)
 
     def __unicode__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.address)

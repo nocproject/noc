@@ -44,13 +44,13 @@ class IPAMAppplication(Application):
         if afi == "4":
             if p.mask < 8:
                 return ""
-                # Align to 8-bit border
+            # Align to 8-bit border
             p.mask = (p.mask // 8) * 8
             p = self.rx_ipv4_prefix_rest.sub("", p.normalized.prefix) + "."
         else:
             if p.mask < 16:
                 return ""
-                # Align to 16-bit border
+            # Align to 16-bit border
             p.mask = (p.mask // 16) * 16
             p = self.rx_ipv6_prefix_rest.sub("", p.normalized.prefix)
         return p
@@ -66,6 +66,50 @@ class IPAMAppplication(Application):
             dist = self.ADDRESS_SPOT_DIST
         return p.area_spot([a.address for a in prefix.address_set.all()] + extra,
                            dist=dist, sep=sep)
+
+    def ds_afi(self, afi):
+        """
+        Return dual-stack pair AFI
+        :param afi: "4" or "6"
+        :return:
+        """
+        return "6" if afi == "4" else "4"
+
+    def process_dual_stacking(self, prefix, ds_prefix):
+        """
+        Process dual-stacking linking
+        :param prefix:
+        :type prefix: Prefix
+        :param ds_prefix:
+        :type prefix: str
+        """
+        if not ds_prefix:
+            prefix.clear_transition()
+            return
+
+        ds_afi = self.ds_afi(prefix.afi)
+        try:
+            ds_p = Prefix.objects.get(vrf=prefix.vrf,
+                                      afi=ds_afi,
+                                      prefix=ds_prefix)
+        except Prefix.DoesNotExist:
+            # Create paired prefix
+            ds_p = Prefix(
+                vrf=prefix.vrf,
+                afi=ds_afi,
+                prefix=ds_prefix,
+                description=prefix.description,
+                state=prefix.state,
+                vc=prefix.vc,
+                tags=prefix.tags
+            )
+            ds_p.save()
+        if prefix.afi == "4":
+            prefix.ipv6_transition = ds_p
+            prefix.save()
+        else:
+            ds_p.ipv6_transition = prefix
+            ds_p.save()
 
     @view(url=r"^$", url_name="index", menu="Assigned Addresses",
           access="view")
@@ -396,6 +440,11 @@ class IPAMAppplication(Application):
                                                    "name"),
                                                required=False,
                                                help_text=_("Visual appearance"))
+                dual_stack_prefix = forms.CharField(
+                    label=_("Dual-stack prefix"),
+                    required=False,
+                    help_text=_("Appropriative dual-stack allocation")
+                )
 
                 def clean_prefix(self):
                     prefix = self.cleaned_data["prefix"]
@@ -413,6 +462,21 @@ class IPAMAppplication(Application):
                                              prefix=prefix).exists():
                         raise ValidationError(_("Prefix is already exists"))
                     return prefix
+
+                def clean_dual_stack_prefix(self):
+                    ds_prefix = self.cleaned_data["dual_stack_prefix"]
+                    ds_afi = "6" if afi == "4" else "4"
+                    if ds_prefix:
+                        if afi == "4":
+                            check_ipv6_prefix(ds_prefix)
+                        else:
+                            check_ipv4_prefix(ds_prefix)
+                        # Check permissions
+                        if not PrefixAccess.user_can_change(request.user, vrf,
+                                                            ds_afi, ds_prefix):
+                            raise ValidationError(_("Permission denied. "
+                                        "Cannot set dual-stack allocation"))
+                    return ds_prefix
 
             return AddPrefixForm
 
@@ -440,7 +504,10 @@ class IPAMAppplication(Application):
                 self.message_user(request,
                                   _("Prefix %(prefix)s was created") % {
                                       "prefix": p.prefix})
-                # Redirect depenging on submit button pressed
+                # Process dual-stack linking
+                ds_prefix = form.cleaned_data["dual_stack_prefix"]
+                self.process_dual_stacking(p, ds_prefix)
+                # Redirect depending on submit button pressed
                 if "_continue" in request.POST:
                     return self.response_redirect("ip:ipam:change_prefix",
                                                   vrf.id, afi, p.prefix)
@@ -521,6 +588,26 @@ class IPAMAppplication(Application):
                                                    "name"),
                                                required=False,
                                                help_text=_("Visual appearance"))
+                dual_stack_prefix = forms.CharField(
+                    label=_("Dual-stack prefix"),
+                    required=False,
+                    help_text=_("Appropriative dual-stack allocation")
+                )
+
+                def clean_dual_stack_prefix(self):
+                    ds_prefix = self.cleaned_data["dual_stack_prefix"]
+                    ds_afi = "6" if afi == "4" else "4"
+                    if ds_prefix:
+                        if afi == "4":
+                            check_ipv6_prefix(ds_prefix)
+                        else:
+                            check_ipv4_prefix(ds_prefix)
+                        # Check permissions
+                        if not PrefixAccess.user_can_change(request.user, vrf,
+                                                            ds_afi, ds_prefix):
+                            raise ValidationError(_("Permission denied. "
+                                        "Cannot set dual-stack allocation"))
+                    return ds_prefix
 
             return EditPrefixForm
 
@@ -539,13 +626,17 @@ class IPAMAppplication(Application):
             form = form_class(request.POST)
             if form.is_valid():
                 for k, v in form.cleaned_data.items():
-                    if not can_bind_vc and k == "vc":
+                    if ((not can_bind_vc and k == "vc") or
+                        k == "dual_stack_prefix"):
                         continue
                     setattr(prefix, k, v)
                 prefix.save()
                 self.message_user(request,
                                   _("Prefix %(prefix)s has been changed") % {
                                       "prefix": prefix})
+                # Process dual-stack linking
+                ds_prefix = form.cleaned_data["dual_stack_prefix"]
+                self.process_dual_stacking(prefix, ds_prefix)
                 return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
                                               prefix.prefix)
         else:
