@@ -21,7 +21,7 @@ from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
                           EventClass, MIB, EventLog, CloneClassificationRule,\
                           ActiveEvent, EventTrigger, Enumeration
-from noc.sa.models import profile_registry
+from noc.sa.models import profile_registry, ManagedObject
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.snmputils import render_tc
@@ -646,8 +646,16 @@ class Classifier(Daemon):
         """
         Write error log and mark event as failed
         """
+        # Check object still exists
+        try:
+            event.managed_object
+        except ManagedObject.DoesNotExist:
+            logging.error("Deleting orphaned event %s" % str(event.id))
+            event.delete()
+            return
         if traceback:
-            logging.error("Failed to process event %s: %s" % (str(event.id), traceback))
+            logging.error("Failed to process event %s: %s" % (str(event.id),
+                                                              traceback))
         else:
             logging.error("Failed to process event %s" % str(event.id))
             # Prepare traceback
