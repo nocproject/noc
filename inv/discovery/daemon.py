@@ -402,10 +402,10 @@ class DiscoveryDaemon(Daemon):
                 icache[i["name"]] = iface
                 found_interfaces.add(i["name"])
                 # Remove hanging subinterfaces
-                e_subs = set(s.name for s in
+                e_subs = set(str(s.name) for s in
                              SubInterface.objects.filter(
                                  interface=iface.id).only("name"))
-                f_subs = set(x["name"] for x in i["subinterfaces"])
+                f_subs = set(str(x["name"]) for x in i["subinterfaces"])
                 for si_name in e_subs - f_subs:
                     self.o_info(o, "Deleting subinterface '%s'" % si_name)
                     x = SubInterface.objects.filter(interface=iface.id,
@@ -509,7 +509,7 @@ class DiscoveryDaemon(Daemon):
                 try:
                     address = Address.objects.get(vrf=vrf, afi=a["afi"],
                                                   address=a["ip"])
-                except Address.DoesNotExists:
+                except Address.DoesNotExist:
                     address = None
                     self.notify_new_address(vrf=vrf, address=a["ip"],
                         object=o, interface=a["interface"],
