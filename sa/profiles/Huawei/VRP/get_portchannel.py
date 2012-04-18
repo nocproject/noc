@@ -21,7 +21,7 @@ class Script(noc.sa.script.Script):
     def execute_vrp3(self):
         raise self.NotSupportedError()
 
-    rx_chan_line_vrp5 = re.compile(r"(?P<interface>Eth-Trunk\d+).*?\nWorkingMode: (?P<mode>\S+).*?\nPortName[^\n]+(?P<members>.*?)\n\n", re.IGNORECASE | re.DOTALL | re.MULTILINE)
+    rx_chan_line_vrp5 = re.compile(r"(?P<interface>Eth-Trunk\d+).*?\nWorkingMode: (?P<mode>\S+).*?\nPortName[^\n]+(?P<members>.*?)(\n\s*\n|\n\s\s)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
     @NOCScript.match()
     def execute_other(self):
@@ -31,12 +31,13 @@ class Script(noc.sa.script.Script):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         for match in self.rx_chan_line_vrp5.finditer(trunk):
+            print "\n\n\n%s\n\n\n\n" % match.group("members")
             r += [{
                 "interface": match.group("interface"),
                 "members": [l.split(" ", 1)[0] for l in match.group("members").lstrip("\n").splitlines()],
                 "type": {
                     "normal": "S",
-                     "static": "L"
+                    "static": "L"
                 }[match.group("mode").lower()]
             }]
         return r
