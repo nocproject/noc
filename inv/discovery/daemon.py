@@ -24,7 +24,7 @@ from noc.inv.models import Interface, ForwardingInstance, SubInterface,\
 from noc.lib.debug import error_report
 from noc.lib.ip import IP
 from noc.ip.models import VRF, Prefix, AS, Address
-from noc.main.models import SystemNotification
+from noc.main.models import SystemNotification, ResourceState
 
 
 class DiscoveryDaemon(Daemon):
@@ -64,6 +64,8 @@ class DiscoveryDaemon(Daemon):
         self.p_save = (self.p_enabled and
                        self.config.getboolean("prefix_discovery",
                                               "save"))
+        self.p_state_map = self.get_state_map(self.config.get("prefix_discovery",
+                                                              "change_state"))
         self.ip_enabled = self.config.getboolean("ip_discovery",
                                                 "enabled")
         self.asn = AS.default_as()
@@ -82,11 +84,35 @@ class DiscoveryDaemon(Daemon):
                                       int(self.ip_success_retry * 1.1))
         self.ip_failed_retry_range = (int(self.ip_failed_retry * 0.9),
                                      int(self.ip_failed_retry * 1.1))
+        self.ip_state_map = self.get_state_map(self.config.get("prefix_discovery",
+                                                              "change_state"))
         # Templates
         self.fqdn_template = self.config.get("ip_discovery",
                                              "fqdn_template")
         if self.fqdn_template:
             self.fqdn_template = Template(self.fqdn_template)
+
+    def get_state_map(self, s):
+        """
+        Process from state -> to state; ....; from state -> to state syntax
+        and return a map of {state: state}
+        :param s:
+        :return:
+        """
+        def get_state(name):
+            try:
+                return ResourceState.objects.get(name=name)
+            except ResourceState.DoesNotExist:
+                self.die("Unknown resource state: '%s'" % name)
+
+        m = {}
+        for x in s.split(";"):
+            x = x.strip()
+            if "->" not in x:
+                self.die("Invalid state map expression: '%s'" % x)
+            f, t = [get_state(y.strip()) for y in x.split("->")]
+            m[f.id] = t
+        return m
 
     def run(self):
         last_i_check = 0
@@ -480,12 +506,28 @@ class DiscoveryDaemon(Daemon):
                 if a.get("mac") == "FF:FF:FF:FF:FF:FF":
                     continue
                 # Check address in IPAM
-                if not Address.objects.filter(vrf=vrf, afi=a["afi"],
-                                              address=a["ip"]).exists():
+                try:
+                    address = Address.objects.get(vrf=vrf, afi=a["afi"],
+                                                  address=a["ip"])
+                except Address.DoesNotExists:
+                    address = None
                     self.notify_new_address(vrf=vrf, address=a["ip"],
                         object=o, interface=a["interface"],
                         description=None)
-                    if self.ip_save:
+                if self.ip_save:
+                    if address:
+                        if address.state.id in self.ip_state_map:
+                            # Change address state
+                            fs = address.state
+                            ts = self.ip_state_map[fs.id]
+                            self.o_info(o,
+                                        "Changing address %s:%s state from %s to %s" % (
+                                            address.vrf.name, address.address,
+                                            fs.name, ts.name
+                                        ))
+                            address.state = ts
+                            address.save()
+                    else:
                         if a["afi"] == "4" and not vrf.afi_ipv4:
                             self.o_info(o, "Enabling IPv4 AFI on VRF %s (%s)" % (
                                 vrf.name, vrf.rd))
@@ -550,29 +592,47 @@ class DiscoveryDaemon(Daemon):
             p = IP.prefix(a)
             prefix = str(p.normalized)
             # Check prefix exists in IPAM
-            if (prefix not in seen and
-                not Prefix.objects.filter(vrf=vrf, afi=p.afi, prefix=prefix).exists()):
+            if prefix not in seen:
                 seen.add(prefix)
-                self.notify_new_prefix(vrf=vrf, prefix=a,
-                    object=o, interface=si["name"],
-                    description=si.get("description"))
-                # Save to IPAM when necessary
-                # @todo: vc binding
+                try:
+                    pfx = Prefix.objects.get(vrf=vrf, afi=p.afi, prefix=prefix)
+                except Prefix.DoesNotExist:
+                    pfx = None
+                    # Notify about new prefix found
+                    self.notify_new_prefix(vrf=vrf, prefix=a,
+                        object=o, interface=si["name"],
+                        description=si.get("description"))
                 if self.p_save:
-                    Prefix(vrf=vrf, afi=p.afi, asn=self.asn,
-                        prefix=prefix, description=si.get("description")).save()
+                    if pfx:
+                        # Prefix exists
+                        if pfx.state.id in self.p_state_map:
+                            # Change prefix state
+                            fs = pfx.state
+                            ts = self.p_state_map[fs.id]
+                            self.o_info(o,
+                                        "Changing prefix %s:%s state from %s to %s" % (
+                                            pfx.vrf.name, pfx.prefix,
+                                            fs.name, ts.name
+                                        ))
+                            pfx.state = ts
+                            pfx.save()
+                    else:
+                        # Create prefix
+                        Prefix(vrf=vrf, afi=p.afi, asn=self.asn,
+                            prefix=prefix,
+                            description=si.get("description")).save()
             # Check address exists in IPAM
             # @todo: MAC
             try:
                 a = Address.objects.get(vrf=vrf, afi=p.afi, address=p.address)
             except Address.DoesNotExist:
                 a = None
-            if a is None:
-                # Create new address
                 self.notify_new_address(vrf=vrf, address=p.address,
                     object=o, interface=si["name"],
                     description=si.get("description"))
-                if self.p_save:
+            if a is None:
+                # Create new address
+                if self.ip_save:
                     if self.check_address_constraint(vrf, p.afi, p.address,
                         o, si["name"]):
                         Address(vrf=vrf, afi=p.afi,
