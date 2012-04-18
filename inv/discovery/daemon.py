@@ -24,6 +24,7 @@ from noc.inv.models import Interface, ForwardingInstance, SubInterface,\
 from noc.lib.debug import error_report
 from noc.lib.ip import IP
 from noc.ip.models import VRF, Prefix, AS, Address
+from noc.lib.nosql import Q
 from noc.main.models import SystemNotification, ResourceState
 
 
@@ -187,8 +188,7 @@ class DiscoveryDaemon(Daemon):
         for k, v in values.items():
             vv = getattr(obj, k)
             if v != vv:
-                if (type(v) != int or
-                    not hasattr(vv, "id") or v != vv.id):
+                if type(v) != int or not hasattr(vv, "id") or v != vv.id:
                     setattr(obj, k, v)
                     changes += [(k, v)]
         if changes:
@@ -402,9 +402,14 @@ class DiscoveryDaemon(Daemon):
                 icache[i["name"]] = iface
                 found_interfaces.add(i["name"])
                 # Remove hanging subinterfaces
+                q = Q(interface=iface.id)
+                if forwarding_instance:
+                    q &= Q(forwarding_instance=forwarding_instance.id)
+                else:
+                    q &= (Q(forwarding_instance__exists=False) |
+                          Q(forwarding_instance=None))
                 e_subs = set(str(s.name) for s in
-                             SubInterface.objects.filter(
-                                 interface=iface.id).only("name"))
+                             SubInterface.objects.filter(q).only("name"))
                 f_subs = set(str(x["name"]) for x in i["subinterfaces"])
                 for si_name in e_subs - f_subs:
                     self.o_info(o, "Deleting subinterface '%s'" % si_name)
@@ -416,7 +421,6 @@ class DiscoveryDaemon(Daemon):
                 for si in i["subinterfaces"]:
                     s_iface = SubInterface.objects.filter(interface=iface.id,
                             name=si["name"]).first()
-                    refreshed = False
                     if s_iface:
                         changes = self.update_if_changed(s_iface, {
                             "managed_object": o.id,
@@ -440,10 +444,12 @@ class DiscoveryDaemon(Daemon):
                             "untagged_vlan": si.get("untagged_vlan"),
                             "tagged_vlans": si.get("tagged_vlans", []),
                             # ip_unnumbered_subinterface
-                            "ifindex": si.get("snmp_ifindex")
+                            "ifindex": si.get("snmp_ifindex"),
+                            "forwarding_instance": forwarding_instance
                         })
-                        self.log_changes(o, "Subinterface '%s' has been changed" % si["name"],
-                                         changes)
+                        if changes:
+                            self.log_changes(o, "Subinterface '%s' has been changed" % si["name"],
+                                             changes)
                         refreshed = bool(changes)
                     else:
                         self.o_info(o, "Creating subinterface '%s'" % si["name"])
@@ -471,7 +477,8 @@ class DiscoveryDaemon(Daemon):
                             untagged_vlan=si.get("untagged_vlan"),
                             tagged_vlans=si.get("tagged_vlans", []),
                             # ip_unnumbered_subinterface
-                            ifindex=si.get("snmp_ifindex")
+                            ifindex=si.get("snmp_ifindex"),
+                            forwarding_instance=forwarding_instance
                         )
                         s_iface.save()
                         refreshed = True
