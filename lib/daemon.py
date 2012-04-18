@@ -178,6 +178,10 @@ class Daemon(object):
             logging.basicConfig(level=logging.DEBUG,
                                 format='%(asctime)s %(message)s')
 
+    def die(self, msg):
+        logging.error(msg)
+        sys.exit(1)
+
     def on_load_config(self):
         """
         Called after config has been reloaded on SIGHUP
