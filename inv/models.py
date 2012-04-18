@@ -277,7 +277,8 @@ class ForwardingInstance(Document):
     # VRF
 
     def __unicode__(self):
-        return u"%s: %s" % (self.managed_object.name, forwarding_instance)
+        return u"%s: %s" % (self.managed_object.name,
+                            self.name if self.name else "default")
 
 
 class Interface(Document):
