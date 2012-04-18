@@ -31,7 +31,6 @@ class Script(noc.sa.script.Script):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         for match in self.rx_chan_line_vrp5.finditer(trunk):
-            print "\n\n\n%s\n\n\n\n" % match.group("members")
             r += [{
                 "interface": match.group("interface"),
                 "members": [l.split(" ", 1)[0] for l in match.group("members").lstrip("\n").splitlines()],
