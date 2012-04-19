@@ -350,7 +350,7 @@ class DiscoveryDaemon(Daemon):
                 if forwarding_instance:
                     changes = self.update_if_changed(forwarding_instance, {
                         "type": fi["type"],
-                        "forwarding_instance": fi["forwarding_instance"]
+                        "name": fi["forwarding_instance"]
                     })
                     self.log_changes(o, "Forwarding instance '%s' has been changed" % forwarding_instance,
                                      changes)
@@ -360,7 +360,7 @@ class DiscoveryDaemon(Daemon):
                     vr = fi["virtual_router"] if "virtual_router" in fi else None
                     forwarding_instance = ForwardingInstance(
                         managed_object=o.id,
-                        forwarding_instance=fi["forwarding_instance"],
+                        name=fi["forwarding_instance"],
                         type=fi["type"],
                         virtual_router=vr)
                     forwarding_instance.save()
@@ -447,9 +447,8 @@ class DiscoveryDaemon(Daemon):
                             "ifindex": si.get("snmp_ifindex"),
                             "forwarding_instance": forwarding_instance
                         })
-                        if changes:
-                            self.log_changes(o, "Subinterface '%s' has been changed" % si["name"],
-                                             changes)
+                        self.log_changes(o, "Subinterface '%s' has been changed" % si["name"],
+                                         changes)
                         refreshed = bool(changes)
                     else:
                         self.o_info(o, "Creating subinterface '%s'" % si["name"])
