@@ -786,7 +786,10 @@ class DiscoveryDaemon(Daemon):
         :return:
         """
         afi = "6" if ":" in address else "4"
-        ip = [str(x) for x in IP.prefix(address)._get_parts()]
+        if afi == "4":
+            ip = [str(x) for x in IP.prefix(address)._get_parts()]
+        else:
+            ip = ["%x" % x for x in IP.prefix(address)._get_parts()]
         rip = list(reversed(ip))
         c = octx.copy()
         c.update({
