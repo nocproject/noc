@@ -451,7 +451,7 @@ class DiscoveryDaemon(Daemon):
                         })
                         self.log_changes(o, "Subinterface '%s' has been changed" % si["name"],
                                          changes)
-                        refreshed = bool(changes)
+                        # refreshed = bool(changes)
                     else:
                         self.o_info(o, "Creating subinterface '%s'" % si["name"])
                         s_iface = SubInterface(
@@ -482,10 +482,10 @@ class DiscoveryDaemon(Daemon):
                             forwarding_instance=forwarding_instance
                         )
                         s_iface.save()
-                        refreshed = True
+                        # refreshed = True
                     si_count += 1
                     # Run prefix discovery when necessary
-                    if (self.p_save and refreshed and
+                    if (self.p_save and  # refreshed and
                         (si.get("is_ipv4") or si.get("is_ipv6"))):
                         self.refresh_prefix(o, fi["forwarding_instance"],
                                             fi.get("rd", "0:0"), si)
@@ -590,7 +590,9 @@ class DiscoveryDaemon(Daemon):
         """
         vrf = self.get_or_create_VRF(o, vrf_name, rd)
         octx = self.get_object_context(o)
-        addresses = si.get("ipv4_addresses", []) + si.get("ipv6_addresses", [])
+        ipv4_addresses = si.get("ipv4_addresses", [])
+        ipv6_addresses = si.get("ipv6_addresses", [])
+        addresses = ipv4_addresses + ipv6_addresses
         if vrf is None:
             p = set(str(IP.prefix(a).normalized) for a in addresses)
             self.o_info(o, "Cannot find VRF for prefixes: %s" % ", ".join(p))
@@ -643,10 +645,14 @@ class DiscoveryDaemon(Daemon):
                 if self.ip_save:
                     if self.check_address_constraint(vrf, p.afi, p.address,
                         o, si["name"]):
-                        Address(vrf=vrf, afi=p.afi,
+                        Address(
+                            vrf=vrf,
+                            afi=p.afi,
+                            address=p.address,
                             fqdn=self.get_fqdn(octx, si["name"], p.address),
-                            mac=si.get("mac"), address=p.address,
-                            managed_object=o, description="%s:%s" % (o, si["name"])
+                            mac=si.get("mac"),
+                            managed_object=o,
+                            description="%s:%s" % (o, si["name"])
                         ).save()
             else:
                 if a.managed_object != o:
@@ -655,6 +661,21 @@ class DiscoveryDaemon(Daemon):
                     a.managed_object = o
                     a.description = "%s:%s" % (o, si["name"])
                     a.save()
+        # Dual-stacking detection
+        if addresses and len(ipv4_addresses) == len(ipv6_addresses):
+            for ipv4, ipv6 in zip(ipv4_addresses, ipv6_addresses):
+                try:
+                    p4 = Prefix.objects.get(vrf=vrf, afi="4",
+                                    prefix=str(IP.prefix(ipv4).normalized))
+                    p6 = Prefix.objects.get(vrf=vrf, afi="6",
+                                    prefix=str(IP.prefix(ipv6).normalized))
+                except Prefix.DoesNotExist:
+                    continue
+                if not p4.has_transition and not p6.has_transition:
+                    self.o_info(o, "Dual-stacking prefixes %s and %s" % (
+                        p4, p6))
+                    p4.ipv6_transition = p6
+                    p4.save()
 
     def check_address_constraint(self, vrf, afi, address, o, i):
         """
