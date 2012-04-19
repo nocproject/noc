@@ -33,7 +33,7 @@ from noc.sa.protocols.sae_pb2 import *
 from noc.lib.search import SearchResult
 from noc.lib.fields import PickledField, INETField, AutoCompleteTagsField
 from noc.lib.app.site import site
-from noc.lib.validators import check_re
+from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL
 from noc.lib import nosql
 ##
@@ -650,6 +650,7 @@ class ManagedObjectSelector(models.Model):
         * string starting with @ - treated as selector name
         * string containing numbers - treated as object's id
         * string - managed object name.
+        * string - IPv4 or IPv6 address - management address
 
         Raises ManagedObject.DoesNotExists if object is not found.
         Raises ManagedObjectSelector.DoesNotExists if selector is not found
@@ -666,14 +667,19 @@ class ManagedObjectSelector(models.Model):
             if not isinstance(so, basestring):
                 so = str(so)
             if so.startswith("@"):
+                # Selector expression: @<selector name>
                 o = ManagedObjectSelector.objects.get(name=so[1:])
                 objects |= set(o.managed_objects)
             else:
-                try:
-                    o = ManagedObject.objects.get(id=int(so))
-                except ValueError:
-                    o = ManagedObject.objects.get(name=so)
-                objects |= set([o])
+                # Search by name
+                q = Q(name=so)
+                if is_int(so):
+                    # Search by id
+                    q |= Q(id=int(so))
+                if is_ipv4(so) or is_ipv6(so):
+                    q |= Q(address=so)
+                o = ManagedObject.objects.get(q)
+                objects.add(o)
         return list(objects)
 
 ##
