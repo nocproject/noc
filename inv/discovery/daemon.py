@@ -591,7 +591,8 @@ class DiscoveryDaemon(Daemon):
         vrf = self.get_or_create_VRF(o, vrf_name, rd)
         octx = self.get_object_context(o)
         ipv4_addresses = si.get("ipv4_addresses", [])
-        ipv6_addresses = si.get("ipv6_addresses", [])
+        ipv6_addresses = [a for a in si.get("ipv6_addresses", [])
+                          if not a.startswith("fe80:")]
         addresses = ipv4_addresses + ipv6_addresses
         if vrf is None:
             p = set(str(IP.prefix(a).normalized) for a in addresses)
