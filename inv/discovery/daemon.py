@@ -109,6 +109,8 @@ class DiscoveryDaemon(Daemon):
         m = {}
         for x in s.split(";"):
             x = x.strip()
+            if not x:
+                continue
             if "->" not in x:
                 self.die("Invalid state map expression: '%s'" % x)
             f, t = [get_state(y.strip()) for y in x.split("->")]
