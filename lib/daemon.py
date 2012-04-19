@@ -351,6 +351,8 @@ class Daemon(object):
             pass
         except MemoryError:
             logging.error("Out of memory. Exiting.")
+        except SystemExit:
+            logging.info("Exiting")
         except:
             error_report()
 
