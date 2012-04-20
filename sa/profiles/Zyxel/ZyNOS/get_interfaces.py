@@ -19,10 +19,21 @@ class Script(noc.sa.script.Script):
     name = "Zyxel.ZyNOS.get_interfaces"
     implements = [IGetInterfaces]
 
+    rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*"
+                                "Active\s+:(?P<admin>(Yes|No)).*$",
+                                re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ospf_status = re.compile(r"^\s+Internet Address (?P<ifaddr>"
+                                "\d+\.\d+\.\d+\.\d+\/\d+).+$",
+                                re.MULTILINE)
+    rx_rip_status = re.compile(r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
+                               "(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
+                               "(?P<direction>\S+)\s+.+$",
+                               re.MULTILINE)
+    rx_ipif = re.compile(r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
+                         "Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
+                         "\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
+
     def get_admin_status(self, iface):
-        rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*"
-                                    "Active\s+:(?P<admin>(Yes|No)).*$",
-                                    re.MULTILINE | re.DOTALL | re.IGNORECASE)
         if self.snmp and self.access_profile.snmp_ro:
             try:
                 # IF-MIB::ifAdminStatus
@@ -31,42 +42,41 @@ class Script(noc.sa.script.Script):
             except self.snmp.TimeOutError:
                 pass  # Fallback to CLI
 
-        match = rx_admin_status.search(self.cli("show interface config %s"
-                                         % iface))
-        return True if match.group("admin").lower() == "yes" else False
+        v = self.cli("show interface config %s" % iface)
+        match = self.rx_admin_status.search(v)
+        return match.group("admin").lower() == "yes"
 
-    def is_ospf(self, ifaddr):
-        rx_ospf_status = re.compile(r"^\s+Internet Address (?P<ifaddr>"
-                                    "\d+\.\d+\.\d+\.\d+\/\d+).+$",
-                                    re.MULTILINE)
+    def get_ospf_addresses(self):
+        """
+        Returns set of IP addresses of OSPF interfaces
+        :return: set of ip addresses
+        :rtype: set
+        """
         try:
-            for match in rx_ospf_status.finditer(self.cli("show ip ospf interface",
-                                                 cached=True)):
-                if match.group("ifaddr") == ifaddr:
-                    return True
+            v = self.cli("show ip ospf interface", cached=True)
         except self.CLISyntaxError:
-            pass
-        return False
+            return set()
+        return set(match.group("ifaddr") for
+            match in self.rx_ospf_status.finditer(v))
 
-    def is_rip(self, ifaddr):
-        rx_rip_status = re.compile(r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
-                                    "(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
-                                    "(?P<direction>\S+)\s+.+$",
-                                    re.MULTILINE)
+    def get_rip_addresses(self):
+        """
+        Returns set of IP addresses of RIP interfaces
+        :return: set of ip addresses
+        :rtype: set
+        """
         try:
-            for match in rx_rip_status.finditer(self.cli("show router rip",
-                                                        cached=True)):
-                if (ifaddr == IPv4(match.group("ip"),
-                                   netmask=match.group("mask")).prefix and
-                    match.group("direction") != "None"):
-                    return True
+            v = self.cli("show router rip", cached=True)
         except self.CLISyntaxError:
-            pass
-        return False
+            return set()
+        return set(IPv4(match.group("ip"), netmask=match.group("mask")).prefix
+            for match in self.rx_rip_status.finditer(v)
+            if match.group("direction").lower() != "none")
 
     def execute(self):
         interfaces = []
-
+        ospf_addresses = self.get_ospf_addresses()
+        rip_addresses = self.get_rip_addresses()
         # Get portchannes
         portchannel_members = {}  # member -> (portchannel, type)
         with self.cached():
@@ -75,10 +85,8 @@ class Script(noc.sa.script.Script):
                 t = pc["type"] == "L"
                 for m in pc["members"]:
                     portchannel_members[m] = (i, t)
-
         # Get mac
         mac = self.scripts.get_chassis_id()
-
         # Get switchports
         for swp in self.scripts.get_switchport():
             admin = self.get_admin_status(swp["interface"])
@@ -109,12 +117,8 @@ class Script(noc.sa.script.Script):
                 iface["aggregated_interface"] = portchannel_members[name][0]
                 iface["is_lacp"] = portchannel_members[name][1]
             interfaces += [iface]
-
         # Get SVIs
-        rx_ipif = re.compile(r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
-                             "Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
-                             "\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
-        for match in rx_ipif.finditer(self.cli("show ip")):
+        for match in self.rx_ipif.finditer(self.cli("show ip")):
             vid = int(match.group("vid"))
             ip = IPv4(match.group("ip"), netmask=match.group("mask")).prefix
             iface = {
@@ -135,10 +139,9 @@ class Script(noc.sa.script.Script):
                     "vlan_ids": [vid] if vid else []
                 }]
             }
-            if self.is_rip(ip):
+            if ip in rip_addresses:
                 iface["subinterfaces"][0]["is_rip"] = True
-            if self.is_ospf(ip):
+            if ip in ospf_addresses:
                 iface["subinterfaces"][0]["is_ospf"] = True
             interfaces += [iface]
-
         return [{"interfaces": interfaces}]
