@@ -20,7 +20,7 @@ class Script(noc.sa.script.Script):
     implements = [IGetInterfaces]
 
     def get_admin_status(self, iface):
-        rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*" \
+        rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*"
                                     "Active\s+:(?P<admin>(Yes|No)).*$",
                                     re.MULTILINE | re.DOTALL | re.IGNORECASE)
         if self.snmp and self.access_profile.snmp_ro:
@@ -36,7 +36,7 @@ class Script(noc.sa.script.Script):
         return True if match.group("admin").lower() == "yes" else False
 
     def is_ospf(self, ifaddr):
-        rx_ospf_status = re.compile(r"^\s+Internet Address (?P<ifaddr>" \
+        rx_ospf_status = re.compile(r"^\s+Internet Address (?P<ifaddr>"
                                     "\d+\.\d+\.\d+\.\d+\/\d+).+$",
                                     re.MULTILINE)
         try:
@@ -49,15 +49,16 @@ class Script(noc.sa.script.Script):
         return False
 
     def is_rip(self, ifaddr):
-        rx_rip_status = re.compile(r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+" \
-                                    "(?P<mask>\d+\.\d+\.\d+\.\d+)\s+" \
+        rx_rip_status = re.compile(r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
+                                    "(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
                                     "(?P<direction>\S+)\s+.+$",
                                     re.MULTILINE)
         try:
             for match in rx_rip_status.finditer(self.cli("show router rip",
                                                         cached=True)):
-                if ifaddr == IPv4(match.group("ip"), netmask=match.group("mask")).prefix
-                and match.group("direction") != "None":
+                if (ifaddr == IPv4(match.group("ip"),
+                                   netmask=match.group("mask")).prefix and
+                    match.group("direction") != "None"):
                     return True
         except self.CLISyntaxError:
             pass
@@ -110,9 +111,9 @@ class Script(noc.sa.script.Script):
             interfaces += [iface]
 
         # Get SVIs
-        rx_ipif = re.compile(r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+" \
-                                "Netmask[(?P<mask>\d+\.\d+\.\d+\.\d+)\]," \
-                                "\s+VID[(?P<vid>\d+)\]$", re.MULTILINE)
+        rx_ipif = re.compile(r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
+                             "Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
+                             "\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
         for match in rx_ipif.finditer(self.cli("show ip")):
             vid = int(match.group("vid"))
             ip = IPv4(match.group("ip"), netmask=match.group("mask")).prefix
