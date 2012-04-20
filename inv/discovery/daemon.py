@@ -602,6 +602,16 @@ class DiscoveryDaemon(Daemon):
         for a in addresses:
             p = IP.prefix(a)
             prefix = str(p.normalized)
+            # Ignore local prefixes
+            if ((p.afi == "4" and (
+                    prefix.startswith("127.") or
+                    prefix.endswith("/32"))
+                ) or
+                (p.afi == "6" and (
+                    prefix.startswith("fe80:") or
+                    prefix.endswith("/128"))
+                )):
+                continue
             # Check prefix exists in IPAM
             if prefix not in seen:
                 seen.add(prefix)
@@ -685,6 +695,10 @@ class DiscoveryDaemon(Daemon):
         :param address:
         :return:
         """
+        # Ignore local addresses (127.0.0.0/8 and ::1)
+        if ((afi == "4" and address.startswith("127.")) or
+            (afi == "6" and address == "::1")):
+            return False
         # @todo: speedup
         if vrf.vrf_group.address_constraint != "G":
             return True
