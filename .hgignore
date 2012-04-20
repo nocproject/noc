@@ -20,3 +20,4 @@ contrib/share/*
 MANIFEST
 .*
 atlassian-ide-plugin.xml
+ext_*
