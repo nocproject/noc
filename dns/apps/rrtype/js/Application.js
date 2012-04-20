@@ -11,6 +11,7 @@ Ext.define("NOC.dns.rrtype.Application", {
     uses: ["NOC.dns.rrtype.Model"],
     
     model: "NOC.dns.rrtype.Model",
+    search: true,
     
     columns: [
         {
@@ -19,11 +20,14 @@ Ext.define("NOC.dns.rrtype.Application", {
         },
         {
             text: "Active",
-            dataIndex: "is_active"
+            dataIndex: "is_active",
+            renderer: NOC.render.Bool,
+            width: 50
         },
         {
             text: "Validation",
-            dataIndex: "validation"
+            dataIndex: "validation",
+            flex: 1
         }
     ],
     
@@ -46,6 +50,13 @@ Ext.define("NOC.dns.rrtype.Application", {
             fieldLabel: "Validation",
             name: "validation",
             allowBlank: true
+        }
+    ],
+    filters: [
+        {
+            title: "By Active",
+            name: "is_active",
+            ftype: "boolean"
         }
     ]
 });
