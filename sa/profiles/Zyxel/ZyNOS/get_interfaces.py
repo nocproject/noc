@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Zyxel.ZyNOS.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -20,17 +20,19 @@ class Script(noc.sa.script.Script):
     implements = [IGetInterfaces]
 
     def get_admin_status(self, iface):
-        rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*Active" \
-                                    "\s+:(?P<admin>(Yes|No)).*$",
+        rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*" \
+                                    "Active\s+:(?P<admin>(Yes|No)).*$",
                                     re.MULTILINE | re.DOTALL | re.IGNORECASE)
         if self.snmp and self.access_profile.snmp_ro:
             try:
-                s = self.snmp.get("1.3.6.1.2.1.2.2.1.7.%d" % int(iface))  # IF-MIB::ifAdminStatus
+                # IF-MIB::ifAdminStatus
+                s = self.snmp.get("1.3.6.1.2.1.2.2.1.7.%d" % int(iface))
                 return int(s) == 1
             except self.snmp.TimeOutError:
                 pass  # Fallback to CLI
 
-        match = rx_admin_status.search(self.cli("show interface config %s" % iface))
+        match = rx_admin_status.search(self.cli("show interface config %s"
+                                         % iface))
         return True if match.group("admin").lower() == "yes" else False
 
     def is_ospf(self, ifaddr):
@@ -38,7 +40,8 @@ class Script(noc.sa.script.Script):
                                     "\d+\.\d+\.\d+\.\d+\/\d+).+$",
                                     re.MULTILINE)
         try:
-            for match in rx_ospf_status.finditer(self.cli("show ip ospf interface", cached=True)):
+            for match in rx_ospf_status.finditer(self.cli("show ip ospf interface",
+                                                 cached=True)):
                 if match.group("ifaddr") == ifaddr:
                     return True
         except self.CLISyntaxError:
@@ -51,8 +54,10 @@ class Script(noc.sa.script.Script):
                                     "(?P<direction>\S+)\s+.+$",
                                     re.MULTILINE)
         try:
-            for match in rx_rip_status.finditer(self.cli("show router rip", cached=True)):
-                if ifaddr == IPv4(match.group("ip"), netmask=match.group("mask")).prefix and match.group("direction") != "None":
+            for match in rx_rip_status.finditer(self.cli("show router rip",
+                                                        cached=True)):
+                if ifaddr == IPv4(match.group("ip"), netmask=match.group("mask")).prefix
+                and match.group("direction") != "None":
                     return True
         except self.CLISyntaxError:
             pass
@@ -105,25 +110,27 @@ class Script(noc.sa.script.Script):
             interfaces += [iface]
 
         # Get SVIs
-        rx_ipif = re.compile(r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+Netmask" \
-                                "\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],\s+VID" \
-                                "\[(?P<vid>\d+)\]$", re.MULTILINE)
+        rx_ipif = re.compile(r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+" \
+                                "Netmask[(?P<mask>\d+\.\d+\.\d+\.\d+)\]," \
+                                "\s+VID[(?P<vid>\d+)\]$", re.MULTILINE)
         for match in rx_ipif.finditer(self.cli("show ip")):
             vid = int(match.group("vid"))
             ip = IPv4(match.group("ip"), netmask=match.group("mask")).prefix
             iface = {
                 "name": "vlan%d" % vid if vid else "Mgmt",
                 "type": "SVI",
-                "admin_status": True,  # since inactive vlans aren't shown at all
+                # since inactive vlans aren't shown at all
+                "admin_status": True,
                 "oper_status": True,
                 "mac": mac,  # @todo get mgmt mac
-                "description": "vlan%d" % vid if vid else "Outband management",  # @todo get vlan name
+                # @todo get vlan name
+                "description": "vlan%d" % vid if vid else "Outband management",
                 "subinterfaces": [{
                     "name": "vlan%d" % vid if vid else "Mgmt",
                     "admin_status": True,
                     "oper_status": True,
                     "is_ipv4": True,
-                    "ipv4_adresses": [ip],  # @todo search for secondary IPs
+                    "ipv4_addresses": [ip],  # @todo search for secondary IPs
                     "vlan_ids": [vid] if vid else []
                 }]
             }
