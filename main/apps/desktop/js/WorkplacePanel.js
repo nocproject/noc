@@ -14,6 +14,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     border: false,
     layout: "fit",
     items: [],
+    controller: undefined,
     // Launch application in tab
     launchTab: function(panel_class, title, params) {
         var me = this,
@@ -24,10 +25,11 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             });
         var app = Ext.create(panel_class, {
                 "noc": params,
-                "title": title
+                "title": title,
+                "controller": me.controller
             });
         tab.add(app);
-        this.setActiveTab(tab);
+        me.setActiveTab(tab);
         tab.on("beforeclose", function(tab) {
             if(tab.menu_node && tab.desktop_controller)
                 tab.desktop_controller.on_close_tab(tab.menu_node);

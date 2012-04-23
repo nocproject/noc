@@ -52,6 +52,7 @@ class DesktopApplication(ExtApplication):
             config.get("authentication", "single_session_group"))
         self.mutual_exclusive_group = self.get_group(
             config.get("authentication", "mutual_exclusive_group"))
+        self.idle_timeout = config.getint("authentication", "idle_timeout")
 
     def get_group(self, name):
         """
@@ -229,7 +230,8 @@ class DesktopApplication(ExtApplication):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "theme": theme,
-            "can_change_credentials": auth_backend.can_change_credentials
+            "can_change_credentials": auth_backend.can_change_credentials,
+            "idle_timeout": self.idle_timeout
         }
 
     @view(method=["GET"], url="^navigation/$", access=True, api=True)
