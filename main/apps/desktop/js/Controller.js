@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // Desktop application controller
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.desktop.Controller");
@@ -9,59 +9,63 @@ console.debug("Defining NOC.main.desktop.Controller");
 Ext.define("NOC.main.desktop.Controller", {
     extend: "Ext.app.Controller",
     views: ["NOC.main.desktop.Viewport"],
+
     init: function() {
+        var me = this;
         console.log("Controller started");
-        this.login_window = null;
-        this.check_logged();
-        this.launched_tabs = {};
-        this.control({
+        me.login_window = null;
+        me.checkLogged();
+        me.launched_tabs = {};
+        me.control({
             // Navigation tree events
             "#navtree": {
-                itemclick: this.on_nav_launch
+                itemclick: me.onNavLaunch
             },
             // Header events
             "#header_menu_toggle": {
-                click: this.on_panels_toggle
+                click: me.onPanelsToggle
             },
             "#header_menu_userprofile": {
-                click: this.on_user_profile
+                click: me.onUserProfile
             },
             "#header_menu_change_password": {
-                click: this.show_change_credentials  
+                click: me.showChangeCredentials  
             },
             "#header_menu_logout": {
-                click: this.do_logout
+                click: me.doLogout
             },
             "#search": {
-                search: this.on_search
+                search: me.onSearch
             }
         });
     },
     // Check session is authenticated
-    check_logged: function() {
+    checkLogged: function() {
+        var me = this;
         Ext.Ajax.request({
             method: "GET",
             url: "/main/desktop/is_logged/",
-            scope: this,
+            scope: me,
             success: function(response) {
                 var status = Ext.decode(response.responseText);
                 if (status)
-                    this.on_login();
+                    me.on_login();
                 else
-                    this.show_login();
+                    me.showLogin();
             },
             failure: function(response) {
-                this.show_login();
+                me.showLogin();
             }
         }); 
     },
     // Called when session is authenticated or user logged in
     on_login: function() {
+        var me = this;
         // Apply user settings
         Ext.Ajax.request({
             method: "GET",
             url: "/main/desktop/user_settings/",
-            scope: this,
+            scope: me,
             success: function(response) {
                 var settings = Ext.decode(response.responseText);
                 // Set username in the header
@@ -87,25 +91,26 @@ Ext.define("NOC.main.desktop.Controller", {
                 // Display username button
                 Ext.getCmp("header").getComponent("user_display_name").show();
                 // Reset opened tabs
-                this.launched_tabs = {};
+                me.launched_tabs = {};
                 // Load menu
-                this.update_menu();
+                me.updateMenu();
                 // Change theme
-                this.change_theme(settings["theme"]);
+                me.changeTheme(settings["theme"]);
             }
         });
         // Launch welcome application
-        this.launch_tab("NOC.main.welcome.Application", "Welcome", {});
+        me.launchTab("NOC.main.welcome.Application", "Welcome", {});
     },
     // Show login window
-    show_login: function() {
+    showLogin: function() {
+        var me = this;
         Ext.Ajax.request({
             method: "GET",
             url: "/main/desktop/login_fields/",
             scope: this,
             success: function(response) {
                 var fields = Ext.decode(response.responseText);
-                this.login_window = Ext.create("NOC.main.desktop.Login", {
+                me.login_window = Ext.create("NOC.main.desktop.Login", {
                     controller: this,
                     login_fields: fields
                 });
@@ -114,6 +119,7 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     // Start login sequence
     do_login: function(values) {
+        var me = this;
         console.log("Do login");
         Ext.Ajax.request({
             method: "POST",
@@ -124,9 +130,9 @@ Ext.define("NOC.main.desktop.Controller", {
                 var r = Ext.decode(response.responseText);
                 if(r.status) {
                     // Login successfull
-                    this.login_window.close();
-                    this.login_window = null;
-                    this.on_login();
+                    me.login_window.close();
+                    me.login_window = null;
+                    me.on_login();
                 } else {
                     // Login failed
                     Ext.Msg.alert("Failed", r.message);
@@ -138,7 +144,8 @@ Ext.define("NOC.main.desktop.Controller", {
         });
     },
     // Start logout sequence
-    do_logout: function() {
+    doLogout: function() {
+        var me = this;
         Ext.Ajax.request({
             method: "POST",
             url: "/main/desktop/logout/",
@@ -146,8 +153,8 @@ Ext.define("NOC.main.desktop.Controller", {
             success: function(response) {
                 Ext.getCmp("header").getComponent("user_display_name").hide();
                 Ext.getCmp("workplace").removeAll(true);
-                this.update_menu();
-                this.show_login();
+                me.updateMenu();
+                me.showLogin();
             },
             failure: function(response) {
                 Ext.Msg.alert("Failed", "Logout failed");
@@ -155,7 +162,8 @@ Ext.define("NOC.main.desktop.Controller", {
         });
     },
     // Change current theme
-    change_theme: function(theme) {
+    changeTheme: function(theme) {
+        var me = this;
         if(theme == "default")
             theme = "ext-all.css";
         else
@@ -164,7 +172,8 @@ Ext.define("NOC.main.desktop.Controller", {
             "/static/resources/css/" + theme);
     },
     // Update menu
-    update_menu: function() {
+    updateMenu: function() {
+        var me = this;
         console.log("Update menu");
         var store = Ext.getStore("NOC.main.desktop.NavTreeStore");
         if (!store.isLoading()) {
@@ -172,7 +181,8 @@ Ext.define("NOC.main.desktop.Controller", {
         }
     },
     // Application selected in nav tree
-    on_nav_launch: function(view, record, item, index, event, opts) {
+    onNavLaunch: function(view, record, item, index, event, opts) {
+        var me = this;
         var reuse = !event.shiftKey;
 
         Ext.Ajax.request({
@@ -184,46 +194,50 @@ Ext.define("NOC.main.desktop.Controller", {
             scope: this,
             success: function(response, opts) {
                 var data = Ext.decode(response.responseText);
-                this.launch_tab(data["class"], data["title"], data["params"],
+                me.launchTab(data["class"], data["title"], data["params"],
                                 opts.params.node, reuse);
             }
         });
     },
     // Launch application in tab
-    launch_tab: function(panel_class, title, params, node, reuse) {
-        if(reuse && node && this.launched_tabs[node]) {
+    launchTab: function(panel_class, title, params, node, reuse) {
+        var me = this;
+        if(reuse && node && me.launched_tabs[node]) {
             // Open tab
-            Ext.getCmp("workplace").setActiveTab(this.launched_tabs[node]);
+            Ext.getCmp("workplace").setActiveTab(me.launched_tabs[node]);
             return;
         }
-        var tab = Ext.getCmp("workplace").launch_tab(panel_class, title, params);
+        var tab = Ext.getCmp("workplace").launchTab(panel_class, title, params);
         if(node) {
-            this.launched_tabs[node] = tab;
+            me.launched_tabs[node] = tab;
             tab.menu_node = node;
             tab.desktop_controller = this;
         }
     },
     // Toggle panels
-    on_panels_toggle: function() {
+    onPanelsToggle: function() {
+        var me = this;
         Ext.getCmp("header").collapse(Ext.Component.DIRECTION_TOP);
         Ext.getCmp("nav").collapse(Ext.Component.DIRECTION_LEFT);
         Ext.getCmp("status").collapse(Ext.Component.DIRECTION_BOTTOM);
     },
     // Search text entered
-    on_search: function(value) {
-        this.launch_tab("NOC.main.desktop.IFramePanel",
+    onSearch: function(value) {
+        var me = this;
+        me.launchTab("NOC.main.desktop.IFramePanel",
                         "Search",
                         {url: "/main/search/?" + Ext.urlEncode({query: value})});
     },
     // Show change credentials form
-    show_change_credentials: function() {
+    showChangeCredentials: function() {
+        var me = this;
         Ext.Ajax.request({
             method: "GET",
             url: "/main/desktop/change_credentials_fields/",
             scope: this,
             success: function(response) {
                 var fields = Ext.decode(response.responseText);
-                this.change_credentials_window = Ext.create("NOC.main.desktop.ChangeCredentials", {
+                me.change_credentials_window = Ext.create("NOC.main.desktop.ChangeCredentials", {
                     controller: this,
                     change_credentials_fields: fields
                 });
@@ -232,14 +246,15 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     // Change credentials
     do_change_credentials: function(values) {
+        var me = this;
         Ext.Ajax.request({
             method: "POST",
             url: "/main/desktop/change_credentials/",
             params: values,
             scope: this,
             success: function(response) {
-                this.change_credentials_window.close();
-                this.change_credentials_window = null;
+                me.change_credentials_window.close();
+                me.change_credentials_window = null;
             },
             failure: function(response) {
                 var status = Ext.decode(response.responseText);
@@ -249,12 +264,14 @@ Ext.define("NOC.main.desktop.Controller", {
     },
     //
     on_close_tab: function(menu_id) {
-        if(this.launched_tabs[menu_id])
-            delete this.launched_tabs[menu_id];
+        var me = this;
+        if(me.launched_tabs[menu_id])
+            delete me.launched_tabs[menu_id];
     },
     // Show user profile panel
-    on_user_profile: function() {
-        this.launch_tab("NOC.main.desktop.IFramePanel",
+    onUserProfile: function() {
+        var me = this;
+        me.launchTab("NOC.main.desktop.IFramePanel",
                         "User Profile",
                         {url: "/main/userprofile/profile/"});
     }

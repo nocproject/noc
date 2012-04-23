@@ -15,7 +15,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     layout: "fit",
     items: [],
     // Launch application in tab
-    launch_tab: function(panel_class, title, params) {
+    launchTab: function(panel_class, title, params) {
         var me = this,
             tab = me.add({
                 title: title,
