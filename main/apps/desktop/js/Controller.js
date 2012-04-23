@@ -14,6 +14,8 @@ Ext.define("NOC.main.desktop.Controller", {
         var me = this;
         console.log("Controller started");
         me.login_window = null;
+        me.idleTimeout = 0;
+        me.idleTimerId = -1;
         me.checkLogged();
         me.launched_tabs = {};
         me.control({
@@ -49,7 +51,7 @@ Ext.define("NOC.main.desktop.Controller", {
             success: function(response) {
                 var status = Ext.decode(response.responseText);
                 if (status)
-                    me.on_login();
+                    me.onLogin();
                 else
                     me.showLogin();
             },
@@ -59,7 +61,7 @@ Ext.define("NOC.main.desktop.Controller", {
         }); 
     },
     // Called when session is authenticated or user logged in
-    on_login: function() {
+    onLogin: function() {
         var me = this;
         // Apply user settings
         Ext.Ajax.request({
@@ -70,20 +72,20 @@ Ext.define("NOC.main.desktop.Controller", {
                 var settings = Ext.decode(response.responseText);
                 // Set username in the header
                 var display_name = "";
-                if(settings["first_name"])
-                    display_name += settings["first_name"];
-                if(settings["last_name"]) {
+                if(settings.first_name)
+                    display_name += settings.first_name;
+                if(settings.last_name) {
                     if(display_name)
                         display_name += " ";
-                    display_name += settings["last_name"];
+                    display_name += settings.last_name;
                 }
                 if(!display_name)
-                    display_name = settings["username"];
+                    display_name = settings.username;
                 Ext.getCmp("header").set_user_name(display_name);
                 // Activate/deactivate change credentials menu
                 Ext.getCmp("header").getComponent("user_display_name").menu
                     .getComponent("header_menu_change_password")
-                    .setDisabled(!settings["can_change_credentials"]);
+                    .setDisabled(!settings.can_change_credentials);
                 // Activate user profile menu
                 Ext.getCmp("header").getComponent("user_display_name").menu
                     .getComponent("header_menu_userprofile")
@@ -95,7 +97,9 @@ Ext.define("NOC.main.desktop.Controller", {
                 // Load menu
                 me.updateMenu();
                 // Change theme
-                me.changeTheme(settings["theme"]);
+                me.changeTheme(settings.theme);
+                // Setup idle timer
+                me.setIdleTimeout(settings.idle_timeout);
             }
         });
         // Launch welcome application
@@ -132,7 +136,7 @@ Ext.define("NOC.main.desktop.Controller", {
                     // Login successfull
                     me.login_window.close();
                     me.login_window = null;
-                    me.on_login();
+                    me.onLogin();
                 } else {
                     // Login failed
                     Ext.Msg.alert("Failed", r.message);
@@ -149,8 +153,9 @@ Ext.define("NOC.main.desktop.Controller", {
         Ext.Ajax.request({
             method: "POST",
             url: "/main/desktop/logout/",
-            scope: this,
+            scope: me,
             success: function(response) {
+                me.stopIdleTimer();
                 Ext.getCmp("header").getComponent("user_display_name").hide();
                 Ext.getCmp("workplace").removeAll(true);
                 me.updateMenu();
@@ -207,11 +212,13 @@ Ext.define("NOC.main.desktop.Controller", {
             Ext.getCmp("workplace").setActiveTab(me.launched_tabs[node]);
             return;
         }
-        var tab = Ext.getCmp("workplace").launchTab(panel_class, title, params);
+        var workplace = Ext.getCmp("workplace");
+        workplace.controller = me; // @todo: Fix hack
+        var tab = workplace.launchTab(panel_class, title, params);
         if(node) {
             me.launched_tabs[node] = tab;
             tab.menu_node = node;
-            tab.desktop_controller = this;
+            tab.desktop_controller = me;
         }
     },
     // Toggle panels
@@ -274,5 +281,51 @@ Ext.define("NOC.main.desktop.Controller", {
         me.launchTab("NOC.main.desktop.IFramePanel",
                         "User Profile",
                         {url: "/main/userprofile/profile/"});
+    },
+    // Setup idle timeout
+    setIdleTimeout: function(timeout) {
+        var me = this;
+
+        me.stopIdleTimer();
+        me.idleTimeout = timeout * 1000;
+        if(me.idleTimeout) {
+            //
+            console.log("Set idle timeout to", me.idleTimeout, "ms");
+            me.idleTimerId = Ext.Function.defer(me.onIdle, me.idleTimeout, me);
+            Ext.getDoc().on({
+                scope: me,
+                mousemove: me.resetIdleTimer,
+                keydown: me.resetIdleTimer
+            });
+        }
+        //
+        window.NOCIdleHandler = Ext.bind(me.resetIdleTimer, me);
+    },
+    //
+    stopIdleTimer: function() {
+        var me = this;
+        if(me.idleTimerId != -1) {
+            clearTimeout(me.idleTimerId);
+            me.idleTimerId = -1;
+            Ext.getDoc().un({
+                scope: me,
+                mousemove: me.resetIdleTimer,
+                keydown: me.resetIdleTimer
+            });
+        }
+    },
+    //
+    resetIdleTimer: function() {
+        var me = this;
+        clearTimeout(me.idleTimerId);
+        if(me.idleTimeout) {
+            me.idleTimerId = Ext.Function.defer(me.onIdle, me.idleTimeout, me);
+        }
+    },
+    //
+    onIdle: function() {
+        var me = this;
+        console.log("Auto-logout");
+        me.doLogout();
     }
 });
