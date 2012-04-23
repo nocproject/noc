@@ -90,6 +90,8 @@ class VRF(models.Model):
     allocated_till = models.DateField(_("Allocated till"), null=True,
                                       blank=True,
                                       help_text=_("VRF temporary allocated till the date"))
+    project = models.CharField("Project ID", max_length=256,
+                               null=True, blank=True, db_index=True)
 
     def __unicode__(self):
         if self.rd == "0:0":
@@ -173,6 +175,8 @@ class Prefix(models.Model):
     allocated_till = models.DateField(_("Allocated till"), null=True,
                                       blank=True,
                                       help_text=_("Prefix temporary allocated till the date"))
+    project = models.CharField("Project ID", max_length=256,
+                               null=True, blank=True, db_index=True)
     ipv6_transition = models.OneToOneField("self",
                                            related_name="ipv4_transition",
                                            null=True, blank=True,
@@ -610,6 +614,8 @@ class Address(models.Model):
                               default=ResourceState.get_default)
     allocated_till = models.DateField(_("Allocated till"), null=True, blank=True,
                                       help_text=_("Address temporary allocated till the date"))
+    project = models.CharField("Project ID", max_length=256,
+                               null=True, blank=True, db_index=True)
     ipv6_transition = models.OneToOneField("self",
                                            related_name="ipv4_transition",
                                            null=True, blank=True,
