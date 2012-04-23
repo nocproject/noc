@@ -164,6 +164,8 @@ single_session_group =
 
 # If group name given, only one active session per all group member is allowed
 mutual_exclusive_group =
+# If set, auto-logout after idle_timeout secods of inactivity
+idle_timeout = 0
 
 #
 # Site customization
