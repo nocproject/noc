@@ -1100,7 +1100,8 @@ class SystemNotification(models.Model):
     name = models.CharField("Name", max_length=64, unique=True)
     notification_group = models.ForeignKey(NotificationGroup,
                                            verbose_name="Notification Group",
-                                           null=True, blank=True)
+                                           null=True, blank=True,
+                                           on_delete=models.SET_NULL)
 
     def __unicode__(self):
         return self.name
