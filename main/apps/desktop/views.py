@@ -18,7 +18,7 @@ from noc.lib.version import get_version
 from noc.lib.middleware import set_user
 from noc.settings import LANGUAGE_CODE
 from noc.main.auth.backends import backend as auth_backend
-from noc.main.models import Group, UserSession
+from noc.main.models import Group, UserSession, UserState
 
 
 class DesktopApplication(ExtApplication):
@@ -369,9 +369,61 @@ class DesktopApplication(ExtApplication):
 
     @view(method=["POST"], url="^dlproxy/$", access=True, api=True)
     def api_dlproxy(self, request):
+        """
+        Get POST request and return as downloadable file
+        """
         ct = request.POST.get("content_type", "text/plain")
         fn = request.POST.get("filename", "file")
         data = request.POST.get("data", "")
         r = HttpResponse(data, content_type=ct)
         r["Content-Disposition"] = "attachment; filename=%s" % fn
         return r
+
+    @view(method=["GET"], url="^state/", access=PermitLogged(), api=True)
+    def api_get_state(self, request):
+        """
+        Get user state
+        :param request:
+        :return:
+        """
+        uid = request.user.id
+        r = dict((r.key, r.value)
+            for r in UserState.objects.filter(user_id=uid))
+        return r
+
+    @view(method=["DELETE"], url="^state/(?P<name>.+)/$",
+          access=PermitLogged(), api=True)
+    def api_clear_state(self, request, name):
+        """
+        Clear user state
+        :param request:
+        :param name:
+        :return:
+        """
+        uid = request.user.id
+        UserState.objects.filter(user_id=uid, key=name).delete()
+        return True
+
+    @view(method=["POST"], url="^state/(?P<name>.+)/$",
+          access=PermitLogged(), api=True)
+    def api_set_state(self, request, name):
+        """
+        Clear user state
+        :param request:
+        :param name:
+        :return:
+        """
+        uid = request.user.id
+        value = request.raw_post_data
+        if not value:
+            # Delete state
+            UserState.objects.filter(user_id=uid, key=name).delete()
+        else:
+            # Save
+            s = UserState.objects.filter(user_id=uid, key=name).first()
+            if s:
+                s.value = value
+            else:
+                s = UserState(user_id=uid, key=name, value = value)
+            s.save()
+        return True

@@ -327,6 +327,19 @@ class UserSession(nosql.Document):
         return n
 
 
+class UserState(nosql.Document):
+    meta = {
+        "collection": "noc.userstate",
+        "allow_inheritance": False
+    }
+    user_id = nosql.IntField()
+    key = nosql.StringField()
+    value = nosql.StringField()
+
+    def __unicode__(self):
+        return "%s: %s" % (self.user_id, name)
+
+
 class Style(models.Model):
     """
     CSS Style
