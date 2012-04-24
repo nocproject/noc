@@ -52,6 +52,6 @@ class Reportreportallocated(SimpleReport):
                 "afi": afi,
                 "prefix": prefix.prefix
             }),
-            columns=["Prefix", "Description"],
-            data=[(p.prefix, p.description)
+            columns=["Prefix", "State", "Description"],
+            data=[(p.prefix, p.state.name, p.description)
                   for p in prefix.children_set.order_by("prefix")])
