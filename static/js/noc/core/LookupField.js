@@ -18,6 +18,7 @@ Ext.define("NOC.core.LookupField", {
     typeAhead: true,
     editable: true,
     query: {},
+    stateful: false,
 
     initComponent: function() {
         var me = this,

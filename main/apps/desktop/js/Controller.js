@@ -8,6 +8,7 @@ console.debug("Defining NOC.main.desktop.Controller");
 
 Ext.define("NOC.main.desktop.Controller", {
     extend: "Ext.app.Controller",
+    require: ["NOC.core.StateProvider"],
     views: ["NOC.main.desktop.Viewport"],
 
     init: function() {
@@ -63,6 +64,8 @@ Ext.define("NOC.main.desktop.Controller", {
     // Called when session is authenticated or user logged in
     onLogin: function() {
         var me = this;
+        // Initialize state provider
+        Ext.state.Manager.setProvider(Ext.create("NOC.core.StateProvider"));
         // Apply user settings
         Ext.Ajax.request({
             method: "GET",
