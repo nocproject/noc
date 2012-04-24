@@ -48,7 +48,8 @@ class ExpandedReport(SimpleReport):
     def get_data(self, vrf, afi, prefix, **kwargs):
         def get_info(prefix, level=0):
             s = "----" * level
-            data = [[s + prefix.prefix, unicode(prefix.vc) if prefix.vc else "",
+            data = [[s + prefix.prefix, prefix.state.name,
+                     unicode(prefix.vc) if prefix.vc else "",
                      prefix.description, prefix]]
             for c in prefix.children_set.order_by("prefix"):
                 data += get_info(c, level + 1)
@@ -61,6 +62,6 @@ class ExpandedReport(SimpleReport):
                 "afi": afi,
                 "prefix": prefix.prefix
             }),
-            columns=[_("Prefix"), _("VC"), _("Description"),
+            columns=[_("Prefix"), _("State"), _("VC"), _("Description"),
                      TableColumn(_("Tags"), format="tags")],
             data=data, enumerate=True)
