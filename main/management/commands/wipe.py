@@ -188,11 +188,14 @@ class Command(BaseCommand):
         :return: None
         """
         from noc.main.models import AuditTrail, NotificationGroupUser,\
-                                    UserProfile, Checkpoint
+                                    UserProfile, Checkpoint, UserState
         from noc.sa.models import UserAccess
         from noc.fm.models import ActiveAlarm
         from noc.ip.models import PrefixAccess, PrefixBookmark
         from noc.kb.models import KBEntryPreviewLog, KBUserBookmark
+        # Clean UserState
+        with self.log("Cleaning user preferences"):
+            UserState.objects.filter(user_id=o.id).delete()
         # Clean NotificationGroupUser
         with self.log("Cleaning audit trail"):
             AuditTrail.objects.filter(user=o).delete()
