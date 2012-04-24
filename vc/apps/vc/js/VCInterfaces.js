@@ -52,7 +52,7 @@ Ext.define("NOC.vc.vc.VCInterfaces", {
                         '<tr>',
                             '<td style="{parent.o_style}">{managed_object_name}</td>',
                             '<td style="{parent.i_style}"><tpl for="interfaces">{name} (',
-                                '{ipv4_addresses}',
+                                '{ipv4_addresses}; ',
                                 '{ipv6_addresses}',
                             '){[ xindex === xcount ? "" : ", "]}</tpl></td>',
                         '</tr>',
