@@ -10,6 +10,7 @@
 import datetime
 ## Django modules
 from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
+from django.http import HttpResponse
 ## NOC modules
 from noc.settings import config
 from noc.lib.app import ExtApplication, ModelApplication, view, PermitLogged
@@ -365,3 +366,12 @@ class DesktopApplication(ExtApplication):
             "name": theme["name"],
             "css": theme["css"]
         }
+
+    @view(method=["POST"], url="^dlproxy/$", access=True, api=True)
+    def api_dlproxy(self, request):
+        ct = request.POST.get("content_type", "text/plain")
+        fn = request.POST.get("filename", "file")
+        data = request.POST.get("data", "")
+        r = HttpResponse(data, content_type=ct)
+        r["Content-Disposition"] = "attachment; filename=%s" % fn
+        return r
