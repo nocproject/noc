@@ -15,7 +15,7 @@ from django.utils.translation import ugettext as _
 def humanize_timedelta(delta):
     def round(x):
         return int(x + 0.5)
-    
+
     d = delta.days
     s = delta.seconds
     if not d:
@@ -58,7 +58,11 @@ def humanize_timedelta(delta):
 
 
 def humanize_distance(d):
-    return humanize_timedelta(datetime.datetime.now() - d)
+    try:
+        dist = humanize_timedelta(datetime.datetime.now() - d)
+    except TypeError:
+        dist = _("Never")
+    return dist
 
 
 def total_seconds(td):
