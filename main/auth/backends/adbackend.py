@@ -110,10 +110,11 @@ class NOCADBackend(NOCAuthBackend):
             # DO NOT TURN THIS OFF OR SEARCH WON'T WORK!
             ldap.set_option(ldap.OPT_REFERRALS, 0)
             client = ldap.initialize(self.server)
-            # Bind anonymously or with technical user to resolve username
+            # Bind with specified technical user to resolve username
+            # or try to bind with provided username/password
             self.ldap_bind(client,
-                self.bind_dn if self.bind_dn else None,
-                self.bind_password if self.bind_password else None
+                self.bind_dn if self.bind_dn else username,
+                self.bind_password if self.bind_password else password
                 )
             # Search for user
             base = self.expand_template(self.users_base, context)
