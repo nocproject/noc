@@ -32,7 +32,6 @@ class Script(NOCScript):
     rx_phy_ifindex = re.compile(r"SNMP ifIndex: (?P<ifindex>\d+)",
                                 re.MULTILINE | re.IGNORECASE)
     rx_phy_mac = re.compile(r"^\s+Current address: (?P<mac>\S+),", re.MULTILINE)
-
     rx_log_split = re.compile(r"^\s+Logical interface\s+", re.MULTILINE)
     rx_log_name = re.compile(r"^(?P<name>\S+).+?SNMP ifIndex (?P<ifindex>\d+)",
                              re.IGNORECASE)
@@ -90,9 +89,11 @@ class Script(NOCScript):
             if match:
                 iface["description"] = match.group("description")
             # Get MAC
+            mac = None
             match = self.rx_phy_mac.search(phy)
             if match:
-                iface["mac"] = match.group("mac")
+                mac = match.group("mac")
+                iface["mac"] = mac
             # Process subinterfaeces
             subs = []
             for s in L:
@@ -105,14 +106,15 @@ class Script(NOCScript):
                     "snmp_ifindex": match.group("ifindex"),
                     "admin_status": True,
                     "oper_status": True,
-                    #"description"    : StringParameter(required=False),
-                    #"mac"            : MACAddressParameter(required=False),
-
                 }
+                if mac:
+                    si["mac"] = mac
                 # Get description
                 match = self.rx_phy_description.search(s)
                 if match:
                     si["description"] = match.group("description")
+                # Get MAX
+
                 # Process protocols
                 for p in self.rx_log_protocol.split(s)[1:]:
                     match = self.re_search(self.rx_log_pname, p)
