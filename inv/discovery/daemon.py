@@ -427,7 +427,7 @@ class DiscoveryDaemon(Daemon):
                         changes = self.update_if_changed(s_iface, {
                             "managed_object": o.id,
                             "description": si.get("description"),
-                            "mac": si.get("mac"),
+                            "mac": si.get("mac", i.get("mac")),
                             "vlan_ids": si.get("vlan_ids", []),
                             "is_ipv4": si.get("is_ipv4", False),
                             "is_ipv6": si.get("is_ipv6", False),
@@ -459,7 +459,7 @@ class DiscoveryDaemon(Daemon):
                             managed_object=o.id,
                             name=si["name"],
                             description=si.get("description"),
-                            mac=si.get("mac"),
+                            mac=si.get("mac", i.get("mac")),
                             vlan_ids=si.get("vlan_ids", []),
                             is_ipv4=si.get("is_ipv4", False),
                             is_ipv6=si.get("is_ipv6", False),
