@@ -19,6 +19,7 @@ Ext.define("NOC.core.LookupField", {
     editable: true,
     query: {},
     stateful: false,
+    autoSelect: true,
 
     initComponent: function() {
         var me = this,
@@ -78,9 +79,7 @@ Ext.define("NOC.core.LookupField", {
 
     onBlur: function(field, e) {
         var me = this;
-        console.log("BLUR", field, me.getDisplayValue(), me.getRawValue());
         if(!me.getRawValue()) {
-            console.log("CLEAR");
             me.clearValue();
             me.fireEvent("clear");
         }
