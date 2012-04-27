@@ -248,6 +248,8 @@ Ext.define("NOC.core.ModelApplication", {
         // swap items. Because 'fit' layout accept only 1 item
         var me = this;
         me.items.items = [me.items.last(), me.items.first()];
+        me.items.last().hide();
+        me.items.first().show();
         // Apply changes to form toolbar
         if(me.items.first().itemId === "form") {
             // Switched to form
