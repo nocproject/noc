@@ -134,9 +134,11 @@ class Web(Daemon):
         # Connect to mongodb
         import noc.lib.nosql
         # Initialize site
+        logging.info("Registering web applications")
         from noc.lib.app import site
         site.autodiscover()
         # Run children's I/O loop
+        logging.info("Starting to serve requests")
         tornado.ioloop.IOLoop.instance().start()
 
     def SIGTERM(self, signo, frame):
