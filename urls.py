@@ -20,3 +20,6 @@ urlpatterns = patterns("",
     (r"^jsi18n/$", "django.views.i18n.javascript_catalog",
         {"packages": "django.conf"})
 ) + site.urls
+
+from noc.main.models import CustomField
+CustomField.install_fields()

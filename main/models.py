@@ -58,7 +58,7 @@ def on_new_model(sender, **kwargs):
     """
     if hasattr(sender, "search"):
         search_methods.add(getattr(sender, "search"))
-    databrowse.site.register(sender)
+
 ##
 ## Attach to the 'class_prepared' signal
 ## and on_new_model on every new model
@@ -176,6 +176,158 @@ class AuditTrail(models.Model):
             subject=subject,
             body=message
         ).save()
+
+
+class CustomField(models.Model):
+    """
+    Custom field description
+    """
+    class Meta:
+        verbose_name = "Custom Field"
+        verbose_name_plural = "Custom Fields"
+        unique_together = [("table", "name")]
+
+    table = models.CharField("Table", max_length=64)
+    name = models.CharField("Name", max_length=64)
+    is_active = models.BooleanField("Is Active", default=True)
+    label = models.CharField("Label", max_length=128)
+    type = models.CharField("Type", max_length=64,
+                            choices=[
+                                ("str", "String"),
+                                ("int", "Integer")
+                            ])
+    description = models.TextField("Description", null=True, blank=True)
+    # Applicable only for "str" type
+    max_length = models.IntegerField("Max. Length", default=0)
+    regexp = models.CharField("Regexp", max_length=256, null=True, blank=True)
+    # Create database index on field
+    is_indexed = models.BooleanField("Is Indexed", default=False)
+    # Include into the applications search fields
+    is_searchable = models.BooleanField("Is Searchable", default=False)
+    # Create grid filter
+    is_filtered = models.BooleanField("Is Filtered", default=False)
+
+    def __unicode__(self):
+        return u"%s.%s" % (self.table, self.name)
+
+    @property
+    def db_column(self):
+        return "cust_%s" % self.name
+
+    @property
+    def index_name(self):
+        return "%s_%s" % (self.table, self.name)
+
+    def get_field(self):
+        """
+        Return *Field instance
+        """
+        if self.type == "str":
+            l = self.max_length if self.max_length else 256
+            return models.CharField(name=self.name, db_column=self.db_column,
+                                    null=True, blank=True,
+                                    max_length=l)
+        else:
+            raise NotImplementedError
+
+    @property
+    def db_create_statement(self):
+        if self.type == "str":
+            ms = self.max_length if self.max_length else 256
+            r = "VARCHAR(%s)" % ms
+        elif self.type == "int":
+            r = "INTEGER"
+        else:
+            raise ValueError("Invalid field type '%s'" % self.type)
+        return "ALTER TABLE %s ADD COLUMN \"%s\" %s NULL" % (
+            self.table, self.db_column, r
+        )
+
+    @property
+    def db_drop_statement(self):
+        return "ALTER TABLE %s DROP COLUMN \"%s\"" % (
+            self.table, self.db_column)
+
+    def activate_field(self):
+        c = connection.cursor()
+        c.execute(self.db_create_statement)
+        c.execute("COMMIT")
+
+    def deactivate_field(self):
+        c = connection.cursor()
+        c.execute(self.db_drop_statement)
+        c.execute("COMMIT")
+
+    def create_index(self):
+        c = connection.cursor()
+        c.execute("CREATE INDEX %s ON %s(%s)" % (self.index_name,
+                                                self.table, self.db_column))
+        c.execute("COMMIT")
+
+    def drop_index(self):
+        c = connection.cursor()
+        c.execute("DROP INDEX %s" % self.index_name)
+        c.execute("COMMIT")
+
+    def save(self, *args, **kwargs):
+        """
+        Create actual database field
+        """
+        if self.id:
+            old = CustomField.objects.get(id=self.id)
+            old_active = old.is_active
+            old_indexed = old.is_indexed
+        else:
+            old_active = False
+            old_indexed = False
+        if not self.is_active:
+            self.is_indexed = False
+        super(CustomField, self).save(*args, **kwargs)
+        if old_active != self.is_active:
+            # Field status changed
+            if self.is_active:
+                self.activate_field()
+                if self.is_indexed:
+                    self.create_index()
+            else:
+                self.deactivate_field()
+        elif self.is_indexed != old_indexed:
+            if self.is_indexed:
+                self.create_index()
+            else:
+                self.drop_index()
+
+    def delete(self):
+        if self.is_active:
+            self.deactivate_field()
+        super(CustomField, self).delete()
+
+    def model_class(self):
+        """
+        Return appropriative Model class
+        """
+        from django.contrib.contenttypes.models import ContentType
+        a, m = self.table.split("_", 1)
+        return ContentType.objects.get(app_label=a, model=m).model_class()
+
+    @classmethod
+    def table_fields(self, table):
+        return CustomField.objects.filter(is_active=True, table=table)
+
+    @classmethod
+    def install_fields(cls):
+        """
+        Install custom fields to models.
+        Must be called after all models are initialized
+        """
+        m = None
+        for f in cls.objects.filter(is_active=True).order_by("table"):
+            # Get model
+            if m is None or m._meta.db_table != f.table:
+                m = f.model_class()
+            # Install field
+            mf = f.get_field()
+            mf.contribute_to_class(m, str(f.name))
 
 
 class Permission(models.Model):

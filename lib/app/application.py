@@ -21,6 +21,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from django.utils.html import escape
 from django.template import loader
+from django import forms
+from django.utils.datastructures import SortedDict
 ## NOC modules
 from access import HasPerm, Permit, Deny
 from site import site
@@ -28,6 +30,7 @@ from noc.lib.forms import NOCForm
 from noc import settings
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import DictParameter
+from noc.main.models import CustomField
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -407,6 +410,54 @@ class Application(object):
         Return an URL to change group access
         """
         return None
+
+    def customize_form(self, form, table):
+        """
+        Add custom fields to form class
+        """
+        l = []
+        for f in CustomField.table_fields(table):
+            if f.type == "str":
+                ml = f.max_length if f.max_length else 256
+                ff = forms.CharField(required=False, label=f.label,
+                                     max_length=ml)
+            elif f.type == "int":
+                ff = forms.IntegerField(required=False, label=f.label)
+            else:
+                raise ValueError("Invalid field type: '%s'" % f.type)
+            l += [(str(f.name), ff)]
+        form.base_fields.update(SortedDict(l))
+        return form
+
+    def apply_custom_fields(self, o, v, table):
+        """
+        Apply custom fields to form
+        :param o: Object
+        :param v: values dict
+        :param table: table
+        :return:
+        """
+        for f in CustomField.table_fields(table):
+            n = str(f.name)
+            if n in v:
+                setattr(o, n, v[n])
+        return o
+
+    def apply_custom_initial(self, o, v, table):
+        """
+
+        :param o: Object
+        :param v: Initial data
+        :param table: table
+        :return:
+        """
+        for f in CustomField.table_fields(table):
+            n = str(f.name)
+            if n not in v:
+                x = getattr(o, n)
+                if x:
+                    v[n] = x
+        return o
 
     def check_mrt_access(self, request, name):
         mc = self.mrt_config[name]
