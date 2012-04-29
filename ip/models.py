@@ -230,7 +230,7 @@ class Prefix(models.Model):
                     AND prefix >> %%s
                 ORDER BY masklen(prefix) DESC
                 LIMIT 1
-                """ % cls._meta.db_table, [vrf.id, afi, str(prefix)]))
+                """ % cls._meta.db_table, [vrf.id, str(afi), str(prefix)]))
         if not r:
             return None
         return r[0]
