@@ -9,10 +9,12 @@
 # Django Modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+from django.db.models import Q
 # NOC Modules
-from noc.lib.app.simplereport import SimpleReport
+from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.lib.validators import *
 from noc.ip.models import VRF, Prefix
+from noc.main.models import CustomField
 
 
 class ReportForm(forms.Form):
@@ -41,17 +43,53 @@ class ReportForm(forms.Form):
             raise ValidationError(_("Prefix not found"))
 
 
-class Reportreportallocated(SimpleReport):
+class ReportAllocated(SimpleReport):
     title = _("Allocated Blocks")
     form = ReportForm
 
+    def get_form(self):
+        fc = super(ReportAllocated, self).get_form()
+        self.customize_form(fc, "ip_prefix")
+        return fc
+
     def get_data(self, vrf, afi, prefix, **kwargs):
+        def get_row(p):
+            r = [p.prefix, p.state.name,
+                unicode(p.vc) if p.vc else ""]
+            for f in cf:
+                v = getattr(p, f.name)
+                r += [v if v is not None else ""]
+            r += [p.description]
+            return r
+
+        cf = CustomField.table_fields("ip_prefix")
+        cfn = dict((f.name, f) for f in cf)
+        # Prepare columns
+        columns = [
+            "Prefix",
+            "State",
+            "VC"
+        ]
+        for f in cf:
+            columns += [f.label]
+        columns += [
+            "Description",
+            TableColumn(_("Tags"), format="tags")
+        ]
+        # Prepare query
+        q = Q()
+        for k in kwargs:
+            v = kwargs[k]
+            if k in cfn and v is not None and v != "":
+                q &= Q(**{str(k): v})
+        #
         return self.from_dataset(title=_(
             "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
                 "vrf": vrf.name,
                 "afi": afi,
                 "prefix": prefix.prefix
             }),
-            columns=["Prefix", "State", "Description"],
-            data=[(p.prefix, p.state.name, p.description)
-                  for p in prefix.children_set.order_by("prefix")])
+            columns=columns,
+            data=[get_row(p)
+                  for p in prefix.children_set.filter(q).order_by("prefix")],
+        enumerate=True)

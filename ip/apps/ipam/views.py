@@ -22,7 +22,7 @@ from noc.lib.widgets import *
 from noc.lib.colors import *
 from noc.sa.interfaces import MACAddressParameter
 from noc.ip.models import *
-from noc.main.models import Permission, Style
+from noc.main.models import Permission, Style, CustomField
 from noc.vc.models import VC, VCBindFilter
 from noc.sa.models import ReduceTask
 
@@ -215,6 +215,10 @@ class IPAMAppplication(Application):
                 prefix_info += [
                     ("Free addresses", free - 2 if free >= 2 else free)
                 ]
+        # Add custom fields
+        for f in CustomField.table_fields("ip_prefix"):
+            v = getattr(prefix, f.name)
+            prefix_info += [(f.label, v if v is not None else "")]
         # Bookmarks
         has_bookmark = prefix.has_bookmark(user)
         bookmarks = PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=afi)
@@ -480,6 +484,8 @@ class IPAMAppplication(Application):
                                         "Cannot set dual-stack allocation"))
                     return ds_prefix
 
+            # Add custom fields
+            self.customize_form(AddPrefixForm, "ip_prefix")
             return AddPrefixForm
 
         # Validation
@@ -503,6 +509,7 @@ class IPAMAppplication(Application):
                            tt=form.cleaned_data["tt"],
                            project=form.cleaned_data["project"],
                            style=form.cleaned_data["style"])
+                self.apply_custom_fields(p, form.cleaned_data, "ip_prefix")
                 p.save()
                 self.message_user(request,
                                   _("Prefix %(prefix)s was created") % {
@@ -614,6 +621,7 @@ class IPAMAppplication(Application):
                                         "Cannot set dual-stack allocation"))
                     return ds_prefix
 
+            self.customize_form(EditPrefixForm, "ip_prefix")
             return EditPrefixForm
 
         # Validate
@@ -645,7 +653,7 @@ class IPAMAppplication(Application):
                 return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
                                               prefix.prefix)
         else:
-            form = form_class(initial={
+            initial={
                 "asn": prefix.asn.id,
                 "state": prefix.state.id,
                 "vc": prefix.vc.id if prefix.vc else None,
@@ -654,7 +662,9 @@ class IPAMAppplication(Application):
                 "tt": prefix.tt,
                 "project": prefix.project,
                 "style": prefix.style.id if prefix.style else None
-            })
+            }
+            self.apply_custom_initial(prefix, initial, "ip_prefix")
+            form = form_class(initial=initial)
         return self.render(request, "change_prefix.html", vrf=vrf, afi=afi,
                            prefix=prefix, form=form)
 
@@ -772,6 +782,7 @@ class IPAMAppplication(Application):
                 else:
                     return ""
 
+        self.customize_form(AddressForm, "ip_address")
         return AddressForm
 
     ##
@@ -823,6 +834,7 @@ class IPAMAppplication(Application):
                             tags=form.cleaned_data["tags"],
                             tt=form.cleaned_data["tt"],
                             style=form.cleaned_data["style"])
+                self.apply_custom_fields(a, form.cleaned_data, "ip_address")
                 a.save()
                 self.message_user(request,
                                   _("Address %(address)s was created") % {
@@ -928,6 +940,8 @@ class IPAMAppplication(Application):
                 address.tags = form.cleaned_data["tags"]
                 address.tt = form.cleaned_data["tt"]
                 address.style = form.cleaned_data["style"]
+                self.apply_custom_fields(address, form.cleaned_data,
+                                         "ip_address")
                 address.save()
                 self.message_user(request, _("Address %(address)s changed") % {
                     "address": address.address})
@@ -954,6 +968,7 @@ class IPAMAppplication(Application):
                 }
             if address.managed_object:
                 initial["managed_object"] = address.managed_object.name
+            self.apply_custom_initial(address, initial, "ip_address")
             form = form_class(initial=initial)
         return self.render(request, "change_address.html", vrf=vrf, afi=afi,
                            prefix=prefix, form=form, address=address)
