@@ -7,9 +7,10 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.test import RestModelTestCase
+from noc.lib.test import RestModelTestCase, unittest
 
 
+@unittest.skip("Not ready")
 class {{model}}TestCase(RestModelTestCase):
     app = "{{module}}.{{app}}"
 
