@@ -30,7 +30,6 @@ from noc.lib.forms import NOCForm
 from noc import settings
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import DictParameter
-from noc.main.models import CustomField
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -415,6 +414,7 @@ class Application(object):
         """
         Add custom fields to form class
         """
+        from noc.main.models import CustomField
         l = []
         for f in CustomField.table_fields(table):
             if f.type == "str":
@@ -437,6 +437,7 @@ class Application(object):
         :param table: table
         :return:
         """
+        from noc.main.models import CustomField
         for f in CustomField.table_fields(table):
             n = str(f.name)
             if n in v:
@@ -451,6 +452,7 @@ class Application(object):
         :param table: table
         :return:
         """
+        from noc.main.models import CustomField
         for f in CustomField.table_fields(table):
             n = str(f.name)
             if n not in v:
