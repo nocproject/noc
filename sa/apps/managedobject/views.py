@@ -21,6 +21,7 @@ from django.template import loader
 ## NOC modules
 from noc.lib.app import ModelApplication, site, Permit, PermitSuperuser,\
                         HasPerm, PermissionDenied, view
+from noc.main.models import CustomField
 from noc.sa.models import *
 from noc.settings import config
 from noc.lib.fileutils import in_dir
@@ -218,6 +219,10 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         ("Tags", {
             "fields": ("tags",)
         }),
+        ("Custom", {
+            "fields": tuple(f.name for f in
+                CustomField.table_fields("sa_managedobject"))
+        })
     )
     list_display = ["name", object_status, alarms, profile, "vrf", "address",
                     domain_activator,
