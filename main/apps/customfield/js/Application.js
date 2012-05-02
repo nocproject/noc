@@ -56,13 +56,15 @@ Ext.define("NOC.main.customfield.Application", {
             name: "table",
             xtype: "textfield",
             fieldLabel: "Table",
-            allowBlank: false
+            allowBlank: false,
+            regex: /^[a-z]+_[a-z_]+$/
         },
         {
             name: "name",
             xtype: "textfield",
             fieldLabel: "Name",
-            allowBlank: false
+            allowBlank: false,
+            regex: /^[a-zA-Z0-9_]+$/
         },
         {
             name: "is_active",
