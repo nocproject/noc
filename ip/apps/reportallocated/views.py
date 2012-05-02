@@ -59,7 +59,7 @@ class ReportAllocated(SimpleReport):
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]
-            r += [p.description]
+            r += [p.description, p]
             return r
 
         cf = CustomField.table_fields("ip_prefix")
