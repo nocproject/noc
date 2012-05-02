@@ -22,6 +22,7 @@ from noc.sa.interfaces import BooleanParameter, IntParameter, FloatParameter,\
     ModelParameter, StringParameter
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
+from noc.main.models import CustomField
 
 
 class DjangoTagsParameter(StringParameter):
@@ -83,18 +84,34 @@ class ExtModelApplication(ExtApplication):
             elif isinstance(f, related.ForeignKey):
                 self.clean_fields[f.name] = ModelParameter(f.rel.to,
                     required=not f.null)
-            # Find field_* and populate custom fields
+        # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
             h = getattr(self, fn)
             if callable(h):
                 self.custom_fields[fn[6:]] = h
-            #
+        #
         if not self.query_fields:
             # By default - search in unique text fields
             self.query_fields = ["%s__%s" % (f.name, self.query_condition)
                                  for f in self.model._meta.fields
                                  if f.unique and isinstance(f, CharField)]
+        # Add searchable custom fields
+        self.query_fields += ["%s__%s" % (f.name, self.query_condition)
+            for f in CustomField.table_fields(self.model._meta.db_table)
+            if f.is_searchable
+        ]
+
+    def get_launch_info(self, user):
+        li = super(ExtModelApplication, self).get_launch_info(user)
+        cf = list(CustomField.table_fields(self.model._meta.db_table))
+        if cf:
+            li["params"].update({
+                "cust_model_fields": [f.ext_model_field for f in cf],
+                "cust_grid_columns": [f.ext_grid_column for f in cf],
+                "cust_form_fields": [f.ext_form_field for f in cf]
+            })
+        return li
 
     def get_Q(self, request, query):
         """

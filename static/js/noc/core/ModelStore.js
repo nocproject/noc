@@ -13,13 +13,16 @@ Ext.define("NOC.core.ModelStore", {
     model: undefined,
     remoteSort: true,
     remoteFilter: true,
+    customFields: [],
 
     constructor: function(config) {
         var me = this,
             model = Ext.create(config.model);
-
         Ext.apply(config, {
-            model: config.model,
+            // model: config.model,
+            model: null,
+            fields: model.fields.items.concat(config.customFields),
+            implicitModel: true,
             proxy: Ext.create("Ext.data.RestProxy", {
                 url: model.rest_url,
                 pageParam: "__page",

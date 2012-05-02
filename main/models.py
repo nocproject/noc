@@ -269,6 +269,13 @@ class CustomField(models.Model):
         c.execute("DROP INDEX %s" % self.index_name)
         c.execute("COMMIT")
 
+    def rename(self, old_name):
+        c = connection.cursor()
+        c.execute("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
+            self.table, old_name, self.db_column
+        ))
+        c.execute("COMMIT")
+
     def save(self, *args, **kwargs):
         """
         Create actual database field
@@ -277,6 +284,8 @@ class CustomField(models.Model):
             old = CustomField.objects.get(id=self.id)
             old_active = old.is_active
             old_indexed = old.is_indexed
+            if old.name != self.name:
+                self.rename(old.db_column)
         else:
             old_active = False
             old_indexed = False
@@ -328,6 +337,52 @@ class CustomField(models.Model):
             # Install field
             mf = f.get_field()
             mf.contribute_to_class(m, str(f.name))
+
+    @property
+    def ext_model_field(self):
+        """
+        Dict containing ExtJS model field description
+        """
+        f = {
+            "name": self.name,
+            "type": {
+                "str": "string",
+                "int": "int"
+            }[self.type]
+        }
+        return f
+
+    @property
+    def ext_grid_column(self):
+        """
+        Dict containing ExtJS grid column description
+        """
+        f = {
+            "text": self.label,
+            "dataIndex": self.name,
+            "hidden": True
+        }
+        return f
+
+    @property
+    def ext_form_field(self):
+        """
+        Dict containing ExtJS form field description
+        """
+        f = {
+            "name": self.name,
+            "fieldLabel": self.label,
+            "allowBlank": True
+        }
+        if self.type == "str":
+            f["xtype"] = "textfield"
+        elif self.type == "int":
+            f["xtype"] = "numberfield"
+        else:
+            raise ValueError("Invalid field type '%s'" % self.type)
+        if self.regexp:
+            f["regex"] = self.regexp
+        return f
 
 
 class Permission(models.Model):

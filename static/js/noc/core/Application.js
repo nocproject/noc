@@ -18,6 +18,7 @@ Ext.define("NOC.core.Application", {
             me.permissions[options.noc.permissions[p]] = true;
         }
         me.appTitle = options.title;
+        me.noc = options.noc;
         me.callParent(options);
     },
     hasPermission: function(name) {

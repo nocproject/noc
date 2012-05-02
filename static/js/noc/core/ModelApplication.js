@@ -31,9 +31,11 @@ Ext.define("NOC.core.ModelApplication", {
         // Create store
         me.store = Ext.create("NOC.core.ModelStore", {
             model: me.model,
+            customFields: me.noc.cust_model_fields || [],
             autoLoad: true,
             pageSize: 1  // Increased by AutoSize plugin
         });
+        console.log("Store", me.store);
         // Setup Grid toolbar
         var gridToolbar = [
             {
@@ -109,7 +111,7 @@ Ext.define("NOC.core.ModelApplication", {
             xtype: "gridpanel",
             itemId: "grid",
             store: me.store,
-            columns: me.columns,
+            columns: me.columns.concat(me.noc.cust_grid_columns || []),
             border: false,
             autoScroll: true,
             stateful: true,
@@ -213,7 +215,7 @@ Ext.define("NOC.core.ModelApplication", {
                     {
                         xtype: "hiddenfield",
                         name: "id"
-                    }].concat(me.fields),
+                    }].concat(me.fields).concat(me.noc.cust_form_fields || []),
                 tbar: me.applyPermissions(formToolbar)
             }
         };
@@ -264,7 +266,6 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this,
             mv = Ext.create(this.model, data).validate(),
             record;
-
         if(!mv.isValid()) {
             // @todo: Error report
             return;
