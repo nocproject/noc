@@ -166,7 +166,7 @@ class IP(object):
 
     def area_spot(self, addresses, dist, sep=False):
         """
-        eturns a list of addresses, laying inside prefix and containing area
+        Returns a list of addresses, laying inside prefix and containing area
         aroung given addresses
 
         :param addresses: Used addresses
@@ -180,14 +180,16 @@ class IP(object):
         """
         if not addresses:
             return []
-        spot_size = 2 * dist + 1
         s_first = self.first.set_mask()
         s_last = self.last.set_mask()
         # Return all addresses except network and broadcast
         # for IPv4, when a dist is larger than network size
         if self.afi == "4" and dist >= self.size:
             d = 0 if s_first.address in addresses else 1
-            return list((s_first + d).iter_address(until=s_last - 1))
+            if self.mask == 31:
+                return list((s_first + d).iter_address(until=s_last))
+            else:
+                return list((s_first + d).iter_address(until=s_last - 1))
         # Left only addresses remaining in prefix and convert them to
         # IP instances
         addresses = set([a for a in [IP.prefix(a) if isinstance(a, basestring) else a for a in addresses] if self.contains(a)])
@@ -220,9 +222,12 @@ class IP(object):
                 break
             last = a
         # Return result
-        if self.afi == "4":
+        if self.afi == "4" and self.mask != 31:
             # Remove network and broadcast address
-            return [a for a in spot if a is None or a.address not in (self.first.address, self.last.address)]
+            return [a for a in spot if (
+                a is None or
+                a.address not in (self.first.address,
+                                  self.last.address))]
         else:
             return spot
 
