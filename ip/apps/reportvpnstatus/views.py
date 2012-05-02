@@ -28,7 +28,7 @@ class ReportVPNStatusApplication(SimpleReport):
                           forwarding_instance=fi.id).only("name")]
                 si = sorted(si)
                 if si:
-                    d += [[fi.name, ", ".join(si)]]
+                    d += [[fi.managed_object.name, ", ".join(si)]]
             if d:
                 data += [SectionRow(name="VRF %s, RD: %s [%s]" % (
                     vrf.name, vrf.rd, vrf.state.name
