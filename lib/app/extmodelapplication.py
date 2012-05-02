@@ -22,7 +22,6 @@ from noc.sa.interfaces import BooleanParameter, IntParameter, FloatParameter,\
     ModelParameter, StringParameter
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
-from noc.main.models import CustomField
 
 
 class DjangoTagsParameter(StringParameter):
@@ -98,13 +97,15 @@ class ExtModelApplication(ExtApplication):
                                  if f.unique and isinstance(f, CharField)]
         # Add searchable custom fields
         self.query_fields += ["%s__%s" % (f.name, self.query_condition)
-            for f in CustomField.table_fields(self.model._meta.db_table)
-            if f.is_searchable
-        ]
+            for f in self.get_custom_fields() if f.is_searchable]
+
+    def get_custom_fields(self):
+        from noc.main.models import CustomField
+        return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_launch_info(self, user):
         li = super(ExtModelApplication, self).get_launch_info(user)
-        cf = list(CustomField.table_fields(self.model._meta.db_table))
+        cf = self.get_custom_fields()
         if cf:
             li["params"].update({
                 "cust_model_fields": [f.ext_model_field for f in cf],
