@@ -232,7 +232,8 @@ class ManagedObjectAdmin(admin.ModelAdmin):
                    "administrative_domain", "vrf", "profile_name"]
     search_fields = ["name", "address", "repo_path", "description"]
     object_class = ManagedObject
-    actions = ["test_access", "bulk_change_activator", "reschedule_discovery"]
+    actions = ["test_access", "bulk_change_activator",
+               "reschedule_discovery", "apply_config_filters"]
     ##
     ## Dirty hack to display PasswordInput in admin form
     ##
@@ -242,7 +243,8 @@ class ManagedObjectAdmin(admin.ModelAdmin):
             if "request" in kwargs:  # For Django 1.1 and later compatibility
                 kwargs.pop("request", None)
             return db_field.formfield(**kwargs)
-        return super(ManagedObjectAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        return super(ManagedObjectAdmin, self).formfield_for_dbfield(
+            db_field, **kwargs)
     
     ##
     ## Row-level access control
@@ -293,6 +295,17 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         return self.app.response_redirect("sa:managedobject:changelist")
     reschedule_discovery.short_description = _("Run interface discovery now")
 
+    def apply_config_filters(self, request, queryset):
+        """
+        Apply config filter pyRule
+        """
+        self.app.message_user(request, "Config filters are reapplied")
+        for o in queryset.filter(config__isnull=False):
+            cfg = o.config.data
+            if cfg:
+                o.config.write(cfg)
+        return self.app.response_redirect("sa:managedobject:changelist")
+    apply_config_filters.short_description = _("Apply Config Filters")
 
 ##
 ## ManagedObject application
