@@ -76,5 +76,20 @@ Ext.define("NOC.main.pyrule.Application", {
             name: "is_builtin",
             ftype: "boolean"
         }
-    ]
+    ],
+    showOpError: function(action, op, status) {
+        var me = this;
+        // Detect Syntax Errors
+        if(status.traceback) {
+            var rx = /^Syntax error: (.+) \(<string>, line (\d+)\)$/i,
+                g = rx.exec(status.traceback);
+            if(g != null) {
+                var error = g[1],
+                    line = g[2];
+                NOC.error("Syntax error at line " + line + "<br/>" + error);
+                return;
+            }
+        }
+        me.callParent([action, op, status]);
+    }
 });

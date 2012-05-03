@@ -20,3 +20,11 @@ class PyRuleApplication(ExtModelApplication):
     menu = "Setup | PyRule"
     model = PyRule
     query_fields = ["name__icontains"]
+
+    def clean(self, data):
+        data = super(PyRuleApplication, self).clean(data)
+        try:
+            PyRule.compile_text(data["text"])
+        except SyntaxError, why:
+            raise ValueError("Syntax error: %s" % why)
+        return data
