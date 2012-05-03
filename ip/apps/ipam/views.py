@@ -748,7 +748,7 @@ class IPAMAppplication(Application):
                                            help_text=_("Visual appearance"))
 
             def clean_address(self):
-                address = self.cleaned_data["address"]
+                address = self.cleaned_data["address"].strip()
                 # Validate address
                 if afi == "4":
                     check_ipv4(address)
@@ -768,7 +768,7 @@ class IPAMAppplication(Application):
                 if not self.cleaned_data["mac"]:
                     return ""
                 try:
-                    return MACAddressParameter().clean(self.cleaned_data["mac"])
+                    return MACAddressParameter().clean(self.cleaned_data["mac"].strip())
                 except InterfaceTypeError:
                     raise forms.ValidationError("Invalid MAC address")
 
