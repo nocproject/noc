@@ -754,7 +754,7 @@ class DiscoveryDaemon(Daemon):
             subject = "%d new addresses discovered" % c
             body = ["%d new addresses discovered" % c, ""]
             for r in self.new_addresses:
-                body += ["%s: %s%sat %s:%s" % (r["vrf"], r["address"],
+                body += ["%s: %s%s at %s:%s" % (r["vrf"], r["address"],
                     " [%s] " % r["description"] if r["description"] else "",
                     r["object"].name, r["interface"])]
             SystemNotification.notify("inv.prefix_discovery", subject=subject,
