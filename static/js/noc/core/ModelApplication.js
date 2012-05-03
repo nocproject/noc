@@ -288,6 +288,8 @@ Ext.define("NOC.core.ModelApplication", {
                 if(record.phantom) {
                     // Remove from store
                     me.store.remove(record);
+                } else {
+                    record.setDirty();
                 }
                 this.showOpError("save", op, status);
             }
