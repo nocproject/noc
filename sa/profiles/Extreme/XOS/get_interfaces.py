@@ -22,20 +22,21 @@ class Script(NOCScript):
     name = "Extreme.XOS.get_interfaces"
     implements = [IGetInterfaces]
 
-    rx_vlan = re.compile(r"^VLAN Interface.+\s+with\s+name\s+(?P<name>.+?)\s+created.+$",
+    rx_vlan = re.compile(r"^VLAN Interface.*\s+with\s+name\s+(?P<name>.+?)\s+created.+$",
         re.IGNORECASE | re.MULTILINE)
     rx_untag = re.compile(r"^Tagging:\s+Untagged.*$",
         re.IGNORECASE | re.MULTILINE)
-    rx_tag = re.compile(r"^Tagging:\s+802.1Q\s+Tag\s+(?P<tag>\d+)\s*$",
+    rx_tag = re.compile(r"^.+Tagging:\s+802.1Q\s+Tag\s+(?P<tag>\d+)\s*$",
         re.IGNORECASE | re.MULTILINE)
     rx_ip = re.compile(r"^IP:\s+(?P<ip>\S+)/(?P<mask>\S+).*$",
         re.IGNORECASE | re.MULTILINE)
-    rx_tagged = re.compile(r"^Tagged:\s+(?P<ifaces>.+?)\s*$",
+    rx_tagged = re.compile(r"^Tag(?:ged)?:\s+(?P<ifaces>.+?)\s*$",
         re.IGNORECASE | re.MULTILINE)
     rx_untagged = re.compile(r"^Untag:\s+(?P<ifaces>.+?)\s*$",
         re.IGNORECASE | re.MULTILINE)
     rx_port_descr = re.compile(r"\(([^)]+)\)")
     rx_port_name = re.compile("(?P<port>\d+:\d+)")
+    rx_port_name1 = re.compile("(?P<port>\d+)")
 
     def execute(self):
         vlans = []
@@ -43,6 +44,8 @@ class Script(NOCScript):
         self.descriptions = {}  # port -> descriptions
         self.ports = set()  # All ports
         v = self.cli("show vlan detail")
+        v = v.replace(",\n", ",")
+        il_parse = self.parse_interfaces1
         for l in v.splitlines():
             l = l.strip()
             # Process VLAN name
@@ -70,6 +73,8 @@ class Script(NOCScript):
             # Process VLAN tag
             match = self.rx_tag.match(l)
             if match:
+                if l.startswith("Admin"):
+                    il_parse = self.parse_interfaces2
                 current["vlan_id"] = int(match.group("tag"))
                 continue
             # Process IP
@@ -81,12 +86,12 @@ class Script(NOCScript):
             # Process tagged
             match = self.rx_tagged.match(l)
             if match:
-                current["tagged"] += self.parse_interfaces(match.group("ifaces"))
+                current["tagged"] += il_parse(match.group("ifaces"))
                 continue
             # Process untagged
             match = self.rx_untagged.match(l)
             if match:
-                current["untagged"] += self.parse_interfaces(match.group("ifaces"))
+                current["untagged"] += il_parse(match.group("ifaces"))
                 continue
         # Save last VLAN
         if current:
@@ -147,9 +152,10 @@ class Script(NOCScript):
         # Return
         return [{"interfaces": interfaces}]
 
-    def parse_interfaces(self, l):
+    def parse_interfaces1(self, l):
         # Fetch ports
         ports = set()
+        print self.rx_port_descr.split(l)
         for i in self.rx_port_descr.split(l):
             match = self.rx_port_name.search(i)
             if match:
@@ -163,4 +169,22 @@ class Script(NOCScript):
                 p, d = d.split(":", 1)
                 p = p.replace("-", ":")
                 self.descriptions[p] = d
+        return list(ports)
+
+    def parse_interfaces2(self, l):
+        print "parse_interfaces2", l
+        ports = set()
+        for p in l.split(","):
+            p = p.strip()
+            # split description
+            match = self.rx_port_descr.search(p)
+            if match:
+                d = match.group(1)
+                if "-" in d:
+                    d = d.split("-", 1)[1]
+                    p = p[:match.start()]
+                self.descriptions[p] = d
+            match = self.rx_port_name1.search(p)
+            if match:
+                self.ports.add(match.group("port"))
         return list(ports)
