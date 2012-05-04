@@ -273,6 +273,24 @@ class REParameter(StringParameter):
         return value
 
 
+class PyExpParameter(StringParameter):
+    """
+    Check python expression
+    >>> PyExpParameter().clean("(a + 3) * 7")
+    '(a + 3) * 7'
+    >>> PyExpParameter().clean("a =!= b") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: REParameter: 'a =!= b'
+    """
+    def clean(self, value):
+        try:
+            compile(value, "<string>", "eval")
+        except SyntaxError, why:
+            self.raise_error(value)
+        return value
+
+
 class BooleanParameter(Parameter):
     """
     >>> BooleanParameter().clean(True)
