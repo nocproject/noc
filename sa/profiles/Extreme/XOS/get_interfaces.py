@@ -26,7 +26,7 @@ class Script(NOCScript):
         re.IGNORECASE | re.MULTILINE)
     rx_untag = re.compile(r"^Tagging:\s+Untagged.*$",
         re.IGNORECASE | re.MULTILINE)
-    rx_tag = re.compile(r"^.+Tagging:\s+802.1Q\s+Tag\s+(?P<tag>\d+)\s*$",
+    rx_tag = re.compile(r"^.*Tagging:\s+802.1Q\s+Tag\s+(?P<tag>\d+)\s*$",
         re.IGNORECASE | re.MULTILINE)
     rx_ip = re.compile(r"^IP:\s+(?P<ip>\S+)/(?P<mask>\S+).*$",
         re.IGNORECASE | re.MULTILINE)
@@ -156,7 +156,6 @@ class Script(NOCScript):
     def parse_interfaces1(self, l):
         # Fetch ports
         ports = set()
-        print self.rx_port_descr.split(l)
         for i in self.rx_port_descr.split(l):
             match = self.rx_port_name.search(i)
             if match:
