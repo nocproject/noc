@@ -148,6 +148,7 @@ class Script(NOCScript):
             }
             if p in self.descriptions:
                 i["description"] = self.descriptions[p]
+                si["description"] = self.descriptions[p]
             interfaces += [i]
         # Return
         return [{"interfaces": interfaces}]
@@ -172,7 +173,6 @@ class Script(NOCScript):
         return list(ports)
 
     def parse_interfaces2(self, l):
-        print "parse_interfaces2", l
         ports = set()
         for p in l.split(","):
             p = p.strip()
@@ -186,5 +186,6 @@ class Script(NOCScript):
                 self.descriptions[p] = d
             match = self.rx_port_name1.search(p)
             if match:
-                self.ports.add(match.group("port"))
+                ports.add(match.group("port"))
+        self.ports.update(ports)
         return list(ports)
