@@ -8,6 +8,7 @@
 
 ## Python services
 import cPickle
+import time
 ## NOC modules
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.profiles import profile_registry
@@ -110,3 +111,20 @@ class Service(SAEService):
         """
         self.activator.refresh_object_mappings()
         done(controller, response=RefreshEventFilterResponse())
+
+    def get_status(self, controller, request, done):
+        status = self.activator.get_status()
+        r = StatusResponse()
+        r.timestamp = status["timestamp"]
+        r.pool = status["pool"]
+        r.instance = status["instance"]
+        r.state = status["state"]
+        r.max_scripts = status["max_scripts"]
+        r.current_scripts = status["current_scripts"]
+        for s in status["scripts"]:
+            i = r.scripts.add()
+            i.script = s["script"]
+            i.address = s["address"]
+            i.start_time = s["start_time"]
+            i.timeout = s["timeout"]
+        done(controller, response=r)

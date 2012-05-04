@@ -398,7 +398,7 @@ class RPCSocket(object):
             self.rpc_handle_response(msg.id, msg.response)
 
     def rpc_handle_request(self, id, request):
-        logging.debug("rpc_handle_request")
+        logging.debug("rpc_handle_request: %s" % request.method)
         if id in self.transactions:
             self.send_error(id, ERR_TRANSACTION_EXISTS,
                             "Transaction %s is already exists" % id)

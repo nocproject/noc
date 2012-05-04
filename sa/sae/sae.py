@@ -78,6 +78,7 @@ class SAE(Daemon):
         #
         t = time.time()
         self.last_mrtask_check = t
+        self.last_status_refresh = t
         # Activator interface implementation
         self.servers = None
         self.to_save_output = False
@@ -237,6 +238,8 @@ class SAE(Daemon):
             # Check Map/Reduce task status
             self.process_mrtasks()
             self.last_mrtask_check = t
+        if t - self.last_status_refresh >= 60:  # @todo: Configurable
+            self.refresh_activator_status()
 
     def write_event(self, data, timestamp=None, managed_object=None):
         """
@@ -578,6 +581,48 @@ class SAE(Daemon):
                 o = None
             self.mo_cache[object_id] = o
         return o
+
+    def request_activator_status(self, stream):
+        """
+        Refresh activator statuses
+        :return:
+        """
+        def status_callback(transaction, response=None, error=None):
+            if response:
+                s = {
+                    "timestamp": response.timestamp,
+                    "pool": response.pool,
+                    "instance": response.instance,
+                    "state": response.state,
+                    "max_scripts": response.max_scripts,
+                    "current_scripts": response.current_scripts,
+                    "scripts": [
+                        {
+                            "script": i.script,
+                            "address": i.address,
+                            "start_time": i.start_time,
+                            "timeout": i.timeout
+                        } for i in response.scripts
+                    ]
+                }
+                stream.last_status = s
+
+        stream.proxy.get_status(StatusRequest(), status_callback)
+
+    def refresh_activator_status(self):
+        logging.debug("Refreshing activator status")
+        for pool in self.activators:
+            for stream in self.activators[pool]:
+                self.request_activator_status(stream)
+        self.last_status_refresh = time.time()
+
+    def get_activator_status(self):
+        r = []
+        for pool in self.activators:
+            for stream in self.activators[pool]:
+                if hasattr(stream, "last_status"):
+                    r += [stream.last_status]
+        return r
 
     ##
     ## Signal handlers

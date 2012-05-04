@@ -302,6 +302,23 @@ message PMDataRequest {
 
 message PMDataResponse {}
 
+message StatusRequest {}
+
+message StatusResponse {
+    message ScriptInfo {
+        required string script = 1;
+        required string address = 2;
+        required int32 start_time = 3;
+        required int32 timeout = 4;
+    }
+    required int32 timestamp = 1;
+    required string pool = 2;
+    required string instance = 3;
+    required string state = 4;
+    required int32 max_scripts = 5;
+    required int32 current_scripts = 6;
+    repeated ScriptInfo scripts = 7;
+}
 //
 // RPC Services
 //
@@ -321,4 +338,5 @@ service SAEService {
     rpc event            (EventRequest)           returns (EventResponse);
     rpc ping_check       (PingCheckRequest)       returns (PingCheckResponse);
     rpc pm_data          (PMDataRequest)          returns (PMDataResponse);
+    rpc get_status       (StatusRequest)          returns (StatusResponse);
 }
