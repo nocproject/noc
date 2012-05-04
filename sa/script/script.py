@@ -452,6 +452,7 @@ class Script(threading.Thread):
                 # Race condition caught. Handle CancelledError
                 self.error("Cancelled")
             else:
+                self.error("Unhandled exception")
                 t, v, tb = sys.exc_info()
                 r = [str(t), str(v)]
                 r += [format_frames(get_traceback_frames(tb))]

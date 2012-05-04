@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Service Activator Daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 from __future__ import with_statement
 import os
@@ -787,6 +786,27 @@ class Activator(Daemon, FSM):
             logging.info("Cancelling stale script %s(%s)" % (
                 script.name, script.access_profile.address))
             script.cancel_script()
+
+    def get_status(self):
+        s = {
+            "timestamp": int(time.time()),
+            "pool": self.activator_name,
+            "instance": self.instance_id,
+            "state": self._current_state,
+            "max_scripts": self.max_script_threads
+        }
+        with self.script_lock:
+            s["current_scripts"] = len(self.script_threads)
+            ss = []
+            for script in self.script_threads:
+                ss += [{
+                    "script": script.name,
+                    "address": script.access_profile.address,
+                    "start_time": int(script.start_time),
+                    "timeout": script._timeout
+                }]
+            s["scripts"] = ss
+        return s
 
     def SIGUSR1(self, signo, frame):
         """

@@ -251,7 +251,7 @@ class Service(SAEService):
             e.text = "Authentication required"
             done(controller, error=e)
             return
-        activator = self.get_controller_activator(controller)
+        # activator = self.get_controller_activator(controller)
         # Resolve managed object by request's IP
         # @todo: Speed optimization
         if request.object:
