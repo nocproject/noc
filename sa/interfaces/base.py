@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Abstract script interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import re
 import types
@@ -254,9 +253,26 @@ class REStringParameter(StringParameter):
         if not self.rx.search(v):
             self.raise_error(value)
         return v
-##
-##
-##
+
+
+class REParameter(StringParameter):
+    """
+    Check Regular Expression
+    >>> REParameter().clean(".+?")
+    ".+?"
+    >>> REParameter().clean("+") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: REParameter: '+'
+    """
+    def clean(self, value):
+        try:
+            re.compile(value)
+        except Exception, why:
+            self.raise_error(value)
+        return value
+
+
 class BooleanParameter(Parameter):
     """
     >>> BooleanParameter().clean(True)
