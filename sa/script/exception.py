@@ -23,6 +23,10 @@ class CLIOperationError(Exception):
     """CLI Operation returns error (Except of Syntax Error)"""
 
 
+class CLITransportError(Exception):
+    """CLI Transport-level exception"""
+
+
 class NotSupportedError(Exception):
     """Feature is not supported on current platform/software/feature set"""
 

@@ -7,12 +7,14 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import sys
 import re
 import Queue
 ## NOC modules
 from noc.lib.fsm import StreamFSM
 from noc.sa.script.exception import *
 from noc.lib.text import replace_re_group
+from noc.lib.debug import format_frames, get_traceback_frames
 
 
 class CLI(StreamFSM):
@@ -81,6 +83,7 @@ class CLI(StreamFSM):
         self.collected_data = ""
         self.submitted_data = []
         self.submit_lines_limit = None
+        self.error_traceback = None
         self.motd = ""  # Message of the day storage
         self.pattern_prompt = None  # Set when entering PROMPT state
         if isinstance(self.profile.pattern_more, basestring):
@@ -99,6 +102,24 @@ class CLI(StreamFSM):
     def on_read(self, data):
         """
         Override Socket.on_read to feed the data to FSM
+        :param data:
+        :return:
+        """
+        try:
+            self.guarded_read(data)
+        except:
+            # FSM-level exception
+            self.error("Unhandled exception")
+            t, v, tb = sys.exc_info()
+            r = [str(t), str(v)]
+            r += [format_frames(get_traceback_frames(tb))]
+            self.error_traceback = "\n".join(r)
+            self.debug("CLI traceback:\n%s" % self.error_traceback)
+            self.queue.put(None)  # Signal transport-level exception
+
+    def guarded_read(self, data):
+        """
+        Process incoming data and feed FSM
         :param data:
         :return:
         """

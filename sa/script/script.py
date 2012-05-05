@@ -164,6 +164,7 @@ class Script(threading.Thread):
     LoginError = LoginError
     CLISyntaxError = CLISyntaxError
     CLIOperationError = CLIOperationError
+    CLITransportError = CLITransportError
     NotSupportedError = NotSupportedError
     UnexpectedResultError = UnexpectedResultError
     #
@@ -447,6 +448,8 @@ class Script(threading.Thread):
         except self.http.HTTPError, e:
             self.error(str(e))
             self.e_http_error = str(e)
+        except self.CLITransportError, why:
+            self.error_traceback = why
         except:
             if self.e_cancel:
                 # Race condition caught. Handle CancelledError
@@ -512,6 +515,7 @@ class Script(threading.Thread):
             except thread.error:
                 # Bug in python's Queue module:
                 # Sometimes, tries to release unacquired lock
+                self.error("Trying to release unacquired lock")
                 time.sleep(1)
 
     def request_cli_provider(self):
@@ -528,6 +532,10 @@ class Script(threading.Thread):
                 raise UnknownAccessScheme(self.access_profile.scheme)
             self.cli_provider = s_class(self)
             self.cli_queue_get()
+            # Check provider has no flagged errors
+            if self.cli_provider.error_traceback:
+                raise CLITransportError(
+                    self.cli_provider.error_traceback)
             self.debug("CLI Provider is ready")
             # Set up session when necessary
             if (self.profile.setup_session and
@@ -573,8 +581,14 @@ class Script(threading.Thread):
                 # Check CLI provider is ready
                 self.request_cli_provider()
                 # Execute command
-                self.cli_provider.submit(cmd, command_submit=command_submit, bulk_lines=bulk_lines)
+                self.cli_provider.submit(cmd,
+                    command_submit=command_submit,
+                    bulk_lines=bulk_lines)
                 data = self.cli_queue_get()
+                if data is None and self.cli_provider.error_traceback:
+                    # Transport-level CLI error occured
+                    raise self.CLITransportError(
+                        self.cli_provider.error_traceback)
                 if cached:
                     # Store back to cache
                     cache[cc] = data
