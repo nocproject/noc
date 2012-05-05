@@ -51,9 +51,12 @@ class CLITelnetSocket(CLI, ConnectedTCPSocket):
         logging.debug("[%s] %s" % (self.log_label(), msg))
 
     def on_close(self):
-        if self.get_state() == "START":
+        state = self.get_state()
+        if state == "SSH_START":
             self.motd = "Connection timeout"
             self.set_state("FAILURE")
+        elif self.stale:
+            self.queue.put(None)  # Signal stale socket timeout
 
     def on_connect(self):
         super(CLITelnetSocket, self).on_connect()
