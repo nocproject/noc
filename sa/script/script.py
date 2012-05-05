@@ -165,6 +165,7 @@ class Script(threading.Thread):
     CLISyntaxError = CLISyntaxError
     CLIOperationError = CLIOperationError
     CLITransportError = CLITransportError
+    TimeOutError = TimeOutError
     NotSupportedError = NotSupportedError
     UnexpectedResultError = UnexpectedResultError
     #
@@ -434,7 +435,7 @@ class Script(threading.Thread):
         try:
             with self.cancelable():
                 result = self.guarded_run()
-        except TimeOutError:
+        except self.TimeOutError:
             self.error("Timed out")
             self.e_timeout = True
         except CancelledError:
@@ -536,6 +537,8 @@ class Script(threading.Thread):
             if self.cli_provider.error_traceback:
                 raise CLITransportError(
                     self.cli_provider.error_traceback)
+            if self.cli_provider.stale:
+                raise self.TimeOutError()
             self.debug("CLI Provider is ready")
             # Set up session when necessary
             if (self.profile.setup_session and
@@ -585,10 +588,13 @@ class Script(threading.Thread):
                     command_submit=command_submit,
                     bulk_lines=bulk_lines)
                 data = self.cli_queue_get()
-                if data is None and self.cli_provider.error_traceback:
-                    # Transport-level CLI error occured
-                    raise self.CLITransportError(
-                        self.cli_provider.error_traceback)
+                if data is None:
+                    if self.cli_provider.error_traceback:
+                        # Transport-level CLI error occured
+                        raise self.CLITransportError(
+                            self.cli_provider.error_traceback)
+                    elif self.cli_provider.stale:
+                        raise self.TimeOutError()
                 if cached:
                     # Store back to cache
                     cache[cc] = data

@@ -261,9 +261,12 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         logging.error("[%s] %s" % (self.log_label(), msg))
 
     def on_close(self):
-        if self.get_state() == "SSH_START":
+        state = self.get_state()
+        if state == "SSH_START":
             self.motd = "Connection timeout"
             self.set_state("FAILURE")
+        elif self.stale:
+            self.queue.put(None)  # Signal stale socket timeout
 
     def generate_private_x(self, bits):
         def get_random(bits):
