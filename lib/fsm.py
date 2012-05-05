@@ -167,6 +167,10 @@ class StreamFSM(FSM):
         logging.debug("[%s(0x%x)]<%s> %s" % (
         self.__class__.__name__, id(self), self.get_state(), msg))
 
+    def error(self, msg):
+        logging.error("[%s(0x%x)]<%s> %s" % (
+        self.__class__.__name__, id(self), self.get_state(), msg))
+
     def set_patterns(self, patterns):
         self.debug("set_patterns(%s)" % repr(patterns))
         self.patterns = [(re.compile(x, re.DOTALL | re.MULTILINE), y) for x, y
