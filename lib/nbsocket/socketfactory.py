@@ -252,6 +252,7 @@ class SocketFactory(object):
         with self.register_lock:
             for s in [s for s in self.sockets.values() if s.is_stale()]:
                 logging.debug("Closing stale socket %s" % s)
+                s.stale = True
                 s.close()
 
     def create_pending_sockets(self):

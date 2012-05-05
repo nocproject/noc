@@ -30,6 +30,7 @@ class Socket(object):
         self.last_read = self.start_time + 100  # @todo: Meaningful value
         self.name = None
         self.closing = False  # In closing state
+        self.stale = False  # Closed as stale
         self.ttl = self.TTL
         self.set_timeout(self.TTL)
         self.factory.register_socket(self)
