@@ -203,7 +203,7 @@
             },
             {
                 "key_re": "^OLD-CISCO-TS-MIB::tsLineUser\\.(?:[1-4])$",
-                "value_re": "^(?P<user>\\S+)$"
+                "value_re": "^(?P<user>.*)$"
             }
         ]
     },
