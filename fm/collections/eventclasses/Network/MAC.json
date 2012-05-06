@@ -211,5 +211,40 @@
                 "required": false
             }
         ]
+    },
+
+    {
+        "name": "Network | MAC | MAC Moved",
+        "description": "MAC address moved",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "body_template": "MAC moved: {{mac}}{% if interface %}, port {{interface}}{% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": "" 
+            }
+        },
+        "vars": [
+            {
+                "name": "mac",
+                "description": "MAC Address",
+                "type": "mac",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "VLAN",
+                "type": "int",
+                "required": false
+            },
+            {
+                "name": "interface",
+                "description": "Interface",
+                "type": "interface_name",
+                "required": false
+            }
+        ]
     }
 ]
