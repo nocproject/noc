@@ -68,7 +68,7 @@
                 "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2macNotification$"
             },
             {
-                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swl2NotificationBidings$",
+                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swl2NotificationBin?dings$",
                 "value_re": "^\\x01(?P<mac__bin_to_mac>.{6}).{2}(?P<iface>.{2})"
             }
         ],
@@ -99,8 +99,39 @@
                 "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2macNotification$"
             },
             {
-                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swl2NotificationBidings$",
+                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swl2NotificationBin?dings$",
                 "value_re": "^\\x02(?P<mac__bin_to_mac>.{6}).{2}(?P<iface>.{2})"
+            }
+        ],
+        "vars": [
+            {
+                "name": "interface",
+                "value": "=str(ord(iface[1]))"
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS | Network | MAC | MAC Moved (SNMP)",
+        "description": "DES3526-L2MGMT-MIB::swL2macNotification",
+        "event_class__name": "Network | MAC | MAC Moved",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2macNotification$"
+            },
+            {
+                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swl2NotificationBin?dings$",
+                "value_re": "^\\x03(?P<mac__bin_to_mac>.{6}).{2}(?P<iface>.{2})"
             }
         ],
         "vars": [
