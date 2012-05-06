@@ -218,7 +218,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%(?:LINK-(?:SP-)?3|UBR\\d+00-5)-UPDOWN: Interface (?P<interface>.+), changed state to down$"
+                "value_re": "%(?:LINK-(?:SP-)?3|UBR\\d+00-5)-(?:UPDOWN|CHANGED): Interface (?P<interface>.+), changed state to(.+)? down$"
             }
         ]
     },
