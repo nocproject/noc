@@ -57,6 +57,7 @@ class Script(NOCScript):
            "Ce": "physical",    # Cellular
            "Et": "physical",    # Ethernet
            "Fa": "physical",    # FastEthernet
+           "Fd": "physical",    # Fddi
            "Gi": "physical",    # GigabitEthernet
            "Gr": "physical",    # Group-Async
            "Lo": "loopback",    # Loopback
@@ -71,6 +72,7 @@ class Script(NOCScript):
            "SR": "physical",    # Spatial Reuse Protocol
            "Se": "physical",    # Serial
            "Te": "physical",    # TenGigabitEthernet
+           "To": "physical",    # TokenRing
            "Tu": "tunnel",      # Tunnel
            "VL": "SVI",         # VLAN, found on C3500XL
            "Vl": "SVI",         # Vlan
