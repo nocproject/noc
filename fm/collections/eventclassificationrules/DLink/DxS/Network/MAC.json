@@ -68,7 +68,7 @@
                 "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2macNotification$"
             },
             {
-                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swl2NotificationBin?dings$",
+                "key_re": "^D[EG]S-?\\d{4}.+-MIB::sw(?:l2NotificationBin?dings|L2macNotifyInfo)$",
                 "value_re": "^\\x01(?P<mac__bin_to_mac>.{6}).{2}(?P<iface>.{2})"
             }
         ],
@@ -99,7 +99,7 @@
                 "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2macNotification$"
             },
             {
-                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swl2NotificationBin?dings$",
+                "key_re": "^D[EG]S-?\\d{4}.+-MIB::sw(?:l2NotificationBin?dings|L2macNotifyInfo)$",
                 "value_re": "^\\x02(?P<mac__bin_to_mac>.{6}).{2}(?P<iface>.{2})"
             }
         ],
@@ -130,7 +130,7 @@
                 "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2macNotification$"
             },
             {
-                "key_re": "^D[EG]S-?\\d{4}.+-MIB::swl2NotificationBin?dings$",
+                "key_re": "^D[EG]S-?\\d{4}.+-MIB::sw(?:l2NotificationBin?dings|L2macNotifyInfo)$",
                 "value_re": "^\\x03(?P<mac__bin_to_mac>.{6}).{2}(?P<iface>.{2})"
             }
         ],
