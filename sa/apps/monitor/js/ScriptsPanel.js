@@ -11,6 +11,7 @@ Ext.define("NOC.sa.monitor.ScriptsPanel", {
     uses: [],
     title: "Scripts",
     closable: false,
+    layout: "fit",
 
     initComponent: function() {
         var me = this;
