@@ -594,6 +594,7 @@ class SAE(Daemon):
                     "pool": response.pool,
                     "instance": response.instance,
                     "state": response.state,
+                    "last_state_change": response.last_state_change,
                     "max_scripts": response.max_scripts,
                     "current_scripts": response.current_scripts,
                     "scripts": [

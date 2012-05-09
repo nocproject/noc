@@ -16,6 +16,7 @@ class IGetActivatorInfo(Interface):
         "pool": StringParameter(),
         "instance": StringParameter(),
         "state": StringParameter(),
+        "last_state_change": IntParameter(),
         "max_scripts": IntParameter(),
         "current_scripts": IntParameter(),
         "scripts": DictListParameter(attrs={

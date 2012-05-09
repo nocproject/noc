@@ -119,6 +119,7 @@ class Service(SAEService):
         r.pool = status["pool"]
         r.instance = status["instance"]
         r.state = status["state"]
+        r.last_state_change = status["last_state_change"]
         r.max_scripts = status["max_scripts"]
         r.current_scripts = status["current_scripts"]
         for s in status["scripts"]:

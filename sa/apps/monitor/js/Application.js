@@ -69,6 +69,7 @@ Ext.define("NOC.sa.monitor.Application", {
                 pool:r.pool,
                 instance: r.instance,
                 state: r.state,
+                last_state_change: new Date(r.last_state_change * 1000),
                 current_scripts: r.current_scripts,
                 max_scripts: r.max_scripts
             });
@@ -86,5 +87,6 @@ Ext.define("NOC.sa.monitor.Application", {
         });
         me.poolsStore.loadData(poolsData);
         me.scriptsStore.loadData(scriptsData);
+        console.log(result);
     }
 });
