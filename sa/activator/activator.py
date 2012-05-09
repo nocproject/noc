@@ -793,6 +793,7 @@ class Activator(Daemon, FSM):
             "pool": self.activator_name,
             "instance": self.instance_id,
             "state": self._current_state,
+            "last_state_change": int(self._state_enter_time),
             "max_scripts": self.max_script_threads
         }
         with self.script_lock:

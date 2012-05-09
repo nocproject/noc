@@ -38,6 +38,12 @@ Ext.define("NOC.sa.monitor.PoolsPanel", {
                             dataIndex: "state"
                         },
                         {
+                            text: "Changed",
+                            dataIndex: "last_state_change",
+                            xtype: "datecolumn",
+                            format: "Y-m-d H:i:s"
+                        },
+                        {
                             text: "Current",
                             dataIndex: "current_scripts",
                             summaryType: "sum",

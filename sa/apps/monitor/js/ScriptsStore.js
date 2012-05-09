@@ -29,7 +29,7 @@ Ext.define("NOC.sa.monitor.ScriptsStore", {
         },
         {
             name: "start_time",
-            type: "string"
+            type: "date"
         },
         {
             name: "timeout",

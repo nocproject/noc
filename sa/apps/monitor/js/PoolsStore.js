@@ -24,6 +24,10 @@ Ext.define("NOC.sa.monitor.PoolsStore", {
             type: "string"
         },
         {
+            name: "last_state_change",
+            type: "date"
+        },
+        {
             name: "current_scripts",
             type: "int"
         },
