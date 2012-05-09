@@ -11,6 +11,7 @@ Ext.define("NOC.sa.monitor.PoolsPanel", {
     uses: [],
     title: "Pools",
     closable: false,
+    layout: "fit",
 
     initComponent: function() {
         var me = this;
