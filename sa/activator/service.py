@@ -123,6 +123,7 @@ class Service(SAEService):
         r.max_scripts = status["max_scripts"]
         r.current_scripts = status["current_scripts"]
         r.scripts_processed = status["scripts_processed"]
+        r.scripts_failed = status["scripts_failed"]
         for s in status["scripts"]:
             i = r.scripts.add()
             i.script = s["script"]

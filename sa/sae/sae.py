@@ -598,6 +598,7 @@ class SAE(Daemon):
                     "max_scripts": response.max_scripts,
                     "current_scripts": response.current_scripts,
                     "scripts_processed": response.scripts_processed,
+                    "scripts_failed": response.scripts_failed,
                     "scripts": [
                         {
                             "script": i.script,
