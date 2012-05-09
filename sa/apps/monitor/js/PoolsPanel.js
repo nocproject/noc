@@ -60,6 +60,12 @@ Ext.define("NOC.sa.monitor.PoolsPanel", {
                             dataIndex: "scripts_processed",
                             summaryType: "sum",
                             align: "right"
+                        },
+                        {
+                            text: "Failed",
+                            dataIndex: "scripts_failed",
+                            summaryType: "sum",
+                            align: "right"
                         }
                     ],
                     tbar: [

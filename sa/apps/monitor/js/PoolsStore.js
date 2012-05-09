@@ -38,6 +38,10 @@ Ext.define("NOC.sa.monitor.PoolsStore", {
         {
             name: "scripts_processed",
             type: "int"
+        },
+        {
+            name: "scripts_failed",
+            type: "int"
         }
     ],
     data: []

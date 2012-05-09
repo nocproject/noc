@@ -143,6 +143,7 @@ class Activator(Daemon, FSM):
         self.max_script_threads = self.config.getint("activator",
                                                      "max_scripts")
         self.scripts_processed = 0
+        self.scripts_failed = 0
         self.script_lock = Lock()
         self.script_call_queue = Queue.Queue()
         self.pm_data_queue = []
@@ -277,6 +278,7 @@ class Activator(Daemon, FSM):
         to_refresh_filters = False
         self.next_mappings_update = None
         self.scripts_processed = 0
+        self.scripts_failed = 0
         # Check does our instance is designated to listen
         self.to_listen = self.config.get("activator", "listen_instance") == self.instance_id
         if self.to_listen:
@@ -386,6 +388,7 @@ class Activator(Daemon, FSM):
         script.start()
 
     def on_script_exit(self, script):
+        failed = 1
         if script.e_timeout:
             s = "is timed out"
         elif script.e_cancel:
@@ -394,6 +397,7 @@ class Activator(Daemon, FSM):
             s = "cannot log in"
         else:
             s = "is completed"
+            failed = 0
         logging.info("Script %s(%s) %s" % (script.name,
                                            script.access_profile.address, s))
         with self.script_lock:
@@ -401,6 +405,7 @@ class Activator(Daemon, FSM):
             logging.info("%d script threads left (%d max)" % (
                 len(self.script_threads), self.max_script_threads))
             self.scripts_processed += 1
+            self.scripts_failed += failed
         cb(script)
 
     def request_call(self, f, *args, **kwargs):
@@ -799,7 +804,8 @@ class Activator(Daemon, FSM):
             "state": self._current_state,
             "last_state_change": int(self._state_enter_time),
             "max_scripts": self.max_script_threads,
-            "scripts_processed": self.scripts_processed
+            "scripts_processed": self.scripts_processed,
+            "scripts_failed": self.scripts_failed
         }
         with self.script_lock:
             s["current_scripts"] = len(self.script_threads)

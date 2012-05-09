@@ -20,6 +20,7 @@ class IGetActivatorInfo(Interface):
         "max_scripts": IntParameter(),
         "current_scripts": IntParameter(),
         "scripts_processed": IntParameter(),
+        "scripts_failed": IntParameter(),
         "scripts": DictListParameter(attrs={
             "script": StringParameter(),
             "address": StringParameter(),

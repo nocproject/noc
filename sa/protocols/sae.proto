@@ -319,7 +319,8 @@ message StatusResponse {
     required int32 max_scripts = 6;
     required int32 current_scripts = 7;
     required int32 scripts_processed = 8;
-    repeated ScriptInfo scripts = 9;
+    required int32 scripts_failed = 9;
+    repeated ScriptInfo scripts = 10;
 }
 //
 // RPC Services
