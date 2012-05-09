@@ -71,7 +71,8 @@ Ext.define("NOC.sa.monitor.Application", {
                 state: r.state,
                 last_state_change: new Date(r.last_state_change * 1000),
                 current_scripts: r.current_scripts,
-                max_scripts: r.max_scripts
+                max_scripts: r.max_scripts,
+                scripts_processed: r.scripts_processed
             });
             Ext.each(r.scripts, function(rr) {
                 scriptsData.push({

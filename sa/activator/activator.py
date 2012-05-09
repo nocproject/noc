@@ -140,7 +140,9 @@ class Activator(Daemon, FSM):
         self.next_crashinfo_check = None
         self.next_heartbeat = None
         self.script_threads = {}
-        self.max_script_threads = self.config.getint("activator", "max_scripts")
+        self.max_script_threads = self.config.getint("activator",
+                                                     "max_scripts")
+        self.scripts_processed = 0
         self.script_lock = Lock()
         self.script_call_queue = Queue.Queue()
         self.pm_data_queue = []
@@ -274,6 +276,7 @@ class Activator(Daemon, FSM):
         """
         to_refresh_filters = False
         self.next_mappings_update = None
+        self.scripts_processed = 0
         # Check does our instance is designated to listen
         self.to_listen = self.config.get("activator", "listen_instance") == self.instance_id
         if self.to_listen:
@@ -397,6 +400,7 @@ class Activator(Daemon, FSM):
             cb = self.script_threads.pop(script)
             logging.info("%d script threads left (%d max)" % (
                 len(self.script_threads), self.max_script_threads))
+            self.scripts_processed += 1
         cb(script)
 
     def request_call(self, f, *args, **kwargs):
@@ -794,7 +798,8 @@ class Activator(Daemon, FSM):
             "instance": self.instance_id,
             "state": self._current_state,
             "last_state_change": int(self._state_enter_time),
-            "max_scripts": self.max_script_threads
+            "max_scripts": self.max_script_threads,
+            "scripts_processed": self.scripts_processed
         }
         with self.script_lock:
             s["current_scripts"] = len(self.script_threads)

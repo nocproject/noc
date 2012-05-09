@@ -122,6 +122,7 @@ class Service(SAEService):
         r.last_state_change = status["last_state_change"]
         r.max_scripts = status["max_scripts"]
         r.current_scripts = status["current_scripts"]
+        r.scripts_processed = status["scripts_processed"]
         for s in status["scripts"]:
             i = r.scripts.add()
             i.script = s["script"]
