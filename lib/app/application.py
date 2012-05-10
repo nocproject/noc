@@ -423,6 +423,8 @@ class Application(object):
                                      max_length=ml)
             elif f.type == "int":
                 ff = forms.IntegerField(required=False, label=f.label)
+            elif f.type == "bool":
+                ff = forms.BooleanField(required=False, label=f.label)
             else:
                 raise ValueError("Invalid field type: '%s'" % f.type)
             l += [(str(f.name), ff)]
