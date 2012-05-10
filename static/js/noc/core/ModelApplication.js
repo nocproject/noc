@@ -35,7 +35,6 @@ Ext.define("NOC.core.ModelApplication", {
             autoLoad: true,
             pageSize: 1  // Increased by AutoSize plugin
         });
-        console.log("Store", me.store);
         // Setup Grid toolbar
         var gridToolbar = [
             {
@@ -107,11 +106,17 @@ Ext.define("NOC.core.ModelApplication", {
             };
         }
         // Grid
+        var cust_columns = me.noc.cust_grid_columns || [];
+        Ext.each(cust_columns, function(c) {
+            if(c.renderer && Ext.isString(c.renderer)) {
+                c.renderer = eval(c.renderer);
+            }
+        });
         var grid_panel = {
             xtype: "gridpanel",
             itemId: "grid",
             store: me.store,
-            columns: me.columns.concat(me.noc.cust_grid_columns || []),
+            columns: me.columns.concat(cust_columns),
             border: false,
             autoScroll: true,
             stateful: true,

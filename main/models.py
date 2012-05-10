@@ -194,7 +194,8 @@ class CustomField(models.Model):
     type = models.CharField("Type", max_length=64,
                             choices=[
                                 ("str", "String"),
-                                ("int", "Integer")
+                                ("int", "Integer"),
+                                ("bool", "Boolean")
                             ])
     description = models.TextField("Description", null=True, blank=True)
     # Applicable only for "str" type
@@ -224,9 +225,22 @@ class CustomField(models.Model):
         """
         if self.type == "str":
             l = self.max_length if self.max_length else 256
-            return models.CharField(name=self.name, db_column=self.db_column,
-                                    null=True, blank=True,
-                                    max_length=l)
+            return models.CharField(
+                name=self.name,
+                db_column=self.db_column,
+                null=True, blank=True,
+                max_length=l)
+        elif self.type == "int":
+            return models.IntegerField(
+                name=self.name,
+                db_column=self.db_column,
+                null=True, blank=True)
+        elif self.type == "bool":
+            return models.BooleanField(
+                name=self.name,
+                db_column=self.db_column,
+                default=False
+            )
         else:
             raise NotImplementedError
 
@@ -237,6 +251,8 @@ class CustomField(models.Model):
             r = "VARCHAR(%s)" % ms
         elif self.type == "int":
             r = "INTEGER"
+        elif self.type == "bool":
+            r = "BOOLEAN"
         else:
             raise ValueError("Invalid field type '%s'" % self.type)
         return "ALTER TABLE %s ADD COLUMN \"%s\" %s NULL" % (
@@ -248,33 +264,28 @@ class CustomField(models.Model):
         return "ALTER TABLE %s DROP COLUMN \"%s\"" % (
             self.table, self.db_column)
 
-    def activate_field(self):
+    def exec_commit(self, sql):
         c = connection.cursor()
-        c.execute(self.db_create_statement)
+        c.execute(sql)
         c.execute("COMMIT")
+
+    def activate_field(self):
+        self.exec_commit(self.db_create_statement)
 
     def deactivate_field(self):
-        c = connection.cursor()
-        c.execute(self.db_drop_statement)
-        c.execute("COMMIT")
+        self.exec_commit(self.db_drop_statement)
 
     def create_index(self):
-        c = connection.cursor()
-        c.execute("CREATE INDEX %s ON %s(%s)" % (self.index_name,
-                                                self.table, self.db_column))
-        c.execute("COMMIT")
+        self.exec_commit("CREATE INDEX %s ON %s(%s)" % (
+            self.index_name, self.table, self.db_column))
 
     def drop_index(self):
-        c = connection.cursor()
-        c.execute("DROP INDEX %s" % self.index_name)
-        c.execute("COMMIT")
+        self.exec_commit("DROP INDEX %s" % self.index_name)
 
     def rename(self, old_name):
-        c = connection.cursor()
-        c.execute("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
+        self.exec_commit("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
             self.table, old_name, self.db_column
         ))
-        c.execute("COMMIT")
 
     def save(self, *args, **kwargs):
         """
@@ -347,7 +358,8 @@ class CustomField(models.Model):
             "name": self.name,
             "type": {
                 "str": "string",
-                "int": "int"
+                "int": "int",
+                "bool": "boolean"
             }[self.type]
         }
         return f
@@ -362,6 +374,8 @@ class CustomField(models.Model):
             "dataIndex": self.name,
             "hidden": True
         }
+        if self.type == "bool":
+            f["renderer"] = "NOC.render.Bool"
         return f
 
     @property
@@ -369,19 +383,27 @@ class CustomField(models.Model):
         """
         Dict containing ExtJS form field description
         """
-        f = {
-            "name": self.name,
-            "fieldLabel": self.label,
-            "allowBlank": True
-        }
-        if self.type == "str":
-            f["xtype"] = "textfield"
-        elif self.type == "int":
-            f["xtype"] = "numberfield"
+        if self.type == "bool":
+            f = {
+                "name": self.name,
+                "xtype": "checkboxfield",
+                "boxLabel": self.label,
+                "allowBlank": True
+            }
+        elif self.type in ("str", "int"):
+            f = {
+                "name": self.name,
+                "xtype": {
+                    "str": "textfield",
+                    "int": "numberfield"
+                }[self.type],
+                "fieldLabel": self.label,
+                "allowBlank": True
+            }
+            if self.type == "str" and self.regexp:
+                f["regex"] = self.regexp
         else:
             raise ValueError("Invalid field type '%s'" % self.type)
-        if self.regexp:
-            f["regex"] = self.regexp
         return f
 
 
