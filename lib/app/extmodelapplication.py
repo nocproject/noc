@@ -67,7 +67,7 @@ class ExtModelApplication(ExtApplication):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
         self.pk_field_name = self.model._meta.pk.name
         # Prepare field converters
-        #self.clean_fields = {}  # name -> Parameter
+        self.clean_fields = self.clean_fields.copy()  # name -> Parameter
         for f in self.model._meta.fields:
             if f.name in self.clean_fields:
                 continue  # Overriden behavior
