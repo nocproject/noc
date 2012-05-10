@@ -45,28 +45,33 @@ Ext.define("NOC.sa.monitor.PoolsPanel", {
                             format: "Y-m-d H:i:s"
                         },
                         {
-                            text: "Current",
-                            dataIndex: "current_scripts",
-                            summaryType: "sum",
-                            align: "right"
-                        },
-                        {
-                            text: "Max",
-                            dataIndex: "max_scripts",
-                            summaryType: "sum",
-                            align: "right"
-                        },
-                        {
-                            text: "Processed",
-                            dataIndex: "scripts_processed",
-                            summaryType: "sum",
-                            align: "right"
-                        },
-                        {
-                            text: "Failed",
-                            dataIndex: "scripts_failed",
-                            summaryType: "sum",
-                            align: "right"
+                            text: "Scripts",
+                            columns: [
+                                {
+                                    text: "Current",
+                                    dataIndex: "current_scripts",
+                                    summaryType: "sum",
+                                    align: "right"
+                                },
+                                {
+                                    text: "Limit",
+                                    dataIndex: "max_scripts",
+                                    summaryType: "sum",
+                                    align: "right"
+                                },
+                                {
+                                    text: "Processed",
+                                    dataIndex: "scripts_processed",
+                                    summaryType: "sum",
+                                    align: "right"
+                                },
+                                {
+                                    text: "Failed",
+                                    dataIndex: "scripts_failed",
+                                    summaryType: "sum",
+                                    align: "right"
+                                }
+                            ]
                         }
                     ],
                     tbar: [
