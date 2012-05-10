@@ -90,7 +90,8 @@ Ext.define("NOC.main.customfield.Application", {
                 fields: ["id", "label"],
                 data: [
                     {id: "str", label: "String"},
-                    {id: "int", label: "Integer"}
+                    {id: "int", label: "Integer"},
+                    {id: "bool", label: "Boolean"}
                 ]
             }
         },
