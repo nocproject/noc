@@ -327,9 +327,19 @@ class ExtModelApplication(ExtApplication):
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
-            return self.response(str(why), status=self.BAD_REQUEST)
+            return self.render_json(
+                    {
+                        "status": False,
+                        "message": "Bad request",
+                        "traceback": str(why)
+                    }, status=self.BAD_REQUEST)
         except InterfaceTypeError, why:
-            return self.response(str(why), status=self.BAD_REQUEST)
+            return self.render_json(
+                    {
+                        "status": False,
+                        "message": "Bad request",
+                        "traceback": str(why)
+                    }, status=self.BAD_REQUEST)
         try:
             self.queryset(request).get(**attrs)
             return self.render_json(
