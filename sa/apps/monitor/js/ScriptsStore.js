@@ -33,11 +33,11 @@ Ext.define("NOC.sa.monitor.ScriptsStore", {
         },
         {
             name: "timeout",
-            type: "string"
+            type: "int"
         },
         {
             name: "duration",
-            type: "string"
+            type: "int"
         }
     ],
     data: []
