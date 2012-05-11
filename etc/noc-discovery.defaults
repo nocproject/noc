@@ -45,6 +45,7 @@ change_state =
 # Django template to generate discovered Address'es FQDN.
 # Available context variables are:
 #   object - Managed object instance
+#   vrf - VRF instance
 #   name - Managed object's name
 #   host - host part of managed object's name
 #   domain - domain part of managed object's name
