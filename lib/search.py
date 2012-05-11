@@ -19,7 +19,12 @@ class SearchResult(object):
     """
     def __init__(self, url, title, text, relevancy=1.0):
         if type(url) in [types.TupleType, types.ListType]:
-            self.url = site.reverse(*url)
+            try:
+                self.url = site.reverse(*url)
+            except:
+                p = url[0].split(":")
+                app = "NOC.%s.%s.Application" % (p[0], p[1])
+                self.url = "javascript:window.parent.NOC.run('%s', 'Search', {cmd: {cmd: 'open', id: '%s'}});" % (app, url[1])
         else:
             self.url = url
         self.title = title
