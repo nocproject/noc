@@ -702,11 +702,19 @@ class Address(models.Model):
     ##
     @classmethod
     def search(cls, user, query, limit):
+        from noc.sa.interfaces import MACAddressParameter,\
+            InterfaceTypeError
         q = Q(description__icontains=query) | Q(fqdn__icontains=query)
         if is_ipv4(query):
             q |= Q(afi="4", address=query)
         elif is_ipv6(query):
             q |= Q(afi="6", address=query)
+        else:
+            try:
+                mac = MACAddressParameter().clean(query)
+                q |= Q(mac=mac)
+            except InterfaceTypeError:
+                pass  # NOC a MAC address
         for o in cls.objects.filter(q):
             if query == o.address:
                 relevancy = 1.0
