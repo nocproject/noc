@@ -509,6 +509,7 @@ class DiscoveryDaemon(Daemon):
             if vrf is None:
                 self.o_info(o, "Skipping unknown VRF '%s'" % v["name"])
                 continue
+            octx["vrf"] = vrf
             for a in v["addresses"]:
                 # Skip broadcast MACs
                 if a.get("mac") == "FF:FF:FF:FF:FF:FF":
@@ -598,6 +599,7 @@ class DiscoveryDaemon(Daemon):
             p = set(str(IP.prefix(a).normalized) for a in addresses)
             self.o_info(o, "Cannot find VRF for prefixes: %s" % ", ".join(p))
             return
+        octx["vrf"] = vrf
         seen = set()
         for a in addresses:
             p = IP.prefix(a)
