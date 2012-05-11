@@ -12,8 +12,10 @@ Ext.application({
     controllers: ["NOC.main.desktop.Controller"],
 
     launch: function() {
+        var me = this;
         console.log("NOC application starting");
         Ext.create("NOC.main.desktop.Viewport");
         console.log("NOC application ready");
+        NOC.run = me.controllers.first().launchTab;
     }
 });

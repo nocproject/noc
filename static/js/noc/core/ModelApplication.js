@@ -32,7 +32,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.store = Ext.create("NOC.core.ModelStore", {
             model: me.model,
             customFields: me.noc.cust_model_fields || [],
-            autoLoad: true,
+            autoLoad: false,
             pageSize: 1  // Increased by AutoSize plugin
         });
         // Setup Grid toolbar
@@ -249,6 +249,12 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.filters) {
             me.filterPanel = me.grid.getComponent("filters");
         }
+        // Process commands
+        if(me.noc.cmd && me.noc.cmd.cmd == "open") {
+            me.store.setFilterParams({id: me.noc.cmd.id});
+        }
+        // Finally, load the store
+        me.store.load();
     },
     // Toggle Grid/Form
     toggle: function() {
