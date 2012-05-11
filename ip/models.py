@@ -714,7 +714,7 @@ class Address(models.Model):
                 mac = MACAddressParameter().clean(query)
                 q |= Q(mac=mac)
             except InterfaceTypeError:
-                pass  # NOC a MAC address
+                pass  # Not a MAC address
         for o in cls.objects.filter(q):
             if query == o.address:
                 relevancy = 1.0
