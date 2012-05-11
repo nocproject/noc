@@ -74,7 +74,7 @@ class ReportFilterApplication(SimpleReport):
                 for p in Prefix.objects.filter(**q)\
                     .exclude(prefix="0.0.0.0/0")\
                     .exclude(prefix="::/0")\
-                    .order_by("vrf__name","prefix")]
+                    .order_by("vrf__name","prefix").select_related()]
         return self.from_dataset(
             title=self.title,
             columns=columns,
