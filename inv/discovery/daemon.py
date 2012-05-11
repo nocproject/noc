@@ -699,7 +699,9 @@ class DiscoveryDaemon(Daemon):
         """
         # Ignore local addresses (127.0.0.0/8 and ::1)
         if ((afi == "4" and address.startswith("127.")) or
-            (afi == "6" and address == "::1")):
+            (afi == "6" and (
+                address == "::1" or
+                address.startswith("fe80:")))):
             return False
         # @todo: speedup
         if vrf.vrf_group.address_constraint != "G":
