@@ -43,6 +43,8 @@ class Script(NOCScript):
     rx_log_netaddress6 = re.compile(r"^\s+Destination: (?P<dest>\S+?),[ \r\n]+Local: (?P<local>\S+?)$",
         re.MULTILINE)
     rx_log_ae = re.compile(r"AE bundle: (?P<bundle>\S+?)\.\d+", re.MULTILINE)
+    rx_flags_vlan = re.compile(r"^\s+Flags:.+VLAN-Tag \[\s*0x\d+\.(?P<vlan>\d+)\s*\]",
+        re.IGNORECASE | re.MULTILINE)
 
     internal_interfaces = re.compile(r"^(lc-|cbp|demux|dsc|em|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|bme|jsrv)")
     internal_interfaces_olive = re.compile(r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip)")
@@ -99,8 +101,6 @@ class Script(NOCScript):
             for s in L:
                 match = self.re_search(self.rx_log_name, s)
                 sname = match.group("name")
-                if sname.startswith("lo0.163"):
-                    continue
                 si = {
                     "name": sname,
                     "snmp_ifindex": match.group("ifindex"),
@@ -113,8 +113,11 @@ class Script(NOCScript):
                 match = self.rx_phy_description.search(s)
                 if match:
                     si["description"] = match.group("description")
-                # Get MAX
-
+                # Get vlans
+                vlan_ids = []
+                match = self.rx_flags_vlan.search(s)
+                if match:
+                    vlan_ids = [int(match.group("vlan"))]
                 # Process protocols
                 for p in self.rx_log_protocol.split(s)[1:]:
                     match = self.re_search(self.rx_log_pname, p)
@@ -154,9 +157,6 @@ class Script(NOCScript):
                         if not vlans_requested:
                             # Request vlans port mapping
                             untagged, tagged = self.get_vlan_port_mapping()
-                            print "\n\n\n!!!!!!!"
-                            print untagged
-                            print tagged
                             vlans_requested = True
                         # Set untagged
                         try:
@@ -168,9 +168,13 @@ class Script(NOCScript):
                             si["tagged_vlans"] = sorted(tagged[si["name"]])
                         except KeyError:
                             pass
-                        x = untagged.get(si["name"])
-                        if x:
-                            si["untagged_vlans"]
+                        # x = untagged.get(si["name"])
+                        # if x:
+                        #     si["untagged_vlans"]
+                    # Set vlan_ids
+                    if vlan_ids and (
+                        si.get("is_ipv4") or si.get("is_ipv6")):
+                        si["vlan_ids"] = vlan_ids
                 # Append to subinterfaces list
                 subs += [si]
             # Append to collected interfaces
