@@ -37,7 +37,7 @@ class ReportFilterApplication(SimpleReport):
                 required = False
             )
 
-        self.customize_form(RForm, "ip_prefix")
+        self.customize_form(RForm, "ip_prefix", search=True)
         return RForm
 
     def get_data(self, **kwargs):
@@ -74,7 +74,7 @@ class ReportFilterApplication(SimpleReport):
                 for p in Prefix.objects.filter(**q)\
                     .exclude(prefix="0.0.0.0/0")\
                     .exclude(prefix="::/0")\
-                    .order_by("vrf__name","prefix").select_related()]
+                    .order_by("vrf__name", "prefix").select_related()]
         return self.from_dataset(
             title=self.title,
             columns=columns,
