@@ -409,6 +409,21 @@ class CustomField(models.Model):
             raise ValueError("Invalid field type '%s'" % self.type)
         return f
 
+    def get_choices(self):
+        """
+        Returns django-compatible choices
+        """
+        c = connection.cursor()
+        c.execute("""
+            SELECT DISTINCT \"%(col)s\"
+            FROM %(table)s
+            WHERE \"%(col)s\" IS NOT NULL AND \"%(col)s\" != ''
+            ORDER BY \"%(col)s\"""" % {
+            "col": self.db_column,
+            "table":self.table
+        })
+        return [(x, x) for x, in c.fetchall()]
+
 
 class Permission(models.Model):
     """

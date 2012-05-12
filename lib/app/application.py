@@ -410,9 +410,9 @@ class Application(object):
         """
         return None
 
-    def customize_form(self, form, table):
+    def customize_form(self, form, table, search=False):
         """
-        Add custom fields to form class
+        Add custom fields to django form class
         """
         from noc.main.models import CustomField
         l = []
@@ -420,9 +420,16 @@ class Application(object):
             if f.is_hidden:
                 continue
             if f.type == "str":
-                ml = f.max_length if f.max_length else 256
-                ff = forms.CharField(required=False, label=f.label,
-                                     max_length=ml)
+                if search and f.is_filtered:
+                    ff = forms.ChoiceField(
+                        required=False,
+                        label=f.label,
+                        choices=[("", "---")] + f.get_choices()
+                    )
+                else:
+                    ml = f.max_length if f.max_length else 256
+                    ff = forms.CharField(required=False, label=f.label,
+                                         max_length=ml)
             elif f.type == "int":
                 ff = forms.IntegerField(required=False, label=f.label)
             elif f.type == "bool":
