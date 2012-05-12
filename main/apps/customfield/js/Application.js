@@ -49,6 +49,11 @@ Ext.define("NOC.main.customfield.Application", {
             text: "Filtered",
             dataIndex: "is_filtered",
             renderer: NOC.render.Bool
+        },
+        {
+            text: "Hidden",
+            dataIndex: "is_hidden",
+            renderer: NOC.render.Bool
         }
     ],
     fields: [
@@ -130,6 +135,12 @@ Ext.define("NOC.main.customfield.Application", {
             xtype: "checkboxfield",
             boxLabel: "Is Filtered",
             allowBlank: false
+        },
+        {
+            name: "is_hidden",
+            xtype: "checkboxfield",
+            boxLabel: "Is Hidden",
+            allowBlank: false
         }
     ],
     filters: [
@@ -146,6 +157,11 @@ Ext.define("NOC.main.customfield.Application", {
         {
             title: "By Filtered",
             name: "is_filtered",
+            ftype: "boolean"
+        },
+        {
+            title: "By Hidden",
+            name: "is_hidden",
             ftype: "boolean"
         }
     ]

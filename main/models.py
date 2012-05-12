@@ -206,7 +206,10 @@ class CustomField(models.Model):
     # Include into the applications search fields
     is_searchable = models.BooleanField("Is Searchable", default=False)
     # Create grid filter
+    # Show comboboxes in search criteria
     is_filtered = models.BooleanField("Is Filtered", default=False)
+    # Field is excluded from forms
+    is_hidden = models.BooleanField("Is Hidden", default=False)
 
     def __unicode__(self):
         return u"%s.%s" % (self.table, self.name)

@@ -110,7 +110,8 @@ class ExtModelApplication(ExtApplication):
             li["params"].update({
                 "cust_model_fields": [f.ext_model_field for f in cf],
                 "cust_grid_columns": [f.ext_grid_column for f in cf],
-                "cust_form_fields": [f.ext_form_field for f in cf]
+                "cust_form_fields": [f.ext_form_field for f in cf
+                                     if not f.is_hidden]
             })
         return li
 

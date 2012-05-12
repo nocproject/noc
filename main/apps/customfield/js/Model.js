@@ -63,6 +63,11 @@ Ext.define("NOC.main.customfield.Model", {
             name: "is_filtered",
             type: "boolean",
             defaultValue: false
+        },
+        {
+            name: "is_hidden",
+            type: "boolean",
+            defaultValue: false
         }
     ]
 });
