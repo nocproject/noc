@@ -417,6 +417,8 @@ class Application(object):
         from noc.main.models import CustomField
         l = []
         for f in CustomField.table_fields(table):
+            if f.is_hidden:
+                continue
             if f.type == "str":
                 ml = f.max_length if f.max_length else 256
                 ff = forms.CharField(required=False, label=f.label,
