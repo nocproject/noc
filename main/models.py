@@ -195,7 +195,9 @@ class CustomField(models.Model):
                             choices=[
                                 ("str", "String"),
                                 ("int", "Integer"),
-                                ("bool", "Boolean")
+                                ("bool", "Boolean"),
+                                ("date", "Date"),
+                                ("datetime", "Date&Time")
                             ])
     description = models.TextField("Description", null=True, blank=True)
     # Applicable only for "str" type
@@ -242,13 +244,24 @@ class CustomField(models.Model):
             return models.BooleanField(
                 name=self.name,
                 db_column=self.db_column,
-                default=False
-            )
+                default=False)
+        elif self.type == "date":
+            return models.DateField(
+                name=self.name,
+                db_column=self.db_column,
+                null=True, blank=True)
+        elif self.type == "datetime":
+            return models.DateTimeField(
+                name=self.name,
+                db_column=self.db_column,
+                null=True, blank=True)
         else:
             raise NotImplementedError
 
     @property
     def db_create_statement(self):
+        # @todo: Use django's capabilities to generate SQL
+        # field.db_type ?
         if self.type == "str":
             ms = self.max_length if self.max_length else 256
             r = "VARCHAR(%s)" % ms
@@ -256,6 +269,10 @@ class CustomField(models.Model):
             r = "INTEGER"
         elif self.type == "bool":
             r = "BOOLEAN"
+        elif self.type == "date":
+            r = "DATE"
+        elif self.type == "datetime":
+            r = "TIMESTAMP"
         else:
             raise ValueError("Invalid field type '%s'" % self.type)
         return "ALTER TABLE %s ADD COLUMN \"%s\" %s NULL" % (
@@ -362,7 +379,9 @@ class CustomField(models.Model):
             "type": {
                 "str": "string",
                 "int": "int",
-                "bool": "boolean"
+                "bool": "boolean",
+                "date": "date",
+                "datetime": "date"
             }[self.type]
         }
         return f
@@ -393,12 +412,14 @@ class CustomField(models.Model):
                 "boxLabel": self.label,
                 "allowBlank": True
             }
-        elif self.type in ("str", "int"):
+        elif self.type in ("str", "int", "date", "datetime"):
             f = {
                 "name": self.name,
                 "xtype": {
                     "str": "textfield",
-                    "int": "numberfield"
+                    "int": "numberfield",
+                    "date": "datefield",
+                    "datetime": "datefield"
                 }[self.type],
                 "fieldLabel": self.label,
                 "allowBlank": True
