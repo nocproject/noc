@@ -342,7 +342,13 @@ class ExtModelApplication(ExtApplication):
                         "traceback": str(why)
                     }, status=self.BAD_REQUEST)
         try:
-            self.queryset(request).get(**attrs)
+            # Exclude callable values from query
+            # (Django raises exception on pyRules)
+            # @todo: Check unique fields only?
+            qattrs = dict((k, attrs[k])
+                for k in attrs if not callable(attrs[k]))
+            # Check for duplicates
+            self.queryset(request).get(**qattrs)
             return self.render_json(
                     {
                     "status": False,
