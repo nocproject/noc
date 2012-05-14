@@ -60,9 +60,13 @@ class RefAppplication(ExtApplication):
         start = q.get(self.start_param)
         format = q.get(self.format_param)
         query = q.get(self.query_param)
-        if query:
+        if "id" in q:
+            data = [x for x in self.refs[ref]
+                    if str(x["id"]) == q["id"]]
+        elif query:
             ql = query.lower()
-            data = [x for x in self.refs[ref] if ql in x["label"].lower()]
+            data = [x for x in self.refs[ref]
+                    if ql in x["label"].lower()]
         else:
             data = [x for x in self.refs[ref]]
         if start is not None and limit is not None:
