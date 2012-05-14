@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Django modules
+from django.db import connection
 ## NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.main.models import CustomField
@@ -34,7 +36,8 @@ TABLE TR TD {
 """
 
 class Node(object):
-    def __init__(self):
+    def __init__(self, app):
+        self.app = app
         self.children = []
         self.height = 0
         self.depth = 0
@@ -82,42 +85,42 @@ class Node(object):
 
 
 class VRFGroupNode(Node):
-    def __init__(self, vrf_group):
+    def __init__(self, app, vrf_group):
         self.vrf_group = vrf_group
-        super(VRFGroupNode, self).__init__()
+        super(VRFGroupNode, self).__init__(app)
 
     def get_html(self):
         return "<b>VRF Group: %s</b>" % self.vrf_group.name
 
 
 class VRFNode(Node):
-    def __init__(self, vrf):
+    def __init__(self, app, vrf):
         self.vrf = vrf
-        super(VRFNode, self).__init__()
+        super(VRFNode, self).__init__(app)
 
     def populate(self):
         root = Prefix.objects.get(vrf=self.vrf, prefix="0.0.0.0/0")
         for p in root.children_set.order_by("prefix"):
-            self.children += [PrefixNode(p)]
+            self.children += [PrefixNode(self.app, p)]
 
     def get_html(self):
         return "<b>VRF %s</b><br/>RD: %s" % (self.vrf.name, self.vrf.rd)
 
 
 class PrefixNode(Node):
-    def __init__(self, prefix):
+    def __init__(self, app, prefix):
         self.prefix = prefix
         if self.prefix.afi == "4":
             self.size = 2 ** (32 - int(self.prefix.prefix.split("/")[1]))
         else:
             self.size = 0
         self.used = None
-        super(PrefixNode, self).__init__()
+        super(PrefixNode, self).__init__(app)
         self.update_usage()
 
     def populate(self):
         for p in self.prefix.children_set.order_by("prefix"):
-            self.children += [PrefixNode(p)]
+            self.children += [PrefixNode(self.app, p)]
 
     def get_html(self):
         r = ["<b><u>%s</u></b>" % self.prefix.prefix]
@@ -152,7 +155,7 @@ class PrefixNode(Node):
             pu = min(int(float(u) * 100 / float(ps)), 100)
         else:
             # Count addresses
-            u = self.prefix.address_set.count()
+            u = self.app.ip_usage.get(self.prefix.id, 0)
             if ps > 2:
                 pu = int(float(u) * 100 / float(ps - 2))
             else:
@@ -163,15 +166,30 @@ class PrefixNode(Node):
 class ReportOverviewApplication(ReportApplication):
     title = "Overview"
 
+    def get_ip_usage(self):
+        """
+        Returns dict of prefix_id -> ip address count
+        :return:
+        """
+        c = connection.cursor()
+        c.execute("""
+            SELECT prefix_id, COUNT(*)
+            FROM ip_address
+            GROUP BY 1
+            """)
+        return dict(c.fetchall())
+
     def report_html(self):
+        #
+        self.ip_usage = self.get_ip_usage()
         # Prepare tree
         nodes = []
         for vrf_group in VRFGroup.objects.order_by("name"):
             if vrf_group.address_constraint == "G":
-                nodes += [VRFGroupNode(vrf_group)]
+                nodes += [VRFGroupNode(self, vrf_group)]
             else:
                 for vrf in vrf_group.vrf_set.order_by("name"):
-                    nodes += [VRFNode(vrf)]
+                    nodes += [VRFNode(self, vrf)]
         # Render tree
         max_level = max(n.get_depth() for n in nodes)
         r = [CSS, "<table border='0'>"]
