@@ -29,7 +29,6 @@ TABLE TR TD {
     border-radius: 8px;
     padding: 8px;
     border: 1px solid #808080;
-    height: 100%;
 }
 </style>
 """
@@ -65,11 +64,10 @@ class Node(object):
 
     def update_report(self, r, current_level, max_level):
         if self.height > 1:
-            r += ["<td rowspan='%s'>" % self.height]
+            r += ["<td rowspan='%s' class='block'>" % self.height]
         else:
-            r += ["<td>"]
-        r += ["<div class='block'>", self.get_html(), "</div>"]
-        r += ["</td>"]
+            r += ["<td class='block'>"]
+        r += [self.get_html(), "</td>"]
         if self.children:
             for c in self.children:
                 c.update_report(r, current_level + 1, max_level)
@@ -109,6 +107,10 @@ class VRFNode(Node):
 class PrefixNode(Node):
     def __init__(self, prefix):
         self.prefix = prefix
+        if self.prefix.afi == "4":
+            self.size = 2 ** (32 - int(self.prefix.prefix.split("/")[1]))
+        else:
+            self.size = 0
         self.used = None
         super(PrefixNode, self).__init__()
         self.update_usage()
@@ -146,8 +148,7 @@ class PrefixNode(Node):
             return
         if self.children:
             # Count prefixes
-            u = sum((2 ** (32 - int(p.prefix.split("/")[1]))
-                    for p in self.prefix.children_set.only("prefix")))
+            u = sum(c.size for c in self.children)
             pu = min(int(float(u) * 100 / float(ps)), 100)
         else:
             # Count addresses
