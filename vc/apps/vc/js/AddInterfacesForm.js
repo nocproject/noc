@@ -140,7 +140,8 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
             if(managed_object && interface) {
                 var s = {
                     interface: interface,
-                    untagged: me.vc.l1
+                    untagged: me.vc.l1,
+                    status: true
                 };
                 if(description)
                     s.description = description;
@@ -158,7 +159,6 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
     runTasks: function() {
         var me = this,
             stopped = true;
-        console.log("runTasks", me.store);
         for(var o in me.mo) {
             NOC.mrt({
                 url: "/vc/vc/mrt/set_switchport/",
