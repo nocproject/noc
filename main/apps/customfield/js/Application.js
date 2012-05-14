@@ -28,7 +28,7 @@ Ext.define("NOC.main.customfield.Application", {
             renderer: NOC.render.Bool
         },
         {
-            text: "label",
+            text: "Label",
             dataIndex: "label"
         },
         {
@@ -96,7 +96,9 @@ Ext.define("NOC.main.customfield.Application", {
                 data: [
                     {id: "str", label: "String"},
                     {id: "int", label: "Integer"},
-                    {id: "bool", label: "Boolean"}
+                    {id: "bool", label: "Boolean"},
+                    {id: "date", label: "Date"},
+                    {id: "datetime", label: "Date&Time"}
                 ]
             }
         },
