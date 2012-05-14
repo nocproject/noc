@@ -434,6 +434,10 @@ class Application(object):
                 ff = forms.IntegerField(required=False, label=f.label)
             elif f.type == "bool":
                 ff = forms.BooleanField(required=False, label=f.label)
+            elif f.type == "date":
+                ff = forms.DateField(required=False, label=f.label)
+            elif f.type == "datetime":
+                ff = forms.DateTimeField(required=False, label=f.label)
             else:
                 raise ValueError("Invalid field type: '%s'" % f.type)
             l += [(str(f.name), ff)]
