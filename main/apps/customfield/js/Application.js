@@ -9,7 +9,8 @@ console.debug("Defining NOC.main.customfield.Application");
 Ext.define("NOC.main.customfield.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.main.customfield.Model"
+        "NOC.main.customfield.Model",
+        "NOC.main.ref.model.LookupField"
     ],
     model: "NOC.main.customfield.Model",
     search: true,
@@ -59,10 +60,9 @@ Ext.define("NOC.main.customfield.Application", {
     fields: [
         {
             name: "table",
-            xtype: "textfield",
+            xtype: "main.ref.model.LookupField",
             fieldLabel: "Table",
-            allowBlank: false,
-            regex: /^[a-z]+_[a-z_]+$/
+            allowBlank: false
         },
         {
             name: "name",
