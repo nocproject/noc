@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Django modules
+from django.db import models
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces import interface_registry
@@ -47,6 +49,16 @@ class RefAppplication(ExtApplication):
         """
         return sorted(({"id": n, "label": n} for n in profile_registry.classes),
                       key=lambda x: x["label"])
+
+    def build_model(self):
+        """
+        Model Names
+        :return:
+        """
+        return sorted(({"id": m._meta.db_table,
+                        "label": m._meta.db_table}
+            for m in models.get_models()),
+            key=lambda x: x["label"])
 
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
