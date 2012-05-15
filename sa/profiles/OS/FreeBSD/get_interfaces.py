@@ -45,9 +45,10 @@ class Script(NOCScript):
             else:
                 if self.parent == "IEEE 802.11":
                     for i in self.interfaces:
-                        if i["mac"] == self.subiface["mac"]:
-                            i["subinterfaces"] += [self.subiface]
-                            break
+                        if "mac" in i:
+                            if i["mac"] == self.subiface["mac"]:
+                                i["subinterfaces"] += [self.subiface]
+                                break
                 else:
                     for i in self.interfaces:
                         if i["name"] == self.parent:
