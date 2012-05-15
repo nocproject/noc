@@ -49,7 +49,7 @@ class ReportHistoryApplication(SimpleReport):
             scope += ["ip_address"]
         last = None
         r = []
-        for l in AuditTrail.objects.filter(db_table__gte=dt,
+        for l in AuditTrail.objects.filter(timestamp__gte=dt,
                                            db_table__in=scope)\
                                    .order_by("-timestamp")\
                                    .select_related():
