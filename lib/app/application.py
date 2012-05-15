@@ -426,6 +426,12 @@ class Application(object):
                         label=f.label,
                         choices=[("", "---")] + f.get_choices()
                     )
+                elif f.enum_group:
+                    ff = forms.ChoiceField(
+                        required=False,
+                        label=f.label,
+                        choices=[("", "---")] + f.get_enums()
+                    )
                 else:
                     ml = f.max_length if f.max_length else 256
                     ff = forms.CharField(required=False, label=f.label,

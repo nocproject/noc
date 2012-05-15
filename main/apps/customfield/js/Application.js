@@ -10,7 +10,8 @@ Ext.define("NOC.main.customfield.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.main.customfield.Model",
-        "NOC.main.ref.model.LookupField"
+        "NOC.main.ref.model.LookupField",
+        "NOC.main.customfieldenumgroup.LookupField"
     ],
     model: "NOC.main.customfield.Model",
     search: true,
@@ -35,6 +36,11 @@ Ext.define("NOC.main.customfield.Application", {
         {
             text: "Type",
             dataIndex: "type"
+        },
+        {
+            text: "Enum Group",
+            dataIndex: "enum_group",
+            renderer: NOC.render.Lookup("enum_group")
         },
         {
             text: "Indexed",
@@ -100,6 +106,15 @@ Ext.define("NOC.main.customfield.Application", {
                     {id: "date", label: "Date"},
                     {id: "datetime", label: "Date&Time"}
                 ]
+            }
+        },
+        {
+            name: "enum_group",
+            xtype: "main.customfieldenumgroup.LookupField",
+            fieldLabel: "Enum Group",
+            allowBlank: true,
+            query: {
+                is_active: true
             }
         },
         {

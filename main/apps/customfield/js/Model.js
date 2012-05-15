@@ -37,6 +37,15 @@ Ext.define("NOC.main.customfield.Model", {
             type: "string"
         },
         {
+            name: "enum_group",
+            type: "string"
+        },
+        {
+            name: "enum_group__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "description",
             type: "string"
         },
