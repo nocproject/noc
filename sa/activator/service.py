@@ -72,7 +72,7 @@ class Service(SAEService):
         if request.access_profile.scheme not in profile.supported_schemes:
             e = Error(code=ERR_INVALID_SCHEME,
                       text="Access scheme '%s' is not supported for profile '%s'" % (
-                        self.code_to_scheme(request.access_profile.scheme),
+                        request.access_profile.scheme,
                         request.access_profile.profile))
             done(controller, error=e)
             return
