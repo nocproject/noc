@@ -296,9 +296,11 @@ class Script(NOCScript):
                 vrfs[v["name"]] = {
                     "forwarding_instance": v["name"],
                     "type": "VRF",
-                    "rd": v["rd"],
                     "interfaces": []
                 }
+                rd = v.get("rd")
+                if rd:
+                    vrfs[v["name"]]["rd"] = rd
                 for i in v["interfaces"]:
                     imap[i] = v["name"]
         for i in interfaces:
