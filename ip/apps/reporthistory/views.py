@@ -23,9 +23,13 @@ class ReportHistoryApplication(SimpleReport):
     class form(forms.Form):
         days = forms.IntegerField(label="Days", initial=3)
         include_prefixes = forms.BooleanField(
-            label="Include Prefixes")
+            label="Include Prefixes",
+            required=False
+        )
         include_addresses = forms.BooleanField(
-            label="Include Addresses")
+            label="Include Addresses",
+            required=False
+        )
 
     rx_detail = re.compile(r"^(.+?): (.+?) -> (.+?)$",
         re.MULTILINE | re.UNICODE)
