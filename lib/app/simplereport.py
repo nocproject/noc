@@ -183,7 +183,7 @@ for suffix in ["KB", "MB", "GB", "TB", "PB"]:
     l *= 1024
 
 
-class SafeString(str):
+class SafeString(unicode):
     """
     Do not perform HTML quoting
     """
