@@ -775,15 +775,16 @@ class Activator(Daemon, FSM):
         self.sae_stream.proxy.pm_data(r, pm_data_callback)
 
     def compile_ignore_event_rules(self, rules):
-        self.ignore_event_rules = []
+        ir = []
         for r in rules:
             try:
                 logging.debug("Adding ignore rule: %s | %s" % (r.left_re,
                                                                r.right_re))
-                self.ignore_event_rules += [(re.compile(r.left_re, re.IGNORECASE),
-                                             re.compile(r.right_re, re.IGNORECASE))]
+                ir += [(re.compile(r.left_re, re.IGNORECASE),
+                        re.compile(r.right_re, re.IGNORECASE))]
             except re.error, why:
                 logging.error("Failed to compile ignore event rule: %s,%s. skipping" % (l, r))
+        self.ignore_event_rules = ir
 
     @check_state("ESTABLISHED")
     def cancel_stale_scripts(self):
