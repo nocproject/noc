@@ -178,6 +178,42 @@ class AuditTrail(models.Model):
         ).save()
 
 
+class CustomFieldEnumGroup(models.Model):
+    """
+    Enumeration groups for custom fields
+    """
+    class Meta:
+        verbose_name = "Enum Group"
+        verbose_name_plural = "Enum Groups"
+
+    name = models.CharField("Name", max_length=128, unique=True)
+    is_active = models.BooleanField("Is Active", default=True)
+    description = models.TextField("Description",
+        null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+
+class CustomFieldEnumValue(models.Model):
+    """
+    Enumeration groups values
+    """
+    class Meta:
+        verbose_name = "Enum Group Value"
+        verbose_name_plural = "Enum Group Values"
+        unique_together = [("enum_group", "key")]
+
+    enum_group = models.ForeignKey(CustomFieldEnumGroup,
+        verbose_name="Enum Group", related_name="enumvalue_set")
+    is_active = models.BooleanField("Is Active", default=True)
+    key = models.CharField("Key", max_length=256)
+    value = models.CharField("Value", max_length=256)
+
+    def __unicode__(self):
+        return u"%s@%s:%s" % (self.enum_group.name,
+                              self.key, self.value)
+
 class CustomField(models.Model):
     """
     Custom field description
@@ -212,6 +248,9 @@ class CustomField(models.Model):
     is_filtered = models.BooleanField("Is Filtered", default=False)
     # Field is excluded from forms
     is_hidden = models.BooleanField("Is Hidden", default=False)
+    # Is enumeration?
+    enum_group = models.ForeignKey(CustomFieldEnumGroup,
+        verbose_name="Enum Group", null=True, blank=True)
 
     def __unicode__(self):
         return u"%s.%s" % (self.table, self.name)
@@ -224,6 +263,22 @@ class CustomField(models.Model):
     def index_name(self):
         return "%s_%s" % (self.table, self.name)
 
+    def get_enums(self):
+        """
+        Return django-compatible choices or None
+        :return:
+        """
+        if self.enum_group:
+            qs = self.enum_group.enumvalue_set\
+                                .filter(is_active=True)\
+                                .order_by("value")
+            if self.type == "int":
+                return [(int(e.key), e.value) for e in qs]
+            else:
+                return [(e.key, e.value) for e in qs]
+        else:
+            return None
+
     def get_field(self):
         """
         Return *Field instance
@@ -234,7 +289,7 @@ class CustomField(models.Model):
                 name=self.name,
                 db_column=self.db_column,
                 null=True, blank=True,
-                max_length=l)
+                max_length=l, choices=self.get_enums())
         elif self.type == "int":
             return models.IntegerField(
                 name=self.name,
@@ -411,6 +466,23 @@ class CustomField(models.Model):
                 "xtype": "checkboxfield",
                 "boxLabel": self.label,
                 "allowBlank": True
+            }
+        elif self.type == "str" and self.enum_group:
+            f = {
+                "name": self.name,
+                "xtype": "combobox",
+                "fieldLabel": self.label,
+                "allowBlank": True,
+                "queryMode": "local",
+                "displayField": "label",
+                "valueField": "id",
+                "store": {
+                    "fields": ["id", "label"],
+                    "data": [
+                        {"id": k, "label": v}
+                        for k, v in self.get_enums()
+                    ]
+                }
             }
         elif self.type in ("str", "int", "date", "datetime"):
             f = {
