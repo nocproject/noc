@@ -112,7 +112,7 @@ Ext.define("NOC.core.ModelApplication", {
                 c.renderer = eval(c.renderer);
             }
         });
-        var grid_panel = {
+        var gridPanel = {
             xtype: "gridpanel",
             itemId: "grid",
             store: me.store,
@@ -188,7 +188,7 @@ Ext.define("NOC.core.ModelApplication", {
             }
         ].concat(me.formToolbar);
 
-        var form_panel = {
+        var formPanel = {
             xtype: 'container',
             itemId: "form",
             layout: "fit",
@@ -226,7 +226,7 @@ Ext.define("NOC.core.ModelApplication", {
         };
 
         Ext.apply(me, {
-            items: [grid_panel, form_panel]
+            items: [gridPanel, formPanel]
         });
 
         // Initialize component
