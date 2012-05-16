@@ -25,7 +25,8 @@ from noc.lib.debug import error_report
 from noc.lib.ip import IP
 from noc.ip.models import VRF, Prefix, AS, Address
 from noc.lib.nosql import Q
-from noc.main.models import SystemNotification, ResourceState
+from noc.main.models import SystemNotification, ResourceState,\
+                            SystemTemplate
 
 
 class DiscoveryDaemon(Daemon):
@@ -717,7 +718,8 @@ class DiscoveryDaemon(Daemon):
         self.o_info(o, "Address collision detected: %s:%s conflicts with VRF %s" % (
             vrf, address, a.vrf
         ))
-        self.address_collisions += [(address, a.vrf, a.managed_object, vrf, o, i)]
+        self.address_collisions += [(address, a.vrf, a.managed_object,
+                                     vrf, o, i)]
         return False
 
     def notify_new_prefix(self, vrf, prefix, object, interface, description):
@@ -742,43 +744,67 @@ class DiscoveryDaemon(Daemon):
         self.o_info(object, "Discovered address %s: %s at %s" % (
             vrf, address, interface))
 
+    def send_report(self, template_name, context):
+        """
+        Render template and send notifications
+        :param template_name:
+        :param context:
+        :return:
+        """
+        tpl = SystemTemplate.objects.get(name=template_name).template
+        subject = tpl.render_subject(**context)
+        body = tpl.render_body(**context)
+        SystemNotification.notify("inv.prefix_discovery",
+            subject=subject,
+            body=body)
+
     def report_new_prefixes(self):
-        c = len(self.new_prefixes)
-        subject = "%d new prefixes discovered" % c
-        body = ["%d new prefixes discovered" % c, ""]
-        for r in self.new_prefixes:
-            body += ["%s: %s%sat %s:%s" % (r["vrf"], r["prefix"],
-                " [%s] " % r["description"] if r["description"] else "",
-                r["object"].name, r["interface"])]
-        SystemNotification.notify("inv.prefix_discovery", subject=subject,
-            body="\n".join(body))
+        ctx = {
+            "count": len(self.new_prefixes),
+            "prefixes": [
+                {
+                    "vrf": p["vrf"],
+                    "prefix": p["prefix"],
+                    "description": p["description"],
+                    "object": p["object"],
+                    "interface": p["interface"]
+                } for p in self.new_prefixes
+            ]
+        }
+        self.send_report("inv.discovery.new_prefixes_report", ctx)
 
     def report_new_addresses(self):
-            c = len(self.new_addresses)
-            subject = "%d new addresses discovered" % c
-            body = ["%d new addresses discovered" % c, ""]
-            for r in self.new_addresses:
-                body += ["%s: %s%s at %s:%s" % (r["vrf"], r["address"],
-                    " [%s] " % r["description"] if r["description"] else "",
-                    r["object"].name, r["interface"])]
-            SystemNotification.notify("inv.prefix_discovery", subject=subject,
-                body="\n".join(body))
+        ctx = {
+            "count": len(self.new_addresses),
+            "addresses": [
+                {
+                    "vrf": a["vrf"],
+                    "address": a["address"],
+                    "description": a["description"],
+                    "object": a["object"],
+                    "interface": a["interface"]
+
+                } for a in self.new_addresses]
+        }
+        self.send_report("inv.discovery.new_addresses_report", ctx)
 
     def report_address_collisions(self):
-        c = len(self.address_collisions)
-        subject = "%d address collisions found" % c
-        body = ["%d address collisions found" % c, ""]
-        for address, vrf1, o1, vrf2, o2, i2 in self.address_collisions:
-            r = "%s:" % address
-            if o1:
-                r += " %s (%s)" % (vrf1, o1)
-            else:
-                r += " %s" % vrf1
-            r += " vs "
-            r += "%s (%s:%s)" % (vrf2, o2, i2)
-            body += [r]
-        SystemNotification.notify("inv.prefix_discovery", subject=subject,
-            body="\n".join(body))
+        ctx = {
+            "count": len(self.address_collisions),
+            "collisions": [
+                {
+                    "address": address,
+                    "vrf_old": vrf1,
+                    "vrf_new": vrf2,
+                    "object_old": o1,
+                    "object_new": o2,
+                    "interface_new": i2
+                }
+                for address, vrf1, o1, vrf2, o2, i2
+                in self.address_collisions
+            ]
+        }
+        self.send_report("inv.discovery.address_collision_report", ctx)
 
     def get_object_context(self, o):
         """
