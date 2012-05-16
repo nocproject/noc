@@ -12,6 +12,7 @@ from django import forms
 ## NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.ip.models import VRF, Prefix
+from noc.main.models import CustomField
 from noc.lib.validators import *
 
 
@@ -46,15 +47,37 @@ class ExpandedReport(SimpleReport):
     title = "All Allocated Blocks"
 
     def get_data(self, vrf, afi, prefix, **kwargs):
+        def get_row(p, level=0):
+            s = "--" * level
+            r = [s + p.prefix, p.state.name,
+                unicode(p.vc) if p.vc else ""]
+            for f in cf:
+                v = getattr(p, f.name)
+                r += [v if v is not None else ""]
+            r += [p.description, p]
+            return r
+
         def get_info(prefix, level=0):
             s = "----" * level
-            data = [[s + prefix.prefix, prefix.state.name,
-                     unicode(prefix.vc) if prefix.vc else "",
-                     prefix.description, prefix]]
+            data = [get_row(prefix, level)]
             for c in prefix.children_set.order_by("prefix"):
                 data += get_info(c, level + 1)
             return data
 
+        cf = CustomField.table_fields("ip_prefix")
+        cfn = dict((f.name, f) for f in cf)
+        # Prepare columns
+        columns = [
+            "Prefix",
+            "State",
+            "VC"
+        ]
+        for f in cf:
+            columns += [f.label]
+        columns += [
+            "Description",
+            TableColumn(_("Tags"), format="tags")
+        ]
         data = get_info(prefix)
         return self.from_dataset(title=_(
             "All allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
@@ -62,6 +85,5 @@ class ExpandedReport(SimpleReport):
                 "afi": afi,
                 "prefix": prefix.prefix
             }),
-            columns=[_("Prefix"), _("State"), _("VC"), _("Description"),
-                     TableColumn(_("Tags"), format="tags")],
+            columns=columns,
             data=data, enumerate=True)
