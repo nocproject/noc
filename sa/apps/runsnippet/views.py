@@ -6,12 +6,31 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import new
 ## Django modules
 from django import forms
+from django.utils.datastructures import SortedDict
 ## NOC modules
 from noc.lib.app import Application, view, NOCForm
 from noc.sa.models import CommandSnippet, ReduceTask, ManagedObject
 from noc.main.models import Permission
+from noc.lib.mac import MAC
+
+
+## Form clean for mac address
+def clean_mac(self, v):
+    # Call basic clean
+    v = forms.CharField.clean(self, v)
+    # Normalize and clean MAC
+    try:
+        return MAC(v.strip())
+    except ValueError:
+        raise forms.ValidationError("Invalid MAC")
+
+CLEAN = {
+    "mac": clean_mac
+}
 
 
 def reduce_task(task, snippet):
@@ -49,11 +68,34 @@ class RunSnippetApplication(Application):
             return "commands"
     
     def get_form(self, vars, data=None):
-        f = NOCForm(data)
+        """
+        Create form
+        :param vars: CommandSnippet.vars
+        :param data:
+        :return:
+        """
+        fc = NOCForm
+        fields = []
         for v in vars:
-            f.fields[v] = forms.CharField(label=v)
-        return f
-    
+            type = vars[v]["type"]
+            if type in ("internal", "hidden"):
+                continue
+            required = vars[v].get("required", False)
+            label = vars[v].get("label", v)
+            if type == "bool":
+                ff = forms.BooleanField(label=label, required=required)
+            elif type == "int":
+                ff = forms.IntegerField(label=label, required=required)
+            else:
+                ff = forms.CharField(label=label, required=required)
+                c = CLEAN.get(type)
+                if c:
+                    ff.clean = new.instancemethod(c, ff, ff.__class__)
+            fields += [(v, ff)]
+        # Apply data
+        fc.base_fields.update(SortedDict(fields))
+        return fc(data)
+
     def run_task(self, snippet, objects, params):
         def get_map_script_params(snippet, data):
             def inner(obj):
@@ -99,8 +141,8 @@ class RunSnippetApplication(Application):
                                     snippet.effective_permission_name)):
             return self.response_forbidden("Forbidden")
         vars = snippet.vars
-        if "object" in vars:
-            vars.remove("object")
+        has_vars = any([v for v in vars if vars[v]["type"] not in (
+            "internal", "hidden")])
         map_task = self.get_map_script(snippet)
         objects = list(snippet.selector.objects_for_user(request.user,
                                                          [map_task]))
@@ -110,7 +152,7 @@ class RunSnippetApplication(Application):
                 int(n[4:]) for n in request.POST.keys()
                 if n.startswith("OBJ:") or n.startswith("CFM:")])
             data = None
-            if vars:
+            if has_vars:
                 form = self.get_form(vars, request.POST)
                 if form.is_valid():
                     data = form.cleaned_data
@@ -131,7 +173,7 @@ class RunSnippetApplication(Application):
                     return self.render(request, "confirm.html",
                         data=cd, snippet=snippet, vars = data.items())
         else:
-            if (not vars and len(objects) == 1 and
+            if (not has_vars and len(objects) == 1 and
                     not snippet.require_confirmation):
                 # Run immediately
                 task = self.run_task(snippet, objects, {})

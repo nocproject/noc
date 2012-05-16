@@ -17,6 +17,7 @@ import time
 import types
 import re
 from collections import defaultdict
+import shlex
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -1098,22 +1099,41 @@ class CommandSnippet(models.Model):
     def get_absolute_url(self):
         return site.reverse("sa:commandsnippet:change", self.id)
     
-    rx_var = re.compile(r"{{\s*([^|}]+)\s*(?:\|.+?)?}}", re.MULTILINE)
-    rx_vartag = re.compile(r"\{%\s*var\s+(?P<name>\S+)\s+(?P<type>\S+)\s*%\}",
+    rx_var = re.compile(r"{{\s*([^|}]+?)\s*(?:\|.+?)?}}", re.MULTILINE)
+    rx_vartag = re.compile(r"\{%\s*var\s+(?P<name>\S+)\s+(?P<type>\S+)(?P<rest>.*)\s*%\}",
                            re.MULTILINE)
 
     @property
     def vars(self):
         """
-        List of variables used in template
+        Variables used in snippet. Returns dict
+        name -> {type: , required: }
         """
-        internal = set()
+        vars = {}
+        # Search for {{ var }}
+        for v in self.rx_var.findall(self.snippet):
+            if "." in v:
+                v = v.split(".", 1)[0]
+            if v != "object":
+                vars[v] = {
+                    "type": "str",
+                    "required": True,
+                    "label": v
+                }
+        # Search for {% var <name> <type> %}
         for match in self.rx_vartag.finditer(self.snippet):
-            name, type = match.groups()
-            if type == "internal":
-                internal.add(name)
-        return set([v for v in self.rx_var.findall(self.snippet)
-                    if not v.startswith("object.") and v not in internal])
+            name, type, rest = match.groups()
+            vars[name] = {
+                "type": type,
+                "required": True,
+                "label": name
+            }
+            if rest:
+                for a in shlex.split(rest.strip()):
+                    k, v = a.split("=", 1)
+                    if k == "label":
+                        vars[name][k] = v
+        return vars
 
     def expand(self, data):
         """
