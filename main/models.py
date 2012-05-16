@@ -18,7 +18,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
 from django.contrib.auth.models import User, Group
 from django.core.validators import MaxLengthValidator
-from django.contrib import databrowse
 from django.db.models.signals import class_prepared, pre_save, pre_delete,\
                                      post_save, post_delete
 from django.template import Template as DjangoTemplate
