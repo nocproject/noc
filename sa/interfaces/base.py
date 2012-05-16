@@ -11,8 +11,9 @@ import re
 import types
 import datetime
 ## NOC Modules
-from noc.lib.text import list_to_ranges, ranges_to_list, list_to_ranges
+from noc.lib.text import list_to_ranges, ranges_to_list
 from noc.lib.ip import IPv6
+from noc.lib.mac import MAC
 from noc.lib.validators import *
 
 try:
@@ -964,14 +965,8 @@ class VLANIDMapParameter(StringParameter):
             return list_to_ranges([vp.clean(v) for v in ranges_to_list(value)])
         except SyntaxError:
             self.raise_error(value)
-##
-##
-##
-rx_mac_address_cisco = re.compile(r"^[0-9A-F]{4}(?P<sep>[.\-])[0-9A-F]{4}(?P=sep)[0-9A-F]{4}$")
-rx_mac_address_cisco_media = re.compile("^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
-rx_mac_address_sixblock = re.compile("^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$")
-rx_mac_address_hp = re.compile("^[0-9A-F]{6}-[0-9A-F]{6}$")
-rx_mac_address_solid = re.compile(r"^[0-9a-f]{12}$", re.IGNORECASE)
+
+
 class MACAddressParameter(StringParameter):
     """
     >>> MACAddressParameter().clean("1234.5678.9ABC")
@@ -1024,40 +1019,13 @@ class MACAddressParameter(StringParameter):
         value = super(MACAddressParameter, self).clean(value)
         if len(value) == 6 and self.accept_bin:
             # MAC address in binary form
-            return ":".join(["%02X" % ord(c) for c in value])
-        value = value.upper()
-        match = rx_mac_address_solid.match(value)
-        if match:
-            return "%s:%s:%s:%s:%s:%s" % (value[:2], value[2:4], value[4:6],
-                                          value[6:8], value[8:10], value[10:])
-        match = rx_mac_address_cisco_media.match(value)
-        if match:
-            value = value.replace(".", "")[2:]
-            return "%s:%s:%s:%s:%s:%s" % (value[:2], value[2:4], value[4:6],
-                                          value[6:8], value[8:10], value[10:])
-        match = rx_mac_address_cisco.match(value)
-        if match:
-            value = value.replace(".", "").replace("-", "")
-        else:
-            match = rx_mac_address_hp.match(value)
-            if match:
-                value = value.replace("-", "")
-            else:
-                value = value.replace("-", ":")
-                match = rx_mac_address_sixblock.match(value)
-                if not match:
-                    self.raise_error(value)
-                value = ""
-                for i in range(1, 7):
-                    v = match.group(i)
-                    if len(v) == 1:
-                        v = "0" + v
-                    value += v
-        return "%s:%s:%s:%s:%s:%s" % (value[:2], value[2:4], value[4:6],
-                                      value[6:8], value[8:10], value[10:])
-    
+            return MAC(":".join(["%02X" % ord(c) for c in value]))
+        try:
+            return MAC(value)
+        except ValueError:
+            self.raise_error(value)
 
-##
+
 class InterfaceNameParameter(StringParameter):
     def script_clean_input(self, profile, value):
         return profile.convert_interface_name(value)
