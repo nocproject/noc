@@ -8,21 +8,32 @@
 from django import template
 
 
+VARTYPES = ["internal", "hidden", "str", "mac", "bool", "int"]
+
 ##
 ## Parsers
 ##
 def do_var(parser, token):
     """
-    {% var <name> internal %}
+    {% var <name> <type> %}
+    where type is one of:
+        * internal or hidden
     :param parser:
     :param token:
     :return:
     """
     try:
-        tag, name, vartype = token.split_contents()
+        t = token.split_contents()
+        if len(t) < 3:
+            raise ValueError
     except ValueError:
-        raise template.TemplateSyntaxError("%s tag requires two arguments" % (
+        raise template.TemplateSyntaxError("%s tag requires at least 3 arguments" % (
             token.contents.split()[0]))
+    tag, name, vartype = t[:3]
+    if vartype not in VARTYPES:
+        raise template.TemplateSyntaxError("Invalid var type '%s'. Acceptable types are: %s" % (
+            vartype, ", ".join(VARTYPES)
+        ))
     return VarNode(name, vartype)
 
 
