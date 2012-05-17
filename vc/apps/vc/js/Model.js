@@ -37,10 +37,6 @@ Ext.define("NOC.vc.vc.Model", {
             type: "string"
         },
         {
-            name: "project",
-            type: "string"
-        },
-        {
             name: "style",
             type: "int"
         },

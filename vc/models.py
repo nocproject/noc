@@ -287,8 +287,6 @@ class VC(models.Model):
     l2 = models.IntegerField("Label 2", default=0)
     description = models.CharField("Description", max_length=256, null=True,
                                    blank=True)
-    project = models.CharField("Project ID", max_length=256,
-                               null=True, blank=True, db_index=True)
     style = models.ForeignKey(Style, verbose_name="Style", blank=True,
                               null=True)
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
