@@ -141,9 +141,9 @@ class Web(Daemon):
         logging.info("Starting to serve requests")
         tornado.ioloop.IOLoop.instance().start()
 
-    def SIGTERM(self, signo, frame):
+    def at_exit(self):
         if self.t_children:
             for pid in self.t_children:
                 logging.info("Stopping child %d" % pid)
                 os.kill(pid, signal.SIGTERM)
-        os._exit(0)
+        super(Web, self).at_exit()
