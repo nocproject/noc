@@ -281,7 +281,7 @@ class Launcher(Daemon):
                     d.pid = None
                 except OSError:
                     pass
-        logging.info("STOP")
+        super(Launcher, self).at_exit()
 
     def SIGTERM(self, signo, frame):
         self.at_exit()
