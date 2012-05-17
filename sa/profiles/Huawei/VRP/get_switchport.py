@@ -46,7 +46,7 @@ class Script(NOCScript):
         for match in self.rx_line.finditer(self.cli("display port vlan")):
             port = {}
             tagged = []
-            trunk = match.group("mode") in {"trunk", "hybrid"}
+            trunk = match.group("mode") in ("trunk", "hybrid")
             if trunk:
                 vlans = match.group("vlans").strip()
                 if vlans != "-":
@@ -74,7 +74,7 @@ class Script(NOCScript):
                 "tagged": tagged,
                 "members": members
             }
-            if match.group("mode") in {"access", "hybrid"}:
+            if match.group("mode") in ("access", "hybrid"):
                 port.update({"untagged": pvid})
             description = descriptions.get(interface, False)
             if description != "":
