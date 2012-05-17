@@ -46,7 +46,13 @@ except mongoengine.connection.ConnectionError, why:
     sys.exit(1)
 
 ## Shortcut to ObjectId
-ObjectId = pymongo.objectid.ObjectId
+try:
+    import pymongo.objectid
+    ObjectId = pymongo.objectid.ObjectId
+except ImportError:
+    import pymongo.bson.objectid
+    ObjectId = pymongo.bson.objectid.ObjectId
+
 RECURSIVE_REFERENCE_CONSTANT = "self"
 
 
