@@ -50,8 +50,8 @@ try:
     import pymongo.objectid
     ObjectId = pymongo.objectid.ObjectId
 except ImportError:
-    import pymongo.bson.objectid
-    ObjectId = pymongo.bson.objectid.ObjectId
+    import bson.objectid
+    ObjectId = bson.objectid.ObjectId
 
 RECURSIVE_REFERENCE_CONSTANT = "self"
 
