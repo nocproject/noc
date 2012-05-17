@@ -47,11 +47,6 @@ Ext.define("NOC.vc.vc.Application", {
             hidden: true
         },
         {
-            text: "Project",
-            dataIndex: "project",
-            hidden: true
-        },
-        {
             text: "Int.",
             dataIndex: "interfaces_count",
             width: 50,
@@ -104,12 +99,6 @@ Ext.define("NOC.vc.vc.Application", {
             name: "description",
             xtype: "textfield",
             fieldLabel: "Description",
-            allowBlank: true
-        },
-        {
-            name: "project",
-            xtype: "textfield",
-            fieldLabel: "Project",
             allowBlank: true
         },
         {
