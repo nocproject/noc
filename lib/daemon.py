@@ -165,21 +165,19 @@ class Daemon(object):
                         os.makedirs(piddir)
                         os.chmod(piddir, 01777)
                     except OSError, why:
-                        logging.error("Cannot create PIDfile directory %s: %s" % (
+                        self.die("Cannot create PIDfile directory %s: %s" % (
                             piddir, why))
-                        sys.exit(1)
                 elif not os.path.isdir(piddir):
-                    logging.error("'%s' is not a directory" % piddir)
-                    sys.exit(1)
+                    self.die("'%s' is not a directory" % piddir)
                 elif not os.access(piddir, os.W_OK):
-                    logging.error("'%s' is not writable" % piddir)
-                    sys.exit(1)
+                    self.die("'%s' is not writable" % piddir)
         else:
             logging.basicConfig(level=logging.DEBUG,
                                 format='%(asctime)s %(message)s')
 
     def die(self, msg):
         logging.error(msg)
+        self.at_exit()
         sys.exit(1)
 
     def on_load_config(self):
@@ -309,9 +307,8 @@ class Daemon(object):
             with open(self.pidfile, "w") as f:
                 f.write(str(pid))
         except IOError, why:
-            logging.error("Unable to write PIDfile '%s': %s" % (self.pidfile,
-                                                                why))
-            sys.exit(1)
+            self.die("Unable to write PIDfile '%s': %s" % (self.pidfile,
+                                                           why))
 
     def heartbeat(self):
         """
@@ -355,6 +352,7 @@ class Daemon(object):
             logging.info("Exiting")
         except:
             error_report()
+        self.at_exit()
 
     def start(self):
         """
@@ -381,7 +379,6 @@ class Daemon(object):
                 os.kill(pid, signal.SIGTERM)
             except:
                 pass
-            os.unlink(pidfile)
 
     def launch(self):
         """
@@ -408,6 +405,14 @@ class Daemon(object):
         """
         self.stop()
         self.start()
+
+    def at_exit(self):
+        if self.pidfile:
+            try:
+                os.unlink(self.pidfile)
+            except OSError:
+                pass
+        logging.info("STOP")
 
     def SIGUSR2(self, signo, frame):
         """
@@ -449,4 +454,16 @@ class Daemon(object):
         :return:
         """
         logging.info("SIGINT received. Exiting")
+        self.at_exit()
+        os._exit(0)
+
+    def SIGTERM(self, signo, frame):
+        """
+        SIGTERM processing
+        :param signo:
+        :param frame:
+        :return:
+        """
+        logging.info("SIGTERM received. Exiting")
+        self.at_exit()
         os._exit(0)
