@@ -31,10 +31,6 @@ class Script(NOCScript):
         r"^\tvlan: (?P<vlan>\d+) parent interface: (?P<parent>\S+)$")
     rx_if_lagg = re.compile(r"^\tlaggport: (?P<ifname>\S+) flags=\d+<.*>$")
     rx_if_wlan = re.compile(r"^\tssid .+$")
-    interfaces = []
-    iface = {}
-    subiface = {}
-    parent = ""
 
     def add_iface(self):
         if "type" in self.iface:
@@ -59,6 +55,10 @@ class Script(NOCScript):
         self.parent = ""
 
     def execute(self):
+        self.interfaces = []
+        self.iface = {}
+        self.subiface = {}
+        self.parent = ""
         r = [{"interfaces": []}]
         for s in self.cli("ifconfig -v").splitlines():
             match = self.rx_if_name.search(s)
