@@ -58,7 +58,7 @@ class Script(NOCScript):
             if interface.startswith("Eth-Trunk"):
                 ifname = self.profile.convert_interface_name(interface)
                 for p in portchannels:
-                    if p["interface"] in {ifname, interface}:
+                    if p["interface"] in (ifname, interface):
                         members = p["members"]
 
             pvid = int(match.group("pvid"))
