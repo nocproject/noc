@@ -4,7 +4,7 @@
 ## OS:     FreeBSD
 ## Compatible:
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -17,6 +17,8 @@ class Profile(noc.sa.profiles.Profile):
     name = "OS.FreeBSD"
     supported_schemes = [TELNET, SSH]
     command_super = "su"
+    command_exit = "exit"
+    pattern_username = r"^[Ll]ogin:"
     pattern_unpriveleged_prompt = r"^\S*?(%|\$)"
     pattern_prompt = r"^(?P<hostname>\S*)#"
     pattern_syntax_error = r": Command not found\."
