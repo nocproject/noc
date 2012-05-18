@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## EdgeCore.ES.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -107,16 +107,25 @@ class Script(NOCScript):
         return {
             "vendor": "EdgeCore",
             "platform": platform,
-            "version": version,
+            "version": version
         }
 
     ##
     ## ES4626
     ##
-    rx_sys_4 = re.compile(r"BootRom Version\s+.*?(?P<platform>ES.+?)_",
+    rx_sys_4 = re.compile(r"(?P<platform>ES.+?) Device, Compiled",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_ver_4 = re.compile(
-        r"SoftWare (Package )?Version.*?_(?P<version>\d.+?)$",
+        r"SoftWare (Package )?Version.*?(?:_|Vco\.)(?P<version>\d.+?)$",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_boot_4 = re.compile(
+        r"BootRom Version (\S+_)?(?P<boot>\d.+?)$",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_hw_4 = re.compile(
+        r"HardWare Version (\S+_)?(?P<hardware>\S+)$",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ser_4 = re.compile(
+        r"Device serial number (\S+_)?(?P<serial>\S+)$",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def get_version_4xxx(self, v, version):
@@ -126,8 +135,19 @@ class Script(NOCScript):
         if not version:
             match_ver = self.re_search(self.rx_ver_4, v)
             version = match_ver.group("version")
-        return {
+        r = {
             "vendor": "EdgeCore",
             "platform": match_sys.group("platform"),
             "version": version,
+            "attributes": {}
         }
+        match = self.rx_boot_4.search(v)
+        if match:
+            r["attributes"].update({"Boot PROM": match.group("boot")})
+        match = self.rx_hw_4.search(v)
+        if match:
+            r["attributes"].update({"HW version": match.group("hardware")})
+        match = self.rx_ser_4.search(v)
+        if match:
+            r["attributes"].update({"Serial Number": match.group("serial")})
+        return r
