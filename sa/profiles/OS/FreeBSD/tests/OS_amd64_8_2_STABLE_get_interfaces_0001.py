@@ -52,14 +52,14 @@ class OS_FreeBSD_get_interfaces_Test(ScriptTestCase):
                   'type': 'physical'},
                  {'admin_status': True,
                   'name': 'lo0',
-                  'oper_status': False,
+                  'oper_status': True,
                   'subinterfaces': [{'admin_status': True,
                                      'ipv4_addresses': ['127.0.0.1/8'],
                                      'ipv6_addresses': ['::1/128'],
                                      'is_ipv4': True,
                                      'is_ipv6': True,
                                      'name': 'lo0',
-                                     'oper_status': False}],
+                                     'oper_status': True}],
                   'type': 'loopback'}],
   'type': 'ip'}]
     motd = ''

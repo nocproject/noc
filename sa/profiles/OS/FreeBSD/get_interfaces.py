@@ -17,9 +17,7 @@ class Script(NOCScript):
     name = "OS.FreeBSD.get_interfaces"
     implements = [IGetInterfaces]
     rx_if_name = re.compile(
-        r"^(?P<ifname>\S+): flags=\d+<(?P<flags>\S+)> metric \d+ mtu \d+$")
-    rx_if_up = re.compile(
-        r"^(?P<ifname>\S+): flags=\d+<UP,\S+> metric \d+ mtu \d+$")
+    r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)> metric \d+ mtu \d+$")
     rx_if_descr = re.compile(r"^\tdescription: (?P<descr>.+)\s*$")
     rx_if_mac = re.compile(r"^\tether (?P<mac>\S+)\s*$")
     rx_if_inet = re.compile(
@@ -71,6 +69,8 @@ class Script(NOCScript):
                 self.subiface["admin_status"] = flags.startswith("UP,")
                 if "LOOPBACK" in flags:
                     self.iface["type"] = "loopback"
+                    self.iface["oper_status"] = flags.startswith("UP,")
+                    self.subiface["oper_status"] = flags.startswith("UP,")
                 if "POINTOPOINT" in flags:
                     self.iface["type"] = "tunnel"
                 continue
