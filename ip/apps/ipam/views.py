@@ -438,8 +438,6 @@ class IPAMAppplication(Application):
                                        required=False)
                 tt = forms.IntegerField(label=_("TT #"), required=False,
                                         help_text=_("Ticket #"))
-                project = forms.CharField(label=_("Project"), required=False,
-                                          help_text=_("Project ID"))
                 style = forms.ModelChoiceField(label=_("Style"),
                                                queryset=Style.objects.filter(
                                                    is_active=True).order_by(
@@ -507,7 +505,6 @@ class IPAMAppplication(Application):
                            description=form.cleaned_data["description"],
                            tags=form.cleaned_data["tags"],
                            tt=form.cleaned_data["tt"],
-                           project=form.cleaned_data["project"],
                            style=form.cleaned_data["style"])
                 self.apply_custom_fields(p, form.cleaned_data, "ip_prefix")
                 p.save()
@@ -592,8 +589,6 @@ class IPAMAppplication(Application):
                                        required=False)
                 tt = forms.IntegerField(label=_("TT #"), required=False,
                                         help_text=_("Ticket #"))
-                project = forms.CharField(label=_("Project"), required=False,
-                                             help_text=_("Project ID"))
                 style = forms.ModelChoiceField(label=_("Style"),
                                                queryset=Style.objects.filter(
                                                    is_active=True).order_by(
@@ -660,7 +655,6 @@ class IPAMAppplication(Application):
                 "description": prefix.description,
                 "tags": prefix.tags,
                 "tt": prefix.tt,
-                "project": prefix.project,
                 "style": prefix.style.id if prefix.style else None
             }
             self.apply_custom_initial(prefix, initial, "ip_prefix")
