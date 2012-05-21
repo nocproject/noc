@@ -98,6 +98,7 @@ class IPAMAppplication(Application):
                 vrf=prefix.vrf,
                 afi=ds_afi,
                 prefix=ds_prefix,
+                asn=prefix.asn,
                 description=prefix.description,
                 state=prefix.state,
                 vc=prefix.vc,
