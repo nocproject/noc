@@ -18,7 +18,7 @@ rx_ifc_block = re.compile(
     r"Interface\s+(PHY|Physical)\s+Protocol[^\n]+\n(?P<block>.*)$",
     re.MULTILINE | re.DOTALL | re.IGNORECASE)
 rx_ifc_br_status = re.compile(
-    r"^\s*(?P<interface>[^ ]+)\s+(?P<status>up|down).*$", re.IGNORECASE)
+    r"^\s*(?P<interface>[^ ]+)\s+(?P<status>up|down|\*down).*$", re.IGNORECASE)
 
 
 class Script(NOCScript):
