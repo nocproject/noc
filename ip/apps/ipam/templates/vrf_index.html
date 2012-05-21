@@ -422,11 +422,16 @@ function on_mynetworks(n)
         {% if prefix.tags %}
             <tr class="row2"><td><b>Tags</b></td><td>{% tags prefix %}</td></tr>
         {% endif %}
+        <!-- ASN -->
+        {% if prefix.asn.asn %}
+            <tr class="row1"><td><b>AS</b></td><td>AS{{ prefix.asn.asn }} ({{ prefix.asn.as_name }})</td></tr>
+        {% endif %}
         <!-- VC -->
-        <tr class="row1">
-            <td><b>VC</b></td>
-            <td>{% if prefix.vc %}{{prefix.vc}}{% endif %}</td>
-        </tr>
+        {% if prefix.vc %}
+            <tr class="row1">
+                <td><b>VC</b></td><td>{{prefix.vc}}</td>
+            </tr>
+        {% endif %}
         <!-- End VC -->
         <tr class="row2">
             <td><b>Maintainers</b></td>
