@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Huawei.VRP.get_portchannel
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -29,7 +29,9 @@ class Script(noc.sa.script.Script):
         try:
             trunk = self.cli("display eth-trunk")
         except self.CLISyntaxError:
-            raise self.NotSupportedError()
+            # version 5.3 produce like this:
+            # Error: No valid trunk in the system.
+            return []
         for match in self.rx_chan_line_vrp5.finditer(trunk):
             r += [{
                 "interface": match.group("interface"),
