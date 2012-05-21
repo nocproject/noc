@@ -14,4 +14,5 @@ class {{app}}Appplication(ExtApplication):
     """
     {{module}}.{{app}} application
     """
-    pass
+    title = "{{app}}"
+
