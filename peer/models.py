@@ -179,15 +179,30 @@ class AS(models.Model):
     # RPSL descr field
     description = models.CharField("Description", max_length=64)
     organisation = models.ForeignKey(Organisation, verbose_name="Organisation")
-    administrative_contacts = models.ManyToManyField(Person,
-            verbose_name="admin-c", related_name="as_administrative_contacts")
-    tech_contacts = models.ManyToManyField(Person, verbose_name="tech-c",
-                                           related_name="as_tech_contacts")
-    maintainers = models.ManyToManyField(Maintainer, verbose_name="Maintainers",
-                                         related_name="as_maintainers")
-    routes_maintainers = models.ManyToManyField(Maintainer,
-            verbose_name="Routes Maintainers",
-            related_name="as_route_maintainers")
+    administrative_contacts = models.ManyToManyField(
+        Person,
+        verbose_name="admin-c",
+        related_name="as_administrative_contacts",
+        null=True, blank=True
+    )
+    tech_contacts = models.ManyToManyField(
+        Person,
+        verbose_name="tech-c",
+        related_name="as_tech_contacts",
+        null=True, blank=True
+    )
+    maintainers = models.ManyToManyField(
+        Maintainer,
+        verbose_name="Maintainers",
+        related_name="as_maintainers",
+        null=True, blank=True
+    )
+    routes_maintainers = models.ManyToManyField(
+        Maintainer,
+        verbose_name="Routes Maintainers",
+        related_name="as_route_maintainers",
+        null=True, blank=True
+    )
     # remarks: will be prepended automatically
     header_remarks = models.TextField("Header Remarks", null=True, blank=True)
      # remarks: will be prepended automatically
