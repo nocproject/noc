@@ -407,12 +407,6 @@ function on_mynetworks(n)
             <td><b>State</b></td>
             <td>{{ prefix.state }}</td>
         </tr>
-        {% if prefix.project %}
-            <tr class="row1">
-                <td><b>Project</b></td>
-                <td>{{ prefix.project }}</td>
-            </tr>
-        {% endif %}
         {%  if prefix.afi == "4" and prefix.ipv6_transition %}
             <tr class="row1">
                 <td><b>Dual-stack allocation</b></td>
