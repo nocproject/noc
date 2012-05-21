@@ -409,6 +409,7 @@ class Daemon(object):
     def at_exit(self):
         if self.pidfile:
             try:
+                logging.info("Removing pidfile: %s" % self.pidfile)
                 os.unlink(self.pidfile)
             except OSError:
                 pass
