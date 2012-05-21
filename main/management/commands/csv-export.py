@@ -32,8 +32,18 @@ class Command(BaseCommand):
             print "%s.%s" % (t.app_label, t.model)
         sys.exit(1)
 
+    def get_queryset(self, model, args):
+        if not args:
+            return model.objects.all()
+        q = {}
+        for a in args:
+            if "=" in a:
+                k, v = a.split("=", 1)
+                q[k] = v
+        return model.objects.filter(**q)
+
     def handle(self, *args, **options):
-        if len(args) != 1:
+        if len(args) < 1:
             self._usage()
         r = args[0].split(".")
         if len(r) != 2:
@@ -44,4 +54,6 @@ class Command(BaseCommand):
                                         model=model).model_class()
         except ContentType.DoesNotExist:
             return self._usage()
-        print csv_export(m, first_row_only=options.get("template")),
+        print csv_export(m,
+            queryset=self.get_queryset(m, args[1:]),
+            first_row_only=options.get("template")),
