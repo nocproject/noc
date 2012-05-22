@@ -204,9 +204,9 @@ Ext.define("NOC.main.config.Application", {
         me.store.filterBy(function(r) {
             return (
                 (value === "")
-                    || (r.data.key.search(value) != -1)
-                    || (r.data.value.search(value) != -1)
-                    || (r.data.default.search(value) != -1));
+                    || (r.data.key.indexOf(value) != -1)
+                    || (r.data.value.indexOf(value) != -1)
+                    || (r.data.default.indexOf(value) != -1));
         });
     }
 });
