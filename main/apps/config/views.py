@@ -30,11 +30,15 @@ class ConfigApplication(ExtApplication):
 
     def find_configs(self):
         def add_config(config, defaults):
+            if config in seen:
+                return
             h = hashlib.sha1(config).hexdigest()
             self.configs[h] = config
             self.config_list += [{"id": h, "name": config}]
             self.defaults[h] = defaults
+            seen.add(config)
 
+        seen = set()
         launcher_config = ConfigParser.SafeConfigParser()
         launcher_config.read("etc/noc-launcher.defaults")
         launcher_config.read("etc/noc-launcher.conf")
