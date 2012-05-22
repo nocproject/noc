@@ -89,6 +89,7 @@ class Daemon(object):
                     "Signal '%s' is not supported on this platform" % s)
                 continue
             signal.signal(sig, getattr(self, s))
+        #atexit.register(self.at_exit)
 
     def load_config(self):
         """
@@ -178,7 +179,7 @@ class Daemon(object):
     def die(self, msg):
         logging.error(msg)
         self.at_exit()
-        sys.exit(1)
+        os._exit(1)
 
     def on_load_config(self):
         """
@@ -202,7 +203,7 @@ class Daemon(object):
         try:
             if os.fork():
                 # Exit parent and return control to the shell immediately
-                sys.exit(0)
+                os._exit(0)
         except OSError, e:
             sys.stderr.write("Fork failed")
             sys.exit(1)
