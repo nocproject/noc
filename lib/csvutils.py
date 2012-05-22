@@ -57,7 +57,7 @@ def csv_export(model, queryset=None, first_row_only=False):
     if queryset is None:
         queryset = model.objects.all()
         # Write rows
-    for r in queryset:
+    for r in queryset.select_related():
         row = []
         # Format row
         for f, required, rel, rf in fields:
