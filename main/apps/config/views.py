@@ -1,126 +1,119 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Configuration file editor
+## main.config application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 import ConfigParser
-import os
-import re
-import pwd
+import hashlib
 ## NOC modules
-from noc.lib.app import Application, PermitSuperuser, view
+from noc.lib.app import ExtApplication, view
+from noc.lib.serialize import json_decode
 
 
-class ConfigApplication(Application):
+class ConfigApplication(ExtApplication):
     """
-    Configuration editor
+    main.config application
     """
     title = "Configs"
-    CONFIGS = ["noc.conf", "noc-launcher.conf", "noc-scheduler.conf",
-               "noc-web.conf", "noc-sae.conf", "noc-activator.conf",
-               "noc-classifier.conf", "noc-correlator.conf",
-               "noc-notifier.conf", "noc-discovery.conf"]
+    menu = "Setup | Configs"
 
-    @view(url=r"^$", url_name="index", access=PermitSuperuser(),
-          menu="Setup | Configs")
-    def view_index(self, request):
-        """
-        List of configs
-        """
-        return self.render(request, "index.html", configs=self.CONFIGS)
+    def __init__(self, *args, **kwargs):
+        ExtApplication.__init__(self, *args, **kwargs)
+        self.configs = {}  # id -> name
+        self.config_list = []  # [{id: ..., name: ...}]
+        self.defaults = {}  # id -> defaults path
+        self.find_configs()
 
-    @view(url=r"^(?P<config>\S+)/$", url_name="view", access=PermitSuperuser())
-    def view_config(self, request, config):
-        """
-        Display and edit config
-        """
-        def encode_name(section, name):
-            return "%s::%s" % (section, name)
+    def find_configs(self):
+        def add_config(config, defaults):
+            h = hashlib.sha1(config).hexdigest()
+            self.configs[h] = config
+            self.config_list += [{"id": h, "name": config}]
+            self.defaults[h] = defaults
 
-        def decode_name(name):
-            return name.split("::")
+        launcher_config = ConfigParser.SafeConfigParser()
+        launcher_config.read("etc/noc-launcher.defaults")
+        launcher_config.read("etc/noc-launcher.conf")
+        add_config("etc/noc.conf", "etc/noc.defaults")
+        for section in launcher_config.sections():
+            if not section.startswith("noc-"):
+                continue
+            # Find daemon configs
+            for opt in launcher_config.options(section):
+                if opt.startswith("config"):
+                    add_config(
+                        launcher_config.get(section, opt),
+                        "etc/%s.defaults" % section
+                    )
+        self.config_list = sorted(self.config_list,
+            key=lambda x: x["name"])
 
-        if config not in self.CONFIGS:
-            return self.response_not_found("%s not found" % config)
-        if request.POST:
-            ## Attempt to save config
-            conf = ConfigParser.RawConfigParser()
-            for name, value in request.POST.items():
-                if not value:
-                    continue
-                section, option = decode_name(name)
-                if not conf.has_section(section):
-                    conf.add_section(section)
-                conf.set(section, option, value)
-            with open(os.path.join("etc", config), "w") as f:
-                conf.write(f)
-            return self.response_redirect(request.path)
-        ## Search for available online help
-        help_path = "static/doc/en/nocbook/html/_sources/configuration.txt"
-        help_prefix = config.replace(".", "-")
-        help_href = "/static/doc/en/nocbook/html/configuration.html#%s"
-        if os.path.exists(help_path):
-            with open(help_path) as f:
-                help = f.read()
-        else:
-            help = ""
-        rx = re.compile(r"^\.\. _(%s.*?):" % help_prefix, re.MULTILINE)
-        help = [x.replace("_", "-") for x in rx.findall(help)]
-        ## Read config data
-        conf = ConfigParser.RawConfigParser()
-        conf.read(os.path.join("etc", config))
-        read_only = not os.access(os.path.join("etc", config), os.W_OK)
-        system_user = pwd.getpwuid(os.getuid())[0]
-        defaults_conf = ConfigParser.RawConfigParser()
-        defaults_conf.read(os.path.join("etc", "%s.defaults" % config[:-5]))
-        sections = set(conf.sections())
-        sections.update(defaults_conf.sections())
-        data = []
-        for s in sections:
-            options = set()
-            if conf.has_section(s):
-                options.update(conf.options(s))
-            if defaults_conf.has_section(s):
-                options.update(defaults_conf.options(s))
-            sd = []
-            for o in options:
-                x = {"name": encode_name(s, o), "label": o}
-                if conf.has_option(s, o):
-                    x["value"] = conf.get(s, o)
+    @view(url=r"^$", method=["GET"], access="launch", api=True)
+    def api_configs(self, request):
+        """
+        Get Configs list
+        :return:
+        """
+        return self.config_list
+
+    @view(url=r"^(?P<id>[0-9a-f]{40})/$", method=["GET"],
+        access="launch", api=True)
+    def api_get_config(self, request, id):
+        """
+        Get Config data
+        :param request:
+        :param id:
+        :return:
+        """
+        if id not in self.configs:
+            return self.response_not_found()
+        # Read config
+        config = ConfigParser.SafeConfigParser()
+        config.read(self.configs[id])
+        # Read defaults
+        defaults = ConfigParser.SafeConfigParser()
+        defaults.read(self.defaults[id])
+        # Build result
+        r = []
+        for ds in defaults.sections():
+            for k, v in defaults.items(ds):
+                if config.has_option(ds, k):
+                    vv = config.get(ds, k)
                 else:
-                    x["value"] = ""
-                if defaults_conf.has_option(s, o):
-                    x["default"] = defaults_conf.get(s, o)
-                else:
-                    x["default"] = ""
-                # Try to find online help for option and determine option order
-                option_help = "%s-%s-%s" % (
-                help_prefix, s.replace("_", "-"), o.replace("_", "-"))
-                try:
-                    x["index"] = help.index(option_help)
-                    x["help"] = help_href % option_help
-                except ValueError:
-                    x["index"] = 10000
-                    x["help"] = None
-                sd.append(x)
-            # Order options like manual
-            sd = sorted(sd, lambda x, y: cmp(x["index"], y["index"]))
-            # Try to find online help for section and determine section order
-            section_help = "%s-%s" % (help_prefix, s.replace("_", "-"))
-            try:
-                index = help.index(section_help)
-                section_help = help_href % section_help
-            except ValueError:
-                index = 10000
-                section_help = None
-            data.append({"section": s, "data": sd, "help": section_help,
-                         "index": index})
-        # Order sections like manual
-        data = sorted(data, lambda x, y: cmp(x["index"], y["index"]))
-        return self.render(request, "view.html", config_name=config,
-                data=data, read_only=read_only, system_user=system_user)
+                    vv = ""
+                r += [{
+                    "section": ds,
+                    "key": k,
+                    "default": v,
+                    "value": vv
+                }]
+        return r
+
+    @view(url=r"^(?P<id>[0-9a-f]{40})/$", method=["POST"],
+        access="launch", api=True)
+    def api_save_config(self, request, id):
+        """
+        Get Config data
+        :param request:
+        :param id:
+        :return:
+        """
+        data = json_decode(request.raw_post_data)
+        if id not in self.configs:
+            return self.response_not_found()
+        # Read config
+        config = ConfigParser.SafeConfigParser()
+        config.read(self.configs[id])
+        # Apply updates
+        for d in data:
+            if not config.has_section(d["section"]):
+                config.add_section(d["section"])
+            config.set(d["section"], d["key"], d["value"])
+        # Save
+        with open(self.configs[id], "w") as f:
+            config.write(f)
+        return True

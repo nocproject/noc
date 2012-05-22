@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## config Test
+## main.config unittests
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ApplicationTestCase
-from django.utils import simplejson as json
 
-class configTestCase(ApplicationTestCase):
+## NOC modules
+from noc.lib.test import AjaxTestCase, unittest
+
+
+@unittest.skip("Not ready yet")
+class configTestCase(AjaxTestCase):
     pass

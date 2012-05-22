@@ -1,9 +1,0 @@
-{% extends "template.html" %}
-{% block content %}
-<h1>Select config file</h1>
-<TABLE BORDER="0">
-    {% for c in configs %}
-    <TR><TD><A HREF="{% url main:config:view c %}">{{c}}</A></TD></TR>
-    {% endfor %}
-</TABLE>
-{% endblock %}
