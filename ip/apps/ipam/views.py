@@ -649,9 +649,10 @@ class IPAMAppplication(Application):
                 return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
                                               prefix.prefix)
         else:
-            if afi == "4":
+            ds_prefix = None
+            if afi == "4" and prefix.ipv6_transition:
                 ds_prefix = prefix.ipv6_transition.prefix
-            else:
+            elif afi == "6" and prefix.ipv4_transition:
                 ds_prefix = prefix.ipv4_transition.prefix
             initial={
                 "asn": prefix.asn.id,
