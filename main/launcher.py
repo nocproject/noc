@@ -16,7 +16,6 @@ import logging
 import ConfigParser
 import pwd
 import grp
-import atexit
 import signal
 import stat
 ## NOC modules
@@ -211,8 +210,6 @@ class Launcher(Daemon):
             if self.is_superuser and dn == "noc-sae":
                 self.crashinfo_uid = uid
                 self.crashinfo_dir = os.path.dirname(self.config.get("main", "logfile"))
-        #
-        atexit.register(self.at_exit)
 
     def sync_contrib(self):
         """
@@ -282,7 +279,3 @@ class Launcher(Daemon):
                 except OSError:
                     pass
         super(Launcher, self).at_exit()
-
-    def SIGTERM(self, signo, frame):
-        self.at_exit()
-        os._exit(0)
