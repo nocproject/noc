@@ -22,7 +22,12 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
                 title: title,
                 closable: true,
                 layout: "fit"
-            });
+            }),
+            first = me.items.first();
+        if(first && first.title != title && first.title == "Welcome") {
+            // Close "Welcome" tab
+            first.close();
+        }
         var app = Ext.create(panel_class, {
                 "noc": params,
                 "title": title,
