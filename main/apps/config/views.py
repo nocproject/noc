@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 import ConfigParser
 import hashlib
 ## NOC modules
