@@ -214,6 +214,9 @@ repo     = /var/repo
 vcs_type = hg
 # Path to VCS CLI utility
 vcs_path = /usr/local/bin/hg
+# Limit amount of concurrently grabbed configs
+# 0 - no limit
+concurrency = 0
 # Next check on activator overload
 timeout_overload = 150
 # Next check on down host
@@ -270,7 +273,7 @@ warn_before_expired_days = 30
 #
 [tt]
 # Link to TT. %(tt)s expanded into ticket number
-url = http://example.com/ticket=%(tt)s
+url = http://example.com/ticket=%%(tt)s
 
 #
 # Other paths
