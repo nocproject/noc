@@ -21,6 +21,7 @@ Ext.define("NOC.sa.monitor.Application", {
                     border: false,
                     activeTab: 0,
                     layout: "fit",
+                    autoScroll: true,
                     items: [
                         Ext.create("NOC.sa.monitor.PoolsPanel", {
                             store: me.poolsStore,
