@@ -175,7 +175,8 @@ Ext.define("NOC.inv.interface.Application", {
             return (
                 !s
                 || smatch(r, "name", s)
-                || smatch(r, "description", s));
+                || smatch(r, "description", s)
+                || smatch(r, "vrf", s));
         });
     }
 });

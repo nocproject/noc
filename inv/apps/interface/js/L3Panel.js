@@ -31,6 +31,10 @@ Ext.define("NOC.inv.interface.L3Panel", {
                             dataIndex: "name"
                         },
                         {
+                            text: "VRF",
+                            dataIndex: "vrf"
+                        },
+                        {
                             text: "IP",
                             dataIndex: "ip"
                         },
