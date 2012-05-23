@@ -46,6 +46,7 @@ Ext.define("NOC.inv.interface.Application", {
                     border: false,
                     activeTab: 0,
                     layout: "fit",
+                    autoScroll: true,
                     items: [
                         me.l1Panel,
                         me.lagPanel,
