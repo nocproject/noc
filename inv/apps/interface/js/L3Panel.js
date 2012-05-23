@@ -45,6 +45,10 @@ Ext.define("NOC.inv.interface.L3Panel", {
                             hidden: true
                         },
                         {
+                            text: "VLAN",
+                            dataIndex: "vlan"
+                        },
+                        {
                             text: "Description",
                             dataIndex: "description",
                             flex: 1
