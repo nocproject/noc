@@ -33,6 +33,7 @@ from noc.lib.fileutils import read_file
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket import SocketFactory
 from noc.lib.ip import IP
+from noc.lib.dateutils import total_seconds
 
 
 class SAE(Daemon):
@@ -485,7 +486,7 @@ class SAE(Daemon):
                     **kwargs)
 
         t = datetime.datetime.now()
-        logging.debug("Processing MRT schedules")
+        # logging.debug("Processing MRT schedules")
         # Reset rates
         sae_mrt_rate = 0
         shard_mrt_rate = {}  # shard_id -> count
@@ -530,7 +531,7 @@ class SAE(Daemon):
             mt.status = "R"
             mt.save()
             exec_script(mt)
-        dt = (datetime.datetime.now() - t).total_seconds()
+        dt = total_seconds(datetime.datetime.now() - t)
         # logging.debug("MRT Schedules processed in %ss" % dt)
         if dt > self.mrt_schedule_interval:
             logging.error("SAE is overloaded by MRT scheduling (took %ss)" % dt)
