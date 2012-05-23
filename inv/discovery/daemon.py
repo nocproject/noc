@@ -385,8 +385,9 @@ class DiscoveryDaemon(Daemon):
                     changes = self.update_if_changed(iface, {
                         "type": i["type"],
                         "mac": i.get("mac"),
+                        "description": i.get("description"),
                         "aggregated_interface": agg,
-                        "is_lacp": "is_lacp" in i and i["is_lacp"]
+                        "is_lacp": i.get("is_lacp", False)
                     })
                     self.log_changes(o, "Interface '%s' has been changed" % i["name"],
                                      changes)
@@ -398,6 +399,7 @@ class DiscoveryDaemon(Daemon):
                         name=i["name"],
                         type=i["type"],
                         mac=i.get("mac"),
+                        description=i.get("description"),
                         aggregated_interface=agg,
                         is_lacp="is_lacp" in i and i["is_lacp"]
                     )
