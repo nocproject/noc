@@ -154,7 +154,8 @@ Ext.define("NOC.inv.interface.Application", {
                 !s
                 || smatch(r, "name", s)
                 || smatch(r, "description", s)
-                || smatch(r, "mac", s));
+                || smatch(r, "mac", s)
+                || smatch(r, "lag"));
         });
         // Search LAG
         me.lagStore.filterBy(function(r) {
