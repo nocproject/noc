@@ -56,6 +56,17 @@ class InterfaceAppplication(ExtApplication):
               Interface.objects.filter(managed_object=o.id,
                                        type="aggregated").order_by("name")
         ]
+        # L2 interfaces
+        l2 = [
+            {
+                "name": i.name,
+                "description": i.description,
+                "untagged_vlan": i.untagged_vlan,
+                "tagged_vlans": i.tagged_vlans
+            } for i in
+              SubInterface.objects.filter(managed_object=o.id,
+                  is_bridge=True)
+        ]
         # L3 interfaces
         q = Q(is_ipv4=True) | Q(is_ipv6=True)
         l3 = [
@@ -72,5 +83,6 @@ class InterfaceAppplication(ExtApplication):
         return {
             "l1": l1,
             "lag": lag,
+            "l2": l2,
             "l3": l3
         }
