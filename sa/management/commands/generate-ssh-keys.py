@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Generate SSH keys according to config
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import os
 import ConfigParser
@@ -37,10 +36,7 @@ class Command(BaseCommand):
         :param path:
         :return:
         """
-        if path.endswith(".conf"):
-            d_path = path[:-5] + ".defaults"
-        else:
-            d_path = path + ".defaults"
+        d_path = "etc/noc-activator.defaults"
         config = ConfigParser.SafeConfigParser()
         config.read(d_path)
         config.read(path)
