@@ -25,6 +25,13 @@ Ext.define("NOC.inv.interface.L2Store", {
         {
             name: "tagged_vlans",
             type: "auto"
+        },
+        {
+            name: "tagged_range",
+            type: "string",
+            convert: function(value, record) {
+                return NOC.listToRanges(record.get("tagged_vlans"));
+            }
         }
     ],
     data: []
