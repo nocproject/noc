@@ -434,7 +434,7 @@ class SAE(Daemon):
             try:
                 mt = MapTask.objects.get(id=mt_id)
             except MapTask.DoesNotExist:
-                logging.error("Map task %d suddently disappeared" % mt_id)
+                logging.error("Late answer for map task %d is ignored" % mt_id)
                 return
             if error:
                 # Process non-fatal reasons
@@ -493,7 +493,7 @@ class SAE(Daemon):
         # Run tasks
         for mt in MapTask.objects.filter(status="W", next_try__lte=t,
                     managed_object__activator__shard__is_active=True,
-                    managed_object__activator__shard__name__in=self.shards):
+                    managed_object__activator__shard__name__in=self.shards).select_related():
             # Check for task timeouts
             if mt.task.stop_time < t:
                 mt.status = "F"
@@ -531,9 +531,9 @@ class SAE(Daemon):
             mt.save()
             exec_script(mt)
         dt = (datetime.datetime.now() - t).total_seconds()
-        logging.debug("MRT Schedules processed in %ss" % dt)
+        # logging.debug("MRT Schedules processed in %ss" % dt)
         if dt > self.mrt_schedule_interval:
-            logging.error("SAE is overloaded by MRT scheduling")
+            logging.error("SAE is overloaded by MRT scheduling (took %ss)" % dt)
             #  @todo: Generate FM event
 
     def run_sae_script(self, request, callback):
