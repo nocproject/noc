@@ -482,6 +482,7 @@ class SAE(Daemon):
                     **kwargs)
 
         t = datetime.datetime.now()
+        logging.debug("Processing MRT schedules")
         # Reset rates
         sae_mrt_rate = 0
         shard_mrt_rate = {}  # shard_id -> count
@@ -526,6 +527,9 @@ class SAE(Daemon):
             mt.status = "R"
             mt.save()
             exec_script(mt)
+        logging.debug("MRT Schedules processed in %ss" % (
+            (datetime.datetime.now() - t).total_seconds()
+        ))
 
     def run_sae_script(self, request, callback):
         """
