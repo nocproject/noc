@@ -25,28 +25,37 @@ Ext.define("NOC.inv.interface.Application", {
         // Create tabs
         me.l1Panel = Ext.create("NOC.inv.interface.L1Panel", {
             app: me,
-            store: me.l1Store
+            store: me.l1Store,
+            disabled: true
         });
         me.lagPanel = Ext.create("NOC.inv.interface.LAGPanel", {
             app: me,
-            store: me.lagStore
+            store: me.lagStore,
+            disabled: true
         });
         me.l2Panel = Ext.create("NOC.inv.interface.L2Panel", {
             app: me,
-            store: me.l2Store
+            store: me.l2Store,
+            disabled: true
         });
         me.l3Panel = Ext.create("NOC.inv.interface.L3Panel", {
             app: me,
-            store: me.l3Store
+            store: me.l3Store,
+            disabled: true
         });
         //
         Ext.apply(me, {
             items: [
                 Ext.create("Ext.tab.Panel", {
+                    name: "tab",
+                    itemId: "tab",
                     border: false,
                     activeTab: 0,
                     layout: "fit",
                     autoScroll: true,
+                    defaults: {
+                        autoScroll: true
+                    },
                     items: [
                         me.l1Panel,
                         me.lagPanel,
@@ -68,10 +77,26 @@ Ext.define("NOC.inv.interface.Application", {
                             fn: me.onObjectChange
                         }
                     }
+                },
+                {
+                    xtype: "textfield",
+                    name: "search",
+                    itemId: "search",
+                    inputType: "search",
+                    disabled: true,
+                    emptyText: "Search ...",
+                    listeners: {
+                        change: {
+                            scope: me,
+                            fn: me.onSearch
+                        }
+                    }
                 }
             ]
         });
         me.callParent();
+        me.searchField = me.dockedItems.items[0].getComponent("search");
+        me.tabPanel = me.getComponent("tab");
     },
     // Called when managed object changed
     onObjectChange: function(combo, s) {
@@ -97,11 +122,8 @@ Ext.define("NOC.inv.interface.Application", {
         var me = this,
             data = Ext.decode(response.responseText),
             adjust = function(panel, data) {
-                if(data) {
-                    panel.show();
-                } else {
-                    panel.hide();
-                }
+                var d = (data || []).length > 0;
+                panel.setDisabled(!d);
             }
         // Set panel visibility
         adjust(me.l1Panel, data.l1);
@@ -113,5 +135,47 @@ Ext.define("NOC.inv.interface.Application", {
         me.lagStore.loadData(data.lag || []);
         me.l2Store.loadData(data.l2 || []);
         me.l3Store.loadData(data.l3 || []);
+        //
+        me.searchField.setDisabled(false);
+        me.tabPanel.setActiveTab(0);
+        me.searchField.setValue("");
+    },
+    //
+    onSearch: function(field, value) {
+        var me = this,
+            s = value.toLowerCase(),
+            // Match substring
+            smatch = function(record, field, s) {
+                return record.get(field).toLowerCase().indexOf(s) != -1;
+            }
+        // Search L1
+        me.l1Store.filterBy(function(r) {
+            return (
+                !s
+                || smatch(r, "name", s)
+                || smatch(r, "description", s)
+                || smatch(r, "mac", s));
+        });
+        // Search LAG
+        me.lagStore.filterBy(function(r) {
+            return (
+                !s
+                || smatch(r, "name", s)
+                || smatch(r, "description", s));
+        });
+        // Search L2
+        me.l2Store.filterBy(function(r) {
+            return (
+                !s
+                || smatch(r, "name", s)
+                || smatch(r, "description", s));
+        });
+        // Search L3
+        me.l3Store.filterBy(function(r) {
+            return (
+                !s
+                || smatch(r, "name", s)
+                || smatch(r, "description", s));
+        });
     }
 });
