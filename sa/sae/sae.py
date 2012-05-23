@@ -113,6 +113,9 @@ class SAE(Daemon):
             self.mrt_log_dir = os.path.join(ld, "mrt")
             if not os.path.isdir(self.mrt_log_dir):
                 os.mkdir(self.mrt_log_dir)
+        # Settings
+        self.mrt_schedule_interval = 1
+        self.activator_status_interval = 60
 
     def build_manifest(self):
         """
@@ -234,11 +237,11 @@ class SAE(Daemon):
         """
         t = time.time()
         reset_queries()  # Clear debug SQL log
-        if t - self.last_mrtask_check >= 1:
+        if t - self.last_mrtask_check >= self.mrt_schedule_interval:
             # Check Map/Reduce task status
             self.process_mrtasks()
             self.last_mrtask_check = t
-        if t - self.last_status_refresh >= 60:  # @todo: Configurable
+        if t - self.last_status_refresh >= self.activator_status_interval:
             self.refresh_activator_status()
 
     def write_event(self, data, timestamp=None, managed_object=None):
@@ -527,9 +530,11 @@ class SAE(Daemon):
             mt.status = "R"
             mt.save()
             exec_script(mt)
-        logging.debug("MRT Schedules processed in %ss" % (
-            (datetime.datetime.now() - t).total_seconds()
-        ))
+        dt = (datetime.datetime.now() - t).total_seconds()
+        logging.debug("MRT Schedules processed in %ss" % dt)
+        if dt > self.mrt_schedule_interval:
+            logging.error("SAE is overloaded by MRT scheduling")
+            #  @todo: Generate FM event
 
     def run_sae_script(self, request, callback):
         """
