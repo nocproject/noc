@@ -44,6 +44,8 @@ class ConfigApplication(ExtApplication):
         launcher_config.read("etc/noc-launcher.defaults")
         launcher_config.read("etc/noc-launcher.conf")
         add_config("etc/noc.conf", "etc/noc.defaults")
+        add_config("etc/noc-launcher.conf",
+            "etc/noc-launcher.defaults")
         for section in launcher_config.sections():
             if not section.startswith("noc-"):
                 continue
