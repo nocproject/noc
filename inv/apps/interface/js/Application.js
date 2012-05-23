@@ -20,6 +20,7 @@ Ext.define("NOC.inv.interface.Application", {
         // Create stores
         me.l1Store = Ext.create("NOC.inv.interface.L1Store");
         me.l3Store = Ext.create("NOC.inv.interface.L3Store");
+        me.l2Store = Ext.create("NOC.inv.interface.L2Store");
         me.lagStore = Ext.create("NOC.inv.interface.LAGStore");
         // Create tabs
         me.l1Panel = Ext.create("NOC.inv.interface.L1Panel", {
@@ -29,6 +30,10 @@ Ext.define("NOC.inv.interface.Application", {
         me.lagPanel = Ext.create("NOC.inv.interface.LAGPanel", {
             app: me,
             store: me.lagStore
+        });
+        me.l2Panel = Ext.create("NOC.inv.interface.L2Panel", {
+            app: me,
+            store: me.l2Store
         });
         me.l3Panel = Ext.create("NOC.inv.interface.L3Panel", {
             app: me,
@@ -44,6 +49,7 @@ Ext.define("NOC.inv.interface.Application", {
                     items: [
                         me.l1Panel,
                         me.lagPanel,
+                        me.l2Panel,
                         me.l3Panel
                     ]
                 })
@@ -88,26 +94,23 @@ Ext.define("NOC.inv.interface.Application", {
     // Init stores
     onLoadInterfaces: function(response) {
         var me = this,
-            data = Ext.decode(response.responseText);
+            data = Ext.decode(response.responseText),
+            adjust = function(panel, data) {
+                if(data) {
+                    panel.show();
+                } else {
+                    panel.hide();
+                }
+            }
         // Set panel visibility
-        if(data.l1) {
-            me.l1Panel.show();
-        } else {
-            me.l1Panel.hide();
-        }
-        if(data.lag) {
-            me.lagPanel.show();
-        } else {
-            me.lagPanel.hide();
-        }
-        if(data.l3) {
-            me.l3Panel.show();
-        } else {
-            me.l3Panel.hide();
-        }
+        adjust(me.l1Panel, data.l1);
+        adjust(me.lagPanel, data.lag);
+        adjust(me.l2Panel, data.l2);
+        adjust(me.l3Panel, data.l3);
         // Load data
         me.l1Store.loadData(data.l1 || []);
         me.lagStore.loadData(data.lag || []);
+        me.l2Store.loadData(data.l2 || []);
         me.l3Store.loadData(data.l3 || []);
     }
 });
