@@ -37,7 +37,12 @@ Ext.define("NOC.inv.interface.L2Panel", {
                         },
                         {
                             text: "Tagged",
-                            dataIndex: "tagged_vlans"
+                            dataIndex: "tagged_vlans",
+                            hidden: true
+                        },
+                        {
+                            text: "Tagged (Ranges)",
+                            dataIndex: "tagged_range"
                         },
                         {
                             text: "Description",
