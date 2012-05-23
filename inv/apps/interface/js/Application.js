@@ -20,7 +20,21 @@ Ext.define("NOC.inv.interface.Application", {
         // Create stores
         me.l1Store = Ext.create("NOC.inv.interface.L1Store");
         me.l3Store = Ext.create("NOC.inv.interface.L3Store");
+        me.lagStore = Ext.create("NOC.inv.interface.LAGStore");
         // Create tabs
+        me.l1Panel = Ext.create("NOC.inv.interface.L1Panel", {
+            app: me,
+            store: me.l1Store
+        });
+        me.lagPanel = Ext.create("NOC.inv.interface.LAGPanel", {
+            app: me,
+            store: me.lagStore
+        });
+        me.l3Panel = Ext.create("NOC.inv.interface.L3Panel", {
+            app: me,
+            store: me.l3Store
+        });
+        //
         Ext.apply(me, {
             items: [
                 Ext.create("Ext.tab.Panel", {
@@ -28,14 +42,9 @@ Ext.define("NOC.inv.interface.Application", {
                     activeTab: 0,
                     layout: "fit",
                     items: [
-                        Ext.create("NOC.inv.interface.L1Panel", {
-                            app: me,
-                            store: me.l1Store
-                        }),
-                        Ext.create("NOC.inv.interface.L3Panel", {
-                            app: me,
-                            store: me.l3Store
-                        })
+                        me.l1Panel,
+                        me.lagPanel,
+                        me.l3Panel
                     ]
                 })
             ],
@@ -45,6 +54,7 @@ Ext.define("NOC.inv.interface.Application", {
                     xtype: "sa.managedobject.LookupField",
                     name: "managedobject",
                     itemId: "managedobject",
+                    emptyText: "Select managed object ...",
                     listeners: {
                         select: {
                             scope: me,
@@ -79,7 +89,25 @@ Ext.define("NOC.inv.interface.Application", {
     onLoadInterfaces: function(response) {
         var me = this,
             data = Ext.decode(response.responseText);
+        // Set panel visibility
+        if(data.l1) {
+            me.l1Panel.show();
+        } else {
+            me.l1Panel.hide();
+        }
+        if(data.lag) {
+            me.lagPanel.show();
+        } else {
+            me.lagPanel.hide();
+        }
+        if(data.l3) {
+            me.l3Panel.show();
+        } else {
+            me.l3Panel.hide();
+        }
+        // Load data
         me.l1Store.loadData(data.l1 || []);
+        me.lagStore.loadData(data.lag || []);
         me.l3Store.loadData(data.l3 || []);
     }
 });

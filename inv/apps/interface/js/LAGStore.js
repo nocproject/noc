@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------
-// inv.interface L1 Store
+// inv.interface LAG Store
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.interface.L1Store");
+console.debug("Defining NOC.inv.interface.LAGStore");
 
-Ext.define("NOC.inv.interface.L1Store", {
+Ext.define("NOC.inv.interface.LAGStore", {
     extend: "Ext.data.Store",
     model: null,
     fields: [
@@ -15,20 +15,18 @@ Ext.define("NOC.inv.interface.L1Store", {
             type: "string"
         },
         {
-            name: "mac",
-            type: "string"
-        },
-        {
             name: "description",
             type: "string"
         },
         {
-            name: "ifindex",
-            type: "int"
+            name: "members",
+            type: "auto"
         },
         {
-            name: "lag",
-            type: "string"
+            name: "count",
+            convert: function(value, record) {
+                return record.get("members").length;
+            }
         }
     ],
     data: []

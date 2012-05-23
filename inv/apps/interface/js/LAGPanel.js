@@ -1,15 +1,15 @@
 //---------------------------------------------------------------------
-// inv.interface L1 Panel
+// inv.interface LAG Panel
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.interface.L1Panel");
+console.debug("Defining NOC.inv.interface.LAGPanel");
 
-Ext.define("NOC.inv.interface.L1Panel", {
+Ext.define("NOC.inv.interface.LAGPanel", {
     extend: "Ext.panel.Panel",
     uses: [],
-    title: "Physical",
+    title: "LAG",
     closable: false,
     layout: "fit",
 
@@ -23,7 +23,7 @@ Ext.define("NOC.inv.interface.L1Panel", {
                     border: false,
                     autoScroll: true,
                     stateful: true,
-                    stateId: "inv.interface-l1-grid",
+                    stateId: "inv.interface-LAG-grid",
                     store: me.store,
                     columns: [
                         {
@@ -31,22 +31,17 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             dataIndex: "name"
                         },
                         {
-                            text: "MAC",
-                            dataIndex: "mac"
+                            text: "Count",
+                            dataIndex: "count"
                         },
                         {
-                            text: "LAG",
-                            dataIndex: "lag"
+                            text: "Members",
+                            dataIndex: "members"
                         },
                         {
                             text: "Description",
                             dataIndex: "description",
                             flex: 1
-                        },
-                        {
-                            text: "ifIndex",
-                            dataIndex: "ifindex",
-                            hidden: true
                         }
                      ]
                 }
