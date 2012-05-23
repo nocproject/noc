@@ -106,12 +106,12 @@ class IGetInterfaces(Interface):
                 ipv4_addresses = list of IPv4 addresses
     
             name = if2
-            type = "aggregate"
+            type = "physical"
             is_lacp = True
             aggregated_interface = "if1"
             
             name = if3
-            type = "aggregate"
+            type = "physical"
             is_lacp = True
             aggregated_interface = "if1"
     
