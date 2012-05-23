@@ -37,6 +37,10 @@ Ext.define("NOC.inv.interface.L3Store", {
         {
             name: "vlan",
             type: "auto"
+        },
+        {
+            name: "vrf",
+            type: "string"
         }
     ],
     data: []

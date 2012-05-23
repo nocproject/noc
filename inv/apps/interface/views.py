@@ -75,7 +75,8 @@ class InterfaceAppplication(ExtApplication):
                 "description": i.description,
                 "ipv4_addresses": i.ipv4_addresses,
                 "ipv6_addresses": i.ipv6_addresses,
-                "vlan": i.vlan_ids
+                "vlan": i.vlan_ids,
+                "vrf": i.forwarding_instance.name if i.forwarding_instance else ""
             } for i in
               SubInterface.objects.filter(managed_object=o.id)\
                 .filter(q).order_by("name")
