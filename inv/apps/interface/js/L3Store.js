@@ -33,6 +33,10 @@ Ext.define("NOC.inv.interface.L3Store", {
                     ipv6 = record.get("ipv6_addresses") || [];
                 return ipv4.concat(ipv6);
             }
+        },
+        {
+            name: "vlan",
+            type: "auto"
         }
     ],
     data: []

@@ -63,7 +63,8 @@ class InterfaceAppplication(ExtApplication):
                 "name": i.name,
                 "description": i.description,
                 "ipv4_addresses": i.ipv4_addresses,
-                "ipv6_addresses": i.ipv6_addresses
+                "ipv6_addresses": i.ipv6_addresses,
+                "vlan": i.vlan_ids
             } for i in
               SubInterface.objects.filter(managed_object=o.id)\
                 .filter(q).order_by("name")
