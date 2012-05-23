@@ -13,6 +13,7 @@ import datetime
 from django.db.models import Q
 ## NOC modules
 from noc.lib.periodic import Task as PeriodicTask
+from noc.settings import config
 
 
 def reduce_config_pull(task):
@@ -20,7 +21,7 @@ def reduce_config_pull(task):
     import datetime
     import random
     import logging
-    
+
     from noc.settings import config
     from noc.sa.protocols.sae_pb2 import ERR_OVERLOAD, ERR_DOWN
     ## Process task results
@@ -68,7 +69,8 @@ class Task(PeriodicTask):
     name = "cm.config_pull"
     description = ""
     default_timeout = 300
-    
+    concurrency = config.getint("cm", "concurrency")
+
     def execute(self):
         # Import here to avoid circular import error
         from noc.cm.models import Config
@@ -76,7 +78,10 @@ class Task(PeriodicTask):
         # Run Map/Reduce task
         q = (Q(managed_object__is_configuration_managed=True, pull_every__isnull=False) &
             (Q(next_pull__lt=datetime.datetime.now()) | Q(next_pull__isnull=True)))
-        objects = [o.managed_object for o in Config.objects.filter(q).order_by("next_pull")]
+        qs = Config.objects.filter(q).order_by("next_pull")
+        if self.concurrency:
+            qs = qs[:self.concurrency]
+        objects = [o.managed_object for o in qs]
         # @todo: smarter timeout calculation
         task = ReduceTask.create_task(objects, reduce_config_pull, {},
                                       "get_config", {}, self.timeout - 3)
