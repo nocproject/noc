@@ -120,6 +120,49 @@ class PlainReferenceField(BaseField):
         return self.document_type._fields.get(name)
 
 
+class PlainReferenceListField(PlainReferenceField):
+    def __get__(self, instance, owner):
+        def convert(value):
+            if isinstance(value, ObjectId):
+                # Dereference
+                v = self.document_type.objects(id=value).first()
+                if v is None:
+                    raise ValidationError("Unable to dereference %s:%s" % (
+                                        self.document_type, v))
+                return v
+            else:
+                return value
+
+        if instance is None:
+            # Document class being used rather than a document object
+            return self
+        # Get value from document instance if available
+        value = instance._data.get(self.name)
+        # Dereference DBRefs
+        if value is not None:
+            instance._data[self.name] = [convert(v) for v in value]
+        return super(PlainReferenceField, self).__get__(instance, owner)
+
+    def to_mongo(self, document):
+        def convert(value):
+            if isinstance(value, Document):
+                # We need the id from the saved object to create the DBRef
+                id = value.id
+                if id is None:
+                    raise ValidationError("You can only reference documents once "
+                                          "they have been saved to the database")
+            else:
+                id = value
+            return id_field.to_mongo(id)
+
+        id_field_name = self.document_type._meta["id_field"]
+        id_field = self.document_type._fields[id_field_name]
+        if document:
+            return [convert(v) for v in document]
+        else:
+            return document
+
+
 class ForeignKeyField(BaseField):
     """
     A reference to the RDBMS" table that will be automatically
