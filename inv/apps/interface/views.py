@@ -21,6 +21,14 @@ class InterfaceAppplication(ExtApplication):
     title = "Interfaces"
     menu = "Interfaces"
 
+    mrt_config = {
+        "get_mac": {
+            "map_script": "get_mac_address_table",
+            "timeout": 120,
+            "access": "get_mac"
+        }
+    }
+
     @view(url="^(?P<managed_object>\d+)/$", method=["GET"],
         access="view", api=True)
     def api_get_interfaces(self, request, managed_object):

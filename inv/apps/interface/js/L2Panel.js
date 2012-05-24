@@ -27,6 +27,19 @@ Ext.define("NOC.inv.interface.L2Panel", {
                     store: me.store,
                     columns: [
                         {
+                            xtype: "actioncolumn",
+                            width: 25,
+                            items: [
+                                {
+                                    tooltip: "Show MACs",
+                                    iconCls: "icon_tick",
+                                    scope: me,
+                                    handler: me.showMAC,
+                                    disabled: !me.app.hasPermission("get_mac")
+                                }
+                            ]
+                        },
+                        {
                             text: "Name",
                             dataIndex: "name"
                         },
@@ -54,5 +67,38 @@ Ext.define("NOC.inv.interface.L2Panel", {
             ]
         });
         me.callParent();
+    },
+    //
+    showMAC: function(grid, rowIndex, colIndex) {
+        var me = this,
+            r = me.store.getAt(rowIndex);
+
+        me.currentMAC = r;
+        NOC.mrt({
+            url: "/inv/interface/mrt/get_mac/",
+            selector: me.app.currentObject,
+            mapParams: {
+                interface: r.get("name")
+            },
+            scope: me,
+            success: me.showMACForm,
+            failure: function() {
+                NOC.error("Failed to get MACs");
+            }
+        });
+    },
+    //
+    showMACForm: function(result) {
+        var me = this,
+            r = result[0];
+        if(r.status) {
+            Ext.create("NOC.inv.interface.MACForm", {
+                data: r.result,
+                title: Ext.String.format("MACs on {0}",
+                    me.currentMAC.get("name"))
+            });
+        } else {
+            NOC.error("Failed to get MACs");
+        }
     }
 });
