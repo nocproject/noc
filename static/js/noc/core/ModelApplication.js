@@ -116,7 +116,23 @@ Ext.define("NOC.core.ModelApplication", {
             xtype: "gridpanel",
             itemId: "grid",
             store: me.store,
-            columns: me.columns.concat(cust_columns),
+            columns: [
+                {
+                    xtype: "actioncolumn",
+                    width: 25,
+                    sortable: false,
+                    items: [{
+                        iconCls: "icon_pencil",
+                        tooltip: "Edit",
+                        scope: me,
+                        handler: function(grid, rowIndex, colIndex) {
+                            var me = this,
+                                record = grid.getStore().getAt(rowIndex);
+                            me.onEditRecord(record);
+                        }
+                    }]
+                }
+            ].concat(me.columns).concat(cust_columns),
             border: false,
             autoScroll: true,
             stateful: true,
@@ -139,8 +155,12 @@ Ext.define("NOC.core.ModelApplication", {
                 getRowClass: Ext.bind(me.getRowClass, me)
             },
             listeners: {
-                itemdblclick: me.onEditRecord,
-                select: me.onEditRecord
+                itemdblclick: {
+                    scope: me,
+                    fn: function(grid, record) {
+                        this.onEditRecord(record);
+                    }
+                }
             }
         };
         // Form
@@ -307,8 +327,8 @@ Ext.define("NOC.core.ModelApplication", {
         });
     },
     // Show Form
-    onEditRecord: function(view, record) {
-        var me = this.up("panel");
+    onEditRecord: function(record) {
+        var me = this;
         // Check permissions
         if (!me.hasPermission("read") && !me.hasPermission("update"))
             return;
