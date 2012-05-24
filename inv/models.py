@@ -9,6 +9,7 @@
 ## Python modules
 import re
 import datetime
+from collections import defaultdict
 ## NOC modules
 from noc.lib.nosql import *
 from noc.sa.models import ManagedObject, ManagedObjectSelector
@@ -317,12 +318,48 @@ class Interface(Document):
         super(Interface, self).save(*args, **kwargs)
 
     @property
+    def link(self):
+        """
+        Return Link instance or None
+        :return:
+        """
+        return Link.objects.filter(interfaces=self.id).first()
+
+    @property
     def is_linked(self):
         """
         Check interface is linked
         :returns: True if interface is linked, False otherwise
         """
-        return False  # @todo: Check Link
+        return self.link is not None
+
+    def unlink(self):
+        """
+        Remove existing link.
+        Raise ValueError if interface is not linked
+        """
+        link = self.link
+        if link is None:
+            raise ValueError("Interface is not linked")
+        if link.is_ptp:
+            link.delete()
+        else:
+            raise ValueError("Cannot unlink non p-t-p link")
+
+    def link_ptp(self, other):
+        """
+        Create p-t-p link with other interface
+        Raise ValueError if either of interface already connected.
+        :type other: Interface
+        :returns: Link instance
+        """
+        if self.is_linked or other.is_linked:
+            raise ValueError("Already linked")
+        if self.id == other.id:
+            raise ValueError("Cannot link with self")
+        link = Link(interfaces=[self, other])
+        link.save()
+        return link
 
 
 class SubInterface(Document):
@@ -370,17 +407,66 @@ class Link(Document):
     Always contains a list of 2*N references.
     2 - for fully resolved links
     2*N for unresolved N-link portchannel
+    N, N > 2 - broadcast media
     """
     meta = {
         "collection": "noc.links",
         "allow_inheritance": False,
-        "index": ["interfaces"]
+        "indexes": ["interfaces"]
     }
 
-    interfaces = ListField(PlainReferenceField(Interface))
+    interfaces = PlainReferenceListField(Interface)
 
     def __unicode__(self):
         return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])
+
+    @property
+    def is_ptp(self):
+        """
+        Check link is point-to-point link
+        :return:
+        """
+        return len(self.interfaces) == 2
+
+    @property
+    def is_lag(self):
+        """
+        Check link is unresolved LAG
+        :return:
+        """
+        if self.is_ptp:
+            return True
+        d = defaultdict(int)  # object -> count
+        for i in self.interfaces:
+            d[i.managed_object.id] += 1
+        if len(d) != 2:
+            return False
+        k = d.keys()
+        return d[k[0]] == d[k[1]]
+
+    @property
+    def is_broadcast(self):
+        """
+        Check link is broadcast media
+        :return:
+        """
+        return not self.is_ptp and not self.is_lag
+
+    def other(self, interface):
+        """
+        Return other interfaces of the link
+        :param interface:
+        :return:
+        """
+        return [i for i in self.interfaces if i.id != interface.id]
+
+    def other_ptp(self, interface):
+        """
+        Return other interface of ptp link
+        :param interface:
+        :return:
+        """
+        return self.other(interface)[0]
 
 
 class DiscoveryStatusInterface(Document):
