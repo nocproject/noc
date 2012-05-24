@@ -1151,6 +1151,26 @@ class ModelParameter(Parameter):
             self.raise_error("Not found: %d" % value)
 
 
+class DocumentParameter(Parameter):
+    """
+    Document reference parameter
+    """
+    def __init__(self, document, required=True):
+        super(DocumentParameter, self).__init__(required=required)
+        self.document = document
+
+    def clean(self, value):
+        if not value:
+            if self.required:
+                self.raise_error("Value required")
+            else:
+                return None
+        v = self.document.objects.filter(id=value).first()
+        if not v:
+            self.raise_error("Not found: %d" % value)
+        return v
+
+
 ## Stub for interface registry
 interface_registry = {}
 
