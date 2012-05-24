@@ -10,6 +10,8 @@
 from noc.lib.app import ExtApplication, view
 from noc.sa.models import ManagedObject
 from noc.inv.models import Interface, SubInterface, Q
+from noc.sa.interfaces import StringParameter, ListOfParameter,\
+    DocumentParameter
 
 
 class InterfaceAppplication(ExtApplication):
@@ -27,6 +29,30 @@ class InterfaceAppplication(ExtApplication):
         :param managed_object:
         :return:
         """
+        def get_link(i):
+            link = i.link
+            if not link:
+                return None
+            if link.is_ptp:
+                # ptp
+                o = link.other_ptp(i)
+                label = "%s:%s" % (o.managed_object.name, o.name)
+            elif link.is_lag:
+                # unresolved LAG
+                o = [ii for ii in link.other(i)
+                     if ii.managed_object.id != i.managed_object_id]
+                label = "LAG %s: %s" % (o[0].managed_object.name,
+                                        ", ".join(ii.name for ii in o))
+            else:
+                # Broadcast
+                label = ", ".join(
+                    "%s:%s" % (ii.managed_object.name, ii.name)
+                               for ii in link.other(i))
+            return {
+                "id": str(link.id),
+                "label": label
+            }
+
         # Get object
         o = self.get_object_or_404(ManagedObject, id=int(managed_object))
         if not o.has_access(request.user):
@@ -35,12 +61,14 @@ class InterfaceAppplication(ExtApplication):
         # @todo: proper ordering
         l1 = [
             {
+                "id": str(i.id),
                 "name": i.name,
                 "description": i.description,
                 "mac": i.mac,
                 "ifindex": i.ifindex,
                 "lag": (i.aggregated_interface.name
-                        if i.aggregated_interface else "")
+                        if i.aggregated_interface else ""),
+                "link": get_link(i)
             } for i in
               Interface.objects.filter(managed_object=o.id,
                                        type="physical").order_by("name")
@@ -87,3 +115,50 @@ class InterfaceAppplication(ExtApplication):
             "l2": l2,
             "l3": l3
         }
+
+    @view(url="^link/$", method=["POST"],
+        validate={
+            "type": StringParameter(choices=["ptp"]),
+            "interfaces": ListOfParameter(element=DocumentParameter(Interface))
+        },
+        access="link", api=True)
+    def api_link(self, request, type, interfaces):
+        if type == "ptp":
+            if len(interfaces) == 2:
+                interfaces[0].link_ptp(interfaces[1])
+                return {
+                    "status": True
+                }
+            else:
+                raise ValueError, "Invalid interfaces length"
+        return {
+            "status": False
+        }
+
+    @view(url="^unlink/(?P<iface_id>[0-9a-f]{24})/$", method=["POST"],
+        access="link", api=True)
+    def api_unlink(self, request, iface_id):
+        i = Interface.objects.filter(id=iface_id).first()
+        if not i:
+            return self.response_not_found()
+        try:
+            i.unlink()
+            return {
+                "status": True,
+                "msg": "Unlinked"
+            }
+        except ValueError, why:
+            return {
+                "status": False,
+                "msg": str(why)
+            }
+
+    @view(url="^unlinked/(?P<object_id>\d+)/$", method=["GET"],
+        access="link", api=True)
+    def api_unlinked(self, request, object_id):
+        o = self.get_object_or_404(ManagedObject, id=int(object_id))
+        r = [{"id": str(i.id), "label": i.name}
+            for i in Interface.objects.filter(managed_object=o.id,
+                                        type="physical").order_by("name")
+            if not i.link]
+        return r
