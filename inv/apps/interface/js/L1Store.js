@@ -11,6 +11,10 @@ Ext.define("NOC.inv.interface.L1Store", {
     model: null,
     fields: [
         {
+            name: "id",
+            type: "auto"
+        },
+        {
             name: "name",
             type: "string"
         },
@@ -29,6 +33,10 @@ Ext.define("NOC.inv.interface.L1Store", {
         {
             name: "lag",
             type: "string"
+        },
+        {
+            name: "link",
+            type: "auto"
         }
     ],
     data: []
