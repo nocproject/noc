@@ -50,7 +50,8 @@ Ext.define("NOC.vc.vc.Application", {
             text: "Int.",
             dataIndex: "interfaces_count",
             width: 50,
-            sortable: false
+            sortable: false,
+            align: "right"
         },
         {
             text: "Prefixes",
