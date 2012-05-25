@@ -13,6 +13,8 @@ from django import forms
 from django.contrib import admin
 from django.http import HttpResponse
 from django.db import transaction
+## Django modules
+from django.db import models
 ## NOC modules
 from noc.lib.app import Application, view
 from noc.lib.csvutils import csv_export, csv_import, get_model_fields,\
@@ -21,6 +23,37 @@ from noc.lib.csvutils import csv_export, csv_import, get_model_fields,\
 
 class CSVApplication(Application):
     title = "CSV Export/Import"
+
+    class ModelForm(forms.Form):
+        model = forms.ChoiceField(
+            choices=[
+                (m._meta.db_table.replace("_", "."),
+                 m._meta.db_table.replace("_", "."))
+                for m in sorted(models.get_models(),
+                key=lambda x: x._meta.db_table)])
+        action = forms.CharField(widget=forms.HiddenInput)
+
+    @view(url="^$", url_name="index", menu="Setup | CSV Export/Import",
+        access="import")
+    def view_index(self, request):
+        if request.POST:
+            form = self.ModelForm(request.POST)
+            if form.is_valid():
+                if form.cleaned_data["action"] == "Export":
+                    app, m = form.cleaned_data["model"].split(".", 1)
+                    model = ContentType.objects.get(app_label=app,
+                                                    model=m).model_class()
+                    return self.render_plain_text(
+                        csv_export(model),
+                        mimetype="text/csv; encoding=utf-8"
+                    )
+                else:
+                    return self.response_redirect("main:csv:import",
+                        form.cleaned_data["model"])
+        else:
+            form = self.ModelForm()
+        return self.render(request,
+            "index.html", form=form)
 
     class ImportForm(forms.Form):
         """
@@ -63,7 +96,7 @@ class CSVApplication(Application):
         else:
             form = self.ImportForm(
                     {"referer": request.META.get("HTTP_REFERER", "/")})
-            # Prepare fields description
+        # Prepare fields description
         fields = []
         for name, required, rel, rname in get_model_fields(m):
             if rel:
