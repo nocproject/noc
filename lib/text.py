@@ -229,3 +229,38 @@ def indent(text, n=4):
         return ""
     i = " " * n
     return i + text.replace("\n", "\n" + i)
+
+
+def split_alnum(s):
+    """
+    Split line to a sequence of iterating alpha and digit strings
+
+    :param s:
+    :type s: str
+    :return: list
+    :rtype: list
+
+    >>> split_alnum("Fa 0/1")
+    ['Fa ', 0, '/', 1]
+    >>> split_alnum("Fa 0/1.15")
+    ['Fa ', 0, '/', 1, '.', 15]
+    >>> split_alnum("ge-1/0/1")
+    ['ge-', 1, '/', 0, '/', 1]
+    >>> split_alnum("ge-1/0/1.15")
+    ['ge-', 1, '/', 0, '/', 1, '.', 15]
+    """
+    def convert(x):
+        try:
+            return int(x)
+        except ValueError:
+            return x
+    r = []
+    digit = None
+    for c in s:
+        d = c.isdigit()
+        if d != digit:
+            digit = d
+            r += [c]
+        else:
+            r[-1] += c
+    return [convert(x) for x in r]
