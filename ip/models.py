@@ -181,6 +181,8 @@ class Prefix(models.Model):
                                            },
                                            on_delete=models.SET_NULL)
 
+    csv_ignored_fields = ["parent"]
+
     def __unicode__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.prefix)
 
@@ -579,7 +581,7 @@ class Address(models.Model):
     class Meta:
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
-        unique_together = [("prefix", "vrf", "afi", "address")]
+        unique_together = [("vrf", "afi", "address")]
 
     prefix = models.ForeignKey(Prefix, verbose_name=_("Prefix"))
     vrf = models.ForeignKey(VRF, verbose_name=_("VRF"))
@@ -617,6 +619,8 @@ class Address(models.Model):
                                                "afi": "6"
                                            },
                                            on_delete=models.SET_NULL)
+
+    csv_ignored_fields = ["prefix"]
 
     def __unicode__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.address)
