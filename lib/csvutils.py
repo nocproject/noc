@@ -19,11 +19,35 @@ IR_SKIP = 1  # Skip conflicted records
 IR_UPDATE = 2  # Overwrite conflicted records
 
 
+def update_if_changed(obj, values):
+    """
+    Update fields if changed.
+    :param obj: Document instance
+    :type obj: Document
+    :param values: New values
+    :type values: dict
+    :returns: List of changed (key, value)
+    :rtype: list
+    """
+    changes = []
+    for k, v in values.items():
+        vv = getattr(obj, k)
+        if v != vv:
+            if type(v) != int or not hasattr(vv, "id") or v != vv.id:
+                setattr(obj, k, v)
+                changes += [(k, v)]
+    if changes:
+        obj.save()
+    return changes
+
+
 def get_model_fields(model):
     # Detect fields
     fields = []
+    ignored = set(getattr(model, "csv_ignored_fields", []))
+    ignored.add("id")
     for f in model._meta.fields:
-        if f.name == "id":
+        if f.name in ignored:
             continue
         required = not f.null and f.default == models.fields.NOT_PROVIDED
         # Process references
@@ -73,10 +97,6 @@ def csv_export(model, queryset=None, first_row_only=False):
         # Return result
     return io.getvalue()
 
-IGNORED_REQUIRED = {
-    "ip_address": set(["prefix"]),
-    }
-
 
 def csv_import(model, f, resolution=IR_FAIL):
     """
@@ -100,7 +120,8 @@ def csv_import(model, f, resolution=IR_FAIL):
     integers = set([f.name for f in model._meta.fields if
                     isinstance(f, models.IntegerField)])
     # Search for foreign keys and required fields
-    ir = IGNORED_REQUIRED.get(model._meta.db_table, set())
+    ir = set(getattr(model, "csv_ignored_fields", []))
+    ir.add("id")
     for name, required, rel, rname in get_model_fields(model):
         field_names.add(name)
         if rel:
@@ -131,6 +152,8 @@ def csv_import(model, f, resolution=IR_FAIL):
             return None, "Invalid row size. line %d" % count
         vars = dict(zip(header, row))
         for h, v in vars.items():
+            if v in ("None", ""):
+                v = None
             # Check required field is not none
             if not v and h in required_fields:
                 return None, "Required field '%s' is empty at line %d" % (
@@ -167,6 +190,8 @@ def csv_import(model, f, resolution=IR_FAIL):
         # Find object
         o = None
         for f in u_fields:
+            if f not in vars:
+                continue
             # Find by unique fields
             try:
                 o = model.objects.get(**{f: vars[f]})
@@ -177,7 +202,9 @@ def csv_import(model, f, resolution=IR_FAIL):
             # Find by composite unique keys
             for fs in ut_fields:
                 try:
-                    o = model.objects.get(**dict([(f, vars[f]) for f in fs]))
+                    o = model.objects.get(
+                        **dict([(f, vars[f]) for f in fs if f in vars])
+                    )
                     break
                 except model.DoesNotExist:
                     pass
@@ -190,6 +217,11 @@ def csv_import(model, f, resolution=IR_FAIL):
             elif resolution == IR_SKIP:
                 # Skip line
                 count -= 1
+                continue
+            elif resolution == IR_UPDATE:
+                c = update_if_changed(o, vars)
+                if not c:
+                    count -= 1
                 continue
         else:
             # Create object

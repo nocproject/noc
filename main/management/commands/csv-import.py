@@ -16,6 +16,7 @@ from django.db import transaction
 from django.contrib.contenttypes.models import ContentType
 ## NOC modules
 from noc.lib.csvutils import csv_import, IR_FAIL, IR_SKIP, IR_UPDATE
+from noc.lib.debug import error_report
 
 
 class Command(BaseCommand):
@@ -39,6 +40,14 @@ class Command(BaseCommand):
         sys.exit(1)
 
     def handle(self, *args, **options):
+        try:
+            self._handle(*args, **options)
+        except CommandError, why:
+            raise CommandError(why)
+        except:
+            error_report()
+
+    def _handle(self, *args, **options):
         if len(args) < 1:
             self._usage()
         r = args[0].split(".")
@@ -66,10 +75,8 @@ class Command(BaseCommand):
             with open(f) as f:
                 count, error = csv_import(m, f, resolution=resolve)
                 if count is None:
-                    print "... Error: %s" % error
-                    sys.exit(1)
+                    raise CommandError(error)
                 else:
                     print "... %d rows imported/updated" % count
         transaction.commit()
         transaction.leave_transaction_management()
-        sys.exit(0)
