@@ -12,6 +12,7 @@ from noc.sa.models import ManagedObject
 from noc.inv.models import Interface, SubInterface, Q
 from noc.sa.interfaces import StringParameter, ListOfParameter,\
     DocumentParameter
+from noc.lib.text import split_alnum
 
 
 class InterfaceAppplication(ExtApplication):
@@ -37,6 +38,9 @@ class InterfaceAppplication(ExtApplication):
         :param managed_object:
         :return:
         """
+        def sorted_iname(s):
+            return sorted(s, key=lambda x: split_alnum(x["name"]))
+
         def get_link(i):
             link = i.link
             if not link:
@@ -79,7 +83,7 @@ class InterfaceAppplication(ExtApplication):
                 "link": get_link(i)
             } for i in
               Interface.objects.filter(managed_object=o.id,
-                                       type="physical").order_by("name")
+                                       type="physical")
         ]
         # LAG
         lag = [
@@ -90,7 +94,7 @@ class InterfaceAppplication(ExtApplication):
                     managed_object=o.id, aggregated_interface=i.id)]
             } for i in
               Interface.objects.filter(managed_object=o.id,
-                                       type="aggregated").order_by("name")
+                                       type="aggregated")
         ]
         # L2 interfaces
         l2 = [
@@ -115,13 +119,13 @@ class InterfaceAppplication(ExtApplication):
                 "vrf": i.forwarding_instance.name if i.forwarding_instance else ""
             } for i in
               SubInterface.objects.filter(managed_object=o.id)\
-                .filter(q).order_by("name")
+                .filter(q)
         ]
         return {
-            "l1": l1,
-            "lag": lag,
-            "l2": l2,
-            "l3": l3
+            "l1": sorted_iname(l1),
+            "lag": sorted_iname(lag),
+            "l2": sorted_iname(l2),
+            "l3": sorted_iname(l3)
         }
 
     @view(url="^link/$", method=["POST"],
@@ -169,4 +173,4 @@ class InterfaceAppplication(ExtApplication):
             for i in Interface.objects.filter(managed_object=o.id,
                                         type="physical").order_by("name")
             if not i.link]
-        return r
+        return sorted(r, key=lambda x: split_alnum(x["label"]))

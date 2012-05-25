@@ -32,7 +32,7 @@ Ext.define("NOC.inv.interface.L2Panel", {
                             items: [
                                 {
                                     tooltip: "Show MACs",
-                                    iconCls: "icon_tick",
+                                    iconCls: "icon_script_go",
                                     scope: me,
                                     handler: me.showMAC,
                                     disabled: !me.app.hasPermission("get_mac")
