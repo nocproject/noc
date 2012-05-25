@@ -671,12 +671,12 @@ class DiscoveryDaemon(Daemon):
                             description="%s:%s" % (o, si["name"])
                         ).save()
             else:
-                if a.managed_object != o:
-                    # Rebind
-                    self.o_info(o, "Bind to %s: %s" % (vrf, p.address))
-                    a.managed_object = o
-                    a.description = "%s:%s" % (o, si["name"])
-                    a.save()
+                changes = {"managed_object": o}
+                if si.get("mac"):
+                    changes["mac"] = si.get("mac")
+                if not a.description:
+                    changes["description"] = "%s:%s" % (o, si["name"])
+                self.update_if_changed(a, changes)
         # Dual-stacking detection
         if addresses and len(ipv4_addresses) == len(ipv6_addresses):
             for ipv4, ipv6 in zip(ipv4_addresses, ipv6_addresses):
