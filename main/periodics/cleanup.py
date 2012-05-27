@@ -80,9 +80,18 @@ class Task(noc.lib.periodic.Task):
                 cat.delete()
         self.info("Empty categories are cleaned")
 
+    def cleanup_failed_script_log(self):
+        from noc.sa.models import FailedScriptLog
+
+        d = datetime.datetime.now() - datetime.timedelta(days=7)
+        self.info("Cleaning failed scripts log")
+        FailedScriptLog.objects.filter(timestamp__lte=d).delete()
+        self.info("Failed scripts logs are cleaned")
+
     def execute(self):
         self.cleanup_expired_sessions()
         self.cleanup_hanging_tags()
         self.cleanup_mrt()
         self.cleanup_empty_categories()
+        self.cleanup_failed_script_log()
         return True

@@ -25,7 +25,8 @@ from django.db import reset_queries
 from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
 from noc.sa.models import Activator, ManagedObject, MapTask, script_registry,\
-                          profile_registry, ActivatorCapabilitiesCache
+                          profile_registry, ActivatorCapabilitiesCache,\
+                          FailedScriptLog
 from noc.fm.models import NewEvent
 from noc.sa.rpc import RPCSocket, file_hash
 from noc.sa.protocols.sae_pb2 import *
@@ -408,6 +409,15 @@ class SAE(Daemon):
             for k in kwargs:
                 r += [u"%s=%s" % (k, kwargs[k])]
         logging.log(level, u" ".join(r))
+        if status == "failed":
+            FailedScriptLog(
+                timestamp=datetime.datetime.now(),
+                managed_object=task.managed_object.name,
+                address=task.managed_object.address,
+                script=task.map_script,
+                error_code=kwargs["code"],
+                error_text=kwargs["error"]
+            ).save()
         # Log into mrt log
         # timestamp, map task id, object id, object name, object addres,
         # object profile, script, status
