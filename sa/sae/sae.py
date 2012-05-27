@@ -415,7 +415,7 @@ class SAE(Daemon):
                 managed_object=task.managed_object.name,
                 address=task.managed_object.address,
                 script=task.map_script,
-                error_code=kwargs["code"],
+                error_code=kwargs["code"] if "code" in kwargs else None,
                 error_text=kwargs["error"]
             ).save()
         # Log into mrt log
@@ -510,8 +510,8 @@ class SAE(Daemon):
                 mt.status = "F"
                 mt.script_result = dict(code=ERR_TIMEOUT, text="Timed out")
                 mt.save()
-                self.log_mrt(logging.INFO, task=mt,
-                             status="failed", msg="timed out")
+                self.log_mrt(logging.INFO, task=mt, status="failed",
+                    code=ERR_TIMEOUT, error="timed out")
                 continue
             # Check for global rate limit
             if self.max_mrt_rate_per_sae:
