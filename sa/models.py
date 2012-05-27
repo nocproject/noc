@@ -1206,6 +1206,23 @@ class MRTConfig(nosql.Document):
         return self.name
 
 
+class FailedScriptLog(nosql.Document):
+    meta = {
+        "collection": "noc.log.sa.failed_scripts",
+        "allow_inheritance": False
+    }
+
+    timestamp = nosql.DateTimeField()
+    managed_object = nosql.StringField()
+    address = nosql.StringField()
+    script = nosql.StringField()
+    error_code = nosql.IntField()
+    error_text = nosql.StringField()
+
+    def __unicode__(self):
+        return str(self.id)
+
+
 ##
 ## Reduce Scripts
 ##
