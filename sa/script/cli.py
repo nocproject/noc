@@ -244,11 +244,16 @@ class CLI(StreamFSM):
         Entering SUPER PASSWORD state
         :return:
         """
-        self.set_patterns([
+        p = []
+        if self.profile.pattern_unpriveleged_prompt:
+            p += [(self.profile.pattern_unpriveleged_prompt,
+                   "UNPRIVELEGED_PROMPT")]
+        p += [
             (self.profile.pattern_prompt, "PROMPT"),
             (self.profile.pattern_password, "PASSWORD"),
             (self.pager_patterns, "PAGER")
-        ])
+        ]
+        self.set_patterns(p)
         sp = self.access_profile.super_password
         if not sp:
             sp = ""
