@@ -111,6 +111,9 @@ class Script(NOCScript):
                     "admin_status": admin_status,
                     "oper_status": oper_status,
                     }
+                # Description
+                if iface.get("description"):
+                    sub["description"] = iface["description"]
                 # IPv4 addresses
                 match = self.rx_int_ipv4.search(s)
                 if match:
