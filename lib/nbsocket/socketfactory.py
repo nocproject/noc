@@ -428,6 +428,6 @@ class SocketFactory(object):
                     error_report()
                     logging.info("Restoring from tick() failure")
                 last_tick = t
-            if t - last_stale > 3:
+            if t - last_stale >= 1:
                 self.close_stale()
                 last_stale = t

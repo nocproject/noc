@@ -157,10 +157,13 @@ class StreamFSM(FSM):
 
     def __init__(self, async_throttle=None):
         self.patterns = []
+        self._in_buffer = []
         self.in_buffer = ""
         self.async_throttle = async_throttle  # Limit to throttle synchronous check
         self.feed_count = 0  # Number of bytes fed from last state transition
         self.cleanup = None
+        self.ac = False
+        self.last_feed = None
         super(StreamFSM, self).__init__()
 
     def debug(self, msg):
@@ -178,10 +181,14 @@ class StreamFSM(FSM):
                                                                       patterns]
 
     def in_async_check(self):
-        return (self.async_throttle is not None and
-                self.feed_count >= self.async_throttle)
+        return self.ac
 
     def check_fsm(self):
+        if (self.ac and self.last_feed and
+            time.time() - self.last_feed < 1):
+            return
+        self.in_buffer += "".join(self._in_buffer)
+        self._in_buffer = []
         if self.cleanup:
             self.in_buffer = self.cleanup(self.in_buffer)
         while self.in_buffer and self.patterns:
@@ -194,7 +201,7 @@ class StreamFSM(FSM):
                 match = rx.search(self.in_buffer, offset)
                 if match:
                     matched = True
-                    self.feed_count = 0  # Reset counter on event
+                    self.reset_async_check()
                     self.debug("match '%s'" % rx.pattern)
                     self.call_state_handler(self._current_state, "match",
                                             self.in_buffer[:match.start(0)],
@@ -207,16 +214,15 @@ class StreamFSM(FSM):
                 break
 
     def feed(self, data, cleanup=None):
-        self.in_buffer += data
-        self.feed_count += len(data)
+        self._in_buffer += [data]
         self.cleanup = cleanup
-        if not self.in_async_check():
+        self.last_feed = time.time()
+        if not self.ac:
             self.check_fsm()
 
     def async_check_fsm(self):
-        if self.in_async_check():
-            self.debug("Asynchronous check")
-            self.check_fsm()
+        self.ac = True
+        self.check_fsm()
 
     def reset_async_check(self):
-        self.feed_count = 0
+        self.ac = False
