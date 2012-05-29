@@ -74,7 +74,6 @@ class RunSnippetApplication(Application):
         :param data:
         :return:
         """
-        fc = NOCForm
         fields = []
         for v in vars:
             type = vars[v]["type"]
@@ -93,6 +92,8 @@ class RunSnippetApplication(Application):
                     ff.clean = new.instancemethod(c, ff, ff.__class__)
             fields += [(v, ff)]
         # Apply data
+        class fc(NOCForm):
+            pass
         fc.base_fields.update(SortedDict(fields))
         return fc(data)
 
