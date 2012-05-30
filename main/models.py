@@ -40,6 +40,7 @@ from noc.lib.app.site import site
 from noc.lib.ip import IP
 from noc.lib.validators import check_extension, check_mimetype
 from noc.lib import nosql
+from noc.lib.validators import is_int
 ## Register periodics
 periodic_registry.register_all()
 ##
@@ -405,7 +406,7 @@ class CustomField(models.Model):
         return ContentType.objects.get(app_label=a, model=m).model_class()
 
     @classmethod
-    def table_fields(self, table):
+    def table_fields(cls, table):
         return CustomField.objects.filter(is_active=True, table=table)
 
     @classmethod
@@ -515,6 +516,22 @@ class CustomField(models.Model):
             "table":self.table
         })
         return [(x, x) for x, in c.fetchall()]
+
+    @classmethod
+    def table_search_Q(cls, table, query):
+        q = []
+        for f in CustomField.objects.filter(is_active=True,
+            table=table, is_searchable=True):
+            if f.type == "str":
+                q += [{"%s__icontains" % f.name: query}]
+            elif f.type == "int":
+                if is_int(query):
+                    q += [{f.name: int(query)}]
+        if q:
+            return reduce(lambda x, y: x | models.Q(**y), q,
+                models.Q(**q[0]))
+        else:
+            return None
 
 
 class Permission(models.Model):
