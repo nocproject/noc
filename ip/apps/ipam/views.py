@@ -25,6 +25,7 @@ from noc.ip.models import *
 from noc.main.models import Permission, Style, CustomField
 from noc.vc.models import VC, VCBindFilter
 from noc.sa.models import ReduceTask
+from noc.lib.db import SQL
 
 
 class IPAMAppplication(Application):
@@ -465,16 +466,19 @@ class IPAMAppplication(Application):
                     # Check prefix not exists
                     if vrf.vrf_group.address_constraint == "V":
                         # Addresses are unique per VRF
-                        vrfs = [vrf]
+                        p = Prefix.objects.filter(vrf=vrf, afi=afi,
+                            prefix=prefix)
                     else:
                         # Addresses are unique per VRF Group
-                        vrfs = vrf.vrf_group.vrf_set.all()
-                    p = Prefix.objects.filter(
-                        vrf__in=vrfs,
-                        afi=afi,
-                        prefix=prefix)
+                        p = Prefix.objects.filter(
+                            vrf__in=vrf.vrf_group.vrf_set.all(),
+                            afi=afi,
+                            parent__isnull=False
+                        ).filter(
+                            SQL("prefix >>= '%s'" % prefix) |
+                            SQL("prefix <<= '%s'" % prefix))
                     if p:
-                        raise ValidationError(_("Prefix is already exists in vrf %s") % p[0].vrf)
+                        raise ValidationError(_("Prefix %s is already exists in vrf %s") % (p[0].prefix, p[0].vrf))
                     return prefix
 
                 def clean_dual_stack_prefix(self):
