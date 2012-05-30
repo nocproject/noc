@@ -29,6 +29,9 @@ class VRFApplication(ExtModelApplication):
         }
     }
 
+    def field_row_class(self, o):
+        return o.style.css_class_name if o.style else ""
+
     @view(url="^bulk/import/$", method=["POST"], access="import", api=True,
           validate={
               "items": ListOfParameter(element=DictParameter(attrs={

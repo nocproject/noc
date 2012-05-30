@@ -17,6 +17,7 @@ Ext.define("NOC.ip.vrf.Application", {
     ],
     model: "NOC.ip.vrf.Model",
     search: true,
+    rowClassField: "row_class",
     columns: [
         {
             text: "Name",

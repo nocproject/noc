@@ -75,6 +75,11 @@ Ext.define("NOC.ip.vrf.Model", {
         {
             name: "allocated_till",
             type: "date"
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });
