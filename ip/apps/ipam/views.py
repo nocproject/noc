@@ -463,9 +463,18 @@ class IPAMAppplication(Application):
                                                         prefix):
                         raise ValidationError(_("Permission denied"))
                     # Check prefix not exists
-                    if Prefix.objects.filter(vrf=vrf, afi=afi,
-                                             prefix=prefix).exists():
-                        raise ValidationError(_("Prefix is already exists"))
+                    if vrf.vrf_group.address_constraint == "V":
+                        # Addresses are unique per VRF
+                        vrfs = [vrf]
+                    else:
+                        # Addresses are unique per VRF Group
+                        vrfs = vrf.vrf_group.vrf_set.all()
+                    p = Prefix.objects.filter(
+                        vrf__in=vrfs,
+                        afi=afi,
+                        prefix=prefix)
+                    if p:
+                        raise ValidationError(_("Prefix is already exists in vrf %s") % p[0].vrf)
                     return prefix
 
                 def clean_dual_stack_prefix(self):
