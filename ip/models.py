@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.template import Template, Context
 # NOC Modules
-from noc.main.models import Style, ResourceState
+from noc.main.models import Style, ResourceState, CustomField
 from noc.peer.models import AS
 from noc.vc.models import VC
 from noc.sa.models import ManagedObject
@@ -131,6 +131,9 @@ class VRF(models.Model):
         q = Q(name__icontains=query)
         if is_rd(query):
             q |= Q(rd=query)
+        cq = CustomField.table_search_Q(cls._meta.db_table, query)
+        if cq:
+            q |= cq
         for o in cls.objects.filter(q):
             relevancy = 1.0
             yield SearchResult(
@@ -294,7 +297,6 @@ class Prefix(models.Model):
         """
         if self.is_root:
             raise ValidationError("Cannot delete root prefix")
-        parent = self.parent
         # Reconnect children prefixes
         self.children_set.update(parent=self.parent)
         # Reconnect children addresses
@@ -465,6 +467,9 @@ class Prefix(models.Model):
             q |= Q(afi="4", prefix=query)
         elif is_ipv6_prefix(query):
             q |= Q(afi="6", prefix=query)
+        cq = CustomField.table_search_Q(cls._meta.db_table, query)
+        if cq:
+            q |= cq
         for o in cls.objects.filter(q):
             if query == o.prefix:
                 relevancy = 1.0
@@ -713,6 +718,9 @@ class Address(models.Model):
                 q |= Q(mac=mac)
             except InterfaceTypeError:
                 pass  # Not a MAC address
+        cq = CustomField.table_search_Q(cls._meta.db_table, query)
+        if cq:
+            q |= cq
         for o in cls.objects.filter(q):
             if query == o.address:
                 relevancy = 1.0
