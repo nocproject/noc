@@ -27,7 +27,7 @@ class Profile(NOCProfile):
     convert_mac = NOCProfile.convert_mac_to_cisco
 
     rx_interface_name = re.compile(
-        r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(/\d+)*(?:\.\d+)?(?:(?:/RSP\d+)?/CPU\d+(?:/\d+)*)?)$",
+        r"^(?P<type>[a-z\-]+)\s*(?P<number>\d+(/\d+)*(?:\.\d+)?(?:(?:/RS?P\d+)?/CPU\d+(?:/\d+)*)?)$",
         re.IGNORECASE)
 
     def convert_interface_name(self, s):
