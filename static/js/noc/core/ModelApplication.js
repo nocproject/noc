@@ -61,7 +61,7 @@ Ext.define("NOC.core.ModelApplication", {
                 tooltip: "Add new record",
                 hasAccess: NOC.hasPermission("create"),
                 scope: me,
-                handler: function() {me.onNewRecord();}
+                handler: me.onNewRecord
             }
         ].concat(me.gridToolbar);
         // Initialize panels
@@ -127,7 +127,7 @@ Ext.define("NOC.core.ModelApplication", {
                         scope: me,
                         handler: function(grid, rowIndex, colIndex) {
                             var me = this,
-                                record = grid.getStore().getAt(rowIndex);
+                                record = me.store.getAt(rowIndex);
                             me.onEditRecord(record);
                         }
                     }]
@@ -182,9 +182,7 @@ Ext.define("NOC.core.ModelApplication", {
                 scope: me,
                 handler: me.onClose
             },
-            {
-                xtype: "tbseparator"
-            },
+            "-",
             {
                itemId: "reset",
                text: "Reset",
@@ -202,9 +200,15 @@ Ext.define("NOC.core.ModelApplication", {
                scope: me,
                handler: me.onDelete
             },
+            "-",
             {
-                xtype: "tbseparator",
-                itemId: "custom_sep"
+                itemId: "clone",
+                text: "Clone",
+                iconCls: "icon_page_copy",
+                disabled: true,
+                hasAccess: NOC.hasPermission("create"),
+                scope: me,
+                handler: me.onClone
             }
         ].concat(me.formToolbar);
 
@@ -265,6 +269,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.closeButton = ft.getComponent("close");
         me.resetButton = ft.getComponent("reset");
         me.deleteButton = ft.getComponent("delete");
+        me.cloneButton = ft.getComponent("clone");
         me.formTitle = form.getComponent("form_title");
         if(me.filters) {
             me.filterPanel = me.grid.getComponent("filters");
@@ -295,16 +300,17 @@ Ext.define("NOC.core.ModelApplication", {
     // Save changed data
     saveRecord: function(data) {
         var me = this,
-            mv = Ext.create(this.model, data).validate(),
+            mv = Ext.create(me.model, data).validate(),
             record;
         if(!mv.isValid()) {
             // @todo: Error report
             return;
         }
-        if (data.id) { // @todo: phantom?
+        if (me.currentRecord) {
             // Change
-            record = me.grid.getSelectionModel().getLastSelected();
+            record = me.currentRecord;
             record.set(data);
+
         } else {
             // Create
             record = me.store.add([data])[0];
@@ -334,6 +340,12 @@ Ext.define("NOC.core.ModelApplication", {
             return;
         me.editRecord(record);
     },
+    // Set focus to first non-hidden field
+    // @todo: check for hidden attribute
+    focusOnFirstField: function() {
+        var me = this;
+        me.form.getFields().items[1].focus(false, 100);
+    },
     // New record. Hide grid and open form
     onNewRecord: function(defaults) {
         var me = this;
@@ -344,11 +356,13 @@ Ext.define("NOC.core.ModelApplication", {
         me.currentRecord = null;
         me.setFormTitle(me.createTitle);
         me.toggle();
-        me.form.getFields().first().focus(false, 100);
+        // Focus on first field
+        me.focusOnFirstField();
         // Activate delete button
         me.deleteButton.setDisabled(true);
         me.saveButton.setDisabled(!me.hasPermission("create"));
         me.resetButton.setDisabled(!me.hasPermission("create"));
+        me.cloneButton.setDisabled(true);
         // Disable custom form toolbar
         me.activateCustomFormToolbar(false);
     },
@@ -362,11 +376,12 @@ Ext.define("NOC.core.ModelApplication", {
         // Load records
         me.form.loadRecord(record);
         // Focus on first field
-        me.form.getFields().first().focus(false, 100);
+        me.focusOnFirstField();
         // Activate delete button
         me.deleteButton.setDisabled(!me.hasPermission("delete"));
         me.saveButton.setDisabled(!me.hasPermission("update"));
         me.resetButton.setDisabled(!me.hasPermission("update"));
+        me.cloneButton.setDisabled(!me.hasPermission("create"));
         // Enable custom form toolbar
         me.activateCustomFormToolbar(true);
     },
@@ -410,9 +425,13 @@ Ext.define("NOC.core.ModelApplication", {
     // Save button pressed
     onSave: function() {
         var me = this;
-        if(!me.form.isValid())
+        if(!me.form.isValid()) {
+            NOC.error("Error in data");
             return;
-        var v = this.form.getFieldValues();
+        }
+        var v = me.form.getFieldValues();
+        if(!me.currentRecord && v.id)
+            v.id = null;
         // Fetch comboboxes labels
         me.form.getFields().each(function(field) {
             if(Ext.isDefined(field.getLookupData))
@@ -422,7 +441,8 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Reset button pressed
     onReset: function() {
-        this.form.reset();
+        var me = this;
+        me.form.reset();
     },
     // Delete button pressed
     onDelete: function() {
@@ -497,6 +517,13 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this;
         me.toggle();
         me.reloadStore();
+    },
+    // "clone" button pressed
+    onClone: function() {
+        var me = this;
+        me.currentRecord = null;  // Mark record as new
+        me.setFormTitle(me.createTitle);
+        me.cloneButton.setDisabled(true);
     },
     // Return Grid's row classes
     getRowClass: function(record, index, params, store) {
