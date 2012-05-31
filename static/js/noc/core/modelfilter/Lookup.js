@@ -21,14 +21,10 @@ Ext.define("NOC.core.modelfilter.Lookup", {
                     "id__referred": me.referrer + "__" + me.name
                 },
                 listeners: {
-                    select: {
-                        scope: me,
-                        fn: me.onChange
-                    },
-                    clear: {
-                        scope: me,
-                        fn: me.onChange
-                    }
+                    scope: me,
+                    select: me.onChange,
+                    clear: me.onChange,
+                    blur: me.onChange
                 }
             });
 
