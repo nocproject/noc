@@ -431,22 +431,27 @@ class IPAMAppplication(Application):
                         is_active=True).order_by("name"),
                     help_text=_("Prefix state")
                 )
-                asn = forms.ModelChoiceField(label=_("ASN"),
-                                             queryset=AS.objects.order_by("asn"),
-                                             help_text=_("AS Number"))
-                description = forms.CharField(label=_("Description"),
-                                              widget=forms.Textarea,
-                                              required=False)
-                tags = forms.CharField(label=_("Tags"), widget=AutoCompleteTags,
-                                       required=False)
-                tt = forms.IntegerField(label=_("TT #"), required=False,
-                                        help_text=_("Ticket #"))
-                style = forms.ModelChoiceField(label=_("Style"),
-                                               queryset=Style.objects.filter(
-                                                   is_active=True).order_by(
-                                                   "name"),
-                                               required=False,
-                                               help_text=_("Visual appearance"))
+                asn = forms.ModelChoiceField(
+                    label=_("ASN"),
+                    queryset=AS.objects.order_by("asn"),
+                    help_text=_("AS Number"))
+                description = forms.CharField(
+                    label=_("Description"),
+                    widget=forms.Textarea,
+                    required=False)
+                tags = forms.CharField(
+                    label=_("Tags"),
+                    widget=AutoCompleteTags,
+                    required=False)
+                tt = forms.IntegerField(
+                    label=_("TT #"),
+                    required=False,
+                    help_text=_("Ticket #"))
+                style = forms.ModelChoiceField(
+                    label=_("Style"),
+                    queryset=Style.objects.filter(is_active=True).order_by("name"),
+                    required=False,
+                    help_text=_("Visual appearance"))
                 dual_stack_prefix = forms.CharField(
                     label=_("Dual-stack prefix"),
                     required=False,
@@ -465,14 +470,13 @@ class IPAMAppplication(Application):
                                                         prefix):
                         raise ValidationError(_("Permission denied"))
                     # Check prefix not exists
-                    if vrf.vrf_group.address_constraint == "V":
-                        # Addresses are unique per VRF
-                        p = Prefix.objects.filter(vrf=vrf, afi=afi,
-                            prefix=prefix)
-                    else:
-                        # Addresses are unique per VRF Group
+                    p = Prefix.objects.filter(
+                        vrf=vrf, afi=afi, prefix=prefix)
+                    if (not p and
+                        vrf.vrf_group.address_constraint == "G"):
+                        # Prefixes are unique per VRF Group
                         p = Prefix.objects.filter(
-                            vrf__in=vrf.vrf_group.vrf_set.all(),
+                            vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id),
                             afi=afi,
                             parent__isnull=False
                         ).filter(
