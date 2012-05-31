@@ -60,7 +60,7 @@
                 "value_re": "SAFEGUARD-ENGINE-MIB::swSafeGuardNotification$"
             },
             {
-                "key_re": "^SAFEGUARD-ENGINE-MIB::swSafeGuardCurrentStatus$",
+                "key_re": "^SAFEGUARD-ENGINE-MIB::swSafeGuardCurrentStatus(\\.0)?$",
                 "value_re": "exhausted$"
             }
         ]
@@ -85,7 +85,7 @@
                 "value_re": "SAFEGUARD-ENGINE-MIB::swSafeGuardNotification$"
             },
             {
-                "key_re": "^SAFEGUARD-ENGINE-MIB::swSafeGuardCurrentStatus$",
+                "key_re": "^SAFEGUARD-ENGINE-MIB::swSafeGuardCurrentStatus(\\.0)?$",
                 "value_re": "normal$"
             }
         ]
