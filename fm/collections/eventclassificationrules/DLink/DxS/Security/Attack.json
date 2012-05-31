@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^DOS-PREV-MIB::swDoSAttackDetected$"
+                "value_re": "^DOS-PREV-MIB::swDoS(?:AttackDetected|Notify)$"
             },
             {
                 "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
@@ -90,7 +90,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^DOS-PREV-MIB::swDoSAttackDetected$"
+                "value_re": "^DOS-PREV-MIB::swDoS(?:AttackDetected|Notify)$"
             },
             {
                 "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
@@ -144,7 +144,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^DOS-PREV-MIB::swDoSAttackDetected$"
+                "value_re": "^DOS-PREV-MIB::swDoS(?:AttackDetected|Notify)$"
             },
             {
                 "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
@@ -198,7 +198,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^DOS-PREV-MIB::swDoSAttackDetected$"
+                "value_re": "^DOS-PREV-MIB::swDoS(?:AttackDetected|Notify)$"
             },
             {
                 "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
@@ -252,7 +252,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^DOS-PREV-MIB::swDoSAttackDetected$"
+                "value_re": "^DOS-PREV-MIB::swDoS(?:AttackDetected|Notify)$"
             },
             {
                 "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
