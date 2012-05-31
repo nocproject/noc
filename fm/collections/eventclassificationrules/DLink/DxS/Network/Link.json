@@ -115,7 +115,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "DDM Port (?P<interface>\\S+) optic module (?P<sensor>.+) exceeded the (?P<threshold>low|high) warning threshold"
+                "value_re": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) exceeded the (?P<threshold>low|high) warning threshold"
             }
         ]
     },
@@ -136,7 +136,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "DDM Port (?P<interface>\\S+) optic module (?P<sensor>.+) recovered from the (?P<threshold>low|high) warning threshold"
+                "value_re": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) recovered from the (?P<threshold>low|high) warning threshold"
             }
         ]
     },
@@ -157,7 +157,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "DDM Port (?P<interface>\\S+) optic module (?P<sensor>.+) exceeded the (?P<threshold>low|high) alarm threshold"
+                "value_re": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) exceeded the (?P<threshold>low|high) alarm threshold"
             }
         ]
     },
@@ -178,7 +178,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "DDM Port (?P<interface>\\S+) optic module (?P<sensor>.+) recovered from the (?P<threshold>low|high) alarm threshold"
+                "value_re": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) recovered from the (?P<threshold>low|high) alarm threshold"
             }
         ]
     }
