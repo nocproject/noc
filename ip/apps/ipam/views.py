@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 # Python modules
+from __future__ import with_statement
 from operator import attrgetter, itemgetter
 # Django modules
 from django.utils.translation import ugettext_lazy as _
@@ -520,23 +521,30 @@ class IPAMAppplication(Application):
                            tags=form.cleaned_data["tags"],
                            tt=form.cleaned_data["tt"],
                            style=form.cleaned_data["style"])
-                self.apply_custom_fields(p, form.cleaned_data, "ip_prefix")
-                p.save()
-                self.message_user(request,
-                                  _("Prefix %(prefix)s was created") % {
-                                      "prefix": p.prefix})
-                # Process dual-stack linking
-                ds_prefix = form.cleaned_data["dual_stack_prefix"]
-                self.process_dual_stacking(p, ds_prefix)
-                # Redirect depending on submit button pressed
-                if "_continue" in request.POST:
-                    return self.response_redirect("ip:ipam:change_prefix",
-                                                  vrf.id, afi, p.prefix)
-                if "_addanother" in request.POST:
-                    return self.response_redirect("ip:ipam:add_prefix", vrf.id,
-                                                  afi, p.parent.prefix)
-                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
-                                              p.prefix)
+                self.apply_custom_fields(
+                    p, form.cleaned_data, "ip_prefix")
+                with self.form_errors(form):
+                    p.save()
+                if not form._errors:
+                    self.message_user(
+                        request,
+                        _("Prefix %(prefix)s has been created") % {
+                            "prefix": p.prefix})
+                    # Process dual-stack linking
+                    ds_prefix = form.cleaned_data["dual_stack_prefix"]
+                    self.process_dual_stacking(p, ds_prefix)
+                    # Redirect depending on submit button pressed
+                    if "_continue" in request.POST:
+                        return self.response_redirect(
+                            "ip:ipam:change_prefix",
+                            vrf.id, afi, p.prefix)
+                    if "_addanother" in request.POST:
+                        return self.response_redirect(
+                            "ip:ipam:add_prefix",
+                            vrf.id, afi, p.parent.prefix)
+                    return self.response_redirect(
+                        "ip:ipam:vrf_index",
+                        vrf.id, afi, p.prefix)
         else:
             initial = {
                 "asn": parent.asn.id,
@@ -656,16 +664,19 @@ class IPAMAppplication(Application):
                         k == "dual_stack_prefix"):
                         continue
                     setattr(prefix, k, v)
-                prefix.save()
-                self.message_user(
-                    request,
-                    _("Prefix %(prefix)s has been changed") % {
-                        "prefix": prefix})
-                # Process dual-stack linking
-                ds_prefix = form.cleaned_data["dual_stack_prefix"]
-                self.process_dual_stacking(prefix, ds_prefix)
-                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
-                                              prefix.prefix)
+                with self.form_errors(form):
+                    prefix.save()
+                if not form._errors:
+                    self.message_user(
+                        request,
+                        _("Prefix %(prefix)s has been changed") % {
+                            "prefix": prefix})
+                    # Process dual-stack linking
+                    ds_prefix = form.cleaned_data["dual_stack_prefix"]
+                    self.process_dual_stacking(prefix, ds_prefix)
+                    return self.response_redirect(
+                        "ip:ipam:vrf_index",
+                        vrf.id, afi, prefix.prefix)
         else:
             ds_prefix = None
             if afi == "4" and prefix.ipv6_transition:
@@ -860,22 +871,25 @@ class IPAMAppplication(Application):
                     style=form.cleaned_data["style"])
                 self.apply_custom_fields(
                     a, form.cleaned_data, "ip_address")
-                a.save()
-                self.message_user(
-                    request,
-                    _("Address %(address)s was created") % {
-                        "address": a.address})
-                # Redirect depending on submit button pressed
-                if "_continue" in request.POST:
+                with self.form_errors(form):
+                    a.save()
+                if not form._errors:
+                    self.message_user(
+                        request,
+                        _("Address %(address)s has been created") % {
+                            "address": a.address})
+                    # Redirect depending on submit button pressed
+                    if "_continue" in request.POST:
+                        return self.response_redirect(
+                            "ip:ipam:change_address", vrf.id, afi,
+                            form.cleaned_data["address"])
+                    if "_addanother" in request.POST:
+                        return self.response_redirect(
+                            "ip:ipam:add_address", vrf.id, afi,
+                            a.prefix.prefix)
                     return self.response_redirect(
-                        "ip:ipam:change_address", vrf.id, afi,
-                        form.cleaned_data["address"])
-                if "_addanother" in request.POST:
-                    return self.response_redirect(
-                        "ip:ipam:add_address", vrf.id, afi,
-                        a.prefix.prefix)
-                return self.response_redirect(
-                    "ip:ipam:vrf_index", vrf.id, afi, a.prefix.prefix)
+                        "ip:ipam:vrf_index",
+                        vrf.id, afi, a.prefix.prefix)
         else:
             initial = {
                 "state": ResourceState.get_default()
@@ -967,20 +981,24 @@ class IPAMAppplication(Application):
                 address.style = form.cleaned_data["style"]
                 self.apply_custom_fields(
                     address, form.cleaned_data, "ip_address")
-                address.save()
-                self.message_user(request, _("Address %(address)s changed") % {
-                    "address": address.address})
-                if "_continue" in request.POST:
+                with self.form_errors(form):
+                    address.save()
+                if not form._errors:
+                    self.message_user(
+                        request,
+                        _("Address %(address)s changed") % {
+                            "address": address.address})
+                    if "_continue" in request.POST:
+                        return self.response_redirect(
+                            "ip:ipam:change_address",
+                            vrf.id, afi, form.cleaned_data["address"])
+                    if "_addanother" in request.POST:
+                        return self.response_redirect(
+                            "ip:ipam:add_address",
+                            vrf.id, afi, prefix.prefix)
                     return self.response_redirect(
-                        "ip:ipam:change_address",
-                        vrf.id, afi, form.cleaned_data["address"])
-                if "_addanother" in request.POST:
-                    return self.response_redirect(
-                        "ip:ipam:add_address",
-                        vrf.id, afi, prefix.prefix)
-                return self.response_redirect(
-                    "ip:ipam:vrf_index",
-                    vrf.id, afi, address.prefix.prefix)
+                        "ip:ipam:vrf_index",
+                        vrf.id, afi, address.prefix.prefix)
         else:
             initial = {
                 "address": address.address,
