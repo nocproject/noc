@@ -49,21 +49,25 @@ Ext.define("NOC.core.LookupField", {
             }
             if(!me.store.data.length && value) {
                 // store not ready. load
-                // @todo: check for loop
-                me.store.on(
-                    "load",
-                    Ext.bind(me.setValue, me, arguments),
-                    me,
-                    {single: true}
-                );
+                var cb = Ext.bind(me.setValue, me, arguments);
                 me.store.load({
                     params: {
                         id: value
+                    },
+                    scope: me,
+                    callback: function(records, operation, success) {
+                        if(records) {
+                            cb();
+                        }
                     }
                 });
+                return me;
+            } else {
+                return me.callParent([value]);
             }
+        } else {
+            return me.callParent([value]);
         }
-        return me.callParent([value]);
     },
 
     getLookupData: function() {
