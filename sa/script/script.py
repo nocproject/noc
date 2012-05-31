@@ -687,7 +687,7 @@ class Script(threading.Thread):
         """
         # Can cancel only inside guarded_run
         if not self.is_cancelable:
-            self.error("Cannot cancel non-cancelable scipt")
+            self.error("Cannot cancel non-cancelable script")
             return
         if not self.isAlive():
             self.error("Trying to kill already dead thread")
@@ -697,7 +697,9 @@ class Script(threading.Thread):
             return
         # Raise CancelledError in script's thread
         self.e_cancel = True
-        r = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self._thread_id), ctypes.py_object(CancelledError))
+        r = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+            ctypes.c_long(self._thread_id),
+            ctypes.py_object(CancelledError))
         if r == 1:
             self.debug("Cancel event sent")
             # Remote exception raised.
@@ -708,7 +710,8 @@ class Script(threading.Thread):
         elif r > 1:
             # Failed to raise exception
             # Revert back thread state
-            ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.ident), None)
+            ctypes.pythonapi.PyThreadState_SetAsyncExc(
+                ctypes.c_long(self._thread_id), None)
             self.error("Failed to cancel script")
 
     def hang(self):
