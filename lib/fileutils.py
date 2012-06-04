@@ -151,3 +151,23 @@ def search_path(file):
         if os.path.exists(f):
             return f
     return None
+
+
+def tail(path, lines):
+    """
+    Return string containing last lines of file
+    :param lines:
+    :return:
+    """
+    with open(path) as f:
+        avg = 74
+        while True:
+            try:
+                f.seek(-avg * lines, 2)
+            except IOError:
+                f.seek(0)
+            pos = f.tell()
+            l = f.read().splitlines()
+            if len(l) >= lines or not pos:
+                return l[-lines:]
+            avg *= 1.61
