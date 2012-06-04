@@ -1209,7 +1209,8 @@ class MRTConfig(nosql.Document):
 class FailedScriptLog(nosql.Document):
     meta = {
         "collection": "noc.log.sa.failed_scripts",
-        "allow_inheritance": False
+        "allow_inheritance": False,
+        "indexes": ["timestamp"]
     }
 
     timestamp = nosql.DateTimeField()
