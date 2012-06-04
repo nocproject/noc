@@ -20,17 +20,24 @@ prefix_fields = [f for f in CustomField.table_fields("ip_prefix")
 
 CSS = """
 <style>
+TABLE {
+    border-spacing: 8px;
+}
+
 TABLE TR TD {
     border: none;
 }
 
 .block {
-    margin: 4px;
+    padding: 8px;
     background-color: #c0c0c0;
     color: #000000;
-    border-radius: 8px;
-    padding: 8px;
-    border: 1px solid #808080;
+    border-radius: 16px;
+    background-image: linear-gradient(bottom, rgb(128,128,128) 30%, rgb(192,192,192) 65%);
+    background-image: -o-linear-gradient(bottom, rgb(128,128,128) 30%, rgb(192,192,192) 65%);
+    background-image: -moz-linear-gradient(bottom, rgb(128,128,128) 30%, rgb(192,192,192) 65%);
+    background-image: -webkit-linear-gradient(bottom, rgb(128,128,128) 30%, rgb(192,192,192) 65%);
+    background-image: -ms-linear-gradient(bottom, rgb(128,128,128) 30%, rgb(192,192,192) 65%);
 }
 </style>
 """
@@ -240,7 +247,7 @@ class ReportOverviewApplication(ReportApplication):
                     nodes += [VRFNode(self, vrf)]
         # Render tree
         max_level = max(n.get_depth() for n in nodes)
-        r = [CSS, "<table border='0'>"]
+        r = [CSS, "<table>"]
         r += ["<tr>"]
         for n in nodes:
             n.update_report(r, 1, max_level)
