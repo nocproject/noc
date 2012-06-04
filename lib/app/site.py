@@ -170,7 +170,8 @@ class Site(object):
                         # Validate via NOC interfaces
                         if request.method == "GET":
                             g = dict((k, v[0] if len(v) == 1 else v)
-                                     for k, v in request.GET.lists())
+                                     for k, v in request.GET.lists()
+                                     if k != "_dc")
                         else:
                             ct = request.META.get("CONTENT_TYPE")
                             if ct and ("text/json" in ct or
