@@ -87,10 +87,22 @@ class Node(object):
 class VRFGroupNode(Node):
     def __init__(self, app, vrf_group):
         self.vrf_group = vrf_group
+        self.vrfs = list(vrf_group.vrf_set.all())
         super(VRFGroupNode, self).__init__(app)
 
+    def populate(self):
+        if self.vrfs:
+            vid = "{%s}" % ",".join([str(v.id) for v in self.vrfs ])
+            root = Prefix.objects.get(vrf=self.vrfs[0],
+                prefix="0.0.0.0/0")
+            c = GPrefixNode(self.app, root, vid)
+            self.children = c.children  # Relink
+
     def get_html(self):
-        return "<b>VRF Group: %s</b>" % self.vrf_group.name
+        r = ["<b>VRF Group: %s</b>" % self.vrf_group.name]
+        r += ["&nbsp;&nbsp;<b>%s</b> (RD: %s)" % (v.name, v.rd)
+              for v in self.vrfs]
+        return "<br>".join(r)
 
 
 class VRFNode(Node):
@@ -108,6 +120,7 @@ class VRFNode(Node):
 
 
 class PrefixNode(Node):
+    show_vrf = False
     def __init__(self, app, prefix):
         self.prefix = prefix
         if self.prefix.afi == "4":
@@ -118,6 +131,12 @@ class PrefixNode(Node):
         super(PrefixNode, self).__init__(app)
         self.update_usage()
 
+    def __unicode__(self):
+        return self.prefix
+
+    def __repr__(self):
+        return "<%s %s>" % (self.__class__.__name__, self.prefix)
+
     def populate(self):
         for p in self.prefix.children_set.order_by("prefix"):
             self.children += [PrefixNode(self.app, p)]
@@ -126,6 +145,8 @@ class PrefixNode(Node):
         r = ["<b><u>%s</u></b>" % self.prefix.prefix]
         if self.prefix.description:
             r += ["<br/>%s" % self.prefix.description]
+        if self.show_vrf:
+            r += ["<br/>VRF: %s" % self.prefix.vrf.name]
         if self.used is not None:
             r += ["<br/><b>%s</b>" % self.used]
         # Show custom fields
@@ -161,6 +182,33 @@ class PrefixNode(Node):
             else:
                 pu = int(float(u) * 100 / float(ps))
         self.used = "Usage: %s%%" % pu
+
+
+class GPrefixNode(PrefixNode):
+    show_vrf = True
+    def __init__(self, app, prefix, vrfs):
+        self.vrfs = vrfs
+        super(GPrefixNode, self).__init__(app, prefix)
+
+    def populate(self):
+        self.children = [
+            GPrefixNode(self.app, p, self.vrfs) for p in
+            Prefix.objects.raw("""
+                SELECT id FROM ip_prefix p
+                WHERE
+                        vrf_id = ANY (%s::integer[])
+                    AND prefix << %s
+                    AND NOT EXISTS (
+                        SELECT id
+                        FROM ip_prefix
+                        WHERE
+                            vrf_id = ANY (%s::integer[])
+                            AND prefix << %s
+                            AND prefix >> p.prefix
+                        )
+                ORDER BY p.prefix
+            """, [self.vrfs, self.prefix.prefix,
+                  self.vrfs, self.prefix.prefix])]
 
 
 class ReportOverviewApplication(ReportApplication):
