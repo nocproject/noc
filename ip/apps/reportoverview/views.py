@@ -42,7 +42,7 @@ TABLE TR TD {
 
 .bar_wrap {
     display: inline-block;
-    width: 100px;
+    width: 150px;
     border: 1px solid #1c1c1c;
     -webkit-box-shadow: 0 0 1px #666, inset 0 1px 1px #222;
     -moz-box-shadow: 0 0 1px #666, inset 0 1px 1px #222;
@@ -68,6 +68,12 @@ TABLE TR TD {
     background-image: -moz-linear-gradient(#66A3E2, #5387BA 50%, #4B79AF 51%, #385D87);
     background-image: -o-linear-gradient(#66A3E2, #5387BA 50%, #4B79AF 51%, #385D87);
     background-image: linear-gradient(#66A3E2, #5387BA 50%, #4B79AF 51%, #385D87);
+}
+
+.bar_text {
+    width: 100%;
+    color: #ffffff;
+    padding-left: 60px;
 }
 </style>
 """
@@ -121,7 +127,11 @@ class Node(object):
         return ""
 
     def get_bar(self, percent):
-        return "<div class='bar_wrap'><div class='bar' style='width:%d%%'></div></div>" % int(percent)
+        return ("<div class='bar_wrap'>"
+        "<div class='bar' style='width:%d%%'>"
+        "<div class='bar_text'>%d%%</div>"
+        "</div>"
+        "</div>") % (int(percent), int(percent))
 
 
 class VRFGroupNode(Node):
@@ -188,7 +198,7 @@ class PrefixNode(Node):
         if self.show_vrf:
             r += ["<br/>VRF: %s" % self.prefix.vrf.name]
         if self.used is not None:
-            r += ["<br/><b>Usage:</b> %s" % self.get_bar(self.used)]
+            r += ["<br/>%s" % self.get_bar(self.used)]
         # Show custom fields
         for f in prefix_fields:
             v = getattr(self.prefix, f.name)
