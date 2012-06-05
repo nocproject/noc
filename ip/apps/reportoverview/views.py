@@ -39,6 +39,36 @@ TABLE TR TD {
     background-image: -webkit-linear-gradient(bottom, rgb(128,128,128) 30%, rgb(192,192,192) 65%);
     background-image: -ms-linear-gradient(bottom, rgb(128,128,128) 30%, rgb(192,192,192) 65%);
 }
+
+.bar_wrap {
+    display: inline-block;
+    width: 100px;
+    border: 1px solid #1c1c1c;
+    -webkit-box-shadow: 0 0 1px #666, inset 0 1px 1px #222;
+    -moz-box-shadow: 0 0 1px #666, inset 0 1px 1px #222;
+    -o-box-shadow: 0 0 1px #666, inset 0 1px 1px #222;
+    box-shadow: 0 0 1px #666, inset 0 1px 1px #222;
+    background-image: -webkit-linear-gradient(#323232, #2E2E2E 50%, #323232);
+    background-image: -moz-linear-gradient(#323232, #2E2E2E 50%, #323232);
+    background-image: -o-linear-gradient(#323232, #2E2E2E 50%, #323232);
+    background-image: linear-gradient(#323232, #2E2E2E 50%, #323232);
+}
+
+.bar {
+    height: 15px;
+    max-width: 100%;
+    background-color: #5387ba;
+    border-right: 1px solid #282828;
+    -webkit-border-shadow: inset 0 0 1px #ddd;
+    -moz-border-shadow: inset 0 0 1px #ddd;
+    -o-border-shadow: inset 0 0 1px #ddd;
+    border-shadow: inset 0 0 1px #ddd;
+    box-shadow: inset 0 0 1px #ddd;
+    background-image: -webkit-linear-gradient(#66A3E2, #5387BA 50%, #4B79AF 51%, #385D87);
+    background-image: -moz-linear-gradient(#66A3E2, #5387BA 50%, #4B79AF 51%, #385D87);
+    background-image: -o-linear-gradient(#66A3E2, #5387BA 50%, #4B79AF 51%, #385D87);
+    background-image: linear-gradient(#66A3E2, #5387BA 50%, #4B79AF 51%, #385D87);
+}
 </style>
 """
 
@@ -89,6 +119,9 @@ class Node(object):
 
     def get_html(self):
         return ""
+
+    def get_bar(self, percent):
+        return "<div class='bar_wrap'><div class='bar' style='width:%d%%'></div></div>" % int(percent)
 
 
 class VRFGroupNode(Node):
@@ -155,7 +188,7 @@ class PrefixNode(Node):
         if self.show_vrf:
             r += ["<br/>VRF: %s" % self.prefix.vrf.name]
         if self.used is not None:
-            r += ["<br/><b>%s</b>" % self.used]
+            r += ["<br/><b>Usage:</b> %s" % self.get_bar(self.used)]
         # Show custom fields
         for f in prefix_fields:
             v = getattr(self.prefix, f.name)
@@ -188,7 +221,7 @@ class PrefixNode(Node):
                 pu = int(float(u) * 100 / float(ps - 2))
             else:
                 pu = int(float(u) * 100 / float(ps))
-        self.used = "Usage: %s%%" % pu
+        self.used = pu
 
 
 class GPrefixNode(PrefixNode):
