@@ -201,7 +201,7 @@ class GPrefixNode(PrefixNode):
         self.children = [
             GPrefixNode(self.app, p, self.vrfs) for p in
             Prefix.objects.raw("""
-                SELECT id FROM ip_prefix p
+                SELECT * FROM ip_prefix p
                 WHERE
                         vrf_id = ANY (%s::integer[])
                     AND prefix << %s
