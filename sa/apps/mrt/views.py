@@ -10,8 +10,9 @@
 import datetime
 ## NOC modules
 from noc.lib.app import ExtApplication, view
-from noc.sa.models import MRTConfig, ManagedObjectSelector, ManagedObject,\
-                          ReduceTask
+from noc.sa.models import MRTConfig, ManagedObjectSelector,\
+    ManagedObject, ReduceTask
+from noc.main.models import Permission
 from noc.lib.serialize import json_decode
 
 
@@ -42,8 +43,10 @@ class MRTAppplication(ExtApplication):
         if not config:
             return self.response_not_found("Task not found")
         # Check permissions
-        if not request.user.has_perm("sa:mrt:%s" % config.permission_name):
-            return self.response_forbidden("Permission denied")
+        pn = "sa:mrt:%s" % config.permission_name
+        if not Permission.has_perm(request.user, pn):
+            return self.response_forbidden(
+                "Permission denied: '%s' permission required" % pn)
         # Parse request
         try:
             r = json_decode(request.raw_post_data)
@@ -69,11 +72,13 @@ class MRTAppplication(ExtApplication):
             ))
         # Run MRT
         timeout = r.get("timeout", None) or config.timeout
-        t = ReduceTask.create_task(objects,
-                                   "pyrule:%s" % config.reduce_pyrule.name, {},
-                                   config.map_script, r.get("map_args", {}),
-                                   timeout)
-        return self.response_accepted(location="/sa/mrt/%s/%d/" % (task, t.id))
+        t = ReduceTask.create_task(
+            objects,
+            "pyrule:%s" % config.reduce_pyrule.name, {},
+            config.map_script, r.get("map_args", {}),
+            timeout)
+        return self.response_accepted(
+            location="/sa/mrt/%s/%d/" % (task, t.id))
 
     @view(url="^(?P<task>[0-9a-zA-Z_\-]+)/(?P<task_id>\d+)/$", method=["GET"],
           access="launch", api=True)
