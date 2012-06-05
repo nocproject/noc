@@ -27,6 +27,7 @@ from noc.ip.models import VRF, Prefix, AS, Address
 from noc.lib.nosql import Q
 from noc.main.models import SystemNotification, ResourceState,\
                             SystemTemplate
+from noc.fm.models import NewEvent
 
 
 class DiscoveryDaemon(Daemon):
@@ -730,6 +731,21 @@ class DiscoveryDaemon(Daemon):
         ))
         self.address_collisions += [(address, a.vrf, a.managed_object,
                                      vrf, o, i)]
+        NewEvent(
+            timestamp=datetime.datetime.now(),
+            managed_object=o,
+            raw_vars={
+                "source": "system",
+                "process": "discovery",
+                "type": "address collision",
+                "address": address,
+                "vrf": vrf.name,
+                "interface": i,
+                "existing_vrf": a.vrf.name,
+                "existing_object": a.managed_object.name
+            },
+            log=[]
+        ).save()
         return False
 
     def notify_new_prefix(self, vrf, prefix, object, interface, description):
