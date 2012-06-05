@@ -11,7 +11,8 @@ from django.http import HttpResponse
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
-from noc.lib.nosql import StringField, BooleanField, GeoPointField, Q
+from noc.lib.nosql import StringField, BooleanField, GeoPointField,\
+    ForeignKeyField, Q
 from noc.sa.interfaces import BooleanParameter, GeoPointParameter
 from noc.lib.validators import is_int
 
@@ -127,6 +128,9 @@ class ExtDocApplication(ExtApplication):
             if v is not None:
                 if isinstance(f, GeoPointField):
                     pass
+                elif isinstance(f, ForeignKeyField):
+                    r["%s__label" % f.name] = unicode(v)
+                    v = v.id
                 elif type(v) not in (str, unicode, int, long, bool):
                     if hasattr(v, "id"):
                         v = v.id
