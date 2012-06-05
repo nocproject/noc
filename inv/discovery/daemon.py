@@ -177,6 +177,9 @@ class DiscoveryDaemon(Daemon):
     def o_info(self, managed_object, msg):
         logging.info("[%s] %s" % (managed_object.name, msg))
 
+    def o_error(self, managed_object, msg):
+        logging.error("[%s] %s" % (managed_object.name, msg))
+
     def update_if_changed(self, obj, values):
         """
         Update fields if changed.
@@ -377,7 +380,12 @@ class DiscoveryDaemon(Daemon):
                     name=i["name"]).first()
                 if ("aggregated_interface" in i and
                     bool(i["aggregated_interface"])):
-                    agg = icache[i["aggregated_interface"]]
+                    agg = icache.get(i["aggregated_interface"])
+                    if not agg:
+                        self.o_error(o,
+                            "Cannot find aggregated interface '%s'. Skipping %s" % (
+                                i["aggregated_interface"], i["name"]))
+                        continue
                 else:
                     agg = None
                 if iface:
