@@ -29,8 +29,21 @@ Ext.define("NOC.sa.mrtconfig.Application", {
         },
 
         {
+            text: "Permission",
+            dataIndex: "permission_name",
+            width: 70
+        },
+
+        {
             text: "Map Script",
             dataIndex: "map_script"
+        },
+
+        {
+            text: "Reduce pyRule",
+            dataIndex: "reduce_pyrule",
+            width: 100,
+            renderer: NOC.render.Lookup("reduce_pyrule")
         },
 
         {

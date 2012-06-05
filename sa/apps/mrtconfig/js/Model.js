@@ -42,6 +42,10 @@ Ext.define("NOC.sa.mrtconfig.Model", {
             type: "int"
         },
         {
+            name: "reduce_pyrule__label",
+            type: "string"
+        },
+        {
             name: "selector",
             type: "int"
         },
