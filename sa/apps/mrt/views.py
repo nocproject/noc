@@ -88,8 +88,10 @@ class MRTAppplication(ExtApplication):
         if not config:
             return self.response_not_found("Task not found")
         # Check permissions
-        if not request.user.has_perm("sa:mrt:%s" % config.permission_name):
-            return self.response_forbidden("Permission denied")
+        pn = "sa:mrt:%s" % config.permission_name
+        if not Permission.has_perm(request.user, pn):
+            return self.response_forbidden(
+                "Permission denied: '%s' permission required" % pn)
         #
         t = self.get_object_or_404(ReduceTask, id=int(task_id))
         try:
