@@ -69,11 +69,26 @@ class CodeTest(TestCase):
                     "Error in %s: 'with' statement without __future__ import" % path]
         return failures
 
+    def check_perm(self, path, data):
+        """
+        Check for request.user.has_perm construction
+        :param path:
+        :param data:
+        :return:
+        """
+        failures = []
+        if "request.user.has_perm" in data:
+            failures += [
+                "Error in %s: request.user.has_perm used" % path
+            ]
+        return failures
+
     ##
     ## Run tests for module
     ##
     def check_file(self, path, data):
         failures = self.check_with(path, data)
+        failures += self.check_perm(path, data)
         return failures
 
     ##
