@@ -28,6 +28,8 @@ save = true
 # Example:
 # change_state = PLANNED -> ALLOCATED; RESERVED -> ALLOCATED
 change_state =
+# IGetDiscoveryCustom pyRule name to set up prefix custom fields
+custom_pyrule =
 
 [ip_discovery]
 enabled = false

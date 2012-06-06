@@ -26,7 +26,7 @@ from noc.lib.ip import IP
 from noc.ip.models import VRF, Prefix, AS, Address
 from noc.lib.nosql import Q
 from noc.main.models import SystemNotification, ResourceState,\
-                            SystemTemplate
+                            SystemTemplate, PyRule
 from noc.fm.models import NewEvent
 
 
@@ -94,6 +94,17 @@ class DiscoveryDaemon(Daemon):
                                              "fqdn_template")
         if self.fqdn_template:
             self.fqdn_template = Template(self.fqdn_template)
+        # pyRules
+        p = self.config.get("prefix_discovery", "custom_pyrule")
+        self.p_custom_pyrule = None
+        if self.p_save and p:
+            r = list(PyRule.objects.filter(name=p,
+                    interface="IGetDiscoveryCustom"))
+            if r:
+                logging.info("Enabling prefix discovery custom pyRule '%s'" % p)
+                self.p_custom_pyrule = r[0]
+            else:
+                logging.error("Prefix discovery custom pyRule '%s' is not found. Ignoring." % p)
 
     def get_state_map(self, s):
         """
@@ -644,18 +655,28 @@ class DiscoveryDaemon(Daemon):
                             # Change prefix state
                             fs = pfx.state
                             ts = self.p_state_map[fs.id]
-                            self.o_info(o,
-                                        "Changing prefix %s:%s state from %s to %s" % (
-                                            pfx.vrf.name, pfx.prefix,
-                                            fs.name, ts.name
-                                        ))
+                            self.o_info(
+                                o,
+                                "Changing prefix %s:%s state from %s to %s" % (
+                                    pfx.vrf.name, pfx.prefix,
+                                    fs.name, ts.name))
                             pfx.state = ts
                             pfx.save()
                     else:
                         # Create prefix
-                        Prefix(vrf=vrf, afi=p.afi, asn=self.asn,
+                        pfx = Prefix(vrf=vrf, afi=p.afi, asn=self.asn,
                             prefix=prefix,
-                            description=si.get("description")).save()
+                            description=si.get("description"))
+                        pfx.save()
+                    if self.p_custom_pyrule:
+                        d = self.p_custom_pyrule(instance=pfx,
+                            managed_object=o)
+                        if d:
+                            changes = self.update_if_changed(pfx, d)
+                            self.log_changes(o,
+                                "Prefix '%s' has been changed" % pfx.prefix,
+                                changes)
+
             # Check address exists in IPAM
             # @todo: MAC
             try:
