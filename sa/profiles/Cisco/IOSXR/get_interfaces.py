@@ -104,7 +104,10 @@ class Script(NOCScript):
                 if match:
                     m = match.group("name")
                     ifaces[current]["members"] += [m]
-                    ae_map[m] = current
+                    if "." in current:
+                        ae_map[m] = current.split(".", 1)[0]
+                    else:
+                        ae_map[m] = current
         # Get VRFs and "default" VRF interfaces
         r = []
         seen = set()
