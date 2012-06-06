@@ -15,6 +15,8 @@ set_env.setup(use_django=True)
 if __name__ == "__main__":
     from noc.inv.discovery.daemon import DiscoveryDaemon
     from noc.lib.debug import error_report
+    from noc.main.models import CustomField
+    CustomField.install_fields()
 
     try:
         DiscoveryDaemon().process_command()
