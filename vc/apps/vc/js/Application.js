@@ -149,7 +149,7 @@ Ext.define("NOC.vc.vc.Application", {
                     text: "Add First Free",
                     iconCls: "icon_application_form_add",
                     tooltip: "Add first free VC",
-                    checkAccess: NOC.hasPermission("create"),
+                    hasAccess: NOC.hasPermission("create"),
                     scope: me,
                     handler: me.onFirstNewRecord
                 },
@@ -158,7 +158,7 @@ Ext.define("NOC.vc.vc.Application", {
                     text: "Import",
                     iconCls: "icon_door_in",
                     tooltip: "Import VCs",
-                    checkAccess: NOC.hasPermission("import"),
+                    hasAccess: NOC.hasPermission("import"),
                     menu: {
                         xtype: "menu",
                         plain: true,
@@ -184,7 +184,7 @@ Ext.define("NOC.vc.vc.Application", {
                     text: "VC Interfaces",
                     iconCls: "icon_page_link",
                     tooltip: "Show VC interfaces",
-                    checkAccess: NOC.hasPermission("read"),
+                    hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onVCInterfaces
                 },
@@ -193,7 +193,7 @@ Ext.define("NOC.vc.vc.Application", {
                     text: "Add Interfaces",
                     iconCls: "icon_page_add",
                     tooltip: "Add interfaces to VC",
-                    checkAccess: NOC.hasPermission("set_untagged"),
+                    hasAccess: NOC.hasPermission("set_untagged"),
                     scope: me,
                     handler: me.onAddVCInterfaces
                 }
