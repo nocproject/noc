@@ -31,6 +31,10 @@ class VCApplication(ExtModelApplication):
     query_condition = "icontains"
     int_query_fields = ["l1", "l2"]
 
+    implied_permissions = {
+        "read": ["vc:vcdomain:lookup", "main:style:lookup"]
+    }
+
     mrt_config = {
         "get_vlans": {
             "map_script": "get_vlans",
