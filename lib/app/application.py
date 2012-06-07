@@ -131,20 +131,20 @@ class Application(object):
     def js_app_class(self):
         return "NOC.main.desktop.IFramePanel"
 
-    def get_launch_info(self, user):
+    def get_launch_info(self, request):
         """
         Return desktop launch information
         """
         from noc.main.models import Permission
 
+        user = request.user
         ps = self.get_app_id().replace(".", ":") + ":"
-        if user.is_superuser:
-            qs = Permission.objects
+        lps = len(ps)
+        if "PERMISSIONS" in request.session:
+            perms = request.session["PERMISSIONS"]
         else:
-            qs = user.noc_user_permissions
-        perms = [p.split(":")[2] for p in
-                 qs.filter(name__startswith = ps).values_list("name",
-                                                              flat=True)]
+            perms = Permission.get_effective_permissions(user)
+        perms = [p[lps:] for p in perms if p.startswith(ps)]
         return {
             "class": self.js_app_class,
             "title": unicode(self.title),

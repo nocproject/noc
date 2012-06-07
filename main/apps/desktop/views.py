@@ -18,7 +18,7 @@ from noc.lib.version import get_version
 from noc.lib.middleware import set_user
 from noc.settings import LANGUAGE_CODE
 from noc.main.auth.backends import backend as auth_backend
-from noc.main.models import Group, UserSession, UserState
+from noc.main.models import Group, UserSession, UserState, Permission
 
 
 class DesktopApplication(ExtApplication):
@@ -188,6 +188,8 @@ class DesktopApplication(ExtApplication):
             if profile and profile.preferred_language:
                 lang = profile.preferred_language
             request.session["django_language"] = lang
+            # Calculate permissions
+            request.session["PERMISSIONS"] = Permission.get_effective_permissions(user)
         # Update last login
         user.last_login = datetime.datetime.now()
         user.save()
@@ -292,7 +294,7 @@ class DesktopApplication(ExtApplication):
                 raise KeyError
         except KeyError:
             return self.response_not_found()
-        return menu["app"].get_launch_info(request.user)
+        return menu["app"].get_launch_info(request)
 
     @view(method=["GET"], url="^login_fields/$", access=True, api=True)
     def api_login_fields(self, request):

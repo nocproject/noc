@@ -31,7 +31,7 @@ from noc.lib.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.lib.fields import TextArrayField, ColorField, CIDRField
-from noc.lib.middleware import get_user
+from noc.lib.middleware import get_user, get_request
 from noc.lib.timepattern import TimePattern as TP
 from noc.lib.timepattern import TimePatternList
 from noc.sa.interfaces.base import interface_registry
@@ -50,6 +50,7 @@ periodic_registry.register_all()
 ## And yielding a SearchResults (ordered by relevancy)
 ##
 search_methods = set()
+search_models = set()
 
 
 def on_new_model(sender, **kwargs):
@@ -58,6 +59,9 @@ def on_new_model(sender, **kwargs):
     """
     if hasattr(sender, "search"):
         search_methods.add(getattr(sender, "search"))
+    if (hasattr(sender, "get_search_Q") and
+        hasattr(sender, "get_search_data")):
+        search_models.add(sender)
 
 ##
 ## Attach to the 'class_prepared' signal
@@ -568,12 +572,11 @@ class Permission(models.Model):
             return False
         if user.is_superuser:
             return True
-        try:
-            p = Permission.objects.get(name=perm)
-        except Permission.DoesNotExist:
-            return False  # Permission not found
-        return (p.users.filter(id=user.id).exists() or
-                p.groups.filter(id__in=user.groups.all()).exists())
+        request = get_request()
+        if request and "PERMISSIONS" in request.session:
+            return perm in request.session["PERMISSIONS"]
+        else:
+            return perm in cls.get_effective_permissions(user)
 
     @classmethod
     def get_user_permissions(cls, user):
@@ -637,6 +640,28 @@ class Permission(models.Model):
         # Revoke permissions
         for p in current - perms:
             Permission.objects.get(name=p).groups.remove(group)
+
+    @classmethod
+    def get_effective_permissions(cls, user):
+        """
+        Returns a set of effective user permissions,
+        counting group and implied ones
+        """
+        if user.is_superuser:
+            return Permission.objects.values_list("name", flat=True)
+        perms = set()
+        # User permissions
+        for p in user.noc_user_permissions.all():
+            perms.add(p.name)
+            if p.implied:
+                perms.update(p.implied.split(","))
+        # Group permissions
+        for g in user.groups.all():
+            for p in g.noc_group_permissions.all():
+                perms.add(p.name)
+                if p.implied:
+                    perms.update(p.implied.split(","))
+        return perms
 
 
 class UserSession(nosql.Document):
