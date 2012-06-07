@@ -103,27 +103,6 @@ NOC.hasPermission = function(perm) {
     }
 };
 //
-/*
-        def f():
-        if last_start==last_end:
-            return str(last_start)
-        else:
-            return "%d-%d"%(last_start,last_end)
-    last_start=None
-    last_end=None
-    r=[]
-    for i in sorted(s):
-        if last_end is not None and i==last_end+1:
-            last_end+=1
-        else:
-            if last_start is not None:
-                r+=[f()]
-            last_start=i
-            last_end=i
-    if last_start is not None:
-        r+=[f()]
-    return ",".join(r)
-*/
 NOC.listToRanges = function(lst) {
     var l = lst.sort(function(x, y){return x - y;}),
         lastStart = null,
