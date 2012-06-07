@@ -314,6 +314,7 @@ class ManagedObjectApplication(ModelApplication):
     model = ManagedObject
     model_admin = ManagedObjectAdmin
     menu = "Managed Objects"
+    query_condition = "icontains"
     
     @view(url=r"^(?P<object_id>\d+)/scripts/$",
          url_name="scripts", access=HasPerm("change"))
