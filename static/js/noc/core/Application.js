@@ -14,6 +14,7 @@ Ext.define("NOC.core.Application", {
     constructor: function(options) {
         var me = this;
         // Set up permissions before calling initComponent
+        me.permissions = {};
         for(var p in options.noc.permissions) {
             me.permissions[options.noc.permissions[p]] = true;
         }
