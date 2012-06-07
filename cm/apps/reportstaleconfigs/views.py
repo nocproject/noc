@@ -41,7 +41,8 @@ class ReportStaleConfig(SimpleReport):
                    c.managed_object.platform,
                    c.managed_object.address,
                    humanize_distance(c.last_pull))
-            for c in
-            Config.objects.filter(q).order_by("managed_object__administrative_domain__name")],
+            for c in Config.objects.filter(q).order_by(
+                "managed_object__administrative_domain__name")
+            if c.is_stale],
             enumerate=True
         )
