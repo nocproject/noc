@@ -67,10 +67,3 @@ class Command(BaseCommand):
         for name in old_perms - new_perms:
             print "- %s" % name
             Permission.objects.get(name=name).delete()
-        # Check all users have implied permissions
-        for p in Permission.objects.filter(implied__isnull=False):
-            users = list(p.users.all())
-            for ip in p.get_implied_permissions():
-                for u in users:
-                    if not ip.users.filter(id=u.id).exists():
-                        ip.users.add(u)
