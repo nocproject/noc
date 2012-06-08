@@ -72,15 +72,19 @@ Ext.define("NOC.core.LookupField", {
             // number or string
             // Start store lookup
             // @todo: do not refresh current value
-            me.store.load({
-                params: {id: value},
-                scope: me,
-                callback: function(records, operation, success) {
-                    if(success && records.length > 0) {
-                        this.setValue(records[0]);
+            var v = me.getValue();
+
+            if(!v || v != value) {
+                me.store.load({
+                    params: {id: value},
+                    scope: me,
+                    callback: function(records, operation, success) {
+                        if(success && records.length > 0) {
+                            this.setValue(records[0]);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         return me;
     },
