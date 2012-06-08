@@ -122,7 +122,7 @@ Ext.define("NOC.core.ModelApplication", {
                     width: 25,
                     sortable: false,
                     items: [{
-                        iconCls: "icon_pencil",
+                        iconCls: "icon_page_edit",
                         tooltip: "Edit",
                         scope: me,
                         handler: function(grid, rowIndex, colIndex) {
