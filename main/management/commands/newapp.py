@@ -52,6 +52,7 @@ class Command(BaseCommand):
         "StringField": "string",
         "BooleanField": "boolean",
         "IntField": "int",
+        "DateTimeField": "auto",
         "GeoPointField": "auto",
         "URLField": "string"
     }
@@ -60,6 +61,7 @@ class Command(BaseCommand):
         "StringField": "textfield",
         "BooleanField": "checkboxfield",
         "IntField": "numberfield",
+        "DateTimeField": "textfield",
         "GeoPointField": "geofield",
         "URLField": "textfield"
     }
