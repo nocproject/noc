@@ -103,8 +103,8 @@ class ExtModelApplication(ExtApplication):
         from noc.main.models import CustomField
         return list(CustomField.table_fields(self.model._meta.db_table))
 
-    def get_launch_info(self, user):
-        li = super(ExtModelApplication, self).get_launch_info(user)
+    def get_launch_info(self, request):
+        li = super(ExtModelApplication, self).get_launch_info(request)
         cf = self.get_custom_fields()
         if cf:
             li["params"].update({
