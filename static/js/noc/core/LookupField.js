@@ -13,14 +13,17 @@ Ext.define("NOC.core.LookupField", {
     valueField: "id",
     queryMode: "remote",
     queryParam: "__query",
+    queryCaching: false,
+    queryDelay: 200,
     forceSelection: true,
     minChars: 2,
     typeAhead: true,
+    triggerAction: "all",
     editable: true,
     query: {},
     stateful: false,
-    autoSelect: true,
-    pageSize: 25,
+    autoSelect: false,
+    pageSize: 0,
 
     initComponent: function() {
         var me = this,
@@ -34,40 +37,52 @@ Ext.define("NOC.core.LookupField", {
         }
         me.addEvents("clear");
         me.callParent();
-        // @todo: clear event
-        me.on("specialkey", me.onSpecialKey, me);
-        me.on("blur", me.onBlur, me);
+        me.on("specialkey", me.onSpecialKey, me, {delay: 100});
     },
 
+    // setValue
+    // Value can be
+    //    * id (int or string), when loaded from form
+    //    * record object, when store loaded
+    //    * [record]
     setValue: function(value) {
         var me = this;
 
-        if(Ext.isDefined(value)) {
-            if(me.store.loading) {
-                // do not set value until store is loaded
-                return me;
-            }
-            if(!me.store.data.length && value) {
-                // store not ready. load
-                var cb = Ext.bind(me.setValue, me, arguments);
-                me.store.load({
-                    params: {
-                        id: value
-                    },
-                    scope: me,
-                    callback: function(records, operation, success) {
-                        if(records) {
-                            cb();
-                        }
-                    }
-                });
-                return me;
-            } else {
+        if(me.store.loading) {
+            // Value will actually be set
+            // by store.load callback.
+            // Ignore it now
+            return me;
+        }
+        if(!value || value.length == 0) {
+            // Empty value
+            return me.callParent([]);
+        }
+        if(typeof(value) == "object") {
+            // Called when item selected from drop-down list
+            // can be either
+            // * record
+            // * [record]
+            if(value.length == undefined) {
                 return me.callParent([value]);
+            } else {
+                return me.callParent([value[0]]);
             }
         } else {
-            return me.callParent([value]);
+            // number or string
+            // Start store lookup
+            // @todo: do not refresh current value
+            me.store.load({
+                params: {id: value},
+                scope: me,
+                callback: function(records, operation, success) {
+                    if(success && records.length > 0) {
+                        this.setValue(records[0]);
+                    }
+                }
+            });
         }
+        return me;
     },
 
     getLookupData: function() {
@@ -76,15 +91,7 @@ Ext.define("NOC.core.LookupField", {
 
     onSpecialKey: function(field, e) {
         var me = this;
-        if(e.ESC) {
-            me.clearValue();
-            me.fireEvent("clear");
-        }
-    },
-
-    onBlur: function(field, e) {
-        var me = this;
-        if(!me.getRawValue()) {
+        if(e.keyCode == e.ESC) {
             me.clearValue();
             me.fireEvent("clear");
         }
