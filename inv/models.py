@@ -539,3 +539,37 @@ class DiscoveryStatusIP(Document):
             s.last_status = status
             s.last_check = datetime.datetime.now()
         s.save()
+
+
+class NewPrefixDiscoveryLog(Document):
+    meta = {
+        "collection": "noc.log.discovery.prefix.new",
+        "allow_inheritance": False,
+        "indexes": ["-timestamp"]
+    }
+    timestamp = DateTimeField()
+    vrf = StringField()
+    prefix = StringField()
+    description = StringField()
+    managed_object = StringField()
+    interface = StringField()
+
+    def __unicode__(self):
+        return "%s new %s:%s" % (self.timestamp, self.vrf, self.prefix)
+
+
+class NewAddressDiscoveryLog(Document):
+    meta = {
+        "collection": "noc.log.discovery.address.new",
+        "allow_inheritance": False,
+        "indexes": ["-timestamp"]
+    }
+    timestamp = DateTimeField()
+    vrf = StringField()
+    address = StringField()
+    description = StringField()
+    managed_object = StringField()
+    interface = StringField()
+
+    def __unicode__(self):
+        return "%s new %s:%s" % (self.timestamp, self.vrf, self.address)

@@ -20,7 +20,8 @@ from django.template import Template, Context
 from noc.lib.daemon import Daemon
 from noc.sa.models import ManagedObject, profile_registry, ReduceTask
 from noc.inv.models import Interface, ForwardingInstance, SubInterface,\
-                           DiscoveryStatusInterface, DiscoveryStatusIP
+                           DiscoveryStatusInterface, DiscoveryStatusIP,\
+                           NewPrefixDiscoveryLog, NewAddressDiscoveryLog
 from noc.lib.debug import error_report
 from noc.lib.ip import IP
 from noc.ip.models import VRF, Prefix, AS, Address
@@ -806,6 +807,15 @@ class DiscoveryDaemon(Daemon):
             body=body)
 
     def report_new_prefixes(self):
+        ts = datetime.datetime.now()
+        log = [NewPrefixDiscoveryLog(
+            timestamp=ts,
+            vrf=p["vrf"].name,
+            prefix=p["prefix"],
+            description=p["description"],
+            managed_object=p["object"].name,
+            interface=p["interface"]) for p in self.new_prefixes]
+        NewPrefixDiscoveryLog.objects.insert(log, load_bulk=True)
         ctx = {
             "count": len(self.new_prefixes),
             "prefixes": [
@@ -821,6 +831,15 @@ class DiscoveryDaemon(Daemon):
         self.send_report("inv.discovery.new_prefixes_report", ctx)
 
     def report_new_addresses(self):
+        ts = datetime.datetime.now()
+        log = [NewAddressDiscoveryLog(
+            timestamp=ts,
+            vrf=p["vrf"].name,
+            address=p["address"],
+            description=p["description"],
+            managed_object=p["object"].name,
+            interface=p["interface"]) for p in self.new_addresses]
+        NewAddressDiscoveryLog.objects.insert(log, load_bulk=True)
         ctx = {
             "count": len(self.new_addresses),
             "addresses": [
@@ -830,7 +849,6 @@ class DiscoveryDaemon(Daemon):
                     "description": a["description"],
                     "object": a["object"],
                     "interface": a["interface"]
-
                 } for a in self.new_addresses]
         }
         self.send_report("inv.discovery.new_addresses_report", ctx)
