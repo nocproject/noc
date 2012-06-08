@@ -3,7 +3,7 @@
 ## Vendor: Alcatel
 ## OS:     AOS
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -17,4 +17,4 @@ class Profile(noc.sa.profiles.Profile):
     supported_schemes = [TELNET, SSH]
     pattern_username = "[Ll]ogin :"
     pattern_password = "[Pp]assword :"
-    pattern_prompt = r"^\S*->"
+    pattern_prompt = r"^(\S*->|(?P<hostname>\S+)# )"
