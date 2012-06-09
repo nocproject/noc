@@ -152,7 +152,11 @@ Ext.define("NOC.core.ModelApplication", {
             ],
             rbar: grid_rbar,
             viewConfig: {
-                getRowClass: Ext.bind(me.getRowClass, me)
+                getRowClass: Ext.bind(me.getRowClass, me),
+                listeners: {
+                    scope: me,
+                    cellclick: me.onCellClick
+                }
             },
             listeners: {
                 itemdblclick: {
@@ -537,6 +541,17 @@ Ext.define("NOC.core.ModelApplication", {
             }
         } else {
             return "";
+        }
+    },
+    //
+    onCellClick: function(view, cell, cellIndex, record, row,
+                          rowIndex, e) {
+        var me = this;
+        if(e.target.tagName == "A") {
+            var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);
+            if(header.onClick) {
+                header.onClick.apply(me, [record]);
+            }
         }
     }
 });

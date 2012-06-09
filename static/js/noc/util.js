@@ -62,6 +62,10 @@ NOC.render.Lookup = function(name) {
     };
 };
 
+NOC.render.Clickable = function(value) {
+    return "<a href='#'>" + value + "</a>";
+}
+
 //
 // Run new Map/Reduce task
 // Usage:
