@@ -12,6 +12,7 @@ Ext.define("NOC.vc.vc.Application", {
         "NOC.vc.vc.Model",
         "NOC.core.TagsField",
         "NOC.main.style.LookupField",
+        "NOC.main.resourcestate.LookupField",
         "NOC.vc.vcdomain.LookupField"
     ],
     model: "NOC.vc.vc.Model",
@@ -55,6 +56,11 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     text: "Name",
                     dataIndex: "name"
+                },
+                {
+                    text: "State",
+                    dataIndex: "state",
+                    renderer: NOC.render.Lookup("state")
                 },
                 {
                     text: "Label",
@@ -113,6 +119,12 @@ Ext.define("NOC.vc.vc.Application", {
                     fieldLabel: "Name",
                     allowBlank: false,
                     regex: /^[a-zA-Z0-9_\-]+$/
+                },
+                {
+                    name: "state",
+                    xtype: "main.resourcestate.LookupField",
+                    fieldLabel: "State",
+                    allowBlank: false
                 },
                 {
                     name: "l1",

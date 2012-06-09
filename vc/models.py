@@ -16,7 +16,7 @@ from django.db.models import Q
 from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.sa.models import ManagedObjectSelector
-from noc.main.models import Style
+from noc.main.models import Style, ResourceState
 from noc.lib.validators import is_int
 from noc.lib.fields import CIDRField, AutoCompleteTagsField
 from noc.lib.app.site import site
@@ -283,6 +283,8 @@ class VC(models.Model):
 
     vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain")
     name = models.CharField("Name", max_length=64)
+    state = models.ForeignKey(ResourceState, verbose_name="State",
+        default=ResourceState.get_default)
     l1 = models.IntegerField("Label 1")
     l2 = models.IntegerField("Label 2", default=0)
     description = models.CharField("Description", max_length=256, null=True,
