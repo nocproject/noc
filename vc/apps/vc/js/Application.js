@@ -18,103 +18,6 @@ Ext.define("NOC.vc.vc.Application", {
     search: true,
     rowClassField: "row_class",
 
-    columns: [
-        {
-            text: "VC Domain",
-            dataIndex: "vc_domain",
-            renderer: NOC.render.Lookup("vc_domain")
-        },
-        {
-            text: "Name",
-            dataIndex: "name"
-        },
-        {
-            text: "Label",
-            dataIndex: "label",
-            width: 50,
-            sortable: false
-        },
-        {
-            text: "L1",
-            dataIndex: "l1",
-            width: 25,
-            hidden: true
-        },
-        {
-            text: "L2",
-            dataIndex: "l2",
-            width: 25,
-            hidden: true
-        },
-        {
-            text: "Int.",
-            dataIndex: "interfaces_count",
-            width: 50,
-            sortable: false,
-            align: "right"
-        },
-        {
-            text: "Prefixes",
-            dataIndex: "prefixes",
-            width: 100,
-            sortable: false
-        },
-        {
-            text: "Description",
-            dataIndex: "description",
-            flex: 1
-        },
-        {
-            text: "Tags",
-            dataIndex: "tags",
-            renderer: NOC.render.Tags
-        }
-    ],
-    fields: [
-        {
-            name: "vc_domain",
-            xtype: "vc.vcdomain.LookupField",
-            fieldLabel: "VC Domain",
-            allowBlank: false
-        },
-        {
-            name: "name",
-            xtype: "textfield",
-            fieldLabel: "Name",
-            allowBlank: false,
-            regex: /^[a-zA-Z0-9_\-]+$/
-        },
-        {
-            name: "l1",
-            xtype: "numberfield",
-            fieldLabel: "L1",
-            allowBlank: false
-        },
-        { // @todo: Auto-hide when VC domain does not support l2
-            name: "l2",
-            xtype: "numberfield",
-            fieldLabel: "L2",
-            allowBlank: true
-        },
-        {
-            name: "description",
-            xtype: "textfield",
-            fieldLabel: "Description",
-            allowBlank: true
-        },
-        {
-            name: "style",
-            xtype: "main.style.LookupField",
-            fieldLabel: "Style",
-            allowBlank: true
-        },
-        {
-            name: "tags",
-            xtype: "tagsfield",
-            fieldLabel: "Tags",
-            allowBlank: true
-        }
-    ],
     filters: [
         {
             title: "By VC Domain",
@@ -143,6 +46,106 @@ Ext.define("NOC.vc.vc.Application", {
     initComponent: function() {
         var me = this;
         Ext.apply(me, {
+            columns: [
+                {
+                    text: "VC Domain",
+                    dataIndex: "vc_domain",
+                    renderer: NOC.render.Lookup("vc_domain")
+                },
+                {
+                    text: "Name",
+                    dataIndex: "name"
+                },
+                {
+                    text: "Label",
+                    dataIndex: "label",
+                    width: 50,
+                    sortable: false
+                },
+                {
+                    text: "L1",
+                    dataIndex: "l1",
+                    width: 25,
+                    hidden: true
+                },
+                {
+                    text: "L2",
+                    dataIndex: "l2",
+                    width: 25,
+                    hidden: true
+                },
+                {
+                    text: "Int.",
+                    dataIndex: "interfaces_count",
+                    width: 50,
+                    sortable: false,
+                    align: "right",
+                    renderer: NOC.render.Clickable,
+                    onClick: me.onInterfacesCellClick
+                },
+                {
+                    text: "Prefixes",
+                    dataIndex: "prefixes",
+                    width: 100,
+                    sortable: false
+                },
+                {
+                    text: "Description",
+                    dataIndex: "description",
+                    flex: 1
+                },
+                {
+                    text: "Tags",
+                    dataIndex: "tags",
+                    renderer: NOC.render.Tags
+                }
+            ],
+            fields: [
+                {
+                    name: "vc_domain",
+                    xtype: "vc.vcdomain.LookupField",
+                    fieldLabel: "VC Domain",
+                    allowBlank: false
+                },
+                {
+                    name: "name",
+                    xtype: "textfield",
+                    fieldLabel: "Name",
+                    allowBlank: false,
+                    regex: /^[a-zA-Z0-9_\-]+$/
+                },
+                {
+                    name: "l1",
+                    xtype: "numberfield",
+                    fieldLabel: "L1",
+                    allowBlank: false
+                },
+                { // @todo: Auto-hide when VC domain does not support l2
+                    name: "l2",
+                    xtype: "numberfield",
+                    fieldLabel: "L2",
+                    allowBlank: true
+                },
+                {
+                    name: "description",
+                    xtype: "textfield",
+                    fieldLabel: "Description",
+                    allowBlank: true
+                },
+                {
+                    name: "style",
+                    xtype: "main.style.LookupField",
+                    fieldLabel: "Style",
+                    allowBlank: true
+                },
+                {
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: "Tags",
+                    allowBlank: true
+                }
+            ],
+
             gridToolbar: [
                 {
                     itemId: "create_first",
@@ -272,11 +275,10 @@ Ext.define("NOC.vc.vc.Application", {
         me.reloadStore();
     },
     // Show interfaces window
-    onVCInterfaces: function() {
-        var me = this,
-            vc = me.currentRecord.data;
+    showVCInterfaces: function(record) {
+        var me = this;
         Ext.Ajax.request({
-            url: "/vc/vc/" + vc.id + "/interfaces/",
+            url: "/vc/vc/" + record.get("id") + "/interfaces/",
             method: "GET",
             scope: me,
             success: function(response) {
@@ -286,7 +288,7 @@ Ext.define("NOC.vc.vc.Application", {
                 } else {
                     Ext.create("NOC.vc.vc.VCInterfaces", {
                         app: me,
-                        vc: vc,
+                        vc: record.data,
                         interfaces: r
                     });
                 }
@@ -296,6 +298,11 @@ Ext.define("NOC.vc.vc.Application", {
             }
         });
     },
+
+    onVCInterfaces: function() {
+        var me = this;
+        me.showVCInterfaces(me.currentRecord);
+    },
     //
     onAddVCInterfaces: function() {
         var me = this,
@@ -304,5 +311,10 @@ Ext.define("NOC.vc.vc.Application", {
             app: me,
             vc: vc
         });
+    },
+    //
+    onInterfacesCellClick: function(record) {
+        var me = this;
+        me.showVCInterfaces(record);
     }
 });
