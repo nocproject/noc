@@ -123,6 +123,55 @@
                 "value_re": "UPS: (?P<name>A power supply unit \\(PSU\\)) fault no longer exists. 0x0A08"
             }
         ]
-    }
+    },
 
+    {
+        "name": "APC | AOS | Chassis | PSU | PSU Failed (SNMP)",
+        "description": "PowerNet-MIB::apc",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^APC\\.AOS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^PowerNet-MIB::apc$"
+            },
+            {
+                "key_re": "^PowerNet-MIB::mtrapargsString\\.0$",
+                "value_re": "^UPS: On battery power in response to an input power problem.$"
+            }
+        ]
+    },
+
+    {
+        "name": "APC | AOS | Chassis | PSU | PSU Recovered (SNMP)",
+        "description": "PowerNet-MIB::apc",
+        "event_class__name": "Chassis | PSU | PSU Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^APC\\.AOS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^PowerNet-MIB::apc$"
+            },
+            {
+                "key_re": "^PowerNet-MIB::mtrapargsString\\.0$",
+                "value_re": "^UPS: No longer on battery power.$"
+            }
+        ]
+    }
 ]
