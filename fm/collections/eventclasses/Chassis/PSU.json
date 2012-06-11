@@ -60,7 +60,7 @@
     },
 
     {
-        "name": "Chassis | PSU | PSU Canged",
+        "name": "Chassis | PSU | PSU Changed",
         "description": "Power Suppply Unit Changed",
         "action": "A",
         "text": {
