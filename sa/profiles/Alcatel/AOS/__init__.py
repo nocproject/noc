@@ -18,3 +18,4 @@ class Profile(noc.sa.profiles.Profile):
     pattern_username = "[Ll]ogin :"
     pattern_password = "[Pp]assword :"
     pattern_prompt = r"^(\S*->|(?P<hostname>\S+)# )"
+    command_save_config = "write memory\r\ncopy working certified"
