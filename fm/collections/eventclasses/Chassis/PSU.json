@@ -57,5 +57,40 @@
                 "alarm_class__name": "Chassis | PSU | PSU Failed"
             }
         ]
+    },
+
+    {
+        "name": "Chassis | PSU | PSU Canged",
+        "description": "Power Suppply Unit Changed",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Power Supply Unit Changed: {{name}}{% if from_state %} from {{from_state}}{% endif %}{% if to_state %} to {{to_state}}{% endif %}",
+                "body_template": "Power Supply Unit Changed: {{name}}{% if from_state %} from {{from_state}}{% endif %}{% if to_state %} to {{to_state}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "name",
+                "description": "PSU Name",
+                "type": "str",
+                "required": true
+            },
+            {
+                "name": "from_state",
+                "description": "Prevoius state",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "to_state",
+                "description": "Current state",
+                "type": "str",
+                "required": false
+            }
+        ]
     }
 ]
