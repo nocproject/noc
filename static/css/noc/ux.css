@@ -67,3 +67,15 @@
 .x-boxselect-item-close {
 	cursor: pointer;
 }
+/* Clickable cell */
+.noc-clickable-cell, .noc-clickable-cell:visited {
+    color: #000000;
+    text-decoration: none;
+    border-bottom: 1px black dotted;
+}
+
+.noc-clickable-cell:hover {
+    color: #808080;
+    text-decoration: none;
+    border-bottom: 1px #808080 solid;
+}

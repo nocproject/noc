@@ -63,7 +63,7 @@ NOC.render.Lookup = function(name) {
 };
 
 NOC.render.Clickable = function(value) {
-    return "<a href='#'>" + value + "</a>";
+    return "<a href='#' class='noc-clickable-cell'>" + value + "</a>";
 }
 
 //
