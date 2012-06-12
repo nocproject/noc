@@ -145,7 +145,7 @@ class IP(object):
         Return generator of free prefixes.
 
         :param prefixes: List of occupied prefixes
-        :type prefixes: List of IP instances
+        :type prefixes: list
         :return: Generator of free prefixes
         :rtype: Generator of IP instances
         """
