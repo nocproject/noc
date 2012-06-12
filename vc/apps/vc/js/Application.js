@@ -27,6 +27,12 @@ Ext.define("NOC.vc.vc.Application", {
             lookup: "vc.vcdomain"
         },
         {
+            title: "By State",
+            name: "state",
+            ftype: "lookup",
+            lookup: "main.resourcestate"
+        },
+        {
             title: "By VC Filter",
             name: "l1",
             ftype: "vcfilter"
