@@ -361,6 +361,27 @@ class Interface(Document):
         link.save()
         return link
 
+    @classmethod
+    def get_interface(cls, s):
+        """
+        Parse <managed object>@<interface> string
+        and return interface instance or None
+        """
+        if "@" not in s:
+            raise ValueError("Invalid interface: %s" % s)
+        o, i = s.rsplit("@", 1)
+        # Get managed object
+        try:
+            mo = ManagedObject.objects.get(name=o)
+        except ManagedObject.DoesNotExist:
+            raise ValueError("Invalid manged object: %s" % o)
+        # Normalize interface name
+        i = mo.profile.convert_interface_name(i)
+        # Look for interface
+        iface = Interface.objects.filter(managed_object=mo.id,
+            name=i).first()
+        return iface
+
 
 class SubInterface(Document):
     meta = {
