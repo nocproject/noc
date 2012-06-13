@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_config
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -30,8 +30,10 @@ class Script(NOCScript):
     ## DGS-3024, DGS-3048
     ##
     @NOCScript.match(platform__regex=r"DGS-(3024|3048)")
-    def execute_not_supported(self):
-        raise self.NotSupportedError()
+    def execute_config_current(self):
+        config = self.cli("show config current_config")
+        config = self.strip_first_lines(config, 1)
+        return self.cleaned_config(config)
 
     ##
     ## DES-1210-28, DES-1210-52
