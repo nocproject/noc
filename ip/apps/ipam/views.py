@@ -683,10 +683,11 @@ class IPAMAppplication(Application):
                         vrf.id, afi, prefix.prefix)
         else:
             ds_prefix = None
-            if afi == "4" and prefix.ipv6_transition:
-                ds_prefix = prefix.ipv6_transition.prefix
-            elif afi == "6" and prefix.ipv4_transition:
-                ds_prefix = prefix.ipv4_transition.prefix
+            if prefix.has_transition:
+                if afi == "4":
+                    ds_prefix = prefix.ipv6_transition.prefix
+                elif afi == "6":
+                    ds_prefix = prefix.ipv4_transition.prefix
             initial = {
                 "asn": prefix.asn.id,
                 "state": prefix.state.id,
