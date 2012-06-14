@@ -185,16 +185,19 @@ class ManagedObject(models.Model):
             verbose_name="Config Filter pyRule", 
             limit_choices_to={"interface": "IConfigFilter"},
             null=True, blank=True,
+            on_delete=models.SET_NULL,
             related_name="managed_object_config_filter_rule_set")
     config_diff_filter_rule = models.ForeignKey(PyRule,
             verbose_name=_("Config Diff Filter Rule"),
             limit_choices_to={"interface": "IConfigDiffFilter"},
             null=True, blank=True,
+            on_delete=models.SET_NULL,
             related_name="managed_object_config_diff_rule_set")
     config_validation_rule = models.ForeignKey(PyRule,
             verbose_name="Config Validation pyRule",
             limit_choices_to={"interface": "IConfigValidator"},
             null=True, blank=True,
+            on_delete=models.SET_NULL,
             related_name="managed_object_config_validation_rule_set")
     max_scripts = models.IntegerField(_("Max. Scripts"),
             null=True, blank=True,
