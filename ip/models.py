@@ -254,7 +254,7 @@ class Prefix(models.Model):
             check_ipv4_prefix(self.prefix)
         elif self.afi == "6":
             check_ipv6_prefix(self.prefix)
-            # Check root prefix have no parent
+        # Check root prefix have no parent
         if self.is_root and self.parent:
             raise ValidationError("Root prefix cannot have parent")
 
@@ -303,6 +303,8 @@ class Prefix(models.Model):
         self.address_set.update(prefix=self.parent)
         # Unlink dual-stack allocations
         self.clear_transition()
+        # Remove bookmarks
+        self.prefixbookmark_set.all().delete()
         # Finally delete
         super(Prefix, self).delete(*args, **kwargs)
 
