@@ -27,7 +27,7 @@ class Script(noc.sa.script.Script):
     def execute_other(self):
         r = []
         try:
-            trunk = self.cli("display eth-trunk")
+            trunk = self.cli("display eth-trunk", cached=True)
         except self.CLISyntaxError:
             # version 5.3 produce like this:
             # Error: No valid trunk in the system.

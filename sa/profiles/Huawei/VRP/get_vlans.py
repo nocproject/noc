@@ -44,8 +44,8 @@ class Script(NOCScript):
         rx_vlan_line_vrp5 = re.compile(r"^(?P<vlan_id>\d{1,4})\s*?.*?", re.IGNORECASE | re.DOTALL | re.MULTILINE)
         rx_vlan_line_vrp3 = re.compile(r"^\sVLAN ID:\s+?(?P<vlan_id>\d{1,4})\n.*?Name:\s+(?P<name>.*?)\n.*?(\n\n|$)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
         if self.match_version(version__startswith="5."):
-            vlans = self.cli("display vlan")
+            vlans = self.cli("display vlan", cached=True)
             return [{"vlan_id": int(match.group("vlan_id")), "name": "VLAN" + match.group("vlan_id")} for match in rx_vlan_line_vrp5.finditer(vlans)]
         else:
-            vlans = self.cli("display vlan all")
+            vlans = self.cli("display vlan all", cached=True)
             return [{"vlan_id": int(match.group("vlan_id")), "name": match.group("name")} for match in rx_vlan_line_vrp3.finditer(vlans)]

@@ -57,7 +57,7 @@ class Script(NOCScript):
         ## Other (VRP5 style)
         ##
         else:
-            cli = self.cli("display interface brief")
+            cli = self.cli("display interface brief", cached=True)
             match = rx_ifc_block.search(cli)
             if match:
                 for l in match.group("block").splitlines():
