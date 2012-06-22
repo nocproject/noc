@@ -16,7 +16,7 @@ class Script(NOCScript):
     name = "Huawei.VRP.get_switchport"
     implements = [IGetSwitchport]
     rx_line = re.compile(
-        r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE)
+        r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE)
     rx_descr = re.compile(
         r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
 
@@ -47,10 +47,15 @@ class Script(NOCScript):
 
         # Get ports in vlans
         r = []
-        for match in self.rx_line.finditer(self.cli("display port vlan")):
+        if self.match_version(version__startswith="5.3"):
+            v = self.cli("display port allow-vlan")
+        else:
+            v = self.cli("display port vlan")
+
+        for match in self.rx_line.finditer(v):
             port = {}
             tagged = []
-            trunk = match.group("mode") in ("trunk", "hybrid")
+            trunk = match.group("mode") in ("trunk", "hybrid", "trunking")
             if trunk:
                 vlans = match.group("vlans").strip()
                 if vlans != "-":
