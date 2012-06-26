@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:WARN:|WARN\\(4\\)) Unauthenticated IP-MAC address and discarded by ip mac port binding \\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), Port: (?P<interface>\\S+)\\)$"
+                "value_re": "(?:WARN:|WARN\\(4\\)) Unauthenticated IP-MAC address and discarded by ip mac port binding \\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), [Pp]ort: (?P<interface>\\S+)\\)$"
             }
         ]
     },
@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:WARN:|WARN\\(4\\)) Dynamic IMPB entry is conflicting with static IMPB\\s*\\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), Port: (?P<interface>\\S+)\\)$"
+                "value_re": "(?:WARN:|WARN\\(4\\)) Dynamic IMPB entry is conflicting with static IMPB\\s*\\(IP: (?P<ip>\\S+), MAC: (?P<mac>\\S+), [Pp]ort: (?P<interface>\\S+)\\)$"
             }
         ]
     },
