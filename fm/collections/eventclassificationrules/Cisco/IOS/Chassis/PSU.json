@@ -285,6 +285,48 @@
     },
 
     {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Failed #8 (SYSLOG)",
+        "description": "%C6KPWR-SP-2-PSFAIL: power supply 1 output failed.",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C6KPWR-SP-2-PSFAIL: (?P<name>power supply \\d+) output failed.$"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #8 (SYSLOG)",
+        "description": "%C6KPWR-SP-4-PSOK: power supply 1 turned on.",
+        "event_class__name": "Chassis | PSU | PSU Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C6KPWR-SP-4-PSOK: (?P<name>power supply \\d+) turned on.$"
+            }
+        ]
+    },
+
+    {
         "name": "Cisco | IOS | Chassis | PSU | PSU Changed (SYSLOG)",
         "description": "%ENVM-6-PSCHANGE: Power Supply 1 changed from removed to Zytek AC Power Supply",
         "event_class__name": "Chassis | PSU | PSU Changed",
