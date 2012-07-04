@@ -1,8 +1,8 @@
 -- -----------------------------------------------------------------------------
 -- MIB NAME : Equipment Common mib
 -- FILE NAME: Equipment.mib
--- DATE     : 2011/01/18
--- VERSION  : 2.14
+-- DATE     : 2011/04/20
+-- VERSION  : 2.17
 -- PURPOSE  : To construct the MIB structure of equipments management
 --            for proprietary enterprise
 -- -----------------------------------------------------------------------------
@@ -13,6 +13,29 @@
 -- [New Object]
 -- [Modification]
 -- Notes: (Requested by who and which project)
+--
+-- Version 2.17, 2011/04/20, LiangFeng  
+-- Description:
+-- [New Value]
+-- 1. Add value list "backup-master(6)" in swUnitMgmtCurrentMode.
+-- Notes: Requested by Hubert Huang for project DGS-3120.
+--
+-- Version 2.16, 2011/02/21, Melody Gao  
+-- Description:
+-- [New Object]
+-- 1. Add swFanTrapState and swPowerTrapState to support fan and power trap state control.
+-- Notes: Requested by Melody Gao for project DGS-3120.
+--
+-- Version 2.15, 2011/02/09, Green Zhu
+-- [Modification]
+-- 1. Delete swEquipmentGreenTechnology according to 
+-- SNR-20100628-001_v1 05.doc. (change term Green Technology to power saving).
+-- 2. Rename swEquipmentPowerSavingState to swEquipPowerSavingLinkDetectState.
+-- [New Object]
+-- 1. Add  swEquipPowerSavingHiberState, swEquipPowerSavingPortLEDState, 
+-- swEquipPowerSavingPortState and swEquipPowerSavingScheduleCtrl.
+-- To support power saving function(SNR-20100628-001_v1 05.doc).
+-- Notes: Requested by Green Zhu for project DES-3810.
 --
 -- Version 2.14, 2011/01/18, Valo Lee
 -- Description:
@@ -127,7 +150,7 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
 
 
      swEquipmentMIB MODULE-IDENTITY
-          LAST-UPDATED "201101180000Z"
+          LAST-UPDATED "201104200000Z"
           ORGANIZATION "D-Link Corp."
           CONTACT-INFO
             "http://support.dlink.com"
@@ -169,7 +192,28 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
     ::= { swEquipment 1 }
 
 -- -----------------------------------------------------------------------------
-
+     swFanTrapState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               enabled(1),
+              disabled(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "Indicate the fan warning event trap state."
+        ::= { swEquipment 4 }    
+        
+     swPowerTrapState OBJECT-TYPE
+        SYNTAX  INTEGER {
+               enabled(1),
+              disabled(2)
+               }
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "Indicate the power warning event trap state."
+        ::= { swEquipment 5 }
+        
     swPowerTable OBJECT-TYPE
         SYNTAX          SEQUENCE OF SwPowerEntry
         MAX-ACCESS      not-accessible
@@ -581,7 +625,8 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
                     auto(2),
                     stand-alone(3),
                     master(4),
-                    slave(5)
+                    slave(5),
+                    backup-master(6)
                 }
         MAX-ACCESS  read-only
         STATUS  current
@@ -805,7 +850,10 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
         ::= { swExternalAlarmEntry 2 }
 
     swExternalAlarmStatus OBJECT-TYPE
-        SYNTAX  INTEGER
+        SYNTAX  INTEGER {
+              alarming(1),
+              normal(2)
+    	}
         MAX-ACCESS  read-only
         STATUS  current
         DESCRIPTION
@@ -817,7 +865,7 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
 -- --------------------------------------------------------------------------------
 	swEquipmentPowerSaving OBJECT IDENTIFIER ::= { swEquipment 11 }
 	 
-   		swEquipmentPowerSavingState OBJECT-TYPE
+   		swEquipPowerSavingLinkDetectState OBJECT-TYPE
        		 SYNTAX  INTEGER {
               		enabled(1),
               		disabled(2)
@@ -826,7 +874,6 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
     		STATUS      current
     		DESCRIPTION  "Indicates the equipment reduced power consumption state."
     		::= { swEquipmentPowerSaving 1 }
-
     		
     	swEquipPowerSavingLenDetect OBJECT-TYPE
        		 SYNTAX  INTEGER {
@@ -837,7 +884,152 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
     		STATUS      current
     		DESCRIPTION  "Indicates the equipment reduced power consumption state with a link partner."
     		::= { swEquipmentPowerSaving 2 }
-    			    	
+ 
+		swEquipPowerSavingHiberState OBJECT-TYPE
+				SYNTAX  INTEGER {
+				enabled(1),
+				disabled(2)
+				}
+				MAX-ACCESS  read-write
+				STATUS  current
+				DESCRIPTION
+				"This object indicates the power saving state of system hibernation."
+				DEFVAL {disabled}    
+				::= { swEquipmentPowerSaving 3 }
+		
+		swEquipPowerSavingPortLEDState OBJECT-TYPE
+				SYNTAX  INTEGER {
+				enabled(1),
+				disabled(2)
+				}
+				MAX-ACCESS  read-write
+				STATUS  current
+				DESCRIPTION
+				"This object indicates the power saving state of port LED."
+				DEFVAL {disabled}    
+				::= { swEquipmentPowerSaving 4 }        
+				
+		swEquipPowerSavingPortState OBJECT-TYPE
+				SYNTAX  INTEGER {
+				enabled(1),
+				disabled(2)
+				}
+				MAX-ACCESS  read-write
+				STATUS  current
+				DESCRIPTION
+				"This object indicates the power saving state of port."
+				DEFVAL {disabled}    
+				::= { swEquipmentPowerSaving 5 }  
+    		
+-- -----------------------------------------------------------------------------  	
+		swEquipPowerSavingScheduleCtrl OBJECT IDENTIFIER ::= { swEquipmentPowerSaving 6 }
+-- -----------------------------------------------------------------------------  
+		swEquipPowerSavingHibernationTable OBJECT-TYPE
+				SYNTAX  SEQUENCE OF SwEquipPowerSavingHibernationEntry
+				MAX-ACCESS  not-accessible
+				STATUS  current
+				DESCRIPTION
+				"A list of the system hibernation configurations of the power saving."
+				::= { swEquipPowerSavingScheduleCtrl 1 }
+
+		swEquipPowerSavingHibernationEntry OBJECT-TYPE
+				SYNTAX  SwEquipPowerSavingHibernationEntry
+				MAX-ACCESS  not-accessible
+				STATUS  current
+				DESCRIPTION
+				"An entry containing the system hibernation configurations of the power saving."
+				INDEX   { swTimeRangeMgmtRangeName }
+				::= { swEquipPowerSavingHibernationTable 1 }
+
+		SwEquipPowerSavingHibernationEntry ::=
+				SEQUENCE {
+				swEquipPowerSavingHiberRowStatus
+						RowStatus
+				}		
+
+		swEquipPowerSavingHiberRowStatus OBJECT-TYPE
+				SYNTAX  RowStatus
+				MAX-ACCESS  read-create
+				STATUS  current
+				DESCRIPTION
+				"This object indicates the status of this entry."
+				::= { swEquipPowerSavingHibernationEntry 100 }		
+				
+-- -----------------------------------------------------------------------------    		    	
+		swEquipPowerSavingPortLedTable OBJECT-TYPE
+				SYNTAX  SEQUENCE OF SwEquipPowerSavingPortLedEntry
+				MAX-ACCESS  not-accessible
+				STATUS  current
+				DESCRIPTION
+				"A list of the port LED configurations of the power saving."
+				::= { swEquipPowerSavingScheduleCtrl 2 }
+
+		swEquipPowerSavingPortLedEntry OBJECT-TYPE
+				SYNTAX  SwEquipPowerSavingPortLedEntry
+				MAX-ACCESS  not-accessible
+				STATUS  current
+				DESCRIPTION
+				"An entry containing the port LED configurations of the power saving."
+				INDEX   { swTimeRangeMgmtRangeName}
+				::= { swEquipPowerSavingPortLedTable 1 }
+
+		SwEquipPowerSavingPortLedEntry ::=
+				SEQUENCE {
+				swEquipPowerSavingPortLedRowStatus
+						RowStatus				
+				}
+
+		swEquipPowerSavingPortLedRowStatus OBJECT-TYPE
+				SYNTAX  RowStatus
+				MAX-ACCESS  read-create
+				STATUS  current
+				DESCRIPTION
+				"This object indicates the status of this entry."
+				::= { swEquipPowerSavingPortLedEntry 100 }	
+
+-- -----------------------------------------------------------------------------    
+		swEquipPowerSavingPortTable OBJECT-TYPE
+				SYNTAX  SEQUENCE OF SwEquipPowerSavingPortEntry
+				MAX-ACCESS  not-accessible
+				STATUS  current
+				DESCRIPTION
+				"A list of the port configurations of the power saving."
+				::= { swEquipPowerSavingScheduleCtrl 3 }
+
+		swEquipPowerSavingPortEntry OBJECT-TYPE
+				SYNTAX  SwEquipPowerSavingPortEntry
+				MAX-ACCESS  not-accessible
+				STATUS  current
+				DESCRIPTION
+				"An entry containing the port configurations of the power saving."
+				INDEX   { swEquipPowerSavingPortIndex, swTimeRangeMgmtRangeName }
+				::= { swEquipPowerSavingPortTable 1 }
+
+		SwEquipPowerSavingPortEntry ::=
+				SEQUENCE {
+				swEquipPowerSavingPortIndex
+						INTEGER,			
+				swEquipPowerSavingPortRowStatus
+						RowStatus				
+				} 
+
+		swEquipPowerSavingPortIndex OBJECT-TYPE
+				SYNTAX  INTEGER
+				MAX-ACCESS  not-accessible
+				STATUS  current
+				DESCRIPTION
+				"Indicates the module's port number.(1..Max port number in
+				the module)."
+				::= { swEquipPowerSavingPortEntry 1 }
+				
+		swEquipPowerSavingPortRowStatus OBJECT-TYPE
+				SYNTAX  RowStatus
+				MAX-ACCESS  read-create
+				STATUS  current
+				DESCRIPTION
+				"This object indicates the status of this entry."
+				::= { swEquipPowerSavingPortEntry 100 }	
+    		
 -- --------------------------------------------------------------------------------
 -- swEquipmentTemperatureCtrl
 -- --------------------------------------------------------------------------------
@@ -881,158 +1073,6 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
             "This object indicates the LED admin state of all ports."
         DEFVAL {enabled}    
         ::= { swEquipmentLEDCtrl 1 }
-	
--- -----------------------------------------------------------------------------    
---	swEquipmentGreenTechnology OBJECT IDENTIFIER ::= { swEquipment 14 }
--- -----------------------------------------------------------------------------
-	swEquipmentGreenTechnology OBJECT IDENTIFIER ::= { swEquipment 14 }
-	
-	swEquipmentGreenTechStateCtrl OBJECT IDENTIFIER ::= { swEquipmentGreenTechnology 1 }
-	
-	swEquipmentGreenTechHiberState OBJECT-TYPE
-        SYNTAX  INTEGER {
-               enabled(1),
-               disabled(2)
-               }
-        MAX-ACCESS  read-write
-        STATUS  current
-        DESCRIPTION
-            "This object indicates the green technology state of system hibernation."
-        DEFVAL {disabled}    
-        ::= { swEquipmentGreenTechStateCtrl 1 }
-       
- 	swEquipmentGreenTechPortLEDState OBJECT-TYPE
-        SYNTAX  INTEGER {
-               enabled(1),
-               disabled(2)
-               }
-        MAX-ACCESS  read-write
-        STATUS  current
-        DESCRIPTION
-            "This object indicates the green technology state of port LED."
-        DEFVAL {disabled}    
-        ::= { swEquipmentGreenTechStateCtrl 2 }        
-        
- 	swEquipmentGreenTechPortState OBJECT-TYPE
-        SYNTAX  INTEGER {
-               enabled(1),
-               disabled(2)
-               }
-        MAX-ACCESS  read-write
-        STATUS  current
-        DESCRIPTION
-            "This object indicates the green technology state of port."
-        DEFVAL {disabled}    
-        ::= { swEquipmentGreenTechStateCtrl 3 }  
-                   
--- -----------------------------------------------------------------------------  	
-	swEquipmentGreenTechScheduleCtrl OBJECT IDENTIFIER ::= { swEquipmentGreenTechnology 2 }
-	
-	swEquipmentGreenTechHibernationTable OBJECT-TYPE
-		SYNTAX  SEQUENCE OF SwEquipmentGreenTechHibernationEntry
-		MAX-ACCESS  not-accessible
-		STATUS  current
-		DESCRIPTION
-			"A list of the system hibernation configurations of the green technology."
-		::= { swEquipmentGreenTechScheduleCtrl 1 }
-
-	swEquipmentGreenTechHibernationEntry OBJECT-TYPE
-		SYNTAX  SwEquipmentGreenTechHibernationEntry
-		MAX-ACCESS  not-accessible
-		STATUS  current
-		DESCRIPTION
-			"An entry containing the system hibernation configurations of the green technology."
-		INDEX   { swTimeRangeMgmtRangeName }
-		::= { swEquipmentGreenTechHibernationTable 1 }
-
-	SwEquipmentGreenTechHibernationEntry ::=
-		SEQUENCE {
-			swEquipmentGreenTechHiberRowStatus
-				RowStatus
-	        }		
-
-    swEquipmentGreenTechHiberRowStatus OBJECT-TYPE
-        SYNTAX  RowStatus
-        MAX-ACCESS  read-create
-        STATUS  current
-        DESCRIPTION
-            "This object indicates the status of this entry."
-        ::= { swEquipmentGreenTechHibernationEntry 100 }		
-		
--- -----------------------------------------------------------------------------    		    	
-	swEquipmentGreenTechPortLedTable OBJECT-TYPE
-		SYNTAX  SEQUENCE OF SwEquipmentGreenTechPortLedEntry
-		MAX-ACCESS  not-accessible
-		STATUS  current
-		DESCRIPTION
-			"A list of the port LED configurations of the green technology."
-		::= { swEquipmentGreenTechScheduleCtrl 2 }
-
-	swEquipmentGreenTechPortLedEntry OBJECT-TYPE
-		SYNTAX  SwEquipmentGreenTechPortLedEntry
-		MAX-ACCESS  not-accessible
-		STATUS  current
-		DESCRIPTION
-			"An entry containing the port LED configurations of the green technology."
-		INDEX   { swTimeRangeMgmtRangeName}
-		::= { swEquipmentGreenTechPortLedTable 1 }
-
-	SwEquipmentGreenTechPortLedEntry ::=
-		SEQUENCE {
-			swEquipmentGreenTechPortLedRowStatus
-				RowStatus				
-	        }
-
-    swEquipmentGreenTechPortLedRowStatus OBJECT-TYPE
-        SYNTAX  RowStatus
-        MAX-ACCESS  read-create
-        STATUS  current
-        DESCRIPTION
-            "This object indicates the status of this entry."
-        ::= { swEquipmentGreenTechPortLedEntry 100 }	
-
--- -----------------------------------------------------------------------------    
-	swEquipmentGreenTechPortTable OBJECT-TYPE
-		SYNTAX  SEQUENCE OF SwEquipmentGreenTechPortEntry
-		MAX-ACCESS  not-accessible
-		STATUS  current
-		DESCRIPTION
-			"A list of the port configurations of the green technology."
-		::= { swEquipmentGreenTechScheduleCtrl 3 }
-
-	swEquipmentGreenTechPortEntry OBJECT-TYPE
-		SYNTAX  SwEquipmentGreenTechPortEntry
-		MAX-ACCESS  not-accessible
-		STATUS  current
-		DESCRIPTION
-			"An entry containing the port configurations of the green technology."
-		INDEX   { swEquipmentGreenTechPortIndex, swTimeRangeMgmtRangeName }
-		::= { swEquipmentGreenTechPortTable 1 }
-
-	SwEquipmentGreenTechPortEntry ::=
-		SEQUENCE {
-			swEquipmentGreenTechPortIndex
-				INTEGER,			
-			swEquipmentGreenTechPortRowStatus
-				RowStatus				
-	        } 
-
-    swEquipmentGreenTechPortIndex OBJECT-TYPE
-        SYNTAX  INTEGER
-        MAX-ACCESS  not-accessible
-        STATUS  current
-        DESCRIPTION
-            "Indicates the module's port number.(1..Max port number in
-			the module)."
-        ::= { swEquipmentGreenTechPortEntry 1 }
-        
-    swEquipmentGreenTechPortRowStatus OBJECT-TYPE
-        SYNTAX  RowStatus
-        MAX-ACCESS  read-create
-        STATUS  current
-        DESCRIPTION
-            "This object indicates the status of this entry."
-        ::= { swEquipmentGreenTechPortEntry 100 }	
 
 -- -----------------------------------------------------------------------------
 --  swExternalAlarmStackingMgmt
@@ -1093,12 +1133,16 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
         ::= { swExternalAlarmStackingEntry 3 }
 
     swExternalAlarmStackingStatus OBJECT-TYPE
-        SYNTAX  INTEGER
+        SYNTAX  INTEGER {
+              alarming(1),
+              normal(2)
+    	}
         MAX-ACCESS  read-only
         STATUS  current
         DESCRIPTION
             "Shows the current status of each alarm channel."
         ::= { swExternalAlarmStackingEntry 4 }
+        
 -- -----------------------------------------------------------------------------
 	swEquipmentNotifyMgmt           OBJECT IDENTIFIER ::= { swEquipmentNotify 1 }
 	swEquipmentNotification         OBJECT IDENTIFIER ::= { swEquipmentNotify 2 }
@@ -1402,7 +1446,6 @@ EQUIPMENT-MIB DEFINITIONS ::= BEGIN
         STATUS          current
         DESCRIPTION     "The notice of an Alarm in the specified channel."
         ::= { swEquipExternalAlarmNotifyPrefix 2 }
-
 --- -----------------------------------------------------------------------------
     swNotificationBindings OBJECT IDENTIFIER ::= { swEquipmentNotify 3 }
 

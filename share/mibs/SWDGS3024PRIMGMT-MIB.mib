@@ -1,0 +1,14 @@
+SWDGS3024PRIMGMT-MIB    DEFINITIONS ::= BEGIN
+
+    IMPORTS
+        MODULE-IDENTITY					FROM SNMPv2-SMI
+        dlink-products,dlink-mgmt				    FROM DLINK-ID-REC-MIB;
+						    	
+    
+   	dgs-3024SeriesProd   	OBJECT IDENTIFIER ::= { dlink-products 68 }
+	dgs-3024				OBJECT IDENTIFIER ::= { dgs-3024SeriesProd 1 }
+
+    	dgs-3024SeriesProd-Mgmt		OBJECT IDENTIFIER ::= { dlink-mgmt 68 }
+    	dgs-3024Mgmt      				OBJECT IDENTIFIER ::= { dgs-3024SeriesProd-Mgmt 1 }
+	
+END   

@@ -1,8 +1,8 @@
 -- -----------------------------------------------------------------------------
 -- MIB NAME : Time Range Common mib
 -- FILE NAME: TimeRange.mib
--- DATE     : 2007/05/15
--- VERSION  : 2.01
+-- DATE     : 2008/11/20
+-- VERSION  : 2.02
 -- PURPOSE  : To construct the MIB structure of time range management
 --            for proprietary enterprise
 -- -----------------------------------------------------------------------------
@@ -13,6 +13,13 @@
 --  [New Object]
 --  [Modification]
 -- Notes: (Requested by who and which project)
+--
+-- Version 2.02, 2008/11/20, Marco
+-- Description:
+-- [New Object]
+-- [Modifications]
+-- 1. change default value for swTimeRangeMgmtEndTime
+-- Requested by Marco.
 --
 -- Version 2.01, 2007/05/15, Yan
 -- Description:
@@ -33,7 +40,7 @@ TIMERANGE-MIB DEFINITIONS ::= BEGIN
          dlink-common-mgmt                FROM DLINK-ID-REC-MIB;
 
      swTimeRangeMIB MODULE-IDENTITY
-         LAST-UPDATED "0703270000Z"
+         LAST-UPDATED "0811200000Z"
          ORGANIZATION "D-Link Corp."
          CONTACT-INFO
              "http://support.dlink.com"
@@ -122,7 +129,7 @@ TIMERANGE-MIB DEFINITIONS ::= BEGIN
            DESCRIPTION
                "The end time of a day. The format is hh:mm:ss ONLY; and cannot
                 be set using a different format. The ending time must be set later
-                than the starting time. The default value is 24:00:00."
+                than the starting time. The default value is 23:59:59."
            ::= { swTimeRangeMgmtEntry 4 }
 
        swimeRangeMgmtStatus OBJECT-TYPE

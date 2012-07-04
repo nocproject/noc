@@ -1,8 +1,8 @@
 -- -----------------------------------------------------------------------------
 -- MIB NAME : General Management Common mib
 -- FILE NAME: Genmgmt.mib
--- DATE     : 2010/11/15
--- VERSION  : 2.31
+-- DATE     : 2011/03/02
+-- VERSION  : 2.34
 -- PURPOSE  : To construct the MIB structure of general management information
 --            for proprietary enterprise
 -- -----------------------------------------------------------------------------
@@ -14,18 +14,31 @@
 --  [Modification]
 -- Notes: (Requested by who and which project)     
 --
+-- Version 2.34 2011/03/02,Rock Zhang
+-- Description:
+-- [New Object]
+-- Add agentARPRetryTimes to support the ARP retry times.
+-- Notes:Requested by Rock Zhang for project DGS3600.
+--
+-- Version 2.33 2011/02/14,  Jok Long
+-- Description:
+-- [New Object]
+-- Add object agentBscFileSystemIncrement in agentBscFileSystemTable to
+-- indicate the downloading configuration file apply mode.
+-- [Modification]
+-- Notes:Requested by Jok Long for project DGS3620
+--
+-- Version 2.32 2011/02/10,King Cao
+-- Description:
+-- [New Object]
+-- Add agentARPTotalARPEntries to display the total number of ARP entries.
+-- Notes: Requested by King Cao for SNR-20101227-001.
+--
 -- Version 2.31 2010/11/15,Green Zhu
 -- Description:
 -- [New Object]
 -- Add agentFirmwareType to display the firmware type.
--- Notes: Requested by Green Zhu for DGS3620.
---  
--- Version 2.31 2010/10/14,Jok Long
--- Description:
--- [New Object]
--- Add node agentBscFileSystemIncrement.
--- Notes: Requested by Jok Long for DGS-3620.
---
+-- Notes: Requested by Green Zhu for DGS3120.
 --
 -- Version 2.30 2010/04/19,Green Zhu
 -- Description:
@@ -268,7 +281,7 @@ AGENT-GENERAL-MIB  DEFINITIONS ::= BEGIN
 	VlanId				    FROM Q-BRIDGE-MIB;
 
       agentGeneralMgmt MODULE-IDENTITY
-            LAST-UPDATED "201011150000Z"
+            LAST-UPDATED "201103020000Z"
             ORGANIZATION "D-Link Corp."
             CONTACT-INFO
                 "http://support.dlink.com"
@@ -1892,7 +1905,23 @@ UnitList                ::= OCTET STRING(SIZE (0..3))
                      By default, the event log is enabled."
                DEFVAL { enabled }
                 ::={agentGratuitousARPEntry 4}
+                
+    agentARPTotalARPEntries OBJECT-TYPE
+        SYNTAX  INTEGER
+        MAX-ACCESS  read-only
+        STATUS  current
+        DESCRIPTION
+            "Used to display the total number of ARP entries."
+        ::= { agentARPMgmt 3 }
 
+    agentARPRetryTimes OBJECT-TYPE
+        SYNTAX  INTEGER
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+            "This indicates the retry times of the ARP request."
+        ::= { agentARPMgmt 4 }
+        
 -- -----------------------------------------------------------------------------
 -- swMultiImageCtrlTable
 -- -----------------------------------------------------------------------------
@@ -2039,10 +2068,10 @@ UnitList                ::= OCTET STRING(SIZE (0..3))
                         INTEGER,
                 agentBscFileSystemInterfaceName
                         DisplayString,
-                agentBscFileSystemIncrement
-        		TruthValue,
                 agentBscFileSystemServerDomainName
-                        DisplayString
+                        DisplayString,
+                agentBscFileSystemIncrement
+        	        	    TruthValue    
 
         }
 
@@ -2234,25 +2263,26 @@ UnitList                ::= OCTET STRING(SIZE (0..3))
              "This node is used to specify the interface name when agentBscFileSystemServerIPv6Addr
               is the local link address."
         ::= {  agentBscFileSystemEntry 13 }
-
-     agentBscFileSystemIncrement OBJECT-TYPE
-				SYNTAX      TruthValue
-				MAX-ACCESS  read-write
-				STATUS  current
-				DESCRIPTION
-							"This object indicates whether the previous configuration will remain 
-             valid or not after downloading the config file.
-             True : keep valid
-             False : erase. "
-       	 ::= { agentBscFileSystemEntry 14 }
-
+        
    agentBscFileSystemServerDomainName OBJECT-TYPE
         SYNTAX  DisplayString  (SIZE(0..255))
         MAX-ACCESS  read-write
         STATUS  current
         DESCRIPTION
             "This object indicates the domain name of the TFTP server."
-        ::= {  agentBscFileSystemEntry 15}
+        ::= {  agentBscFileSystemEntry 14 }
+        
+   agentBscFileSystemIncrement OBJECT-TYPE
+        SYNTAX      TruthValue
+        MAX-ACCESS  read-write
+        STATUS  current
+        DESCRIPTION
+             "If increment is specified, then the existing configuration will not be cleared before applying
+             of the new configuration. If it is not specified, then the existing configuration will be cleared
+             before applying of the new configuration.
+             True : keep valid
+             False : erase. "
+       	 ::= { agentBscFileSystemEntry 15 } 
 	
 -- --------------------------------------------------------------------------------
      agentBscFileSystemSaveConfigDriverID OBJECT-TYPE
