@@ -22,7 +22,8 @@ class Profile(noc.sa.profiles.Profile):
     pattern_more = [
         (r"^--More\(Enter: next line, spacebar: next page, any other key: quit\)--", " "),
         (r"\[<frameId/slotId>\]", "\n"),
-        (r"\(y/n\) \[n\]", "y\n")
+        (r"\(y/n\) \[n\]", "y\n"),
+        (r"\[to\]\:", "\n")
     ]
     pattern_unpriveleged_prompt = r"^\S+?>"
     command_more = " "
