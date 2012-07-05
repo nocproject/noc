@@ -3,7 +3,7 @@
 ## Huawei.VRP3.get_config
 ## sergey.sadovnikov@gmail.com
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -18,6 +18,7 @@ class Script(NOCScript):
     implements = [IGetConfig]
 
     def execute(self):
+        self.cli("no monitor")
         with self.configure():
             config = self.cli("show running-config")
             config = self.strip_first_lines(config, 3)
