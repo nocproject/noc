@@ -4,7 +4,7 @@
 ## OS:     VRP3
 ## Compatible: 3.1
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -28,6 +28,7 @@ class Profile(noc.sa.profiles.Profile):
     pattern_unpriveleged_prompt = r"^\S+?>"
     command_more = " "
     config_volatile = ["^%.*?$"]
+    command_disable_pager="length 0"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
