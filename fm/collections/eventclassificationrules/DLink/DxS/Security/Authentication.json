@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:INFO:|INFO\\(6\\)) SNMP request received from (?P<ip>\\S+) with invalid community string"
+                "value_re": "(?:WARN:|INFO:|INFO\\(6\\)) SNMP request received from (?P<ip>\\S+) with invalid community string"
             }
         ]
     },
