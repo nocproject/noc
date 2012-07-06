@@ -65,7 +65,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2macNotification$"
+                "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2(?:macNotification|NotifyPrefix)$"
             },
             {
                 "key_re": "^D[EG]S-?\\d{4}.+-MIB::sw(?:l2NotificationBin?dings|L2macNotifyInfo)$",
@@ -96,7 +96,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2macNotification$"
+                "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2(?:macNotification|NotifyPrefix)$"
             },
             {
                 "key_re": "^D[EG]S-?\\d{4}.+-MIB::sw(?:l2NotificationBin?dings|L2macNotifyInfo)$",
@@ -127,7 +127,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2macNotification$"
+                "value_re": "^D[EG]S-?\\d{4}.+-MIB::swL2(?:macNotification|NotifyPrefix)$"
             },
             {
                 "key_re": "^D[EG]S-?\\d{4}.+-MIB::sw(?:l2NotificationBin?dings|L2macNotifyInfo)$",
