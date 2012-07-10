@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObject Manager
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -315,7 +315,14 @@ class ManagedObjectApplication(ModelApplication):
     model_admin = ManagedObjectAdmin
     menu = "Managed Objects"
     query_condition = "icontains"
-    
+
+    @view(url=r"^(\d+)/delete/$", url_name="delete", access="delete")
+    def view_delete(self, request, object_id, extra_context=None):
+        """Delete object"""
+        self.message_user(request,
+            "Use './noc wipe managed_object %d' to wipe managed object" % int(object_id))
+        return self.response_redirect_to_referrer(request)
+
     @view(url=r"^(?P<object_id>\d+)/scripts/$",
          url_name="scripts", access=HasPerm("change"))
     def view_scripts(self, request, object_id):
