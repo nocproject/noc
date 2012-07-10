@@ -85,6 +85,11 @@
     },
 
     {
+        "mib": "AGENT-GENERAL-MIB",
+        "preference": 4300
+    },
+
+    {
         "mib": "SWPRIMGMT-MIB",
         "preference": 4500
     },
