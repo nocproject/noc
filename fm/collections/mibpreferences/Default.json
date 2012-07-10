@@ -85,8 +85,13 @@
     },
 
     {
-        "mib": "AGENT-GENERAL-MIB",
+        "mib": "EQUIPMENT-MIB",
         "preference": 4300
+    },
+
+    {
+        "mib": "AGENT-GENERAL-MIB",
+        "preference": 4400
     },
 
     {
