@@ -96,4 +96,6 @@ class TrapCollector(ListenUDPSocket, EventCollector):
                 ts = int(time.time())
                 for o, v in var_binds:
                     body[oid_to_str(o._value)] = extract(v)
+                if self.log_traps:
+                    logging.info("DECODED SNMP TRAP: '%r'" % body))
                 self.process_event(ts, object, body)
