@@ -9,6 +9,7 @@
 """
 ## Python module
 import time
+import logging
 ## pysnmp modules
 from pyasn1.codec.ber import decoder
 from pysnmp.proto import api
@@ -32,9 +33,10 @@ class TrapCollector(ListenUDPSocket, EventCollector):
     """
     name = "TrapCollector"
 
-    def __init__(self, activator, address, port):
+    def __init__(self, activator, address, port, log_traps=False):
         self.info("Initializing at %s:%s" % (address, port))
         self.collector_signature = "%s:%s" % (address, port)
+        self.log_traps = log_traps
         ListenUDPSocket.__init__(self, activator.factory, address, port)
         EventCollector.__init__(self, activator)
 
@@ -67,6 +69,8 @@ class TrapCollector(ListenUDPSocket, EventCollector):
         if not object:
             # Skip events from unknown sources
             return
+        if self.log_traps:
+            logging.info("SNMP TRAP: '%r'" % whole_msg)
         while whole_msg:
             msg_version = int(api.decodeMessageVersion(whole_msg))
             if api.protoModules.has_key(msg_version):

@@ -302,10 +302,12 @@ class Activator(Daemon, FSM):
         """
         logging.debug("Starting trap collectors")
         from noc.sa.activator.trap_collector import TrapCollector
+        log_traps = self.config.getboolean("main", "log_snmp_traps")
         self.trap_collectors = [
-            TrapCollector(self, ip, port)
+            TrapCollector(self, ip, port, log_traps)
             for ip, port
-            in self.resolve_addresses(self.config.get("activator", "listen_traps"), 162)
+            in self.resolve_addresses(
+                self.config.get("activator", "listen_traps"), 162)
         ]
 
     def stop_trap_collectors(self):
