@@ -70,7 +70,7 @@ class TrapCollector(ListenUDPSocket, EventCollector):
             # Skip events from unknown sources
             return
         if self.log_traps:
-            logging.info("SNMP TRAP: '%r'" % whole_msg)
+            self.info("SNMP TRAP: %r" % whole_msg)
         while whole_msg:
             msg_version = int(api.decodeMessageVersion(whole_msg))
             if api.protoModules.has_key(msg_version):
@@ -97,5 +97,5 @@ class TrapCollector(ListenUDPSocket, EventCollector):
                 for o, v in var_binds:
                     body[oid_to_str(o._value)] = extract(v)
                 if self.log_traps:
-                    logging.info("DECODED SNMP TRAP: '%r'" % body)
+                    self.info("DECODED SNMP TRAP: %r" % body)
                 self.process_event(ts, object, body)
