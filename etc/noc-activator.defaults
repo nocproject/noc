@@ -16,6 +16,7 @@ log_cli_sessions = false
 log_cli_sessions_path = /var/log/noc/cli-sessions/{{ip}}-{{script}}-{{ts}}.log
 log_cli_sessions_ip_re =
 log_cli_sessions_script_re =
+log_snmp_traps = false
 
 [activator]
 name            = unknown
