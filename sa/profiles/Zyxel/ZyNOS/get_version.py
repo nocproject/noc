@@ -26,7 +26,8 @@ FW_OIDS = {
     "ES-2108-G": 19,
     "GS-4012F": 20,
     "ES-4124": 24,
-    "XGS-4728F": 46
+    "XGS-4728F": 46,
+    "GS2200-24": 55
 }
 
 
@@ -47,7 +48,7 @@ class Script(NOCScript):
             try:
                 # Get platform from sys.Descr.0
                 platform = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
-                oid = FW_OIDS[platform]
+                oid = FW_OIDS.get(platform)
                 # Get major and minor versions, model string
                 # and version control number
                 if oid:
@@ -56,6 +57,7 @@ class Script(NOCScript):
                     fwmod = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.3.0" % oid)
                     fwver = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.4.0" % oid)
                 else:
+                    self.error("Cannot find base OID for model '%s'" % platform)
                     raise self.snmp.TimeOutError  # Fallback to CLI
                 return {
                     "vendor": "Zyxel",
