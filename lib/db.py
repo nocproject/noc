@@ -95,3 +95,21 @@ def check_pg_superuser():
         WHERE usename = USER
             AND usesuper=true""")
     return c.fetchall()[0][0] == 1
+
+
+def vacuum(table, analyze=False):
+    """
+    Run VACUUM on table
+    :param table: Table name
+    :param analyze: Issue ANALYZE command
+    :return:
+    """
+    if analyze:
+        cmd = "VACUUM ANALYZE %s" % table
+    else:
+        cmd = "VACUUM %s" % table
+    c = connection.cursor()
+    # Close current transaction
+    # before running VACUUM
+    c.execute("COMMIT")
+    c.execute(cmd)
