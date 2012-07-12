@@ -27,7 +27,8 @@ class Task(noc.lib.periodic.Task):
         from mongoengine.django.sessions import MongoSession
 
         self.info("Cleaning expired sessions")
-        MongoSession.objects.filter(expire_date__lt=datetime.datetime.now()).delete()
+        MongoSession.objects.filter(
+            expire_date__lt=datetime.datetime.now()).delete()
         self.info("Expired sessions are cleaned")
 
     def cleanup_hanging_tags(self):
@@ -47,13 +48,18 @@ class Task(noc.lib.periodic.Task):
         """
         Remove old map/reduce tasks
         """
-        from noc.sa.models import ReduceTask
+        from noc.sa.models import ReduceTask, MapTask
+        from noc.lib.db import vacuum
 
         self.info("Cleanup map/reduce tasks")
         watermark = datetime.datetime.now() - datetime.timedelta(days=1)
         for t in ReduceTask.objects.filter(stop_time__lt=watermark):
             t.delete()
         self.info("Map/Reduce tasks are cleaned")
+        self.info("Compacting MRT tables")
+        vacuum(ReduceTask._meta.db_table, analyze=True)
+        vacuum(MapTask._meta.db_table, analyze=True)
+        self.info("MRT Tables are compacted")
 
     def cleanup_empty_categories(self):
         """
