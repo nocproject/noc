@@ -28,6 +28,7 @@ secret          = thesecretkey
 software_update = true
 max_scripts     = 10
 pm_data_secret  = secret
+enable_internal_trap_parser = false
 
 [sae]
 host = 127.0.0.1
