@@ -301,7 +301,13 @@ class Activator(Daemon, FSM):
         Start SNMP Trap Collectors
         """
         logging.debug("Starting trap collectors")
-        from noc.sa.activator.trap_collector import TrapCollector
+        if self.config.getboolean("activator",
+            "enable_internal_trap_parser"):
+            logging.info("Using internal trap parser")
+            from noc.sa.activator.trap_collector import TrapCollector
+        else:
+            logging.info("Using pysnmp trap parser")
+            from noc.sa.activator.pysnmp_trap_collector import TrapCollector
         log_traps = self.config.getboolean("main", "log_snmp_traps")
         self.trap_collectors = [
             TrapCollector(self, ip, port, log_traps)

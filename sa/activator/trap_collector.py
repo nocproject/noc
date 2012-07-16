@@ -2,21 +2,18 @@
 ##----------------------------------------------------------------------
 ## SNMP Trap Collector
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python module
 import time
 import logging
-## pysnmp modules
-from pyasn1.codec.ber import decoder
-from pysnmp.proto import api
 ## NOC modules
 from noc.lib.nbsocket import ListenUDPSocket
 from noc.sa.activator.event_collector import EventCollector
 from noc.lib.escape import fm_escape
+from noc.lib.snmp.trap import decode_trap
 
 
 class TrapCollector(ListenUDPSocket, EventCollector):
@@ -41,61 +38,20 @@ class TrapCollector(ListenUDPSocket, EventCollector):
         EventCollector.__init__(self, activator)
 
     def on_read(self, whole_msg, address, port):
-        def oid_to_str(o):
-            return ".".join([str(x) for x in o])
-
-        def extract(val):
-            def unchain(val):
-                c = []
-                for i in range(len(val._componentValues)):
-                    k = val._componentValues[i]
-                    if k is not None:
-                        if hasattr(k, "getComponentType"):
-                            c.append(k.getComponentType().getNameByPosition(i))
-                            c.extend(unchain(k))
-                        elif hasattr(k, "_value"):
-                            c.append(k._value)
-                return c
-
-            v = unchain(val)
-            if not v:
-                return ""
-            v = v[-1]
-            if type(v) == tuple:
-                return oid_to_str(v)
-            return fm_escape(v)
-
         object = self.map_event(address)
         if not object:
             # Skip events from unknown sources
             return
         if self.log_traps:
             self.info("SNMP TRAP: %r" % whole_msg)
-        while whole_msg:
-            msg_version = int(api.decodeMessageVersion(whole_msg))
-            if api.protoModules.has_key(msg_version):
-                p_mod = api.protoModules[msg_version]
-            else:
-                self.error('Unsupported SNMP version %s from %s' % (
-                    msg_version, address))
-                return
-            req_msg, whole_msg = decoder.decode(whole_msg,
-                                                asn1Spec=p_mod.Message())
-            req_pdu = p_mod.apiMessage.getPDU(req_msg)
-            if req_pdu.isSameTypeWith(p_mod.TrapPDU()):
-                body = {
-                    "source":"SNMP Trap","collector":
-                    self.collector_signature
-                }
-                if msg_version == api.protoVersion1:
-                    oid = oid_to_str(p_mod.apiTrapPDU.getEnterprise(req_pdu))
-                    body["1.3.6.1.6.3.1.1.4.1.0"] = oid  # snmpTrapOID.0
-                    var_binds = p_mod.apiTrapPDU.getVarBindList(req_pdu)
-                else:
-                    var_binds = p_mod.apiPDU.getVarBindList(req_pdu)
-                ts = int(time.time())
-                for o, v in var_binds:
-                    body[oid_to_str(o._value)] = extract(v)
-                if self.log_traps:
-                    self.info("DECODED SNMP TRAP: %r" % body)
-                self.process_event(ts, object, body)
+        community, varbinds = decode_trap(whole_msg)
+        # @todo: Check trap community
+        body = {
+            "source":"SNMP Trap",
+            "collector": self.collector_signature
+        }
+        body.update(varbinds)
+        body = dict((k, fm_escape(body[k])) for k in body)
+        if self.log_traps:
+            self.info("DECODED SNMP TRAP: %r" % body)
+        self.process_event(int(time.time()), object, body)
