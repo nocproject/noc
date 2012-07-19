@@ -37,6 +37,14 @@ Ext.define("NOC.inv.interface.L1Store", {
         {
             name: "link",
             type: "auto"
+        },
+        {
+            name: "profile",
+            type: "string"
+        },
+        {
+            name: "profile__label",
+            type: "string"
         }
     ],
     data: []

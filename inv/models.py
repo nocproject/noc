@@ -260,6 +260,40 @@ class Model(Document):
 ##
 ## Network topology
 ##
+class InterfaceProfile(Document):
+    """
+    Interface SLA profile and settings
+    """
+    meta = {
+        "collection": "noc.interface_profiles",
+        "allow_inheritance": False
+    }
+    name = StringField(unique=True)
+    description = StringField()
+    # Interface-level events processing
+    link_events = StringField(
+        required=True,
+        choices=[
+            ("I", "Ignore Events"),
+            ("L", "Log events, do not raise alarms"),
+            ("A", "Raise alarms")
+        ],
+        default="A"
+    )
+
+    def __unicode__(self):
+        return self.name
+
+    @classmethod
+    def get_default_profile(cls):
+        try:
+            return cls._default_profile
+        except AttributeError:
+            cls._default_profile = cls.objects.filter(
+                name="default").first()
+            return cls._default_profile
+
+
 class ForwardingInstance(Document):
     """
     Non-default forwarding instances
@@ -306,7 +340,9 @@ class Interface(Document):
     aggregated_interface = PlainReferenceField("self", required=False)
     is_lacp = BooleanField(default=False)
     # admin status + oper status
-    is_ignored = BooleanField(default=False)
+    # is_ignored = BooleanField(default=False)
+    profile = PlainReferenceField(InterfaceProfile,
+        default=InterfaceProfile.get_default_profile)
     
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)
