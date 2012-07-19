@@ -64,7 +64,19 @@ NOC.render.Lookup = function(name) {
 
 NOC.render.Clickable = function(value) {
     return "<a href='#' class='noc-clickable-cell'>" + value + "</a>";
-}
+};
+
+NOC.render.ClickableLookup = function(name) {
+    var l = name + "__label";
+    return function(value, meta, record) {
+        if(value) {
+            return "<a href='#' class='noc-clickable-cell' title='Click to change...'>"
+                + record.get(l) + "</a>";
+        } else {
+            return "";
+        }
+    };
+};
 
 //
 // Run new Map/Reduce task
@@ -81,7 +93,7 @@ NOC.render.Clickable = function(value) {
 NOC.mrt = function(options) {
     var m = Ext.create("NOC.core.MRT", options);
     m.run();
-}
+};
 //
 NOC.error = function(msg) {
     Ext.MessageBox.show({
