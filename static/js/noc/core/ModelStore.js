@@ -87,7 +87,6 @@ Ext.define("NOC.core.ModelStore", {
     sync: function(config) {
         var me = this,
             conf = config || {};
-        console.log("store.sync", config);
         me.syncConfig = Ext.Object.merge({}, conf);
         me.callParent();
     },
