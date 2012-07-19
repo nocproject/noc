@@ -916,6 +916,9 @@ class EventClass(nosql.Document):
 
     disposition = nosql.ListField(nosql.EmbeddedDocumentField(EventDispositionRule))
     repeat_suppression = nosql.ListField(nosql.EmbeddedDocumentField(EventSuppressionRule))
+    # True if event processing is regulated by
+    # Interface Profile.link_events setting
+    link_event = nosql.BooleanField(default=False)
     #
     category = nosql.ObjectIdField()
     
