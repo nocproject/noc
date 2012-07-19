@@ -391,9 +391,9 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // Delete record
     deleteRecord: function() {
-        var me = this,
-            record = me.grid.getSelectionModel().getLastSelected();
-        me.store.remove(record);
+        var me = this;
+        me.store.remove(me.currentRecord);
+        me.currentRecord = null;
         me.store.sync();
         me.toggle();
     },
