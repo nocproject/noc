@@ -9,7 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.sa.models import ManagedObject
-from noc.inv.models import Interface, SubInterface, Q
+from noc.inv.models import Interface, SubInterface, InterfaceProfile, Q
 from noc.sa.interfaces import StringParameter, ListOfParameter,\
     DocumentParameter
 from noc.lib.text import split_alnum
@@ -176,3 +176,16 @@ class InterfaceAppplication(ExtApplication):
                                         type="physical").order_by("name")
             if not i.link]
         return sorted(r, key=lambda x: split_alnum(x["label"]))
+
+    @view(url="^l1/(?P<iface_id>[0-9a-f]{24})/change_profile/$",
+        validate={
+            "profile": DocumentParameter(InterfaceProfile)
+        },
+        method=["POST"], access="profile", api=True)
+    def api_change_profile(self, request, iface_id, profile):
+        i = Interface.objects.filter(id=iface_id).first()
+        if not i:
+            return self.response_not_found()
+        i.profile = profile;
+        i.save();
+        return True
