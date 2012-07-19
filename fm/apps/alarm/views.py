@@ -16,6 +16,7 @@ from noc.lib.widgets import AutoCompleteTextInput, lookup, TreePopupField
 from noc.lib.app import Application, HasPerm, view
 from noc.fm.models import *
 from noc.sa.models import ManagedObject
+from noc.inv.models import Interface
 
 
 class AlarmManagedApplication(Application):
@@ -127,6 +128,18 @@ class AlarmManagedApplication(Application):
         else:
             subscribers = []
         children = get_chilren(alarm)  # (level, alarm, subject)
+        interface = None
+        if "interface" in alarm.vars:
+            iface = Interface.objects.filter(
+                managed_object=alarm.managed_object.id,
+                name=alarm.vars["interface"]
+            ).first()
+            if iface:
+                interface = alarm.vars["interface"]
+                if iface.description:
+                    interface += " (%s)" % iface.description
+                interface += " [%s]" % iface.profile.name
+
         
         return self.render(request, "alarm.html",
                            a=alarm,
@@ -146,7 +159,8 @@ class AlarmManagedApplication(Application):
                            severities=severities,
                            subscribers=subscribers,
                            children=children,
-                           n_children=len(children)
+                           n_children=len(children),
+                           interface=interface
                           )
 
     class MessageForm(Application.Form):

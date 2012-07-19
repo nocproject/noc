@@ -19,6 +19,7 @@ from noc.lib.escape import json_escape, fm_escape
 from noc.fm.models import *
 from noc.sa.models import ManagedObject
 from noc.main.models import Checkpoint
+from noc.inv.models import Interface
 
 
 class EventAppplication(Application):
@@ -82,6 +83,7 @@ class EventAppplication(Application):
         """
         event = self.get_event_or_404(event_id)
         u_lang = request.session["django_language"]
+        interface = None
         if event.status in ("A", "S"):
             subject = event.get_translated_subject(u_lang)
             body = event.get_translated_body(u_lang)
@@ -93,6 +95,16 @@ class EventAppplication(Application):
                        a.get_translated_subject(u_lang))
                 for a in alarms if a]
             n_alarms = len(alarms)
+            if "interface" in event.vars:
+                iface = Interface.objects.filter(
+                    managed_object=event.managed_object.id,
+                    name=event.vars["interface"]
+                ).first()
+                if iface:
+                    interface = event.vars["interface"]
+                    if iface.description:
+                        interface += " (%s)" % iface.description
+                    interface += " [%s]" % iface.profile.name
         else:
             subject = ""
             body = ""
@@ -108,7 +120,9 @@ class EventAppplication(Application):
                            probable_causes=probable_causes,
                            recommended_actions=recommended_actions,
                            alarms=alarms,
-                           n_alarms=n_alarms)
+                           n_alarms=n_alarms,
+                           interface=interface
+        )
 
     @view(url="^(?P<event_id>[0-9a-f]{24})/reclassify/$", url_name="reclassify",
           access=HasPerm("change"))

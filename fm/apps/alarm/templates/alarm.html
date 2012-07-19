@@ -153,6 +153,9 @@ function toggle_root() {
     <h2>Summary</h2>
     <table WIDTH="100%">
         <tr><TD STYLE="width: 150px"><b>Managed Object:</b></td><td>{{a.managed_object.name}} {% if a.managed_object.platform %}({{a.managed_object.platform}}){% endif %}</td></tr>
+        {% if interface %}
+            <tr><td><b>Interface:</b></td><td>{{ interface }}</td></tr>
+        {% endif %}
         <tr><td><b>Alarm Class:</b></td><td>{{a.alarm_class}}</td></tr>
         <tr>
             <td><b>Root Cause:</b></td>
