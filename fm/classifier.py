@@ -21,6 +21,7 @@ from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
                           EventClass, MIB, EventLog, CloneClassificationRule,\
                           ActiveEvent, EventTrigger, Enumeration
+import noc.inv.models
 from noc.sa.models import profile_registry, ManagedObject
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
@@ -837,7 +838,8 @@ class Classifier(Daemon):
         c_vars.update(dict([(k, fm_unescape(v)) for k, v in resolved_vars.items()]))
         rule, vars = self.find_matching_rule(event, c_vars)
         if rule is None:
-            # Somethin goes wrong. No default rule found. Exit immediately
+            # Something goes wrong.
+            # No default rule found. Exit immediately
             logging.error("No default rule found. Exiting")
             os._exit(1)
         if rule.to_drop:
@@ -847,6 +849,24 @@ class Classifier(Daemon):
         event_class = rule.event_class
         # Calculate rule variables
         vars = self.eval_rule_variables(event, event_class, vars)
+        # Additionally check link events
+        disposable = True
+        if event_class.link_event and "interface" in vars:
+            iface = noc.inv.models.Interface.objects.filter(
+                managed_object=event.managed_object.id,
+                name=event.managed_object.profile.convert_interface_name(vars["interface"])
+            ).first()
+            if iface:
+                action = iface.profile.link_events
+                if action == "I":
+                    # Ignore
+                    logging.info("Event %s mark as ignored by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name))
+                    event.delete()
+                    return CR_DELETED
+                elif action == "L":
+                    # Do not dispose
+                    logging.info("Event %s marked as not disposable by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name))
+                    disposable = False
         # Suppress repeats
         if event_class.id in self.suppression:
             suppress, name, nearest = self.to_suppress(event, event_class,
@@ -896,7 +916,7 @@ class Classifier(Daemon):
                     event.delete()
                     return CR_DELETED
         # Finally dispose event to further processing by noc-correlator
-        if rule.to_dispose:
+        if disposable and rule.to_dispose:
             event.dispose_event()
             return CR_DISPOSED
         elif rule.is_unknown:

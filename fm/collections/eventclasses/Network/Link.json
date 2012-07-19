@@ -86,6 +86,7 @@
         "name": "Network | Link | Link Down",
         "description": "Link Down",
         "action": "A",
+        "link_event": true,
         "text" : {
             "en": {
                 "subject_template": "Link Down: {{interface}}",
@@ -105,11 +106,6 @@
         ],
         "disposition": [
             {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
-            {
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Network | Link | Link Down"
@@ -121,6 +117,7 @@
         "name": "Network | Link | Link Up",
         "description": "Link Up",
         "action": "A",
+        "link_event": true,
         "text" : {
             "en": {
                 "subject_template": "Link Up: {{interface}}{% if speed %}, Speed: {{speed}}{% endif %}{% if duplex %}, Duplex: {{duplex}}{% endif %}",
