@@ -69,6 +69,11 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             }
                         },
                         {
+                            text: "Profile",
+                            dataIndex: "profile",
+                            renderer: NOC.render.Lookup("profile")
+                        },
+                        {
                             text: "Description",
                             dataIndex: "description",
                             flex: 1
