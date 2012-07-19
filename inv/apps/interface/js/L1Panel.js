@@ -71,7 +71,8 @@ Ext.define("NOC.inv.interface.L1Panel", {
                         {
                             text: "Profile",
                             dataIndex: "profile",
-                            renderer: NOC.render.Lookup("profile")
+                            renderer: NOC.render.ClickableLookup("profile"),
+                            onClick: me.onChangeProfile
                         },
                         {
                             text: "Description",
@@ -83,7 +84,14 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             dataIndex: "ifindex",
                             hidden: true
                         }
-                     ]
+                    ],
+                    viewConfig: {
+                        // getRowClass: Ext.bind(me.getRowClass, me),
+                        listeners: {
+                            scope: me,
+                            cellclick: me.onCellClick
+                        }
+                    }
                 }
             ]
         });
@@ -136,6 +144,25 @@ Ext.define("NOC.inv.interface.L1Panel", {
             title: Ext.String.format("Link {0} with", ifaceName),
             app: me.app,
             ifaceId: ifaceId
+        });
+    },
+    //
+    onCellClick: function(view, cell, cellIndex, record, row,
+                          rowIndex, e) {
+        var me = this;
+        if(e.target.tagName == "A") {
+            var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);
+            if(header.onClick) {
+                header.onClick.apply(me, [record]);
+            }
+        }
+    },
+    //
+    onChangeProfile: function(record) {
+        var me = this;
+        Ext.create("NOC.inv.interface.ChangeInterfaceProfileForm", {
+            app: me,
+            record: record
         });
     }
 });
