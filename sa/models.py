@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Models for "sa" module
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import marshal
 import base64
@@ -929,7 +928,7 @@ class ReduceTask(models.Model):
                         if i >= lts:
                             break
                         i += ms
-                else:
+                elif pool_timeouts[pool]:
                     # Give a try when cannot detect pool capabilities
                     t = max(pool_timeouts[pool])
                 timeout = max(timeout, t)
