@@ -21,7 +21,7 @@
     },
 
     {
-        "name": "Huawei | VRP | Config | Config Changed (SNMP)",
+        "name": "Huawei | VRP | Config | Config Changed #1 (SNMP)",
         "description": "HUAWEI-DATASYNC-MIB::hwCfgChgNotify",
         "event_class__name": "Config | Config Changed",
         "preference": 1000,
@@ -37,6 +37,27 @@
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
                 "value_re": "^HUAWEI-DATASYNC-MIB::hwCfgChgNotify$"
+            }
+        ]
+    },
+
+    {
+        "name": "Huawei | VRP | Config | Config Changed #2 (SNMP)",
+        "description": "This notification is generated when the configuration is changed - raw variables 1.3.6.1.6.3.1.1.4.1.0  1.3.6.1.4.1.2011.6.10.2.1",
+        "event_class__name": "Config | Config Changed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Huawei\\.VRP$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^HUAWEI-MIB::hwConfig\\.2\\.1$"
             }
         ]
     },

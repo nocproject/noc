@@ -93,11 +93,11 @@
     },
 
     {
-        "mib": "HUAWEI-MIB",
+        "mib": "HUAWEI-CONFIG-MAN-MIB",
         "preference": 4700
     },
     {
-        "mib": "HUAWEI-CONFIG-MAN-MIB",
+        "mib": "HUAWEI-MIB",
         "preference": 4800
     }
 
