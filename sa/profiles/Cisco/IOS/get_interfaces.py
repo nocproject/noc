@@ -76,6 +76,7 @@ class Script(NOCScript):
            "Tu": "tunnel",      # Tunnel
            "VL": "SVI",         # VLAN, found on C3500XL
            "Vl": "SVI",         # Vlan
+           "Vo": "physical",    # Voice
            "XT": "SVI"          # Extended Tag ATM
            }
 
