@@ -1,0 +1,140 @@
+-- ===========================================================================
+-- Copyright (C) 1998-2005 by HUAWEI TECHNOLOGIES. All rights reserved.
+-- 
+-- Description: Alarm MIB                  S
+-- Reference:   Module(ITU-ALARM-TC-MIB) Extracted from RFC3877.TXT,from 92007 to 94996.
+-- Version:      V1.00
+-- History: 
+--          
+-- ===========================================================================
+
+ITU-ALARM-TC-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+   MODULE-IDENTITY, mib-2
+       FROM SNMPv2-SMI         -- [RFC2578]
+   TEXTUAL-CONVENTION
+       FROM SNMPv2-TC;         -- [RFC2579]
+
+  ituAlarmTc MODULE-IDENTITY
+      LAST-UPDATED "200409090000Z"  -- September 09, 2004
+      ORGANIZATION "IETF Distributed Management Working Group"
+      CONTACT-INFO
+         " WG EMail: disman@ietf.org
+           Subscribe: disman-request@ietf.org
+           http://www.ietf.org/html.charters/disman-charter.html
+
+           Chair:     Randy Presuhn
+                      randy_presuhn@mindspring.com
+
+           Editors:   Sharon Chisholm
+                      Nortel Networks
+                      PO Box 3511 Station C
+                      Ottawa, Ont.  K1Y 4H7
+                      Canada
+                      schishol@nortelnetworks.com
+
+                      Dan Romascanu
+                      Avaya
+                      Atidim Technology Park, Bldg. #3
+                      Tel Aviv, 61131
+                      Israel
+                      Tel: +972-3-645-8414
+                      Email: dromasca@avaya.com"
+      DESCRIPTION
+         "This MIB module defines the ITU Alarm
+         textual convention for objects not expected to require
+         regular extension.
+
+         Copyright (C) The Internet Society (2004).  The
+         initial version of this MIB module was published
+         in RFC 3877.  For full legal notices see the RFC
+         itself.  Supplementary information may be available on:
+         http://www.ietf.org/copyrights/ianamib.html"
+      REVISION    "200409090000Z"  -- September 09, 2004
+      DESCRIPTION
+          "Initial version, published as RFC 3877."
+     ::= { mib-2 120 }
+
+ItuPerceivedSeverity ::= TEXTUAL-CONVENTION
+    STATUS current
+    DESCRIPTION
+            "ITU perceived severity values"
+    REFERENCE
+           "ITU Recommendation M.3100, 'Generic Network Information
+            Model', 1995
+            ITU Recommendation X.733, 'Information Technology - Open
+            Systems Interconnection - System Management: Alarm
+            Reporting Function', 1992"
+    SYNTAX         INTEGER
+           {
+           cleared (1),
+           indeterminate (2),
+           critical (3),
+           major (4),
+           minor (5),
+           warning (6)
+           }
+
+ItuTrendIndication ::= TEXTUAL-CONVENTION
+    STATUS current
+    DESCRIPTION
+            "ITU trend indication values for alarms."
+    REFERENCE
+           "ITU Recommendation M.3100, 'Generic Network Information
+            Model', 1995
+            ITU Recommendation X.733, 'Information Technology - Open
+            Systems Interconnection - System Management: Alarm
+            Reporting Function', 1992"
+    SYNTAX         INTEGER
+      {
+      moreSevere (1),
+      noChange (2),
+      lessSevere (3)
+      }
+
+END
+-- ===========================================================================
+-- Full Copyright Statement
+-- 
+--    Copyright (C) The Internet Society (2004).  This document is subject
+--    to the rights, licenses and restrictions contained in BCP 78, and
+--    except as set forth therein, the authors retain all their rights.
+-- 
+--    This document and the information contained herein are provided on an
+--    "AS IS" basis and THE CONTRIBUTOR, THE ORGANIZATION HE/SHE REPRESENTS
+--    OR IS SPONSORED BY (IF ANY), THE INTERNET SOCIETY AND THE INTERNET
+--    ENGINEERING TASK FORCE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED,
+--    INCLUDING BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE
+--    INFORMATION HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED
+--    WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+-- 
+-- Intellectual Property
+-- 
+--    The IETF takes no position regarding the validity or scope of any
+--    Intellectual Property Rights or other rights that might be claimed to
+--    pertain to the implementation or use of the technology described in
+--    this document or the extent to which any license under such rights
+--    might or might not be available; nor does it represent that it has
+--    made any independent effort to identify any such rights.  Information
+--    on the procedures with respect to rights in RFC documents can be
+--    found in BCP 78 and BCP 79.
+-- 
+--    Copies of IPR disclosures made to the IETF Secretariat and any
+--    assurances of licenses to be made available, or the result of an
+--    attempt made to obtain a general license or permission for the use of
+--    such proprietary rights by implementers or users of this
+--    specification can be obtained from the IETF on-line IPR repository at
+--    http://www.ietf.org/ipr.
+-- 
+--    The IETF invites any interested party to bring to its attention any
+--    copyrights, patents or patent applications, or other proprietary
+--    rights that may cover technology that may be required to implement
+--    this standard.  Please address the information to the IETF at ietf-
+--    ipr@ietf.org.
+-- 
+-- Acknowledgement
+-- 
+--    Funding for the RFC Editor function is currently provided by the
+--    Internet Society.
+-- ===========================================================================
