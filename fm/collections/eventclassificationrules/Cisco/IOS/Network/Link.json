@@ -338,5 +338,26 @@
                 "value_re": "%.+-THRESHOLD_VIOLATION: (?P<interface>\\S+): (?P<sensor>.+) (?P<threshold>high|low) warning; Operating value: .+, Threshold value: .+."
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Network | Link | Half-Duplex (SYSLOG)",
+        "description": "%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on GigabitEthernet3/16 (not half duplex), with SEP001193222F48 Port 1 (half duplex).",
+        "event_class__name": "Network | Link | Half-Duplex",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%CDP-4-DUPLEX_MISMATCH: duplex mismatch discovered on (?P<interface>\\S+) (not half duplex), with \\S+ Port \\d+ (half duplex)."
+            }
+        ]
     }
 ]
