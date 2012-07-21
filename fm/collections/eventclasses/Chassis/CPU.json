@@ -55,8 +55,8 @@
         "action": "A",
         "text": {
             "en": {
-                "subject_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}",
-                "body_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}",
+                "subject_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}{% if count %}, dropped {{count}} packets{% endif %}{% if proto %}, protocol {{proto}}{% endif %}",
+                "body_template": "CoPP drops exceeded threshold{% if cpu %} for {{cpu}}{% endif %}{% if count %}, dropped {{count}} packets{% endif %}{% if proto %}, protocol {{proto}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "CoPP protects control plane by dropping traffic exceeding thresholds",
                 "recommended_actions": ""
@@ -67,6 +67,18 @@
                 "name": "cpu",
                 "description": "CPU Name",
                 "type": "str",
+                "required": false
+            },
+            {
+                "name": "proto",
+                "description": "Dropped packets protocol",
+                "type": "str",
+                "required": false
+            },
+            {
+                "name": "count",
+                "description": "Dropped packets count",
+                "type": "int",
                 "required": false
             }
         ],
