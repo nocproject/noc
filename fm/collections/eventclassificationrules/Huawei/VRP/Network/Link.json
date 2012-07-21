@@ -131,5 +131,55 @@
                 "value_re": "^IF-MIB::linkDown$"
             }
         ]
+    },
+
+    {
+        "name": "Huawei | VRP | Network | Link | Half-Duplex (SNMP)",
+        "description": "HUAWEI-BASE-TRAP-MIB::hwPortPhysicalEthHalfDuplexAlarm",
+        "event_class__name": "Network | Link | Half-Duplex",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Huawei\\.VRP$"
+            },
+            {
+                "key_re": "^ENTITY-MIB::entPhysicalName\\.\\d+$",
+                "value_re": "^(?P<interface>.+)$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^HUAWEI-BASE-TRAP-MIB::hwPortPhysicalEthHalfDuplexAlarm$"
+            }
+        ]
+    },
+
+    {
+        "name": "Huawei | VRP | Network | Link | Full-Duplex (SNMP)",
+        "description": "HUAWEI-BASE-TRAP-MIB::hwPortPhysicalEthFullDuplexClear",
+        "event_class__name": "Network | Link | Full-Duplex",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Huawei\\.VRP$"
+            },
+            {
+                "key_re": "^ENTITY-MIB::entPhysicalName\\.\\d+$",
+                "value_re": "^(?P<interface>.+)$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^HUAWEI-BASE-TRAP-MIB::hwPortPhysicalEthFullDuplexClear$"
+            }
+        ]
     }
 ]
