@@ -41,6 +41,41 @@
     },
 
     {
+        "name": "Network | Link | Half-Duplex",
+        "description": "Link going into half-duplex state",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Link going into half-duplex state: {{interface}}",
+                "body_template": "Link going into half-duplex state: {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface name",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+            {
+                "name": "ignore",
+                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+                "action": "ignore"
+            },
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | Link | Half-Duplex"
+            }
+        ]
+    },
+
+    {
         "name": "Network | Link | Connection Problem",
         "description": "Link or carrier problem",
         "action": "A",

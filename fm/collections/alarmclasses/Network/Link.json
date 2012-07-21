@@ -39,6 +39,30 @@
     },
 
     {
+        "name": "Network | Link | Half-Duplex",
+        "description": "Link going into half-duplex state",
+        "is_unique": true,
+        "discriminator": ["interface"],
+        "user_clearable": true,
+        "default_severity__name": "WARNING",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "interface name"
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Link going into half-duplex state: {{interface}}",
+                "body_template": "Link going into half-duplex state: {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
+    },
+
+    {
         "name": "Network | Link | Link Down",
         "description": "Link down",
         "is_unique": true,
