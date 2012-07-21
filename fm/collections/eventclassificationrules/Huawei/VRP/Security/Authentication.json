@@ -1,26 +1,6 @@
 [
     {
-        "name": "Huawei | VRP | Security | Authentication | Logout (SYSLOG)",
-        "description": "Feb  3 2012 05:46:47 switch-test %%01SHELL/5/LOGOUT(l)[413]:VTY logout from 192.168.220.252.",
-        "event_class__name": "Security | Authentication | Logout",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^Huawei\\.VRP$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "VTY logout from (?P<ip>\\S+)\\."
-            }
-        ]
-    },
-    {
-        "name": "Huawei | VRP | Security | Authentication | Login (SYSLOG)",
+        "name": "Huawei | VRP | Security | Authentication | Login #1 (SYSLOG)",
         "description": "Feb  3 2012 05:46:46 switch-test %%01SHELL/5/LOGIN(l)[410]:VTY login from 192.168.220.252.",
         "event_class__name": "Security | Authentication | Login",
         "preference": 1000,
@@ -39,6 +19,70 @@
             }
         ]
     },
+
+    {
+        "name": "Huawei | VRP | Security | Authentication | Logout # 1(SYSLOG)",
+        "description": "Feb  3 2012 05:46:47 switch-test %%01SHELL/5/LOGOUT(l)[413]:VTY logout from 192.168.220.252.",
+        "event_class__name": "Security | Authentication | Logout",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Huawei\\.VRP$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "VTY logout from (?P<ip>\\S+)\\."
+            }
+        ]
+    },
+
+    {
+        "name": "Huawei | VRP | Security | Authentication | Login #2 (SYSLOG)",
+        "description": "Jul 20 2012 11:37:29 od-agg-1-dobrovolskogo126 %%01SHELL/5/LOGIN(l):  amt login from 212.40.34.7.",
+        "event_class__name": "Security | Authentication | Login",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Huawei\\.VRP$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%01SHELL/5/LOGIN\\(l\\):\\s+(?P<user>\\S+) login from (?P<ip>\\S+)\\.$"
+            }
+        ]
+    },
+
+    {
+        "name": "Huawei | VRP | Security | Authentication | Logout #2 (SYSLOG)",
+        "description": "Jul 20 2012 11:37:35 od-agg-1-dobrovolskogo126 %%01SHELL/5/LOGOUT(l):  amt logout from 212.40.34.7.",
+        "event_class__name": "Security | Authentication | Logout",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Huawei\\.VRP$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "LOGOUT\\(l\\):\\s+(?P<user>\\S+) logout from (?P<ip>\\S+)\\.$"
+            }
+        ]
+    },
+
     {
         "name": "Huawei | VRP | Security | Authentication | Login Failed (SYSLOG)",
         "description": "Feb  3 2012 09:30:30 switch-test %%01SHELL/4/TELNETFAILED(l)[419]:Failed to login through telnet. (Ip=192.168.220.252, UserName=test, Times=1)",
@@ -55,7 +99,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "Failed to login through telnet\\. \\(Ip=(?P<ip>\\S+), UserName=(?P<user>.*), Times=\\d+\\)"
+                "value_re": "Failed to login through telnet\\. \\([Ii][Pp]=(?P<ip>\\S+), UserName=(?P<user>.*), Times=\\d+(\\)|,)"
             }
         ]
     }
