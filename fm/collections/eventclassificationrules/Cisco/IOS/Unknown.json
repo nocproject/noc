@@ -293,6 +293,26 @@
                 "value_re": "%TDP-5-INFO:.+" 
             }
         ]
-    }
+    },
 
+    {
+        "name": "Cisco | IOS | Unknown | Ignore ACL logging (SYSLOG)",
+        "description": "%SEC-6-IPACCESSLOGRL: access-list logging rate-limited or missed 1 packet",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SEC-6-IPACCESSLOGRL: access-list logging rate-limited or missed \\d+ packet"
+            }
+        ]
+    }
 ]

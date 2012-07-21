@@ -1,7 +1,7 @@
 [
     {
         "name": "Cisco | IOS | Security | ACL | ACL Deny #1 (SYSLOG)",
-        "description": "50490: Aug  8 03:22:04 GMT: %SEC-6-IPACCESSLOGP: list aclBorder denied tcp 118.84.26.135(46365) (Vlan51 0015.c726.6100) -> 124.218.199.108(22), 1 packet",
+        "description": "%SEC-6-IPACCESSLOGP: list aclBorder denied tcp 118.84.26.135(46365) (Vlan51 0015.c726.6100) -> 124.218.199.108(22), 1 packet",
         "event_class__name": "Security | ACL | ACL Deny",
         "preference": 1000,
         "patterns": [
@@ -22,7 +22,7 @@
     
     {
         "name": "Cisco | IOS | Security | ACL | ACL Deny #2 (SYSLOG)",
-        "description": "4462: Aug  7 23:36:30.993: %SEC-6-IPACCESSLOGP: list aclOUTSIDE_IN denied udp 54.11.18.121(5064) -> 194.221.181.5(5060), 1 packet",
+        "description": "%SEC-6-IPACCESSLOGP: list aclOUTSIDE_IN denied udp 54.11.18.121(5064) -> 194.221.181.5(5060), 1 packet",
         "event_class__name": "Security | ACL | ACL Deny",
         "preference": 1000,
         "patterns": [
@@ -43,7 +43,7 @@
     
     {
         "name": "Cisco | IOS | Security | ACL | ACL Deny #3 (SYSLOG)",
-        "description": "13812: Aug  9 14:42:49.342: %SEC-6-IPACCESSLOGS: list 50 denied 118.61.236.12 1 packet",
+        "description": "%SEC-6-IPACCESSLOGS: list 50 denied 118.61.236.12 1 packet",
         "event_class__name": "Security | ACL | ACL Deny",
         "preference": 1000,
         "patterns": [
@@ -64,7 +64,7 @@
 
     {
         "name": "Cisco | IOS | Security | ACL | ACL Deny #4 (SYSLOG)",
-        "description": "970: Aug  9 16:18:24.541: %SEC-6-IPACCESSLOGNP: list acl-manage-nets denied 0 109.161.33.19 -> 0.0.0.0, 1 packet",
+        "description": "%SEC-6-IPACCESSLOGNP: list acl-manage-nets denied 0 109.161.33.19 -> 0.0.0.0, 1 packet",
         "event_class__name": "Security | ACL | ACL Deny",
         "preference": 1000,
         "patterns": [
@@ -78,14 +78,35 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%SEC-6-IPACCESSLOGNP: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+) -> (?P<dst_ip>\\S+), (?P<count>\\d+) packets?$" 
+                "value_re": "%SEC-6-IPACCESSLOG[NRD]P: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+) -> (?P<dst_ip>\\S+), (?P<count>\\d+) packets?$" 
             }
         ]
     },
-    
+
+    {
+        "name": "Cisco | IOS | Security | ACL | ACL Deny #5 (SYSLOG)",
+        "description": "%SEC-6-IPACCESSLOGDP: list IGMP_ONLY denied icmp 10.10.192.10 -> 10.10.16.1 (0/0), 3 packets",
+        "event_class__name": "Security | ACL | ACL Deny",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%SEC-6-IPACCESSLOG[NRD]P: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+) -> (?P<dst_ip>\\S+) \\(\\d+/\\d+\\), (?P<count>\\S+) packet"
+            }
+        ]
+    },
+
     {
         "name": "Cisco | IOS | Security | ACL | ACL Permit #1 (SYSLOG)",
-        "description": "15435: 015463: Aug  8 08:49:20.976 MSD: %SEC-6-IPACCESSLOGP: list aclIN permitted tcp 211.114.211.230(36995) -> 211.12.61.191(22), 8 packets",
+        "description": "%SEC-6-IPACCESSLOGP: list aclIN permitted tcp 211.114.211.230(36995) -> 211.12.61.191(22), 8 packets",
         "event_class__name": "Security | ACL | ACL Permit",
         "preference": 1000,
         "patterns": [
@@ -106,7 +127,7 @@
 
     {
         "name": "Cisco | IOS | Security | ACL | ACL Permit #2 (SYSLOG)",
-        "description": "3278: 003274: Aug 12 07:19:33: %SEC-6-IPACCESSLOGP: list ins_ban permitted udp 3.1.2.1(500) (GigabitEthernet0/1.3321 001f.9d60.741b) -> 7.2.2.6(500), 24 packets",
+        "description": "%SEC-6-IPACCESSLOGP: list ins_ban permitted udp 3.1.2.1(500) (GigabitEthernet0/1.3321 001f.9d60.741b) -> 7.2.2.6(500), 24 packets",
         "event_class__name": "Security | ACL | ACL Permit",
         "preference": 1000,
         "patterns": [
