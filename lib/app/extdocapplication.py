@@ -62,6 +62,12 @@ class ExtDocApplication(ExtApplication):
             self.query_fields = ["%s__%s" % (n, self.query_condition)
                                  for n, f in self.model._fields.items()
                                  if f.unique and isinstance(f, StringField)]
+        # Find field_* and populate custom fields
+        self.custom_fields = {}
+        for fn in [n for n in dir(self) if n.startswith("field_")]:
+            h = getattr(self, fn)
+            if callable(h):
+                self.custom_fields[fn[6:]] = h
 
     def get_Q(self, request, query):
         """
@@ -137,6 +143,9 @@ class ExtDocApplication(ExtApplication):
                     else:
                         v = unicode(v)
             r[n] = v
+        # Add custom fields
+        for f in self.custom_fields:
+            r[f] = self.custom_fields[f](o)
         return r
 
     def instance_to_lookup(self, o):

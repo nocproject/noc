@@ -231,7 +231,7 @@ class ExtModelApplication(ExtApplication):
                 else:
                     r[f.name] = None
                     r["%s__label" % f.name] = ""
-            # Add custom fields
+        # Add custom fields
         for f in self.custom_fields:
             r[f] = self.custom_fields[f](o)
         return r
