@@ -41,6 +41,22 @@ class InterfaceAppplication(ExtApplication):
         def sorted_iname(s):
             return sorted(s, key=lambda x: split_alnum(x["name"]))
 
+        def get_style(i):
+            profile = i.profile
+            if profile:
+                try:
+                    return style_cache[profile.id]
+                except KeyError:
+                    pass
+                if profile.style:
+                    s = profile.style.css_class_name
+                else:
+                    s = ""
+                style_cache[profile.id] = s
+                return s
+            else:
+                return ""
+
         def get_link(i):
             link = i.link
             if not link:
@@ -71,6 +87,7 @@ class InterfaceAppplication(ExtApplication):
             return self.response_forbidden("Permission denied")
         # Physical interfaces
         # @todo: proper ordering
+        style_cache = {}  ## profile_id -> css_style
         l1 = [
             {
                 "id": str(i.id),
@@ -82,7 +99,8 @@ class InterfaceAppplication(ExtApplication):
                         if i.aggregated_interface else ""),
                 "link": get_link(i),
                 "profile": str(i.profile.id),
-                "profile__label": unicode(i.profile)
+                "profile__label": unicode(i.profile),
+                "row_class": get_style(i)
             } for i in
               Interface.objects.filter(managed_object=o.id,
                                        type="physical")
@@ -186,6 +204,6 @@ class InterfaceAppplication(ExtApplication):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:
             return self.response_not_found()
-        i.profile = profile;
-        i.save();
+        i.profile = profile
+        i.save()
         return True

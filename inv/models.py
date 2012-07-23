@@ -12,6 +12,7 @@ import datetime
 from collections import defaultdict
 ## NOC modules
 from noc.lib.nosql import *
+from noc.main.models import Style
 from noc.sa.models import ManagedObject, ManagedObjectSelector
 from noc.sa.interfaces import MACAddressParameter
 
@@ -270,6 +271,7 @@ class InterfaceProfile(Document):
     }
     name = StringField(unique=True)
     description = StringField()
+    style = ForeignKeyField(Style)
     # Interface-level events processing
     link_events = StringField(
         required=True,

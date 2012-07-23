@@ -8,11 +8,13 @@ console.debug("Defining NOC.inv.interfaceprofile.Application");
 
 Ext.define("NOC.inv.interfaceprofile.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
-        "NOC.inv.interfaceprofile.Model"
+    requires: [
+        "NOC.inv.interfaceprofile.Model",
+        "NOC.main.style.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
+    rowClassField: "row_class",
     columns: [
         {
             text: "Name",
@@ -28,6 +30,15 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     "A": "Raise"
                 }[value];
             }
+        },
+        {
+            text: "Style",
+            dataIndex: "style",
+            renderer: NOC.render.Lookup("style")
+        },
+        {
+            text: "Description",
+            dataIndex: "description"
         }
     ],
     fields: [
@@ -41,6 +52,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
             name: "description",
             xtype: "textarea",
             fieldLabel: "Description",
+            allowBlank: true
+        },
+        {
+            name: "style",
+            xtype: "main.style.LookupField",
+            fieldLabel: "Style",
             allowBlank: true
         },
         {
