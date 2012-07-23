@@ -3,6 +3,7 @@
         "name": "Network | Link | Err-Disable",
         "description": "Link in err-disable state",
         "action": "A",
+        "link_event": true,
         "text": {
             "en": {
                 "subject_template": "Link err-disable: {{interface}} ({{reason}})",
@@ -28,11 +29,6 @@
         ],
         "disposition": [
             {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
-            {
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Network | Link | Err-Disable"
@@ -44,6 +40,7 @@
         "name": "Network | Link | Half-Duplex",
         "description": "Link going into half-duplex state",
         "action": "A",
+        "link_event": true,
         "text": {
             "en": {
                 "subject_template": "Link going into half-duplex state: {{interface}}",
@@ -63,11 +60,6 @@
         ],
         "disposition": [
             {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
-            {
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Network | Link | Half-Duplex"
@@ -79,6 +71,7 @@
         "name": "Network | Link | Full-Duplex",
         "description": "Link going into full-duplex state",
         "action": "A",
+        "link_event": true,
         "text": {
             "en": {
                 "subject_template": "Link going into full-duplex state: {{interface}}",
@@ -98,11 +91,6 @@
         ],
         "disposition": [
             {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
-            {
                 "name": "dispose",
                 "action": "clear",
                 "alarm_class__name": "Network | Link | Half-Duplex"
@@ -114,6 +102,7 @@
         "name": "Network | Link | Connection Problem",
         "description": "Link or carrier problem",
         "action": "A",
+        "link_event": true,
         "text" : {
             "en": {
                 "subject_template": "Connection problem: {{interface}}",
@@ -129,13 +118,6 @@
                 "description": "Affected interface",
                 "type": "interface_name",
                 "required": true
-            }
-        ],
-        "disposition": [
-            {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
             }
         ],
         "repeat_suppression": [
@@ -249,6 +231,7 @@
         "name": "Network | Link | Link Flap Error Detected",
         "description": "Link-flap error detected",
         "action": "A",
+        "link_event": true,
         "text" : {
             "en": {
                 "subject_template": "Link-flap error detected on {{interface}}",
@@ -268,11 +251,6 @@
         ],
         "disposition": [
             {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
-            {
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Network | Link | Err-Disable"
@@ -284,6 +262,7 @@
         "name": "Network | Link | Link Flap Error Recovery",
         "description": "Link-flap error recovery",
         "action": "A",
+        "link_event": true,
         "text" : {
             "en": {
                 "subject_template": "Link-flap error detected on {{interface}}",
@@ -303,11 +282,6 @@
         ],
         "disposition": [
             {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
-            {
                 "name": "dispose",
                 "action": "clear",
                 "alarm_class__name": "Network | Link | Err-Disable"
@@ -319,6 +293,7 @@
         "name": "Network | Link | DOM | Warning: Out of Threshold",
         "description": "DOM above or below threshold exceeded",
         "action": "A",
+        "link_event": true,
         "text" : {
             "en": {
                 "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
@@ -349,11 +324,6 @@
             }
         ],
         "disposition": [
-            {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
             {
                 "name": "dispose",
                 "action": "raise",
@@ -378,6 +348,7 @@
         "name": "Network | Link | DOM | Warning: Out of Threshold Recovered",
         "description": "DOM above or below threshold recovered",
         "action": "A",
+        "link_event": true,
         "text" : {
             "en": {
                 "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
@@ -409,11 +380,6 @@
         ],
         "disposition": [
             {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
-            {
                 "name": "dispose",
                 "action": "clear",
                 "alarm_class__name": "Network | Link | DOM | Warning: Out of Threshold"
@@ -425,6 +391,7 @@
         "name": "Network | Link | DOM | Alarm: Out of Threshold",
         "description": "DOM above or below threshold exceeded",
         "action": "A",
+        "link_event": true,
         "text" : {
             "en": {
                 "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
@@ -456,11 +423,6 @@
         ],
         "disposition": [
             {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
-            {
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Network | Link | DOM | Alarm: Out of Threshold"
@@ -472,6 +434,7 @@
         "name": "Network | Link | DOM | Alarm: Out of Threshold Recovered",
         "description": "DOM above or below threshold recovered",
         "action": "A",
+        "link_event": true,
         "text" : {
             "en": {
                 "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
@@ -502,11 +465,6 @@
             }
         ],
         "disposition": [
-            {
-                "name": "ignore",
-                "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
-                "action": "ignore"
-            },
             {
                 "name": "dispose",
                 "action": "clear",
