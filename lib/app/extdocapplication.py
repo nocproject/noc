@@ -13,7 +13,8 @@ from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
 from noc.lib.nosql import StringField, BooleanField, GeoPointField,\
     ForeignKeyField, Q
-from noc.sa.interfaces import BooleanParameter, GeoPointParameter
+from noc.sa.interfaces import BooleanParameter, GeoPointParameter,\
+    ModelParameter
 from noc.lib.validators import is_int
 
 
@@ -57,6 +58,9 @@ class ExtDocApplication(ExtApplication):
                 self.clean_fields[name] = BooleanParameter()
             elif isinstance(f, GeoPointField):
                 self.clean_fields[name] = GeoPointParameter()
+            elif isinstance(f, ForeignKeyField):
+                self.clean_fields[f.name] = ModelParameter(
+                    f.document_type, required=f.required)
         #
         if not self.query_fields:
             self.query_fields = ["%s__%s" % (n, self.query_condition)
@@ -109,6 +113,21 @@ class ExtDocApplication(ExtApplication):
             return HttpResponse(content,
                                mimetype="text/plain; charset=utf-8",
                                status=status)
+
+    def clean(self, data):
+        """
+        Clean up input data
+        :param data: dict of parameters
+        :type data: dict
+        :return: dict of cleaned parameters of raised InterfaceTypeError
+        :rtype: dict
+        """
+        if "id" in data:
+            del data["id"]
+        for f in data:
+            if f in self.clean_fields:
+                data[f] = self.clean_fields[f].clean(data[f])
+        return dict((str(k), data[k]) for k in data)
 
     def cleaned_query(self, q):
         q = q.copy()
@@ -200,7 +219,7 @@ class ExtDocApplication(ExtApplication):
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
         try:
-            attrs = self.deserialize(request.raw_post_data)
+            attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
             return self.response(str(why), status=self.BAD_REQUEST)
         if "id" in attrs:
@@ -231,7 +250,7 @@ class ExtDocApplication(ExtApplication):
           access="update", api=True)
     def api_update(self, request, id):
         try:
-            attrs = self.deserialize(request.raw_post_data)
+            attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError, why:
             return self.response(str(why), status=self.BAD_REQUEST)
         try:
