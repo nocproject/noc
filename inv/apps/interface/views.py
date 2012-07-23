@@ -204,6 +204,8 @@ class InterfaceAppplication(ExtApplication):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:
             return self.response_not_found()
-        i.profile = profile
-        i.save()
+        if i.profile != profile:
+            i.profile = profile
+            i.profile_locked = True
+            i.save()
         return True

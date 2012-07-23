@@ -19,6 +19,9 @@ concurrency = 20
 success_retry = 86400
 failed_retry = 900
 reschedule_interval = 900
+# IInterfaceClassification-interfaced pyRule
+# returning interface class name
+classification_pyrule =
 
 [prefix_discovery]
 enabled = false

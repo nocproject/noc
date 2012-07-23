@@ -271,7 +271,7 @@ class InterfaceProfile(Document):
     }
     name = StringField(unique=True)
     description = StringField()
-    style = ForeignKeyField(Style)
+    style = ForeignKeyField(Style, required=False)
     # Interface-level events processing
     link_events = StringField(
         required=True,
@@ -341,10 +341,11 @@ class Interface(Document):
     mac = StringField(required=False)
     aggregated_interface = PlainReferenceField("self", required=False)
     is_lacp = BooleanField(default=False)
-    # admin status + oper status
-    # is_ignored = BooleanField(default=False)
+    # @todo: admin status + oper status
     profile = PlainReferenceField(InterfaceProfile,
         default=InterfaceProfile.get_default_profile)
+    # profile locked on manual user change
+    profile_locked = BooleanField(required=False, default=False)
     
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)

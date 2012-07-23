@@ -21,7 +21,8 @@ from noc.lib.daemon import Daemon
 from noc.sa.models import ManagedObject, profile_registry, ReduceTask
 from noc.inv.models import Interface, ForwardingInstance, SubInterface,\
                            DiscoveryStatusInterface, DiscoveryStatusIP,\
-                           NewPrefixDiscoveryLog, NewAddressDiscoveryLog
+                           NewPrefixDiscoveryLog, NewAddressDiscoveryLog, \
+                           InterfaceProfile
 from noc.lib.debug import error_report
 from noc.lib.ip import IP
 from noc.ip.models import VRF, Prefix, AS, Address
@@ -106,6 +107,18 @@ class DiscoveryDaemon(Daemon):
                 self.p_custom_pyrule = r[0]
             else:
                 logging.error("Prefix discovery custom pyRule '%s' is not found. Ignoring." % p)
+        self.i_classification_pyrule = None
+        if self.i_enabled:
+            p = self.config.get("interface_discovery",
+                "classification_pyrule")
+            if p:
+                r = list(PyRule.objects.filter(name=p,
+                        interface="IInterfaceClassification"))
+                if r:
+                    logging.info("Enabling interface classification pyRule '%s'" % p)
+                    self.i_classification_pyrule = r[0]
+                else:
+                    logging.error("Interface classification pyRule '%s' is not found. Ignoring" % p)
 
     def get_state_map(self, s):
         """
@@ -358,6 +371,7 @@ class DiscoveryDaemon(Daemon):
     def import_interfaces(self, o, interfaces):
         si_count = 0
         found_interfaces = set()
+        i_profiles = {}  # Interface profile name -> instance
         for fi in interfaces:
             ## Process forwarding instance
             if fi["forwarding_instance"] == "default":
@@ -425,6 +439,27 @@ class DiscoveryDaemon(Daemon):
                         is_lacp="is_lacp" in i and i["is_lacp"]
                     )
                     iface.save()
+                # Interface classification
+                if (self.i_classification_pyrule and
+                    not iface.profile_locked):
+                    p_name = self.i_classification_pyrule(
+                        interface=iface)
+                    if p_name and p_name != iface.profile.name:
+                        # Change profile
+                        p = i_profiles.get(p_name)
+                        if p is None:
+                            p = InterfaceProfile.objects.filter(name=p_name).first()
+                            if p:
+                                i_profiles[p_name] = p
+                            else:
+                                self.o_error(o, "Invalid interface profile '%s' for interface '%s'" % (
+                                    p_name, iface.name))
+                        if p and p != iface.profile:
+                            self.o_info(o,
+                                "Interface %s has been classified as '%s'" % (
+                                    iface.name, p_name))
+                            iface.profile = p
+                            iface.save()
                 icache[i["name"]] = iface
                 found_interfaces.add(i["name"])
                 # Remove hanging subinterfaces
