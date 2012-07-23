@@ -18,3 +18,6 @@ class InterfaceProfileApplication(ExtDocApplication):
     title = "Interface Profile"
     menu = "Setup | Interface Profiles"
     model = InterfaceProfile
+
+    def field_row_class(self, o):
+        return o.style.css_class_name if o.style else ""

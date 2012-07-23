@@ -12,6 +12,7 @@ Ext.define("NOC.inv.interface.L1Panel", {
     title: "Physical",
     closable: false,
     layout: "fit",
+    rowClassField: "row_class",
 
     initComponent: function() {
         var me = this;
@@ -86,7 +87,7 @@ Ext.define("NOC.inv.interface.L1Panel", {
                         }
                     ],
                     viewConfig: {
-                        // getRowClass: Ext.bind(me.getRowClass, me),
+                        getRowClass: Ext.bind(me.getRowClass, me),
                         listeners: {
                             scope: me,
                             cellclick: me.onCellClick
@@ -164,5 +165,19 @@ Ext.define("NOC.inv.interface.L1Panel", {
             app: me,
             record: record
         });
+    },
+    // Return Grid's row classes
+    getRowClass: function(record, index, params, store) {
+        var me = this;
+        if(me.rowClassField) {
+            var c = record.get(me.rowClassField);
+            if(c) {
+                return c;
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
     }
 });

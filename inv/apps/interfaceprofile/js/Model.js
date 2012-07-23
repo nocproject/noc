@@ -24,9 +24,25 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "string"
         },
         {
+            name: "style",
+            type: "int"
+        },
+        {
             name: "link_events",
             type: "string",
             defaultValue: "A"
+        },
+        // CSS
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
+        },
+        // Foreign keys
+        {
+            name: "style__label",
+            type: "string",
+            persist: false
         }
     ]
 });
