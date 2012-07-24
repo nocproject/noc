@@ -98,8 +98,8 @@ class InterfaceAppplication(ExtApplication):
                 "lag": (i.aggregated_interface.name
                         if i.aggregated_interface else ""),
                 "link": get_link(i),
-                "profile": str(i.profile.id),
-                "profile__label": unicode(i.profile),
+                "profile": str(i.profile.id) if i.profile else None,
+                "profile__label": unicode(i.profile) if i.profile else None,
                 "row_class": get_style(i)
             } for i in
               Interface.objects.filter(managed_object=o.id,
