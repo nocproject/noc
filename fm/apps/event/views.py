@@ -104,7 +104,8 @@ class EventAppplication(Application):
                     interface = event.vars["interface"]
                     if iface.description:
                         interface += " (%s)" % iface.description
-                    interface += " [%s]" % iface.profile.name
+                    if interface.profile:
+                        interface += " [%s]" % iface.profile.name
         else:
             subject = ""
             body = ""
