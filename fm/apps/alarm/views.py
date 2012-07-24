@@ -138,7 +138,8 @@ class AlarmManagedApplication(Application):
                 interface = alarm.vars["interface"]
                 if iface.description:
                     interface += " (%s)" % iface.description
-                interface += " [%s]" % iface.profile.name
+                if interface.profile:
+                    interface += " [%s]" % iface.profile.name
 
         
         return self.render(request, "alarm.html",
