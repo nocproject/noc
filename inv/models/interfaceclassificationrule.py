@@ -1,0 +1,154 @@
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Interface Classification Rules models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.lib.nosql import Document, EmbeddedDocument, StringField,\
+    ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,\
+    IntField
+
+
+class InterfaceClassificationMatch(EmbeddedDocument):
+    # Field name
+    field = StringField(choices=[
+        ("name", "name"),
+        ("description", "description"),
+        ("ipv4", "ipv4"),
+        ("ipv6", "ipv6"),
+        ("tagged", "tagged vlan"),
+        ("untagged", "untagged vlan")
+    ])
+    # Operation
+    op = StringField(choices=[
+        ("regexp", "RegExp"),
+        ("eq", "Equals"),
+        ("contains", "Contains"),
+        ("in", "in"),
+        ("between", "Between")
+    ])
+    #
+    value1 = StringField()
+    #
+    value2 = StringField(required=False)
+
+    def __unicode__(self):
+        if self.op == "between":
+            return "%s between %s and %s" % (
+                self.field, self.value1, self.value2)
+        else:
+            return "%s %s %s" % (self.field, self.op, self.value1)
+
+    def check_single_value(self):
+        if not self.value1:
+            raise SyntaxError("value1 is not set")
+        if self.value2:
+            raise SyntaxError("value2 is set")
+
+    def compile(self, f_name):
+        a =  getattr(self, "compile_%s_%s" % (self.field, self.op), None)
+        if a:
+            return a(f_name)
+        else:
+            raise SyntaxError("%s %s is not implemented" % (
+                self.field, self.op))
+
+    # name
+    def compile_name_eq(self, f_name):
+        self.check_single_value()
+        return "\n".join([
+            "def %s(iface):" % f_name,
+            "    return iface.name == %s" % repr(self.value1)
+        ])
+
+    def compile_name_contains(self, f_name):
+        self.check_single_value()
+        return "\n".join([
+            "def %s(iface):" % f_name,
+            "    return %s in iface.name.lower()" % repr(self.value1.lower())
+        ])
+
+    def compile_name_regex(self, f_name):
+        self.check_single_value()
+        return "\n".join([
+            "rx_%s = re.compile(%s)" % (f_name, repr(self.value1)),
+            "def %s(iface):" % f_name,
+            "    return bool(rx_%s.search(iface.name))" % f_name
+        ])
+
+    # description
+    def compile_description_eq(self, f_name):
+        self.check_single_value()
+        return "\n".join([
+            "def %s(iface):" % f_name,
+            "    return iface.description == %s" % repr(self.value1)
+        ])
+
+    def compile_description_contains(self, f_name):
+        self.check_single_value()
+        return "\n".join([
+            "def %s(iface):" % f_name,
+            "    return iface.description and %s in iface.description.lower()" % repr(self.value1.lower())
+        ])
+
+    def compile_description_regex(self, f_name):
+        self.check_single_value()
+        return "\n".join([
+            "rx_%s = re.compile(%s)" % (f_name, repr(self.value1)),
+            "def %s(iface):" % f_name,
+            "    return iface.description and bool(rx_%s.search(iface.description))" % f_name
+        ])
+
+
+class InterfaceClassificationRule(Document):
+    meta = {
+        "collection": "noc.inv.interfaceclassificationrules",
+        "allow_inheritance": False
+    }
+    name = StringField(required=False)
+    is_active = BooleanField(default=True)
+    description = StringField(required=False)
+    order = IntField()
+    match = ListField(
+        EmbeddedDocumentField(InterfaceClassificationMatch),
+        required=False)
+    profile_name = StringField()
+
+    def __unicode__(self):
+        r = [unicode(x) for x in self.match]
+        return "%s -> %s" % (", ".join(r), self.profile_name)
+
+    @classmethod
+    def get_classificator_code(cls):
+        r = ["import re"]
+        mf = ["def classify(interface):"]
+        for rule in cls.objects.filter(is_active=True).order_by("order"):
+            rid = str(rule.id)
+            lmn = []
+            for i, m in enumerate(rule.match):
+                mn = "match_%s_%d" % (rid, i)
+                r += [m.compile(mn)]
+                lmn += ["%s(interface)" % mn]
+            if lmn:
+                mf += [
+                    "    if %s:" % " and ".join(lmn),
+                    "        return %s" % repr(rule.profile_name)
+                ]
+            else:
+                mf += ["    return %s" % repr(rule.profile_name)]
+        r += mf
+        return "\n".join(r)
+
+    @classmethod
+    def get_classificator(cls):
+        code = cls.get_classificator_code() + "\nhandlers[0] = classify\n"
+        # Hack to retrieve reference
+        handlers = {}
+        # Compile code
+        exec code in {"re": re, "handlers": handlers}
+        return handlers[0]

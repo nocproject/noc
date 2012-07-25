@@ -22,7 +22,7 @@ from noc.sa.models import ManagedObject, profile_registry, ReduceTask
 from noc.inv.models import Interface, ForwardingInstance, SubInterface,\
                            DiscoveryStatusInterface, DiscoveryStatusIP,\
                            NewPrefixDiscoveryLog, NewAddressDiscoveryLog, \
-                           InterfaceProfile
+                           InterfaceProfile, InterfaceClassificationRule
 from noc.lib.debug import error_report
 from noc.lib.ip import IP
 from noc.ip.models import VRF, Prefix, AS, Address
@@ -112,6 +112,7 @@ class DiscoveryDaemon(Daemon):
             p = self.config.get("interface_discovery",
                 "classification_pyrule")
             if p:
+                # Use pyRule
                 r = list(PyRule.objects.filter(name=p,
                         interface="IInterfaceClassification"))
                 if r:
@@ -119,6 +120,12 @@ class DiscoveryDaemon(Daemon):
                     self.i_classification_pyrule = r[0]
                 else:
                     logging.error("Interface classification pyRule '%s' is not found. Ignoring" % p)
+            elif InterfaceClassificationRule.objects.filter(is_active=True).count():
+                # Load rules
+                logging.info("Compiling interface classification rules:\n"
+                             "-----[CODE]-----\n%s\n-----[END]-----" %\
+                             InterfaceClassificationRule.get_classificator_code())
+                self.i_classification_pyrule = InterfaceClassificationRule.get_classificator()
 
     def get_state_map(self, s):
         """
@@ -150,6 +157,7 @@ class DiscoveryDaemon(Daemon):
         interface_discovery_task = None
         ip_discovery_task = None
         self.reset_vrf_cache()
+        self.reset_profiles_cache()
         while True:
             if self.new_prefixes:
                 self.report_new_prefixes()
@@ -320,6 +328,9 @@ class DiscoveryDaemon(Daemon):
         self.cache_vrf_by_rd = {}
         self.cache_vrf_by_name = {}
 
+    def reset_profiles_cache(self):
+        self.cache_i_profiles = {}  # Interface profile name -> instance
+
     def get_or_create_VRF(self, object, name, rd):
         """
 
@@ -371,7 +382,6 @@ class DiscoveryDaemon(Daemon):
     def import_interfaces(self, o, interfaces):
         si_count = 0
         found_interfaces = set()
-        i_profiles = {}  # Interface profile name -> instance
         for fi in interfaces:
             ## Process forwarding instance
             if fi["forwarding_instance"] == "default":
@@ -439,27 +449,6 @@ class DiscoveryDaemon(Daemon):
                         is_lacp="is_lacp" in i and i["is_lacp"]
                     )
                     iface.save()
-                # Interface classification
-                if (self.i_classification_pyrule and
-                    not iface.profile_locked):
-                    p_name = self.i_classification_pyrule(
-                        interface=iface)
-                    if p_name and p_name != iface.profile.name:
-                        # Change profile
-                        p = i_profiles.get(p_name)
-                        if p is None:
-                            p = InterfaceProfile.objects.filter(name=p_name).first()
-                            if p:
-                                i_profiles[p_name] = p
-                            else:
-                                self.o_error(o, "Invalid interface profile '%s' for interface '%s'" % (
-                                    p_name, iface.name))
-                        if p and p != iface.profile:
-                            self.o_info(o,
-                                "Interface %s has been classified as '%s'" % (
-                                    iface.name, p_name))
-                            iface.profile = p
-                            iface.save()
                 icache[i["name"]] = iface
                 found_interfaces.add(i["name"])
                 # Remove hanging subinterfaces
@@ -548,9 +537,11 @@ class DiscoveryDaemon(Daemon):
                         (si.get("is_ipv4") or si.get("is_ipv6"))):
                         self.refresh_prefix(o, fi["forwarding_instance"],
                                             fi.get("rd", "0:0"), si)
+                # Perform interface classification
+                self.interface_classification(iface)
         # Remove hanging interfaces
-        db_interfaces = set([x.name for x in
-                Interface.objects.filter(managed_object=o.id).only("name")])
+        db_interfaces = set(x.name for x in
+                Interface.objects.filter(managed_object=o.id).only("name"))
         for i in db_interfaces - found_interfaces:
             iface = Interface.objects.filter(managed_object=o.id, name=i).first()
             if iface:
@@ -944,6 +935,34 @@ class DiscoveryDaemon(Daemon):
             "interface": interface,
         })
         return self.fqdn_template.render(Context(c))
+
+    def interface_classification(self, iface):
+        """
+        Perform interface classification
+        :param iface:
+        :return:
+        """
+        if not self.i_classification_pyrule or iface.profile_locked:
+            return
+        o = iface.managed_object
+        p_name = self.i_classification_pyrule(interface=iface)
+        if p_name and p_name != iface.profile.name:
+            # Change profile
+            p = self.cache_i_profiles.get(p_name)
+            if p is None:
+                p = InterfaceProfile.objects.filter(name=p_name).first()
+                if p:
+                    self.cache_i_profiles[p_name] = p
+                else:
+                    self.o_error(o,
+                        "Invalid interface profile '%s' for interface '%s'" % (
+                            p_name, iface.name))
+            if p and p != iface.profile:
+                self.o_info(o,
+                    "Interface %s has been classified as '%s'" % (
+                        iface.name, p_name))
+                iface.profile = p
+                iface.save()
 
 
 def interface_discovery_reduce(task):

@@ -259,6 +259,8 @@ class Model(Document):
 ## Network topology
 ##
 from interfaceprofile import InterfaceProfile
+from interfaceclassificationrule import InterfaceClassificationRule,\
+    InterfaceClassificationMatch
 from forwardinginstance import ForwardingInstance
 from interface import Interface
 from subinterface import SubInterface
