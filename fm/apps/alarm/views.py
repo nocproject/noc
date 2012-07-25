@@ -138,7 +138,7 @@ class AlarmManagedApplication(Application):
                 interface = alarm.vars["interface"]
                 if iface.description:
                     interface += " (%s)" % iface.description
-                if interface.profile:
+                if iface.profile:
                     interface += " [%s]" % iface.profile.name
 
         
