@@ -3,7 +3,7 @@
 ##----------------------------------------------------------------------
 ## Check for hanging *.pyc files
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -24,8 +24,10 @@ def check():
             continue
         app = app[4:]
         for root, dirs, files in os.walk(app):
-            py = set([f + "c" for f in files if f.endswith(".py")])
-            pyc = set([f for f in files if f.endswith(".pyc")])
+            # .pyc present, .py absent
+            py = set(f + "c" for f in files if f.endswith(".py"))
+            py |= set(d + ".pyc" for d in dirs)
+            pyc = set(f for f in files if f.endswith(".pyc"))
             left = pyc - py
             if left:
                 r += [os.path.join(root, f) for f in left]
