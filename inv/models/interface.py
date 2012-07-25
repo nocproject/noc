@@ -117,5 +117,11 @@ class Interface(Document):
             name=i).first()
         return iface
 
+    @property
+    def subinterface_set(self):
+        return SubInterface.objects.filter(interface=self.id)
+
+
 ## Avoid circular references
+from subinterface import SubInterface
 from link import Link
