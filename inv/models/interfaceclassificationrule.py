@@ -12,6 +12,7 @@ import re
 from noc.lib.nosql import Document, EmbeddedDocument, StringField,\
     ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,\
     IntField
+from noc.lib.ip import IP
 
 
 class InterfaceClassificationMatch(EmbeddedDocument):
@@ -19,8 +20,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
     field = StringField(choices=[
         ("name", "name"),
         ("description", "description"),
-        ("ipv4", "ipv4"),
-        ("ipv6", "ipv6"),
+        ("ip", "ip"),
         ("tagged", "tagged vlan"),
         ("untagged", "untagged vlan")
     ])
@@ -103,6 +103,41 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             "def %s(iface):" % f_name,
             "    return iface.description and bool(rx_%s.search(iface.description))" % f_name
         ])
+    # IP
+    def compile_ip_eq(self, f_name):
+        self.check_single_value()
+        v = IP.prefix(self.value1)
+        r = [
+            "def %s(iface):" % f_name,
+            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(is_ipv%(afi)s=True)]" % {"afi": v.afi},
+            "    a = sum(a, [])",
+        ]
+        if "/" in self.value1:
+            # Compare prefixes
+            r += [
+                "    return any(x for x in a if x == %r)" % v.prefix
+            ]
+        else:
+            # Compare addresses
+            v = v.prefix.split("/")[0]
+            r += [
+                "    return any(x for x in a if x.split('/')[0] == %r)" % v
+            ]
+        return "\n".join(r)
+
+    def compile_ip_in(self, f_name):
+        self.check_single_value()
+        if "/" not in self.value1:
+            raise SyntaxError("'%s' must be prefix" % self.value1)
+        v = IP.prefix(self.value1)
+        r = [
+            "def %s(iface):" % f_name,
+            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(is_ipv%(afi)s=True)]" % {"afi": v.afi},
+            "    a = sum(a, [])",
+            "    v = IP.prefix(%r)" % v.prefix,
+            "    return any(x for x in a if IP.prefix(x) in v)"
+        ]
+        return "\n".join(r)
 
 
 class InterfaceClassificationRule(Document):
@@ -150,5 +185,5 @@ class InterfaceClassificationRule(Document):
         # Hack to retrieve reference
         handlers = {}
         # Compile code
-        exec code in {"re": re, "handlers": handlers}
+        exec code in {"re": re, "IP": IP, "handlers": handlers}
         return handlers[0]
