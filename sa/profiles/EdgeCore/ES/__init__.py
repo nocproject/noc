@@ -35,6 +35,10 @@ class Profile(noc.sa.profiles.Profile):
     convert_mac = noc.sa.profiles.Profile.convert_mac_to_dashed
 
     def convert_interface_name(self, s):
+        """
+        >>> Profile().convert_interface_name("Eth 1/ 1")
+        'Eth 1/1'
+        """
         s = s.replace("  ", " ")
         return s.replace("/ ", "/")
 
