@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%C\\d+K.+INVALIDSOURCEADDRESSPACKET: \\(Suppressed \\d+ times\\)\\s*Packet received with invalid source MAC address \\(\\S+\\) on port (?P<interface>\\S+) in vlan (?P<vlan>\\d+)"
+                "value_re": "%C\\d+K.+INVALIDSOURCEADDRESSPACKET: \\(Suppressed \\d+ times\\)\\s*Packet received with invalid source MAC address \\((?P<mac>\\S+)\\) on port (?P<interface>\\S+) in vlan (?P<vlan>\\d+)"
             }
         ]
     }
