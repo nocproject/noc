@@ -19,25 +19,109 @@
                 "type": "int",
                 "required": true
             },
-            
             {
                 "name": "table_deletes",
                 "description": "Number of deletes per interval",
                 "type": "int",
                 "required": true
             },
-            
             {
                 "name": "table_drops",
                 "description": "Number of drops per interval",
                 "type": "int",
                 "required": true
             },
-            
             {
                 "name": "table_ageouts",
                 "description": "Number of aged entries per interval",
                 "type": "int",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | LLDP | Created New Neighbor",
+        "description": "LLDP Created New Neighbore",
+        "action": "L",
+        "text": {
+            "en": {
+                "subject_template": "LLDP Created New Neighbor: {{interface}}",
+                "body_template": "LLDP Created New Neighbor:\n{{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Affected interface",
+                "type": "interface_name",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | LLDP | Native Vlan Not Match",
+        "description": "LLDP Native Vlan Not Match",
+        "action": "L",
+        "text" : {
+            "en": {
+                "subject_template": "LLDP: Native Vlan not mach on {{interface}}. Port native vlan {{vlan}}, neighbor port native vlan {{vlan_neighbor}}",
+                "body_template": "LLDP: Native Vlan not mach on {{interface}}. Port native vlan {{vlan}}, neighbor port native vlan {{vlan_neighbor}}",
+                "symptoms": "",
+                "probable_causes": " ",
+                "recommended_actions": "check configuration ports"
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Affected interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "VLAN ID",
+                "type": "int",
+                "required": true
+            },
+            {
+                "name": "vlan_neighbor",
+                "description": "VLAN NEI ID",
+                "type": "int",
+                "required": true
+            }
+        ],
+        "disposition": [
+        ]
+    },
+
+    {
+        "name": "Network | LLDP | LLDP Aged Out",
+        "description": "LLDP Aged Out",
+        "action": "L",
+        "text" : {
+            "en": {
+                "subject_template": "LLDP: Neighbor on interface {{interface}} aged out.",
+                "body_template": "LLDP: Neighbor on interface {{interface}} aged out.",
+                "symptoms": "",
+                "probable_causes": " ",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Affected interface",
+                "type": "interface_name",
                 "required": true
             }
         ],
