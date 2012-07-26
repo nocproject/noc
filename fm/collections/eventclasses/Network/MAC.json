@@ -102,6 +102,48 @@
     },
 
     {
+        "name": "Network | MAC | Invalid MAC",
+        "description": "Invalid MAC detected",
+        "action": "A",
+        "text" : {
+            "en": {
+                "subject_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "body_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "mac",
+                "description": "MAC Address",
+                "type": "mac",
+                "required": true
+            },
+            {
+                "name": "interface",
+                "description": "Affected interface",
+                "type": "interface_name",
+                "required": true
+            },
+            {
+                "name": "vlan",
+                "description": "Affected vlan",
+                "type": "int",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | MAC | Invalid MAC"
+            }
+        ]
+    },
+
+    {
         "name": "Network | MAC | MAC Flood",
         "description": "Flooding MAC Detected",
         "action": "A",
