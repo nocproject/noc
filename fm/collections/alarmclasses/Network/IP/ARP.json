@@ -1,7 +1,7 @@
 [
     {
         "name": "Network | IP | ARP Moved",
-        "description": "ARP Model",
+        "description": "ARP Moved",
         "is_unique": true,
         "discriminator": ["ip", "from_mac", "to_mac"],
         "user_clearable": true,
@@ -13,27 +13,24 @@
                 "type": "interface_name",
                 "required": false
             },
-            
             {
                 "name": "ip",
                 "description": "IP",
                 "type": "ip_address",
                 "required": true
             },
-            
             {
                 "name": "from_mac",
                 "description": "From MAC",
                 "type": "mac",
                 "required": true
             },
-
             {
                 "name": "to_mac",
                 "description": "To MAC",
                 "type": "mac",
                 "required": true
-            }            
+            }
         ],
         "text": {
             "en": {
