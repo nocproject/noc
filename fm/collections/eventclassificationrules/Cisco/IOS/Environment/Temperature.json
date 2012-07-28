@@ -393,5 +393,68 @@
                 "value_re": "%C6KENV-SP-4-(?:MINOR|MAJOR)TEMPALARMRECOVER: (?P<name>.+) temperature crossed threshold #1\\(=(?P<threshold>\\d+)C\\). It has returned to normal operating temperature range."
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #11 (SYSLOG)",
+        "description": "%HARDWARE-2-THERMAL_WARNING: Temperature has reached warning threshold",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "HARDWARE-\\d+-THERMAL_(?:WARNING|CRITICAL).+[Tt]emperature has reached (?:warning|critical) threshold"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #11 (SYSLOG)",
+        "description": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit.",
+        "event_class__name": "Environment | Temperature Returned to Normal Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #12 (SYSLOG)",
+        "description": "%ENVIRONMENTAL-1-ALERT: Temp: Left Ext, Location: F0, State: Minor, Reading: 57 Celsius",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "ENVIRONMENTAL-\\d+-ALERT.+[Tt]emp: (?P<name>.+), [Ll]ocation.+State.+Reading: (?P<measure>\\S+) Celsius"
+            }
+        ]
     }
 ]
