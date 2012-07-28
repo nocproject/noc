@@ -16,8 +16,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "Storm detected on {{interface}}",
-                "body_template": "Storm detected on {{interface}}",
+                "subject_template": "Storm detected on port {{interface}}",
+                "body_template": "Storm detected on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
@@ -42,15 +42,15 @@
         ],
         "text": {
             "en": {
-                "subject_template": "Broadcast Storm detected on {{interface}}",
-                "body_template": "Broadcast Storm detected on {{interface}}",
+                "subject_template": "Broadcast Storm detected on port {{interface}}",
+                "body_template": "Broadcast Storm detected on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
             }
         }
     },
-    
+
     {
         "name": "Network | Storm Control | Multicast Storm Detected",
         "description": "Multicast Storm Detected",
@@ -68,18 +68,18 @@
         ],
         "text": {
             "en": {
-                "subject_template": "Multicast Storm detected on {{interface}}",
-                "body_template": "Multicast Storm detected on {{interface}}",
+                "subject_template": "Multicast Storm detected on port {{interface}}",
+                "body_template": "Multicast Storm detected port on {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
             }
         }
     },
-    
+
     {
         "name": "Network | Storm Control | Unicast Storm Detected",
-        "description": "Unicast Storm Detected",
+        "description": "Unicast (DLF) Storm Detected",
         "is_unique": true,
         "discriminator": ["interface"],
         "user_clearable": true,
@@ -94,11 +94,11 @@
         ],
         "text": {
             "en": {
-                "subject_template": "Unicast Storm detected on {{interface}}",
-                "body_template": "Unicast Storm detected on {{interface}}",
+                "subject_template": "Unicast (DLF) Storm detected on port {{interface}}",
+                "body_template": "Unicast (DLF) Storm detected on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
-                "recommended_actions": ""
+                "recommended_actions": "Enable DLF (destination lookup failure) filter"
             }
         }
     }
