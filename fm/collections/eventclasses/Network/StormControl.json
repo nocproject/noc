@@ -5,8 +5,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "Storm Detected on {{interface}}",
-                "body_template": "Storm Detected  on {{interface}}",
+                "subject_template": "Storm Detected on port {{interface}}",
+                "body_template": "Storm Detected on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
@@ -28,15 +28,15 @@
             }
         ]
     },
-    
+
     {
         "name": "Network | Storm Control | Storm Cleared",
         "description": "Storm Cleared",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "Storm Cleared on {{interface}}",
-                "body_template": "Storm Cleared  on {{interface}}",
+                "subject_template": "Storm Cleared on port {{interface}}",
+                "body_template": "Storm Cleared on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -65,8 +65,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "Broadcast Storm Detected on {{interface}}",
-                "body_template": "Broadcast Storm Detected  on {{interface}}",
+                "subject_template": "Broadcast Storm Detected on port {{interface}}",
+                "body_template": "Broadcast Storm Detected on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -88,15 +88,15 @@
             }
         ]
     },
-    
+
     {
         "name": "Network | Storm Control | Broadcast Storm Cleared",
         "description": "Broadcast Storm Cleared",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "Broadcast Storm Cleared on {{interface}}",
-                "body_template": "Broadcast Storm Cleared  on {{interface}}",
+                "subject_template": "Broadcast Storm Cleared on port {{interface}}",
+                "body_template": "Broadcast Storm Cleared on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -118,15 +118,15 @@
             }
         ]
     },
-    
+
     {
         "name": "Network | Storm Control | Multicast Storm Detected",
         "description": "Multicast Storm Detected",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "Multicast Storm Detected on {{interface}}",
-                "body_template": "Multicast Storm Detected  on {{interface}}",
+                "subject_template": "Multicast Storm Detected on port {{interface}}",
+                "body_template": "Multicast Storm Detected on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -148,15 +148,15 @@
             }
         ]
     },
-    
+
     {
         "name": "Network | Storm Control | Multicast Storm Cleared",
         "description": "Multicast Storm Cleared",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "Multicast Storm Cleared on {{interface}}",
-                "body_template": "Multicast Storm Cleared  on {{interface}}",
+                "subject_template": "Multicast Storm Cleared on port {{interface}}",
+                "body_template": "Multicast Storm Cleared on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -178,18 +178,18 @@
             }
         ]
     },
-    
+
     {
         "name": "Network | Storm Control | Unicast Storm Detected",
-        "description": "Unicast Storm Detected",
+        "description": "Unicast (DLF) Storm Detected",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "Unicast Storm Detected on {{interface}}",
-                "body_template": "Unicast Storm Detected  on {{interface}}",
+                "subject_template": "Unicast (DLF) Storm Detected on port {{interface}}",
+                "body_template": "Unicast (DLF) Storm Detected on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
-                "recommended_actions": ""
+                "recommended_actions": "Enable DLF (destination lookup failure) filter"
             }
         },
         "vars": [
@@ -208,15 +208,15 @@
             }
         ]
     },
-    
+
     {
         "name": "Network | Storm Control | Unicast Storm Cleared",
-        "description": "Unicast Storm Cleared",
+        "description": "Unicast (DLF) Storm Cleared",
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "Unicast Storm Cleared on {{interface}}",
-                "body_template": "Unicast Storm Cleared  on {{interface}}",
+                "subject_template": "Unicast (DLF) Storm Cleared on port {{interface}}",
+                "body_template": "Unicast (DLF) Storm Cleared on port {{interface}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
