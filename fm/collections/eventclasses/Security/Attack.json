@@ -5,7 +5,7 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "{{name}} attack detected{% if interface %} at inteface {{interface}}{% endif %}{% if src_ip %} from {{src_ip}}{% endif %}",
+                "subject_template": "{{name}} attack detected{% if interface %} at interface {{interface}}{% endif %}{% if src_ip %} from {{src_ip}}{% endif %}",
                 "body_template": "{{name}} attack detected.{% if interface %}\\nInterface: {{interface}}{% endif %}{% if src_ip %}\\nSource: {{src_ip}}{% endif %}",
                 "symptoms": "Unsolicitized traffic from source",
                 "probable_causes": "Virus/Botnet activity or malicious actions",
