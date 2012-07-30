@@ -39,9 +39,12 @@ class Script(NOCScript):
         re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
     rx_sec_ip = re.compile(r"Secondary address (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
-    rx_ipv6 = re.compile("(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)", re.MULTILINE | re.IGNORECASE)
+    rx_ipv6 = re.compile(
+        r"(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)",
+        re.MULTILINE | re.IGNORECASE)
     rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
-    rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
+    rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
+        re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?)$", re.IGNORECASE)
 
@@ -91,6 +94,25 @@ class Script(NOCScript):
             if match:
                 ospfs += [match.group("name")]
         return ospfs
+
+    rx_ifindex = re.compile(
+        r"^(?P<interface>\S+): Ifindex = (?P<ifindex>\d+)")
+
+    def get_ifindex(self):
+        try:
+            c = self.cli("show snmp mib ifmib ifindex")
+        except self.CLISyntaxError:
+            return []
+        r = []
+        for l in c.split("\n"):
+            match = self.rx_ifindex.match(l.strip())
+            if not match:
+                continue
+            r.append({
+                "interface": match.group("interface"),
+                "ifindex": match.group("ifindex")
+            })
+        return r
 
     ## Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
     rx_vlan_ubr = re.compile(
@@ -184,15 +206,17 @@ class Script(NOCScript):
         interfaces = []
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
+        # Get interfaces SNMP ifIndex
+        ifindex = self.get_ifindex()
 
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
-            ifname = self.profile.convert_interface_name(
-                match.group("interface"))
+            full_ifname = match.group("interface")
+            ifname = self.profile.convert_interface_name(full_ifname)
             if ifname[:2] in ["Vi", "Tu", "Di", "GM"]:
                 continue
             # NOC-378 - Dirty hack for interface like ATM0/IMA0
-            if "/ima" in match.group("interface").lower():
+            if "/ima" in full_ifname.lower():
                 continue
             if ":" in ifname:
                 inm = ifname.split(":")[0]
@@ -250,6 +274,11 @@ class Script(NOCScript):
                      matchifn.group("number"))
             if shotn in ospfs:
                 sub["is_ospf"] = True
+
+            for i in ifindex:
+                if i["interface"] == full_ifname:
+                    sub['ifindex'] = int(i["ifindex"])
+
             if "." not in ifname and ":" not in ifname:
                 iface = {
                     "name": ifname,
