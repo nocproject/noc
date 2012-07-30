@@ -102,5 +102,63 @@
                 "value_re": "(?:INFO:|INFO\\(6\\)) Port (?P<interface>.+) VID (?P<vlan>\\d+) LBD recovered. Loop detection restarted"
             }
         ]
+    },
+
+    {
+        "name": "DLink | DxS | Network | LBD | Vlan Loop Detected (SNMP)",
+        "description": "LOOPBACK-DETECT-MIB::swVlanLoopOccurred",
+        "event_class__name": "Network | LBD | Vlan Loop Detected",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "LOOPBACK-DETECT-MIB::swVlanLoopOccurred"
+            },
+            {
+                "key_re": "^LOOPBACK-DETECT-MIB::swLoopDetectPortIndex$",
+                "value_re": "^(?P<interface>\\S+)$"
+            },
+            {
+                "key_re": "^LOOPBACK-DETECT-MIB::swVlanLoopDetectVID$",
+                "value_re": "^(?P<vlan>\\S+)$"
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS | Network | LBD | Vlan Loop Cleared (SNMP)",
+        "description": "LOOPBACK-DETECT-MIB::swVlanLoopOccurred",
+        "event_class__name": "Network | LBD | Vlan Loop Cleared",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "LOOPBACK-DETECT-MIB::swVlanLoopRestart"
+            },
+            {
+                "key_re": "^LOOPBACK-DETECT-MIB::swLoopDetectPortIndex$",
+                "value_re": "^(?P<interface>\\S+)$"
+            },
+            {
+                "key_re": "^LOOPBACK-DETECT-MIB::swVlanLoopDetectVID$",
+                "value_re": "^(?P<vlan>\\S+)$"
+            }
+        ]
     }
 ]
