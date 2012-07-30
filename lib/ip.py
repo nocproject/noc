@@ -22,7 +22,7 @@ class IP(object):
         Return new prefix instance.
 
         :param prefix: String containing prefix
-        :type prefix: String
+        :type prefix: str
         """
         self.prefix = prefix
         self.address, self.mask = prefix.split("/")
@@ -48,8 +48,8 @@ class IP(object):
         """Compare prefix with other
 
         :param other: IP instance to be compared
-        :type other: IP instance
-        :rtype: integer
+        :type other: IP
+        :rtype: int
         Returns:
 
         * 0  -- if prefix equals to other
@@ -86,7 +86,7 @@ class IP(object):
         Convert string to prefix instance.
 
         :param prefix: String containing IPv4/IPv6 prefix
-        :type prefix: String
+        :type prefix: str
         :return: IPv6 or IPv6 instance
         :rtype: IPv4 or IPv6 instance
         """
@@ -192,7 +192,10 @@ class IP(object):
                 return list((s_first + d).iter_address(until=s_last - 1))
         # Left only addresses remaining in prefix and convert them to
         # IP instances
-        addresses = set([a for a in [IP.prefix(a) if isinstance(a, basestring) else a for a in addresses] if self.contains(a)])
+        addresses = set(
+            a for a in [
+                IP.prefix(a) if isinstance(a, basestring) else a for a in addresses
+            ] if self.contains(a))
         addresses = sorted(addresses)
         # Fill the spot
         spot = []
@@ -204,10 +207,9 @@ class IP(object):
                 last_touched = min(a + dist, s_last)
                 spot = list(max(a - dist, s_first).iter_address(until=last_touched))
             else:
-                d = a - last
-                if d <= dist:
+                if a + dist <= last:
                     # No gap, fill d addresses from last touched
-                    lt = min(last_touched + d, s_last)
+                    lt = min(last_touched + (a - last), s_last)
                     spot += list((last_touched + 1).iter_address(until=lt))
                 else:
                     # Gap, insert separator if needed
