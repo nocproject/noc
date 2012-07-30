@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "interface\\(\\d+/\\d+\\)(?P<interface>\\S+) loopback detect status: (2|3)\\.\\(1:normal; 2:block; 3:shutdown\\)"
+                "value_re": "interface\\(\\d+/\\d+\\)(?P<interface>\\S+) loopback detect status: (2|3|4)\\.\\(1:normal; 2:block; 3:shutdown"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "interface\\(\\d+/\\d+\\)(?P<interface>\\S+) loopback detect status: 1\\.\\s*\\(1:normal; 2:block; 3:shutdown\\)"
+                "value_re": "interface\\(\\d+/\\d+\\)(?P<interface>\\S+) loopback detect status: 1\\.\\s*\\(1:normal; 2:block; 3:shutdown"
             }
         ]
     },
