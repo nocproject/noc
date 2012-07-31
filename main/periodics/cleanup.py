@@ -87,8 +87,7 @@ class Task(noc.lib.periodic.Task):
         self.info("Empty categories are cleaned")
 
     def cleanup_failed_script_log(self):
-        from noc.sa.models import FailedScriptLog
-
+        from noc.sa.models.failedscriptlog import FailedScriptLog
         d = datetime.datetime.now() - datetime.timedelta(days=7)
         self.info("Cleaning failed scripts log")
         FailedScriptLog.objects.filter(timestamp__lte=d).delete()
