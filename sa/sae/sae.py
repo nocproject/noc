@@ -24,9 +24,9 @@ from django.db import reset_queries
 ## NOC modules
 from noc.sa.sae.service import Service
 from noc.sa.sae.sae_socket import SAESocket
-from noc.sa.models import Activator, ManagedObject, MapTask, script_registry,\
-                          profile_registry, ActivatorCapabilitiesCache,\
-                          FailedScriptLog
+from noc.sa.models import (Activator, ManagedObject, MapTask,
+                           script_registry, profile_registry,
+                           ActivatorCapabilitiesCache, FailedScriptLog)
 from noc.fm.models import NewEvent
 from noc.sa.rpc import RPCSocket, file_hash
 from noc.sa.protocols.sae_pb2 import *

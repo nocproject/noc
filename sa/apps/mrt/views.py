@@ -10,8 +10,8 @@
 import datetime
 ## NOC modules
 from noc.lib.app import ExtApplication, view
-from noc.sa.models import MRTConfig, ManagedObjectSelector,\
-    ManagedObject, ReduceTask
+from noc.sa.models import  (ManagedObjectSelector, ManagedObject,
+                            ReduceTask, MRTConfig)
 from noc.main.models import Permission
 from noc.lib.serialize import json_decode
 
@@ -39,7 +39,8 @@ class MRTAppplication(ExtApplication):
         :return:
         """
         # Get task
-        config = MRTConfig.objects.filter(name=task, is_active=True).first()
+        config = MRTConfig.objects.filter(
+            name=task, is_active=True).first()
         if not config:
             return self.response_not_found("Task not found")
         # Check permissions

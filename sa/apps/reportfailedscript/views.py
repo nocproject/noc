@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.sa.models import FailedScriptLog
+from sa.models.failedscriptlog import FailedScriptLog
 
 
 class ReportObjectsSummary(SimpleReport):
