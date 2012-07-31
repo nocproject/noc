@@ -355,6 +355,8 @@ class ManagedObjectAttribute(models.Model):
     class Meta:
         verbose_name = _("Managed Object Attribute")
         verbose_name_plural = _("Managed Object Attributes")
+        db_table = "sa_managedobjectattribute"
+        app_label = "sa"
         unique_together = [("managed_object", "key")]
         ordering = ["managed_object", "key"]
 
@@ -369,3 +371,4 @@ class ManagedObjectAttribute(models.Model):
 
 ## Avoid circular references
 from reducetask import ReduceTask, reduce_object_script
+from useraccess import UserAccess
