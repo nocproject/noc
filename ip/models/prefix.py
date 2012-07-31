@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 from vrf import VRF
 from afi import AFI_CHOICES
 from noc.peer.models import AS
-from noc.vc.models import VC
+from noc.vc.models.vc import VC
 from noc.main.models import Style, ResourceState, CustomField
 from noc.lib.fields import AutoCompleteTagsField, CIDRField
 from noc.lib.app import site
