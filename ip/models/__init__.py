@@ -32,31 +32,7 @@ AFI_CHOICES = [
     ("6", _("IPv6"))
 ]
 
-
-class VRFGroup(models.Model):
-    """
-    Group of VRFs with common properties
-    """
-    class Meta:
-        verbose_name = _("VRF Group")
-        verbose_name_plural = _("VRF Groups")
-        ordering = ["name"]
-
-    name = models.CharField(_("VRF Group"), unique=True, max_length=64,
-                            help_text=_("Unique VRF Group name"))
-    address_constraint = models.CharField(_("Address Constraint"), max_length=1,
-                                          choices=[("V", _(
-                                              "Addresses are unique per VRF")),
-                                              ("G", _("Addresses are unique per VRF Group"))],
-                                          default="V")
-    description = models.TextField(_("Description"), blank=True, null=True)
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-    def get_absolute_url(self):
-        return site.reverse("ip:vrfgroup:change", self.id)
+from vrfgroup import VRFGroup
 
 
 class VRF(models.Model):
