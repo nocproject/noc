@@ -101,7 +101,7 @@ class VRF(models.Model):
         return site.reverse("ip:vrf:change", self.id)
 
     @classmethod
-    def get_global(self):
+    def get_global(cls):
         """
         Returns VRF 0:0
         """
@@ -155,13 +155,19 @@ class Prefix(models.Model):
 
     parent = models.ForeignKey("self", related_name="children_set",
                                verbose_name=_("Parent"), null=True, blank=True)
-    vrf = models.ForeignKey(VRF, verbose_name=_("VRF"))
+    vrf = models.ForeignKey(
+        VRF,
+        verbose_name=_("VRF"),
+        default=VRF.get_global
+    )
     afi = models.CharField(_("Address Family"), max_length=1,
                            choices=AFI_CHOICES)
     prefix = CIDRField(_("Prefix"))
-    asn = models.ForeignKey(AS, verbose_name=_("AS"),
-                            help_text=_(
-                                "Authonomous system granted with prefix"))
+    asn = models.ForeignKey(
+        AS, verbose_name=_("AS"),
+        help_text=_("Authonomous system granted with prefix"),
+        default=AS.default_as
+    )
     vc = models.ForeignKey(VC, verbose_name=_("VC"), null=True, blank=True,
                            on_delete=models.SET_NULL,
                            help_text=_("VC bound to prefix"))
@@ -262,6 +268,11 @@ class Prefix(models.Model):
         """
         Save prefix
         """
+        # Set defaults
+        if not self.vrf:
+            self.vrf = VRF.get_global()
+        if not self.asn:
+            self.asn = AS.default_as()
         if not self.is_root:
             # Set proper parent
             self.parent = Prefix.get_parent(self.vrf, self.afi, self.prefix)
@@ -591,7 +602,11 @@ class Address(models.Model):
         unique_together = [("vrf", "afi", "address")]
 
     prefix = models.ForeignKey(Prefix, verbose_name=_("Prefix"))
-    vrf = models.ForeignKey(VRF, verbose_name=_("VRF"))
+    vrf = models.ForeignKey(
+        VRF,
+        verbose_name=_("VRF"),
+        default=VRF.get_global
+    )
     afi = models.CharField(_("Address Family"), max_length=1,
                            choices=AFI_CHOICES)
     address = INETField(_("Address"))
