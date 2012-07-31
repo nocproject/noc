@@ -25,7 +25,8 @@ from noc.inv.models import Interface, ForwardingInstance, SubInterface,\
                            InterfaceProfile, InterfaceClassificationRule
 from noc.lib.debug import error_report
 from noc.lib.ip import IP
-from noc.ip.models import VRF, Prefix, AS, Address
+from noc.peer.models import AS
+from noc.ip.models import VRF, Prefix, Address
 from noc.lib.nosql import Q
 from noc.main.models import SystemNotification, ResourceState,\
                             SystemTemplate, PyRule
