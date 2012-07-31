@@ -24,7 +24,6 @@ from noc.lib.fields import INETField, InetArrayField, AutoCompleteTagsField
 from noc.sa.profiles import profile_registry
 from noc.main.models import NotificationGroup
 from noc.cm.models import PrefixList
-from noc.sa.models import AdministrativeDomain
 from noc.lib.middleware import get_user
 from noc.lib.crypto import md5crypt
 from noc.lib.app.site import site
