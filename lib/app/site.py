@@ -414,6 +414,8 @@ class Site(object):
             # Do not discover site twice
             return
         for app in [a for a in INSTALLED_APPS if a.startswith("noc.")]:
+            # Import models
+            __import__(app + ".models", {}, {}, "*")
             m = app.split(".")[1]
             root = self.add_module_menu(app)
             # Initialize application
