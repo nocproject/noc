@@ -1,11 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## groupaccess Test
+## sa.groupaccess unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
 
-class groupaccessTestCase(ModelApplicationTestCase):
-    pass
+## NOC modules
+from noc.lib.test import RestModelTestCase, unittest
+
+
+@unittest.skip("Not ready")
+class GroupAccessTestCase(RestModelTestCase):
+    app = "sa.groupaccess"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]
