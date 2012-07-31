@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.sa.models import MRTConfig
+from noc.sa.models.mrtconfig import MRTConfig
 
 
 class MRTConfigApplication(ExtDocApplication):
