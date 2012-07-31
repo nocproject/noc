@@ -18,10 +18,12 @@ import pymongo
 sys.path = [".", ".."] + sys.path
 import settings
 
-##
-## Return NOC version
-##
+
 def get_version():
+    """
+    Returns NOC version
+    :return:
+    """
     with open("VERSION") as f:
         v = f.read().split("\n")[0].strip()
     try:
@@ -37,7 +39,22 @@ def get_version():
         pass
     return v
 
-##
+
+def get_pg_version():
+    with os.popen("pg_config --version") as f:
+        return f.read().strip()
+
+
+def get_psycopg_version():
+    import psycopg2
+    return psycopg2.__version__
+
+
+def get_pymongo_version():
+    import pymongo
+    return pymongo.version
+
+
 def get_mongo_version():
     connection_args = {}
     if settings.NOSQL_DATABASE_HOST:
@@ -46,19 +63,19 @@ def get_mongo_version():
         connection_args["port"] = settings.NOSQL_DATABASE_PORT
     c = pymongo.Connection(**connection_args)
     i = c.server_info()
-    return "%s (%d bits)" % (i["version"], i["bits"])
+    return "%s (%dbit)" % (i["version"], i["bits"])
 
-##
+
 def about():
-    with os.popen("pg_config --version") as f:
-        pg_version = f.read().strip()
     versions = [
         ["NOC", get_version()],
         ["OS", " ".join(os.uname())],
         ["Python", sys.version],
-        ["PostgreSQL", pg_version],
+        ["PostgreSQL", get_pg_version()],
         ["MongoDB", get_mongo_version()],
-        ["Python Path", ":".join(sys.path)]
+        ["Python Path", ":".join(sys.path)],
+        ["psycopg2", get_psycopg_version()],
+        ["pymongo", get_pymongo_version()]
     ]
     cv_path = os.path.join("contrib", "lib", "VERSION.csv")
     if os.path.exists(cv_path):
@@ -69,5 +86,5 @@ def about():
     for c, v in versions:
         print "|%s|%s|" % (c, v.replace("\n", " "))
 
-if __name__=="__main__":
+if __name__ == "__main__":
     about()
