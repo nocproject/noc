@@ -12,7 +12,7 @@ from django.db import models
 from vctype import VCType
 from vcfilter import VCFilter
 from noc.main.models import Style
-from noc.sa.models import ManagedObjectSelector
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
 
 class VCDomain(models.Model):
