@@ -14,7 +14,6 @@ import urllib
 from django.utils.translation import ugettext as _
 from django.contrib import admin
 from django import forms
-from django.db.models import Q
 from django.contrib.auth.models import User, Group
 from django.utils.safestring import SafeString
 from django.template import loader
@@ -362,8 +361,6 @@ class ManagedObjectApplication(ModelApplication):
             scr = script_registry[script]
         except:
             return self.response_not_found("No script found")
-        form = None
-        result = None
         if scr.implements and scr.implements[0].requires_input():
             # Script requires additional parameters
             if request.POST or request.GET:
@@ -519,20 +516,16 @@ class ManagedObjectApplication(ModelApplication):
         return self.render(request, "alarms.html",
                            object=o, alarms=alarms)
     
-    ##
     def user_access_list(self, user):
         return [s.selector.name for s in UserAccess.objects.filter(user=user)]
     
-    ##
     def user_access_change_url(self, user):
         return self.site.reverse("sa:useraccess:changelist",
                                  QUERY={"user__id__exact": user.id})
     
-    ##
     def group_access_list(self, group):
         return [s.selector.name for s in GroupAccess.objects.filter(group=group)]
     
-    ##
     def group_access_change_url(self, group):
         return self.site.reverse("sa:groupaccess:changelist",
                                  QUERY={"group__id__exact": group.id})

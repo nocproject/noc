@@ -11,7 +11,7 @@ from django.db import connection
 ## NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.main.models import CustomField
-from noc.ip.models import VRFGroup, VRF, Prefix, IP
+from noc.ip.models import VRFGroup, Prefix
 from noc.lib.ip import IP
 from noc.settings import ADMIN_MEDIA_PREFIX
 

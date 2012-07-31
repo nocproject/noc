@@ -66,6 +66,7 @@ class IPAMAppplication(Application):
             dist = self.MAX_IPv4_NET_SIZE
         else:
             dist = self.ADDRESS_SPOT_DIST
+        print "area_spot", [a.address for a in prefix.address_set.all()] + extra, dist, sep
         return p.area_spot([a.address for a in prefix.address_set.all()] + extra,
                            dist=dist, sep=sep)
 

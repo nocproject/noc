@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## VRFGroup model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ class VRFGroup(models.Model):
         verbose_name = _("VRF Group")
         verbose_name_plural = _("VRF Groups")
         db_table = "ip_vrfgroup"
+        app_label = "ip"
         ordering = ["name"]
 
     name = models.CharField(
