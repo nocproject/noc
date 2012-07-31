@@ -6,10 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Django modules
+from django.db import models
 ## Third-party modules
 from south.db import db
-## NOC modules
-from noc.ip.models import *
 
 
 class Migration:

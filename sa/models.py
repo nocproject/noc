@@ -27,6 +27,7 @@ from django.contrib.auth.models import User, Group
 from tagging.models import TaggedItem
 ## NOC modules
 from noc.main.models import PyRule, Shard, PrefixTable, Permission
+from noc.ip.models.vrf import VRF
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
 from noc.sa.protocols.sae_pb2 import *
@@ -177,7 +178,7 @@ class ManagedObject(models.Model):
     repo_path = models.CharField(_("Repo Path"),
             max_length=128, blank=True, null=True)
     # Default VRF
-    vrf = models.ForeignKey("ip.VRF", verbose_name=_("VRF"),
+    vrf = models.ForeignKey(VRF, verbose_name=_("VRF"),
                             blank=True, null=True)
     # pyRules
     config_filter_rule = models.ForeignKey(PyRule,

@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 
-from south.db import db
+## Django modules
 from django.db import models
-from noc.ip.models import *
+## Third-party modules
+from south.db import db
+## NOC modules
+from noc.lib.fields import MACField
+
 
 class Migration:
     depends_on=(
