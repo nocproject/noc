@@ -1,23 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## UserAccess Manager
+## sa.useraccess application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.sa.models import UserAccess
-##
-## UserAccess admin
-##
-class UserAccessAdmin(admin.ModelAdmin):
-    list_display=["user","selector"]
-    list_filter=["user"]
-##
-## UserAccess application
-##
-class UserAccessApplication(ModelApplication):
-    model=UserAccess
-    model_admin=UserAccessAdmin
-    menu="Setup | User Access"
+
+
+class UserAccessApplication(ExtModelApplication):
+    """
+    UserAccess application
+    """
+    title = "User Access"
+    menu = "Setup | User Access"
+    model = UserAccess
