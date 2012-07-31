@@ -404,9 +404,8 @@ class CustomField(models.Model):
         """
         Return appropriative Model class
         """
-        from django.contrib.contenttypes.models import ContentType
         a, m = self.table.split("_", 1)
-        return ContentType.objects.get(app_label=a, model=m).model_class()
+        return models.get_model(a, m)
 
     @classmethod
     def table_fields(cls, table):
