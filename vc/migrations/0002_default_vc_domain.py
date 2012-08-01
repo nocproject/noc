@@ -8,7 +8,7 @@
 """
 """
 from south.db import db
-from noc.vc.models import *
+from django.db import models
 
 class Migration:
     

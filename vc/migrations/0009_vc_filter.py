@@ -2,7 +2,6 @@
 
 from south.db import db
 from django.db import models
-from noc.vc.models import *
 
 class Migration:
     

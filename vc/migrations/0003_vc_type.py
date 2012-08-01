@@ -1,6 +1,6 @@
 
 from south.db import db
-from noc.vc.models import *
+from django.db import models
 
 vc_checks={
     "q": ("802.1Q VLAN",        1, (1,4095),     None),

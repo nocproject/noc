@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from south.db import db
-from django.db import models
+
+## Python modules
 import os
+## Django modules
+from django.db import models
+## Third-party modules
+from south.db import db
+
 
 class Migration:
     depends_on = (

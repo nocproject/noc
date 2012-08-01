@@ -2,7 +2,7 @@
 
 from south.db import db
 from django.db import models
-from noc.vc.models import *
+from django.db import models
 
 class Migration:
     depends_on = [
