@@ -3,7 +3,7 @@
 ## Third-party modules
 from south.db import db
 ## NOC modules
-from noc.vc.models import *
+from django.db import models
 
 
 class Migration:

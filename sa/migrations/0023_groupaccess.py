@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 
-from south.db import db
+## Django modules
 from django.db import models
-from noc.sa.models import *
+## Third-party modules
+from south.db import db
+
 
 class Migration:
     

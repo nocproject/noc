@@ -6,7 +6,7 @@
 """
 """
 from south.db import db
-from noc.sa.models import *
+
 
 class Migration:
     depends_on=[
