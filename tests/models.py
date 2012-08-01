@@ -35,11 +35,12 @@ class LoadModuleNamesTest(TestCase):
         :param model:
         :return:
         """
-        try:
-            model.objects.all()
-            return []
-        except Exception, why:
-            return [why]
+        if hasattr(model, "objects"):
+            try:
+                model.objects.all()
+            except Exception, why:
+                return [str(why)]
+        return []
 
     def check_model(self, model):
         """
