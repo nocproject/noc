@@ -27,10 +27,10 @@ class Script(NOCScript):
     rx_interface_3526 = re.compile(r"Information of (?P<interface>[^\n]+?)\n",
                                    re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_interface_swport_3526 = re.compile(
-        r"Information of (?P<interface>[^\n]+?)\n.*?VLAN Membership Mode:\s+(?P<mode>[^\n]+?)\n.*?Native VLAN:\s+(?P<native>\d+).*?Allowed VLAN:\s+(?P<vlans>.*?)Forbidden VLAN:",
+        r"Information of (?P<interface>[^\n]+?)\n.*?VLAN Membership Mode(|\s+):\s+(?P<mode>[^\n]+?)\n.*?Native VLAN(|\s+):\s+(?P<native>\d+).*?Allowed VLAN(|\s+):\s+(?P<vlans>.*?)Forbidden VLAN(|\s+):",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_interface_qinq_3526 = re.compile(
-        r"802.1Q-tunnel Status:\s+(?P<qstatus>\S+).*?802.1Q-tunnel Mode:\s+(?P<qmode>\S+)",
+        r"802.1Q-tunnel Status(|\s+):\s+(?P<qstatus>\S+).*?802.1Q-tunnel Mode(|\s+):\s+(?P<qmode>\S+)",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_interface_swport_4626 = re.compile(
         r"(?P<interface>[^\n]+)\n.*?Mode\s+:(?P<mode>\S+).*?Port VID\s+:(?P<pvid>\d+).*?",
@@ -50,6 +50,7 @@ class Script(NOCScript):
         if (self.match_version(platform__contains="3526") or
            self.match_version(platform__contains="3510") or
            self.match_version(platform__contains="3528") or
+           self.match_version(platform__contains="3552") or
            self.match_version(platform__contains="4612")):
             cmd = self.cli("show interface switchport")
             for block in cmd.rstrip("\n\n").split("\n\n"):
