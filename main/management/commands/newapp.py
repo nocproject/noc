@@ -44,6 +44,7 @@ class Command(BaseCommand):
         "TextField": ("string", "textarea", None),
         "DateField": ("date", "datefield", None),
         "CIDRField": ("string", "textfield", None),
+        "IPAddressField": ("string", "textfield", None),
         "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags")
     }
 
