@@ -6,18 +6,35 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+                {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
                 "description": "interface",
                 "type": "interface_name",
                 "required": true
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "LBD loop detected on {{interface}}",
-                "body_template": "LBD loop detected on {{interface}}",
+                "subject_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %}",
+                "body_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "Check hardware link and topology"
@@ -32,6 +49,16 @@
         "discriminator": ["interface", "vlan"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+                {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -44,12 +71,19 @@
                 "description": "Vlan",
                 "type": "int",
                 "required": true
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "LBD loop detected on {{interface}} vlan {{vlan}}",
-                "body_template": "LBD loop detected on {{interface}} vlan {{vlan}}",
+                "subject_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}",
+                "body_template": "LBD loop detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}",
                 "symptoms": "Lost traffic on specific vlan",
                 "probable_causes": "",
                 "recommended_actions": "Check topology or use STP to avoid loops"

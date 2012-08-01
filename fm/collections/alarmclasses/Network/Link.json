@@ -6,6 +6,16 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+                {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -14,12 +24,19 @@
             {
                 "name": "reason",
                 "description": "err-disable reason"
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Link err-disable: {{interface}} ({{reason}})",
-                "body_template": "Link err-disable: {{interface}} ({{reason}})",
+                "subject_template": "Link err-disable: {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
+                "body_template": "Link err-disable: {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -45,16 +62,33 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+                {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
                 "description": "interface name"
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Link going into half-duplex state: {{interface}}",
-                "body_template": "Link going into half-duplex state: {{interface}}",
+                "subject_template": "Link going into half-duplex state: {{interface}}{% if description %} ({{description}}){% endif %}",
+                "body_template": "Link going into half-duplex state: {{interface}}{% if description %} ({{description}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -175,6 +209,16 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+                {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -193,12 +237,19 @@
                 "description": "Measured name",
                 "type": "str",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
-                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}{% if description %} ({{description}}){% endif %}",
+                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}{% if description %} ({{description}}){% endif %}",
                 "symptoms": "Connection lost",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -213,6 +264,16 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "CRITICAL",
+        "datasources": [
+                {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -231,12 +292,19 @@
                 "description": "Measured name",
                 "type": "str",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
-                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}",
+                "subject_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}{% if description %} ({{description}}){% endif %}",
+                "body_template": "DOM exceeded the{% if sensor %} {{sensor}}{% endif %}{% if threshold %} {{threshold}}{% endif %} treshold: {{interface}}{% if description %} ({{description}}){% endif %}",
                 "symptoms": "Connection lost",
                 "probable_causes": "",
                 "recommended_actions": ""
