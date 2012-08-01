@@ -170,13 +170,13 @@ class IP(object):
         aroung given addresses
 
         :param addresses: Used addresses
-        :type addresses: List of IP instances or strings
+        :type addresses: list
         :param dist: Distance to spot araund used addresses
-        :type dist: Integer
+        :type dist: int
         :param sep: Insert None into the gaps if sep is True
-        :type sep: Boolean
+        :type sep: bool
         :return: List containing area spot
-        :rtype: List of IP instances or Nones
+        :rtype: list
         """
         if not addresses:
             return []
@@ -207,7 +207,7 @@ class IP(object):
                 last_touched = min(a + dist, s_last)
                 spot = list(max(a - dist, s_first).iter_address(until=last_touched))
             else:
-                if a + dist <= last:
+                if a <= last + dist:
                     # No gap, fill d addresses from last touched
                     lt = min(last_touched + (a - last), s_last)
                     spot += list((last_touched + 1).iter_address(until=lt))
@@ -217,7 +217,8 @@ class IP(object):
                         spot += [None]
                     # Fill spot around address
                     lt = min(a + dist, s_last)
-                    spot += list((a - dist).iter_address(until=lt))
+                    sf = max(a - dist, last)
+                    spot += list(sf.iter_address(until=lt))
                 last_touched = lt
             # Exit if last address touched
             if last_touched == s_last:
@@ -251,9 +252,9 @@ class IPv4(IP):
     def __init__(self, prefix, netmask=None):
         """
         :param prefix: String in format X.X.X.X or X.X.X.X/Y
-        :type prefix: String
+        :type prefix: str
         :param netmask: Optional netmask in X.X.X.X format
-        :type netmask: String
+        :type netmask: str
         """
         if "/" not in prefix:
             if netmask:
