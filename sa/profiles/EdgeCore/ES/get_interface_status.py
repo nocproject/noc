@@ -24,11 +24,13 @@ class Script(NOCScript):
     rx_interface_status = re.compile(r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*?index is (?P<ifindex>\d+).*?address is (?P<mac>\S+).*?",
         re.IGNORECASE | re.DOTALL)
     rx_interface_descr = re.compile(r".*?alias name is (?P<descr>[^,]+?),.*?", re.IGNORECASE | re.DOTALL)
-    rx_interface_status_3526 = re.compile(r"Information of (?P<interface>[^\n]+?)\n.*?Mac Address:\s+(?P<mac>[^\n]+?)\n(?P<block>.*)",
+    rx_interface_status_3526 = re.compile(r"Information of (?P<interface>[^\n]+?)\n.*?Mac Address(|\s+):\s+(?P<mac>[^\n]+?)\n(?P<block>.*)",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
-    rx_interface_intstatus_3526 = re.compile(r".*?Name:[^\n]* (?P<descr>[^\n]*?)\n.*?Link Status:\s+(?P<intstatus>up|down)\n",
+    rx_interface_intstatus_3526 = re.compile(r".*?Name(|\s+):[^\n]* (?P<descr>[^\n]*?)\n.*?Link Status(|\s+):\s+(?P<intstatus>up|down)\n",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
-    rx_interface_linestatus_3526 = re.compile(r"Port Operation Status:\s+(?P<linestatus>up|down)\n",
+    rx_interface_linestatus_3526 = re.compile(r"Port Operation Status(|\s+):\s+(?P<linestatus>up|down)\n",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_snmp_name_eth = re.compile(r"Ethernet Port on unit\s+(?P<unit>[^\n]+?),\s+port(\s+|\:)(?P<port>\d{1,2})",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     def execute(self, interface=None):
@@ -38,16 +40,33 @@ class Script(NOCScript):
                 r = []
                  # IF-MIB::ifName, IF-MIB::ifOperStatus, IF-MIB::ifAlias, IF-MIB::ifPhysAddress
                 for i, n, s, d, m in self.join_four_tables(self.snmp,
-                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.2.2.1.8",
+                    "1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.2.2.1.8",
                     "1.3.6.1.2.1.31.1.1.1.18", "1.3.6.1.2.1.2.2.1.6",
                     bulk=True):
-                    if not n.startswith("Port-Channel"):
-                        n = n.replace("Port", "Eth 1/")
-                        if n == "":
-                            continue
+                    match = self.rx_snmp_name_eth.search(n)
+                    if match:
+                        if match.group("unit") == "0":
+                            unit = "1"
+                            n = "Eth " + unit + "/" + match.group("port")
+                        else:
+                            n = "Eth " + match.group("unit") + "/" + match.group("port")
+                    if n.startswith("Trunk ID"):
+                        n = "Trunk " + n.replace("Trunk ID ", "").lstrip('0')
+                    if n.startswith("Trunk Port ID"):
+                        n = "Trunk " + n.replace("Trunk Port ID ", "").lstrip('0') 
+                    if n.startswith("Trunk Member"):
+                        n = "Eth 1/" + str(i)
+                    if n.startswith("VLAN ID"):
+                        n = "VLAN " + n.replace("VLAN ID ", "").lstrip('0')
+                    if n.startswith("VLAN interface"):
+                        n = "VLAN " + n.replace("VLAN interface ID ", "").lstrip('0')
+                    if n.startswith("Console"):
+                        continue
+                    if n.startswith("Loopback"):
+                        continue
                     r += [{"snmp_ifindex": i, "interface": n,
                            "status": int(s) == 1, "description": d,
-                           "mac": m}]  # ifOperStatus up(1)
+                           "mac": MACAddressParameter().clean(m)}]  # ifOperStatus up(1)
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -80,7 +99,7 @@ class Script(NOCScript):
                 match = self.rx_interface_status_3526.search(l + "\n")
                 if match:
                     descr = ""
-                    interface = match.group("interface").replace("VLAN ", "VLAN")
+                    interface = match.group("interface")
                     if interface.startswith("VLAN"):
                         intstatus = "up"
                         linestatus = "up"
@@ -98,7 +117,7 @@ class Script(NOCScript):
                     r += [{
                         "interface": interface,
                         "mac": MACAddressParameter().clean(match.group("mac")),
-                        "status": linestatus == "up",
+                        "status": linestatus.lower() == "up",
                         }]
                     if descr:
                         r[-1]["description"] = descr
