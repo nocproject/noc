@@ -32,25 +32,3 @@ from commandsnippet import CommandSnippet
 from activatorcapabilitiescache import ActivatorCapabilitiesCache
 from mrtconfig import MRTConfig
 from failedscriptlog import FailedScriptLog
-
-
-##
-## SAE services shortcuts
-##
-def sae_refresh_event_filter(object):
-    """
-    Refresh event filters for all activators serving object
-    
-    :param object: Managed object
-    :type object: ManagedObject instance
-    """
-    def reduce_notify(task):
-        mt = task.maptask_set.all()[0]
-        if mt.status == "C":
-            return mt.script_result
-        return False
-    
-    t = ReduceTask.create_task("SAE", reduce_notify, {},
-                               "notify", {"event": "refresh_event_filter",
-                                          "object_id": object.id}, 1)
-    #return t.get_result()
