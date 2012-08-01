@@ -29,6 +29,18 @@ class LoadModuleNamesTest(TestCase):
                     "%s.get_absolute_url is not callable" % model.name]
         return failures
 
+    def check_orm(self, model):
+        """
+        Check basic ORM operations
+        :param model:
+        :return:
+        """
+        try:
+            model.objects.all()
+            return []
+        except Exception, why:
+            return [why]
+
     def check_model(self, model):
         """
         Check single model
@@ -37,6 +49,7 @@ class LoadModuleNamesTest(TestCase):
         """
         failures = []
         failures += self.check_get_absolute_url(model)
+        failures += self.check_orm(model)
         return failures
 
     def test_models(self):
