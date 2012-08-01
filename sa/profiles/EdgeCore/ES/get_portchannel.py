@@ -19,12 +19,13 @@ class Script(NOCScript):
     implements = [IGetPortchannel]
     cache = True
 
-    rx_chan_line_3526 = re.compile(r"Information of (?P<interface>Trunk \d+).*?Member Ports: (?P<members_str>[^\n]+)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
+    rx_chan_line_3526 = re.compile(r"Information of (?P<interface>Trunk \d+).*?Member Ports(|\s+): (?P<members_str>[^\n]+)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
     @NOCScript.match(platform__contains="4612")
     @NOCScript.match(platform__contains="3526")
     @NOCScript.match(platform__contains="3510")
     @NOCScript.match(platform__contains="3528")
+    @NOCScript.match(platform__contains="3552")
     def execute_3526(self):
         status = self.cli("show interface status")
         r = []
