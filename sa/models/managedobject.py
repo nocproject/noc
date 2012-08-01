@@ -218,7 +218,7 @@ class ManagedObject(models.Model):
         if ((old is None and self.trap_source_ip) or
             (old and self.trap_source_ip != old.trap_source_ip) or
             (old and self.activator.id != old.activator.id)):
-            sae_refresh_event_filter(self)
+            self.sae_refresh_event_filter()
         # Process config
         try:
             # self.config is OneToOne field created by Config
@@ -348,6 +348,25 @@ class ManagedObject(models.Model):
         if rx:
             return re.match(rx, interface) is not None
         return False
+
+    def sae_refresh_event_filter(self):
+        """
+        Refresh event filters for all activators serving object
+        """
+        def reduce_notify(task):
+            mt = task.maptask_set.all()[0]
+            if mt.status == "C":
+                return mt.script_result
+            return False
+
+        ReduceTask.create_task(
+            "SAE",
+            reduce_notify, {},
+            "notify", {
+                "event": "refresh_event_filter",
+                "object_id": self.id},
+            1
+        )
 
 
 class ManagedObjectAttribute(models.Model):
