@@ -33,8 +33,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "BPDU Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
-                "body_template": "BPDU Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
+                "subject_template": "BPDU Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
+                "body_template": "BPDU Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
@@ -76,8 +76,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
-                "body_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
+                "subject_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
+                "body_template": "STP Root Guard Violation on {{interface}}{% if description %} ({{description}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
@@ -119,8 +119,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "STP Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
-                "body_template": "STP Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}})",
+                "subject_template": "STP Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %}",
+                "body_template": "STP Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
@@ -168,8 +168,8 @@
         ],
         "text": {
             "en": {
-                "subject_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}}) vlan {{vlan}}",
-                "body_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} ({{reason}}) vlan {{vlan}}",
+                "subject_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}",
+                "body_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
