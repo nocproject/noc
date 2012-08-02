@@ -161,6 +161,14 @@ class ManagedObjectSelector(models.Model):
     def match(self, managed_object):
         return self.managed_objects.filter(id=managed_object.id).exists()
 
+    def __contains__(self, managed_object):
+        """
+        "managed_object in selector"
+        :param managed_object:
+        :return:
+        """
+        return self.match(managed_object)
+
     def scripts_profiles(self, scripts):
         """
         Returns a list of profile names supporting scripts
