@@ -14,8 +14,9 @@ from django.db.models import Q
 from tagging.models import TaggedItem
 ## NOC modules
 from administrativedomain import AdministrativeDomain
-from managedobject import ManagedObject
+from managedobject import ManagedObject, ManagedObjectAttribute
 from activator import Activator
+from useraccess import UserAccess
 from noc.main.models import Shard, PrefixTable
 from noc.sa.profiles import profile_registry
 from noc.lib.fields import AutoCompleteTagsField
