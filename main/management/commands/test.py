@@ -54,8 +54,8 @@ class Command(BaseCommand):
     requires_model_validation = False
 
     def handle(self, *test_labels, **options):
-        verbosity = int(options.get("verbosity", 1))
         interactive = options.get("interactive", True)
+        verbosity = int(options.get("verbosity", 1 if interactive else 0))
         reuse_db = options.get("reuse_db", False)
         junit_xml_out = options.get("junit_xml_out")
         coverage_xml_out = options.get("coverage_xml_out")
