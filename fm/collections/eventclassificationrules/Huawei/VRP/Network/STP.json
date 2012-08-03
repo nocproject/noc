@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "MSTP/\\d+/SET_PORT_\\w+.+process \\d+ instance \\d+,MSTP set port (?P<interface>\\S+) state as (?P<state__enum__stp_state>\\S+)\\.$"
+                "value_re": "MSTP/\\d+/SET_PORT_\\w+.+process \\d+ instance \\d+,\\s*MSTP set port (?P<interface>\\S+) state as (?P<state__enum__stp_state>\\S+)\\.$"
             }
         ]
     },
