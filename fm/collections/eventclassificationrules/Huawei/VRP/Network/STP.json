@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "RECEIVE_MSTITC.+instance (?P<instance>\\d+), port name is (?P<interface>.+)."
+                "value_re": "RECEIVE_(?:MSTITC|CISTTC).+instance (?P<instance>\\d+), port name is (?P<interface>.+)."
             }
         ]
     },
