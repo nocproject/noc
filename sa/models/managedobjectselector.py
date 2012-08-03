@@ -16,7 +16,6 @@ from tagging.models import TaggedItem
 from administrativedomain import AdministrativeDomain
 from managedobject import ManagedObject, ManagedObjectAttribute
 from activator import Activator
-from useraccess import UserAccess
 from noc.main.models import Shard, PrefixTable
 from noc.sa.profiles import profile_registry
 from noc.lib.fields import AutoCompleteTagsField
@@ -267,3 +266,6 @@ class ManagedObjectSelectorByAttribute(models.Model):
     def __unicode__(self):
         return u"%s: %s = %s" % (
             self.selector.name, self.key_re, self.value_re)
+
+# Avoid circular references
+from useraccess import UserAccess
