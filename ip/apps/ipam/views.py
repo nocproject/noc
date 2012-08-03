@@ -21,11 +21,12 @@ from noc.lib.ip import *
 from noc.lib.forms import NOCForm
 from noc.lib.widgets import *
 from noc.lib.colors import *
-from noc.sa.interfaces import MACAddressParameter
+from noc.sa.interfaces import MACAddressParameter, InterfaceTypeError
 from noc.ip.models import *
-from noc.main.models import Permission, Style, CustomField
+from noc.main.models import Permission, Style, CustomField, ResourceState
+from noc.peer.models import AS
 from noc.vc.models import VCBindFilter
-from noc.sa.models import ReduceTask
+from noc.sa.models import ReduceTask, ManagedObject
 from noc.lib.db import SQL
 
 
