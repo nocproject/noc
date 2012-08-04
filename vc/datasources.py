@@ -31,7 +31,7 @@ class VCDS(DataSource):
         :return:
         """
         for d in VCDomain.objects.filter(selector__isnull=False):
-            if managed_object in d:
+            if managed_object in d.selector:
                 return d
         return None
 
