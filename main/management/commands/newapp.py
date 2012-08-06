@@ -43,8 +43,11 @@ class Command(BaseCommand):
         "IntegerField": ("int", "numberfield", None),
         "TextField": ("string", "textarea", None),
         "DateField": ("date", "datefield", None),
+        "DateTimeField": ("date", "datefield", None),
         "CIDRField": ("string", "textfield", None),
         "IPAddressField": ("string", "textfield", None),
+        "INETField": ("string", "textfield", None),
+        "MACField": ("string", "textfield", None),
         "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags")
     }
 
@@ -182,7 +185,7 @@ class Command(BaseCommand):
                         if f.name == "id":
                             continue
                         fc = f.__class__.__name__
-                        if fc == "ForeignKey":
+                        if fc in ("ForeignKey", "OneToOneField"):
                             # Foreign key
                             fr = f.rel.to
                             rc = "%s.%s" % (fr.__module__.split(".")[1],
