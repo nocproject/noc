@@ -7,7 +7,7 @@
         "user_clearable": true,
         "default_severity__name": "WARNING",
         "datasources": [
-                {
+            {
                 "name": "InterfaceDS",
                 "datasource": "inv.InterfaceDS",
                 "search": {
@@ -41,7 +41,7 @@
             }
         }
     },
-    
+
     {
         "name": "Network | STP | Root Guard Violation",
         "description": "Root Guard Violation",
@@ -50,7 +50,7 @@
         "user_clearable": true,
         "default_severity__name": "WARNING",
         "datasources": [
-                {
+            {
                 "name": "InterfaceDS",
                 "datasource": "inv.InterfaceDS",
                 "search": {
@@ -84,7 +84,7 @@
             }
         }
     },
-    
+
     {
         "name": "Network | STP | STP Loop Detected",
         "description": "STP Loop Detected",
@@ -93,7 +93,7 @@
         "user_clearable": true,
         "default_severity__name": "WARNING",
         "datasources": [
-                {
+            {
                 "name": "InterfaceDS",
                 "datasource": "inv.InterfaceDS",
                 "search": {
@@ -136,12 +136,20 @@
         "user_clearable": true,
         "default_severity__name": "WARNING",
         "datasources": [
-                {
+            {
                 "name": "InterfaceDS",
                 "datasource": "inv.InterfaceDS",
                 "search": {
                     "managed_object": "managed_object",
                     "interface": "interface"
+                }
+            },
+            {
+                "name": "VCDS",
+                "datasource": "vc.VCDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "l1": "vlan"
                 }
             }
         ],
@@ -164,12 +172,33 @@
                 "type": "str",
                 "required": false,
                 "default": "=InterfaceDS.description"
+            },
+            {
+                "name": "vlan_name",
+                "description": "Vlan name",
+                "type": "str",
+                "required": false,
+                "default": "=VCDS.name"
+            },
+            {
+                "name": "vlan_description",
+                "description": "Vlan description",
+                "type": "str",
+                "required": false,
+                "default": "=VCDS.description"
+            },
+            {
+                "name": "vlan_vc_domain",
+                "description": "VC domain",
+                "type": "str",
+                "required": false,
+                "default": "=VCDS.vc_domain"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}",
-                "body_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}",
+                "subject_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}",
+                "body_template": "STP Vlan Loop Detected on {{interface}}{% if description %} ({{description}}){% endif %} vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
