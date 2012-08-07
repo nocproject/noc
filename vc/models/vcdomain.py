@@ -67,3 +67,6 @@ class VCDomain(models.Model):
                 if not VC.objects.filter(vc_domain=self, l1=l).exists():
                     return l  # Return first free found
         return None  # Nothing found
+
+## Avoid circular references
+from vc import VC
