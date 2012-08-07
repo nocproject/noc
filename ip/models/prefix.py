@@ -172,6 +172,7 @@ class Prefix(models.Model):
         Save prefix
         """
         # Set defaults
+        self.afi = "6" if ":" in self.prefix else "4"
         if not self.vrf:
             self.vrf = VRF.get_global()
         if not self.asn:
@@ -180,7 +181,6 @@ class Prefix(models.Model):
             # Set proper parent
             self.parent = Prefix.get_parent(
                 self.vrf, self.afi, self.prefix)
-        self.afi = "6" if ":" in self.prefix else "4"
         super(Prefix, self).save(**kwargs)
         # Rebuild tree if necessary
         # Reconnect children children prefixes
