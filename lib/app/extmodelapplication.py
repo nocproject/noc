@@ -68,6 +68,7 @@ class ExtModelApplication(ExtApplication):
         self.pk_field_name = self.model._meta.pk.name
         # Prepare field converters
         self.clean_fields = self.clean_fields.copy()  # name -> Parameter
+        self.fk_fields = {}
         for f in self.model._meta.fields:
             if f.name in self.clean_fields:
                 continue  # Overriden behavior
@@ -83,6 +84,7 @@ class ExtModelApplication(ExtApplication):
             elif isinstance(f, related.ForeignKey):
                 self.clean_fields[f.name] = ModelParameter(f.rel.to,
                     required=not f.null)
+                self.fk_fields[f.name] = f.rel.to
         # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
@@ -203,6 +205,14 @@ class ExtModelApplication(ExtApplication):
             elif lt and hasattr(self, "lookup_%s" % lt):
                 # Custom lookup
                 getattr(self, "lookup_%s" % lt)(nq, np, v)
+                continue
+            elif np in self.fk_fields and lt:
+                # dereference
+                try:
+                    o = self.fk_fields[np].objects.get(**{lt: v})
+                    nq[np] = o
+                except self.fk_fields[np].DoesNotExist:
+                    nq[np] = 0  # False search
                 continue
             elif np in self.clean_fields:  # @todo: Check for valid lookup types
                 v = self.clean_fields[np].clean(v)
