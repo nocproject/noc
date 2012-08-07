@@ -27,6 +27,7 @@ class Profile(noc.sa.profiles.Profile):
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "write memory\n"
+    command_exit = "exit"
 
     ##
     ## Compare versions

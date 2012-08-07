@@ -16,6 +16,7 @@ from noc.sa.interfaces import IGetVersion
 
 class Script(NOCScript):
     name = "HP.ProCurve9xxx.get_version"
+    cache = True
     implements = [IGetVersion]
 
     rx_sw_ver = re.compile(r"SW:\sVersion\s(?P<version>\S+)",
@@ -38,7 +39,7 @@ class Script(NOCScript):
                 pass
 
         # Get version
-        v = self.cli("show version")
+        v = self.cli("show version", cached=True)
         match1 = self.re_search(self.rx_sw_ver, v)
         match2 = self.re_search(self.rx_hw_ver, v)
         return {
