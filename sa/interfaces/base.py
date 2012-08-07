@@ -1171,6 +1171,28 @@ class DocumentParameter(Parameter):
         return v
 
 
+class TagsParameter(Parameter):
+    """
+    >>> TagsParameter().clean([1, 2, "tags"])
+    ['1', '2', 'tags']
+    >>> TagsParameter().clean([1, 2, "tags "])
+    ['1', '2', 'tags']
+    >>> TagsParameter().clean("1,2,tags")
+    ['1', '2', 'tags']
+    >>> TagsParameter().clean("1 , 2,  tags")
+    ['1', '2', 'tags']
+    """
+    def clean(self, value):
+        if type(value) in (list, tuple):
+            v = [str(v).strip() for v in value]
+            return [x for x in v if x]
+        elif isinstance(value, basestring):
+            v = [x.strip() for x in value.split(",")]
+            return [x for x in v if x]
+        else:
+            self.raise_error("Invalid tags: %s" % value)
+
+
 ## Stub for interface registry
 interface_registry = {}
 
