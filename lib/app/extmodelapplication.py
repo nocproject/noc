@@ -18,17 +18,12 @@ from tagging.models import Tag
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
-from noc.sa.interfaces import BooleanParameter, IntParameter, FloatParameter,\
-    ModelParameter, StringParameter
+from noc.sa.interfaces import (BooleanParameter, IntParameter,
+                               FloatParameter, ModelParameter,
+                               StringParameter, TagsParameter)
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
-
-
-class DjangoTagsParameter(StringParameter):
-    def clean(self, value):
-        if not value:
-            return ""
-        return ",".join(value)
+from noc.lib.fields import AutoCompleteTagsField
 
 
 class ExtModelApplication(ExtApplication):
@@ -72,15 +67,15 @@ class ExtModelApplication(ExtApplication):
         for f in self.model._meta.fields:
             if f.name in self.clean_fields:
                 continue  # Overriden behavior
-            if f.name == "tags":
-                self.clean_fields[f.name] = DjangoTagsParameter(
-                    required=not f.null)
             elif isinstance(f, BooleanField):
                 self.clean_fields[f.name] = BooleanParameter()
             elif isinstance(f, IntegerField):
                 self.clean_fields[f.name] = IntParameter()
             elif isinstance(f, FloatField):
                 self.clean_fields[f.name] = FloatParameter()
+            elif isinstance(f, AutoCompleteTagsField):
+                self.clean_fields[f.name] = TagsParameter(
+                    required=not f.null)
             elif isinstance(f, related.ForeignKey):
                 self.clean_fields[f.name] = ModelParameter(f.rel.to,
                     required=not f.null)

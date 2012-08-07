@@ -1185,10 +1185,10 @@ class TagsParameter(Parameter):
     def clean(self, value):
         if type(value) in (list, tuple):
             v = [str(v).strip() for v in value]
-            return [x for x in v if x]
+            return ",".join(x for x in v if x)
         elif isinstance(value, basestring):
             v = [x.strip() for x in value.split(",")]
-            return [x for x in v if x]
+            return ",".join(x for x in v if x)
         else:
             self.raise_error("Invalid tags: %s" % value)
 
