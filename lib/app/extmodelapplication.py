@@ -167,11 +167,26 @@ class ExtModelApplication(ExtApplication):
         :return: dict of cleaned parameters of raised InterfaceTypeError
         :rtype: dict
         """
+        print data
+        # Delete id
         if "id" in data:
             del data["id"]
-        for f in data:
-            if f in self.clean_fields:
+        # Clean up fields
+        for f in self.clean_fields:
+            if f in data:
                 data[f] = self.clean_fields[f].clean(data[f])
+        # Dereference fields
+        refs = [f for f in data if "__" in f]
+        for r in refs:
+            l, x = r.split("__", 1)
+            if l in self.fk_fields:
+                try:
+                    data[l] = self.fk_fields[l].objects.get(**{x: data[r]})
+                except self.fk_fields[l].DoesNotExist:
+                    # Raise error
+                    data[l] = self.clean_fields[l].clean(0)
+                del data[r]  # Dereferenced
+        # Clone data
         return dict((str(k), data[k]) for k in data)
 
     def cleaned_query(self, q):
@@ -209,8 +224,7 @@ class ExtModelApplication(ExtApplication):
             elif np in self.fk_fields and lt:
                 # dereference
                 try:
-                    o = self.fk_fields[np].objects.get(**{lt: v})
-                    nq[np] = o
+                    nq[np] = self.fk_fields[np].objects.get(**{lt: v})
                 except self.fk_fields[np].DoesNotExist:
                     nq[np] = 0  # False search
                 continue
