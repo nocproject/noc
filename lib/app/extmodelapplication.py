@@ -23,7 +23,6 @@ from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                StringParameter, TagsParameter)
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
-from noc.lib.fields import AutoCompleteTagsField
 
 
 class ExtModelApplication(ExtApplication):
@@ -59,6 +58,7 @@ class ExtModelApplication(ExtApplication):
     custom_fields = {}  # name -> handler, populated automatically
 
     def __init__(self, *args, **kwargs):
+        from noc.lib.fields import AutoCompleteTagsField
         super(ExtModelApplication, self).__init__(*args, **kwargs)
         self.pk_field_name = self.model._meta.pk.name
         # Prepare field converters
