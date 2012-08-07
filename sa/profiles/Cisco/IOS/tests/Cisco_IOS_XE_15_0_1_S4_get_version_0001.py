@@ -18,7 +18,7 @@ class Cisco_IOS_get_version_Test(ScriptTestCase):
     version = '15.0(1)S4'
     input = {}
     result = {'attributes': {'image': 'PPC_LINUX_IOSD-ADVIPSERVICES-M'},
- 'platform': 'IOS-XE',
+ 'platform': 'ASR1004',
  'vendor': 'Cisco',
  'version': '15.0(1)S4'}
     motd = ''

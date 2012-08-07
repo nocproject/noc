@@ -21,6 +21,8 @@ class Script(NOCScript):
 
     rx_ver = re.compile(r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (?P<platform>.+?) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (?P<platform>.+?) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),", re.MULTILINE | re.DOTALL)
+    rx_platform = re.compile(r"^cisco (?P<platform>\S+) \(\S+\) processor with",
+        re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
@@ -40,9 +42,15 @@ class Script(NOCScript):
                 pass
         v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
+        platform = match.group("platform")
+        if platform == "IOS-XE":
+            # Process IOS XE platform
+            pmatch = self.re_search(self.rx_platform, v)
+            if pmatch:
+                platform = pmatch.group("platform")
         return {
             "vendor": "Cisco",
-            "platform": match.group("platform"),
+            "platform": platform,
             "version": match.group("version"),
             "attributes": {
                 "image": match.group("image"),
