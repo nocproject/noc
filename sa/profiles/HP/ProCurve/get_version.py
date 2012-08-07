@@ -29,7 +29,7 @@ class Script(NOCScript):
             except self.snmp.TimeOutError:
                 pass  # Fallback to CLI
         if not v:
-            v = self.cli("walkMIB sysDescr")
+            v = self.cli("walkMIB sysDescr", cached=True)
         match = self.re_search(self.rx_ver, v.strip())
         return {
             "vendor": "HP",
