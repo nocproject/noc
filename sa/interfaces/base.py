@@ -1174,13 +1174,13 @@ class DocumentParameter(Parameter):
 class TagsParameter(Parameter):
     """
     >>> TagsParameter().clean([1, 2, "tags"])
-    ['1', '2', 'tags']
+    '1,2,tags'
     >>> TagsParameter().clean([1, 2, "tags "])
-    ['1', '2', 'tags']
+    '1,2,tags'
     >>> TagsParameter().clean("1,2,tags")
-    ['1', '2', 'tags']
+    '1,2,tags'
     >>> TagsParameter().clean("1 , 2,  tags")
-    ['1', '2', 'tags']
+    '1,2,tags'
     """
     def clean(self, value):
         if type(value) in (list, tuple):
