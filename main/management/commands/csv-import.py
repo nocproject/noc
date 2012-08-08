@@ -44,6 +44,8 @@ class Command(BaseCommand):
             self._handle(*args, **options)
         except CommandError, why:
             raise CommandError(why)
+        except SystemExit:
+            pass
         except:
             error_report()
 
