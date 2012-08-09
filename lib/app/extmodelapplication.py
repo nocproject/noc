@@ -20,7 +20,8 @@ from extapplication import ExtApplication, view
 from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
-                               StringParameter, TagsParameter)
+                               StringParameter, TagsParameter,
+                               NoneParameter)
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
 
@@ -58,7 +59,6 @@ class ExtModelApplication(ExtApplication):
     custom_fields = {}  # name -> handler, populated automatically
 
     def __init__(self, *args, **kwargs):
-        from noc.lib.fields import AutoCompleteTagsField
         super(ExtModelApplication, self).__init__(*args, **kwargs)
         self.pk_field_name = self.model._meta.pk.name
         # Prepare field converters
@@ -67,19 +67,11 @@ class ExtModelApplication(ExtApplication):
         for f in self.model._meta.fields:
             if f.name in self.clean_fields:
                 continue  # Overriden behavior
-            elif isinstance(f, BooleanField):
-                self.clean_fields[f.name] = BooleanParameter()
-            elif isinstance(f, IntegerField):
-                self.clean_fields[f.name] = IntParameter()
-            elif isinstance(f, FloatField):
-                self.clean_fields[f.name] = FloatParameter()
-            elif isinstance(f, AutoCompleteTagsField):
-                self.clean_fields[f.name] = TagsParameter(
-                    required=not f.null)
-            elif isinstance(f, related.ForeignKey):
-                self.clean_fields[f.name] = ModelParameter(f.rel.to,
-                    required=not f.null)
-                self.fk_fields[f.name] = f.rel.to
+            vf = self.get_validator(f)
+            if vf:
+                if f.null:
+                    vf = NoneParameter() | vf
+                self.clean_fields[f.name] = vf
         # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
@@ -95,6 +87,30 @@ class ExtModelApplication(ExtApplication):
         # Add searchable custom fields
         self.query_fields += ["%s__%s" % (f.name, self.query_condition)
             for f in self.get_custom_fields() if f.is_searchable]
+
+    def get_validator(self, field):
+        """
+        Returns Parameter instance or None to clean up field
+        :param field:
+        :type field: Field
+        :return:
+        """
+        from noc.lib.fields import AutoCompleteTagsField
+
+        if isinstance(field, BooleanField):
+            return BooleanParameter()
+        elif isinstance(field, IntegerField):
+            return IntParameter()
+        elif isinstance(field, FloatField):
+            return FloatParameter()
+        elif isinstance(field, AutoCompleteTagsField):
+            return TagsParameter(required=not field.null)
+        elif isinstance(field, related.ForeignKey):
+            self.fk_fields[field.name] = field.rel.to
+            return ModelParameter(field.rel.to,
+                required=not field.null)
+        else:
+            return None
 
     def get_custom_fields(self):
         from noc.main.models import CustomField
@@ -197,6 +213,8 @@ class ExtModelApplication(ExtApplication):
                 self.format_param, self.sort_param, self.query_param):
                 continue
             v = q[p]
+            if v == "\x00":
+                v = None
             # Pass through interface cleaners
             if lt == "referred":
                 # Unroll __referred
