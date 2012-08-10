@@ -2,30 +2,30 @@
 ##----------------------------------------------------------------------
 ## Ubiquiti.AirOS.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+
+## Python modules
 import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
 
-rx_version = re.compile("\.v(?P<version>[^@]+)@")
 
-
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name = "Ubiquiti.AirOS.get_version"
     cache = True
     implements = [IGetVersion]
 
+    rx_version = re.compile("^\S+\.v(?P<version>[^@]+)$")
+
     def execute(self):
         # Replace # with @ to prevent prompt matching
-        ps1 = self.cli("echo $PS1|sed 's/#/@/'")
-        v_match = rx_version.search(ps1)
-        board = self.cli("grep board.name /etc/board.info")
-        l, r = board.split("=")
-        board = r.strip()
+        v = self.cli("cat /etc/version").strip()
+        v_match = self.rx_version.search(v)
+        board = self.cli("grep board.name /etc/board.info").strip()
+        board = board.split("=", 1)[1].strip()
         return {
             "vendor": "Ubiquiti",
             "platform": board,
