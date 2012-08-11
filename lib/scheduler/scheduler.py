@@ -14,7 +14,7 @@ import datetime
 from error import JobExists
 from noc.lib.nosql import get_db
 from noc.lib.debug import error_report
-from noc.sa.models import ReduceTask, MapTask
+from noc.sa.models import ReduceTask
 
 
 class Scheduler(object):
@@ -25,17 +25,20 @@ class Scheduler(object):
     ATTR_TIMEOUT = "timeout"
     ATTR_KEY = "key"
     ATTR_DATA = "data"
-    S_WAIT = "W"
-    S_RUN = "R"
-    S_STOP = "S"
-    S_FAIL = "F"
+    S_WAIT = "W"  # Waiting to run
+    S_RUN = "R"   # Running
+    S_STOP = "S"  # Stopped by operator
+    S_FAIL = "F"  # Not used yet
 
-    def __init__(self, name):
+    JobExists = JobExists
+
+    def __init__(self, name, cleanup=None):
         self.name = name
         self.job_classes = {}
         self.collection_name = self.COLLECTION_BASE + self.name
         self.collection = get_db()[self.collection_name]
         self.active_mrt = {}  # ReduceTask -> Job instance
+        self.cleanup_callback = cleanup
 
     def debug(self, msg):
         logging.debug("[%s] %s" % (self.name, msg))
@@ -198,9 +201,15 @@ class Scheduler(object):
         while True:
             if not self.run_pending():
                 time.sleep(1)
+            else:
+                self.cleanup()
 
     def wipe(self):
         """
         Wipe off all schedules
         """
         self.collection.drop()
+
+    def cleanup(self):
+        if self.cleanup_callback:
+            self.cleanup_callback()

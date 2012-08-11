@@ -16,7 +16,7 @@ from job import Job
 
 class IntervalJob(Job):
     @classmethod
-    def submit(cls, scheduler, key, data=None, interval=60,
+    def submit(cls, scheduler, key=None, data=None, interval=60,
                randomize=False):
         """
         Submit new job to scheduler
