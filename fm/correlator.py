@@ -17,13 +17,15 @@ import re
 from django.db import reset_queries
 ## NOC modules
 from noc.lib.daemon import Daemon
-from noc.fm.models import EventDispositionQueue, ActiveEvent, EventClass,\
+from noc.fm.models import ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
+from noc.fm.correlatorscheduler import CorrelatorScheduler
 from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.nosql import ObjectId
 from noc.lib.datasource import datasource_registry
+from noc.lib.scheduler.intervaljob import IntervalJob
 
 
 class Trigger(object):
@@ -181,6 +183,27 @@ class Rule(object):
             return self.alarm_class.get_discriminator({}), None
 
 
+class PerformanceReportJob(IntervalJob):
+    name = "performance_report"
+
+    def handler(self):
+        c = self.scheduler.correlator
+        count = c.stat_count
+        success_count = c.stat_success_count
+        t = time.time()
+        dt = t - c.stat_start
+        if dt:
+            perf = count / dt
+        else:
+            perf = 0
+        logging.info(
+            "%d events has been disposed (success: %d, failed: %d). "
+            "%s seconds elapsed. %6.2f events/sec" % (
+                count, success_count, count - success_count, dt, perf))
+        c.reset_stats()
+        return True
+
+
 class Correlator(Daemon):
     daemon_name = "noc-correlator"
 
@@ -193,6 +216,14 @@ class Correlator(Daemon):
         self.rca_reverse = {}  # alarm_class -> set([alarm_class])
         Daemon.__init__(self)
         logging.info("Running noc-correlator")
+        self.scheduler = CorrelatorScheduler(self,
+            cleanup=reset_queries)
+        self.scheduler.register_job_class(PerformanceReportJob)
+        try:
+            PerformanceReportJob.submit(self.scheduler,
+                key="report", interval=60)
+        except self.scheduler.JobExists:
+            pass
         # Tables
         self.NOC_ACTIVATORS = self.get_activators()  # NOC::Activators prefix table
 
@@ -285,16 +316,6 @@ class Correlator(Daemon):
         r += [format_frames(get_traceback_frames(tb))]
         r = "\n".join(r)
         event.mark_as_failed(version=self.version, traceback=r)
-
-    def iter_new_events(self, max_chunk=100):
-        """
-        Generator returning ActiveEvents to be disposed
-        """
-        for de in EventDispositionQueue.objects.order_by("timestamp")[:max_chunk]:
-            e = ActiveEvent.objects.filter(id=de.event_id).first()
-            de.delete()
-            if e:
-                yield e
 
     def set_root_cause(self, a, root=None):
         """
@@ -444,7 +465,7 @@ class Correlator(Daemon):
             if cond:
                 # Process action
                 if r.action == "drop":
-                    event.delete()
+                    e.delete()
                     return
                 elif r.action == "ignore":
                     return
@@ -490,34 +511,19 @@ class Correlator(Daemon):
             PrefixTablePrefix(table=t, prefix=p).save()
         return t
 
+    def reset_stats(self):
+        self.stat_start = time.time()
+        self.stat_count = 0
+        self.stat_success_count = 0
+
+    def update_stats(self, success=False):
+        self.stat_count += 1
+        if success:
+            self.stat_success_count += 1
+
     def run(self):
         """
         Main daemon loop
         """
-        CHECK_EVERY = 3  # Recheck queue every N seconds
-        REPORT_INTERVAL = 100
-        while True:
-            n = 0
-            sn = 0
-            t0 = time.time()
-            for e in self.iter_new_events(REPORT_INTERVAL):
-                try:
-                    self.dispose_event(e)
-                    sn += 1
-                except:
-                    self.mark_as_failed(e)
-                n += 1
-                reset_queries()
-            if n:
-                # Write performance report
-                dt = time.time() - t0
-                if dt:
-                    perf = n / dt
-                else:
-                    perf = 0
-                logging.info("%d events are disposed (success: %d, failed: %d)"
-                             "(%10.4f second elapsed. %10.4f events/sec)" % (
-                                    n, sn, n - sn, dt, perf))
-            else:
-                # No events classified this pass. Sleep
-                time.sleep(CHECK_EVERY)
+        self.reset_stats()
+        self.scheduler.run()

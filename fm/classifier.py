@@ -21,6 +21,7 @@ from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
                           EventClass, MIB, EventLog, CloneClassificationRule,\
                           ActiveEvent, EventTrigger, Enumeration
+from noc.fm.correlatorscheduler import CorrelatorScheduler
 import noc.inv.models
 from noc.sa.models import profile_registry, ManagedObject
 from noc.lib.version import get_version
@@ -426,6 +427,7 @@ class Classifier(Daemon):
         self.dump_clone = False
         Daemon.__init__(self)
         logging.info("Running Classifier version %s" % self.version)
+        self.correlator_scheduler = CorrelatorScheduler()
 
     def setup_opt_parser(self):
         self.opt_parser.add_option("-d", "--dump", action="append",
@@ -917,7 +919,7 @@ class Classifier(Daemon):
                     return CR_DELETED
         # Finally dispose event to further processing by noc-correlator
         if disposable and rule.to_dispose:
-            event.dispose_event()
+            self.correlator_scheduler.submit_event(event)
             return CR_DISPOSED
         elif rule.is_unknown:
             return CR_UNKNOWN
