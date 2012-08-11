@@ -1350,10 +1350,6 @@ class ActiveEvent(nosql.Document):
         """
         return total_seconds(self.timestamp - self.start_timestamp)
 
-    def dispose_event(self):
-        EventDispositionQueue(timestamp=datetime.datetime.now(),
-                              event_id=self.id).save()
-
     def get_template_vars(self):
         """
         Prepare template variables
@@ -1825,18 +1821,6 @@ class AlarmTrigger(models.Model):
     
     def __unicode__(self):
         return "%s <<<%s>>>" % (self.alarm_class_re, self.condition)
-
-
-class EventDispositionQueue(nosql.Document):
-    meta = {
-        "collection": "noc.events.disposition",
-        "allow_inheritance": False,
-    }
-    timestamp = nosql.DateTimeField(required=True)
-    event_id = nosql.ObjectIdField(required=True)
-
-    def __unicode__(self):
-        return str(self.event_id)
 
 
 class Enumeration(nosql.Document):
