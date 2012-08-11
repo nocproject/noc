@@ -136,6 +136,8 @@ class ReduceTask(models.Model):
             objects = object_selector.managed_objects
         elif isinstance(object_selector, basestring):
             objects = [ManagedObject.objects.get(name=object_selector)]
+        elif type(object_selector) in (int, long):
+            objects = [ManagedObject.objects.get(id=object_selector)]
         else:
             objects = list(object_selector)
         # Resolve strings to managed objects, if returned by selector
