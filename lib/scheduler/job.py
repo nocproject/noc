@@ -10,6 +10,15 @@
 import logging
 
 
+class JobBase(type):
+    def __new__(cls, name, bases, attrs):
+        m = type.__new__(cls, name, bases, attrs)
+        if m.map_task:
+            from noc.sa.models import ManagedObject
+            m.model = ManagedObject
+        return m
+
+
 class Job(object):
     """
     Basic scheduler job class.
@@ -23,6 +32,7 @@ class Job(object):
     to get task parameters, then MRT will be launched.
     *handler* function will be called on MRT successful completion.
     """
+    __metaclass__ = JobBase
     name = ""  # Unique Job name
     map_task = None  # Set to map task name
     model = None  # Model/Document class
