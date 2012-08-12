@@ -13,15 +13,13 @@ from noc.fm.models import ActiveEvent
 
 class AlarmDispositionJob(Job):
     name = "dispose"
+    model = ActiveEvent
 
     def handler(self):
-        self.event = ActiveEvent.objects.filter(id=self.key).first()
-        if self.event:
-            self.scheduler.correlator.dispose_event(self.event)
-            self.scheduler.correlator.update_stats(success=True)
+        self.scheduler.correlator.dispose_event(self.object)
+        self.scheduler.correlator.update_stats(success=True)
         return True
 
     def on_exception(self):
-        if hasattr(self, "event"):
-            self.scheduler.correlator.mark_as_failed(self.event)
-            self.scheduler.correlator.update_stats(success=False)
+        self.scheduler.correlator.mark_as_failed(self.object)
+        self.scheduler.correlator.update_stats(success=False)
