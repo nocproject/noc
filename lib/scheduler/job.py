@@ -13,9 +13,19 @@ import logging
 class Job(object):
     """
     Basic scheduler job class.
+
+    Model/Document dereference:
+    If *model* parameter is set to Module or Document class,
+    *key* will be dereferenced and *object* attribute will be set.
+
+    MRT mode:
+    if *map_task* is set, *get_map_task_params()* will be called
+    to get task parameters, then MRT will be launched.
+    *handler* function will be called on MRT successful completion.
     """
     name = ""  # Unique Job name
     map_task = None  # Set to map task name
+    model = None  # Model/Document class
 
     S_SUCCESS = 0
     S_FAILED = 1
@@ -27,6 +37,7 @@ class Job(object):
         self.scheduler = scheduler
         self.key = key
         self.data = data or {}
+        self.object = None  # Set by dereference()
         self.job_data = self.data.get(self.JOB_NS, {})
 
     def info(self, msg):
@@ -86,3 +97,11 @@ class Job(object):
         :return:
         """
         return {}
+
+    def dereference(self):
+        if self.model:
+            try:
+                self.object = self.model.objects.get(id=self.key)
+            except self.model.DoesNotExist:
+                return False
+        return True
