@@ -115,6 +115,12 @@ class Scheduler(object):
         :param job:
         :return:
         """
+        # Dereference job
+        if not job.dereference():
+            logging.info("Cannot dereference job %s(%s). Removing" % (
+                job.name, job.key))
+            self.remove_job(job.name, job.key)
+            return
         # Change status
         self.info("Running job %s(%s)" % (job.name, job.key))
         self.collection.update({
