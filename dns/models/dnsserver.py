@@ -15,6 +15,7 @@ from django.db import models
 ## NOC modules
 from noc.settings import config
 from noc.dns.generators import generator_registry
+from noc.lib.fields import INETField
 
 generator_registry.register_all()
 
@@ -41,7 +42,7 @@ class DNSServer(models.Model):
     name = models.CharField(_("Name"), max_length=64, unique=True)
     generator_name = models.CharField(_("Generator"), max_length=32,
         choices=generator_registry.choices)
-    ip = models.IPAddressField(_("IP"), null=True, blank=True)
+    ip = INETField(_("IP"), null=True, blank=True)
     description = models.CharField(_("Description"), max_length=128,
         blank=True, null=True)
     location = models.CharField(_("Location"), max_length=128,
