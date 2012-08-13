@@ -95,7 +95,7 @@ class Scheduler(object):
 
     def reschedule_job(self, job_name, key, ts, status=None,
                        duration=None, last_status=None, tb=None,
-                       log=None):
+                       log=None, update_runs=False):
         self.info("Rescheduling job %s(%s) to %s%s" % (
             job_name, key, ts, " status=%s" % status if status else ""))
         s = {
@@ -109,10 +109,13 @@ class Scheduler(object):
             s[self.ATTR_LAST_STATUS] = last_status
         if duration is not None:
             s[self.ATTR_LAST_DURATION] = duration
+        op = {"$set": s}
+        if update_runs:
+            op["$inc"] = {self.ATTR_RUNS: 1}
         self.collection.update({
             self.ATTR_CLASS: job_name,
             self.ATTR_KEY: key
-        }, {"$set": s}, safe=True)
+        }, op, safe=True)
 
     def set_job_status(self, job_name, key, status):
         self.info("Changing %s(%s) status to %s" % (
@@ -191,7 +194,8 @@ class Scheduler(object):
                 status="W",
                 last_status=s,
                 duration=t1 - job.started,
-                tb=tb
+                tb=tb,
+                update_runs=True
             )
 
     def complete_mrt_job(self, t):
