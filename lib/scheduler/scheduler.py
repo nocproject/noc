@@ -37,13 +37,14 @@ class Scheduler(object):
 
     JobExists = JobExists
 
-    def __init__(self, name, cleanup=None):
+    def __init__(self, name, cleanup=None, reset_running=False):
         self.name = name
         self.job_classes = {}
         self.collection_name = self.COLLECTION_BASE + self.name
         self.collection = get_db()[self.collection_name]
         self.active_mrt = {}  # ReduceTask -> Job instance
         self.cleanup_callback = cleanup
+        self.reset_running = reset_running
 
     def debug(self, msg):
         logging.debug("[%s] %s" % (self.name, msg))
@@ -227,6 +228,14 @@ class Scheduler(object):
         return n
 
     def run(self):
+        if self.reset_running:
+            # Change running to waiting
+            self.debug("Resetting running jobs")
+            self.collection.update({
+                self.ATTR_STATUS: self.S_RUN
+            }, {
+                "$set": {self.ATTR_STATUS: self.S_WAIT}
+            }, multi=True, safe=True)
         self.info("Running scheduler")
         while True:
             if not self.run_pending():
