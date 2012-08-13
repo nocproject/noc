@@ -8,6 +8,8 @@
 
 ## Python modules
 import logging
+## NOC modules
+from noc.main.models import SystemNotification
 
 
 class JobBase(type):
@@ -36,10 +38,11 @@ class Job(object):
     name = ""  # Unique Job name
     map_task = None  # Set to map task name
     model = None  # Model/Document class
+    system_notification = None  # Name of system notification group
 
-    S_SUCCESS = 0
-    S_FAILED = 1
-    S_EXCEPTION = 2
+    S_SUCCESS = "S"
+    S_FAILED = "F"
+    S_EXCEPTION = "X"
 
     JOB_NS = "_noc"  # data structure prefix to be placed to _local
 
@@ -49,6 +52,7 @@ class Job(object):
         self.data = data or {}
         self.object = None  # Set by dereference()
         self.job_data = self.data.get(self.JOB_NS, {})
+        self.started = None  # Timestamp
 
     def info(self, msg):
         logging.info("[%s: %s(%s)] %s" % (
@@ -115,3 +119,9 @@ class Job(object):
             except self.model.DoesNotExist:
                 return False
         return True
+
+    def notify(self, subject, body):
+        SystemNotification.notify(
+            name=self.system_notification,
+            subject=subject,
+            body=body)
