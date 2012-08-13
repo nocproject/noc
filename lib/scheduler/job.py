@@ -8,6 +8,7 @@
 
 ## Python modules
 import logging
+import datetime
 ## NOC modules
 from noc.main.models import SystemNotification
 
@@ -53,6 +54,7 @@ class Job(object):
         self.object = None  # Set by dereference()
         self.job_data = self.data.get(self.JOB_NS, {})
         self.started = None  # Timestamp
+        self._log = []
 
     def info(self, msg):
         logging.info("[%s: %s(%s)] %s" % (
@@ -125,3 +127,12 @@ class Job(object):
             name=self.system_notification,
             subject=subject,
             body=body)
+
+    def log(self, msg):
+        self._log += [{
+            "t": datetime.datetime.now(),
+            "m": msg
+        }]
+
+    def get_log(self):
+        return self._log

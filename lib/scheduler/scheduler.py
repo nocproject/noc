@@ -30,6 +30,7 @@ class Scheduler(object):
     ATTR_LAST_DURATION = "ldur"  # last job duration
     ATTR_RUNS = "runs"  # Number of runs
     ATTR_TRACEBACK = "tb"  # Last error traceback
+    ATTR_LOG = "log"  # Job log
     S_WAIT = "W"  # Waiting to run
     S_RUN = "R"   # Running
     S_STOP = "S"  # Stopped by operator
@@ -93,12 +94,14 @@ class Scheduler(object):
         }, safe=True)
 
     def reschedule_job(self, job_name, key, ts, status=None,
-                       duration=None, last_status=None, tb=None):
+                       duration=None, last_status=None, tb=None,
+                       log=None):
         self.info("Rescheduling job %s(%s) to %s%s" % (
             job_name, key, ts, " status=%s" % status if status else ""))
         s = {
             self.ATTR_TS: ts,
-            self.ATTR_TRACEBACK: tb
+            self.ATTR_TRACEBACK: tb,
+            self.ATTR_LOG: log or []
         }
         if status:
             s[self.ATTR_STATUS] = status
