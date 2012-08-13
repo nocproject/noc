@@ -51,6 +51,7 @@ class DNSServer(models.Model):
     class Meta:
         verbose_name = _("DNS Server")
         verbose_name_plural = _("DNS Servers")
+        db_table = "dns_dnsserver"
     
     name = models.CharField(_("Name"), max_length=64, unique=True)
     generator_name = models.CharField(_("Generator"), max_length=32,
@@ -132,6 +133,7 @@ class DNSZoneProfile(models.Model):
     class Meta:
         verbose_name = _("DNS Zone Profile")
         verbose_name_plural = _("DNS Zone Profiles")
+        db_table = "dns_dnszoneprofile"
     
     name = models.CharField(_("Name"), max_length=32, unique=True)
     masters = models.ManyToManyField(DNSServer, verbose_name=_("Masters"),
@@ -188,6 +190,7 @@ class DNSZone(models.Model):
         verbose_name = _("DNS Zone")
         verbose_name_plural = _("DNS Zones")
         ordering = ["name"]
+        db_table = "dns_dnszone"
     
     name = models.CharField(_("Domain"), max_length=256, unique=True)
     description = models.CharField(_("Description"), null=True, blank=True,
@@ -547,6 +550,8 @@ class DNSZoneRecordType(models.Model):
         verbose_name = _("DNS Zone Record Type")
         verbose_name_plural = _("DNS Zone Record Types")
         ordering = ["type"]
+        db_table = "dns_dnszonerecordtype"
+
     type = models.CharField(_("Type"), max_length=16, unique=True)
     is_active = models.BooleanField(_("Is Active?"), default=True)
     validation = models.CharField(_("Validation"), max_length=256,
@@ -558,7 +563,7 @@ class DNSZoneRecordType(models.Model):
         return unicode(self.type)
     
     @classmethod
-    def interpolate_re(self, rx):
+    def interpolate_re(cls, rx):
         """
         Replace macroses in regular expression. Following macroses are
         expanded:
@@ -609,6 +614,7 @@ class DNSZoneRecord(models.Model):
     class Meta:
         verbose_name = _("DNS Zone Record")
         verbose_name_plural = _("DNS Zone Records")
+        db_table = "dns_dnszonerecord"
     
     zone = models.ForeignKey(DNSZone, verbose_name="Zone")
     left = models.CharField(_("Left"), max_length=32, blank=True, null=True)
@@ -631,4 +637,3 @@ class DNSZoneRecord(models.Model):
         :rtype: String
         """
         return site.reverse("dns:dnszone:change", self.zone.id)
-    
