@@ -188,11 +188,7 @@ class DNSZone(models.Model):
             """Compare two RR tuples"""
             x1, x2, x3 = x
             y1, y2, y3 = y
-            r = cmp(x1, y1)
-            if not r:
-                r = cmp(x2, y2)
-            if not r:
-                r = cmp(x3, y3)
+            r = cmp(x1, y1) or cmp(x2, y2) or cmp(x3, y3)
             return r
 
         if self.type == "F":
@@ -203,12 +199,8 @@ class DNSZone(models.Model):
                         "IN  A" if a.afi == "4" else "IN  AAAA",
                         a.address
                     )
-                    for a in Address.objects.raw("""
-                        SELECT id,address,afi,fqdn
-                        FROM   %s
-                        WHERE  domainname(fqdn)=%%s
-                        ORDER BY address
-                        """ % Address._meta.db_table, [self.name])]
+                    for a in Address.objects.extra(where=["domainname(fqdn)='%s'" % self.name]).order_by("address")
+            ]
             order_by = cmp_fwd
         elif self.type == "R4":
             # Populate IPv4 reverse zone from IPAM
