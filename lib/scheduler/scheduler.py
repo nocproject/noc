@@ -13,7 +13,7 @@ import datetime
 ## NOC modules
 from error import JobExists
 from noc.lib.nosql import get_db
-from noc.lib.debug import error_report
+from noc.lib.debug import error_report, get_traceback
 from noc.sa.models import ReduceTask
 
 
@@ -25,6 +25,11 @@ class Scheduler(object):
     ATTR_TIMEOUT = "timeout"
     ATTR_KEY = "key"
     ATTR_DATA = "data"
+    ATTR_LAST = "last"  # last run
+    ATTR_LAST_STATUS = "ls"  # last completion status
+    ATTR_LAST_DURATION = "ldur"  # last job duration
+    ATTR_RUNS = "runs"  # Number of runs
+    ATTR_TRACEBACK = "tb"  # Last error traceback
     S_WAIT = "W"  # Waiting to run
     S_RUN = "R"   # Running
     S_STOP = "S"  # Stopped by operator
@@ -86,14 +91,20 @@ class Scheduler(object):
             self.ATTR_KEY: key
         }, safe=True)
 
-    def reschedule_job(self, job_name, key, ts, status=None):
+    def reschedule_job(self, job_name, key, ts, status=None,
+                       duration=None, last_status=None, tb=None):
         self.info("Rescheduling job %s(%s) to %s%s" % (
             job_name, key, ts, " status=%s" % status if status else ""))
         s = {
-            self.ATTR_TS: ts
+            self.ATTR_TS: ts,
+            self.ATTR_TRACEBACK: tb
         }
         if status:
             s[self.ATTR_STATUS] = status
+        if last_status:
+            s[self.ATTR_LAST_STATUS] = last_status
+        if duration is not None:
+            s[self.ATTR_LAST_DURATION] = duration
         self.collection.update({
             self.ATTR_CLASS: job_name,
             self.ATTR_KEY: key
@@ -123,10 +134,14 @@ class Scheduler(object):
             return
         # Change status
         self.info("Running job %s(%s)" % (job.name, job.key))
+        job.started = time.time()
         self.collection.update({
             self.ATTR_CLASS: job.name,
             self.ATTR_KEY: job.key
-        }, {"$set": {self.ATTR_STATUS: self.S_RUN}})
+        }, {"$set": {
+            self.ATTR_STATUS: self.S_RUN,
+            self.ATTR_LAST: datetime.datetime.fromtimestamp(job.started)
+        }})
         #
         if job.map_task:
             # Run in MRT mode
@@ -140,12 +155,14 @@ class Scheduler(object):
             self._run_job_handler(job)
 
     def _run_job_handler(self, job, **kwargs):
+        tb = None
         try:
             r = job.handler(**kwargs)
         except Exception:
             error_report()
             job.on_exception()
             s = job.S_EXCEPTION
+            tb = get_traceback()
         else:
             if r:
                 self.info("Job %s(%s) is completed successfully" % (
@@ -164,7 +181,14 @@ class Scheduler(object):
             self.remove_job(job.name, job.key)
         else:
             # Reschedule job
-            self.reschedule_job(job.name, job.key, t, status="W")
+            t1 = time.time()
+            self.reschedule_job(
+                job.name, job.key, t,
+                status="W",
+                last_status=s,
+                duration=t1 - job.started,
+                tb=tb
+            )
 
     def complete_mrt_job(self, t):
         job = self.active_mrt[t]
