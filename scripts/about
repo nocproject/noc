@@ -12,6 +12,7 @@ from __future__ import with_statement
 import os
 import sys
 import csv
+import platform
 ## Third-party modules
 import pymongo
 ## NOC modules
@@ -66,10 +67,38 @@ def get_mongo_version():
     return "%s (%dbit)" % (i["version"], i["bits"])
 
 
+def get_brand():
+    """
+    Get OS brand
+    :return:
+    """
+    o = os.uname()[0].lower()
+    if o == "linux":
+        if os.path.exists("/etc/redhat-release"):
+            # RedHat
+            return open("/etc/redhat-release").read().strip()
+        elif os.path.exists("/etc/SuSE-release"):
+            # SuSE
+            with open("/etc/SuSE-release") as f:
+                return f.readline().strip()
+        elif os.path.exists("/etc/debian_version"):
+            # Debian
+            return open("/etc/debian_version").read().strip()
+    elif o == "darwin":
+        # OS X
+        return platform.mac_ver()[0]
+    return None
+
+
 def about():
     versions = [
         ["NOC", get_version()],
-        ["OS", " ".join(os.uname())],
+        ["OS", " ".join(os.uname())]
+    ]
+    os_brand = get_brand()
+    if os_brand:
+        versions += [["OS Brand", os_brand]]
+    versions += [
         ["Python", sys.version],
         ["PostgreSQL", get_pg_version()],
         ["MongoDB", get_mongo_version()],
