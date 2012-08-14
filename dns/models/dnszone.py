@@ -9,6 +9,7 @@
 ## Python modules
 import re
 import time
+from collections import defaultdict
 # Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -20,8 +21,9 @@ from noc.ip.models import Address, AddressRange
 from noc.lib.fields import AutoCompleteTagsField
 from noc.lib.app.site import site
 from noc.lib.ip import IPv6
-from noc.lib.validators import is_ipv4
+from noc.lib.validators import is_ipv4, is_int
 from noc.lib.rpsl import rpsl_format
+
 
 ##
 ## Managers for DNSZone
@@ -53,12 +55,13 @@ class DNSZone(models.Model):
         db_table = "dns_dnszone"
 
     name = models.CharField(_("Domain"), max_length=256, unique=True)
-    description = models.CharField(_("Description"), null=True, blank=True,
-        max_length=64)
+    description = models.CharField(_("Description"),
+        null=True, blank=True, max_length=64)
     is_auto_generated = models.BooleanField(_("Auto generated?"))
     serial = models.CharField(_("Serial"),
         max_length=10, default="0000000000")
-    profile = models.ForeignKey(DNSZoneProfile, verbose_name=_("Profile"))
+    profile = models.ForeignKey(DNSZoneProfile,
+        verbose_name=_("Profile"))
     notification_group = models.ForeignKey(NotificationGroup,
         verbose_name=_("Notification Group"), null=True, blank=True,
         help_text=_("Notification group to use when zone changed"))
@@ -102,6 +105,7 @@ class DNSZone(models.Model):
             return "F"  # Forward
 
     rx_rzone = re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
+
     @property
     def reverse_prefix(self):
         """
@@ -157,10 +161,6 @@ class DNSZone(models.Model):
             return p + "%02d" % (sn + 1)
         return p + "00"
 
-    ##
-    ## Returns a list of zone's RR.
-    ## [(left,type,right)]
-    ##
     @property
     def records(self):
         """
@@ -170,158 +170,8 @@ class DNSZone(models.Model):
         :return: Zone records
         :trype: List of tuples
         """
-        def cmp_ptr(x, y):
-            """
-            Compare two RR tuples. PTR records are compared as integer,
-            other records - as strings.
-            """
-            x1, x2, x3 = x
-            y1, y2, y3 = y
-            if "PTR" in x2 and "PTR" in y2:
-                try:
-                    return cmp(int(x1), int(y1))
-                except ValueError:
-                    pass
-            return cmp(x1, y1)
-
-        def cmp_fwd(x, y):
-            """Compare two RR tuples"""
-            x1, x2, x3 = x
-            y1, y2, y3 = y
-            r = cmp(x1, y1) or cmp(x2, y2) or cmp(x3, y3)
-            return r
-
-        if self.type == "F":
-            # Populate forward zone from IPAM
-            records = [
-                    (
-                        a.fqdn.split(".")[0],
-                        "IN  A" if a.afi == "4" else "IN  AAAA",
-                        a.address
-                    )
-                    for a in Address.objects.extra(where=["domainname(fqdn)='%s'" % self.name]).order_by("address")
-            ]
-            order_by = cmp_fwd
-        elif self.type == "R4":
-            # Populate IPv4 reverse zone from IPAM
-            records = [
-                (
-                    a.address.split(".")[3],
-                    "PTR",
-                    a.fqdn + "."
-                )
-                for a in Address.objects.raw("""
-                    SELECT id,address,afi,fqdn
-                    FROM %s
-                    WHERE
-                            address << %%s
-                        AND afi='4'
-                """ % Address._meta.db_table, [self.reverse_prefix])
-                ]
-            order_by = cmp_ptr
-        elif self.type == "R6":
-            # Populate IPv6 reverse zone from IPAM
-            origin_length = (len(self.name) - 8 + 1) // 2
-            records = [
-                (
-                    IPv6(a.address).ptr(origin_length),
-                    "PTR",
-                    a.fqdn + "."
-                )
-                for a in Address.objects.raw("""
-                    SELECT id,address,afi,fqdn
-                    FROM %s
-                    WHERE
-                            address << %%s
-                        AND afi='6'
-                """ % Address._meta.db_table, [self.reverse_prefix])]
-            order_by = cmp_fwd
-        else:
-            raise Exception("Invalid zone type")
-        # Add records from DNSZoneRecord
-        zonerecords = self.dnszonerecord_set.all()
-        if self.type == "R4":
-            # Classles reverse zone delegation
-            # Range delegations
-            for r in AddressRange.objects.raw("""
-                SELECT * FROM
-                ip_addressrange
-                WHERE
-                        from_address<<%s
-                    AND to_address<<%s
-                    AND action='D'""", [self.reverse_prefix, self.reverse_prefix]):
-                nses = [ns.strip() for ns in r.reverse_nses.split(",")]
-                for a in r.addresses:
-                    n = a.address.split(".")[-1]
-                    records += [(n, "CNAME", "%s.%s/32" % (n, n))]
-                    for ns in nses:
-                        records += [("%s/32" % n, "IN NS", ns)]
-            # Subnet delegation macro
-            delegations = {}
-            for d in [r for r in zonerecords if "NS" in r.type.type and "/" in r.left]:
-                r = d.right
-                l = d.left
-                if l in delegations:
-                    delegations[l].append(r)
-                else:
-                    delegations[l] = [r]
-            # Perform classless reverse zone delegation
-            for d, nses in delegations.items():
-                try:
-                    net, mask = [int(x) for x in l.split("/")]
-                    if net < 0 or net > 255 or mask <= 24 or mask > 32:
-                        raise ValueError("Invalid record")
-                except ValueError:
-                    records += [(";; Invalid record: %s" % d, "IN NS", "error")]
-                    continue
-                for ns in nses:
-                    records += [(d, "IN NS", str(ns))]
-                m = mask - 24
-                bitmask = ((1 << m) - 1) << (8 - m)
-                if net & bitmask != net:
-                    records += [(";; Invalid network: %s" % d, "CNAME", d)]
-                    continue
-                for i in range(net, net + (1 << (8 - m))):
-                    records += [("%d" % i, "CNAME", "%d.%s" % (i, d))]
-            # Other records
-            records += [(x.left, x.type.type, x.right)
-                        for x in zonerecords
-                        if ("NS" in x.type.type and "/" not in x.left)
-                           or "NS" not in x.type.type]
-        else:
-            records += [(x.left, x.type.type, x.right) for x in zonerecords]
-        # Add NS records if nesessary
-        suffix = ".%s." % self.name
-        l = len(self.name)
-        for z in self.children:
-            nested_nses = []
-            for ns in z.profile.authoritative_servers:
-                ns_name = self.get_ns_name(ns)
-                records += [(z.name[:-l - 1], "IN NS", ns_name)]
-                # Zone delegated to NS from the child zone
-                if ns_name.endswith(suffix) and "." in ns_name[:-len(suffix)]:
-                    r = (ns_name[:-len(suffix)], ns.ip)
-                    if r not in nested_nses:
-                        nested_nses += [r]
-            if nested_nses:  # Create A records for nested NSes
-                for name, ip in nested_nses:
-                    records += [(name, "IN A", ip)]
-        # Create missed A records for NSses from zone
-        # Find in-zone NSes
-        in_zone_nses = {}
-        for ns in self.profile.authoritative_servers:
-            ns_name = self.get_ns_name(ns)
-             # NS server from zone
-            if ns_name.endswith(suffix) and "." not in ns_name[:-len(suffix)]:
-                in_zone_nses[ns_name[:-len(suffix)]] = ns.ip
-        # Find missed in-zone NSes
-        for l, t, r in records:
-            if l in in_zone_nses and t in ["A", "IN A"]:
-                del in_zone_nses[l]
-        for name, ip in in_zone_nses.items():
-            records += [(name, "IN A", ip)]
-        #
-        return sorted(records, order_by)
+        # @todo: deprecated
+        return [(a, b, c) for a, b, c, _, _ in self.get_records()]
 
     def zonedata(self, ns):
         """
@@ -332,6 +182,7 @@ class DNSZone(models.Model):
         :return: Zone data
         :rtype: String
         """
+        # @todo: deprecated
         return ns.generator_class().get_zone(self)
 
     @property
@@ -347,7 +198,9 @@ class DNSZone(models.Model):
     def children(self):
         """List of next-level nested zones"""
         l = len(self.name)
-        return [z for z in DNSZone.objects.filter(name__iendswith="." + self.name) if "." not in z.name[:-l - 1]]
+        s = ".%s" % self.name
+        return [z for z in DNSZone.objects.filter(name__iendswith=s)
+                if "." not in z.name[:-l - 1]]
 
     @classmethod
     def get_ns_name(cls, ns):
@@ -367,7 +220,8 @@ class DNSZone(models.Model):
         :return: List of zone NSes
         :rtype: List of string
         """
-        return sorted([self.get_ns_name(ns) for ns in self.profile.authoritative_servers])
+        return sorted(self.get_ns_name(ns)
+            for ns in self.profile.authoritative_servers)
 
     @property
     def rpsl(self):
@@ -384,10 +238,200 @@ class DNSZone(models.Model):
         if self.name.lower().endswith(".10.in-addr.arpa"):
             return ""
         n1, n2, n = self.name.lower().split(".", 2)
-        if n >= "16.172.in-addr.arpa" and n <= "31.172.in-addr.arpa":
+        if "16.172.in-addr.arpa" <= n <= "31.172.in-addr.arpa":
             return ""
         n1, n = self.name.lower().split(".", 1)
         if n == "168.192.in-addr.arpa":
             return ""
-        s = ["domain: %s" % self.name] + ["nserver: %s" % ns for ns in self.ns_list]
+        s = ["domain: %s" % self.name] + ["nserver: %s" % ns
+                                          for ns in self.ns_list]
         return rpsl_format("\n".join(s))
+
+    def get_ipam_a(self):
+        """
+        Fetch A/AAAA records from IPAM
+        :return: (name, type, content, ttl, prio)
+        """
+        ttl = self.profile.zone_ttl
+        return [(
+            a.fqdn.split(".")[0],
+            "A" if a.afi == "4" else "AAAA",
+            a.address,
+            ttl,
+            None
+            ) for a in Address.objects.extra(
+                where=["domainname(fqdn)=%s"], params=[self.name])
+        ]
+
+    def get_ipam_ptr4(self):
+        """
+        Fetch IPv4 PTR records from IPAM
+        :return: (name, type, content, ttl, prio)
+        """
+        ttl = self.profile.zone_ttl
+        return [(
+            a.address.split(".")[3],
+            "PTR",
+            a.fqdn + ".",
+            ttl,
+            None
+            ) for a in Address.objects.filter(afi="4").extra(
+                where=["address << %s"], params=[self.reverse_prefix])
+        ]
+
+    def get_ipam_ptr6(self):
+        """
+        Fetch IPv6 PTR records from IPAM
+        :return: (name, type, content, ttl, prio)
+        :return:
+        """
+        ttl = self.profile.zone_ttl
+        origin_length = (len(self.name) - 8 + 1) // 2
+        return [(
+            IPv6(a.address).ptr(origin_length),
+            "PTR",
+            a.fqdn + ".",
+            ttl,
+            None
+            ) for a in Address.objects.filter(afi="6").extra(
+            where=["address << %s"], params=[self.reverse_prefix])
+        ]
+
+    def get_missed_ns_a(self, records):
+        """
+        Returns missed A record for NS'es
+        :param records:
+        :return:
+        """
+        suffix = ".%s." % self.name
+        ttl = self.profile.zone_ttl
+        # Create missed A records for NSses from zone
+        # Find in-zone NSes
+        in_zone_nses = {}
+        for ns in self.profile.authoritative_servers:
+            if not ns.ip:
+                continue
+            ns_name = self.get_ns_name(ns)
+             # NS server from zone
+            if (ns_name.endswith(suffix) and
+                "." not in ns_name[:-len(suffix)]):
+                in_zone_nses[ns_name[:-len(suffix)]] = ns.ip
+        # Find missed in-zone NSes
+        return [(name, "A", in_zone_nses[name], ttl, None)
+            for name in in_zone_nses
+            if not (name in in_zone_nses and type in ("A", "IN A"))]
+
+    def get_ns(self):
+        # Add NS records if nesessary
+        records = []
+        suffix = ".%s." % self.name
+        ttl = self.profile.zone_ttl
+        l = len(self.name)
+        for z in self.children:
+            nested_nses = []
+            for ns in z.profile.authoritative_servers:
+                ns_name = self.get_ns_name(ns)
+                records += [(z.name[:-l - 1], "IN NS", ns_name)]
+                # Zone delegated to NS from the child zone
+                if (ns_name.endswith(suffix) and
+                    "." in ns_name[:-len(suffix)]):
+                    r = (ns_name[:-len(suffix)], ns.ip)
+                    if r not in nested_nses:
+                        nested_nses += [r]
+            if nested_nses:  # Create A records for nested NSes
+                for name, ip in nested_nses:
+                    records += [(name, "A", ip, ttl, None)]
+        return records
+
+    def get_rr(self):
+        """
+        Get RRs from database
+        :return:
+        """
+        def f(name, type, content, ttl, prio):
+            """
+            Process MX record priority
+            """
+            if type == "MX":
+                if " " in content:
+                    p, rest = content.split(" ", 1)
+                    if is_int(prio):
+                        return name, type, rest, ttl, p
+            return name, type, content, ttl, prio
+
+        ttl = self.profile.zone_ttl
+        return [f(r.left, r.type, r.right, ttl, None)
+            for r in self.dnszonerecord_set.exclude(left__contains="/")
+        ]
+
+    def get_classless_delegation(self):
+        """
+        Classless reverse zone delegation
+        :return:
+        """
+        records = []
+        ttl = self.profile.zone_ttl
+        # Range delegations
+        for r in AddressRange.objects.filter(action="D").extra(
+            where=["from_address << %s", "to_address << %s"],
+            params=[self.reverse_prefix, self.reverse_prefix]):
+            nses = [ns.strip() for ns in r.reverse_nses.split(",")]
+            for a in r.addresses:
+                n = a.address.split(".")[-1]
+                records += [(n, "CNAME", "%s.%s/32" % (n, n), ttl, None)]
+                for ns in nses:
+                    records += [("%s/32" % n, "NS", ns, ttl, None)]
+        # Subnet delegation macro
+        delegations = defaultdict(list)
+        for d in [r for r in self.dnszonerecord_set.filter(
+            type__type__contains="NS", left__contains="/")]:
+            delegations[d.left] += [d.right]
+        # Perform classless reverse zone delegation
+        for d in delegations:
+            nses = delegations[d]
+            net, mask = [int(x) for x in d.split("/")]
+            if net < 0 or net > 255 or mask <= 24 or mask > 32:
+                continue  # Invalid record
+            for ns in nses:
+                records += [(d, "NS", str(ns), ttl, None)]
+            m = mask - 24
+            bitmask = ((1 << m) - 1) << (8 - m)
+            if net & bitmask != net:
+                continue  # Invalid network
+            records += [(str(i), "CNAME", "%d.%s" % (i, d), ttl, None)
+                for i in range(net, net + (1 << (8 - m)))
+            ]
+        return records
+
+    def get_records(self):
+        def cmp_ptr(x, y):
+            """
+            Compare two RR tuples. PTR records are compared as integer,
+            other records - as strings.
+            """
+            x1, x2, _, _, _ = x
+            y1, y2, _, _, _ = y
+            if x2 == y2 == "PTR":
+                try:
+                    return cmp(int(x1), int(y1))
+                except ValueError:
+                    pass
+            return cmp(x, y)
+
+        records = []
+        records += self.get_rr()
+        records += self.get_ns()
+        if self.type == "F":
+            records += self.get_ipam_a()
+            records += self.get_missed_ns_a(records)
+            order_by = cmp
+        elif self.type == "R4":
+            records += self.get_ipam_ptr4()
+            records += self.get_classless_delegation()
+            order_by = cmp_ptr
+        elif self.type == "R6":
+            records += self.get_ipam_ptr6()
+            order_by = cmp_ptr
+        else:
+            raise ValueError("Invalid zone type")
+        return sorted(records, order_by)
