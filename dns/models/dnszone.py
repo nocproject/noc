@@ -380,6 +380,8 @@ class DNSZone(models.Model):
                 n = a.address.split(".")[-1]
                 records += [(n, "CNAME", "%s.%s/32" % (n, n), ttl, None)]
                 for ns in nses:
+                    if not ns.endswith("."):
+                        ns += "."
                     records += [("%s/32" % n, "NS", ns, ttl, None)]
         # Subnet delegation macro
         delegations = defaultdict(list)
@@ -393,7 +395,10 @@ class DNSZone(models.Model):
             if net < 0 or net > 255 or mask <= 24 or mask > 32:
                 continue  # Invalid record
             for ns in nses:
-                records += [(d, "NS", str(ns), ttl, None)]
+                ns = str(ns)
+                if not ns.endswith("."):
+                    ns += "."
+                records += [(d, "NS", ns, ttl, None)]
             m = mask - 24
             bitmask = ((1 << m) - 1) << (8 - m)
             if net & bitmask != net:
