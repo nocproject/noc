@@ -83,7 +83,8 @@ def get_brand():
                 return f.readline().strip()
         elif os.path.exists("/etc/debian_version"):
             # Debian
-            return open("/etc/debian_version").read().strip()
+            v = open("/etc/debian_version").read().strip()
+            return "Debian %s" % v
     elif o == "darwin":
         # OS X
         return platform.mac_ver()[0]
