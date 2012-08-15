@@ -13,6 +13,7 @@ import os
 import sys
 import csv
 import platform
+import subprocess
 ## Third-party modules
 import pymongo
 ## NOC modules
@@ -74,17 +75,16 @@ def get_brand():
     """
     o = os.uname()[0].lower()
     if o == "linux":
-        if os.path.exists("/etc/redhat-release"):
-            # RedHat
-            return open("/etc/redhat-release").read().strip()
-        elif os.path.exists("/etc/SuSE-release"):
+        # First, try lsb_release -d
+        try:
+            b = subprocess.check_output(["lsb_release", "-d"])
+            return b.split(":", 1)[1].strip()
+        except OSError:
+            pass
+        if os.path.exists("/etc/SuSE-release"):
             # SuSE
             with open("/etc/SuSE-release") as f:
                 return f.readline().strip()
-        elif os.path.exists("/etc/debian_version"):
-            # Debian
-            v = open("/etc/debian_version").read().strip()
-            return "Debian %s" % v
     elif o == "darwin":
         # OS X
         return "Mac OS X %s" % platform.mac_ver()[0]
