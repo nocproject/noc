@@ -360,7 +360,7 @@ class DNSZone(models.Model):
             return name, type, content, ttl, prio
 
         ttl = self.profile.zone_ttl
-        return [f(r.left, r.type, r.right, ttl, None)
+        return [f(r.left, r.type.type, r.right, ttl, None)
             for r in self.dnszonerecord_set.exclude(left__contains="/")
         ]
 
