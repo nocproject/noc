@@ -70,7 +70,7 @@ class TCPSocket(Socket):
             return
         self.out_buffer = self.out_buffer[sent:]
         if self.in_shutdown and not self.out_buffer:
-            self.close()
+            self.close(flush=True)
         self.update_status()
 
     def handle_connect(self):
