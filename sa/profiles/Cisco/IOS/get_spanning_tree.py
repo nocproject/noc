@@ -52,6 +52,8 @@ class Script(NOCScript):
                     "state": {
                         "dis": "disabled",
                         "blk": "discarding",
+                        "bkn": "broken",
+                        "lrn": "learning",
                         "??": "learning",
                         "fwd": "forwarding"
                     }[R[2].lower()],  # @todo: refine states
