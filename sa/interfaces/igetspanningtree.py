@@ -58,7 +58,7 @@ class IGetSpanningTree(Interface):
                 # Local port id
                 "port_id": StringParameter(),
                 # Interface state
-                "state": StringParameter(choices=["disabled", "discarding", "learning", "forwarding", "blocked", "unknown"]),
+                "state": StringParameter(choices=["disabled", "discarding", "learning", "forwarding", "broken", "unknown"]),
                 # Interface role
                 "role": StringParameter(choices=["disabled", "alternate", "backup", "root", "designated", "master", "nonstp", "unknown"]),
                 # Port priority
