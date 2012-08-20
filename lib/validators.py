@@ -36,10 +36,14 @@ def is_int(v):
     True
     >>> is_int("Ten")
     False
+    >>> is_int(None)
+    False
     """
     try:
         v = int(v)
     except ValueError:
+        return False
+    except TypeError:
         return False
     return True
 
