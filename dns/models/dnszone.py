@@ -171,7 +171,14 @@ class DNSZone(models.Model):
         :trype: List of tuples
         """
         # @todo: deprecated
-        return [(a, b, c) for a, b, c, _, _ in self.get_records()]
+        def f(name, type, content, ttl, prio):
+            if prio is not None:
+                return name, type, "%s %s" % (prio, content)
+            else:
+                return name, type, content
+
+        return [f(a, b, c, d, e)
+                for a, b, c, d, e in self.get_records()]
 
     def zonedata(self, ns):
         """
@@ -355,8 +362,8 @@ class DNSZone(models.Model):
             if type == "MX":
                 if " " in content:
                     p, rest = content.split(" ", 1)
-                    if is_int(prio):
-                        return name, type, rest, ttl, p
+                    if is_int(p):
+                        return name, type, rest, ttl, int(p)
             return name, type, content, ttl, prio
 
         ttl = self.profile.zone_ttl
