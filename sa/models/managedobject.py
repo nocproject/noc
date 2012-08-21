@@ -391,3 +391,4 @@ class ManagedObjectAttribute(models.Model):
 ## Avoid circular references
 from reducetask import ReduceTask, reduce_object_script
 from useraccess import UserAccess
+from groupaccess import GroupAccess
