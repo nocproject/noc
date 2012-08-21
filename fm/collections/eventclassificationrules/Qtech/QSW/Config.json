@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%CMDLINE-6-COMMAND: \(1\)( (?P<user>\S+):|) configure terminal$"
+                "value_re": "%CMDLINE-6-COMMAND: \\(1\\)( (?P<user>\\S+):|) configure terminal$"
             }
         ]
     },
