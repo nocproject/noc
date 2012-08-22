@@ -197,11 +197,11 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%(?:LINK-(?:SP-)?3|UBR\\d+00-5)-UPDOWN: Interface (?P<interface>.+), changed state to up$"
+                "value_re": "%(?:LINK-(?:SP-|.FC.-)?3|UBR\\d+00-5)-UPDOWN: Interface (?P<interface>.+), changed state to up$"
             }
         ]
     },
-    
+
     {
         "name": "Cisco | IOS | Network | Link | Link Down (SYSLOG)",
         "description": "%LINK-3-UPDOWN: Interface GigabitEthernet4/0/45, changed state to down",
@@ -218,7 +218,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%(?:LINK-(?:SP-)?3|UBR\\d+00-5)-(?:UPDOWN|CHANGED): Interface (?P<interface>.+), changed state to(.+)? down$"
+                "value_re": "%(?:LINK-(?:SP-|.FC.-)?3|UBR\\d+00-5)-(?:UPDOWN|CHANGED): Interface (?P<interface>.+), changed state to(.+)? down$"
             }
         ]
     },
