@@ -98,7 +98,7 @@
                 "value_re": "SHELL/\\d/TIMEOUT.+VTY login from (?P<ip>\\S+) is time out"
             }
         ]
-    }
+    },
 
     {
         "name": "Huawei | VRP | Security | Authentication | Login Failed #1 (SYSLOG)",
