@@ -15,14 +15,14 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%LINEPROTO-(?:SP-)?5-UPDOWN"
+                "value_re": "%LINEPROTO-.*5-UPDOWN"
             }
         ]
     },
     
     {
         "name": "Cisco | IOS | Unknown | Ignore SNMP Syslog (SNMP)",
-        "description": "%LINEPROTO-5-UPDOWN",
+        "description": "CISCO-SYSLOG-MIB::clogMessageGenerated",
         "event_class__name": "Unknown | Ignore",
         "preference": 3000,
         "patterns": [
