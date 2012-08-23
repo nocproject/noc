@@ -338,7 +338,8 @@ class DNSZone(models.Model):
             nested_nses = []
             for ns in z.profile.authoritative_servers:
                 ns_name = self.get_ns_name(ns)
-                records += [(z.name[:-l - 1], "IN NS", ns_name)]
+                records += [(z.name[:-l - 1], "IN NS", ns_name,
+                             ttl, None)]
                 # Zone delegated to NS from the child zone
                 if (ns_name.endswith(suffix) and
                     "." in ns_name[:-len(suffix)]):
