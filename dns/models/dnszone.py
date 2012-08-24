@@ -23,6 +23,7 @@ from noc.lib.app.site import site
 from noc.lib.ip import IPv6
 from noc.lib.validators import is_ipv4, is_int
 from noc.lib.rpsl import rpsl_format
+from noc.dns.utils.zonefile import ZoneFile
 
 
 ##
@@ -53,6 +54,7 @@ class DNSZone(models.Model):
         verbose_name_plural = _("DNS Zones")
         ordering = ["name"]
         db_table = "dns_dnszone"
+        app_label = "dns"
 
     name = models.CharField(_("Domain"), max_length=256, unique=True)
     description = models.CharField(_("Description"),
@@ -172,11 +174,21 @@ class DNSZone(models.Model):
         """
         # @todo: deprecated
         def f(name, type, content, ttl, prio):
+            name = name[:-lnsuffix]  # Strip domain from name
+            if type == "CNAME" and content.endswith(nsuffix):
+                # Strip domain from content
+                content = content[:-lnsuffix]
+            if prio is not None:
+                content = "%s %s" % (prio, content)
+
             if prio is not None:
                 return name, type, "%s %s" % (prio, content)
             else:
                 return name, type, content
 
+        suffix = self.name + "."
+        nsuffix = "." + suffix
+        lnsuffix = len(nsuffix)
         return [f(a, b, c, d, e)
                 for a, b, c, d, e in self.get_records()]
 
@@ -185,9 +197,9 @@ class DNSZone(models.Model):
         Return zone data formatted for given nameserver.
 
         :param ns: DNS Server
-        :type ns: DNSServer instance
+        :type ns: DNSServer
         :return: Zone data
-        :rtype: String
+        :rtype: str
         """
         # @todo: deprecated
         return ns.generator_class().get_zone(self)
@@ -329,10 +341,11 @@ class DNSZone(models.Model):
             if not (name in in_zone_nses and type in ("A", "IN A"))]
 
     def get_ns(self):
-        # Add NS records if nesessary
-        records = []
-        suffix = ".%s." % self.name
         ttl = self.profile.zone_ttl
+        # Zone NSes
+        records = [("", "NS", n, ttl, None) for n in self.ns_list]
+        # Add nested NS records if nesessary
+        suffix = ".%s." % self.name
         l = len(self.name)
         for z in self.children:
             nested_nses = []
@@ -431,6 +444,21 @@ class DNSZone(models.Model):
                     pass
             return cmp(x, y)
 
+        def fr(r):
+            name, type, content, ttl, prio = r
+            if not name.endswith("."):
+                if name:
+                    name += ".%s." % self.name
+                else:
+                    name = self.name + "."
+            if (type in ("NS", "MX", "CNAME") and
+                not content.endswith(".")):
+                if content:
+                    content += ".%s." % self.name
+                else:
+                    content = self.name + "."
+            return name, type, content, ttl, prio
+
         records = []
         records += self.get_rr()
         records += self.get_ns()
@@ -447,4 +475,22 @@ class DNSZone(models.Model):
             order_by = cmp_ptr
         else:
             raise ValueError("Invalid zone type")
-        return sorted(records, order_by)
+        return sorted((fr(r) for r in records), order_by)
+
+    def get_zone_text(self):
+        """
+        BIND-style zone text for configuration management
+        :return:
+        """
+        zf = ZoneFile(
+            zone=self.name,
+            soa=self.profile.zone_soa,
+            contact=self.profile.zone_contact,
+            serial=self.serial,
+            refresh=self.profile.zone_refresh,
+            retry=self.profile.zone_retry,
+            expire=self.profile.zone_expire,
+            ttl=self.profile.zone_ttl,
+            records=self.get_records()
+        )
+        return zf.get_text()
