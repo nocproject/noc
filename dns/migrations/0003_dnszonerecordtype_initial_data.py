@@ -6,8 +6,6 @@
 
 ## Third-party modules
 from south.db import db
-## NOC modules
-from noc.dns.models import *
 
 
 RECORD_TYPES = [
@@ -60,4 +58,4 @@ class Migration:
                 db.execute("INSERT INTO dns_dnszonerecordtype(type, is_visible) VALUES(%s, %s)", [rtype, is_visible])
 
     def backwards(self):
-        "Write your backwards migration here"
+        """Write your backwards migration here"""

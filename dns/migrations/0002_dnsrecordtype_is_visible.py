@@ -6,7 +6,7 @@
 """
 """
 from south.db import db
-from noc.dns.models import *
+from django.db import models
 
 class Migration:
     
