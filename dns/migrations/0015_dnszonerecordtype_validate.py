@@ -6,12 +6,14 @@
 """
 """
 from south.db import db
-from noc.dns.models import *
+from django.db import models
+
 
 class Migration:
-    
     def forwards(self):
-        db.add_column("dns_dnszonerecordtype","validation",models.CharField("Validation",max_length=256,blank=True,null=True))
-    
+        db.add_column("dns_dnszonerecordtype", "validation",
+            models.CharField("Validation", max_length=256, blank=True,
+                null=True))
+
     def backwards(self):
-        db.delete_column("dns_dnszonerecordtype","validation")
+        db.delete_column("dns_dnszonerecordtype", "validation")

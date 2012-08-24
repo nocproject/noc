@@ -8,14 +8,15 @@
 """
 """
 from south.db import db
-from noc.dns.models import *
+from django.db import models
+
 
 class Migration:
     
     def forwards(self):
         for p_id,zl in db.execute("SELECT id,zone_ns_list FROM dns_dnszoneprofile"):
             for n in [x.strip() for x in zl.split(",")]:
-                if db.execute("SELECT COUNT(*) FROM dns_dnsserver WHERE name=%s",[n])[0][0]==0:
+                if not db.execute("SELECT COUNT(*) FROM dns_dnsserver WHERE name=%s",[n])[0][0]:
                     db.execute("INSERT INTO dns_dnsserver(name) values (%s)",[n])
                 db.execute("INSERT INTO dns_dnszoneprofile_ns_servers(dnszoneprofile_id,dnsserver_id) SELECT %s,id FROM dns_dnsserver WHERE name=%s",
                     [p_id,n])
