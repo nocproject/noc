@@ -24,6 +24,7 @@ class DNSZoneRecord(models.Model):
         verbose_name = _("DNS Zone Record")
         verbose_name_plural = _("DNS Zone Records")
         db_table = "dns_dnszonerecord"
+        app_label = "dns"
 
     zone = models.ForeignKey(DNSZone, verbose_name="Zone")
     left = models.CharField(_("Left"), max_length=32, blank=True, null=True)

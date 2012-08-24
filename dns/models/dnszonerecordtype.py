@@ -24,6 +24,7 @@ class DNSZoneRecordType(models.Model):
         verbose_name_plural = _("DNS Zone Record Types")
         ordering = ["type"]
         db_table = "dns_dnszonerecordtype"
+        app_label = "dns"
 
     type = models.CharField(_("Type"), max_length=16, unique=True)
     is_active = models.BooleanField(_("Is Active?"), default=True)
