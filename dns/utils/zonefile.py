@@ -32,6 +32,10 @@ class ZoneFile(object):
         """
         self.zone = zone
         self.soa = soa
+        if "@" in contact:
+            contact = contact.replace("@", ".")
+        if not contact.endswith("."):
+            contact += "."
         self.contact = contact
         self.serial = serial
         self.refresh = refresh
@@ -46,7 +50,7 @@ class ZoneFile(object):
         lnsuffix = len(nsuffix)
         # SOA
         z = [HEADER, """
-$ORIGIN .
+$ORIGIN %(domain)s
 $TTL %(ttl)d
 %(domain)s IN SOA %(soa)s %(contact)s (
     %(serial)s ; serial
@@ -71,9 +75,7 @@ $TTL %(ttl)d
         # Add records
         rr = []
         for name, type, content, ttl, prio in self.records:
-            if name == suffix and type == "NS":
-                continue  # Already included
-            if not name.endswith(nsuffix):
+            if not name.endswith(nsuffix) and name != suffix:
                 continue  # Trash
             name = name[:-lnsuffix]  # Strip domain from name
             if type == "CNAME" and content.endswith(nsuffix):
@@ -97,7 +99,7 @@ $TTL %(ttl)d
 
     def pretty_time(self, t):
         """
-        Format seconds to human-readable time
+        Format seconds to human-readable time for comments
         :param t:
         :return:
         """
