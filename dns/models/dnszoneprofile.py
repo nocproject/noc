@@ -34,6 +34,7 @@ class DNSZoneProfile(models.Model):
         verbose_name = _("DNS Zone Profile")
         verbose_name_plural = _("DNS Zone Profiles")
         db_table = "dns_dnszoneprofile"
+        app_label = "dns"
 
     name = models.CharField(_("Name"), max_length=32, unique=True)
     masters = models.ManyToManyField(DNSServer, verbose_name=_("Masters"),

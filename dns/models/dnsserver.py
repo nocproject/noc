@@ -38,6 +38,7 @@ class DNSServer(models.Model):
         verbose_name = _("DNS Server")
         verbose_name_plural = _("DNS Servers")
         db_table = "dns_dnsserver"
+        app_label = "dns"
 
     name = models.CharField(_("Name"), max_length=64, unique=True)
     generator_name = models.CharField(_("Generator"), max_length=32,
