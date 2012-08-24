@@ -2,53 +2,30 @@
 ##----------------------------------------------------------------------
 ## BINDv9 Zone Generator
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 import noc.dns.generators
 import time, os
+from noc.dns.utils.zonefile import ZoneFile
+
 
 class Generator(noc.dns.generators.Generator):
     name = "BINDv9"
 
-    def get_soa(self):
-        nses = ["\tNS\t%s\n" % n for n in self.zone.ns_list]
-        nses = "".join(nses)
-        contact = self.zone.profile.zone_contact.replace("@", ".")
-        if not contact.endswith("."):
-            contact += "."
-        return """$ORIGIN .
-$TTL %(ttl)d
-%(domain)s IN SOA %(soa)s %(contact)s (
-            %(serial)s ; serial
-            %(refresh)d       ; refresh (%(pretty_refresh)s)
-            %(retry)d        ; retry (%(pretty_retry)s)
-            %(expire)d    ; expire (%(pretty_expire)s)
-            %(ttl)d       ; minimum (%(pretty_ttl)s)
-            )
-%(nses)s
-""" % {
-            "domain": self.zone.name,
-            "soa": self.zone.profile.zone_soa,
-            "contact": contact,
-            "serial": self.zone.serial,
-            "ttl": self.zone.profile.zone_ttl,
-            "pretty_ttl": self.pretty_time(self.zone.profile.zone_ttl),
-            "refresh": self.zone.profile.zone_refresh,
-            "pretty_refresh": self.pretty_time(self.zone.profile.zone_refresh),
-            "retry": self.zone.profile.zone_retry,
-            "pretty_retry": self.pretty_time(self.zone.profile.zone_retry),
-            "expire": self.zone.profile.zone_expire,
-            "pretty_expire": self.pretty_time(self.zone.profile.zone_expire),
-            "nses": nses
-        }
-
-    def get_records(self):
-        s = "$ORIGIN %s\n" % self.zone.name
-        s += self.format_3_columns(self.zone.records)
-        return s
+    def get_zone(self, zone):
+        return ZoneFile(
+            zone=zone.name,
+            soa=zone.profile.zone_soa,
+            contact=zone.profile.zone_contact,
+            serial=zone.serial,
+            refresh=zone.profile.zone_refresh,
+            retry=zone.profile.zone_retry,
+            expire=zone.profile.zone_expire,
+            ttl=zone.profile.zone_ttl,
+            records=zone.get_records()
+        ).get_text()
 
     def get_include(self, ns):
         def ns_list(ds):
