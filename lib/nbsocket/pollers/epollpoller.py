@@ -36,7 +36,9 @@ class EpollPoller(Poller):
         e = select.EPOLLIN
         if sock in self.writers:
             e |= select.EPOLLOUT
-        self.epoll.register(f, e)
+            self.epoll.modify(f, e)
+        else:
+            self.epoll.register(f, e)
         self.sockets[f] = sock
 
     def add_writer(self, sock):
@@ -53,7 +55,9 @@ class EpollPoller(Poller):
         e = select.EPOLLOUT
         if sock in self.readers:
             e |= select.EPOLLIN
-        self.epoll.register(f, e)
+            self.epoll.modify(f, e)
+        else:
+            self.epoll.register(f, e)
         self.sockets[f] = sock
 
     def remove_reader(self, sock):
@@ -66,10 +70,11 @@ class EpollPoller(Poller):
         if sock not in self.readers:
             return
         f = sock.fileno()
-        e = 0
         if sock in self.writers:
-            e |= select.EPOLLOUT
-        self.epoll.register(f, e)
+            e = select.EPOLLOUT
+            self.epoll.modify(f, e)
+        else:
+            self.epoll.unregister(f)
         self.readers.remove(sock)
         if sock not in self.writers:
             del self.sockets[f]
@@ -84,10 +89,11 @@ class EpollPoller(Poller):
         if sock not in self.writers:
             return
         f = sock.fileno()
-        e = 0
         if sock in self.readers:
-            e |= select.EPOLLIN
-        self.epoll.register(f, e)
+            e = select.EPOLLIN
+            self.epoll.modify(f, e)
+        else:
+            self.epoll.unregister(f)
         self.writers.remove(sock)
         if sock not in self.readers:
             del self.sockets[f]
