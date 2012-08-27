@@ -1,0 +1,100 @@
+#!/usr/bin/env python
+# NOC modules
+import set_env
+ 
+set_env.setup(use_django=True)
+ 
+from noc.lib.stomp.client import STOMPClient
+import time
+import sys
+import logging
+ 
+STATS = []
+SF = None
+QUEUE = "/topic/t1"
+ 
+def callback(destination, body):
+    global STATS, SF
+
+    if body["cmd"] == "STOP":
+        dt = time.time() - body["t"]
+        n = body["n"]
+        print "STOP: %d messages in %s secs (%smsg/sec)" % (
+            n, dt, n / dt
+        )
+        f = open(SF, "w")
+        for n, dt in STATS:
+            f.write("%s,%s\n" % (n, dt))
+        f.close()
+    elif body["cmd"] == "MESSAGE":
+        dt = time.time() - body["t"]
+        n = body["n"]
+        STATS += [(n, dt)]
+ 
+def main_producer(messages, synchronous=False):
+    client = STOMPClient("127.0.0.1", 19705)
+    client.start()
+    t0 = time.time()
+    n = 0
+    for i in range(messages):
+        t = time.time()
+        client.send({"cmd": "MESSAGE", "t": t, "n": n},
+            destination=QUEUE, receipt=synchronous)
+        n += 1
+    client.send({"cmd": "STOP", "t": t0, "n": n},
+        destination="/topic/t1")
+    client.stop()
+
+def main_consumer():
+    client = STOMPClient("127.0.0.1", 19705)
+    client.start()
+    client.subscribe(QUEUE, callback=callback)
+    client.wait()
+
+def usage():
+    print "STOMP Server Benchmark"
+    print "Producer:"
+    print "    %s [-v] [-s] -p <n>" % sys.argv[0]
+    print "Consumer:"
+    print "    %s [-v] -c <out>" % sys.argv[0]
+    print "Where:"
+    print "    -v    -- be verbose"
+    print "    -s    -- synchronous messaging"
+    print "    <n>   -- generate <n> messages"
+    print "    <out> -- write CSV report to file <out>"
+
+ 
+if __name__ == "__main__":
+    import getopt
+
+    # Parse arguments
+    is_producer = False
+    verbose = False
+    synchronous = False
+    messages = None
+    out = None
+    optlist, optargs = getopt.getopt(sys.argv[1:], "vsp:c:")
+    for k, v in optlist:
+        if k == "-p":
+            is_producer = True
+            messages = int(v)
+        elif k == "-c":
+            is_producer = False
+            out = v
+        elif k == "-v":
+            verbose = True
+        elif k == "-s":
+            synchronous = True
+    # Setup logging
+    if verbose:
+        for h in logging.root.handlers:
+             logging.root.removeHandler(h)
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)s %(levelname)s %(message)s")
+    # Run
+    if is_producer:
+        main_producer(messages=messages, synchronous=synchronous)
+    else:
+        SF = out
+        main_consumer()
