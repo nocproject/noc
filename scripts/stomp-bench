@@ -19,9 +19,10 @@ def callback(destination, body):
     if body["cmd"] == "STOP":
         dt = time.time() - body["t"]
         n = body["n"]
-        print "STOP: %d messages in %s secs (%smsg/sec)" % (
-            n, dt, n / dt
-        )
+        print "Synchronous: %s Polling: %s" % (
+            body["synch"], body["polling"])
+        print "Performance: %d messages in %s secs (%smsg/sec)" % (
+            n, dt, n / dt)
         f = open(SF, "w")
         for n, dt in STATS:
             f.write("%s,%s\n" % (n, dt))
@@ -41,7 +42,9 @@ def main_producer(messages, synchronous=False):
         client.send({"cmd": "MESSAGE", "t": t, "n": n},
             destination=QUEUE, receipt=synchronous)
         n += 1
-    client.send({"cmd": "STOP", "t": t0, "n": n},
+    client.send({"cmd": "STOP", "t": t0, "n": n,
+                 "synch": synchronous,
+                 "polling": client.factory.poller.__class__.__name__},
         destination="/topic/t1")
     client.stop()
 
