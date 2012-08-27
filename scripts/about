@@ -20,6 +20,11 @@ import pymongo
 sys.path = [".", ".."] + sys.path
 import settings
 
+if hasattr(subprocess, "check_output"):
+    check_output = subprocess.check_output
+else:
+    def check_output(args):
+        return subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0]
 
 def get_version():
     """
@@ -77,7 +82,7 @@ def get_brand():
     if o == "linux":
         # First, try lsb_release -d
         try:
-            b = subprocess.check_output(["lsb_release", "-d"])
+            b = check_output(["lsb_release", "-d"])
             return b.split(":", 1)[1].strip()
         except OSError:
             pass
