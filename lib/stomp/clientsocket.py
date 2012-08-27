@@ -41,6 +41,11 @@ class STOMPClientSocket(ConnectedTCPSocket):
 
     def on_conn_refused(self):
         self.error("Connection refused")
+        self.client.on_sock_conn_refused()
+
+    def on_close(self):
+        super(STOMPClientSocket, self).on_close()
+        self.client.on_sock_close()
 
     def cmd_ERROR(self, headers, body):
         self.error("STOMP error received: %s" % body)
@@ -48,7 +53,7 @@ class STOMPClientSocket(ConnectedTCPSocket):
         # @todo: push error
 
     def cmd_CONNECTED(self, headers, body):
-        self.client.set_connected()
+        self.client.on_connected()
 
     def cmd_MESSAGE(self, headers, body):
         if "subscription" in headers and "destination" in headers:
@@ -57,12 +62,8 @@ class STOMPClientSocket(ConnectedTCPSocket):
             self.client.on_message(
                 headers["destination"], headers["subscription"], body)
 
-    def subscribe(self, destination, id, ack):
-        self.send_frame("SUBSCRIBE", {
-            "destination": destination,
-            "ack": ack,
-            "id": id
-        })
+    def cmd_RECEIPT(self, headers, body):
+        self.client.on_receipt(headers.get("receipt-id"))
 
     def unsubscribe(self, id):
         self.send_frame("UNSUBSCRIBE", {

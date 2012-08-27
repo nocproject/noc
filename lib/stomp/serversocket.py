@@ -16,9 +16,8 @@ from noc.lib.debug import get_traceback
 class STOMPServerSocket(AcceptedTCPSocket):
     protocol_class = STOMPProtocol
 
-    def __init__(self, factory, socket, server=None):
-        self.server = server
-        print server
+    def __init__(self, factory, socket):
+        self.server = factory.controller
         AcceptedTCPSocket.__init__(self, factory, socket)
 
     def send_message(self, cmd, headers=None, body=""):
@@ -112,4 +111,4 @@ class STOMPServerSocket(AcceptedTCPSocket):
         raise NotImplementedError
 
     def cmd_DISCONNECT(self, headers, body):
-        raise NotImplementedError
+        pass
