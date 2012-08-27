@@ -39,6 +39,8 @@ class STOMPClient(object):
         self.current_frame = None
         self.connected = threading.Event()  # Set on CONNECTED frame
         self.disconnect_receipt = None
+        self.receipt_event = threading.Event()  # Block until receipt
+        self.last_receipt = None  # Last receipt id
 
     def __repr__(self):
         return "<STOMPClient %s:%s>" % (self.host, self.port)
@@ -78,7 +80,6 @@ class STOMPClient(object):
             self.current_frame = None
             self.send_frame(command, message, body)
         if self.destinations:
-            # @todo:
             self.refresh_subscriptions()
 
     def start(self):
@@ -150,11 +151,17 @@ class STOMPClient(object):
             "id": sid
         })
 
-    def send(self, message, destination):
+    def send(self, message, destination, receipt=False):
+        if self.last_receipt:
+            self.receipt_event.wait()
+        self.last_receipt = None
         self.debug("send (%s): %s" % (destination, message))
-        self.send_frame("SEND", {
-            "destination": destination
-        }, message)
+        h = {"destination": destination}
+        if receipt:
+            self.last_receipt = str(self.receipt_id.next())
+            h["receipt"] = self.last_receipt
+            self.receipt_event.clear()
+        self.send_frame("SEND", h, message)
 
     def on_message(self, destination, sid, body):
         c = self.callbacks.get(sid)
@@ -190,6 +197,10 @@ class STOMPClient(object):
     def on_receipt(self, receipt_id):
         if receipt_id == self.disconnect_receipt:
             # DISCONNECT RECEIPT accepted
+            self.socket.close()
             if not self.shared_factory:
-                self.socket.close()
                 self.factory.shutdown()
+        elif self.last_receipt and receipt_id == self.last_receipt:
+            self.receipt_event.set()
+
+
