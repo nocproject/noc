@@ -51,12 +51,10 @@ class PTYSocket(Socket):
         else:
             self.close()
 
-    def can_write(self):
-        return bool(self.out_buffer)
-
     def handle_write(self):
         sent = self.socket.send(self.out_buffer)
         self.out_buffer = self.out_buffer[sent:]
+        self.set_status(w=bool(self.out_buffer))
 
     def handle_connect(self):
         self.is_connected = True
@@ -65,6 +63,7 @@ class PTYSocket(Socket):
     def write(self, msg):
         self.debug("write(%s)" % repr(msg))
         self.out_buffer += msg
+        self.set_status(w=bool(self.out_buffer))
 
     def close(self, flush=False):
         Socket.close(self)

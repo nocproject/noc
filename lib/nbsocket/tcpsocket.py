@@ -61,8 +61,8 @@ class TCPSocket(Socket):
         """
         try:
             if self.character_mode:
-                self.debug("Character send: %s" % repr(self.out_buffer[:1]))
-            sent = self.socket.send(self.out_buffer[:1] if self.character_mode
+                self.debug("Character send: %s" % repr(self.out_buffer[0]))
+            sent = self.socket.send(self.out_buffer[0] if self.character_mode
                                                        else self.out_buffer)
         except socket.error, why:
             self.error("Socket error: %s" % repr(why))
@@ -71,13 +71,17 @@ class TCPSocket(Socket):
         self.out_buffer = self.out_buffer[sent:]
         if self.in_shutdown and not self.out_buffer:
             self.close(flush=True)
+            return
+        self.set_status(w=bool(self.out_buffer))
         self.update_status()
 
     def handle_connect(self):
         """
         Set is_connected flag and call on_connect()
         """
+        self.debug("Connected")
         self.is_connected = True
+        self.set_status(r=True, w=False)
         self.on_connect()
 
     def write(self, msg):
@@ -89,6 +93,7 @@ class TCPSocket(Socket):
         :type msg: Str
         """
         self.out_buffer += msg
+        self.set_status(w=bool(self.out_buffer) and self.is_connected)
 
     def on_read(self, data):
         """
