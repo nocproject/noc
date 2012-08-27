@@ -19,13 +19,12 @@
                 "type": "int",
                 "required": true
             },
-            
             {
                 "name": "name",
                 "description": "VLAN Name",
                 "type": "str",
                 "required": false
-            }            
+            }
         ]
     },
 
@@ -49,13 +48,12 @@
                 "type": "int",
                 "required": true
             },
-            
             {
                 "name": "name",
                 "description": "VLAN Name",
                 "type": "str",
                 "required": false
-            }            
+            }
         ]
     }
 ]
