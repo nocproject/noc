@@ -165,7 +165,6 @@ class STOMPClient(object):
 
     def on_message(self, destination, sid, body):
         c = self.callbacks.get(sid)
-        print "MESSAGE", destination, sid, body, c
         if c:
             c(destination, body)
 
