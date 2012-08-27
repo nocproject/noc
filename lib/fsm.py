@@ -180,9 +180,6 @@ class StreamFSM(FSM):
                                                                       in
                                                                       patterns]
 
-    def in_async_check(self):
-        return self.ac
-
     def check_fsm(self):
         if (self.ac and self.last_feed and
             time.time() - self.last_feed < 1):
@@ -211,6 +208,9 @@ class StreamFSM(FSM):
                     self.event(event)  # Change state
                     break
             if not matched:
+                if (not self.ac and
+                    len(self.in_buffer) > self.async_throttle):
+                    self.set_async_check()
                 break
 
     def feed(self, data, cleanup=None):
@@ -221,8 +221,12 @@ class StreamFSM(FSM):
             self.check_fsm()
 
     def async_check_fsm(self):
-        self.ac = True
         self.check_fsm()
 
     def reset_async_check(self):
+        self.debug("Starting synchronous FSM check")
         self.ac = False
+
+    def set_async_check(self):
+        self.debug("Starting asynchronous FSM check")
+        self.ac = True
