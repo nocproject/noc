@@ -188,6 +188,9 @@ class SNMPGetSocket(UDPSocket):
         self.provider = provider
         self.oid = oid
         self.address = self.provider.access_profile.address
+
+    def create_socket(self):
+        super(SNMPGetSocket, self).create_socket()
         self.sendto(self.get_snmp_request(), (self.address, 161))
 
     def get_community(self):
