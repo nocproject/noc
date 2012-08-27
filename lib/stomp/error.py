@@ -7,4 +7,8 @@
 ##----------------------------------------------------------------------
 
 class STOMPError(Exception):
-    pass
+    """STOMP Protocol Error"""
+
+
+class STOMPNotConnected(Exception):
+    """Client is not connected"""

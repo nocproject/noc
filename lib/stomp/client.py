@@ -9,6 +9,8 @@
 ## Python modules
 import logging
 import threading
+import time
+import itertools
 ## NOC modules
 from clientsocket import STOMPClientSocket
 from noc.lib.nbsocket import SocketFactory
@@ -21,72 +23,173 @@ class STOMPClient(object):
 
     def __init__(self, host, port, login=None, passcode=None,
                  factory=None):
-        self.shared_fabric = factory is not None
+        self.shared_factory = factory is not None
         self.host = host
         self.port = port
         self.login = login
         self.passcode = passcode
-        self.factory = factory or SocketFactory()
+        self.factory = factory or SocketFactory(write_delay=False)
+        self.factory_thread = None
         self.socket = None
-        self.connected_event = threading.Event()
-        self.s_id = 0
+        self.subscription_id = itertools.count()  # Subscription id generator
+        self.receipt_id = itertools.count()  # Receipt id generator
         self.callbacks = {}  # Subscription id -> callback
         self.destinations = {}  # destination -> (id, ack)
+        self.started = False  # Set to True when start() called
+        self.current_frame = None
+        self.connected = threading.Event()  # Set on CONNECTED frame
+        self.disconnect_receipt = None
 
-    def get_subscription_id(self):
-        self.s_id += 1
-        return str(self.s_id)
+    def __repr__(self):
+        return "<STOMPClient %s:%s>" % (self.host, self.port)
 
     def debug(self, message):
         logging.debug("STOMP(%s:%s): %s" % (
             self.host, self.port, message))
 
-    def _connect(self):
-        if not self.socket:
-            self.debug("Connecting")
-            self.socket = self.factory.connect_tcp(self.host, self.port,
-                STOMPClientSocket)
-            self.socket.set_client(self)
-        self.connected_event.wait()
+    def on_sock_conn_refused(self):
+        """
+        Called when socket connection is refused
+        :return:
+        """
+        self.socket = None
+        self.connected.clear()
+        self.debug("Connection refused")
 
-    def set_connected(self):
-        self.debug("socket is connected")
-        self.connected_event.set()
+    def on_sock_close(self):
+        """
+        Called when client socket is closed
+        :return:
+        """
+        self.debug("Socket closed")
+        self.socket = None
+        self.connected.clear()
+        time.sleep(1)
+        self.start_connection()
 
-    def msg(self, command, headers, body=None):
-        pass
+    def on_connected(self):
+        """
+        Called when CONNECTED frame received
+        :return:
+        """
+        self.connected.set()
+        if self.current_frame:
+            command, message, body = self.current_frame
+            self.current_frame = None
+            self.send_frame(command, message, body)
+        if self.destinations:
+            # @todo:
+            self.refresh_subscriptions()
 
     def start(self):
+        """
+        Start client
+        :return:
+        """
         self.debug("Starting client")
-        if not self.shared_fabric:
+        self.started = True
+        if not self.shared_factory:
             self.debug("Running client factory")
-            threading.Thread(target=self.factory.run,
-                name="stomp-factory", args=(True,)).start()
+            self.factory_thread = threading.Thread(
+                target=self.factory.run,
+                name="stomp-factory", args=(True,))
+            self.factory_thread.daemon = True
+            self.factory_thread.start()
 
     def stop(self):
+        """
+        Stop client
+        :return:
+        """
+        self.started = False
         if self.socket:
-            self.socket.disconnect()
+            self.disconnect()
+        if self.factory_thread:
+            self.factory_thread.join()
+
+    def start_connection(self):
+        """
+        Initialize connection attempt
+        :return:
+        """
+        self.debug("Starting connection")
+        self.connecting = True
+        self.socket = self.factory.connect_tcp(self.host, self.port,
+            STOMPClientSocket)
+        self.socket.set_client(self)
+
+    def send_frame(self, command, headers, body=""):
+        # Check socket is connected
+        if not self.connected.isSet():
+            if not self.current_frame:
+                # Save current frame
+                # Send when ready
+                self.current_frame = (command, headers, body)
+                self.start_connection()
+                return
+            else:
+                self.connected.wait()
+        # Pass frame to socket
+        self.socket.send_frame(command, headers, body)
 
     def subscribe(self, destination, callback=None, ack=ACK_AUTO):
-        self._connect()
-        sid = self.get_subscription_id()
+        sid = str(self.subscription_id.next())
         self.debug("subscribe %s (id=%s)" % (destination, sid))
         self.callbacks[sid] = callback
         self.destinations[destination] = (sid, ack)
-        self.socket.subscribe(destination, sid, ack)
+        self.send_frame("SUBSCRIBE", {
+            "destination": destination,
+            "ack": ack,
+            "id": sid
+        })
 
     def unsubscribe(self, destination):
-        self._connect()
         sid, _ = self.destinations[destination]
         self.debug("unsubscribe %s (id=%s)" % (destination, sid))
-        self.socket.unsubscribe(sid)
+        self.send_frame("UNSUBSCRIBE", {
+            "id": sid
+        })
 
     def send(self, message, destination):
-        self._connect()
         self.debug("send (%s): %s" % (destination, message))
-        self.socket.send_message(message, destination)
+        self.send_frame("SEND", {
+            "destination": destination
+        }, message)
 
     def on_message(self, destination, sid, body):
         c = self.callbacks.get(sid)
+        print "MESSAGE", destination, sid, body, c
         if c:
             c(destination, body)
+
+    def wait(self):
+        """Wait until factory completes"""
+        if self.factory_thread:
+            self.factory_thread.join()
+
+    def refresh_subscriptions(self):
+        """
+        Refresh existing subscriptions
+        :return:
+        """
+        for destination in self.destinations:
+            sid, ack = self.destinations[destination]
+            self.debug("Refreshing subscription to '%s'" % destination)
+            self.send_frame("SUBSCRIBE", {
+                "destination": destination,
+                "ack": ack,
+                "id": sid
+            })
+
+    def disconnect(self):
+        self.disconnect_receipt = str(self.receipt_id.next())
+        self.send_frame("DISCONNECT", {
+            "receipt": self.disconnect_receipt
+        })
+
+    def on_receipt(self, receipt_id):
+        if receipt_id == self.disconnect_receipt:
+            # DISCONNECT RECEIPT accepted
+            if not self.shared_factory:
+                self.socket.close()
+                self.factory.shutdown()
