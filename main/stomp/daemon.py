@@ -8,7 +8,6 @@
 
 ## Python modules
 import logging
-from collections import defaultdict
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket import SocketFactory
@@ -23,7 +22,7 @@ class STOMPDaemon(Daemon):
     def __init__(self):
         super(STOMPDaemon, self).__init__()
         logging.info("Running noc-stomp")
-        self.factory = SocketFactory()
+        self.factory = SocketFactory(controller=self, write_delay=False)
         self.subscriptions = {}  # socket, id -> Subscription
         self.destinations = {}  # name -> destination
 
@@ -38,8 +37,7 @@ class STOMPDaemon(Daemon):
         self.factory.listen_tcp(
             self.config.get("stomp", "listen"),
             self.config.getint("stomp", "port"),
-            STOMPServerSocket,
-            server=self
+            STOMPServerSocket
         )
         self.factory.run()
 
