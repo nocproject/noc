@@ -175,6 +175,29 @@
     },
 
     {
+        "name": "Environment | UPS | Battery Power Normal",
+        "description": "Battery Power Normal",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Battery power normal",
+                "body_template": "Battery power normal",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Environment | UPS | Battery Power Low"
+            }
+        ]
+    },
+
+    {
         "name": "Environment | UPS | Battery Replaced",
         "description": "Battery Replaced",
         "action": "L",
