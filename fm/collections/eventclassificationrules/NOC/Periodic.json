@@ -27,7 +27,7 @@
             }
         ]
     },
-    
+
     {
         "name": "NOC | Periodic | Periodic Failed",
         "description": "Periodic task has been failed",
@@ -53,6 +53,56 @@
             {
                 "key_re": "^profile$",
                 "value_re": "^NOC\\.SAE$"
+            }
+        ]
+    },
+
+    {
+        "name": "NOC | Periodic | Probe Ok",
+        "description": "NOC probe ok",
+        "event_class__name": "NOC | Periodic | Periodic OK",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^system$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^NOC\\.SAE$"
+            },
+            {
+                "key_re": "^type$",
+                "value_re": "^(?P<task>pm probe)$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "^OK$"
+            }
+        ]
+    },
+
+    {
+        "name": "NOC | Periodic | Periodic Failed | PM Failed",
+        "description": "PM Failed",
+        "event_class__name": "NOC | Periodic | Periodic Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^system$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^NOC\\.SAE$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "^Failed .+$"
+            },
+            {
+                "key_re": "^type$",
+                "value_re": "^(?P<task>pm probe)$"
             }
         ]
     }
