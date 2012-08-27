@@ -11,7 +11,6 @@ from __future__ import with_statement
 import socket
 import time
 import logging
-from errno import *
 ## NOC modules
 from noc.lib.nbsocket.exceptions import *
 
@@ -34,6 +33,11 @@ class Socket(object):
         self.ttl = self.TTL
         self.set_timeout(self.TTL)
         self.factory.register_socket(self)
+        if socket:
+            self.set_status(r=True)
+
+    def __repr__(self):
+        return "<%s(0x%x)>" % (self.__class__.__name__, id(self))
 
     def create_socket(self):
         """
@@ -43,6 +47,7 @@ class Socket(object):
         if not self.socket_is_ready():  # Socket was not created
             raise SocketNotImplemented()
         self.socket.setblocking(0)
+        self.set_status(r=True)
         self.update_status()
 
     def set_timeout(self, ttl):
@@ -71,27 +76,7 @@ class Socket(object):
         :return: file id or None
         :rtype: int or None
         """
-        return self.socket.fileno() if socket else None
-
-    def can_read(self):
-        """
-        Check socket can be read. If can_read returns True, socket
-        will be polled for read event. handle_read() will be called
-        when some data will be available for reading
-
-        :rtype: bool
-        """
-        return self.socket_is_ready()
-
-    def can_write(self):
-        """
-        Check socket can be written. If can_write returns True, socket
-        will be polled for write events. handle_write() will be called
-        when some data can be sent via socket
-
-        :trype bool:
-        """
-        return self.socket_is_ready()
+        return self.socket.fileno() if self.socket else None
 
     def handle_read(self):
         """
@@ -131,6 +116,7 @@ class Socket(object):
             return
         self.closing = True
         if self.socket:
+            self.set_status(r=False, w=False)
             self.factory.unregister_socket(self)
             try:
                 if self.socket:
@@ -191,6 +177,9 @@ class Socket(object):
         Update socket status to indicate socket still active
         """
         self.last_read = time.time()
+
+    def set_status(self, r=None, w=None):
+        self.factory.set_status(self, r=r, w=w)
 
     def is_stale(self):
         """

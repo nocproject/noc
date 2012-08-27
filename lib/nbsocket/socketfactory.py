@@ -9,17 +9,16 @@
 ## Python modules
 from __future__ import with_statement
 import logging
-import select
 import time
-import sys
 from threading import RLock
-from errno import EBADF, EINTR
 ## NOC modules
 from noc.lib.debug import error_report
-from noc.lib.nbsocket.exceptions import get_socket_error
-from noc.lib.nbsocket.listentcpsocket import ListenTCPSocket
-from noc.lib.nbsocket.connectedtcpsocket import ConnectedTCPSocket
-from noc.lib.nbsocket.acceptedtcpsocket import AcceptedTCPSocket
+from exceptions import get_socket_error
+from listentcpsocket import ListenTCPSocket
+from connectedtcpsocket import ConnectedTCPSocket
+from acceptedtcpsocket import AcceptedTCPSocket
+from pollers.detect import get_poller
+from pipesocket import PipeSocket
 
 
 class SocketFactory(object):
@@ -27,95 +26,17 @@ class SocketFactory(object):
     Socket factory is a major event loop controller, maintaining full socket
     lifetime
     """
-    def __init__(self, tick_callback=None, polling_method=None, controller=None):
+    def __init__(self, tick_callback=None,
+                 polling_method=None, controller=None,
+                 write_delay=True):
         self.sockets = {}      # fileno -> socket
         self.socket_name = {}  # socket -> name
         self.name_socket = {}  # name -> socket
         self.new_sockets = []  # list of (socket,name)
         self.tick_callback = tick_callback
         self.to_shutdown = False
-        self.register_lock = RLock()    # Guard for register/unregister operations
-        self.controller = controller    # Reference to controlling daemon
-        self.get_active_sockets = None  # Polling method
-        self.setup_poller(polling_method)
-        # Performance data
-        self.cnt_polls = 0  # Number of polls
-
-    def shutdown(self):
-        """
-        Shut down socket factory and exit next event loop
-        """
-        logging.info("Shutting down the factory")
-        self.to_shutdown = True
-
-    # Check select() available
-    def has_select(self):
-        """
-        Check select() method is available
-
-        :rtype: Bool
-        """
-        return True
-
-    def has_kevent(self):
-        """
-        Check kevent/kqueue method is available
-
-        :rtype: Bool
-        """
-        return hasattr(select, "kqueue")
-
-    def has_poll(self):
-        """
-        Check poll() method is available
-
-        :rtype: Bool
-        """
-        return hasattr(select, "poll")
-
-    def has_epoll(self):
-        """
-        Check epoll() method is available
-
-        :rtype: Bool
-        """
-        return hasattr(select, "epoll")
-
-    def setup_poller(self, polling_method=None):
-        """
-        Set up polling function.
-
-        :param polling_method: Name of polling method. Must be one of:
-                               * select
-                               * poll
-                               * kevent
-                               * epoll
-                               * None (detect best method)
-        """
-        def setup_select_poller():
-            """Enable select() method"""
-            logging.debug("Set up select() poller")
-            self.get_active_sockets = self.get_active_select
-            self.polling_method = "select"
-
-        def setup_poll_poller():
-            """Enable poll() method"""
-            logging.debug("Set up poll() poller")
-            self.get_active_sockets = self.get_active_poll
-            self.polling_method = "poll"
-
-        def setup_epoll_poller():
-            """Enable epoll() method"""
-            logging.debug("Set up epoll() poller")
-            self.get_active_sockets = self.get_active_epoll
-            self.polling_method = "epoll"
-
-        def setup_kevent_poller():
-            """Enable kevent() method. Broken for now and disabled"""
-            logging.debug("Set up kevent/kqueue poller")
-            self.get_active_sockets = self.get_active_kevent
-            self.polling_method = "kevent"
-
+        self.register_lock = RLock()  # Guard for register/unregister operations
+        self.controller = controller  # Reference to controlling daemon
         if polling_method is None:
             # Read settings if available
             try:
@@ -123,26 +44,19 @@ class SocketFactory(object):
                 polling_method = config.get("main", "polling_method")
             except ImportError:
                 polling_method = "select"
-        logging.debug("Setting up '%s' polling method" % polling_method)
-        if polling_method == "optimal":
-            # Detect possibilities
-            if self.has_kevent():  # kevent
-                setup_kevent_poller()
-            elif self.has_epoll():
-                setup_epoll_poller()  # epoll
-            elif self.has_poll():  # poll
-                setup_poll_poller()
-            else:  # Fallback to select
-                setup_select_poller()
-        elif polling_method == "kevent" and self.has_kevent():
-            setup_kevent_poller()
-        elif polling_method == "epoll" and self.has_epoll():
-            setup_epoll_poller()
-        elif polling_method == "poll" and self.has_poll():
-            setup_poll_poller()
-        else:
-            # Fallback to select
-            setup_select_poller()
+        self.poller = get_poller(polling_method)
+        # Performance data
+        self.cnt_polls = 0  # Number of polls
+        self.write_delay = write_delay
+        if not self.write_delay:
+            self.control = PipeSocket(self)
+
+    def shutdown(self):
+        """
+        Shut down socket factory and exit next event loop
+        """
+        logging.info("Shutting down the factory")
+        self.to_shutdown = True
 
     def register_socket(self, socket, name=None):
         """
@@ -160,6 +74,7 @@ class SocketFactory(object):
             logging.debug("unregister_socket(%s)" % socket)
             if socket not in self.socket_name:  # Not in factory yet
                 return
+            self.set_status(socket, r=False, w=False)
             self.sockets.pop(socket.fileno(), None)
             old_name = self.socket_name.pop(socket, None)
             self.name_socket.pop(old_name, None)
@@ -176,7 +91,7 @@ class SocketFactory(object):
         """
         try:
             method()
-        except:
+        except Exception:
             exc = get_socket_error()
             try:
                 if exc:
@@ -185,7 +100,7 @@ class SocketFactory(object):
                     socket.error("Unhandled exception when calling %s" % str(method))
                     error_report()
                     socket.close()
-            except:
+            except Exception:
                 socket.error("Error when handling error condition")
                 error_report()
             return False
@@ -200,7 +115,7 @@ class SocketFactory(object):
             socket.debug("Initializing socket")
             if not self.guarded_socket_call(socket, socket.create_socket):
                 return
-        if socket.socket is None:
+        if not socket.socket_is_ready():
             # Race condition raised. Socket is unregistered since last socket.create_socket call.
             # Silently ignore and exit
             return
@@ -262,144 +177,41 @@ class SocketFactory(object):
                 socket, name = self.new_sockets.pop(0)
                 self.init_socket(socket, name)
 
+    def set_status(self, sock, r=None, w=None):
+        logging.debug("set_status(%s, r=%s, w=%s)" % (sock, r, w))
+        with self.register_lock:
+            if r is not None:
+                if r:
+                    self.poller.add_reader(sock)
+                else:
+                    self.poller.remove_reader(sock)
+            if w is not None:
+                if w:
+                    self.poller.add_writer(sock)
+                    if not self.write_delay:
+                        # Force get_active() completion
+                        self.control.write("x")
+                else:
+                    self.poller.remove_writer(sock)
+
     def loop(self, timeout=1):
         """
-        Generic event loop. Depends upon get_active_sockets() method, set
-        up by factory constructor
+        Generic event loop
         """
         self.create_pending_sockets()
         if self.sockets:
-            r, w = self.get_active_sockets(timeout)
+            r, w = self.poller.get_active(timeout)
             self.cnt_polls += 1
-            #logging.debug("Active sockets: Read=%s Write=%s"%(repr(r), repr(w)))
-            # Process write events before read to catch refused connections
-            for fd in w:
-                s = self.sockets.get(fd)
-                if s:
-                    self.guarded_socket_call(s, s.handle_write)
+            # Process write events before read
+            # to catch refused connections
+            for s in w:
+                self.guarded_socket_call(s, s.handle_write)
             # Process read events
-            for fd in r:
-                s = self.sockets.get(fd)
-                if s:
-                    self.guarded_socket_call(s, s.handle_read)
+            for s in r:
+                self.guarded_socket_call(s, s.handle_read)
         else:
             # No socket initialized. Sleep to prevent CPU hogging
             time.sleep(timeout)
-
-    ##
-    ## Straightforward select() implementation
-    ## Returns a list of (read fds, write fds)
-    ##
-    def get_active_select(self, timeout):
-        """
-        select() implementation
-
-        :returns: Tuple of (List of read socket ids, Write socket ids)
-        """
-        # Get read and write candidates
-        with self.register_lock:
-            r = [f for f, s in self.sockets.items() if s.can_read()]
-            w = [f for f, s in self.sockets.items() if s.can_write()]
-        # Poll socket status
-        try:
-            r, w, x = select.select(r, w, [], timeout)
-            return r, w
-        except select.error, why:
-            if why[0] not in (EINTR, EBADF):
-                error_report()  # non-ignorable errors
-            return [], []
-        except KeyboardInterrupt:
-            logging.info("Got Ctrl+C, exiting")
-            sys.exit(0)
-        except:
-            error_report()
-            return [], []
-
-    def get_active_poll(self, timeout):
-        """
-        poll() implementation
-
-        :returns: Tuple of (List of read socket ids, Write socket ids)
-        """
-        poll = select.poll()
-        # Get read and write candidates
-        with self.register_lock:
-            for f, s in self.sockets.items():
-                e = ((select.POLLIN if s.can_read() else 0) |
-                     (select.POLLOUT if s.can_write() else 0))
-                if e:
-                    poll.register(f, e)
-        # Poll socket status
-        try:
-            events = poll.poll(timeout * 1000)  # ms->s
-        except select.error, why:
-            if why[0] not in (EINTR, EBADF):
-                error_report()  # non-ignorable errors
-            return [], []
-        except:
-            return [], []
-        # Build result
-        rset = [fd for fd, e in events if e & (select.POLLIN | select.POLLHUP)]
-        wset = [fd for fd, e in events if e & select.POLLOUT]
-        return rset, wset
-
-    def get_active_kevent(self, timeout):
-        """
-        kevent() implementation. Broken.
-
-        :returns: Tuple of (List of read socket ids, Write socket ids)
-        """
-        # Get read and write candidates
-        kqueue = select.kqueue()
-        l = 0
-        with self.register_lock:
-            for f, s in self.sockets.items():
-                if s.can_write():
-                    kqueue.control([select.kevent(f, select.KQ_FILTER_WRITE,
-                                                  select.KQ_EV_ADD)], 0)
-                    l += 1
-                if s.can_read():
-                    kqueue.control([select.kevent(f, select.KQ_FILTER_READ,
-                                                  select.KQ_EV_ADD)], 0)
-                    l += 1
-        # Poll events
-        rset = []
-        wset = []
-        for e in kqueue.control(None, l, timeout):
-            if e.filter & select.KQ_FILTER_WRITE:
-                wset += [e.ident]
-            if e.filter & select.KQ_FILTER_READ:
-                rset += [e.ident]
-        return rset, wset
-
-    def get_active_epoll(self, timeout):
-        """
-        epoll() implementation
-
-        :returns: Tuple of (List of read socket ids, Write socket ids)
-        """
-
-        epoll = select.epoll()
-        # Get read and write candidates
-        with self.register_lock:
-            for f, s in self.sockets.items():
-                e = ((select.EPOLLIN if s.can_read() else 0) |
-                     (select.EPOLLOUT if s.can_write() else 0))
-                if e:
-                    epoll.register(f, e)
-        # Poll socket status
-        try:
-            events = epoll.poll(timeout)
-        except select.error, why:
-            if why[0] not in (EINTR, EBADF):
-                error_report()  # non-ignorable errors
-            return [], []
-        except:
-            return [], []
-        # Build result
-        rset = [fd for fd, e in events if e & (select.EPOLLIN | select.EPOLLHUP)]
-        wset = [fd for fd, e in events if e & select.EPOLLOUT]
-        return rset, wset
 
     def run(self, run_forever=False):
         """
@@ -413,7 +225,10 @@ class SocketFactory(object):
         if run_forever:
             cond = lambda: True
         else:
-            cond = lambda: len(self.sockets) > 0
+            if self.write_delay:
+                cond = lambda: bool(self.sockets)
+            else:
+                cond = lambda: len(self.sockets) > 1
             # Wait for any socket
             while not cond():
                 time.sleep(1)
@@ -424,10 +239,11 @@ class SocketFactory(object):
             if self.tick_callback and t - last_tick >= 1:
                 try:
                     self.tick_callback()
-                except:
+                except Exception:
                     error_report()
                     logging.info("Restoring from tick() failure")
                 last_tick = t
             if t - last_stale >= 1:
                 self.close_stale()
                 last_stale = t
+        logging.debug("Stopping socket factory")

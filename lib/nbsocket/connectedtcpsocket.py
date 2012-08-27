@@ -34,6 +34,10 @@ class ConnectedTCPSocket(TCPSocket):
         self.local_address = local_address
         super(ConnectedTCPSocket, self).__init__(factory)
 
+    def __repr__(self):
+        return "<%s(0x%x, %s:%s)>" % (
+            self.__class__.__name__, id(self), self.address, self.port)
+
     def create_socket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         super(ConnectedTCPSocket, self).create_socket()
@@ -47,10 +51,10 @@ class ConnectedTCPSocket(TCPSocket):
             return
         elif e not in (0, EISCONN, EINPROGRESS, EALREADY, EWOULDBLOCK):
             raise socket.error, (e, errorcode[e])
+        self.set_status(r=self.is_connected, w=not self.is_connected)
 
     def handle_read(self):
         if not self.is_connected:
-            self.debug("Connected")
             self.handle_connect()
             return
         try:
@@ -74,9 +78,6 @@ class ConnectedTCPSocket(TCPSocket):
             self.protocol.feed(data)
         else:
             self.on_read(data)
-
-    def can_write(self):
-        return self.out_buffer or not self.is_connected
 
     def handle_write(self):
         if not self.is_connected:

@@ -60,11 +60,3 @@ class AcceptedTCPSocket(TCPSocket):
             self.protocol.feed(data)
         else:
             self.on_read(data)
-
-    def can_write(self):
-        """
-        Indicate socket has data to be send
-
-        :rtype: Bool
-        """
-        return bool(self.out_buffer)
