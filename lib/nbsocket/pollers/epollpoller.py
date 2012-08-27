@@ -104,7 +104,7 @@ class EpollPoller(Poller):
         :return:
         """
         try:
-            events = self.epoll.poll(timeout * 1000)  # s -> ms
+            events = self.epoll.poll(timeout)  # s -> ms
         except select.error, why:
             if why[0] not in (EINTR, EBADF):
                 error_report()  # non-ignorable errors
