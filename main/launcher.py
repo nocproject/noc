@@ -104,7 +104,7 @@ class DaemonData(object):
         try:
             logging.info("%s: killing" % self.logname)
             os.kill(self.pid, signal.SIGTERM)
-        except:
+        except Exception:
             logging.error("%s: Unable to kill daemon" % self.logname)
 
     def check_heartbeat(self):
@@ -120,7 +120,7 @@ class DaemonData(object):
         self.next_heartbeat_check = t + HEARTBEAT_TIMEOUT
         try:
             mt = os.stat(self.pidfile)[stat.ST_MTIME]
-        except:
+        except OSError:
             logging.error("Unable to stat pidfile: %s" % self.pidfile)
             return
         if t - mt >= HEARTBEAT_TIMEOUT:
@@ -143,8 +143,9 @@ class Launcher(Daemon):
         self.is_superuser = os.getuid() == 0  # @todo: rewrite
         self.crashinfo_uid = None
         self.crashinfo_dir = None
-        for n in ["scheduler", "web", "sae", "activator", "classifier",
-                  "correlator", "notifier", "probe", "discovery"]:
+        for n in ["stomp", "scheduler", "web", "sae", "activator",
+                  "classifier", "correlator", "notifier", "probe",
+                  "discovery"]:
             dn = "noc-%s" % n
             # Check daemon is enabled
             if not self.config.getboolean(dn, "enabled"):
@@ -217,14 +218,14 @@ class Launcher(Daemon):
         """
         sync = os.path.join("scripts", "sync-contrib")
         if os.path.exists(sync):
-            logging.info("Syncronizing contrib")
+            logging.info("Synchronizing contrib")
             r = subprocess.call([sync])
             if r == 0:
-                logging.info("contrib syncronized")
+                logging.info("contrib synchronized")
             else:
-                logging.error("contrib syncronization failed")
+                logging.error("contrib synchronization failed")
         else:
-            logging.info("Skipping contrib syncronization")
+            logging.info("Skipping contrib synchronization")
 
     def run(self):
         """
