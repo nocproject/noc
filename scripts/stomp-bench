@@ -11,7 +11,10 @@ import logging
  
 STATS = []
 SF = None
-QUEUE = "/topic/t1"
+QUEUE = "/queue/t1"
+TOPIC = "/topic/t1"
+
+DEST = TOPIC
  
 def callback(destination, body):
     global STATS, SF
@@ -19,10 +22,14 @@ def callback(destination, body):
     if body["cmd"] == "STOP":
         dt = time.time() - body["t"]
         n = body["n"]
-        print "Synchronous: %s Polling: %s" % (
-            body["synch"], body["polling"])
-        print "Performance: %d messages in %s secs (%smsg/sec)" % (
-            n, dt, n / dt)
+        info = [body["polling"]]
+        if body["synch"]:
+            info += ["Synchronous"]
+        if body["persistent"]:
+            info += ["Persistent"]
+        info = "[%s]" % ", ".join(info)
+        print "Performance: %d messages in %s secs (%smsg/sec) %s" % (
+            n, dt, n / dt, info)
         f = open(SF, "w")
         for n, dt in STATS:
             f.write("%s,%s\n" % (n, dt))
@@ -32,7 +39,7 @@ def callback(destination, body):
         n = body["n"]
         STATS += [(n, dt)]
  
-def main_producer(messages, synchronous=False):
+def main_producer(messages, synchronous=False, persistent=False):
     client = STOMPClient("127.0.0.1", 19705)
     client.start()
     t0 = time.time()
@@ -40,30 +47,34 @@ def main_producer(messages, synchronous=False):
     for i in range(messages):
         t = time.time()
         client.send({"cmd": "MESSAGE", "t": t, "n": n},
-            destination=QUEUE, receipt=synchronous)
+            destination=DEST, receipt=synchronous,
+            persistent=persistent)
         n += 1
     client.send({"cmd": "STOP", "t": t0, "n": n,
                  "synch": synchronous,
+                 "persistent": persistent,
                  "polling": client.factory.poller.__class__.__name__},
-        destination="/topic/t1")
+        destination=DEST, receipt=synchronous, persistent=persistent)
     client.stop()
 
 def main_consumer():
     client = STOMPClient("127.0.0.1", 19705)
     client.start()
-    client.subscribe(QUEUE, callback=callback)
+    client.subscribe(DEST, callback=callback)
     client.wait()
 
 def usage():
     print "STOMP Server Benchmark"
     print "Producer:"
-    print "    %s [-v] [-s] -p <n>" % sys.argv[0]
+    print "    %s [-v] [-s] [-P] [-Q] -p <n>" % sys.argv[0]
     print "Consumer:"
-    print "    %s [-v] -c <out>" % sys.argv[0]
+    print "    %s [-v] [-Q] -c <out>" % sys.argv[0]
     print "Where:"
     print "    -v    -- be verbose"
     print "    -s    -- synchronous messaging"
+    print "    -P    -- persistent messaging"
     print "    <n>   -- generate <n> messages"
+    print "   -Q     -- use queue instead of topic"
     print "    <out> -- write CSV report to file <out>"
 
  
@@ -75,12 +86,20 @@ if __name__ == "__main__":
     verbose = False
     synchronous = False
     messages = None
+    persistent = False
     out = None
-    optlist, optargs = getopt.getopt(sys.argv[1:], "vsp:c:")
+    optlist, optargs = getopt.getopt(sys.argv[1:], "vsPQp:c:")
     for k, v in optlist:
+        if k == "-h":
+            usage()
+            sys.exit(0)
         if k == "-p":
             is_producer = True
             messages = int(v)
+        elif k == "-P":
+            persistent = True
+        elif k == "-Q":
+            DEST = QUEUE
         elif k == "-c":
             is_producer = False
             out = v
@@ -97,7 +116,8 @@ if __name__ == "__main__":
             format="%(asctime)s %(levelname)s %(message)s")
     # Run
     if is_producer:
-        main_producer(messages=messages, synchronous=synchronous)
+        main_producer(messages=messages,
+            synchronous=synchronous, persistent=persistent)
     else:
         SF = out
         main_consumer()
