@@ -86,6 +86,7 @@ class CLI(StreamFSM):
         self.error_traceback = None
         self.motd = ""  # Message of the day storage
         self.pattern_prompt = None  # Set when entering PROMPT state
+        self.streaming = False  # Streaming mode indicator
         if isinstance(self.profile.pattern_more, basestring):
             self.more_patterns = [self.profile.pattern_more]
             self.more_commands = [self.profile.command_more]
@@ -107,7 +108,7 @@ class CLI(StreamFSM):
         """
         try:
             self.guarded_read(data)
-        except:
+        except Exception:
             # FSM-level exception
             self.error("Unhandled exception")
             t, v, tb = sys.exc_info()
@@ -146,7 +147,8 @@ class CLI(StreamFSM):
             self.submitted_data = self.submitted_data[self.submit_lines_limit:]
             self.write(sd)
 
-    def submit(self, msg, command_submit=None, bulk_lines=None):
+    def submit(self, msg, command_submit=None, bulk_lines=None,
+               streaming=False):
         """
         Submit command to CLI
         :param msg:
@@ -154,8 +156,9 @@ class CLI(StreamFSM):
         :param bulk_lines:
         :return:
         """
-        self.debug("submit(%s,bulk_lines=%s)" % (repr(msg), bulk_lines))
+        self.debug("submit(%s, bulk_lines=%s, streaming=%s)" % (repr(msg), bulk_lines, streaming))
         self.submit_lines_limit = bulk_lines
+        self.streaming = streaming
         if bulk_lines:
             self.submitted_data = msg.splitlines()
             self.__flush_submitted_data()
@@ -299,6 +302,8 @@ class CLI(StreamFSM):
             # Submit data
             self.queue.put(self.collected_data + data)
             self.collected_data = ""
+            if self.streaming:
+                self.queue.put(True)
 
     def on_PROMPT_PAGER(self):
         """
@@ -322,7 +327,7 @@ class CLI(StreamFSM):
         """
         self.set_patterns([])
         if not self.is_ready:
-            self.queue.put(None)  # Signal status upodate
+            self.queue.put(None)  # Signal status update
         self.queue.put(LoginError(self.motd))
 
     def on_START_match(self, data, match):
@@ -336,3 +341,11 @@ class CLI(StreamFSM):
 
     on_USERNAME_match = on_START_match
     on_PASSWORD_match = on_START_match
+
+    def check_fsm(self):
+        super(CLI, self).check_fsm()
+        if self.streaming:
+            # Stream result
+            self.queue.put(self.in_buffer)
+            self.in_buffer = ""
+            self.ac = False

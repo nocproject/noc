@@ -642,6 +642,26 @@ class Script(threading.Thread):
         self.cli_debug(data, "<")
         return data
 
+    def cli_stream(self, cmd, command_submit=None):
+        if command_submit is None:
+            command_submit = self.profile.command_submit
+        # Check CLI provider is ready
+        self.request_cli_provider()
+        # Run streaming
+        self.cli_provider.submit(cmd,
+            command_submit=command_submit, streaming=True)
+        # Execute command
+        while True:
+            data = self.cli_queue_get()
+            if data == True:
+                break
+            if data is not None:
+                seq = (yield data)  # Get sequence to send
+                if seq:
+                    self.cli_provider.write(seq)
+            else:
+                break
+
     def cleaned_config(self, config):
         """
         Clean up config from all unnecessary trash
