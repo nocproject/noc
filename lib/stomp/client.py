@@ -151,7 +151,8 @@ class STOMPClient(object):
             "id": sid
         })
 
-    def send(self, message, destination, receipt=False):
+    def send(self, message, destination,
+             receipt=False, persistent=False):
         if self.last_receipt:
             self.receipt_event.wait()
         self.last_receipt = None
@@ -161,6 +162,8 @@ class STOMPClient(object):
             self.last_receipt = str(self.receipt_id.next())
             h["receipt"] = self.last_receipt
             self.receipt_event.clear()
+        if persistent:
+            h["persistent"] = "true"
         self.send_frame("SEND", h, message)
 
     def on_message(self, destination, sid, body):

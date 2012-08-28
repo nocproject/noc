@@ -14,6 +14,7 @@ from noc.lib.nbsocket import SocketFactory
 from noc.lib.stomp.serversocket import STOMPServerSocket
 from subscription import Subscription
 from destination import Destination
+from storage import Storage
 
 
 class STOMPDaemon(Daemon):
@@ -25,6 +26,7 @@ class STOMPDaemon(Daemon):
         self.factory = SocketFactory(controller=self, write_delay=False)
         self.subscriptions = {}  # socket, id -> Subscription
         self.destinations = {}  # name -> destination
+        self.storage = Storage()
 
     # def load_config(self):
     #    super(STOMPDaemon, self).load_config()
@@ -69,6 +71,11 @@ class STOMPDaemon(Daemon):
 
     def send(self, destination_name, headers, body):
         if destination_name not in self.destinations:
+            if (headers.get("persistent") == "true" and
+                destination_name.startswith("/queue/")):
+                # Store persistent message
+                logging.debug("Store persistent message for %s" % destination_name)
+                self.storage.put(destination_name, headers, body)
             return
         self.destinations[destination_name].send(headers, body)
 
