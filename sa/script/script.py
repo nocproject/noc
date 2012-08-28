@@ -685,27 +685,28 @@ class Script(threading.Thread):
         nr = 0
         for data in stream:
             input += data
-            r = parser(input)
-            if r is None:
-                continue  # No match
-            key, obj, input = r
-            if key not in seen:
-                seen.add(key)
-                objects += [obj]
-                nr = 0
-                r_key = None
-            else:
-                if r_key:
-                    if r_key == key:
-                        nr += 1
-                        if nr >= 3:
-                            if cmd_stop:
-                                # Stop loop at final page
-                                stream.send(cmd_stop)
+            while input:
+                r = parser(input)
+                if r is None:
+                    break  # No match
+                key, obj, input = r
+                if key not in seen:
+                    seen.add(key)
+                    objects += [obj]
+                    nr = 0
+                    r_key = None
                 else:
-                    r_key = key
-                    if cmd_next:
-                        stream.send(cmd_next)
+                    if r_key:
+                        if r_key == key:
+                            nr += 1
+                            if nr >= 3:  # 3 repeats
+                                if cmd_stop:
+                                    # Stop loop at final page
+                                    stream.send(cmd_stop)
+                    else:
+                        r_key = key
+                        if cmd_next:
+                            stream.send(cmd_next)
         return objects
 
     def cleaned_config(self, config):
