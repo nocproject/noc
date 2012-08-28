@@ -371,7 +371,7 @@ class IntParameter(Parameter):
             return self.default
         try:
             i = int(value)
-        except:
+        except ValueError:
             self.raise_error(value)
         if ((self.min_value is not None and i < self.min_value)
                 or (self.max_value is not None and i > self.max_value)):
