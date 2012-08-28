@@ -662,6 +662,52 @@ class Script(threading.Thread):
             else:
                 break
 
+    def cli_object_stream(self, cmd, command_submit=None,
+                          parser=None, cmd_next=None, cmd_stop=None):
+        """
+
+        :param cmd:
+        :param command_submit:
+        :param parser: callable accepting buffer and returning
+                       (key, data, rest) or None.
+                       key - string with object distinguisher
+                       data - dict containing attributes
+                       rest -- unparsed rest of string
+        :param cmd_next: Sequence to go to the next page
+        :param cmd_stop: Sequence to stop
+        :return:
+        """
+        stream = self.cli_stream(cmd, command_submit)
+        objects = []
+        seen = set()
+        input = ""
+        r_key = None
+        nr = 0
+        for data in stream:
+            input += data
+            r = parser(input)
+            if r is None:
+                continue  # No match
+            key, obj, input = r
+            if key not in seen:
+                seen.add(key)
+                objects += [obj]
+                nr = 0
+                r_key = None
+            else:
+                if r_key:
+                    if r_key == key:
+                        nr += 1
+                        if nr >= 3:
+                            if cmd_stop:
+                                # Stop loop at final page
+                                stream.send(cmd_stop)
+                else:
+                    r_key = key
+                    if cmd_next:
+                        stream.send(cmd_next)
+        return objects
+
     def cleaned_config(self, config):
         """
         Clean up config from all unnecessary trash
