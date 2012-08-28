@@ -42,6 +42,11 @@ class Destination(object):
         """
         if s not in self.subscriptions:
             self.subscriptions += [s]
+            if len(self.subscriptions) == 1:
+                # Replay stored messages
+                for id, h, msg in self.daemon.storage.get_messages(self.name):
+                    self.send(h, msg)
+                    self.daemon.storage.remove(id)
 
     def unsubscribe(self, s):
         """
