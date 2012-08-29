@@ -133,10 +133,13 @@ class Daemon(object):
                 loglevel = self.LOG_LEVELS[self.config.get("main", "loglevel")]
                 logging.root.setLevel(loglevel)
             if logfile:
+                filename = logfile.replace(
+                    "{{instance}}", self.instance_id)
+                # Check permissions
+                self.check_writable(filename)
                 # Log to file
                 rf_handler = logging.handlers.RotatingFileHandler(
-                    filename=logfile.replace(
-                        "{{instance}}", self.instance_id),
+                    filename=filename,
                     maxBytes=self.config.getint("main", "logsize"),
                     backupCount=self.config.getint("main", "logfiles")
                 )
@@ -172,6 +175,8 @@ class Daemon(object):
                     self.die("'%s' is not a directory" % piddir)
                 elif not os.access(piddir, os.W_OK):
                     self.die("'%s' is not writable" % piddir)
+            if self.pidfile:
+                self.check_writable(self.pidfile)
         else:
             logging.basicConfig(level=logging.DEBUG,
                                 format='%(asctime)s %(message)s')
@@ -180,6 +185,18 @@ class Daemon(object):
         logging.error(msg)
         self.at_exit()
         os._exit(1)
+
+    def check_writable(self, path):
+        """
+        Check file can be open as writable
+        :return:
+        """
+        try:
+            f = open(path, "a")
+        except IOError, why:
+            sys.stderr.write(str(why) + "\n")
+            sys.stderr.write("Exiting\n")
+            os._exit(1)
 
     def on_load_config(self):
         """
