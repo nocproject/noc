@@ -643,6 +643,7 @@ class Script(threading.Thread):
         return data
 
     def cli_stream(self, cmd, command_submit=None):
+        self.debug("cli_stream(%s)" % cmd)
         if command_submit is None:
             command_submit = self.profile.command_submit
         # Check CLI provider is ready
@@ -702,10 +703,12 @@ class Script(threading.Thread):
                             if nr >= 3:  # 3 repeats
                                 if cmd_stop:
                                     # Stop loop at final page
+                                    self.debug("Stopping stream. Sending %r" % cmd_stop)
                                     stream.send(cmd_stop)
                     else:
                         r_key = key
                         if cmd_next:
+                            self.debug("Next screen. Sending %r" % cmd_next)
                             stream.send(cmd_next)
         return objects
 
