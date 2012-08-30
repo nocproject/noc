@@ -24,9 +24,12 @@ class PopenSocket(Socket):
 
     def create_socket(self):
         self.debug("Launching %s" % self.argv)
-        self.p = subprocess.Popen(self.argv, stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT)
+        self.p = subprocess.Popen(
+            self.argv,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
         self.socket = FileWrapper(self.p.stdout.fileno())
+        super(PopenSocket, self).create_socket()
 
     def handle_read(self):
         try:
