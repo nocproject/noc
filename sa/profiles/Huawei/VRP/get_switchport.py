@@ -61,6 +61,10 @@ class Script(NOCScript):
                 if vlans != "-":
                     vlans = vlans.replace(" ", ",")
                     tagged = self.expand_rangelist(vlans)
+                    # For VRP version 5.3
+                    if r and r[-1]["interface"] == match.group("interface"): 
+                        r[-1]["tagged"] += [v for v in tagged if v in known_vlans]
+                        continue
             members = []
 
             interface = match.group("interface")
@@ -84,10 +88,10 @@ class Script(NOCScript):
                 "members": members
             }
             if match.group("mode") in ("access", "hybrid"):
-                port.update({"untagged": pvid})
-            description = descriptions.get(interface, False)
-            if description != "":
-                port.update({"description": description})
+                port["untagged"] = pvid
+            description = descriptions.get(interface)
+            if description:
+                port["description"] = description
 
             r += [port]
         return r
