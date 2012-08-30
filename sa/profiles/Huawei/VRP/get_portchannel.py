@@ -21,7 +21,10 @@ class Script(noc.sa.script.Script):
     def execute_vrp3(self):
         raise self.NotSupportedError()
 
-    rx_chan_line_vrp5 = re.compile(r"(?P<interface>Eth-Trunk\d+).*?\nWorkingMode: (?P<mode>\S+).*?\nPortName[^\n]+(?P<members>.*?)(\n\s*\n|\n\s\s)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
+    rx_chan_line_vrp5 = re.compile(r"(?P<interface>Eth-Trunk\d+).*?\n"
+                                   r"(?:LAG ID: \d+\s+)?WorkingMode: (?P<mode>\S+).*?\n"
+                                   r"(?:Actor)?PortName[^\n]+(?P<members>.*?)(\n\s*\n|\n\s\s)",
+                                   re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
     @NOCScript.match()
     def execute_other(self):
