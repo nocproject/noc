@@ -16,6 +16,7 @@ FOOTER = """;;
 ;;"""
 
 class ZoneFile(object):
+    TABSTOP = 8
     def __init__(self, zone, soa, contact, serial,
                  refresh, retry, expire, ttl, records):
         """
@@ -89,8 +90,8 @@ $TTL %(ttl)d
             l1 = max(len(r[0]) for r in rr)
             l2 = max(len(r[1]) for r in rr)
             # Ceil to boundary of 4
-            l1 = (l1 // 4 + 1) * 4
-            l2 = (l2 // 4 + 1) * 4
+            l1 = (l1 // self.TABSTOP + 1) * self.TABSTOP
+            l2 = (l2 // self.TABSTOP + 1) * self.TABSTOP
             # Format according to mask
             mask = "%%-%ds%%-%ds%%s" % (l1, l2)
             z += [mask % tuple(r) for r in rr]
