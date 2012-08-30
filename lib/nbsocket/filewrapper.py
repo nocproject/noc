@@ -19,6 +19,9 @@ class FileWrapper(object):
     def __init__(self, fileno):
         self._fileno = fileno
 
+    def __repr__(self):
+        return "<FileWrapper(%s)>" % self._fileno
+
     def fileno(self):
         return self._fileno
 
@@ -44,7 +47,7 @@ class FileWrapper(object):
         """
         flags = fcntl.fcntl(self._fileno, fcntl.F_GETFL, 0)
         if status:
-            flags &= (0xFFFFFFFF ^ os.O_NONBLOCK)  # Blocking mode
+            flags &= ~os.O_NONBLOCK  # Blocking mode
         else:
             flags |= os.O_NONBLOCK  # Nonblocking mode
         fcntl.fcntl(self._fileno, fcntl.F_SETFL, flags)
