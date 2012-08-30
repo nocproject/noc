@@ -60,7 +60,7 @@ class ConnectedTCPSocket(TCPSocket):
         try:
             data = self.socket.recv(self.READ_CHUNK)
         except socket.error, why:
-            if why[0] == ECONNREFUSED:
+            if why[0] in (ECONNREFUSED, EHOSTUNREACH):
                 self.on_conn_refused()
                 self.close()
                 return
