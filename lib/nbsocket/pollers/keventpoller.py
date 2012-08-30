@@ -8,6 +8,7 @@
 
 ## Python modules
 import select
+from errno import EINTR
 ## NOC modules
 from base import Poller
 
@@ -20,6 +21,16 @@ class KEventPoller(Poller):
         self.writers = set()
         self.kqueue = select.kqueue()
 
+    def _update(self, f, filter, op):
+        """
+        Update socket's kqueue registration
+        :param f: file handler
+        :param filter: KQ_FILTER_READ or KQ_FILTER_WRITE
+        :param op: KQ_EV_ADD or KQ_EV_DELETE
+        :return:
+        """
+        self.kqueue.control([select.kevent(f, filter, op)], 0)
+
     def add_reader(self, sock):
         """
         Add reader to poller
@@ -30,9 +41,7 @@ class KEventPoller(Poller):
         if sock in self.readers:
             return
         f = sock.fileno()
-        self.kqueue.control([
-            select.kevent(f, select.KQ_FILTER_READ,
-                select.KQ_EV_ADD)], 0)
+        self._update(f, select.KQ_FILTER_READ, select.KQ_EV_ADD)
         self.readers.add(sock)
         self.sockets[f] = sock
 
@@ -46,9 +55,7 @@ class KEventPoller(Poller):
         if sock in self.writers:
             return
         f = sock.fileno()
-        self.kqueue.control([
-            select.kevent(f, select.KQ_FILTER_WRITE,
-                select.KQ_EV_ADD)], 0)
+        self._update(f, select.KQ_FILTER_WRITE, select.KQ_EV_ADD)
         self.writers.add(sock)
         self.sockets[f] = sock
 
@@ -62,9 +69,7 @@ class KEventPoller(Poller):
         if sock not in self.readers:
             return
         f = sock.fileno()
-        self.kqueue.control([
-            select.kevent(f, select.KQ_FILTER_READ,
-                select.KQ_EV_DELETE)], 0)
+        self._update(f, select.KQ_FILTER_READ, select.KQ_EV_DELETE)
         self.readers.remove(sock)
         if sock not in self.writers:
             del self.sockets[f]
@@ -79,9 +84,7 @@ class KEventPoller(Poller):
         if sock not in self.writers:
             return
         f = sock.fileno()
-        self.kqueue.control([
-            select.kevent(f, select.KQ_FILTER_WRITE,
-                select.KQ_EV_DELETE)], 0)
+        self._update(f, select.KQ_FILTER_WRITE, select.KQ_EV_DELETE)
         self.writers.remove(sock)
         if sock not in self.readers:
             del self.sockets[f]
@@ -94,7 +97,14 @@ class KEventPoller(Poller):
         rset = []
         wset = []
         l = len(self.readers) + len(self.writers)
-        for e in self.kqueue.control(None, l, timeout):
+        try:
+            events = self.kqueue.control(None, l, timeout)
+        except OSError, e:
+            if e[0] == EINTR:
+                return [], []  # Interrupted system call
+            else:
+                raise
+        for e in events:
             s = self.sockets.get(e.ident)
             if s is None:
                 continue
