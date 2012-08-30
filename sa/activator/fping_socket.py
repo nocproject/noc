@@ -10,10 +10,10 @@
 import os
 import tempfile
 ## NOC modules
-from noc.lib.nbsocket.ptysocket import PTYSocket
+from noc.lib.nbsocket.popen import PopenSocket
 
 
-class FPingProbeSocket(PTYSocket):
+class FPingProbeSocket(PopenSocket):
     """
     External fping process.
     Runs fping against supplied list of hosts.
@@ -28,7 +28,7 @@ class FPingProbeSocket(PTYSocket):
         f.close()
         self.callback = callback
         # Fping requires root to read hosts from file. Run it through the wrapper
-        PTYSocket.__init__(self, factory,
+        PopenSocket.__init__(self, factory,
                            ["./scripts/stdin-wrapper", self.tmp_path,
                             fping_path, "-A", "-u"])
 
