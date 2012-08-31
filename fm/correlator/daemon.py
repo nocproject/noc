@@ -20,7 +20,7 @@ from noc.fm.correlator.jobs.performance_report import PerformanceReportJob
 from noc.lib.daemon import Daemon
 from noc.fm.models import ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
-from noc.fm.correlatorscheduler import CorrelatorScheduler
+from noc.fm.correlator.scheduler import CorrelatorScheduler
 from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
