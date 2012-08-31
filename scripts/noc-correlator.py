@@ -3,7 +3,7 @@
 ##----------------------------------------------------------------------
 ## noc-correlator daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -13,5 +13,5 @@ import set_env
 set_env.setup(use_django=True)
 
 if __name__ == "__main__":
-    from noc.fm.correlator import Correlator
+    from noc.fm.correlator.daemon import Correlator
     Correlator().process_command()
