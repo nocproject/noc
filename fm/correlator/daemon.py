@@ -16,6 +16,7 @@ import re
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
+from noc.fm.correlator.jobs.performance_report import PerformanceReportJob
 from noc.lib.daemon import Daemon
 from noc.fm.models import ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
@@ -25,7 +26,6 @@ from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.nosql import ObjectId
 from noc.lib.datasource import datasource_registry
-from noc.lib.scheduler.intervaljob import IntervalJob
 
 
 class Trigger(object):
@@ -181,27 +181,6 @@ class Rule(object):
             return discriminator, vars
         else:
             return self.alarm_class.get_discriminator({}), None
-
-
-class PerformanceReportJob(IntervalJob):
-    name = "performance_report"
-
-    def handler(self):
-        c = self.scheduler.correlator
-        count = c.stat_count
-        success_count = c.stat_success_count
-        t = time.time()
-        dt = t - c.stat_start
-        if dt:
-            perf = count / dt
-        else:
-            perf = 0
-        logging.info(
-            "%d events has been disposed (success: %d, failed: %d). "
-            "%s seconds elapsed. %6.2f events/sec" % (
-                count, success_count, count - success_count, dt, perf))
-        c.reset_stats()
-        return True
 
 
 class Correlator(Daemon):
