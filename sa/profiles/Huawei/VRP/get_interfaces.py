@@ -35,7 +35,7 @@ class Script(NOCScript):
                             re.MULTILINE | re.IGNORECASE)
 
     rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s+:\s+(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
-    rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})", re.MULTILINE | re.IGNORECASE)
+    rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}[.\-]\w{4}[.\-]\w{4})", re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
     #rx_sec_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2}) Sub", re.MULTILINE | re.IGNORECASE)
     rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
@@ -126,7 +126,7 @@ class Script(NOCScript):
                 "oper_status": o_stat,
             }
 
-            if match.group("desc"):
+            if match.group("desc") and match.group("desc") != "---":
                 sub["description"] = match.group("desc")
 
             matchmac = self.rx_mac.search(hw)
@@ -163,7 +163,7 @@ class Script(NOCScript):
                     "type": self.types[re.sub(r'\d.*', "", ifname)],
                     "subinterfaces": [sub]
                 }
-                if match.group("desc"):
+                if match.group("desc") and match.group("desc") != "---":
                     iface["description"] = match.group("desc")
 
                 if "mac" in sub:
