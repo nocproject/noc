@@ -34,10 +34,13 @@ class STOMPClientSocket(ConnectedTCPSocket):
 
     def on_connect(self):
         # Send CONNECT frame
-        self.send_frame("CONNECT", {
+        h = {
             "accept-version": VERSION,
             "host": self.address
-        })
+        }
+        if self.client.client_id:
+            h["client-id"] = self.client.client_id
+        self.send_frame("CONNECT", h)
 
     def on_conn_refused(self):
         self.error("Connection refused")

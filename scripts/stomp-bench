@@ -40,7 +40,7 @@ def callback(destination, body):
         STATS += [(n, dt)]
  
 def main_producer(messages, synchronous=False, persistent=False):
-    client = STOMPClient("127.0.0.1", 19705)
+    client = STOMPClient("127.0.0.1", 19705, client_id="producer")
     client.start()
     t0 = time.time()
     n = 0
@@ -58,7 +58,7 @@ def main_producer(messages, synchronous=False, persistent=False):
     client.stop()
 
 def main_consumer():
-    client = STOMPClient("127.0.0.1", 19705)
+    client = STOMPClient("127.0.0.1", 19705, client_id="consumer")
     client.start()
     client.subscribe(DEST, callback=callback)
     client.wait()

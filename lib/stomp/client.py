@@ -22,7 +22,7 @@ class STOMPClient(object):
     ACK_CLIENT_INDIVIDUAL = "client-individual"
 
     def __init__(self, host, port, login=None, passcode=None,
-                 factory=None):
+                 factory=None, client_id=None):
         self.shared_factory = factory is not None
         self.host = host
         self.port = port
@@ -30,6 +30,7 @@ class STOMPClient(object):
         self.passcode = passcode
         self.factory = factory or SocketFactory(write_delay=False)
         self.factory_thread = None
+        self.client_id = client_id
         self.socket = None
         self.subscription_id = itertools.count()  # Subscription id generator
         self.receipt_id = itertools.count()  # Receipt id generator
