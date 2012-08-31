@@ -97,6 +97,34 @@ class RCACondition(object):
                                                "ObjectId": ObjectId})
 
 
+class JobLauncher(object):
+    def __init__(self, scheduler, job_name, interval, vars):
+        self.scheduler = scheduler
+        self.job = scheduler.get_job_class(job_name)
+        self.interval = interval
+        x = []
+        for k in vars:
+            x += ["'%s': %s" % (k, vars[k])]
+        self.vars_expr = compile("{%s}" % ", ".join(x),
+            "<string>", "eval")
+
+    def get_vars(self, alarm):
+        """
+        Calculate job vars
+        :param alarm:
+        :return:
+        """
+        return eval(self.vars_expr, {}, {
+            "alarm": alarm,
+            "datetime": datetime,
+            "ObjectId": ObjectId
+        })
+
+    def submit(self, alarm):
+        vars = self.get_vars(alarm)
+        self.job.submit(self.scheduler, key=alarm.id, data=vars,
+            interval=self.interval, keep_offset=True)
+
 
 class Rule(object):
     def __init__(self, ec, dr):
@@ -193,7 +221,7 @@ class Correlator(Daemon):
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = {}  # alarm_class -> set([alarm_class])
-        Daemon.__init__(self)
+        self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
         logging.info("Running noc-correlator")
         self.scheduler = CorrelatorScheduler(self,
             cleanup=reset_queries)
@@ -203,6 +231,8 @@ class Correlator(Daemon):
                 key="report", interval=60)
         except self.scheduler.JobExists:
             pass
+        #
+        Daemon.__init__(self)
         # Tables
         self.NOC_ACTIVATORS = self.get_activators()  # NOC::Activators prefix table
 
@@ -214,6 +244,7 @@ class Correlator(Daemon):
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
+        self.load_alarm_jobs()
 
     def load_rules(self):
         """
@@ -280,7 +311,23 @@ class Correlator(Daemon):
                 except KeyError:
                     self.rca_reverse[rc.root.id] = set([a.id])
                 n += 1
-        logging.debug("%d RCA Rules has been loaded" % n)
+        logging.debug("%d RCA Rules have been loaded" % n)
+
+    def load_alarm_jobs(self):
+        """
+        Load alarm jobs
+        :return:
+        """
+        n = 0
+        self.alarm_jobs = {}  # class id ->
+        for a in AlarmClass.objects.all():
+            if not a.jobs:
+                continue
+            self.alarm_jobs[a.id] = [
+                JobLauncher(self.scheduler, j.job, j.interval, j.vars)
+                for j in a.jobs]
+            n += len(self.alarm_jobs[a.id])
+        logging.debug("%d alarm jobs have been loaded" % n)
 
     def mark_as_failed(self, event):
         """
@@ -350,9 +397,9 @@ class Correlator(Daemon):
                             ])
         a.save()
         a.contribute_event(e)
-        logging.debug("%s: Event %s(%s) raises alarm %s(%s)" % (
+        logging.debug("%s: Event %s(%s) raises alarm %s (%s): %r" % (
             r.u_name, str(e.id), e.event_class.name,
-            str(a.id), r.alarm_class.name))
+            str(a.id), r.alarm_class.name, a.vars))
         # RCA
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one
@@ -370,6 +417,10 @@ class Correlator(Daemon):
                     t.call(a)
                 except:
                     error_report()
+        # Launch jobs when necessary
+        if a.alarm_class.id in self.alarm_jobs:
+            for job in self.alarm_jobs[r.alarm_class.id]:
+                job.submit(a)
 
     def clear_alarm(self, r, e):
         if r.unique:
@@ -390,6 +441,7 @@ class Correlator(Daemon):
         :param r: Delayed rule
         :param e: Event which can trigger delayed rule
         """
+        # @todo: Rewrite to scheduler
         discriminator, vars = r.get_vars(e)
         ws = e.timestamp - datetime.timedelta(seconds=r.combo_window)
         de = ActiveEvent.objects.filter(
