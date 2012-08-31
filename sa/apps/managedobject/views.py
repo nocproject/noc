@@ -527,5 +527,6 @@ class ManagedObjectApplication(ModelApplication):
         return [s.selector.name for s in GroupAccess.objects.filter(group=group)]
     
     def group_access_change_url(self, group):
-        return self.site.reverse("sa:groupaccess:changelist",
-                                 QUERY={"group__id__exact": group.id})
+        return "/sa/groupaccess/"
+        # return self.site.reverse("sa:groupaccess:changelist",
+        #                         QUERY={"group__id__exact": group.id})
