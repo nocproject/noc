@@ -645,6 +645,29 @@ class AlarmRootCauseCondition(nosql.EmbeddedDocument):
                 self.match_condition == other.match_condition)
 
 
+class AlarmClassJob(nosql.EmbeddedDocument):
+    meta = {
+        "allow_inheritance": False
+    }
+    # Job name (fm/correlator/jobs/<name>.py)
+    job = nosql.StringField(required=True)
+    # Start job after *delay* seconds after alarm risen
+    # delay = nosql.IntField(required=False, default=0)
+    # Restart job every *interval* seconds
+    interval = nosql.IntField(required=False, default=0)
+    # Job parameters: name -> expression
+    vars = nosql.DictField(required=True)
+
+    def __unicode__(self):
+        return self.job
+
+    def __eq__(self, other):
+        return (self.job == other.job and
+                self.interval == other.interval and
+                self.vars == other.vars
+            )
+
+
 class AlarmClassCategory(nosql.Document):
     meta = {
         "collection": "noc.alartmclasscategories",  # @todo: Fix bug
@@ -711,6 +734,8 @@ class AlarmClass(nosql.Document):
     flap_threshold = nosql.FloatField(required=False, default=0)
     # RCA
     root_cause = nosql.ListField(nosql.EmbeddedDocumentField(AlarmRootCauseCondition))
+    # Job descriptioons
+    jobs = nosql.ListField(nosql.EmbeddedDocumentField(AlarmClassJob))
     #
     category = nosql.ObjectIdField()
 
@@ -1556,6 +1581,7 @@ class ActiveAlarm(nosql.Document):
                           root=self.root
                           )
         a.save()
+        # @todo: Clear related correlator jobs
         self.delete()
         return a
 

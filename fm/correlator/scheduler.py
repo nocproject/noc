@@ -35,7 +35,8 @@ class CorrelatorScheduler(Scheduler):
                         o.__module__.startswith(m_name)):
                         self.register_job_class(o)
         else:
-            # Called from classifier
+            # Called from classifier,
+            # Register only "dispose" job
             self.register_job_class(AlarmDispositionJob)
 
     def submit_event(self, event):
