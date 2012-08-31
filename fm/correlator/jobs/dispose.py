@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Alarm disposition job class
+## Alarm disposition job
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
