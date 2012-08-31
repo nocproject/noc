@@ -18,7 +18,14 @@ class STOMPServerSocket(AcceptedTCPSocket):
 
     def __init__(self, factory, socket):
         self.server = factory.controller
+        self.client_id = None
         AcceptedTCPSocket.__init__(self, factory, socket)
+
+    def __repr__(self):
+        r = ["0x%x" % id(self)]
+        if self.client_id:
+            r += [self.client_id]
+        return "<STOMPServerSocket(%s)>" % ", ".join(r)
 
     def send_message(self, cmd, headers=None, body=""):
         msg = stomp_build_frame(cmd, headers, body)
@@ -69,6 +76,9 @@ class STOMPServerSocket(AcceptedTCPSocket):
         if not self.server.authenticate(login, passcode):
             self.send_error(headers, "Access denied")
             return
+        # Set client id
+        if "client-id" in headers:
+            self.client_id = headers["client-id"]
         # Send CONNECTED frame
         self.send_message("CONNECTED", {"version": VERSION})
 
