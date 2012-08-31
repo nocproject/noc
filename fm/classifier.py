@@ -21,7 +21,7 @@ from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
                           EventClass, MIB, EventLog, CloneClassificationRule,\
                           ActiveEvent, EventTrigger, Enumeration
-from noc.fm.correlatorscheduler import CorrelatorScheduler
+from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models
 from noc.sa.models import profile_registry, ManagedObject
 from noc.lib.version import get_version
