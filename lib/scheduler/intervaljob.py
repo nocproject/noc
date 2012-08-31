@@ -17,7 +17,7 @@ from job import Job
 class IntervalJob(Job):
     @classmethod
     def submit(cls, scheduler, key=None, data=None, interval=60,
-               randomize=False):
+               randomize=False, keep_offset=False):
         """
         Submit new job to scheduler
         :param cls:
@@ -27,11 +27,15 @@ class IntervalJob(Job):
         :param interval: In case of success rerun job every *interval*
             seconds
         :param randomize: Randomize launch within interval
+        :param keep_offset: Keep current time offset from the boundary
+            of interval. Overriden by *randomize*
         :return:
         """
         data = data or {}
         if randomize:
             offset = random.random()
+        elif keep_offset:
+            offset = time.time() % interval / interval
         else:
             offset = 0
         data[cls.JOB_NS] = {
