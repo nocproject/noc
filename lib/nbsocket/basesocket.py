@@ -126,14 +126,6 @@ class Socket(object):
             self.socket = None
             self.on_close()
 
-    def log_label(self):
-        """
-        Returns a prefix for log messages
-
-        :rtype: str
-        """
-        return "%s(0x%x)" % (self.__class__.__name__, id(self))
-
     def debug(self, msg):
         """
         Emit debug-level log message.
@@ -141,7 +133,7 @@ class Socket(object):
         :param msg: Message
         :type msg: str
         """
-        logging.debug("[%s] %s" % (self.log_label(), msg))
+        logging.debug("[%r] %s" % (self, msg))
 
     def info(self, msg):
         """
@@ -150,7 +142,7 @@ class Socket(object):
         :param msg: Message
         :type msg: str
         """
-        logging.info("[%s] %s" % (self.log_label(), msg))
+        logging.info("[%r] %s" % (self, msg))
 
     def error(self, msg):
         """
@@ -160,7 +152,7 @@ class Socket(object):
         :type msg: str
         """
 
-        logging.error("[%s] %s" % (self.log_label(), msg))
+        logging.error("[%r] %s" % (self, msg))
 
     def set_name(self, name):
         """

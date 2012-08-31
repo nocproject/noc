@@ -36,11 +36,15 @@ class ListenTCPSocket(Socket):
         """
         self.backlog = backlog
         self.nconnects = nconnects
-        Socket.__init__(self, factory)
         self.socket_class = socket_class
         self.address = address
         self.port = port
         self.kwargs = kwargs
+        Socket.__init__(self, factory)
+
+    def __repr__(self):
+        return "<%s(0x%x, %s:%s)>" % (
+            self.__class__.__name__, id(self), self.address, self.port)
 
     def create_socket(self):
         """Create socket, bind and listen"""
@@ -67,8 +71,3 @@ class ListenTCPSocket(Socket):
             self.nconnects -= 1
             if not self.nconnects:
                 self.close()
-
-    def log_label(self):
-        """Customized logging prefix"""
-        return "%s(0x%x,%s:%s)" % (self.__class__.__name__, id(self),
-                                   self.address, self.port)
