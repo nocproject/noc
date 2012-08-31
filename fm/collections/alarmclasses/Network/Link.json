@@ -199,6 +199,15 @@
                     "vars__interface": "alarm.vars['interface']"
                 }
             }
+        ],
+        "jobs": [
+            {
+                "job": "check_link",
+                "interval": 60,
+                "vars": {
+                    "interface": "alarm.vars['interface']"
+                }
+            }
         ]
     },
 
