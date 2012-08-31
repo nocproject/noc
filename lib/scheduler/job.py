@@ -16,7 +16,7 @@ from noc.main.models import SystemNotification
 class JobBase(type):
     def __new__(cls, name, bases, attrs):
         m = type.__new__(cls, name, bases, attrs)
-        if m.map_task:
+        if m.map_task and not m.model:
             from noc.sa.models import ManagedObject
             m.model = ManagedObject
         return m
@@ -105,6 +105,14 @@ class Job(object):
     def submit(cls, scheduler, key, data=None,
                ts=None):
         scheduler.submit(cls.name, key, data, ts)
+
+    def get_managed_object(self):
+        """
+        Return managed object instance or id
+        (applicable only when map_task is not None)
+        :return:
+        """
+        return self.key
 
     def get_map_task_params(self):
         """

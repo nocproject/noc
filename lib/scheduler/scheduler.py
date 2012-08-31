@@ -60,6 +60,9 @@ class Scheduler(object):
         self.info("Registering job class: %s" % cls.name)
         self.job_classes[cls.name] = cls
 
+    def get_job_class(self, name):
+        return self.job_classes[name]
+
     def submit(self, job_name, key=None, data=None, ts=None):
         """
         Submit new job
@@ -83,8 +86,8 @@ class Scheduler(object):
             self.ATTR_KEY: key,
             self.ATTR_DATA: data
         }, manipulate=True, safe=True)
-        self.info("Scheduling job %s(%s) id=%s" % (
-            job_name, key, id))
+        self.info("Scheduling job %s(%s) id=%s at %s" % (
+            job_name, key, id, ts))
 
     def remove_job(self, job_name, key):
         self.info("Removing job %s(%s)" % (job_name, key))
@@ -153,7 +156,7 @@ class Scheduler(object):
         if job.map_task:
             # Run in MRT mode
             t = ReduceTask.create_task(
-                job.key,  # Managed object is in key
+                job.get_managed_object(),  # Managed object is in key
                 None, {},
                 job.map_task, job.get_map_task_params()
             )
