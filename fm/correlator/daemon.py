@@ -16,6 +16,7 @@ import re
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
+from rule import Rule
 from rcacondition import RCACondition
 from trigger import Trigger
 from scheduler import CorrelatorScheduler
@@ -24,95 +25,9 @@ from noc.fm.correlator.jobs.performance_report import PerformanceReportJob
 from noc.lib.daemon import Daemon
 from noc.fm.models import ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
-from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
+from noc.main.models import PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
-from noc.lib.datasource import datasource_registry
-
-
-class Rule(object):
-    def __init__(self, ec, dr):
-        self.name = dr.name
-        self.event_class = ec
-        self.u_name = "%s: %s" % (self.event_class.name, self.name)
-        self.condition = compile(dr.condition, "<string>", "eval")
-        try:
-            self.conditional_pyrule = PyRule.objects.get(name=ec.conditional_pyrule_name,
-                                                         interface="IDispositionCondition")
-        except PyRule.DoesNotExist:
-            self.conditional_pyrule = None
-        self.action = dr.action
-        self.alarm_class = dr.alarm_class
-        self.stop_disposition = dr.stop_disposition
-        self.var_mapping = {}
-        self.discriminator = []
-        self.datasources = {}
-        self.c_defaults = {}
-        self.d_defaults = {}
-        if self.alarm_class:
-            self.severity = self.alarm_class.default_severity.severity
-            self.unique = self.alarm_class.is_unique
-            a_vars = set([v.name for v in self.alarm_class.vars])
-            e_vars = set([v.name for v in self.event_class.vars])
-            for v in a_vars.intersection(e_vars):
-                self.var_mapping[v] = v
-            if dr.var_mapping:
-                self.var_mapping.update(dr.var_mapping)
-            self.discriminator = self.alarm_class.discriminator
-            self.combo_condition = dr.combo_condition
-            self.combo_window = dr.combo_window
-            self.combo_event_classes = [c.id for c in dr.combo_event_classes]
-            self.combo_count = dr.combo_count
-            # Default variables
-            for v in self.alarm_class.vars:
-                if v.default:
-                    if v.default.startswith("="):
-                        # Expression
-                        self.d_defaults[v.name] = compile(v.default[1:],
-                                                          "<string>", "eval")
-                    else:
-                        # Constant
-                        self.c_defaults[v.name] = v.default
-            # Compile datasource lookup functions
-            self.datasources = {}  # name -> ds class
-            for ds in self.alarm_class.datasources:
-                self.datasources[ds.name] = eval(
-                    "lambda vars: datasource_registry['%s'](%s)" % (
-                        ds.datasource,
-                        ", ".join(["%s=vars['%s']" % (k, v)
-                                   for k, v in ds.search.items()])),
-                    {"datasource_registry": datasource_registry}, {})
-            
-
-    def get_vars(self, e):
-        """
-        Get alarm variables from event.
-
-        :param e: ActiveEvent
-        :returns: tuple of (discriminator, vars)
-        """
-        if self.var_mapping:
-            vars = self.c_defaults.copy()
-            # Map vars
-            for k, v in self.var_mapping.items():
-                try:
-                    vars[v] = e.vars[k]
-                except KeyError:
-                    pass
-            # Calculate dynamic defaults
-            ds_vars = vars.copy()
-            ds_vars["managed_object"] = e.managed_object
-            context = dict([(k, v(ds_vars)) for k, v in self.datasources.items()])
-            context.update(vars)
-            for k, v in self.d_defaults.items():
-                x = eval(v, {}, context)
-                if x:
-                    vars[k] = x
-            # Calculate discriminator
-            discriminator = self.alarm_class.get_discriminator(vars)
-            return discriminator, vars
-        else:
-            return self.alarm_class.get_discriminator({}), None
 
 
 class Correlator(Daemon):
@@ -167,7 +82,7 @@ class Correlator(Daemon):
                     r += [rule]
                     nr += 1
                     if dr.combo_condition != "none" and dr.combo_window:
-                        for cc in combo_event_classes:
+                        for cc in dr.combo_event_classes:
                             try:
                                 self.back_rules[cc.id] += [dr]
                             except KeyError:
@@ -263,7 +178,8 @@ class Correlator(Daemon):
             root = ActiveAlarm.objects.filter(**q).first()
             if root:
                 # Root cause found
-                logging.debug("%s is root cause for %s (Rule: %s)" % (root.id, a.id, rc.name))
+                logging.debug("%s is root cause for %s (Rule: %s)" % (
+                    root.id, a.id, rc.name))
                 a.set_root(root)
                 return True
         return False
@@ -273,8 +189,9 @@ class Correlator(Daemon):
         if r.unique:
             assert discriminator is not None
             # @todo: unneeded SQL lookup here
-            a = ActiveAlarm.objects.filter(managed_object=e.managed_object_id,
-                                           discriminator=discriminator).first()
+            a = ActiveAlarm.objects.filter(
+                managed_object=e.managed_object_id,
+                discriminator=discriminator).first()
             if a:
                 # Active alarm found, refresh
                 logging.debug("%s: Contributing event %s(%s) to active alarm %s(%s)" % (
@@ -283,22 +200,24 @@ class Correlator(Daemon):
                 a.contribute_event(e)
                 return
         # Create new alarm
-        a = ActiveAlarm(timestamp=e.timestamp, last_update=e.timestamp,
-                        managed_object=e.managed_object,
-                        alarm_class=r.alarm_class,
-                        severity=r.severity,
-                        vars=vars,
-                        discriminator=discriminator,
-                        events=[e],
-                        log=[
-                            AlarmLog(timestamp=datetime.datetime.now(),
-                                     from_status="A",
-                                     to_status="A",
-                                     message="Alarm risen from event %s(%s) by rule '%s'" % (
-                                        str(e.id), str(e.event_class.name),
-                                        r.u_name
-                                        ))
-                            ])
+        a = ActiveAlarm(
+            timestamp=e.timestamp, last_update=e.timestamp,
+            managed_object=e.managed_object,
+            alarm_class=r.alarm_class,
+            severity=r.severity,
+            vars=vars,
+            discriminator=discriminator,
+            events=[e],
+            log=[
+                AlarmLog(
+                    timestamp=datetime.datetime.now(),
+                    from_status="A",
+                    to_status="A",
+                    message="Alarm risen from event %s(%s) by rule '%s'" % (
+                        str(e.id), str(e.event_class.name), r.u_name)
+                )
+            ]
+        )
         a.save()
         a.contribute_event(e)
         logging.debug("%s: Event %s(%s) raises alarm %s (%s): %r" % (
@@ -330,8 +249,9 @@ class Correlator(Daemon):
         if r.unique:
             discriminator, vars = r.get_vars(e)
             assert discriminator is not None
-            a = ActiveAlarm.objects.filter(managed_object=e.managed_object_id,
-                                           discriminator=discriminator).first()
+            a = ActiveAlarm.objects.filter(
+                managed_object=e.managed_object_id,
+                discriminator=discriminator).first()
             if a:
                 logging.debug("%s: Event %s(%s) clears alarm %s(%s)" % (
                     r.u_name, str(e.id), e.event_class.name,
