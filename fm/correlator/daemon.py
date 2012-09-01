@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## noc-correlator daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011The NOC Project
+## Copyright (C) 2007-2012, The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -16,50 +16,17 @@ import re
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
+from noc.fm.correlator.trigger import Trigger
+from noc.fm.correlator.scheduler import CorrelatorScheduler
 from noc.fm.correlator.jobs.performance_report import PerformanceReportJob
 from noc.lib.daemon import Daemon
 from noc.fm.models import ActiveEvent, EventClass,\
                           ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
-from noc.fm.correlator.scheduler import CorrelatorScheduler
 from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.nosql import ObjectId
 from noc.lib.datasource import datasource_registry
-
-
-class Trigger(object):
-    def __init__(self, t):
-        self.name = t.name
-        # Condition
-        self.condition = compile(t.condition, "<string>", "eval")
-        self.time_pattern = t.time_pattern
-        self.selector = t.selector
-        # Action
-        self.notification_group = t.notification_group
-        self.template = t.template
-        self.pyrule = t.pyrule
-
-    def match(self, alarm):
-        """
-        Check event matches trigger condition
-        """
-        return (eval(self.condition, {}, {"alarm": alarm, "re": re}) and
-                (self.time_pattern.match(alarm.timestamp) if self.time_pattern else True) and
-                (self.selector.match(alarm.managed_object) if self.selector else True))
-        
-    def call(self, alarm):
-        if not self.match(alarm):
-            return
-        logging.debug("Calling trigger '%s'" % self.name)
-        # Notify if necessary
-        if self.notification_group and self.template:
-            self.notification_group.notify(
-                subject=self.template.render_subject(alarm=alarm),
-                body=self.template.render_body(alarm=alarm))
-        # Call pyRule
-        if self.pyrule:
-            self.pyrule(alarm=alarm)
 
 
 class RCACondition(object):
