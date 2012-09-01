@@ -1,0 +1,51 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## RCACondition
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012, The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## NOC modules
+from noc.lib.nosql import ObjectId
+
+
+class RCACondition(object):
+    def __init__(self, alarm_class, condition):
+        self.name = "%s::%s" % (alarm_class.name, condition.name)
+        self.window = condition.window
+        self.root = condition.root
+        self.same_object = False
+        # Build condition expression
+        self.condition = compile(condition.condition, "<string>", "eval")
+        # Build match condition expression
+        x = [
+            "'alarm_class': ObjectId('%s')" % self.root.id,
+            "'id__ne': alarm.id",
+            "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
+            "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
+        ]
+        for k, v in condition.match_condition.items():
+            if k == "managed_object" and v == "alarm.managed_object":
+                self.same_object = True
+            x += ["'%s': %s" % (k, v)]
+        self.match_condition = compile("{%s}" % ", ".join(x),
+            "<string>", "eval")
+
+    def __unicode__(self):
+        return self.name
+
+    def get_context(self, alarm):
+        return {
+            "alarm": alarm,
+            "datetime": datetime,
+            "ObjectId": ObjectId
+        }
+
+    def check_condition(self, alarm):
+        return eval(self.condition, {}, self.get_context(alarm))
+
+    def get_match_condition(self, alarm):
+        return eval(self.match_condition, {}, self.get_context(alarm))
