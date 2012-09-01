@@ -759,7 +759,7 @@ class AlarmClass(nosql.Document):
         :returns: Discriminator hash
         """
         if vars:
-            ds = [str(vars[n]) for n in self.discriminator]
+            ds = sorted(str(vars[n]) for n in self.discriminator)
             return hashlib.sha1("\x00".join(ds)).hexdigest()
         else:
             return hashlib.sha1("").hexdigest()
