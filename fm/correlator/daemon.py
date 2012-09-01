@@ -16,6 +16,7 @@ import re
 ## Django modules
 from django.db import reset_queries
 ## NOC modules
+from rcacondition import RCACondition
 from trigger import Trigger
 from scheduler import CorrelatorScheduler
 from joblauncher import JobLauncher
@@ -26,45 +27,7 @@ from noc.fm.models import ActiveEvent, EventClass,\
 from noc.main.models import PyRule, PrefixTable, PrefixTablePrefix
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
-from noc.lib.nosql import ObjectId
 from noc.lib.datasource import datasource_registry
-
-
-class RCACondition(object):
-    def __init__(self, alarm_class, condition):
-        self.name = "%s::%s" % (alarm_class.name, condition.name)
-        self.window = condition.window
-        self.root = condition.root
-        self.same_object = False
-        # Build condition expression
-        self.condition = compile(condition.condition, "<string>", "eval")
-        # Build match condition expression
-        x = [
-            "'alarm_class': ObjectId('%s')" % self.root.id,
-            "'id__ne': alarm.id",
-            "'timestamp__gte': alarm.timestamp - datetime.timedelta(seconds=%d)" % self.window,
-            "'timestamp__lte': alarm.timestamp + datetime.timedelta(seconds=%d)" % self.window
-        ]
-        for k, v in condition.match_condition.items():
-            if k == "managed_object" and v == "alarm.managed_object":
-                self.same_object = True
-            x += ["'%s': %s" % (k, v)]
-        self.match_condition = compile("{%s}" % ", ".join(x), "<string>", "eval")
-    
-    def __unicode__(self):
-        return self.name
-
-    def check_condition(self, alarm):
-        return eval(self.condition, {}, {"alarm": alarm,
-                                         "datetime": datetime,
-                                         "ObjectId": ObjectId})
-
-    def get_match_condition(self, alarm):
-        return eval(self.match_condition, {}, {"alarm": alarm,
-                                               "datetime": datetime,
-                                               "ObjectId": ObjectId})
-
-
 
 
 class Rule(object):
