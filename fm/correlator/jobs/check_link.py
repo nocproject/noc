@@ -11,7 +11,7 @@
 from base import AlarmJob
 
 
-class PerformanceReportJob(AlarmJob):
+class CheckLinkJob(AlarmJob):
     name = "check_link"
     map_task = "get_interface_status"
 
