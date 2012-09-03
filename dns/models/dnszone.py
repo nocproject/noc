@@ -438,9 +438,9 @@ class DNSZone(models.Model):
             x1, x2, _, _, _ = x
             y1, y2, _, _, _ = y
             if x2 == "NS" and y2 != "NS":
-                return 1
-            if x2 != "NS" and y2 == "NS":
                 return -1
+            if x2 != "NS" and y2 == "NS":
+                return 1
             if x2 == y2 == "PTR":
                 try:
                     return cmp(int(x1), int(y1))
