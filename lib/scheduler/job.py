@@ -37,6 +37,7 @@ class Job(object):
     """
     __metaclass__ = JobBase
     name = ""  # Unique Job name
+    ignored = False  # Set to True to ignore job class
     map_task = None  # Set to map task name
     model = None  # Model/Document class
     system_notification = None  # Name of system notification group
