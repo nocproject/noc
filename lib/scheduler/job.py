@@ -121,10 +121,21 @@ class Job(object):
         """
         return {}
 
+    def get_defererence_query(self):
+        """
+        Get dereference query condition.
+        Called by dereference()
+        :return: dict or None
+        """
+        return {"id": self.key}
+
     def dereference(self):
         if self.model:
+            q = self.get_defererence_query()
+            if q is None:
+                return False
             try:
-                self.object = self.model.objects.get(id=self.key)
+                self.object = self.model.objects.get(**q)
             except self.model.DoesNotExist:
                 return False
         return True
