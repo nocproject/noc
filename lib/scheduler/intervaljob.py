@@ -38,12 +38,13 @@ class IntervalJob(Job):
             offset = time.time() % interval / interval
         else:
             offset = 0
-        data[cls.JOB_NS] = {
+        schedule = {
             "interval": interval,
             "offset": offset
         }
-        scheduler.submit(cls.name, key, data,
-            cls.get_next_aligned(interval, offset=offset))
+        scheduler.submit(cls.name, key=key, data=data,
+            schedule=schedule,
+            ts=cls.get_next_aligned(interval, offset=offset))
 
     @classmethod
     def get_next_aligned(cls, interval, next=False, offset=0):
@@ -61,6 +62,6 @@ class IntervalJob(Job):
         return datetime.datetime.fromtimestamp(ts)
 
     def get_schedule(self, status):
-        offset = self.job_data["offset"]
+        offset = self.schedule["offset"]
         return self.get_next_aligned(
-            self.job_data["interval"], next=True, offset=offset)
+            self.schedule["interval"], next=True, offset=offset)

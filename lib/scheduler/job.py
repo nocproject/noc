@@ -45,14 +45,12 @@ class Job(object):
     S_FAILED = "F"
     S_EXCEPTION = "X"
 
-    JOB_NS = "_noc"  # data structure prefix to be placed to _local
-
-    def __init__(self, scheduler, key=None, data=None):
+    def __init__(self, scheduler, key=None, data=None, schedule=None):
         self.scheduler = scheduler
         self.key = key
         self.data = data or {}
+        self.schedule = schedule or {}
         self.object = None  # Set by dereference()
-        self.job_data = self.data.get(self.JOB_NS, {})
         self.started = None  # Timestamp
         self._log = []
 
@@ -102,9 +100,10 @@ class Job(object):
         return None  # Remove schedule on complete
 
     @classmethod
-    def submit(cls, scheduler, key, data=None,
+    def submit(cls, scheduler, key, data=None, schedule=None,
                ts=None):
-        scheduler.submit(cls.name, key, data, ts)
+        scheduler.submit(cls.name, key=key, data=data,
+            schedule=schedule, ts=ts)
 
     def get_managed_object(self):
         """

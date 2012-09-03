@@ -25,6 +25,7 @@ class Scheduler(object):
     ATTR_TIMEOUT = "timeout"
     ATTR_KEY = "key"
     ATTR_DATA = "data"
+    ATTR_SCHEDULE = "schedule"
     ATTR_LAST = "last"  # last run
     ATTR_LAST_STATUS = "ls"  # last completion status
     ATTR_LAST_DURATION = "ldur"  # last job duration
@@ -63,7 +64,8 @@ class Scheduler(object):
     def get_job_class(self, name):
         return self.job_classes[name]
 
-    def submit(self, job_name, key=None, data=None, ts=None):
+    def submit(self, job_name, key=None, data=None,
+               schedule=None, ts=None):
         """
         Submit new job
         """
@@ -84,7 +86,8 @@ class Scheduler(object):
             self.ATTR_CLASS: job_name,
             self.ATTR_STATUS: self.S_WAIT,
             self.ATTR_KEY: key,
-            self.ATTR_DATA: data
+            self.ATTR_DATA: data,
+            self.ATTR_SCHEDULE: schedule
         }, manipulate=True, safe=True)
         self.info("Scheduling job %s(%s) id=%s at %s" % (
             job_name, key, id, ts))
@@ -232,7 +235,9 @@ class Scheduler(object):
                     job_data[self.ATTR_KEY], self.S_FAIL)
                 continue
             job = jcls(self,
-                job_data[self.ATTR_KEY], job_data[self.ATTR_DATA])
+                job_data[self.ATTR_KEY], job_data[self.ATTR_DATA],
+                job_data[self.ATTR_SCHEDULE]
+            )
             self.run_job(job)
             n += 1
         return n
