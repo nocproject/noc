@@ -17,6 +17,7 @@ import re
 from django.db import reset_queries
 from django.template import Template, Context
 ## NOC modules
+from scheduler import DiscoveryScheduler
 from noc.lib.daemon import Daemon
 from noc.sa.models import ManagedObject, profile_registry, ReduceTask
 from noc.inv.models import Interface, ForwardingInstance, SubInterface,\
@@ -40,6 +41,7 @@ class DiscoveryDaemon(Daemon):
 
     def __init__(self, *args, **kwargs):
         super(DiscoveryDaemon, self).__init__(*args, **kwargs)
+        self.scheduler = DiscoveryScheduler(self)
         self.pmap_interfaces = [p for p in profile_registry.classes
                     if "get_interfaces" in profile_registry.classes[p].scripts]
         self.pmap_ip = [p for p in profile_registry.classes
@@ -207,6 +209,8 @@ class DiscoveryDaemon(Daemon):
                     if r:
                         self.process_ip_discovery(r)
                         ip_discovery_task = None
+            # Run version inventory
+            self.scheduler.run_pending()
             time.sleep(1)
 
     def o_info(self, managed_object, msg):
