@@ -26,11 +26,18 @@ class Task(noc.lib.periodic.Task):
         # Drop all events with event class action L
         to_drop = [c.id for c in EventClass.objects.filter(action="L")]
         dc = ActiveEvent.objects.filter(event_class__in=to_drop,
-                                        timestamp__lte=border).count()
+            timestamp__lte=border).count()
         if dc:
             ActiveEvent.objects.filter(event_class__in=to_drop,
-                                        timestamp__lte=border).delete()
-            self.info("%d active events cleaned" % dc)
+                timestamp__lte=border).delete()
+            self.info("%d active events cleaned (requested by event class)" % dc)
+        # Drop all events not contributing to alarms
+        dc = ActiveEvent.objects.filter(alarms__exists=False,
+            timestamp__lte=border).count()
+        if dc:
+            ActiveEvent.objects.filter(alarms__exists=False,
+                timestamp__lte=border).delete()
+            self.info("%d active events cleaned (no related alarms)" % dc)
         # Archive other events
         n = 0
         for e in ActiveEvent.objects.filter(timestamp__lte=border):
@@ -38,4 +45,5 @@ class Task(noc.lib.periodic.Task):
             n += 1
         if n:
             self.info("%d active events are moved into archive" % n)
+        # Delete archived events without alarms
         return True
