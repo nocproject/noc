@@ -7,11 +7,14 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import os
 import logging
 import time
 import datetime
+import inspect
 ## NOC modules
 from error import JobExists
+from job import Job
 from noc.lib.nosql import get_db
 from noc.lib.debug import error_report, get_traceback
 from noc.sa.models import ReduceTask
@@ -60,6 +63,27 @@ class Scheduler(object):
     def register_job_class(self, cls):
         self.info("Registering job class: %s" % cls.name)
         self.job_classes[cls.name] = cls
+
+    def register_all(self, path, exclude=None):
+        """
+        Register all Job classes defined within directory
+        :param path:
+        :return:
+        """
+        exclude = exclude or []
+        if not os.path.isdir(path):
+            raise ValueError("'%s' must be a directory" % path)
+        mr = "noc.%s." % ".".join(path.split(os.sep))
+        for f in os.listdir(path):
+            if f in exclude or not f.endswith(".py"):
+                continue
+            mn = mr + f[:-3]  # Full module name
+            m = __import__(mn, {}, {}, "*")
+            for on in dir(m):
+                o = getattr(m, on)
+                if (inspect.isclass(o) and issubclass(o, Job) and
+                    o.__module__.startswith(mn)):
+                    self.register_job_class(o)
 
     def get_job_class(self, name):
         return self.job_classes[name]
