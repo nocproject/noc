@@ -6,7 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import datetime
 ## NOC modules
+from noc.settings import config
 from noc.lib.scheduler.intervaljob import IntervalJob
 from noc.sa.models.managedobject import ManagedObject
 
@@ -16,9 +19,11 @@ class VersionInventoryJob(IntervalJob):
     map_task = "get_version"
     system_notification = "sa.version_inventory"
 
-    initial_submit_interval = 300  # @todo: Config
-    success_retry = 86400
-    failed_retry = 600
+    ignored = not config.getboolean("version_inventory", "enabled")
+    initial_submit_interval = config.getint("version_inventory",
+        "initial_submit_interval")
+    success_retry = config.getint("version_inventory", "success_retry")
+    failed_retry = config.getint("version_inventory", "failed_retry")
 
     @classmethod
     def initial_submit(cls, scheduler, keys):
@@ -60,3 +65,9 @@ class VersionInventoryJob(IntervalJob):
                 "Version inventory changes for %s" % object.name,
                 "\n".join(changes))
         return True
+
+    def get_schedule(self, status):
+        if status == self.S_SUCCESS:
+            return super(VersionInventoryJob, self).get_schedule(status)
+        else:
+            return datetime.datetime.now() + datetime.timedelta(seconds=self.failed_retry)
