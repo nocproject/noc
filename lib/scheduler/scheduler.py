@@ -42,7 +42,8 @@ class Scheduler(object):
 
     JobExists = JobExists
 
-    def __init__(self, name, cleanup=None, reset_running=False):
+    def __init__(self, name, cleanup=None, reset_running=False,
+                 initial_submit=False):
         self.name = name
         self.job_classes = {}
         self.collection_name = self.COLLECTION_BASE + self.name
@@ -50,6 +51,8 @@ class Scheduler(object):
         self.active_mrt = {}  # ReduceTask -> Job instance
         self.cleanup_callback = cleanup
         self.reset_running = reset_running
+        self.initial_submit = initial_submit
+        self.initial_submit_next_check = {}  # job class -> timestamp
 
     def debug(self, msg):
         logging.debug("[%s] %s" % (self.name, msg))
@@ -63,6 +66,12 @@ class Scheduler(object):
     def register_job_class(self, cls):
         self.info("Registering job class: %s" % cls.name)
         self.job_classes[cls.name] = cls
+        # Register intial submit handlers
+        if (self.initial_submit and
+            hasattr(cls, "initial_submit") and
+            callable(cls.initial_submit) and
+            hasattr(cls, "initial_submit_interval")):
+            self.initial_submit_next_check[cls] = time.time()
 
     def register_all(self, path, exclude=None):
         """
@@ -238,6 +247,25 @@ class Scheduler(object):
 
     def run_pending(self):
         n = 0
+        # Run pending intial submits
+        if self.initial_submit_next_check:
+            for jcls in self.initial_submit_next_check:
+                t0 = time.time()
+                if self.initial_submit_next_check[jcls] <= t0:
+                    # Get existing keys
+                    keys = [x["_id"] for x in
+                            self.collection.find({
+                                self.ATTR_CLASS: jcls.name
+                            }, ["_id"])]
+                    # Run initial submit
+                    try:
+                        self.info("Running initial submit for %s" % jcls.name)
+                        jcls.initial_submit(self, keys)
+                    except Exception:
+                        error_report()
+                    # Reschedule initial submit
+                    self.initial_submit_next_check[jcls] = (
+                        t0 + jcls.initial_submit_interval)
         # Check for complete MRT
         if self.active_mrt:
             complete = [t for t in self.active_mrt if t.complete]
