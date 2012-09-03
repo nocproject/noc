@@ -341,3 +341,13 @@ enable_google_satellite_maps = false
 sa_managedobjectselector_object_ids = 60
 vc_vcinterfacescount = 3600
 vc_vcprefixes = 3600
+
+[version_inventory]
+# Enable version discovery process
+enabled = true
+# Inject new schedules every N seconds
+initial_submit_interval = 900
+# Retry interval in case of success
+success_retry = 86400
+# Retry interval in case of failure
+failed_retry = 900
