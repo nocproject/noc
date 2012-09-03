@@ -48,6 +48,9 @@ class Scheduler(Daemon):
                     time_pattern=tp,
                     timeout=periodic_registry[pt].default_timeout
                 ).save()
+        # Find schedules with unknown class
+        for s in Schedule.objects.exclude(periodic_name__in=list(periodic_registry.classes)):
+            s.delete()
 
     def launch_task(self, task):
         """
