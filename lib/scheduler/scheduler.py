@@ -253,10 +253,10 @@ class Scheduler(object):
                 t0 = time.time()
                 if self.initial_submit_next_check[jcls] <= t0:
                     # Get existing keys
-                    keys = [x["_id"] for x in
+                    keys = [x[self.ATTR_KEY] for x in
                             self.collection.find({
                                 self.ATTR_CLASS: jcls.name
-                            }, ["_id"])]
+                            }, [self.ATTR_KEY])]
                     # Run initial submit
                     try:
                         self.info("Running initial submit for %s" % jcls.name)
