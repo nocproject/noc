@@ -51,6 +51,7 @@ class Scheduler(object):
         self.active_mrt = {}  # ReduceTask -> Job instance
         self.cleanup_callback = cleanup
         self.reset_running = reset_running
+        self.ignored = []
         self.initial_submit = initial_submit
         self.initial_submit_next_check = {}  # job class -> timestamp
 
@@ -66,6 +67,9 @@ class Scheduler(object):
     def register_job_class(self, cls):
         self.info("Registering job class: %s" % cls.name)
         self.job_classes[cls.name] = cls
+        # Set up ignored jobs
+        if cls.ignored:
+            self.ignored += [cls.name]
         # Register intial submit handlers
         if (self.initial_submit and
             hasattr(cls, "initial_submit") and
@@ -250,6 +254,8 @@ class Scheduler(object):
         # Run pending intial submits
         if self.initial_submit_next_check:
             for jcls in self.initial_submit_next_check:
+                if jcls.name in self.ignored:
+                    continue
                 t0 = time.time()
                 if self.initial_submit_next_check[jcls] <= t0:
                     # Get existing keys
@@ -275,10 +281,14 @@ class Scheduler(object):
                 (t, self.active_mrt[t])
                     for t in self.active_mrt if t not in complete)
         # Check for pending persistent tasks
-        for job_data in self.collection.find({
+        q = {
             self.ATTR_TS: {"$lte": datetime.datetime.now()},
             self.ATTR_STATUS: self.S_WAIT
-            }):
+        }
+        if self.ignored:
+            q[self.ATTR_CLASS] = {"$nin": self.ignored}
+        print q
+        for job_data in self.collection.find(q):
             jcls = self.job_classes.get(job_data[self.ATTR_CLASS])
             if not jcls:
                 # Invalid job class. Park job to FAIL state
