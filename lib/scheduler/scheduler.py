@@ -65,7 +65,8 @@ class Scheduler(object):
         logging.error("[%s] %s" % (self.name, msg))
 
     def register_job_class(self, cls):
-        self.info("Registering job class: %s" % cls.name)
+        s = " (ignored)" if cls.ignored else ""
+        self.info("Registering job class: %s%s" % (cls.name, s))
         self.job_classes[cls.name] = cls
         # Set up ignored jobs
         if cls.ignored:
@@ -287,7 +288,6 @@ class Scheduler(object):
         }
         if self.ignored:
             q[self.ATTR_CLASS] = {"$nin": self.ignored}
-        print q
         for job_data in self.collection.find(q):
             jcls = self.job_classes.get(job_data[self.ATTR_CLASS])
             if not jcls:
