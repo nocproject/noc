@@ -178,7 +178,12 @@ class SocketFactory(object):
                 self.init_socket(socket, name)
 
     def set_status(self, sock, r=None, w=None):
-        logging.debug("set_status(%s, r=%s, w=%s)" % (sock, r, w))
+        l = []
+        if r is not None:
+            l += ["+READ" if r else "-READ"]
+        if w is not None:
+            l += ["+WRITE" if w else "-WRITE"]
+        logging.debug("%s set_status: %s" % (sock, " ".join(l)))
         with self.register_lock:
             if r is not None:
                 if r:

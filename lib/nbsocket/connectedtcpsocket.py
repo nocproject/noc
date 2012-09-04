@@ -35,8 +35,9 @@ class ConnectedTCPSocket(TCPSocket):
         super(ConnectedTCPSocket, self).__init__(factory)
 
     def __repr__(self):
-        return "<%s(0x%x, %s:%s)>" % (
-            self.__class__.__name__, id(self), self.address, self.port)
+        return "<%s(0x%x, %s:%s, %s)>" % (
+            self.__class__.__name__, id(self),
+            self.address, self.port, ", ".join(self.get_flags()))
 
     def create_socket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

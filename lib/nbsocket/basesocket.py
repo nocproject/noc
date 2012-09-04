@@ -37,7 +37,21 @@ class Socket(object):
             self.set_status(r=True)
 
     def __repr__(self):
-        return "<%s(0x%x)>" % (self.__class__.__name__, id(self))
+        return "<%s(0x%x, %s)>" % (
+            self.__class__.__name__, id(self),
+            ", ".join(self.get_flags()))
+
+    def get_flags(self):
+        """
+        Returns list of flags
+        :return:
+        """
+        f = []
+        if self.closing:
+            f += ["closing"]
+        if self.stale:
+            f += ["stale"]
+        return f
 
     def create_socket(self):
         """
