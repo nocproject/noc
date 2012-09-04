@@ -76,7 +76,7 @@ class Socket(object):
         :return: file id or None
         :rtype: int or None
         """
-        return self.socket.fileno() if self.socket else None
+        return self.socket.fileno()
 
     def handle_read(self):
         """
@@ -116,7 +116,6 @@ class Socket(object):
             return
         self.closing = True
         if self.socket:
-            self.set_status(r=False, w=False)
             self.factory.unregister_socket(self)
             try:
                 if self.socket:
