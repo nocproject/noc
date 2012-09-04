@@ -35,6 +35,14 @@ class TCPSocket(Socket):
         self.so_sndbuf = None  # Save SO_SNDBUF after entering character mode
         super(TCPSocket, self).__init__(factory, socket)
 
+    def get_flags(self):
+        f = super(TCPSocket, self).get_flags()
+        if self.is_connected:
+            f += ["connected"]
+        if self.in_shutdown:
+            f += ["shutdown"]
+        return f
+
     def create_socket(self):
         """
         Create socket and adjust buffers
@@ -53,6 +61,7 @@ class TCPSocket(Socket):
         if flush and self.out_buffer:
             self.in_shutdown = True
         else:
+            self.is_connected = False
             super(TCPSocket, self).close()
 
     def handle_write(self):
@@ -81,7 +90,7 @@ class TCPSocket(Socket):
         """
         self.debug("Connected")
         self.is_connected = True
-        self.set_status(r=True, w=False)
+        self.set_status(r=True, w=bool(self.out_buffer))
         self.on_connect()
 
     def write(self, msg):
