@@ -51,15 +51,18 @@ class ZoneFile(object):
         lnsuffix = len(nsuffix)
         # SOA
         z = [HEADER, """
-$ORIGIN %(domain)s
-$TTL %(ttl)d
+$ORIGIN .
 %(domain)s IN SOA %(soa)s %(contact)s (
     %(serial)s ; serial
     %(refresh)d       ; refresh (%(pretty_refresh)s)
     %(retry)d        ; retry (%(pretty_retry)s)
     %(expire)d      ; expire (%(pretty_expire)s)
     %(ttl)d       ; minimum (%(pretty_ttl)s)
-    )""" % {
+    )
+$ORIGIN %(domain)s.
+$TTL %(ttl)d
+
+""" % {
             "domain": self.zone,
             "soa": self.soa,
             "contact": self.contact,
