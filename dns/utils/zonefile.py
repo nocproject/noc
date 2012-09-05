@@ -59,9 +59,6 @@ $ORIGIN .
     %(expire)d      ; expire (%(pretty_expire)s)
     %(ttl)d       ; minimum (%(pretty_ttl)s)
     )
-$ORIGIN %(domain)s.
-$TTL %(ttl)d
-
 """ % {
             "domain": self.zone,
             "soa": self.soa,
@@ -77,6 +74,7 @@ $TTL %(ttl)d
             "pretty_expire": self.pretty_time(self.expire),
         }]
         # Add records
+        nses = []
         rr = []
         for name, type, content, ttl, prio in self.records:
             if not name.endswith(nsuffix) and name != suffix:
@@ -87,16 +85,28 @@ $TTL %(ttl)d
                 content = content[:-lnsuffix]
             if prio is not None:
                 content = "%s %s" % (prio, content)
-            rr += [(name, type, content)]
-        # Pretty format records to 3 columns
+            if not name and type == "NS":
+                nses += [(name, type, content)]
+            else:
+                rr += [(name, type, content)]
+        # prepare mask for 3-column format
         if rr:
             l1 = max(len(r[0]) for r in rr)
             l2 = max(len(r[1]) for r in rr)
             # Ceil to boundary of 4
             l1 = (l1 // self.TABSTOP + 1) * self.TABSTOP
             l2 = (l2 // self.TABSTOP + 1) * self.TABSTOP
+        else:
+            l1 = self.TABSTOP
+            l2 = self.TABSTOP
+        mask = "%%-%ds%%-%ds%%s" % (l1, l2)
+        # Add zone NS
+        if nses:
+           z += [mask % tuple(r) for r in nses]
+        # Add RRs
+        if rr:
+            z += ["$ORIGIN %s." % self.zone, "$TTL %d" % self.ttl]
             # Format according to mask
-            mask = "%%-%ds%%-%ds%%s" % (l1, l2)
             z += [mask % tuple(r) for r in rr]
         z += [FOOTER]
         return "\n".join(z)
