@@ -46,6 +46,8 @@ class Socket(object):
         Returns list of flags
         :return:
         """
+        if not hasattr(self, "socket"):
+            return ["init"]
         f = []
         if self.closing:
             f += ["closing"]
