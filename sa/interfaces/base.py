@@ -351,14 +351,19 @@ class IntParameter(Parameter):
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IntParameter: 10
-    >>> IntParameter(max_value=10,default=7).clean(5)
+    >>> IntParameter(max_value=10, default=7).clean(5)
     5
-    >>> IntParameter(max_value=10,default=7).clean(None)
+    >>> IntParameter(max_value=10, default=7).clean(None)
     7
-    >>> IntParameter(max_value=10,default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> IntParameter(max_value=10, default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IntParameter: 15
+    >>> IntParameter().clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IntParameter: None
+    None
     """
     def __init__(self, required=True, default=None,
                  min_value=None, max_value=None):
@@ -371,7 +376,7 @@ class IntParameter(Parameter):
             return self.default
         try:
             i = int(value)
-        except ValueError:
+        except (ValueError, TypeError):
             self.raise_error(value)
         if ((self.min_value is not None and i < self.min_value)
                 or (self.max_value is not None and i > self.max_value)):
