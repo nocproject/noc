@@ -235,13 +235,13 @@ class AccessTestCase(TestCase):
     ##
     def test_zone_records(self):
         z11_records = self.z11.records
-        for r in [("ns1", "IN A", "10.0.0.1"),
-                  ("ns2", "IN A", "10.0.0.2"),
-                  ("z12", "IN NS", "ns1.example.com."),
-                  ("z12", "IN NS", "ns2.example.com."),
-                  ("z21", "IN NS", "ns1.example.com."),
-                  ("z21", "IN NS", "ns2.example.com."),
-                  ("z31", "IN NS", "ns1.example.com.")]:
+        for r in [("ns1", "A", "10.0.0.1"),
+                  ("ns2", "A", "10.0.0.2"),
+                  ("z12", "NS", "ns1.example.com."),
+                  ("z12", "NS", "ns2.example.com."),
+                  ("z21", "NS", "ns1.example.com."),
+                  ("z21", "NS", "ns2.example.com."),
+                  ("z31", "NS", "ns1.example.com.")]:
             self.assertTrue(r in z11_records)
         zr41_records = self.zr41.records
         # Check classless delegation
