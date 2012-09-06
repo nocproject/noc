@@ -430,6 +430,13 @@ class DNSZone(models.Model):
         return records
 
     def get_records(self):
+        def cmp_fwd(x, y):
+            sn = self.name + "."
+            return cmp(
+                (None if x[0] == sn else x[0], x[1], x[2], x[3], x[4]),
+                (None if y[0] == sn else y[0], y[1], y[2], y[3], y[4])
+            )
+
         def cmp_ptr(x, y):
             """
             Compare two RR tuples. PTR records are compared as integer,
@@ -469,7 +476,7 @@ class DNSZone(models.Model):
         if self.type == "F":
             records += self.get_ipam_a()
             records += self.get_missed_ns_a(records)
-            order_by = cmp
+            order_by = cmp_fwd
         elif self.type == "R4":
             records += self.get_ipam_ptr4()
             records += self.get_classless_delegation()
