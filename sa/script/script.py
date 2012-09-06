@@ -748,7 +748,7 @@ class Script(threading.Thread):
                 result[int(x)] = None
         return sorted(result.keys())
 
-    rx_detect_sep = re.compile("^(.+?)\d+$")
+    rx_detect_sep = re.compile("^(.*?)\d+$")
 
     def expand_interface_range(self, s):
         """
