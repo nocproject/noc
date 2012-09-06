@@ -29,6 +29,7 @@ from noc.sa.script.telnet import CLITelnetSocket
 from noc.sa.script.ssh import CLISSHSocket
 from noc.sa.script.http import HTTPProvider
 from noc.sa.script.snmp import SNMPProvider
+from noc.lib.validators import is_int
 
 ## Module constants
 rx_nohex = re.compile("[^0-9a-f]+")  # non-hexadecimal
@@ -746,6 +747,47 @@ class Script(threading.Thread):
             else:
                 result[int(x)] = None
         return sorted(result.keys())
+
+    rx_detect_sep = re.compile("^(.+?)\d+$")
+
+    def expand_interface_range(self, s):
+        """
+        Convert interface range expression to a list
+        of interfaces
+        "Gi 1/1-3,Gi 1/7" -> ["Gi 1/1", "Gi 1/2", "Gi 1/3", "Gi 1/7"]
+        "1:1-3" -> ["1:1", "1:2", "1:3"]
+        "1:1-1:3" -> ["1:1", "1:2", "1:3"]
+        :param s: Comma-separated list
+        :return:
+        """
+        r = set()
+        for x in s.split(","):
+            x = x.strip()
+            if not x:
+                continue
+            if "-" in x:
+                # Expand range
+                f, t = [y.strip() for y in x.split("-")]
+                # Detect common prefix
+                match = self.rx_detect_sep.match(f)
+                if not match:
+                    raise ValueError(x)
+                prefix = match.group(1)
+                # Detect range boundaries
+                start = int(f[len(prefix):])
+                if is_int(t):
+                    stop = int(t)  # Just integer
+                else:
+                    if not t.startswith(prefix):
+                        raise ValueError(x)
+                    stop = int(t[len(prefix):])  # Prefixed
+                if start > stop:
+                    raise ValueError(x)
+                for i in range(start, stop + 1):
+                    r.add(prefix + str(i))
+            else:
+                r.add(x)
+        return sorted(r)
 
     def hexstring_to_mac(self, s):
         """Convert a 6-octet string to MAC address"""
