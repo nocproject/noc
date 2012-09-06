@@ -316,7 +316,7 @@ class DNSZone(models.Model):
             where=["address << %s"], params=[self.reverse_prefix])
         ]
 
-    def get_missed_ns_a(self, records):
+    def get_missed_ns_a(self):
         """
         Returns missed A record for NS'es
         :param records:
@@ -475,7 +475,7 @@ class DNSZone(models.Model):
         records += self.get_ns()
         if self.type == "F":
             records += self.get_ipam_a()
-            records += self.get_missed_ns_a(records)
+            records += self.get_missed_ns_a()
             order_by = cmp_fwd
         elif self.type == "R4":
             records += self.get_ipam_ptr4()
@@ -486,7 +486,7 @@ class DNSZone(models.Model):
             order_by = cmp_ptr
         else:
             raise ValueError("Invalid zone type")
-        return sorted((fr(r) for r in records), order_by)
+        return sorted(set(fr(r) for r in records), order_by)
 
     def get_zone_text(self):
         """
