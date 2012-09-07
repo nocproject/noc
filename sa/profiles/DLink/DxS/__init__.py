@@ -69,6 +69,83 @@ class Profile(NOCProfile):
         else:
             script.cli("disable clipaging")
 
+    rx_port = re.compile(r"^\s*(?P<port>\d+(/|:)?\d*)\s+"
+        r"(\((?P<media_type>(C|F))\))?\s+(?P<admin_state>Enabled|Disabled)\s+"
+        r"(?P<admin_speed>Auto|10M|100M|1000M|10G)/"
+        r"((?P<admin_duplex>Half|Full)/)?"
+        r"(?P<admin_flowctrl>Enabled|Disabled)\s+"
+        r"(?P<status>LinkDown|Link\sDown)?((?P<speed>10M|100M|1000M|10G)/"
+        r"(?P<duplex>Half|Full)/(?P<flowctrl>None|802.3x))?\s+"
+        r"(?P<address_learning>Enabled|Disabled)\s*"
+        r"(\n\s+(?P<mdix>Auto|MDI|MDIX)\s*)?"
+        r"\n\s+Desc(ription)?:\s*(?P<desc>\S*?)\s*\n",
+        re.MULTILINE | re.DOTALL)
+
+    def parse_interface(self, s):
+        match = self.rx_port.search(s)
+        if match:
+            port = match.group("port")
+            media_type = match.group("media_type")
+            obj = {
+                "port": port,
+                "media_type": media_type,
+                "admin_state": match.group("admin_state") == "Enabled",
+                "admin_speed": match.group("admin_speed"),
+                "admin_duplex": match.group("admin_duplex"),
+                "admin_flowctrl": match.group("admin_flowctrl"),
+                "status": match.group("status") is None,
+                "speed": match.group("speed"),
+                "duplex": match.group("duplex"),
+                "flowctrl": match.group("flowctrl"),
+                "address_learning": match.group("address_learning").strip(),
+                "mdix": match.group("mdix").strip(),
+                "desc": match.group("desc").strip()
+            }
+            key = "%s-%s" % (port, media_type)
+            return key, obj, s[match.end():]
+        else:
+            return None
+
+    def get_ports(self, script):
+        objects = script.cli_object_stream(
+            "show ports description", parser=self.parse_interface,
+            cmd_next="n", cmd_stop="q")
+        prev_i = None
+        ports = []
+        for i in objects:
+            if prev_i and (prev_i['port'] == i['port']):
+                if i['status'] == True:
+                    for j in ports:
+                        if j['port'] == i['port']:
+                            j = i
+                            break
+            else:
+                ports += [i]
+            prev_i = i
+        return ports
+
+    rx_vlan = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
+    r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
+    r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
+    r"^(Current Tagged P|Tagged p)orts\s+: (?P<tagged_ports>\S*)\s+.+?"
+    r"^(Current Untagged P|Untagged p)orts\s*: (?P<untagged_ports>\S*)\s*\n",
+    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+
+    def get_vlans(self, script):
+        vlans = []
+        for match in self.rx_vlan.finditer(script.cli("show vlan")):
+            tagged_ports = \
+                script.expand_interface_range(match.group("tagged_ports"))
+            untagged_ports = \
+                script.expand_interface_range(match.group("untagged_ports"))
+            vlans += [{
+                "vlan_id": int(match.group("vlan_id")),
+                "vlan_name": match.group("vlan_name"),
+                "vlan_type": match.group("vlan_type"),
+                "tagged_ports": tagged_ports,
+                "untagged_ports": untagged_ports
+            }]
+        return vlans
 
 def DES3200(v):
     """
