@@ -77,7 +77,7 @@ class TelnetProtocol(Protocol):
 
     def iac_response(self, command, opt):
         self.debug("Sending IAC %s" % self.iac_repr(command, opt))
-        self.parent.out_buffer += IAC + command + opt
+        self.parent.write(IAC + command + opt)
 
     def sb_response(self, command, opt, data=None):
         sb = IAC + SB + command + opt
@@ -85,7 +85,7 @@ class TelnetProtocol(Protocol):
             sb += data
         sb += IAC + SE
         self.debug("Sending SB %s" % repr(sb))
-        self.parent.out_buffer += sb
+        self.parent.write(sb)
 
     def process_sb(self, sb):
         self.debug("Received SB %s" % repr(sb))
