@@ -225,7 +225,7 @@ class SocketFactory(object):
         :param run_forever: Run event loop forever, when True, else shutdown
                             fabric when no sockets available
         """
-        logging.debug("Running socket factory")
+        logging.debug("Running socket factory (%s)" % self.poller.__class__.__name__)
         self.create_pending_sockets()
         if run_forever:
             cond = lambda: True
