@@ -520,6 +520,14 @@ class Script(threading.Thread):
                 self.error("Trying to release unacquired lock")
                 time.sleep(1)
 
+    def reset_cli_queue(self):
+        """
+        Remove all pending messages from CLI provider's queue
+        :return:
+        """
+        while not self.cli_provider.queue.empty():
+            self.cli_provider.queue.get(block=False)
+
     def request_cli_provider(self):
         """Run CLI provider if not available"""
         if self.parent:
@@ -663,6 +671,8 @@ class Script(threading.Thread):
                     self.cli_provider.write(seq)
             else:
                 break
+        # Reset stream data
+        self.reset_cli_queue()
 
     def cli_object_stream(self, cmd, command_submit=None,
                           parser=None, cmd_next=None, cmd_stop=None):
@@ -711,6 +721,12 @@ class Script(threading.Thread):
                         if cmd_next:
                             self.debug("Next screen. Sending %r" % cmd_next)
                             stream.send(cmd_next)
+        dm = ["cli_object_stream(%s) returns:" % cmd]
+        l = "===[ %s ]" % cmd
+        dm += [l + "=" * max(0, 72 - len(l))]
+        dm += [repr(objects)]
+        dm += ["=" * 72]
+        self.debug("\n".join(dm))
         return objects
 
     def cleaned_config(self, config):
