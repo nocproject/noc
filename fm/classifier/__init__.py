@@ -337,7 +337,11 @@ class Rule(object):
             for name in self.fixups:
                 r = name.split("__")
                 if len(r) == 2:
-                    c += ["e_vars[\"%s\"] = self.fixup_%s(fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
+                    if r[1] in ("ifindex",):
+                        # call fixup with managed object
+                        c += ["e_vars[\"%s\"] = self.fixup_%s(event.managed_object, fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
+                    else:
+                        c += ["e_vars[\"%s\"] = self.fixup_%s(fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
                 else:
                     c += ["args = [%s, fm_unescape(e_vars[\"%s\"])]" % (", ".join(["\"%s\"" % x for x in r[2:]]), name)]
                     c += ["e_vars[\"%s\"] = self.fixup_%s(*args)" % (r[0], r[1])]
@@ -396,14 +400,26 @@ class Rule(object):
     def fixup_enum(self, name, v):
         """
         Resolve v via enumeration name
+        @todo: not used?
         """
         return self.classifier.enumerations[name][v.lower()]
 
-    def fixup_ifindex(self, v):
+    def fixup_ifindex(self, managed_object, v):
         """
         Resolve ifindex to interface name
         """
-        pass
+        ifindex = int(v)
+        # Try to resolve interface
+        i = Interface.objects.filter(
+            managed_object=managed_object.id, ifindex=ifindex).first()
+        if i:
+            return i.name
+        # Try to resolve subinterface
+        si = SubInterface.objects.filter(
+            managed_object=managed_object.id, ifindex=ifindex).first()
+        if si:
+            return si.name
+        return v
 
 CR_FAILED = 0
 CR_DELETED = 1
