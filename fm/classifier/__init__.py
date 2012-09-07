@@ -21,6 +21,7 @@ from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
                           EventClass, MIB, EventLog, CloneClassificationRule,\
                           ActiveEvent, EventTrigger, Enumeration
+from noc.inv.models import Interface, SubInterface
 from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models
 from noc.sa.models import profile_registry, ManagedObject
@@ -397,6 +398,12 @@ class Rule(object):
         Resolve v via enumeration name
         """
         return self.classifier.enumerations[name][v.lower()]
+
+    def fixup_ifindex(self, v):
+        """
+        Resolve ifindex to interface name
+        """
+        pass
 
 CR_FAILED = 0
 CR_DELETED = 1
