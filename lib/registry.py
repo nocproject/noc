@@ -89,6 +89,9 @@ class Registry(object):
     def __getitem__(self, name):
         return self.classes[name]
 
+    def __contains__(self, item):
+        return item in self.classes
+
     @property
     def choices(self):
         """
