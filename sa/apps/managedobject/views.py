@@ -10,16 +10,16 @@
 import pprint
 import os
 import urllib
+import datetime
 ## Django modules
 from django.utils.translation import ugettext as _
 from django.contrib import admin
 from django import forms
-from django.contrib.auth.models import User, Group
 from django.utils.safestring import SafeString
 from django.template import loader
 ## NOC modules
-from noc.lib.app import ModelApplication, site, Permit, PermitSuperuser,\
-                        HasPerm, PermissionDenied, view
+from noc.lib.app import (ModelApplication, site, Permit,
+                        HasPerm, PermissionDenied, view)
 from noc.main.models import CustomField
 from noc.sa.models import *
 from noc.settings import config
@@ -27,7 +27,7 @@ from noc.lib.fileutils import in_dir
 from noc.lib.widgets import PasswordWidget
 from noc.lib.ip import IP
 from noc.fm.models import get_object_status, ActiveAlarm, AlarmSeverity
-from noc.inv.models import DiscoveryStatusInterface, DiscoveryStatusIP
+from noc.inv.discovery.scheduler import DiscoveryScheduler
 
 
 class ManagedObjectAdminForm(forms.ModelForm):
@@ -288,11 +288,13 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         Reschedule interface discovery
         """
         self.app.message_user(request, "Interface discovery has been rescheduled")
+        now = datetime.datetime.now()
         for o in queryset:
-            DiscoveryStatusInterface.reschedule(o, 0, True)
-            DiscoveryStatusIP.reschedule(o, 0, True)
+            for job in ["version_inventory",
+                        "ip_discovery", "interface_discovery"]:
+                discovery_scheduler.reschedule_job(job, o.id, now)
         return self.app.response_redirect("sa:managedobject:changelist")
-    reschedule_discovery.short_description = _("Run interface discovery now")
+    reschedule_discovery.short_description = _("Run discovery now")
 
     def apply_config_filters(self, request, queryset):
         """
@@ -530,3 +532,5 @@ class ManagedObjectApplication(ModelApplication):
         return "/sa/groupaccess/"
         # return self.site.reverse("sa:groupaccess:changelist",
         #                         QUERY={"group__id__exact": group.id})
+
+discovery_scheduler = DiscoveryScheduler()
