@@ -19,4 +19,6 @@ class DiscoveryScheduler(Scheduler):
             "inv.discovery", initial_submit=daemon is not None,
             reset_running=daemon is not None
         )
-        self.register_all(os.path.join("inv", "discovery", "jobs"))
+        self.register_all(
+            os.path.join("inv", "discovery", "jobs"),
+            exclude=["base.py"])
