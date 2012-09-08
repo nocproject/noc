@@ -1699,7 +1699,7 @@ class DBTrigger(models.Model):
     ##
     @classmethod
     def x(cls):
-        f = self._meta.get_field_by_name("model")[0]
+        f = cls._meta.get_field_by_name("model")[0]
         f.choices = [(m._meta.db_table, m._meta.db_table)
             for m in models.get_models()]
 
