@@ -26,7 +26,8 @@ class ForwardingInstance(Document):
                        default="ip")
     virtual_router = StringField(required=False)
     name = StringField()
-    # VRF
+    # VRF/VPLS
+    rd = StringField(required=False)
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name,
