@@ -5,6 +5,7 @@ import set_env
 set_env.setup(use_django=True)
  
 from noc.lib.stomp.client import STOMPClient
+from noc.lib.debug import error_report
 import time
 import sys
 import logging
@@ -115,9 +116,12 @@ if __name__ == "__main__":
             level=logging.DEBUG,
             format="%(asctime)s %(levelname)s %(message)s")
     # Run
-    if is_producer:
-        main_producer(messages=messages,
-            synchronous=synchronous, persistent=persistent)
-    else:
-        SF = out
-        main_consumer()
+    try:
+        if is_producer:
+            main_producer(messages=messages,
+                synchronous=synchronous, persistent=persistent)
+        else:
+            SF = out
+            main_consumer()
+    except Exception:
+        error_report()
