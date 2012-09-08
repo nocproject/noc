@@ -178,7 +178,6 @@ class ExtModelApplication(ExtApplication):
         :return: dict of cleaned parameters of raised InterfaceTypeError
         :rtype: dict
         """
-        print data
         # Delete id
         if "id" in data:
             del data["id"]
