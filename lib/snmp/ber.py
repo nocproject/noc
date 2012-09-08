@@ -152,6 +152,9 @@ class BERDecoder(object):
             r += [v]
         return r
 
+    def parse_utctime(self, msg):
+        return msg  # @todo: Convert to datetime
+
     DECODERS = {
         # Primitive types
         True: {
@@ -174,7 +177,7 @@ class BERDecoder(object):
             # T61String	P/C	20	14
             # VideotexString	P/C	21	15
             # IA5String	P/C	22	16
-            # UTCTime	P/C	23	17
+            22: parse_utctime,  # 23, 0x17, UTCTime
             # GeneralizedTime	P/C	24	18
             # GraphicString	P/C	25	19
             # VisibleString	P/C	26	1A
