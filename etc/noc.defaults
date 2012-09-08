@@ -345,9 +345,69 @@ vc_vcprefixes = 3600
 [version_inventory]
 # Enable version discovery process
 enabled = true
+# Save result to database
+save = true
 # Inject new schedules every N seconds
 initial_submit_interval = 900
+# Upper limit of new schedule submitted at once
+initial_submit_concurrency = 20
 # Retry interval in case of success
 success_retry = 86400
 # Retry interval in case of failure
 failed_retry = 900
+
+[interface_discovery]
+enabled = true
+save = true
+success_retry = 86400
+failed_retry = 900
+initial_submit_interval = 900
+# IInterfaceClassification-interfaced pyRule
+# returning interface class name
+classification_pyrule =
+
+[prefix_discovery]
+enabled = true
+save = true
+# Change prefix state when found
+# Format: from state -> to state; ...; from state -> to state
+# Example:
+# change_state = PLANNED -> ALLOCATED; RESERVED -> ALLOCATED
+change_state =
+# IGetDiscoveryCustom pyRule name to set up prefix custom fields
+custom_pyrule =
+
+[ip_discovery]
+# Enable ip discovery process
+enabled = true
+# True - save results to IPAM database
+# False - only report new addresses
+save = true
+# Inject new schedules every N seconds
+initial_submit_interval = 900
+# Upper limit of new schedule submitted at once
+initial_submit_concurrency = 20
+# Retry interval in case of success
+success_retry = 86400
+# Retry interval in case of failure
+failed_retry = 900
+# Change address state when found
+# Format: from state -> to state; ...; from state -> to state
+# Example:
+# change_state = PLANNED -> ALLOCATED; RESERVED -> ALLOCATED
+change_state =
+#
+# Django template to generate discovered Address'es FQDN.
+# Available context variables are:
+#   object - Managed object instance
+#   vrf - VRF instance
+#   name - Managed object's name
+#   host - host part of managed object's name
+#   domain - domain part of managed object's name
+#   interface - interface, on which address have been discovered
+#   afi - address family, "4" or "6"
+#   ip - ip address
+#   IP - list of octets for IPv4 of 16-bit blocks for IPv6
+#   rIP - IP in reversed order
+#
+fqdn_template = ip-{{ IP|join:"-" }}.{%% if domain %%}{{ domain }}{%% else %%}example.com{%% endif %%}
