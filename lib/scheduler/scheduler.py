@@ -71,12 +71,15 @@ class Scheduler(object):
         # Set up ignored jobs
         if cls.ignored:
             self.ignored += [cls.name]
-        # Register intial submit handlers
-        if (self.initial_submit and
-            hasattr(cls, "initial_submit") and
-            callable(cls.initial_submit) and
-            hasattr(cls, "initial_submit_interval")):
-            self.initial_submit_next_check[cls] = time.time()
+        else:
+            # Initialize job class
+            cls.initialize(self)
+            # Register intial submit handlers
+            if (self.initial_submit and
+                hasattr(cls, "initial_submit") and
+                callable(cls.initial_submit) and
+                hasattr(cls, "initial_submit_interval")):
+                self.initial_submit_next_check[cls] = time.time()
 
     def register_all(self, path, exclude=None):
         """
@@ -184,7 +187,7 @@ class Scheduler(object):
             self.remove_job(job.name, job.key)
             return
         # Change status
-        self.info("Running job %s(%s)" % (job.name, job.key))
+        self.info("Running job %s(%s)" % (job.name, job.get_display_key()))
         job.started = time.time()
         self.collection.update({
             self.ATTR_CLASS: job.name,
@@ -217,16 +220,18 @@ class Scheduler(object):
         else:
             if r:
                 self.info("Job %s(%s) is completed successfully" % (
-                    job.name, job.key))
+                    job.name, job.get_display_key()))
                 job.on_success()
                 s = job.S_SUCCESS
             else:
                 self.info("Job %s(%s) is failed" % (
-                    job.name, job.key))
+                    job.name, job.get_display_key()))
                 job.on_failure()
                 s = job.S_FAILED
-        #
-        t = job.get_schedule(s)
+        self._complete_job(job, s, tb)
+
+    def _complete_job(self, job, status, tb):
+        t = job.get_schedule(status)
         if t is None:
             # Unschedule job
             self.remove_job(job.name, job.key)
@@ -236,27 +241,36 @@ class Scheduler(object):
             self.reschedule_job(
                 job.name, job.key, t,
                 status="W",
-                last_status=s,
+                last_status=status,
                 duration=t1 - job.started,
                 tb=tb,
                 update_runs=True
             )
 
     def complete_mrt_job(self, t):
-        job = self.active_mrt[t]
+        job = self.active_mrt.pop(t)
         for m in t.maptask_set.all():
             if m.status == "C":
                 self._run_job_handler(job, object=m.managed_object,
                     result=m.script_result)
+            else:
+                self.info("Job %s(%s) is failed" % (
+                    job.name, job.get_display_key()))
+                self._complete_job(job, self.S_FAIL, m.script_result)
         t.delete()
 
     def run_pending(self):
         n = 0
+        throttled = set()  # Job classes exceeding concurrency limits
         # Run pending intial submits
         if self.initial_submit_next_check:
             for jcls in self.initial_submit_next_check:
                 if jcls.name in self.ignored:
                     continue
+                if jcls.map_task and jcls.concurrency:
+                    # Check concurrency limits
+                    # @todo:!!!
+                    pass
                 t0 = time.time()
                 if self.initial_submit_next_check[jcls] <= t0:
                     # Get existing keys
