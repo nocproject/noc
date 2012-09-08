@@ -41,6 +41,7 @@ class Job(object):
     map_task = None  # Set to map task name
     model = None  # Model/Document class
     system_notification = None  # Name of system notification group
+    concurrency = None  # Limit number of concurrently running jobs
 
     S_SUCCESS = "S"
     S_FAILED = "F"
@@ -55,13 +56,28 @@ class Job(object):
         self.started = None  # Timestamp
         self._log = []
 
+    @classmethod
+    def initialize(cls, scheduler):
+        """
+        Called on scheduler.register()
+        :param cls:
+        :param scheduler:
+        :return:
+        """
+        pass
+
+    def get_display_key(self):
+        return self.key
+
     def info(self, msg):
         logging.info("[%s: %s(%s)] %s" % (
-            self.scheduler.name, self.name, self.key, msg))
+            self.scheduler.name, self.name,
+            self.get_display_key(), msg))
 
     def error(self, msg):
         logging.error("[%s: %s(%s)] %s" % (
-            self.scheduler.name, self.name, self.key, msg))
+            self.scheduler.name, self.name,
+            self.get_display_key(), msg))
 
     def handler(self, *args, **kwargs):
         """
