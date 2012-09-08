@@ -11,8 +11,10 @@ import re
 ## NOC modules
 from noc.lib.nosql import Document, EmbeddedDocument, StringField,\
     ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,\
-    IntField
+    IntField, PlainReferenceField
 from noc.lib.ip import IP
+from noc.main.models import PrefixTable
+from interfaceprofile import InterfaceProfile
 
 
 class InterfaceClassificationMatch(EmbeddedDocument):
@@ -34,8 +36,10 @@ class InterfaceClassificationMatch(EmbeddedDocument):
     ])
     #
     value1 = StringField()
-    #
+    # "between"
     value2 = StringField(required=False)
+    # "ip in"
+    prefix_table = ForeignKeyField(PrefixTable, required=False)
 
     def __unicode__(self):
         if self.op == "between":
@@ -139,6 +143,27 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         ]
         return "\n".join(r)
 
+    ## Untagged
+    def compile_untagged_eq(self, f_name):
+        self.check_single_value()
+        vlan = int(self.value1)
+        if vlan < 1 or vlan > 4096:
+            raise SyntaxError("Invalid VLAN")
+        r = [
+            "def %s(iface):" % f_name,
+            "    for si in iface.subinterface_set.filter(is_bridge):",
+            "        if si.untagged_vlan = %d:" % vlan,
+            "            return True",
+            "    return False"
+        ]
+        return "\n".join(r)
+
+    def compile_untagged_between(self, f_name):
+        pass
+
+    def compile_untagged_in(self, f_name):
+        pass
+
 
 class InterfaceClassificationRule(Document):
     meta = {
@@ -152,7 +177,8 @@ class InterfaceClassificationRule(Document):
     match = ListField(
         EmbeddedDocumentField(InterfaceClassificationMatch),
         required=False)
-    profile_name = StringField()
+    profile = PlainReferenceField(InterfaceProfile,
+        default=InterfaceProfile.get_default_profile)
 
     def __unicode__(self):
         r = [unicode(x) for x in self.match]
@@ -161,7 +187,7 @@ class InterfaceClassificationRule(Document):
     @classmethod
     def get_classificator_code(cls):
         r = ["import re"]
-        mf = ["def classify(interface):"]
+        mf = ["def classify(cls, interface):"]
         for rule in cls.objects.filter(is_active=True).order_by("order"):
             rid = str(rule.id)
             lmn = []
@@ -172,10 +198,10 @@ class InterfaceClassificationRule(Document):
             if lmn:
                 mf += [
                     "    if %s:" % " and ".join(lmn),
-                    "        return %s" % repr(rule.profile_name)
+                    "        return %r" % rule.profile.name
                 ]
             else:
-                mf += ["    return %s" % repr(rule.profile_name)]
+                mf += ["    return %r" % rule.profile.name]
         r += mf
         return "\n".join(r)
 
