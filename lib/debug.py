@@ -174,7 +174,7 @@ def format_frames(frames, reverse=True):
     if reverse:
         fr.reverse()
     for f in fr:
-        r += [u"File: %s (Line: %d)" % (f["filename"], f["lineno"])]
+        r += [u"File: %s (Line: %s)" % (f["filename"], f["lineno"])]
         r += [u"Function: %s" % (f["function"])]
         r += [format_source(f["pre_context_lineno"], f["pre_context"])]
         r += [u"%5d ==> %s" % (f["lineno"], f["context_line"])]
@@ -253,7 +253,6 @@ def error_fingerprint():
         ]
     ])
     return hashlib.sha1(s).hexdigest()
-
 
 
 def BQ(s):
