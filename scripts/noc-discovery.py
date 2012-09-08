@@ -20,5 +20,7 @@ if __name__ == "__main__":
 
     try:
         DiscoveryDaemon().process_command()
-    except:
+    except SystemExit:
+        pass
+    except Exception:
         error_report()
