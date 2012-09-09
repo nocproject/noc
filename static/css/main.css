@@ -59,7 +59,7 @@ div.breadcrumbs ul li:after {
 .object-tags li {
     display: block;
     float: left;
-    background:url(/media/img/admin/tool-left.gif) 0 0 no-repeat;
+    background:url(/media/img/tool-left.gif) 0 0 no-repeat;
     padding:0 0 0 8px;
     margin-left:2px;
     height:16px;
@@ -69,7 +69,7 @@ div.breadcrumbs ul li:after {
     display: block;
     float: left;
     color: white;
-    background:#999 url(/media/img/admin/tool-right.gif) 100% 0 no-repeat;
+    background:#999 url(/media/img/tool-right.gif) 100% 0 no-repeat;
     padding: .1em 14px .1em 8px;
     height: 14px;
 }
@@ -117,7 +117,7 @@ table tbody tr.selected {
 
 #noc-popup-header {
     font-weight: bold;
-    background: #7CA0C7 url(/media/img/admin/default-bg.gif) top left repeat-x;
+    background: #7CA0C7 url(/media/img/default-bg.gif) top left repeat-x;
     color: white;
     padding: 4px;
     padding-right: 10px;
