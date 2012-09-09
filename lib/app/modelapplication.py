@@ -10,7 +10,7 @@
 from django.utils.translation import ugettext as _
 from django.contrib import admin as django_admin
 from django.utils.encoding import smart_unicode
-from django.contrib.admin.filterspecs import FilterSpec, ChoicesFilterSpec
+from django.contrib.admin import SimpleListFilter, FieldListFilter
 from django.views.static import serve as serve_static
 from django.db.models.fields import CharField
 from django.db.models import Q
@@ -306,7 +306,7 @@ class ModelApplication(Application):
             return self.model.objects.all()
 
 
-class ExistingChoicesFilterSpec(ChoicesFilterSpec):
+class ExistingListFilter(SimpleListFilter):
     """
     List filter. Show only species present in list
     """
@@ -326,4 +326,7 @@ class ExistingChoicesFilterSpec(ChoicesFilterSpec):
                     }
 
 ## Install specific filters to all models
-FilterSpec.filter_specs.insert(0, (lambda f: getattr(f, "existing_choices_filter", False), ExistingChoicesFilterSpec))
+FieldListFilter.register(
+    lambda f: getattr(f, "existing_choices_filter", False),
+    ExistingListFilter
+)
