@@ -957,11 +957,10 @@ class Script(threading.Thread):
         :return: Boolean string
         :rtype: str
         """
-        s = s.lower()
-        if s.startswith("0x"):
-            s = s[2:]
-        s = rx_nohex.sub("", s)
-        return "".join([hexbin[c] for c in s])
+        return "".join(
+            hexbin[c] for c in
+            "".join("%02x" % ord(d) for d in s)
+        )
 
     @classmethod
     def get_scheme_id(cls, scheme):
