@@ -16,7 +16,8 @@ from tagging.models import TaggedItem
 from administrativedomain import AdministrativeDomain
 from managedobject import ManagedObject, ManagedObjectAttribute
 from activator import Activator
-from noc.main.models import Shard, PrefixTable
+from noc.main.models import Shard
+from noc.main.models.prefixtable import PrefixTable
 from noc.sa.profiles import profile_registry
 from noc.lib.fields import AutoCompleteTagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
