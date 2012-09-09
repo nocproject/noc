@@ -646,7 +646,7 @@ class Permission(models.Model):
         counting group and implied ones
         """
         if user.is_superuser:
-            return Permission.objects.values_list("name", flat=True)
+            return set(Permission.objects.values_list("name", flat=True))
         perms = set()
         # User permissions
         for p in user.noc_user_permissions.all():

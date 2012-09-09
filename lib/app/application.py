@@ -209,8 +209,7 @@ class Application(object):
         return render_to_response(self.get_template_path(template),
                                   dict if dict else kwargs,
                                   context_instance=RequestContext(request,
-                                                                  dict={
-                                                                      "app": self}))
+                                                                  {"app": self}))
 
     def render_template(self, template, dict={}, **kwargs):
         """
