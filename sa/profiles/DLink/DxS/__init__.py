@@ -4,7 +4,7 @@
 ## OS:     DxS
 ## Compatible:
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ class Profile(NOCProfile):
         r"(?P<status>LinkDown|Link\sDown)?((?P<speed>10M|100M|1000M|10G)/"
         r"(?P<duplex>Half|Full)/(?P<flowctrl>None|802.3x))?\s+"
         r"(?P<address_learning>Enabled|Disabled)\s*"
-        r"(\n\s+(?P<mdix>Auto|MDI|MDIX)\s*)?"
+        r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
         r"\n\s+Desc(ription)?:\s*(?P<desc>\S*?)\s*\n",
         re.MULTILINE | re.DOTALL)
 
@@ -98,7 +98,7 @@ class Profile(NOCProfile):
                 "duplex": match.group("duplex"),
                 "flowctrl": match.group("flowctrl"),
                 "address_learning": match.group("address_learning").strip(),
-                "mdix": match.group("mdix").strip(),
+                "mdix": match.group("mdix"),
                 "desc": match.group("desc").strip()
             }
             key = "%s-%s" % (port, media_type)
@@ -127,8 +127,8 @@ class Profile(NOCProfile):
     rx_vlan = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
     r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
     r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
-    r"^(Current Tagged P|Tagged p)orts\s+: (?P<tagged_ports>\S*)\s+.+?"
-    r"^(Current Untagged P|Untagged p)orts\s*: (?P<untagged_ports>\S*)\s*\n",
+    r"^(Current Tagged P|Tagged p)orts\s+:\s*(?P<tagged_ports>\S*?)\s*\n"
+    r"^(Current Untagged P|Untagged p)orts\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def get_vlans(self, script):
