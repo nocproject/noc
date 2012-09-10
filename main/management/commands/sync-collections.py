@@ -179,7 +179,7 @@ class CollectionSync(object):
     def sync(self):
         print "Syncing noc.%s:" % self.name
         # Get builtin ids
-        self.builtin_ids = set([str(o._id) for o
+        self.builtin_ids = set([str(o.id) for o
                                 in self.doc.objects.filter(is_builtin=True)])
         # Define set of unique fields
         self.unique = set()
