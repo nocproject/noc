@@ -247,9 +247,12 @@ class ColorField(models.Field):
         return u"#%06x"%value
     
     def get_db_prep_value(self, value, connection, prepared=False):
-        if value.startswith("#"):
-            value=value[1:]
-        return int(value,16)
+        if isinstance(value, basestring):
+            if value.startswith("#"):
+                value = value[1:]
+            return int(value, 16)
+        else:
+            return value
     
     def formfield(self,**kwargs):
         kwargs["widget"]=ColorPickerWidget
