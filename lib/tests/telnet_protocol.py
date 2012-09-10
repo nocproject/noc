@@ -22,6 +22,9 @@ class TelnetTestCase(NOCTestCase):
         def write(self, s):
             self.out_buffer += s
 
+        def set_status(self, r=None, w=None):
+            pass
+
     def assertResponse(self, packets, response):
         """
         Create telnet protocol instance, feed the input packets
