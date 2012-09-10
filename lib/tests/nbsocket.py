@@ -9,6 +9,7 @@
 from unittest import TestCase
 ## NOC modules
 from noc.lib.nbsocket import *
+from noc.lib.nbsocket.pollers.detect import get_methods
 from noc.lib.nbsocket.popen import PopenSocket
 from noc.lib.nbsocket.ptysocket import PTYSocket
 
@@ -114,24 +115,12 @@ class NBSocketTestCase(TestCase):
     ## Poller test wrapper
     def poller_test(self, polling_method, port):
         factory = SocketFactory(polling_method=polling_method)
-        if factory.polling_method != polling_method:
-            return
         self.set_up_sockets(factory, port)
         factory.run()
         self.check_result(factory)
 
-    ## Test select() method
-    def test_select(self):
-        self.poller_test("select", self.TCP_PORT)
-
-    ## Test poll method
-    def test_poll(self):
-        self.poller_test("poll", self.TCP_PORT + 1)
-
-    ## Test kevent/kqueue method
-    def test_kevent(self):
-        self.poller_test("kevent", self.TCP_PORT + 2)
-
-    ## Test kevent/kqueue method
-    def test_epoll(self):
-        self.poller_test("epoll", self.TCP_PORT + 3)
+    def test_poller(self):
+        port = self.TCP_PORT
+        for method in get_methods():
+            self.poller_test(method, port)
+            port += 1
