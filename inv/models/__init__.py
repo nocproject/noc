@@ -158,7 +158,7 @@ class ModelSocket(EmbeddedDocument):
     def __eq__(self, v):
         try:
             return (self.name == v.name and
-                    self.type._id == v.type._id and
+                    self.type.id == v.type.id and
                     self.kind == v.kind and
                     self.range == v.range
                     )
