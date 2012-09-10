@@ -15,6 +15,7 @@ class TelnetTestCase(NOCTestCase):
     class SocketStub(object):
         def __init__(self):
             self.out_buffer = ""
+            self.is_connected = True
 
         def debug(self, msg):
             pass
