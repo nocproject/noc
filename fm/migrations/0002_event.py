@@ -48,7 +48,7 @@ class Migration:
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('event_class', models.ForeignKey(EventClass,verbose_name="Event Class")),
             ('name', models.CharField("Name",max_length=64)),
-            ('preference', models.IntegerField("Preference",1000))
+            ('preference', models.IntegerField("Preference", default=1000))
         ))
         
         # Mock Models
