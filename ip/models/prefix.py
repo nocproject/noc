@@ -131,7 +131,7 @@ class Prefix(models.Model):
         Get nearest closing prefix
         """
         r = list(Prefix.objects.raw("""
-                SELECT *
+                SELECT id, prefix
                 FROM ip_prefix
                 WHERE
                         vrf_id=%s
