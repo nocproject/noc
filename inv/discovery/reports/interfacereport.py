@@ -60,16 +60,19 @@ class InterfaceReport(Report):
             Interface.objects.filter(
                 managed_object=self.object.id, name=i).delete()
 
-    def submit_subinterfaces(self, interface, subinterfaces):
+    def submit_subinterfaces(self, forwarding_instance,
+                             interface, subinterfaces):
         """
         Delete hanging subinterfaces
-        :param interface: generator yielding subinterfaces names
-        :param subinterfaces:
         :return:
         """
+        if forwarding_instance:
+            forwarding_instance = forwarding_instance.id
         db_siface = set(i["name"] for i in
             SubInterface.objects.filter(
-                managed_object=self.object.id, interface=interface.id
+                managed_object=self.object.id,
+                forwarding_instance=forwarding_instance,
+                interface=interface.id
             ).only("name"))
         for i in db_siface - set(subinterfaces):
             self.info("Removing subinterface %s" % i)
@@ -112,7 +115,7 @@ class InterfaceReport(Report):
             fi.save()
         return fi
 
-    def submit_interface(self, forwarding_instance, name, type,
+    def submit_interface(self, name, type,
                          mac=None, description=None,
                          aggregated_interface=None, is_lacp=False):
         iface = Interface.objects.filter(
