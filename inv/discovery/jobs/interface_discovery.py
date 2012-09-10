@@ -74,6 +74,7 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
         """
         self.profiles_cache = {}
         self.report = InterfaceReport(self, to_save=self.to_save)
+        self.seen_interfaces = []
         # Process forwarding instances
         for fi in result:
             forwarding_instance = self.report.submit_forwarding_instance(
@@ -101,7 +102,6 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                             continue
                 # Submit discovered interface
                 iface = self.report.submit_interface(
-                    forwarding_instance=forwarding_instance,
                     name=i["name"], type=i["type"], mac=i.get("mac"),
                     description=i.get("description"),
                     aggregated_interface=agg,
@@ -137,12 +137,14 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                     )
                 # Delete hanging subinterfaces
                 self.report.submit_subinterfaces(
-                    iface, [si["name"] for si in i["subinterfaces"]])
+                    forwarding_instance, iface,
+                    [si["name"] for si in i["subinterfaces"]])
                 # Perform interface classification
                 self.interface_classification(iface)
             # Delete hanging interfaces
-            self.report.submit_interfaces(
-                [i["name"] for i in fi["interfaces"]])
+            self.seen_interfaces += [i["name"] for i in fi["interfaces"]]
+        # Delete hanging interfaces
+        self.report.submit_interfaces(self.seen_interfaces)
         # Delete hanging forwarding instances
         self.report.submit_forwarding_instances(
             fi["forwarding_instance"] for fi in result)
