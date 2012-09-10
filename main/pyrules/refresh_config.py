@@ -15,14 +15,16 @@
 ## Python modules
 import datetime
 ## NOC modules
-from noc.inv.models import DiscoveryStatusInterface
+from noc.inv.discovery.scheduler import DiscoveryScheduler
 
 CONFIG_DELAY = 10  # Minutes to delay config fetch
 INTERFACE_DELAY = 15  # Minutes to delay interface fetch
 
+discovery_scheduler = DiscoveryScheduler()
 
 @pyrule
 def refresh_config(event):
+    now = datetime.datetime.now()
     # Check managed object is managed
     if not event.managed_object.is_managed:
         return
@@ -32,10 +34,13 @@ def refresh_config(event):
         return
     try:
         config = event.managed_object.config
-    except:
+        config.next_pull = next_pull
+        config.save()
+    except Exception:
         return  # No config found
-    config.next_pull = next_pull
-    config.save()
     # Schedule interface fetch
-    DiscoveryStatusInterface.reschedule(event.managed_object,
-                                        INTERFACE_DELAY * 60)
+    discovery_scheduler.reschedule_job(
+        job_name="interface_discovery",
+        key=event.managed_object.id,
+        ts=now + datetime.timedelta(minutes=INTERFACE_DELAY)
+    )
