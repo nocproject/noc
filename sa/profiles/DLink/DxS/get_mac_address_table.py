@@ -54,6 +54,7 @@ class Script(NOCScript):
                     "deleteontimeout":"D",
                     "del_on_timeout":"D",
                     "deleteonreset":"D",
+                    "del_on_reset":"D",
                     "permanent":"S",
                     "self":"S"}[match.group("type").lower()],
             }]
