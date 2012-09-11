@@ -74,7 +74,7 @@ class Web(Daemon):
                 "path": "static"}),
             # /media/
             (r"^/media/(.*)", tornado.web.StaticFileHandler, {
-                "path": "contrib/lib/django/contrib/admin/static/admin"}),
+                "path": "contrib/lib/django/contrib/admin/static"}),
             # /doc/
             (r"^/doc/(.*)", tornado.web.StaticFileHandler, {
                 "path": "share/doc/users_guide/html"}),

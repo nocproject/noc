@@ -1,17 +1,16 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="{{ LANGUAGE_CODE|default:"en-us" }}" xml:lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+{% load admin_static %}{% load url from future %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
 <title>{% block title %}{% endblock %} | {{setup.installation_name}}</title>
 {% if setup.favicon_mime %}
     <link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />
 {% endif %}
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
-<link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" /><link rel="stylesheet" type="text/css" href="/static/css/main.css" />
 <META NAME="Copyright" CONTENT="2007-2011, nocproject.org" />
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
 <META HTTP-EQUIV="Expires" CONTENT="0" />
-<SCRIPT TYPE="text/javascript" SRC="{% admin_media_prefix %}js/jquery.js"></SCRIPT>
+<SCRIPT TYPE="text/javascript" SRC="{% static "admin/js/jquery.js" %}"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/jquery.corner.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript" SRC="/static/js/popup.js"></SCRIPT>
 {% block extrastyle %}{% endblock %}

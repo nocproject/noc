@@ -111,9 +111,9 @@ def object_status(o):
     if status is None:
         s += ["? "]
     elif status:
-        s += ["<img src='/media/img/icon-yes.gif' title='Up' />"]
+        s += ["<img src='/media/admin/img/icon-yes.gif' title='Up' />"]
     else:
-        s += ["<img src='/media/img/icon-no.gif' title='Down' />"]
+        s += ["<img src='/media/admin/img/icon-no.gif' title='Down' />"]
     if o.is_managed:
         try:
             o.profile

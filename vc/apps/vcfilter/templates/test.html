@@ -21,7 +21,7 @@
         {% for r in result %}
             <TR class="{%cycle 'row1' 'row2'%}">
                 <TD>{{r.vcfilter}}</TD>
-                <TD><img src="/media/img/icon-{%if r.result%}yes{%else%}no{%endif%}.gif"></TD>
+                <TD><img src="/media/admin/img/icon-{%if r.result%}yes{%else%}no{%endif%}.gif"></TD>
             </TR>
         {% endfor %}
     </TABLE>

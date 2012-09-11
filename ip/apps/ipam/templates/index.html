@@ -1,7 +1,7 @@
 {% extends "template.html" %}
 {% load tags %}
 {% block extrahead %}
-    <link rel="stylesheet" type="text/css" href="/media/css/changelists.css" />
+    <link rel="stylesheet" type="text/css" href="/media/admin/css/changelists.css" />
 {% endblock %}
 {% block content %}
 <h1>Select VRF</h1>
@@ -36,7 +36,7 @@ function on_mynetworks(n)
     <div id="toolbar">
         <form id="changelist-search" action="" method="get">{% csrf_token %}
             <div><!-- DIV needed for valid HTML -->
-                <label for="searchbar"><img src="/media/img/icon_searchbox.png" alt="Search" /></label>
+                <label for="searchbar"><img src="/media/admin/img/icon_searchbox.png" alt="Search" /></label>
                 <input type="text" size="40" name="q" value="{{query}}" id="searchbar" />
                 <input type="submit" value="Search" />
             </div>
