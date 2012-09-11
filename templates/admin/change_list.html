@@ -82,25 +82,11 @@
       {% block filters %}
         {% if cl.has_filters %}
           <div id="changelist-filter">
-            <h2>{% trans 'Filter' %} <img id="cl-toggle-icon" alt="toggle" title="toggle" src="/media/admin/img/arrow-up.gif" style="float: right; padding: 2px"/></h2>
+            <h2>{% trans 'Filter' %} <img id="cl-toggle-icon" src="/static/img/silk-companion/arrow_ne.png" style="float: right; padding: 2px"/></h2>
             <div id="changelist-content">
             {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
             </div>
           </div>
-          {%comment%}
-          <script type="text/javascript">
-          $("#changelist-filter h2").click(
-              function () {
-                  $("#changelist-content").slideToggle("slow");
-                  if($("#changelist #cl-toggle-icon").attr("src").search("-up")==-1) {
-                      $("#changelist #cl-toggle-icon").attr("src","/media/admin/img/arrow-up.gif");
-                  } else {
-                      $("#changelist #cl-toggle-icon").attr("src","/media/admin/img/arrow-down.gif");
-                  }
-                  return false;
-              });
-          </script>
-          {%endcomment%}
         {% endif %}
       {% endblock %}
       
@@ -122,48 +108,12 @@
   $("#changelist-filter h2").click(
       function () {
           $("#changelist-content").slideToggle("slow");
-          if($("#changelist #cl-toggle-icon").attr("src").search("-up")==-1) {
-              $("#changelist #cl-toggle-icon").attr("src","/media/admin/img/arrow-up.gif");
+          if($("#changelist #cl-toggle-icon").attr("src").search("_sw")==-1) {
+              $("#changelist #cl-toggle-icon").attr("src","/static/img/silk-companion/arrow_sw.png");
           } else {
-              $("#changelist #cl-toggle-icon").attr("src","/media/admin/img/arrow-down.gif");
+              $("#changelist #cl-toggle-icon").attr("src","/static/img/silk-companion/arrow_ne.png");
           }
           return false;
       });
   </script>
 {% endblock %}
-{%comment%}
-
-
-
-{% extends "admin/base_site.html" %}
-{% load adminmedia admin_list i18n %}
-
-{% block stylesheet %}{% admin_media_prefix %}css/changelists.css{% endblock %}
-
-{% block bodyclass %}change-list{% endblock %}
-
-{% if not is_popup %}{% block breadcrumbs %}<div class="breadcrumbs"><a href="../../">{% trans "Home" %}</a> &rsaquo; <a href="../">{{ app_label|capfirst }}</a> &rsaquo; {{ cl.opts.verbose_name_plural|capfirst }}</div>{% endblock %}{% endif %}
-
-{% block coltype %}flex{% endblock %}
-
-{% block content %}
-<div id="content-main">
-{% block object-tools %}
-<ul class="object-tools">
-{% if user.is_superuser %}
-<li><a href="csv/export/{% for key, value in cl.params.items %}{% if forloop.first %}?{% else %}&{% endif %}{{ key }}={{ value }}{% endfor %}" class="viewsitelink">CSV Export</a></li>
-{% endif %}
-{% if has_add_permission %}
-<li><a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">{% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}</a></li>
-{% endif %}
-</ul>
-{% endblock %}
-<div id="cl-extra-object-tools" style="display:none">{%block extra-object-tools%}{%endblock%}</div>
-<script type="text/javascript">
-$(".object-tools").html($("#cl-extra-object-tools").html()+$(".object-tools").html());
-</script>
-<div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
-{% block search %}{% search_form cl %}{% endblock %}
-{% block date_hierarchy %}{% date_hierarchy cl %}{% endblock %}
-
-{%endcomment%}
