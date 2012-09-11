@@ -633,7 +633,7 @@ class Classifier(Daemon):
         return IPv6PrefixParameter().clean(value)
 
     def decode_ip_prefix(self, event, value):
-        return IPPrefixParameter().clean(value)
+        return PrefixParameter().clean(value)
 
     def decode_mac(self, event, value):
         return MACAddressParameter().clean(value)
