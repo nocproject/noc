@@ -75,13 +75,9 @@ class Script(NOCScript):
                 if p['port'] in v['tagged_ports']:
                     tagged_vlans += [v['vlan_id']]
                 if p['port'] in v['untagged_ports']:
-                    i['subinterfaces'][0].update({
-                        "untagged_vlan" : v['vlan_id']
-                    })
-                if len(tagged_vlans) != 0:
-                    i['subinterfaces'][0].update({
-                        "tagged_vlan" : tagged_vlans
-                    })
+                    i['subinterfaces'][0]["untagged_vlan"] = v['vlan_id']
+            if len(tagged_vlans) != 0:
+                i['subinterfaces'][0]['tagged_vlans'] = tagged_vlans
             interfaces += [i]
 
         ipif = self.cli("show ipif")
