@@ -173,7 +173,7 @@
                 {% for k, v in e.resolved_vars.items %}
                     <tr class="{% cycle 'row1' 'row2' %}">
                         <td class="data-key">{{k}}</td>
-                        <td>{{v}}{% if "::" in k %}<a href="#" class="mib-help" onclick="return show_popup('MIB Help', '{% url fm:mib:help k%}');"><img src="/media/img/admin/selector-addall.gif" title="Show MIB help"/></a>{% endif %}</td>
+                        <td>{{v}}{% if "::" in k %}<a href="#" class="mib-help" onclick="return show_popup('MIB Help', '{% url fm:mib:help k%}');"><img src="static/img/fam/silk/resultset_next.png" title="Show MIB help"/></a>{% endif %}</td>
                     </tr>
                 {% endfor %}
             {% endif %}

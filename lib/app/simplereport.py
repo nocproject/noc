@@ -366,7 +366,7 @@ class TableColumn(ReportNode):
         Display boolean field
         """
         t = "yes" if f else "no"
-        return SafeString("<img title='%s' src='%simg/admin/icon-%s.gif' />" % (
+        return SafeString("<img title='%s' src='%simg/icon-%s.gif' />" % (
         t, settings.ADMIN_MEDIA_PREFIX, t))
 
     def f_integer(self, f):
@@ -504,7 +504,7 @@ class TableSection(ReportSection):
                         # Display totals from previous sections
                         s += render_subtotals()
                     s += [
-                        "<tr><td colspan=%d style='margin: 0;padding: 2px 5px 3px 5px;font-size: 11px;text-align:left;font-weight:bold;background: #7CA0C7 url(/media/img/admin/default-bg.gif) top left repeat-x;color:white;'>" % s_span,
+                        "<tr><td colspan=%d style='margin: 0;padding: 2px 5px 3px 5px;font-size: 11px;text-align:left;font-weight:bold;background: #7CA0C7 url(/media/img/default-bg.gif) top left repeat-x;color:white;'>" % s_span,
                         self.quote(row.title), "</td></tr>"]
                     current_section = row
                     continue

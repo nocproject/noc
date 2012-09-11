@@ -206,7 +206,7 @@ class PrefixNode(Node):
                 continue
             if f.type == "bool":
                 t = "yes" if f else "no"
-                icon = "<img src='%simg/admin/icon-%s.gif' />" % (
+                icon = "<img src='%simg/icon-%s.gif' />" % (
                     ADMIN_MEDIA_PREFIX, t)
                 r += ["<br/>%s: %s" % (f.label, icon)]
             else:

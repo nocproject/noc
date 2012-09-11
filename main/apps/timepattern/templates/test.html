@@ -13,7 +13,7 @@
         {% for r in result %}
             <tr class="{%cycle 'row1' 'row2'%}">
                 <td>{{r.pattern.name}}</td>
-                <td><img src="/media/img/admin/icon-{%if r.result%}yes{%else%}no{%endif%}.gif"></td>
+                <td><img src="/media/img/icon-{%if r.result%}yes{%else%}no{%endif%}.gif"></td>
             </tr>
         {% endfor %}
     </table>
