@@ -44,7 +44,7 @@ def reduce_task(task, snippet):
             result = "<pre>%s</pre>" % str(mt.script_result)
             icon = "no"
         r += ["<tr>", "<td>",
-              "<img src='/media/img/admin/icon-%s.gif' />" % icon,
+              "<img src='/media/img/icon-%s.gif' />" % icon,
               "&nbsp;",
               mt.managed_object.name, "</td>",
               "<td>", result, "</td>", "</tr>"]

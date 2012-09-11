@@ -24,7 +24,7 @@ class AccessWidget(forms.Widget):
             font-size:  11px;
             text-align: left;
             font-weight: bold;
-            background:  #7CA0C7 url(/media/img/admin/default-bg.gif) top left repeat-x;
+            background:  #7CA0C7 url(/media/img/default-bg.gif) top left repeat-x;
             color:       white;
         }
         

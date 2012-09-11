@@ -286,31 +286,32 @@ class CustomField(models.Model):
         """
         Return *Field instance
         """
+        name = str(self.name)
         if self.type == "str":
             l = self.max_length if self.max_length else 256
             return models.CharField(
-                name=self.name,
+                name=name,
                 db_column=self.db_column,
                 null=True, blank=True,
                 max_length=l, choices=self.get_enums())
         elif self.type == "int":
             return models.IntegerField(
-                name=self.name,
+                name=name,
                 db_column=self.db_column,
                 null=True, blank=True)
         elif self.type == "bool":
             return models.BooleanField(
-                name=self.name,
+                name=name,
                 db_column=self.db_column,
                 default=False)
         elif self.type == "date":
             return models.DateField(
-                name=self.name,
+                name=name,
                 db_column=self.db_column,
                 null=True, blank=True)
         elif self.type == "datetime":
             return models.DateTimeField(
-                name=self.name,
+                name=name,
                 db_column=self.db_column,
                 null=True, blank=True)
         else:

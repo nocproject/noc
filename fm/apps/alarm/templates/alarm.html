@@ -127,10 +127,10 @@ function toggle_severity() {
     
     if ($m.is(":hidden")) {
         $m.show();
-        $i.attr("src", "/media/img/admin/selector-removeall.gif");
+        $i.attr("src", "/static/img/fam/silk/resultset_previous.png");
     } else {
         $m.hide();
-        $i.attr("src", "/media/img/admin/selector-addall.gif");
+        $i.attr("src", "/static/img/fam/silk/resultset_next.png");
     }
 }
 
@@ -140,10 +140,10 @@ function toggle_root() {
     
     if ($m.is(":hidden")) {
         $m.show();
-        $i.attr("src", "/media/img/admin/selector-removeall.gif");
+        $i.attr("src", "/static/img/fam/silk/resultset_previous.png");
     } else {
         $m.hide();
-        $i.attr("src", "/media/img/admin/selector-addall.gif");
+        $i.attr("src", "/static/img/fam/silk/resultset_next.png");
     }
 }
 </script>
@@ -172,7 +172,7 @@ function toggle_root() {
                         </form>
                     </span>
                     <a href="#" onclick="return toggle_root();">
-                        <img id="root-icon" src="/media/img/admin/selector-addall.gif" title="Change root cause" />
+                        <img id="root-icon" src="/static/img/fam/silk/resultset_next.png" title="Change root cause" />
                     </a>
                 {% endif %}
             </td>
@@ -193,7 +193,7 @@ function toggle_root() {
                     </select>
                 </span>
                 <a href="#" onclick="return toggle_severity();">
-                    <img id="severity-icon" src="/media/img/admin/selector-addall.gif" title="Change severity" />
+                    <img id="severity-icon" src="/static/img/fam/silk/resultset_next.png" title="Change severity" />
                 </a>
             {% endif %}
             </td>

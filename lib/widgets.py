@@ -146,7 +146,7 @@ class TreePopupWidget(Input):
             <input type="hidden" id="%(id)s" name="%(id)s" value="%(value)s" />
             <span id="%(id)s_text">%(d_value)s</span>
             <a href="#" onclick="show_popup_choose('%(id)s', '%(title)s', '%(lookup)s');">
-                <img src="/media/img/admin/selector-addall.gif" />
+                <img src="static/img/fam/silk/resultset_next.png" />
             </a>
             """ % {"title": escape(self.attrs["title"]),
                    "lookup": self.attrs["lookup"],
