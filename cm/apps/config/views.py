@@ -79,7 +79,7 @@ class ConfigAdmin(admin.ModelAdmin):
                    "managed_object__activator",
                    "managed_object__profile_name",
                    "managed_object__administrative_domain"]
-    search_fields = ["repo_path"]
+    search_fields = ["repo_path", "managed_object__name"]
     actions = ["get_now"]
 
     def queryset(self, request):
