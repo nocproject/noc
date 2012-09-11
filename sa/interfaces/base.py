@@ -912,14 +912,27 @@ class IPParameter(StringParameter):
         """
         >>> IPParameter().clean("192.168.0.1")
         '192.168.0.1'
-        >>> IPParameter().clean("::")
-        '::'
+        >>> PrefixParameter().clean("2001:db8::/32")
+        '2001:db8::/32'
         """
         if ":" in value:
             return IPv6Parameter().clean(value)
         else:
             return IPv4Parameter().clean(value)
-    
+
+##
+## Prefix parameter
+##
+class PrefixParameter(StringParameter):
+    def clean(self, value):
+        """
+        >>> PrefixParameter().clean("192.168.0.0/24")
+        '192.168.0.0/24'
+        """
+        if ":" in value:
+            return IPv6PrefixParameter().clean(value)
+        else:
+            return IPv4PrefixParameter().clean(value)
 
 ##
 ##
