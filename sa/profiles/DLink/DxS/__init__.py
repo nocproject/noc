@@ -78,8 +78,8 @@ class Profile(NOCProfile):
         r"(?P<duplex>Half|Full)/(?P<flowctrl>None|802.3x))?\s+"
         r"(?P<address_learning>Enabled|Disabled)\s*"
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
-        r"\n\s+Desc(ription)?:\s*(?P<desc>\S*?)\s*\n",
-        re.MULTILINE | re.DOTALL)
+        r"\n\s+Desc(ription)?:\s*(?P<desc>\S*\s*\S*\s*\S*\s*\S*\s*\S*\s*)\n",
+        re.MULTILINE)
 
     def parse_interface(self, s):
         match = self.rx_port.search(s)
