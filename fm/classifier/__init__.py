@@ -21,7 +21,7 @@ from noc.lib.daemon import Daemon
 from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
                           EventClass, MIB, EventLog, CloneClassificationRule,\
                           ActiveEvent, EventTrigger, Enumeration
-from noc.inv.models import Interface, SubInterface
+from noc.inv.models import Interface, SubInterface, InterfaceProfile
 from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models
 from noc.sa.models import profile_registry, ManagedObject
@@ -448,6 +448,8 @@ class Classifier(Daemon):
         self.enumerations = {}  # name -> value -> enumerated
         self.suppression = {}  # event_class_id -> (condition, suppress)
         self.dump_clone = False
+        # Default link event action, when interface is not in inventory
+        self.default_link_action = None
         Daemon.__init__(self)
         logging.info("Running Classifier version %s" % self.version)
         self.correlator_scheduler = CorrelatorScheduler()
@@ -467,6 +469,7 @@ class Classifier(Daemon):
         self.load_rules()
         self.load_triggers()
         self.load_suppression()
+        self.load_link_action()
 
     def load_rules(self):
         """
@@ -607,6 +610,16 @@ class Classifier(Daemon):
                                        s["suppress"])
                 for s in suppression]
         logging.info("Suppression rules are loaded")
+
+    def load_link_action(self):
+        self.default_link_action = None
+        profile_name = self.config.get(
+            "classifier", "default_interface_profile").strip()
+        if profile_name:
+            p = InterfaceProfile.objects.filter(name=profile_name).first()
+            if p:
+                logging.info("Setting default link event action to %r" % p.link_events)
+                self.default_link_action = p.link_events
 
     ##
     ## Variable decoders
@@ -883,15 +896,17 @@ class Classifier(Daemon):
             ).first()
             if iface:
                 action = iface.profile.link_events
-                if action == "I":
-                    # Ignore
-                    logging.info("Event %s mark as ignored by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name))
-                    event.delete()
-                    return CR_DELETED
-                elif action == "L":
-                    # Do not dispose
-                    logging.info("Event %s marked as not disposable by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name))
-                    disposable = False
+            else:
+                action = self.default_link_action
+            if action == "I":
+                # Ignore
+                logging.info("Event %s mark as ignored by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name))
+                event.delete()
+                return CR_DELETED
+            elif action == "L":
+                # Do not dispose
+                logging.info("Event %s marked as not disposable by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name))
+                disposable = False
         # Suppress repeats
         if event_class.id in self.suppression:
             suppress, name, nearest = self.to_suppress(event, event_class,
