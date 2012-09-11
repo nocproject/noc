@@ -15,7 +15,7 @@
                 {% for name,required,rel in fields %}
                 <tr class="{%cycle 'row1' 'row2'%}"     >
                     <td>{{name}}</td>
-                    <td><img src="/media/img/icon-{%if required %}yes{%else%}no{%endif%}.gif"></td>
+                    <td><img src="/media/admin/img/icon-{%if required %}yes{%else%}no{%endif%}.gif"></td>
                     <td>{{rel}}</td>
                 </tr>
                 {% endfor %}

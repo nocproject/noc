@@ -36,7 +36,7 @@ distribution.allow_tags = True
 ## Override auto-generated column
 ##
 def ag(obj):
-    return "<img src='/media/img/icon-%s.gif'>" % {True: "yes",
+    return "<img src='/media/admin/img/icon-%s.gif'>" % {True: "yes",
                                             False: "no"}[obj.is_auto_generated]
 ag.short_description = SafeString("Auto<br/>Gen.")
 ag.allow_tags = True

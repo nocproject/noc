@@ -45,7 +45,7 @@ class NOCForm(forms.Form):
     """
     class Media:
         css = {
-            "all": ["/media/css/forms.css"],
+            "all": ["/media/admin/css/forms.css"],
             }
 
     def __init__(self, *args, **kwargs):

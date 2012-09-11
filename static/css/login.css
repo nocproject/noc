@@ -37,11 +37,11 @@ ul.errorlist {
     margin: 0 0 3px 0;
     border: 1px solid red;
     color: white;
-    background: red url(/media/img/icon_alert.gif) 5px .3em no-repeat;
+    background: red url(/media/admin/img/icon_alert.gif) 5px .3em no-repeat;
 }
 
 input[type=submit] {
-    background: white url(/media/img/nav-bg.gif) bottom repeat-x;
+    background: white url(/media/admin/img/nav-bg.gif) bottom repeat-x;
     padding: 3px 5px;
     color: black;
     border: 1px solid #bbb;

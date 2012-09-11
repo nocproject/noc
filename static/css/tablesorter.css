@@ -47,7 +47,7 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 .tablesorter-search-row {
     padding: 3px;
     border-bottom: 1px solid #ddd;
-    background: #e1e1e1 url(/media/img/nav-bg.gif) top left repeat-x;
+    background: #e1e1e1 url(/media/admin/img/nav-bg.gif) top left repeat-x;
     color: #666;
 }
 
@@ -66,5 +66,5 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 
 .tablesorter-container {
     border: 1px solid #ccc;
-    background: white url(/media/img/changelist-bg.gif) top right repeat-y !important;
+    background: white url(/media/admin/img/changelist-bg.gif) top right repeat-y !important;
 }
