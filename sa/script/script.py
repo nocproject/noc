@@ -715,7 +715,10 @@ class Script(threading.Thread):
                                 if cmd_stop:
                                     # Stop loop at final page
                                     self.debug("Stopping stream. Sending %r" % cmd_stop)
-                                    stream.send(cmd_stop)
+                                    try:
+                                        stream.send(cmd_stop)
+                                    except StopIteration:
+                                        pass  # Ignore stopped generator
                     else:
                         r_key = key
                         if cmd_next:
