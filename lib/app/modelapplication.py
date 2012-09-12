@@ -143,8 +143,10 @@ class ModelApplication(Application):
     @view(url=r"^add/$", url_name="add", access=HasPerm("add"))
     def view_add(self, request, form_url="", extra_context=None):
         """Display add form"""
-        return self.admin.add_view(request,
-                               extra_context=self.get_context(extra_context))
+        return self.admin.add_view(
+            request,
+            form_url=self.base_url,
+            extra_context=self.get_context(extra_context))
     
     @view(url=r"^(\d+)/history/$", url_name="history",
           access=HasPerm("change"))
@@ -163,10 +165,13 @@ class ModelApplication(Application):
             return self.response_redirect("..")
     
     @view(url=r"^(\d+)/$", url_name="change", access=HasPerm("change"))
-    def view_change(self,request,object_id,extra_context=None):
+    def view_change(self, request, object_id, extra_context=None):
         """Display change form"""
-        return self.admin.change_view(request, object_id,
-                                      self.get_context(extra_context))
+        return self.admin.change_view(
+            request,
+            object_id,
+            form_url=self.base_url,
+            extra_context=self.get_context(extra_context))
 
     ##
     ## Backport from ExtApplication/ExtModelApplication for lookup support

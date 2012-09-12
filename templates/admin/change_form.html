@@ -1,14 +1,15 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_modify adminmedia %}
+{% load i18n admin_static admin_modify %}
+{% load url from future %}
+{% load admin_urls %}
 
 {% block extrahead %}{{ block.super }}
-{% url admin:jsi18n as jsi18nurl %}
+{% url 'admin:jsi18n' as jsi18nurl %}
 <script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
 {{ media }}
 {% endblock %}
 
-{% block extrastyle %}
-{{ block.super }}
+{% block extrastyle %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="/media/admin/css/forms.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/forms.css" />
 {% endblock %}
@@ -17,14 +18,14 @@
 
 {% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
 
-{% block breadcrumbs %}
 {% if not is_popup %}
+    {% block breadcrumbs %}
     {{block.super}}
     <li>{{app.module_title}}</li>
     <li><a href="{{app.base_url}}">{{app.title}}</a></li>
     <li>{% if add %}{% trans "Add" %} {{ opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}</li>
+    {% endblock %}
 {%endif%}
-{% endblock %}
 
 {% block content %}<div id="content-main">
 {% block object-tools %}
@@ -35,8 +36,7 @@
 {% if save_on_top %}{% submit_row %}{% endif %}
 {% if errors %}
     <p class="errornote">
-    {% blocktrans count errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
-    </p>
+    {% blocktrans count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}    </p>
     {{ adminform.form.non_field_errors }}
 {% endif %}
 
@@ -52,7 +52,7 @@
 
 {% block after_related_objects %}{% endblock %}
 
-{% submit_row %}
+{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
 
 {% if adminform and add %}
    <script type="text/javascript">document.getElementById("{{ adminform.first_field.auto_id }}").focus();</script>
