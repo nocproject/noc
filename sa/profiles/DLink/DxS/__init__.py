@@ -79,8 +79,9 @@ class Profile(NOCProfile):
         r"(?P<address_learning>Enabled|Disabled)\s*"
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
-        r"\n\s+Desc(ription)?:\s*(?P<desc>\S*\s*\S*\s*\S*\s*\S*\s*\S*\s*)\n",
+        r"\n\s+Desc(ription)?:\s*?(?P<desc>.*?)$",
         re.MULTILINE)
+
 
     def parse_interface(self, s):
         match = self.rx_port.search(s)
