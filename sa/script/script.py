@@ -174,7 +174,6 @@ class Script(threading.Thread):
 
     def __init__(self, profile, _activator, access_profile, timeout=0, parent=None, **kwargs):
         self.start_time = time.time()
-        self.daemon = True  # Daemon thread
         self.parent = parent
         self.access_profile = access_profile
         self.attrs = {}

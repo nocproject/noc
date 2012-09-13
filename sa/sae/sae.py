@@ -260,7 +260,7 @@ class SAE(Daemon):
         if type(data) == list:
             data = dict(data)
         elif type(data) != dict:
-            raise ValidationError("List or dict type required")
+            raise ValueError("List or dict type required")
         # Strip syslog facility if required
         if (self.strip_syslog_facility and "source" in data
             and data["source"] == "syslog" and "facility" in data):
