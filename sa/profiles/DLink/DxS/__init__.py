@@ -69,7 +69,7 @@ class Profile(NOCProfile):
         else:
             script.cli("disable clipaging")
 
-    rx_port = re.compile(r"^\s*(?P<port>\d+(/|:)?\d*)\s+"
+    rx_port = re.compile(r"^\s*(?P<port>\d+(/|:)?\d*)\s*"
         r"(\((?P<media_type>(C|F))\))?\s+(?P<admin_state>Enabled|Disabled)\s+"
         r"(?P<admin_speed>Auto|10M|100M|1000M|10G)/"
         r"((?P<admin_duplex>Half|Full)/)?"
@@ -77,6 +77,7 @@ class Profile(NOCProfile):
         r"(?P<status>LinkDown|Link\sDown)?((?P<speed>10M|100M|1000M|10G)/"
         r"(?P<duplex>Half|Full)/(?P<flowctrl>None|802.3x))?\s+"
         r"(?P<address_learning>Enabled|Disabled)\s*"
+        r"((?P<trap_state>Enabled|Disabled)\s*)?"
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
         r"\n\s+Desc(ription)?:\s*(?P<desc>\S*\s*\S*\s*\S*\s*\S*\s*\S*\s*)\n",
         re.MULTILINE)
@@ -99,6 +100,7 @@ class Profile(NOCProfile):
                 "flowctrl": match.group("flowctrl"),
                 "address_learning": match.group("address_learning").strip(),
                 "mdix": match.group("mdix"),
+                "trap_state": match.group("trap_state"),
                 "desc": match.group("desc").strip()
             }
             key = "%s-%s" % (port, media_type)
