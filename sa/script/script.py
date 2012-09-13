@@ -174,6 +174,7 @@ class Script(threading.Thread):
 
     def __init__(self, profile, _activator, access_profile, timeout=0, parent=None, **kwargs):
         self.start_time = time.time()
+        self.daemon = True  # Daemon thread
         self.parent = parent
         self.access_profile = access_profile
         self.attrs = {}
@@ -695,6 +696,7 @@ class Script(threading.Thread):
         input = ""
         r_key = None
         nr = 0
+        stop_sent = False
         for data in stream:
             input += data
             while input:
@@ -711,14 +713,15 @@ class Script(threading.Thread):
                     if r_key:
                         if r_key == key:
                             nr += 1
-                            if nr >= 3:  # 3 repeats
-                                if cmd_stop:
-                                    # Stop loop at final page
-                                    self.debug("Stopping stream. Sending %r" % cmd_stop)
-                                    try:
-                                        stream.send(cmd_stop)
-                                    except StopIteration:
-                                        pass  # Ignore stopped generator
+                            if nr >= 3 and cmd_stop and not stop_sent:
+                                # Stop loop at final page
+                                # After 3 repeats
+                                self.debug("Stopping stream. Sending %r" % cmd_stop)
+                                try:
+                                    stream.send(cmd_stop)
+                                    stop_sent = True
+                                except StopIteration:
+                                    pass  # Ignore stopped generator
                     else:
                         r_key = key
                         if cmd_next:
