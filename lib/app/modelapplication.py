@@ -133,7 +133,7 @@ class ModelApplication(Application):
         return "%s.%s" % (self.model._meta.app_label, 
                           self.model._meta.object_name.lower())
     
-    @view(url=r"^$", url_name="changelist", access=HasPerm("change"),
+    @view(url=r"^$", url_name="admin:%s_%s_changelist", access=HasPerm("change"),
           menu=get_menu)
     def view_changelist(self, request, extra_context=None):
         """Display changelist"""
@@ -145,9 +145,9 @@ class ModelApplication(Application):
         """Display add form"""
         return self.admin.add_view(
             request,
-            form_url=self.base_url,
+            form_url=form_url,
             extra_context=self.get_context(extra_context))
-    
+
     @view(url=r"^(\d+)/history/$", url_name="history",
           access=HasPerm("change"))
     def view_history(self,request,object_id,extra_context=None):
@@ -170,7 +170,6 @@ class ModelApplication(Application):
         return self.admin.change_view(
             request,
             object_id,
-            form_url=self.base_url,
             extra_context=self.get_context(extra_context))
 
     ##
