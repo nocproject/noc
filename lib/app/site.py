@@ -89,6 +89,11 @@ class Site(object):
     def __init__(self):
         self.apps = {}  # app_id -> app instance
         self.urlpatterns = patterns("")
+        # Install admin: namespace
+        # for model applications
+        self.admin_patterns = patterns("")  # Django 1.4 compatibility
+        self.urlpatterns = [RegexURLResolver(
+            "^admin/", self.admin_patterns, namespace="admin")]
         self.urlresolvers = {}  # (module,appp) -> RegexURLResolver
         self.menu = []
         self.menu_index = {}  # id -> menu item
@@ -391,7 +396,17 @@ class Site(object):
                 if u.name:
                     names.add(u.name)
             sv = self.site_view(app, mm)
-            ar += [RegexURLPattern(u.url, sv, name=u.name)]
+            # Django 1.4 workaround
+            u_name = u.name
+            if u_name and u_name.startswith("admin:"):
+                if "%" in u_name:
+                    u_name = u_name % (app.module, app.app)
+                url = "^../%s/%s/%s" % (app.module, app.app, u.url[1:])
+                self.admin_patterns += [
+                    RegexURLPattern(url, sv, name=u_name.split(":", 1)[1])
+                ]
+                u_name = u_name.rsplit("_", 1)[1]
+            ar += [RegexURLPattern(u.url, sv, name=u_name)]
             for n in names:
                 self.register_named_view(app.module, app.app, n, sv)
         # Register application-level menu
