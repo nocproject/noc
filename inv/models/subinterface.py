@@ -21,6 +21,7 @@ class SubInterface(Document):
         "indexes": [
             "interface", "managed_object",
             "untagged_vlan", "tagged_vlans",
+            "enabled_afi",
             "is_bridge", "is_ipv4", "is_ipv6"
         ]
     }
@@ -32,6 +33,9 @@ class SubInterface(Document):
     description = StringField(required=False)
     mac = StringField(required=False)
     vlan_ids = ListField(IntField(), default=[])
+    enabled_afi = ListField(StringField(
+        choices=[(x, x) for x in "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE"]
+    ), default=[])
     is_ipv4 = BooleanField(default=False)
     is_ipv6 = BooleanField(default=False)
     is_mpls = BooleanField(default=False)
@@ -39,6 +43,13 @@ class SubInterface(Document):
     ipv4_addresses = ListField(StringField(), default=[])
     ipv6_addresses = ListField(StringField(), default=[])
     iso_addresses = ListField(StringField(), default=[])
+    enabled_protocols = ListField(StringField(
+        choices=[(x, x) for x in [
+            "ISIS", "OSPF", "RIP", "EIGRP",
+            "BGP",
+            "LDP", "RSVP"
+        ]]
+    ), default=[])
     is_isis = BooleanField(default=False)
     is_ospf = BooleanField(default=False)
     is_rsvp = BooleanField(default=False)

@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-from noc.lib.nosql import Document, ForeignKeyField, StringField,\
-    IntField, BooleanField, PlainReferenceField
+from noc.lib.nosql import (Document, ForeignKeyField, StringField,
+    IntField, BooleanField, PlainReferenceField, ListField)
 from interfaceprofile import InterfaceProfile
 from noc.sa.models import ManagedObject
 from noc.sa.interfaces import MACAddressParameter
@@ -36,7 +36,10 @@ class Interface(Document):
     ifindex = IntField(required=False)
     mac = StringField(required=False)
     aggregated_interface = PlainReferenceField("self", required=False)
-    is_lacp = BooleanField(default=False)
+    is_lacp = BooleanField(default=False)  # @todo: Deprecated
+    enabled_protocols = ListField(StringField(
+        choices=[(x, x) for x in ["LACP", "LLDP", "CDP"]]
+    ), default=[])
     # @todo: admin status + oper status
     profile = PlainReferenceField(InterfaceProfile,
         default=InterfaceProfile.get_default_profile)
