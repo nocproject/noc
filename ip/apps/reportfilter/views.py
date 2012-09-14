@@ -14,6 +14,7 @@ from django.db.models import Q
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.main.models import CustomField
 from noc.ip.models import VRF, Prefix
+from noc.peer.models import AS
 
 
 class ReportFilterApplication(SimpleReport):
@@ -32,6 +33,11 @@ class ReportFilterApplication(SimpleReport):
                     ("", "All"),
                     ("4", _("IPv4")),
                     ("6", _("IPv6"))])
+            asn = forms.ModelChoiceField(
+                label=_("AS Number"),
+                required=False,
+                queryset=AS.objects.order_by("asn")
+            )
             description = forms.CharField(
                 label=_("Description"),
                 required = False
@@ -42,7 +48,7 @@ class ReportFilterApplication(SimpleReport):
 
     def get_data(self, **kwargs):
         def get_row(p):
-            r = [p.vrf.name, p.prefix, p.state.name,
+            r = [p.vrf.name, p.prefix, p.state.name, unicode(p.asn),
                 unicode(p.vc) if p.vc else ""]
             for f in cf:
                 v = getattr(p, f.name)
@@ -58,7 +64,7 @@ class ReportFilterApplication(SimpleReport):
                     q[k + "__icontains"] = v
                 else:
                     q[k] = v
-        columns = ["VRF", "Prefix", "State", "VC"]
+        columns = ["VRF", "Prefix", "State", "AS", "VC"]
         cf = CustomField.table_fields("ip_prefix")
         for f in cf:
             if f.type == "bool":
