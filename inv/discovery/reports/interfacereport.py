@@ -117,7 +117,8 @@ class InterfaceReport(Report):
 
     def submit_interface(self, name, type,
                          mac=None, description=None,
-                         aggregated_interface=None, is_lacp=False):
+                         aggregated_interface=None,
+                         is_lacp=False, enabled_protocols=[]):
         iface = Interface.objects.filter(
             managed_object=self.object.id, name=name).first()
         if iface:
@@ -127,7 +128,8 @@ class InterfaceReport(Report):
                 "mac": mac,
                 "description": description,
                 "aggregated_interface": aggregated_interface,
-                "is_lacp": is_lacp
+                "is_lacp": is_lacp,
+                "enabled_protocols": enabled_protocols
             })
             self.log_changes("Interface '%s' has been changed" % name,
                 changes)
@@ -141,7 +143,8 @@ class InterfaceReport(Report):
                 mac=mac,
                 description=description,
                 aggregated_interface=aggregated_interface,
-                is_lacp=is_lacp
+                is_lacp=is_lacp,
+                enabled_protocols=enabled_protocols
             )
             iface.save()
         return iface
@@ -149,10 +152,12 @@ class InterfaceReport(Report):
     def submit_subinterface(self, forwarding_instance, interface,
                             name, description=None, mac=None,
                             vlan_ids=None,
+                            enabled_afi=[],
                             is_ipv4=False, is_ipv6=False,
                             is_mpls=False, is_bridge=False,
                             ipv4_addresses=[], ipv6_addresses=[],
                             iso_addresses=[],
+                            enabled_protocols=[],
                             is_isis=False, is_ospf=False, is_rsvp=False,
                             is_ldp=False, is_rip=False, is_bgp=False,
                             is_eigrp=False,
@@ -167,6 +172,7 @@ class InterfaceReport(Report):
                 "description": description,
                 "mac": mac,
                 "vlan_ids": vlan_ids,
+                "enabled_afi": enabled_afi,
                 "is_ipv4": is_ipv4,
                 "is_ipv6": is_ipv6,
                 "is_mpls": is_mpls,
@@ -174,6 +180,7 @@ class InterfaceReport(Report):
                 "ipv4_addresses": ipv4_addresses,
                 "ipv6_addresses": ipv6_addresses,
                 "iso_addresses": iso_addresses,
+                "enabled_protocols": enabled_protocols,
                 "is_isis": is_isis,
                 "is_ospf": is_ospf,
                 "is_rsvp": is_rsvp,
@@ -199,6 +206,7 @@ class InterfaceReport(Report):
                 description=description,
                 mac=mac,
                 vlan_ids=vlan_ids,
+                enabled_afi=enabled_afi,
                 is_ipv4=is_ipv4,
                 is_ipv6=is_ipv6,
                 is_mpls=is_mpls,
@@ -206,6 +214,7 @@ class InterfaceReport(Report):
                 ipv4_addresses=ipv4_addresses,
                 ipv6_addresses=ipv6_addresses,
                 iso_addresses=iso_addresses,
+                enabled_protocols=enabled_protocols,
                 is_isis=is_isis,
                 is_ospf=is_ospf,
                 is_rsvp=is_rsvp,

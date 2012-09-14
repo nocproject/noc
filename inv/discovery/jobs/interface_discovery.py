@@ -105,7 +105,8 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                     name=i["name"], type=i["type"], mac=i.get("mac"),
                     description=i.get("description"),
                     aggregated_interface=agg,
-                    is_lacp=i.get("is_lacp", False)
+                    is_lacp=i.get("is_lacp", False),
+                    enabled_protocols=i.get("enabled_protocols", [])
                 )
                 icache[i["name"]] = iface
                 # Submit subinterfaces
@@ -120,9 +121,11 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                         is_ipv6=si.get("is_ipv6", False),
                         is_mpls=si.get("is_mpls", False),
                         is_bridge=si.get("is_bridge", False),
+                        enabled_afi=si.get("enabled_afi", []),
                         ipv4_addresses=si.get("ipv4_addresses", []),
                         ipv6_addresses=si.get("ipv6_addresses", []),
                         iso_addresses=si.get("iso_addresses", []),
+                        enabled_protocols=i.get("enabled_protocols", []),
                         is_isis=si.get("is_isis", False),
                         is_ospf=si.get("is_ospf", False),
                         is_rsvp=si.get("is_rsvp", False),
