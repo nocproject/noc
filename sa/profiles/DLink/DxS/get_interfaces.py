@@ -37,7 +37,8 @@ class Script(NOCScript):
     r"Interface Admin.? State\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
     r"(DHCPv6 Client State\s+:\s+(?:Enabled|Disabled)\s*\n)?"
     r"(Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n)?"
-    r"(IPv4 Address\s+:\s+(?P<ipv4_address>\S+)\s+\(Manual\)\s+Primary\s*\n)?"
+    r"(IPv4 Address\s+:\s+(?P<ipv4_address>\S+)\s+\(Manual\)\s*\n)?"
+    r"(IPv4 Address\s+:\s+(?P<ipv4_addr_pri>\S+)\s+\(Manual\)\s+Primary\s*\n)?"
     r"(Proxy ARP\s+:\s+(?:Enabled|Disabled)\s+\(Local : \S+\s*\)\s*\n)?"
     r"(IPv4 State\s+:\s+(?P<is_ipv4>Enabled|Disabled)\s*\n)?"
     r"(IPv6 State\s+:\s+(?P<is_ipv6>Enabled|Disabled)\s*\n)?"
@@ -149,10 +150,17 @@ class Script(NOCScript):
                     "is_ipv6" : ipv6 == "Enabled"
                 })
             # TODO: Parse secondary IPv4 address and IPv6 address
+            ipv4_addresses = []
             ipv4_address = match.group("ipv4_address")
             if ipv4_address is not None:
+                    ipv4_addresses += [ipv4_address]
+            ipv4_addr_pri = match.group("ipv4_addr_pri")
+            if ipv4_addr_pri is not None:
+                    ipv4_addresses += [ipv4_addr_pri]
+            if ipv4_address is not None \
+            or ipv4_addr_pri is not None:
                 i['subinterfaces'][0].update({
-                    "ipv4_addresses" : [ipv4_address]
+                    "ipv4_addresses" : ipv4_addresses
                 })
                 if ipv4 is None:
                     i['subinterfaces'][0].update({
