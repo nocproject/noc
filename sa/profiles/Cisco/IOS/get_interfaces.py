@@ -84,6 +84,26 @@ class Script(NOCScript):
            "XT": "SVI"          # Extended Tag ATM
            }
 
+    rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
+        re.MULTILINE | re.DOTALL)
+
+    def get_lldp_interfaces(self):
+        """
+        Returns a set of normalized LLDP interface names
+        :return:
+        """
+        try:
+            v = self.cli("show lldp interface")
+        except self.CLISyntaxError:
+            return []
+        ports = set()
+        for s in v.strip().split("\n\n"):
+            match = self.rx_lldp.search(s)
+            if match:
+                if match.group("rx_state").lower() == "enabled":
+                    ports.add(self.profile.convert_interface_name(match.group("iface")))
+        return ports
+
     def get_ospfint(self):
         try:
             v = self.cli("show ip ospf interface brief")
@@ -160,6 +180,8 @@ class Script(NOCScript):
             t = pc["type"] == "L"
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
+        # Get LLDP interfaces
+        lldp = self.get_lldp_interfaces()
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
@@ -230,6 +252,8 @@ class Script(NOCScript):
                         "type": "physical",
                         "enabled_protocols": []
                     }
+                    if inm in lldp:
+                        iface["enabled_protocols"] += ["LLDP"]
                     interfaces += [iface]
             a_stat = match.group("admin_status").lower() == "up"
             o_stat = match.group("oper_status").lower() == "up"
@@ -296,6 +320,8 @@ class Script(NOCScript):
                     "enabled_protocols": [],
                     "subinterfaces": [sub]
                 }
+                if ifname in lldp:
+                    iface["enabled_protocols"] += ["LLDP"]
                 if match.group("desc"):
                     iface["description"] = match.group("desc")
                 if "mac" in sub:
