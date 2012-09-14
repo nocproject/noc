@@ -47,6 +47,7 @@ class ExtDocApplication(ExtApplication):
     sort_param = "__sort"
     format_param = "__format"  # List output format
     query_param = "__query"
+    only_param = "__only"
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -135,7 +136,8 @@ class ExtDocApplication(ExtApplication):
             if p in q:
                 del q[p]
         for p in (self.limit_param, self.page_param, self.start_param,
-            self.format_param, self.sort_param, self.query_param):
+            self.format_param, self.sort_param, self.query_param,
+            self.only_param):
             if p in q:
                 del q[p]
         # Normalize parameters
@@ -144,9 +146,11 @@ class ExtDocApplication(ExtApplication):
                 q[p] = self.clean_fields[p].clean(q[p])
         return q
 
-    def instance_to_dict(self, o):
+    def instance_to_dict(self, o, fields=None):
         r = {}
         for n, f in o._fields.items():
+            if fields and n not in fields:
+                continue
             v = getattr(o, n)
             if v is not None:
                 v = f.to_python(v)
@@ -167,7 +171,7 @@ class ExtDocApplication(ExtApplication):
             r[f] = self.custom_fields[f](o)
         return r
 
-    def instance_to_lookup(self, o):
+    def instance_to_lookup(self, o, fields=None):
         return {
             "id": str(o.id),
             "label": unicode(o)
@@ -183,6 +187,9 @@ class ExtDocApplication(ExtApplication):
         start = q.get(self.start_param)
         format = q.get(self.format_param)
         query = q.get(self.query_param)
+        only = q.get(self.only_param)
+        if only:
+            only = only.split(",")
         ordering = []
         if format == "ext" and self.sort_param in q:
             for r in self.deserialize(q[self.sort_param]):
@@ -199,7 +206,7 @@ class ExtDocApplication(ExtApplication):
             total = data.count()
         if start is not None and limit is not None:
             data = data[int(start):int(start) + int(limit)]
-        out = [formatter(o) for o in data]
+        out = [formatter(o, fields=only) for o in data]
         if format == "ext":
             out = {
                 "total": total,
@@ -244,7 +251,11 @@ class ExtDocApplication(ExtApplication):
             o = self.queryset(request).get(id=id)
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        return self.response(self.instance_to_dict(o), status=self.OK)
+        only = request.GET.get(self.only_param)
+        if only:
+            only = only.split(",")
+        return self.response(self.instance_to_dict(o, fields=only),
+            status=self.OK)
 
     @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24})/?$",
           access="update", api=True)
