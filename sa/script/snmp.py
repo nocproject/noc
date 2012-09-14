@@ -184,10 +184,10 @@ class SNMPGetSocket(UDPSocket):
     def __init__(self, provider, oid):
         self.got_result = False
         self.is_failed = False
-        super(SNMPGetSocket, self).__init__(provider.factory)
         self.provider = provider
         self.oid = oid
         self.address = self.provider.access_profile.address
+        super(SNMPGetSocket, self).__init__(provider.factory)
 
     def create_socket(self):
         super(SNMPGetSocket, self).create_socket()
