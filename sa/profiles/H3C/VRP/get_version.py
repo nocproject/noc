@@ -25,7 +25,7 @@ class Script(NOCScript):
         r"\s3Com\sOS\sV(?P<version>.+?)$",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_ver1 = re.compile(r"^Comware\sSoftware,\s\Version\s(?P<version>.+?),.+"
-        r"^H3C (?P<platform>\S+) uptime is",
+        r"^(H3C )?(?P<platform>\S+) uptime is",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_hw = re.compile(r"Hardware Version is (?P<hardware>\S+)")
     rx_boot = re.compile(r"Bootrom Version is (?P<bootprom>\S+)")
