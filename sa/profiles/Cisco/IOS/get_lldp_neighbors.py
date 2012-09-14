@@ -22,7 +22,7 @@ class Script(NOCScript):
     rx_summary_split = re.compile(r"^Device ID.+?\n",
                                   re.MULTILINE | re.IGNORECASE)
     rx_s_line = re.compile(
-        r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[0-9/\.]*)\s+\d+\s+(?P<capability>\S*)\s+(?P<remote_if>.+)$")
+        r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[\d/\.]*)\s+\d+\s+(?P<capability>\S*)\s+(?P<remote_if>(?:Fa|Gi|Te)\S*?\s?\d+[\d/\.]*)$")
     rx_chassis_id = re.compile(r"^Chassis id:\s*(?P<id>\S+)",
                                re.MULTILINE | re.IGNORECASE)
     rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)",
@@ -45,7 +45,7 @@ class Script(NOCScript):
                 break
             match = self.rx_s_line.match(l)
             if not match:
-                raise self.UnexpectedResultError()
+                continue
             local_if = match.group("local_if")
             i = {"local_interface": local_if, "neighbors": []}
             # Build neighbor data
