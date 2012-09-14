@@ -699,6 +699,9 @@ class Activator(Daemon, FSM):
             self.next_mappings_update = time.time() + response.expire
 
         logging.info("Requesting object mappings")
+        # Delay next request to at least 1 minute
+        self.next_mappings_update = time.time() + 60
+        # Request object mappings
         r = ObjectMappingsRequest()
         self.sae_stream.proxy.object_mappings(r, object_mappings_callback)
 
