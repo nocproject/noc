@@ -55,6 +55,7 @@ class ExtModelApplication(ExtApplication):
     sort_param = "__sort"
     format_param = "__format"  # List output format
     query_param = "__query"
+    only_param = "__only"
     clean_fields = {}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
 
@@ -209,7 +210,8 @@ class ExtModelApplication(ExtApplication):
                 # Skip ignored params
             if np in self.ignored_params or p in (
                 self.limit_param, self.page_param, self.start_param,
-                self.format_param, self.sort_param, self.query_param):
+                self.format_param, self.sort_param, self.query_param,
+                self.only_param):
                 continue
             v = q[p]
             if v == "\x00":
@@ -246,9 +248,11 @@ class ExtModelApplication(ExtApplication):
             nq[p] = v
         return nq
 
-    def instance_to_dict(self, o):
+    def instance_to_dict(self, o, fields=None):
         r = {}
         for f in o._meta.local_fields:
+            if fields and f.name not in fields:
+                continue  # Restrict to selected fields
             if f.name == "tags":
                 # Send tags as a list
                 r[f.name] = [x for x in
@@ -269,10 +273,12 @@ class ExtModelApplication(ExtApplication):
                     r["%s__label" % f.name] = ""
         # Add custom fields
         for f in self.custom_fields:
+            if fields and f not in fields:
+                continue
             r[f] = self.custom_fields[f](o)
         return r
 
-    def instance_to_lookup(self, o):
+    def instance_to_lookup(self, o, fields=None):
         return {
             "id": o.id,
             "label": unicode(o)
@@ -284,12 +290,15 @@ class ExtModelApplication(ExtApplication):
         """
         # Todo: Fix
         q = dict((str(k), v[0] if len(v) == 1 else v)
-        for k, v in request.GET.lists())
+            for k, v in request.GET.lists())
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
         format = q.get(self.format_param)
         query = q.get(self.query_param)
+        only = q.get(self.only_param)
+        if only:
+            only = only.split(",")
         ordering = []
         if format == "ext" and self.sort_param in q:
             for r in self.deserialize(q[self.sort_param]):
@@ -311,7 +320,7 @@ class ExtModelApplication(ExtApplication):
             total = data.count()
         if start is not None and limit is not None:
             data = data[int(start):int(start) + int(limit)]
-        out = [formatter(o) for o in data]
+        out = [formatter(o, fields=only) for o in data]
         if format == "ext":
             out = {
                 "total": total,
@@ -418,7 +427,11 @@ class ExtModelApplication(ExtApplication):
             o = self.queryset(request).get(id=int(id))
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        return self.response(self.instance_to_dict(o), status=self.OK)
+        only = request.GET.get(self.only_param)
+        if only:
+            only = only.split(",")
+        return self.response(self.instance_to_dict(o, fields=only),
+            status=self.OK)
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
