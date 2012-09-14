@@ -227,7 +227,8 @@ class Script(NOCScript):
                         "name": inm,
                         "admin_status": True,
                         "oper_status": True,
-                        "type": "physical"
+                        "type": "physical",
+                        "enabled_protocols": []
                     }
                     interfaces += [iface]
             a_stat = match.group("admin_status").lower() == "up"
@@ -237,6 +238,8 @@ class Script(NOCScript):
                 "name": ifname,
                 "admin_status": a_stat,
                 "oper_status": o_stat,
+                "enabled_afi": [],
+                "enabled_protocols": []
             }
             if "alias" in match.groups():
                 sub["description"] = match.group("alias")
@@ -247,6 +250,7 @@ class Script(NOCScript):
                 sub["mac"] = matchmac.group("mac")
             if ifname in switchports and ifname not in portchannel_members:
                 sub["is_bridge"] = True
+                sub["enabled_afi"] += ["BRIDGE"]
                 u, t = switchports[ifname]
                 if u:
                     sub["untagged_vlan"] = u
@@ -266,15 +270,18 @@ class Script(NOCScript):
             if match.group("ip"):
                 if ifname in ipv4_interfaces:
                     sub["is_ipv4"] = True
+                    sub["enabled_afi"] += ["IPv4"]
                     sub["ipv4_addresses"] = ipv4_interfaces[ifname]
                 if ifname in ipv6_interfaces:
                     sub["is_ipv6"] = True
+                    sub["enabled_afi"] += ["IPv6"]
                     sub["ipv6_addresses"] = ipv6_interfaces[ifname]
             matchifn = self.rx_cisco_interface_name.match(ifname)
             shotn = (matchifn.group("type").capitalize() +
                      matchifn.group("number"))
             if shotn in ospfs:
                 sub["is_ospf"] = True
+                sub["enabled_protocols"] += ["OSPF"]
 
             for i in ifindex:
                 if i["interface"] == full_ifname:
@@ -286,6 +293,7 @@ class Script(NOCScript):
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "type": self.types[ifname[:2]],
+                    "enabled_protocols": [],
                     "subinterfaces": [sub]
                 }
                 if match.group("desc"):
@@ -302,6 +310,7 @@ class Script(NOCScript):
                     ai, is_lacp = portchannel_members[ifname]
                     iface["aggregated_interface"] = ai
                     iface["is_lacp"] = is_lacp
+                    iface["enabled_protocols"] += ["LACP"]
                 interfaces += [iface]
             else:
                 # Append additional subinterface
