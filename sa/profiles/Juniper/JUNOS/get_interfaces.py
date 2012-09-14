@@ -106,6 +106,7 @@ class Script(NOCScript):
                     "snmp_ifindex": match.group("ifindex"),
                     "admin_status": True,
                     "oper_status": True,
+                    "enabled_afi": []
                 }
                 if mac:
                     si["mac"] = mac
@@ -126,11 +127,13 @@ class Script(NOCScript):
                     if proto == "iso":
                         # Protocol ISO
                         si["is_iso"] = True
+                        si["enabled_afi"] += ["ISO"]
                         if local_addresses:
                             si["iso_addresses"] = local_addresses
                     elif proto == "inet":
                         # Protocol IPv4
                         si["is_ipv4"] = True
+                        si["enabled_afi"] += ["IPv4"]
                         si["ipv4_addresses"] = ["%s/32" % a for a in
                                                 local_addresses]
                         # Find connected networks
@@ -141,6 +144,7 @@ class Script(NOCScript):
                     elif proto == "inet6":
                         # Protocol IPv6
                         si["is_ipv6"] = True
+                        si["enabled_afi"] += ["IPv6"]
                         si["ipv6_addresses"] = ["%s/128" % a for a in
                                                 local_addresses]
                         # Find connected networks
@@ -173,7 +177,8 @@ class Script(NOCScript):
                         #     si["untagged_vlans"]
                     # Set vlan_ids
                     if vlan_ids and (
-                        si.get("is_ipv4") or si.get("is_ipv6")):
+                        "IPv4" in si["enabled_afi"] or
+                        "IPv6" in si["enabled_afi"]):
                         si["vlan_ids"] = vlan_ids
                 # Append to subinterfaces list
                 subs += [si]
