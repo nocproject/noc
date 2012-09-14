@@ -88,6 +88,7 @@ class Script(NOCScript):
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "type": ift,
+                "enabled_protocols": []
                 }
             # Get description
             description = None
@@ -103,6 +104,8 @@ class Script(NOCScript):
             if ifname in portchannel_members:
                 iface["aggregated_interface"] = portchannel_members[ifname][0]
                 iface["is_lacp"] = portchannel_members[ifname][1]
+                if portchannel_members[ifname][1]:
+                    iface["enabled_protocols"] += ["LACP"]
             # Process subinterfaces
             subinterfaces = []
             if "aggregated_interface" not in iface:
@@ -110,6 +113,8 @@ class Script(NOCScript):
                     "name": ifname,
                     "admin_status": admin_status,
                     "oper_status": oper_status,
+                    "enabled_afi": [],
+                    "enabled_protocols": []
                     }
                 # Description
                 if iface.get("description"):
@@ -118,6 +123,7 @@ class Script(NOCScript):
                 match = self.rx_int_ipv4.search(s)
                 if match:
                     sub["is_ipv4"] = True
+                    sub["enabled_afi"] += ["IPv4"]
                     sub["ipv4_addresses"] = [match.group("address")]
                 # ifIndex
                 match = self.rx_int_ifindex.search(s)
@@ -129,14 +135,13 @@ class Script(NOCScript):
                 # Set switchports
                 if ifname in switchports:
                     sub["is_bridge"] = True
+                    sub["enabled_afi"] += ["BRIDGE"]
                     u, t = switchports[ifname]
                     if u:
                         sub["untagged_vlan"] = u
                     if t:
                         sub["tagged_vlans"] = t
-                if (sub.get("is_ipv4") or sub.get("is_ipv6") or
-                    sub.get("is_iso") or sub.get("is_mpls") or
-                    sub.get("is_bridge")):
+                if sub["enabled_afi"]:
                     subinterfaces += [sub]
             # Append to interfaces
             iface["subinterfaces"] = subinterfaces
