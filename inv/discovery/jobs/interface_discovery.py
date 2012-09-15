@@ -36,8 +36,9 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
     @classmethod
     def initialize(cls, scheduler):
         super(InterfaceDiscoveryJob, cls).initialize(scheduler)
-        # Compile classification rules
-        cls.compile_classification_rules(scheduler)
+        if scheduler.daemon:
+            # Compile classification rules
+            cls.compile_classification_rules(scheduler)
 
     @classmethod
     def compile_classification_rules(cls, scheduler):
