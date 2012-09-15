@@ -125,7 +125,7 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                         ipv4_addresses=si.get("ipv4_addresses", []),
                         ipv6_addresses=si.get("ipv6_addresses", []),
                         iso_addresses=si.get("iso_addresses", []),
-                        enabled_protocols=i.get("enabled_protocols", []),
+                        enabled_protocols=si.get("enabled_protocols", []),
                         is_isis=si.get("is_isis", False),
                         is_ospf=si.get("is_ospf", False),
                         is_rsvp=si.get("is_rsvp", False),
