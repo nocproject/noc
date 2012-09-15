@@ -16,8 +16,8 @@ class Script(NOCScript):
     name = "OS.FreeBSD.get_arp"
     implements = [IGetARP]
     rx_line = re.compile(
-    r"^\S+\s+\((?P<ip>\S+)\)\s+\S+\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S+)",
-     re.MULTILINE | re.DOTALL)
+        r"^\S+\s+\((?P<ip>\S+)\)\s+\S+\s+(?P<mac>[0-9a-fA-F:]+)\s+\S+\s+"
+        r"(?P<interface>\S+)", re.MULTILINE | re.DOTALL)
 
     def execute(self, vrf=None):
         if vrf:
@@ -26,8 +26,6 @@ class Script(NOCScript):
             s = self.cli("arp -an")
         r = []
         for match in self.rx_line.finditer(s):
-            if match.group("mac") == "incomplete":
-                continue
             r += [{
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
