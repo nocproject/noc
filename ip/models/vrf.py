@@ -6,6 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import hashlib
+import struct
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -95,6 +98,11 @@ class VRF(models.Model):
         """
         Create root entries for all enabled AFIs
         """
+        # Generate unique rd, if empty
+        if not self.rd:
+            self.rd = "0:%d" % struct.unpack(
+                "I", hashlib.sha1(self.name).digest()[:4])
+        # Save VRF
         super(VRF, self).save(**kwargs)
         if self.afi_ipv4:
             # Create IPv4 root, if not exists

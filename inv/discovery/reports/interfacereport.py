@@ -97,7 +97,7 @@ class InterfaceReport(Report):
             changes = self.update_if_changed(fi, {
                 "type": type,
                 "name": instance,
-                "rd": rd
+                "rd": rd if rd else fi.rd
             })
             self.log_changes(
                 "Forwarding instance '%s' has been changed" % instance,
