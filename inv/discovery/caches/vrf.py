@@ -42,6 +42,8 @@ class VRFCache(object):
             except KeyError:
                 return set_cache(VRF.get_global())
         # Non-default VRF
+        if not rd:
+            rd = VRF.generate_rd(name)
         # Lookup RD cache
         try:
             return self.cache_vrf_by_rd[rd]
