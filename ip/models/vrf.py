@@ -94,14 +94,21 @@ class VRF(models.Model):
         """
         return VRF.objects.get(rd="0:0")
 
+    @classmethod
+    def generate_rd(cls, name):
+        """
+        Generate unique rd for given name
+        """
+        return "0:%d" % struct.unpack(
+            "I", hashlib.sha1(name).digest()[:4])
+
     def save(self, **kwargs):
         """
         Create root entries for all enabled AFIs
         """
         # Generate unique rd, if empty
         if not self.rd:
-            self.rd = "0:%d" % struct.unpack(
-                "I", hashlib.sha1(self.name).digest()[:4])
+            self.rd = self.generate_rd(self.name)
         # Save VRF
         super(VRF, self).save(**kwargs)
         if self.afi_ipv4:
