@@ -18,9 +18,9 @@ import new
 from django.db import reset_queries
 ## NOC modules
 from noc.lib.daemon import Daemon
-from noc.fm.models import EventClassificationRule, NewEvent, FailedEvent, \
-                          EventClass, MIB, EventLog, CloneClassificationRule,\
-                          ActiveEvent, EventTrigger, Enumeration
+from noc.fm.models import (EventClassificationRule, NewEvent, FailedEvent,
+                           EventClass, MIB, EventLog, CloneClassificationRule,
+                           ActiveEvent, EventTrigger, Enumeration)
 from noc.inv.models import Interface, SubInterface, InterfaceProfile
 from noc.fm.correlator.scheduler import CorrelatorScheduler
 import noc.inv.models
@@ -29,7 +29,10 @@ from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.snmputils import render_tc
 from noc.lib.escape import fm_unescape, fm_escape
-from noc.sa.interfaces.base import *
+from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
+                                    IPParameter, IPv4PrefixParameter,
+                                    IPv6PrefixParameter, PrefixParameter,
+                                    MACAddressParameter, InterfaceTypeError)
 from noc.lib.datasource import datasource_registry
 from noc.lib.nosql import ObjectId
 
