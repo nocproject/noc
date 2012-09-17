@@ -72,9 +72,9 @@ class SocketFactory(object):
         """
         with self.register_lock:
             logging.debug("unregister_socket(%s)" % socket)
+            self.set_status(socket, r=False, w=False)
             if socket not in self.socket_name:  # Not in factory yet
                 return
-            self.set_status(socket, r=False, w=False)
             self.sockets.pop(socket.fileno(), None)
             old_name = self.socket_name.pop(socket, None)
             self.name_socket.pop(old_name, None)
