@@ -10,10 +10,10 @@
 ## Python modules
 from __future__ import with_statement
 import os
-import pprint
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
+from noc.lib.nosql import (ListField, EmbeddedDocumentField, ValidationError)
 from noc.inv.models import *
 from noc.fm.models import *
 from noc.lib.debug import error_report
@@ -167,6 +167,11 @@ class CollectionSync(object):
                 # Other types
                 changed = True
                 setattr(obj, i, v)
+        # Look for deleted list fields
+        for f in (set(obj._fields) - set(d)):
+            if getattr(obj, f) and type(obj._fields[f]) == ListField:
+                setattr(obj, f, None)
+                changed = True
         # Save and report changes if exists
         if created:
             self.log("Creating: %s" % unicode(obj))
