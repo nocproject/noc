@@ -76,6 +76,10 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             onClick: me.onChangeProfile
                         },
                         {
+                            text: "Protocols",
+                            dataIndex: "enabled_protocols"
+                        },
+                        {
                             text: "Description",
                             dataIndex: "description",
                             flex: 1
