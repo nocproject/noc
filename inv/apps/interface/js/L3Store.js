@@ -35,6 +35,10 @@ Ext.define("NOC.inv.interface.L3Store", {
             }
         },
         {
+            name: "enabled_protocols",
+            type: "auto"
+        },
+        {
             name: "vlan",
             type: "auto"
         },

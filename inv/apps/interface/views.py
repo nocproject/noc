@@ -100,6 +100,7 @@ class InterfaceAppplication(ExtApplication):
                 "link": get_link(i),
                 "profile": str(i.profile.id) if i.profile else None,
                 "profile__label": unicode(i.profile) if i.profile else None,
+                "enabled_protocols": i.enabled_protocols,
                 "row_class": get_style(i)
             } for i in
               Interface.objects.filter(managed_object=o.id,
@@ -135,6 +136,7 @@ class InterfaceAppplication(ExtApplication):
                 "description": i.description,
                 "ipv4_addresses": i.ipv4_addresses,
                 "ipv6_addresses": i.ipv6_addresses,
+                "enabled_protocols": i.enabled_protocols,
                 "vlan": i.vlan_ids,
                 "vrf": i.forwarding_instance.name if i.forwarding_instance else ""
             } for i in

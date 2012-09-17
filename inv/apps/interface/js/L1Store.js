@@ -47,6 +47,10 @@ Ext.define("NOC.inv.interface.L1Store", {
             type: "string"
         },
         {
+            name: "enabled_protocols",
+            type: "auto"
+        },
+        {
             name: "row_class",
             type: "string"
         }
