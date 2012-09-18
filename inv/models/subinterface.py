@@ -19,6 +19,7 @@ class SubInterface(Document):
         "collection": "noc.subinterfaces",
         "allow_inheritance": False,
         "indexes": [
+            ("managed_object", "ifindex"),
             "interface", "managed_object",
             "untagged_vlan", "tagged_vlans",
             "enabled_afi",

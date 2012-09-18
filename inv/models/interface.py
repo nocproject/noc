@@ -23,7 +23,8 @@ class Interface(Document):
         "allow_inheritance": False,
         "indexes": [
             ("managed_object", "name"),
-            "mac"
+            "mac",
+            ("managed_object", "ifindex")
         ]
     }
     managed_object = ForeignKeyField(ManagedObject)
