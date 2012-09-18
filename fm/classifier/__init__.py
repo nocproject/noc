@@ -903,12 +903,20 @@ class Classifier(Daemon):
                 action = self.default_link_action
             if action == "I":
                 # Ignore
-                logging.info("Event %s mark as ignored by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name))
+                if iface:
+                    msg = "Event %s has been marked as ignored by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name)
+                else:
+                    msg = "Event %s has been marked as ignored by default interface profile" % event.id
+                logging.info(msg)
                 event.delete()
                 return CR_DELETED
             elif action == "L":
                 # Do not dispose
-                logging.info("Event %s marked as not disposable by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name))
+                if iface:
+                    msg = "Event %s has been marked as not disposable by interface profile '%s' (%s)" % (event.id, iface.profile.name, iface.name)
+                else:
+                    msg = "Event %s has been marked as not disposable by default interface" % event.id
+                logging.info(msg)
                 disposable = False
         # Suppress repeats
         if event_class.id in self.suppression:
