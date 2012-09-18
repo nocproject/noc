@@ -479,11 +479,11 @@ class IPAMAppplication(Application):
                         # Prefixes are unique per VRF Group
                         p = Prefix.objects.filter(
                             vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id),
-                            afi=afi,
-                            parent__isnull=False
+                            afi=afi
                         ).filter(
                             SQL("prefix >>= '%s'" % prefix) |
-                            SQL("prefix <<= '%s'" % prefix))
+                            SQL("prefix <<= '%s'" % prefix)
+                        ).exclude(parent__isnull=True)
                     if p:
                         raise ValidationError(_("Prefix %s is already exists in vrf %s") % (p[0].prefix, p[0].vrf))
                     return prefix
