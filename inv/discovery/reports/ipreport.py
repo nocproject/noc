@@ -10,9 +10,11 @@
 import datetime
 ## Django modules
 from django.template import Template, Context
+from django.db.models import Q
 ## NOC modules
 from base import Report
 from noc.ip.models.address import Address
+from noc.ip.models.addressrange import AddressRange
 from noc.fm.models import NewEvent
 from noc.inv.models import NewAddressDiscoveryLog
 from noc.lib.ip import IP
@@ -31,6 +33,7 @@ class IPReport(Report):
         self.fqdn_template = Template(t) if t else None
         self.new_addresses = []
         self.collisions = []
+        self.locked_ranges = {}  # VRF -> [(from ip, to ip)]
 
     def submit(self, vrf, address, interface=None, description=None,
                mac=None):
@@ -38,6 +41,9 @@ class IPReport(Report):
             return
         # Skip ignored MACs
         if mac and self.is_ignored_mac(mac):
+            return
+        # Check address not in locked range
+        if self.is_locked_range(vrf, address):
             return
         # Check address in IPAM
         afi = "6" if ":" in address else "4"
@@ -55,6 +61,27 @@ class IPReport(Report):
         :return:
         """
         return mac == "FF:FF:FF:FF:FF:FF"
+
+    def is_locked_range(self, vrf, address):
+        """
+        Check address is within locked address range
+        :param vrf:
+        :param address:
+        :return:
+        """
+        if vrf not in self.locked_ranges:
+            # Build locked range cache
+            q = Q(action__in=["G", "D"]) | Q(is_locked=True)
+            self.locked_ranges[vrf] = [
+                (f.from_address, f.to_address)
+                for f in AddressRange.objects.filter(
+                    vrf=vrf).filter(q)]
+        # Try to find range
+        # @todo: binary search
+        for from_address, to_address in self.locked_ranges[vrf]:
+            if from_address <= address <= to_address:
+                return True
+        return False
 
     def new_address(self, vrf, afi, address, interface=None,
                     description=None, mac=None):
