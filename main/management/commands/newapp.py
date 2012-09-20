@@ -227,8 +227,12 @@ class Command(BaseCommand):
                         if n == "id":
                             continue
                         fc = f.__class__.__name__
+                        if fc == "ForeignKeyField":
+                            ft = "int"
+                        else:
+                            ft = self.document_ext_type[fc]
                         fd = {
-                            "type": self.document_ext_type[fc],
+                            "type": ft,
                             "name": n,
                             "label": unicode(n),
                             "blank": not f.required
