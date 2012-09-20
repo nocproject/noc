@@ -66,14 +66,12 @@ class InterfaceReport(Report):
         Delete hanging subinterfaces
         :return:
         """
+        qs = SubInterface.objects.filter(
+            managed_object=self.object.id,
+            interface=interface.id)
         if forwarding_instance:
-            forwarding_instance = forwarding_instance.id
-        db_siface = set(i["name"] for i in
-            SubInterface.objects.filter(
-                managed_object=self.object.id,
-                forwarding_instance=forwarding_instance,
-                interface=interface.id
-            ).only("name"))
+            qs = qs.filter(forwarding_instance=forwarding_instance.id)
+        db_siface = set(i["name"] for i in qs.only("name"))
         for i in db_siface - set(subinterfaces):
             self.info("Removing subinterface %s" % i)
             SubInterface.objects.filter(
