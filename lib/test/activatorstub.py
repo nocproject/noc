@@ -29,10 +29,7 @@ class ActivatorStub(object):
         pass
 
     def cli(self, cmd):
-        try:
-            return self.test.cli[cmd]
-        except KeyError:
-            raise Exception("Command not found in canned session: %s" % cmd)
+        return self.test.cli[cmd]
 
     def snmp_get(self, oid):
         try:

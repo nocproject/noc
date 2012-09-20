@@ -366,6 +366,8 @@ class Script(threading.Thread):
 
     def debug(self, msg):
         """Debug log message"""
+        if self.activator.use_canned_session:
+            return
         logging.debug(u"[%s] %s" % (self.debug_name, unicode(str(msg), "utf8")))
 
     def error(self, msg):
@@ -575,7 +577,10 @@ class Script(threading.Thread):
         # Submit command
         command_submit = self.profile.command_submit if command_submit is None else command_submit
         if self.activator.use_canned_session:
-            data = self.activator.cli(cmd)
+            try:
+                data = self.activator.cli(cmd)
+            except KeyError:
+                raise self.CLISyntaxError(cmd)
         else:
             # Check result is cached
             cc = "CLI:" + cmd  # Cache key
