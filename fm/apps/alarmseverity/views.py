@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Alarm Severity
+## fm.alarmseverity application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.utils.translation import ugettext_lazy as _
 ## NOC modules
-from noc.lib.app import TreeApplication
+from noc.lib.app import ExtDocApplication, view
 from noc.fm.models import AlarmSeverity
 
 
-class AlarmSeverityApplication(TreeApplication):
-    title = _("Alarm Severities")
-    verbose_name = _("Alarm Severity")
-    verbose_name_plural = _("Alarm Severities")
+class AlarmSeverityApplication(ExtDocApplication):
+    """
+    AlarmSeverity application
+    """
+    title = "Alarm Severity"
     menu = "Setup | Alarm Severities"
     model = AlarmSeverity
+
+    def field_row_class(self, o):
+        return o.style.css_class_name if o.style else ""
