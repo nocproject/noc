@@ -5,8 +5,24 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
-from django.utils import simplejson as json
+from noc.lib.test import RestModelTestCase, unittest
 
-class dnszonerecordtypeTestCase(ModelApplicationTestCase):
-    pass
+
+@unittest.skip("Not ready")
+class RRTestCase(RestModelTestCase):
+    app = "dns.rrtype"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]
+
