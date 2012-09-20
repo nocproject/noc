@@ -233,7 +233,7 @@ class InterfaceReport(Report):
                 forwarding_instance.name if forwarding_instance else "default",
                 forwarding_instance.rd if forwarding_instance else "0:0")
             if vrf is None:
-                self.info("Skipping unknown VRF '%s'" % v["name"])
+                self.info("Skipping unknown VRF '%s'" % vrf["name"])
             else:
                 # Submit ipv4 addresses and prefixes
                 if is_ipv4:
