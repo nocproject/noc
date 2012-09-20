@@ -305,11 +305,12 @@ class ModelApplicationTestCase(NOCTestCase):
         User.objects.filter(username=self.user).delete()
 
     def test_superuser(self):
+        credentials = {"user": self.user, "password": self.user}
         # Get changelist
-        r = self.client.get(self.prefix)
+        r = self.client.get(self.prefix, credentials=credentials)
         self.assertEqual(r.status_code, self.HTTP_OK)
         # Get "Add" page
-        r = self.client.get(self.prefix + "add/")
+        r = self.client.get(self.prefix + "add/", credentials=credentials)
         self.assertEqual(r.status_code, self.HTTP_OK)
 
 
