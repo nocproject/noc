@@ -170,11 +170,6 @@ class ApplicationTestCase(TestCase):
     pass
 
 
-@unittest.skip("ModelApplicationTestCase is obsolete")
-class ModelApplicationTestCase(TestCase):
-    pass
-
-
 @unittest.skip("ReportApplicationTestCase is obsolete")
 class ReportApplicationTestCase(TestCase):
     pass
@@ -284,6 +279,34 @@ class ModelTestCase(NOCTestCase):
                 o.save()
             # Delete object
             o.delete()
+
+
+class ModelApplicationTestCase(NOCTestCase):
+    user = "superuser"
+
+    HTTP_OK = 200
+
+    def setUp(self):
+        super(ModelApplicationTestCase, self).setUp()
+        # Set up user
+        u = User(username=self.user, is_staff=True,
+                 is_superuser=True)
+        u.set_password(self.user)
+        u.save()
+        # Set up HTTP client
+        prefix = "/%s/" % self.app.replace(".", "/")
+        self.client = TestClient(prefix=prefix)
+
+    def tearDown(self):
+        User.objects.filter(username=self.user).delete()
+
+    def test_superuser(self):
+        # Get changelist
+        status, data = self.client.get(self.prefix)
+        self.assertEqual(status, self.HTTP_OK)
+        # Get "Add" page
+        status, data = self.client.get(self.prefix + "add/")
+        self.assertEqual(status, self.HTTP_OK)
 
 
 class AjaxTestCase(NOCTestCase):
