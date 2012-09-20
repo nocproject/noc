@@ -92,3 +92,7 @@ class UserApplication(ModelApplication):
         """Disable 'Delete' button"""
         return False
     
+    @view(url=r"^add/legacy/$", url_name="admin:auth_user_add",
+        access="add")
+    def view_legacy_add(self, request, form_url="", extra_context=None):
+        return self.response_redirect("..")
