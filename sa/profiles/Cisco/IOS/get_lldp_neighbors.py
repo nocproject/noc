@@ -22,9 +22,13 @@ class Script(NOCScript):
     rx_summary_split = re.compile(r"^Device ID.+?\n",
                                   re.MULTILINE | re.IGNORECASE)
     rx_s_line = re.compile(
-        r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[\d/\.]*)\s+\d+\s+(?P<capability>\S*)\s+(?P<remote_if>(?:Fa|Gi|Te)\S*?\s?\d+[\d/\.]*)$")
+        r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[\d/\.]*)\s+.+$")
     rx_chassis_id = re.compile(r"^Chassis id:\s*(?P<id>\S+)",
-                               re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE)
+    rx_remote_port = re.compile("^Port id:\s*(?P<remote_if>.+?)\s*$",
+        re.MULTILINE | re.IGNORECASE)
+    rx_enabled_caps = re.compile("^Enabled Capabilities:\s*(?P<caps>\S*)\s*$",
+        re.MULTILINE | re.IGNORECASE)
     rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)",
                            re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
@@ -39,6 +43,8 @@ class Script(NOCScript):
             # % LLDP is not enabled
             return []
         v = self.rx_summary_split.split(v)[1]
+        lldp_interfaces = []
+        # Get LLDP interfaces with neighbors
         for l in v.splitlines():
             l = l.strip()
             if not l:
@@ -46,9 +52,23 @@ class Script(NOCScript):
             match = self.rx_s_line.match(l)
             if not match:
                 continue
-            local_if = match.group("local_if")
-            i = {"local_interface": local_if, "neighbors": []}
-            # Build neighbor data
+            lldp_interfaces += [match.group("local_if")]
+        # Get LLDP neighbors
+        for local_if in lldp_interfaces:
+            i = {
+                "local_interface": local_if,
+                "neighbors": []
+            }
+            # Get neighbors details
+            try:
+                v = self.cli("show lldp neighbors %s detail" % local_if)
+            except self.CLISyntaxError:
+                # Found strange CLI syntax on Catalyst 4900
+                # Allow ONLY interface name or "detail"
+                # Need testing...
+                raise self.NotSupportedError()
+            # Get remote port
+            match = self.re_search(self.rx_remote_port, v)
             remote_port = match.group("remote_if")
             remote_port_subtype = 5
             if self.rx_mac.match(remote_port):
@@ -67,32 +87,25 @@ class Script(NOCScript):
                 "remote_port_subtype": remote_port_subtype,
                 "remote_chassis_id_subtype": 4
             }
-            # Get capability
-            cap = 0
-            for c in match.group("capability").split(","):
-                c = c.strip()
-                if c:
-                    cap |= {
-                        "O": 1, "P": 2, "B": 4,
-                        "W": 8, "R": 16, "T": 32,
-                        "C": 64, "S": 128
-                    }[c]
-            n["remote_capabilities"] = cap
-            # Get neighbor detail
-            try:
-                v = self.cli("show lldp neighbors %s detail" % local_if)
-            except self.CLISyntaxError:
-                """
-                Found strange CLI syntax on Catalyst 4900
-                Allow ONLY interface name or "detail"
-                Need testing...
-                """
-                raise self.NotSupportedError()
-            # Get remote chassis id
+            # Get chassis id
             match = self.rx_chassis_id.search(v)
             if not match:
                 continue
             n["remote_chassis_id"] = match.group("id")
+            # Get capabilities
+            cap = 0
+            match = self.rx_enabled_caps.search(v)
+            if match:
+                for c in match.group("caps").split(","):
+                    c = c.strip()
+                    if c:
+                        cap |= {
+                            "O": 1, "P": 2, "B": 4,
+                            "W": 8, "R": 16, "T": 32,
+                            "C": 64, "S": 128
+                        }[c]
+            n["remote_capabilities"] = cap
+            # Get remote chassis id
             match = self.rx_system.search(v)
             if match:
                 n["remote_system_name"] = match.group("name")
