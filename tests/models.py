@@ -13,6 +13,17 @@ from django.db import models as django_models
 
 
 class LoadModuleNamesTest(TestCase):
+    def check_app_label(self, model):
+        """
+        Check model has properly set app_label
+        :param model:
+        :return:
+        """
+        failures = []
+        if model._meta.app_label == "model":
+            failures += ["%s: Invalid app label" % model.__name__]
+        return failures
+
     def check_get_absolute_url(self, model):
         """
         Check all models with .tags field have .get_absolute_url()
@@ -26,7 +37,7 @@ class LoadModuleNamesTest(TestCase):
                     "%s has tags but no .get_absolute_url() defined" % model.__name__]
             elif not callable(getattr(model, "get_absolute_url")):
                 failures += [
-                    "%s.get_absolute_url is not callable" % model.name]
+                    "%s.get_absolute_url is not callable" % model.__name__]
         return failures
 
     def check_orm(self, model):
@@ -49,6 +60,7 @@ class LoadModuleNamesTest(TestCase):
         :return:
         """
         failures = []
+        failures += self.check_app_label(model)
         failures += self.check_get_absolute_url(model)
         failures += self.check_orm(model)
         return failures
