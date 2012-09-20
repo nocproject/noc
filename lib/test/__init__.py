@@ -306,11 +306,11 @@ class ModelApplicationTestCase(NOCTestCase):
 
     def test_superuser(self):
         # Get changelist
-        status, data = self.client.get(self.prefix)
-        self.assertEqual(status, self.HTTP_OK)
+        r = self.client.get(self.prefix)
+        self.assertEqual(r.status_code, self.HTTP_OK)
         # Get "Add" page
-        status, data = self.client.get(self.prefix + "add/")
-        self.assertEqual(status, self.HTTP_OK)
+        r = self.client.get(self.prefix + "add/")
+        self.assertEqual(r.status_code, self.HTTP_OK)
 
 
 class AjaxTestCase(NOCTestCase):
