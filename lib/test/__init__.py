@@ -298,8 +298,8 @@ class ModelApplicationTestCase(NOCTestCase):
         if self.app is None:
             r = self.__module__.split(".")
             self.app = "%s.%s" % (r[1], r[3])
-        prefix = "/%s/" % self.app.replace(".", "/")
-        self.client = TestClient(prefix=prefix)
+        self.prefix = "/%s/" % self.app.replace(".", "/")
+        self.client = TestClient()
 
     def tearDown(self):
         User.objects.filter(username=self.user).delete()
