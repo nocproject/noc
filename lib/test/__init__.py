@@ -282,6 +282,7 @@ class ModelTestCase(NOCTestCase):
 
 
 class ModelApplicationTestCase(NOCTestCase):
+    app = None  # Application id (<module>.<name>)
     user = "superuser"
 
     HTTP_OK = 200
@@ -294,6 +295,9 @@ class ModelApplicationTestCase(NOCTestCase):
         u.set_password(self.user)
         u.save()
         # Set up HTTP client
+        if self.app is None:
+            r = self.__module__.split(".")
+            app = "%s.%s" % (r[1], r[3])
         prefix = "/%s/" % self.app.replace(".", "/")
         self.client = TestClient(prefix=prefix)
 
