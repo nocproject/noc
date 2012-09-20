@@ -160,4 +160,5 @@ class ScriptTestCase(unittest.TestCase):
             self.assertEquals(new_result, old_result)
         else:
             # Exception raised
-            self.assertEquals(script.error_traceback, None)
+            self.assertTrue(script.error_traceback is None,
+                "Unhandled exception while running script:\n%s" % script.error_traceback)
