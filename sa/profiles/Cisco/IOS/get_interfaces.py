@@ -95,7 +95,7 @@ class Script(NOCScript):
         try:
             v = self.cli("show lldp interface")
         except self.CLISyntaxError:
-            return []
+            return set()
         ports = set()
         for s in v.strip().split("\n\n"):
             match = self.rx_lldp.search(s)
