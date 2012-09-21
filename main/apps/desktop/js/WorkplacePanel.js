@@ -15,6 +15,18 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     layout: "fit",
     items: [],
     controller: undefined,
+    //
+    initComponent: function() {
+        var me = this;
+        Ext.apply(me, {
+            listeners: {
+                scope: me,
+                tabchange: me.onTabChange,
+                afterrender: me.onAfterRender
+            }
+        });
+        me.callParent();
+    },
     // Launch application in tab
     launchTab: function(panel_class, title, params) {
         var me = this,
@@ -40,5 +52,11 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
                 tab.desktop_controller.on_close_tab(tab.menu_node);
         });
         return tab;
+    },
+    //
+    onTabChange: function(panel, tab) {
+    },
+    //
+    onAfterRender: function() {
     }
 });
