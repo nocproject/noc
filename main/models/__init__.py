@@ -756,11 +756,11 @@ class Style(models.Model):
         s = u"color: %s !important; background-color: %s !important;" % (
             self.font_color, self.background_color)
         if self.bold:
-            s += u" font-weight: bold;"
+            s += u" font-weight: bold !important;"
         if self.italic:
-            s += u" font-style: italic;"
+            s += u" font-style: italic !important;"
         if self.underlined:
-            s += u" text-decoration: underline;"
+            s += u" text-decoration: underline !important;"
         return s
 
     @property
