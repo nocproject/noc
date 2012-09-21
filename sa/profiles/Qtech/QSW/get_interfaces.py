@@ -151,6 +151,7 @@ class Script(NOCScript):
 
         # Get L3 interfaces
         try:
+            enabled_afi = []
             ip_int = self.cli("show ip interface")  # QWS-3xxx
             match = self.rx_mac.search(ip_int)
             mac = match.group("mac")
@@ -170,6 +171,7 @@ class Script(NOCScript):
                 if ":" in ip1:
                     ip_interfaces = "ipv6_addresses"
                     ip_ver = "is_ipv6"
+                    enabled_afi += ["IPv6"]
                     ip1 = IPv6(ip1, netmask=match.group("mask1")).prefix
                     if ip2:
                         ip2 = IPv6(ip2, netmask=match.group("mask2")).prefix
@@ -179,6 +181,7 @@ class Script(NOCScript):
                 else:
                     ip_interfaces = "ipv4_addresses"
                     ip_ver = "is_ipv4"
+                    enabled_afi += ["IPv4"]
                     ip1 = IPv4(ip1, netmask=match.group("mask1")).prefix
                     if ip2:
                         ip2 = IPv4(ip2, netmask=match.group("mask2")).prefix
@@ -200,6 +203,7 @@ class Script(NOCScript):
                                 "admin_status": a_stat,
                                 "oper_status": a_stat,
                                 ip_ver: True,
+                                "enabled_afi": enabled_afi,
                                 ip_interfaces: ip_list,
                                 "mac": mac,
                                 "vlan_ids": self.expand_rangelist(vlan),
@@ -208,16 +212,19 @@ class Script(NOCScript):
                 interfaces += [iface]
 
         except self.CLISyntaxError:
+            enabled_afi = []
             ip_int = self.cli("show ip")  # QWS-2xxx
             match = self.rx_sh_mng.search(ip_int)
             ip = match.group("ip")
             if ":" in ip:
-                ip_nterfaces = "ipv6_addresses"
+                ip_interfaces = "ipv6_addresses"
                 ip_ver = "is_ipv6"
+                enabled_afi += ["IPv6"]
                 ip = IPv6(ip, netmask=match.group("mask")).prefix
             else:
                 ip_interfaces = "ipv4_addresses"
                 ip_ver = "is_ipv4"
+                enabled_afi += ["IPv4"]
                 ip = IPv4(ip, netmask=match.group("mask")).prefix
             ip_list = [ip]
             vlan = match.group("vlan")
@@ -236,6 +243,7 @@ class Script(NOCScript):
                             "admin_status": True,
                             "oper_status": True,
                             ip_ver: True,
+                            "enabled_afi": enabled_afi,
                             ip_interfaces: ip_list,
                             "mac": mac,
                             "vlan_ids": self.expand_rangelist(vlan),
@@ -265,6 +273,7 @@ class Script(NOCScript):
                             "admin_status": a_stat,
                             "oper_status": o_stat,
                             "is_bridge": True,
+                            "enabled_afi": ["BRIDGE"],
                             "mac": mac,
                             #"snmp_ifindex": self.scripts.get_ifindex(interface=name)
                         }]
@@ -281,7 +290,9 @@ class Script(NOCScript):
             if ifname in portchannel_members:
                 ai, is_lacp = portchannel_members[ifname]
                 iface["aggregated_interface"] = ai
-                iface["is_lacp"] = is_lacp
+                if is_lacp:
+                    iface["is_lacp"] = is_lacp
+                    iface["enabled_protocols"] = ["LACP"]
             interfaces += [iface]
 
         return [{"interfaces": interfaces}]

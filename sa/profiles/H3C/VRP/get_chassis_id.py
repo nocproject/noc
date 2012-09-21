@@ -25,14 +25,22 @@ class Script(NOCScript):
     @NOCScript.match(version__startswith="3.02")
     def execute_old(self):
         v = self.cli("display stp")
-        match = self.re_search(self.rx_mac_old, v)
+        match = self.rx_mac_old.search(v)
         return match.group("id")
 
     rx_mac = re.compile(r"^CIST Bridge[^:]*?:\s*\d+?\.(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
+    rx_mac1 = re.compile(r"^\s*MAC_ADDRESS[^:]*?:\s(?P<id>\S+)",
+        re.IGNORECASE | re.MULTILINE)
+
     @NOCScript.match()
     def execute_new(self):
         v = self.cli("display stp")
-        match = self.re_search(self.rx_mac, v)
-        return match.group("id")
+        match = self.rx_mac.search(v)
+        if match is not None:
+            return match.group("id")
+        else:
+            v = self.cli("display device manuinfo")
+            match = self.rx_mac1.search(v)
+            return match.group("id")
