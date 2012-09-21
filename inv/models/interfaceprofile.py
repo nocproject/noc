@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.nosql import Document, StringField, ForeignKeyField
+from noc.lib.nosql import Document, StringField, ForeignKeyField, BooleanField
 from noc.main.models import Style
 
 
@@ -32,6 +32,8 @@ class InterfaceProfile(Document):
         ],
         default="A"
     )
+    # Discovery settings
+    mac_discovery = BooleanField(default=False)
 
     def __unicode__(self):
         return self.name

@@ -29,20 +29,36 @@ class MODiscoveryJob(IntervalJob):
             return self.key
 
     @classmethod
+    def can_submit(cls, object):
+        """
+        Check object is submittable
+        :param cls:
+        :param object:
+        :return:
+        """
+        return True
+
+    @classmethod
     def initial_submit(cls, scheduler, keys):
         now = datetime.datetime.now()
         profiles = [s.rsplit(".", 1)[0]
                     for s in script_registry.classes
                     if s.endswith(".%s" % cls.map_task)]
+        isc = cls.initial_submit_concurrency
         for mo in ManagedObject.objects.filter(
             is_managed=True, profile_name__in=profiles).exclude(
-            id__in=keys).only("id")[:cls.initial_submit_concurrency]:
-            cls.submit(
-                scheduler=scheduler, key=mo.id,
-                interval=cls.success_retry,
-                failed_interval=cls.failed_retry,
-                randomize=True,
-                ts=now + datetime.timedelta(seconds=random.random() * cls.initial_submit_interval))
+            id__in=keys).only("id"):
+            if cls.can_submit(mo):
+                cls.submit(
+                    scheduler=scheduler, key=mo.id,
+                    interval=cls.success_retry,
+                    failed_interval=cls.failed_retry,
+                    randomize=True,
+                    ts=now + datetime.timedelta(
+                        seconds=random.random() * cls.initial_submit_interval))
+                isc -= 1
+                if not isc:
+                    break
 
     def get_defererence_query(self):
         """
