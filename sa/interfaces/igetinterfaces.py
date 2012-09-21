@@ -197,7 +197,7 @@ class IGetInterfaces(Interface):
             # L2 protocols enabled on interface
             "enabled_protocols": ListOfParameter(
                 element=StringParameter(choices=[
-                    "LACP", "LLDP", "CDP", "UDLD", "CTP"
+                    "LACP", "LLDP", "CDP", "UDLD", "CTP", "GVRP", "VTP", "STP"
                 ]), required=False),
             "description": StringParameter(required=False),
             "mac": MACAddressParameter(required=False),
@@ -227,7 +227,8 @@ class IGetInterfaces(Interface):
                                 element=StringParameter(choices=[
                                     "ISIS", "OSPF", "RIP", "EIGRP",
                                     "BGP",
-                                    "LDP", "RSVP"
+                                    "LDP", "RSVP",
+                                    "PIM", "DVMRP", "IGMP", "VRRP"
                                 ]), required=False),
                 "is_isis": BooleanParameter(required=False),  # @todo: Deprecated
                 "is_ospf": BooleanParameter(required=False),  # @todo: Deprecated
