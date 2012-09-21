@@ -9,5 +9,19 @@ console.debug("Defining NOC.main.style.LookupField");
 Ext.define("NOC.main.style.LookupField", {
     extend: "NOC.core.LookupField",
     alias: "widget.main.style.LookupField",
-    requires: ["NOC.main.style.Lookup"]
+    requires: ["NOC.main.style.Lookup"],
+
+    initComponent: function() {
+        var me = this;
+        Ext.apply(me, {
+            listConfig: {
+                scope: me,
+                getInnerTpl: me.getInnerTpl
+            }
+        });
+        me.callParent();
+    },
+    getInnerTpl: function() {
+        return "<div class='noc-color-{id}'>{label}</div>";
+    }
 });
