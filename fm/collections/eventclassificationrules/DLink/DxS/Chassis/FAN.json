@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(Unit \\d+, )?(?P<name>\S+\s+Fan\\s*\\d*) failed$"
+                "value_re": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) failed$"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(Unit \\d+, )?(?P<name>\S+\s+Fan\\s*\\d*) recovered$"
+                "value_re": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) recovered$"
             }
         ]
     }
