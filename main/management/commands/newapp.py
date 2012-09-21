@@ -48,7 +48,8 @@ class Command(BaseCommand):
         "IPAddressField": ("string", "textfield", None),
         "INETField": ("string", "textfield", None),
         "MACField": ("string", "textfield", None),
-        "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags")
+        "AutoCompleteTagsField": ("auto", "tagsfield", "NOC.render.Tags"),
+        "ColorField": ("int", "numberfield", None)
     }
 
     # Document -> Ext type maps
