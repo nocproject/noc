@@ -160,9 +160,9 @@ class Script(NOCScript):
             if len(tagged_vlans) != 0:
                 i['subinterfaces'][0]['tagged_vlans'] = tagged_vlans
             if lldp_enable and ifname in lldp:
-                enabled_protocols += ["LLDP"]
+                i["enabled_protocols"] += ["LLDP"]
             if ctp_enable and ifname in ctp:
-                enabled_protocols += ["CTP"]
+                i["enabled_protocols"] += ["CTP"]
             interfaces += [i]
 
         ipif = self.cli("show ipif")
