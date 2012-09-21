@@ -20,18 +20,18 @@ class Script(noc.sa.script.Script):
     implements = [IGetInterfaces]
 
     rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*"
-                                "Active\s+:(?P<admin>(Yes|No)).*$",
+                                r"Active\s+:(?P<admin>(Yes|No)).*$",
                                 re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_ospf_status = re.compile(r"^\s+Internet Address (?P<ifaddr>"
-                                "\d+\.\d+\.\d+\.\d+\/\d+).+$",
+                                r"\d+\.\d+\.\d+\.\d+\/\d+).+$",
                                 re.MULTILINE)
     rx_rip_status = re.compile(r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
-                               "(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
-                               "(?P<direction>\S+)\s+.+$",
+                               r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
+                               r"(?P<direction>\S+)\s+.+$",
                                re.MULTILINE)
     rx_ipif = re.compile(r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
-                         "Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
-                         "\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
+                            r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
+                            r"\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
 
     def get_admin_status(self, iface):
         if self.snmp and self.access_profile.snmp_ro:
@@ -42,8 +42,8 @@ class Script(noc.sa.script.Script):
             except self.snmp.TimeOutError:
                 pass  # Fallback to CLI
 
-        v = self.cli("show interface config %s" % iface)
-        match = self.rx_admin_status.search(v)
+        s = self.cli("show interface config %s" % iface)
+        match = self.rx_admin_status.search(s)
         return match.group("admin").lower() == "yes"
 
     def get_ospf_addresses(self):
@@ -77,6 +77,7 @@ class Script(noc.sa.script.Script):
         interfaces = []
         ospf_addresses = self.get_ospf_addresses()
         rip_addresses = self.get_rip_addresses()
+
         # Get portchannes
         portchannel_members = {}  # member -> (portchannel, type)
         with self.cached():
@@ -85,15 +86,42 @@ class Script(noc.sa.script.Script):
                 t = pc["type"] == "L"
                 for m in pc["members"]:
                     portchannel_members[m] = (i, t)
+        # Get portchannel members' details
+        for m in portchannel_members:
+            admin = self.get_admin_status(m)
+            oper = self.scripts.get_interface_status(interface=m)[0]["status"]
+            iface = {
+                "name": m,
+                "admin_status": admin,
+                "oper_status": oper,
+                "type": "physical",
+                "subinterfaces": [],
+                "aggregated_interface": portchannel_members[m][0],
+                "is_lacp": portchannel_members[m][1],  # @todo: Deprecated
+                # @todo: description
+            }
+            if portchannel_members[m][1]:
+                iface["enabled_protocols"] = ["LACP"]
+            interfaces += [iface]
+
         # Get mac
         mac = self.scripts.get_chassis_id()
+
         # Get switchports
         for swp in self.scripts.get_switchport():
-            admin = self.get_admin_status(swp["interface"])
+            admin = False
+            if len(swp["members"]) > 0:
+                for m in swp["members"]:
+                    admin = self.get_admin_status(m)
+                    if admin:
+                        break
+            else:
+                admin = self.get_admin_status(swp["interface"])
             name = swp["interface"]
             iface = {
                 "name": name,
-                "type": "aggregated" if len(swp["members"]) > 0 else "physical",
+                "type": "aggregated" if len(swp["members"]) > 0
+                    else "physical",
                 "admin_status": admin,
                 "oper_status": swp["status"],
                 "mac": mac,
@@ -101,7 +129,9 @@ class Script(noc.sa.script.Script):
                     "name": name,
                     "admin_status": admin,
                     "oper_status": swp["status"],
-                    "is_bridge": True,
+                    "is_bridge": True,  # @todo: Deprecated
+                    "enabled_afi": ["BRIDGE"],
+                    "mac": mac,
                     #"snmp_ifindex": self.scripts.get_ifindex(interface=name)
                 }]
             }
@@ -113,35 +143,50 @@ class Script(noc.sa.script.Script):
                 pass
             if swp["description"]:
                 iface["description"] = swp["description"]
-            if name in portchannel_members:
-                iface["aggregated_interface"] = portchannel_members[name][0]
-                iface["is_lacp"] = portchannel_members[name][1]
+                iface["subinterfaces"][0]["description"] = swp["description"]
             interfaces += [iface]
+
         # Get SVIs
+        ipifarr = {}
         for match in self.rx_ipif.finditer(self.cli("show ip")):
             vid = int(match.group("vid"))
             ip = IPv4(match.group("ip"), netmask=match.group("mask")).prefix
+            if vid not in ipifarr:
+                ipifarr[vid] = [ip]
+            else:
+                ipifarr[vid].append(ip)
+        for v in ipifarr.keys():
             iface = {
-                "name": "vlan%d" % vid if vid else "Mgmt",
-                "type": "SVI",
-                # since inactive vlans aren't shown at all
-                "admin_status": True,
-                "oper_status": True,
-                "mac": mac,  # @todo get mgmt mac
-                # @todo get vlan name
-                "description": "vlan%d" % vid if vid else "Outband management",
+                "name": "vlan%d" % v if v else "Management",
+                "mac": mac,  # @todo: get mgmt mac
+                # @todo: get vlan name to form better description
+                "description": "vlan%d" % v if v else "Outband management",
+                "admin_status": True,  # always True, since inactive
+                "oper_status": True,   # SVIs aren't shown at all
                 "subinterfaces": [{
-                    "name": "vlan%d" % vid if vid else "Mgmt",
+                    "name": "vlan%d" % v if v else "Management",
+                    "description": "vlan%d" % v if v else "Outband management",
                     "admin_status": True,
                     "oper_status": True,
-                    "is_ipv4": True,
-                    "ipv4_addresses": [ip],  # @todo search for secondary IPs
-                    "vlan_ids": [vid] if vid else []
+                    "is_ipv4": True,  # @todo: Deprecated
+                    "enabled_afi": ["IPv4"],
+                    "ipv4_addresses": ipifarr[v],
+                    "mac": mac,
+                    "enabled_protocols": []
                 }]
             }
-            if ip in rip_addresses:
-                iface["subinterfaces"][0]["is_rip"] = True
-            if ip in ospf_addresses:
-                iface["subinterfaces"][0]["is_ospf"] = True
+            if v == 0:  # Outband management
+                iface["type"] = "physical"
+                # @todo: really get status
+            else:
+                iface["type"] = "SVI"
+                iface["subinterfaces"][0]["vlan_ids"] = [v]
+            for i in ipifarr[v]:
+                if i in rip_addresses:
+                    iface["subinterfaces"][0]["is_rip"] = True  # @todo: Deprecated
+                    iface["subinterfaces"][0]["enabled_protocols"] += ["RIP"]
+                if i in ospf_addresses:
+                    iface["subinterfaces"][0]["is_ospf"] = True  # @todo: Deprecated
+                    iface["subinterfaces"][0]["enabled_protocols"] += ["OSPF"]
             interfaces += [iface]
         return [{"interfaces": interfaces}]
