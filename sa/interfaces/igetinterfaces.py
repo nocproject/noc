@@ -197,7 +197,7 @@ class IGetInterfaces(Interface):
             # L2 protocols enabled on interface
             "enabled_protocols": ListOfParameter(
                 element=StringParameter(choices=[
-                    "LACP", "LLDP", "CDP"
+                    "LACP", "LLDP", "CDP", "UDLD", "CTP"
                 ]), required=False),
             "description": StringParameter(required=False),
             "mac": MACAddressParameter(required=False),
