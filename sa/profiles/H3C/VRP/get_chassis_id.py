@@ -31,8 +31,16 @@ class Script(NOCScript):
     rx_mac = re.compile(r"^CIST Bridge[^:]*?:\s*\d+?\.(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
+    rx_mac1 = re.compile(r"^MAC_ADDRESS[^:]*?:\s(?P<id>\S+)",
+        re.IGNORECASE | re.MULTILINE)
+
     @NOCScript.match()
     def execute_new(self):
         v = self.cli("display stp")
         match = self.re_search(self.rx_mac, v)
-        return match.group("id")
+        if match is not None:
+            return match.group("id")
+        else:
+            v = self.cli("display device manuinfo")
+            match = self.re_search(self.rx_mac1, v)
+            return match.group("id")
