@@ -68,18 +68,20 @@ class Script(NOCScript):
                         "oper_status": o_stat,
                         "description": alias,
                         "mac": mac,
+                        "enabled_afi": [],
+                        "enabled_protocols": []
                         }
                 match = self.rx_ip.search(s)
                 if match:
                     ip = IPv4(match.group('ip'), netmask=match.group('mask')).prefix
                     sub['ipv4_addresses'] = [ip]
-                    sub['is_ipv4'] = True
+                    sub['enabled_afi'] += ["IPv4"]
                 match = self.rx_vlan.search(s)
                 if match:
                     vlan = match.group('vlan')
                     sub['vlan_ids'] = [vlan]
                 if alias in ospfs:
-                    sub['is_ospf'] = True
+                    sub['enabled_protocols'] += ["OSPF"]
                 phys = ifname.find('.') == -1
                 if phys:
                         iface = {
