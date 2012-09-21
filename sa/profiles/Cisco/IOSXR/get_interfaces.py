@@ -166,6 +166,8 @@ class Script(NOCScript):
                             "name": siface,
                             "admin_status": ii["status"],
                             "oper_status": ii["status"],
+                            "enabled_afi": [],
+                            "enabled_protocols": []
                         }
                         if ii.get("mac"):
                             sp["mac"] = ii["mac"]
@@ -178,10 +180,10 @@ class Script(NOCScript):
                             ipv4_addresses = [a for a in ii["addresses"] if ":" not in a]
                             ipv6_addresses = [a for a in ii["addresses"] if ":" in a]
                             if ipv4_addresses:
-                                sp["is_ipv4"] = True
+                                sp["enabled_afi"] += ["IPv4"]
                                 sp["ipv4_addresses"] = ipv4_addresses
                             if ipv6_addresses:
-                                sp["is_ipv6"] = True
+                                sp["enabled_afi"] += ["IPv6"]
                                 sp["ipv6_addresses"] = ipv6_addresses
                         p["subinterfaces"] += [sp]
                 rr["interfaces"] += [p]

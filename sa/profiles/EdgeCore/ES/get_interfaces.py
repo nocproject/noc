@@ -43,6 +43,12 @@ class Script(NOCScript):
     rx_ip_if_3510MA = re.compile(r".*?IP address:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+Mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
                                      re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
+    rx_lldp_35xx = re.compile(r"\s+LLDP Enable\s+\:\s+Yes",
+                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+
+    rx_lldp_ports_35xx = re.compile(r".*?(?P<name>(Eth|Trunk)[^\n]+\d)\s+\|\s+(Rx|Tx-Rx)",
+                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+
 
     def execute(self):
         ifaces = {}
@@ -53,6 +59,7 @@ class Script(NOCScript):
         mac_svi = ""        
         name_ = {}
         mac_ = {}
+        snmp_ifindex_ = {}
         descr_ = {}
         stat_ = {}
         tagged_ = {}
@@ -71,6 +78,8 @@ class Script(NOCScript):
             if "description" in p:
                 descr_[intf] = p["description"]
             stat_[intf] = p["status"]
+            if "snmp_ifindex" in p:
+                snmp_ifindex_[intf] = p["snmp_ifindex"]
 
         # Get switchport's
         for p in self.scripts.get_switchport():
@@ -79,8 +88,18 @@ class Script(NOCScript):
                 tagged_[intf] = p["tagged"]
             if "untagged" in p:
                 untagged_[intf] = p["untagged"]
-        
 
+        # Get LLDP
+        lldp = set()
+        buf = self.cli("sh lldp config")
+        for p in buf.splitlines():
+            match = self.rx_lldp_35xx.match(p)
+            if match:
+                for v in buf.splitlines():
+                    match = self.rx_lldp_ports_35xx.match(v)
+                    if match:
+                        lldp.add(self.profile.convert_interface_name(match.group("name")))
+        
         # Get SVI interfaces on 4612
         if (self.match_version(platform__contains="4612")):
             for ls in self.cli("show ip interface").splitlines():
@@ -103,11 +122,13 @@ class Script(NOCScript):
                     type = "SVI"
                     vlan_ids = [int(namesviif[5:])]
                     mac_svi = mac_[namesviif]
+                    enabled_afi = ["IPv4"]
                     sub = {
                        "name": namesviif,
                        "admin_status": stat == "up",
                        "oper_status": stat == "up",
                        "is_ipv4": True,
+                       "enabled_afi": enabled_afi,
                        "ipv4_addresses": ip_addr,
                        "vlan_ids": vlan_ids,
                        "mac": mac_svi,
@@ -145,6 +166,7 @@ class Script(NOCScript):
                      mask = match.group("mask")
                      ip_addr = [IPv4(ip, netmask = mask).prefix]
                      type = "SVI"
+                     enabled_afi = ["IPv4"]
                      vlan_ids = [int(namesviif[5:])]
                      if namesviif in mac_:
                          mac_svi = mac_[namesviif]
@@ -153,6 +175,7 @@ class Script(NOCScript):
                         "admin_status": a_stat == "Up",
                         "oper_status": o_stat == "Up",
                         "is_ipv4": True,
+                        "enabled_afi": enabled_afi,
                         "ipv4_addresses": ip_addr,
                         "vlan_ids": vlan_ids,
                      }
@@ -178,6 +201,7 @@ class Script(NOCScript):
                    ip_addr = IPv4(ip, netmask = mask).prefix
                    status = "Up"
                    type = "SVI"
+                   enabled_afi = ["IPv4"]
                    vlan_ids = [int(namesviif[5:])]
                    if namesviif in mac_:
                        mac_svi = mac_[namesviif]
@@ -186,6 +210,7 @@ class Script(NOCScript):
                        "admin_status": status == "Up",
                        "oper_status": status == "Up",
                        "is_ipv4": True,
+                       "enabled_afi": enabled_afi,
                        "ipv4_addresses": [ip_addr],
                        "vlan_ids": vlan_ids,
                    }
@@ -201,6 +226,7 @@ class Script(NOCScript):
                    if mac_svi:
                        ifaces[namesviif]["mac"] = mac_svi
 
+        
         # Pre-process portchannel members
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
@@ -227,23 +253,30 @@ class Script(NOCScript):
                 continue 
             is_bundle = current.startswith("Trunk")
             if is_bundle:
+                enabled_afi = ["BRIDGE"]
                 ifaces[current]["mac"] = mac_[current] 
                 ifaces[current]["admin_status"] = stat_[current]
                 ifaces[current]["oper_status"] = stat_[current]
                 ifaces[current]["type"] = "aggregated"
+                ifaces[current]["enabled_protocols"] = []
                 # Sub-interface
                 sub = {
                    "name": current,
                    "admin_status": stat_[current],
                    "oper_status": stat_[current],
                    "is_bridge": True,
+                   "enabled_afi": enabled_afi,
                    "tagged_vlans": tagged_[current],
                    "untagged_vlan": untagged_[current],
                    "mac": mac_[current],
                 }
+                if current in lldp:
+                   ifaces[current]["enabled_protocols"] += ["LLDP"]
                 if current in descr_:
                    ifaces[current]["description"] = descr_[current]
                    sub["description"] = descr_[current]
+                if current in snmp_ifindex_:
+                   sub["snmp_ifindex"] = snmp_ifindex_[current]
                 ifaces[current]["subinterfaces"] = [sub]
                 
             else:
@@ -251,30 +284,35 @@ class Script(NOCScript):
                 ifaces[current]["admin_status"] = stat_[current]
                 ifaces[current]["oper_status"] = stat_[current]
                 ifaces[current]["type"] = "physical"
+                ifaces[current]["enabled_protocols"] = []
+                enabled_afi = ["BRIDGE"]
                 sub = {
                    "name": current,
                    "admin_status": stat_[current],
                    "oper_status": stat_[current],
                    "is_bridge": True,
+                   "enabled_afi": enabled_afi,
                    "mac": mac_[current],
                 }
-
+                if current in lldp:
+                   ifaces[current]["enabled_protocols"] += ["LLDP"]
                 if current in descr_:
                    ifaces[current]["description"] = descr_[current]
                    sub["description"] = descr_[current]
-                ifaces[current]["subinterfaces"] = [sub]
                 if current in tagged_:
                    sub["tagged_vlans"] = tagged_[current]
                 if current in untagged_:
                    sub["untagged_vlan"] = untagged_[current] 
-
+                if current in snmp_ifindex_:
+                   sub["snmp_ifindex"] = snmp_ifindex_[current]
+                ifaces[current]["subinterfaces"] = [sub]
 
                 # Portchannel member
                 if current in portchannel_members:
                    ai, is_lacp = portchannel_members[current]
                    ifaces[current]["aggregated_interface"] = ai
                    ifaces[current]["is_lacp"] = is_lacp
-
+                   ifaces[current]["enabled_protocols"] += ["LACP"]
             
         # Get VRFs and "default" VRF interfaces
         r = []

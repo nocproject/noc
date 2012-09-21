@@ -141,7 +141,9 @@ class Script(NOCScript):
                     "name": ifname,
                     "admin_status": admin_status,
                     "oper_status": oper_status,
-                    }
+                    "enabled_afi": [],
+                    "enabled_protocols": []
+                }
 
                 if ifname in untagged:
                     sub["untagged_vlan"] = untagged[ifname]
@@ -152,12 +154,12 @@ class Script(NOCScript):
                     for str in shint.split("\r\n"):
                         match = self.rx_int_ipv4.search(str)
                         if match:
-                            sub["is_ipv4"] = True
+                            sub["enabled_afi"] += ["IPv4"]
                             sub["ipv4_addresses"] = [match.group("address")]
                 if ift == "physical":
-                    sub["is_bridge"] = True
+                    sub["enabled_afi"] += ["BRIDGE"]
                 if ifname in ospfint:
-                    sub["is_ospf"] = True
+                    sub["enabled_protocols"] += ["OSPF"]
                 if (sub.get("is_ipv4") or sub.get("is_ipv6") or
                     sub.get("is_iso") or sub.get("is_mpls") or
                     sub.get("is_bridge")):
