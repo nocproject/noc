@@ -27,7 +27,9 @@ class Script(NOCScript):
             if match.group("status").lower() == "enabled":
                 r += [{
                     "interface": "T%s" % match.group("trunk"),
-                    "members": self.expand_rangelist(match.group("members")),
+                    "members": self.expand_interface_range(
+                        match.group("members")
+                    ),
                     "type": "L" if match.group("type").lower() == "lacp" else "S"
                     }]
         return r
