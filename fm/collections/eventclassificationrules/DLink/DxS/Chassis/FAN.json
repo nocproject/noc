@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:WARN:|WARN\\(4\\)|CRIT:|CRIT\\(2\\)) (Unit \\d+, )?(?P<name>.*Fan) failed$"
+                "value_re": "(Unit \\d+, )?(?P<name>\S+\s+Fan\\s*\\d*) failed$"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:INFO:|INFO\\(6\\)|CRIT:|CRIT\\(2\\)) (Unit \\d+, )?(?P<name>.+) recovered$"
+                "value_re": "(Unit \\d+, )?(?P<name>\S+\s+Fan\\s*\\d*) recovered$"
             }
         ]
     }
