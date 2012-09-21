@@ -254,7 +254,7 @@ class AccessTestCase(TestCase):
                 ("13", "CNAME", "13.8/29"),
                 ("14", "CNAME", "14.8/29"),
                 ("15", "CNAME", "15.8/29"),
-                ("8/29", "IN NS", "ns3.example.com")]:
+                ("8/29", "NS", "ns3.example.com")]:
             self.assertTrue(r in zr41_records,
                 "%s not in %s" % (r, zr41_records))
         zr42_records = self.zr42.records
