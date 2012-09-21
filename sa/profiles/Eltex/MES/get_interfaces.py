@@ -141,7 +141,8 @@ class Script(NOCScript):
             if ifname in portchannel_members:
                 ai, is_lacp = portchannel_members[ifname]
                 iface["aggregated_interface"] = ai
-                iface["is_lacp"] = is_lacp
+                if is_lacp:
+                    iface["enabled_protocols"] = ["LACP"]
 
             iface["subinterfaces"] = []
             interfaces += [iface]
