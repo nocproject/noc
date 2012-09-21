@@ -290,8 +290,8 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         self.app.message_user(request, "Interface discovery has been rescheduled")
         now = datetime.datetime.now()
         for o in queryset:
-            for job in ["version_inventory",
-                        "ip_discovery", "interface_discovery"]:
+            for job in ["version_inventory", "ip_discovery",
+                        "interface_discovery", "mac_discovery"]:
                 discovery_scheduler.reschedule_job(job, o.id, now)
         return self.app.response_redirect("sa:managedobject:changelist")
     reschedule_discovery.short_description = _("Run discovery now")

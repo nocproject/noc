@@ -265,6 +265,8 @@ from forwardinginstance import ForwardingInstance
 from interface import Interface
 from subinterface import SubInterface
 from link import Link
+from maclog import MACLog
+from macdb import MACDB
 
 
 class NewPrefixDiscoveryLog(Document):

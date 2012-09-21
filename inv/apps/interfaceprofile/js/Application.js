@@ -37,8 +37,15 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
             renderer: NOC.render.Lookup("style")
         },
         {
+            text: "MAC",
+            dataIndex: "mac_discovery",
+            renderer: NOC.render.Bool,
+            width: 50
+        },
+        {
             text: "Description",
-            dataIndex: "description"
+            dataIndex: "description",
+            flex: 1
         }
     ],
     fields: [
@@ -76,6 +83,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     {id: "A", label: "Raise alarms"}
                 ]
             }
+        },
+        {
+            name: "mac_discovery",
+            xtype: "checkbox",
+            boxLabel: "MAC Discovery",
+            allowBlank: true
         }
     ]
 });
