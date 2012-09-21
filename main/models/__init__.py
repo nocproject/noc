@@ -753,8 +753,8 @@ class Style(models.Model):
         """
         CSS Style
         """
-        s = u"color: %s; background-color: %s;" % (self.font_color,
-                                                   self.background_color)
+        s = u"color: %s !important; background-color: %s !important;" % (
+            self.font_color, self.background_color)
         if self.bold:
             s += u" font-weight: bold;"
         if self.italic:
@@ -768,7 +768,8 @@ class Style(models.Model):
         """
         CSS class style
         """
-        return u".%s { %s }\n" % (self.css_class_name, self.style)
+        return u".%s, .%s td { %s }\n" % (
+            self.css_class_name, self.css_class_name, self.style)
 
 
 class Language(models.Model):
