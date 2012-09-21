@@ -1,7 +1,7 @@
 [
     {
         "name": "EdgeCore | ES | Security | Authentication | Login (SYSLOG)",
-        "description": "Jul 24 7:57:22 GOR_35 snmp: User(skripnik/Telnet) (10.100.100.101), login successful",
+        "description": "Aug 31 15:37:30 test snmp LoginSuccess,admin,TELNET,172.16.3.254",
         "event_class__name": "Security | Authentication | Login",
         "preference": 1000,
         "patterns": [
@@ -15,57 +15,66 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "snmp: User\\((?P<user>.+?)(/\\w+)?\\) \\((?P<ip>\\S+)\\), login successful"
+                "value_re": "snmp LoginSuccess,(?P<user>.*),(?:TELNET|Console|WEB),(?P<ip>\\S+)$"
             }
         ]
     },
-
     {
-        "name": "EdgeCore | ES | Security | Authentication | Logout (SYSLOG)",
-        "description": "Jul 24 7:57:39 GOR_35 cli: 10.100.100.101 VTY user skripnik, logout from PRIV. EXEC",
-        "event_class__name": "Security | Authentication | Logout",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^EdgeCore\\.ES$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "cli: (?P<ip>\\S+) VTY user (?P<user>\\S+), logout from PRIV\\. EXEC"
-            }
-        ]
-    },
-
-    {
-        "name": "EdgeCore | ES | Security | Authentication | SSH Login (SYSLOG)",
-        "description": "%Jul 24 10:44:26 2012 MODULE_UTILS_SSH[tSshdSessionTask1]:SSH: User admin login successfully from 10.100.100.55",
+        "name": "EdgeCore | ES | Security | Authentication | Login #1 (SNMP)",
+        "description": "ES3528MO-MIB::swAuthenticationSuccess",
         "event_class__name": "Security | Authentication | Login",
         "preference": 1000,
         "patterns": [
             {
                 "key_re": "^source$",
-                "value_re": "^syslog$"
+                "value_re": "^SNMP Trap$"
             },
             {
                 "key_re": "^profile$",
                 "value_re": "^EdgeCore\\.ES$"
             },
             {
-                "key_re": "^message$",
-                "value_re": "MODULE_UTILS_SSH\\[tSshdSessionTask\\d+\\]:SSH: User (?P<user>\\S+) login successfully from (?P<ip>\\S+)"
+                "key_re": "^ES3528MO-MIB::trapVar\\.11$",
+                "value_re": "^(?P<user>.+?)$"
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapVar\\.13$",
+                "value_re": "^(?P<ip__bin_to_ip>\\S+)$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^ES3528MO-MIB::swAuthenticationSuccess$"
             }
         ]
     },
-
     {
-        "name": "EdgeCore | ES | Security | Authentication | SSH Logout (SYSLOG)",
-        "description": "%Jul 24 10:55:00 2012 MODULE_UTILS_SSH[tSshdSessionTask1]:SSH: User admin logout from 10.100.100.55",
-        "event_class__name": "Security | Authentication | Logout",
+        "name": "EdgeCore | ES | Security | Authentication | Login #2 (SNMP)",
+        "description": "ES3528MO-MIB::swAuthenticationSuccess",
+        "event_class__name": "Security | Authentication | Login",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^EdgeCore\\.ES$"
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapVar\\.11$",
+                "value_re": "^(?P<user>.+?)$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^ES3528MO-MIB::swAuthenticationSuccess$"
+            }
+        ]
+    },
+    {
+        "name": "EdgeCore | ES | Security | Authentication | Login Failed (SYSLOG)",
+        "description": "Aug 31 15:37:23 test snmp LoginFailure,admin,TELNET,172.16.3.254",
+        "event_class__name": "Security | Authentication | Login Failed",
         "preference": 1000,
         "patterns": [
             {
@@ -78,7 +87,81 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "MODULE_UTILS_SSH\\[tSshdSessionTask\\d+\\]:SSH: User (?P<user>\\S+) logout from (?P<ip>\\S+)"
+                "value_re": "snmp LoginFailure,(?P<user>.*),(?:TELNET|Console|WEB),(?P<ip>\\S+)$"
+            }
+        ]
+    },
+
+    {
+        "name": "EdgeCore | ES | Security | Authentication | Authentication Failed #1 (SYSLOG)",
+        "description": "Sep 19 13:36:03 Karavaev-28 snmp Authentication failure notification.",
+        "event_class__name": "Security | Authentication | Authentication Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^EdgeCore\\.ES$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "snmp Authentication failure notification.$"
+            }
+        ]
+    },
+
+    {
+        "name": "EdgeCore | ES | Security | Authentication | Login Failed #1 (SNMP)",
+        "description": "ES3528MO-MIB::swAuthenticationFailure",
+        "event_class__name": "Security | Authentication | Login Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^EdgeCore\\.ES$"
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapVar\\.11$",
+                "value_re": "^(?P<user>.+?)$"
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapVar\\.13$",
+                "value_re": "^(?P<ip__bin_to_ip>\\S+)$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^ES3528MO-MIB::swAuthenticationFailure$"
+            }
+        ]
+    },
+    {
+        "name": "EdgeCore | ES | Security | Authentication | Login Failed #2 (SNMP)",
+        "description": "ES3528MO-MIB::swAuthenticationFailure",
+        "event_class__name": "Security | Authentication | Login Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^EdgeCore\\.ES$"
+            },
+            {
+                "key_re": "^ES3528MO-MIB::trapVar\\.11$",
+                "value_re": "^(?P<user>.+?)$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^ES3528MO-MIB::swAuthenticationFailure$"
             }
         ]
     }
