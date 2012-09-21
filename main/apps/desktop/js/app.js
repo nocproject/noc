@@ -13,6 +13,8 @@ Ext.application({
 
     launch: function() {
         var me = this;
+        console.log("Initializing history API");
+        Ext.History.init();
         console.log("NOC application starting");
         Ext.create("NOC.main.desktop.Viewport");
         console.log("NOC application ready");
