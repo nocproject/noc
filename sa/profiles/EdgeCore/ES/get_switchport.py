@@ -49,6 +49,7 @@ class Script(NOCScript):
 
         if (self.match_version(platform__contains="3526") or
            self.match_version(platform__contains="3510") or
+           self.match_version(platform__contains="2228N") or
            self.match_version(platform__contains="3528") or
            self.match_version(platform__contains="3552") or
            self.match_version(platform__contains="4612")):
