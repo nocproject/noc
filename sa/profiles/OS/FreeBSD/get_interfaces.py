@@ -67,6 +67,7 @@ class Script(NOCScript):
                 self.subiface["name"] = match.group("ifname")
                 self.iface["admin_status"] = flags.startswith("UP,")
                 self.subiface["admin_status"] = flags.startswith("UP,")
+                self.subiface["enabled_afi"] = []
                 if "LOOPBACK" in flags:
                     self.iface["type"] = "loopback"
                     self.iface["oper_status"] = flags.startswith("UP,")
@@ -97,6 +98,7 @@ class Script(NOCScript):
                 else:
                     self.subiface["ipv4_addresses"] = [ipv4_addr]
                     self.subiface["is_ipv4"] = True
+                    self.subiface["enabled_afi"] += ["IPv4"]
                 continue
             match = self.rx_if_inet6.search(s)
             if match:
@@ -110,6 +112,7 @@ class Script(NOCScript):
                 else:
                     self.subiface["ipv6_addresses"] = [ipv6_addr]
                     self.subiface["is_ipv6"] = True
+                    self.subiface["enabled_afi"] += ["IPv6"]
                 continue
             match = self.rx_if_status.search(s)
             if match:
@@ -131,6 +134,7 @@ class Script(NOCScript):
                 else:
                     self.iface["aggregated_interface"] = [ifname]
                     self.iface["is_lacp"] = True
+                    self.iface["enabled_protocols"] = ["LACP"]
                 continue
             match = self.rx_if_wlan.search(s)
             if match:
