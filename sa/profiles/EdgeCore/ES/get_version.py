@@ -70,8 +70,19 @@ class Script(NOCScript):
     rx_ver_35 = re.compile(
         r"^\s*Operation code version\s*:\s*(?P<version>\S+)\s*$",
         re.MULTILINE | re.IGNORECASE)
+    rx_ser_35 = re.compile(
+        r"^\s*Serial Number\s*:\s*(?P<serial>\S+)\s*$",
+        re.MULTILINE | re.IGNORECASE)
+    rx_hw_35 = re.compile(
+        r"^\s*Hardware Version\s*:\s*(?P<hardware>\S+)\s*$",
+        re.MULTILINE | re.IGNORECASE)
+    rx_boot_35 = re.compile(
+        r"^\s*Boot ROM Version\s+:\s+(?P<boot>.+)\s*$",
+        re.MULTILINE | re.IGNORECASE)
 
     def get_version_35xx(self, show_system, version):
+        # Vendor default
+        vendor = "EdgeCore"
         # Detect version
         if not version:
             v = self.cli("show version", cached=True)
@@ -98,17 +109,33 @@ class Script(NOCScript):
             platform = "ES3510"
         elif "3552M" in platform:
             platform = "ES3552M"
-        elif "3528" in platform or "ES3526S" in platform:
+        elif "ES3528M" in platform:
+            platform = "ES3528M"
+        elif "ES3526S" in platform:
             pass
+        elif "MR2228N" in platform:
+            vendor = "MRV"
         elif platform.lower() == "8 sfp ports + 4 gigabit combo ports l2/l3/l4 managed standalone switch":
             platform = "ES4612"
         else:
             raise self.NotSupportedError(platform)
-        return {
-            "vendor": "EdgeCore",
+        r = {
+            "vendor": vendor,
             "platform": platform,
-            "version": version
+            "version": version,
+            "attributes": {}
         }
+        v = self.cli("show version", cached=True)
+	match = self.rx_boot_35.search(v)
+        if match:
+            r["attributes"].update({"Boot PROM": match.group("boot")})
+        match = self.rx_hw_35.search(v)
+        if match:
+            r["attributes"].update({"HW version": match.group("hardware")})
+        match = self.rx_ser_35.search(v)
+        if match:
+            r["attributes"].update({"Serial Number": match.group("serial")})
+        return r
 
     ##
     ## ES4626
@@ -151,3 +178,4 @@ class Script(NOCScript):
         if match:
             r["attributes"].update({"Serial Number": match.group("serial")})
         return r
+
