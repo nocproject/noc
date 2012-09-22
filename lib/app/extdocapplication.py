@@ -24,30 +24,7 @@ class ExtDocApplication(ExtApplication):
     query_fields = []  # Use all unique fields by default
     query_condition = "startswith"
     int_query_fields = []  # Integer fields for exact match
-
     pk_field_name = None  # Set by constructor
-
-    # REST return codes and messages
-    OK = 200
-    CREATED = 201
-    DELETED = 204
-    BAD_REQUEST = 400
-    FORBIDDEN = 401
-    NOT_FOUND = 404
-    DUPLICATE_ENTRY = 409
-    NOT_HERE = 410
-    INTERNAL_ERROR = 500
-    NOT_IMPLEMENTED = 501
-    THROTTLED = 503
-
-    ignored_params = ["_dc"]
-    page_param = "__page"
-    start_param = "__start"
-    limit_param = "__limit"
-    sort_param = "__sort"
-    format_param = "__format"  # List output format
-    query_param = "__query"
-    only_param = "__only"
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -101,9 +78,6 @@ class ExtDocApplication(ExtApplication):
             return self.model.objects.filter(self.get_Q(request, query))
         else:
             return self.model.objects.all()
-
-    def deserialize(self, data):
-        return json_decode(data)
 
     def response(self, content="", status=200):
         if not isinstance(content, basestring):
@@ -233,9 +207,9 @@ class ExtDocApplication(ExtApplication):
             del attrs["id"]
         try:
             self.queryset(request).get(**attrs)
-            return self.response(status=self.DUPLICATE_ENTRY)
+            return self.response(status=self.CONFLICT)
         except self.model.MultipleObjectsReturned:
-            return self.response(status=self.DUPLICATE_ENTRY)
+            return self.response(status=self.CONFLICT)
         except self.model.DoesNotExist:
             o = self.model(**attrs)
             o.save()
