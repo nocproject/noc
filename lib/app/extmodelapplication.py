@@ -17,7 +17,7 @@ from django.db.utils import IntegrityError
 from tagging.models import Tag
 ## NOC modules
 from extapplication import ExtApplication, view
-from noc.lib.serialize import json_encode, json_decode
+from noc.lib.serialize import json_encode
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
@@ -32,30 +32,7 @@ class ExtModelApplication(ExtApplication):
     query_fields = []  # Use all unique fields by default
     query_condition = "startswith"  # Match method for string fields
     int_query_fields = []  # Query integer fields for exact match
-
     pk_field_name = None  # Set by constructor
-
-    # REST return codes and messages
-    OK = 200
-    CREATED = 201
-    DELETED = 204
-    BAD_REQUEST = 400
-    FORBIDDEN = 401
-    NOT_FOUND = 404
-    CONFLICT = 409
-    NOT_HERE = 410
-    INTERNAL_ERROR = 500
-    NOT_IMPLEMENTED = 501
-    THROTTLED = 503
-
-    ignored_params = ["_dc"]
-    page_param = "__page"
-    start_param = "__start"
-    limit_param = "__limit"
-    sort_param = "__sort"
-    format_param = "__format"  # List output format
-    query_param = "__query"
-    only_param = "__only"
     clean_fields = {}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
 
@@ -157,9 +134,6 @@ class ExtModelApplication(ExtApplication):
             return self.model.objects.filter(self.get_Q(request, query))
         else:
             return self.model.objects.all()
-
-    def deserialize(self, data):
-        return json_decode(data)
 
     def response(self, content="", status=200):
         if not isinstance(content, basestring):
