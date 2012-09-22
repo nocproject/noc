@@ -17,7 +17,6 @@ from django.db.utils import IntegrityError
 from tagging.models import Tag
 ## NOC modules
 from extapplication import ExtApplication, view
-from noc.lib.serialize import json_encode
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
@@ -135,16 +134,6 @@ class ExtModelApplication(ExtApplication):
         else:
             return self.model.objects.all()
 
-    def response(self, content="", status=200):
-        if not isinstance(content, basestring):
-            return HttpResponse(json_encode(content),
-                mimetype="text/json; charset=utf-8",
-                status=status)
-        else:
-            return HttpResponse(content,
-                mimetype="text/plain; charset=utf-8",
-                status=status)
-
     def clean(self, data):
         """
         Clean up input data
@@ -257,51 +246,6 @@ class ExtModelApplication(ExtApplication):
             "id": o.id,
             "label": unicode(o)
         }
-
-    def list_data(self, request, formatter):
-        """
-        Returns a list of requested object objects
-        """
-        # Todo: Fix
-        q = dict((str(k), v[0] if len(v) == 1 else v)
-            for k, v in request.GET.lists())
-        limit = q.get(self.limit_param)
-        # page = q.get(self.page_param)
-        start = q.get(self.start_param)
-        format = q.get(self.format_param)
-        query = q.get(self.query_param)
-        only = q.get(self.only_param)
-        if only:
-            only = only.split(",")
-        ordering = []
-        if format == "ext" and self.sort_param in q:
-            for r in self.deserialize(q[self.sort_param]):
-                if r["direction"] == "DESC":
-                    ordering += ["-%s" % r["property"]]
-                else:
-                    ordering += [r["property"]]
-        q = self.cleaned_query(q)
-        if None in q:
-            ew = q.pop(None)
-            data = self.queryset(request, query).filter(**q).extra(where=ew)
-        else:
-            data = self.queryset(request, query).filter(**q)
-        data = data.select_related()
-        # Apply sorting
-        if ordering:
-            data = data.order_by(*ordering)
-        if format == "ext":
-            total = data.count()
-        if start is not None and limit is not None:
-            data = data[int(start):int(start) + int(limit)]
-        out = [formatter(o, fields=only) for o in data]
-        if format == "ext":
-            out = {
-                "total": total,
-                "success": True,
-                "data": out
-            }
-        return self.response(out, status=self.OK)
 
     def lookup_tags(self, q, name, value):
         if not value:

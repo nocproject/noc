@@ -10,11 +10,10 @@
 from django.http import HttpResponse
 ## NOC modules
 from extapplication import ExtApplication, view
-from noc.lib.serialize import json_encode, json_decode
-from noc.lib.nosql import StringField, BooleanField, GeoPointField,\
-    ForeignKeyField, Q
-from noc.sa.interfaces import BooleanParameter, GeoPointParameter,\
-    ModelParameter
+from noc.lib.nosql import (StringField, BooleanField, GeoPointField,
+                           ForeignKeyField, Q)
+from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
+                               ModelParameter)
 from noc.lib.validators import is_int
 
 
@@ -79,16 +78,6 @@ class ExtDocApplication(ExtApplication):
         else:
             return self.model.objects.all()
 
-    def response(self, content="", status=200):
-        if not isinstance(content, basestring):
-            return HttpResponse(json_encode(content),
-                               mimetype="text/json; charset=utf-8",
-                               status=status)
-        else:
-            return HttpResponse(content,
-                               mimetype="text/plain; charset=utf-8",
-                               status=status)
-
     def clean(self, data):
         """
         Clean up input data
@@ -151,44 +140,6 @@ class ExtDocApplication(ExtApplication):
             "label": unicode(o)
         }
 
-    def list_data(self, request, formatter):
-        """
-        Returns a list of requested object objects
-        """
-        q = dict(request.GET.items())
-        limit = q.get(self.limit_param)
-        # page = q.get(self.page_param)
-        start = q.get(self.start_param)
-        format = q.get(self.format_param)
-        query = q.get(self.query_param)
-        only = q.get(self.only_param)
-        if only:
-            only = only.split(",")
-        ordering = []
-        if format == "ext" and self.sort_param in q:
-            for r in self.deserialize(q[self.sort_param]):
-                if r["direction"] == "DESC":
-                    ordering += ["-%s" % r["property"]]
-                else:
-                    ordering += [r["property"]]
-        q = self.cleaned_query(q)
-        data = self.queryset(request, query).filter(**q)
-        # Apply sorting
-        if ordering:
-            data = data.order_by(*ordering)
-        if format == "ext":
-            total = data.count()
-        if start is not None and limit is not None:
-            data = data[int(start):int(start) + int(limit)]
-        out = [formatter(o, fields=only) for o in data]
-        if format == "ext":
-            out = {
-                "total": total,
-                "success": True,
-                "data": out
-            }
-        return self.response(out, status=self.OK)
-        
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
