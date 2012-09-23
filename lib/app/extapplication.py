@@ -102,7 +102,7 @@ class ExtApplication(Application):
             data = self.queryset(request, query).filter(**q).extra(where=ew)
         else:
             data = self.queryset(request, query).filter(**q)
-        if hasattr(data, "select_related"):
+        if hasattr(data, "_as_sql"):  # For Models only
             data = data.select_related()
         # Apply sorting
         if ordering:
