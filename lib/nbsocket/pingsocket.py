@@ -20,7 +20,6 @@ ICMP_ECHO = 8
 MAX_RECV = 1500
 
 
-# @todo: Timeout handling
 class PingSocket(Socket):
     """
     ICMP Echo Request sender, Echo Reply receiver
@@ -45,10 +44,11 @@ class PingSocket(Socket):
             self.sessions[session.req_id] = session
             msg = session.build_echo_request()
             try:
-                self.socket.sendto(msg, (session.address, 1))  # Port is irrelevant
+                # Port is irrelevant for icmp
+                self.socket.sendto(msg, (session.address, 1))
             except socket.error, why:  # ENETUNREACH
                 self.debug("Socket error: %s" % why)
-                self.close()
+                session.register_miss()
                 return
         self.set_status(w=bool(self.out_buffer))
         self.update_status()
