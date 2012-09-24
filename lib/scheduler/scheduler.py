@@ -7,11 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 import os
 import logging
 import time
 import datetime
 import inspect
+import threading
 ## NOC modules
 from error import JobExists
 from job import Job
@@ -187,7 +189,8 @@ class Scheduler(object):
             self.remove_job(job.name, job.key)
             return
         # Change status
-        self.info("Running job %s(%s)" % (job.name, job.get_display_key()))
+        s = "threaded " if job.threaded else ""
+        self.info("Running %sjob %s(%s)" % (s, job.name, job.get_display_key()))
         job.started = time.time()
         self.collection.update({
             self.ATTR_CLASS: job.name,
@@ -209,6 +212,16 @@ class Scheduler(object):
             self._run_job_handler(job)
 
     def _run_job_handler(self, job, **kwargs):
+        if job.threaded:
+            t = threading.Thread(target=self._job_wrapper,
+                args=(job,), kwargs=kwargs
+            )
+            t.daemon = True
+            t.start()
+        else:
+            return self._job_wrapper(job, **kwargs)
+
+    def _job_wrapper(self, job, **kwargs):
         tb = None
         try:
             r = job.handler(**kwargs)
