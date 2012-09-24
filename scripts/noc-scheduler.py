@@ -13,7 +13,7 @@ import set_env
 set_env.setup(use_django=True)
 
 if __name__ == "__main__":
-    from noc.main.scheduler import Scheduler
+    from noc.main.scheduler.daemon import SchedulerDaemon
     from noc.main.models import CustomField
     CustomField.install_fields()
-    Scheduler().process_command()
+    SchedulerDaemon().process_command()
