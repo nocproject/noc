@@ -31,7 +31,7 @@ class Script(NOCScript):
     rx_mac = re.compile(r"^CIST Bridge[^:]*?:\s*\d+?\.(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    rx_mac1 = re.compile(r"^\s*MAC_ADDRESS[^:]*?:\s(?P<id>\S+)",
+    rx_mac1 = re.compile(r"^\s*MAC(_|\s)ADDRESS[^:]*?:\s(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
     @NOCScript.match()
