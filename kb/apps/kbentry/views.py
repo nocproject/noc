@@ -46,12 +46,12 @@ class KBEntryApplication(ModelApplication):
     ##
     ##
     ##
-    def view_change(self,request,object_id,extra_context=None):
+    def view_change(self,request,object_id,form_url="",extra_context=None):
         def response_change(*args):
             self.message_user(request,"KB%s was changed successfully"%object_id)
             return self.response_redirect("kb:view:view",object_id)
         self.admin.response_change=response_change
-        return self.admin.change_view(request,object_id,self.get_context(extra_context))
+        return self.admin.change_view(request,object_id,form_url,self.get_context(extra_context))
     view_change.url=r"^(\d+)/$"
     view_change.url_name="change"
     view_change.access=HasPerm("change")
