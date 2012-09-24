@@ -116,6 +116,9 @@ Ext.define("NOC.core.ModelApplication", {
             xtype: "gridpanel",
             itemId: "grid",
             store: me.store,
+            features: [
+                {ftype: "selectable", id: "selectable"}
+            ],
             columns: [
                 {
                     xtype: "actioncolumn",
