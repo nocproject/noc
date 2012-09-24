@@ -22,7 +22,7 @@ MAX_RECV = 1500
 
 class PingSocket(Socket):
     """
-    ICMP Echo Request sender, Echo Reply receiver
+    Abstract ICMP Echo Request sender, Echo Reply receiver
     """
     def __init__(self, factory):
         # Pending pings
@@ -31,9 +31,11 @@ class PingSocket(Socket):
         self.sessions = {}  # Request Id -> PingSession
         super(PingSocket, self).__init__(factory)
 
+    def _create_socket(self):
+        raise NotImplementedError
+
     def create_socket(self):
-        self.socket = socket.socket(
-            socket.AF_INET, socket.SOCK_RAW, ICMP_PROTO)
+        self._create_socket()
         super(PingSocket, self).create_socket()
         if self.out_buffer:
             self.set_status(w=True)
@@ -53,6 +55,9 @@ class PingSocket(Socket):
         self.set_status(w=bool(self.out_buffer))
         self.update_status()
 
+    def parse_reply(self, msg, addr):
+        raise NotImplementedError
+
     def handle_read(self):
         self.update_status()
         try:
@@ -61,18 +66,7 @@ class PingSocket(Socket):
             if why[0] in (EINTR, EAGAIN):
                 return
             raise socket.error, why
-        ip_header = msg[:20]
-        (ver, tos, plen, pid, flags,
-         ttl, proto, checksum, src_ip,
-         dst_ip) = struct.unpack("!BBHHHBBHII", ip_header)
-
-        icmp_header = msg[20:28]
-        (icmp_type, icmp_code, icmp_checksum,
-        req_id, seq) = struct.unpack(
-            "!BBHHH", icmp_header)
-        if icmp_type == ICMP_ECHOREPLY and req_id in self.sessions:
-            self.sessions[req_id].register_reply(
-                address=src_ip, seq=seq, ttl=ttl, msg=msg)
+        self.parse_reply(msg, addr)
 
     def ping(self, addr, size=64, count=1, timeout=3, callback=None):
         """
@@ -86,8 +80,12 @@ class PingSocket(Socket):
         :param callback:
         :return:
         """
+        if ":" in addr:
+            raise NotImplementedError
+        else:
+            s_cls = Ping4Session
         self.out_buffer += [
-            PingSession(self, address=addr, size=size, count=count,
+            s_cls(self, address=addr, size=size, count=count,
                 timeout=timeout, callback=callback)
         ]
         if self.socket:
@@ -110,7 +108,29 @@ class PingSocket(Socket):
             s.register_miss()
 
 
-# @todo: Rewrite as named tuple
+class Ping4Socket(PingSocket):
+    """
+    ICMPv4 Ping Socket
+    """
+    def _create_socket(self):
+        self.socket = socket.socket(
+            socket.AF_INET, socket.SOCK_RAW, ICMP_PROTO)
+
+    def parse_reply(self, msg, addr):
+        ip_header = msg[:20]
+        (ver, tos, plen, pid, flags,
+         ttl, proto, checksum, src_ip,
+         dst_ip) = struct.unpack("!BBHHHBBHII", ip_header)
+
+        icmp_header = msg[20:28]
+        (icmp_type, icmp_code, icmp_checksum,
+        req_id, seq) = struct.unpack(
+            "!BBHHH", icmp_header)
+        if icmp_type == ICMP_ECHOREPLY and req_id in self.sessions:
+            self.sessions[req_id].register_reply(
+                address=src_ip, seq=seq, ttl=ttl, msg=msg)
+
+
 class PingSession(object):
     def __init__(self, ping_socket, address, size,
                  count, timeout, callback):
@@ -131,6 +151,9 @@ class PingSession(object):
     def register_miss(self):
         self.result += [None]
         self.next()
+
+    def build_echo_request(self):
+        raise NotImplementedError
 
     def register_reply(self, address, seq, ttl, msg):
         if seq != self.seq or msg[28:] != self.payload:
@@ -156,23 +179,6 @@ class PingSession(object):
             self.ping_socket.out_buffer += [self]
             self.ping_socket.set_status(w=True)
 
-    def build_echo_request(self):
-        checksum = 0
-        self.req_id = id(self) & 0xFFFF
-        # Fake header with zero checksum
-        header = struct.pack("!BBHHH",
-            ICMP_ECHO, 0, checksum, self.req_id, self.seq)
-        self.payload = "A" * (self.size - 28)  # Pad to size
-        # Get checksum
-        checksum = self.get_checksum(header + self.payload)
-        # Rebuild header with proper checksum
-        header = struct.pack("!BBHHH",
-            ICMP_ECHO, 0, checksum, self.req_id, self.seq)
-        # Save time
-        self.t = time.time()
-        self.expire = self.t + self.timeout
-        return header + self.payload
-
     def get_checksum(self, msg):
         """
         Calculate checksum
@@ -191,3 +197,25 @@ class PingSession(object):
         s = (s >> 16) + (s & 0xFFFF)  # Add high 16 bits to low 16 bits
         s += (s >> 16)
         return ~s & 0xFFFF
+
+
+class Ping4Session(PingSession):
+    """
+    ICMPv4 Ping Session
+    """
+    def build_echo_request(self):
+        checksum = 0
+        self.req_id = id(self) & 0xFFFF
+        # Fake header with zero checksum
+        header = struct.pack("!BBHHH",
+            ICMP_ECHO, 0, checksum, self.req_id, self.seq)
+        self.payload = "A" * (self.size - 28)  # Pad to size
+        # Get checksum
+        checksum = self.get_checksum(header + self.payload)
+        # Rebuild header with proper checksum
+        header = struct.pack("!BBHHH",
+            ICMP_ECHO, 0, checksum, self.req_id, self.seq)
+        # Save time
+        self.t = time.time()
+        self.expire = self.t + self.timeout
+        return header + self.payload
