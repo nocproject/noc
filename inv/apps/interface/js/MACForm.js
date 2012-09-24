@@ -29,6 +29,9 @@ Ext.define("NOC.inv.interface.MACForm", {
                     xtype: "gridpanel",
                     itemId: "grid",
                     store: me.store,
+                    features: [
+                        {ftype: "selectable", id: "selectable"}
+                    ],
                     autoScroll: true,
                     layout: "fit",
                     columns: [
