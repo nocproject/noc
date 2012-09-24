@@ -13,9 +13,49 @@ class EdgeCore_ES_get_version_Test(ScriptTestCase):
     platform='ES3526XA-V2'
     version='1.1.0.29'
     input={}
-    result={'platform': 'ES3526XA-V2', 'vendor': 'EdgeCore', 'version': '1.1.0.29'}
+    result = {'attributes': {'HW version': 'R01A2', 'Serial Number': 'A809003245'},
+ 'platform': 'ES3526XA-V2',
+ 'vendor': 'EdgeCore',
+ 'version': '1.1.0.29'}
     motd=' \n\n      CLI session with the ES3526XA is opened.\n      To end the CLI session, enter [Exit].\n\n'
     cli={
+## 'show version'
+'show version': """show version
+ Serial Number:           A809003245
+ Service Tag:
+ Hardware Version:        R01A2
+ EPLD Version:            0.00
+ Number of Ports:         26
+ Main Power Status:       Up
+ Loader Version:          1.0.0.2
+ Boot ROM Version:        1.0.0.5
+ Operation Code Version:  1.1.0.29""",
+## 'show system'
+'show system': """show system
+System Description: Layer2+ Fast Ethernet Standalone Switch ES3526XA
+System OID String: 1.3.6.1.4.1.259.8.1.5
+System Information
+ System Up Time:          98 days, 1 hours, 41 minutes, and 4.50 seconds
+ System Name:             SW023-003
+ System Location:         [NONE]
+ System Contact:          [NONE]
+ MAC Address (Unit1):     00-12-CF-87-D1-C0
+ Web Server:              Enabled
+ Web Server Port:         80
+ Web Secure Server:       Enabled
+ Web Secure Server Port:  443
+ Telnet Server:           Enable
+ Telnet Server Port:      23
+ Authentication Login:     TACACS Local None
+ Jumbo Frame:             Disabled
+
+ POST Result:
+DUMMY Test 1 ................. PASS
+UART Loopback Test ........... PASS
+DRAM Test .................... PASS
+Switch Int Loopback Test ..... PASS
+
+Done All Pass.""",
 }
     snmp_get={'1.3.6.1.2.1.1.1.0': 'Layer2+ Fast Ethernet Standalone Switch ES3526XA',
  '1.3.6.1.2.1.1.2.0': '(1, 3, 6, 1, 4, 1, 259, 8, 1, 5)',
