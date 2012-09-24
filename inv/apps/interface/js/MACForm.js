@@ -41,7 +41,8 @@ Ext.define("NOC.inv.interface.MACForm", {
                         },
                         {
                             text: "MAC",
-                            dataIndex: "mac"
+                            dataIndex: "mac",
+                            width: 110
                         },
                         {
                             text: "VLAN",
