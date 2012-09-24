@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## noc-scheduler daemon
+## Legacy periodic scheduler
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
@@ -17,7 +17,6 @@ import threading
 ## Django modules
 from django.db import transaction, reset_queries
 ## NOC modules
-from noc.lib.daemon import Daemon
 from noc.lib.periodic import periodic_registry
 from noc.lib.debug import error_report
 from noc.main.models import Schedule, TimePattern, PyRule
@@ -25,14 +24,13 @@ from noc.sa.models import ManagedObject
 from noc.fm.models import NewEvent
 
 
-class Scheduler(Daemon):
-    daemon_name = "noc-scheduler"
-
-    def __init__(self):
-        super(Scheduler, self).__init__()
-        logging.info("Running noc-scheduler")
+class PeriodicScheduler(threading.Thread):
+    def __init__(self, daemon):
+        super(PeriodicScheduler, self).__init__()
         self.running = set()
         self.running_lock = threading.Lock()
+        self.daemon = True
+        self.s_daemon = daemon
 
     def update_schedules(self):
         """Create schedules for new periodic tasks"""
@@ -121,11 +119,11 @@ class Scheduler(Daemon):
         logging.info("Waiting for 15 seconds")
         for i in range(15):
             time.sleep(1)
-            self.heartbeat()
+            self.s_daemon.heartbeat()
         transaction.enter_transaction_management()
         self.update_schedules()
         while True:
-            self.heartbeat()
+            self.s_daemon.heartbeat()
             last_check = time.time()
             # Get tasks to run
             new_tasks = Schedule.get_tasks()
