@@ -21,7 +21,8 @@ class Profile(NOCProfile):
     pattern_password = "[Pp]ass[Ww]ord:"
     pattern_more = "CTRL\+C.+?a All"
     pattern_unpriveleged_prompt = r"^\S+:(3|6|user|operator)#"
-    pattern_syntax_error = r"(Available commands|Next possible completions|Ambiguous token):"
+    pattern_syntax_error = r"(Available commands|Next possible completions|"
+    r"Ambiguous token):"
     command_super = "enable admin"
     pattern_prompt = r"^(?P<hostname>\S+(:\S+)*)#"
     command_disable_pager = "disable clipaging"
@@ -58,7 +59,8 @@ class Profile(NOCProfile):
                 self.cluster_member = p[8:].strip()
             # Switch to cluster member, if necessary
         if self.cluster_member:
-            script.debug("Switching to SIM member '%s'" % script.cluster_member)
+            script.debug("Switching to SIM member '%s'" %
+                script.cluster_member)
             script.cli("reconfig member_id %s" % script.cluster_member)
 
     def shutdown_session(self, script):
@@ -81,7 +83,6 @@ class Profile(NOCProfile):
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
         r"\n\s+Desc(ription)?:\s*?(?P<desc>.*?)$",
         re.MULTILINE)
-
 
     def parse_interface(self, s):
         match = self.rx_port.search(s)
@@ -131,7 +132,8 @@ class Profile(NOCProfile):
     r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
     r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
     r"^(Current Tagged P|Tagged p)orts\s+:\s*(?P<tagged_ports>\S*?)\s*\n"
-    r"^(Current Untagged P|Untagged p)orts\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
+    r"^(Current Untagged P|Untagged p)orts\s*:\s*"
+    r"(?P<untagged_ports>\S*?)\s*\n",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def get_vlans(self, script):
@@ -149,6 +151,7 @@ class Profile(NOCProfile):
                 "untagged_ports": untagged_ports
             }]
         return vlans
+
 
 def DES3200(v):
     """

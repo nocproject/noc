@@ -149,8 +149,8 @@ class Script(NOCScript):
             }
             desc = p['desc']
             if desc != '' and desc != 'null':
-                i.update({"description" : desc})
-                i['subinterfaces'][0].update({"description" : desc})
+                i.update({"description": desc})
+                i['subinterfaces'][0].update({"description": desc})
             tagged_vlans = []
             for v in vlans:
                 if p['port'] in v['tagged_ports']:
@@ -186,22 +186,22 @@ class Script(NOCScript):
             desc = match.group("desc")
             if desc is not None and desc != '':
                 desc = desc.strip()
-                i.update({"description" : desc})
-                i['subinterfaces'][0].update({"description" : desc})
+                i.update({"description": desc})
+                i['subinterfaces'][0].update({"description": desc})
             ip_address = match.group("ip_address")
             ip_subnet = match.group("ip_subnet")
             ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-            i['subinterfaces'][0].update({"ipv4_addresses" : [ip_address]})
+            i['subinterfaces'][0].update({"ipv4_addresses": [ip_address]})
             vlan_name = match.group("vlan_name")
             for v in vlans:
                 if vlan_name == v['vlan_name']:
                     vlan_id = v['vlan_id']
-                    i['subinterfaces'][0].update({"vlan_ids" : [vlan_id]})
+                    i['subinterfaces'][0].update({"vlan_ids": [vlan_id]})
                     for f in fdb:
                         if 'CPU' in f['interfaces'] \
                         and vlan_id == f['vlan_id']:
-                            i.update({"mac" : f['mac']})
-                            i['subinterfaces'][0].update({"mac" : f['mac']})
+                            i.update({"mac": f['mac']})
+                            i['subinterfaces'][0].update({"mac": f['mac']})
                             break
                     break
             interfaces += [i]
@@ -243,8 +243,8 @@ class Script(NOCScript):
             if ipv4_address is not None \
             or ipv4_addr_pri is not None:
                 i['subinterfaces'][0].update({
-                    "ipv4_addresses" : ipv4_addresses,
-                    "is_ipv4" : True
+                    "ipv4_addresses": ipv4_addresses,
+                    "is_ipv4": True
                 })
             i['subinterfaces'][0].update({"enabled_afi": enabled_afi})
             vlan_name = match.group("vlan_name")
@@ -255,8 +255,8 @@ class Script(NOCScript):
                     for f in fdb:
                         if 'CPU' in f['interfaces'] \
                         and vlan_id == f['vlan_id']:
-                            i.update({"mac" : f['mac']})
-                            i['subinterfaces'][0].update({"mac" : f['mac']})
+                            i.update({"mac": f['mac']})
+                            i['subinterfaces'][0].update({"mac": f['mac']})
                             break
                     break
             if rip_enable and ifname in rip:
