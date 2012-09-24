@@ -42,6 +42,7 @@ class Job(object):
     model = None  # Model/Document class
     system_notification = None  # Name of system notification group
     concurrency = None  # Limit number of concurrently running jobs
+    threaded = False  # Run handler in separate thread
 
     S_SUCCESS = "S"
     S_FAILED = "F"
