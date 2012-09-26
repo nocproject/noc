@@ -12,6 +12,15 @@ from noc.lib.nosql import (Document, ForeignKeyField, StringField,
 from interfaceprofile import InterfaceProfile
 from noc.sa.models import ManagedObject
 from noc.sa.interfaces import MACAddressParameter
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
+INTERFACE_TYPES = (IGetInterfaces.returns
+                   .element.attrs["interfaces"]
+                   .element.attrs["type"].choices)
+INTERFACE_PROTOCOLS = (IGetInterfaces.returns
+                       .element.attrs["interfaces"]
+                       .element.attrs["enabled_protocols"]
+                       .element.choices)
 
 
 class Interface(Document):
@@ -29,17 +38,14 @@ class Interface(Document):
     }
     managed_object = ForeignKeyField(ManagedObject)
     name = StringField()  # Normalized via Profile.convert_interface_name
-    type = StringField(choices=[(x, x) for x in
-                                    ["physical", "SVI", "aggregated",
-                                     "loopback", "management",
-                                     "null", "tunnel", "other", "unknown"]])
+    type = StringField(choices=[(x, x) for x in INTERFACE_TYPES])
     description = StringField(required=False)
     ifindex = IntField(required=False)
     mac = StringField(required=False)
     aggregated_interface = PlainReferenceField("self", required=False)
     is_lacp = BooleanField(default=False)  # @todo: Deprecated
     enabled_protocols = ListField(StringField(
-        choices=[(x, x) for x in ["LACP", "LLDP", "CDP"]]
+        choices=[(x, x) for x in INTERFACE_PROTOCOLS]
     ), default=[])
     # @todo: admin status + oper status
     profile = PlainReferenceField(InterfaceProfile,
