@@ -21,12 +21,14 @@ class Script(NOCScript):
     TIMEOUT = 300
 
     rx_ipif1 = re.compile(r"Interface Name\s+:\s+(?P<ifname>.+?)\s*\n"
-    r"IP Address\s+:\s+(?P<ip_address>\S+)\s+\(Manual\)\s*\n"
+    r"IP Address\s+:\s+(?P<ip_address>\S+)\s+\(\S+\)\s*\n"
     r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n"
     r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
     r"Admin. State\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
     r"Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n"
     r"Member Ports\s+:\s*\S*\s*\n"
+    r"(IPv6 Link-Local Address\s+:\s+\S+\s*\n)?"
+    r"(IPv6 Global Unicast Address\s+:\s+(?P<ipv6_address>\S+)\s*\n)?"
     r"(DHCP Option12 State\s+:\s+(?:Enabled|Disabled)\s*\n)?"
     r"(DHCP Option12 Host Name\s+:\s*\S*\s*\n)?"
     r"(Description\s+:\s*(?P<desc>\S*?)\s*\n)?",
@@ -37,12 +39,14 @@ class Script(NOCScript):
     r"Interface Admin.? State\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
     r"(DHCPv6 Client State\s+:\s+(?:Enabled|Disabled)\s*\n)?"
     r"(Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n)?"
-    r"(IPv4 Address\s+:\s+(?P<ipv4_address>\S+)\s+\(Manual\)\s*\n)?"
-    r"(IPv4 Address\s+:\s+(?P<ipv4_addr_pri>\S+)\s+\(Manual\)\s+Primary\s*\n)?"
+    r"(IPv4 Address\s+:\s+(?P<ipv4_address>\S+)\s+\(\S+\)\s*\n)?"
+    r"(IPv4 Address\s+:\s+(?P<ipv4_addr_pri>\S+)\s+\(\S+\)\s+Primary\s*\n)?"
     r"(Proxy ARP\s+:\s+(?:Enabled|Disabled)\s+\(Local : \S+\s*\)\s*\n)?"
     r"(IPv4 State\s+:\s+(?P<is_ipv4>Enabled|Disabled)\s*\n)?"
     r"(IPv6 State\s+:\s+(?P<is_ipv6>Enabled|Disabled)\s*\n)?"
     r"(IP Directed Broadcast\s+:\s+(?:Enabled|Disabled)\s*\n)?"
+    r"(IPv6 Link-Local Address\s+:\s+\S+\s*\n)?"
+    r"(IPv6 Global Unicast Address\s+:\s+(?P<ipv6_address>\S+) \(\S+\)\s*\n)?"
     r"(IP MTU\s+:\s+\d+\s+\n)?",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
@@ -122,7 +126,12 @@ class Script(NOCScript):
                 "show loopdetect ports all", parser=self.parse_ctp,
                 cmd_next="n", cmd_stop="q")
             except self.CLISyntaxError:
-                c = []
+                try:
+                    c = self.cli_object_stream(
+                    "show loopdetect ports", parser=self.parse_ctp,
+                    cmd_next="n", cmd_stop="q")
+                except self.CLISyntaxError:
+                    c = []
             for i in c:
                 ctp += [i['port']]
 
@@ -191,7 +200,12 @@ class Script(NOCScript):
             ip_address = match.group("ip_address")
             ip_subnet = match.group("ip_subnet")
             ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-            i['subinterfaces'][0].update({"ipv4_addresses": [ip_address]})
+            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            ipv6_address = match.group("ipv6_address")
+            if ipv6_address is not None:
+                i['subinterfaces'][0]["ipv6_addresses"] = [ipv6_address]
+                i['subinterfaces'][0]["enabled_afi"] += ["IPv6"]
+                i['subinterfaces'][0]["is_ipv6"] = True
             vlan_name = match.group("vlan_name")
             for v in vlans:
                 if vlan_name == v['vlan_name']:
@@ -246,6 +260,11 @@ class Script(NOCScript):
                     "ipv4_addresses": ipv4_addresses,
                     "is_ipv4": True
                 })
+            ipv6_address = match.group("ipv6_address")
+            if ipv6_address is not None:
+                i['subinterfaces'][0]["ipv6_addresses"] = [ipv6_address]
+                enabled_afi += ["IPv6"]
+                i['subinterfaces'][0]["is_ipv6"] = True
             i['subinterfaces'][0].update({"enabled_afi": enabled_afi})
             vlan_name = match.group("vlan_name")
             for v in vlans:
