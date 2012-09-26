@@ -55,8 +55,8 @@ class Script(NOCScript):
     rx_rip_gs = re.compile(r"RIP Global State : Enabled")
     rx_ospf_gs = re.compile(r"OSPF Router ID : \S+\s*\nState\s+: Enabled")
     rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled")
-    rx_udld_gs = re.compile(r"LLDP Status\s+: Enabled")
     rx_ctp_gs = re.compile(r"LBD Status\s+: Enabled")
+    rx_pim_gs = re.compile(r"PIM Global State\s+: Enabled")
 
     rx_rip = re.compile(r"(?P<ipif>\S+)\s+\S+\s+(?:Disabled|Enabled)\s+"
     r"(?:Disabled|Enabled)\s+(?:Disabled|Enabled)\s+"
@@ -68,7 +68,15 @@ class Script(NOCScript):
     rx_lldp = re.compile(r"Port ID\s+:\s+(?P<ipif>\S+)\s*\n"
     r"\-+\s*\nAdmin Status\s+: (?:TX_and_RX|RX_Only|TX_Only)")
 
+    rx_udld = re.compile(r"(?P<ipif>\S+)\s+Enabled\s+\S+\s+\S+\s+\S+\s+\d+")
+
     rx_ctp = re.compile(r"^(?P<ipif>\S+)\s+Enabled\s+\S+", re.MULTILINE)
+
+    rx_pim = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\S+\s+\d+\s+\d+\s+\S+\s+"
+    r"(?P<state>Enabled)\s+")
+
+    rx_igmp = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+\d+\s+"
+    r"\d+\s+(?P<state>Enabled)\s+")
 
     def parse_ctp(self, s):
         match = self.rx_ctp.search(s)
@@ -114,6 +122,14 @@ class Script(NOCScript):
             for match in self.rx_lldp.finditer(c):
                 lldp += [match.group("ipif")]
 
+        udld = []
+        try:
+            c = self.cli("show duld ports")
+        except self.CLISyntaxError:
+            c = ""
+        for match in self.rx_udld.finditer(c):
+            udld += [match.group("ipif")]
+
         ctp = []
         try:
             c = self.cli("show loopdetect")
@@ -134,6 +150,24 @@ class Script(NOCScript):
                     c = []
             for i in c:
                 ctp += [i['port']]
+
+        pim = []
+        try:
+            c = self.cli("show pim")
+        except self.CLISyntaxError:
+            c = ""
+        pim_enable = self.rx_pim_gs.search(c) is not None
+        if pim_enable:
+            for match in self.rx_pim.finditer(c):
+                pim += [match.group("ipif")]
+
+        igmp = []
+        try:
+            c = self.cli("show igmp")
+        except self.CLISyntaxError:
+            c = ""
+        for match in self.rx_igmp.finditer(c):
+            igmp += [match.group("ipif")]
 
         ports = self.profile.get_ports(self)
         vlans = self.profile.get_vlans(self)
@@ -172,6 +206,8 @@ class Script(NOCScript):
                 i["enabled_protocols"] += ["LLDP"]
             if ctp_enable and ifname in ctp:
                 i["enabled_protocols"] += ["CTP"]
+            if ifname in udld:
+                i["enabled_protocols"] += ["UDLD"]
             interfaces += [i]
 
         ipif = self.cli("show ipif")
@@ -282,6 +318,10 @@ class Script(NOCScript):
                 enabled_protocols += ["RIP"]
             if ospf_enable and ifname in ospf:
                 enabled_protocols += ["OSPF"]
+            if pim_enable and ifname in pim:
+                enabled_protocols += ["PIM"]
+            if ifname in igmp:
+                enabled_protocols += ["IGMP"]
             i['subinterfaces'][0]["enabled_protocols"] = enabled_protocols
             interfaces += [i]
 
