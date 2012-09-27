@@ -2,26 +2,25 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_vlans
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVlans
-import re
 
 
 class Script(NOCScript):
     name = "DLink.DxS.get_vlans"
     implements = [IGetVlans]
-    rx_vlan = re.compile(r"^VID\s+:\s+(?P<vlanid>\S+).+VLAN Name\s+:\s+(?P<vlanname>\S+)$", re.MULTILINE)
 
     def execute(self):
         r = []
-        for match in self.rx_vlan.finditer(self.cli("show vlan")):
-            r.append({
-                "vlan_id": int(match.group('vlanid')),
-                "name": match.group('vlanname')
-            })
+        vlans = self.profile.get_vlans(self)
+        for v in vlans:
+            r += [{
+                "vlan_id": v['vlan_id'],
+                "name": v['vlan_name']
+            }]
         return r
