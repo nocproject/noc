@@ -39,7 +39,7 @@ class UserProfileApplication(ModelApplication):
     ## Edit profile
     ##
     @view(method=["GET", "POST"], url=r"^profile/$", access=PermitLogged())
-    def view_change(self, request, extra_context=None):
+    def view_change(self, request, form_url="", extra_context=None):
         def setup_language():
             # Change session language
             lang = settings.LANGUAGE_CODE
@@ -62,10 +62,9 @@ class UserProfileApplication(ModelApplication):
             profile.save()
         self.admin.response_change = response_change
         r = self.admin.change_view(request, str(profile.id),
-                                      self.get_context(extra_context))
+            form_url, self.get_context(extra_context))
         setup_language()
         return r
-
 
     def has_delete_permission(self, request, obj=None):
         """Disable delete"""
