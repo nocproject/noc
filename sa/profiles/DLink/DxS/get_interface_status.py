@@ -44,16 +44,18 @@ class Script(NOCScript):
                 pass
 
         # Fallback to CLI
-        if interface is None:
-            interface = "all"
-        try:
-            s = self.cli("cable_diag ports %s" % interface)
-        except self.CLISyntaxError:
-            raise self.NotSupportedError()
-
-        for match in self.rx_line.finditer(s):
-            r += [{
-                "interface": match.group("interface"),
-                "status": match.group("status").lower() == "up"
+        ports = self.profile.get_ports(self)
+        for p in ports:
+            if interface is not None:
+                if interface == p['port']:
+                    return [{
+                        "interface": interface,
+                        "status": p['status']
+                    }]
+                    break
+            else:
+                r += [{
+                    "interface": p['port'],
+                    "status": p['status']
                 }]
         return r
