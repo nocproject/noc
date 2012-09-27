@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## Form widgets
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Django modules
 from django import forms
 from django.forms.widgets import Input, PasswordInput
@@ -33,7 +32,7 @@ class PasswordWidget(PasswordInput):
         js = ["/static/js/toggle_password.js"]
     
     def render(self, name, value, attrs=None):
-        r= mark_safe("<span>")+ super(PasswordWidget, self).render(name, value, attrs)
+        r= mark_safe("<span>") + super(PasswordWidget, self).render(name, value, attrs)
         return r + mark_safe(u""" <input type="checkbox" onclick="toggle_password('id_%s',this.checked);"> Show password </span>""" % name)
 
 
@@ -146,7 +145,7 @@ class TreePopupWidget(Input):
             <input type="hidden" id="%(id)s" name="%(id)s" value="%(value)s" />
             <span id="%(id)s_text">%(d_value)s</span>
             <a href="#" onclick="show_popup_choose('%(id)s', '%(title)s', '%(lookup)s');">
-                <img src="static/img/fam/silk/resultset_next.png" />
+                <img src="/static/img/fam/silk/resultset_next.png" />
             </a>
             """ % {"title": escape(self.attrs["title"]),
                    "lookup": self.attrs["lookup"],
