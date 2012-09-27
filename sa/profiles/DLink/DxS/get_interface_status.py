@@ -9,13 +9,11 @@
 """
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaceStatus
-import re
 
 
 class Script(NOCScript):
     name = "DLink.DxS.get_interface_status"
     implements = [IGetInterfaceStatus]
-    rx_line = re.compile(r"^\s*(?P<interface>\S+)\s+(?P<type>FE|GE|10GE|Fiber|1000BASE\-T|1000BASE\-X|10GBASE-R)\s+Link (?P<status>Up|Down)\s+(?P<test>\S+)\s+.*$", re.IGNORECASE | re.MULTILINE)
 
     def execute(self, interface=None):
         r = []
