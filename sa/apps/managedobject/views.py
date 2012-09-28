@@ -27,7 +27,7 @@ from noc.lib.fileutils import in_dir
 from noc.lib.widgets import PasswordWidget
 from noc.lib.ip import IP
 from noc.fm.models import get_object_status, ActiveAlarm, AlarmSeverity
-from noc.inv.discovery.scheduler import DiscoveryScheduler
+from noc.lib.scheduler.utils import refresh_schedule
 
 
 class ManagedObjectAdminForm(forms.ModelForm):
@@ -292,7 +292,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         for o in queryset:
             for job in ["version_inventory", "ip_discovery",
                         "interface_discovery", "mac_discovery"]:
-                discovery_scheduler.reschedule_job(job, o.id, now)
+                refresh_schedule("inv.discovery", job, o.id)
         return self.app.response_redirect("sa:managedobject:changelist")
     reschedule_discovery.short_description = _("Run discovery now")
 
@@ -532,5 +532,3 @@ class ManagedObjectApplication(ModelApplication):
         return "/sa/groupaccess/"
         # return self.site.reverse("sa:groupaccess:changelist",
         #                         QUERY={"group__id__exact": group.id})
-
-discovery_scheduler = DiscoveryScheduler()
