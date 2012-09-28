@@ -96,3 +96,8 @@ class UserApplication(ModelApplication):
         access="add")
     def view_legacy_add(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")
+
+    @view(url=r"^legacy/$", url_name="admin:auth_user_changelist",
+        access=True)
+    def view_legacy_changelist(self, request, form_url="", extra_context=None):
+        return self.response_redirect("..")

@@ -10,7 +10,7 @@
 from django.utils.translation import  ugettext_lazy as _
 from django import forms
 ## NOC modules
-from noc.lib.app import ModelApplication
+from noc.lib.app import ModelApplication, view
 from django.contrib.auth.models import Group
 from django.contrib import admin
 from noc.main.apps.user.widgets import AccessWidget
@@ -63,3 +63,8 @@ class GroupApplication(ModelApplication):
     model_admin = GroupAdmin
     menu = "Setup | Groups"
     icon = "icon_group"
+
+    @view(url=r"^add/legacy/$", url_name="admin:auth_group_add",
+        access="add")
+    def view_legacy_add(self, request, form_url="", extra_context=None):
+        return self.response_redirect("..")
