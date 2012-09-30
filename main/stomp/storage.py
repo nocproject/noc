@@ -24,18 +24,19 @@ class Storage(object):
     def debug(self, msg):
         logging.info("[Storage] %s" % msg)
 
-    def put(self, destination, headers, body):
+    def put(self, destination, headers, body, expires=None):
         self.collection.insert({
             "dest": destination,
             "headers": headers,
             "body": body,
-            "ts": time.time()
+            "ts": time.time(),
+            "expires": expires
         }, safe=True)
 
     def get_messages(self, destination):
         for d in self.collection.find({
             "dest": destination}).sort("ts"):
-            yield d["_id"], d["headers"], d["body"]
+            yield d["_id"], d["headers"], d["body"], d.get("expires")
 
     def remove(self, id):
         self.collection.remove({"_id": id})
