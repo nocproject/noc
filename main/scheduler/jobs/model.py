@@ -47,3 +47,8 @@ class ModelJob(IntervalJob):
                 isc -= 1
                 if not isc:
                     break
+
+    def send(self, message, destination,
+             receipt=False, persistent=False):
+        self.scheduler.daemon.send(message, destination,
+            receipt=receipt, persistent=persistent)
