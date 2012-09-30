@@ -49,6 +49,6 @@ class ModelJob(IntervalJob):
                     break
 
     def send(self, message, destination,
-             receipt=False, persistent=False):
+             receipt=False, persistent=False, expires=None):
         self.scheduler.daemon.send(message, destination,
-            receipt=receipt, persistent=persistent)
+            receipt=receipt, persistent=persistent, expires=expires)

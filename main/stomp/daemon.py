@@ -8,6 +8,7 @@
 
 ## Python modules
 import logging
+import time
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket import SocketFactory
@@ -70,14 +71,22 @@ class STOMPDaemon(Daemon):
             del self.destinations[d.name]
 
     def send(self, destination_name, headers, body):
+        # Check expiration
+        expires = None
+        now = time.time()
+        if "expires" in headers:
+            expires = (now + int(headers["expires"]) / 1000.0)
+        #
         if destination_name not in self.destinations:
             if (headers.get("persistent") == "true" and
                 destination_name.startswith("/queue/")):
                 # Store persistent message
                 logging.debug("Store persistent message for %s" % destination_name)
-                self.storage.put(destination_name, headers, body)
+                self.storage.put(
+                    destination_name, headers, body, expires=expires)
             return
-        self.destinations[destination_name].send(headers, body)
+        self.destinations[destination_name].send(
+            headers, body, expires=expires)
 
     def on_close(self, socket):
         """

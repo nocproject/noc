@@ -153,7 +153,16 @@ class STOMPClient(object):
         })
 
     def send(self, message, destination,
-             receipt=False, persistent=False):
+             receipt=False, persistent=False, expires=None):
+        """
+        Send STOMP message to destination
+        :param message:
+        :param destination:
+        :param receipt: Wait for receipt
+        :param persistent: Store message until consumer be ready
+        :param expires: Expiration time, in seconds
+        :return:
+        """
         if self.last_receipt:
             self.receipt_event.wait()
         self.last_receipt = None
@@ -165,6 +174,8 @@ class STOMPClient(object):
             self.receipt_event.clear()
         if persistent:
             h["persistent"] = "true"
+        if expires:
+            h["expires"] = int(expires * 1000)  # to ms
         self.send_frame("SEND", h, message)
 
     def on_message(self, destination, sid, body):
@@ -205,5 +216,3 @@ class STOMPClient(object):
                 self.factory.shutdown()
         elif self.last_receipt and receipt_id == self.last_receipt:
             self.receipt_event.set()
-
-

@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-#import time
+import time
 import random
 
 
@@ -44,8 +44,8 @@ class Destination(object):
             self.subscriptions += [s]
             if len(self.subscriptions) == 1:
                 # Replay stored messages
-                for id, h, msg in self.daemon.storage.get_messages(self.name):
-                    self.send(h, msg)
+                for id, h, msg, expires in self.daemon.storage.get_messages(self.name):
+                    self.send(h, msg, expires=expires)
                     self.daemon.storage.remove(id)
 
     def unsubscribe(self, s):
@@ -57,7 +57,10 @@ class Destination(object):
         if s in self.subscriptions:
             self.subscriptions.remove(s)
 
-    def send(self, headers, msg):
+    def send(self, headers, msg, expires=None):
+        t = time.time()
+        if expires < t:
+            return
         h = headers.copy()  # @todo: python 2.5
         h["destination"] = self.name
         h["message-id"] = self.get_message_id()

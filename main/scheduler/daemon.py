@@ -39,6 +39,6 @@ class SchedulerDaemon(Daemon):
         self.scheduler.run()
 
     def send(self, message, destination,
-             receipt=False, persistent=False):
+             receipt=False, persistent=False, expires=None):
         self.stomp_client.send(message, destination,
-            receipt=receipt, persistent=persistent)
+            receipt=receipt, persistent=persistent, expires=expires)
