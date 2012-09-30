@@ -5,6 +5,7 @@ import set_env
 set_env.setup(use_django=True)
  
 from noc.lib.stomp.client import STOMPClient
+from noc.lib.stomp.threadclient import ThreadedSTOMPClient
 from noc.lib.debug import error_report
 import time
 import sys
@@ -39,9 +40,17 @@ def callback(destination, body):
         dt = time.time() - body["t"]
         n = body["n"]
         STATS += [(n, dt)]
- 
-def main_producer(messages, synchronous=False, persistent=False):
-    client = STOMPClient("127.0.0.1", 19705, client_id="producer")
+
+def get_client(addr, port, client_id=None, threaded=False):
+    if threaded:
+        return ThreadedSTOMPClient(addr, port, client_id=client_id)
+    else:
+        return STOMPClient(addr, port, client_id=client_id)
+
+def main_producer(messages, synchronous=False, persistent=False,
+                  threaded=False):
+    client = get_client("127.0.0.1", 19705,
+        client_id="producer", threaded=threaded)
     client.start()
     t0 = time.time()
     n = 0
@@ -58,8 +67,9 @@ def main_producer(messages, synchronous=False, persistent=False):
         destination=DEST, receipt=synchronous, persistent=persistent)
     client.stop()
 
-def main_consumer():
-    client = STOMPClient("127.0.0.1", 19705, client_id="consumer")
+def main_consumer(threaded=False):
+    client = get_client("127.0.0.1", 19705,
+        client_id="consumer", threaded=threaded)
     client.start()
     client.subscribe(DEST, callback=callback)
     client.wait()
@@ -76,6 +86,7 @@ def usage():
     print "    -P    -- persistent messaging"
     print "    <n>   -- generate <n> messages"
     print "   -Q     -- use queue instead of topic"
+    print "   -t     -- use threaded client"
     print "    <out> -- write CSV report to file <out>"
 
  
@@ -88,8 +99,9 @@ if __name__ == "__main__":
     synchronous = False
     messages = None
     persistent = False
+    threaded = False
     out = None
-    optlist, optargs = getopt.getopt(sys.argv[1:], "vsPQp:c:")
+    optlist, optargs = getopt.getopt(sys.argv[1:], "vstPQp:c:")
     for k, v in optlist:
         if k == "-h":
             usage()
@@ -108,6 +120,8 @@ if __name__ == "__main__":
             verbose = True
         elif k == "-s":
             synchronous = True
+        elif k == "-t":
+            threaded = True
     # Setup logging
     if verbose:
         for h in logging.root.handlers:
@@ -119,9 +133,10 @@ if __name__ == "__main__":
     try:
         if is_producer:
             main_producer(messages=messages,
-                synchronous=synchronous, persistent=persistent)
+                synchronous=synchronous, persistent=persistent,
+                threaded=threaded)
         else:
             SF = out
-            main_consumer()
+            main_consumer(threaded=threaded)
     except Exception:
         error_report()
