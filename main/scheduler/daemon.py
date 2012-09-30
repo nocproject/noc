@@ -14,6 +14,7 @@ import logging
 from noc.lib.daemon import Daemon
 from periodic import PeriodicScheduler
 from scheduler import JobScheduler
+from noc.lib.stomp.threadclient import ThreadedSTOMPClient
 
 
 class SchedulerDaemon(Daemon):
@@ -24,14 +25,20 @@ class SchedulerDaemon(Daemon):
         logging.info("Running noc-scheduler")
         self.periodic_thread = None
         self.scheduler = None
+        self.stomp_client = None
 
     def run(self):
         self.scheduler = JobScheduler(self)
         self.periodic_thread = PeriodicScheduler(self)
         self.periodic_thread.start()
+        self.stomp_client = ThreadedSTOMPClient(
+            "127.0.0.1", 19705,
+            client_id="noc-scheduler"
+        )
+        self.stomp_client.start()
         self.scheduler.run()
-        # Wait for periodic thread termination
-        # while True:
-        #    self.periodic_thread.join(1)
-        #    if not self.periodic_thread.isAlive():
-        #        break
+
+    def send(self, message, destination,
+             receipt=False, persistent=False):
+        self.stomp_client.send(message, destination,
+            receipt=receipt, persistent=persistent)
