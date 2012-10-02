@@ -66,8 +66,7 @@ class DNSZone(models.Model):
     # @todo: Rename to is_provisioned
     is_auto_generated = models.BooleanField(_("Auto generated?"))
     # @todo: Convert to integer
-    serial = models.CharField(_("Serial"),
-        max_length=10, default="0000000000")
+    serial = models.IntegerField(_("Serial"), default=0)
     profile = models.ForeignKey(DNSZoneProfile,
         verbose_name=_("Profile"))
     notification_group = models.ForeignKey(NotificationGroup,
@@ -163,11 +162,12 @@ class DNSZone(models.Model):
         :rtype: String
         """
         T = time.gmtime()
-        p = "%04d%02d%02d" % (T[0], T[1], T[2])
-        sn = int(self.serial[-2:])
-        if self.serial.startswith(p):
-            return p + "%02d" % (sn + 1)
-        return p + "00"
+        base = T[0] * 10000 + T[1] * 100 + T[2]
+        s_base = self.serial // 100
+        if s_base < base:
+            return base * 100  # New day
+        else:
+            return self.serial + 1  # May cause future lap
 
     def set_next_serial(self):
         self.serial = self.next_serial
@@ -200,7 +200,8 @@ class DNSZone(models.Model):
         nsuffix = "." + suffix
         lnsuffix = len(nsuffix)
         return [f(a, b, c, d, e)
-                for a, b, c, d, e in self.get_records()]
+                for a, b, c, d, e in self.get_records()
+                if b != "SOA"]
 
     def zonedata(self, ns):
         """
@@ -275,6 +276,17 @@ class DNSZone(models.Model):
         s = ["domain: %s" % self.name] + ["nserver: %s" % ns
                                           for ns in self.ns_list]
         return rpsl_format("\n".join(s))
+
+    def get_soa(self):
+        """
+        SOA record
+        :return:
+        """
+        return [(self.name + ".", "SOA", "%s %s %d %d %d %d %d" % (
+            self.name, self.profile.zone_contact, self.serial,
+            self.profile.zone_refresh, self.profile.zone_retry,
+            self.profile.zone_expire,
+            self.profile.zone_ttl), self.profile.zone_ttl, None)]
 
     def get_ipam_a(self):
         """
@@ -496,24 +508,16 @@ class DNSZone(models.Model):
             order_by = cmp_ptr
         else:
             raise ValueError("Invalid zone type")
-        return sorted(set(fr(r) for r in records), order_by)
+        records = (self.get_soa() +
+                   sorted(set(fr(r) for r in records), order_by))
+        return records
 
     def get_zone_text(self):
         """
         BIND-style zone text for configuration management
         :return:
         """
-        zf = ZoneFile(
-            zone=self.name,
-            soa=self.profile.zone_soa,
-            contact=self.profile.zone_contact,
-            serial=self.serial,
-            refresh=self.profile.zone_refresh,
-            retry=self.profile.zone_retry,
-            expire=self.profile.zone_expire,
-            ttl=self.profile.zone_ttl,
-            records=self.get_records()
-        )
+        zf = ZoneFile(zone=self.name, records=self.get_records())
         return zf.get_text()
 
     @classmethod
