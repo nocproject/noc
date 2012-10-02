@@ -28,10 +28,10 @@ class SyncDNSZoneCmdJob(SyncJob):
         for ns in DNSServer.objects.filter(sync_channel=channel):
             for p in ns.masters.all():
                 zones |= set((z.name, z.serial)
-                    for z in p.dnszone_set.all())
+                    for z in p.dnszone_set.filter(is_auto_generated=True))
             for p in ns.slaves.all():
                 zones |= set((z.name, z.serial)
-                    for z in p.dnszone_set.all())
+                    for z in p.dnszone_set.filter(is_auto_generated=True))
         self.send({
             "cmd": "list",
             "items": dict(zones)
@@ -50,9 +50,10 @@ class SyncDNSZoneCmdJob(SyncJob):
                 }
             }
         except DNSZone.DoesNotExist:
+            # Force LIST request
             msg = {
-                "cmd": "delete",
-                "object": object
+                "cmd": "request",
+                "request": "list"
             }
         self.send(msg, destination="/queue/sync/dns/zone/%s/" % channel)
         return True

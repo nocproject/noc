@@ -36,15 +36,11 @@ class SyncDNSZoneVerify(ModelJob):
         channels = self.object.channels
         if not channels:
             return True  # Not synchronized
-        cmd = {
-            "cmd": "verify",
-            "object": self.object.name,
-            "data": {
-                "serial": self.object.serial,
-                "records": self.object.get_records()
-            }
-        }
         for c in channels:
-            dst = "/queue/sync/dns/zone/%s/" % c
-            self.send(cmd, dst, persistent=True, expires=604800)  # 1W
+            dst = "/queue/sync/%s/" % c
+            self.send({
+                "cmd": "request",
+                "request": "verify",
+                "object": self.object.name
+            }, dst)
         return True
