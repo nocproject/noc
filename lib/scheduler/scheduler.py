@@ -118,11 +118,12 @@ class Scheduler(object):
             ts = (datetime.datetime.now() +
                   datetime.timedelta(seconds=ts))
         # Check Job is not exists
-        if self.collection.find_one({
-            self.ATTR_CLASS: job_name,
-            self.ATTR_KEY: key
-        }):
-            raise JobExists()
+        if key is not None:
+            if self.collection.find_one({
+                self.ATTR_CLASS: job_name,
+                self.ATTR_KEY: key
+            }):
+                raise JobExists()
         # Submit job
         id = self.collection.insert({
             self.ATTR_TS: ts,
