@@ -139,6 +139,15 @@ class Address(models.Model):
         # Set proper prefix
         self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
         super(Address, self).save(**kwargs)
+        DNSZone.touch(self.address)
+        DNSZone.touch(self.fqdn)
+
+    def delete(self):
+        fqdn = self.fqdn
+        address = self.address
+        super(Address, self).delete()
+        DNSZone.touch(fqdn)
+        DNSZone.touch(address)
 
     def clean(self):
         """
@@ -200,3 +209,6 @@ class Address(models.Model):
                 text=unicode(o),
                 relevancy=relevancy
             )
+
+## Prevent import loop
+from noc.dns.models import DNSZone
