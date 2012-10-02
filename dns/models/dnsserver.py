@@ -46,11 +46,16 @@ class DNSServer(models.Model):
     ip = INETField(_("IP"), null=True, blank=True)
     description = models.CharField(_("Description"), max_length=128,
         blank=True, null=True)
+    sync_channel = models.CharField(_("Sync channel"),
+        max_length=64, blank=True, null=True)
+    # @todo: Deprecated, move to custom field
     location = models.CharField(_("Location"), max_length=128,
         blank=True, null=True)
+    # @todo: Deprecated
     provisioning = models.CharField(_("Provisioning"), max_length=128,
         blank=True, null=True,
         help_text=_("Script for zone provisioning"))
+    # @todo: Deprecated
     autozones_path = models.CharField(_("Autozones path"), max_length=256,
         blank=True, null=True, default="autozones",
         help_text=_("Prefix for autozones in config files"))
@@ -99,3 +104,8 @@ class DNSServer(models.Model):
         Property containing generator class
         """
         return generator_registry[self.generator_name]
+
+    def save(self, *args, **kwargs):
+        super(DNSServer, self).save(*args, **kwargs)
+        from dnszone import DNSZone
+        DNSZone.touch(self.name)

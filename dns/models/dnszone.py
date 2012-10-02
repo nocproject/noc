@@ -14,16 +14,20 @@ from collections import defaultdict
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
 ## NOC modules
 from dnszoneprofile import DNSZoneProfile
 from noc.main.models import NotificationGroup
-from noc.ip.models import Address, AddressRange
+from noc.ip.models.address import Address
+from noc.ip.models.addressrange import AddressRange
 from noc.lib.fields import AutoCompleteTagsField
 from noc.lib.app.site import site
 from noc.lib.ip import IPv6
-from noc.lib.validators import is_ipv4, is_int
+from noc.lib.validators import is_ipv4, is_ipv6, is_int
 from noc.lib.rpsl import rpsl_format
 from noc.dns.utils.zonefile import ZoneFile
+from noc.lib.scheduler.utils import sync_request
 
 
 ##
@@ -59,7 +63,9 @@ class DNSZone(models.Model):
     name = models.CharField(_("Domain"), max_length=256, unique=True)
     description = models.CharField(_("Description"),
         null=True, blank=True, max_length=64)
+    # @todo: Rename to is_provisioned
     is_auto_generated = models.BooleanField(_("Auto generated?"))
+    # @todo: Convert to integer
     serial = models.CharField(_("Serial"),
         max_length=10, default="0000000000")
     profile = models.ForeignKey(DNSZoneProfile,
@@ -162,6 +168,10 @@ class DNSZone(models.Model):
         if self.serial.startswith(p):
             return p + "%02d" % (sn + 1)
         return p + "00"
+
+    def set_next_serial(self):
+        self.serial = self.next_serial
+        self.save()
 
     @property
     def records(self):
@@ -505,3 +515,64 @@ class DNSZone(models.Model):
             records=self.get_records()
         )
         return zf.get_text()
+
+    @classmethod
+    def get_zone(cls, name):
+        """
+        Resolve name to zone object
+        :return:
+        """
+        if is_int(name):
+            # IPv4 zone
+            n = name.split(".")
+            n.reverse()
+            zn = "%s.in-addr.arpa" % (".".join(n[1:]))
+            try:
+                return DNSZone.objects.get(name=zn)
+            except DNSZone.DoesNotExist:
+                return None
+        elif is_ipv6(name):
+            # IPv6 zone
+            pass  # @todo
+        else:
+            while name:
+                try:
+                    return DNSZone.objects.get(name=name)
+                except DNSZone.DoesNotExist:
+                    pass
+                name = ".".join(name.split(".")[1:])
+            return None
+
+    @classmethod
+    def touch(cls, name):
+        """
+        Mark zone as dirty
+        :param cls:
+        :param name:
+        :return:
+        """
+        z = cls.get_zone(name)
+        if z:
+            z.set_next_serial()
+            sync_request(z.channels, "verify", z.name)
+
+    @property
+    def channels(self):
+        return sorted(set("dns/zone/%s" % c for c in
+            self.profile.masters.filter(sync_channel__isnull=False)
+                .values_list("sync_channel", flat=True)))
+
+
+##
+## Signal handlers
+##
+@receiver(post_save, sender=DNSZone)
+def on_save(sender, instance, created, **kwargs):
+    if created:
+        sync_request(instance.channels, "list")
+    else:
+        sync_request(instance.channels, "verify", instance.name)
+
+@receiver(pre_delete, sender=DNSZone)
+def on_delete(sender, instance, **kwargs):
+    sync_request(instance.channels, "list", delta=5)

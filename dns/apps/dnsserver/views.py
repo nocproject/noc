@@ -12,13 +12,15 @@ from noc.dns.models import DNSServer
 ## DNSServer admin
 ##
 class DNSServerAdmin(admin.ModelAdmin):
-    list_display=["name","generator_name","ip","location","description"]
-    search_fields=["name","description","ip"]
-    list_filter=["generator_name"]
+    list_display = ["name", "generator_name", "ip", "location",
+                    "sync_channel", "description"]
+    search_fields = ["name", "description", "ip"]
+    list_filter = ["generator_name", "sync_channel"]
+
 ##
 ## DNSServer application
 ##
 class DNSServerApplication(ModelApplication):
-    model=DNSServer
-    model_admin=DNSServerAdmin
-    menu="Setup | DNS Servers"
+    model = DNSServer
+    model_admin = DNSServerAdmin
+    menu = "Setup | DNS Servers"
