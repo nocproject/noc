@@ -46,16 +46,9 @@ class SyncDNSZoneVerify(IntervalJob):
                 break
 
     def handler(self, *args, **kwargs):
-        zones = set()
-        for ns in DNSServer.objects.filter(sync_channel=self.key):
-            for p in ns.masters.all():
-                zones |= set((z.name, z.serial)
-                    for z in p.dnszone_set.all())
-            for p in ns.slaves.all():
-                zones |= set((z.name, z.serial)
-                    for z in p.dnszone_set.all())
+        dst = "/queue/sync/dns/zone/%s/" % self.key
         self.scheduler.daemon.stomp_client.send({
-            "cmd": "list",
-            "items": dict(zones)
-        }, destination="/queue/sync/dns/zone/%s/" % self.key)
+            "cmd": "request",
+            "request": "list"
+        }, dst)
         return True
