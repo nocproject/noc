@@ -17,43 +17,42 @@ FOOTER = """;;
 
 class ZoneFile(object):
     TABSTOP = 8
-    def __init__(self, zone, soa, contact, serial,
-                 refresh, retry, expire, ttl, records):
+
+    def __init__(self, zone, records):
         """
         :param zone: Zone name
-        :param soa: SOA
-        :param contact:
-        :param serial:
-        :param refresh:
-        :param retry:
-        :param expire:
-        :param ttl:
-        :param records: List of tuples (fqdn, type, content, ttl, prio)
+        :param records: List of tuples (fqdn, type, content, ttl, prio).
+            First record must be SOA
         :return:
         """
+        if not records:
+            raise ValueError("Zone must contain SOA record")
+        if records[0][1] != "SOA":
+            raise ValueError("First record must be SOA")
         self.zone = zone
-        self.soa = soa
+        self.records = records
+
+    def get_text(self):
+        (primary, contact, serial,
+         refresh, retry, expire, ttl) = self.records[0][2].split()
+        serial = int(serial)
+        refresh = int(refresh)
+        retry = int(retry)
+        expire = int(expire)
+        ttl = int(ttl)
         if "@" in contact:
             contact = contact.replace("@", ".")
         if not contact.endswith("."):
             contact += "."
-        self.contact = contact
-        self.serial = serial
-        self.refresh = refresh
-        self.retry = retry
-        self.expire = expire
-        self.ttl = ttl
-        self.records = records
 
-    def get_text(self):
         suffix = self.zone + "."
         nsuffix = "." + suffix
         lnsuffix = len(nsuffix)
         # SOA
         z = [HEADER, """
-$ORIGIN .
-%(domain)s IN SOA %(soa)s %(contact)s (
-    %(serial)s ; serial
+$ORIGIN %(domain)s.
+@ IN SOA %(primary)s %(contact)s (
+    %(serial)d ; serial
     %(refresh)d       ; refresh (%(pretty_refresh)s)
     %(retry)d        ; retry (%(pretty_retry)s)
     %(expire)d      ; expire (%(pretty_expire)s)
@@ -61,22 +60,22 @@ $ORIGIN .
     )
 """ % {
             "domain": self.zone,
-            "soa": self.soa,
-            "contact": self.contact,
-            "serial": self.serial,
-            "ttl": self.ttl,
-            "pretty_ttl": self.pretty_time(self.ttl),
-            "refresh": self.refresh,
-            "pretty_refresh": self.pretty_time(self.refresh),
-            "retry": self.retry,
-            "pretty_retry": self.pretty_time(self.retry),
-            "expire": self.expire,
-            "pretty_expire": self.pretty_time(self.expire),
+            "primary": primary,
+            "contact": contact,
+            "serial": serial,
+            "ttl": ttl,
+            "pretty_ttl": self.pretty_time(ttl),
+            "refresh": refresh,
+            "pretty_refresh": self.pretty_time(refresh),
+            "retry": retry,
+            "pretty_retry": self.pretty_time(retry),
+            "expire": expire,
+            "pretty_expire": self.pretty_time(expire),
         }]
         # Add records
         nses = []
         rr = []
-        for name, type, content, ttl, prio in self.records:
+        for name, type, content, ttl, prio in self.records[1:]:
             if not name.endswith(nsuffix) and name != suffix:
                 continue  # Trash
             name = name[:-lnsuffix]  # Strip domain from name
@@ -105,7 +104,7 @@ $ORIGIN .
            z += [mask % tuple(r) for r in nses]
         # Add RRs
         if rr:
-            z += ["$ORIGIN %s." % self.zone, "$TTL %d" % self.ttl]
+            z += ["$TTL %d" % ttl]
             # Format according to mask
             z += [mask % tuple(r) for r in rr]
         z += [FOOTER]
@@ -123,7 +122,7 @@ $ORIGIN .
         W = [345600, 86400, 3600, 60, 1]
         r = []
         for w in W:
-            rr = int(t / w)
+            rr = t // w
             t -= rr * w
             r += [rr]
         z = []
