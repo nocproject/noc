@@ -64,7 +64,7 @@ class PowerDNSPgSQLChannel(Channel):
             missed |= remote - set(seen)
             # Update missed list with mismatched serials
             for name in seen:
-                if seen[name] != int(items[name]):
+                if seen[name] != items[name]:
                     # Version mismatch
                     missed.add(name)
             c.execute("COMMIT")
@@ -80,7 +80,7 @@ class PowerDNSPgSQLChannel(Channel):
             *records* - list of (name, type, content, ttl, priority)
         :return:
         """
-        serial = int(data["serial"])
+        serial = data["serial"]
         type = "MASTER"
         records = set(tuple(r) for r in data["records"])  # (name, type, content, ttl, priority)
         for cn in self.databases:
@@ -155,9 +155,9 @@ class PowerDNSPgSQLChannel(Channel):
                     object, name, type, content))
                 c.execute("""
                 INSERT INTO records(domain_id, name, type, content,
-                    ttl, prio)
-                VALUES(%s, %s, %s, %s, %s, %s)
-                """, [domain_id, name, type, content, ttl, prio])
+                    ttl, prio, change_date)
+                VALUES(%s, %s, %s, %s, %s, %s, %s)
+                """, [domain_id, name, type, content, ttl, prio, serial])
                 new += 1
             self.info("%s summary: %d new/ %d removed" % (
                 object, new, removed))
