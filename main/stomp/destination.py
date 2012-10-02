@@ -58,9 +58,10 @@ class Destination(object):
             self.subscriptions.remove(s)
 
     def send(self, headers, msg, expires=None):
-        t = time.time()
-        if expires < t:
-            return
+        if expires:
+            t = time.time()
+            if expires < t:
+                return
         h = headers.copy()  # @todo: python 2.5
         h["destination"] = self.name
         h["message-id"] = self.get_message_id()
