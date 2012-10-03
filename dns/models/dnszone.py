@@ -159,7 +159,7 @@ class DNSZone(models.Model):
         to follow common practive.
 
         :return: Zone serial number
-        :rtype: String
+        :rtype: int
         """
         T = time.gmtime()
         base = T[0] * 10000 + T[1] * 100 + T[2]
