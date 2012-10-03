@@ -38,6 +38,15 @@ class PowerDNSPgSQLChannel(Channel):
                     self.die(str(why).strip())
         return r
 
+    def normalized_records(self, records):
+        for name, type, content, ttl, prio in records:
+            if name.endswith("."):
+                name = name[:-1]
+            if (type in ("NS", "MX", "CNAME") and
+                content.endswith(".")):
+                content = content[:-1]
+            yield name, type, content, ttl, prio
+
     def on_list(self, items):
         """
         :param items: Dict of name -> version
@@ -82,7 +91,7 @@ class PowerDNSPgSQLChannel(Channel):
         """
         serial = data["serial"]
         type = "MASTER"
-        records = set(tuple(r) for r in data["records"])  # (name, type, content, ttl, priority)
+        records = set(self.normalized_records(data["records"]))  # (name, type, content, ttl, priority)
         for cn in self.databases:
             # Synchronize zone
             c = cn.cursor()
