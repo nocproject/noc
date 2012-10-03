@@ -193,14 +193,18 @@ class STOMPClient(object):
         Refresh existing subscriptions
         :return:
         """
+        frames = []
+        # Size can be changed during iteration
         for destination in self.destinations:
             sid, ack = self.destinations[destination]
             self.debug("Refreshing subscription to '%s'" % destination)
-            self.send_frame("SUBSCRIBE", {
+            frames += [{
                 "destination": destination,
                 "ack": ack,
                 "id": sid
-            })
+            }]
+        for f in frames:
+            self.send_frame("SUBSCRIBE", f)
 
     def disconnect(self):
         self.disconnect_receipt = str(self.receipt_id.next())
