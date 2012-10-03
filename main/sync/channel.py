@@ -7,7 +7,9 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 import logging
+import threading
 
 
 class Channel(object):
@@ -16,6 +18,7 @@ class Channel(object):
         self.channel = channel
         self.name = name
         self.root = "/queue/sync/%s/" % "/".join(self.channel.split("/")[:-1])
+        self.lock = threading.Lock()
 
     def die(self, msg):
         self.daemon.die("[%s] %s" % (self.channel, msg))
@@ -54,10 +57,12 @@ class Channel(object):
             return
         if cmd == "list":
             if "items" in msg:
-                self.on_list(msg["items"])
+                with self.lock:
+                    self.on_list(msg["items"])
         elif cmd == "verify":
             if "object" in msg and "data" in msg:
-                self.on_verify(msg["object"], msg["data"])
+                with self.lock:
+                    self.on_verify(msg["object"], msg["data"])
         elif cmd == "request":
             if "request" in msg:
                 if msg["request"] == "list":
