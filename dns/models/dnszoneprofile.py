@@ -9,6 +9,8 @@
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 ## NOC modules
 from dnsserver import DNSServer
 from noc.main.models import NotificationGroup
@@ -62,3 +64,11 @@ class DNSZoneProfile(models.Model):
         slave servers
         """
         return list(self.masters.all()) + list(self.slaves.all())
+
+##
+## Signal handlers
+##
+@receiver(post_save, sender=DNSZoneProfile)
+def on_save(sender, instance, created, **kwargs):
+    for z in instance.dnszone_set.filter(is_auto_generated=True):
+        z.touch(z.name)
