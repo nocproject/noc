@@ -13,7 +13,8 @@ HEADER = """;;
 
 FOOTER = """;;
 ;; End of auto-generated zone
-;;"""
+;;
+"""
 
 class ZoneFile(object):
     TABSTOP = 8
@@ -49,16 +50,14 @@ class ZoneFile(object):
         nsuffix = "." + suffix
         lnsuffix = len(nsuffix)
         # SOA
-        z = [HEADER, """
-$ORIGIN %(domain)s.
+        z = [HEADER, """$ORIGIN %(domain)s.
 @ IN SOA %(primary)s %(contact)s (
     %(serial)d ; serial
     %(refresh)d       ; refresh (%(pretty_refresh)s)
     %(retry)d        ; retry (%(pretty_retry)s)
     %(expire)d      ; expire (%(pretty_expire)s)
     %(ttl)d       ; minimum (%(pretty_ttl)s)
-    )
-""" % {
+    )""" % {
             "domain": self.zone,
             "primary": primary,
             "contact": contact,
