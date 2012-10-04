@@ -7,11 +7,26 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.nosql import Document, PlainReferenceField,\
-    ForeignKeyField, StringField, BooleanField, ListField, IntField
+from noc.lib.nosql import (Document, PlainReferenceField,
+                           ForeignKeyField, StringField, BooleanField,
+                           ListField, IntField)
 from forwardinginstance import ForwardingInstance
 from interface import Interface
 from noc.sa.models import ManagedObject
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
+
+SUBINTERFACE_AFI = (
+    IGetInterfaces.returns
+    .element.attrs["interfaces"]
+    .element.attrs["subinterfaces"]
+    .element.attrs["enabled_afi"].element.choices)
+
+SUBINTERFACE_PROTOCOLS = (
+    IGetInterfaces.returns
+    .element.attrs["interfaces"]
+    .element.attrs["subinterfaces"]
+    .element.attrs["enabled_protocols"].element.choices)
 
 
 class SubInterface(Document):
@@ -35,7 +50,7 @@ class SubInterface(Document):
     mac = StringField(required=False)
     vlan_ids = ListField(IntField(), default=[])
     enabled_afi = ListField(StringField(
-        choices=[(x, x) for x in "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE"]
+        choices=[(x, x) for x in SUBINTERFACE_AFI]
     ), default=[])
     is_ipv4 = BooleanField(default=False)
     is_ipv6 = BooleanField(default=False)
@@ -45,11 +60,7 @@ class SubInterface(Document):
     ipv6_addresses = ListField(StringField(), default=[])
     iso_addresses = ListField(StringField(), default=[])
     enabled_protocols = ListField(StringField(
-        choices=[(x, x) for x in [
-            "ISIS", "OSPF", "RIP", "EIGRP",
-            "BGP",
-            "LDP", "RSVP"
-        ]]
+        choices=[(x, x) for x in SUBINTERFACE_PROTOCOLS]
     ), default=[])
     is_isis = BooleanField(default=False)
     is_ospf = BooleanField(default=False)
