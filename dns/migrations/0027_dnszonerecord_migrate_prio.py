@@ -11,6 +11,8 @@ class Migration:
             WHERE
                 t.type IN ('MX', 'SRV')
             """):
+            if " " not in content:
+                continue
             prio, rest = content.split(" ", 1)
             try:
                 prio = int(prio)
