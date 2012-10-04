@@ -558,7 +558,8 @@ class DNSZone(models.Model):
         z = cls.get_zone(name)
         if z:
             z.set_next_serial()
-            sync_request(z.channels, "verify", z.name)
+            if z.is_auto_generated:
+                sync_request(z.channels, "verify", z.name)
 
     @property
     def channels(self):
@@ -572,7 +573,7 @@ class DNSZone(models.Model):
 ##
 @receiver(post_save, sender=DNSZone)
 def on_save(sender, instance, created, **kwargs):
-    if created:
+    if created or not instance.is_auto_generated:
         sync_request(instance.channels, "list")
     else:
         sync_request(instance.channels, "verify", instance.name)
