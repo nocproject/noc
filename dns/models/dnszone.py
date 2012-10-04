@@ -391,19 +391,10 @@ class DNSZone(models.Model):
         Get RRs from database
         :return:
         """
-        def f(name, type, content, ttl, prio):
-            """
-            Process MX record priority
-            """
-            if type == "MX":
-                if " " in content:
-                    p, rest = content.split(" ", 1)
-                    if is_int(p):
-                        return name, type, rest, ttl, int(p)
-            return name, type, content, ttl, prio
-
         ttl = self.profile.zone_ttl
-        return [f(r.left, r.type.type, r.right, ttl, None)
+        return [
+            (r.left, r.type.type, r.right,
+             r.ttl if r.ttl else ttl, r.priority)
             for r in self.dnszonerecord_set.exclude(left__contains="/")
         ]
 

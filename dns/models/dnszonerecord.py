@@ -9,6 +9,8 @@
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
 ## NOC modules
 from dnszone import DNSZone
 from dnszonerecordtype import DNSZoneRecordType
@@ -28,9 +30,9 @@ class DNSZoneRecord(models.Model):
 
     zone = models.ForeignKey(DNSZone, verbose_name="Zone")
     left = models.CharField(_("Left"), max_length=32, blank=True, null=True)
+    ttl = models.IntegerField(_("TTL"), null=True, blank=True)
     type = models.ForeignKey(DNSZoneRecordType, verbose_name="Type")
-    # @todo: Priority
-    # @todo: TTL
+    priority = models.IntegerField(_("Priority"), null=True, blank=True)
     right = models.CharField(_("Right"), max_length=64)
     tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
 
@@ -50,12 +52,14 @@ class DNSZoneRecord(models.Model):
         """
         return site.reverse("dns:dnszone:change", self.zone.id)
 
-    def save(self, *args, **kwargs):
-        super(DNSZoneRecord, self).save(*args, **kwargs)
-        # Refresh zone cache
-        self.zone.touch(self.zone.name)
+##
+## Signal handlers
+##
+@receiver(post_save, sender=DNSZoneRecord)
+def on_save(sender, instance, created, **kwargs):
+    instance.zone.touch(instance.zone.name)
 
-    def delete(self, *args, **kwargs):
-        zone = self.zone
-        super(DNSZoneRecord, self).delete(*args, **kwargs)
-        zone.touch(zone.name)
+
+@receiver(pre_delete, sender=DNSZoneRecord)
+def on_delete(sender, instance, **kwargs):
+    instance.zone.touch(instance.zone.name)
