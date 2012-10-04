@@ -20,6 +20,7 @@ class PowerDNSDBAPIChannel(Channel):
         self.databases = self.get_databases(config)
         if not self.databases:
             self.die("No databases set")
+        self.account = config.get("account", "NOC")
 
     def get_database(self, db_string):
         """
@@ -59,7 +60,10 @@ class PowerDNSDBAPIChannel(Channel):
         for cn in self.databases:
             c = cn.cursor()
             c.execute("BEGIN")
-            c.execute("SELECT id, name, notified_serial FROM domains")
+            c.execute("""
+                SELECT id, name, notified_serial
+                FROM domains
+                WHERE account = %s""", [self.account])
             seen = {}  # name -> version
             for id, name, serial in c.fetchall():
                 if name not in remote:
@@ -98,7 +102,7 @@ class PowerDNSDBAPIChannel(Channel):
             c = cn.cursor()
             c.execute("BEGIN")
             c.execute("""
-            SELECT id, type, notified_serial
+            SELECT id, type, notified_serial, account
             FROM domains
             WHERE name = %s
             """, [object])
@@ -107,15 +111,19 @@ class PowerDNSDBAPIChannel(Channel):
                 # Create new zone
                 self.info("Creating new zone: %s" % object)
                 c.execute("""
-                INSERT INTO domains(name, type, notified_serial)
-                VALUES(%s, %s, %s)
-                """, [object, type, serial])
+                INSERT INTO domains(name, type, notified_serial, account)
+                VALUES(%s, %s, %s, %s)
+                """, [object, type, serial, self.account])
                 c.execute("SELECT id FROM domains WHERE name = %s",
                     [object])
                 domain_id, = c.fetchone()
             else:
                 # Check for changes
-                domain_id, d_type, notified_serial = r
+                domain_id, d_type, notified_serial, account = r
+                if account != self.account:
+                    self.info("%s is provisioned by other account (%s)" % (
+                        object, account))
+                    return  # Provisioned by other source
                 changes = []
                 if type != d_type:
                     changes = [("type", type)]
