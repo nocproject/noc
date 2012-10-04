@@ -222,13 +222,11 @@ class AccessTestCase(TestCase):
     def test_zone_next_serial(self):
         for z in DNSZone.objects.all():
             s = z.next_serial
-            self.assertEqual(len(s), 10)
-            self.assertEqual(s[-2:], "00")
+            self.assertEqual(s % 100, 0)
             z.serial = z.next_serial
             z.save()
             s = z.next_serial
-            self.assertEqual(len(s), 10)
-            self.assertEqual(s[-2:], "01")
+            self.assertEqual(s % 100, 1)
     
     ##
     ##
