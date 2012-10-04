@@ -547,7 +547,7 @@ class DNSZone(models.Model):
         :return:
         """
         z = cls.get_zone(name)
-        if z:
+        if z and z.is_auto_generated:
             z.set_next_serial()
 
     @property
@@ -555,6 +555,19 @@ class DNSZone(models.Model):
         return sorted(set("dns/zone/%s" % c for c in
             self.profile.masters.filter(sync_channel__isnull=False)
                 .values_list("sync_channel", flat=True)))
+
+    def update_repo(self):
+        """
+        Update DNS repo entry
+        :return:
+        """
+        from noc.cm.models import DNS
+        try:
+            r = DNS.objects.get(repo_path=self.name)
+        except DNS.DoesNotExist:
+            r = DNS(repo_path=self.name)
+            r.save()
+        r.write(self.get_zone_text())
 
 
 ##
@@ -566,7 +579,11 @@ def on_save(sender, instance, created, **kwargs):
         sync_request(instance.channels, "list")
     else:
         sync_request(instance.channels, "verify", instance.name)
+    if instance.is_auto_generated:
+        instance.update_repo()
+
 
 @receiver(pre_delete, sender=DNSZone)
 def on_delete(sender, instance, **kwargs):
     sync_request(instance.channels, "list", delta=5)
+    # @todo: Delete from repo
