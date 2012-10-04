@@ -538,6 +538,8 @@ class DNS(Object):
                 if is_differ(o.path, z.zonedata(ns)):
                     changed[z] = None
         for o in objects.values():
+            if "/" not in o.repo_path:
+                continue
             logging.debug("DNS.global_pull: Deleting object: %s" % o.repo_path)
             o.delete()
         for z in changed:
