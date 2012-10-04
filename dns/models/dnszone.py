@@ -558,8 +558,6 @@ class DNSZone(models.Model):
         z = cls.get_zone(name)
         if z:
             z.set_next_serial()
-            if z.is_auto_generated:
-                sync_request(z.channels, "verify", z.name)
 
     @property
     def channels(self):
