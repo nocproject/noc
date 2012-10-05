@@ -27,5 +27,27 @@
                 "alarm_class__name": "Chassis | RAM | RAM Failed" 
             }
         ]
+    },
+
+    {
+        "name": "Chassis | RAM | Insufficient Memory",
+        "description": "Insufficient Memory",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "Insufficient Memory",
+                "body_template": "Insufficient Memory",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Chassis | RAM | Insufficient Memory"
+            }
+        ]
     }
 ]
