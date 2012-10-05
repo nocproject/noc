@@ -9,14 +9,17 @@
 """
 # Python modules
 import re
+import string
 # NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
+from noc.lib.ip import IPv4
 
 
 class Script(NOCScript):
     name = "Brocade.IronWare.get_interfaces"
     implements = [IGetInterfaces]
+    TIMEOUT = 900
 
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)",
@@ -33,23 +36,96 @@ class Script(NOCScript):
         re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
-        portchannel_members = {}  # member -> (portchannel, type)
-        for pc in self.scripts.get_portchannel():
-            i = pc["interface"]
-            for m in pc["members"]:
-                portchannel_members[m] = (i, False)  # 9xxx doesn't support LACP
-
-        interfaces = []
-        shospf = self.cli("sh ip ospf interface")
-        ospfint = []
-        for s in shospf.split("\n"):
-            if s.find("OSPF enabled") > 0:
-                i = s.split(',')[0]
-                if i[0] == 'v':
-                    ospfint.append('ve' + i[1:])
+        rip=[]
+        try:
+            c=self.cli("show ip rip int | inc ^Interface")
+        except self.CLISyntaxError:
+            c=""
+        c=c.strip("\n")
+        for ii in c.split("\n"):
+            ii=ii.lower()
+            if ii.find("ve")>0:
+                ii=ii.replace("ve ","ve")
+            else:
+                ii=ii.replace("Eth ","")
+            if ii !='':
+                ii=ii.split(" ")[1]
+            rip+=[ii]
+        ospf=[]
+        try:
+            c=self.cli("sh ip ospf int | inc OSPF enabled")
+        except self.CLISyntaxError:
+            c=""
+        c=c.strip("\n")
+        for ii in c.split("\n"):
+            ii=ii.lower().split(",")[0]
+            if ii.startswith("ve "):
+                ii=ii.replace("ve ","ve")
+            elif ii.startswith("v"):
+                ii=ii.replace("v","ve")
+            elif ii.startswith("loop"):
+                ii=ii.replace("loopback ","lb")
+            elif ii.startswith("lb"):
+                ii=ii
+            elif ii != '':
+                ii=ii.split(" ")[1]
+            ospf+=[ii.strip()]
+        pim=[]
+        try:
+            c=self.cli("sh ip pim int | inc ^Int")
+        except self.CLISyntaxError:
+            c=""
+        if c!='':
+            for ii in c.split("\n"):
+                ii=ii.split(" ")[1]
+                if ii.startswith("v"):
+                    ii=ii.replace("v","ve")
                 else:
-                    ospfint.append(i)
-
+                    ii=ii.replace("e","")
+                pim+=[ii]
+        dvmrp=[]
+        try:
+            c=self.cli("sh ip dvmrp int | inc ^Int")
+        except self.CLISyntaxError:
+            c=""
+        if c!='':
+            c=c.strip("\n")
+            for ii in c.split("\n"):
+                ii= ii.split(" ")[1]
+                if ii.startswith("v"):
+                    ii=ii.replace("v","ve")
+                else:
+                    ii=ii.replace("e","")
+                dvmrp+=[ii]
+        stp=[]
+        try:
+            c=self.cli("show span | inc /")
+        except self.CLISyntaxError:
+            c=""
+        c=c.strip("\n")
+        for ii in c.split("\n"):
+            ii=ii.split(" ")[0]
+        gvrp=[]
+        try:
+            c=self.cli("show gvrp")
+        except self.CLISyntaxError:
+            c=""
+        igmp=[]
+        try:
+            c=self.cli("sh ip igmp int | exc group:")
+        except self.CLISyntaxError:
+            c=""
+        c=c.strip("\n")
+        for ii in c.split("\n"):
+            ii=ii.strip()
+            ii=ii.split(" ")[0]
+            ii=ii.strip(":")
+            if ii.startswith("v"):
+                ii=ii.replace("v","ve")
+            else:
+                ii=ii.replace("e","")
+            igmp+=[ii]
+        interfaces=[]
         shrunvlan = self.cli("sh running-config vlan")
         tagged = {}
         untagged = {}
@@ -65,7 +141,7 @@ class Script(NOCScript):
                         continue
 
                     if m[0].split()[0] == "vlan":
-                        vlan = m[0].split()[1]
+                        vlan = int(m[0].split()[1])
                         continue
 
                     elif m[0][:3] == "ve ":
@@ -99,74 +175,76 @@ class Script(NOCScript):
                                     tagged[ifc].append(vlan)
                                 else:
                                     tagged[ifc] = [vlan]
-
                             else:
                                 untagged[ifc] = vlan
-        v = self.cli("show interfaces brief")
-        for s in v.split("\n"):
-            if not s or s[0:4] == "Port":
-                continue
-            ifname = s.split()[0]
-            f2l = ifname[0:2]
-            if f2l == "ve":
-                ift = "SVI"
-            elif f2l == "lb":
-                ift = "loopback"
-            else:
-                ift = "physical"
-            admin_status = s.split()[1] == "Up"
-            oper_status = admin_status
-            if len(s.split()) > 9:
-                desc = s.split()[9]
-            else:
-                desc = ''
 
-            iface = {
-                "name": ifname,
-                "admin_status": admin_status,
-                "oper_status": oper_status,
-                "type": ift,
-                "description": desc,
-                }
-            mac = s.split()[8]
-            if not mac == 'N/A':
-                iface["mac"] = mac
-                # Process portchannel members
-            if ifname in portchannel_members:
-                iface["aggregated_interface"] = portchannel_members[ifname][0]
-                # Process subinterfaces
-            subinterfaces = []
-            if "aggregated_interface" not in iface:
-                sub = {
+        c=self.cli("sh int br | excl Port")
+        c=c.strip("\n")
+        for ii in c.split("\n"):
+            ii=ii.lower()
+            ii=ii.replace("disabled"," disabled ")
+            ii=ii.replace("disabn"," disabled n")
+            ii=ii.replace("up"," up ")
+            ii=ii.replace("  "," ")
+            port=ii.split()
+            if len(port)>1:
+                ifname=port[0]
+                if ifname.find("/")>0:
+                    ift="physical"
+                if ifname.find("e")>0:
+                    ift="SVI"
+                if ifname.find("b")>0:
+                    ift="loopback"
+                if ifname.find("m")>0:
+                    ift="management"
+                i = {
                     "name": ifname,
-                    "admin_status": admin_status,
-                    "oper_status": oper_status,
-                    "enabled_afi": [],
-                    "enabled_protocols": []
+                    "type": ift,
+                    "admin_status": port[1]=="up",
+                    "oper_status": port[1]=="up",
+                    "enabled_protocols": [],
+                    "subinterfaces": [{
+                        "name": ifname,
+                        "admin_status": port[1]=="up",
+                        "oper_status": port[1]=="up"
+                    }]
                 }
+                if ift=="SVI":
+                    i['subinterfaces'][0].update({"vlan_ids":[untagged[ifname]]})
+                    ipa=self.cli("show run int %s | inc ip addr" % ifname)
+                    ipa=ipa.strip()
+                    if len(ipa)>1:
+                        i['subinterfaces'][0].update({"enabled_afi":["IPv4"]})
+                        self.debug("ip.split len:" + str(len(ipa.split())))
+                        if len(ipa.split())>3:
+                            ip_address="%s/%s" % (ipa.split()[2],IPv4.netmask_to_len(ipa.split()[3]))
+                        else:
+                            ip_address=ipa.split()[2]
+                        i['subinterfaces'][0].update({"ipv4_addresses":[ip_address]})
 
-                if ifname in untagged:
-                    sub["untagged_vlan"] = untagged[ifname]
-                if ifname in tagged:
-                    sub["tagged_vlan"] = tagged[ifname]
-                if ift == "SVI":  # IPv4 addresses
-                    shint = self.cli("show interfaces %s" % ifname)
-                    for str in shint.split("\r\n"):
-                        match = self.rx_int_ipv4.search(str)
-                        if match:
-                            sub["enabled_afi"] += ["IPv4"]
-                            sub["ipv4_addresses"] = [match.group("address")]
-                if ift == "physical":
-                    sub["enabled_afi"] += ["BRIDGE"]
-                if ifname in ospfint:
-                    sub["enabled_protocols"] += ["OSPF"]
-                if (sub.get("is_ipv4") or sub.get("is_ipv6") or
-                    sub.get("is_iso") or sub.get("is_mpls") or
-                    sub.get("is_bridge")):
-                    subinterfaces += [sub]
-                    # Append to interfaces
-            iface["subinterfaces"] = subinterfaces
-            if "subinterfaces" or "aggregated_interface" in iface:
-                interfaces += [iface]
-                # Get interfaces
+                if len(port)>9:
+                    desc=port[9]
+                else:
+                    desc=''
+                i['subinterfaces'][0].update({"description":desc})
+                if ift=="physical":
+                    i['subinterfaces'][0].update({"is_bridge": True})
+                    if ifname in tagged:
+                        i['subinterfaces'][0].update({"tagged_vlans": tagged[ifname]})
+                    if ifname in untagged:
+                        i['subinterfaces'][0].update({"untagged_vlan": untagged[ifname]})
+                l2protos=[]
+                l3protos=[]
+                if ifname in stp: l2protos+=["STP"]
+                if ifname in gvrp: l2protos+=["GVRP"]
+                i.update({"enabled_protocols": l2protos})
+                # L3 protocols check:
+                if ifname in rip: l3protos+=["RIP"]
+                if ifname in ospf: l3protos+=["OSPF"]
+                if ifname in pim: l3protos+=["PIM"]
+                if ifname in dvmrp: l3protos+=["DVMRP"]
+                if ifname in igmp: l3protos+=["IGMP"]
+                i['subinterfaces'][0].update({"enabled_protocols":l3protos})
+
+                interfaces+=[i]
         return [{"interfaces": interfaces}]
