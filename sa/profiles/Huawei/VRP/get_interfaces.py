@@ -46,6 +46,8 @@ class Script(NOCScript):
         "Eth-Trunk": "aggregated",
         "Ip-Trunk": "aggregated",
         "GigabitEthernet": "physical",
+        "FastEthernet": "physical",
+        "Ethernet": "physical",
         "Logic-Channel": "tunnel",
         "LoopBack": "loopback",
         "MEth": "management",
