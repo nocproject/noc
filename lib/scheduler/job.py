@@ -172,3 +172,10 @@ class Job(object):
 
     def get_log(self):
         return self._log
+
+    def can_run(self):
+        """
+        Check wrether the job can be launched
+        :return:
+        """
+        return True

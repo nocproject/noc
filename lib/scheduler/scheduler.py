@@ -189,6 +189,9 @@ class Scheduler(object):
                 job.name, job.key))
             self.remove_job(job.name, job.key)
             return
+        # Check job can be run
+        if not job.can_run():
+            return
         # Change status
         s = "threaded " if job.threaded else ""
         self.info("Running %sjob %s(%s)" % (s, job.name, job.get_display_key()))
