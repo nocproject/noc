@@ -88,6 +88,8 @@ class SAE(Daemon):
         self.log_cli_sessions = False
         self.script_threads = {}
         self.script_lock = threading.Lock()
+        #
+        self.blocked_pools = set()  # Blocked activator names
 
     def load_config(self):
         """
@@ -291,15 +293,18 @@ class SAE(Daemon):
             return float(a.max_scripts - a.current_scripts) / a.max_scripts
 
         if name not in self.activators:
+            self.blocked_pools.add(name)
             raise Exception("Activator pool '%s' is not available" % name)
         a = self.activators[name]
         if len(a) == 0:
+            self.blocked_pools.add(name)
             raise Exception("No activators in pool '%s' available" % name)
         if not for_script:
             return random.choice(list(a))
         # Weighted balancing
         a = sorted(a, lambda x, y: -cmp(weight(x), weight(y)))[0]
         if a.max_scripts == a.current_scripts:
+            self.blocked_pools.add(name)
             raise Exception("All activators are busy in pool '%s'" % name)
         return a
 
@@ -501,6 +506,7 @@ class SAE(Daemon):
         sae_mrt_rate = 0
         shard_mrt_rate = {}  # shard_id -> count
         throttled_shards = set()  # shard_id
+        self.blocked_pools = set()  # Reset block status
         # Run tasks
         for mt in MapTask.objects.filter(status="W", next_try__lte=t,
                     managed_object__activator__shard__is_active=True,
@@ -512,6 +518,10 @@ class SAE(Daemon):
                 mt.save()
                 self.log_mrt(logging.INFO, task=mt, status="failed",
                     code=ERR_TIMEOUT, error="timed out")
+                continue
+            # Check blocked pools
+            if mt.managed_object.activator.name in self.blocked_pools:
+                # Silently skip task until next round
                 continue
             # Check for global rate limit
             if self.max_mrt_rate_per_sae:
