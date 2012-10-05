@@ -52,5 +52,19 @@ class MACDiscoveryJob(MODiscoveryJob):
         :param object:
         :return:
         """
-        return bool(SubInterface.objects.filter(
-            managed_object=object.id, enabled_afi="BRIDGE").first())
+        return object.is_managed and bool(
+            SubInterface.objects.filter(managed_object=object.id,
+                enabled_afi="BRIDGE").first())
+
+    def can_run(self):
+        if not super(MACDiscoveryJob, self).can_run():
+            return False
+        # Check object has bridge interfaces
+        # with enabled MAC discovery
+        for si in SubInterface.objects.filter(
+            managed_object=self.object.id,
+            enabled_afi="BRIDGE"):
+            if si.interface.profile.mac_discovery:
+                return True
+        # No suitable interfaces
+        return False
