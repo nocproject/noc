@@ -23,5 +23,25 @@
                 "recommended_actions": "Replace faulty RAM module" 
             }
         }
+    },
+
+    {
+        "name": "Chassis | RAM | Insufficient Memory",
+        "description": "Insufficient Memory",
+        "is_unique": true,
+        "discriminator": [],
+        "user_clearable": true,
+        "default_severity__name": "CRITICAL",
+        "vars": [
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Insufficient Memory",
+                "body_template": "Insufficient Memory",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        }
     }
 ]
