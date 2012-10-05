@@ -327,7 +327,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%THERMAL-3-PS: System detected (?P<name>Power System) \\d+ THERMAL FAIL condition."
+                "value_re": "%(?:THERMAL-3-PS|PS-3-THERMAL): System detected (?P<name>.+) THERMAL FAIL condition."
             }
         ]
     },
@@ -348,7 +348,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%THERMAL-3-PS: (?P<name>Power System) \\d+ THERMAL condition is now normal."
+                "value_re": "%(?:THERMAL-3-PS|PS-3-THERMAL): (?P<name>.+) THERMAL condition is now normal."
             }
         ]
     },
