@@ -17,13 +17,6 @@ class Generator(noc.dns.generators.Generator):
     def get_zone(self, zone):
         return ZoneFile(
             zone=zone.name,
-            soa=zone.profile.zone_soa,
-            contact=zone.profile.zone_contact,
-            serial=zone.serial,
-            refresh=zone.profile.zone_refresh,
-            retry=zone.profile.zone_retry,
-            expire=zone.profile.zone_expire,
-            ttl=zone.profile.zone_ttl,
             records=zone.get_records()
         ).get_text()
 
