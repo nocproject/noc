@@ -66,3 +66,6 @@ class MODiscoveryJob(IntervalJob):
         :return:
         """
         return {"id": self.key, "is_managed": True}
+
+    def can_run(self):
+        return not self.map_task or self.object.is_managed
