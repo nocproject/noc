@@ -21,13 +21,11 @@ Ext.define("NOC.main.style.Model", {
         },
         {
             name: "font_color",
-            type: "int",
-            defaultValue: 0
+            type: "auto"
         },
         {
             name: "background_color",
-            type: "int",
-            defaultValue: 16777215
+            type: "auto"
         },
         {
             name: "bold",
