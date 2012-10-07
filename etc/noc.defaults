@@ -362,6 +362,8 @@ save = true
 success_retry = 86400
 failed_retry = 900
 initial_submit_interval = 900
+# Upper limit of new schedule submitted at once
+initial_submit_concurrency = 20
 # IInterfaceClassification-interfaced pyRule
 # returning interface class name
 classification_pyrule =
