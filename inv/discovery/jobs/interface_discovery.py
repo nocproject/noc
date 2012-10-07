@@ -22,6 +22,8 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
     ignored = not config.getboolean("interface_discovery", "enabled")
     initial_submit_interval = config.getint("interface_discovery",
         "initial_submit_interval")
+    initial_submit_concurrency = config.getint("interface_discovery",
+        "initial_submit_concurrency")
     success_retry = config.getint("interface_discovery", "success_retry")
     failed_retry = config.getint("interface_discovery", "failed_retry")
     to_save = config.getboolean("interface_discovery", "save")  # @todo: Ignored
