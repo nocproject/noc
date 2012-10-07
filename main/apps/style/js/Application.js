@@ -8,8 +8,9 @@ console.debug("Defining NOC.main.style.Application");
 
 Ext.define("NOC.main.style.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
-        "NOC.main.style.Model"
+    requires: [
+        "NOC.main.style.Model",
+        "Ext.ux.form.ColorField"
     ],
     model: "NOC.main.style.Model",
     rowClassField: "row_class",
@@ -51,13 +52,13 @@ Ext.define("NOC.main.style.Application", {
         },
         {
             name: "font_color",
-            xtype: "numberfield",
+            xtype: "colorfield",
             fieldLabel: "Font Color",
             allowBlank: false
         },
         {
             name: "background_color",
-            xtype: "numberfield",
+            xtype: "colorfield",
             fieldLabel: "Background Color",
             allowBlank: false
         },
