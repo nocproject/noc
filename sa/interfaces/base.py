@@ -1211,6 +1211,23 @@ class TagsParameter(Parameter):
             self.raise_error("Invalid tags: %s" % value)
 
 
+class ColorParameter(Parameter):
+    def clean(self, value):
+        if value is None and self.default is not None:
+            return self.default
+        if type(value) in (int, long):
+            return value
+        if isinstance(value, basestring):
+            if value.startswith("#"):
+                value = value[1:]
+            if len(value) == 6:
+                try:
+                    return int(value, 16)
+                except ValueError:
+                    self.raise_error(value)
+        self.raise_error(value)
+
+
 ## Stub for interface registry
 interface_registry = {}
 
