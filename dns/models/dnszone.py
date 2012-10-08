@@ -27,7 +27,8 @@ from noc.lib.ip import IPv6
 from noc.lib.validators import is_ipv4, is_ipv6, is_int
 from noc.lib.rpsl import rpsl_format
 from noc.dns.utils.zonefile import ZoneFile
-from noc.lib.scheduler.utils import sync_request
+from noc.lib.scheduler.utils import sync_request, sliding_job
+from noc.settings import config
 
 
 ##
@@ -171,7 +172,9 @@ class DNSZone(models.Model):
 
     def set_next_serial(self):
         self.serial = self.next_serial
-        self.save()
+        # self.save()
+        # Hack to not send post_save signal
+        DNSZone.objects.filter(id=self.id).update(serial=self.serial)
 
     @property
     def records(self):
@@ -548,7 +551,15 @@ class DNSZone(models.Model):
         """
         z = cls.get_zone(name)
         if z and z.is_auto_generated:
-            z.set_next_serial()
+            z._touch()
+
+    def _touch(self, is_new=False):
+        if self.is_auto_generated:
+            sliding_job("main.jobs", "dns.touch_zone", key=self.id,
+                delta=config.getint("dns", "delay"),
+                cutoff_delta=config.getint("dns", "cutoff"),
+                data={"new": is_new}
+            )
 
     @property
     def channels(self):
@@ -575,12 +586,8 @@ class DNSZone(models.Model):
 ##
 @receiver(post_save, sender=DNSZone)
 def on_save(sender, instance, created, **kwargs):
-    if created or not instance.is_auto_generated:
-        sync_request(instance.channels, "list")
-    else:
-        sync_request(instance.channels, "verify", instance.name)
     if instance.is_auto_generated:
-        instance.update_repo()
+        instance._touch(is_new=created)
 
 
 @receiver(pre_delete, sender=DNSZone)
