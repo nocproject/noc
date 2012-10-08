@@ -107,7 +107,7 @@ class IPReport(Report):
             if self.to_save:
                 if not description:
                     description = "Seen at %s:%s" % (
-                        self.object, interface)
+                        self.object.name, interface)
                 Address(vrf=vrf, afi=afi,
                     fqdn=self.get_fqdn(interface, address),
                     mac=mac, address=address,
