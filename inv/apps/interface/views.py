@@ -190,8 +190,14 @@ class InterfaceAppplication(ExtApplication):
     @view(url="^unlinked/(?P<object_id>\d+)/$", method=["GET"],
         access="link", api=True)
     def api_unlinked(self, request, object_id):
+        def get_label(i):
+            if i.description:
+                return "%s (%s)" % (i.name, i.description)
+            else:
+                return i.name
+
         o = self.get_object_or_404(ManagedObject, id=int(object_id))
-        r = [{"id": str(i.id), "label": i.name}
+        r = [{"id": str(i.id), "label": get_label(i)}
             for i in Interface.objects.filter(managed_object=o.id,
                                         type="physical").order_by("name")
             if not i.link]
