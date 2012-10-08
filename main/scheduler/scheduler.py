@@ -21,7 +21,8 @@ class JobScheduler(Scheduler):
         super(JobScheduler, self).__init__(
             "main.jobs",
             initial_submit=daemon is not None,
-            reset_running=daemon is not None
+            reset_running=daemon is not None,
+            max_threads=daemon.config.getint("main", "max_threads")
         )
         # Subscribers
         self.subscribers = defaultdict(list)  # Destination -> [jobs]

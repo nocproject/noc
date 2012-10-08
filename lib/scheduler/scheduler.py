@@ -45,7 +45,7 @@ class Scheduler(object):
     JobExists = JobExists
 
     def __init__(self, name, cleanup=None, reset_running=False,
-                 initial_submit=False):
+                 initial_submit=False, max_threads=None):
         self.name = name
         self.job_classes = {}
         self.collection_name = self.COLLECTION_BASE + self.name
@@ -56,6 +56,7 @@ class Scheduler(object):
         self.ignored = []
         self.initial_submit = initial_submit
         self.initial_submit_next_check = {}  # job class -> timestamp
+        self.max_threads = max_threads
 
     def debug(self, msg):
         logging.debug("[%s] %s" % (self.name, msg))
@@ -189,6 +190,10 @@ class Scheduler(object):
                 job.name, job.key))
             self.remove_job(job.name, job.key)
             return
+        # Check threaded jobs limit
+        if job.threaded and self.max_threads:
+            if threading.active_count() >= self.max_threads:
+                return
         # Check job can be run
         if not job.can_run():
             return
