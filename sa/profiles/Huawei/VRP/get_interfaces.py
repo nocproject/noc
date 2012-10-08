@@ -45,6 +45,7 @@ class Script(NOCScript):
         "Aux": "physical",
         "Eth-Trunk": "aggregated",
         "Ip-Trunk": "aggregated",
+        "XGigabitEthernet": "physical",
         "GigabitEthernet": "physical",
         "FastEthernet": "physical",
         "Ethernet": "physical",
