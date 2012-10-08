@@ -515,7 +515,10 @@ class SAE(Daemon):
             if mt.task.stop_time < t:
                 mt.status = "F"
                 mt.script_result = dict(code=ERR_TIMEOUT, text="Timed out")
-                mt.save()
+                try:
+                    mt.save()
+                except Exception:
+                    pass  # Can raise integrity error if MRT is gone
                 self.log_mrt(logging.INFO, task=mt, status="failed",
                     code=ERR_TIMEOUT, error="timed out")
                 continue
