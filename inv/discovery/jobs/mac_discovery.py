@@ -64,7 +64,11 @@ class MACDiscoveryJob(MODiscoveryJob):
         for si in SubInterface.objects.filter(
             managed_object=self.object.id,
             enabled_afi="BRIDGE"):
-            if si.interface.profile.mac_discovery:
+            try:
+                iface = si.interface
+            except Exception:
+                continue  # Dereference failed
+            if iface.profile.mac_discovery:
                 return True
         # No suitable interfaces
         return False
