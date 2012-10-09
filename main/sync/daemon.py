@@ -61,8 +61,8 @@ class SyncDaemon(Daemon):
         self.stomp_client.start()
         for c in self.channels:
             self.channels[c].init()
-        import time
-        time.sleep(1000)
+        while self.stomp_client.factory_thread.is_alive():
+            self.stomp_client.factory_thread.join(1)
 
     def send(self, message, destination,
              receipt=False, persistent=False, expires=None):
