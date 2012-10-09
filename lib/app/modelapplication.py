@@ -140,7 +140,7 @@ class ModelApplication(Application):
         return self.admin.changelist_view(request,
                                           self.get_context(extra_context))
     
-    @view(url=r"^add/$", url_name="add", access=HasPerm("add"))
+    @view(url=r"^add/$", url_name="admin:%s_%s_add", access=HasPerm("add"))
     def view_add(self, request, form_url="", extra_context=None):
         """Display add form"""
         return self.admin.add_view(
