@@ -23,8 +23,29 @@
             }
         ]
     },
-    
-   {
+
+    {
+        "name": "Cisco | IOS | Security | Authentication | SNMP Authentication Failure (SYSLOG)",
+        "description": "%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host 69.175.126.170",
+        "event_class__name": "Security | Authentication | SNMP Authentication Failure",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "^%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host (?P<ip>\\S+)$"
+            }
+        ]
+    },
+
+    {
        "name": "Cisco | IOS | Security | Authentication | Logout (SYSLOG)",
        "description": "%SYS-6-EXIT_CONFIG: User has exited tty ",
        "event_class__name": "Security | Authentication | Logout",
@@ -43,7 +64,7 @@
                "value_re": "%SYS-6-EXIT_CONFIG: User (?P<user>.+?) has exited tty session \\d+\\s*\\((?P<ip>\\S+)\\)$"
            }
        ]
-   },
+    },
 
     {
         "name": "Cisco | IOS | Security | Authentication | Authentication Failed (SNMP)",
@@ -69,7 +90,7 @@
             }
         ]
     },
-   
+
     {
         "name": "Cisco | IOS | Security | Authentication | Login (SYSLOG)",
         "description": "%SEC_LOGIN-5-LOGIN_SUCCESS: Login Success [user: admin] [Source: 172.16.0.22] [localport: 22] at 13:14:14 MSK Wed Aug 3 2011",
