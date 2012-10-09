@@ -5,14 +5,15 @@
 ## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+
+## Python modules
 import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
 
 
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name = "DLink.DxS.get_version"
     cache = True
     implements = [IGetVersion]
@@ -35,10 +36,10 @@ class Script(noc.sa.script.Script):
             }
         }
         ser = self.rx_ser.search(s)
-        if ser and ser.group("serial") != "System" \
-        and ser.group("serial") != "Power":
-            r["attributes"].update({"Serial Number": ser.group("serial")})
+        if (ser and ser.group("serial") != "System" and
+            ser.group("serial") != "Power"):
+            r["attributes"]["Serial Number"] = ser.group("serial")
         fwt = self.rx_fwt.search(s)
         if fwt:
-            r["attributes"].update({"Firmware Type": fwt.group("fwt")})
+            r["attributes"]["Firmware Type"] = fwt.group("fwt")
         return r
