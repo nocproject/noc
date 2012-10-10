@@ -72,3 +72,9 @@ enabled = true
 user = noc
 group =
 config = etc/noc-discovery.conf
+
+[noc-sync]
+enabled = false
+user = noc
+group =
+config = etc/noc-sync.conf
