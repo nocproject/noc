@@ -24,7 +24,6 @@ class Profile(NOCProfile):
     pattern_syntax_error = r"(Available commands|Next possible completions|Ambiguous token):"
     command_super = "enable admin"
     pattern_prompt = r"^(?P<hostname>\S+(:\S+)*)#"
-    command_disable_pager = "disable clipaging"
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
@@ -42,15 +41,16 @@ class Profile(NOCProfile):
 
     cluster_member = None
     dlink_pager = False
-    rx_pager = re.compile(
-        r"^(Clipaging|CLI Paging)\s+:\s*(?P<cp>Enabled|Disabled)\s*$",
+    rx_pager = re.compile(r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$",
         re.MULTILINE)
 
     def setup_session(self, script):
         # Cache "show switch" command and fetch CLI Paging from it
         match = self.rx_pager.search(script.cli("show switch", cached=True))
-        if match:
-            self.dlink_pager = (match.group("cp") == "Enabled")
+        if not match:
+            self.dlink_pager = True
+            script.debug("Disabling CLI Paging...")
+            script.cli("disable clipaging")
 
         # Parse path parameters
         for p in script.access_profile.path.split("/"):
@@ -58,7 +58,7 @@ class Profile(NOCProfile):
                 self.cluster_member = p[8:].strip()
             # Switch to cluster member, if necessary
         if self.cluster_member:
-            script.debug("Switching to SIM member '%s'" % script.cluster_member)
+            script.debug("Switching to SIM member %s" % script.cluster_member)
             script.cli("reconfig member_id %s" % script.cluster_member)
 
     def shutdown_session(self, script):
@@ -66,8 +66,6 @@ class Profile(NOCProfile):
             script.cli("reconfig exit")
         if self.dlink_pager:
             script.cli("enable clipaging")
-        else:
-            script.cli("disable clipaging")
 
     rx_port = re.compile(r"^\s*(?P<port>\d+(/|:)?\d*)\s*"
         r"(\((?P<media_type>(C|F))\))?\s+(?P<admin_state>Enabled|Disabled)\s+"
@@ -76,7 +74,7 @@ class Profile(NOCProfile):
         r"(?P<admin_flowctrl>Enabled|Disabled)\s+"
         r"(?P<status>LinkDown|Link\sDown)?((?P<speed>10M|100M|1000M|10G)/"
         r"(?P<duplex>Half|Full)/(?P<flowctrl>None|802.3x))?\s+"
-        r"(?P<address_learning>Enabled|Disabled)\s*"
+        r"(?P<addr_learning>Enabled|Disabled)\s*"
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
         r"\n\s+Desc(ription)?:\s*?(?P<desc>.*?)$",
@@ -98,7 +96,7 @@ class Profile(NOCProfile):
                 "speed": match.group("speed"),
                 "duplex": match.group("duplex"),
                 "flowctrl": match.group("flowctrl"),
-                "address_learning": match.group("address_learning").strip(),
+                "address_learning": match.group("addr_learning").strip(),
                 "mdix": match.group("mdix"),
                 "trap_state": match.group("trap_state"),
                 "desc": match.group("desc").strip()
@@ -109,9 +107,30 @@ class Profile(NOCProfile):
             return None
 
     def get_ports(self, script):
-        objects = script.cli_object_stream(
-            "show ports description", parser=self.parse_interface,
-            cmd_next="n", cmd_stop="q")
+        if script.match_version(DES3200, version__gte="1.70.B007"):
+            objects = []
+            c = script.cli("show ports description")
+            for match in self.rx_port.finditer(c):
+                objects += [{
+                    "port": match.group("port"),
+                    "media_type": match.group("media_type"),
+                    "admin_state": match.group("admin_state") == "Enabled",
+                    "admin_speed": match.group("admin_speed"),
+                    "admin_duplex": match.group("admin_duplex"),
+                    "admin_flowctrl": match.group("admin_flowctrl"),
+                    "status": match.group("status") is None,
+                    "speed": match.group("speed"),
+                    "duplex": match.group("duplex"),
+                    "flowctrl": match.group("flowctrl"),
+                    "address_learning": match.group("addr_learning").strip(),
+                    "mdix": match.group("mdix"),
+                    "trap_state": match.group("trap_state"),
+                    "desc": match.group("desc").strip()
+                }]
+        else:
+            objects = script.cli_object_stream(
+                "show ports description", parser=self.parse_interface,
+                cmd_next="n", cmd_stop="q")
         prev_i = None
         ports = []
         for i in objects:
