@@ -446,6 +446,9 @@ function on_mynetworks(n)
 <!-- Toolbar -->
 {% if can_change %}
     <div class="submit-row">
+        {%  if can_rebase %}
+            <a href="{% url ip:ipam:rebase vrf.id afi prefix.prefix %}" class="changelink">Rebase</a>
+        {% endif %}
         <a href="{% url ip:ipam:change_prefix vrf.id afi prefix.prefix %}" class="changelink">Change</a>
         {% if prefix.parent %}
             <a href="{% url ip:ipam:delete_prefix vrf.id afi prefix.prefix %}" class="deletelink" style="float: left">Delete</a>

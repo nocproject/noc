@@ -433,71 +433,57 @@ class Prefix(models.Model):
             """,
             [self.vrf.id, self.afi, self.prefix, self.prefix, self.prefix]))
 
-    ##
-    ## Rebase prefix to a new location
-    ##
     def rebase(self, vrf, new_prefix):
-        c = connection.cursor()
+        """
+        Rebase prefix to a new location
+        :param vrf:
+        :param new_prefix:
+        :return:
+        """
         b = IP.prefix(self.prefix)
         nb = IP.prefix(new_prefix)
-        # Rebase nested prefixes
-        r = []  # (prefix, new_prefix)
-        for p in Prefix.objects.raw("""
-            SELECT *
-            FROM   ip_prefix
-            WHERE
-                    vrf_id=%s
-                AND prefix<<=%s
-        """, [self.vrf.id, self.prefix]):
-            pp = IP.prefix(p.prefix)
-            r += [(p.prefix, pp.rebase(b, nb).prefix)]
-        for op, np in r:
-            c.execute("""
-                UPDATE ip_prefix
-                SET prefix=%s, vrf_id=%s
-                WHERE prefix=%s AND vrf_id=%s""",
-                [np, vrf.id, op, self.vrf.id]
-            )
-            # Rebase addresses
-        r = []
-        for a in Address.objects.raw("""
-            SELECT  *
-            FROM    ip_address
-            WHERE
-                    vrf_id=%s
-                AND address<<=%s
-        """, [self.vrf.id, self.prefix]):
-            r += [(a.address, IP.prefix(a.address).rebase(b, nb).address)]
-        for oa, na in r:
-            c.execute(
-                "UPDATE ip_address SET address=%s, vrf_id=%s WHERE address=%s AND vrf_id=%s",
-                [na, vrf.id, oa, self.vrf.id])
+        # Rebase prefix and all nested prefixes
+        # Parents are left untouched
+        for p in Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["prefix <<= %s"], params=[self.prefix]):
+            np = IP.prefix(p.prefix).rebase(b, nb).prefix
+            # Prefix.objects.filter(pk=p.pk).update(prefix=np, vrf=vrf)
+            p.prefix = np
+            p.vrf = vrf
+            p.save()  # Raise events
+        # Rebase addresses
+        # Parents are left untouched
+        for a in Address.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["address <<= %s"], params=[self.prefix]):
+            na = IP.prefix(a.address).rebase(b, nb).address
+            # Address.objects.filter(pk=a.pk).update(address=na, vrf=vrf)
+            a.address = na
+            a.vrf = vrf
+            a.save()  # Raise events
         # Rebase permissions
         # move all permissions to the nested blocks
-        r = set([a.prefix for a in PrefixAccess.objects.raw("""
-            SELECT  *
-            FROM    ip_prefixaccess
-            WHERE
-                    vrf_id=%s
-                AND prefix<<=%s
-            """, [self.vrf.id, self.prefix])])
-        for p in r:
-            np = IP.prefix(p).rebase(b, nb).prefix
-            c.execute(
-                "UPDATE ip_prefixaccess SET prefix=%s, vrf_id=%s WHERE prefix=%s AND vrf_id=%s",
-                [np, vrf.id, p, self.vrf.id])
-            # create permissions for covered blocks
-        for a in PrefixAccess.objects.raw("""
-            SELECT  *
-            FROM    ip_prefixaccess
-            WHERE
-                    vrf_id=%s
-                AND prefix >> %s
-            """, [self.vrf.id, self.prefix]):
-            PrefixAccess(user=a.user, vrf=vrf, afi=a.afi, prefix=new_prefix,
-                         can_view=a.can_view, can_change=a.can_change).save()
-            # Return rebased prefix
-        return Prefix.objects.get(vrf=vrf, prefix=new_prefix)
+        for pa in PrefixAccess.objects.filter(vrf=self.vrf).extra(
+            where=["prefix <<= %s"], params=[self.prefix]):
+            np = IP.prefix(pa.prefix).rebase(b, nb).prefix
+            PrefixAccess.objects.filter(pk=pa.pk).update(
+                prefix=np, vrf=vrf)
+        # create permissions for covered blocks
+        for pa in PrefixAccess.objects.filter(vrf=self.vrf).extra(
+            where=["prefix >> %s"], params=[self.prefix]):
+            PrefixAccess(user=pa.user, vrf=vrf, afi=pa.afi,
+                prefix=new_prefix,  can_view=pa.can_view,
+                can_change=pa.can_change).save()
+        # @todo: Rebase bookmarks
+        # Return rebased prefix
+        return Prefix.objects.get(pk=self.pk)  # Updated object
+
+    @property
+    def nested_prefix_set(self):
+        """
+        Queryset returning all nested prefixes inside the prefix
+        """
+        return Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+            where=["prefix <<= %s"], params=[self.prefix])
 
     @property
     def nested_address_set(self):
