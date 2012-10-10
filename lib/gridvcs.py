@@ -38,11 +38,11 @@ class GridVCS(object):
         :param dst: Destination string
         :return: (<type>, delta)
         """
-        delta = bdiff(src, dst)
+        delta = textdiff(src, dst)
         if len(delta) >= len(dst):
             return self.T_FILE, dst
         else:
-            return self.T_BDIFF, textdiff(src, dst)
+            return self.T_BDIFF, delta
 
     def apply_delta(self, type, src, delta):
         """
