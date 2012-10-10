@@ -16,8 +16,8 @@ class ActivatorSocket(RPCSocket, ConnectedTCPSocket):
     Activator -> SAE connection
     """
     def __init__(self, factory, address, port, local_address=None):
-        ConnectedTCPSocket.__init__(self, factory, address, port, local_address)
         RPCSocket.__init__(self, factory.controller.service)
+        ConnectedTCPSocket.__init__(self, factory, address, port, local_address)
 
     def activator_event(self, event):
         self.factory.controller.event(event)
