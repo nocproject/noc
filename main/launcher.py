@@ -145,7 +145,7 @@ class Launcher(Daemon):
         self.crashinfo_dir = None
         for n in ["stomp", "scheduler", "web", "sae", "activator",
                   "classifier", "correlator", "notifier", "probe",
-                  "discovery"]:
+                  "discovery", "sync"]:
             dn = "noc-%s" % n
             # Check daemon is enabled
             if not self.config.getboolean(dn, "enabled"):
