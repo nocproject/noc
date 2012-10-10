@@ -51,6 +51,7 @@ class ZoneFile(object):
         lnsuffix = len(nsuffix)
         # SOA
         z = [HEADER, """$ORIGIN %(domain)s.
+$TTL %(ttl)d
 @ IN SOA %(primary)s %(contact)s (
     %(serial)d ; serial
     %(refresh)d       ; refresh (%(pretty_refresh)s)
@@ -103,7 +104,6 @@ class ZoneFile(object):
            z += [mask % tuple(r) for r in nses]
         # Add RRs
         if rr:
-            z += ["$TTL %d" % ttl]
             # Format according to mask
             z += [mask % tuple(r) for r in rr]
         z += [FOOTER]
