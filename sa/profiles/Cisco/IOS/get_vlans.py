@@ -21,7 +21,9 @@ class Script(NOCScript):
     ##
     ## Extract vlan information
     ##
-    rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>.+?)\s+(?:active|act/lshut)", re.MULTILINE)
+    rx_vlan_line = re.compile(
+        r"^(?P<vlan_id>\d{1,4})\s+(?P<name>.+?)\s+(?:active|act/lshut)",
+        re.MULTILINE)
 
     def extract_vlans(self, data):
         return [
@@ -35,22 +37,30 @@ class Script(NOCScript):
     ##
     ## Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
     ##
-    rx_vlan_ubr = re.compile(r"^(\S+\s+){4}(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)", re.MULTILINE)
+    rx_vlan_ubr = re.compile(
+        r"^(\S+\s+){4}(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)", re.MULTILINE)
 
     @NOCScript.match(version__contains="BC")
     def execute_ubr(self):
         vlans = self.cli("show running-config | include cable dot1q-vc-map")
         r = []
         for match in self.rx_vlan_ubr.finditer(vlans):
-            r += [{"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}]
+            r += [{
+                "vlan_id": int(match.group("vlan_id")),
+                 "name": match.group("name")
+            }]
         return r
 
     ##
-    ## 18xx/28xx/37xx/38xx/72xx with EtherSwitch module; C8xx, C29xx, C39xx series
+    ## 18xx/28xx/37xx/38xx/72xx with EtherSwitch module;
+    ## C181X, C26xx, C29xx, C39xx C8xx, series
     ##
-    rx_vlan_dot1q = re.compile(r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):", re.MULTILINE)
+    rx_vlan_dot1q = re.compile(
+        r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):",
+        re.MULTILINE)
 
-    @NOCScript.match(platform__regex=r"^([123][78]\d\d|72\d\d|C[23][9]00|C8[75]0|C181X|ASR\d+)")
+    @NOCScript.match(platform__regex = 
+        r"^([123][78]\d\d|72\d\d|C[23][69]00|C8[75]0|C181X|ASR\d+)")
     def execute_vlan_switch(self):
         try:
             vlans = self.cli("show vlan-switch")
