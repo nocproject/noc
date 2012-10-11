@@ -15,11 +15,15 @@ import re
 class Script(NOCScript):
     name = "DLink.DxS_Cisco_CLI.get_switchport"
     implements = [IGetSwitchport]
-    rx_line = re.compile(r"^(?P<interface>\S*\s*\d+(\/\d+)?)\s+(?P<status>\S+)\s+(?P<mode>ACCESS|TRUNK)\s+\d+\s+(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\S+)", re.MULTILINE)
+    rx_line = re.compile(
+        r"^(?P<interface>\S*\s*\d+(\/\d+)?)\s+(?P<status>\S+)\s+"
+        r"(?P<mode>ACCESS|TRUNK)\s+\d+\s+(?P<untagged>\d+)\s+\S+\s+"
+        r"(?P<vlans>\S+)", re.MULTILINE)
 
     def execute(self):
         r = []
-        for match in self.rx_line.finditer(self.cli("show interfaces switchport")):
+        c = self.cli("show interfaces switchport")
+        for match in self.rx_line.finditer(c):
             trunk = match.group("mode") == "TRUNK"
             if trunk:
                 vlans = match.group("vlans")
@@ -44,6 +48,6 @@ class Script(NOCScript):
                 "802.1ad Tunnel": False,
                 "untagged": int(match.group("untagged")),
                 "tagged": tagged,
-                "members": members,
+                "members": members
                 }]
         return r
