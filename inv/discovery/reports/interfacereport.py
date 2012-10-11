@@ -23,10 +23,10 @@ class InterfaceReport(Report):
         super(InterfaceReport, self).__init__(
             job, enabled=enabled, to_save=to_save)
         self.prefix_report = PrefixReport(job,
-            enabled=job.prefix_discovery_enable,
+            enabled=job.prefix_discovery_enable and job.object.object_profile.enable_prefix_discovery,
             to_save=job.prefix_discovery_save)
         self.ip_report = IPReport(job,
-            enabled=job.ip_discovery_enable,
+            enabled=job.ip_discovery_enable and job.object.object_profile.enable_ip_discovery,
             to_save=job.ip_discovery_save
         )
 

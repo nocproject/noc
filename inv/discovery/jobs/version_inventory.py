@@ -39,3 +39,12 @@ class VersionInventoryJob(MODiscoveryJob):
         self.report.submit(r)
         self.report.send()
         return True
+
+
+    @classmethod
+    def can_submit(cls, object):
+        return object.object_profile.enable_version_inventory
+
+    def can_run(self):
+        return (super(VersionInventoryJob, self).can_run()
+                and self.object.object_profile.enable_version_inventory)

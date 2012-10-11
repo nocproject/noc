@@ -47,3 +47,11 @@ class IPDiscoveryJob(MODiscoveryJob):
                     mac=a["mac"])
         self.report.send()
         return True
+
+    @classmethod
+    def can_submit(cls, object):
+        return object.object_profile.enable_ip_discovery
+
+    def can_run(self):
+        return (super(IPDiscoveryJob, self).can_run()
+                and self.object.object_profile.enable_ip_discovery)
