@@ -9,6 +9,7 @@
 ## NOC modules
 from scheduler import DiscoveryScheduler
 from noc.lib.daemon import Daemon
+from jobs.performance_report import PerformanceReportJob
 
 
 class DiscoveryDaemon(Daemon):
@@ -19,6 +20,11 @@ class DiscoveryDaemon(Daemon):
         self.scheduler = DiscoveryScheduler(self)
 
     def run(self):
+        try:
+            PerformanceReportJob.submit(self.scheduler,
+                key="performance_report", interval=60)
+        except self.scheduler.JobExists:
+            pass
         self.scheduler.run()
 
 #    def report_address_collisions(self):
