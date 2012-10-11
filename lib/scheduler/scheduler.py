@@ -196,6 +196,7 @@ class Scheduler(object):
                 return
         # Check job can be run
         if not job.can_run():
+            self._complete_job(job, job.S_DEFERRED, None)
             return
         # Change status
         s = "threaded " if job.threaded else ""
