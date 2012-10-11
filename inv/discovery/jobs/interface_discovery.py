@@ -183,3 +183,11 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                         iface.name, p_name))
                 iface.profile = p
                 iface.save()
+
+    @classmethod
+    def can_submit(cls, object):
+        return object.object_profile.enable_interface_discovery
+
+    def can_run(self):
+        return (super(InterfaceDiscoveryJob, self).can_run()
+                and self.object.object_profile.enable_interface_discovery)

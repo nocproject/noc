@@ -59,6 +59,8 @@ class MACDiscoveryJob(MODiscoveryJob):
     def can_run(self):
         if not super(MACDiscoveryJob, self).can_run():
             return False
+        if not self.object.object_profile.enable_mac_discovery:
+            return False
         # Check object has bridge interfaces
         # with enabled MAC discovery
         for si in SubInterface.objects.filter(
