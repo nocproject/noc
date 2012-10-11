@@ -52,6 +52,7 @@ class Script(NOCScript):
            "As": "physical",    # Async
            "AT": "physical",    # ATM
            "At": "physical",    # ATM
+           "Br": "physical",  # ISDN Basic Rate Interface
            "BV": "aggregated",  # BVI
            "Bu": "aggregated",  # Bundle
            "C": "physical",     # @todo: fix
@@ -236,7 +237,7 @@ class Script(NOCScript):
         for match in self.rx_sh_int.finditer(v):
             full_ifname = match.group("interface")
             ifname = self.profile.convert_interface_name(full_ifname)
-            if ifname[:2] in ["Vi", "Tu", "Di", "GM"]:
+            if ifname[:2] in ["Vi", "Tu", "Di", "GM", "CP"]:
                 continue
             # NOC-378 - Dirty hack for interface like ATM0/IMA0
             if "/ima" in full_ifname.lower():
