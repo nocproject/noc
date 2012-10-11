@@ -9,6 +9,8 @@
 ## Python modules
 import datetime
 import random
+## Django modules
+from django.db.models import Q
 ## NOC modules
 from noc.lib.scheduler.intervaljob import IntervalJob
 from noc.sa.models.managedobject import ManagedObject
@@ -19,8 +21,6 @@ class MODiscoveryJob(IntervalJob):
     ignored = True
     initial_submit_interval = None
     initial_submit_concurrency = None
-    success_retry = None
-    failed_retry = None
 
     def get_display_key(self):
         if self.object:
@@ -45,20 +45,33 @@ class MODiscoveryJob(IntervalJob):
                     for s in script_registry.classes
                     if s.endswith(".%s" % cls.map_task)]
         isc = cls.initial_submit_concurrency
+        qs = cls.initial_submit_queryset()
+        if type(qs) == dict:
+            qs = Q(**qs)
         for mo in ManagedObject.objects.filter(
-            is_managed=True, profile_name__in=profiles).exclude(
+            is_managed=True, profile_name__in=profiles).filter(qs).exclude(
             id__in=keys).only("id"):
             if cls.can_submit(mo):
+                s_interval = cls.get_submit_interval(mo)
                 cls.submit(
                     scheduler=scheduler, key=mo.id,
-                    interval=cls.success_retry,
-                    failed_interval=cls.failed_retry,
+                    interval=s_interval,
+                    failed_interval=s_interval,
                     randomize=True,
                     ts=now + datetime.timedelta(
-                        seconds=random.random() * cls.initial_submit_interval))
+                        seconds=random.random() * s_interval))
                 isc -= 1
                 if not isc:
                     break
+
+    @classmethod
+    def initial_submit_queryset(cls):
+        """
+        Return dict or Q object to restrict intial submit queryset
+        :param cls:
+        :return:
+        """
+        return Q()
 
     def get_defererence_query(self):
         """
@@ -69,3 +82,10 @@ class MODiscoveryJob(IntervalJob):
 
     def can_run(self):
         return not self.map_task or self.object.is_managed
+
+    @classmethod
+    def get_submit_interval(cls, object):
+        raise NotImplementedError
+
+    def get_interval(self):
+        return self.get_submit_interval(self.object)

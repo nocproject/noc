@@ -22,8 +22,6 @@ class IPDiscoveryJob(MODiscoveryJob):
         "initial_submit_interval")
     initial_submit_concurrency = config.getint("ip_discovery",
         "initial_submit_concurrency")
-    success_retry = config.getint("ip_discovery", "success_retry")
-    failed_retry = config.getint("ip_discovery", "failed_retry")
     to_save = config.getboolean("ip_discovery", "save")
 
     def handler(self, object, result):
@@ -49,9 +47,16 @@ class IPDiscoveryJob(MODiscoveryJob):
         return True
 
     @classmethod
-    def can_submit(cls, object):
-        return object.object_profile.enable_ip_discovery
+    def initial_submit_queryset(cls):
+        return {"object_profile__enable_ip_discovery": True}
 
     def can_run(self):
         return (super(IPDiscoveryJob, self).can_run()
                 and self.object.object_profile.enable_ip_discovery)
+
+    @classmethod
+    def get_submit_interval(cls, object):
+        return object.object_profile.ip_discovery_max_interval
+
+    def get_failed_interval(self):
+        return self.object.object_profile.ip_discovery_min_interval
