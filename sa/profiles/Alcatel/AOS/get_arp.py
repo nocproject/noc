@@ -12,7 +12,8 @@ from noc.sa.interfaces import IGetARP
 import re
 
 rx_line = re.compile(
-    r"^\s*(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\S+\s+(?:P|A|V){,3}\s+(?P<interface>\d\S+)", re.MULTILINE)
+    r"^\s*(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\S+\s+(?:P|A|V){,3}\s+"
+    r"(?P<interface>\d\S+)", re.MULTILINE)
 
 
 class Script(NOCScript):

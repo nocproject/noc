@@ -12,7 +12,8 @@ from noc.sa.interfaces import IGetVlans
 import re
 
 rx_vlan_line = re.compile(
-    r"^\s*(?P<vlan_id>\d{1,4})(\s+\S+){9}\s+o(?:n|ff)\s+(?P<name>(\S+\s*)+?)\s*$")
+    r"^\s*(?P<vlan_id>\d{1,4})(\s+\S+){9}\s+o(?:n|ff)\s+(?P<name>(\S+\s*)+?)"
+    r"\s*$")
 rx_vlan1_line = re.compile(
     r"^\s*(?P<vlan_id>\d{1,4})(\s+\S+){9}\s+(?P<name>(\S+\s*)+?)\s*$")
 

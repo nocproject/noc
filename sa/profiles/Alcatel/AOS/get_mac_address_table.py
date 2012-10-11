@@ -12,7 +12,8 @@ from noc.sa.interfaces import IGetMACAddressTable
 import re
 
 rx_line = re.compile(
-    r"^\s*VLAN\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+\S+\s+\S+\s+(?P<interfaces>\S+)", re.MULTILINE)
+    r"^\s*VLAN\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)"
+    r"\s+\S+\s+\S+\s+(?P<interfaces>\S+)", re.MULTILINE)
 
 
 class Script(NOCScript):
