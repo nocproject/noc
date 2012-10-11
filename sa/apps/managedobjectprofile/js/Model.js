@@ -1,0 +1,145 @@
+//---------------------------------------------------------------------
+// sa.managedobjectprofile Model
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2012 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+console.debug("Defining NOC.sa.managedobjectprofile.Model");
+
+Ext.define("NOC.sa.managedobjectprofile.Model", {
+    extend: "Ext.data.Model",
+    rest_url: "/sa/managedobjectprofile/",
+
+    fields: [
+        {
+            name: "id",
+            type: "int"
+        },
+        {
+            name: "name",
+            type: "string"
+        },
+        {
+            name: "description",
+            type: "string"
+        },
+        {
+            name: "style",
+            type: "int"
+        },
+        {
+            name: "style__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "name_template",
+            type: "string"
+        },
+        {
+            name: "enable_ping",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "down_severity",
+            type: "int",
+            defaultValue: 4000
+        },
+        {
+            name: "enable_config_polling",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "config_polling_min_interval",
+            type: "int",
+            defaultValue: 0
+        },
+        {
+            name: "config_polling_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "enable_version_inventory",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "version_inventory_min_interval",
+            type: "int",
+            defaultValue: 0
+        },
+        {
+            name: "version_inventory_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "enable_interface_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "interface_discovery_min_interval",
+            type: "int",
+            defaultValue: 0
+        },
+        {
+            name: "interface_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "enable_ip_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "ip_discovery_min_interval",
+            type: "int",
+            defaultValue: 0
+        },
+        {
+            name: "ip_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "enable_prefix_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "prefix_discovery_min_interval",
+            type: "int",
+            defaultValue: 0
+        },
+        {
+            name: "prefix_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "enable_mac_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "mac_discovery_min_interval",
+            type: "int",
+            defaultValue: 0
+        },
+        {
+            name: "mac_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
+        }
+    ]
+});

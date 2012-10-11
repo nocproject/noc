@@ -21,6 +21,7 @@ script_registry.register_all()
 ## Import models
 from administrativedomain import AdministrativeDomain
 from activator import Activator
+from managedobjectprofile import ManagedObjectProfile
 from managedobject import ManagedObject, ManagedObjectAttribute
 from managedobjectselector import (ManagedObjectSelector,
                                    ManagedObjectSelectorByAttribute)

@@ -16,9 +16,9 @@ from django.db import IntegrityError
 from django.contrib.auth.models import User, Group
 ## NOC modules
 from administrativedomain import AdministrativeDomain
+from managedobjectprofile import ManagedObjectProfile
 from activator import Activator
 from noc.main.models import PyRule
-# from noc.ip.models.vrf import VRF
 from noc.sa.profiles import profile_registry
 from noc.lib.search import SearchResult
 from noc.lib.fields import INETField, AutoCompleteTagsField
@@ -47,8 +47,10 @@ class ManagedObject(models.Model):
     activator = models.ForeignKey(Activator,
             verbose_name=_("Activator"),
             limit_choices_to={"is_active": True})
-    profile_name = models.CharField(_("Profile"),
+    profile_name = models.CharField(_("SA Profile"),
             max_length=128, choices=profile_registry.choices)
+    object_profile = models.ForeignKey(ManagedObjectProfile,
+        verbose_name=_("Object Profile"))
     description = models.CharField(_("Description"),
             max_length=256, null=True, blank=True)
     # Access

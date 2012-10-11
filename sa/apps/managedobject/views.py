@@ -194,7 +194,8 @@ class ManagedObjectAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             "fields": ("name", "is_managed", "administrative_domain",
-                       "activator", "profile_name", "description")
+                       "activator", "profile_name", "object_profile",
+                       "description")
         }),
         ("Access", {
             "fields": ("scheme", "address", "port", "remote_path", "vrf")
@@ -223,12 +224,14 @@ class ManagedObjectAdmin(admin.ModelAdmin):
                 CustomField.table_fields("sa_managedobject"))
         })
     )
-    list_display = ["name", object_status, alarms, profile, "vrf", "address",
+    list_display = ["name", object_status, alarms, profile,
+                    "object_profile", "vrf", "address",
                     domain_activator,
                     "description", "repo_path", action_links]
     list_filter = ["is_managed", "is_configuration_managed",
                    "activator__shard", "activator",
-                   "administrative_domain", "vrf", "profile_name"]
+                   "administrative_domain", "vrf", "profile_name",
+                   "object_profile"]
     search_fields = ["name", "address", "repo_path", "description"]
     object_class = ManagedObject
     actions = ["test_access", "bulk_change_activator",
