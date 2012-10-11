@@ -6,18 +6,35 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
                 "description": "interface",
                 "type": "interface_name",
                 "required": true
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "UDLD Protocol Error Detected on {{interface}}",
-                "body_template": "UDLD Protocol Error Detected on {{interface}}",
+                "subject_template": "UDLD Protocol Error Detected on {{interface}}{% if description %} ({{description}}){% endif %}",
+                "body_template": "UDLD Protocol Error Detected on {{interface}}{% if description %} ({{description}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 

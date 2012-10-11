@@ -6,6 +6,16 @@
         "discriminator": ["interface", "neighbor"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -24,12 +34,19 @@
                 "description": "VRF",
                 "type": "str",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "PIM neighbor {{neighbor}} down on {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
-                "body_template": "PIM neighbor {{neighbor}} down on {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "subject_template": "PIM neighbor {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+                "body_template": "PIM neighbor {{neighbor}} down on {{interface}}{% if description %} ({{description}}){% endif %}.{% if vrf %} VRF {{vrf}}.{% endif %}",
                 "symptoms": "Multicast flows lost",
                 "probable_causes": "Link failure or protocol misconfiguration",
                 "recommended_actions": "Check links and local and neighbor router configuration" 

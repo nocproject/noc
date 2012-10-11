@@ -6,6 +6,16 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -18,12 +28,19 @@
                 "description": "MAC Address",
                 "type": "mac",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Port Security Violation on port {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
-                "body_template": "Port Security Violation on port {{interface}}{% if mac %}, MAC {{mac}} {% endif %}",
+                "subject_template": "Port Security Violation on port {{interface}}{% if description %} ({{description}}){% endif %}{% if mac %}, MAC {{mac}}{% endif %}",
+                "body_template": "Port Security Violation on port {{interface}}{% if description %} ({{description}}){% endif %}{% if mac %}, MAC {{mac}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
