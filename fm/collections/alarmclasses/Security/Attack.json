@@ -6,6 +6,16 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -18,19 +28,26 @@
                 "description": "Source IP",
                 "type": "ip_address",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Blat Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-                "body_template": "Blat Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+                "subject_template": "Blat Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+                "body_template": "Blat Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
             }
         }
     },
-    
+
     {
         "name": "Security | Attack | Land Attack",
         "description": "Land Attack Detected",
@@ -38,6 +55,16 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -50,19 +77,26 @@
                 "description": "Source IP",
                 "type": "ip_address",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Land Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-                "body_template": "Land Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+                "subject_template": "Land Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+                "body_template": "Land Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
             }
         }
     },
-    
+
     {
         "name": "Security | Attack | Smurf Attack",
         "description": "Smurf Attack Detected",
@@ -70,6 +104,16 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -82,19 +126,26 @@
                 "description": "Source IP",
                 "type": "ip_address",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Smurf Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-                "body_template": "Smurf Attack detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+                "subject_template": "Smurf Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+                "body_template": "Smurf Attack detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
             }
         }
     },
-    
+
     {
         "name": "Security | Attack | TCP SYNFIN Scan",
         "description": "TCP SYNFIN Scan",
@@ -102,6 +153,16 @@
         "discriminator": ["interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -114,19 +175,26 @@
                 "description": "Source IP",
                 "type": "ip_address",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "TCP SYNFIN Scan detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
-                "body_template": "TCP SYNFIN Scan detected on {{interface}}{% if src_ip %}: {{src_ip}}{% endif %}",
+                "subject_template": "TCP SYNFIN Scan detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
+                "body_template": "TCP SYNFIN Scan detected on {{interface}}{% if description %} ({{description}}){% endif %}{% if src_ip %}: {{src_ip}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
             }
         }
     },
-    
+
     {
         "name": "Security | Attack | IP Spoofing",
         "description": "IP Spoofing detected",
@@ -134,6 +202,16 @@
         "discriminator": ["src_ip", "interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -152,12 +230,19 @@
                 "description": "Source MAC",
                 "type": "mac",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "IP Spoofing detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
-                "body_template": "IP Spoofing detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "subject_template": "IP Spoofing detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "body_template": "IP Spoofing detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
@@ -172,6 +257,16 @@
         "discriminator": ["src_ip", "interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -190,12 +285,19 @@
                 "description": "Source MAC",
                 "type": "mac",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
-                "body_template": "Ping Of Death detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "subject_template": "Ping Of Death detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "body_template": "Ping Of Death detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
@@ -210,6 +312,16 @@
         "discriminator": ["src_ip", "interface"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "interface",
@@ -228,12 +340,19 @@
                 "description": "Source MAC",
                 "type": "mac",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Teardrop attack detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
-                "body_template": "Teardrop attack detected on {{interface}}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "subject_template": "Teardrop attack detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
+                "body_template": "Teardrop attack detected on {{interface}}{% if description %} ({{description}}){% endif %}, IP:{{src_ip}}{% if src_mac %}, MAC:{{src_mac}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": "" 
