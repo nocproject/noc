@@ -15,7 +15,10 @@ import re
 class Script(NOCScript):
     name = "DLink.DxS_Cisco_CLI.get_interface_status"
     implements = [IGetInterfaceStatus]
-    rx_line = re.compile(r"^(?P<interface>\S+\s*\d+(\/\d+)?)\s+(?P<status>up|down)\s+\d+\s+(Unknown|Half|Full)\s+\S+\s+(copper|fiber)\s*$", re.IGNORECASE | re.MULTILINE)
+    rx_line = re.compile(
+        r"^(?P<interface>\S+\s*\d+(\/\d+)?)\s+(?P<status>up|down)\s+\d+\s+"
+        r"(Unknown|Half|Full)\s+\S+\s+(copper|fiber)\s*$",
+        re.IGNORECASE | re.MULTILINE)
 
     def execute(self, interface=None):
         # Not tested. Must be identical in different vendors

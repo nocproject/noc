@@ -15,7 +15,9 @@ import re
 class Script(NOCScript):
     name = "DLink.DxS_Cisco_CLI.get_local_users"
     implements = [IGetLocalUsers]
-    rx_line = re.compile(r"^username (?P<username>\S+) password( \d)? \S+\nusername \S+ privilege (?P<privilege>\d+)$", re.MULTILINE)
+    rx_line = re.compile(
+        r"^username (?P<username>\S+) password( \d)? \S+\nusername \S+ "
+        r"privilege (?P<privilege>\d+)$", re.MULTILINE)
 
     def execute(self):
         r = []

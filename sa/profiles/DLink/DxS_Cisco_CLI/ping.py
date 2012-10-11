@@ -15,9 +15,13 @@ import re
 class Script(NOCScript):
     name = "DLink.DxS_Cisco_CLI.ping"
     implements = [IPing]
-    rx_result = re.compile(r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms)?", re.MULTILINE | re.DOTALL)
+    rx_result = re.compile(
+        r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)"
+        r"(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)"
+        r" ms)?", re.MULTILINE | re.DOTALL)
 
-    def execute(self, address, count=None, source_address=None, size=None, df=None):
+    def execute(self, address, count=None, source_address=None, size=None, \
+        df=None):
         if ":" in address:
             cmd = "ping ipv6 %s" % address
             if count:

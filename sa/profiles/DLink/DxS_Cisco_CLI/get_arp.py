@@ -15,7 +15,9 @@ import re
 class Script(NOCScript):
     name = "DLink.DxS_Cisco_CLI.get_arp"
     implements = [IGetARP]
-    rx_line = re.compile(r"^Internet\s+(?P<ip>\S+)\s+(\d+|\-\-)\s+(?P<mac>\S+)\s+arpa\s+(?P<interface>.+)\s*$", re.MULTILINE)
+    rx_line = re.compile(
+        r"^Internet\s+(?P<ip>\S+)\s+(\d+|\-\-)\s+(?P<mac>\S+)\s+arpa\s+"
+        r"(?P<interface>.+)\s*$", re.MULTILINE)
 
     def execute(self):
         s = self.cli("show arp")
@@ -24,6 +26,6 @@ class Script(NOCScript):
             r += [{
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
-                "interface": match.group("interface").strip(),
+                "interface": match.group("interface").strip()
                 }]
         return r
