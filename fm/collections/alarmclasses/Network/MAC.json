@@ -111,6 +111,24 @@
         "discriminator": ["mac"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "oneInterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "one_interface"
+                }
+            },
+            {
+                "name": "twoInterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "two_interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "mac",
@@ -129,12 +147,26 @@
                 "description": "Second interface",
                 "type": "interface_name",
                 "required": true
+            },
+            {
+                "name": "one_description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=oneInterfaceDS.description"
+            },
+            {
+                "name": "two_description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=twoInterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
-                "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}} and {{two_interface}}",
+                "subject_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
+                "body_template": "Duplicate MAC {{mac}} detected on interfaces {{one_interface}}{% if one_description %} ({{one_description}}){% endif %} and {{two_interface}}{% if two_description %} ({{two_description}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -149,6 +181,16 @@
         "discriminator": ["mac"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "InterfaceDS",
+                "datasource": "inv.InterfaceDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "interface": "interface"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "mac",
@@ -167,12 +209,19 @@
                 "description": "Affected vlan",
                 "type": "int",
                 "required": false
+            },
+            {
+                "name": "description",
+                "description": "Interface description",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.description"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
-                "body_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "subject_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if description %} ({{description}}){% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
+                "body_template": "Invalid MAC {{mac}} detected on interfaces {{interface}}{% if description %} ({{description}}){% endif %}{% if vlan %}, vlan {{vlan}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -187,6 +236,16 @@
         "discriminator": ["mac"],
         "user_clearable": true,
         "default_severity__name": "WARNING",
+        "datasources": [
+            {
+                "name": "VCDS",
+                "datasource": "vc.VCDS",
+                "search": {
+                    "managed_object": "managed_object",
+                    "l1": "vlan"
+                }
+            }
+        ],
         "vars": [
             {
                 "name": "mac",
@@ -205,12 +264,33 @@
                 "description": "Interface",
                 "type": "interface_name",
                 "required": false
+            },
+            {
+                "name": "vlan_name",
+                "description": "Vlan name",
+                "type": "str",
+                "required": false,
+                "default": "=VCDS.name"
+            },
+            {
+                "name": "vlan_description",
+                "description": "Vlan description",
+                "type": "str",
+                "required": false,
+                "default": "=VCDS.description"
+            },
+            {
+                "name": "vlan_vc_domain",
+                "description": "VC domain",
+                "type": "str",
+                "required": false,
+                "default": "=VCDS.vc_domain"
             }
         ],
         "text": {
             "en": {
-                "subject_template": "The flooding MAC is detected on vlan {{vlan}}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
-                "body_template": "The flooding MAC is detected on vlan {{vlan}}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+                "subject_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
+                "body_template": "The flooding MAC is detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}, MAC {{mac}}{% if interface %}, interface {{interface}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
