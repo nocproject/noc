@@ -69,14 +69,22 @@ class IntervalJob(Job):
             ts += offset * interval
         return datetime.datetime.fromtimestamp(ts)
 
+    def get_interval(self):
+        return self.schedule["interval"]
+
+    def get_failed_interval(self):
+        return self.schedule.get("failed_interval",
+            self.get_interval())
+
     def get_schedule(self, status):
         if status == self.S_SUCCESS:
-            offset = self.schedule["offset"]
-            return self.get_next_aligned(
-                self.schedule["interval"], next=True, offset=offset)
+            i = self.get_interval()
+            offset = self.schedule["offset"] % i
+            return self.get_next_aligned(i, next=True, offset=offset)
+        elif status == self.S_DEFERRED:
+            return None  # Left until next initial submit
         else:
-            fi = self.schedule.get("failed_interval",
-                self.schedule.get("interval"))
+            fi = self.get_failed_interval()
             if self.schedule.get("randomize"):
                 fi *= (0.5 + random.random())
             return (datetime.datetime.now() +
