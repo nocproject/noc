@@ -24,8 +24,6 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
         "initial_submit_interval")
     initial_submit_concurrency = config.getint("interface_discovery",
         "initial_submit_concurrency")
-    success_retry = config.getint("interface_discovery", "success_retry")
-    failed_retry = config.getint("interface_discovery", "failed_retry")
     to_save = config.getboolean("interface_discovery", "save")  # @todo: Ignored
     # Related reports
     ip_discovery_enable = config.getboolean("ip_discovery", "enabled")
@@ -185,9 +183,16 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                 iface.save()
 
     @classmethod
-    def can_submit(cls, object):
-        return object.object_profile.enable_interface_discovery
+    def initial_submit_queryset(cls):
+        return {"object_profile__enable_interface_discovery": True}
 
     def can_run(self):
         return (super(InterfaceDiscoveryJob, self).can_run()
                 and self.object.object_profile.enable_interface_discovery)
+
+    @classmethod
+    def get_submit_interval(cls, object):
+        return object.object_profile.interface_discovery_max_interval
+
+    def get_failed_interval(self):
+        return self.object.object_profile.interface_discovery_min_interval

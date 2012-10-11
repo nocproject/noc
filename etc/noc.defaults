@@ -356,10 +356,6 @@ save = true
 initial_submit_interval = 900
 # Upper limit of new schedule submitted at once
 initial_submit_concurrency = 20
-# Retry interval in case of success
-success_retry = 86400
-# Retry interval in case of failure
-failed_retry = 900
 
 [interface_discovery]
 enabled = true
@@ -394,10 +390,6 @@ save = true
 initial_submit_interval = 900
 # Upper limit of new schedule submitted at once
 initial_submit_concurrency = 20
-# Retry interval in case of success
-success_retry = 86400
-# Retry interval in case of failure
-failed_retry = 900
 # Change address state when found
 # Format: from state -> to state; ...; from state -> to state
 # Example:
@@ -426,7 +418,3 @@ save = true
 initial_submit_interval = 900
 # Upper limit of new schedule submitted at once
 initial_submit_concurrency = 20
-# Retry interval in case of success
-success_retry = 10800
-# Retry interval in case of failure
-failed_retry = 900
