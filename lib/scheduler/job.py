@@ -47,6 +47,7 @@ class Job(object):
     S_SUCCESS = "S"
     S_FAILED = "F"
     S_EXCEPTION = "X"
+    S_DEFERRED = "D"
 
     def __init__(self, scheduler, key=None, data=None, schedule=None):
         self.scheduler = scheduler
