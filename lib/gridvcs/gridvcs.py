@@ -2,13 +2,12 @@
 ##----------------------------------------------------------------------
 ## GridVCS
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 from __future__ import with_statement
-from collections import namedtuple
 import datetime
 import difflib
 ## Third-party modules
@@ -16,10 +15,8 @@ import pymongo
 import gridfs
 from mercurial.mdiff import textdiff, patch
 ## NOC modules
+from revision import Revision
 from noc.lib.nosql import get_db
-
-
-Revision = namedtuple("Revision", ["id", "ts", "ft"])
 
 
 class GridVCS(object):
