@@ -43,7 +43,7 @@ class ManagedObjectProfile(models.Model):
     enable_config_polling  = models.BooleanField(
         _("Enable config polling"), default=True)
     config_polling_min_interval = models.IntegerField(
-        _("Min. config polling interval"), default=0)
+        _("Min. config polling interval"), default=600)
     config_polling_max_interval = models.IntegerField(
         _("Max. config polling interval"), default=86400)
     ## Discovery settings
@@ -51,35 +51,35 @@ class ManagedObjectProfile(models.Model):
     enable_version_inventory = models.BooleanField(
         _("Enable version inventory"), default=True)
     version_inventory_min_interval = models.IntegerField(
-        _("Min. version inventory interval"), default=0)
+        _("Min. version inventory interval"), default=600)
     version_inventory_max_interval = models.IntegerField(
         _("Max. version inventory interval"), default=86400)
     # Interface discovery
     enable_interface_discovery = models.BooleanField(
         _("Enable interface discovery"), default=True)
     interface_discovery_min_interval = models.IntegerField(
-        _("Min. interface discovery interval"), default=0)
+        _("Min. interface discovery interval"), default=600)
     interface_discovery_max_interval = models.IntegerField(
         _("Max. interface discovery interval"), default=86400)
     # IP discovery
     enable_ip_discovery = models.BooleanField(
         _("Enable IP discovery"), default=True)
     ip_discovery_min_interval = models.IntegerField(
-        _("Min. IP discovery interval"), default=0)
+        _("Min. IP discovery interval"), default=600)
     ip_discovery_max_interval = models.IntegerField(
         _("Max. IP discovery interval"), default=86400)
     # Prefix discovery
     enable_prefix_discovery = models.BooleanField(
         _("Enable prefix discovery"), default=True)
     prefix_discovery_min_interval = models.IntegerField(
-        _("Min. prefix discovery interval"), default=0)
+        _("Min. prefix discovery interval"), default=600)
     prefix_discovery_max_interval = models.IntegerField(
         _("Max. prefix discovery interval"), default=86400)
     # MAC discovery
     enable_mac_discovery = models.BooleanField(
             _("Enable MAC discovery"), default=True)
     mac_discovery_min_interval = models.IntegerField(
-        _("Min. MAC discovery interval"), default=0)
+        _("Min. MAC discovery interval"), default=600)
     mac_discovery_max_interval = models.IntegerField(
         _("Max. MAC discovery interval"), default=86400)
     # Topology discovery
