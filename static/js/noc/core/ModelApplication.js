@@ -252,7 +252,13 @@ Ext.define("NOC.core.ModelApplication", {
                         xtype: "hiddenfield",
                         name: "id"
                     }].concat(me.fields).concat(me.noc.cust_form_fields || []),
-                tbar: me.applyPermissions(formToolbar)
+                tbar: me.applyPermissions(formToolbar),
+                listeners: {
+                    beforeadd: function(me, field) {
+                        if(!field.allowBlank)
+                           field.labelClsExtra = "noc-label-required";
+                    }
+                }
             }
         };
 
