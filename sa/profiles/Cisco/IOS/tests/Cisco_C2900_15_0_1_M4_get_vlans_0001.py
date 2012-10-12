@@ -14,8 +14,8 @@ from noc.lib.test import ScriptTestCase
 class Cisco_IOS_get_vlans_Test(ScriptTestCase):
     script = "Cisco.IOS.get_vlans"
     vendor = "Cisco"
-    platform = "<<<INSERT YOUR PLATFORM HERE>>>"
-    version = "<<<INSERT YOUR VERSION HERE>>>"
+    platform = "C2900"
+    version = "15.0(1)M4"
     input = {}
     result = [{'name': 'default', 'vlan_id': 1}]
     motd = ''
