@@ -1,26 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## DNSServer Manager
+## dns.dnsserver application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
-from noc.dns.models import DNSServer
-##
-## DNSServer admin
-##
-class DNSServerAdmin(admin.ModelAdmin):
-    list_display = ["name", "generator_name", "ip", "location",
-                    "sync_channel", "description"]
-    search_fields = ["name", "description", "ip"]
-    list_filter = ["generator_name", "sync_channel"]
 
-##
-## DNSServer application
-##
-class DNSServerApplication(ModelApplication):
-    model = DNSServer
-    model_admin = DNSServerAdmin
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
+from noc.dns.models import DNSServer
+
+
+class DNSServerApplication(ExtModelApplication):
+    """
+    DNSServer application
+    """
+    title = "DNS Server"
     menu = "Setup | DNS Servers"
+    model = DNSServer
