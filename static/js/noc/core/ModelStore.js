@@ -17,11 +17,22 @@ Ext.define("NOC.core.ModelStore", {
 
     constructor: function(config) {
         var me = this,
-            model = Ext.create(config.model);
+            model = Ext.create(config.model),
+            fields = model.fields.items.concat(config.customFields),
+            defaultValues = {};
+
+        for(var i=0; i < fields.length; i++) {
+            var field = fields[i],
+                dv = field.defaultValue;
+            if(dv != undefined) {
+                defaultValues[field.name] = dv;
+            }
+        }
         Ext.apply(config, {
             // model: config.model,
             model: null,
-            fields: model.fields.items.concat(config.customFields),
+            fields: fields,  // Removed by superclass constructor
+            defaultValues: defaultValues,
             implicitModel: true,
             proxy: Ext.create("Ext.data.RestProxy", {
                 url: model.rest_url,

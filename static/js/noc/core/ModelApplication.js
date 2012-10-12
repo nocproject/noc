@@ -355,10 +355,11 @@ Ext.define("NOC.core.ModelApplication", {
     },
     // New record. Hide grid and open form
     onNewRecord: function(defaults) {
-        var me = this;
+        var me = this,
+            defaultValues = me.store.defaultValues;
         me.form.reset();
-        if(defaults) {
-            me.form.setValues(defaults);
+        if(defaultValues) {
+            me.form.setValues(defaultValues);
         }
         me.currentRecord = null;
         me.setFormTitle(me.createTitle);
