@@ -54,7 +54,7 @@ class Script(NOCScript):
             match = self.rx_int.search(s)
             if match:
                 ifname = match.group('interface')
-                if ifname == 'Virtual254':
+                if ifname in ['Virtual254', 'Tunnel0', 'Tunnel1']:
                     continue
                 a_stat = match.group('admin_status').lower() == "up"
                 o_stat = match.group('oper_status').lower() == "up"
