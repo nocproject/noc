@@ -42,6 +42,8 @@ class NOCLDAPBackend(NOCAuthBackend):
                                           "ldap_superuser_group")
         self.superuser_filter = config.get("authentication",
                                            "ldap_superuser_filter")
+        self.start_tls = config.getboolean("authentication",
+            "ldap_start_tls")
 
     def q(self, s):
         """
@@ -107,6 +109,8 @@ class NOCLDAPBackend(NOCAuthBackend):
         try:
             # Prepare LDAP client
             client = ldap.initialize(self.server)
+            if self.start_tls:
+                client.start_tls_s()
             # Bind anonymously or with technical user to resolve username
             self.ldap_bind(client,
                 self.bind_dn if self.bind_dn else None,
@@ -132,6 +136,8 @@ class NOCLDAPBackend(NOCAuthBackend):
             context["dn"] = dn
             # Try to authenticate
             client = ldap.initialize(self.server)
+            if self.start_tls:
+                client.start_tls_s()
             self.ldap_bind(client, dn, password)
             # Check user is in required group
             if self.required_group:
