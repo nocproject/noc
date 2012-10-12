@@ -23,6 +23,13 @@ rm -f $JUNIT_REPORT $COVERAGE_REPORT
 
 ## Run
 echo "Running CI scripts ..."
+
+echo "Checking test database"
+psql -l | grep $TEST_DB
+if [ $? -ne 0 ]; then
+    dropdb $TEST_DB
+fi
+
 echo "Installing .conf files"
 ./scripts/install-conf || error_exit "$LINENO: Failed to install .conf"
 
