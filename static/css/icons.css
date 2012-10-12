@@ -3998,6 +3998,1871 @@
 .icon_zoom_out {
     background-image: url(/static/img/fam/silk/zoom_out.png) !important;
 }
+/* Silk companion set */
+.icon_application_osx_add {
+    background-image: url(/static/img/silk-companion/application_osx_add.png) !important;
+}
+
+.icon_application_osx_cascade {
+    background-image: url(/static/img/silk-companion/application_osx_cascade.png) !important;
+}
+
+.icon_application_osx_delete {
+    background-image: url(/static/img/silk-companion/application_osx_delete.png) !important;
+}
+
+.icon_application_osx_double {
+    background-image: url(/static/img/silk-companion/application_osx_double.png) !important;
+}
+
+.icon_application_osx_error {
+    background-image: url(/static/img/silk-companion/application_osx_error.png) !important;
+}
+
+.icon_application_osx_get {
+    background-image: url(/static/img/silk-companion/application_osx_get.png) !important;
+}
+
+.icon_application_osx_go {
+    background-image: url(/static/img/silk-companion/application_osx_go.png) !important;
+}
+
+.icon_application_osx_home {
+    background-image: url(/static/img/silk-companion/application_osx_home.png) !important;
+}
+
+.icon_application_osx_key {
+    background-image: url(/static/img/silk-companion/application_osx_key.png) !important;
+}
+
+.icon_application_osx_lightning {
+    background-image: url(/static/img/silk-companion/application_osx_lightning.png) !important;
+}
+
+.icon_application_osx_link {
+    background-image: url(/static/img/silk-companion/application_osx_link.png) !important;
+}
+
+.icon_application_osx_split {
+    background-image: url(/static/img/silk-companion/application_osx_split.png) !important;
+}
+
+.icon_application_osx_start {
+    background-image: url(/static/img/silk-companion/application_osx_start.png) !important;
+}
+
+.icon_application_osx_stop {
+    background-image: url(/static/img/silk-companion/application_osx_stop.png) !important;
+}
+
+.icon_application_start {
+    background-image: url(/static/img/silk-companion/application_start.png) !important;
+}
+
+.icon_application_stop {
+    background-image: url(/static/img/silk-companion/application_stop.png) !important;
+}
+
+.icon_arrow_ew {
+    background-image: url(/static/img/silk-companion/arrow_ew.png) !important;
+}
+
+.icon_arrow_in_longer {
+    background-image: url(/static/img/silk-companion/arrow_in_longer.png) !important;
+}
+
+.icon_arrow_ne {
+    background-image: url(/static/img/silk-companion/arrow_ne.png) !important;
+}
+
+.icon_arrow_ns {
+    background-image: url(/static/img/silk-companion/arrow_ns.png) !important;
+}
+
+.icon_arrow_nsew {
+    background-image: url(/static/img/silk-companion/arrow_nsew.png) !important;
+}
+
+.icon_arrow_nw {
+    background-image: url(/static/img/silk-companion/arrow_nw.png) !important;
+}
+
+.icon_arrow_nw_ne_sw_se {
+    background-image: url(/static/img/silk-companion/arrow_nw_ne_sw_se.png) !important;
+}
+
+.icon_arrow_nw_se {
+    background-image: url(/static/img/silk-companion/arrow_nw_se.png) !important;
+}
+
+.icon_arrow_out_longer {
+    background-image: url(/static/img/silk-companion/arrow_out_longer.png) !important;
+}
+
+.icon_arrow_se {
+    background-image: url(/static/img/silk-companion/arrow_se.png) !important;
+}
+
+.icon_arrow_sw {
+    background-image: url(/static/img/silk-companion/arrow_sw.png) !important;
+}
+
+.icon_arrow_sw_ne {
+    background-image: url(/static/img/silk-companion/arrow_sw_ne.png) !important;
+}
+
+.icon_arrow_switch_bluegreen {
+    background-image: url(/static/img/silk-companion/arrow_switch_bluegreen.png) !important;
+}
+
+.icon_asterisk_red {
+    background-image: url(/static/img/silk-companion/asterisk_red.png) !important;
+}
+
+.icon_bell_silver {
+    background-image: url(/static/img/silk-companion/bell_silver.png) !important;
+}
+
+.icon_bell_silver_start {
+    background-image: url(/static/img/silk-companion/bell_silver_start.png) !important;
+}
+
+.icon_bell_silver_stop {
+    background-image: url(/static/img/silk-companion/bell_silver_stop.png) !important;
+}
+
+.icon_bell_start {
+    background-image: url(/static/img/silk-companion/bell_start.png) !important;
+}
+
+.icon_bell_stop {
+    background-image: url(/static/img/silk-companion/bell_stop.png) !important;
+}
+
+.icon_book_addresses_add {
+    background-image: url(/static/img/silk-companion/book_addresses_add.png) !important;
+}
+
+.icon_book_addresses_delete {
+    background-image: url(/static/img/silk-companion/book_addresses_delete.png) !important;
+}
+
+.icon_book_addresses_edit {
+    background-image: url(/static/img/silk-companion/book_addresses_edit.png) !important;
+}
+
+.icon_book_addresses_error {
+    background-image: url(/static/img/silk-companion/book_addresses_error.png) !important;
+}
+
+.icon_book_addresses_key {
+    background-image: url(/static/img/silk-companion/book_addresses_key.png) !important;
+}
+
+.icon_book_key {
+    background-image: url(/static/img/silk-companion/book_key.png) !important;
+}
+
+.icon_book_magnify {
+    background-image: url(/static/img/silk-companion/book_magnify.png) !important;
+}
+
+.icon_book_open_mark {
+    background-image: url(/static/img/silk-companion/book_open_mark.png) !important;
+}
+
+.icon_book_red {
+    background-image: url(/static/img/silk-companion/book_red.png) !important;
+}
+
+.icon_book_tabs {
+    background-image: url(/static/img/silk-companion/book_tabs.png) !important;
+}
+
+.icon_bookmark {
+    background-image: url(/static/img/silk-companion/bookmark.png) !important;
+}
+
+.icon_bookmark_add {
+    background-image: url(/static/img/silk-companion/bookmark_add.png) !important;
+}
+
+.icon_bookmark_delete {
+    background-image: url(/static/img/silk-companion/bookmark_delete.png) !important;
+}
+
+.icon_bookmark_edit {
+    background-image: url(/static/img/silk-companion/bookmark_edit.png) !important;
+}
+
+.icon_bookmark_error {
+    background-image: url(/static/img/silk-companion/bookmark_error.png) !important;
+}
+
+.icon_bookmark_go {
+    background-image: url(/static/img/silk-companion/bookmark_go.png) !important;
+}
+
+.icon_border_all {
+    background-image: url(/static/img/silk-companion/border_all.png) !important;
+}
+
+.icon_border_bottom {
+    background-image: url(/static/img/silk-companion/border_bottom.png) !important;
+}
+
+.icon_border_draw {
+    background-image: url(/static/img/silk-companion/border_draw.png) !important;
+}
+
+.icon_border_inner {
+    background-image: url(/static/img/silk-companion/border_inner.png) !important;
+}
+
+.icon_border_inner_horizontal {
+    background-image: url(/static/img/silk-companion/border_inner_horizontal.png) !important;
+}
+
+.icon_border_inner_vertical {
+    background-image: url(/static/img/silk-companion/border_inner_vertical.png) !important;
+}
+
+.icon_border_left {
+    background-image: url(/static/img/silk-companion/border_left.png) !important;
+}
+
+.icon_border_none {
+    background-image: url(/static/img/silk-companion/border_none.png) !important;
+}
+
+.icon_border_outer {
+    background-image: url(/static/img/silk-companion/border_outer.png) !important;
+}
+
+.icon_border_right {
+    background-image: url(/static/img/silk-companion/border_right.png) !important;
+}
+
+.icon_border_top {
+    background-image: url(/static/img/silk-companion/border_top.png) !important;
+}
+
+.icon_box_error {
+    background-image: url(/static/img/silk-companion/box_error.png) !important;
+}
+
+.icon_box_picture {
+    background-image: url(/static/img/silk-companion/box_picture.png) !important;
+}
+
+.icon_box_world {
+    background-image: url(/static/img/silk-companion/box_world.png) !important;
+}
+
+.icon_brick_magnify {
+    background-image: url(/static/img/silk-companion/brick_magnify.png) !important;
+}
+
+.icon_bug_fix {
+    background-image: url(/static/img/silk-companion/bug_fix.png) !important;
+}
+
+.icon_bug_magnify {
+    background-image: url(/static/img/silk-companion/bug_magnify.png) !important;
+}
+
+.icon_build {
+    background-image: url(/static/img/silk-companion/build.png) !important;
+}
+
+.icon_build_cancel {
+    background-image: url(/static/img/silk-companion/build_cancel.png) !important;
+}
+
+.icon_bullet_connect {
+    background-image: url(/static/img/silk-companion/bullet_connect.png) !important;
+}
+
+.icon_bullet_cross {
+    background-image: url(/static/img/silk-companion/bullet_cross.png) !important;
+}
+
+.icon_bullet_database {
+    background-image: url(/static/img/silk-companion/bullet_database.png) !important;
+}
+
+.icon_bullet_database_yellow {
+    background-image: url(/static/img/silk-companion/bullet_database_yellow.png) !important;
+}
+
+.icon_bullet_earth {
+    background-image: url(/static/img/silk-companion/bullet_earth.png) !important;
+}
+
+.icon_bullet_edit {
+    background-image: url(/static/img/silk-companion/bullet_edit.png) !important;
+}
+
+.icon_bullet_eject {
+    background-image: url(/static/img/silk-companion/bullet_eject.png) !important;
+}
+
+.icon_bullet_get {
+    background-image: url(/static/img/silk-companion/bullet_get.png) !important;
+}
+
+.icon_bullet_home {
+    background-image: url(/static/img/silk-companion/bullet_home.png) !important;
+}
+
+.icon_bullet_left {
+    background-image: url(/static/img/silk-companion/bullet_left.png) !important;
+}
+
+.icon_bullet_lightning {
+    background-image: url(/static/img/silk-companion/bullet_lightning.png) !important;
+}
+
+.icon_bullet_magnify {
+    background-image: url(/static/img/silk-companion/bullet_magnify.png) !important;
+}
+
+.icon_bullet_minus {
+    background-image: url(/static/img/silk-companion/bullet_minus.png) !important;
+}
+
+.icon_bullet_page_white {
+    background-image: url(/static/img/silk-companion/bullet_page_white.png) !important;
+}
+
+.icon_bullet_plus {
+    background-image: url(/static/img/silk-companion/bullet_plus.png) !important;
+}
+
+.icon_bullet_right {
+    background-image: url(/static/img/silk-companion/bullet_right.png) !important;
+}
+
+.icon_bullet_shape {
+    background-image: url(/static/img/silk-companion/bullet_shape.png) !important;
+}
+
+.icon_bullet_sparkle {
+    background-image: url(/static/img/silk-companion/bullet_sparkle.png) !important;
+}
+
+.icon_bullet_start {
+    background-image: url(/static/img/silk-companion/bullet_start.png) !important;
+}
+
+.icon_bullet_stop {
+    background-image: url(/static/img/silk-companion/bullet_stop.png) !important;
+}
+
+.icon_bullet_stop_alt {
+    background-image: url(/static/img/silk-companion/bullet_stop_alt.png) !important;
+}
+
+.icon_bullet_tick {
+    background-image: url(/static/img/silk-companion/bullet_tick.png) !important;
+}
+
+.icon_bullet_wrench_red {
+    background-image: url(/static/img/silk-companion/bullet_wrench_red.png) !important;
+}
+
+.icon_button {
+    background-image: url(/static/img/silk-companion/button.png) !important;
+}
+
+.icon_cake_out {
+    background-image: url(/static/img/silk-companion/cake_out.png) !important;
+}
+
+.icon_cake_sliced {
+    background-image: url(/static/img/silk-companion/cake_sliced.png) !important;
+}
+
+.icon_calendar_select_day {
+    background-image: url(/static/img/silk-companion/calendar_select_day.png) !important;
+}
+
+.icon_calendar_select_none {
+    background-image: url(/static/img/silk-companion/calendar_select_none.png) !important;
+}
+
+.icon_calendar_select_week {
+    background-image: url(/static/img/silk-companion/calendar_select_week.png) !important;
+}
+
+.icon_calendar_star {
+    background-image: url(/static/img/silk-companion/calendar_star.png) !important;
+}
+
+.icon_camera_connect {
+    background-image: url(/static/img/silk-companion/camera_connect.png) !important;
+}
+
+.icon_camera_magnify {
+    background-image: url(/static/img/silk-companion/camera_magnify.png) !important;
+}
+
+.icon_camera_picture {
+    background-image: url(/static/img/silk-companion/camera_picture.png) !important;
+}
+
+.icon_camera_start {
+    background-image: url(/static/img/silk-companion/camera_start.png) !important;
+}
+
+.icon_camera_stop {
+    background-image: url(/static/img/silk-companion/camera_stop.png) !important;
+}
+
+.icon_car_error {
+    background-image: url(/static/img/silk-companion/car_error.png) !important;
+}
+
+.icon_car_red {
+    background-image: url(/static/img/silk-companion/car_red.png) !important;
+}
+
+.icon_car_start {
+    background-image: url(/static/img/silk-companion/car_start.png) !important;
+}
+
+.icon_car_stop {
+    background-image: url(/static/img/silk-companion/car_stop.png) !important;
+}
+
+.icon_cart_full {
+    background-image: url(/static/img/silk-companion/cart_full.png) !important;
+}
+
+.icon_cart_magnify {
+    background-image: url(/static/img/silk-companion/cart_magnify.png) !important;
+}
+
+.icon_cd_magnify {
+    background-image: url(/static/img/silk-companion/cd_magnify.png) !important;
+}
+
+.icon_cd_play {
+    background-image: url(/static/img/silk-companion/cd_play.png) !important;
+}
+
+.icon_cd_stop {
+    background-image: url(/static/img/silk-companion/cd_stop.png) !important;
+}
+
+.icon_cd_stop_alt {
+    background-image: url(/static/img/silk-companion/cd_stop_alt.png) !important;
+}
+
+.icon_cd_tick {
+    background-image: url(/static/img/silk-companion/cd_tick.png) !important;
+}
+
+.icon_cdr {
+    background-image: url(/static/img/silk-companion/cdr.png) !important;
+}
+
+.icon_cdr_add {
+    background-image: url(/static/img/silk-companion/cdr_add.png) !important;
+}
+
+.icon_cdr_burn {
+    background-image: url(/static/img/silk-companion/cdr_burn.png) !important;
+}
+
+.icon_cdr_cross {
+    background-image: url(/static/img/silk-companion/cdr_cross.png) !important;
+}
+
+.icon_cdr_delete {
+    background-image: url(/static/img/silk-companion/cdr_delete.png) !important;
+}
+
+.icon_cdr_edit {
+    background-image: url(/static/img/silk-companion/cdr_edit.png) !important;
+}
+
+.icon_cdr_eject {
+    background-image: url(/static/img/silk-companion/cdr_eject.png) !important;
+}
+
+.icon_cdr_error {
+    background-image: url(/static/img/silk-companion/cdr_error.png) !important;
+}
+
+.icon_cdr_go {
+    background-image: url(/static/img/silk-companion/cdr_go.png) !important;
+}
+
+.icon_cdr_magnify {
+    background-image: url(/static/img/silk-companion/cdr_magnify.png) !important;
+}
+
+.icon_cdr_play {
+    background-image: url(/static/img/silk-companion/cdr_play.png) !important;
+}
+
+.icon_cdr_start {
+    background-image: url(/static/img/silk-companion/cdr_start.png) !important;
+}
+
+.icon_cdr_stop {
+    background-image: url(/static/img/silk-companion/cdr_stop.png) !important;
+}
+
+.icon_cdr_stop_alt {
+    background-image: url(/static/img/silk-companion/cdr_stop_alt.png) !important;
+}
+
+.icon_cdr_tick {
+    background-image: url(/static/img/silk-companion/cdr_tick.png) !important;
+}
+
+.icon_chart_org_inverted {
+    background-image: url(/static/img/silk-companion/chart_org_inverted.png) !important;
+}
+
+.icon_chart_pie_lightning {
+    background-image: url(/static/img/silk-companion/chart_pie_lightning.png) !important;
+}
+
+.icon_check_error {
+    background-image: url(/static/img/silk-companion/check_error.png) !important;
+}
+
+.icon_clipboard {
+    background-image: url(/static/img/silk-companion/clipboard.png) !important;
+}
+
+.icon_clock_start {
+    background-image: url(/static/img/silk-companion/clock_start.png) !important;
+}
+
+.icon_clock_stop {
+    background-image: url(/static/img/silk-companion/clock_stop.png) !important;
+}
+
+.icon_cmy {
+    background-image: url(/static/img/silk-companion/cmy.png) !important;
+}
+
+.icon_cog_start {
+    background-image: url(/static/img/silk-companion/cog_start.png) !important;
+}
+
+.icon_cog_stop {
+    background-image: url(/static/img/silk-companion/cog_stop.png) !important;
+}
+
+.icon_color {
+    background-image: url(/static/img/silk-companion/color.png) !important;
+}
+
+.icon_comment_dull {
+    background-image: url(/static/img/silk-companion/comment_dull.png) !important;
+}
+
+.icon_comment_play {
+    background-image: url(/static/img/silk-companion/comment_play.png) !important;
+}
+
+.icon_comment_record {
+    background-image: url(/static/img/silk-companion/comment_record.png) !important;
+}
+
+.icon_compass {
+    background-image: url(/static/img/silk-companion/compass.png) !important;
+}
+
+.icon_computer_connect {
+    background-image: url(/static/img/silk-companion/computer_connect.png) !important;
+}
+
+.icon_computer_magnify {
+    background-image: url(/static/img/silk-companion/computer_magnify.png) !important;
+}
+
+.icon_computer_off {
+    background-image: url(/static/img/silk-companion/computer_off.png) !important;
+}
+
+.icon_computer_start {
+    background-image: url(/static/img/silk-companion/computer_start.png) !important;
+}
+
+.icon_computer_stop {
+    background-image: url(/static/img/silk-companion/computer_stop.png) !important;
+}
+
+.icon_computer_wrench {
+    background-image: url(/static/img/silk-companion/computer_wrench.png) !important;
+}
+
+.icon_control_add {
+    background-image: url(/static/img/silk-companion/control_add.png) !important;
+}
+
+.icon_control_add_blue {
+    background-image: url(/static/img/silk-companion/control_add_blue.png) !important;
+}
+
+.icon_control_blank {
+    background-image: url(/static/img/silk-companion/control_blank.png) !important;
+}
+
+.icon_control_blank_blue {
+    background-image: url(/static/img/silk-companion/control_blank_blue.png) !important;
+}
+
+.icon_control_power {
+    background-image: url(/static/img/silk-companion/control_power.png) !important;
+}
+
+.icon_control_power_blue {
+    background-image: url(/static/img/silk-companion/control_power_blue.png) !important;
+}
+
+.icon_control_record {
+    background-image: url(/static/img/silk-companion/control_record.png) !important;
+}
+
+.icon_control_record_blue {
+    background-image: url(/static/img/silk-companion/control_record_blue.png) !important;
+}
+
+.icon_control_remove {
+    background-image: url(/static/img/silk-companion/control_remove.png) !important;
+}
+
+.icon_control_remove_blue {
+    background-image: url(/static/img/silk-companion/control_remove_blue.png) !important;
+}
+
+.icon_css_error {
+    background-image: url(/static/img/silk-companion/css_error.png) !important;
+}
+
+.icon_cup_black {
+    background-image: url(/static/img/silk-companion/cup_black.png) !important;
+}
+
+.icon_cup_green {
+    background-image: url(/static/img/silk-companion/cup_green.png) !important;
+}
+
+.icon_cup_tea {
+    background-image: url(/static/img/silk-companion/cup_tea.png) !important;
+}
+
+.icon_cursor_small {
+    background-image: url(/static/img/silk-companion/cursor_small.png) !important;
+}
+
+.icon_database_copy {
+    background-image: url(/static/img/silk-companion/database_copy.png) !important;
+}
+
+.icon_database_start {
+    background-image: url(/static/img/silk-companion/database_start.png) !important;
+}
+
+.icon_database_stop {
+    background-image: url(/static/img/silk-companion/database_stop.png) !important;
+}
+
+.icon_database_wrench {
+    background-image: url(/static/img/silk-companion/database_wrench.png) !important;
+}
+
+.icon_database_yellow {
+    background-image: url(/static/img/silk-companion/database_yellow.png) !important;
+}
+
+.icon_database_yellow_start {
+    background-image: url(/static/img/silk-companion/database_yellow_start.png) !important;
+}
+
+.icon_database_yellow_stop {
+    background-image: url(/static/img/silk-companion/database_yellow_stop.png) !important;
+}
+
+.icon_decline {
+    background-image: url(/static/img/silk-companion/decline.png) !important;
+}
+
+.icon_device_stylus {
+    background-image: url(/static/img/silk-companion/device_stylus.png) !important;
+}
+
+.icon_disk_black {
+    background-image: url(/static/img/silk-companion/disk_black.png) !important;
+}
+
+.icon_disk_black_error {
+    background-image: url(/static/img/silk-companion/disk_black_error.png) !important;
+}
+
+.icon_disk_black_magnify {
+    background-image: url(/static/img/silk-companion/disk_black_magnify.png) !important;
+}
+
+.icon_disk_download {
+    background-image: url(/static/img/silk-companion/disk_download.png) !important;
+}
+
+.icon_disk_edit {
+    background-image: url(/static/img/silk-companion/disk_edit.png) !important;
+}
+
+.icon_disk_error {
+    background-image: url(/static/img/silk-companion/disk_error.png) !important;
+}
+
+.icon_disk_magnify {
+    background-image: url(/static/img/silk-companion/disk_magnify.png) !important;
+}
+
+.icon_disk_upload {
+    background-image: url(/static/img/silk-companion/disk_upload.png) !important;
+}
+
+.icon_door_error {
+    background-image: url(/static/img/silk-companion/door_error.png) !important;
+}
+
+.icon_drink_red {
+    background-image: url(/static/img/silk-companion/drink_red.png) !important;
+}
+
+.icon_drive_cdr {
+    background-image: url(/static/img/silk-companion/drive_cdr.png) !important;
+}
+
+.icon_drive_network_error {
+    background-image: url(/static/img/silk-companion/drive_network_error.png) !important;
+}
+
+.icon_drive_network_stop {
+    background-image: url(/static/img/silk-companion/drive_network_stop.png) !important;
+}
+
+.icon_dvd_start {
+    background-image: url(/static/img/silk-companion/dvd_start.png) !important;
+}
+
+.icon_dvd_stop {
+    background-image: url(/static/img/silk-companion/dvd_stop.png) !important;
+}
+
+.icon_eject_blue {
+    background-image: url(/static/img/silk-companion/eject_blue.png) !important;
+}
+
+.icon_eject_green {
+    background-image: url(/static/img/silk-companion/eject_green.png) !important;
+}
+
+.icon_email_magnify {
+    background-image: url(/static/img/silk-companion/email_magnify.png) !important;
+}
+
+.icon_email_star {
+    background-image: url(/static/img/silk-companion/email_star.png) !important;
+}
+
+.icon_email_start {
+    background-image: url(/static/img/silk-companion/email_start.png) !important;
+}
+
+.icon_email_stop {
+    background-image: url(/static/img/silk-companion/email_stop.png) !important;
+}
+
+.icon_email_transfer {
+    background-image: url(/static/img/silk-companion/email_transfer.png) !important;
+}
+
+.icon_erase {
+    background-image: url(/static/img/silk-companion/erase.png) !important;
+}
+
+.icon_eyes {
+    background-image: url(/static/img/silk-companion/eyes.png) !important;
+}
+
+.icon_feed_star {
+    background-image: url(/static/img/silk-companion/feed_star.png) !important;
+}
+
+.icon_film_eject {
+    background-image: url(/static/img/silk-companion/film_eject.png) !important;
+}
+
+.icon_film_magnify {
+    background-image: url(/static/img/silk-companion/film_magnify.png) !important;
+}
+
+.icon_film_star {
+    background-image: url(/static/img/silk-companion/film_star.png) !important;
+}
+
+.icon_film_start {
+    background-image: url(/static/img/silk-companion/film_start.png) !important;
+}
+
+.icon_film_stop {
+    background-image: url(/static/img/silk-companion/film_stop.png) !important;
+}
+
+.icon_finger_point {
+    background-image: url(/static/img/silk-companion/finger_point.png) !important;
+}
+
+.icon_flag_black {
+    background-image: url(/static/img/silk-companion/flag_black.png) !important;
+}
+
+.icon_flag_checked {
+    background-image: url(/static/img/silk-companion/flag_checked.png) !important;
+}
+
+.icon_flag_france {
+    background-image: url(/static/img/silk-companion/flag_france.png) !important;
+}
+
+.icon_flag_grey {
+    background-image: url(/static/img/silk-companion/flag_grey.png) !important;
+}
+
+.icon_flag_white {
+    background-image: url(/static/img/silk-companion/flag_white.png) !important;
+}
+
+.icon_flower_daisy {
+    background-image: url(/static/img/silk-companion/flower_daisy.png) !important;
+}
+
+.icon_folder_bookmark {
+    background-image: url(/static/img/silk-companion/folder_bookmark.png) !important;
+}
+
+.icon_folder_connect {
+    background-image: url(/static/img/silk-companion/folder_connect.png) !important;
+}
+
+.icon_folder_film {
+    background-image: url(/static/img/silk-companion/folder_film.png) !important;
+}
+
+.icon_folder_font {
+    background-image: url(/static/img/silk-companion/folder_font.png) !important;
+}
+
+.icon_folder_home {
+    background-image: url(/static/img/silk-companion/folder_home.png) !important;
+}
+
+.icon_folder_up {
+    background-image: url(/static/img/silk-companion/folder_up.png) !important;
+}
+
+.icon_font_color {
+    background-image: url(/static/img/silk-companion/font_color.png) !important;
+}
+
+.icon_font_larger {
+    background-image: url(/static/img/silk-companion/font_larger.png) !important;
+}
+
+.icon_font_smaller {
+    background-image: url(/static/img/silk-companion/font_smaller.png) !important;
+}
+
+.icon_forward_blue {
+    background-image: url(/static/img/silk-companion/forward_blue.png) !important;
+}
+
+.icon_forward_green {
+    background-image: url(/static/img/silk-companion/forward_green.png) !important;
+}
+
+.icon_heart_broken {
+    background-image: url(/static/img/silk-companion/heart_broken.png) !important;
+}
+
+.icon_heart_connect {
+    background-image: url(/static/img/silk-companion/heart_connect.png) !important;
+}
+
+.icon_house_connect {
+    background-image: url(/static/img/silk-companion/house_connect.png) !important;
+}
+
+.icon_house_key {
+    background-image: url(/static/img/silk-companion/house_key.png) !important;
+}
+
+.icon_house_star {
+    background-image: url(/static/img/silk-companion/house_star.png) !important;
+}
+
+.icon_html_error {
+    background-image: url(/static/img/silk-companion/html_error.png) !important;
+}
+
+.icon_image_magnify {
+    background-image: url(/static/img/silk-companion/image_magnify.png) !important;
+}
+
+.icon_image_star {
+    background-image: url(/static/img/silk-companion/image_star.png) !important;
+}
+
+.icon_ipod_connect {
+    background-image: url(/static/img/silk-companion/ipod_connect.png) !important;
+}
+
+.icon_ipod_nano {
+    background-image: url(/static/img/silk-companion/ipod_nano.png) !important;
+}
+
+.icon_ipod_nano_connect {
+    background-image: url(/static/img/silk-companion/ipod_nano_connect.png) !important;
+}
+
+.icon_joystick_connect {
+    background-image: url(/static/img/silk-companion/joystick_connect.png) !important;
+}
+
+.icon_key_start {
+    background-image: url(/static/img/silk-companion/key_start.png) !important;
+}
+
+.icon_key_stop {
+    background-image: url(/static/img/silk-companion/key_stop.png) !important;
+}
+
+.icon_keyboard_connect {
+    background-image: url(/static/img/silk-companion/keyboard_connect.png) !important;
+}
+
+.icon_laptop {
+    background-image: url(/static/img/silk-companion/laptop.png) !important;
+}
+
+.icon_laptop_add {
+    background-image: url(/static/img/silk-companion/laptop_add.png) !important;
+}
+
+.icon_laptop_connect {
+    background-image: url(/static/img/silk-companion/laptop_connect.png) !important;
+}
+
+.icon_laptop_delete {
+    background-image: url(/static/img/silk-companion/laptop_delete.png) !important;
+}
+
+.icon_laptop_disk {
+    background-image: url(/static/img/silk-companion/laptop_disk.png) !important;
+}
+
+.icon_laptop_edit {
+    background-image: url(/static/img/silk-companion/laptop_edit.png) !important;
+}
+
+.icon_laptop_error {
+    background-image: url(/static/img/silk-companion/laptop_error.png) !important;
+}
+
+.icon_laptop_go {
+    background-image: url(/static/img/silk-companion/laptop_go.png) !important;
+}
+
+.icon_laptop_key {
+    background-image: url(/static/img/silk-companion/laptop_key.png) !important;
+}
+
+.icon_laptop_link {
+    background-image: url(/static/img/silk-companion/laptop_link.png) !important;
+}
+
+.icon_laptop_magnify {
+    background-image: url(/static/img/silk-companion/laptop_magnify.png) !important;
+}
+
+.icon_laptop_start {
+    background-image: url(/static/img/silk-companion/laptop_start.png) !important;
+}
+
+.icon_laptop_stop {
+    background-image: url(/static/img/silk-companion/laptop_stop.png) !important;
+}
+
+.icon_laptop_wrench {
+    background-image: url(/static/img/silk-companion/laptop_wrench.png) !important;
+}
+
+.icon_layout_key {
+    background-image: url(/static/img/silk-companion/layout_key.png) !important;
+}
+
+.icon_layout_lightning {
+    background-image: url(/static/img/silk-companion/layout_lightning.png) !important;
+}
+
+.icon_lock_key {
+    background-image: url(/static/img/silk-companion/lock_key.png) !important;
+}
+
+.icon_lock_start {
+    background-image: url(/static/img/silk-companion/lock_start.png) !important;
+}
+
+.icon_lock_stop {
+    background-image: url(/static/img/silk-companion/lock_stop.png) !important;
+}
+
+.icon_lorry_start {
+    background-image: url(/static/img/silk-companion/lorry_start.png) !important;
+}
+
+.icon_lorry_stop {
+    background-image: url(/static/img/silk-companion/lorry_stop.png) !important;
+}
+
+.icon_mail {
+    background-image: url(/static/img/silk-companion/mail.png) !important;
+}
+
+.icon_map_clipboard {
+    background-image: url(/static/img/silk-companion/map_clipboard.png) !important;
+}
+
+.icon_map_cursor {
+    background-image: url(/static/img/silk-companion/map_cursor.png) !important;
+}
+
+.icon_map_error {
+    background-image: url(/static/img/silk-companion/map_error.png) !important;
+}
+
+.icon_map_link {
+    background-image: url(/static/img/silk-companion/map_link.png) !important;
+}
+
+.icon_map_start {
+    background-image: url(/static/img/silk-companion/map_start.png) !important;
+}
+
+.icon_map_stop {
+    background-image: url(/static/img/silk-companion/map_stop.png) !important;
+}
+
+.icon_monitor_key {
+    background-image: url(/static/img/silk-companion/monitor_key.png) !important;
+}
+
+.icon_moon_full {
+    background-image: url(/static/img/silk-companion/moon_full.png) !important;
+}
+
+.icon_music_note {
+    background-image: url(/static/img/silk-companion/music_note.png) !important;
+}
+
+.icon_neighbourhood {
+    background-image: url(/static/img/silk-companion/neighbourhood.png) !important;
+}
+
+.icon_new_blue {
+    background-image: url(/static/img/silk-companion/new_blue.png) !important;
+}
+
+.icon_new_red {
+    background-image: url(/static/img/silk-companion/new_red.png) !important;
+}
+
+.icon_next-green {
+    background-image: url(/static/img/silk-companion/next-green.png) !important;
+}
+
+.icon_next_blue {
+    background-image: url(/static/img/silk-companion/next_blue.png) !important;
+}
+
+.icon_next_green {
+    background-image: url(/static/img/silk-companion/next_green.png) !important;
+}
+
+.icon_outline {
+    background-image: url(/static/img/silk-companion/outline.png) !important;
+}
+
+.icon_package_down {
+    background-image: url(/static/img/silk-companion/package_down.png) !important;
+}
+
+.icon_package_in {
+    background-image: url(/static/img/silk-companion/package_in.png) !important;
+}
+
+.icon_package_se {
+    background-image: url(/static/img/silk-companion/package_se.png) !important;
+}
+
+.icon_package_start {
+    background-image: url(/static/img/silk-companion/package_start.png) !important;
+}
+
+.icon_package_stop {
+    background-image: url(/static/img/silk-companion/package_stop.png) !important;
+}
+
+.icon_package_white {
+    background-image: url(/static/img/silk-companion/package_white.png) !important;
+}
+
+.icon_page_back {
+    background-image: url(/static/img/silk-companion/page_back.png) !important;
+}
+
+.icon_page_break {
+    background-image: url(/static/img/silk-companion/page_break.png) !important;
+}
+
+.icon_page_break_insert {
+    background-image: url(/static/img/silk-companion/page_break_insert.png) !important;
+}
+
+.icon_page_cancel {
+    background-image: url(/static/img/silk-companion/page_cancel.png) !important;
+}
+
+.icon_page_forward {
+    background-image: url(/static/img/silk-companion/page_forward.png) !important;
+}
+
+.icon_page_header_footer {
+    background-image: url(/static/img/silk-companion/page_header_footer.png) !important;
+}
+
+.icon_page_landscape {
+    background-image: url(/static/img/silk-companion/page_landscape.png) !important;
+}
+
+.icon_page_landscape_shot {
+    background-image: url(/static/img/silk-companion/page_landscape_shot.png) !important;
+}
+
+.icon_page_magnify {
+    background-image: url(/static/img/silk-companion/page_magnify.png) !important;
+}
+
+.icon_page_portrait {
+    background-image: url(/static/img/silk-companion/page_portrait.png) !important;
+}
+
+.icon_page_portrait_shot {
+    background-image: url(/static/img/silk-companion/page_portrait_shot.png) !important;
+}
+
+.icon_page_white_break {
+    background-image: url(/static/img/silk-companion/page_white_break.png) !important;
+}
+
+.icon_page_white_cdr {
+    background-image: url(/static/img/silk-companion/page_white_cdr.png) !important;
+}
+
+.icon_page_white_connect {
+    background-image: url(/static/img/silk-companion/page_white_connect.png) !important;
+}
+
+.icon_page_white_database_yellow {
+    background-image: url(/static/img/silk-companion/page_white_database_yellow.png) !important;
+}
+
+.icon_page_white_font {
+    background-image: url(/static/img/silk-companion/page_white_font.png) !important;
+}
+
+.icon_page_white_paint {
+    background-image: url(/static/img/silk-companion/page_white_paint.png) !important;
+}
+
+.icon_page_white_paste_table {
+    background-image: url(/static/img/silk-companion/page_white_paste_table.png) !important;
+}
+
+.icon_page_white_refresh {
+    background-image: url(/static/img/silk-companion/page_white_refresh.png) !important;
+}
+
+.icon_page_white_side_by_side {
+    background-image: url(/static/img/silk-companion/page_white_side_by_side.png) !important;
+}
+
+.icon_paint {
+    background-image: url(/static/img/silk-companion/paint.png) !important;
+}
+
+.icon_paint_can_brush {
+    background-image: url(/static/img/silk-companion/paint_can_brush.png) !important;
+}
+
+.icon_paintbrush_color {
+    background-image: url(/static/img/silk-companion/paintbrush_color.png) !important;
+}
+
+.icon_paintcan_red {
+    background-image: url(/static/img/silk-companion/paintcan_red.png) !important;
+}
+
+.icon_pause_blue {
+    background-image: url(/static/img/silk-companion/pause_blue.png) !important;
+}
+
+.icon_pause_green {
+    background-image: url(/static/img/silk-companion/pause_green.png) !important;
+}
+
+.icon_pause_record {
+    background-image: url(/static/img/silk-companion/pause_record.png) !important;
+}
+
+.icon_phone_edit {
+    background-image: url(/static/img/silk-companion/phone_edit.png) !important;
+}
+
+.icon_phone_error {
+    background-image: url(/static/img/silk-companion/phone_error.png) !important;
+}
+
+.icon_phone_go {
+    background-image: url(/static/img/silk-companion/phone_go.png) !important;
+}
+
+.icon_phone_key {
+    background-image: url(/static/img/silk-companion/phone_key.png) !important;
+}
+
+.icon_phone_link {
+    background-image: url(/static/img/silk-companion/phone_link.png) !important;
+}
+
+.icon_phone_start {
+    background-image: url(/static/img/silk-companion/phone_start.png) !important;
+}
+
+.icon_phone_stop {
+    background-image: url(/static/img/silk-companion/phone_stop.png) !important;
+}
+
+.icon_photo_edit {
+    background-image: url(/static/img/silk-companion/photo_edit.png) !important;
+}
+
+.icon_photo_paint {
+    background-image: url(/static/img/silk-companion/photo_paint.png) !important;
+}
+
+.icon_picture_clipboard {
+    background-image: url(/static/img/silk-companion/picture_clipboard.png) !important;
+}
+
+.icon_pictures_thumbs {
+    background-image: url(/static/img/silk-companion/pictures_thumbs.png) !important;
+}
+
+.icon_pill_error {
+    background-image: url(/static/img/silk-companion/pill_error.png) !important;
+}
+
+.icon_play_blue {
+    background-image: url(/static/img/silk-companion/play_blue.png) !important;
+}
+
+.icon_play_green {
+    background-image: url(/static/img/silk-companion/play_green.png) !important;
+}
+
+.icon_plugin_key {
+    background-image: url(/static/img/silk-companion/plugin_key.png) !important;
+}
+
+.icon_previous-green {
+    background-image: url(/static/img/silk-companion/previous-green.png) !important;
+}
+
+.icon_printer_cancel {
+    background-image: url(/static/img/silk-companion/printer_cancel.png) !important;
+}
+
+.icon_printer_color {
+    background-image: url(/static/img/silk-companion/printer_color.png) !important;
+}
+
+.icon_printer_connect {
+    background-image: url(/static/img/silk-companion/printer_connect.png) !important;
+}
+
+.icon_printer_go {
+    background-image: url(/static/img/silk-companion/printer_go.png) !important;
+}
+
+.icon_printer_key {
+    background-image: url(/static/img/silk-companion/printer_key.png) !important;
+}
+
+.icon_printer_mono {
+    background-image: url(/static/img/silk-companion/printer_mono.png) !important;
+}
+
+.icon_printer_start {
+    background-image: url(/static/img/silk-companion/printer_start.png) !important;
+}
+
+.icon_printer_stop {
+    background-image: url(/static/img/silk-companion/printer_stop.png) !important;
+}
+
+.icon_rainbow_star {
+    background-image: url(/static/img/silk-companion/rainbow_star.png) !important;
+}
+
+.icon_record_blue {
+    background-image: url(/static/img/silk-companion/record_blue.png) !important;
+}
+
+.icon_record_green {
+    background-image: url(/static/img/silk-companion/record_green.png) !important;
+}
+
+.icon_record_red {
+    background-image: url(/static/img/silk-companion/record_red.png) !important;
+}
+
+.icon_reload {
+    background-image: url(/static/img/silk-companion/reload.png) !important;
+}
+
+.icon_report_start {
+    background-image: url(/static/img/silk-companion/report_start.png) !important;
+}
+
+.icon_report_stop {
+    background-image: url(/static/img/silk-companion/report_stop.png) !important;
+}
+
+.icon_reverse_blue {
+    background-image: url(/static/img/silk-companion/reverse_blue.png) !important;
+}
+
+.icon_reverse_green {
+    background-image: url(/static/img/silk-companion/reverse_green.png) !important;
+}
+
+.icon_rewind_blue {
+    background-image: url(/static/img/silk-companion/rewind_blue.png) !important;
+}
+
+.icon_rewind_green {
+    background-image: url(/static/img/silk-companion/rewind_green.png) !important;
+}
+
+.icon_rgb {
+    background-image: url(/static/img/silk-companion/rgb.png) !important;
+}
+
+.icon_rosette_blue {
+    background-image: url(/static/img/silk-companion/rosette_blue.png) !important;
+}
+
+.icon_rss_error {
+    background-image: url(/static/img/silk-companion/rss_error.png) !important;
+}
+
+.icon_script_start {
+    background-image: url(/static/img/silk-companion/script_start.png) !important;
+}
+
+.icon_script_stop {
+    background-image: url(/static/img/silk-companion/script_stop.png) !important;
+}
+
+.icon_seasons {
+    background-image: url(/static/img/silk-companion/seasons.png) !important;
+}
+
+.icon_section_collapsed {
+    background-image: url(/static/img/silk-companion/section_collapsed.png) !important;
+}
+
+.icon_section_expanded {
+    background-image: url(/static/img/silk-companion/section_expanded.png) !important;
+}
+
+.icon_server_start {
+    background-image: url(/static/img/silk-companion/server_start.png) !important;
+}
+
+.icon_server_stop {
+    background-image: url(/static/img/silk-companion/server_stop.png) !important;
+}
+
+.icon_server_wrench {
+    background-image: url(/static/img/silk-companion/server_wrench.png) !important;
+}
+
+.icon_shape_3d {
+    background-image: url(/static/img/silk-companion/shape_3d.png) !important;
+}
+
+.icon_shape_shade_a {
+    background-image: url(/static/img/silk-companion/shape_shade_a.png) !important;
+}
+
+.icon_shape_shade_b {
+    background-image: url(/static/img/silk-companion/shape_shade_b.png) !important;
+}
+
+.icon_shape_shade_c {
+    background-image: url(/static/img/silk-companion/shape_shade_c.png) !important;
+}
+
+.icon_shape_shadow {
+    background-image: url(/static/img/silk-companion/shape_shadow.png) !important;
+}
+
+.icon_shape_shadow_toggle {
+    background-image: url(/static/img/silk-companion/shape_shadow_toggle.png) !important;
+}
+
+.icon_shape_square_select {
+    background-image: url(/static/img/silk-companion/shape_square_select.png) !important;
+}
+
+.icon_shapes_many {
+    background-image: url(/static/img/silk-companion/shapes_many.png) !important;
+}
+
+.icon_shapes_many_select {
+    background-image: url(/static/img/silk-companion/shapes_many_select.png) !important;
+}
+
+.icon_share {
+    background-image: url(/static/img/silk-companion/share.png) !important;
+}
+
+.icon_shield_error {
+    background-image: url(/static/img/silk-companion/shield_error.png) !important;
+}
+
+.icon_shield_rainbow {
+    background-image: url(/static/img/silk-companion/shield_rainbow.png) !important;
+}
+
+.icon_shield_silver {
+    background-image: url(/static/img/silk-companion/shield_silver.png) !important;
+}
+
+.icon_shield_start {
+    background-image: url(/static/img/silk-companion/shield_start.png) !important;
+}
+
+.icon_shield_stop {
+    background-image: url(/static/img/silk-companion/shield_stop.png) !important;
+}
+
+.icon_smartphone {
+    background-image: url(/static/img/silk-companion/smartphone.png) !important;
+}
+
+.icon_smartphone_add {
+    background-image: url(/static/img/silk-companion/smartphone_add.png) !important;
+}
+
+.icon_smartphone_connect {
+    background-image: url(/static/img/silk-companion/smartphone_connect.png) !important;
+}
+
+.icon_smartphone_delete {
+    background-image: url(/static/img/silk-companion/smartphone_delete.png) !important;
+}
+
+.icon_smartphone_disk {
+    background-image: url(/static/img/silk-companion/smartphone_disk.png) !important;
+}
+
+.icon_smartphone_edit {
+    background-image: url(/static/img/silk-companion/smartphone_edit.png) !important;
+}
+
+.icon_smartphone_error {
+    background-image: url(/static/img/silk-companion/smartphone_error.png) !important;
+}
+
+.icon_smartphone_go {
+    background-image: url(/static/img/silk-companion/smartphone_go.png) !important;
+}
+
+.icon_smartphone_key {
+    background-image: url(/static/img/silk-companion/smartphone_key.png) !important;
+}
+
+.icon_smartphone_wrench {
+    background-image: url(/static/img/silk-companion/smartphone_wrench.png) !important;
+}
+
+.icon_sort_ascending {
+    background-image: url(/static/img/silk-companion/sort_ascending.png) !important;
+}
+
+.icon_sort_descending {
+    background-image: url(/static/img/silk-companion/sort_descending.png) !important;
+}
+
+.icon_sound_high {
+    background-image: url(/static/img/silk-companion/sound_high.png) !important;
+}
+
+.icon_sound_in {
+    background-image: url(/static/img/silk-companion/sound_in.png) !important;
+}
+
+.icon_sound_out {
+    background-image: url(/static/img/silk-companion/sound_out.png) !important;
+}
+
+.icon_sport_golf_practice {
+    background-image: url(/static/img/silk-companion/sport_golf_practice.png) !important;
+}
+
+.icon_star_bronze {
+    background-image: url(/static/img/silk-companion/star_bronze.png) !important;
+}
+
+.icon_star_bronze_half_grey {
+    background-image: url(/static/img/silk-companion/star_bronze_half_grey.png) !important;
+}
+
+.icon_star_gold {
+    background-image: url(/static/img/silk-companion/star_gold.png) !important;
+}
+
+.icon_star_gold_half_grey {
+    background-image: url(/static/img/silk-companion/star_gold_half_grey.png) !important;
+}
+
+.icon_star_gold_half_silver {
+    background-image: url(/static/img/silk-companion/star_gold_half_silver.png) !important;
+}
+
+.icon_star_grey {
+    background-image: url(/static/img/silk-companion/star_grey.png) !important;
+}
+
+.icon_star_half_grey {
+    background-image: url(/static/img/silk-companion/star_half_grey.png) !important;
+}
+
+.icon_star_silver {
+    background-image: url(/static/img/silk-companion/star_silver.png) !important;
+}
+
+.icon_status_be_right_back {
+    background-image: url(/static/img/silk-companion/status_be_right_back.png) !important;
+}
+
+.icon_status_invisible {
+    background-image: url(/static/img/silk-companion/status_invisible.png) !important;
+}
+
+.icon_stop_blue {
+    background-image: url(/static/img/silk-companion/stop_blue.png) !important;
+}
+
+.icon_stop_green {
+    background-image: url(/static/img/silk-companion/stop_green.png) !important;
+}
+
+.icon_stop_red {
+    background-image: url(/static/img/silk-companion/stop_red.png) !important;
+}
+
+.icon_tab_blue {
+    background-image: url(/static/img/silk-companion/tab_blue.png) !important;
+}
+
+.icon_tab_green {
+    background-image: url(/static/img/silk-companion/tab_green.png) !important;
+}
+
+.icon_tab_red {
+    background-image: url(/static/img/silk-companion/tab_red.png) !important;
+}
+
+.icon_table_cell {
+    background-image: url(/static/img/silk-companion/table_cell.png) !important;
+}
+
+.icon_table_column {
+    background-image: url(/static/img/silk-companion/table_column.png) !important;
+}
+
+.icon_table_column_add {
+    background-image: url(/static/img/silk-companion/table_column_add.png) !important;
+}
+
+.icon_table_column_delete {
+    background-image: url(/static/img/silk-companion/table_column_delete.png) !important;
+}
+
+.icon_table_connect {
+    background-image: url(/static/img/silk-companion/table_connect.png) !important;
+}
+
+.icon_table_row {
+    background-image: url(/static/img/silk-companion/table_row.png) !important;
+}
+
+.icon_tags_grey {
+    background-image: url(/static/img/silk-companion/tags_grey.png) !important;
+}
+
+.icon_tags_red {
+    background-image: url(/static/img/silk-companion/tags_red.png) !important;
+}
+
+.icon_telephone_red {
+    background-image: url(/static/img/silk-companion/telephone_red.png) !important;
+}
+
+.icon_television_in {
+    background-image: url(/static/img/silk-companion/television_in.png) !important;
+}
+
+.icon_television_off {
+    background-image: url(/static/img/silk-companion/television_off.png) !important;
+}
+
+.icon_television_out {
+    background-image: url(/static/img/silk-companion/television_out.png) !important;
+}
+
+.icon_television_star {
+    background-image: url(/static/img/silk-companion/television_star.png) !important;
+}
+
+.icon_text_ab {
+    background-image: url(/static/img/silk-companion/text_ab.png) !important;
+}
+
+.icon_text_complete {
+    background-image: url(/static/img/silk-companion/text_complete.png) !important;
+}
+
+.icon_text_direction {
+    background-image: url(/static/img/silk-companion/text_direction.png) !important;
+}
+
+.icon_text_double_underline {
+    background-image: url(/static/img/silk-companion/text_double_underline.png) !important;
+}
+
+.icon_text_fit {
+    background-image: url(/static/img/silk-companion/text_fit.png) !important;
+}
+
+.icon_text_flip {
+    background-image: url(/static/img/silk-companion/text_flip.png) !important;
+}
+
+.icon_text_font_default {
+    background-image: url(/static/img/silk-companion/text_font_default.png) !important;
+}
+
+.icon_text_inverse {
+    background-image: url(/static/img/silk-companion/text_inverse.png) !important;
+}
+
+.icon_text_left_to_right {
+    background-image: url(/static/img/silk-companion/text_left_to_right.png) !important;
+}
+
+.icon_text_lowercase_a {
+    background-image: url(/static/img/silk-companion/text_lowercase_a.png) !important;
+}
+
+.icon_text_mirror {
+    background-image: url(/static/img/silk-companion/text_mirror.png) !important;
+}
+
+.icon_text_right_to_left {
+    background-image: url(/static/img/silk-companion/text_right_to_left.png) !important;
+}
+
+.icon_text_rotate_0 {
+    background-image: url(/static/img/silk-companion/text_rotate_0.png) !important;
+}
+
+.icon_text_rotate_180 {
+    background-image: url(/static/img/silk-companion/text_rotate_180.png) !important;
+}
+
+.icon_text_rotate_270 {
+    background-image: url(/static/img/silk-companion/text_rotate_270.png) !important;
+}
+
+.icon_text_rotate_90 {
+    background-image: url(/static/img/silk-companion/text_rotate_90.png) !important;
+}
+
+.icon_text_ruler {
+    background-image: url(/static/img/silk-companion/text_ruler.png) !important;
+}
+
+.icon_text_shading {
+    background-image: url(/static/img/silk-companion/text_shading.png) !important;
+}
+
+.icon_text_spelling {
+    background-image: url(/static/img/silk-companion/text_spelling.png) !important;
+}
+
+.icon_text_tab {
+    background-image: url(/static/img/silk-companion/text_tab.png) !important;
+}
+
+.icon_theme {
+    background-image: url(/static/img/silk-companion/theme.png) !important;
+}
+
+.icon_time_green {
+    background-image: url(/static/img/silk-companion/time_green.png) !important;
+}
+
+.icon_time_red {
+    background-image: url(/static/img/silk-companion/time_red.png) !important;
+}
+
+.icon_transmit_red {
+    background-image: url(/static/img/silk-companion/transmit_red.png) !important;
+}
+
+.icon_user_alert {
+    background-image: url(/static/img/silk-companion/user_alert.png) !important;
+}
+
+.icon_user_b {
+    background-image: url(/static/img/silk-companion/user_b.png) !important;
+}
+
+.icon_user_brown {
+    background-image: url(/static/img/silk-companion/user_brown.png) !important;
+}
+
+.icon_user_comment {
+    background-image: url(/static/img/silk-companion/user_comment.png) !important;
+}
+
+.icon_user_cross {
+    background-image: url(/static/img/silk-companion/user_cross.png) !important;
+}
+
+.icon_user_earth {
+    background-image: url(/static/img/silk-companion/user_earth.png) !important;
+}
+
+.icon_user_gray_cool {
+    background-image: url(/static/img/silk-companion/user_gray_cool.png) !important;
+}
+
+.icon_user_home {
+    background-image: url(/static/img/silk-companion/user_home.png) !important;
+}
+
+.icon_user_key {
+    background-image: url(/static/img/silk-companion/user_key.png) !important;
+}
+
+.icon_user_magnify {
+    background-image: url(/static/img/silk-companion/user_magnify.png) !important;
+}
+
+.icon_user_mature {
+    background-image: url(/static/img/silk-companion/user_mature.png) !important;
+}
+
+.icon_user_star {
+    background-image: url(/static/img/silk-companion/user_star.png) !important;
+}
+
+.icon_user_suit_black {
+    background-image: url(/static/img/silk-companion/user_suit_black.png) !important;
+}
+
+.icon_user_tick {
+    background-image: url(/static/img/silk-companion/user_tick.png) !important;
+}
+
+.icon_vcard_key {
+    background-image: url(/static/img/silk-companion/vcard_key.png) !important;
+}
+
+.icon_vector_key {
+    background-image: url(/static/img/silk-companion/vector_key.png) !important;
+}
+
+.icon_weather_cloud {
+    background-image: url(/static/img/silk-companion/weather_cloud.png) !important;
+}
+
+.icon_weather_cloudy_rain {
+    background-image: url(/static/img/silk-companion/weather_cloudy_rain.png) !important;
+}
+
+.icon_webcam_connect {
+    background-image: url(/static/img/silk-companion/webcam_connect.png) !important;
+}
+
+.icon_webcam_start {
+    background-image: url(/static/img/silk-companion/webcam_start.png) !important;
+}
+
+.icon_webcam_stop {
+    background-image: url(/static/img/silk-companion/webcam_stop.png) !important;
+}
+
+.icon_world_connect {
+    background-image: url(/static/img/silk-companion/world_connect.png) !important;
+}
+
+.icon_world_dawn {
+    background-image: url(/static/img/silk-companion/world_dawn.png) !important;
+}
+
+.icon_world_key {
+    background-image: url(/static/img/silk-companion/world_key.png) !important;
+}
+
+.icon_world_night {
+    background-image: url(/static/img/silk-companion/world_night.png) !important;
+}
+
+.icon_world_orbit {
+    background-image: url(/static/img/silk-companion/world_orbit.png) !important;
+}
+
+.icon_xhtml_error {
+    background-image: url(/static/img/silk-companion/xhtml_error.png) !important;
+}
+
 /* Custom icons */
 .icon_py {
     background-image: url(/static/img/other/py.png) !important;
