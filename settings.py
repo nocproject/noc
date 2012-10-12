@@ -10,7 +10,7 @@ if not config.sections():
     # Called from autodoc
     config.read(["../../../../etc/noc.defaults", "../../../../etc/noc.conf"])
 
-DEBUG = config.get("main", "debug")
+DEBUG = config.getboolean("main", "debug")
 TEMPLATE_DEBUG = DEBUG
 
 ## Set up admins
