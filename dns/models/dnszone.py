@@ -586,7 +586,7 @@ class DNSZone(models.Model):
 ##
 @receiver(post_save, sender=DNSZone)
 def on_save(sender, instance, created, **kwargs):
-    if instance.is_auto_generated:
+    if instance.is_auto_generated and not hasattr(instance, "_nosignal"):
         instance._touch(is_new=created)
 
 

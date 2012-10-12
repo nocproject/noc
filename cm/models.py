@@ -545,6 +545,7 @@ class DNS(Object):
         for z in changed:
             logging.debug("DNS.global_pull: Zone %s changed" % z.name)
             z.serial = z.next_serial
+            z._nosignal = True
             z.save()
             for ns in z.profile.masters.all():
                 path = os.path.join(ns.name, z.name)
