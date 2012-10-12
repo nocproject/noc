@@ -54,7 +54,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "config_polling_min_interval",
             type: "int",
-            defaultValue: 0
+            defaultValue: 600
         },
         {
             name: "config_polling_max_interval",
@@ -69,7 +69,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "version_inventory_min_interval",
             type: "int",
-            defaultValue: 0
+            defaultValue: 600
         },
         {
             name: "version_inventory_max_interval",
@@ -84,7 +84,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "interface_discovery_min_interval",
             type: "int",
-            defaultValue: 0
+            defaultValue: 600
         },
         {
             name: "interface_discovery_max_interval",
@@ -99,7 +99,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "ip_discovery_min_interval",
             type: "int",
-            defaultValue: 0
+            defaultValue: 600
         },
         {
             name: "ip_discovery_max_interval",
@@ -114,7 +114,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "prefix_discovery_min_interval",
             type: "int",
-            defaultValue: 0
+            defaultValue: 600
         },
         {
             name: "prefix_discovery_max_interval",
@@ -129,7 +129,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "mac_discovery_min_interval",
             type: "int",
-            defaultValue: 0
+            defaultValue: 600
         },
         {
             name: "mac_discovery_max_interval",
