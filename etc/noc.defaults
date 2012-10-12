@@ -126,6 +126,8 @@ ldap_required_filter = (|(uniqueMember={{dn}})(member={{user}}))
 ldap_superuser_group =
 # Filter to search user in superusers group
 ldap_superuser_filter = (|(uniqueMember={{dn}})(member={{user}}))
+# Use TLS
+ldap_start_tls = false
 
 # AD server URI (Applicable only for "ad" method)
 ad_server = ldap://ad.example.com/
