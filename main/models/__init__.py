@@ -1816,6 +1816,7 @@ class Checkpoint(models.Model):
         cp.save()
         return cp
 
+from favorites import Favorites
 
 ##
 ## Install triggers
