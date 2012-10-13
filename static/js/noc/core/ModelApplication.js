@@ -69,7 +69,12 @@ Ext.define("NOC.core.ModelApplication", {
         var grid_rbar = null;
         me.filterGetters = [];
         if(me.filters) {
-            var fh = Ext.bind(me.onFilter, me);
+            var fh = Ext.bind(me.onFilter, me),
+                filters = [{
+                    title: "Favorites",
+                    name: "fav_status",
+                    ftype: "favorites"
+                }].concat(me.filters);
             grid_rbar = {
                 xtype: "form",
                 itemId: "filters",
@@ -84,14 +89,15 @@ Ext.define("NOC.core.ModelApplication", {
                         handler: me.onResetFilters
                     }
                 ],
-                items: me.filters.map(function(f) {
+                items: filters.map(function(f) {
                     var ft = {
                         boolean: "NOC.core.modelfilter.Boolean",
                         lookup: "NOC.core.modelfilter.Lookup",
                         vcfilter: "NOC.core.modelfilter.VCFilter",
                         afi: "NOC.core.modelfilter.AFI",
                         vc: "NOC.core.modelfilter.VC",
-                        tag: "NOC.core.modelfilter.Tag"
+                        tag: "NOC.core.modelfilter.Tag",
+                        favorites: "NOC.core.modelfilter.Favorites"
                     }[f.ftype];
                     var fc = Ext.Object.merge(f, {
                         referrer: app_name
@@ -122,18 +128,28 @@ Ext.define("NOC.core.ModelApplication", {
             columns: [
                 {
                     xtype: "actioncolumn",
-                    width: 25,
+                    width: 40,
                     sortable: false,
-                    items: [{
-                        iconCls: "icon_page_edit",
-                        tooltip: "Edit",
-                        scope: me,
-                        handler: function(grid, rowIndex, colIndex) {
-                            var me = this,
-                                record = me.store.getAt(rowIndex);
-                            me.onEditRecord(record);
+                    items: [
+                        {
+                            tooltip: "Mark/Unmark",
+                            scope: me,
+                            getClass: function(col, meta, r) {
+                                return r.get("fav_status") ? "icon_star" : "icon_star_grey";
+                            },
+                            handler: me.onFavItem
+                        },
+                        {
+                            iconCls: "icon_page_edit",
+                            tooltip: "Edit",
+                            scope: me,
+                            handler: function(grid, rowIndex, colIndex) {
+                                var me = this,
+                                    record = me.store.getAt(rowIndex);
+                                me.onEditRecord(record);
+                            }
                         }
-                    }]
+                    ]
                 }
             ].concat(me.columns).concat(cust_columns),
             border: false,
@@ -563,5 +579,23 @@ Ext.define("NOC.core.ModelApplication", {
                 header.onClick.apply(me, [record]);
             }
         }
+    },
+    //
+    onFavItem: function(grid, rowIndex, colIndex) {
+        var me = this,
+            r = me.store.getAt(rowIndex),
+            id = r.get("id"),
+            action = r.get("fav_status") ? "reset" : "set",
+            url = me.base_url + "favorites/item/" + id + "/" + action + "/";
+
+        Ext.Ajax.request({
+            url: url,
+            method: "POST",
+            scope: me,
+            success: function() {
+                // Invert current status
+                r.set("fav_status", !r.get("fav_status"));
+            }
+        });
     }
 });
