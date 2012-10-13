@@ -12,8 +12,10 @@ import os
 from django.views.static import serve as serve_static
 from django.http import HttpResponse
 ## NOC modules
-from application import Application, view, HasPerm
+from application import Application, view
+from access import HasPerm, PermitLogged
 from noc.lib.serialize import json_decode, json_encode
+from noc.main.models.favorites import Favorites
 
 
 class ExtApplication(Application):
@@ -40,6 +42,7 @@ class ExtApplication(Application):
     format_param = "__format"  # List output format
     query_param = "__query"
     only_param = "__only"
+    fav_status = "fav_status"
 
     def __init__(self, *args, **kwargs):
         super(ExtApplication, self).__init__(*args, **kwargs)
@@ -67,6 +70,23 @@ class ExtApplication(Application):
             return HttpResponse(content,
                 mimetype="text/plain; charset=utf-8",
                 status=status)
+
+    def fav_convert(self, item):
+        """
+        Convert favorite item from string to storage format
+        """
+        return str(item)
+
+    def get_favorite_items(self, user):
+        """
+        Returns a set of user's favorite items
+        """
+        f = Favorites.objects.filter(
+            user=user.id, app=self.app_id).first()
+        if f:
+            return set(f.favorites)
+        else:
+            return set()
 
     def cleaned_query(self, q):
         raise NotImplementedError
@@ -96,12 +116,23 @@ class ExtApplication(Application):
                     ordering += ["-%s" % r["property"]]
                 else:
                     ordering += [r["property"]]
+        fs = None
+        fav_items = None
+        if self.fav_status in q:
+            fs = q.pop(self.fav_status) == "true"
         q = self.cleaned_query(q)
         if None in q:
             ew = q.pop(None)
             data = self.queryset(request, query).filter(**q).extra(where=ew)
         else:
             data = self.queryset(request, query).filter(**q)
+        # Favorites filter
+        if fs is not None:
+            fav_items = self.get_favorite_items(request.user)
+            if fs:
+                data = data.filter(id__in=fav_items)
+            else:
+                data = data.exclude(id__in=fav_items)
         if hasattr(data, "_as_sql"):  # For Models only
             data = data.select_related()
         # Apply sorting
@@ -112,6 +143,12 @@ class ExtApplication(Application):
         if start is not None and limit is not None:
             data = data[int(start):int(start) + int(limit)]
         out = [formatter(o, fields=only) for o in data]
+        # Set favorites
+        if not only and formatter == self.instance_to_dict:
+            if fav_items is None:
+                fav_items = self.get_favorite_items(request.user)
+            for r in out:
+                r[self.fav_status] = r["id"] in fav_items
         if format == "ext":
             out = {
                 "total": total,
@@ -127,3 +164,48 @@ class ExtApplication(Application):
         Static file server
         """
         return serve_static(request, path, document_root=self.document_root)
+
+    @view(url="^favorites/app/(?P<action>set|reset)/$",
+        method=["POST"],
+        access=PermitLogged(), api=True)
+    def api_favorites_app(self, request, action):
+        """
+        Set/reset favorite app status
+        """
+        v = action == "set"
+        fv = Favorites.objects.filter(
+            user=request.user.id, app=self.app_id).first()
+        if fv:
+            if fv.favorite_app != v:
+                fv.favorite_app = v
+                fv.save()
+        elif v:
+            Favorites(user=request.user, app=self.app_id,
+                favorite_app=v).save()
+        return True
+
+    @view(url="^favorites/item/(?P<item>[0-9a-f]+)/(?P<action>set|reset)/$",
+        method=["POST"],
+        access=PermitLogged(), api=True)
+    def api_favorites_items(self, request, item, action):
+        """
+        Set/reset favorite items
+        """
+        v = action == "set"
+        item = self.fav_convert(item)
+        fv = Favorites.objects.filter(
+            user=request.user.id, app=self.app_id).first()
+        if fv:
+            fi = fv.favorites
+            if v and item not in fi:
+                fv.favorites += [item]
+                fv.save()
+            elif not v and item in fi:
+                fi.remove(item)
+                fv.favorites = fi
+                fv.save()
+        elif v:
+            # Add single item
+            Favorites(user=request.user, app=self.app_id,
+                favorites=[item]).save()
+        return True
