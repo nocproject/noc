@@ -89,6 +89,12 @@ class ExtModelApplication(ExtApplication):
         else:
             return None
 
+    def fav_convert(self, item):
+        """
+        Convert favorite item from string to storage format
+        """
+        return int(item)
+
     def get_custom_fields(self):
         from noc.main.models import CustomField
         return list(CustomField.table_fields(self.model._meta.db_table))
