@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Application class
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ from __future__ import with_statement
 import logging
 import os
 import datetime
+import functools
 ## Django modules
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect,\
@@ -96,6 +97,8 @@ class ApplicationBase(type):
     def __new__(cls, name, bases, attrs):
         global site
         m = type.__new__(cls, name, bases, attrs)
+        for name in attrs:
+            m.add_to_class(name, attrs[name])
         if "apps" in m.__module__:
             site.register(m)
         return m
@@ -126,6 +129,23 @@ class Application(object):
             ["MODULE_NAME"]).MODULE_NAME
         self.app_id = "%s.%s" % (self.module, self.app)
         self.menu_url = None   # Set by site.autodiscover()
+
+    @classmethod
+    def add_to_class(cls, name, value):
+        if hasattr(value, "contribute_to_class"):
+            value.contribute_to_class(cls, name)
+        else:
+            setattr(cls, name, value)
+
+    @classmethod
+    def add_view(cls, name, func, url, access, url_name=None,
+                 menu=None, method=None, validate=None, api=False):
+        # Decorate function to clear attributes
+        f = functools.partial(func)
+        # Add to class
+        cls.add_to_class(name,
+            view(url=url, access=access, url_name=url_name, menu=menu,
+                method=method, validate=validate, api=api)(f))
 
     @property
     def js_app_class(self):
