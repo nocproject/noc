@@ -19,6 +19,7 @@ from noc.lib.middleware import set_user
 from noc.settings import LANGUAGE_CODE
 from noc.main.auth.backends import backend as auth_backend
 from noc.main.models import Group, UserSession, UserState, Permission
+from noc.main.models.favorites import Favorites
 
 
 class DesktopApplication(ExtApplication):
@@ -429,3 +430,18 @@ class DesktopApplication(ExtApplication):
                 s = UserState(user_id=uid, key=name, value = value)
             s.save()
         return True
+
+    @view(url="^favapps/$", method=["GET"],
+        access=PermitLogged(), api=True)
+    def api_favapps(self, request):
+        favapps = [f.app for f in
+                   Favorites.objects.filter(
+                       user=request.user.id,
+                       favorite_app=True).only("app")]
+        return [
+            {
+                "app": fa,
+                "title": self.site.apps[fa].title,
+                "launch_info": self.site.apps[fa].get_launch_info(request)
+            } for fa in favapps
+        ]
