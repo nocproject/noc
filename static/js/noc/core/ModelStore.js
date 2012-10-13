@@ -28,6 +28,15 @@ Ext.define("NOC.core.ModelStore", {
                 defaultValues[field.name] = dv;
             }
         }
+        // Additional fields
+        fields = fields.concat([
+            {
+                name: "fav_status",
+                type: "boolean",
+                persist: false
+            }
+        ]);
+
         Ext.apply(config, {
             // model: config.model,
             model: null,
