@@ -97,9 +97,10 @@ def sync_request(channels, request, object=None, delta=None):
     if not channels:
         return
     data = {
-        "request": request,
-        "channels": channels
+        "request": request
     }
     if object:
         data["object"] = object
-    submit_job("main.jobs", "main.sync_request", data=data, delta=delta)
+    for c in channels:
+        sliding_job("main.jobs", "main.sync_request", key=c,
+        data=data, delta=delta, cutoff_delta=60)
