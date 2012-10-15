@@ -19,10 +19,10 @@ class SyncCtlJob(Job):
         """
         data contains:
         {
-            cmd: <command>,
-            object: <object name>,
-            channels: <channels to notify>
+            request: <command>,
+            [ object: <object name> ]
         }
+        key contains name of the channel
         :param args:
         :param kwargs:
         :return:
@@ -30,7 +30,6 @@ class SyncCtlJob(Job):
         msg = {"cmd": "request", "request": self.data["request"]}
         if "object" in self.data:
             msg["object"] = self.data["object"]
-        for channel in self.data["channels"]:
-            self.scheduler.daemon.send(
-                msg, destination="/queue/sync/%s/" % channel)
+        self.scheduler.daemon.send(
+            msg, destination="/queue/sync/%s/" % self.key)
         return True
