@@ -91,7 +91,11 @@ class Script(NOCScript):
 
         # Get LLDP
         lldp = set()
-        buf = self.cli("sh lldp config")
+        try:
+            buf = self.cli("sh lldp config")
+        except self.CLISyntaxError:
+            # On 3526S LLDP is not supported
+            buf = ""
         for p in buf.splitlines():
             match = self.rx_lldp_35xx.match(p)
             if match:
