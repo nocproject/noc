@@ -20,7 +20,7 @@ class Script(noc.sa.script.Script):
     rx_arp_line_vrp5 = re.compile(r"^(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)\s+\d*\s+.{3}\s+(?P<interface>\S+)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
     @NOCScript.match(version__startswith="5.")
-    def execute_vrp5(self):
+    def execute_vrp5(self, vrf=None):
         if self.match_version(version__startswith="5.3"):
             displayarp = "display arp"
         else:
@@ -30,7 +30,7 @@ class Script(noc.sa.script.Script):
     rx_arp_line_vrp3 = re.compile(r"^\s*(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+\d+\s+(?P<type>D|S)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
     @NOCScript.match()
-    def execute_vrp3(self):
+    def execute_vrp3(self, vrf=None):
         arp = self.cli("display arp")
         return [{
             "ip": match.group("ip"),
