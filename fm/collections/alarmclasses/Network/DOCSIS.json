@@ -309,7 +309,7 @@
         "is_unique": true,
         "discriminator": ["interface"],
         "user_clearable": true,
-        "default_severity__name": "WARNING",
+        "default_severity__name": "MAJOR",
         "vars": [
             {
                 "name": "interface",

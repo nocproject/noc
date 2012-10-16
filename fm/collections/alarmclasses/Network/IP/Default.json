@@ -13,14 +13,12 @@
                 "type": "ip_address",
                 "required": true
             },
-            
             {
                 "name": "mac",
                 "description": "MAC",
                 "type": "mac",
                 "required": false
             },
-            
             {
                 "name": "interface",
                 "description": "Interface",

@@ -71,7 +71,7 @@
         "is_unique": true,
         "discriminator": ["interface"],
         "user_clearable": true,
-        "default_severity__name": "WARNING",
+        "default_severity__name": "INFO",
         "vars": [
             {
                 "name": "interface",
@@ -115,7 +115,7 @@
         "is_unique": true,
         "discriminator": ["invalid_rp"],
         "user_clearable": true,
-        "default_severity__name": "WARNING",
+        "default_severity__name": "INFO",
         "vars": [
             {
                 "name": "pim_router",
