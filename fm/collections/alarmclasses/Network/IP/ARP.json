@@ -5,7 +5,7 @@
         "is_unique": true,
         "discriminator": ["ip", "from_mac", "to_mac"],
         "user_clearable": true,
-        "default_severity__name": "WARNING",
+        "default_severity__name": "INFO",
         "vars": [
             {
                 "name": "interface",
