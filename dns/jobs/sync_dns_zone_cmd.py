@@ -24,17 +24,19 @@ class SyncDNSZoneCmdJob(SyncJob):
         :param object:
         :return:
         """
-        zones = set()
+        # Get all related profiles
+        profiles = set()
         for ns in DNSServer.objects.filter(sync_channel=channel):
-            for p in ns.masters.all():
-                zones |= set((z.name, z.serial)
-                    for z in p.dnszone_set.filter(is_auto_generated=True))
-            for p in ns.slaves.all():
-                zones |= set((z.name, z.serial)
-                    for z in p.dnszone_set.filter(is_auto_generated=True))
+            profiles |= set(ns.masters.all())
+            profiles |= set(ns.slaves.all())
+        # Get zone list
+        zones = dict((z.name, z.serial)
+            for z in DNSZone.objects.filter(
+                is_auto_generated=True, profile__in=profiles))
+        # Send LIST message
         self.send({
             "cmd": "list",
-            "items": dict(zones)
+            "items": zones
         }, destination="/queue/sync/dns/zone/%s/" % channel)
         return True
 
