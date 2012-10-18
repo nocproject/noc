@@ -474,7 +474,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%C7600_ENV-SP-4-MINORTEMPALARM: (?P<name>.+) temperature crossed threshold #1\\(=(?P<min>\\S+\\). It has exceeded normal operating temperature range."
+                "value_re": "%C7600_ENV-SP-4-MINORTEMPALARM: (?P<name>.+) temperature crossed threshold #1\\(=(?P<min>\\S+)\\). It has exceeded normal operating temperature range."
             }
         ]
     },
@@ -495,7 +495,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%C7600_ENV-SP-4-MINORTEMPALARMRECOVER: (?P<name>.+) temperature crossed threshold #1\\(=(?P<min>\\S+\\). It has returned to normal operating temperature range."
+                "value_re": "%C7600_ENV-SP-4-MINORTEMPALARMRECOVER: (?P<name>.+) temperature crossed threshold #1\\(=(?P<min>\\S+)\\). It has returned to normal operating temperature range."
             }
         ]
     },
