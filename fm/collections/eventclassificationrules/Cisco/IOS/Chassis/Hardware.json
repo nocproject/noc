@@ -213,5 +213,26 @@
                 "value_re": "%HARDWARE-3-ASICNUM_ERROR: Port-ASIC number (?P<interface>\\d+) is invalid."
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Hardware Port Error #3 (SYSLOG)",
+        "description": "%ILACC-5-LATECOLL: Unit 0, late collision error",
+        "event_class__name": "Chassis | Hardware | Hardware Port Error",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "LATECOLL: (?P<interface>.+), [Ll]ate collision"
+            }
+        ]
     }
 ]
