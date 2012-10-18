@@ -11,7 +11,7 @@ from django.http import HttpResponse
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.nosql import (StringField, BooleanField, GeoPointField,
-                           ForeignKeyField, Q)
+                           ForeignKeyField, PlainReferenceField, Q)
 from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
                                ModelParameter)
 from noc.lib.validators import is_int
@@ -123,6 +123,9 @@ class ExtDocApplication(ExtApplication):
                 elif isinstance(f, ForeignKeyField):
                     r["%s__label" % f.name] = unicode(v)
                     v = v.id
+                elif isinstance(f, PlainReferenceField):
+                    r["%s__label" % f.name] = unicode(v)
+                    v = str(v.id)
                 elif type(v) not in (str, unicode, int, long, bool):
                     if hasattr(v, "id"):
                         v = v.id
