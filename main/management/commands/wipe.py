@@ -98,8 +98,9 @@ class Command(BaseCommand):
         :return: None
         """
         from noc.sa.models import ManagedObjectAttribute
-        from noc.inv.models import ForwardingInstance,\
-                                   Interface, SubInterface, Link
+        from noc.inv.models import (ForwardingInstance,
+                                   Interface, SubInterface, Link,
+                                   MACDB)
         from noc.fm.models import NewEvent, FailedEvent,\
                                   ActiveEvent, ArchivedEvent,\
                                   ActiveAlarm, ArchivedAlarm
@@ -128,6 +129,9 @@ class Command(BaseCommand):
                             ia.save()
                     # Delete alarm
                     a.delete()
+        # Wiping MAC DB
+        with self.log("Wiping MAC DB"):
+            MACDB.objects.filter(managed_object__id=o.id).delete()
         # Wiping interfaces, subs and links
         with self.log("Deleting forwarding instances, "
                       "interfaces, subinterfaces and links"):
