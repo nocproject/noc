@@ -5,8 +5,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "MPLS LSP Up: {{name}}{% if bandwidth %}({{bandwidth}} bps){% endif %}",
-                "body_template": "MPLS LSP Up: {{name}}{% if bandwidth %}({{bandwidth}} bps){% endif %}",
+                "subject_template": "MPLS LSP Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){% endif %}",
+                "body_template": "MPLS LSP Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -19,7 +19,6 @@
                 "type": "str",
                 "required": true
             },
-            
             {
                 "name": "bandwidth",
                 "description": "Bandwidth (bps)",
@@ -73,8 +72,8 @@
         "action": "A",
         "text" : {
             "en": {
-                "subject_template": "MPLS Path Up: {{name}}{% if bandwidth %}({{bandwidth}} bps){%endif%}",
-                "body_template": "MPLS Path Up: {{name}}{% if bandwidth %}({{bandwidth}} bps){%endif%}",
+                "subject_template": "MPLS Path Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){%endif%}",
+                "body_template": "MPLS Path Up: {{name}}{% if bandwidth %} ({{bandwidth}} bps){%endif%}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -87,7 +86,6 @@
                 "type": "str",
                 "required": true
             },
-            
             {
                 "name": "bandwidth",
                 "description": "Bandwidth (bps)",
@@ -133,15 +131,15 @@
             }
         ]
     },
-    
+
     {
         "name": "Network | MPLS | LDP Neighbor Up",
         "description": "MPLS LDP Neighbor Up",
         "action": "A",
         "text": {
             "en": {
-                "subject_template": "MPLS LDP Neighbor Up: {{neighbor}}",
-                "body_template": "MPLS LDP Neighbor Up: {{neighbor}}",
+                "subject_template": "MPLS LDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+                "body_template": "MPLS LDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -153,6 +151,12 @@
                 "description": "LDP Neighbor",
                 "type": "ip_address",
                 "required": true
+            },
+            {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
+                "required": false
             }
         ],
         "disposition": [
@@ -170,8 +174,8 @@
         "action": "A",
         "text": {
             "en": {
-                "subject_template": "MPLS LDP Neighbor Down: {{neighbor}} ({{reason}})",
-                "body_template": "MPLS LDP Neighbor Down: {{neighbor}} ({{reason}})",
+                "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+                "body_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
@@ -188,7 +192,7 @@
                 "name": "reason",
                 "description": "Reason",
                 "type": "str",
-                "required": true
+                "required": false
             }
         ],
         "disposition": [
@@ -196,6 +200,78 @@
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Network | MPLS | LDP Neighbor Down"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | MPLS | TDP Neighbor Up",
+        "description": "MPLS TDP Neighbor Up",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "MPLS TDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+                "body_template": "MPLS TDP Neighbor Up: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "neighbor",
+                "description": "TDP Neighbor",
+                "type": "ip_address",
+                "required": true
+            },
+            {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Network | MPLS | TDP Neighbor Down"
+            }
+        ]
+    },
+
+    {
+        "name": "Network | MPLS | TDP Neighbor Down",
+        "description": "MPLS TDP Neighbor Down",
+        "action": "A",
+        "text": {
+            "en": {
+                "subject_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+                "body_template": "MPLS TDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "neighbor",
+                "description": "TDP Neighbor",
+                "type": "ip_address",
+                "required": true
+            },
+            {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name": "Network | MPLS | TDP Neighbor Down"
             }
         ]
     }
