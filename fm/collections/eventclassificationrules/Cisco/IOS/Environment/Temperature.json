@@ -459,6 +459,48 @@
     },
 
     {
+        "name": "Cisco | IOS | Environment | Temperature Out of Range #13 (SYSLOG)",
+        "description": "%C7600_ENV-SP-4-MINORTEMPALARM: module 4 device-1 temperature crossed threshold #1(=60C). It has exceeded normal operating temperature range.",
+        "event_class__name": "Environment | Temperature Out of Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C7600_ENV-SP-4-MINORTEMPALARM: (?P<name>.+) temperature crossed threshold #1\\(=(?P<min>\\S+\\). It has exceeded normal operating temperature range."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #13 (SYSLOG)",
+        "description": "%C7600_ENV-SP-4-MINORTEMPALARMRECOVER: module 4 device-1 temperature crossed threshold #1(=60C). It has returned to normal operating temperature range.",
+        "event_class__name": "Environment | Temperature Returned to Normal Range",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C7600_ENV-SP-4-MINORTEMPALARMRECOVER: (?P<name>.+) temperature crossed threshold #1\\(=(?P<min>\\S+\\). It has returned to normal operating temperature range."
+            }
+        ]
+    },
+
+    {
         "name": "Cisco | IOS | Environment | Temperature Out of Range #1 (SNMP)",
         "description": "CISCO-ENVMON-MIB::ciscoEnvMonTemperatureNotification",
         "event_class__name": "Environment | Temperature Out of Range",
