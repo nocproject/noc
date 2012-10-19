@@ -22,10 +22,18 @@ class Script(NOCScript):
                           re.MULTILINE)
     rx_platform = re.compile(r"^(?P<platform>.+?)\s+named\s+", re.MULTILINE)
 
+    rx_platform1 = re.compile(r"^Name\s+: (?P<platform>.+?)\s+Date",
+        re.MULTILINE)
+
     def execute(self):
         m = self.motd
+        try:
+            platform = self.re_search(self.rx_platform, m).group("platform")
+        except self.CLISyntaxError:
+            platform = self.re_search(self.rx_platform1, m).group("platform")
+
         return {
             "vendor": "APC",
-            "platform": self.re_search(self.rx_platform, m).group("platform"),
+            "platform": platform.strip(),
             "version": self.re_search(self.rx_fwver, m).group("version")
             }
