@@ -16,6 +16,6 @@ class Profile(NOCProfile):
     supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
     pattern_username = r"^User Name\s+:"
     pattern_password = r"^Password\s+:"
-    pattern_prompt = r"^>"
+    pattern_prompt = r"^(\S+)?>"
     pattern_more = r"^Press <ENTER> to continue...$"
     command_submit = "\r"
