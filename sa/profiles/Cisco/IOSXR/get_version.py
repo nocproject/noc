@@ -19,8 +19,8 @@ class Script(NOCScript):
     cache = True
     implements = [IGetVersion]
 
-    rx_ver = re.compile(r"^Cisco IOS XR Software, Version\s+(?P<version>\S+\[\d+\]).+cisco\s+(?P<platform>\d+)/PRP", re.MULTILINE | re.DOTALL)
-    rx_snmp_ver = re.compile(r"Cisco IOS XR Software \(Cisco (?P<platform>\S+/PRP)\),\s+Version\s+(?P<version>\S+\[\d+\])")
+    rx_ver = re.compile(r"^Cisco IOS XR Software, Version\s+(?P<version>\S+)\[\S+\].+cisco\s+(?P<platform>\S+)( Series)? \(\S+\) processor with \d+", re.MULTILINE | re.DOTALL)
+    rx_snmp_ver = re.compile(r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\s+\w+\).+\s+Version\s+(?P<version>\S+)\[\S+\]")
 
     def execute(self):
         if self.snmp and self.access_profile.snmp_ro:
@@ -30,7 +30,7 @@ class Script(NOCScript):
                 return {
                     "vendor"     : "Cisco",
                     "platform"   : match.group("platform"),
-                    "version"    : match.group("version"),
+                    "version"    : match.group("version")
                 }
             except self.snmp.TimeOutError:
                 pass
