@@ -27,13 +27,13 @@ class Script(NOCScript):
 
     def execute(self):
         m = self.motd
-        try:
-            platform = self.re_search(self.rx_platform, m).group("platform")
-        except self.CLISyntaxError:
-            platform = self.re_search(self.rx_platform1, m).group("platform")
+        match = self.rx_platform.search(m)
+        if not match:
+            match = self.rx_platform1.search(m)
+        platform = match.group("platform").strip()
 
         return {
             "vendor": "APC",
-            "platform": platform.strip(),
+            "platform": platform,
             "version": self.re_search(self.rx_fwver, m).group("version")
             }
