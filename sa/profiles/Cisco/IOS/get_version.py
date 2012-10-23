@@ -19,7 +19,7 @@ class Script(NOCScript):
     cache = True
     implements = [IGetVersion]
 
-    rx_ver = re.compile(r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (IOS-XE Software,\s)?(?P<platform>.+?) Software \((?P<image>[^)]+)\), Version (?P<version>[^\s,]+)", re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (IOS-XE Software,\s)?(?P<platform>.+?) Software \((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^\s,]+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (?P<platform>.+?) Software \((?P<image>[^)]+)\), Version (?P<version>[^,]+),", re.MULTILINE | re.DOTALL)
     rx_platform = re.compile(r"^cisco (?P<platform>\S+) \(\S+\) processor with",
         re.IGNORECASE | re.MULTILINE)
