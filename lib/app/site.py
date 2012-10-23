@@ -104,6 +104,7 @@ class Site(object):
                               config.getboolean("main", "log_api_calls"))
         self.log_sql_statements = config.getboolean("main",
                                                     "log_sql_statements")
+        self.app_contributors = defaultdict(set)
 
     @property
     def urls(self):
@@ -413,6 +414,9 @@ class Site(object):
         if (hasattr(app, "launch_access") and
             hasattr(app, "menu") and app.menu):
             self.add_app_menu(app)
+        # Register contributors
+        for c in self.app_contributors[app.__class__]:
+            c.set_app(app)
 
     def add_module_menu(self, m):
         mod_name = __import__(m, {}, {}, ["MODULE_NAME"]).MODULE_NAME
@@ -516,6 +520,8 @@ class Site(object):
         item["id"] = menu_id
         self.menu_index[menu_id] = item
 
+    def add_contributor(self, cls, contributor):
+        self.app_contributors[cls].add(contributor)
 
 ##
 ## Global application site instance
