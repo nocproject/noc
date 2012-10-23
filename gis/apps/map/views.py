@@ -27,8 +27,8 @@ class MapAppplication(ExtApplication):
         :param request:
         :return:
         """
-        enable_xyz = config.get("gis", "enable_xyz_maps")
-        enable_tms = config.get("gis", "enable_tms_maps")
+        enable_xyz = config.getboolean("gis", "enable_xyz_maps")
+        enable_tms = config.getboolean("gis", "enable_tms_maps")
         layers = []
         for m in Map.objects.filter(is_active=True).order_by("name"):
             # XYZ layer
