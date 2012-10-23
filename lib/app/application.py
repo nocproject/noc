@@ -146,6 +146,7 @@ class Application(object):
         cls.add_to_class(name,
             view(url=url, access=access, url_name=url_name, menu=menu,
                 method=method, validate=validate, api=api)(f))
+        site.add_contributor(cls, func.im_self)
 
     @property
     def js_app_class(self):
