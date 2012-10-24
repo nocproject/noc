@@ -74,7 +74,7 @@ class AlarmManagedApplication(Application):
         order_by = forms.ChoiceField(label="Order by",
                                      required=False,
                                      choices=[
-                                            ("-timestamp", "Timestamp"),
+                                            ("-id", "Timestamp"),
                                             ("-severity", "Severity")
                                         ])
 
