@@ -206,7 +206,7 @@ class EventAppplication(Application):
         count = events.count()
         u_lang = request.session["django_language"]
         
-        events = list(events.order_by("-timestamp")[lr:rr])
+        events = list(events.order_by("-id")[lr:rr])
         checkpoints = []
         if events:
             # Get visible checkpoints
@@ -215,7 +215,7 @@ class EventAppplication(Application):
             q = Q(user=request.user) | Q(private=False)
             cpq = Checkpoint.objects.filter(timestamp__gte=min_time,
                                             timestamp__lte=max_time)
-            checkpoints = list(cpq.filter(q).order_by("-timestamp"))
+            checkpoints = list(cpq.filter(q).order_by("-id"))
         
         for e in events:
             # Insert checkpoints
