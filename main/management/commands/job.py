@@ -25,7 +25,10 @@ class Command(BaseCommand):
         make_option("--scheduler", "-s",
             dest="scheduler",
             default="main.jobs",
-            choices=["main.jobs"],
+            choices=[
+                "main.jobs",
+                "inv.discovery"
+                ],
             help="Select scheduler"),
         make_option("--list", "-l",
             action="store_const",
