@@ -8,7 +8,10 @@ console.debug("Defining NOC.core.ModelApplication");
 
 Ext.define("NOC.core.ModelApplication", {
     extend: "NOC.core.Application",
-    requires: ["NOC.core.ModelStore"],
+    requires: [
+        "NOC.core.ModelStore",
+        "NOC.core.InlineModelStore"
+    ],
     layout: "fit",
     search: false,
     filters: null,
@@ -235,6 +238,85 @@ Ext.define("NOC.core.ModelApplication", {
             }
         ].concat(me.formToolbar);
 
+        // Prepare inlines grid
+        var formInlines = [];
+        me.inlineStores = [];
+        if(me.inlines) {
+            for(var i = 0; i < me.inlines.length; i++) {
+                var inline = me.inlines[i],
+                    istore = Ext.create("NOC.core.InlineModelStore", {
+                        model: inline.model
+                    }),
+                    gp = {
+                        xtype: "gridpanel",
+                        columns: inline.columns,
+                        store: istore,
+                        selType: "rowmodel",
+                        plugins: [
+                            Ext.create("Ext.grid.plugin.RowEditing", {
+                                clicksToEdit: 2
+                            })
+                        ],
+                        tbar: [
+                            {
+                                text: "Add",
+                                iconCls: "icon_add",
+                                handler: function() {
+                                    var grid = this.up("panel"),
+                                        rowEditing = grid.plugins[0];
+                                    rowEditing.cancelEdit();
+                                    grid.store.insert(0, {});
+                                    rowEditing.startEdit(0, 0);
+                                }
+                            },
+                            {
+                                text: "Delete",
+                                iconCls: "icon_delete",
+                                handler: function() {
+                                    var grid = this.up("panel"),
+                                        sm = grid.getSelectionModel(),
+                                        rowEditing = grid.plugins[0];
+                                    rowEditing.cancelEdit();
+                                    grid.store.remove(sm.getSelection());
+                                    if(grid.store.getCount() > 0) {
+                                        sm.select(0);
+                                    }
+                                }
+                            }
+                        ],
+                        /*dockedItems: [
+                            {
+                                xtype: "pagingtoolbar",
+                                store: istore,
+                                dock: "bottom",
+                                displayInfo: true
+                            }
+                        ],*/
+                        listeners: {
+                            validateedit: function(editor, e) {
+                                // @todo: Bring to plugin
+                                var form = editor.editor.getForm();
+                                // Process comboboxes
+                                form.getFields().each(function(field) {
+                                    e.record.set(field.name, field.getValue());
+                                    if(Ext.isDefined(field.getLookupData))
+                                        e.record.set(field.name + "__label",
+                                                     field.getLookupData());
+                                    });
+                            }
+                        }
+                    },
+                    r = {
+                        xtype: "fieldset",
+                        anchor: "100%",
+                        title: inline.title,
+                        collapsible: true,
+                        items: [gp]
+                    }
+                formInlines = formInlines.concat(r);
+                me.inlineStores = me.inlineStores.concat(istore);
+            }
+        }
         var formPanel = {
             xtype: 'container',
             itemId: "form",
@@ -267,10 +349,11 @@ Ext.define("NOC.core.ModelApplication", {
                     {
                         xtype: "hiddenfield",
                         name: "id"
-                    }].concat(me.fields).concat(me.noc.cust_form_fields || []),
+                    }].concat(me.fields).concat(me.noc.cust_form_fields || []).concat(formInlines),
                 tbar: me.applyPermissions(formToolbar),
                 listeners: {
                     beforeadd: function(me, field) {
+                        // Change label style for required fields
                         if(!field.allowBlank)
                            field.labelClsExtra = "noc-label-required";
                     }
@@ -339,16 +422,38 @@ Ext.define("NOC.core.ModelApplication", {
             // Change
             record = me.currentRecord;
             record.set(data);
-
         } else {
             // Create
             record = me.store.add([data])[0];
+            var rIndex = me.store.indexOf(record);
         }
         me.store.sync({
             scope: me,
             success: function() {
-                this.toggle();
-                this.reloadStore();
+                var me = this;
+                if(me.inlineStores.length) {
+                    // @todo: Save several inlines
+                    var istore = me.inlineStores[0];
+                    if(!me.currentRecord) {
+                        // Record created, set parent id
+                        var r = me.store.getAt(rIndex);
+                        istore.setParent(r.get("id"));
+                    }
+                    // Save inline
+                    istore.sync({
+                        scope: me,
+                        success: function() {
+                            this.toggle();
+                            this.reloadStore();
+                        },
+                        failure: function(response, op, status) {
+                            this.showOpError("save", op, status);
+                        }
+                    });
+                } else {
+                    me.toggle();
+                    me.reloadStore();
+                }
             },
             failure: function(response, op, status) {
                 if(record.phantom) {
@@ -384,6 +489,7 @@ Ext.define("NOC.core.ModelApplication", {
             me.form.setValues(defaultValues);
         }
         me.currentRecord = null;
+        me.resetInlines();
         me.setFormTitle(me.createTitle);
         me.toggle();
         // Focus on first field
@@ -405,6 +511,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.toggle();
         // Load records
         me.form.loadRecord(record);
+        me.loadInlines();
         // Focus on first field
         me.focusOnFirstField();
         // Activate delete button
@@ -596,6 +703,25 @@ Ext.define("NOC.core.ModelApplication", {
                 // Invert current status
                 r.set("fav_status", !r.get("fav_status"));
             }
+        });
+    },
+    //
+    resetInlines: function() {
+        var me = this;
+        Ext.each(me.inlineStores, function(istore) {
+            istore.loadData([]);
+        });
+    },
+    // Load inline stores
+    loadInlines: function() {
+        var me = this;
+        // Do not load store on new record
+        if(!me.currentRecord || !me.inlineStores.length)
+            return;
+        var parentId = me.currentRecord.get("id");
+        Ext.each(me.inlineStores, function(istore) {
+            istore.setParent(parentId);
+            istore.load();
         });
     }
 });

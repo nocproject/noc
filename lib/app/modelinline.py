@@ -117,6 +117,8 @@ class ModelInline(object):
                 self.parent_rel = f.name
                 break
         assert self.parent_rel
+        if self.parent_rel in self.clean_fields:
+            del self.clean_fields[self.parent_rel]
 
     def get_custom_fields(self):
         from noc.main.models import CustomField
@@ -174,7 +176,7 @@ class ModelInline(object):
         else:
             return self.model.objects.all()
 
-    def clean(self, data):
+    def clean(self, data, parent):
         """
         Clean up input data
         :param data: dict of parameters
@@ -185,9 +187,11 @@ class ModelInline(object):
         # Delete id
         if "id" in data:
             del data["id"]
+        # Forcefully set parent
+        data[self.parent_rel] = parent
         # Clean up fields
         for f in self.clean_fields:
-            if f in data:
+            if f in data and f != self.parent_rel:
                 data[f] = self.clean_fields[f].clean(data[f])
         # Dereference fields
         refs = [f for f in data if "__" in f]
@@ -337,7 +341,7 @@ class ModelInline(object):
         parent = self.app.get_object_or_404(
             self.parent_model, id=int(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data))
+            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
         except ValueError, why:
             return self.app.render_json(
                     {
@@ -373,7 +377,7 @@ class ModelInline(object):
                     "message": "Duplicated record"
                 }, status=self.CONFLICT)
         except self.model.DoesNotExist:
-            attrs[self.parent] = parent
+            attrs[self.parent_rel] = parent
             o = self.model(**attrs)
             try:
                 o.save()
@@ -383,8 +387,15 @@ class ModelInline(object):
                         "status": False,
                         "message": "Integrity error"
                     }, status=self.CONFLICT)
-            return self.app.response(self.instance_to_dict(o),
-                status=self.CREATED)
+            format = request.GET.get(self.format_param)
+            if format == "ext":
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.app.response(r, status=self.CREATED)
 
     def api_read(self, request, parent, id):
         """
@@ -405,7 +416,7 @@ class ModelInline(object):
         parent = self.app.get_object_or_404(
             self.parent_model, id=int(parent))
         try:
-            attrs = self.clean(self.app.deserialize(request.raw_post_data))
+            attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
         except ValueError, why:
             return self.app.render_json(
                     {

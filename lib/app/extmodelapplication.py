@@ -340,7 +340,16 @@ class ExtModelApplication(ExtApplication):
                         "status": False,
                         "message": "Integrity error"
                     }, status=self.CONFLICT)
-            return self.response(self.instance_to_dict(o), status=self.CREATED)
+            # Check format
+            format = request.GET.get(self.format_param)
+            if format == "ext":
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.CREATED)
 
     @view(method=["GET"], url="^(?P<id>\d+)/?$", access="read", api=True)
     def api_read(self, request, id):
