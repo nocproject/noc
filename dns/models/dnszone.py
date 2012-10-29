@@ -180,7 +180,7 @@ class DNSZone(models.Model):
     def records(self):
         """
         All zone records. Zone records returned as list of tuples
-        (left, type, right), where type is RR type.
+        (name, type, content), where type is RR type.
 
         :return: Zone records
         :trype: List of tuples
@@ -285,8 +285,17 @@ class DNSZone(models.Model):
         SOA record
         :return:
         """
-        return [(self.name + ".", "SOA", "%s %s %d %d %d %d %d" % (
-            self.name, self.profile.zone_contact, self.serial,
+        def dotted(s):
+            if not s.endswith("."):
+                return s + "."
+            else:
+                return s
+
+        return [(dotted(self.name),
+                 "SOA", "%s %s %d %d %d %d %d" % (
+            dotted(self.profile.zone_soa),
+            dotted(self.profile.zone_contact),
+            self.serial,
             self.profile.zone_refresh, self.profile.zone_retry,
             self.profile.zone_expire,
             self.profile.zone_ttl), self.profile.zone_ttl, None)]
@@ -396,9 +405,9 @@ class DNSZone(models.Model):
         """
         ttl = self.profile.zone_ttl
         return [
-            (r.left, r.type.type, r.right,
+            (r.name, r.type, r.content,
              r.ttl if r.ttl else ttl, r.priority)
-            for r in self.dnszonerecord_set.exclude(left__contains="/")
+            for r in self.dnszonerecord_set.exclude(name__contains="/")
         ]
 
     def get_classless_delegation(self):
@@ -423,8 +432,8 @@ class DNSZone(models.Model):
         # Subnet delegation macro
         delegations = defaultdict(list)
         for d in [r for r in self.dnszonerecord_set.filter(
-            type__type__contains="NS", left__contains="/")]:
-            delegations[d.left] += [d.right]
+            type__type__contains="NS", name__contains="/")]:
+            delegations[d.name] += [d.content]
         # Perform classless reverse zone delegation
         for d in delegations:
             nses = delegations[d]

@@ -9,5 +9,4 @@
 from dnsserver import DNSServer, generator_registry
 from dnszoneprofile import DNSZoneProfile
 from dnszone import DNSZone
-from dnszonerecordtype import DNSZoneRecordType
 from dnszonerecord import DNSZoneRecord
