@@ -327,6 +327,27 @@
     },
 
     {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Failed #9 (SYSLOG)",
+        "description": "%POWER_SUPPLIES-3-PWR_FAIL: Power supply 2 is not functioning",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%POWER_SUPPLIES-3-PWR_FAIL: (?P<name>Power supply \\d+) is not functioning"
+            }
+        ]
+    },
+
+    {
         "name": "Cisco | IOS | Chassis | PSU | PSU Changed (SYSLOG)",
         "description": "%ENVM-6-PSCHANGE: Power Supply 1 changed from removed to Zytek AC Power Supply",
         "event_class__name": "Chassis | PSU | PSU Changed",
