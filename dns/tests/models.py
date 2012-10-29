@@ -68,8 +68,8 @@ class AccessTestCase(TestCase):
         self.zr41 = DNSZone(name="0.0.10.in-addr.arpa", is_auto_generated=True,
             profile=self.profile1)
         self.zr41.save()
-        DNSZoneRecord(zone=self.zr41, left="8/29", type=self.ns_type,
-            right="ns3.example.com").save()
+        DNSZoneRecord(zone=self.zr41, name="8/29", type=self.ns_type,
+            content="ns3.example.com").save()
         # ZR42
         self.zr42 = DNSZone(name="1.0.10.in-addr.arpa", is_auto_generated=True,
             profile=self.profile1)
