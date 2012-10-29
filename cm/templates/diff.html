@@ -43,6 +43,7 @@
     <FORM METHOD="POST" ACTION="{% cm_url diff o.id %}">{% csrf_token %}
     <TABLE SUMMARY="Revisions" WIDTH="100%">
         <CAPTION>Revisions</CAPTION>
+        <INPUT TYPE="submit" VALUE="Diff">
         {% for rev in o.revisions %}
             <TR>
                 <TD><A HREF="{% cm_url view_revision o.id rev.revision %}">{{rev.revision}}</A></TD>

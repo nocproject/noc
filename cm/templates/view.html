@@ -85,6 +85,7 @@
     <FORM METHOD="POST" ACTION="{% cm_url diff o.id %}">{% csrf_token %}
     <TABLE SUMMARY="Revisions" WIDTH="100%">
         <CAPTION>Revisions</CAPTION>
+        <INPUT TYPE="submit" VALUE="Diff">
         <TBODY>
         {% for rev in o.revisions %}
             <TR class={% ifequal r.revision rev.revision %}"selected"{% else %}"{%cycle 'row1' 'row2'%}"{% endifequal %}>
