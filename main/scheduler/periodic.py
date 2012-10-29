@@ -48,7 +48,8 @@ class PeriodicScheduler(threading.Thread):
                 ).save()
         # Find schedules with unknown class
         for s in Schedule.objects.exclude(periodic_name__in=list(periodic_registry.classes)):
-            s.delete()
+            if not s.periodic_name.startswith("pyrule:"):
+                s.delete()
 
     def launch_task(self, task):
         """
