@@ -13,7 +13,6 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 ## NOC modules
 from dnszone import DNSZone
-from dnszonerecordtype import DNSZoneRecordType
 from noc.lib.fields import AutoCompleteTagsField
 from noc.lib.app.site import site
 
@@ -29,19 +28,19 @@ class DNSZoneRecord(models.Model):
         app_label = "dns"
 
     zone = models.ForeignKey(DNSZone, verbose_name="Zone")
-    left = models.CharField(_("Left"), max_length=32, blank=True, null=True)
+    name = models.CharField(_("Name"), max_length=32, blank=True, null=True)
     ttl = models.IntegerField(_("TTL"), null=True, blank=True)
-    type = models.ForeignKey(DNSZoneRecordType, verbose_name="Type")
+    type = models.CharField(_("Type"), max_length=16)
     priority = models.IntegerField(_("Priority"), null=True, blank=True)
-    right = models.CharField(_("Right"), max_length=64)
+    content = models.CharField(_("Content"), max_length=256)
     tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
 
     def __unicode__(self):
         return u"%s %s" % (self.zone.name,
             " ".join([x
                       for x
-                      in (self.left, self.type.type, self.right)
-                      if x is not None
+                      in (self.name, self.type, self.content)
+                      if x
                     ]))
 
     def get_absolute_url(self):
