@@ -1,34 +1,23 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Custom Field Enum Group
+## main.customfieldenumgroup application
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib import admin
 ## NOC modules
-from noc.lib.app import ModelApplication
+from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.modelinline import ModelInline
 from noc.main.models import CustomFieldEnumGroup, CustomFieldEnumValue
 
 
-class EnumGroupInline(admin.TabularInline):
+class CustomFieldEnumGroupApplication(ExtModelApplication):
     """
-    Enum Group
+    CustomFieldEnumGroup application
     """
-    model = CustomFieldEnumValue
-    extra = 10
-
-
-class EnumGroupAdmin(admin.ModelAdmin):
-    inlines = [EnumGroupInline]
-    list_display = ["name", "is_active", "description"]
-    list_filter = ["is_active"]
-    search_fields = ["name", "description"]
-
-
-class EnumGroupAdminApplication(ModelApplication):
-    model = CustomFieldEnumGroup
-    model_admin = EnumGroupAdmin
+    title = "Enum Groups"
     menu = "Setup | Enum Groups"
+    model = CustomFieldEnumGroup
+
+    values = ModelInline(CustomFieldEnumValue)
