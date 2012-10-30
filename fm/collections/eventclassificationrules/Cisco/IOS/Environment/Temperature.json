@@ -520,7 +520,7 @@
             },
             {
                 "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureStatusDescr\\.\\d+$",
-                "value_re": "(?P<name>.+) temperature"
+                "value_re": "(?P<name>.+) t\\S+"
             },
             {
                 "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureStatusValue\\.\\d+$",
@@ -528,7 +528,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
-                "value_re": "CISCO-ENVMON-MIB::ciscoEnvMonTemperatureNotification"
+                "value_re": "CISCO-ENVMON-MIB::(?:ciscoEnvMonTemperatureNotification|ciscoEnvMonTempStatusChangeNotif)"
             }
         ]
     },
@@ -553,7 +553,7 @@
             },
             {
                 "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureStatusDescr\\.\\d+$",
-                "value_re": "(?P<name>.+) temperature"
+                "value_re": "(?P<name>.+) t\\S+"
             },
             {
                 "key_re": "^CISCO-ENVMON-MIB::ciscoEnvMonTemperatureStatusValue\\.\\d+$",
@@ -561,7 +561,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
-                "value_re": "CISCO-ENVMON-MIB::ciscoEnvMonTempStatusChangeNotif"
+                "value_re": "CISCO-ENVMON-MIB::(?:ciscoEnvMonTemperatureNotification|ciscoEnvMonTempStatusChangeNotif)"
             }
         ]
     }
