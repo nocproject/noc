@@ -28,7 +28,7 @@ class Script(NOCScript):
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
                     "1.3.6.1.2.1.2.2.1.8", bulk=True):
                     # ifOperStatus up(1)
-                    if n.startswith("Stack"):
+                    if n.startswith("Stack") or n.startswith("Voice"):
                         continue
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r
