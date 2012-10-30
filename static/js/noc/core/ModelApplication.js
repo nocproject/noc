@@ -254,7 +254,11 @@ Ext.define("NOC.core.ModelApplication", {
                         selType: "rowmodel",
                         plugins: [
                             Ext.create("Ext.grid.plugin.RowEditing", {
-                                clicksToEdit: 2
+                                clicksToEdit: 2,
+                                listeners: {
+                                    scope: me,
+                                    edit: me.onInlineEdit
+                                }
                             })
                         ],
                         tbar: [
@@ -723,5 +727,12 @@ Ext.define("NOC.core.ModelApplication", {
             istore.setParent(parentId);
             istore.load();
         });
+    },
+    //
+    onInlineEdit: function() {
+        var me = this;
+        if(me.currentRecord) {
+            me.currentRecord.setDirty();
+        }
     }
 });
