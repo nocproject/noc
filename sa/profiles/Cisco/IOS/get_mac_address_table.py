@@ -13,8 +13,12 @@ import re
 class Script(noc.sa.script.Script):
     name = "Cisco.IOS.get_mac_address_table"
     implements = [IGetMACAddressTable]
-    rx_line = re.compile(r"^(?:\*\s+)?(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?:\S+\s+){0,2}(?P<interfaces>.*)$")
-    rx_line2 = re.compile(r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>.*)$")  # Catalyst 3500XL
+    rx_line = re.compile(
+        r"^(?:\*\s+)?(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+"
+        r"(?:\S+\s+){0,2}(?P<interfaces>.*)$")
+    rx_line2 = re.compile(
+        r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+"
+        r"(?P<interfaces>.*)$")  # Catalyst 3500XL
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac address-table"
@@ -45,8 +49,12 @@ class Script(noc.sa.script.Script):
                 mac = match.group("mac")
                 if mac.startswith("3333."):
                     continue  # Static entries
-                interfaces = [i.strip() for i in match.group("interfaces").split(",")]
-                interfaces = [i for i in interfaces if i.lower() not in ("router", "switch", "stby-switch", "yes", "no", "-")]
+                interfaces = [
+                    i.strip() for i in match.group("interfaces").split(",")
+                ]
+                interfaces = [i for i in interfaces if i.lower() not in (
+                    "router", "switch", "stby-switch", "yes", "no", "-", "cpu"
+                    )]
                 if not interfaces:
                     continue
                 m_type = {"dynamic": "D",
