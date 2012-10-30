@@ -432,7 +432,7 @@ class DNSZone(models.Model):
         # Subnet delegation macro
         delegations = defaultdict(list)
         for d in [r for r in self.dnszonerecord_set.filter(
-            type__type__contains="NS", name__contains="/")]:
+            type="NS", name__contains="/")]:
             delegations[d.name] += [d.content]
         # Perform classless reverse zone delegation
         for d in delegations:
