@@ -16,7 +16,7 @@ from noc.fm.correlator.jobs.dispose import AlarmDispositionJob
 class CorrelatorScheduler(Scheduler):
     def __init__(self, correlator=None, cleanup=None):
         super(CorrelatorScheduler, self).__init__(
-            "fm.correlator", cleanup=cleanup)
+            "fm.correlator", cleanup=cleanup, preserve_order=True)
         self.correlator = correlator
         if correlator:
             # Called from correlator
