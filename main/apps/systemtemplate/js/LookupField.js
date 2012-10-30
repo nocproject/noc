@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------
-// NOC.main.template.Lookup
+// NOC.main.systemtemplate.Lookup
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.template.LookupField");
+console.debug("Defining NOC.main.systemtemplate.LookupField");
 
-Ext.define("NOC.main.template.LookupField", {
+Ext.define("NOC.main.systemtemplate.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.template.LookupField",
-    requires: ["NOC.main.template.Lookup"]
+    alias: "widget.main.systemtemplate.LookupField",
+    requires: ["NOC.main.systemtemplate.Lookup"]
 });
