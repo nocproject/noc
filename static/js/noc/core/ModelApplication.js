@@ -279,12 +279,14 @@ Ext.define("NOC.core.ModelApplication", {
                                 handler: function() {
                                     var grid = this.up("panel"),
                                         sm = grid.getSelectionModel(),
-                                        rowEditing = grid.plugins[0];
+                                        rowEditing = grid.plugins[0],
+                                        app = grid.up("panel").up("panel");
                                     rowEditing.cancelEdit();
                                     grid.store.remove(sm.getSelection());
                                     if(grid.store.getCount() > 0) {
                                         sm.select(0);
                                     }
+                                    app.onInlineEdit();
                                 }
                             }
                         ],
