@@ -45,7 +45,8 @@ class Scheduler(object):
     JobExists = JobExists
 
     def __init__(self, name, cleanup=None, reset_running=False,
-                 initial_submit=False, max_threads=None):
+                 initial_submit=False, max_threads=None,
+                 preserve_order=False):
         self.name = name
         self.job_classes = {}
         self.collection_name = self.COLLECTION_BASE + self.name
@@ -57,6 +58,7 @@ class Scheduler(object):
         self.initial_submit = initial_submit
         self.initial_submit_next_check = {}  # job class -> timestamp
         self.max_threads = max_threads
+        self.preserve_order = preserve_order
 
     def debug(self, msg):
         logging.debug("[%s] %s" % (self.name, msg))
@@ -325,7 +327,12 @@ class Scheduler(object):
         }
         if self.ignored:
             q[self.ATTR_CLASS] = {"$nin": self.ignored}
-        for job_data in self.collection.find(q):
+        qs = self.collection.find(q)
+        if self.preserve_order:
+            qs = qs.sort([(self.ATTR_TS, 1), ("_id", 1)])
+        else:
+            qs = qs.sort(self.ATTR_TS)
+        for job_data in qs:
             jcls = self.job_classes.get(job_data[self.ATTR_CLASS])
             if not jcls:
                 # Invalid job class. Park job to FAIL state
