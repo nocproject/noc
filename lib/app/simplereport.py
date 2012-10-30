@@ -365,9 +365,10 @@ class TableColumn(ReportNode):
         """
         Display boolean field
         """
-        t = "yes" if f else "no"
-        return SafeString("<img title='%s' src='%simg/icon-%s.gif' />" % (
-        t, settings.ADMIN_MEDIA_PREFIX, t))
+        if f:
+            return SafeString("<img src='/static/img/fam/silk/tick.png' />")
+        else:
+            return SafeString("<img src='/static/img/fam/silk/cross.png' />")
 
     def f_integer(self, f):
         """
