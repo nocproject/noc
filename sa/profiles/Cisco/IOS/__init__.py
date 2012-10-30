@@ -41,6 +41,14 @@ class Profile(NOCProfile):
             return "BVI" + interface[3:]
         if interface.lower().startswith("e1"):
             return "E1 %s" % interface[2:].strip()
+        if interface.lower().startswith("t1"):
+            return "T1 %s" % interface[2:].strip()
+        if interface.lower().startswith("fxo null"):
+            return "FXO %s" % interface[8:].strip()
+        if interface.lower().startswith("fxs"):
+            return "FXS %s" % interface[3:].strip()
+        if interface.lower().startswith("efxs"):
+            return "EFXS %s" % interface[4:].strip()
         match = self.rx_cable_if.search(interface)
         if match:
             return "Ca %s/%s" % match.group('pr_if'), match.group('sub_if')
