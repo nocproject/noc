@@ -63,8 +63,14 @@ class GroupApplication(ModelApplication):
     model_admin = GroupAdmin
     menu = "Setup | Groups"
     icon = "icon_group"
+    title = "Groups"
 
     @view(url=r"^add/legacy/$", url_name="admin:auth_group_add",
         access="add")
     def view_legacy_add(self, request, form_url="", extra_context=None):
+        return self.response_redirect("..")
+
+    @view(url=r"^legacy/$", url_name="admin:auth_group_changelist",
+        access=True)
+    def view_legacy_changelist(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")
