@@ -10,7 +10,7 @@
 from django.contrib import admin
 from django import forms
 ## NOC modules
-from noc.lib.app import ModelApplication, HasPerm
+from noc.lib.app import ModelApplication, HasPerm, view
 from noc.sa.models import ManagedObjectSelector, ManagedObjectSelectorByAttribute
 
 ##
@@ -79,3 +79,9 @@ class ManagedObjectSelectorApplication(ModelApplication):
         return self.render(request,"test.html",{"data":r})
     view_test.url=r"^test/(?P<objects>\d+(?:,\d+)*)/$"
     view_test.access=HasPerm("change")
+
+    @view(url="^(?P<selector_id>\d+)/members/", method=["GET"],
+        access="read", api=True)
+    def api_members(self, request, selector_id):
+        s = self.get_object_or_404(ManagedObjectSelector, id=int(selector_id))
+        return [o.id for o in s.managed_objects]
