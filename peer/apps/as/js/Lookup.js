@@ -8,6 +8,5 @@ console.debug("Defining NOC.peer.as.Lookup");
 
 Ext.define("NOC.peer.as.Lookup", {
     extend: "NOC.core.Lookup",
-    model: "NOC.peer.as.Model",
     url: "/peer/as/lookup/"
 });

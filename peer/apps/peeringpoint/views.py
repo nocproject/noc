@@ -1,38 +1,21 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## PeeringPoint Manager
+## peer.peeringpoint application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.contrib import admin
 ## NOC modules
-from noc.lib.app import ModelApplication
+from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import PeeringPoint
 
-
-class PeeringPointAdmin(admin.ModelAdmin):
+class PeeringPointApplication(ExtModelApplication):
     """
-    Peering Point admin
+    Peering Point application
     """
-    list_display = ["hostname", "location", "local_as", "router_id",
-                  "profile_name", "communities"]
-    list_filter = ["profile_name"]
-    search_fields = ["hostname", "router_id"]
-    actions = ["rpsl_for_selected"]
-
-    def rpsl_for_selected(self, request, queryset):
-        """
-        Generate RPSL for selected objects
-        """
-        rpsl = "\n\n".join([o.rpsl for o in queryset])
-        return self.app.render_plain_text(rpsl)
-    rpsl_for_selected.short_description = "RPSL for selected objects"
-
-
-class PeeringPointApplication(ModelApplication):
+    title = "Peering Points"
+    menu = "Setup | Peering Points"
     model = PeeringPoint
-    model_admin = PeeringPointAdmin
-    menu="Setup | Peering Points"
+    query_fields = ["hostname__icontains", "router_id__icontains"]
+

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.peer.peeringpoint.Lookup
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.peer.peeringpoint.Lookup");
