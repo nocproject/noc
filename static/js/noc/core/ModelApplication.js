@@ -22,6 +22,7 @@ Ext.define("NOC.core.ModelApplication", {
     createTitle: "Create {0}",
     changeTitle: "Change {0}",
     rowClassField: undefined,
+    actions: undefined,
 
     initComponent: function() {
         var me = this;
@@ -121,6 +122,7 @@ Ext.define("NOC.core.ModelApplication", {
                 c.renderer = eval(c.renderer);
             }
         });
+        var selModel = Ext.create(me.actions ? "Ext.selection.CheckboxModel" : "Ext.selection.Model");
         var gridPanel = {
             xtype: "gridpanel",
             itemId: "grid",
@@ -160,6 +162,7 @@ Ext.define("NOC.core.ModelApplication", {
             stateful: true,
             stateId: app_name + "-grid",
             plugins: [Ext.create("Ext.ux.grid.AutoSize")],
+            selModel: selModel,
             dockedItems: [
                 {
                     xtype: "toolbar",
@@ -195,8 +198,8 @@ Ext.define("NOC.core.ModelApplication", {
                 itemId: "save",
                 text: "Save",
                 iconCls: "icon_disk",
-                formBind: true,
-                disabled: true,
+                // formBind: true,
+                // disabled: true,
                 scope: me,
                 // @todo: check access
                 handler: me.onSave
@@ -290,14 +293,6 @@ Ext.define("NOC.core.ModelApplication", {
                                 }
                             }
                         ],
-                        /*dockedItems: [
-                            {
-                                xtype: "pagingtoolbar",
-                                store: istore,
-                                dock: "bottom",
-                                displayInfo: true
-                            }
-                        ],*/
                         listeners: {
                             validateedit: function(editor, e) {
                                 // @todo: Bring to plugin
@@ -436,30 +431,9 @@ Ext.define("NOC.core.ModelApplication", {
         me.store.sync({
             scope: me,
             success: function() {
-                var me = this;
-                if(me.inlineStores.length) {
-                    // @todo: Save several inlines
-                    var istore = me.inlineStores[0];
-                    if(!me.currentRecord) {
-                        // Record created, set parent id
-                        var r = me.store.getAt(rIndex);
-                        istore.setParent(r.get("id"));
-                    }
-                    // Save inline
-                    istore.sync({
-                        scope: me,
-                        success: function() {
-                            this.toggle();
-                            this.reloadStore();
-                        },
-                        failure: function(response, op, status) {
-                            this.showOpError("save", op, status);
-                        }
-                    });
-                } else {
-                    me.toggle();
-                    me.reloadStore();
-                }
+                var me = this,
+                    parentId = me.store.getAt(rIndex);
+                me.saveInlines(parentId, me.inlineStores);
             },
             failure: function(response, op, status) {
                 if(record.phantom) {
@@ -471,6 +445,31 @@ Ext.define("NOC.core.ModelApplication", {
                 this.showOpError("save", op, status);
             }
         });
+    },
+    //
+    saveInlines: function(parentId, stores) {
+        var me = this;
+        if(stores.length > 0) {
+            var istore = stores[0];
+            if(parentId) {
+                istore.setParent(parentId);
+            }
+            // Save inline
+            istore.sync({
+                scope: me,
+                success: function() {
+                    // Save next
+                    me.saveInlines(parentId, stores.slice(1));
+                },
+                failure: function(response, op, status) {
+                    me.showOpError("save", op, status);
+                }
+            });
+        } else {
+            // Save completed
+            me.toggle();
+            me.reloadStore();
+        }
     },
     // Show Form
     onEditRecord: function(record) {
