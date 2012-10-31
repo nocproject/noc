@@ -1,13 +1,13 @@
 //---------------------------------------------------------------------
-// NOC.peer.rir.LookupField
+// NOC.peer.person.LookupField
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.peer.rir.LookupField");
+console.debug("Defining NOC.peer.person.LookupField");
 
-Ext.define("NOC.peer.rir.LookupField", {
+Ext.define("NOC.peer.person.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.peer.rir.LookupField",
-    requires: ["NOC.peer.rir.Lookup"]
+    alias: "widget.peer.person.LookupField",
+    requires: ["NOC.peer.person.Lookup"]
 });
