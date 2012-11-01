@@ -40,7 +40,8 @@ Ext.define("NOC.core.ModelApplication", {
             pageSize: 1  // Increased by AutoSize plugin
         });
         // Setup Grid toolbar
-        var gridToolbar = [
+        var gridToolbar = [];
+        gridToolbar = gridToolbar.concat([
             {
                 xtype: "textfield",
                 name: "search_field",
@@ -67,7 +68,35 @@ Ext.define("NOC.core.ModelApplication", {
                 scope: me,
                 handler: me.onNewRecord
             }
-        ].concat(me.gridToolbar);
+        ]);
+        // admin actions
+        if(me.actions) {
+            gridToolbar = gridToolbar.concat([{
+                iconCls: "icon_bomb",
+                tooltip: "Group actions",
+                hasAccess: NOC.hasPermission("update"),
+                itemId: "action_menu",
+                disabled: true,
+                menu: {
+                    xtype: "menu",
+                    plain: true,
+                    items: me.actions.map(function(o) {
+                        return {
+                            text: o.title,
+                            itemId: o.action,
+                            form: o.form
+                        }
+                    }),
+                    listeners: {
+                        click: {
+                            scope: me,
+                            fn: me.onAction
+                        }
+                    }
+                }
+            }]);
+        }
+        gridToolbar = gridToolbar.concat(me.gridToolbar);
         // Initialize panels
         // Filters
         var grid_rbar = null;
@@ -122,7 +151,17 @@ Ext.define("NOC.core.ModelApplication", {
                 c.renderer = eval(c.renderer);
             }
         });
-        var selModel = Ext.create(me.actions ? "Ext.selection.CheckboxModel" : "Ext.selection.Model");
+        var selModel;
+        if(me.actions) {
+            selModel = Ext.create("Ext.selection.CheckboxModel", {
+                listeners: {
+                    scope: me,
+                    selectionchange: me.onActionSelectionChange
+                }
+            });
+        } else {
+            selModel = Ext.create("Ext.selection.CheckboxModel");
+        }
         var gridPanel = {
             xtype: "gridpanel",
             itemId: "grid",
@@ -377,6 +416,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.grid = grid;
         me.form = form.getForm();
         me.search_field = gt.getComponent("search_field");
+        me.actionMenu = gt.getComponent("action_menu");
         me.create_button = gt.getComponent("create");
         me.saveButton = ft.getComponent("save");
         me.closeButton = ft.getComponent("close");
@@ -735,5 +775,69 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.currentRecord) {
             me.currentRecord.setDirty();
         }
+    },
+    // Admin action selected
+    onAction: function(menu, item, e) {
+        var me = this,
+            records = me.grid.getSelectionModel().getSelection().map(function(o) {
+                return o.get("id")
+            });
+        if(item.form) {
+            me.showActionForm(item.itemId, item.text, records, item.form);
+        } else {
+            me.runAction(item.itemId, {ids: records});
+        }
+    },
+    //
+    runAction: function(action, params) {
+        var me = this;
+        Ext.Ajax.request({
+            url: me.base_url + "actions/" + action + "/",
+            method: "POST",
+            scope: me,
+            params: params,
+            success: function(response) {
+                var r = Ext.decode(response.responseText) || "OK";
+                NOC.info(r);
+            },
+            failure: function() {
+                NOC.error("Failed");
+            }
+        });
+    },
+    //
+    showActionForm: function(action, title, records, form) {
+        var me = this,
+            w = Ext.create("Ext.Window", {
+            modal: true,
+            autoShow: true,
+            layout: "fit",
+            items: [{
+                xtype: "form",
+                items: form
+            }],
+            title: Ext.String.format("{0} on {1} records",
+                title,
+                records.length),
+            buttons: [{
+                text: "Run",
+                iconCls: "icon_tick",
+                handler: function() {
+                    var form = w.items.first().getForm();
+                    if(!form.isValid()) {
+                        NOC.error("Error");
+                        return;
+                    }
+                    var params = form.getValues();
+                    params.ids = records;
+                    w.close();
+                    me.runAction(action, params);
+                }
+            }]
+        });
+    },
+    onActionSelectionChange: function(o, selected, opts) {
+        var me = this;
+        me.actionMenu.setDisabled(!selected.length);
     }
 });
