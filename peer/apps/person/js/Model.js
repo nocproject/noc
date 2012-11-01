@@ -45,7 +45,8 @@ Ext.define("NOC.peer.person.Model", {
         },
         {
             name: "rir__label",
-            type: "string"
+            type: "string",
+            persist:false
         },
         {
             name: "extra",
