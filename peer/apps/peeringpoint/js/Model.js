@@ -29,7 +29,8 @@ Ext.define("NOC.peer.peeringpoint.Model", {
         },
         {
             name: "local_as__label",
-            type: "string"
+            type: "string",
+            persist:false
         },
         {
             name: "router_id",

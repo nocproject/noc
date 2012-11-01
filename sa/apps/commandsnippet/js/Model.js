@@ -17,7 +17,8 @@ Ext.define("NOC.sa.commandsnippet.Model", {
         },
         {
             name: "selector__label",
-            type: "string"
+            type: "string",
+            persist:false
         },
         {
             name: "name",
