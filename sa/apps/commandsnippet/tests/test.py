@@ -1,11 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## commandsnippet Test
+## sa.commandsnippet unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
 
-class commandsnippetTestCase(ModelApplicationTestCase):
-    pass
+## NOC modules
+from noc.lib.test import RestModelTestCase, unittest
+
+@unittest.skip("Not ready")
+class CommandSnippetTestCase(RestModelTestCase):
+    app = "sa.commandsnippet"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]
+
