@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## AuditTrail Manager
+## main.audittrail application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.main.models import AuditTrail
-##
-## AuditTrail admin
-##
-class AuditTrailAdmin(admin.ModelAdmin):
-    list_display=["user","timestamp","model","db_table","operation","subject"]
-    list_filter=["user"]
-    search_fields=["subject","body"]
-##
-## AuditTrail application
-##
-class AuditTrailApplication(ModelApplication):
-    model=AuditTrail
-    model_admin=AuditTrailAdmin
-    menu="Audit Trail"
+
+class AuditTrailApplication(ExtModelApplication):
+    """
+    AuditTrails application
+    """
+    title = "Audit Trail"
+    menu = "Audit Trail"
+    model = AuditTrail
+    query_fields = ["subject__icontains", "body__icontains"]
+
