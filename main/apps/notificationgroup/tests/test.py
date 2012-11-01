@@ -1,12 +1,29 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## notificationgroup Test
+## main.notificationgroup unittes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.test import ModelApplicationTestCase
-from django.utils import simplejson as json
 
-class notificationgroupTestCase(ModelApplicationTestCase):
-    pass
+## NOC modules
+from noc.lib.test import RestModelTestCase, unittest
+
+
+@unittest.skip("Not ready")
+class NotificationGroupTestCase(RestModelTestCase):
+    app = "main.notificationgroup"
+
+    scenario = [
+        {
+            "GET": {
+                # key: value
+            },
+            "POST": {
+                # key: value
+            },
+            "PUT": {
+                # key: value
+            }
+        }
+    ]
