@@ -366,6 +366,7 @@ Ext.define("NOC.core.ModelApplication", {
                 border: true,
                 padding: 4,
                 bodyPadding: 4,
+                autoScroll: true,
                 defaults: {
                     enableKeyEvents: true,
                     listeners: {
