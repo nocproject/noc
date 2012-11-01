@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Organisation Manager
+## peer.organisation application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import Organisation
-##
-## Organisation admin
-##
-class OrganisationAdmin(admin.ModelAdmin):
-    list_display=["organisation","org_name","org_type"]
-##
-## Organisation application
-##
-class OrganisationApplication(ModelApplication):
-    model=Organisation
-    model_admin=OrganisationAdmin
-    menu="Setup | Organisations"
+
+class OrganisationApplication(ExtModelApplication):
+    """
+    Person application
+    """
+    title = "Organisations"
+    menu = "Setup | Organisations"
+    model = Organisation
+    query_fields = ["organisation__icontains","org_name__icontains"]
+
