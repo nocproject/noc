@@ -21,7 +21,8 @@ Ext.define("NOC.main.audittrail.Model", {
         },
         {
             name: "user__label",
-            type: "string"
+            type: "string",
+            persist:false
         },
         {
             name: "timestamp",
