@@ -131,7 +131,7 @@ class Command(BaseCommand):
                     a.delete()
         # Wiping MAC DB
         with self.log("Wiping MAC DB"):
-            MACDB.objects.filter(managed_object__id=o.id).delete()
+            MACDB._get_collection().remove({"managed_object": o.id})
         # Wiping interfaces, subs and links
         with self.log("Deleting forwarding instances, "
                       "interfaces, subinterfaces and links"):
