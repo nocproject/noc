@@ -8,8 +8,9 @@
 
 ## Django moules
 from django.http import HttpResponse
-from django.db.models.fields import CharField, BooleanField, IntegerField,\
-    FloatField, related
+from django.db.models.fields import (
+    CharField, BooleanField, IntegerField, FloatField,
+    DateField, DateTimeField, related)
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 from django.db.utils import IntegrityError
@@ -21,6 +22,7 @@ from noc.sa.interfaces import (BooleanParameter, IntParameter,
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
                                NoneParameter)
+from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
 
@@ -80,6 +82,10 @@ class ExtModelApplication(ExtApplication):
             return IntParameter()
         elif isinstance(field, FloatField):
             return FloatParameter()
+        elif isinstance(field, DateField):
+            return DateParameter()
+        elif isinstance(field, DateTimeField):
+            return DateTimeParameter()
         elif isinstance(field, AutoCompleteTagsField):
             return TagsParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
