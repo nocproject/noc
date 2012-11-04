@@ -36,9 +36,10 @@ Ext.define("NOC.dns.dnsserver.Application", {
         },
         {
             name: "generator_name",
-            xtype: "textfield",
+            xtype: "combobox",
             fieldLabel: "Generator",
-            allowBlank: false
+            allowBlank: false,
+            store: ["BINDv9"]
         },
         {
             name: "ip",
