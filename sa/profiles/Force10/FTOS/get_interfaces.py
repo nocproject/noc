@@ -32,6 +32,7 @@ class Script(NOCScript):
     types = {
         "gi": "physical",
         "te": "physical",
+        "fo": "physical",
         "fa": "physical",
         "vl": "SVI",
         "po": "aggregated",
