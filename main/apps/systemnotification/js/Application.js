@@ -29,10 +29,17 @@ Ext.define("NOC.main.systemnotification.Application", {
     fields: [
         {
             name: "name",
-            xtype: "textfield",
+            xtype: "combobox",
             fieldLabel: "Name",
             width: 400,
-            allowBlank: false
+            allowBlank: false,
+            store: [
+                "dns.change",
+                "dns.domain_expiration_warning",
+                "dns.domain_expired",
+                "ip.sync_macs",
+                "sa.version_inventory"
+            ]
         },
         {
             name: "notification_group",
