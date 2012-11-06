@@ -138,15 +138,20 @@ class Address(models.Model):
         self.afi = self.get_afi(self.address)
         # Set proper prefix
         self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
-        old_fqdn = None
+        old = None
         if self.pk:
             old = Address.objects.get(pk=self.pk)
-            old_fqdn = old.fqdn
         super(Address, self).save(**kwargs)
-        DNSZone.touch(self.address)
-        DNSZone.touch(self.fqdn)
-        if old_fqdn and old_fqdn != self.fqdn:
-            DNSZone.touch(old_fqdn)
+        # If address or fqdn changed, touch zones
+        if (not old or self.address != old.address or
+            self.fqdn != old.fqdn or self.vrf != old.vrf):
+            # Touch reverse zone
+            DNSZone.touch(self.address)
+            # Touch forward zone
+            DNSZone.touch(self.fqdn)
+            if old.fqdn and old.fqdn != self.fqdn:
+                # Touch old forward zone too
+                DNSZone.touch(old.fqdn)
 
     def delete(self):
         fqdn = self.fqdn
