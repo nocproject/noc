@@ -10,6 +10,7 @@ Ext.define("NOC.main.audittrail.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.main.audittrail.Model",
+        "NOC.main.ref.model.LookupField",
         "NOC.main.user.LookupField"
     ],
     model: "NOC.main.audittrail.Model",
@@ -92,6 +93,12 @@ Ext.define("NOC.main.audittrail.Application", {
             name: "user",
             ftype: "lookup",
             lookup: "main.user"
+        },
+        {
+            title: "By DB Table",
+            name: "db_table",
+            ftype: "lookup",
+            lookup: "main.ref.model"
         }
     ]
 });
