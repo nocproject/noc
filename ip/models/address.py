@@ -149,7 +149,7 @@ class Address(models.Model):
             DNSZone.touch(self.address)
             # Touch forward zone
             DNSZone.touch(self.fqdn)
-            if old.fqdn and old.fqdn != self.fqdn:
+            if old and old.fqdn and old.fqdn != self.fqdn:
                 # Touch old forward zone too
                 DNSZone.touch(old.fqdn)
 
