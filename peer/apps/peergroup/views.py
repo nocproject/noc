@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## PeerGroup Manager
+## peer.peergroup application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import PeerGroup
-##
-## PeerGroup admin
-##
-class PeerGroupAdmin(admin.ModelAdmin):
-    list_display=["name","description","communities"]
-##
-## PeerGroup application
-##
-class PeerGroupApplication(ModelApplication):
-    model=PeerGroup
-    model_admin=PeerGroupAdmin
-    menu="Setup | Peer Groups"
+
+class PeerGroupApplication(ExtModelApplication):
+    """
+    PeerGroup application
+    """
+    title = "Peer Groups"
+    menu = "Setup | Peer Groups"
+    model = PeerGroup
+    query_fields = ["name__icontains","description__icontains"]
+
