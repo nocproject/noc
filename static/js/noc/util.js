@@ -149,3 +149,59 @@ NOC.listToRanges = function(lst) {
     }
     return r.join(",")
 };
+//
+// SHJS wrapper
+//
+Ext.define("NOC.SyntaxHighlight", {
+    singleton: true,
+    langCache: {},
+    withLang: function(lang, callback) {
+        var me = this;
+        if(lang in me.langCache) {
+            Ext.callback(callback, me, [me.langCache[lang]]);
+        } else {
+            Ext.Ajax.request({
+                url: "/static/js/highlight/" + lang + ".js",
+                scope: me,
+                success: function(response) {
+                    // Override SHJS's global scope
+                    with(this) {
+                        this.sh_languages = {};
+                        eval(response.responseText);
+                        me.langCache[lang] = this.sh_languages[lang];
+                    }
+                    Ext.callback(callback, me, [me.langCache[lang]]);
+                }
+            });
+        }
+    },
+    highlight: function(el, text, lang) {
+        var me = this;
+        me.withLang(lang, function(l) {
+            var tags = sh_highlightString(text, l);
+            //
+            // Fill text nodes
+            var last = undefined;
+            for(var i in tags) {
+                var t = tags[i];
+                if(last) {
+                    last.end = t.pos;
+                }
+                last = t;
+            }
+            // Generate HTML
+            var html = tags.map(function(v) {
+                var t = text.substr(v.pos, v.end - v.pos);
+                console.log(v, t);
+                if(v.node) {
+                    return "<span class='" + v.node.className + "'>" +
+                        t + "</span>";
+                } else {
+                    return t;
+                }
+            }).join("");
+            // Update element
+            el.update("<pre class='sh_sourcecode'>" + html + "</pre>");
+        });
+    }
+});
