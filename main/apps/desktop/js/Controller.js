@@ -11,7 +11,7 @@ Ext.define("NOC.main.desktop.Controller", {
     require: ["NOC.core.StateProvider"],
     views: ["NOC.main.desktop.Viewport"],
 
-    init: function() {
+    onLaunch: function() {
         var me = this;
         console.log("Controller started");
         me.login_window = null;
