@@ -33,3 +33,7 @@ from commandsnippet import CommandSnippet
 from activatorcapabilitiescache import ActivatorCapabilitiesCache
 from mrtconfig import MRTConfig
 from failedscriptlog import FailedScriptLog
+##
+## Post-initialization
+##
+import post_init
