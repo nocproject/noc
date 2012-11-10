@@ -68,8 +68,8 @@ def sliding_job(scheduler_name, job_class, key=None,
         Scheduler.ATTR_KEY: key
     })
     if j:
-        cutoff = j[Scheduler.ATTR_SCHEDULE]["cutoff"]
-        if ts <= cutoff:
+        cutoff = j[Scheduler.ATTR_SCHEDULE].get("cutoff")
+        if not cutoff or ts <= cutoff:
             # Slide job
             c.update({
                 "_id": j["_id"]
