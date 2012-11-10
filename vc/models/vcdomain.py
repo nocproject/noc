@@ -13,6 +13,7 @@ from vctype import VCType
 from vcfilter import VCFilter
 from noc.main.models import Style
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.selectorcache import SelectorCache
 
 
 class VCDomain(models.Model):
@@ -43,6 +44,23 @@ class VCDomain(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    def get_for_object(cls, managed_object):
+        """
+        Find VC Domain for Managed Object
+        :param managed_object: Managed Object instance
+        :return: VC Domain instance or None
+        """
+        c = SelectorCache.objects.filter(object=managed_object.id).first()
+        if not c:
+            return None  # No cached entry found
+        if not c.vc_domain:
+            return None  # No assotiated domain
+        try:
+            return cls.objects.get(id=c.vc_domain)
+        except cls.DoesNotExist:
+            return None  # Record not found
 
     def get_free_label(self, vc_filter=None):
         """
