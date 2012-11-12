@@ -14,6 +14,7 @@ from noc.lib.nosql import (Document, StringField, ForeignKeyField,
                            IntField)
 from interface import Interface
 from noc.sa.models.managedobject import ManagedObject
+from noc.vc.models import VCDomain
 from maclog import MACLog
 from noc.lib.mac import MAC
 
@@ -29,6 +30,7 @@ class MACDB(Document):
     }
     # Todo: Add Validation
     mac = StringField()
+    vc_domain = ForeignKeyField(VCDomain, required=False)
     vlan = IntField()
     managed_object = ForeignKeyField(ManagedObject)
     interface = PlainReferenceField(Interface)
@@ -44,7 +46,7 @@ class MACDB(Document):
         super(MACDB, self).save()
 
     @classmethod
-    def submit(cls, mac, vlan, interface, timestamp=None):
+    def submit(cls, mac, vc_domain, vlan, interface, timestamp=None):
         """
         Submit mac to database
         Returns True if database been changed
@@ -58,7 +60,8 @@ class MACDB(Document):
             timestamp = datetime.datetime.now()
         managed_object = interface.managed_object
         mac = MAC(mac)
-        m = MACDB.objects.filter(mac=mac).first()
+        vcd = vc_domain.id if vc_domain else None
+        m = MACDB.objects.filter(mac=mac, vc_domain=vcd).first()
         if m:
             if (managed_object != m.managed_object or
                 interface != m.interface or vlan != m.vlan):
@@ -66,6 +69,7 @@ class MACDB(Document):
                 MACLog(
                     timestamp=m.last_changed,
                     mac=mac,
+                    vc_domain_name=vc_domain.name if vc_domain else None,
                     vlan=m.vlan,
                     managed_object_name=m.managed_object.name,
                     interface_name=m.interface.name
@@ -81,6 +85,7 @@ class MACDB(Document):
         else:
             MACDB(
                 mac=mac,
+                vc_domain=vc_domain,
                 vlan=vlan,
                 managed_object=managed_object,
                 interface=interface,

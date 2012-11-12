@@ -23,6 +23,7 @@ class MACLog(Document):
     # Todo: Add Validation
     timestamp = DateTimeField()
     mac = StringField()
+    vc_domain_name = StringField()
     vlan = IntField()
     managed_object_name = StringField()
     interface_name = StringField()
