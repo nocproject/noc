@@ -205,3 +205,129 @@ Ext.define("NOC.SyntaxHighlight", {
         });
     }
 });
+//
+//validate function def
+//
+NOC.is_vlanid = function(value) {
+    if (value >= 1 && value <= 4095) {
+        return true;
+    } else {
+        return false;
+    }
+};
+//
+NOC.is_asn = function(value) {
+    if (value > 0) {
+        return true;
+    } else {
+        return false;
+    }
+};
+//
+NOC.is_ipv4 = function(value) {
+    var arrayX = new Array(),
+        arrayoct = new Array(),
+        arrayX = value.split(".");
+    if (arrayX.length != 4)
+        return false;
+    else {
+        for (var oct in arrayX) {
+            if ((parseInt(arrayX[oct]) >= 0) && (parseInt(arrayX[oct]) <=255))
+                arrayoct.push(arrayX[oct]);
+        }
+        if (arrayoct.length != 4) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+};
+//
+NOC.is_ipv4_prefix = function(value) {
+    var arrayX = new Array(),
+        arrayX = value.split("/");
+    if (arrayX.length != 2)
+        return false;
+    if (!NOC.is_ipv4(arrayX[0]))
+        return false;
+    if ((parseInt(arrayX[1]) >= 0) && (parseInt(arrayX[1]) <= 32)) {
+        return true;
+    } else {
+        return false;
+    }
+};
+//
+// init quick labels for vtype validators
+Ext.QuickTips.init();
+Ext.form.Field.prototype.msgTarget = 'side';
+//
+// custom Vtype for vtype:"VlanID"
+Ext.apply(Ext.form.field.VTypes, {
+    VlanID: function(val, field) {
+        try {
+            var id = parseInt(field.getValue());
+            return NOC.is_vlanid(id);
+        } catch(e) {
+            return false;
+        }
+    },
+    VlanIDText: "Must be a numeric value [1-4095]",
+    VlanIDMask: /[\d\/]/
+});
+//
+// custom Vtype for vtype:"ASN" - autonomous system number
+Ext.apply(Ext.form.field.VTypes, {
+    ASN: function(val, field) {
+        try {
+            var asn = parseInt(field.getValue());
+            return NOC.is_asn(asn);
+        } catch(e) {
+            return false;
+        }
+    },
+    ASNText: "AS num must be a numeric value > 0",
+    ASNMask: /[\d\/]/
+});
+//
+// custom Vtype for vtype:"IPv4"
+Ext.apply(Ext.form.field.VTypes, {
+    IPv4: function(val, field){
+        try {
+            var ipv4 = field.getValue();
+            return NOC.is_ipv4(ipv4);
+        } catch(e) {
+            return false;
+        }
+    },
+    IPv4Text: "Must be a numeric value 0.0.0.0 - 255.255.255.255",
+    IPv4Mask: /[\d\.]/i
+});
+//
+// custom Vtype for vtype:"IPv4Prefix"
+Ext.apply(Ext.form.field.VTypes, {
+    IPv4Prefix: function(val, field){
+        try {
+            var ipv4pref = field.getValue();
+            return NOC.is_ipv4_prefix(ipv4pref);
+        } catch(e) {
+            return false;
+        }
+    },
+    IPv4PrefixText: "Must be a numeric value 0.0.0.0/0 - 255.255.255.255/32",
+    IPv4PrefixMask: /[\d\.\/]/i
+});
+//
+// custom Vtype for vtype:"FQDN"
+Ext.apply(Ext.form.field.VTypes, {
+    FQDN: function(val, field){
+        try {
+            var fqdntest = /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i;
+            var fqdn = field.getValue();
+            return fqdntest.test(fqdn);
+        } catch(e) {
+            return false;
+        }
+    },
+    FQDNText: "Not valid FQDN",
+    FQDNMask: /[-.a-zA-Z0-9]/i
+});
