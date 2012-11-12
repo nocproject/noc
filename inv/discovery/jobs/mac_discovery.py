@@ -9,6 +9,7 @@
 ## NOC modules
 from base import MODiscoveryJob
 from noc.inv.discovery.reports.macreport import MACReport
+from noc.vc.models.vcdomain import VCDomain
 from noc.settings import config
 from noc.inv.models.subinterface import SubInterface
 
@@ -30,11 +31,27 @@ class MACDiscoveryJob(MODiscoveryJob):
         :param result:
         :return:
         """
-        self.report = MACReport(self, to_save=self.to_save)
+        seen = {}  # MAC -> vlan
+        dups = set()
+        # Detect SVI addresses seen in multiple vlans
         for v in result:
-            if v["type"] == "D" and v["interfaces"]:
+            if v["type"] == "D":
+                mac = v["mac"]
+                vlan = v["vlan_id"]
+                if mac in seen and seen[mac] != vlan:
+                    # Duplicated
+                    dups.add(mac)
+                else:
+                    seen[mac] = vlan
+        # Fill report
+        self.report = MACReport(self, to_save=self.to_save)
+        vc_domain = VCDomain.get_for_object(self.object)
+        for v in result:
+            if (v["type"] == "D" and v["interfaces"] and
+                v["mac"] not in dups):
                 self.report.submit(
                     mac=v["mac"],
+                    vc_domain=vc_domain,
                     vlan=v["vlan_id"],
                     managed_object=object,
                     if_name=v["interfaces"][0]

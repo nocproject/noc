@@ -21,7 +21,7 @@ class MACReport(Report):
         self.changed = []
         self.if_cache = {}
 
-    def submit(self, mac, vlan, managed_object, if_name):
+    def submit(self, mac, vc_domain, vlan, managed_object, if_name):
         if not self.enabled:
             return
         iface = self.get_interface(managed_object, if_name)
@@ -29,8 +29,11 @@ class MACReport(Report):
             return  # Not found
         if not iface.profile.mac_discovery:
             return  # Disabled discovery
-        if MACDB.submit(mac, vlan, iface):
-            self.info("MAC %s. VLAN %d at %s" % (mac, vlan, if_name))
+        if MACDB.submit(mac, vc_domain, vlan, iface):
+            self.info("MAC %s. VC Domain: %s, VLAN %d at %s" % (
+                mac,
+                vc_domain.name if vc_domain else None,
+                vlan, if_name))
             self.changed += [(mac, vlan, iface)]
 
     def get_interface(self, managed_object, if_name):

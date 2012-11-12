@@ -52,7 +52,8 @@ class VCDomain(models.Model):
         :param managed_object: Managed Object instance
         :return: VC Domain instance or None
         """
-        c = SelectorCache.objects.filter(object=managed_object.id).first()
+        c = SelectorCache.objects.filter(object=managed_object.id,
+            vc_domain__ne=None).first()
         if not c:
             return None  # No cached entry found
         if not c.vc_domain:
