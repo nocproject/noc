@@ -1451,13 +1451,18 @@ class SystemNotification(models.Model):
         return self.name
 
     @classmethod
-    def notify(cls, name, subject, body, link=None):
+    def get_notification_group(cls, name):
         try:
             sn = SystemNotification.objects.get(name=name)
+            return sn.notification_group
         except SystemNotification.DoesNotExist:  # Ignore undefined notifications
-            return
-        if sn.notification_group:
-            sn.notification_group.notify(subject=subject, body=body, link=link)
+            return None
+
+    @classmethod
+    def notify(cls, name, subject, body, link=None):
+        n = cls.get_notification_group(name)
+        if n:
+            n.notify(subject=subject, body=body, link=link)
 
 
 class UserProfileManager(models.Manager):
