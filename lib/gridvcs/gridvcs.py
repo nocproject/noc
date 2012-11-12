@@ -16,12 +16,13 @@ import gridfs
 from mercurial.mdiff import textdiff, patch
 ## NOC modules
 from revision import Revision
-from noc.lib.nosql import get_db
+from noc.lib.nosql import get_db, ObjectId
 
 
 class GridVCS(object):
     T_FILE = "F"
     T_BDIFF = "b"
+    ENCODING = "utf-8"
 
     def __init__(self, repo):
         self.fs = gridfs.GridFS(
@@ -69,7 +70,7 @@ class GridVCS(object):
         """
         return patch(src, delta)
 
-    def put(self, object, data):
+    def put(self, object, data, ts=None):
         """
         Save data
         :param object:
@@ -81,17 +82,22 @@ class GridVCS(object):
             # Get old version
             with self.fs.get_last_version(object=object, ft=self.T_FILE) as f:
                 old_data = f.read()
+            # Check data has been changed
+            if data == old_data:
+                return False
             # Calculate reverse delta
             dt, delta = self.get_delta(data, old_data)
-            if not delta:
-                return  # Not changed
             # Save delta
-            self.fs.put(delta, object=object, ts=f.upload_date, ft=dt)
+            self.fs.put(delta, object=object, ts=f.ts, ft=dt,
+                encoding=self.ENCODING)
             # Remove old version
             self.fs.delete(f._id)
         # Save new version
+        ts = ts or datetime.datetime.now()
         self.fs.put(data, object=object,
-            ts=datetime.datetime.now(), ft=self.T_FILE)
+            ts=ts, ft=self.T_FILE,
+            encoding=self.ENCODING)
+        return True
 
     def get(self, object, revision=None):
         """
@@ -101,8 +107,11 @@ class GridVCS(object):
         :return:
         """
         if not revision:
-            with self.fs.get_last_version(object=object, ft=self.T_FILE) as f:
-                return f.read()
+            try:
+                with self.fs.get_last_version(object=object, ft=self.T_FILE) as f:
+                    return f.read()
+            except gridfs.errors.NoFile:
+                return None
         else:
             data = None
             for r in self.iter_revisions(object, reverse=True):
@@ -131,6 +140,21 @@ class GridVCS(object):
         d = pymongo.DESCENDING if reverse else pymongo.ASCENDING
         for r in self.files.find({"object": object}).sort("ts", d):
             yield Revision(r["_id"], r["ts"], r["ft"])
+
+    def find_revision(self, object, revision):
+        """
+        :param object:
+        :param revision: Revision id
+        :return:
+        """
+        r = self.files.find_one({
+            "object": object,
+            "_id": ObjectId(revision)
+        })
+        if r:
+            return Revision(r["_id"], r["ts"], r["ft"])
+        else:
+            return None
 
     def diff(self, object, rev1, rev2):
         """
