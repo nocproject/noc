@@ -192,7 +192,6 @@ Ext.define("NOC.SyntaxHighlight", {
             // Generate HTML
             var html = tags.map(function(v) {
                 var t = text.substr(v.pos, v.end - v.pos);
-                console.log(v, t);
                 if(v.node) {
                     return "<span class='" + v.node.className + "'>" +
                         t + "</span>";
