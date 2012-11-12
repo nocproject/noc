@@ -19,7 +19,6 @@ from error import JobExists
 from job import Job
 from noc.lib.nosql import get_db
 from noc.lib.debug import error_report, get_traceback
-from noc.sa.models import ReduceTask
 
 
 class Scheduler(object):
@@ -373,3 +372,6 @@ class Scheduler(object):
     def cleanup(self):
         if self.cleanup_callback:
             self.cleanup_callback()
+
+## Avoid circular reference
+from noc.sa.models import ReduceTask
