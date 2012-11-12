@@ -395,8 +395,15 @@ Ext.define("NOC.core.ModelApplication", {
                 listeners: {
                     beforeadd: function(me, field) {
                         // Change label style for required fields
-                        if(!field.allowBlank)
-                           field.labelClsExtra = "noc-label-required";
+                        if(field.xtype == "fieldset") {
+                            for(var key in field.items.items) {
+                                if (!field.items.items[key].allowBlank)
+                                    field.items.items[key].labelClsExtra = "noc-label-required";
+                            }
+                        } else {
+                            if(!field.allowBlank)
+                               field.labelClsExtra = "noc-label-required";
+                        }
                     }
                 }
             }
