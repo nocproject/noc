@@ -22,7 +22,8 @@ Ext.define("NOC.main.systemnotification.Application", {
         },
         {
             text: "Notification Group",
-            dataIndex: "notification_group__label",
+            dataIndex: "notification_group",
+            renderer: NOC.render.Lookup("notification_group"),
             flex: 1
         }
     ],

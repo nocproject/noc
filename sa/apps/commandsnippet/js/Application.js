@@ -27,7 +27,8 @@ Ext.define("NOC.sa.commandsnippet.Application", {
         },
         {
             text: "Object Selector",
-            dataIndex: "selector__label"
+            dataIndex: "selector",
+            renderer: NOC.render.Lookup("selector")
         },
         {
             text: "Description",
