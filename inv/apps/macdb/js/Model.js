@@ -12,20 +12,7 @@ Ext.define("NOC.inv.macdb.Model", {
 
     fields: [
         {
-            name: "managed_object__label",
-            type: "string"
-        },
-
-        {
-            name: "vlan",
-            type: "int"
-        },
-        {
-            name: "managed_object",
-            type: "int"
-        },
-        {
-            name: "last_changed",
+            name: "id",
             type: "string"
         },
         {
@@ -33,19 +20,38 @@ Ext.define("NOC.inv.macdb.Model", {
             type: "string"
         },
         {
-            name: "interface__label",
+            name: "vc_domain",
             type: "string"
         },
         {
-            name: "fav_status",
-            type: "auto"
+            name: "vc_domain__label",
+            type: "string",
+            persist: false           
+        },
+        {
+            name: "vlan",
+            type: "int"
+        },
+        {
+            name: "managed_object",
+            type: "string"
+        },
+        {
+            name: "managed_object__label",
+            type: "string",
+            persist: false
         },
         {
             name: "interface",
-            type: "string",
+            type: "string"
         },
         {
-            name: "id",
+            name: "interface__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "last_changed",
             type: "string"
         }
     ]

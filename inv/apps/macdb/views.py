@@ -36,19 +36,24 @@ class MACApplication(ExtDocApplication):
         :return:
         """
         current = []
-        m = MACDB.objects.filter(mac=mac).first()
-        if m:
-            current = [{
-                "timestamp": str(m.last_changed),
-                "mac": m.mac,
-                "vlan": m.vlan,
-                "managed_object_name": str(m.managed_object.name),
-                "interface_name": str(m.interface.name)
-            }]
+        
+        m = MACDB.objects.filter(mac=mac).order_by("-timestamp")
+        for p in m:
+            if p:
+                vc_d = str(p.vc_domain.name) if p.vc_domain else None
+                current = [{
+                    "timestamp": str(p.last_changed),
+                    "mac": p.mac,
+                    "vc_domain": vc_d,
+                    "vlan": p.vlan,
+                    "managed_object_name": str(p.managed_object.name),
+                    "interface_name": str(p.interface.name)
+                }]
         history = [
             {
                 "timestamp": str(i.timestamp),
                 "mac": i.mac,
+                "vc_domain": str(i.vc_domain_name),
                 "vlan": i.vlan,
                 "managed_object_name": str(i.managed_object_name),
                 "interface_name": str(i.interface_name)
