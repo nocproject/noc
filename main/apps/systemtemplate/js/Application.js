@@ -23,7 +23,8 @@ Ext.define("NOC.main.systemtemplate.Application", {
 
         {
             text: "Template",
-            dataIndex: "template__label",
+            dataIndex: "template",
+            renderer: NOC.render.Lookup("template"),
             flex: 1
         }
     ],

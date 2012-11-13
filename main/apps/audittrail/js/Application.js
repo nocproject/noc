@@ -18,7 +18,8 @@ Ext.define("NOC.main.audittrail.Application", {
     columns: [
         {
             text: "User",
-            dataIndex: "user__label",
+            dataIndex: "user",
+            renderer: NOC.render.Lookup("user"),
             flex: 1
         },
         {

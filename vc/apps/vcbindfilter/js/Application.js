@@ -18,11 +18,13 @@ Ext.define("NOC.vc.vcbindfilter.Application", {
     columns: [
         {
             text: "VC Domain",
-            dataIndex: "vc_domain__label"
+            renderer: NOC.render.Lookup("vc_domain"),
+            dataIndex: "vc_domain"
         },
         {
             text: "VRF",
-            dataIndex: "vrf__label"
+            dataIndex: "vrf",
+            renderer: NOC.render.Lookup("vrf")
         },
         {
             text: "AFI",
@@ -37,7 +39,8 @@ Ext.define("NOC.vc.vcbindfilter.Application", {
         },
         {
             text: "VC Filter",
-            dataIndex: "vc_filter__label"
+            dataIndex: "vc_filter",
+            renderer: NOC.render.Lookup("vc_filter")
         },
         {
             text: "VC Filter Expression",

@@ -30,7 +30,8 @@ Ext.define("NOC.ip.addressrange.Application", {
         },
         {
             text: "VRF",
-            dataIndex: "vrf__label"
+            dataIndex: "vrf",
+            renderer: NOC.render.Lookup("vrf")
         },
         {
             text: "AFI",
