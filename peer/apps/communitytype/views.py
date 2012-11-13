@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## CommunityType Manager
+## peer.communitytype application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import CommunityType
-##
-## CommunityType admin
-##
-class CommunityTypeAdmin(admin.ModelAdmin):
-    list_display=["name"]
-##
-## CommunityType application
-##
-class CommunityTypeApplication(ModelApplication):
-    model=CommunityType
-    model_admin=CommunityTypeAdmin
-    menu="Setup | Community Types"
+
+class CommunityTypeApplication(ExtModelApplication):
+    """
+    Community Types application
+    """
+    title = "Community Types"
+    menu = "Setup | Community Types"
+    model = CommunityType
+    query_fields = ["name__icontains"]
