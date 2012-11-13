@@ -46,6 +46,11 @@ Ext.define("NOC.inv.macdb.MACLogForm", {
                             width: 110
                         },
                         {
+                            text: "VC Domain",
+                            dataIndex: "vc_domain",
+                            flex: 1
+                        },
+                        {
                             text: "Vlan",
                             dataIndex: "vlan",
                             width: 40

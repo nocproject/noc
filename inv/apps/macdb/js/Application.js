@@ -35,6 +35,12 @@ Ext.define("NOC.inv.macdb.Application", {
                     onClick: me.onMACCellClick
                 },
                 {
+                    text: "VC Domain",
+                    dataIndex: "vc_domain",
+                    renderer: NOC.render.Lookup("vc_domain"),
+                    flex: 1
+                },
+                {
                     text: "Vlan",
                     dataIndex: "vlan",
                     width: 40
@@ -42,12 +48,14 @@ Ext.define("NOC.inv.macdb.Application", {
                 {
                     flex: 1,
                     text: "Managed Object",
-                    dataIndex: "managed_object__label"
+                    renderer: NOC.render.Lookup("managed_object"),
+                    dataIndex: "managed_object"
                 },
                 {
                     flex: 1,
                     text: "Interface",
-                    dataIndex: "interface__label"
+                    renderer: NOC.render.Lookup("interface"),
+                    dataIndex: "interface"
                 },
                 {
                     text: "Last Changed",
@@ -78,7 +86,7 @@ Ext.define("NOC.inv.macdb.Application", {
                 } else {
                     Ext.create("NOC.inv.macdb.MACLogForm", {
                         data: r,
-                        title: Ext.String.format("MAC {0} history",
+                        title: Ext.String.format(" MAC {0} history",
                                me.currentMAC)
                     });
                 }
