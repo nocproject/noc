@@ -53,6 +53,9 @@ crashinfo_limit = 1000000
 log_api_calls = false
 # Log SQL statements
 log_sql_statements = false
+# If set, return "Request too large" if json request
+# is larger than limit (0 - unlimited)
+json_row_limit = 0
 
 [database]
 # postgresql_psycopg2
