@@ -1,24 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Community Manager
+## peer.community application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import Community
-##
-## Community admin
-##
-class CommunityAdmin(admin.ModelAdmin):
-    list_display=["community","type","description"]
-    list_filter=["type"]
-    search_fields=["community","description"]
-##
-## Community application
-##
-class CommunityApplication(ModelApplication):
-    model=Community
-    model_admin=CommunityAdmin
-    menu="Communities"
+
+class CommunityApplication(ExtModelApplication):
+    """
+    Community application
+    """
+    title = "Communities"
+    menu = "Communities"
+    model = Community
+    query_fields = ["community__icontains", "description__icontains"]
