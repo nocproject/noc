@@ -30,7 +30,8 @@ Ext.define("NOC.peer.peeringpoint.Application", {
         {
             text: "Local AS",
             flex: 1,
-            dataIndex: "local_as__label"
+            dataIndex: "local_as",
+            renderer: NOC.render.Lookup("local_as")
         },
         {
             text: "Router-ID",

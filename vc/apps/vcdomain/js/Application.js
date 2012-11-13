@@ -25,7 +25,8 @@ Ext.define("NOC.vc.vcdomain.Application", {
 
         {
             text: "Type",
-            dataIndex: "type__label"
+            dataIndex: "type",
+            renderer: NOC.render.Lookup("type")
         },
 
         {
@@ -42,7 +43,8 @@ Ext.define("NOC.vc.vcdomain.Application", {
 
         {
             text: "Selector",
-            dataIndex: "selector__label"
+            dataIndex: "selector",
+            renderer: NOC.render.Lookup("selector")
         },
 
         {
