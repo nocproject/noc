@@ -21,17 +21,20 @@ Ext.define("NOC.peer.peer.Application", {
         {
             text: "Peering Point",
             flex: 1,
-            dataIndex: "peering_point__label"
+            dataIndex: "peering_point",
+            renderer: NOC.render.Lookup("peering_point")
         },
         {
             text: "Peer Group",
             flex: 1,
-            dataIndex: "peer_group__label"
+            dataIndex: "peer_group",
+            renderer: NOC.render.Lookup("peer_group")
         },
         {
             text: "Local AS",
             flex: 1,
-            dataIndex: "local_asn__label"
+            dataIndex: "local_asn",
+            renderer: NOC.render.Lookup("local_asn")
         },
         {
             text: "Remote AS",

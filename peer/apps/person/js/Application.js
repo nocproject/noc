@@ -28,7 +28,8 @@ Ext.define("NOC.peer.person.Application", {
         },
         {
             text: "RIR",
-            dataIndex: "rir__label",
+            dataIndex: "rir",
+            renderer: NOC.render.Lookup("rir"),
             flex: 1
         }
     ],
