@@ -30,6 +30,7 @@ class ExtApplication(Application):
     NOT_FOUND = 404
     CONFLICT = 409
     NOT_HERE = 410
+    TOO_LARGE = 413
     INTERNAL_ERROR = 500
     NOT_IMPLEMENTED = 501
     THROTTLED = 503
@@ -47,6 +48,7 @@ class ExtApplication(Application):
     def __init__(self, *args, **kwargs):
         super(ExtApplication, self).__init__(*args, **kwargs)
         self.document_root = os.path.join(self.module, "apps", self.app)
+        self.row_limit = self.config.getint("main", "json_row_limit")
 
     @property
     def js_app_class(self):
@@ -139,9 +141,15 @@ class ExtApplication(Application):
         if ordering:
             data = data.order_by(*ordering)
         if format == "ext":
-            total = data.count()
+            total = data.count()  # Total unpaged count
         if start is not None and limit is not None:
             data = data[int(start):int(start) + int(limit)]
+        ld = len(data)
+        if self.row_limit and ld > self.row_limit:
+            # Request too large
+            return self.response(
+                "System limit is %d records (%d requested)" % (self.row_limit, ld),
+                status=self.TOO_LARGE)
         out = [formatter(o, fields=only) for o in data]
         # Set favorites
         if not only and formatter == self.instance_to_dict:
