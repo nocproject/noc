@@ -51,6 +51,10 @@ class ExtModelApplication(ExtApplication):
                 if f.null:
                     vf = NoneParameter() | vf
                 self.clean_fields[f.name] = vf
+        # m2m fields
+        self.m2m_fields = {}  # Name -> Model
+        for f in self.model._meta.many_to_many:
+            self.m2m_fields[f.name] = f.rel.to
         # Find field_* and populate custom fields
         self.custom_fields = {}
         for fn in [n for n in dir(self) if n.startswith("field_")]:
@@ -246,6 +250,9 @@ class ExtModelApplication(ExtApplication):
                 else:
                     r[f.name] = None
                     r["%s__label" % f.name] = ""
+        # Add m2m fields
+        for n in self.m2m_fields:
+            r[n] = list(getattr(o, n).values_list("id", flat=True))
         # Add custom fields
         for f in self.custom_fields:
             if fields and f not in fields:
