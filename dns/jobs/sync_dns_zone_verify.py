@@ -22,6 +22,9 @@ class SyncDNSZoneVerify(ModelJob):
     success_retry = 24 * 3600
     failed_retry = 300
 
+    max_delay = 300
+    delay_interval = 300
+
     def get_display_key(self):
         if self.object:
             return self.object.name
