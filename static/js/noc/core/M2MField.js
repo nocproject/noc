@@ -19,7 +19,6 @@ Ext.define("NOC.core.M2MField", {
     delimiter: ",",
     typeAhead: true,
     triggerAction: "all",
-    query: {},
     stateful: false,
     autoSelect: false,
     pageSize: 0,
@@ -31,16 +30,14 @@ Ext.define("NOC.core.M2MField", {
         Ext.applyIf(me, {
             store: Ext.create(sclass)
         });
-        if(me.query) {
-            Ext.apply(me.store.proxy.extraParams, me.query);
-        }
-        me.addEvents("clear");
         me.callParent();
-        me.on("specialkey", me.onSpecialKey, me, {delay: 100});
     },
 
     setValue: function(value) {
         var me = this;
+        if(value === undefined) {
+            return;
+        }
 
         if(me.store.loading) {
             // Value will actually be set
@@ -48,22 +45,16 @@ Ext.define("NOC.core.M2MField", {
             // Ignore it now
             return me;
         }
-        console.log(value);
-            // number or string
-            // Start store lookup
-            // @todo: do not refresh current value
-            var v = me.getValue();
 
-            if(!v || v != value) {
-                me.store.load({
-                    scope: me,
-                    callback: function(records, operation, success) {
-                        if(success && records.length > 0) {
-                            console.log("!!!", records);
-                        }
-                    }
-                });
+        var fromStore = me.fromField.boundList.getStore();
+        me.store.load({
+            scope: me,
+            callback: function(records, operation, success) {
+                if(success) {
+                    fromStore.loadRecords(records);
+                    me.setRawValue(value);
+                }
             }
-       
+        });
     }
 });
