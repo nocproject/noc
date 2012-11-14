@@ -266,7 +266,7 @@ class Scheduler(object):
                 job.name, job.key, t,
                 status="W",
                 last_status=status,
-                duration=t1 - job.started,
+                duration=t1 - job.started,  # @todo: maybe error
                 tb=tb,
                 update_runs=True
             )
@@ -285,16 +285,11 @@ class Scheduler(object):
 
     def run_pending(self):
         n = 0
-        throttled = set()  # Job classes exceeding concurrency limits
         # Run pending intial submits
         if self.initial_submit_next_check:
             for jcls in self.initial_submit_next_check:
                 if jcls.name in self.ignored:
                     continue
-                if jcls.map_task and jcls.concurrency:
-                    # Check concurrency limits
-                    # @todo:!!!
-                    pass
                 t0 = time.time()
                 if self.initial_submit_next_check[jcls] <= t0:
                     # Get existing keys
@@ -326,6 +321,8 @@ class Scheduler(object):
         }
         if self.ignored:
             q[self.ATTR_CLASS] = {"$nin": self.ignored}
+        # @todo: Exclude throttled job classes
+        # Get remaining pending tasks
         qs = self.collection.find(q)
         if self.preserve_order:
             qs = qs.sort([(self.ATTR_TS, 1), ("_id", 1)])
@@ -343,6 +340,14 @@ class Scheduler(object):
                 job_data[self.ATTR_KEY], job_data[self.ATTR_DATA],
                 job_data[self.ATTR_SCHEDULE]
             )
+            # Check for late jobs
+            if (job.max_delay and
+                job_data[self.ATTR_TS] < datetime.datetime.now() - datetime.timedelta(seconds=job.max_delay)):
+                self.info("Job %s(%s) is scheduled too late" % (
+                    job.name, job.get_display_key()))
+                job.started = time.time()
+                self._complete_job(job, job.S_LATE, None)
+                continue
             self.run_job(job)
             n += 1
         return n
