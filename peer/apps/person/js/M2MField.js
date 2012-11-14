@@ -1,12 +1,13 @@
 //---------------------------------------------------------------------
-// NOC.main.peer.maintainer.Lookup
+// NOC.peer.person.M2MField
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.peer.maintainer.Lookup");
+console.debug("Defining NOC.peer.person.M2MField");
 
-Ext.define("NOC.peer.maintainer.Lookup", {
-    extend: "NOC.core.Lookup",
-    url: "/peer/maintainer/lookup/"
+Ext.define("NOC.peer.person.M2MField", {
+    extend: "NOC.core.M2MField",
+    alias: "widget.peer.person.M2MField",
+    requires: ["NOC.peer.person.Lookup"]
 });

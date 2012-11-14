@@ -83,3 +83,38 @@
 .noc-label-required {
     font-weight: bold;
 }
+
+/* Styles used by Ext.ux.form.ItemSelector */
+
+.x-form-multiselect-body .x-boundlist .x-mask {
+    background: none;
+}
+
+.x-form-itemselector-body .x-form-item {
+    margin: 0;
+}
+
+.x-form-itemselector-top {
+    background-image: url(/static/img/other/top2.gif);
+}
+
+.x-form-itemselector-up {
+    background-image: url(/static/img/other/up2.gif);
+}
+
+.x-form-itemselector-add {
+    background-image: url(/static/img/other/right2.gif);
+}
+
+.x-form-itemselector-remove {
+    background-image: url(/static/img/other/left2.gif);
+}
+
+.x-form-itemselector-down {
+    background-image: url(/static/img/other/down2.gif);
+}
+
+.x-form-itemselector-bottom {
+    background-image: url(/static/img/other/bottom2.gif);
+}
+
