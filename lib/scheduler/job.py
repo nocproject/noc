@@ -9,6 +9,7 @@
 ## Python modules
 import logging
 import datetime
+import random
 ## NOC modules
 from noc.main.models import SystemNotification
 
@@ -43,11 +44,15 @@ class Job(object):
     system_notification = None  # Name of system notification group
     concurrency = None  # Limit number of concurrently running jobs
     threaded = False  # Run handler in separate thread
-
+    max_delay = 0  # When set, consider task delayed more than
+                   # max delay seconds as late
+    delay_interval = 0  # Postpone late tasks to random 0..delay_interval
+                        # seconds
     S_SUCCESS = "S"
     S_FAILED = "F"
     S_EXCEPTION = "X"
     S_DEFERRED = "D"
+    S_LATE = "L"
 
     def __init__(self, scheduler, key=None, data=None, schedule=None):
         self.scheduler = scheduler
@@ -116,6 +121,10 @@ class Job(object):
         :status: Job.S_*
         :return:
         """
+        if status == self.S_LATE and self.delay_interval:
+            return (datetime.datetime.now() +
+                    datetime.timedelta(
+                        seconds=random.random() * self.delay_interval))
         return None  # Remove schedule on complete
 
     @classmethod
