@@ -33,7 +33,8 @@ Ext.define("NOC.peer.maintainer.Model", {
         },
         {
             name: "rir__label",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "admins",
