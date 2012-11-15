@@ -16,6 +16,7 @@ Ext.define("NOC.core.M2MField", {
     queryCaching: false,
     queryDelay: 200,
     forceSelection: true,
+    autoScroll: true,
     delimiter: ",",
     typeAhead: true,
     triggerAction: "all",
@@ -47,10 +48,13 @@ Ext.define("NOC.core.M2MField", {
         }
 
         var fromStore = me.fromField.boundList.getStore();
+        var toStore = me.toField.boundList.getStore();
         me.store.load({
             scope: me,
             callback: function(records, operation, success) {
                 if(success) {
+                    fromStore.removeAll();
+                    toStore.removeAll();
                     fromStore.loadRecords(records);
                     me.setRawValue(value);
                 }
