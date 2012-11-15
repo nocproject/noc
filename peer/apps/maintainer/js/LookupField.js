@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------
-// NOC.peer.maintainer.Lookup
+// NOC.peer.maintainer.LookupField
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details

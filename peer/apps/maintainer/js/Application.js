@@ -61,10 +61,22 @@ Ext.define("NOC.peer.maintainer.Application", {
         {
             xtype: "peer.person.M2MField",
             name: "admins",
+            height: 220,
             width: 600,
             fieldLabel: "Admin-c",
             buttons: ['add', 'remove'],
             allowBlank: false
+        },
+        {
+            name: "extra",
+            xtype: "textareafield",
+            fieldLabel: "Extra",
+            allowBlank: false,      
+            width: 600, 
+            height: 100,
+            fieldStyle: {
+                fontFamily: "Courier"
+            }
         }
     ]
 });
