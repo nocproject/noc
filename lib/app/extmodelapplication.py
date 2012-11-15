@@ -297,6 +297,45 @@ class ExtModelApplication(ExtApplication):
         else:
             q[None] = [s]
 
+    def update_m2m(self, o, name, values):
+        if values is None:
+            return  # Do not touch
+        m = self.m2m_fields[name]
+        f = getattr(o, name)
+        # Existing m2m relations
+        e_values = set(f.values_list("id", flat=True))
+        n_values = set(values)
+        # Delete left relations
+        for v in e_values - n_values:
+            f.remove(m.objects.get(id=v))
+        # Create new relations
+        for v in n_values - e_values:
+            f.add(m.objects.get(id=v))
+
+    def update_m2ms(self, o, attrs):
+        """
+        Update all m2m fields
+        """
+        for f in self.m2m_fields:
+            if f in attrs:
+                self.update_m2m(o, f, attrs[f])
+
+    def split_mtm(self, pdata):
+        """
+        Split post data to (fields, m2mfields) data
+        """
+        if self.m2m_fields:
+            f = {}
+            m2m = {}
+            for n in pdata:
+                if n in self.m2m_fields:
+                    m2m[n] = pdata[n]
+                else:
+                    f[n] = pdata[n]
+            return f, m2m
+        else:
+            return pdata, {}
+
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
@@ -307,8 +346,10 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
+        attrs, m2m_attrs = self.split_mtm(
+            self.deserialize(request.raw_post_data))
         try:
-            attrs = self.clean(self.deserialize(request.raw_post_data))
+            attrs = self.clean(attrs)
         except ValueError, why:
             return self.render_json(
                     {
@@ -347,6 +388,8 @@ class ExtModelApplication(ExtApplication):
             o = self.model(**attrs)
             try:
                 o.save()
+                if m2m_attrs:
+                    self.update_m2ms(o, m2m_attrs)
             except IntegrityError:
                 return self.render_json(
                         {
@@ -381,8 +424,10 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
+        attrs, m2m_attrs = self.split_mtm(
+            self.deserialize(request.raw_post_data))
         try:
-            attrs = self.clean(self.deserialize(request.raw_post_data))
+            attrs = self.clean(attrs)
         except ValueError, why:
             return self.render_json(
                     {
@@ -405,6 +450,8 @@ class ExtModelApplication(ExtApplication):
             setattr(o, k, v)
         try:
             o.save()
+            if m2m_attrs:
+                self.update_m2ms(o, m2m_attrs)
         except IntegrityError:
             return self.render_json(
                     {
