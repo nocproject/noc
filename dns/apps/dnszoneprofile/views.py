@@ -1,38 +1,26 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## DNSZoneProfile Manager
+## dns.dnszoneprofile application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.dns.models import DNSZoneProfile
 
-##
-## List of master servers
-##
-def masters(obj):
-    return u", ".join([s.name for s in obj.masters.all()])
-masters.short_description = "Masters"
+class DNSZoneProfileApplication(ExtModelApplication):
+    """
+    DNSZoneProfiles application
+    """
+    title = "Zone Profiles"
+    menu = "Setup | Zone Profiles"
+    model = DNSZoneProfile
 
-##
-## List of slave servers
-##
-def slaves(obj):
-    return u", ".join([s.name for s in obj.slaves.all()])
-slaves.short_description = "Slaves"
+    def field_masterslabel(self, o):
+        return u", ".join([s.name for s in o.masters.all()])
 
-##
-## DNSZoneProfile admin
-##
-class DNSZoneProfileAdmin(admin.ModelAdmin):
-    list_display = ["name", "zone_ttl", "notification_group", masters, slaves]
-    filter_horizontal=["masters", "slaves"]
-##
-## DNSZoneProfile application
-##
-class DNSZoneProfileApplication(ModelApplication):
-    model=DNSZoneProfile
-    model_admin=DNSZoneProfileAdmin
-    menu="Setup | Zone Profiles"
+    def field_slaveslabel(self, o):
+        return u", ".join([s.name for s in o.slaves.all()])
+
