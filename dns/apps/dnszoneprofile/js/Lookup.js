@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------
-// NOC.dns.dnszone.Lookup
+// NOC.dns.dnszoneprofile.Lookup
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2012 The NOC Project
 // See LICENSE for details
