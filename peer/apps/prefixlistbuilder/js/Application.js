@@ -66,8 +66,8 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                     name: "as_set",
                     emptyText: "AS or AS-set",
                     allowBlank: false,
-                    regex: /^AS(\d+|-\w+)(:\S+)?(\s+AS(\d+|-\w+)(:\S+)?)*$/,
-                    invalidText: "Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET)",
+                    regex: /^AS(\d+|-\w+)(-\w+)*(:\S+)?(\s+AS(\d+|-\w+)(:\S+)?)*$/,
+                    invalidText: "Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-MEGA-SET)",
                     plugins: [ 'ucfield' ]
                 }
             ],
