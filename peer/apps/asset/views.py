@@ -2,29 +2,33 @@
 ##----------------------------------------------------------------------
 ## ASSet Manager
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from django.contrib import admin
-from noc.lib.app import ModelApplication
+
+## NOC modules
+from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import ASSet
-##
-## ASSet admin
-##
-class ASSetAdmin(admin.ModelAdmin):
-    list_display=["name","description","members"]
-    search_fields=["name","description","members"]
-    actions=["rpsl_for_selected"]
-    ##
-    ## Generate RPSL for selected objects
-    ##
-    def rpsl_for_selected(self,request,queryset):
-        return self.app.render_plain_text("\n\n".join([o.rpsl for o in queryset]))
-    rpsl_for_selected.short_description="RPSL for selected objects"
-##
-## ASSet application
-##
-class ASSetApplication(ModelApplication):
-    model=ASSet
-    model_admin=ASSetAdmin
-    menu="AS Sets"
+from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
+                                    StringParameter)
+
+class ASSetApplication(ExtModelApplication):
+    """
+    ASSet application
+    """
+    title = "AS Sets"
+    menu = "AS Sets"
+    model = ASSet
+    query_fields = ["name__icontains","description__icontains",
+                    "members__icontains"]
+
+
+    @view(url="^actions/rpsl/$", method=["POST"],
+        access="read", api=True,
+        validate={
+            "ids": ListOfParameter(element=ModelParameter(ASSet))
+        })
+
+    def api_action_rpsl(self,request,ids):
+        return "</br></br>".join([o.rpsl.replace("\n", "</br>") for o in ids])
+    api_action_rpsl.short_description="RPSL for selected objects"

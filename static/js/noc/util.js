@@ -78,6 +78,10 @@ NOC.render.ClickableLookup = function(name) {
     };
 };
 
+NOC.render.WrapColumn = function (val){
+    return '<div style="white-space:normal !important;">'+ val +'</div>';
+};
+
 //
 // Run new Map/Reduce task
 // Usage:
@@ -329,4 +333,34 @@ Ext.apply(Ext.form.field.VTypes, {
     },
     FQDNText: "Not valid FQDN",
     FQDNMask: /[-.a-zA-Z0-9]/i
+});
+//
+// custom Vtype for vtype:"ASSET"
+Ext.apply(Ext.form.field.VTypes, {
+    ASSET: function(val, field){ 
+        try {
+            var assettest = /^AS(-\w+)+$/i;
+            var asset = field.getValue();
+            return assettest.test(asset); 
+        } catch(e) {
+            return false;
+        }
+    },   
+    ASSETText: "Not valid ASSET, must be in form AS-SET or AS-MEGA-SET",
+    ASSETMask: /[A-Z0-9-]/i
+});
+//
+// custom Vtype for vtype:"ASorASSET"
+Ext.apply(Ext.form.field.VTypes, {
+    ASorASSET: function(val, field){
+        try {
+            var asorassettest = /^(AS(\d+|(-\w+)+)(:\S+)?(\s+AS(\d+|(-\w+)+)(:\S+)?)*$)/i;
+            var asorasset = field.getValue();
+            return asorassettest.test(asorasset);
+        } catch(e) {
+            return false;
+        }
+    },
+    ASorASSETText: "Not valid AS or ASSET, must be in form AS3505, AS-SET, AS-MEGA-SET or AS3245:AS-TEST",
+    ASorASSETMask: /[A-Z0-9-:]/i
 });
