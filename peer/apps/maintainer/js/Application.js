@@ -71,7 +71,7 @@ Ext.define("NOC.peer.maintainer.Application", {
             name: "extra",
             xtype: "textareafield",
             fieldLabel: "Extra",
-            allowBlank: false,      
+            allowBlank: true,
             width: 600, 
             height: 100,
             fieldStyle: {
