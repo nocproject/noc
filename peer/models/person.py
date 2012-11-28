@@ -20,9 +20,10 @@ class Person(models.Model):
         db_table = "peer_person"
         app_label = "peer"
 
-
     nic_hdl = models.CharField("nic-hdl", max_length=64, unique=True)
     person = models.CharField("person", max_length=128)
+    type = models.CharField("type", max_length=1, default="P",
+        choices=[("P", "Person"), ("R", "Role")])
     address = models.TextField("address")
     phone = models.TextField("phone")
     fax_no = models.TextField("fax-no", blank=True, null=True)
@@ -36,7 +37,10 @@ class Person(models.Model):
     @property
     def rpsl(self):
         s = []
-        s += ["person: %s" % self.person]
+        if self.type == "R":
+            s += ["role: %s" % self.person]
+        else:
+            s += ["person: %s" % self.person]
         s += ["nic-hdl: %s" % self.nic_hdl]
         s += ["address: %s" % x for x in self.address.split("\n")]
         s += ["phone: %s" % x for x in self.phone.split("\n")]
