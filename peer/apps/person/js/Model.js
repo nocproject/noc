@@ -24,6 +24,11 @@ Ext.define("NOC.peer.person.Model", {
             type: "string"
         },
         {
+            name: "type",
+            defaultValue: "P",
+            type: "string"
+        },
+        {
             name: "address",
             type: "string"
         },

@@ -20,10 +20,17 @@ Ext.define("NOC.peer.person.Application", {
             dataIndex: "nic_hdl",
             flex: 1
         },
-
         {
-            text: "Person",
+            text: "Person/Role Name",
             dataIndex: "person",
+            flex: 1
+        },
+        {
+            text: "Type",
+            dataIndex: "type",
+            renderer: function(a) {
+                return {P: "Person", R: "Role"}[a];
+            },
             flex: 1
         },
         {
@@ -42,16 +49,26 @@ Ext.define("NOC.peer.person.Application", {
             anchor: "70%"
         },
         {
+            name: "type",
+            xtype: "combobox",
+            fieldLabel: "Type",
+            allowBlank: false,
+            store: [
+                ["P", "Person"],
+                ["R", "Role"]     
+            ]
+        },
+        {
             name: "person",
             xtype: "textfield",
-            fieldLabel: "person",
+            fieldLabel: "Person/Role Name",
             allowBlank: false,
             anchor: "70%"
         },
         {
             name: "address",
             xtype: "textareafield",
-            fieldLabel: "address",
+            fieldLabel: "Address",
             allowBlank: false,
             anchor: "70%"
         },
