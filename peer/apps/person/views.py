@@ -14,7 +14,7 @@ class PersonApplication(ExtModelApplication):
     """
     Person application
     """
-    title = "Persons"
+    title = "Persons/Roles"
     menu = "Setup | Persons"
     model = Person
     query_fields = ["nic_hdl__icontains","person__icontains"]
