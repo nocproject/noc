@@ -57,7 +57,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "SNMPv2-MIB::snmpTraps$"
+                "value_re": "(?:SNMPv2-MIB::snmpTraps|IF-MIB::linkUp)$"
             },
             {
                 "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
@@ -96,7 +96,7 @@
             },
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
-                "value_re": "SNMPv2-MIB::snmpTraps$"
+                "value_re": "(?:SNMPv2-MIB::snmpTraps|IF-MIB::linkDown)$"
             },
             {
                 "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
