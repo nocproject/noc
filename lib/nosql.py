@@ -219,6 +219,9 @@ class ForeignKeyField(BaseField):
             id_ = document
         return id_
 
+    def lookup_member(self, name):
+        return None
+
 
 ESC1 = "__"  # Escape for '.'
 ESC2 = "^^"  # Escape for '$'
