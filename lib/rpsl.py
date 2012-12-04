@@ -20,7 +20,16 @@ def rpsl_format(rpsl, ident=None):
         ident = RPLS_IDENT
     out = []
     mask = "%%-%ds%%s" % ident
-    for l in [x for x in rpsl.split("\n") if ":" in x]:
+    if isinstance(rpsl, basestring):
+        rpsl = rpsl.split("\n")
+    for l in [x for x in rpsl if ":" in x]:
         k, v = l.split(":", 1)
         out += [mask % (k.strip() + ":", v.strip())]
     return "\n".join(out) + "\n"
+
+
+def rpsl_multiple(key, value):
+    if not value:
+        return []
+    mask = "%s: %%s" % key
+    return [mask % x for x in value.split("\n")]
