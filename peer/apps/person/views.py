@@ -9,6 +9,8 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import Person
+from noc.lib.app.repoinline import RepoInline
+
 
 class PersonApplication(ExtModelApplication):
     """
@@ -19,3 +21,4 @@ class PersonApplication(ExtModelApplication):
     model = Person
     query_fields = ["nic_hdl__icontains","person__icontains"]
 
+    rpsl = RepoInline("rpsl")

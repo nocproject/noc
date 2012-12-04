@@ -8,9 +8,12 @@
 
 ## Django modules
 from django.db import models
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
 ## NOC modules
 from rir import RIR
-from noc.lib.rpsl import rpsl_format
+from noc.lib.gridvcs.manager import GridVCSField
+from noc.lib.rpsl import rpsl_format, rpsl_multiple
 
 
 class Person(models.Model):
@@ -30,23 +33,38 @@ class Person(models.Model):
     email = models.TextField("email")
     rir = models.ForeignKey(RIR, verbose_name="RIR")
     extra = models.TextField("extra", blank=True, null=True)
+    rpsl = GridVCSField("rpsl_person")
 
     def __unicode__(self):
         return u" %s (%s)" % (self.nic_hdl, self.person)
 
-    @property
-    def rpsl(self):
+    def get_rpsl(self):
         s = []
         if self.type == "R":
             s += ["role: %s" % self.person]
         else:
             s += ["person: %s" % self.person]
         s += ["nic-hdl: %s" % self.nic_hdl]
-        s += ["address: %s" % x for x in self.address.split("\n")]
-        s += ["phone: %s" % x for x in self.phone.split("\n")]
-        if self.fax_no:
-            s += ["fax-no: %s" % x for x in self.fax_no.split("\n")]
-        s += ["email: %s" % x for x in self.email.split("\n")]
+        s += rpsl_multiple("address", self.address)
+        s += rpsl_multiple("phone", self.phone)
+        s += rpsl_multiple("fax-no", self.fax_no)
+        s += rpsl_multiple("email", self.email)
         if self.extra:
             s += [self.extra]
         return rpsl_format("\n".join(s))
+
+    def touch(self):
+        c_rpsl = self.rpsl.read()
+        n_rpsl = self.get_rpsl()
+        if c_rpsl == n_rpsl:
+            return  # Not changed
+        self.rpsl.write(n_rpsl)
+        # todo: sliding job
+
+
+##
+## Signal handlers
+##
+@receiver(post_save, sender=Person)
+def on_save(sender, instance, created, **kwargs):
+    instance.touch()
