@@ -17,6 +17,7 @@ Ext.define("NOC.core.RepoPreview", {
     padding: 4,
     width: 800,
     height: 600,
+    syntax: null,
 
     initComponent: function() {
         var me = this;
@@ -157,7 +158,7 @@ Ext.define("NOC.core.RepoPreview", {
     //
     renderText: function(text, syntax) {
         var me = this;
-        syntax = syntax || "bind";
+        syntax = syntax || me.syntax;
         NOC.SyntaxHighlight.highlight(me.items.first(), text, syntax);
     },
     //

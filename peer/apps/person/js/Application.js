@@ -135,7 +135,8 @@ Ext.define("NOC.peer.person.Application", {
         var me = this;
         Ext.create("NOC.core.RepoPreview", {
             title: Ext.String.format("Preview person RPSL: {0}", me.currentRecord.get("nic_hdl")),
-            rootUrl: "/peer/person/" + me.currentRecord.get("id") + "/repo/rpsl/"
+            rootUrl: "/peer/person/" + me.currentRecord.get("id") + "/repo/rpsl/",
+            syntax: "rpsl"
         });
     }
 });
