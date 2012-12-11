@@ -39,7 +39,7 @@ class ToolsAppplication(Application):
         if not prefix.can_change(request.user):
             return self.response_forbidden(_("Permission denined"))
         return self.render(request,"index.html",vrf=vrf,afi=afi,prefix=prefix,
-            upload_ips_axfr_form=self.AXFRForm(), rebase_form=self.RebaseForm(prefix.prefix))
+            upload_ips_axfr_form=self.AXFRForm())
     
     ##
     ## Download block's allocated IPs in CSV format
