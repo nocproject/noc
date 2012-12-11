@@ -187,6 +187,8 @@ class PrefixNode(Node):
         return "<%s %s>" % (self.__class__.__name__, self.prefix)
 
     def populate(self):
+        if not self.app.prefix_children.get(self.prefix.id):
+            return
         for p in self.prefix.children_set.order_by("prefix"):
             self.children += [PrefixNode(self.app, p)]
 
@@ -275,9 +277,23 @@ class ReportOverviewApplication(ReportApplication):
             """)
         return dict(c.fetchall())
 
+    def get_prefix_children(self):
+        """
+        Returns dict of prefix_id -> count of nested prefixes
+        :return:
+        """
+        c = connection.cursor()
+        c.execute("""
+            SELECT parent_id, COUNT(*)
+            FROM ip_prefix
+            GROUP BY 1
+            """)
+        return dict(c.fetchall())
+
     def report_html(self):
         #
         self.ip_usage = self.get_ip_usage()
+        self.prefix_children = self.get_prefix_children()
         # Prepare tree
         nodes = []
         for vrf_group in VRFGroup.objects.order_by("name"):
