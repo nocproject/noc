@@ -21,8 +21,6 @@ class AccessTestCase(TestCase):
     ## Create default data set
     ##
     def setUp(self):
-        # Get default types
-        self.ns_type = DNSZoneRecordType.objects.get(type="NS")
         # NS1
         self.ns1 = DNSServer(name="ns1.example.com", generator_name="BINDv9",
                     ip="10.0.0.1")
@@ -68,7 +66,7 @@ class AccessTestCase(TestCase):
         self.zr41 = DNSZone(name="0.0.10.in-addr.arpa", is_auto_generated=True,
             profile=self.profile1)
         self.zr41.save()
-        DNSZoneRecord(zone=self.zr41, name="8/29", type=self.ns_type,
+        DNSZoneRecord(zone=self.zr41, name="8/29", type="NS",
             content="ns3.example.com").save()
         # ZR42
         self.zr42 = DNSZone(name="1.0.10.in-addr.arpa", is_auto_generated=True,
