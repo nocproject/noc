@@ -41,3 +41,6 @@ class Script(NOCScript):
         self.debug("Event: %s" % event)
         if event == "refresh_object_mappings" and "object_id" in kwargs:
             return self.refresh_object_mappings(kwargs["object_id"])
+        else:
+            return False
+
