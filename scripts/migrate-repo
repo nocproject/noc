@@ -1,0 +1,78 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## migrate-repo
+## Migrate HG repo to GridVCS
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+import sys
+import subprocess
+import datetime
+## Setup envoronment
+import set_env
+set_env.setup(use_django=True)
+## Django modules
+from django.db import connection
+## NOC modules
+from noc.settings import config
+from noc.lib.gridvcs.gridvcs import GridVCS
+
+HG = config.get("cm", "vcs_path")
+REPO = config.get("cm", "repo")
+
+
+def get_hg_revisions(path):
+    p = subprocess.Popen([HG, "log", "--template", "{rev} {date}\n", path],
+        stdout=subprocess.PIPE, cwd=REPO)
+    s = []
+    for l in p.stdout:
+        l = l.strip()
+        if not l:
+            continue
+        rev, date = l.split()
+        if "-" in date:
+            date, r = date.split("-", 1)
+        s += [(rev, datetime.datetime.fromtimestamp(float(date)))]
+    s.reverse()
+    return s
+
+def get_hg_revision(path, revision):
+    p = subprocess.Popen([HG, "cat", "-r", revision, path],
+        stdout=subprocess.PIPE, cwd=REPO)
+    return p.stdout.read()
+
+
+def get_hg_files():
+    p = subprocess.Popen([HG, "locate"],
+        stdout=subprocess.PIPE, cwd=REPO)
+    return [l.strip() for l in p.stdout.readlines()]
+
+
+def import_file(repo, id, path):
+    print "Imporing %s:" % path,
+    for rev, date in get_hg_revisions(path):
+        print "r%s " % rev,
+        data = get_hg_revision(path, rev)
+        GRIDVCS.put(id, data, ts=date)
+    print
+
+def migrate_dns():
+    files = dict((f.split(os.sep)[-1], f) for f in get_hg_files())
+    c = connection.cursor()
+    c.execute("SELECT id, name FROM dns_dnszone")
+    for id, name in c:
+        if name in files:
+            import_file("dns", id, files[name])
+
+if __name__ == "__main__":
+    repo = sys.argv[1]
+    assert repo in ["dns"]
+    REPO = os.path.join(REPO, repo)
+    if repo == "dns":
+        GRIDVCS = GridVCS("dnszone")
+        migrate_dns()
