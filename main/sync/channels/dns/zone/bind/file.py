@@ -24,6 +24,7 @@ class BINDFileChannel(Channel):
     type = bind/file
     enabled = true
     root = <zone files directory>
+    inc_root = <relative path to zone file>
     on_reload = rndc reload
     on_reload_zone = rndc reload {{ zone }}
     """
@@ -31,6 +32,7 @@ class BINDFileChannel(Channel):
         super(BINDFileChannel, self).__init__(
             daemon, channel, name, config)
         self.zones = config["root"]
+        self.inc_root = config.get("inc_root")
         if not os.path.isdir(self.zones):
             self.die("Cannot open directory %s" % self.zones)
         self.manifest = os.path.join(self.zones, ".manifest")
@@ -56,7 +58,10 @@ class BINDFileChannel(Channel):
         :param zone:
         :return:
         """
-        return self.get_zone_path(zone)
+        if self.inc_root:
+            return os.path.join(self.inc_root, zone)
+        else:
+            return self.get_zone_path(zone)
 
     def get_manifest(self):
         """
