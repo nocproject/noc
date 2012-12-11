@@ -13,7 +13,6 @@ from noc.lib.app.reportapplication import ReportApplication
 from noc.main.models import CustomField
 from noc.ip.models import VRFGroup, Prefix
 from noc.lib.ip import IP
-from noc.settings import ADMIN_MEDIA_PREFIX
 
 prefix_fields = [f for f in CustomField.table_fields("ip_prefix")
                  if not f.is_hidden]
@@ -205,9 +204,8 @@ class PrefixNode(Node):
             if v is None or v == "":
                 continue
             if f.type == "bool":
-                t = "yes" if f else "no"
-                icon = "<img src='%simg/icon-%s.gif' />" % (
-                    ADMIN_MEDIA_PREFIX, t)
+                t = "tick" if f else "cross"
+                icon = "<img src='/static/img/fam/silk/%s.png' />" % t
                 r += ["<br/>%s: %s" % (f.label, icon)]
             else:
                 r += ["<br/>%s: %s" % (f.label, v)]
@@ -284,7 +282,12 @@ class ReportOverviewApplication(ReportApplication):
         nodes = []
         for vrf_group in VRFGroup.objects.order_by("name"):
             if vrf_group.address_constraint == "G":
-                nodes += [VRFGroupNode(self, vrf_group)]
+                vrfs = list(vrf_group.vrf_set.all())
+                if len(vrfs) > 1:
+                    nodes += [VRFGroupNode(self, vrf_group)]
+                else:
+                    # Optimization
+                    nodes += [VRFNode(self, vrfs[0])]
             else:
                 for vrf in vrf_group.vrf_set.order_by("name"):
                     nodes += [VRFNode(self, vrf)]
