@@ -69,7 +69,7 @@
         "action": "L",
         "text" : {
             "en": {
-                "subject_template": "Login failed:{% if user %} {{user}}{% endif %}{% if ip %}({{ip}}){% endif %}",
+                "subject_template": "Login failed:{% if user %} {{user}}{% endif %}{% if ip %} ({{ip}}){% endif %}",
                 "body_template": "Login failed!\n{% if user %}User: {{user}}{% endif %}{% if ip %}\nIP: {{ip}}{% endif %}",
                 "symptoms": "No specific symptoms",
                 "probable_causes": "User failed to log in. Username or password mismatch",
