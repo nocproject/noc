@@ -282,7 +282,7 @@ class ManagedObject(models.Model):
             Address(
                 vrf=vrf,
                 address=self.address,
-                fqdn=self.fqdn,
+                fqdn=fqdn,
                 managed_object=self
             ).save()
             return
