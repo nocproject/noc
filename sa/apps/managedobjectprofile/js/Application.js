@@ -54,6 +54,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             text: "MAC",
             dataIndex: "enable_mac_discovery",
             renderer: NOC.render.Bool
+        },
+        {
+            text: "IPAM",
+            dataIndex: "sync_ipam",
+            renderer: NOC.render.Bool
         }
     ],
     fields: [
@@ -82,9 +87,21 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             allowBlank: true
         },
         {
+            name: "sync_ipam",
+            xtype: "checkboxfield",
+            boxLabel: "Enable IPAM synchronization",
+            allowBlank: false
+        },
+        {
+            name: "fqdn_template",
+            xtype: "textarea",
+            fieldLabel: "FQDN template",
+            allowBlank: true
+        },
+        {
             name: "enable_ping",
             xtype: "checkboxfield",
-            boxLabel: "Enable ping check",
+            fieldLabel: "Enable ping check",
             allowBlank: false
         },
         {
