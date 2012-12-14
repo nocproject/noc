@@ -216,11 +216,15 @@ class ManagedObject(models.Model):
             old = None
         # Save
         super(ManagedObject, self).save()
+        # IPAM sync
+        if self.object_profile.sync_ipam:
+            self.sync_ipam()
         # Notify changes
         if ((old is None and self.trap_source_ip) or
             (old and self.trap_source_ip != old.trap_source_ip) or
             (old and self.activator.id != old.activator.id)):
             self.sae_refresh_event_filter()
+        # @todo: will be removed with GridVCS
         # Process config
         try:
             # self.config is OneToOne field created by Config
@@ -260,6 +264,35 @@ class ManagedObject(models.Model):
         except Config.DoesNotExist:
             pass
         super(ManagedObject, self).delete()
+
+    def sync_ipam(self):
+        """
+        Synchronize FQDN and address with IPAM
+        """
+        from noc.ip.models.address import Address
+        from noc.ip.models.vrf import VRF
+        # Generate FQDN from template
+        fqdn = self.object_profile.get_fqdn(self)
+        # Get existing IPAM record
+        vrf = self.vrf if self.vrf else VRF.get_global()
+        try:
+            a = Address.objects.get(vrf=vrf, address=self.address)
+        except Address.DoesNotExist:
+            # Create new address
+            Address(
+                vrf=vrf,
+                address=self.address,
+                fqdn=self.fqdn,
+                managed_object=self
+            ).save()
+            return
+        # Update existing address
+        if (a.managed_object != self or
+            a.address != self.address or a.fqdn != fqdn):
+            a.managed_object = self
+            a.address = self.address
+            a.fqdn = fqdn
+            a.save()
 
     @classmethod
     def search(cls, user, query, limit):
