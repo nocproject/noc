@@ -9,8 +9,10 @@
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.template import Template, Context
 ## NOC modules
 from noc.main.models.style import Style
+from noc.lib.validators import is_fqdn
 
 
 class ManagedObjectProfile(models.Model):
@@ -92,3 +94,17 @@ class ManagedObjectProfile(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_fqdn(self, object):
+        if self.fqdn_template:
+            # Render template
+            ctx = Context({"object": object})
+            f = Template(self.fqdn_template).render(ctx)
+            # Remove spaces
+            f = "".join(f.split())
+        else:
+            f = object.name
+        # Check resulting fqdn
+        if not is_fqdn(f):
+            raise ValueError("Invalid FQDN: %s" % f)
+        return f
