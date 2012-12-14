@@ -31,6 +31,10 @@ class ManagedObjectProfile(models.Model):
     # Regular expression to check name format
     name_template = models.CharField(_("Name template"), max_length=256,
         blank=True, null=True)
+    ## IPAM Synchronization
+    sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
+    fqdn_template = models.TextField(_("FQDN template"),
+        null=True, blank=True)
     #@todo: Name validation function
     ## FM settings
     enable_ping = models.BooleanField(
