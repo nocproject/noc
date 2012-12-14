@@ -37,6 +37,15 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "fqdn_template",
+            type: "string"
+        },
+        {
+            name: "sync_ipam",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "enable_ping",
             type: "boolean",
             defaultValue: true
