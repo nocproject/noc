@@ -541,6 +541,9 @@ Ext.define("NOC.core.ModelApplication", {
         if(defaultValues) {
             me.form.setValues(defaultValues);
         }
+        if(defaults) {
+            me.form.setValues(defaults);
+        }
         me.currentRecord = null;
         me.resetInlines();
         me.setFormTitle(me.createTitle);
