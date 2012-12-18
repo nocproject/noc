@@ -30,31 +30,45 @@ class Script(NOCScript):
     def execute_small_cat(self):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
-        return match.group("id")
+        base = match.group("id")
+        return {
+            "first_chassis_mac": base,
+            "last_chassis_mac": base
+        }
 
     ##
     ## Cisco Catalyst 4000/4500 Series
     ##
-    rx_cat4000 = re.compile(r"MAC Base =\s+(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+    rx_cat4000 = re.compile(r"MAC Base = (?P<id>\S+).+MAC Count = (?P<count>\d+)",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     @NOCScript.match(version__regex=r"SG")
     def execute_cat4000(self):
         v = self.cli("show idprom chassis")
         match = self.re_search(self.rx_cat4000, v)
-        return match.group("id")
+        base = match.group("id")
+        count = int(match.group("count"))
+        l = int(base[7:].replace(".", ""), 16) + count
+        last = "%s%02x.%04x" % (base[:7], l >> 16, l & 0xffff)
+        return {
+            "first_chassis_mac": base,
+            "last_chassis_mac": last
+        }
 
     ##
     ## Cisco Catalyst 6500 Series or Cisco router 7600 Series
     ##
-    rx_cat6000 = re.compile(r"chassis MAC addresses:.+from\s+(?P<id>\S+)\s+to",
+    rx_cat6000 = re.compile(r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+(?P<to_id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
     @NOCScript.match(version__regex=r"S[XR]")
     def execute_cat6000(self):
         v = self.cli("show catalyst6000 chassis-mac-addresses")
         match = self.re_search(self.rx_cat6000, v)
-        return match.group("id")
+        return {
+            "first_chassis_mac": match.group("from_id"),
+            "last_chassis_mac": match.group("to_id")
+        }
 
     ##
     ## Other
