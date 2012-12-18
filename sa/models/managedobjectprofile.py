@@ -88,9 +88,41 @@ class ManagedObjectProfile(models.Model):
         _("Min. MAC discovery interval"), default=600)
     mac_discovery_max_interval = models.IntegerField(
         _("Max. MAC discovery interval"), default=86400)
-    # Topology discovery
-    # enable_topology_discovery = models.BooleanField(
-    #        _("Enable topology discovery"), default=True)
+    # ID Discovery
+    enable_id_discovery = models.BooleanField(
+            _("Enable ID discovery"), default=True)
+    id_discovery_min_interval = models.IntegerField(
+        _("Min. ID discovery interval"), default=600)
+    id_discovery_max_interval = models.IntegerField(
+        _("Max. ID discovery interval"), default=86400)
+    # LLDP Topology discovery
+    enable_lldp_discovery = models.BooleanField(
+            _("Enable LLDP discovery"), default=True)
+    lldp_discovery_min_interval = models.IntegerField(
+        _("Min. LLDP discovery interval"), default=600)
+    lldp_discovery_max_interval = models.IntegerField(
+        _("Max. LLDP discovery interval"), default=86400)
+    # CDP Topology discovery
+    enable_cdp_discovery = models.BooleanField(
+            _("Enable CDP discovery"), default=True)
+    cdp_discovery_min_interval = models.IntegerField(
+        _("Min. CDP discovery interval"), default=600)
+    cdp_discovery_max_interval = models.IntegerField(
+        _("Max. CDP discovery interval"), default=86400)
+    # FDP Topology discovery
+    enable_fdp_discovery = models.BooleanField(
+            _("Enable FDP discovery"), default=True)
+    fdp_discovery_min_interval = models.IntegerField(
+        _("Min. FDP discovery interval"), default=600)
+    fdp_discovery_max_interval = models.IntegerField(
+        _("Max. FDP discovery interval"), default=86400)
+    # STP Topology discovery
+    enable_stp_discovery = models.BooleanField(
+            _("Enable STP discovery"), default=True)
+    stp_discovery_min_interval = models.IntegerField(
+        _("Min. STP discovery interval"), default=600)
+    stp_discovery_max_interval = models.IntegerField(
+        _("Max. STP discovery interval"), default=86400)
 
     def __unicode__(self):
         return self.name
