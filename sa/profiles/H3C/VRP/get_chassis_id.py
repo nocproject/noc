@@ -39,8 +39,16 @@ class Script(NOCScript):
         v = self.cli("display stp")
         match = self.rx_mac.search(v)
         if match is not None:
-            return match.group("id")
+            mac = match.group("id")
+            return {
+                "first_chassis_mac": mac,
+                "last_chassis_mac": mac
+            }
         else:
             v = self.cli("display device manuinfo")
             match = self.rx_mac1.search(v)
-            return match.group("id")
+            mac = match.group("id")
+            return {
+                "first_chassis_mac": mac,
+                "last_chassis_mac": mac
+            }

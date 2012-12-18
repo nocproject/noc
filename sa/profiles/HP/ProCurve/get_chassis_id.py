@@ -25,4 +25,8 @@ class Script(NOCScript):
     def execute(self):
         v = self.cli("show management")
         match = self.re_search(self.rx_mac, v)
-        return match.group(1)
+        mac = match.group(1)
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }

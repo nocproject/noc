@@ -20,4 +20,8 @@ class Script(NOCScript):
     def execute(self):
         match = self.re_search(self.rx_mac,
             self.cli("show atmlan mac-address"))
-        return match.group("mac")
+        mac = match.group("id")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }

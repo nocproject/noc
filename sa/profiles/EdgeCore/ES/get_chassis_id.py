@@ -30,7 +30,11 @@ class Script(NOCScript):
     def execute_4626(self):
         v = self.cli("show mac-address-table static")
         match = self.re_search(self.rx_mac_4626, v)
-        return match.group("id")
+        mac = match.group("id")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }
 
     ##
     ## Other
@@ -39,4 +43,8 @@ class Script(NOCScript):
     def execute_other(self):
         v = self.cli("show system")
         match = self.re_search(self.rx_mac, v)
-        return match.group("id")
+        mac = match.group("id")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }

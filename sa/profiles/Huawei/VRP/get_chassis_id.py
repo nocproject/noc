@@ -28,10 +28,18 @@ class Script(noc.sa.script.Script):
         v = self.cli("display stp")
         match = self.rx_mac.search(v)
         if match:
-            return match.group("id")
+            mac = match.group("id")
+            return {
+                "first_chassis_mac": mac,
+                "last_chassis_mac": mac
+            }
         else:
             match = self.rx_mac1.search(v)
             if match:
-                return match.group("id")
+                mac = match.group("id")
+                return {
+                    "first_chassis_mac": mac,
+                    "last_chassis_mac": mac
+                }
 
         raise self.NotSupportedError()
