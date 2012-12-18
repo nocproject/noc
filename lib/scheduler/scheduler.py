@@ -147,9 +147,16 @@ class Scheduler(object):
 
     def reschedule_job(self, job_name, key, ts, status=None,
                        duration=None, last_status=None, tb=None,
-                       log=None, update_runs=False):
+                       log=None, update_runs=False,
+                       skip_running=False):
         self.info("Rescheduling job %s(%s) to %s%s" % (
             job_name, key, ts, " status=%s" % status if status else ""))
+        q = {
+            self.ATTR_CLASS: job_name,
+            self.ATTR_KEY: key
+        }
+        if skip_running:
+            q[self.ATTR_STATUS] = self.S_WAIT
         s = {
             self.ATTR_TS: ts,
             self.ATTR_TRACEBACK: tb,
@@ -164,10 +171,7 @@ class Scheduler(object):
         op = {"$set": s}
         if update_runs:
             op["$inc"] = {self.ATTR_RUNS: 1}
-        self.collection.update({
-            self.ATTR_CLASS: job_name,
-            self.ATTR_KEY: key
-        }, op, safe=True)
+        self.collection.update(q, op, safe=True)
 
     def set_job_status(self, job_name, key, status):
         self.info("Changing %s(%s) status to %s" % (
