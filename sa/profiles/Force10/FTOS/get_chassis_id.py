@@ -30,7 +30,11 @@ class Script(NOCScript):
     def execute_s(self):
         v = self.cli("show system brief")
         match = self.re_search(self.rx_system_id, v)
-        return match.group("id")
+        mac = match.group("id")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }
 
     ##
     ## C/E-series
@@ -42,4 +46,8 @@ class Script(NOCScript):
     def execute_other(self):
         v = self.cli("show chassis brief")
         match = self.re_search(self.rx_chassis_id, v)
-        return match.group("id")
+        mac = match.group("id")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }
