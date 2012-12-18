@@ -23,7 +23,7 @@ class ReportObjectsSummary(SimpleReport):
                 r.script,
                 r.error_code,
                 r.error_text
-            ) for r in FailedScriptLog.objects.order_by("-timestamp")
+            ) for r in FailedScriptLog.objects.order_by("-timestamp")[:100]
         ]
         return self.from_dataset(
             title=self.title,
