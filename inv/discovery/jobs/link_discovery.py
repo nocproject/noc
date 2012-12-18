@@ -60,16 +60,22 @@ class LinkDiscoveryJob(MODiscoveryJob):
             self.error("Interface is not found: %s:%s" % (
                 remote_object.name, remote_interface))
             return
-        # @todo: LAG
+        is_l_lag = bool(l_iface.aggregated_interface)
+        is_r_lag = bool(r_iface.aggregated_interface)
         link = l_iface.link
-        if link:
-            if link.other(l_iface) != r_iface:
-                self.error("Found link %s - %s conflicts with existing %s" % (
-                    l_iface, r_iface, link))
+        if not is_l_lag and not is_r_lag:
+            # P2P link
+            if link:
+                if link.other(l_iface) != r_iface:
+                    self.error("Found link %s - %s conflicts with existing %s" % (
+                        l_iface, r_iface, link))
+            else:
+                self.debug("Linking %s and %s" % (l_iface, r_iface))
+                l_iface.link_ptp(r_iface)
+                self.submited.add((local_interface, remote_object, remote_interface))
         else:
-            self.debug("Linking %s and %s" % (l_iface, r_iface))
-            l_iface.link_ptp(r_iface)
-            self.submited.add((local_interface, remote_object, remote_interface))
+            # LAG
+            pass
 
     def process_result(self, object, result):
         """
@@ -113,20 +119,21 @@ class LinkDiscoveryJob(MODiscoveryJob):
             # Check remote object in pending checks
             if pr not in self.candidates:
                 continue
-            pc = self.p_candidates
+            pc = self.p_candidates[pr]
             c = self.candidates[pr]
             if len(pc) == 1 and len(c) == 1:
-                # 1:1 link
+                # single link
                 pcl, pcr = pc[0]
                 cl, cr = c[0]
                 if ((pcl is None or cl is None or pcl == cl) and
                     (pcr is None or cr is None or pcr == cr)):
                     self.submit_link(object, cl, pr, pcr)
             else:
-                # N:N link
-                # Join pending and found results
-                # @todo
-                pass
+                # multilink
+                # Find full match
+                for l, r in pc:
+                    if (l, r) in c:
+                        self.submit_link(object, l, pr, r)
         # Clean my pending link checks
         PendingLinkCheck.objects.filter(
             method=self.method, local_object=object.id).delete()
@@ -137,8 +144,12 @@ class LinkDiscoveryJob(MODiscoveryJob):
                     self.debug("Scheduling check for %s:%s -> %s:%s" % (object.name, l, o, r))
                     PendingLinkCheck.submit(self.method, o, r, object, l)
         # Reschedule pending jobs
-        # @todo: Reschedule only if no pending checks has been processed
-        self.debug("Rescheduling: %r" % set(self.candidates))
+        for o in set(self.candidates) - set(self.p_candidates) - set([self]):
+            self.debug("Rescheduling discovery for: %s" % o.name)
+            self.scheduler.reschedule_job(
+                self.name, o.id,
+                datetime.datetime.now(),  # @todo: Less aggressive
+                skip_running=True)
         return True
 
     @classmethod
