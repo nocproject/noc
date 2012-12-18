@@ -26,4 +26,8 @@ class Script(noc.sa.script.Script):
         mac = self.http.get("/")
         mac = strip_html_tags(mac)
         mac = self.rx_mac.search(mac)
-        return mac.group("mac")
+        mac = mac.group("mac")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }

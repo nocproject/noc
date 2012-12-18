@@ -23,4 +23,8 @@ class Script(noc.sa.script.Script):
     def execute(self):
         v = self.cli("show system-information")
         match = rx_chassis_id.search(v)
-        return match.group("id")
+        mac = match.group("id")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }

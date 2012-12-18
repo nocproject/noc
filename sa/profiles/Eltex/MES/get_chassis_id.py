@@ -25,10 +25,18 @@ class Script(NOCScript):
         if self.snmp and self.access_profile.snmp_ro:
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.17.1.1.0", cached=True)
+                return {
+                    "first_chassis_mac": mac,
+                    "last_chassis_mac": mac
+                }
                 return mac
             except self.snmp.TimeOutError:
                 pass
 
         # Fallback to CLI
         match = self.rx_mac.search(self.cli("show system", cached=True))
-        return match.group("mac")
+        mac = match.group("id")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }

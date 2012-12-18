@@ -21,7 +21,10 @@ class Script(NOCScript):
         if self.snmp and self.access_profile.snmp_ro:
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.1", cached=True)
-                return mac
+                return {
+                    "first_chassis_mac": mac,
+                    "last_chassis_mac": mac
+                }
             except self.snmp.TimeOutError:
                 pass
 
@@ -29,4 +32,7 @@ class Script(NOCScript):
         mac = self.http.get("/setup_get.cgi")
         mac = mac.split(",mac:'")[1]
         mac = mac.split("',ip:'")[0]
-        return mac
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }

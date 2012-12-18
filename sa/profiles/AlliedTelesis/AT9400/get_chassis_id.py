@@ -20,4 +20,8 @@ class Script(NOCScript):
 
     def execute(self):
         match = self.re_search(self.rx_ver, self.cli("show system", cached=True))
-        return match.group("id")
+        mac = match.group("id")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }
