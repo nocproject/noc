@@ -56,6 +56,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             renderer: NOC.render.Bool
         },
         {
+            text: "ID",
+            dataIndex: "enable_id_discovery",
+            renderer: NOC.render.Bool
+        },
+        {
+            text: "LLDP",
+            dataIndex: "enable_lldp_discovery",
+            renderer: NOC.render.Bool
+        },
+        {
             text: "IPAM",
             dataIndex: "sync_ipam",
             renderer: NOC.render.Bool
@@ -251,6 +261,46 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 },
                 {
                     name: "mac_discovery_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // ID
+                {
+                    xtype: "label",
+                    text: "ID discovery"
+                },
+                {
+                    name: "enable_id_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "id_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "id_discovery_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // LLDP
+                {
+                    xtype: "label",
+                    text: "LLDP discovery"
+                },
+                {
+                    name: "enable_lldp_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "lldp_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "lldp_discovery_max_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 }
