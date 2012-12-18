@@ -2,14 +2,16 @@
 ##----------------------------------------------------------------------
 ## Force10.FTOS.get_lldp_neighbors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-import noc.sa.script
-from noc.sa.interfaces import IGetLLDPNeighbors
+
+## Python modules
 import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+
 
 rx_sep = re.compile(r"^===+\n", re.MULTILINE)
 rx_local_interface = re.compile(
@@ -33,13 +35,16 @@ rx_remote_capabilities = re.compile(
     re.IGNORECASE | re.MULTILINE)
 
 
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name = "Force10.FTOS.get_lldp_neighbors"
     implements = [IGetLLDPNeighbors]
 
     def execute(self):
         r = []
-        v = self.cli("show lldp neighbors detail")
+        try:
+            v = self.cli("show lldp neighbors detail")
+        except self.CLIOperationError:
+            return []  # LLDP is not enabled
         # For each interface
         for s in rx_sep.split(v)[1:]:
             match = rx_local_interface.search(s)
