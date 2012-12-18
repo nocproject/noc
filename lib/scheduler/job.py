@@ -76,6 +76,11 @@ class Job(object):
     def get_display_key(self):
         return self.key
 
+    def debug(self, msg):
+        logging.debug("[%s: %s(%s)] %s" % (
+            self.scheduler.name, self.name,
+            self.get_display_key(), msg))
+
     def info(self, msg):
         logging.info("[%s: %s(%s)] %s" % (
             self.scheduler.name, self.name,
