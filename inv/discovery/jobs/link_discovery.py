@@ -14,6 +14,7 @@ from base import MODiscoveryJob
 from noc.settings import config
 from noc.inv.models.pendinglinkcheck import PendingLinkCheck
 from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
 
 
 class LinkDiscoveryJob(MODiscoveryJob):
@@ -60,19 +61,19 @@ class LinkDiscoveryJob(MODiscoveryJob):
             self.error("Interface is not found: %s:%s" % (
                 remote_object.name, remote_interface))
             return
-        is_l_lag = bool(l_iface.aggregated_interface)
-        is_r_lag = bool(r_iface.aggregated_interface)
+        is_l_lag = l_iface.type == "aggregated"
+        is_r_lag = r_iface.type == "aggregated"
         link = l_iface.link
         if not is_l_lag and not is_r_lag:
             # P2P link
             if link:
-                if link.other(l_iface) != r_iface:
+                if r_iface not in link.other(l_iface):
                     self.error("Found link %s - %s conflicts with existing %s" % (
                         l_iface, r_iface, link))
             else:
                 self.debug("Linking %s and %s" % (l_iface, r_iface))
                 l_iface.link_ptp(r_iface)
-                self.submited.add((local_interface, remote_object, remote_interface))
+            self.submited.add((local_interface, remote_object, remote_interface))
         else:
             # LAG
             pass
@@ -91,8 +92,22 @@ class LinkDiscoveryJob(MODiscoveryJob):
         :param result:
         :return:
         """
+        # Fetch existing links
+        self.submited = set()  # (local_iface, remote_object, remote_iface)
+        for l in Link.object_links(object):
+            if l.is_ptp:
+                i1, i2 = l.interfaces
+                if l.is_loop:
+                    # Loop to self
+                    self.submited.add((i1.name, object, i2.name))
+                    self.submited.add((i2.name, object, i1.name))
+                else:
+                    # p2p link
+                    if i1.managed_object == object:
+                        self.submited.add((i1.name, i2.managed_object, i2.name))
+                    else:
+                        self.submited.add((i2.name, i1.managed_object, i1.name))
         # Process results
-        self.submited = set()
         self.candidates = defaultdict(list)  # remote -> [(local iface, remote_iface)]
                                              # remote iface may be unknown
         self.process_result(object, result)
@@ -131,9 +146,9 @@ class LinkDiscoveryJob(MODiscoveryJob):
             else:
                 # multilink
                 # Find full match
-                for l, r in pc:
-                    if (l, r) in c:
-                        self.submit_link(object, l, pr, r)
+                    for l, r in pc:
+                        if (l, r) in c:
+                            self.submit_link(object, l, pr, r)
         # Clean my pending link checks
         PendingLinkCheck.objects.filter(
             method=self.method, local_object=object.id).delete()
@@ -144,7 +159,8 @@ class LinkDiscoveryJob(MODiscoveryJob):
                     self.debug("Scheduling check for %s:%s -> %s:%s" % (object.name, l, o, r))
                     PendingLinkCheck.submit(self.method, o, r, object, l)
         # Reschedule pending jobs
-        for o in set(self.candidates) - set(self.p_candidates) - set([self]):
+        so = set([object]) | set(o for (l, o, r) in self.submited)
+        for o in set(self.candidates) - set(self.p_candidates) - so:
             self.debug("Rescheduling discovery for: %s" % o.name)
             self.scheduler.reschedule_job(
                 self.name, o.id,
