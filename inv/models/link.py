@@ -64,6 +64,17 @@ class Link(Document):
         """
         return not self.is_ptp and not self.is_lag
 
+    @property
+    def is_loop(self):
+        """
+        Check link is looping to same object
+        :return:
+        """
+        if not self.is_ptp:
+            return False
+        i1, i2 = self.interfaces
+        return i1.managed_object == i2.managed_object
+
     def other(self, interface):
         """
         Return other interfaces of the link
@@ -79,3 +90,8 @@ class Link(Document):
         :return:
         """
         return self.other(interface)[0]
+
+    @classmethod
+    def object_links(cls, object):
+        ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
+        return cls.objects.filter(interfaces__in=ifaces)
