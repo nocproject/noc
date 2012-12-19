@@ -23,6 +23,7 @@ class Script(NOCScript):
     rx_ipif1 = re.compile(r"Interface\s*Name\s*:\s*(?P<ifname>\S+)\s*\nIP\s*Address\s*:\s*(?P<ip_address>\S+)\s+\(\S+\)\s*\nSubnet\s*Mask\s*:\s*(?P<ip_subnet>\S+)\s*\nVlan\s*Name\s*:\s*(?P<vlan_name>\S+)\s*\nMember\s*port\s*:\s*(\S+)\s*\nAdmin.\s*State\s*:\s*(?P<admin_state>Enabled|Disabled)\s*\nLink\s*Status\s*:\s*(?P<oper_status>Link\s*Up|Link\s*Down)\s*\n",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
+    rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled")
     rx_lldp = re.compile(r"Port\s*ID\s*:\s*(?P<ipif>\S+)\s*\n\s*\-+\s*\nAdmin\s*Status\s*:\s*(?:Tx_and_Rx|Tx_only|Rx_only)")
     rx_igmp = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+\d+\s+"
     r"\d+\s+(?P<state>Enabled)\s+")
