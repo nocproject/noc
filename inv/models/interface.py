@@ -62,6 +62,17 @@ class Interface(Document):
             self.mac = MACAddressParameter().clean(self.mac)
         super(Interface, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        # Remove all subinterfaces
+        for si in self.subinterface_set.all():
+            si.delete()
+        # Unlink
+        link = self.link
+        if link:
+            self.unlink()
+        # Remove interface
+        super(Interface, self).delete(*args, **kwargs)
+
     @property
     def link(self):
         """
@@ -130,7 +141,6 @@ class Interface(Document):
     @property
     def subinterface_set(self):
         return SubInterface.objects.filter(interface=self.id)
-
 
 ## Avoid circular references
 from subinterface import SubInterface

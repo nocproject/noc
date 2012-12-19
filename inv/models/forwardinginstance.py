@@ -32,3 +32,17 @@ class ForwardingInstance(Document):
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name,
                             self.name if self.name else "default")
+
+    def delete(self, *args, **kwargs):
+        # Delete subinterfaces
+        for si in self.subinterface_set.all():
+            si.delete()
+        # Delete forwarding instance
+        super(ForwardingInstance, self).delete(*args, **kwargs)
+
+    @property
+    def subinterface_set(self):
+        return SubInterface.objects.filter(forwarding_instance=self.id)
+
+## Avoid circular references
+from subinterface import SubInterface
