@@ -45,4 +45,5 @@ class ForwardingInstance(Document):
         return SubInterface.objects.filter(forwarding_instance=self.id)
 
 ## Avoid circular references
+import interface
 from subinterface import SubInterface
