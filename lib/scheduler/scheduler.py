@@ -69,6 +69,8 @@ class Scheduler(object):
         logging.error("[%s] %s" % (self.name, msg))
 
     def register_job_class(self, cls):
+        if not cls.name:
+            return  # Abstract classes
         s = " (ignored)" if cls.ignored else ""
         self.info("Registering job class: %s%s" % (cls.name, s))
         self.job_classes[cls.name] = cls
