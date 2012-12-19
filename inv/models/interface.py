@@ -70,6 +70,8 @@ class Interface(Document):
         link = self.link
         if link:
             self.unlink()
+        # Flush MACDB
+        MACDB.objects.filter(interface=self.id).delete()
         # Remove interface
         super(Interface, self).delete(*args, **kwargs)
 
@@ -145,3 +147,4 @@ class Interface(Document):
 ## Avoid circular references
 from subinterface import SubInterface
 from link import Link
+from macdb import MACDB
