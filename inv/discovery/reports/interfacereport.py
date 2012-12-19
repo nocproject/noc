@@ -41,8 +41,9 @@ class InterfaceReport(Report):
                 managed_object=self.object.id).only("name"))
         for i in db_fi - set(fi):
             self.info("Removing forwarding instance %s" % i)
-            ForwardingInstance.objects.filter(
-                managed_object=self.object.id, name=i).delete()
+            for dfi in ForwardingInstance.objects.filter(
+                managed_object=self.object.id, name=i):
+                dfi.delete()
 
     def submit_interfaces(self, interfaces):
         """
@@ -57,8 +58,10 @@ class InterfaceReport(Report):
                 managed_object=self.object.id).only("name"))
         for i in db_iface - set(interfaces):
             self.info("Removing interface %s" % i)
-            Interface.objects.filter(
-                managed_object=self.object.id, name=i).delete()
+            di = Interface.objects.filter(
+                managed_object=self.object.id, name=i).first()
+            if di:
+                di.delete()
 
     def submit_subinterfaces(self, forwarding_instance,
                              interface, subinterfaces):
@@ -74,10 +77,12 @@ class InterfaceReport(Report):
         db_siface = set(i["name"] for i in qs.only("name"))
         for i in db_siface - set(subinterfaces):
             self.info("Removing subinterface %s" % i)
-            SubInterface.objects.filter(
+            dsi = SubInterface.objects.filter(
                 managed_object=self.object.id,
                 interface=interface.id,
-                name=i).delete()
+                name=i).first()
+            if dsi:
+                dsi.delete()
 
     def submit_forwarding_instance(self, instance, type,
                                    rd=None, vr=None):
