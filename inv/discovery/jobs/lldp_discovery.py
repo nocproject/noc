@@ -94,7 +94,8 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
 
     def get_remote_port(self, object, remote_port, remote_port_subtype):
         f = {
-            5: self.get_remote_port_by_name
+            5: self.get_remote_port_by_name,  # interfaceName(5)
+            7: self.get_remote_port_by_name   # local(7)
         }.get(remote_port_subtype)
         if f:
             return f(object, remote_port)
