@@ -41,12 +41,16 @@ class RefreshSelectorCacheJob(IntervalJob):
                     }
                 ]
         # Write temporary cache
-        self.info("Writing cache")
-        tmp = self.cache + ".tmp"
-        c = get_db()[tmp]
-        c.insert(r)
-        # Substitute cache
-        c.rename(self.cache, dropTarget=True)
+        if r:
+            self.info("Writing cache")
+            tmp = self.cache + ".tmp"
+            c = get_db()[tmp]
+            c.insert(r)
+            # Substitute cache
+            c.rename(self.cache, dropTarget=True)
+        else:
+            # No data
+            self.info("No data to write")
         #
         return True
 
