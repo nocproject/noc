@@ -10,6 +10,7 @@
 from link_discovery import LinkDiscoveryJob
 from noc.settings import config
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.interface import Interface
 
 
 class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
@@ -94,6 +95,7 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
 
     def get_remote_port(self, object, remote_port, remote_port_subtype):
         f = {
+            3: self.get_remote_port_by_mac,   # macAddress(3)
             5: self.get_remote_port_by_name,  # interfaceName(5)
             7: self.get_remote_port_by_name   # local(7)
         }.get(remote_port_subtype)
@@ -104,3 +106,11 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
 
     def get_remote_port_by_name(self, object, port):
         return object.profile.convert_interface_name(port)
+
+    def get_remote_port_by_mac(self, object, mac):
+        i = Interface.objects.filter(managed_object=object.id,
+            mac=mac).first()
+        if i:
+            return i.name
+        else:
+            return None
