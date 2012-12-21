@@ -20,17 +20,36 @@ class Script(NOCScript):
 
     TIMEOUT = 300
 
-    rx_ipif1 = re.compile(r"Interface\s*Name\s*:\s*(?P<ifname>\S+)\s*\nIP\s*Address\s*:\s*(?P<ip_address>\S+)\s+\(\S+\)\s*\nSubnet\s*Mask\s*:\s*(?P<ip_subnet>\S+)\s*\nVlan\s*Name\s*:\s*(?P<vlan_name>\S+)\s*\nMember\s*port\s*:\s*(\S+)\s*\nAdmin.\s*State\s*:\s*(?P<admin_state>Enabled|Disabled)\s*\nLink\s*Status\s*:\s*(?P<oper_status>Link\s*Up|Link\s*Down)\s*\n",
+    rx_ipif = re.compile(
+        r"Interface\s*Name\s*: System\s*\nIP\s*Address\s*:\s*"
+        r"(?P<ip_address>\S+)\s+\(\S+\)\s*\nSubnet\s*Mask\s*:\s*"
+        r"(?P<ip_subnet>\S+)\s*\nVlan\s*Name\s*:\s*(?P<vlan_name>\S+)\s*\n"
+        r"Member\s*port\s*:\s*(\S*)\s*\nAdmin.\s*State\s*:\s*"
+        r"(?P<admin_state>Enabled|Disabled)\s*\nLink\s*Status\s*:\s*"
+        r"(?P<oper_status>Link\s*Up|Link\s*Down)\s*\n",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
     rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled")
-    rx_lldp = re.compile(r"Port\s*ID\s*:\s*(?P<ipif>\S+)\s*\n\s*\-+\s*\nAdmin\s*Status\s*:\s*(?:Tx_and_Rx|Tx_only|Rx_only)")
-    rx_igmp = re.compile(r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+\d+\s+"
-    r"\d+\s+(?P<state>Enabled)\s+")
-    rx_ports=re.compile(r"^\s*(?P<port>\d+(/|:)?\d*)\s*(?P<admin_state>Enabled|Disabled)\s+(?P<admin_speed>Auto|10M|100M|1000M|10G)/((?P<admin_duplex>Half|Full|Auto)/)?(?P<admin_flowctrl>Enabled|Disabled)\s+(?P<status>LinkDown|Link\sDown)?((?P<speed>10M|100M|1000M|10G)/(?P<duplex>Half|Full)/(?P<flowctrl>None|802.3x|Disabled))?\s+(?P<addr_learning>Enabled|Disabled)\s*$",re.MULTILINE)
-    rx_descrs=re.compile(r"^\s*(?P<port>\d+(/|:)?\d*)\s*(?P<description>[a-zA-Z0-9_ \-]+)?$",re.MULTILINE)
-    rx_vlan = re.compile(r"VID\s*:\s*(?P<vlan_id>\d+)\s+VLAN\s*Name\s+:\s*(?P<vlan_name>\S+)\s*\nVLAN\s*TYPE\s+:\s+(?P<vlan_type>\S+)\s*\nMember\s*ports\s*:\s*(?P<member_ports>\S*)\s*\nStatic\s*ports\s*:\s*(?P<static_ports>\S*)\s*\nUntagged\s*ports\s*:\s*(?P<untagged_ports>\S*)\s*\n",
-    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_lldp = re.compile(
+        r"Port\s*ID\s*:\s*(?P<ipif>\S+)\s*\n\s*\-+\s*\nAdmin\s*Status\s*:\s*"
+        r"(?:Tx_and_Rx|Tx_only|Rx_only)")
+    rx_ports = re.compile(
+        r"^\s*(?P<port>\d+:\d+)\s*(?P<admin_state>Enabled|Disabled)\s+"
+        r"(?P<admin_speed>Auto|10M|100M|1000M)/"
+        r"((?P<admin_duplex>Half|Full|Auto)/)?"
+        r"(?P<admin_flowctrl>Enabled|Disabled|Auto)\s+(?P<status>Link Down)?"
+        r"((?P<speed>10M|100M|1000M)/(?P<duplex>Half|Full)/"
+        r"(?P<flowctrl>None|802.3x|Disabled))?\s+"
+        r"(?P<addr_learning>Enabled|Disabled)\s*$", re.MULTILINE)
+    rx_descrs = re.compile(
+        r"^\s*(?P<port>\d+(/|:)?\d*)\s*(?P<description>[a-zA-Z0-9_ \-]+)?$",
+        re.MULTILINE)
+    rx_vlan = re.compile(
+        r"VID\s*:\s*(?P<vlan_id>\d+)\s+VLAN\s*Name\s+:\s*(?P<vlan_name>\S+)"
+        r"\s*\nVLAN\s*TYPE\s+:\s+(?P<vlan_type>\S+)\s*\nMember\s*ports\s*:\s*"
+        r"(?P<member_ports>\S*)\s*\nStatic\s*ports\s*:\s*(?P<static_ports>\S*)"
+        r"\s*\nUntagged\s*ports\s*:\s*(?P<untagged_ports>\S*)\s*\n",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def execute(self):
         lldp = []
@@ -47,62 +66,59 @@ class Script(NOCScript):
                 c = ""
             for match in self.rx_lldp.finditer(c):
                 lldp += [match.group("ipif")]
-        igmp = []
+
+        ports = []
+        objects = []
+        descriptions = {}
         try:
-            c = self.cli("show igmp")
+            d = self.cli("show ports descr all")
         except self.CLISyntaxError:
-            c = ""
-            pass
-        for match in self.rx_igmp.finditer(c):
-            igmp += [match.group("ipif")]
-        ports=[]
-        objects=[]
-        descriptions={}
-        try:
-            d=self.cli("show ports descr all")
-        except self.CLISyntaxError:
-            d=""
+            d = ""
             pass
         if d:
             for match in self.rx_descrs.finditer(d):
-                descriptions[ match.group("port")]= match.group("description")
+                descriptions[match.group("port")] = match.group("description")
         try:
-            c=self.cli("show ports all")
+            c = self.cli("show ports all")
         except self.CLISyntaxError:
-            c=""
+            c = ""
             pass
         if c:
             for match in self.rx_ports.finditer(c):
-                objects+=[{
-                    "port":match.group("port"),
-                    "admin_state":match.group("admin_state") =="Enabled",
-                    "admin_speed":match.group("admin_speed"),
-                    "admin_duplex":match.group("admin_duplex"),
-                    "admin_flowctrl":match.group("admin_flowctrl"),
-                    "status":match.group("status") is None,
-                    "speed":match.group("speed"),
-                    "duplex":match.group("duplex"),
-                    "flowctrl":match.group("flowctrl"),
-                    "address_learning":match.group("addr_learning").strip(),
-                    "desc":descriptions[match.group("port")] if match.group("port") in descriptions else "None"
+                objects += [{
+                    "port": match.group("port"),
+                    "admin_state": match.group("admin_state") == "Enabled",
+                    "admin_speed": match.group("admin_speed"),
+                    "admin_duplex": match.group("admin_duplex"),
+                    "admin_flowctrl": match.group("admin_flowctrl"),
+                    "status": match.group("status") is None,
+                    "speed": match.group("speed"),
+                    "duplex": match.group("duplex"),
+                    "flowctrl": match.group("flowctrl"),
+                    "address_learning": match.group("addr_learning").strip(),
+                    "desc": descriptions[match.group("port")] \
+                        if match.group("port") in descriptions else "None"
                 }]
         for i in objects:
-            ports+=[i]
+            ports += [i]
         vlans = []
         try:
-            c=self.cli("show vlan")
+            c = self.cli("show vlan")
         except self.CLISyntaxError:
-            c=""
+            c = ""
             pass
         if c:
             for match in self.rx_vlan.finditer(c):
-                members = self.expand_interface_range(match.group("member_ports").replace("(","").replace(")",""))
+                members = self.expand_interface_range(
+                    match.group("member_ports").replace("(",
+                    "").replace(")", ""))
                 tagged_ports = []
-                untagged_ports = \
-                    self.expand_interface_range(match.group("untagged_ports").replace("(","").replace(")",""))
+                untagged_ports = self.expand_interface_range(
+                    match.group("untagged_ports").replace("(",
+                    "").replace(")", ""))
                 for p in members:
                     if not(p in untagged_ports):
-                        tagged_ports +=[p]
+                        tagged_ports += [p]
                 vlans += [{
                     "vlan_id": int(match.group("vlan_id")),
                     "vlan_name": match.group("vlan_name"),
@@ -110,8 +126,6 @@ class Script(NOCScript):
                     "tagged_ports": tagged_ports,
                     "untagged_ports": untagged_ports
                 }]
-
-        fdb = self.scripts.get_mac_address_table()
 
         interfaces = []
         for p in ports:
@@ -147,28 +161,23 @@ class Script(NOCScript):
             interfaces += [i]
 
         ipif = self.cli("show ipif")
-        for match in self.rx_ipif1.finditer(ipif):
+        for match in self.rx_ipif.finditer(ipif):
             admin_status = match.group("admin_state") == "Enabled"
             o_status = match.group("oper_status")
             oper_status = re.match(self.rx_link_up, o_status) is not None
             i = {
-                "name": match.group("ifname"),
+                "name": "System",
                 "type": "SVI",
                 "admin_status": admin_status,
                 "oper_status": oper_status,
                 "subinterfaces": [{
-                    "name": match.group("ifname"),
+                    "name": "System",
                     "admin_status": admin_status,
                     "oper_status": oper_status,
                     "is_ipv4": True,
                     "enabled_afi": ["IPv4"]
                 }]
             }
-            desc = "System interface"
-            if desc is not None and desc != '':
-                desc = desc.strip()
-                i.update({"description": desc})
-                i['subinterfaces'][0].update({"description": desc})
             ip_address = match.group("ip_address")
             ip_subnet = match.group("ip_subnet")
             ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
@@ -176,14 +185,9 @@ class Script(NOCScript):
             vlan_name = match.group("vlan_name")
             for v in vlans:
                 if vlan_name == v['vlan_name']:
-                    vlan_id = v['vlan_id']
-                    i['subinterfaces'][0].update({"vlan_ids": [vlan_id]})
-                    for f in fdb:
-                        if 'CPU' in f['interfaces'] \
-                        and vlan_id == f['vlan_id']:
-                            i.update({"mac": f['mac']})
-                            i['subinterfaces'][0].update({"mac": f['mac']})
-                            break
+                    i['subinterfaces'][0]["vlan_ids"] = [v['vlan_id']]
                     break
+            ids = self.scripts.get_chassis_id()
+            i['subinterfaces'][0]["mac"] = ids["first_chassis_mac"]
             interfaces += [i]
         return [{"interfaces": interfaces}]
