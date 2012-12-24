@@ -65,7 +65,9 @@ def parse_neighbor(text):
         r"Neighbor[^\n]+\n(?P<neighbor>.*?Expired time[^\n]+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_neigh = re.compile(
-        r"Chassis\s*ID\s*:\s*(?P<id>\S+).*?Port\s*ID\s*(sub)*type\s*:\s*(?P<p_type>\S+).*?Port\s*ID\s*:\s*(?P<p_id>\S+).*?Sys.*?name\s*:\s*(?P<name>[^\n]+).*?Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)",
+        r"Chassis\s*ID\s*:\s*(?P<id>\S+).*?Port\s*ID\s*(sub)*type\s*:\s*"
+        r"(?P<p_type>\S+).*?Port\s*ID\s*:\s*(?P<p_id>\S+).*?Sys.*?name\s*:\s*"
+        r"(?P<name>[^\n]+).*?Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     n = []
     for match_n in rx_ngh_line.finditer(text):
@@ -78,14 +80,21 @@ def parse_neighbor(text):
                     "local": 7
                 }[match_data.group("p_type")]
                 if n["remote_port_subtype"] == 3:
-                    n["remote_port"] = MACAddressParameter().clean(match_data.group("p_id"))
+                    n["remote_port"] = \
+                        MACAddressParameter().clean(match_data.group("p_id"))
                 else:
                     n["remote_port"] = match_data.group("p_id")
                 n["remote_chassis_id"] = match_data.group("id")
                 n["remote_system_name"] = match_data.group("name")
                 # Get capability
                 cap = 0
-                for c in match_data.group("capability").strip().split(", "):
+                if len(match_data.group("capability").strip().split(", ")) > 1:
+                    capstring = \
+                        match_data.group("capability").strip().split(", ")
+                else:
+                    capstring = \
+                        match_data.group("capability").strip().split()
+                for c in capstring:
                         cap |= {
                         "NA": 0, "other": 1, "repeater": 2, "bridge": 4,
                         "WLAN": 8, "router": 16, "telephone": 32,
