@@ -300,7 +300,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%C6KPWR-SP-2-PSFAIL: (?P<name>power supply \\d+) output failed.$"
+                "value_re": "%C(?:6K|7600_)PWR-SP-2-PSFAIL: (?P<name>power supply \\d+) output failed.$"
             }
         ]
     },
@@ -321,7 +321,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%C6KPWR-SP-4-PSOK: (?P<name>power supply \\d+) turned on.$"
+                "value_re": "%C(?:6K|7600_)PWR-SP-4-PSOK: (?P<name>power supply \\d+) turned on.$"
             }
         ]
     },
