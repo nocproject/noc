@@ -35,7 +35,7 @@ class Script(NOCScript):
                                self.cli("GET STATUS WAN", cached=True))
         if not match:
             raise self.NotSupportedError()
-        mac = match.group("id")
+        mac = match.group("mac")
         return {
             "first_chassis_mac": mac,
             "last_chassis_mac": mac
