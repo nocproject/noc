@@ -49,6 +49,8 @@ class Profile(NOCProfile):
             return "FXS %s" % interface[3:].strip()
         if interface.lower().startswith("efxs"):
             return "EFXS %s" % interface[4:].strip()
+        if interface.lower().startswith("cpp"):
+            return "CPP"
         match = self.rx_cable_if.search(interface)
         if match:
             return "Ca %s/%s" % match.group('pr_if'), match.group('sub_if')
