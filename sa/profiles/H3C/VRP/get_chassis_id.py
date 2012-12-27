@@ -26,7 +26,11 @@ class Script(NOCScript):
     def execute_old(self):
         v = self.cli("display stp")
         match = self.rx_mac_old.search(v)
-        return match.group("id")
+        mac = match.group("id")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }
 
     rx_mac = re.compile(r"^CIST Bridge[^:]*?:\s*\d+?\.(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
