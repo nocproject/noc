@@ -72,7 +72,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
                         l_iface, r_iface, link))
             else:
                 self.debug("Linking %s and %s" % (l_iface, r_iface))
-                l_iface.link_ptp(r_iface)
+                l_iface.link_ptp(r_iface, method=self.name)
             self.submited.add((local_interface, remote_object, remote_interface))
         else:
             # LAG
@@ -84,16 +84,9 @@ class LinkDiscoveryJob(MODiscoveryJob):
         :param result:
         :return:
         """
-        raise NotImplementedError()
+        pass
 
-    def handler(self, object, result):
-        """
-        :param object:
-        :param result:
-        :return:
-        """
-        # Fetch existing links
-        self.submited = set()  # (local_iface, remote_object, remote_iface)
+    def load_existing_links(self, object):
         for l in Link.object_links(object):
             if l.is_ptp:
                 i1, i2 = l.interfaces
@@ -107,29 +100,37 @@ class LinkDiscoveryJob(MODiscoveryJob):
                         self.submited.add((i1.name, i2.managed_object, i2.name))
                     else:
                         self.submited.add((i2.name, i1.managed_object, i1.name))
-        # Process results
-        self.candidates = defaultdict(list)  # remote -> [(local iface, remote_iface)]
-                                             # remote iface may be unknown
-        self.process_result(object, result)
-        # Process pending link checks
-        self.p_candidates = defaultdict(list)  # remote -> [(local iface, remote_iface)]
-                                               # local iface may be unknown
+
+    def load_pending_checks(self, object):
         for plc in PendingLinkCheck.objects.filter(
             method=self.method, local_object=object.id,
             expire__gt=datetime.datetime.now()):
             if plc.local_object not in self.candidates:
                 continue
-            self.p_candidates[plc.remote_object] += [(plc.local_interface, plc.remote_interface)]
-        # Resolve self links
-        if object in self.candidates:
-            sl = set()
-            for l, r in self.candidates[object]:
-                if (l and r and l != r and (l, r) not in sl
-                    and (r, l) not in sl):
-                    sl.add((l, r))
-            for l, r in sl:
-                self.submit_link(object, l, object, r)
-        # Process pending checks
+            self.p_candidates[plc.remote_object] += [
+                (plc.local_interface, plc.remote_interface)]
+
+    def reschedule_pending_jobs(self, object):
+        so = set([object]) | set(o for (l, o, r) in self.submited)
+        for o in set(self.candidates) - set(self.p_candidates) - so:
+            self.debug("Rescheduling discovery for: %s" % o.name)
+            self.scheduler.reschedule_job(
+                self.name, o.id,
+                datetime.datetime.now(),  # @todo: Less aggressive
+                skip_running=True)
+
+    def clean_pending_checks(self, object):
+        PendingLinkCheck.objects.filter(
+            method=self.method, local_object=object.id).delete()
+
+    def write_pending_checks(self, object):
+        for o in self.candidates:
+            for l, r in self.candidates[o]:
+                if (l, o, r) not in self.submited:
+                    self.debug("Scheduling check for %s:%s -> %s:%s" % (object.name, l, o, r))
+                    PendingLinkCheck.submit(self.method, o, r, object, l)
+
+    def process_pending_checks(self, object):
         for pr in self.p_candidates:
             # Check remote object in pending checks
             if pr not in self.candidates:
@@ -146,26 +147,47 @@ class LinkDiscoveryJob(MODiscoveryJob):
             else:
                 # multilink
                 # Find full match
-                    for l, r in pc:
-                        if (l, r) in c:
-                            self.submit_link(object, l, pr, r)
+                for l, r in pc:
+                    if (l, r) in c:
+                        self.submit_link(object, l, pr, r)
+
+    def resolve_self_links(self, object):
+        if object in self.candidates:
+            sl = set()
+            for l, r in self.candidates[object]:
+                if (l and r and l != r and (l, r) not in sl
+                    and (r, l) not in sl):
+                    sl.add((l, r))
+            for l, r in sl:
+                self.submit_link(object, l, object, r)
+
+    def handler(self, object, result):
+        """
+        :param object:
+        :param result:
+        :return:
+        """
+        # Fetch existing links
+        self.submited = set()  # (local_iface, remote_object, remote_iface)
+        self.load_existing_links(object)
+        # Process results
+        self.candidates = defaultdict(list)  # remote -> [(local iface, remote_iface)]
+                                             # remote iface may be unknown
+        self.process_result(object, result)
+        # Process pending link checks
+        self.p_candidates = defaultdict(list)  # remote -> [(local iface, remote_iface)]
+                                               # local iface may be unknown
+        self.load_pending_checks(object)
+        # Resolve self links
+        self.resolve_self_links(object)
+        # Process pending checks
+        self.process_pending_checks(object)
         # Clean my pending link checks
-        PendingLinkCheck.objects.filter(
-            method=self.method, local_object=object.id).delete()
+        self.clean_pending_checks(object)
         # Write pending checks
-        for o in self.candidates:
-            for l, r in self.candidates[o]:
-                if (l, o, r) not in self.submited:
-                    self.debug("Scheduling check for %s:%s -> %s:%s" % (object.name, l, o, r))
-                    PendingLinkCheck.submit(self.method, o, r, object, l)
+        self.write_pending_checks(object)
         # Reschedule pending jobs
-        so = set([object]) | set(o for (l, o, r) in self.submited)
-        for o in set(self.candidates) - set(self.p_candidates) - so:
-            self.debug("Rescheduling discovery for: %s" % o.name)
-            self.scheduler.reschedule_job(
-                self.name, o.id,
-                datetime.datetime.now(),  # @todo: Less aggressive
-                skip_running=True)
+        self.reschedule_pending_jobs(object)
         return True
 
     @classmethod
