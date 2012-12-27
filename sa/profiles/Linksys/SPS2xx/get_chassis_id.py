@@ -36,7 +36,7 @@ class Script(NOCScript):
         # Fallback to CLI
         match = self.re_search(self.rx_mac,
                                self.cli("show system", cached=True))
-        mac = match.group("id")
+        mac = match.group("mac")
         return {
             "first_chassis_mac": mac,
             "last_chassis_mac": mac
