@@ -34,4 +34,8 @@ class Script(NOCScript):
             match = self.rx_ip.search(self.cli("ip addr", cached=True))
         if not match:
             raise Exception("Not implemented")
-        return match.group("mac")
+        mac = match.group("mac")
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": mac
+        }
