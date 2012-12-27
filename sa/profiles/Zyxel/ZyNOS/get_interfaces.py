@@ -105,7 +105,7 @@ class Script(noc.sa.script.Script):
             interfaces += [iface]
 
         # Get mac
-        mac = self.scripts.get_chassis_id()
+        mac = self.scripts.get_chassis_id()["first_chassis_mac"]
 
         # Get switchports
         for swp in self.scripts.get_switchport():
