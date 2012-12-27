@@ -24,7 +24,6 @@ class Script(noc.sa.script.Script):
         v = self.cli("version")
         vm = rx_version.search(v)
         v = self.cli("chassisshow")
-        print v
         cm = rx_platform.search(v)
         return {
             "vendor": "Brocade",

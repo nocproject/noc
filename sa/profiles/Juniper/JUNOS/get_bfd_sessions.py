@@ -23,7 +23,6 @@ class Script(NOCScript):
         r = []
         s = self.cli("show bfd session")
         for match in self.rx_session.finditer(s):
-            print match.groups()
             r += [{
                 "peer": match.group("peer"),
                 "state": match.group("state").lower() == "up",

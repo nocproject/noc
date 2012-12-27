@@ -31,7 +31,6 @@ class Script(NOCScript):
 	if not reset:
 	    reset=" port 1/1/1-10/72/4"
 	cmd = cmd + reset 
-	print cmd
         try:
             macs=self.cli(cmd)
         except self.CLISyntaxError:
