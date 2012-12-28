@@ -32,7 +32,8 @@ class PendingLinkCheck(Document):
     expire = DateTimeField()
 
     def __unicode__(self):
-        return u"%s:%s:%s:%s" % (self.protocol, self.object.name,
+        return u"%s:%s:%s:%s:%s" % (
+            self.method, self.local_object.name, self.local_interface,
             self.remote_object.name, self.remote_interface)
 
     @classmethod
