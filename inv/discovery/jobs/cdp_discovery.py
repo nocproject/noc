@@ -18,7 +18,7 @@ class CDPLinkDiscoveryJob(LinkDiscoveryJob):
     """
     name = "cdp_discovery"
     map_task = "get_cdp_neighbors"
-    method = "lldp"
+    method = "cdp"
     ignored = not config.getboolean("cdp_discovery", "enabled")
     initial_submit_interval = config.getint("cdp_discovery",
         "initial_submit_interval")
