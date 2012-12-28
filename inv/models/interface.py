@@ -104,7 +104,7 @@ class Interface(Document):
         else:
             raise ValueError("Cannot unlink non p-t-p link")
 
-    def link_ptp(self, other):
+    def link_ptp(self, other, method=""):
         """
         Create p-t-p link with other interface
         Raise ValueError if either of interface already connected.
@@ -115,7 +115,7 @@ class Interface(Document):
             raise ValueError("Already linked")
         if self.id == other.id:
             raise ValueError("Cannot link with self")
-        link = Link(interfaces=[self, other])
+        link = Link(interfaces=[self, other], discovery_method=method)
         link.save()
         return link
 

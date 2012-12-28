@@ -9,7 +9,7 @@
 ## Python modules
 from collections import defaultdict
 ## NOC modules
-from noc.lib.nosql import Document, PlainReferenceListField
+from noc.lib.nosql import Document, PlainReferenceListField, StringField
 from interface import Interface
 
 
@@ -28,6 +28,7 @@ class Link(Document):
     }
 
     interfaces = PlainReferenceListField(Interface)
+    discovery_method = StringField()
 
     def __unicode__(self):
         return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])
