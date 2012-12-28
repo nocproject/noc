@@ -30,6 +30,10 @@ class LinkDiscoveryJob(MODiscoveryJob):
 #    initial_submit_concurrency = config.getint("interface_discovery",
 #        "initial_submit_concurrency")
 
+    def is_submitted(self, local_interface, remote_object,
+                     remote_interface):
+        return (local_interface, remote_object, remote_interface) in self.submited
+
     def submit_candidate(self, local_interface,
                          remote_object, remote_interface=None):
         """
@@ -39,6 +43,10 @@ class LinkDiscoveryJob(MODiscoveryJob):
         :param remote_interface:
         :return:
         """
+        if (remote_interface and
+            self.is_submitted(local_interface, remote_object,
+                remote_interface)):
+            return  # Already submitted
         self.debug("Link candidate found: %s -> %s:%s" % (
             local_interface, remote_object.name, remote_interface))
         self.candidates[remote_object] += [
@@ -72,7 +80,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
                         l_iface, r_iface, link))
             else:
                 self.debug("Linking %s and %s" % (l_iface, r_iface))
-                l_iface.link_ptp(r_iface, method=self.name)
+                l_iface.link_ptp(r_iface, method=self.method)
             self.submited.add((local_interface, remote_object, remote_interface))
         else:
             # LAG
@@ -105,8 +113,15 @@ class LinkDiscoveryJob(MODiscoveryJob):
         for plc in PendingLinkCheck.objects.filter(
             method=self.method, local_object=object.id,
             expire__gt=datetime.datetime.now()):
-            if plc.local_object not in self.candidates:
+            if plc.remote_object not in self.candidates:
                 continue
+            if (plc.remote_interface and
+                self.is_submitted(plc.local_interface,
+                    plc.remote_object, plc.remote_interface)):
+                continue
+            self.debug("Pending link check: %s:%s -> %s:%s" % (
+                object.name, plc.local_interface,
+                plc.remote_object.name, plc.remote_interface))
             self.p_candidates[plc.remote_object] += [
                 (plc.local_interface, plc.remote_interface)]
 
@@ -126,7 +141,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
     def write_pending_checks(self, object):
         for o in self.candidates:
             for l, r in self.candidates[o]:
-                if (l, o, r) not in self.submited:
+                if not self.is_submitted(l, o, r):
                     self.debug("Scheduling check for %s:%s -> %s:%s" % (object.name, l, o, r))
                     PendingLinkCheck.submit(self.method, o, r, object, l)
 
