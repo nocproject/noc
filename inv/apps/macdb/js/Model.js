@@ -51,6 +51,11 @@ Ext.define("NOC.inv.macdb.Model", {
             persist: false
         },
         {
+            name: "description",
+            type: "string",
+            persist: false
+        },
+        {
             name: "last_changed",
             type: "string"
         }

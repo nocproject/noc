@@ -54,8 +54,16 @@ Ext.define("NOC.inv.macdb.Application", {
                 {
                     flex: 1,
                     text: "Interface",
-                    renderer: NOC.render.Lookup("interface"),
-                    dataIndex: "interface"
+                    renderer: function(v) {
+                        var array = v.split(":");
+                        return array[1];
+                    },
+                    dataIndex: "interface__label"
+                },
+                {
+                    flex: 1,
+                    text: "Description",
+                    dataIndex: "description"
                 },
                 {
                     text: "Last Changed",

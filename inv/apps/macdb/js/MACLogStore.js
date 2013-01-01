@@ -26,6 +26,10 @@ Ext.define("NOC.inv.macdb.MACLogStore", {
             type: "string"
         },
         {
+            name: "description",
+            type: "string"
+        },
+        {
             name: "timestamp",
             type: "string"
         }
