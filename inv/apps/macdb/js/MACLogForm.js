@@ -64,6 +64,11 @@ Ext.define("NOC.inv.macdb.MACLogForm", {
                             text: "Interface",     
                             dataIndex: "interface_name",
                             flex: 1
+                        },
+                        {
+                            text: "Description",
+                            dataIndex: "description",
+                            flex: 1
                         }
                     ]
                 }
