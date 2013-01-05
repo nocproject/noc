@@ -295,7 +295,8 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         for o in queryset:
             for job in ["version_inventory", "ip_discovery",
                         "interface_discovery", "mac_discovery",
-                        "id_discovery", "lldp_discovery"
+                        "id_discovery", "lldp_discovery",
+                        "cdp_discovery"
                         ]:
                 refresh_schedule("inv.discovery", job, o.id)
         return self.app.response_redirect("sa:managedobject:changelist")
