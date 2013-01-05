@@ -19,7 +19,6 @@ from managedobjectselector import ManagedObjectSelector
 ##
 @receiver(post_save, sender=ManagedObject)
 def mo_change_update_selector_cache(sender, instance, created, **kwargs):
-    print "BLAT!"
     SelectorCache.refresh()
 
 
