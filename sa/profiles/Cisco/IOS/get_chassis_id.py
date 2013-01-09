@@ -45,7 +45,7 @@ class Script(NOCScript):
     @NOCScript.match(version__regex=r"SG")
     def execute_cat4000(self):
         try:
-            v = self.cli("show idprom supervisor")
+            v = self.cli("show idprom chassis")
         except self.CLISyntaxError:
             v = self.cli("show idprom supervisor")
         match = self.re_search(self.rx_cat4000, v)
