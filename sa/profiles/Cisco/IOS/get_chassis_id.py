@@ -44,7 +44,10 @@ class Script(NOCScript):
 
     @NOCScript.match(version__regex=r"SG")
     def execute_cat4000(self):
-        v = self.cli("show idprom chassis")
+        try:
+            v = self.cli("show idprom supervisor")
+        except self.CLISyntaxError:
+            v = self.cli("show idprom supervisor")
         match = self.re_search(self.rx_cat4000, v)
         base = match.group("id")
         count = int(match.group("count"))
