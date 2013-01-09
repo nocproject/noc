@@ -176,6 +176,36 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 86400
         },
         {
+            name: "enable_cdp_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "cdp_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "cdp_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
+            name: "enable_stp_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "stp_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "stp_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

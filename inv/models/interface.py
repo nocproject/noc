@@ -111,13 +111,53 @@ class Interface(Document):
         :type other: Interface
         :returns: Link instance
         """
-        if self.is_linked or other.is_linked:
+        # Try to check existing LAG
+        el = Link.objects.filter(interfaces=self.id).first()
+        if el and other not in el.interfaces:
+            el = None
+        if (self.is_linked or other.is_linked) and not el:
             raise ValueError("Already linked")
         if self.id == other.id:
             raise ValueError("Cannot link with self")
-        link = Link(interfaces=[self, other], discovery_method=method)
-        link.save()
-        return link
+        if self.type in ("physical", "management"):
+            if other.type in ("physical", "management"):
+                # Refine LAG
+                if el:
+                    left_ifaces = [i for i in el.interfaces if i not in (self, other)]
+                    if left_ifaces:
+                        el.interfaces = left_ifaces
+                        el.save()
+                    else:
+                        el.delete()
+                #
+                link = Link(interfaces=[self, other],
+                    discovery_method=method)
+                link.save()
+                return link
+            else:
+                raise ValueError("Cannot connect %s interface to %s" % (
+                    self.type, other.type))
+        elif self.type == "aggregated":
+            # LAG
+            if other.type == "aggregated":
+                # Check LAG size match
+                # Skip already linked members
+                l_members = [i for i in self.lag_members if not i.is_linked]
+                r_members = [i for i in other.lag_members if not i.is_linked]
+                if len(l_members) != len(r_members):
+                    raise ValueError("LAG size mismatch")
+                # Create link
+                if l_members:
+                    link = Link(interfaces=l_members + r_members,
+                        discovery_method=method)
+                    link.save()
+                    return link
+                else:
+                    return
+            else:
+                raise ValueError("Cannot connect %s interface to %s" % (
+                    self.type, other.type))
+        raise ValueError("Cannot link")
 
     @classmethod
     def get_interface(cls, s):
@@ -143,6 +183,12 @@ class Interface(Document):
     @property
     def subinterface_set(self):
         return SubInterface.objects.filter(interface=self.id)
+
+    @property
+    def lag_members(self):
+        if self.type != "aggregated":
+            raise ValueError("Cannot net LAG members for not-aggregated interface")
+        return Interface.objects.filter(aggregated_interface=self.id)
 
 ## Avoid circular references
 from subinterface import SubInterface

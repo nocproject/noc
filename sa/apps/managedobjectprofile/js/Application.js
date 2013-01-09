@@ -66,6 +66,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             renderer: NOC.render.Bool
         },
         {
+            text: "CDP",
+            dataIndex: "enable_cdp_discovery",
+            renderer: NOC.render.Bool
+        },
+        {
+            text: "STP",
+            dataIndex: "enable_stp_discovery",
+            renderer: NOC.render.Bool
+        },
+        {
             text: "IPAM",
             dataIndex: "sync_ipam",
             renderer: NOC.render.Bool
@@ -301,6 +311,46 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 },
                 {
                     name: "lldp_discovery_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // CDP
+                {
+                    xtype: "label",
+                    text: "CDP discovery"
+                },
+                {
+                    name: "enable_cdp_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "cdp_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "cdp_discovery_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // STP
+                {
+                    xtype: "label",
+                    text: "STP discovery"
+                },
+                {
+                    name: "enable_stp_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "stp_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "stp_discovery_max_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 }
