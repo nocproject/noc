@@ -15,6 +15,7 @@ from tagging.models import TaggedItem
 ## NOC modules
 from administrativedomain import AdministrativeDomain
 from managedobject import ManagedObject, ManagedObjectAttribute
+from managedobjectprofile import ManagedObjectProfile
 from activator import Activator
 from noc.main.models import Shard
 from noc.main.models.prefixtable import PrefixTable
@@ -42,6 +43,8 @@ class ManagedObjectSelector(models.Model):
     filter_profile = models.CharField(_("Filter by Profile"),
             max_length=64, null=True, blank=True,
             choices=profile_registry.choices)
+    filter_object_profile = models.ForeignKey(ManagedObjectProfile,
+            verbose_name=_("Filter by Object's Profile"), null=True, blank=True)
     filter_address = models.CharField(_("Filter by Address (REGEXP)"),
             max_length=256, null=True, blank=True, validators=[check_re])
     filter_prefix = models.ForeignKey(PrefixTable,
@@ -88,6 +91,9 @@ class ManagedObjectSelector(models.Model):
         # Filter by profile
         if self.filter_profile:
             q &= Q(profile_name=self.filter_profile)
+        # Filter by object's profile
+        if self.filter_object_profile:
+            q &= Q(object_profile=self.filter_object_profile)
         # Filter by address (regex)
         if self.filter_address:
             q &= Q(address__regex=self.filter_address)
