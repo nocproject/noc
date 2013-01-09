@@ -124,16 +124,12 @@ class Script(NOCScript):
         try:
             c = self.cli("show snmp mib ifmib ifindex")
         except self.CLISyntaxError:
-            return []
-        r = []
+            return {}
+        r = {}
         for l in c.split("\n"):
             match = self.rx_ifindex.match(l.strip())
-            if not match:
-                continue
-            r.append({
-                "interface": match.group("interface"),
-                "ifindex": match.group("ifindex")
-            })
+            if match:
+                r[match.group("interface")] = int(match.group("ifindex"))
         return r
 
     ## Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
@@ -308,9 +304,8 @@ class Script(NOCScript):
                 sub["is_ospf"] = True
                 sub["enabled_protocols"] += ["OSPF"]
 
-            for i in ifindex:
-                if i["interface"] == full_ifname:
-                    sub['ifindex'] = int(i["ifindex"])
+            if full_ifname in ifindex:
+                sub["ifindex"] = ifindex[full_ifname]
 
             if "." not in ifname and ":" not in ifname:
                 iface = {
@@ -338,6 +333,9 @@ class Script(NOCScript):
                     iface["aggregated_interface"] = ai
                     iface["is_lacp"] = is_lacp
                     iface["enabled_protocols"] += ["LACP"]
+                # Ifindex
+                if full_ifname in ifindex:
+                    iface["ifindex"] = ifindex[full_ifname]
                 interfaces += [iface]
             else:
                 # Append additional subinterface
