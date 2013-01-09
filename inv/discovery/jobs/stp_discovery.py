@@ -26,6 +26,11 @@ class STPLinkDiscoveryJob(LinkDiscoveryJob):
         "initial_submit_concurrency")
     strict_pending_candidates_check = False
 
+    def convert_port_id(self, port_id):
+        l, r = [int(x) for x in port_id.split(".")]
+        l //= 16
+        return "%x" % ((l << 12) + r)
+
     def process_result(self, object, result):
         self.n_cache = {}  # bridge_id -> object
         self.desg_port_id = {}  # port_id -> name
@@ -33,7 +38,8 @@ class STPLinkDiscoveryJob(LinkDiscoveryJob):
             for iface in i["interfaces"]:
                 if iface["role"] == "designated":
                     # Store designated port id for pending link processing
-                    self.desg_port_id[iface["port_id"]] = iface["interface"]
+                    pi = self.convert_port_id(iface["port_id"])
+                    self.desg_port_id[pi] = iface["interface"]
                 elif iface["role"] in ("root", "alternate"):
                     # ROOT and ALTERNATE ports are pending check candidates
                     # Get remote object by bridge id
@@ -44,9 +50,9 @@ class STPLinkDiscoveryJob(LinkDiscoveryJob):
                     # Commit remote port id instead of
                     # interface name.
                     # Will be resolved later in load_pending_checks
+                    pi = self.convert_port_id(iface["designated_port_id"])
                     self.submit_candidate(iface["interface"],
-                        remote_object,
-                        iface["designated_port_id"])
+                        remote_object, pi)
 
     def process_pending_checks(self, object):
         for remote_object in self.p_candidates:
