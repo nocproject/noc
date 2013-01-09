@@ -445,3 +445,10 @@ initial_submit_interval = 900
 # Upper limit of new schedule submitted at once
 initial_submit_concurrency = 20
 
+[stp_discovery]
+enabled = false
+# Inject new schedules every N seconds
+initial_submit_interval = 900
+# Upper limit of new schedule submitted at once
+initial_submit_concurrency = 20
+

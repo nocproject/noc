@@ -29,6 +29,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
 #        "initial_submit_interval")
 #    initial_submit_concurrency = config.getint("interface_discovery",
 #        "initial_submit_concurrency")
+    strict_pending_candidates_check = True
 
     def is_submitted(self, local_interface, remote_object,
                      remote_interface):
@@ -47,6 +48,9 @@ class LinkDiscoveryJob(MODiscoveryJob):
             self.is_submitted(local_interface, remote_object,
                 remote_interface)):
             return  # Already submitted
+        if (remote_object in self.candidates and
+            (local_interface, remote_interface) in self.candidates[remote_object]):
+            return
         self.debug("Link candidate found: %s -> %s:%s" % (
             local_interface, remote_object.name, remote_interface))
         self.candidates[remote_object] += [
@@ -69,22 +73,13 @@ class LinkDiscoveryJob(MODiscoveryJob):
             self.error("Interface is not found: %s:%s" % (
                 remote_object.name, remote_interface))
             return
-        is_l_lag = l_iface.type == "aggregated"
-        is_r_lag = r_iface.type == "aggregated"
         link = l_iface.link
-        if not is_l_lag and not is_r_lag:
-            # P2P link
-            if link:
-                if r_iface not in link.other(l_iface):
-                    self.error("Found link %s - %s conflicts with existing %s" % (
-                        l_iface, r_iface, link))
-            else:
-                self.debug("Linking %s and %s" % (l_iface, r_iface))
-                l_iface.link_ptp(r_iface, method=self.method)
-            self.submited.add((local_interface, remote_object, remote_interface))
-        else:
-            # LAG
-            pass
+        self.debug("Linking %s and %s" % (l_iface, r_iface))
+        try:
+            l_iface.link_ptp(r_iface, method=self.method)
+        except ValueError, why:
+            self.error("Linking error: %s" % why)
+        self.submited.add((local_interface, remote_object, remote_interface))
 
     def process_result(self, object, result):
         """
@@ -113,17 +108,27 @@ class LinkDiscoveryJob(MODiscoveryJob):
         for plc in PendingLinkCheck.objects.filter(
             method=self.method, local_object=object.id,
             expire__gt=datetime.datetime.now()):
-            if plc.remote_object not in self.candidates:
+            if (self.strict_pending_candidates_check and
+                plc.remote_object not in self.candidates):
+                continue  # Ignore uncheckable links
+            local_interface = plc.local_interface
+            remote_interface = plc.remote_interface
+            if local_interface is None and remote_interface is None:
+                continue  # Failed to map
+            if (remote_interface and
+                self.is_submitted(local_interface,
+                    plc.remote_object, remote_interface)):
+                # Already submitted link
                 continue
-            if (plc.remote_interface and
-                self.is_submitted(plc.local_interface,
-                    plc.remote_object, plc.remote_interface)):
+            if (plc.remote_object in self.p_candidates and
+                (local_interface, remote_interface) in self.p_candidates[plc.remote_object]):
+                # Suppress duplicates
                 continue
             self.debug("Pending link check: %s:%s -> %s:%s" % (
-                object.name, plc.local_interface,
-                plc.remote_object.name, plc.remote_interface))
+                object.name, local_interface,
+                plc.remote_object.name, remote_interface))
             self.p_candidates[plc.remote_object] += [
-                (plc.local_interface, plc.remote_interface)]
+                (local_interface, remote_interface)]
 
     def reschedule_pending_jobs(self, object):
         so = set([object]) | set(o for (l, o, r) in self.submited)
@@ -189,7 +194,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
         self.candidates = defaultdict(list)  # remote -> [(local iface, remote_iface)]
                                              # remote iface may be unknown
         self.process_result(object, result)
-        # Process pending link checks
+        # Fetch pending link checks
         self.p_candidates = defaultdict(list)  # remote -> [(local iface, remote_iface)]
                                                # local iface may be unknown
         self.load_pending_checks(object)
