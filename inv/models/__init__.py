@@ -267,6 +267,7 @@ from subinterface import SubInterface
 from link import Link
 from maclog import MACLog
 from macdb import MACDB
+from networkchart import NetworkChart
 
 
 class NewPrefixDiscoveryLog(Document):
