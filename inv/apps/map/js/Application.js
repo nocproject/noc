@@ -86,13 +86,18 @@ Ext.define("NOC.inv.map.Application", {
         var me = this,
             data = Ext.decode(response.responseText);
         if(me.graph) {
-            console.log("Clean graph");
+            // @todo: clean graph
         } else {
+            // Create Graph
             var c = me.items.first();
             me.graph = new mxGraph(c.el.dom);
             new mxRubberband(me.graph);
             me.graph.setPanning(true);
             me.graph.setTooltips(true);
+            // Set styles
+            var ss = me.graph.getStylesheet(),
+                edgeStyle = ss.getDefaultEdgeStyle();
+            edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
         }
         me.graph.getModel().beginUpdate();
         try {
