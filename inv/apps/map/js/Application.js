@@ -45,6 +45,7 @@ Ext.define("NOC.inv.map.Application", {
             }],
             items: [{
                 xtype: "component",
+                autoScroll: true,
                 style: {
                     background: "url('/static/img/grid.gif')"
                 }
@@ -98,6 +99,7 @@ Ext.define("NOC.inv.map.Application", {
             var ss = me.graph.getStylesheet(),
                 edgeStyle = ss.getDefaultEdgeStyle();
             edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+            delete edgeStyle.endArrow;
         }
         me.graph.getModel().beginUpdate();
         try {
