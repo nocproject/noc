@@ -87,7 +87,7 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
         if(me.graph) {
             // Clear graph
-            me.graph.removeCells();
+            me.graph.removeCells(me.graph.getChildVertices(me.graph.getDefaultParent()), true);
         } else {
             // Create Graph
             var c = me.items.first();
