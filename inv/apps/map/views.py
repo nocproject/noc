@@ -50,7 +50,7 @@ class MapAppplication(ExtApplication):
                     if i.managed_object not in links:
                         mo_links[i.managed_object] += [link]
         # Attach nodes
-        x = w
+        x = 10
         y = h
         for mo in mos:
             # Managed Objects
@@ -63,6 +63,7 @@ class MapAppplication(ExtApplication):
                 "h": h,
                 "label": mo.name,
                 "label_position": "s",
+                "shape": "xor",
                 "ports": []
             }
             # Used ports
