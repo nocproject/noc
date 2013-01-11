@@ -90,8 +90,9 @@ Ext.define("NOC.inv.map.Application", {
             me.graph.removeCells(me.graph.getChildVertices(me.graph.getDefaultParent()), true);
         } else {
             // Create Graph
-            var c = me.items.first();
-            me.graph = new mxGraph(c.el.dom);
+            var c = me.items.first().el.dom;
+            mxEvent.disableContextMenu(c); // Disable default context menu
+            me.graph = new mxGraph(c);
             me.graph.disconnectOnMove = false;
             // me.graph.foldingEnabled = false;
             me.graph.cellsResizable = false;
@@ -120,6 +121,10 @@ Ext.define("NOC.inv.map.Application", {
                 }
                 shape = shape.nextSibling;
             }
+            // Inititalize tooltips
+            me.graph.getTooltipForCell = me.getTooltipForCell;
+            //
+            me.graph.panningHandler.factoryMethod = me.factoryMethod;
         }
     },
     //
@@ -181,5 +186,13 @@ Ext.define("NOC.inv.map.Application", {
             // Update display
             me.graph.getModel().endUpdate();
         }
+    },
+    //
+    getTooltipForCell: function(cell) {
+        return "My Tooltip";
+    },
+    //
+    factoryMethod: function(menu, cell, evt) {
+        console.log(menu, cell, evt);
     }
 });
