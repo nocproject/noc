@@ -86,7 +86,8 @@ Ext.define("NOC.inv.map.Application", {
     initGraph: function() {
         var me = this;
         if(me.graph) {
-            // @todo: clean graph
+            // Clear graph
+            me.graph.removeCells();
         } else {
             // Create Graph
             var c = me.items.first();
@@ -102,6 +103,23 @@ Ext.define("NOC.inv.map.Application", {
                 edgeStyle = ss.getDefaultEdgeStyle();
             edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
             delete edgeStyle.endArrow;
+            /*
+            var vertexStyle = ss.getDefaultVertexStyle();
+            vertexStyle[mxConstants.STYLE_FILLCOLOR] = "red";
+            vertexStyle[mxConstants.STYLE_STROKECOLOR] = "blue";
+            // Load stencils
+            var req = mxUtils.load("/static/shape/Cisco/router.xml");
+            var sroot = req.getDocumentElement();
+            var shape = sroot.firstChild;
+            while(shape != null) {
+                if(shape.nodeType == mxConstants.NODETYPE_ELEMENT) {
+                    console.log(shape);
+                    mxStencilRegistry.addStencil(shape.getAttribute("name"),
+                        new mxStencil(shape));
+                }
+                shape = shape.nextSibling;
+            }
+            */
         }
     },
     //
@@ -120,7 +138,7 @@ Ext.define("NOC.inv.map.Application", {
                 switch(n.type) {
                     // Insert node
                     case "node":
-                        var style = [];
+                        var style = [];  // ["shape=router"];
                         if(n.label) {
                             // Convert label position to style
                             var lp = n.label_position ? n.label_position : "s";
