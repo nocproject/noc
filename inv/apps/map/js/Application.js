@@ -107,8 +107,9 @@ Ext.define("NOC.inv.map.Application", {
             var vertexStyle = ss.getDefaultVertexStyle();
             vertexStyle[mxConstants.STYLE_FILLCOLOR] = "red";
             vertexStyle[mxConstants.STYLE_STROKECOLOR] = "blue";
+            */
             // Load stencils
-            var req = mxUtils.load("/static/shape/Cisco/router.xml");
+            var req = mxUtils.load("/static/shape/stencils.xml");
             var sroot = req.getDocumentElement();
             var shape = sroot.firstChild;
             while(shape != null) {
@@ -119,7 +120,6 @@ Ext.define("NOC.inv.map.Application", {
                 }
                 shape = shape.nextSibling;
             }
-            */
         }
     },
     //
@@ -138,13 +138,18 @@ Ext.define("NOC.inv.map.Application", {
                 switch(n.type) {
                     // Insert node
                     case "node":
-                        var style = [];  // ["shape=router"];
+                        var style = [];
+                        // Label position
                         if(n.label) {
                             // Convert label position to style
                             var lp = n.label_position ? n.label_position : "s";
                             style.push(me.labelPositionStyle[lp]);
                         }
-                        console.log(style.join(";"))
+                        // Shape
+                        if(n.shape) {
+                            style.push("shape=" + n.shape);
+                        }
+                        // Draw node
                         var v = me.graph.insertVertex(parent, null,
                             n.label ? n.label : null,
                             n.x, n.y, n.w, n.h,
