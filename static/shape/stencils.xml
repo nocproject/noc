@@ -1,4 +1,19 @@
 <shapes>
+<shape name="xor" aspect="fixed">
+	<background>
+        <path>
+            <move x="0" y="10" />
+            <arc rx="50" ry="10" x="100" y="10" sweep-flag="1"/>
+            <arc rx="50" ry="10" x="0" y="10" sweep-flag="1"/>
+            <line x="0" y="40"/>
+            <arc rx="50" ry="10" x="100" y="40"/>
+            <line x="100" y="10" />
+        </path>
+	</background>
+	<foreground>
+		<fillstroke/>
+	</foreground>
+</shape>
 <shape name="or" aspect="variable">
 	<background>
 		<path>
@@ -12,7 +27,7 @@
 		<fillstroke/>
 	</foreground>
 </shape>
-<shape name="xor" aspect="fixed">
+<shape name="xor1" aspect="fixed">
 	<background>
 		<path>
 			<move x="0" y="0"/>
