@@ -61,7 +61,7 @@ Ext.define("NOC.inv.map.Application", {
         // Load mxGraph JS library
         mxLanguage = "en";
         mxLoadStylesheets = false;  // window scope
-        // mxImageBasePath = "";
+        mxImageBasePath = "/static/img/mxgraph/";
         mxLoadResources = false;
         load_scripts(["/static/js/mxClient.min.js"], me,
             me.onLoadJS);
@@ -82,16 +82,18 @@ Ext.define("NOC.inv.map.Application", {
             success: me.loadChart
         });
     },
-    //
-    loadChart: function(response) {
-        var me = this,
-            data = Ext.decode(response.responseText);
+    // Initialize mxGraph
+    initGraph: function() {
+        var me = this;
         if(me.graph) {
             // @todo: clean graph
         } else {
             // Create Graph
             var c = me.items.first();
             me.graph = new mxGraph(c.el.dom);
+            me.graph.disconnectOnMove = false;
+            // me.graph.foldingEnabled = false;
+            me.graph.cellsResizable = false;
             new mxRubberband(me.graph);
             me.graph.setPanning(true);
             me.graph.setTooltips(true);
@@ -101,6 +103,12 @@ Ext.define("NOC.inv.map.Application", {
             edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
             delete edgeStyle.endArrow;
         }
+    },
+    //
+    loadChart: function(response) {
+        var me = this,
+            data = Ext.decode(response.responseText);
+        me.initGraph();
         me.graph.getModel().beginUpdate();
         try {
             // Update data
@@ -122,7 +130,7 @@ Ext.define("NOC.inv.map.Application", {
                         var v = me.graph.insertVertex(parent, null,
                             n.label ? n.label : null,
                             n.x, n.y, n.w, n.h,
-                            style? style.join(";") : null
+                            style ? style.join(";") : null
                         );
                         // Save id
                         if(n.id) {
