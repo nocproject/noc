@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import with_statement
 import os
 ## Django modules
 from django.views.static import serve as serve_static
@@ -217,3 +218,29 @@ class ExtApplication(Application):
             Favorites(user=request.user, app=self.app_id,
                 favorites=[item]).save()
         return True
+
+    @view(url="^templates/(?P<name>[0-9a-zA-Z_/]+)\.js$", access=True)
+    def view_template(self, request, name):
+        """
+        Handlebars template wrapper
+        """
+        src = os.path.join(self.document_root,
+            "templates", "%s.html" % name)
+        if not os.path.isfile(src):
+            return self.response_not_found()
+        with open(src) as f:
+            tpl = f.read()
+        return self.render_plain_text("""
+Ext.apply(
+    NOC.templates, {
+        "%s": Ext.merge(
+            NOC.templates["%s"] || {},
+            {
+                %s: Handlebars.compile(%r)
+            }
+        )
+    }
+);
+Ext.define("NOC.%s.templates.%s", {});
+""" % (self.app_id, self.app_id, name, tpl, self.app_id, name),
+            mimetype="application/javascript;charset=utf-8")
