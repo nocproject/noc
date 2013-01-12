@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 ## NOC modules
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from networkchartstate import NetworkChartState
 
 
 class NetworkChart(models.Model):
@@ -29,3 +30,40 @@ class NetworkChart(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def get_state(self, type, object):
+        """
+        Get current object state
+        :param type:
+        :param object:
+        :return:
+        """
+        print "GET", type, object
+        s = NetworkChartState.objects.filter(
+            chart=self.id, type=type, object=str(object)).first()
+        if s:
+            return s.state
+        else:
+            return {}
+
+    def update_state(self, type, object, state):
+        """
+        Update current object state
+        :param type:
+        :param object:
+        :param state:
+        :return:
+        """
+        object = str(object)
+        s = NetworkChartState.objects.filter(
+            chart=self.id, type=type, object=object).first()
+        if s:
+            cs = s.state.copy()
+            cs.update(state)
+            s.state = cs
+            s.save()
+        else:
+            # Create state
+            NetworkChartState(
+                chart=self.id, type=type, object=object, state=state
+            ).save()

@@ -36,12 +36,22 @@ Ext.define("NOC.inv.map.Application", {
                 select: me.onSelectChart
             }
         });
+        me.saveButton = Ext.create("Ext.button.Button", {
+            iconCls: "icon_disk",
+            text: "Save",
+            tooltip: "Save changes",
+            disabled: true,
+            scope: me,
+            handler: me.onSave
+        });
         Ext.apply(me, {
             dockedItems: [{
                 xtype: "toolbar",
                 dock: "top",
                 items: [
-                    me.chartCombo
+                    me.chartCombo,
+                    "-",
+                    me.saveButton
                 ]
             }],
             items: [{
@@ -74,10 +84,10 @@ Ext.define("NOC.inv.map.Application", {
     },
     //
     onSelectChart: function(combo, records, opts) {
-        var me = this,
-            mapId = records[0].get("id");
+        var me = this;
+        me.mapId = records[0].get("id");
         Ext.Ajax.request({
-            url: "/inv/map/chart/" + mapId + "/",
+            url: "/inv/map/chart/" + me.mapId + "/",
             method: "GET",
             scope: me,
             success: me.loadChart
@@ -86,6 +96,8 @@ Ext.define("NOC.inv.map.Application", {
     // Initialize mxGraph
     initGraph: function() {
         var me = this;
+        me.changeLog = [];
+        me.saveButton.setDisabled(true);
         if(me.graph) {
             // Clear graph
             me.graph.removeCells(me.graph.getChildVertices(me.graph.getDefaultParent()), true);
@@ -116,7 +128,6 @@ Ext.define("NOC.inv.map.Application", {
             var shape = sroot.firstChild;
             while(shape != null) {
                 if(shape.nodeType == mxConstants.NODETYPE_ELEMENT) {
-                    console.log(shape);
                     mxStencilRegistry.addStencil(shape.getAttribute("name"),
                         new mxStencil(shape));
                 }
@@ -126,6 +137,9 @@ Ext.define("NOC.inv.map.Application", {
             me.graph.getTooltipForCell = me.getTooltipForCell;
             //
             // me.graph.panningHandler.factoryMethod = me.factoryMethod;
+            // Add Event Handlers
+            me.graph.addListener(mxEvent.MOVE_CELLS,
+                Ext.bind(me.onNodeMove, me));
         }
     },
     //
@@ -161,6 +175,7 @@ Ext.define("NOC.inv.map.Application", {
                             n.x, n.y, n.w, n.h,
                             style ? style.join(";") : null
                         );
+                        v.objectId = n.id;
                         // Attach tooltip
                         v.nocTooltipTemplate = me.templates.ManagedObjectTooltip;
                         v.nocTooltipData = {
@@ -207,5 +222,46 @@ Ext.define("NOC.inv.map.Application", {
     //
     factoryMethod: function(menu, cell, evt) {
         console.log(menu, cell, evt);
+    },
+    // Save button pressed
+    onSave: function() {
+        var me = this;
+        console.log(me.changeLog);
+        Ext.Ajax.request({
+            url: "/inv/map/chart/" + me.mapId + "/",
+            method: "POST",
+            jsonData: me.changeLog,
+            scope: me,
+            success: function() {
+                me.changeLog = [];
+                me.saveButton.setDisabled(true);
+            }
+        });
+    },
+    //
+    registerChange: function(opts) {
+        var me = this;
+        me.changeLog.push(opts);
+        me.saveButton.setDisabled(false);
+    },
+    // Register cell movement
+    onNodeMove: function(graph, event) {
+        var me = this;
+        for(var i in event.properties.cells) {
+            var c = event.properties.cells[i];
+            if(c.vertex) {
+                // Node moved
+                console.log(c);
+                me.registerChange({
+                    cmd: "move",
+                    type: "mo",
+                    id: c.objectId,
+                    x: c.geometry.x,
+                    y: c.geometry.y,
+                    w: c.geometry.width,
+                    h: c.geometry.height
+                });
+            }
+        }
     }
 });

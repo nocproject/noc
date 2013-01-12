@@ -13,6 +13,7 @@ from noc.lib.app import ExtApplication, view
 from noc.inv.models.networkchart import NetworkChart
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+from noc.lib.serialize import json_decode
 
 
 class MapAppplication(ExtApplication):
@@ -24,12 +25,14 @@ class MapAppplication(ExtApplication):
     icon = "icon_map"
 
     @view(url="^chart/(?P<chart_id>\d+)/$", method=["GET"],
-        access="launch")
-    def chart(self, request, chart_id):
+        access="launch", api=True)
+    def view_chart(self, request, chart_id):
         chart = self.get_object_or_404(NetworkChart, id=int(chart_id))
-        w = 30
-        h = 30
-        s = 20
+        dw = 100
+        dh = 50
+        ds = 20
+        dx = 10
+        dy = 10
         r = []
         # Get managed objects
         mos = list(chart.selector.managed_objects)
@@ -50,16 +53,21 @@ class MapAppplication(ExtApplication):
                     if i.managed_object not in links:
                         mo_links[i.managed_object] += [link]
         # Attach nodes
-        x = 10
-        y = h
         for mo in mos:
-            # Managed Objects
+            # Fill managed objects
+            # Restore state
+            state = chart.get_state("mo", mo.id)
+            h = state.get("h", dh)
+            y = state.get("y")
+            if y is None:
+                y = dy
+                dy += h + ds
             n = {
                 "type": "node",
                 "id": mo.id,
-                "x": x,
+                "x": state.get("x", dx),
                 "y": y,
-                "w": w,
+                "w": state.get("w", dw),
                 "h": h,
                 "label": mo.name,
                 "label_position": "s",
@@ -82,8 +90,6 @@ class MapAppplication(ExtApplication):
                     linked_ports[link] += [p_id]
             #
             r += [n]
-            x += w + s
-            y += h + s
         # Attach links
         for link in linked_ports:
             lp = linked_ports[link]
@@ -94,3 +100,18 @@ class MapAppplication(ExtApplication):
                     "ports": lp
                 }]
         return r
+
+    @view(url="^chart/(?P<chart_id>\d+)/$", method=["POST"],
+        access="launch", api=True)
+    def save_chart(self, request, chart_id):
+        chart = self.get_object_or_404(NetworkChart, id=int(chart_id))
+        for cmd in json_decode(request.raw_post_data):
+            if cmd["cmd"] == "move":
+                if cmd["type"] == "mo":
+                    chart.update_state("mo", cmd["id"], {
+                        "x": cmd["x"],
+                        "y": cmd["y"],
+                        "w": cmd["w"],
+                        "h": cmd["h"]
+                    })
+        return True
