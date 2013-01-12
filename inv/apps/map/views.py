@@ -64,7 +64,11 @@ class MapAppplication(ExtApplication):
                 "label": mo.name,
                 "label_position": "s",
                 "shape": "xor",
-                "ports": []
+                "ports": [],
+                "address": mo.address,
+                "platform": "%s %s" % (mo.get_attr("vendor", ""),
+                                       mo.get_attr("platform", "")),
+                "version": mo.get_attr("version", "")
             }
             # Used ports
             for link in mo_links[mo]:
