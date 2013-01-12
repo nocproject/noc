@@ -9,7 +9,8 @@ console.debug("Defining NOC.inv.map.Application");
 Ext.define("NOC.inv.map.Application", {
     extend: "NOC.core.Application",
     requires: [
-        "NOC.inv.networkchart.LookupField"
+        "NOC.inv.networkchart.LookupField",
+        "NOC.inv.map.templates.ManagedObjectTooltip"
     ],
     // Label position style
     labelPositionStyle: {
@@ -124,7 +125,7 @@ Ext.define("NOC.inv.map.Application", {
             // Inititalize tooltips
             me.graph.getTooltipForCell = me.getTooltipForCell;
             //
-            me.graph.panningHandler.factoryMethod = me.factoryMethod;
+            // me.graph.panningHandler.factoryMethod = me.factoryMethod;
         }
     },
     //
@@ -160,6 +161,14 @@ Ext.define("NOC.inv.map.Application", {
                             n.x, n.y, n.w, n.h,
                             style ? style.join(";") : null
                         );
+                        // Attach tooltip
+                        v.nocTooltipTemplate = me.templates.ManagedObjectTooltip;
+                        v.nocTooltipData = {
+                            name: n.label,
+                            address: n.address,
+                            platform: n.platform,
+                            version: n.version
+                        };
                         // Save id
                         if(n.id) {
                             nodes[n.id] = v;
@@ -173,6 +182,7 @@ Ext.define("NOC.inv.map.Application", {
                             pv.geometry.relative = true;
                             ports[pdata.id] = pv;
                         }
+                        // End of node processing
                         break;
                     // Insert link
                     case "link":
@@ -189,7 +199,10 @@ Ext.define("NOC.inv.map.Application", {
     },
     //
     getTooltipForCell: function(cell) {
-        return "My Tooltip";
+        if(!cell.nocTooltipTemplate) {
+            return "";
+        }
+        return cell.nocTooltipTemplate(cell.nocTooltipData);
     },
     //
     factoryMethod: function(menu, cell, evt) {
