@@ -17,6 +17,7 @@
         <link rel="stylesheet" type="text/css" href="/main/style/css/" />
         <link rel="stylesheet" type="text/css" href="/static/css/mxgraph/common.css" />
         <!-- JS -->
+        <script type="text/javascript" src="/static/js/handlebars.js"></script>
         <script type="text/javascript" src="/static/js/logging.js"></script>
         <script type="text/javascript" src="/static/js/noc/jsloader.js"></script>
         <script type="text/javascript" src="/static/js/ext-all{% if setup.debug_js %}-debug{% endif %}.js"></script>
@@ -34,9 +35,11 @@
                 logo_width: {{setup.logo_width}},
                 logo_height: {{setup.logo_height}}
             };
+            NOC.templates = {};
             Ext.Loader.setConfig({
                 enabled: true,
                 paths: {
+                    {% for m, a in apps %}"NOC.{{m}}.{{a}}.templates": "/{{m}}/{{a}}/templates",{% endfor %}
                     {% for m, a in apps %}"NOC.{{m}}.{{a}}": "/{{m}}/{{a}}/js",{% endfor %}
                     "NOC.models": "/static/js/noc/models",
                     "NOC.widgets": "/static/js/noc/widgets",

@@ -171,7 +171,8 @@ class Application(object):
             "title": unicode(self.title),
             "params": {
                 "url": self.menu_url,
-                "permissions": perms
+                "permissions": perms,
+                "app_id": self.app_id
             }
         }
 
