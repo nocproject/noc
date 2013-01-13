@@ -71,6 +71,7 @@ class MapAppplication(ExtApplication):
                 "h": h,
                 "label": mo.name,
                 "label_position": state.get("label_position", "s"),
+                "collapsed": state.get("collapsed", False),
                 "shape": "xor",
                 "ports": [],
                 "address": mo.address,
@@ -117,5 +118,9 @@ class MapAppplication(ExtApplication):
                 elif cmd["cmd"] == "label_position":
                     chart.update_state("mo", cmd["id"], {
                         "label_position": cmd["label_position"]
+                    })
+                elif cmd["cmd"] == "collapsed":
+                    chart.update_state("mo", cmd["id"], {
+                        "collapsed": cmd["collapsed"]
                     })
         return True
