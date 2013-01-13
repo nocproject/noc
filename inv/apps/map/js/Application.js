@@ -90,6 +90,50 @@ Ext.define("NOC.inv.map.Application", {
             }]
         });
         me.graph = undefined;
+        // Context menus
+        me.nodeContextMenu = Ext.create("Ext.menu.Menu", {
+            items: [
+                {
+                    text: "Label Position",
+                    menu: {
+                        items: [
+                            {
+                                text: "Top Left",
+                                iconCls: "icon_arrow_nw"
+                            },
+                            {
+                                text: "Top",
+                                iconCls: "icon_arrow_up"
+                            },
+                            {
+                                text: "Top Right",
+                                iconCls: "icon_arrow_ne"
+                            },
+                            {
+                                text: "Right",
+                                iconCls: "icon_arrow_right"
+                            },
+                            {
+                                text: "Bottom Right",
+                                iconCls: "icon_arrow_se"
+                            },
+                            {
+                                text: "Bottom",
+                                iconCls: "icon_arrow_down"
+                            },
+                            {
+                                text: "Bottom Left",
+                                iconCls: "icon_arrow_sw"
+                            },
+                            {
+                                text: "Left",
+                                iconCls: "icon_arrow_left"
+                            }
+                        ]
+                    }
+                }
+            ]
+        });
         me.callParent();
     },
     //
@@ -163,7 +207,7 @@ Ext.define("NOC.inv.map.Application", {
             // Inititalize tooltips
             me.graph.getTooltipForCell = me.getTooltipForCell;
             //
-            // me.graph.panningHandler.factoryMethod = me.factoryMethod;
+            me.graph.panningHandler.factoryMethod = Ext.bind(me.onContextMenu, me);
             // Add Event Handlers
             me.graph.addListener(mxEvent.MOVE_CELLS,
                 Ext.bind(me.onNodeMove, me));
@@ -250,10 +294,6 @@ Ext.define("NOC.inv.map.Application", {
         }
         return cell.nocTooltipTemplate(cell.nocTooltipData);
     },
-    //
-    factoryMethod: function(menu, cell, evt) {
-        console.log(menu, cell, evt);
-    },
     // Save button pressed
     onSave: function() {
         var me = this;
@@ -309,5 +349,13 @@ Ext.define("NOC.inv.map.Application", {
     onZoomActual: function() {
         var me = this;
         me.graph.zoomActual();
+    },
+    //
+    onContextMenu: function(menu, cell, evt) {
+        var me = this;
+        if(cell != null) {
+            console.log(evt);
+            me.nodeContextMenu.show();
+        }
     }
 });
