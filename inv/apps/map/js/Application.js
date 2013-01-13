@@ -99,35 +99,75 @@ Ext.define("NOC.inv.map.Application", {
                         items: [
                             {
                                 text: "Top Left",
-                                iconCls: "icon_arrow_nw"
+                                iconCls: "icon_arrow_nw",
+                                itemId: "nw",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onLabelPositionChange
+                                }
                             },
                             {
                                 text: "Top",
-                                iconCls: "icon_arrow_up"
+                                iconCls: "icon_arrow_up",
+                                itemId: "n",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onLabelPositionChange
+                                }
                             },
                             {
                                 text: "Top Right",
-                                iconCls: "icon_arrow_ne"
+                                iconCls: "icon_arrow_ne",
+                                itemId: "ne",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onLabelPositionChange
+                                }
                             },
                             {
                                 text: "Right",
-                                iconCls: "icon_arrow_right"
+                                iconCls: "icon_arrow_right",
+                                itemId: "e",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onLabelPositionChange
+                                }
                             },
                             {
                                 text: "Bottom Right",
-                                iconCls: "icon_arrow_se"
+                                iconCls: "icon_arrow_se",
+                                itemId: "se",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onLabelPositionChange
+                                }
                             },
                             {
                                 text: "Bottom",
-                                iconCls: "icon_arrow_down"
+                                iconCls: "icon_arrow_down",
+                                itemId: "s",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onLabelPositionChange
+                                }
                             },
                             {
                                 text: "Bottom Left",
-                                iconCls: "icon_arrow_sw"
+                                iconCls: "icon_arrow_sw",
+                                itemId: "sw",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onLabelPositionChange
+                                }
                             },
                             {
                                 text: "Left",
-                                iconCls: "icon_arrow_left"
+                                iconCls: "icon_arrow_left",
+                                itemId: "w",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onLabelPositionChange
+                                }
                             }
                         ]
                     }
@@ -354,8 +394,22 @@ Ext.define("NOC.inv.map.Application", {
     onContextMenu: function(menu, cell, evt) {
         var me = this;
         if(cell != null) {
-            console.log(evt);
             me.nodeContextMenu.show();
+        }
+    },
+    //
+    onLabelPositionChange: function(item, event, opt) {
+        var me = this,
+            selection = me.graph.getSelectionCells();
+        for(var i in selection) {
+            var c = selection[i];
+            me.registerChange({
+                cmd: "label_position",
+                type: "mo",
+                id: c.objectId,
+                label_position: item.itemId
+            });
+            // @todo: Dynamically change label position
         }
     }
 });
