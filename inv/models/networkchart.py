@@ -38,7 +38,6 @@ class NetworkChart(models.Model):
         :param object:
         :return:
         """
-        print "GET", type, object
         s = NetworkChartState.objects.filter(
             chart=self.id, type=type, object=str(object)).first()
         if s:

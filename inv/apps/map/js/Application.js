@@ -44,6 +44,27 @@ Ext.define("NOC.inv.map.Application", {
             scope: me,
             handler: me.onSave
         });
+        me.zoomInButton = Ext.create("Ext.button.Button", {
+            tooltip: "Zoom In",
+            iconCls: "icon_magnifier_zoom_in",
+            scope: me,
+            handler: me.onZoomIn,
+            disabled: true
+        });
+        me.zoomOutButton = Ext.create("Ext.button.Button", {
+            tooltip: "Zoom Out",
+            iconCls: "icon_magifier_zoom_out",
+            scope: me,
+            handler: me.onZoomOut,
+            disabled: true
+        });
+        me.zoomActualButton = Ext.create("Ext.button.Button", {
+            tooltip: "Zoom Actual",
+            iconCls: "icon_magnifier",
+            scope: me,
+            handler: me.onZoomActual,
+            disabled: true
+        });
         Ext.apply(me, {
             dockedItems: [{
                 xtype: "toolbar",
@@ -51,7 +72,13 @@ Ext.define("NOC.inv.map.Application", {
                 items: [
                     me.chartCombo,
                     "-",
-                    me.saveButton
+                    // Editing
+                    me.saveButton,
+                    "-",
+                    // Zoom
+                    me.zoomInButton,
+                    me.zoomOutButton,
+                    me.zoomActualButton
                 ]
             }],
             items: [{
@@ -140,6 +167,10 @@ Ext.define("NOC.inv.map.Application", {
             // Add Event Handlers
             me.graph.addListener(mxEvent.MOVE_CELLS,
                 Ext.bind(me.onNodeMove, me));
+            //
+            me.zoomInButton.setDisabled(false);
+            me.zoomOutButton.setDisabled(false);
+            me.zoomActualButton.setDisabled(false);
         }
     },
     //
@@ -263,5 +294,20 @@ Ext.define("NOC.inv.map.Application", {
                 });
             }
         }
+    },
+    // Zoom In
+    onZoomIn: function() {
+        var me = this;
+        me.graph.zoomIn();
+    },
+    // Zoom Out
+    onZoomOut: function() {
+        var me = this;
+        me.graph.zoomOut();
+    },
+    // Zoom Actual
+    onZoomActual: function() {
+        var me = this;
+        me.graph.zoomActual();
     }
 });
