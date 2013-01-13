@@ -94,6 +94,13 @@ Ext.define("NOC.inv.map.Application", {
         me.nodeContextMenu = Ext.create("Ext.menu.Menu", {
             items: [
                 {
+                    text: "Fold/Unfold",
+                    listeners: {
+                        scope: me,
+                        click: me.onFold
+                    }
+                },
+                {
                     text: "Label Position",
                     menu: {
                         items: [
@@ -262,7 +269,8 @@ Ext.define("NOC.inv.map.Application", {
         var me = this,
             data = Ext.decode(response.responseText);
         me.initGraph();
-        me.graph.getModel().beginUpdate();
+        var model = me.graph.getModel();
+        model.beginUpdate();
         try {
             // Update data
             var parent = me.graph.getDefaultParent(),
@@ -291,6 +299,9 @@ Ext.define("NOC.inv.map.Application", {
                             style ? style.join(";") : null
                         );
                         v.objectId = n.id;
+                        if(n.collapsed) {
+                            model.setCollapsed(v, true);
+                        }
                         // Attach tooltip
                         v.nocTooltipTemplate = me.templates.ManagedObjectTooltip;
                         v.nocTooltipData = {
@@ -324,7 +335,7 @@ Ext.define("NOC.inv.map.Application", {
         }
         finally {
             // Update display
-            me.graph.getModel().endUpdate();
+            model.endUpdate();
         }
     },
     //
@@ -411,5 +422,24 @@ Ext.define("NOC.inv.map.Application", {
             });
             // @todo: Dynamically change label position
         }
+    },
+    //
+    onFold: function(item, event, opt) {
+        var me = this,
+            selection = me.graph.getSelectionCells(),
+            model = me.graph.getModel();
+        model.beginUpdate()
+        for(var i in selection) {
+            var c = selection[i];
+            model.setCollapsed(c, !c.isCollapsed());
+            me.registerChange({
+                cmd: "collapsed",
+                type: "mo",
+                id: c.objectId,
+                collapsed: c.isCollapsed()
+            });
+        }
+        // model.layout.execute(me.graph.getDefaultParent());
+        model.endUpdate()
     }
 });
