@@ -70,7 +70,7 @@ class MapAppplication(ExtApplication):
                 "w": state.get("w", dw),
                 "h": h,
                 "label": mo.name,
-                "label_position": "s",
+                "label_position": state.get("label_position", "s"),
                 "shape": "xor",
                 "ports": [],
                 "address": mo.address,
@@ -106,12 +106,16 @@ class MapAppplication(ExtApplication):
     def save_chart(self, request, chart_id):
         chart = self.get_object_or_404(NetworkChart, id=int(chart_id))
         for cmd in json_decode(request.raw_post_data):
-            if cmd["cmd"] == "move":
-                if cmd["type"] == "mo":
+            if cmd["type"] == "mo":
+                if cmd["cmd"] == "move":
                     chart.update_state("mo", cmd["id"], {
                         "x": cmd["x"],
                         "y": cmd["y"],
                         "w": cmd["w"],
                         "h": cmd["h"]
+                    })
+                elif cmd["cmd"] == "label_position":
+                    chart.update_state("mo", cmd["id"], {
+                        "label_position": cmd["label_position"]
                     })
         return True
