@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS_Cisco_CLI.get_portchannel
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -19,7 +19,7 @@ class Script(NOCScript):
         r"^AggregatePort (?P<port>\d+)\s+(up|down)\s+\d+\s+\S+\s+\S+\s+\S+$",
         re.MULTILINE)
     rx_line1 = re.compile(
-        r"^\s+(?P<interface>\S+\s*\d+\/\d+) Link Status: (Down|Up)$",
+        r"^\s+(?P<interface>\S+\s*\d+\/\d+)\s+Link Status: (Down|Up)$",
         re.MULTILINE)
 
     def execute(self):
