@@ -497,7 +497,9 @@ Ext.define("NOC.inv.map.Application", {
     //
     onEdgeStyleChange: function(item, event, opt) {
         var me = this,
-            selection = me.graph.getSelectionCells();
+            selection = me.graph.getSelectionCells(),
+            model = me.graph.getModel();
+        model.beginUpdate();
         for(var i in selection) {
             var c = selection[i];
             if(c.isEdge()) {
@@ -507,8 +509,13 @@ Ext.define("NOC.inv.map.Application", {
                     id: c.objectId,
                     edge_style: item.itemId
                 });
+                var es = {
+                    straight: null,
+                    orthogonal: "elbowEdgeStyle"
+                }[item.itemId];
+                me.graph.setCellStyles(mxConstants.STYLE_EDGE, es, [c]);
             }
-            // @todo: Dynamically change edge style
         }
+        model.endUpdate();
     }
 });
