@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:INFO:|INFO\\(6\\)) Port <(?P<interface>\\S+)>\\s+enter BPDU under attacking state \\(mode: \\S+\\)"
+                "value_re": "Port <?(?P<interface>\\S*\\d+)>?\\s+enter BPDU under (?:attacking|protection) state \\(mode: \\S+\\)"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:INFO:|INFO\\(6\\)) Port <(?P<interface>\\S+)>\\s+recover from BPDU under attacking state automatically"
+                "value_re": "Port <?(?P<interface>\\S*\\d+)>?\\s+recover from BPDU under (?:attacking|protection) state automatically"
             }
         ]
     },
