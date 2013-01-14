@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "Record command information\\. \\(Task=VT\\d+ , [Ii][Pp]=(:?\\S+), [Uu]ser=(?P<user>.+), [Cc]ommand=\"(?P<command>.+)\"\\)"
+                "value_re": "Record command information\\. \\(Task=\\S+\\d+ , [Ii][Pp]=(:?\\S+), [Uu]ser=(?P<user>.+), [Cc]ommand=\"(?P<command>.+)\"\\)"
             }
         ]
     }
