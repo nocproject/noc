@@ -7,7 +7,7 @@ div.mxRubberband {
 	background: #0077FF;
 }
 textarea.mxCellEditor {
-	background: url('../images/transparent.gif');
+	background: url('/static/img/mxgraph/transparent.gif');
 	border-style: solid;
 	border-color: black;
 	border-width: 0;
@@ -17,7 +17,7 @@ div.mxWindow {
 	-webkit-box-shadow: 3px 3px 12px #C0C0C0;
 	-moz-box-shadow: 3px 3px 12px #C0C0C0;
 	box-shadow: 3px 3px 12px #C0C0C0;
-	background: url('../images/window.gif');
+	background: url('/static/img/mxgraph/window.gif');
 	border-style: outset;
 	border-width: 1px;
 	position: absolute;
@@ -31,7 +31,7 @@ table.mxWindow {
 	font-size: 8pt;
 }
 td.mxWindowTitle {
-	background: url('../images/window-title.gif') repeat-x;
+	background: url('/static/img/mxgraph/window-title.gif') repeat-x;
 	text-overflow: ellipsis;
 	white-space: nowrap;
  	text-align: center;
@@ -63,7 +63,7 @@ td.mxWindowPane input, td.mxWindowPane select, td.mxWindowPane textarea, td.mxWi
  	padding: 1px;
 }
 td.mxWindowPane button {
-	background: url('../images/button.gif') repeat-x;
+	background: url('/static/img/mxgraph/button.gif') repeat-x;
   	font-family: Arial;
   	font-size: 8pt;
   	padding: 2px;
@@ -114,7 +114,7 @@ div.mxPopupMenu {
 	-webkit-box-shadow: 3px 3px 12px #C0C0C0;
 	-moz-box-shadow: 3px 3px 12px #C0C0C0;
 	box-shadow: 3px 3px 12px #C0C0C0;
-	background: url('../images/window.gif');
+	background: url('/static/img/mxgraph/window.gif');
 	position: absolute;
 	border-style: solid;
 	border-width: 1px;
