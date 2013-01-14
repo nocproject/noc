@@ -72,7 +72,7 @@ class MapAppplication(ExtApplication):
                 "label": mo.name,
                 "label_position": state.get("label_position", "s"),
                 "collapsed": state.get("collapsed", False),
-                "shape": "xor",
+                "shape": "xor", # @todo: Selectable
                 "ports": [],
                 "address": mo.address,
                 "platform": "%s %s" % (mo.get_attr("vendor", ""),
@@ -95,10 +95,12 @@ class MapAppplication(ExtApplication):
         for link in linked_ports:
             lp = linked_ports[link]
             if len(lp) == 2:
+                state = chart.get_state("link", str(link.id))
                 r += [{
                     "type": "link",
                     "id": str(link.id),
-                    "ports": lp
+                    "ports": lp,
+                    "edge_style": state.get("edge_style")
                 }]
         return r
 
@@ -122,5 +124,10 @@ class MapAppplication(ExtApplication):
                 elif cmd["cmd"] == "collapsed":
                     chart.update_state("mo", cmd["id"], {
                         "collapsed": cmd["collapsed"]
+                    })
+            elif cmd["type"] == "link":
+                if cmd["cmd"] == "edge_style":
+                    chart.update_state("link", cmd["id"], {
+                        "edge_style": cmd["edge_style"]
                     })
         return True

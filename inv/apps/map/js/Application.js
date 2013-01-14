@@ -14,14 +14,18 @@ Ext.define("NOC.inv.map.Application", {
     ],
     // Label position style
     labelPositionStyle: {
-        "nw": "verticalLabelPosition=top;verticalAlign=bottom;labelPosition=left;align=right",
-        "n": "verticalLabelPosition=top;verticalAlign=bottom",
-        "ne": "verticalLabelPosition=top;verticalAlign=bottom;labelPosition=right;align=left",
-        "e": "labelPosition=right;align=left",
-        "se": "verticalLabelPosition=bottom;verticalAlign=top;labelPosition=right;align=left",
-        "s": "verticalLabelPosition=bottom;verticalAlign=top",
+        nw: "verticalLabelPosition=top;verticalAlign=bottom;labelPosition=left;align=right",
+        n: "verticalLabelPosition=top;verticalAlign=bottom",
+        ne: "verticalLabelPosition=top;verticalAlign=bottom;labelPosition=right;align=left",
+        e: "labelPosition=right;align=left",
+        se: "verticalLabelPosition=bottom;verticalAlign=top;labelPosition=right;align=left",
+        s: "verticalLabelPosition=bottom;verticalAlign=top",
         sw: "verticalLabelPosition=bottom;verticalAlign=top;labelPosition=left;align=right",
         w: "labelPosition=left;align=right"
+    },
+    edgeStyle: {
+        straight: "",
+        orthogonal: "edgeStyle=elbowEdgeStyle"
     },
     initComponent: function() {
         var me = this;
@@ -188,10 +192,20 @@ Ext.define("NOC.inv.map.Application", {
                     menu: {
                         items: [
                             {
-                                text: "Staight"
+                                text: "Staight",
+                                itemId: "straight",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onEdgeStyleChange
+                                }
                             },
                             {
-                                text: "Orthogonal"
+                                text: "Orthogonal",
+                                itemId: "orthogonal",
+                                listeners: {
+                                    scope: me,
+                                    click: me.onEdgeStyleChange
+                                }
                             }
                         ]
                     }
@@ -250,7 +264,7 @@ Ext.define("NOC.inv.map.Application", {
             // Set styles
             var ss = me.graph.getStylesheet(),
                 edgeStyle = ss.getDefaultEdgeStyle();
-            edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+            // edgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
             delete edgeStyle.endArrow;
             /*
             var vertexStyle = ss.getDefaultVertexStyle();
@@ -346,12 +360,15 @@ Ext.define("NOC.inv.map.Application", {
                     case "link":
                         var style = [];
                         // Adjust edge style
-                        style.push("edgeStyle=segmentEdgeStyle");
+                        if(n.edge_style && n.edge_style != "straight") {
+                            style.push(me.edgeStyle[n.edge_style]);
+                        }
                         // Create edge
                         var v = me.graph.insertEdge(parent, null, "",
                             ports[n.ports[0]], ports[n.ports[1]],
                             style ? style.join(";") : null
                         );
+                        v.objectId = n.id;
                         break;
                 }
             }
@@ -436,7 +453,7 @@ Ext.define("NOC.inv.map.Application", {
                 m = me.edgeContextMenu;
             }
             if(m) {
-                m.setPosition(evt.pageX,evt.pageY);
+                m.setPosition(evt.pageX, evt.pageY);
                 m.show();
             }
         }
@@ -447,12 +464,14 @@ Ext.define("NOC.inv.map.Application", {
             selection = me.graph.getSelectionCells();
         for(var i in selection) {
             var c = selection[i];
-            me.registerChange({
-                cmd: "label_position",
-                type: "mo",
-                id: c.objectId,
-                label_position: item.itemId
-            });
+            if(c.isVertex()) {
+                me.registerChange({
+                    cmd: "label_position",
+                    type: "mo",
+                    id: c.objectId,
+                    label_position: item.itemId
+                });
+            }
             // @todo: Dynamically change label position
         }
     },
@@ -474,5 +493,22 @@ Ext.define("NOC.inv.map.Application", {
         }
         // model.layout.execute(me.graph.getDefaultParent());
         model.endUpdate()
+    },
+    //
+    onEdgeStyleChange: function(item, event, opt) {
+        var me = this,
+            selection = me.graph.getSelectionCells();
+        for(var i in selection) {
+            var c = selection[i];
+            if(c.isEdge()) {
+                me.registerChange({
+                    cmd: "edge_style",
+                    type: "link",
+                    id: c.objectId,
+                    edge_style: item.itemId
+                });
+            }
+            // @todo: Dynamically change edge style
+        }
     }
 });

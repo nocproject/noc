@@ -22,7 +22,11 @@ class NetworkChartState(Document):
     }
 
     chart = IntField()   # Network chart reference
-    type = StringField(choices=[("mo", "Managed Object")])
+    type = StringField(
+        choices=[
+            ("mo", "Managed Object"),
+            ("link", "Link")
+        ])
     object = StringField()  # Object reference
     state = DictField()  # Arbitrary state data
 
