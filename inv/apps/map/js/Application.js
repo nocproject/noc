@@ -181,6 +181,23 @@ Ext.define("NOC.inv.map.Application", {
                 }
             ]
         });
+        me.edgeContextMenu = Ext.create("Ext.menu.Menu", {
+            items: [
+                {
+                    text: "Line Style",
+                    menu: {
+                        items: [
+                            {
+                                text: "Staight"
+                            },
+                            {
+                                text: "Orthogonal"
+                            }
+                        ]
+                    }
+                }
+            ]
+        });
         me.callParent();
     },
     //
@@ -327,8 +344,14 @@ Ext.define("NOC.inv.map.Application", {
                         break;
                     // Insert link
                     case "link":
+                        var style = [];
+                        // Adjust edge style
+                        style.push("edgeStyle=segmentEdgeStyle");
+                        // Create edge
                         var v = me.graph.insertEdge(parent, null, "",
-                            ports[n.ports[0]], ports[n.ports[1]]);
+                            ports[n.ports[0]], ports[n.ports[1]],
+                            style ? style.join(";") : null
+                        );
                         break;
                 }
             }
@@ -405,7 +428,17 @@ Ext.define("NOC.inv.map.Application", {
     onContextMenu: function(menu, cell, evt) {
         var me = this;
         if(cell != null) {
-            me.nodeContextMenu.show();
+            var m = null;
+            console.log(evt);
+            if(cell.isVertex()) {
+                m = me.nodeContextMenu;
+            } else {
+                m = me.edgeContextMenu;
+            }
+            if(m) {
+                m.setPosition(evt.pageX,evt.pageY);
+                m.show();
+            }
         }
     },
     //
