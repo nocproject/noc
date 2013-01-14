@@ -261,6 +261,7 @@ Ext.define("NOC.inv.map.Application", {
             new mxRubberband(me.graph);
             me.graph.setPanning(true);
             me.graph.setTooltips(true);
+            me.graph.foldingEnabled = false;
             // Set styles
             var ss = me.graph.getStylesheet(),
                 edgeStyle = ss.getDefaultEdgeStyle();
