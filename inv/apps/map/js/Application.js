@@ -462,7 +462,10 @@ Ext.define("NOC.inv.map.Application", {
     //
     onLabelPositionChange: function(item, event, opt) {
         var me = this,
-            selection = me.graph.getSelectionCells();
+            selection = me.graph.getSelectionCells(),
+            model = me.graph.getModel(),
+            ls = me.labelPositionStyle[item.itemId].split(";");
+        model.beginUpdate();
         for(var i in selection) {
             var c = selection[i];
             if(c.isVertex()) {
@@ -472,9 +475,19 @@ Ext.define("NOC.inv.map.Application", {
                     id: c.objectId,
                     label_position: item.itemId
                 });
+                // Reset styles
+                me.graph.setCellStyles("verticalLabelPosition", null, [c]);
+                me.graph.setCellStyles("verticalAlign", null, [c]);
+                me.graph.setCellStyles("labelPosition", null, [c]);
+                me.graph.setCellStyles("align", null, [c]);
+                // Dynamically apply styles
+                for(var j in ls) {
+                    var ss = ls[j].split("=");
+                    me.graph.setCellStyles(ss[0], ss[1], [c]);
+                }
             }
-            // @todo: Dynamically change label position
         }
+        model.endUpdate();
     },
     //
     onFold: function(item, event, opt) {
