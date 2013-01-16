@@ -43,8 +43,16 @@ class Script(NOCScript):
     def execute_other(self):
         v = self.cli("show system")
         match = self.re_search(self.rx_mac, v)
-        mac = match.group("id")
+        first_mac = match.group("id")
+        v = self.cli("show int statu")
+        for l in v.splitlines():
+            match = self.rx_mac.search(l)
+            if match:
+                if match.group("id")!= first_mac:
+                    last_mac = match.group("id")
+        if not last_mac:
+            last_mac = first_mac
         return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
+            "first_chassis_mac": first_mac,
+            "last_chassis_mac": last_mac
         }
