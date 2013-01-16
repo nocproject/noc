@@ -98,10 +98,17 @@ Ext.define("NOC.inv.map.Application", {
         me.nodeContextMenu = Ext.create("Ext.menu.Menu", {
             items: [
                 {
-                    text: "Fold/Unfold",
+                    text: "Fold",
                     listeners: {
                         scope: me,
                         click: me.onFold
+                    }
+                },
+                {
+                    text: "Unfold",
+                    listeners: {
+                        scope: me,
+                        click: me.onUnfold
                     }
                 },
                 {
@@ -490,23 +497,34 @@ Ext.define("NOC.inv.map.Application", {
         model.endUpdate();
     },
     //
-    onFold: function(item, event, opt) {
+    setSelectionCollapsed: function(collapsed) {
         var me = this,
             selection = me.graph.getSelectionCells(),
             model = me.graph.getModel();
         model.beginUpdate()
         for(var i in selection) {
             var c = selection[i];
-            model.setCollapsed(c, !c.isCollapsed());
-            me.registerChange({
-                cmd: "collapsed",
-                type: "mo",
-                id: c.objectId,
-                collapsed: c.isCollapsed()
-            });
+            if(c.isVertex() && c.isCollapsed() != collapsed) {
+                model.setCollapsed(c, collapsed);
+                me.registerChange({
+                    cmd: "collapsed",
+                    type: "mo",
+                    id: c.objectId,
+                    collapsed: collapsed
+                });
+            }
         }
-        // model.layout.execute(me.graph.getDefaultParent());
         model.endUpdate()
+    },
+    //
+    onFold: function(item, event, opt) {
+        var me = this;
+        me.setSelectionCollapsed(true);
+    },
+    //
+    onUnfold: function(item, event, opt) {
+        var me = this;
+        me.setSelectionCollapsed(false);
     },
     //
     onEdgeStyleChange: function(item, event, opt) {
