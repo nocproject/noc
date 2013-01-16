@@ -56,7 +56,7 @@ class Script(NOCScript):
                     edge = None
                 no_neighbor = "no-neighbor" in role
                 rs["topology"] += [{
-                    "name": match.group("port"),
+                    "name": match.group("host"),
                     "mac": match.group("mac"),
                     "port": match.group("port"),
                     "role": self.s_map[match.group("state").lower()],
