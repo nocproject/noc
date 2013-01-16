@@ -70,19 +70,6 @@ class LLDPLinkDiscoveryJob(LinkDiscoveryJob):
         self.n_cache[(chassis_id, chassis_subtype)] = n
         return n
 
-    def get_neighbor_by_mac(self, mac):
-        """
-        Find neighbor by MAC address
-        :param mac:
-        :return:
-        """
-        d = DiscoveryID.objects.filter(first_chassis_mac__lte=mac,
-            last_chassis_mac__gte=mac).first()
-        if d:
-            return d.object
-        else:
-            return None
-
     def get_neighbor_by_ip(self, ip):
         d = DiscoveryID.objects.filter(router_id=ip).first()
         if d:

@@ -13,6 +13,7 @@ from collections import defaultdict
 from base import MODiscoveryJob
 from noc.settings import config
 from noc.inv.models.pendinglinkcheck import PendingLinkCheck
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 
@@ -227,3 +228,16 @@ class LinkDiscoveryJob(MODiscoveryJob):
     def get_failed_interval(self):
         return getattr(self.object.object_profile,
             "%s_discovery_min_interval" % self.method)
+
+    def get_neighbor_by_mac(self, mac):
+        """
+        Find neighbor by MAC address
+        :param mac:
+        :return:
+        """
+        d = DiscoveryID.objects.filter(first_chassis_mac__lte=mac,
+            last_chassis_mac__gte=mac).first()
+        if d:
+            return d.object
+        else:
+            return None
