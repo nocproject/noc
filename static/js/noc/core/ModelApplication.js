@@ -294,6 +294,14 @@ Ext.define("NOC.core.ModelApplication", {
                         columns: inline.columns,
                         store: istore,
                         selType: "rowmodel",
+                        dockedItems : [
+                            {
+                             xtype: "pagingtoolbar",
+                             store: istore,
+                             dock: "bottom",
+                             displayInfo: true
+                            }
+                               ],
                         plugins: [
                             Ext.create("Ext.grid.plugin.RowEditing", {
                                 clicksToEdit: 2,
