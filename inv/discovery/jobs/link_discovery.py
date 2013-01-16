@@ -188,6 +188,8 @@ class LinkDiscoveryJob(MODiscoveryJob):
         :param result:
         :return:
         """
+        # Caches
+        self.neighbor_by_mac_cache = {}  # mac -> object
         # Fetch existing links
         self.submited = set()  # (local_iface, remote_object, remote_iface)
         self.load_existing_links(object)
@@ -235,9 +237,13 @@ class LinkDiscoveryJob(MODiscoveryJob):
         :param mac:
         :return:
         """
+        # Use cached values
+        if mac in self.neighbor_by_mac_cache:
+            return self.neighbor_by_mac_cache[mac]
+        # Find in discovery cache
         d = DiscoveryID.objects.filter(first_chassis_mac__lte=mac,
             last_chassis_mac__gte=mac).first()
         if d:
-            return d.object
-        else:
-            return None
+            d = d.object
+        self.neighbor_by_mac_cache[mac] = d
+        return d
