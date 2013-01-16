@@ -9,7 +9,6 @@
 ## NOC modules
 from link_discovery import LinkDiscoveryJob
 from noc.settings import config
-from noc.inv.models.discoveryid import DiscoveryID
 
 
 class REPLinkDiscoveryJob(LinkDiscoveryJob):
