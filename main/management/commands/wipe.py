@@ -101,6 +101,8 @@ class Command(BaseCommand):
         from noc.inv.models import (ForwardingInstance,
                                    Interface, SubInterface, Link,
                                    MACDB)
+        from noc.inv.models.pendinglinkcheck import PendingLinkCheck
+        from noc.inv.models.discoveryid import DiscoveryID
         from noc.fm.models import NewEvent, FailedEvent,\
                                   ActiveEvent, ArchivedEvent,\
                                   ActiveAlarm, ArchivedAlarm
@@ -132,6 +134,13 @@ class Command(BaseCommand):
         # Wiping MAC DB
         with self.log("Wiping MAC DB"):
             MACDB._get_collection().remove({"managed_object": o.id})
+        # Wiping pending link check
+        with self.log("Wiping pending link checks"):
+            PendingLinkCheck._get_collection().remove({"local_object": o.id})
+            PendingLinkCheck._get_collection().remove({"remote_object": o.id})
+        # Wiping discovery id cache
+        with self.log("Wiping discovered ids"):
+            DiscoveryID._get_collection().remove({"object": o.id})
         # Wiping interfaces, subs and links
         with self.log("Deleting forwarding instances, "
                       "interfaces, subinterfaces and links"):
