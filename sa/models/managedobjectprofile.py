@@ -123,6 +123,13 @@ class ManagedObjectProfile(models.Model):
         _("Min. STP discovery interval"), default=600)
     stp_discovery_max_interval = models.IntegerField(
         _("Max. STP discovery interval"), default=86400)
+    # REP Topology discovery
+    enable_rep_discovery = models.BooleanField(
+            _("Enable REP discovery"), default=True)
+    rep_discovery_min_interval = models.IntegerField(
+        _("Min. REP discovery interval"), default=600)
+    rep_discovery_max_interval = models.IntegerField(
+        _("Max. REP discovery interval"), default=86400)
 
     def __unicode__(self):
         return self.name
