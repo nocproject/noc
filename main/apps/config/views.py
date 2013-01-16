@@ -89,7 +89,10 @@ class ConfigApplication(ExtApplication):
         for ds in defaults.sections():
             for k, v in defaults.items(ds):
                 if config.has_option(ds, k):
-                    vv = config.get(ds, k)
+                    try:
+                        vv = config.get(ds, k)
+                    except ConfigParser.Error:
+                        vv = ""  # Suppress interpolation errors
                 else:
                     vv = ""
                 r += [{
