@@ -254,7 +254,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
         :param object:
         :return:
         """
-        d = DiscoveryID.objects.filter(object=object.id)
+        d = DiscoveryID.objects.filter(object=object.id).first()
         if d:
             return d.first_chassis_mac, d.last_chassis_mac
         else:
