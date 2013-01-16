@@ -36,21 +36,14 @@ class REPLinkDiscoveryJob(LinkDiscoveryJob):
             if not o:
                 continue  # Not found
             elif len(o) == 2:
-                # Inside the ring
-                self.submit_pair(object,
-                    topology[o[0]], topology[o[0] - 1])
-                self.submit_pair(object,
-                    topology[o[1]], topology[o[1] + 1])
-            elif len(o) == 1:
-                # End of the ring
-                if o[0] == 0:
-                    # First
+                f, s = o
+                L = len(topology)
+                if not topology[f]["edge_no_neighbor"]:
                     self.submit_pair(object,
-                        topology[o[0]], topology[o[0] + 1])
-                else:
-                    # Last
+                        topology[f], topology[(f - 1) % L])
+                if not topology[s]["edge_no_neighbor"]:
                     self.submit_pair(object,
-                        topology[o[0]], topology[o[0] - 1])
+                        topology[s], topology[(s + 1) % L])
             else:
                 # Something strange
                 self.error("Invalid REP discovery result: %r" % topology)
