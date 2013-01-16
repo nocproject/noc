@@ -122,7 +122,7 @@ class ConfigApplication(ExtApplication):
         for d in data:
             if not config.has_section(d["section"]):
                 config.add_section(d["section"])
-            config.set(d["section"], d["key"], d["value"])
+            config.set(d["section"], d["key"], d["value"].replace("%", "%%"))
         # Save
         with open(self.configs[id], "w") as f:
             config.write(f)
