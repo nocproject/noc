@@ -206,6 +206,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 86400
         },
         {
+            name: "enable_rep_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "rep_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "rep_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false
