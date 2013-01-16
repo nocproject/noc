@@ -247,3 +247,15 @@ class LinkDiscoveryJob(MODiscoveryJob):
             d = d.object
         self.neighbor_by_mac_cache[mac] = d
         return d
+
+    def get_object_macs(self, object):
+        """
+        Return object's MAC address interval
+        :param object:
+        :return:
+        """
+        d = DiscoveryID.objects.filter(object=object.id)
+        if d:
+            return d.first_chassis_mac, d.last_chassis_mac
+        else:
+            return None, None
