@@ -131,7 +131,7 @@ class MACDiscoveryJob(MODiscoveryJob):
         :return:
         """
         # Local interface
-        iface = Interface.objects.find(
+        iface = Interface.objects.filter(
             managed_object=object.id, name=port).first()
         if not iface:
             return  # Not found
