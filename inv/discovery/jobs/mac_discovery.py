@@ -152,7 +152,7 @@ class MACDiscoveryJob(MODiscoveryJob):
         local_sub = iface.subinterface_set.filter(enabled_afi="BRIDGE").first()
         if not local_sub:
             return  # Something goes wrong
-        if local_sub.untagged_vlan:
+        if not local_sub.tagged_vlans:
             if len(remote_subs) == 1:
                 # Access port to L3 interface
                 self.submit_link(iface, remote_iface)
