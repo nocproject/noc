@@ -18,15 +18,25 @@ class Script(NOCScript):
     name = "Juniper.JUNOS.get_bfd_sessions"
     implements = [IGetBFDSessions]
 
-    _rx_session = re.compile(r"^(?P<peer>\d+\.\d+\.\d+\.\d+)\s+(?P<state>Up|Down)\s+(?P<interface>\S+)\s+(?P<detect>\S+)\s+(?P<tx>\S+)\s+(?P<multi>\S+)", re.MULTILINE)
     rx_session = re.compile(
         r"^(?P<remote_address>\S+)\s+(?P<state>Up)\s+"
         r"(?P<local_interface>\S+)\s+(?P<detect_time>\d+\.\d+)\s+"
-        r"(?P<transmit>\d+\.\d+)\s+(?P<multiplier>\d+)\n.+?"
+        r"(?P<transmit>\d+\.\d+)\s+(?P<multiplier>\d+)\s*\n"
+        r"^\s+Client\s+(?P<client>[^,]+),.+?\n"
+        r".+?"
         r"^\s+Local discriminator (?P<local_discriminator>\d+), "
         r"remote discriminator (?P<remote_discriminator>\d+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
+
+    # JUNOS to interface client type mappings
+    client_map = {
+        "L2": "L2",
+        "RSVP-OAM": "RSVP",
+        "ISIS": "ISIS",
+        "OSPF": "OSPF",
+        "BGP": "BGP"
+    }
 
     def execute(self):
         r = []
@@ -37,10 +47,11 @@ class Script(NOCScript):
                 r += [{
                     # "local_address": IPParameter(),
                     "remote_address": match.group("remote_address"),
-                    "local_interface": match.group("interface"),
+                    "local_interface": match.group("local_interface"),
                     "local_discriminator": int(match.group("local_discriminator")),
                     "remote_discriminator": int(match.group("local_discriminator")),
                     "state": match.group("state").upper(),
+                    "clients": [self.client_map[c] for c in match.group("client").split()],
                     # Transmit interval, microseconds
                     "tx_interval": float(match.group("transmit")) * 1000000,
                     "multiplier": int(match.group("multiplier")),
