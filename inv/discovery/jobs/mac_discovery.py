@@ -102,7 +102,6 @@ class MACDiscoveryJob(MODiscoveryJob):
         if not self.object.object_profile.enable_mac_discovery:
             return False
         # Check object has bridge interfaces
-        # with enabled MAC discovery
         for si in SubInterface.objects.filter(
             managed_object=self.object.id,
             enabled_afi="BRIDGE"):
@@ -110,8 +109,9 @@ class MACDiscoveryJob(MODiscoveryJob):
                 iface = si.interface
             except Exception:
                 continue  # Dereference failed
-            if iface.profile.mac_discovery:
-                return True
+            #if iface.profile.mac_discovery:
+            #    return True
+            return True
         # No suitable interfaces
         return False
 
