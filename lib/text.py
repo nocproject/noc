@@ -264,3 +264,36 @@ def split_alnum(s):
         else:
             r[-1] += c
     return [convert(x) for x in r]
+
+rx_notspace = re.compile(r"^\S+")
+
+def find_indented(s):
+    """
+    Parses following text structure:
+
+    section 1 header
+        line 1
+        line 2
+    section 2 header
+        line 1
+        line 2
+
+    >>> find_idented("section0\\nsection 1\\n  line 1-1\\n  line 1-2\\n\\n"\
+                     "section 2\\n  line 2-1\\n  line 2-2")
+    ['section 1\n  line 1-1\n  line 1-2', 'section 2\n  line 2-1\n  line 2-2']
+    :param s:
+    :return:
+    """
+    r = []
+    cr = []
+    for l in s.splitlines():
+        if rx_notspace.match(l):
+            if len(cr) > 1:
+                r += ["\n".join(cr)]
+            cr = [l]
+            continue
+        elif l:
+            cr += [l]
+    if len(cr) > 1:
+        r += ["\n".join(cr)]
+    return r
