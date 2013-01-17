@@ -15,6 +15,7 @@ from noc.settings import config
 from noc.inv.models.pendinglinkcheck import PendingLinkCheck
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 
 
@@ -36,6 +37,23 @@ class LinkDiscoveryJob(MODiscoveryJob):
                      remote_interface):
         return (local_interface, remote_object, remote_interface) in self.submited
 
+    def get_interface_by_name(self, object, name):
+        """
+        Find interface by name
+        :param object: Managed Object
+        :param name: interface name
+        :return: Interface instance or None
+        """
+        i = Interface.objects.filter(
+            managed_object=object.id, name=name).first()
+        if not i:
+            # JUNOS names fixup
+            si = list(SubInterface.objects.filter(
+                managed_object=object.id, name=name))
+            if len(si) == 1:
+                i = si[0].interface
+        return i
+
     def submit_candidate(self, local_interface,
                          remote_object, remote_interface=None):
         """
@@ -52,8 +70,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
         if (remote_object in self.candidates and
             (local_interface, remote_interface) in self.candidates[remote_object]):
             return  # Already submitted as candidate
-        i = Interface.objects.filter(
-            managed_object=self.object.id, name=local_interface).first()
+        i = self.get_interface_by_name(self.object, local_interface)
         if i:
             if i.is_linked:
                 return  # Already linked
@@ -67,16 +84,12 @@ class LinkDiscoveryJob(MODiscoveryJob):
 
     def submit_link(self, local_object, local_interface,
                     remote_object, remote_interface):
-        l_iface = Interface.objects.filter(
-            managed_object=local_object.id,
-            name=local_interface).first()
+        l_iface = self.get_interface_by_name(local_object, local_interface)
         if not l_iface:
             self.error("Interface is not found: %s:%s" % (
                 local_object.name, local_interface))
             return
-        r_iface = Interface.objects.filter(
-            managed_object=remote_object.id,
-            name=remote_interface).first()
+        r_iface = self.get_interface_by_name(remote_object, remote_interface)
         if not r_iface:
             self.error("Interface is not found: %s:%s" % (
                 remote_object.name, remote_interface))
