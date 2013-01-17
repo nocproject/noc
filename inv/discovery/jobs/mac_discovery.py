@@ -149,7 +149,7 @@ class MACDiscoveryJob(MODiscoveryJob):
             enabled_afi__in=["IPv4", "IPv6"], mac=mac))
         if not remote_subs:
             return  # Cannot find remote sub by MAC
-        local_sub = iface.subinterfaces_set.filter(enabled_afi="BRIDGE").first()
+        local_sub = iface.subinterface_set.filter(enabled_afi="BRIDGE").first()
         if not local_sub:
             return  # Something goes wrong
         if local_sub.untagged_vlan:
