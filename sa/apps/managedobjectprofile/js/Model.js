@@ -221,6 +221,21 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 86400
         },
         {
+            name: "enable_bfd_discovery",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "bfd_discovery_min_interval",
+            type: "int",
+            defaultValue: 600
+        },
+        {
+            name: "bfd_discovery_max_interval",
+            type: "int",
+            defaultValue: 86400
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

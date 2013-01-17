@@ -81,6 +81,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             renderer: NOC.render.Bool
         },
         {
+            text: "BFD",
+            dataIndex: "enable_bfd_discovery",
+            renderer: NOC.render.Bool
+        },
+        {
             text: "IPAM",
             dataIndex: "sync_ipam",
             renderer: NOC.render.Bool
@@ -360,7 +365,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     allowBlank: false
                 },
                 // REP
-                                // STP
                 {
                     xtype: "label",
                     text: "REP discovery"
@@ -377,6 +381,26 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 },
                 {
                     name: "rep_discovery_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // BFD
+                {
+                    xtype: "label",
+                    text: "BFD discovery"
+                },
+                {
+                    name: "enable_bfd_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "bfd_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "bfd_discovery_max_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 }
