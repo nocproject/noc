@@ -59,7 +59,7 @@ class MODiscoveryJob(IntervalJob):
                     failed_interval=s_interval,
                     randomize=True,
                     ts=now + datetime.timedelta(
-                        seconds=random.random() * s_interval))
+                        seconds=random.random() * cls.initial_submit_interval))
                 isc -= 1
                 if not isc:
                     break
