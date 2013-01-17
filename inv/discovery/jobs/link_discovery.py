@@ -81,7 +81,6 @@ class LinkDiscoveryJob(MODiscoveryJob):
             self.error("Interface is not found: %s:%s" % (
                 remote_object.name, remote_interface))
             return
-        link = l_iface.link
         self.debug("Linking %s and %s" % (l_iface, r_iface))
         try:
             l_iface.link_ptp(r_iface, method=self.method)
