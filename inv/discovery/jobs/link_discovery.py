@@ -48,10 +48,17 @@ class LinkDiscoveryJob(MODiscoveryJob):
         if (remote_interface and
             self.is_submitted(local_interface, remote_object,
                 remote_interface)):
-            return  # Already submitted
+            return  # Already submitted as link
         if (remote_object in self.candidates and
             (local_interface, remote_interface) in self.candidates[remote_object]):
-            return
+            return  # Already submitted as candidate
+        i = Interface.objects.filter(
+            managed_object=self.object.id, name=local_interface).first()
+        if i:
+            if i.is_linked:
+                return  # Already linked
+        else:
+            return  # Interface not found
         self.debug("Link candidate found: %s -> %s:%s" % (
             local_interface, remote_object.name, remote_interface))
         self.candidates[remote_object] += [

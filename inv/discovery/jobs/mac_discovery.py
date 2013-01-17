@@ -164,7 +164,9 @@ class MACDiscoveryJob(MODiscoveryJob):
                     return  # No Q-in-Q support yet
                 v = rs.vlan_ids[0]
                 remote_vlans.add(v)
-            if set(vlans) - remote_vlans:
+            diff = set(vlans) - remote_vlans
+            native_vlan = local_sub.untagged_vlan if local_sub.untagged_vlan else 1
+            if diff and diff != set([native_vlan]):
                 return  # Cannot find vlan on remote interface
             # All prerequisites are met
             self.submit_link(iface, remote_iface)
