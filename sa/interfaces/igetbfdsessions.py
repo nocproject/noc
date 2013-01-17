@@ -11,15 +11,17 @@ from base import *
 
 
 class IGetBFDSessions(Interface):
-    returns = ListOfParameter(element=DictParameter(attrs={
-        "peer": IPParameter(),
-        "state": BooleanParameter(),  # True for Up
-        "interface": InterfaceNameParameter(),
+    returns = DictListParameter(attrs={
+        "local_address": IPParameter(required=False),
+        "remote_address": IPParameter(),
+        "local_interface": InterfaceNameParameter(),
+        "local_discriminator": IntParameter(),
+        "remote_discriminator": IntParameter(),
+        "state": StringParameter(choices=["UP"]),
         # Transmit interval, microseconds
         "tx_interval": IntParameter(),
         "multiplier": IntParameter(),
         # Detection time, microseconds
         "detect_time": IntParameter()
-        }))
-    
+    })
     template = "interfaces/igetbfdsessions.html"

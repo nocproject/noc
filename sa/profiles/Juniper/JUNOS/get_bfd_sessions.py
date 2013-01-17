@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Juniper.JUNOS.get_bfd_sessions
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,24 +11,40 @@ import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetBFDSessions
+from noc.lib.text import find_indented
 
 
 class Script(NOCScript):
     name = "Juniper.JUNOS.get_bfd_sessions"
     implements = [IGetBFDSessions]
 
-    rx_session = re.compile(r"^(?P<peer>\d+\.\d+\.\d+\.\d+)\s+(?P<state>Up|Down)\s+(?P<interface>\S+)\s+(?P<detect>\S+)\s+(?P<tx>\S+)\s+(?P<multi>\S+)", re.MULTILINE)
+    _rx_session = re.compile(r"^(?P<peer>\d+\.\d+\.\d+\.\d+)\s+(?P<state>Up|Down)\s+(?P<interface>\S+)\s+(?P<detect>\S+)\s+(?P<tx>\S+)\s+(?P<multi>\S+)", re.MULTILINE)
+    rx_session = re.compile(
+        r"^(?P<remote_address>\S+)\s+(?P<state>Up)\s+"
+        r"(?P<local_interface>\S+)\s+(?P<detect_time>\d+\.\d+)\s+"
+        r"(?P<transmit>\d+\.\d+)\s+(?P<multiplier>\d+)\n.+?"
+        r"^\s+Local discriminator (?P<local_discriminator>\d+), "
+        r"remote discriminator (?P<remote_discriminator>\d+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
 
     def execute(self):
         r = []
-        s = self.cli("show bfd session")
-        for match in self.rx_session.finditer(s):
-            r += [{
-                "peer": match.group("peer"),
-                "state": match.group("state").lower() == "up",
-                "interface": match.group("interface"),
-                "tx_interval": float(match.group("tx")) * 1000000,
-                "multiplier": int(match.group("multi")),
-                "detect_time": float(match.group("detect")) * 1000000
+        s = self.cli("show bfd session extensive")
+        for bs in find_indented(s):
+            match = self.rx_session.search(bs)
+            if match:
+                r += [{
+                    # "local_address": IPParameter(),
+                    "remote_address": match.group("remote_address"),
+                    "local_interface": match.group("interface"),
+                    "local_discriminator": int(match.group("local_discriminator")),
+                    "remote_discriminator": int(match.group("local_discriminator")),
+                    "state": match.group("state").upper(),
+                    # Transmit interval, microseconds
+                    "tx_interval": float(match.group("transmit")) * 1000000,
+                    "multiplier": int(match.group("multiplier")),
+                    # Detection time, microseconds
+                    "detect_time": float(match.group("detect_time")) * 1000000
                 }]
         return r

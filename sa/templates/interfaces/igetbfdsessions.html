@@ -1,21 +1,32 @@
 {% if result %}
 {% load noctags %}
-<h1>{{object.name}} ({{object.address}}) ARP Cache</h1>
+<h1>{{object.name}} ({{object.address}}) BFD Sessions</h1>
 
 {% noctable %}
 <table>
     <thead>
-        <tr><th>Peer</th><th>State</th><th>Interface</th><th>Detect time<br/>(microseconds)</th><th>TX interval<br/>(microseconds)</th><th>Multiplier</th></tr>
+        <tr>
+            <th>Neighbor</th>
+            <th>State</th>
+            <th>Interface</th>
+            <th>LD</th>
+            <th>RD</th>
+            <th>TX int</th>
+            <th>Mult.</th>
+            <th>Detect</th>
+        </tr>
     </thead>
     <tbody>
         {% for r in result %}
             <tr>
-                <td>{{r.peer}}</td>
+                <td>{{r.remote_address}}</td>
                 <td>{{r.state|bool_icon}}</td>
-                <td>{{r.iterface}}</td>
-                <td>{{r.detect_time}}</td>
+                <td>{{r.local_iterface}}</td>
+                <td>{{r.local_discriminator}}</td>
+                <td>{{r.remote_discriminator}}</td>
                 <td>{{r.tx_interval}}</td>
                 <td>{{r.multiplier}}</td>
+                <td>{{r.detect_time}}</td>
             </tr>
         {% endfor %}
     </tbody>
