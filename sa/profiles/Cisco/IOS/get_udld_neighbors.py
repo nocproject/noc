@@ -19,11 +19,11 @@ class Script(NOCScript):
 
     rx_split = re.compile(r"^Interface\s+", re.MULTILINE | re.IGNORECASE)
     rx_entry = re.compile(
-        r"^\s+Current neighbor state: (?P<state>Bidirectional)\n"
-        r"^\s+Device ID: (?P<remote_device>\S+)\n"
-        r"^\s+Port ID: (?P<remote_interface>\S+)\n"
-        r"^\s+Neighbor echo \d+ device: (?P<local_device>\S+)\n",
-        re.MULTILINE | re.IGNORECASE
+        r"^\s+Current neighbor state:\s+(?P<state>Bidirectional).+?"
+        r"^\s+Device (?:ID|name):\s+(?P<remote_device>\S+).+?"
+        r"^\s+Port ID:\s+(?P<remote_interface>\S+).+?"
+        r"^\s+Neighbor echo \d+ device: (?P<local_device>\S+)",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL
     )
 
     def execute(self):
@@ -34,7 +34,7 @@ class Script(NOCScript):
             if len(v) != 2 or not v[1].startswith("---"):
                 continue
             local_interface = v[0].strip()
-            match = self.rx_entry.match(v[1])
+            match = self.rx_entry.search(v[1])
             if not match:
                 continue
             r += [{
