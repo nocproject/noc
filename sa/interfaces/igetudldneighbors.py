@@ -12,8 +12,9 @@ from base import *
 
 class IGetUDLDNeighbors(Interface):
     returns = DictListParameter(attrs={
+        "local_device": StringParameter(),
         "local_interface": InterfaceNameParameter(),
-        "remote_interface": StringParameter(),
         "remote_device": StringParameter(),
+        "remote_interface": StringParameter(),
         "state": StringParameter(choices=["BIDIRECTIONAL"])
     })
