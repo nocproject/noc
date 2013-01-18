@@ -27,16 +27,17 @@ class UDLDLinkDiscoveryJob(LinkDiscoveryJob):
 
     def process_result(self, object, result):
         self.n_cache = {}  # device_id -> object
-        local_ids = None  # Local IDs
+        local_id = None  # Local IDs
         for n in result:
             remote_object = self.get_neighbor(n["remote_device"])
             if not remote_object:
                 continue
-            local_ids = n["local_device"]
+            local_id = n["local_device"]
             self.submit_candidate(n["local_interface"],
                 remote_object, n["remote_interface"])
         # Update UDLD id
-        self.update_udld_id(object, local_ids)
+        if local_id:
+            self.update_udld_id(object, local_id)
 
     def get_neighbor(self, device_id):
         """
