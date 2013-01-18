@@ -27,7 +27,7 @@ class MACReport(Report):
         iface = self.get_interface(managed_object, if_name)
         if not iface:
             return  # Not found
-        if not iface.profile.mac_discovery:
+        if not iface.profile or not iface.profile.mac_discovery:
             return  # Disabled discovery
         if MACDB.submit(mac, vc_domain, vlan, iface):
             self.info("MAC %s. VC Domain: %s, VLAN %d at %s" % (
