@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Dell.Powerconnect.get_vlans
+## Dell.Powerconnect55xx.get_vlans
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
@@ -14,7 +14,7 @@ from noc.sa.interfaces import IGetVlans
 
 
 class Script(NOCScript):
-    name = "Dell.Powerconnect.get_vlans"
+    name = "Dell.Powerconnect55xx.get_vlans"
     implements = [IGetVlans]
     rx_vlan = re.compile(r"^(?P<vlan_id>\d+)\s+(?P<vlan_name>\S+)",
         re.MULTILINE | re.DOTALL)
