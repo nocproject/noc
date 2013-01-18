@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Dell.Powerconnect.get_chassis_id
+## Dell.Powerconnect62xx.get_chassis_id
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
@@ -13,7 +13,7 @@ import re
 
 
 class Script(NOCScript):
-    name = "Dell.Powerconnect.get_chassis_id"
+    name = "Dell.Powerconnect62xx.get_chassis_id"
     cache = True
     rx_mac = re.compile(r"Burned In MAC Address\.+ (?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)

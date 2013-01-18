@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Dell.Powerconnect
+## Dell.Powerconnect62xx.get_version
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
@@ -14,11 +14,12 @@ from noc.sa.interfaces import IGetVersion
 
 
 class Script(NOCScript):
-    name = "Dell.Powerconnect.get_version"
+    name = "Dell.Powerconnect62xx.get_version"
     cache = True
     implements = [IGetVersion]
     rx_ver = re.compile(
         r"Machine Model\.+ (?P<platform>\S+).+?"
+        r"Serial Number\.+ (?P<serial>\S+).+?"
         r"Software Version\.+ (?P<version>\S+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
@@ -27,5 +28,8 @@ class Script(NOCScript):
         return {
             "vendor": "Dell",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
+            "attributes": {
+                "Serial Number": match.group("serial")
+            }
         }
