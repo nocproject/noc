@@ -29,10 +29,10 @@ class UDLDLinkDiscoveryJob(LinkDiscoveryJob):
         self.n_cache = {}  # device_id -> object
         local_id = None  # Local IDs
         for n in result:
+            local_id = n["local_device"]
             remote_object = self.get_neighbor(n["remote_device"])
             if not remote_object:
                 continue
-            local_id = n["local_device"]
             self.submit_candidate(n["local_interface"],
                 remote_object, n["remote_interface"])
         # Update UDLD id
