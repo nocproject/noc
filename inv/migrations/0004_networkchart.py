@@ -7,6 +7,10 @@ from django.db import models
 
 
 class Migration:
+    depends_on = (
+        ('sa', '0056_managedobjectselecter_filter_object_profile'),
+    )
+
     def forwards(self):
         ManagedObjectSelector = db.mock_model(
             model_name="ManagedObjectSelector",
