@@ -25,6 +25,10 @@ class reportlinkmethodsummaryApplication(SimpleReport):
         data = sorted(data, key=lambda x: -x[1])
         return self.from_dataset(
             title=self.title,
-            columns=["Method", TableColumn("Count", align="right", format="integer")],
+            columns=[
+                "Method",
+                TableColumn("Count", align="right",
+                    format="integer", total="sum", total_label="Total")
+            ],
             data=data
         )
