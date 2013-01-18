@@ -296,7 +296,9 @@ class ManagedObjectAdmin(admin.ModelAdmin):
                         "interface_discovery", "mac_discovery",
                         "id_discovery", "lldp_discovery",
                         "cdp_discovery", "stp_discovery",
-                        "rep_discovery", "bfd_discovery"]:
+                        "rep_discovery", "bfd_discovery",
+                        "udld_discovery"
+                        ]:
                 refresh_schedule("inv.discovery", job, o.id)
         return self.app.response_redirect("sa:managedobject:changelist")
     reschedule_discovery.short_description = _("Run discovery now")
