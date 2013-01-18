@@ -21,7 +21,7 @@ class Script(NOCScript):
     rx_entry = re.compile(
         r"^\s+Current neighbor state: (?P<state>Bidirectional)\n"
         r"^\s+Device ID: (?P<remote_device>\S+)\n"
-        r"^\s+Port ID: (?P<remote interface>\S+)\n"
+        r"^\s+Port ID: (?P<remote_interface>\S+)\n"
         r"^\s+Neighbor echo \d+ device: (?P<local_device>\S+)\n",
         re.MULTILINE | re.IGNORECASE
     )
@@ -30,15 +30,15 @@ class Script(NOCScript):
         r = []
         s = self.cli("show udld")
         for p in self.rx_split.split(s):
-            r = p.split("\n", 1)
-            if len(r) != 2 or not r[1].startswith("---"):
+            v = p.split("\n", 1)
+            if len(v) != 2 or not v[1].startswith("---"):
                 continue
-            local_interface = r[0].split()
-            match = self.rx_entry.match(r[1])
+            local_interface = v[0].strip()
+            match = self.rx_entry.match(v[1])
             if not match:
-                return
+                continue
             r += [{
-                  "local_device": match.group("local_debvice"),
+                  "local_device": match.group("local_device"),
                   "local_interface": local_interface,
                   "remote_device": match.group("remote_device"),
                   "remote_interface": match.group("remote_interface"),
