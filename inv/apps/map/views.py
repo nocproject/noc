@@ -112,8 +112,8 @@ class MapAppplication(ExtApplication):
             if cmd["type"] == "mo":
                 if cmd["cmd"] == "move":
                     chart.update_state("mo", cmd["id"], {
-                        "x": cmd["x"],
-                        "y": cmd["y"],
+                        "x": max(cmd["x"], 0),
+                        "y": max(cmd["y"], 0),
                         "w": cmd["w"],
                         "h": cmd["h"]
                     })
