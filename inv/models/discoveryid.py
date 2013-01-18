@@ -29,6 +29,7 @@ class DiscoveryID(Document):
     last_chassis_mac = StringField()
     hostname = StringField()
     router_id = StringField()
+    udld_id = StringField()  # UDLD local identifier
 
     def __unicode__(self):
         return self.object.name

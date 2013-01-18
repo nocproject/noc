@@ -137,6 +137,13 @@ class ManagedObjectProfile(models.Model):
         _("Min. BFD discovery interval"), default=600)
     bfd_discovery_max_interval = models.IntegerField(
         _("Max. BFD discovery interval"), default=86400)
+    # UDLD Topology discovery
+    enable_udld_discovery = models.BooleanField(
+            _("Enable UDLD discovery"), default=True)
+    udld_discovery_min_interval = models.IntegerField(
+        _("Min. UDLD discovery interval"), default=600)
+    udld_discovery_max_interval = models.IntegerField(
+        _("Max. UDLD discovery interval"), default=86400)
 
     def __unicode__(self):
         return self.name
