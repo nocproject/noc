@@ -100,7 +100,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         },
         {
             text: "UDLD",
-            dataIndex: "enable_bfd_discovery",
+            dataIndex: "enable_udld_discovery",
             width: 50,
             renderer: NOC.render.Bool
         },
