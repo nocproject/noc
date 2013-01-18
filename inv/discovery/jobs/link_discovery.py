@@ -11,7 +11,6 @@ import datetime
 from collections import defaultdict
 ## NOC modules
 from base import MODiscoveryJob
-from noc.settings import config
 from noc.inv.models.pendinglinkcheck import PendingLinkCheck
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
@@ -153,11 +152,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
     def reschedule_pending_jobs(self, object):
         so = set([object]) | set(o for (l, o, r) in self.submited)
         for o in set(self.candidates) - set(self.p_candidates) - so:
-            self.debug("Rescheduling discovery for: %s" % o.name)
-            self.scheduler.reschedule_job(
-                self.name, o.id,
-                datetime.datetime.now(),  # @todo: Less aggressive
-                skip_running=True)
+            self.run_on_complete(self.name, o.id)
 
     def clean_pending_checks(self, object):
         PendingLinkCheck.objects.filter(

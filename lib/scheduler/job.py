@@ -62,6 +62,8 @@ class Job(object):
         self.object = None  # Set by dereference()
         self.started = None  # Timestamp
         self._log = []
+        self.on_complete = []  # List of (job_name, key)
+                               # to launch on complete
 
     @classmethod
     def initialize(cls, scheduler):
@@ -194,3 +196,8 @@ class Job(object):
         :return:
         """
         return True
+
+    def run_on_complete(self, job_name, key):
+        j = (job_name, key)
+        if j not in self.on_complete:
+            self.on_complete += [j]

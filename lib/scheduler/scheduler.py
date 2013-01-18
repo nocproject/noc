@@ -261,6 +261,7 @@ class Scheduler(object):
         self._complete_job(job, s, tb)
 
     def _complete_job(self, job, status, tb):
+        on_complete = job.on_complete
         t = job.get_schedule(status)
         if t is None:
             # Unschedule job
@@ -276,6 +277,10 @@ class Scheduler(object):
                 tb=tb,
                 update_runs=True
             )
+        # Reschedule jobs must be executed on complete
+        for job_name, key in on_complete:
+            ts = datetime.datetime.now()
+            self.reschedule_job(job_name, key, ts, skip_running=True)
 
     def complete_mrt_job(self, t):
         job = self.active_mrt.pop(t)
