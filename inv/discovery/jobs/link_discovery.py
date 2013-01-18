@@ -93,7 +93,7 @@ class LinkDiscoveryJob(MODiscoveryJob):
             self.error("Interface is not found: %s:%s" % (
                 remote_object.name, remote_interface))
             return
-        self.debug("Linking %s and %s" % (l_iface, r_iface))
+        self.info("Linking %s and %s" % (l_iface, r_iface))
         try:
             l_iface.link_ptp(r_iface, method=self.method)
         except ValueError, why:
