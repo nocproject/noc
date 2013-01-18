@@ -22,7 +22,7 @@ class DiscoveryID(Document):
     meta = {
         "collection": "noc.inv.discovery_id",
         "allow_inheritance": False,
-        "indexes": ["object"]
+        "indexes": ["object", "hostname", "udld_id"]
     }
     object = ForeignKeyField(ManagedObject)
     first_chassis_mac = StringField()
