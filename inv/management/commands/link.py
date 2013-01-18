@@ -16,7 +16,7 @@ from noc.inv.models import Interface, Link
 
 
 class Command(BaseCommand):
-    help = "Manage events"
+    help = "Show Links"
     option_list = BaseCommand.option_list + (
         make_option("-s", "--show", dest="action",
             action="store_const", const="show",
@@ -27,6 +27,10 @@ class Command(BaseCommand):
         make_option("-r", "--remove", dest="action",
             action="store_const", const="remove",
             help="Remove link"),
+        make_option("-m", "--show-method", dest="show_method",
+            action="store_true",
+            help="Show discovery method"
+        )
     )
 
     def handle(self, *args, **options):
@@ -35,7 +39,7 @@ class Command(BaseCommand):
             action = "show"
         getattr(self, "handle_%s" % action)(*args, **options)
 
-    def show_link(self, link):
+    def show_link(self, link, show_method=False):
         def format_interface(i):
             return "%s@%s" % (i.managed_object.name, i.name)
 
@@ -45,9 +49,14 @@ class Command(BaseCommand):
         r = []
         for mo in i:
             r += [", ".join(format_interface(li) for li in i[mo])]
-        print " --- ".join(r)
+        l = " --- ".join(r)
+        if show_method:
+            l += " [%s]" % link.discovery_method
+        print l
+
 
     def handle_show(self, *args, **options):
+        show_method = options.get("show_method")
         if args:
             # Show single link
             for i in args:
@@ -55,11 +64,11 @@ class Command(BaseCommand):
                 if iface:
                     l = Link.objects.filter(interfaces=iface.id).first()
                     if l:
-                        self.show_link(l)
+                        self.show_link(l, show_method)
         else:
             # Show all links
             for l in Link.objects.all():
-                self.show_link(l)
+                self.show_link(l, show_method)
 
     def handle_add(self, *args, **options):
         """
