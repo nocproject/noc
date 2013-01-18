@@ -41,6 +41,7 @@ class Script(NOCScript):
 
     types = {
         "learned": "D",
+        "learned-psec": "D",
         "permanent": "S",
         "dynamic": "D",
         "static": "S",
