@@ -23,71 +23,91 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         {
             text: "Ping",
             dataIndex: "enable_ping",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "Config",
             dataIndex: "enable_config_polling",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "Version",
             dataIndex: "enable_version_inventory",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "Int.",
             dataIndex: "enable_interface_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "IP",
             dataIndex: "enable_ip_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "Prefix",
             dataIndex: "enable_prefix_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "MAC",
             dataIndex: "enable_mac_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "ID",
             dataIndex: "enable_id_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "LLDP",
             dataIndex: "enable_lldp_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "CDP",
             dataIndex: "enable_cdp_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "STP",
             dataIndex: "enable_stp_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "REP",
             dataIndex: "enable_rep_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "BFD",
             dataIndex: "enable_bfd_discovery",
+            width: 50,
+            renderer: NOC.render.Bool
+        },
+        {
+            text: "UDLD",
+            dataIndex: "enable_bfd_discovery",
+            width: 50,
             renderer: NOC.render.Bool
         },
         {
             text: "IPAM",
             dataIndex: "sync_ipam",
+            width: 50,
             renderer: NOC.render.Bool
         }
     ],
@@ -401,6 +421,26 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 },
                 {
                     name: "bfd_discovery_max_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                // UDLD
+                {
+                    xtype: "label",
+                    text: "UDLD discovery"
+                },
+                {
+                    name: "enable_udld_discovery",
+                    xtype: "checkboxfield",
+                    allowBlank: false
+                },
+                {
+                    name: "udld_discovery_min_interval",
+                    xtype: "numberfield",
+                    allowBlank: false
+                },
+                {
+                    name: "udld_discovery_max_interval",
                     xtype: "numberfield",
                     allowBlank: false
                 }
