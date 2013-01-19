@@ -162,8 +162,11 @@ class LinkDiscoveryJob(MODiscoveryJob):
         for o in self.candidates:
             for l, r in self.candidates[o]:
                 if not self.is_submitted(l, o, r):
-                    self.debug("Scheduling check for %s:%s -> %s:%s" % (object.name, l, o, r))
-                    PendingLinkCheck.submit(self.method, o, r, object, l)
+                    i = self.get_interface_by_name(object, l)
+                    if i and not i.is_linked:
+                        self.debug("Scheduling check for %s:%s -> %s:%s" % (
+                            object.name, l, o, r))
+                        PendingLinkCheck.submit(self.method, o, r, object, l)
 
     def process_pending_checks(self, object):
         for pr in self.p_candidates:
