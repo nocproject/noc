@@ -32,6 +32,7 @@ class BFDLinkDiscoveryJob(LinkDiscoveryJob):
         for session in result:
             if "L2" not in session["clients"]:
                 continue
+            self.ld[session["local_discriminator"]] = session["local_interface"]
             remote_object = self.get_neighbor(session["remote_address"])
             if not remote_object:
                 continue
@@ -39,7 +40,6 @@ class BFDLinkDiscoveryJob(LinkDiscoveryJob):
                 remote_object,
                 str(session["remote_discriminator"])
             )
-            self.ld[session["local_discriminator"]] = session["local_interface"]
         self.debug("Candidates: %s" % self.candidates)
 
     def process_pending_checks(self, object):
@@ -55,7 +55,7 @@ class BFDLinkDiscoveryJob(LinkDiscoveryJob):
                     self.submited.add((str(disc), remote_object, remote_interface))
                 else:
                     self.debug("Local discriminator %d is not found in %s" % (
-                        disc, ", ".join(self.ld.keys())))
+                        disc, ", ".join(str(k) for k in self.ld)))
 
     def get_neighbor(self, address):
         """
