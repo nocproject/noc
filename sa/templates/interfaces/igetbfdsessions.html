@@ -9,6 +9,7 @@
             <th>Neighbor</th>
             <th>State</th>
             <th>Interface</th>
+            <th>Clients</th>
             <th>LD</th>
             <th>RD</th>
             <th>TX int</th>
@@ -21,7 +22,8 @@
             <tr>
                 <td>{{r.remote_address}}</td>
                 <td>{{r.state|bool_icon}}</td>
-                <td>{{r.local_iterface}}</td>
+                <td>{{r.local_interface}}</td>
+                <td>{{ r.clients }}</td>
                 <td>{{r.local_discriminator}}</td>
                 <td>{{r.remote_discriminator}}</td>
                 <td>{{r.tx_interval}}</td>
