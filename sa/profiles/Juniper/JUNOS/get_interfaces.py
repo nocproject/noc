@@ -130,6 +130,9 @@ class Script(NOCScript):
                         si["enabled_afi"] += ["ISO"]
                         if local_addresses:
                             si["iso_addresses"] = local_addresses
+                    elif proto == "mpls":
+                        # MPLS protocol
+                        si["enabled_afi"] += ["MPLS"]
                     elif proto == "inet":
                         # Protocol IPv4
                         si["is_ipv4"] = True
