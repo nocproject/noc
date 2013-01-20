@@ -15,6 +15,7 @@ from noc.lib.fsm import StreamFSM
 from noc.sa.script.exception import *
 from noc.lib.text import replace_re_group
 from noc.lib.debug import format_frames, get_traceback_frames
+from noc.lib.nbsocket.exceptions import BrokenPipeError
 
 
 class CLI(StreamFSM):
@@ -80,6 +81,7 @@ class CLI(StreamFSM):
         self.access_profile = access_profile
         self.queue = Queue.Queue()
         self.is_ready = False
+        self.is_broken_pipe = False
         self.collected_data = ""
         self.submitted_data = []
         self.submit_lines_limit = None
@@ -163,8 +165,14 @@ class CLI(StreamFSM):
             self.submitted_data = msg.splitlines()
             self.__flush_submitted_data()
         else:
-            self.write(msg + (
-            self.profile.command_submit if command_submit is None else command_submit))
+            if command_submit is None:
+                s = self.profile.command_submit
+            else:
+                s = command_submit
+            try:
+                self.write(msg + s)
+            except BrokenPipeError:
+                self.is_broken_pipe = True
 
     def on_START_enter(self):
         """
