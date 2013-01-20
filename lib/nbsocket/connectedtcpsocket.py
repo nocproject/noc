@@ -62,10 +62,12 @@ class ConnectedTCPSocket(TCPSocket):
             data = self.socket.recv(self.READ_CHUNK)
         except socket.error, why:
             if why[0] in (ECONNREFUSED, EHOSTUNREACH):
+                self.error("Connection refused (%s)" % why[0])
                 self.on_conn_refused()
                 self.close()
                 return
             if why[0] in (ECONNRESET, ENOTCONN, ESHUTDOWN, ETIMEDOUT):
+                self.error("Connection lost (%s)" % why[0])
                 self.close()
                 return
             if why[0] in (EINTR, EAGAIN):
