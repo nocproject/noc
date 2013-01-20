@@ -49,5 +49,12 @@ class CDPLinkDiscoveryJob(LinkDiscoveryJob):
         n = DiscoveryID.objects.filter(hostname=device_id).first()
         if n:
             n = n.object
+        elif "." not in device_id:
+            # Sometimes, domain part is truncated.
+            # Try to resolve anyway
+            m = list(DiscoveryID.objects.filter(
+                hostname__startswith=device_id + "."))
+            if len(m) == 1:
+                n = m[0]  # Exact match
         self.n_cache[device_id] = n
         return n
