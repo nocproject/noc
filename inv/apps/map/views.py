@@ -96,11 +96,15 @@ class MapAppplication(ExtApplication):
             lp = linked_ports[link]
             if len(lp) == 2:
                 state = chart.get_state("link", str(link.id))
+                dm = link.discovery_method
+                if not dm:
+                    dm = "manual"
                 r += [{
                     "type": "link",
                     "id": str(link.id),
                     "ports": lp,
-                    "edge_style": state.get("edge_style")
+                    "edge_style": state.get("edge_style"),
+                    "discovery_method": dm
                 }]
         return r
 

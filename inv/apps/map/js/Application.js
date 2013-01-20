@@ -10,7 +10,8 @@ Ext.define("NOC.inv.map.Application", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.inv.networkchart.LookupField",
-        "NOC.inv.map.templates.ManagedObjectTooltip"
+        "NOC.inv.map.templates.ManagedObjectTooltip",
+        "NOC.inv.map.templates.LinkTooltip"
     ],
     // Label position style
     labelPositionStyle: {
@@ -377,6 +378,11 @@ Ext.define("NOC.inv.map.Application", {
                             style ? style.join(";") : null
                         );
                         v.objectId = n.id;
+                        // Tooltips
+                        v.nocTooltipTemplate = me.templates.LinkTooltip;
+                        v.nocTooltipData = {
+                            discovery_method: n.discovery_method
+                        };
                         break;
                 }
             }
