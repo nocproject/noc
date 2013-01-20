@@ -49,6 +49,14 @@ Ext.define("NOC.inv.map.Application", {
             scope: me,
             handler: me.onSave
         });
+        me.reloadButton = Ext.create("Ext.button.Button", {
+            iconCls: "icon_arrow_refresh",
+            text: "Reload",
+            tooltip: "Reload map",
+            disabled: true,
+            scope: me,
+            handler: me.onReload
+        });
         me.zoomInButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom In",
             iconCls: "icon_magnifier_zoom_in",
@@ -79,6 +87,7 @@ Ext.define("NOC.inv.map.Application", {
                     "-",
                     // Editing
                     me.saveButton,
+                    me.reloadButton,
                     "-",
                     // Zoom
                     me.zoomInButton,
@@ -243,6 +252,11 @@ Ext.define("NOC.inv.map.Application", {
     onSelectChart: function(combo, records, opts) {
         var me = this;
         me.mapId = records[0].get("id");
+        me.requestChart();
+    },
+    //
+    requestChart: function() {
+        var me = this;
         Ext.Ajax.request({
             url: "/inv/map/chart/" + me.mapId + "/",
             method: "GET",
@@ -255,6 +269,7 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
         me.changeLog = [];
         me.saveButton.setDisabled(true);
+        me.reloadButton.setDisabled(true);
         if(me.graph) {
             // Clear graph
             me.graph.removeCells(me.graph.getChildVertices(me.graph.getDefaultParent()), true);
@@ -391,6 +406,7 @@ Ext.define("NOC.inv.map.Application", {
             // Update display
             model.endUpdate();
         }
+        me.reloadButton.setDisabled(false);
     },
     //
     getTooltipForCell: function(cell) {
@@ -413,6 +429,11 @@ Ext.define("NOC.inv.map.Application", {
                 me.saveButton.setDisabled(true);
             }
         });
+    },
+    //
+    onReload: function() {
+        var me = this;
+        me.requestChart();
     },
     //
     registerChange: function(opts) {
