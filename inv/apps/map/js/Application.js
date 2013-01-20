@@ -11,7 +11,8 @@ Ext.define("NOC.inv.map.Application", {
     requires: [
         "NOC.inv.networkchart.LookupField",
         "NOC.inv.map.templates.ManagedObjectTooltip",
-        "NOC.inv.map.templates.LinkTooltip"
+        "NOC.inv.map.templates.LinkTooltip",
+        "NOC.inv.map.templates.InterfaceTooltip"
     ],
     // Label position style
     labelPositionStyle: {
@@ -377,6 +378,11 @@ Ext.define("NOC.inv.map.Application", {
                             pv.geometry.offset = new mxPoint(3, 14 * pi - n.h);
                             pv.geometry.relative = true;
                             ports[pdata.id] = pv;
+                            // Tooltips
+                            pv.nocTooltipTemplate = me.templates.InterfaceTooltip;
+                            pv.nocTooltipData = {
+                                interface: pdata.label
+                            }
                         }
                         // End of node processing
                         break;
