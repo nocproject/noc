@@ -401,6 +401,8 @@ class Activator(Daemon, FSM):
             s = "is timed out"
         elif script.e_cancel:
             s = "is cancelled"
+        elif script.e_disconnected:
+            s = "got cli lost"
         elif script.login_error:
             s = "cannot log in"
         else:

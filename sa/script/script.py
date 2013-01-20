@@ -166,6 +166,7 @@ class Script(threading.Thread):
     CLISyntaxError = CLISyntaxError
     CLIOperationError = CLIOperationError
     CLITransportError = CLITransportError
+    CLIDisconnectedError = CLIDisconnectedError
     TimeOutError = TimeOutError
     NotSupportedError = NotSupportedError
     UnexpectedResultError = UnexpectedResultError
@@ -221,6 +222,7 @@ class Script(threading.Thread):
         self.cmd_cache = {}  # "(CLI|GET|GETNETX):key" -> value, suitable only for parent
         self.e_timeout = False  # Script terminated with timeout
         self.e_cancel = False  # Scrcipt cancelled
+        self.e_disconnected = False  # CLI Disconnected error
         self.e_not_supported = False  # NotSupportedError risen
         self.e_http_error = False  # HTTPError risen
         self._thread_id = None  # Python 2.5 compatibility
@@ -454,6 +456,8 @@ class Script(threading.Thread):
             self.e_http_error = str(e)
         except self.CLITransportError, why:
             self.error_traceback = why
+        except self.CLIDisconnectedError:
+            self.e_disconnected = True
         except:
             if self.e_cancel:
                 # Race condition caught. Handle CancelledError
@@ -601,6 +605,8 @@ class Script(threading.Thread):
                 self.cli_provider.submit(cmd,
                     command_submit=command_submit,
                     bulk_lines=bulk_lines)
+                if self.cli_provider.is_broken_pipe:
+                    raise self.CLIDisconnectedError()
                 data = self.cli_queue_get()
                 if data is None:
                     if self.cli_provider.error_traceback:

@@ -27,6 +27,10 @@ class CLITransportError(Exception):
     """CLI Transport-level exception"""
 
 
+class CLIDisconnectedError(Exception):
+    """CLI Disconnected during request"""
+
+
 class NotSupportedError(Exception):
     """Feature is not supported on current platform/software/feature set"""
 

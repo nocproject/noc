@@ -9,7 +9,8 @@
 ## Pyhon modules
 import socket
 ## NOC modules
-from noc.lib.nbsocket.basesocket import Socket
+from basesocket import Socket
+from exceptions import BrokenPipeError
 
 
 class TCPSocket(Socket):
@@ -101,6 +102,9 @@ class TCPSocket(Socket):
         :param msg: Raw data
         :type msg: Str
         """
+        if self.closing:
+            self.error("Attempting to write to closing socket")
+            raise BrokenPipeError()
         self.out_buffer += msg
         self.set_status(w=bool(self.out_buffer) and self.is_connected)
 
