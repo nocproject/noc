@@ -35,7 +35,7 @@ class UDLDLinkDiscoveryJob(LinkDiscoveryJob):
                 continue
             self.submit_candidate(n["local_interface"],
                 remote_object,
-                remote_object.profile.convert_interface_namr(n["remote_interface"]))
+                remote_object.profile.convert_interface_name(n["remote_interface"]))
         # Update UDLD id
         if local_id:
             self.update_udld_id(object, local_id)
