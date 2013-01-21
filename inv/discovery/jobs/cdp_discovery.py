@@ -55,6 +55,6 @@ class CDPLinkDiscoveryJob(LinkDiscoveryJob):
             m = list(DiscoveryID.objects.filter(
                 hostname__startswith=device_id + "."))
             if len(m) == 1:
-                n = m[0]  # Exact match
+                n = m[0].object  # Exact match
         self.n_cache[device_id] = n
         return n
