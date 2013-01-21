@@ -187,7 +187,8 @@ class Script(NOCScript):
                     "admin_status": p['admin_state'],
                     "oper_status": p['status'],
                     # "ifindex": 1,
-                    "is_bridge": True
+                    "is_bridge": True,
+                    "enabled_afi": ['BRIDGE']
                 }]
             }
             desc = p['desc']
