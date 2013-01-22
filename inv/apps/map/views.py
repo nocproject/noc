@@ -14,6 +14,7 @@ from noc.inv.models.networkchart import NetworkChart
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.lib.serialize import json_decode
+from noc.lib.stencil import stencil_registry
 
 
 class MapAppplication(ExtApplication):
@@ -72,7 +73,7 @@ class MapAppplication(ExtApplication):
                 "label": mo.name,
                 "label_position": state.get("label_position", "s"),
                 "collapsed": state.get("collapsed", False),
-                "shape": "router", # @todo: Selectable
+                "shape": "Cisco/router", # @todo: Selectable
                 "ports": [],
                 "address": mo.address,
                 "platform": "%s %s" % (mo.get_attr("vendor", ""),
@@ -135,3 +136,12 @@ class MapAppplication(ExtApplication):
                         "edge_style": cmd["edge_style"]
                     })
         return True
+
+    @view(url="^stencils/$", method=["GET"],
+        access="launch", api=True)
+    def api_stencils(self, request):
+        # @todo: Selective load
+        r = ["<stencils>"]
+        r += [s.get_stencil() for s in stencil_registry.stencils.values()]
+        r += ["</stencils>"]
+        return self.render_response("\n".join(r), content_type="text/xml")
