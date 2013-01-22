@@ -1,4 +1,38 @@
 <shapes>
+    <shape name="router" aspect="fixed" w="77" h="52">
+        <background>
+            <path>
+                <move x="0" y="15" />
+                <arc rx="38" ry="15" x="77" y="15" sweep-flag="1"/>
+                <arc rx="38" ry="15" x="0" y="15" sweep-flag="1"/>
+                <line x="0" y="38" />
+                <arc rx="38" ry="15" x="77" y="38"/>
+                <line x="77" y="15" />
+
+                <move x="24" y="27" />
+                <line x="23" y="22" />
+                <line x="27" y="22" />
+                <line x="33" y="16" />
+                <line x="40" y="18" />
+                <line x="32" y="24" />
+                <line x="35" y="25" />
+                <line x="24" y="27" />
+
+                <move x="53" y="3" />
+                <line x="53" y="9" />
+                <line x="50" y="8" />
+                <line x="44" y="13" />
+                <line x="37" y="11" />
+                <line x="43" y="7" />
+                <line x="40" y="6" />
+                <line x="53" y="3" />
+
+            </path>
+        </background>
+        <foreground>
+            <stroke/>
+        </foreground>
+    </shape>
 <shape name="xor" aspect="fixed">
 	<background>
         <path>

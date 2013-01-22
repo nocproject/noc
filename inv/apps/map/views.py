@@ -72,7 +72,7 @@ class MapAppplication(ExtApplication):
                 "label": mo.name,
                 "label_position": state.get("label_position", "s"),
                 "collapsed": state.get("collapsed", False),
-                "shape": "xor", # @todo: Selectable
+                "shape": "router", # @todo: Selectable
                 "ports": [],
                 "address": mo.address,
                 "platform": "%s %s" % (mo.get_attr("vendor", ""),
