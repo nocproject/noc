@@ -104,7 +104,7 @@ class PrefixReport(Report):
             ts = self.prefix_state_map[fs.id]
             self.info(
                 "Changing prefix %s:%s state from %s to %s" % (
-                    prefix.vrf.name, prefix.address,
+                    prefix.vrf.name, prefix.prefix,
                     fs.name, ts.name))
             if self.to_save:
                 prefix.state = ts
@@ -150,4 +150,4 @@ class PrefixReport(Report):
                     } for p in self.new_prefixes
                 ]
             }
-            self.notify("inv.discovery.new_addresses_report", ctx)
+            self.notify("inv.discovery.new_prefixes_report", ctx)

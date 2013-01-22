@@ -104,6 +104,13 @@ class IPReport(Report):
             address, interface):
             self.info("IP address found: %s:%s at %s" % (
                 vrf, address, interface))
+            self.new_addresses += [{
+                "vrf": vrf,
+                "address": address,
+                "description": description,
+                "object": self.object,
+                "interface": interface
+            }]
             if self.to_save:
                 if not description:
                     description = "Seen at %s:%s" % (
