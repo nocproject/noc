@@ -297,7 +297,7 @@ Ext.define("NOC.inv.map.Application", {
             vertexStyle[mxConstants.STYLE_STROKECOLOR] = "blue";
             */
             // Load stencils
-            var req = mxUtils.load("/static/shape/stencils.xml");
+            var req = mxUtils.load("/inv/map/stencils/");
             var sroot = req.getDocumentElement();
             var shape = sroot.firstChild;
             while(shape != null) {
