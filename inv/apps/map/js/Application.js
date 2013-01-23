@@ -42,6 +42,7 @@ Ext.define("NOC.inv.map.Application", {
             name: "chart",
             allowBlank: true,
             disabled: true,
+            emptyText: "Select chart...",
             listeners: {
                 scope: me,
                 select: me.onSelectChart
