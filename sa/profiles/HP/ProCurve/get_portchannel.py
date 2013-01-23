@@ -18,14 +18,20 @@ class Script(NOCScript):
     name = "HP.ProCurve.get_portchannel"
     implements = [IGetPortchannel]
 
-    rx_trunk = re.compile(r"^\s*(?P<port>\S+)\s*\|.+?\|\s+(?P<trunk>Trk\S+)\s+(?P<type>\S+)\s*$", re.MULTILINE)
+    rx_trunk = re.compile(r"^\s*(?P<port>\S+)\s+\|.+?\|"
+                          "\s+(?P<trunk>\S+)\s+(?P<type>(\S+)?"
+                          "$)", re.MULTILINE)
+
 
     def execute(self):
         r = []
         # Get trunks
         trunks = {}
         trunk_types = {}
-        for port, trunk, type in self.rx_trunk.findall(self.cli("show trunks")):
+        for port, trunk, type, pad in self.rx_trunk.findall(
+                self.cli("show trunks")):
+            if trunk == 'Group':
+                continue
             if trunk not in trunks:
                 trunks[trunk] = []
                 trunk_types[trunk] = type
