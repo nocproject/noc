@@ -13,6 +13,7 @@ from django.template import Template, Context
 ## NOC modules
 from noc.main.models.style import Style
 from noc.lib.validators import is_fqdn
+from noc.lib.stencil import stencil_registry
 
 
 class ManagedObjectProfile(models.Model):
@@ -29,6 +30,9 @@ class ManagedObjectProfile(models.Model):
         _("Description"), blank=True, null=True)
     style = models.ForeignKey(
         Style, verbose_name=_("Style"), blank=True, null=True)
+    # Stencils
+    shape = models.CharField(_("Shape"), blank=True, null=True,
+        choices=stencil_registry.choices, max_length=128)
     ## Name restrictions
     # Regular expression to check name format
     name_template = models.CharField(_("Name template"), max_length=256,

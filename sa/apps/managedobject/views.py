@@ -195,7 +195,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         (None, {
             "fields": ("name", "is_managed", "administrative_domain",
                        "activator", "profile_name", "object_profile",
-                       "description")
+                       "description", "shape")
         }),
         ("Access", {
             "fields": ("scheme", "address", "port", "remote_path", "vrf")

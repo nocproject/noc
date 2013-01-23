@@ -24,6 +24,7 @@ from noc.lib.search import SearchResult
 from noc.lib.fields import INETField, AutoCompleteTagsField
 from noc.lib.app.site import site
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
+from noc.lib.stencil import stencil_registry
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
@@ -80,6 +81,9 @@ class ManagedObject(models.Model):
     # Default VRF
     vrf = models.ForeignKey("ip.VRF", verbose_name=_("VRF"),
                             blank=True, null=True)
+    # Stencils
+    shape = models.CharField(_("Shape"), blank=True, null=True,
+        choices=stencil_registry.choices, max_length=128)
     # pyRules
     config_filter_rule = models.ForeignKey(PyRule,
             verbose_name="Config Filter pyRule",
