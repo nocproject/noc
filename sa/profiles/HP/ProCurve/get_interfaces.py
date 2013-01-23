@@ -19,12 +19,11 @@ class Script(NOCScript):
     name = "HP.ProCurve.get_interfaces"
     implements = [IGetInterfaces]
 
-    iftypes = {
-               "6": "physical",
+    iftypes = {"6": "physical",
                "161": "aggregated",
                "54": "aggregated",
                "53": "SVI",
-               "24": "loopback"
+               "24": "loopback",
                }
 
     objstr = {"ifName": "name",
@@ -35,13 +34,16 @@ class Script(NOCScript):
               "ifOperStatus": "oper_status",
               }
 
-    rx_ip = re.compile(r"\s+(?P<name>\S+)\s+\|\s+(Manual|Disabled)\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+(?P<mask>\d{1,3}.\d{1,3}\.\d{1,3}\.\d{1,3})")
+    rx_ip = re.compile(r"\s+(?P<name>\S+)\s+\|\s+(Manual|Disabled)\s"
+                       "+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s"
+                       "+(?P<mask>\d{1,3}.\d{1,3}\.\d{1,3}\.\d{1,3})")
 
     def execute(self):
         iface = {}
         interfaces = []
         step = len(self.objstr)
-        lines = self.cli("walkMIB " + " ".join(self.objstr.keys())).split("\n")[:-1]
+        lines = self.cli("walkMIB " + " "
+                         .join(self.objstr.keys())).split("\n")[:-1]
         sh_ip = self.cli("show ip")
 
         try:
@@ -56,6 +58,15 @@ class Script(NOCScript):
             t = pc["type"] == "L"
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
+
+        pvm = {}
+        switchports = {}
+        vlans = self.scripts.get_vlans()
+        if vlans:
+            for sp in self.scripts.get_switchport():
+                switchports[sp["interface"]] = (
+                    sp["untagged"] if "untagged" in sp else None,
+                    sp["tagged"])
 
         i = 0
         for s in range(len(lines) / step):
@@ -72,6 +83,7 @@ class Script(NOCScript):
                     iface[self.objstr[leaf]] = val == "1"
                 else:
                     iface[self.objstr[leaf]] = val
+            ifname = iface['name']
             sub = iface.copy()
             ifindex = str.split("=")[0].split(".")[1].rstrip()
             sub["snmp_ifindex"] = int(ifindex)
@@ -82,23 +94,22 @@ class Script(NOCScript):
                 if match:
                     if match.group("name") == sub["name"]:
                         sub["is_ipv4"] = True
-                        sub["ipv4_addresses"] = [IPv4(match.group("ip"), netmask=match.group("mask")).prefix]
+                        sub["ipv4_addresses"] = [IPv4(match.group("ip"),
+                                                 netmask=match.group("mask"))
+                                                 .prefix]
                         if sh_ospf:
                             for o in sh_ospf.split("\n"):
                                 if o.split():
                                     if o.split()[0] == match.group("ip"):
                                         sub["is_ospf"] = True
-            if not iface["name"] in portchannel_members and iface["type"] in ("physical", "aggregated"):
-                sh_vlan = self.cli("show vlans ports %s detail" % iface["name"])
-                tagged = []
-                for v in sh_vlan.split("\n"):
-                    if len(v) > 5:
-                        if v.split()[-1] == "Untagged":
-                            sub["untagged_vlan"] = v.split()[0]
-                        if v.split()[-1] == "Tagged":
-                            tagged += [v.split()[0]]
-                if tagged:
-                    sub["tagged_vlan"] = tagged
+            if ifname in switchports and not ifname in portchannel_members:
+                sub["is_bridge"] = True
+                u, t = switchports[ifname]
+                if u:
+                    sub["untagged_vlan"] = u
+                if t:
+                    sub["tagged_vlans"] = t
+
             iface["subinterfaces"] = [sub]
             interfaces += [iface]
             iface = {}
