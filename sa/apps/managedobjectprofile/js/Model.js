@@ -28,6 +28,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "int"
         },
         {
+            name: "shape",
+            type: "string"
+        },
+        {
             name: "style__label",
             type: "string",
             persist: false
