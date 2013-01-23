@@ -10,7 +10,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     extend: "NOC.core.ModelApplication",
     uses: [
         "NOC.sa.managedobjectprofile.Model",
-        "NOC.main.style.LookupField"
+        "NOC.main.style.LookupField",
+        "NOC.main.ref.stencil.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -128,6 +129,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             name: "style",
             xtype: "main.style.LookupField",
             fieldLabel: "Style",
+            allowBlank: true
+        },
+        {
+            name: "shape",
+            xtype: "main.ref.stencil.LookupField",
+            fieldLabel: "Shape",
             allowBlank: true
         },
         {

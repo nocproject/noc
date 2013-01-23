@@ -12,6 +12,7 @@ from django.db import models
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces import interface_registry
 from noc.sa.models import profile_registry
+from noc.lib.stencil import stencil_registry
 
 
 class RefAppplication(ExtApplication):
@@ -49,6 +50,14 @@ class RefAppplication(ExtApplication):
         """
         return sorted(({"id": n, "label": n} for n in profile_registry.classes),
                       key=lambda x: x["label"])
+
+    def build_stencil(self):
+        """
+        Stencils
+        :return:
+        """
+        return sorted(({"id": s[0], "label": s[1]} for s in stencil_registry.choices),
+            key=lambda x: x["label"])
 
     def build_model(self):
         """
