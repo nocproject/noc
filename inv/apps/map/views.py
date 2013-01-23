@@ -25,6 +25,19 @@ class MapAppplication(ExtApplication):
     menu = "Network Map"
     icon = "icon_map"
 
+    def get_object_shape(self, object):
+        if object.shape:
+            # Use object's shape, if set
+            sn = object.shape
+        elif object.object_profile.shape:
+            # Use profile's shape
+            sn = object.object_profile.shape
+        else:
+            # Fallback to router shape
+            sn = "Cisco/router"
+        return stencil_registry.stencils.get(sn,
+            stencil_registry.stencils["Cisco/router"])
+
     @view(url="^chart/(?P<chart_id>\d+)/$", method=["GET"],
         access="launch", api=True)
     def view_chart(self, request, chart_id):
@@ -58,22 +71,22 @@ class MapAppplication(ExtApplication):
             # Fill managed objects
             # Restore state
             state = chart.get_state("mo", mo.id)
-            h = state.get("h", dh)
             y = state.get("y")
             if y is None:
                 y = dy
                 dy += h + ds
+            shape = self.get_object_shape(mo)
             n = {
                 "type": "node",
                 "id": mo.id,
                 "x": state.get("x", dx),
                 "y": y,
-                "w": state.get("w", dw),
-                "h": h,
+                "w": shape.width,
+                "h": shape.height,
                 "label": mo.name,
                 "label_position": state.get("label_position", "s"),
                 "collapsed": state.get("collapsed", False),
-                "shape": "Cisco/router", # @todo: Selectable
+                "shape": shape.id,
                 "ports": [],
                 "address": mo.address,
                 "platform": "%s %s" % (mo.get_attr("vendor", ""),
