@@ -15,29 +15,45 @@ import csv
 class Stencil(object):
     def __init__(self, id, img_path, name, width, height):
         self.id = id
-        self.img_path = img_path
         self.name = name
         self.width = float(width)
         self.height = float(height)
+        with open(img_path[1:]) as f:
+            self.svg = f.read()
 
-    def get_stencil(self):
-        return ("<shape name='%s' aspect='fixed' w='%s' h='%s'>" \
-               "    <background>" \
-               "        <image src='%s' w='%s' h='%s' />" \
-               "</background>" \
-               "<foreground></foreground>" \
+    def get_stencil(self, status):
+        path = "/inv/map/stencils/%s/%s/" % (status, self.id)
+        return ("<shape name='%s#%s' aspect='fixed' w='%s' h='%s'>"
+               "    <background>"
+               "        <image src='%s' w='%s' h='%s' />"
+               "</background>"
+               "<foreground></foreground>"
                "</shape>") % (
-            self.id, self.width, self.height, self.img_path,
+            self.id, status, self.width, self.height, path,
             self.width, self.height
         )
+
+    def get_svg(self, color):
+        return self.svg.replace("#000000", color)
+
 
 class StencilRegistry:
     prefix = "static/shape/"
     manifest = "MANIFEST"
 
+    COLOR_MAP = {
+        "n": "#0892c3",
+        "w": "#e8d0a9",
+        "a": "#ff6600",
+        "u": "#666666"
+    }
+
     def __init__(self):
         self.choices = []
         self.stencils = {}  # id -> stencil
+        self.svg = {}
+        for n in self.COLOR_MAP:
+            self.svg[n] = {}
 
     def load(self):
         for root, dirs, files in os.walk(self.prefix):
@@ -63,6 +79,17 @@ class StencilRegistry:
                 self.stencils[id] = s
                 self.choices += [(id, name)]
 
+    def get_svg(self, status, shape):
+        if shape not in self.stencils:
+            return None
+        st = self.stencils[shape]
+        if status not in self.svg:
+            return st.svg
+        sm = self.svg[status]
+        if shape not in sm:
+            svg = st.get_svg(self.COLOR_MAP[status])
+            sm[shape] = svg
+        return sm[shape]
 
 stencil_registry = StencilRegistry()
 stencil_registry.load()

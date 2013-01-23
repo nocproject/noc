@@ -19,7 +19,7 @@ from noc.lib.stencil import stencil_registry
 from noc.fm.models import get_object_status
 
 
-class MapAppplication(ExtApplication):
+class MapApplication(ExtApplication):
     """
     inv.net application
     """
@@ -57,8 +57,6 @@ class MapAppplication(ExtApplication):
         access="launch", api=True)
     def view_chart(self, request, chart_id):
         chart = self.get_object_or_404(NetworkChart, id=int(chart_id))
-        dw = 100
-        dh = 50
         ds = 20
         dx = 10
         dy = 10
@@ -180,9 +178,21 @@ class MapAppplication(ExtApplication):
     def api_stencils(self, request):
         # @todo: Selective load
         r = ["<stencils>"]
-        r += [s.get_stencil() for s in stencil_registry.stencils.values()]
+        for status in [self.NS_NORMAL, self.NS_WARNING,
+                  self.NS_ALARM, self.NS_UNREACH]:
+            r += [s.get_stencil(status)
+                  for s in stencil_registry.stencils.values()]
         r += ["</stencils>"]
         return self.render_response("\n".join(r), content_type="text/xml")
+
+    @view(url="^stencils/(?P<status>[nwau])/(?P<shape>.+)/$",
+        method=["GET"], access="launch", api=True)
+    def api_stencil(self, request, status, shape):
+        svg = stencil_registry.get_svg(status, shape)
+        if not svg:
+            return self.response_not_found()
+        else:
+            return self.render_response(svg , content_type="image/svg+xml")
 
     @view(url="^chart/(?P<chart_id>\d+)/status/$", method=["GET"],
         access="launch", api=True)
