@@ -21,21 +21,30 @@ class Script(NOCScript):
 
     rx_line = re.compile(
         r"\w*==========================\s+"
-        r"(GigabitEthernet|TenGigabitEthernet)", re.MULTILINE)
+        r"(GigabitEthernet|TenGigabitEthernet|AggregatePort)", re.MULTILINE)
     rx_line_vlan = re.compile(r"\w*==========================\s+VLAN",
-        re.MULTILINE)
-    rx_name = re.compile(r"(?P<name>.+) is (?P<status>.\S+)\s+,", re.MULTILINE)
+                              re.MULTILINE)
+    rx_name = re.compile(r"(?P<name>.+) is (?P<status>.\S+)(|\s+),",
+                         re.MULTILINE)
     rx_descr = re.compile(
         r"\s+interface's description:(\"\"|\"(?P<description>.+)\")",
         re.MULTILINE)
     rx_mac_local = re.compile(r"Hardware is  VLAN, address is (?P<mac>.\S+)",
-        re.MULTILINE | re.IGNORECASE)
+                              re.MULTILINE | re.IGNORECASE)
     rx_line_ip = re.compile(r"\n", re.MULTILINE | re.IGNORECASE)
     rx_ip_iface = re.compile(r"(?P<vlan_name>.+)",
-        re.MULTILINE | re.IGNORECASE)
+                             re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(r"VLAN\s+(?P<vlan>\d+)", re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Interface address is:\s+(?P<ip>.+)",
-        re.MULTILINE | re.IGNORECASE)
+                       re.MULTILINE | re.IGNORECASE)
+    types = {
+        "Gi": "physical",    # GigabitEthernet
+        "Lo": "loopback",    # Loopback
+        "Ag": "aggregated",  # Port-channel/Portgroup
+        "Te": "physical",    # TenGigabitEthernet
+        "VL": "SVI",         # VLAN, found on C3500XL
+        "Vl": "SVI"
+    }
 
     def execute(self):
         r = []
@@ -46,16 +55,22 @@ class Script(NOCScript):
         switchports = {}  # interface -> (untagged, tagged)
         for swp in self.scripts.get_switchport():
             switchports[swp["interface"]] = (
-            swp["untagged"] if "untagged" in swp else None,
-            swp["tagged"]
+                swp["untagged"] if "untagged" in swp else None,
+                swp["tagged"]
             )
         v = "\n" + v
-        # For each interface
+        portchannel_members = {}
+        for pc in self.scripts.get_portchannel():
+            i = pc["interface"]
+            t = pc["type"] == "L"
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
         i = {
             "forwarding_instance": "default",
             "interfaces": [],
             "type": "physical"
         }
+            # Portchanel
         for s in self.rx_line.split(v)[1:]:
             n = {}
             match = self.rx_name.search(s)
@@ -67,24 +82,28 @@ class Script(NOCScript):
 
             match = self.rx_descr.search(s)
             description = match.group("description")
-
+            if iface in portchannel_members:
+                ai, is_lacp = portchannel_members[iface]
+                n["aggregated_interface"] = ai
+                n["is_lacp"] = is_lacp
+                n["enabled_protocols"] = ["LACP"]
             n["name"] = iface
             n["admin_status"] = True
             n["oper_status"] = status
             n["description"] = description
             n["subinterfaces"] = [{
-                            "name": iface,
-                            "description": description,
-                            "admin_status": True,
-                            "oper_status": status,
-                            "enabled_afi": ["BRIDGE"],
-                            "is_bridge": True,
-                        }]
+                "name": iface,
+                "description": description,
+                "admin_status": True,
+                "oper_status": status,
+                "enabled_afi": ["BRIDGE"],
+                "is_bridge": True,
+            }]
             if switchports[iface][1]:
                 n["subinterfaces"][0]["tagged_vlans"] = switchports[iface][1]
             if switchports[iface][0]:
                 n["subinterfaces"][0]["untagged_vlan"] = switchports[iface][0]
-            n["type"] = "physical"
+            n["type"] = self.types[iface[:2]]
             r += [n]
         for s in self.rx_line_vlan.split(v)[1:]:
             n = {}
@@ -106,24 +125,22 @@ class Script(NOCScript):
 
             description = iface
 
-            iface = {
-                    "name": iface,
-                    "type": "SVI",
-                    "admin_status": True,
-                    "oper_status": True,
-                    "mac": mac,
-                    "description": description,
-                    "subinterfaces": [{
-                            "name": iface,
-                            "description": description,
-                            "admin_status": True,
-                            "oper_status": True,
-                            "enabled_afi": ["IPv4"],
-                            "is_ipv4": True,
-                            "ipv4_addresses": ip_list,
-                            "mac": mac,
-                            "vlan_ids": vlan_ids,
-                            }]
-                    }
+            iface = {"name": iface,
+                     "type": "SVI",
+                     "admin_status": True,
+                     "oper_status": True,
+                     "mac": mac,
+                     "description": description,
+                     "subinterfaces": [{
+                             "name": iface,
+                             "description": description,
+                             "admin_status": True,
+                             "oper_status": True,
+                             "enabled_afi": ["IPv4"],
+                             "is_ipv4": True,
+                             "ipv4_addresses": ip_list,
+                             "mac": mac,
+                             "vlan_ids": vlan_ids,
+                     }]}
             r += [iface]
         return [{"interfaces": r}]
