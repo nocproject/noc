@@ -610,6 +610,8 @@ Ext.define("NOC.inv.map.Application", {
                     id: c.objectId,
                     shape: shape
                 });
+                me.graph.setCellStyles(
+                    mxConstants.STYLE_SHAPE, shape, [c]);
             }
         }
         model.endUpdate();
