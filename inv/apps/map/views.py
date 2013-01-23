@@ -12,6 +12,7 @@ from collections import defaultdict
 from noc.lib.app import ExtApplication, view
 from noc.inv.models.networkchart import NetworkChart
 from noc.inv.models.interface import Interface
+from noc.sa.models import ManagedObject
 from noc.inv.models.link import Link
 from noc.lib.serialize import json_decode
 from noc.lib.stencil import stencil_registry
@@ -76,13 +77,14 @@ class MapAppplication(ExtApplication):
                 y = dy
                 dy += h + ds
             shape = self.get_object_shape(mo)
+            h = shape.height
             n = {
                 "type": "node",
                 "id": mo.id,
                 "x": state.get("x", dx),
                 "y": y,
                 "w": shape.width,
-                "h": shape.height,
+                "h": h,
                 "label": mo.name,
                 "label_position": state.get("label_position", "s"),
                 "collapsed": state.get("collapsed", False),
@@ -143,6 +145,14 @@ class MapAppplication(ExtApplication):
                     chart.update_state("mo", cmd["id"], {
                         "collapsed": cmd["collapsed"]
                     })
+                elif cmd["cmd"] == "shape":
+                    try:
+                        o = ManagedObject.objects.get(id=int(cmd["id"]))
+                    except ManagedObject.DoesNotExist:
+                        continue
+                    if o.shape != cmd["shape"]:
+                        o.shape = cmd["shape"]
+                        o.save()
             elif cmd["type"] == "link":
                 if cmd["cmd"] == "edge_style":
                     chart.update_state("link", cmd["id"], {
