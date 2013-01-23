@@ -17,8 +17,8 @@ class Stencil(object):
         self.id = id
         self.img_path = img_path
         self.name = name
-        self.width = width
-        self.height = height
+        self.width = float(width)
+        self.height = float(height)
 
     def get_stencil(self):
         return ("<shape name='%s' aspect='fixed' w='%s' h='%s'>" \
