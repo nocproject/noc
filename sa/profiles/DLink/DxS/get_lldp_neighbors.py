@@ -124,6 +124,8 @@ class Script(NOCScript):
                     n["remote_port_subtype"] = 2
                 elif remote_port_subtype == "MAC Address":
                     n["remote_port_subtype"] = 3
+                elif remote_port_subtype.lower() == "macaddress":
+                    n["remote_port_subtype"] = 3
                 elif remote_port_subtype == "Network Address":
                     n["remote_port_subtype"] = 4
                 elif remote_port_subtype == "Interface Name":
