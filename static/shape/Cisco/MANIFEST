@@ -2,3 +2,17 @@ file,name,w,h
 layer_3_switch.svg,Layer3 Switch,40,40
 router.svg,Router,47.5,32.5
 workgroup_switch.svg,Workgroup Switch,62.5,32.5
+broadband_router_d.svg,BRAS,47.5,47.5
+pbx.svg,PBX,37.5,37.5
+phone.svg,IP Phone,40,30
+pix.svg,PIX,47.5,32.5
+radio_tower.svg,Radio Tower,23.75,62.5
+satellite_dish.svg,Satellite,61.25,45
+small_hub.svg,Hub,55,28.75
+softswitch_pgw_mgc.svg,Softswitch,35,40
+Space_router.svg,Space Router,80,42.5
+unversal_gateway.svg,Universal Gateway,35,35
+voice_router.svg,Voice Router,47.5,32.5
+VSS.svg,Virtual Switching System,40,52.5
+wireless_router.svg,Wireless Router,47.5,47.5
+workstation.svg,Workstation,46.25,47.5
