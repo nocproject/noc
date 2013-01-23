@@ -73,11 +73,11 @@ class MapAppplication(ExtApplication):
             # Restore state
             state = chart.get_state("mo", mo.id)
             y = state.get("y")
+            shape = self.get_object_shape(mo)
+            h = shape.height
             if y is None:
                 y = dy
                 dy += h + ds
-            shape = self.get_object_shape(mo)
-            h = shape.height
             n = {
                 "type": "node",
                 "id": mo.id,

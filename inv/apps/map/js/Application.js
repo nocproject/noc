@@ -200,7 +200,14 @@ Ext.define("NOC.inv.map.Application", {
                             }
                         ]
                     }
-                }
+                },
+                {
+                    text: "Select Icon ...",
+                    listeners: {
+                        scope: me,
+                        click: me.onSelectIcon
+                    }
+                },
             ]
         });
         me.edgeContextMenu = Ext.create("Ext.menu.Menu", {
@@ -579,6 +586,30 @@ Ext.define("NOC.inv.map.Application", {
                     orthogonal: "elbowEdgeStyle"
                 }[item.itemId];
                 me.graph.setCellStyles(mxConstants.STYLE_EDGE, es, [c]);
+            }
+        }
+        model.endUpdate();
+    },
+    //
+    onSelectIcon: function() {
+        var me = this;
+        Ext.create("NOC.inv.map.SelectIconForm", {app: me});
+    },
+    //
+    setIcon: function(shape) {
+        var me = this,
+            selection = me.graph.getSelectionCells(),
+            model = me.graph.getModel();
+        model.beginUpdate();
+        for(var i in selection) {
+            var c = selection[i];
+            if(c.isVertex()) {
+                me.registerChange({
+                    cmd: "shape",
+                    type: "mo",
+                    id: c.objectId,
+                    shape: shape
+                });
             }
         }
         model.endUpdate();
