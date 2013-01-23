@@ -29,6 +29,11 @@ Ext.define("NOC.inv.map.Application", {
         straight: "",
         orthogonal: "edgeStyle=elbowEdgeStyle"
     },
+    NS_NORMAL: "n",
+    NS_WARNING: "w",
+    NS_ALARM: "a",
+    NS_UNREACH: "u",
+
     initComponent: function() {
         var me = this;
         me.chartCombo = Ext.create("NOC.inv.networkchart.LookupField", {
@@ -207,7 +212,7 @@ Ext.define("NOC.inv.map.Application", {
                         scope: me,
                         click: me.onSelectIcon
                     }
-                },
+                }
             ]
         });
         me.edgeContextMenu = Ext.create("Ext.menu.Menu", {
@@ -391,6 +396,8 @@ Ext.define("NOC.inv.map.Application", {
                                 interface: pdata.label
                             }
                         }
+                        // Set initial status
+                        me.setNodeStatus(v, n.status);
                         // End of node processing
                         break;
                     // Insert link
@@ -615,5 +622,30 @@ Ext.define("NOC.inv.map.Application", {
             }
         }
         model.endUpdate();
+    },
+    // Manipulate cell overlays
+    setCellOverlay: function(cell, img, tooltip) {
+        var me = this,
+            overlay = new mxCellOverlay(img, tooltip);
+        overlay.addListener(mxEvent.CLICK, function(sender, evt) {});
+        me.removeCellOverlays(cell);
+        me.graph.addCellOverlay(cell, overlay);
+    },
+    removeCellOverlays: function(cell) {
+        var me = this;
+        me.graph.removeCellOverlays(cell);
+    },
+    //
+    setNodeStatus: function(cell, status) {
+        var me = this;
+        if(cell.nocStatus == status) {
+            return;
+        }
+        if(status == me.NS_NORMAL) {
+            me.removeCellOverlays(cell);
+        } else {
+            me.setCellOverlay(cell, me.graph.warningImage, status);
+        }
+        cell.nocStatus = status;
     }
 });

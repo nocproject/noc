@@ -16,6 +16,7 @@ from noc.sa.models import ManagedObject
 from noc.inv.models.link import Link
 from noc.lib.serialize import json_decode
 from noc.lib.stencil import stencil_registry
+from noc.fm.models import get_object_status
 
 
 class MapAppplication(ExtApplication):
@@ -25,6 +26,11 @@ class MapAppplication(ExtApplication):
     title = "Network Map"
     menu = "Network Map"
     icon = "icon_map"
+
+    NS_NORMAL = "n"
+    NS_WARNING = "w"
+    NS_ALARM = "a"
+    NS_UNREACH = "u"
 
     def get_object_shape(self, object):
         if object.shape:
@@ -38,6 +44,14 @@ class MapAppplication(ExtApplication):
             sn = "Cisco/router"
         return stencil_registry.stencils.get(sn,
             stencil_registry.stencils["Cisco/router"])
+
+    def get_object_status(self, object):
+        s = get_object_status(object)
+        return {
+            None: self.NS_UNREACH,
+            True: self.NS_NORMAL,
+            False: self.NS_ALARM
+        }[s]
 
     @view(url="^chart/(?P<chart_id>\d+)/$", method=["GET"],
         access="launch", api=True)
@@ -93,7 +107,8 @@ class MapAppplication(ExtApplication):
                 "address": mo.address,
                 "platform": "%s %s" % (mo.get_attr("vendor", ""),
                                        mo.get_attr("platform", "")),
-                "version": mo.get_attr("version", "")
+                "version": mo.get_attr("version", ""),
+                "status": self.get_object_status(mo)
             }
             # Used ports
             for link in mo_links[mo]:
@@ -168,3 +183,18 @@ class MapAppplication(ExtApplication):
         r += [s.get_stencil() for s in stencil_registry.stencils.values()]
         r += ["</stencils>"]
         return self.render_response("\n".join(r), content_type="text/xml")
+
+    @view(url="^chart/(?P<chart_id>\d+)/status/$", method=["GET"],
+        access="launch", api=True)
+    def api_status(self, request, chart_id):
+        def f(s):
+            return {
+                None: self.NS_UNREACH,
+                True: self.NS_NORMAL,
+                False: self.NS_ALARM
+            }[s]
+        chart = self.get_object_or_404(NetworkChart, id=int(chart_id))
+        return [{
+            "id": o.id,
+            "status": self.get_object_status(o)
+        } for o in chart.selector.managed_objects]
