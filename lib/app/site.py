@@ -264,7 +264,7 @@ class Site(object):
                         mimetype="text/json; charset=utf-8")
                 except:
                     r = HttpResponse(get_traceback(), status=500)
-            r["Pragme"] = "no-cache"
+            r["Pragma"] = "no-cache"
             r["Cache-Control"] = "no-cache"
             r["Expires"] = "0"
             return r
