@@ -359,7 +359,7 @@ Ext.define("NOC.inv.map.Application", {
                         }
                         // Shape
                         if(n.shape) {
-                            style.push("shape=" + n.shape);
+                            style.push("shape=" + n.shape + "#" + n.status);
                         }
                         // Draw node
                         var v = me.graph.insertVertex(parent, null,
@@ -368,6 +368,8 @@ Ext.define("NOC.inv.map.Application", {
                             style ? style.join(";") : null
                         );
                         v.objectId = n.id;
+                        v.nocStatus = n.status;
+                        v.nocShape = n.shape;
                         if(n.collapsed) {
                             model.setCollapsed(v, true);
                         }
@@ -618,8 +620,9 @@ Ext.define("NOC.inv.map.Application", {
                     id: c.objectId,
                     shape: shape
                 });
+                c.nocShape = shape;
                 me.graph.setCellStyles(
-                    mxConstants.STYLE_SHAPE, shape, [c]);
+                    mxConstants.STYLE_SHAPE, shape + "#" + c.nocStatus, [c]);
             }
         }
         model.endUpdate();
@@ -647,6 +650,8 @@ Ext.define("NOC.inv.map.Application", {
         } else {
             me.setCellOverlay(cell, me.graph.warningImage, status);
         }
+        me.graph.setCellStyles(
+            mxConstants.STYLE_SHAPE, cell.nocShape + "#" + cell.nocStatus, [cell]);
         cell.nocStatus = status;
     }
 });
