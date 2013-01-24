@@ -75,6 +75,7 @@ class Script(NOCScript):
            "Po": "aggregated",  # Port-channel/Portgroup
            "R": "aggregated",   # @todo: fix
            "SR": "physical",    # Spatial Reuse Protocol
+           "Sr": "physical",    # Spatial Reuse Protocol
            "Se": "physical",    # Serial
            "Te": "physical",    # TenGigabitEthernet
            "To": "physical",    # TokenRing
