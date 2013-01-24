@@ -16,7 +16,7 @@ class Script(NOCScript):
     name = "Alcatel.AOS.get_portchannel"
     implements = [IGetPortchannel]
     rx_line = re.compile(
-        r"^\s+(?P<port>\d+)\s+Static",
+        r"^\s+(?P<port>\d+)\s+(Static|Dynamic)",
         re.MULTILINE)
     rx_line1 = re.compile(
         r"\s+(?P<interface>\d+\/\d+)\s+\S+\s+",
@@ -37,5 +37,5 @@ class Script(NOCScript):
                 "members": members,
                 #<!> TODO: port-channel type detection
                 "type": "L"
-                }]
+            }]
         return r
