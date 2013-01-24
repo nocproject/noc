@@ -21,6 +21,7 @@ log_snmp_traps = false
 [activator]
 name            = unknown
 listen_instance = 0
+ping_instance   = 0
 listen_traps    =
 listen_syslog   =
 listen_pm_data  = 127.0.0.1
@@ -34,10 +35,6 @@ enable_internal_trap_parser = false
 host = 127.0.0.1
 port = 19701
 local_address =
-
-[path]
-fping      =
-fping6     =
 
 [servers]
 listen_http =
