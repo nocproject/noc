@@ -264,13 +264,15 @@ message EventResponse {}
 //
 // Ping hosts
 //
-message PingCheckRequest {
-    repeated string addresses = 1;
+message ObjectStatusRequest {
+    message ObjectStatusItem {
+        required string object = 1;
+        required bool status = 2;
+    }
+    repeated ObjectStatusItem status = 1;
 }
 
-message PingCheckResponse {
-    repeated string reachable   = 1;
-    repeated string unreachable = 2;
+message ObjectStatusResponse {
 }
 
 //
@@ -339,7 +341,7 @@ service SAEService {
     rpc refresh_object_mappings (RefreshObjectMappingsRequest) returns (RefreshObjectMappingsResponse);
     rpc object_mappings  (ObjectMappingsRequest)  returns (ObjectMappingsResponse);
     rpc event            (EventRequest)           returns (EventResponse);
-    rpc ping_check       (PingCheckRequest)       returns (PingCheckResponse);
     rpc pm_data          (PMDataRequest)          returns (PMDataResponse);
+    rpc object_status    (ObjectStatusRequest)    returns (ObjectStatusResponse);
     rpc get_status       (StatusRequest)          returns (StatusResponse);
 }

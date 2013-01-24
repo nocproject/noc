@@ -1862,7 +1862,6 @@ class Enumeration(nosql.Document):
     def __unicode__(self):
         return self.name
 
-    
 ##
 ## Event/Alarm text decoder
 ##
