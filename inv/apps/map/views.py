@@ -16,7 +16,6 @@ from noc.sa.models import ManagedObject
 from noc.inv.models.link import Link
 from noc.lib.serialize import json_decode
 from noc.lib.stencil import stencil_registry
-from noc.fm.models import get_object_status
 
 
 class MapApplication(ExtApplication):
@@ -46,7 +45,7 @@ class MapApplication(ExtApplication):
             stencil_registry.stencils["Cisco/router"])
 
     def get_object_status(self, object):
-        s = get_object_status(object)
+        s = object.get_status()
         return {
             None: self.NS_UNREACH,
             True: self.NS_NORMAL,

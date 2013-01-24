@@ -295,3 +295,33 @@ class Service(SAEService):
             value = d.value if not d.is_null else None
             TimeSeries.register(d.name, d.timestamp, value)
         done(controller, PMDataResponse())
+
+    def object_status(self, controller, request, done):
+        """
+        Handle RPC object_status request
+        :param controller:
+        :param request:
+        :param done:
+        :return:
+        """
+        if not controller.stream.is_authenticated:
+            done(controller, error=Error(code=ERR_AUTH_REQUIRED,
+                                         text="Authentication required"))
+            return
+        for s in request.status:
+            try:
+                mo = ManagedObject.objects.get(id=int(s.object))
+            except ManagedObject.DoesNotExist:
+                pass
+            self.sae.object_status[mo.id] = s.status
+            mo.set_status(s.status)
+            # Save event to database
+            result = "success" if s.status else "failed"
+            self.sae.write_event(
+               data=[("source", "system"),
+                     ("activator", controller.stream.pool_name),
+                     ("probe", "ping"),
+                     ("ip", mo.address),
+                     ("result", result)],
+               managed_object=mo,
+               timestamp=datetime.datetime.now())

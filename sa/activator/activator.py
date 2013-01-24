@@ -13,6 +13,8 @@ import logging
 import time
 import re
 import sys
+import random
+import bisect
 import Queue
 import cPickle
 from threading import Lock
@@ -28,11 +30,11 @@ from noc.sa.activator.servers import ServersHub
 from noc.lib.fileutils import safe_rewrite, read_file
 from noc.lib.daemon import Daemon
 from noc.lib.fsm import FSM, check_state
-from noc.lib.nbsocket import SocketFactory
+from noc.lib.nbsocket.socketfactory import SocketFactory
+from noc.lib.nbsocket.pingsocket import Ping4Socket, Ping6Socket
 from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
 from noc.sa.activator.service import Service
 from noc.sa.activator.activator_socket import ActivatorSocket
-from noc.sa.activator.fping_socket import FPingProbeSocket
 from noc.sa.activator.pm_collector_socket import PMCollectorSocket
 
 
@@ -43,6 +45,7 @@ class Activator(Daemon, FSM):
     daemon_name = "noc-activator"
     FSM_NAME = "Activator"
     DEFAULT_STATE = "IDLE"
+    PING_INTERVAL = 60
     STATES = {
         ## Starting stage. Activator is idle, all servers are down
         "IDLE": {
@@ -120,11 +123,19 @@ class Activator(Daemon, FSM):
                                  and not os.path.exists(os.path.join("sa", "sae", "sae.py")))
         self.service = Service()
         self.service.activator = self
-        self.factory = SocketFactory(tick_callback=self.tick, controller=self)
+        self.factory = SocketFactory(
+            tick_callback=self.tick, controller=self)
         self.children = {}
         self.sae_stream = None
         self.to_listen = False  # To start or not to start collectors
+        self.to_ping = self.config.get("activator", "ping_instance") == self.instance_id  # To start or not to start ping checks
+        if self.to_ping:
+            self.ping4_socket = Ping4Socket(self.factory)
         self.object_mappings = {}  # source -> object_id
+        self.object_status = {}  # address -> True | False | None
+        self.ping_time = []  # (time, address)
+        self.running_pings = set()  # address
+        self.status_change_queue = []  # [(object_id, new status)]
         self.ignore_event_rules = []  # [(left_re,right_re)]
         self.trap_collectors = []  # List of SNMP Trap collectors
         self.syslog_collectors = []  # List of SYSLOG collectors
@@ -422,34 +433,6 @@ class Activator(Daemon, FSM):
         logging.debug("Requesting call: %s(*%s,**%s)" % (f, args, kwargs))
         self.script_call_queue.put((f, args, kwargs))
 
-    def ping_check(self, addresses, callback):
-        def cb(afi, afi_left, result, unreachable):
-            result += unreachable
-            afi_left.remove(afi)
-            if not afi_left:
-                callback(result)
-
-        ipv4_addresses = [a for a in addresses if ":" not in a]
-        ipv6_addresses = [a for a in addresses if ":" in a]
-
-        fping = self.config.get("path", "fping")
-        fping6 = self.config.get("path", "fping6")
-
-        result = []
-        afi_left = set()
-        #
-        if ipv4_addresses:
-            afi_left.add("4")
-        if fping6 and ipv6_addresses:
-            afi_left.add("6")
-        # Launch probes
-        if ipv4_addresses:
-            FPingProbeSocket(self.factory, fping, ipv4_addresses,
-                             lambda x: cb("4", afi_left, result, x))
-        if fping6 and ipv6_addresses:
-            FPingProbeSocket(self.factory, fping6, ipv6_addresses,
-                             lambda x: cb("6", afi_left, result, x))
-
     def map_event(self, source):
         """
         Map event source to object id
@@ -490,9 +473,15 @@ class Activator(Daemon, FSM):
         # Send collected PM data
         if self.get_state() == "ESTABLISHED" and self.pm_data_queue:
             self.send_pm_data()
+        # Send object status changes
+        if self.to_ping and self.get_state() == "ESTABLISHED" and self.status_change_queue:
+            self.send_status_change()
         # Cancel stale scripts
         if self.get_state() == "ESTABLISHED":
             self.cancel_stale_scripts()
+        # Run pending ping probes
+        if self.to_ping and self.get_state() == "ESTABLISHED":
+            self.run_ping_checks()
         # Heartbeat when necessary
         if (self.heartbeat_enable and
             (self.next_heartbeat is None or self.next_heartbeat <= t)):
@@ -697,8 +686,18 @@ class Activator(Daemon, FSM):
             self.object_mappings = dict((x.source, x.object)
                                         for x in response.mappings)
             self.compile_ignore_event_rules(response.ignore_rules)
-            logging.debug("Setting object mappings to: %s" % self.object_mappings)
+            self.debug("Setting object mappings to: %s" % self.object_mappings)
             self.next_mappings_update = time.time() + response.expire
+            # Schedule ping checks
+            self.ping_time = [(t, a) for t, a in self.ping_time if a in self.object_mappings]
+            self.running_pings = set(a for a in self.running_pings if a in self.object_mappings)
+            n = set(self.object_mappings) - (set(a for f, a in self.ping_time) | set(self.running_pings))
+            if n:
+                # New mappings
+                t0 = time.time()
+                self.ping_time += [(t0 + self.PING_INTERVAL * random.random(), a) for a in n]
+                self.ping_time = sorted(self.ping_time)
+            self.debug("Scheduling ping probes to: %s" % self.ping_time)
 
         logging.info("Requesting object mappings")
         # Delay next request to at least 1 minute
@@ -761,6 +760,11 @@ class Activator(Daemon, FSM):
     def queue_pm_result(self, pm_result):
         self.pm_result_queue += pm_result
 
+    def queue_status_change(self, address, status):
+        i = self.object_mappings.get(address)
+        if i:
+            self.status_change_queue += [(i, status)]
+
     def send_pm_data(self):
         """
         Send collected PM data to SAE
@@ -787,6 +791,19 @@ class Activator(Daemon, FSM):
         self.pm_data_queue = []
         self.sae_stream.proxy.pm_data(r, pm_data_callback)
 
+    def send_status_change(self):
+        def status_change_callback(transaction, response=None, error=None):
+            if error:
+                logging.error("object_status failed: %s" % error)
+
+        r = ObjectStatusRequest()
+        for object, status in self.status_change_queue:
+            s = r.status.add()
+            s.object = object
+            s.status = status
+        self.status_change_queue = []
+        self.sae_stream.proxy.object_status(r, status_change_callback)
+
     def compile_ignore_event_rules(self, rules):
         ir = []
         for r in rules:
@@ -809,6 +826,34 @@ class Activator(Daemon, FSM):
             logging.info("Cancelling stale script %s(%s)" % (
                 script.name, script.access_profile.address))
             script.cancel_script()
+
+    def run_ping_checks(self):
+        if not self.ping_time:
+            return
+        i = bisect.bisect_right(self.ping_time, (time.time(), None))
+        while i > 0:
+            t, a = self.ping_time.pop(0)
+            self.debug("PING %s" % a)
+            self.running_pings.add(a)
+            self.ping4_socket.ping(
+                a, count=3, timeout=5, callback=self.ping_callback)
+            i -= 1
+
+    def ping_callback(self, address, result):
+        # Pessimistic: Fail if any ping failed
+        # status = bool(len(result) == len([r for r in result if r is not None]))
+        # Optimistic: Fail if all pings failed
+        status = len([r for r in result if r is not None]) > 0
+        old_status = self.object_status.get(address)
+        if status == old_status:
+            return  # No status change
+        self.debug("PING %s: Result %s [%s -> %s]" % (
+            address, result, old_status, status))
+        if address in self.running_pings:
+            self.running_pings.remove(address)
+            bisect.insort_right(self.ping_time, (time.time() + self.PING_INTERVAL, address))
+        self.object_status[address] = status
+        self.queue_status_change(address, status)
 
     def get_status(self):
         s = {

@@ -26,7 +26,7 @@ from noc.settings import config
 from noc.lib.fileutils import in_dir
 from noc.lib.widgets import PasswordWidget
 from noc.lib.ip import IP
-from noc.fm.models import get_object_status, ActiveAlarm, AlarmSeverity
+from noc.fm.models import ActiveAlarm, AlarmSeverity
 from noc.lib.scheduler.utils import refresh_schedule
 
 
@@ -107,10 +107,8 @@ def object_status(o):
     :return:
     """
     s = []
-    status = get_object_status(o)
-    if status is None:
-        s += ["? "]
-    elif status:
+    status = o.get_status()
+    if status:
         s += ["<img src='/media/admin/img/icon-yes.gif' title='Up' />"]
     else:
         s += ["<img src='/media/admin/img/icon-no.gif' title='Down' />"]

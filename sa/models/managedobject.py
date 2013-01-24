@@ -18,6 +18,7 @@ from django.contrib.auth.models import User, Group
 from administrativedomain import AdministrativeDomain
 from managedobjectprofile import ManagedObjectProfile
 from activator import Activator
+from objectstatus import ObjectStatus
 from noc.main.models import PyRule
 from noc.sa.profiles import profile_registry
 from noc.lib.search import SearchResult
@@ -318,6 +319,7 @@ class ManagedObject(models.Model):
 
     ##
     ## Returns True if Managed Object presents in more than one networks
+    ## @todo: Rewrite
     ##
     @property
     def is_router(self):
@@ -406,6 +408,12 @@ class ManagedObject(models.Model):
                 "object_id": self.id},
             1
         )
+
+    def get_status(self):
+        return ObjectStatus.get_status(self)
+
+    def set_status(self, status):
+        ObjectStatus.set_status(self, status)
 
 
 class ManagedObjectAttribute(models.Model):
