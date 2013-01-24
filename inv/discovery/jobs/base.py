@@ -81,7 +81,8 @@ class MODiscoveryJob(IntervalJob):
         return {"id": self.key, "is_managed": True}
 
     def can_run(self):
-        return not self.map_task or self.object.is_managed
+        return self.object.get_status() and (
+            not self.map_task or self.object.is_managed)
 
     @classmethod
     def get_submit_interval(cls, object):
