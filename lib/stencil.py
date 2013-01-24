@@ -66,6 +66,8 @@ class StencilRegistry:
             reader = csv.reader(f)
             reader.next()
             for row in reader:
+                if not row:
+                    continue
                 file, name, w, h = row
                 n = os.path.splitext(file)[0]
                 id = os.path.join(d, n)
