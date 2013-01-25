@@ -45,7 +45,7 @@ class Script(NOCScript):
 
     rx_ver = re.compile(r"Force10 Application Software Version: (?P<version>\S+).*(?:System|Chassis) Type: (?P<platform>\S+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(
-        r"Force10 Application Software Version:\s*(?P<version>\S+)",
+        r"Application Software Version:\s*(?P<version>\S+)",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
