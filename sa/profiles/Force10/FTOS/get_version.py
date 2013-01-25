@@ -45,7 +45,7 @@ class Script(NOCScript):
 
     rx_ver = re.compile(r"Force10 Application Software Version: (?P<version>\S+).*(?:System|Chassis) Type: (?P<platform>\S+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(
-        r"Application Software Version:\s*(?P<version>\S+)",
+        r"Application Software Version:\s*(?P<version>\S+)(.+Series:\s+(?P<platform>\S+))?",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
@@ -55,12 +55,14 @@ class Script(NOCScript):
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 match = self.re_search(self.rx_snmp_ver, v)
                 version = match.group("version")
-                # Get platform from F10-CHASSIS-MIB::chType
-                v = self.snmp.get("1.3.6.1.4.1.6027.3.1.1.1.1.0")
-                # F10-CHASSIS-MIB seems to be unsupported on C-series
-                if v == "":
-                    raise self.snmp.TimeOutError  # Fallback to CLI
-                platform = F10_CHASSIS[int(v)]
+                platform = match.group("platform")
+                if not platform:
+                    # Get platform from F10-CHASSIS-MIB::chType
+                    v = self.snmp.get("1.3.6.1.4.1.6027.3.1.1.1.1.0")
+                    # F10-CHASSIS-MIB seems to be unsupported on C-series
+                    if v == "":
+                        raise self.snmp.TimeOutError  # Fallback to CLI
+                    platform = F10_CHASSIS[int(v)]
                 return {
                     "vendor": "Force10",
                     "platform": platform,
