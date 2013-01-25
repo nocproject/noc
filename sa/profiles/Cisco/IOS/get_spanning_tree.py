@@ -45,7 +45,7 @@ class Script(NOCScript):
                         "back": "backup",
                         "root": "root",
                         "desg": "designated",
-                        "???": "master",
+                        "mstr": "master",
                         "????": "nonstp",
                         "_": "unknown"
                     }[R[1].lower()],  # @todo: refine roles
