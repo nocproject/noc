@@ -22,6 +22,7 @@ log_snmp_traps = false
 name            = unknown
 listen_instance = 0
 ping_instance   = 0
+ping_interval   = 60
 listen_traps    =
 listen_syslog   =
 listen_pm_data  = 127.0.0.1
