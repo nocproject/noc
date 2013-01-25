@@ -118,7 +118,7 @@ class Activator(Daemon, FSM):
         self.activator_name = self.config.get("activator", "name")
         logging.info("Running activator '%s'" % self.activator_name)
         # Check wrether activator started in bundle or in stand-alone mode
-        self.stand_alone_mode = (self.config.get("activator", "software_update")
+        self.stand_alone_mode = (self.config.getboolean("activator", "software_update")
                                  and not os.path.exists(os.path.join("sa", "sae", "sae.py")))
         self.service = Service()
         self.service.activator = self
