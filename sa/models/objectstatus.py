@@ -36,6 +36,7 @@ class ObjectStatus(Document):
 
     @classmethod
     def set_status(cls, object, status):
+        from noc.fm.models.outage import Outage
         s = cls.objects.filter(object=object.id).first()
         if s:
             if s.status != status:
@@ -43,3 +44,4 @@ class ObjectStatus(Document):
                 s.save()
         else:
             cls(object=object.id, status=status).save()
+        Outage.register_outage(object, not status)

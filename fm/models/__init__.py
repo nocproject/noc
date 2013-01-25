@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## FM module database models
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 from __future__ import with_statement
 import imp
