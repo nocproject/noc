@@ -22,9 +22,9 @@ from threading import Lock
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
 from noc.sa.script.ssh.keys import Key
-from noc.sa.rpc import file_hash, get_digest,\
-                       PROTOCOL_NAME, PROTOCOL_VERSION, PUBLIC_KEYS,\
-                       CIPHERS, MACS, COMPRESSIONS, KEY_EXCHANGES
+from noc.sa.rpc import (file_hash, get_digest,
+                        PROTOCOL_NAME, PROTOCOL_VERSION, PUBLIC_KEYS,
+                        CIPHERS, MACS, COMPRESSIONS, KEY_EXCHANGES)
 from noc.sa.protocols.sae_pb2 import *
 from noc.sa.activator.servers import ServersHub
 from noc.lib.fileutils import safe_rewrite, read_file
@@ -45,7 +45,6 @@ class Activator(Daemon, FSM):
     daemon_name = "noc-activator"
     FSM_NAME = "Activator"
     DEFAULT_STATE = "IDLE"
-    PING_INTERVAL = 60
     STATES = {
         ## Starting stage. Activator is idle, all servers are down
         "IDLE": {
@@ -128,6 +127,7 @@ class Activator(Daemon, FSM):
         self.children = {}
         self.sae_stream = None
         self.to_listen = False  # To start or not to start collectors
+        self.ping_interval = self.config.getint("activator", "ping_interval")
         self.to_ping = self.config.get("activator", "ping_instance") == self.instance_id  # To start or not to start ping checks
         if self.to_ping:
             self.ping4_socket = Ping4Socket(self.factory)
@@ -695,7 +695,7 @@ class Activator(Daemon, FSM):
             if n:
                 # New mappings
                 t0 = time.time()
-                self.ping_time += [(t0 + self.PING_INTERVAL * random.random(), a) for a in n]
+                self.ping_time += [(t0 + self.ping_interval * random.random(), a) for a in n]
                 self.ping_time = sorted(self.ping_time)
             self.debug("Scheduling ping probes to: %s" % self.ping_time)
 
@@ -851,7 +851,7 @@ class Activator(Daemon, FSM):
             address, result, old_status, status))
         if address in self.running_pings:
             self.running_pings.remove(address)
-            bisect.insort_right(self.ping_time, (time.time() + self.PING_INTERVAL, address))
+            bisect.insort_right(self.ping_time, (time.time() + self.ping_interval, address))
         self.object_status[address] = status
         self.queue_status_change(address, status)
 
