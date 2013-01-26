@@ -28,7 +28,10 @@ class Script(NOCScript):
 
     def execute(self):
         r = []
-        s = self.cli("show udld")
+        try:
+            s = self.cli("show udld")
+        except self.CLISyntaxError:
+            return []
         for p in self.rx_split.split(s):
             v = p.split("\n", 1)
             if len(v) != 2 or not v[1].startswith("---"):
