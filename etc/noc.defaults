@@ -179,7 +179,7 @@ idle_timeout = 0
 # Installation name. Displayed in top left corner of web interface
 installation_name = Unconfigured Installation
 # Logo url. Absolute or relative path
-logo_url = /static/img/logo_24x24_black.png
+logo_url = /static/img/logo_black.svg
 # Logo width
 logo_width = 24
 # Logo height
