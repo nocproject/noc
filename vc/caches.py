@@ -38,8 +38,8 @@ class VCInterfacesCount(Cache):
         n = SubInterface.objects.filter(
             Q(managed_object__in=objects) &
             (
-                Q(untagged_vlan=l1, is_bridge=True) |
-                Q(tagged_vlans=l1, is_bridge=True) |
+                Q(untagged_vlan=l1, enabled_afi=["BRIDGE"]) |
+                Q(tagged_vlans=l1, enabled_afi=["BRIDGE"]) |
                 Q(vlan_ids=l1)
             )
         ).count()
@@ -69,12 +69,12 @@ class VCPrefixes(Cache):
         for si in SubInterface.objects.filter(
             Q(managed_object__in=objects) &
             Q(vlan_ids=vc.l1) &
-            (Q(is_ipv4=True) | Q(is_ipv6=True))
-        ).only("is_ipv4", "is_ipv6", "ipv4_addresses", "ipv6_addresses"):
-            if si.is_ipv4:
+            (Q(enabled_afi=["IPv4"]) | Q(enabled_afi=["IPv6"]))
+        ).only("enabled_afi", "ipv4_addresses", "ipv6_addresses"):
+            if "IPv4" in si.enabled_afi:
                 ipv4.update([IP.prefix(ip).first
                           for ip in si.ipv4_addresses])
-            if si.is_ipv6:
+            if "IPv6" in si.enabled_afi:
                 ipv6.update([IP.prefix(ip).first
                           for ip in si.ipv6_addresses])
         p = [str(x.first) for x in sorted(ipv4)]
