@@ -126,7 +126,7 @@ class Script(NOCScript):
     ## MSTP Parsing
     ##
     rx_mstp_region = re.compile(
-        r"Name\s+\[(?P<region>\S+)\].+Revision\s+(?P<revision>\d+)",
+        r"Name\s+\[(?P<region>[^\]]*?)\].+Revision\s+(?P<revision>\d+)",
         re.DOTALL | re.MULTILINE | re.IGNORECASE)
     rx_mstp_instance = re.compile(r"^\s*(\d+)\s+(\S+)", re.MULTILINE)
     rx_mstp_bridge = re.compile(
