@@ -111,6 +111,7 @@ class PingSocket(Socket):
                       self.sessions[r].expire <= t]
         for s in expired:
             s.register_miss()
+        return False
 
 
 class Ping4Socket(PingSocket):
