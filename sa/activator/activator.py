@@ -286,7 +286,7 @@ class Activator(Daemon, FSM):
         """
         Entering ESTABLISHED state
         """
-        to_refresh_filters = False
+        to_refresh_filters = self.to_ping
         self.next_mappings_update = None
         self.scripts_processed = 0
         self.scripts_failed = 0
@@ -844,16 +844,19 @@ class Activator(Daemon, FSM):
         # status = bool(len(result) == len([r for r in result if r is not None]))
         # Optimistic: Fail if all pings failed
         status = len([r for r in result if r is not None]) > 0
-        old_status = self.object_status.get(address)
-        if status == old_status:
-            return  # No status change
-        self.debug("PING %s: Result %s [%s -> %s]" % (
-            address, result, old_status, status))
         if address in self.running_pings:
+            # Return to schedule
             self.running_pings.remove(address)
-            bisect.insort_right(self.ping_time, (time.time() + self.ping_interval, address))
-        self.object_status[address] = status
-        self.queue_status_change(address, status)
+            bisect.insort_right(
+                self.ping_time,
+                (time.time() + self.ping_interval, address))
+        old_status = self.object_status.get(address)
+        if status != old_status:
+            # Status changed
+            self.debug("PING %s: Result %s [%s -> %s]" % (
+                address, result, old_status, status))
+            self.object_status[address] = status
+            self.queue_status_change(address, status)
 
     def get_status(self):
         s = {
