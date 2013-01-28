@@ -74,7 +74,8 @@ class PingSocket(Socket):
             raise socket.error, why
         self.parse_reply(msg, addr)
 
-    def ping(self, addr, size=64, count=1, timeout=3, callback=None):
+    def ping(self, addr, size=64, count=1, timeout=3, callback=None,
+             stop_on_success=False):
         """
         Start ping
 
@@ -88,7 +89,8 @@ class PingSocket(Socket):
         """
         self.out_buffer += [
             PingSession(self, address=addr, size=size,
-                count=count, timeout=timeout, callback=callback)
+                count=count, timeout=timeout, callback=callback,
+                stop_on_success=stop_on_success)
         ]
         if self.socket:
             self.set_status(w=True)
@@ -171,7 +173,7 @@ class Ping6Socket(PingSocket):
 
 class PingSession(object):
     def __init__(self, ping_socket, address, size,
-                 count, timeout, callback):
+                 count, timeout, callback, stop_on_success=False):
         self.ping_socket = ping_socket
         self.address = address
         self.size = size
@@ -179,6 +181,8 @@ class PingSession(object):
         self.left = count
         self.timeout = timeout
         self.callback = callback
+        self.stop_on_success = stop_on_success
+        self.to_stop = False
         self.expire = None
         self.req_id = id(self) & 0xFFFF
         self.seq = 0
@@ -197,6 +201,8 @@ class PingSession(object):
         t = time.time()
         # Append result
         self.result += [t - self.t]
+        if self.stop_on_success:
+            self.to_stop = True
         self.next()
 
     def next(self):
@@ -205,7 +211,7 @@ class PingSession(object):
         """
         self.seq += 1
         self.expire = None
-        if self.seq >= self.count:
+        if self.to_stop or self.seq >= self.count:
             self.ping_socket.close_session(self)
             if self.callback:
                 self.callback(self.address, self.result)
