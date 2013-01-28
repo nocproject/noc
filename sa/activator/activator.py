@@ -15,7 +15,6 @@ import re
 import sys
 import random
 import bisect
-import math
 import Queue
 import cPickle
 from threading import Lock
@@ -824,7 +823,8 @@ class Activator(Daemon, FSM):
         """
         Cancel stale scripts
         """
-        to_cancel = [st for st in self.script_threads.keys() if st.is_stale() and not st.e_cancel]
+        to_cancel = [st for st in self.script_threads
+                     if st.is_stale() and not st.e_cancel]
         for script in to_cancel:
             logging.info("Cancelling stale script %s(%s)" % (
                 script.name, script.access_profile.address))

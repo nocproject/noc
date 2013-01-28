@@ -226,6 +226,7 @@ class Script(threading.Thread):
         self.e_not_supported = False  # NotSupportedError risen
         self.e_http_error = False  # HTTPError risen
         self._thread_id = None  # Python 2.5 compatibility
+        self.cli_wait = False
         # Set up CLI session logging
         if self.parent:
             self.log_cli_sessions_path = self.parent.log_cli_sessions_path
@@ -515,9 +516,11 @@ class Script(threading.Thread):
         Request CLI provider's queue
         Handle cancel condition
         """
+        self.cli_wait = True
         while True:
             try:
-                return self.cli_provider.queue.get(block=True, timeout=1)
+                r = self.cli_provider.queue.get(block=True, timeout=1)
+                break
             except Queue.Empty:
                 pass
             except thread.error:
@@ -525,6 +528,10 @@ class Script(threading.Thread):
                 # Sometimes, tries to release unacquired lock
                 self.error("Trying to release unacquired lock")
                 time.sleep(1)
+        self.cli_wait = False
+        if isinstance(r, Exception):
+            raise r
+        return r
 
     def reset_cli_queue(self):
         """
@@ -532,7 +539,11 @@ class Script(threading.Thread):
         :return:
         """
         while not self.cli_provider.queue.empty():
-            self.cli_provider.queue.get(block=False)
+            self.cli_wait = True
+            r = self.cli_provider.queue.get(block=False)
+            self.cli_wait = False
+            if isinstance(r, Exception):
+                raise r
 
     def request_cli_provider(self):
         """Run CLI provider if not available"""
@@ -839,7 +850,13 @@ class Script(threading.Thread):
         if not self._thread_id:
             self.error("Cannot cancel the script without thread_id")
             return
-        # Raise CancelledError in script's thread
+        # When stuck in CLI, send cancel message
+        if self.cli_provider and self.cli_wait:
+            self.error("Stuck in CLI. Cancelling")
+            self.cli_provider.queue.put(CancelledError())
+            return
+        # As last resort
+        # raise CancelledError in script's thread
         self.e_cancel = True
         r = ctypes.pythonapi.PyThreadState_SetAsyncExc(
             ctypes.c_long(self._thread_id),
