@@ -44,6 +44,9 @@ class Script(NOCScript):
                         break
         r = []
         for match in self.rx_line.finditer(self.cli(cmd)):
+            mactype = match.group("type").lower()
+            if mactype == "self" or mactype == "permanent":
+                continue
             r += [{
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),
@@ -55,7 +58,6 @@ class Script(NOCScript):
                     "del_on_timeout":"D",
                     "deleteonreset":"D",
                     "del_on_reset":"D",
-                    "permanent":"S",
-                    "self":"S"}[match.group("type").lower()],
+                    "blockbyaddrbind":"D"}[mactype],
             }]
         return r
