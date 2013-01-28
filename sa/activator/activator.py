@@ -839,7 +839,8 @@ class Activator(Daemon, FSM):
             self.debug("PING %s" % a)
             self.running_pings.add(a)
             self.ping4_socket.ping(
-                a, count=3, timeout=5, callback=self.ping_callback)
+                a, count=3, timeout=5, callback=self.ping_callback,
+                stop_on_success=True)
             i -= 1
 
     def ping_callback(self, address, result):
