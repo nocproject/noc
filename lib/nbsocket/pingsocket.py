@@ -46,10 +46,16 @@ class PingSocket(Socket):
         if self.out_buffer:
             self.set_status(w=True)
 
+    def get_session_id(self, session):
+        return session.address, session.req_id
+
+    def get_session(self, addr, req_id):
+        return self.sessions.get((addr, req_id))
+
     def handle_write(self):
         while self.out_buffer:
             session = self.out_buffer.pop(0)
-            self.sessions[session.req_id] = session
+            self.sessions[self.get_session_id(session)] = session
             msg = session.build_echo_request()
             try:
                 # Port is irrelevant for icmp
@@ -72,7 +78,7 @@ class PingSocket(Socket):
             if why[0] in (EINTR, EAGAIN):
                 return
             raise socket.error, why
-        self.parse_reply(msg, addr)
+        self.parse_reply(msg, addr[0])
 
     def ping(self, addr, size=64, count=1, timeout=3, callback=None,
              stop_on_success=False):
@@ -99,8 +105,9 @@ class PingSocket(Socket):
         raise NotImplementedError
 
     def close_session(self, session):
-        if session.req_id in self.sessions:
-            del self.sessions[session.req_id]
+        sid = self.get_session_id(session)
+        if sid in self.sessions:
+            del self.sessions[sid]
 
     def is_stale(self):
         """
@@ -137,10 +144,11 @@ class Ping4Socket(PingSocket):
         (icmp_type, icmp_code, icmp_checksum,
         req_id, seq) = struct.unpack(
             "!BBHHH", icmp_header)
-        if icmp_type == ICMPv4_ECHOREPLY and req_id in self.sessions:
-            self.sessions[req_id].register_reply(
-                address=src_ip, seq=seq, ttl=ttl,
-                payload=msg[self.HEADER_SIZE:])
+        if icmp_type == ICMPv4_ECHOREPLY:
+            session = self.get_session(addr, req_id)
+            if session:
+                session.register_reply(address=src_ip, seq=seq, ttl=ttl,
+                    payload=msg[self.HEADER_SIZE:])
 
 
 class Ping6Socket(PingSocket):
@@ -165,10 +173,11 @@ class Ping6Socket(PingSocket):
         (icmp_type, icmp_code, icmp_checksum,
          req_id, seq) = struct.unpack("!BBHHH", icmp_header)
         payload = msg[8:]
-        if icmp_type == ICMPv6_ECHOREPLY and req_id in self.sessions:
-            self.sessions[req_id].register_reply(
-                address=src_ip, seq=seq, ttl=ttl,
-                payload=payload)
+        if icmp_type == ICMPv4_ECHOREPLY:
+            session = self.get_session(addr, req_id)
+            if session:
+                session.register_reply(address=src_ip, seq=seq, ttl=ttl,
+                    payload=payload)
 
 
 class PingSession(object):
