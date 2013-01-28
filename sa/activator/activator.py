@@ -863,9 +863,13 @@ class Activator(Daemon, FSM):
 
     def get_next_ping_time(self, address):
         t = time.time()
-        next_interval = math.ceil(t / self.ping_interval) * self.ping_interval
-        offset = self.ping_offset[address] * self.ping_interval
-        return next_interval + offset
+        istart = (int(t) // self.ping_interval) * self.ping_interval
+        delta = self.ping_interval * self.ping_offset[address]
+        n = istart + delta
+        if n > t:
+            return n
+        else:
+            return n + self.ping_interval
 
     def get_status(self):
         s = {
