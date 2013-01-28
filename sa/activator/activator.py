@@ -15,6 +15,7 @@ import re
 import sys
 import random
 import bisect
+import math
 import Queue
 import cPickle
 from threading import Lock
@@ -134,6 +135,7 @@ class Activator(Daemon, FSM):
         self.object_mappings = {}  # source -> object_id
         self.object_status = {}  # address -> True | False | None
         self.ping_time = []  # (time, address)
+        self.ping_offset = {}  # address -> 0..1
         self.running_pings = set()  # address
         self.status_change_queue = []  # [(object_id, new status)]
         self.ignore_event_rules = []  # [(left_re,right_re)]
@@ -694,8 +696,9 @@ class Activator(Daemon, FSM):
             n = set(self.object_mappings) - (set(a for f, a in self.ping_time) | set(self.running_pings))
             if n:
                 # New mappings
-                t0 = time.time()
-                self.ping_time += [(t0 + self.ping_interval * random.random(), a) for a in n]
+                for a in n:
+                    self.ping_offset[a] = random.random()
+                self.ping_time += [(self.get_next_ping_time(a), a) for a in n]
                 self.ping_time = sorted(self.ping_time)
             self.debug("Scheduling ping probes to: %s" % self.ping_time)
 
@@ -849,7 +852,7 @@ class Activator(Daemon, FSM):
             self.running_pings.remove(address)
             bisect.insort_right(
                 self.ping_time,
-                (time.time() + self.ping_interval, address))
+                (self.get_next_ping_time(address), address))
         old_status = self.object_status.get(address)
         if status != old_status:
             # Status changed
@@ -857,6 +860,12 @@ class Activator(Daemon, FSM):
                 address, result, old_status, status))
             self.object_status[address] = status
             self.queue_status_change(address, status)
+
+    def get_next_ping_time(self, address):
+        t = time.time()
+        next_interval = math.ceil(t / self.ping_interval) * self.ping_interval
+        offset = self.ping_offset[address] * self.ping_interval
+        return next_interval + offset
 
     def get_status(self):
         s = {
