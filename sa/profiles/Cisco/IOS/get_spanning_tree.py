@@ -202,6 +202,7 @@ class Script(NOCScript):
             return self.process_pvst(v, proto="rapid-PVST+")
         elif "Spanning tree enabled protocol mstp" in v:
             return self.process_mstp(v)
-        elif "No spanning tree instance exists" in v \
-        or "No spanning tree instances exist" in v:
+        #elif "No spanning tree instance exists" in v \
+        #or "No spanning tree instances exist" in v:
+        else:
             return {"mode": "None", "instances": []}
