@@ -855,10 +855,10 @@ class Activator(Daemon, FSM):
                 self.ping_time,
                 (self.get_next_ping_time(address), address))
         old_status = self.object_status.get(address)
+        self.debug("PING %s: Result %s [%s -> %s]" % (
+            address, result, old_status, status))
         if status != old_status:
             # Status changed
-            self.debug("PING %s: Result %s [%s -> %s]" % (
-                address, result, old_status, status))
             self.object_status[address] = status
             self.queue_status_change(address, status)
 
