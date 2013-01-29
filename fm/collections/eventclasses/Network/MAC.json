@@ -8,8 +8,8 @@
                 "subject_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
                 "body_template": "MAC {{mac}} Flap detected on vlan {{vlan}}: {{from_interface}} -> {{to_interface}}",
                 "symptoms": "",
-                "probable_causes": "",
-                "recommended_actions": ""
+                "probable_causes": "The system found the specified host moving between the specified ports.",
+                "recommended_actions": "Examine the network for possible loops."
             }
         },
         "vars": [

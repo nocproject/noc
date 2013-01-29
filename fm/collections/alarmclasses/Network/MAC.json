@@ -98,8 +98,8 @@
                 "subject_template": "MAC {{mac}} Flap detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}: {{from_interface}}{% if from_description %} ({{from_description}}){% endif %} -> {{to_interface}}{% if to_description %} ({{to_description}}){% endif %}",
                 "body_template": "MAC {{mac}} Flap detected on vlan {{vlan}}{% if vlan_name %} ({{vlan_name}}){% endif %}: {{from_interface}}{% if from_description %} ({{from_description}}){% endif %} -> {{to_interface}}{% if to_description %} ({{to_description}}){% endif %}{% if vlan_vc_domain %}\nVC Domain: {{vlan_vc_domain}}{% endif %}{% if vlan_description %}\nVLAN Description: {{vlan_description}}{% endif %}",
                 "symptoms": "",
-                "probable_causes": "",
-                "recommended_actions": ""
+                "probable_causes": "The system found the specified host moving between the specified ports.",
+                "recommended_actions": "Examine the network for possible loops."
             }
         }
     },
