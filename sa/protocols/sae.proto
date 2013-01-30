@@ -187,9 +187,10 @@ message ScriptRequest {
         required string value = 2;
     }
     required AccessProfile access_profile = 1;
-    required string        script  = 2;
-    repeated KWArg         kwargs  = 3;
-    optional uint32        timeout = 4;
+    required string        object_name = 2;
+    required string        script  = 3;
+    repeated KWArg         kwargs  = 4;
+    optional uint32        timeout = 5;
 }
 
 message ScriptResponse {

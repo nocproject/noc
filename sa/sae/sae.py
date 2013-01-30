@@ -364,6 +364,7 @@ class SAE(Daemon):
             stream.current_scripts += 1
         # Build request
         r = ScriptRequest()
+        r.object_name = object.name
         r.script = script_name
         r.access_profile.profile = object.profile_name
         r.access_profile.scheme = object.scheme
