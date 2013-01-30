@@ -314,5 +314,26 @@
                 "value_re": "%SEC-6-IPACCESSLOGRL: access-list logging rate-limited or missed \\d+ packet"
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Unknown | Ignore IGMP_CGMP_MODE logging (SYSLOG)",
+        "description": "%MCAST-SP-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan 2120",
+        "event_class__name": "Unknown | Ignore",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%MCAST-SP(?:-STDBY)?-6-IGMP_CGMP_MODE: IGMP snooping now is running in IGMP_CGMP mode on vlan \\d+"
+            }
+        ]
     }
 ]
