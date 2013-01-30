@@ -231,6 +231,8 @@ class Service(SAEService):
         # Build source filter
         for c in ManagedObject.objects.filter(activator=activator,
                     trap_source_ip__isnull=False).only("id", "trap_source_ip"):
+            if c.profile_name.startswith("NOC."):
+                continue
             s = r.mappings.add()
             s.source = c.trap_source_ip
             s.object = str(c.id)
