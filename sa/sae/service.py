@@ -236,6 +236,17 @@ class Service(SAEService):
             s = r.mappings.add()
             s.source = c.trap_source_ip
             s.object = str(c.id)
+        # Ping settings
+        for c in ManagedObject.objects.filter(activator=activator,
+            trap_source_ip__isnull=False,
+            object_profile__enable_ping=True,
+            object_profile__ping_interval__gt=0
+        ).only("trap_source_ip", "object_profile__ping_interval").select_related():
+            if c.profile_name.startswith("NOC."):
+                continue
+            p = r.ping.add()
+            p.address = c.trap_source_ip
+            p.interval = c.object_profile.ping_interval
         # Build event filter
         for ir in IgnoreEventRules.objects.filter(is_active=True):
             i = r.ignore_rules.add()

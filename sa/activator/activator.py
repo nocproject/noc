@@ -127,7 +127,6 @@ class Activator(Daemon, FSM):
         self.children = {}
         self.sae_stream = None
         self.to_listen = False  # To start or not to start collectors
-        self.ping_interval = self.config.getint("activator", "ping_interval")
         self.to_ping = self.config.get("activator", "ping_instance") == self.instance_id  # To start or not to start ping checks
         if self.to_ping:
             self.ping4_socket = Ping4Socket(self.factory)
@@ -135,6 +134,7 @@ class Activator(Daemon, FSM):
         self.object_status = {}  # address -> True | False | None
         self.ping_time = []  # (time, address)
         self.ping_offset = {}  # address -> 0..1
+        self.ping_interval = {}  # address -> interval
         self.running_pings = set()  # address
         self.status_change_queue = []  # [(object_id, new status)]
         self.ignore_event_rules = []  # [(left_re,right_re)]
@@ -690,9 +690,13 @@ class Activator(Daemon, FSM):
             self.debug("Setting object mappings to: %s" % self.object_mappings)
             self.next_mappings_update = time.time() + response.expire
             # Schedule ping checks
-            self.ping_time = [(t, a) for t, a in self.ping_time if a in self.object_mappings]
-            self.running_pings = set(a for a in self.running_pings if a in self.object_mappings)
-            n = set(self.object_mappings) - (set(a for f, a in self.ping_time) | set(self.running_pings))
+            self.ping_interval = dict((x.address, x.interval)
+                for x in response.ping)
+            self.ping_time = [(t, a) for t, a in self.ping_time
+                              if a in self.ping_interval]
+            self.running_pings = set(
+                a for a in self.running_pings if a in self.ping_interval)
+            n = set(self.ping_interval) - (set(a for f, a in self.ping_time) | set(self.running_pings))
             if n:
                 # New mappings
                 for a in n:
@@ -863,14 +867,15 @@ class Activator(Daemon, FSM):
             self.queue_status_change(address, status)
 
     def get_next_ping_time(self, address):
+        i = self.ping_interval.get(address, 60)
         t = time.time()
-        istart = (int(t) // self.ping_interval) * self.ping_interval
-        delta = self.ping_interval * self.ping_offset[address]
+        istart = (int(t) // i) * i
+        delta = i * self.ping_offset[address]
         n = istart + delta
         if n > t:
             return n
         else:
-            return n + self.ping_interval
+            return n + i
 
     def get_status(self):
         s = {

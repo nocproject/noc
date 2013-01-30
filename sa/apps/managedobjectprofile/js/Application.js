@@ -156,10 +156,22 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
             allowBlank: true
         },
         {
-            name: "enable_ping",
-            xtype: "checkboxfield",
-            fieldLabel: "Enable ping check",
-            allowBlank: false
+            xtype: "fieldcontainer",
+            fieldLabel: "Ping Check",
+            layout: "hbox",
+            items: [
+                {
+                    name: "enable_ping",
+                    xtype: "checkboxfield",
+                    fieldLabel: "Enable",
+                    allowBlank: false
+                },
+                {
+                    name: "ping_interval",
+                    xtype: "numberfield",
+                    fieldLabel: "Interval"
+                }
+            ]
         },
         {
             name: "down_severity",
