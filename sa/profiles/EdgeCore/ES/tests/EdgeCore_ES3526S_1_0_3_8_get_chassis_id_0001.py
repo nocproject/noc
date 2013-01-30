@@ -17,8 +17,8 @@ class EdgeCore_ES_get_chassis_id_Test(ScriptTestCase):
     platform = "ES3526S"
     version = "1.0.3.8"
     input = {}
-    result = {'first_chassis_mac': '00:12:CF:4B:22:23',
- 'last_chassis_mac': '00:12:CF:4B:22:23'}
+    result = {'first_chassis_mac': '00:12:CF:90:8F:20',
+ 'last_chassis_mac': '00:12:CF:90:8F:3A'}
     motd = ' \n\n      CLI session with the ES3526S is opened.\n      To end the CLI session, enter [Exit].\n\n'
     cli = {
 ## 'show version'
@@ -46,7 +46,7 @@ System information
  System Name            : sw-3-potapovo
  System Location        : [NONE]
  System Contact         : [NONE]
- MAC address            : 00-12-CF-4B-22-23
+ MAC address            : 00-12-CF-90-8F-20
  Web server             : enable
  Web server port        : 80
  Fan(1)                 : Ok
@@ -65,6 +65,576 @@ PCI Device Check .......................PASS
 Writing Xlinx FPGA image................PASS
 Switch Driver Initialization............PASS
 ------------------- DONE --------------------""", 
+## 'show int statu'
+'show int statu': """show int statu
+Information of Eth 1/1
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-21
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Up
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Up
+  Port Operation Status:  Up
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/2
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-22
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Up
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+ Link Status:            Up
+  Port Operation Status:  Up
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/3
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-23
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Up
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Up
+  Port Operation Status:  Up
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/4
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-24
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+ LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/5
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-25
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/6
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-26
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+ Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/7
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-27
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/8
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-28
+ Configuration: 
+  Name:                   (null)
+ Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/9
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-29
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/10
+ Basic Information: 
+  Port Type:              100TX
+ Mac Address:            00-12-CF-90-8F-2A
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/11
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-2B
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/12
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-2C
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/13
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-2D
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+ Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/14
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-2E
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/15
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-2F
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+ Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/16
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-30
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/17
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-31
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+ LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/18
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-32
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/19
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-33
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+ Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/20
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-34
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/21
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-35
+ Configuration: 
+  Name:                   (null)
+ Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/22
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-36
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/23
+ Basic Information: 
+  Port Type:              100TX
+ Mac Address:            00-12-CF-90-8F-37
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/24
+ Basic Information: 
+  Port Type:              100TX
+  Mac Address:            00-12-CF-90-8F-38
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Down
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Down
+  Operation Speed-duplex: 100full
+  Flow Control Type:      None
+
+Information of Eth 1/25
+ Basic Information: 
+  Port Type:              1000Base SFP
+  Mac Address:            00-12-CF-90-8F-39
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Up
+  Speed-duplex:           Auto
+  Capabilities:           1000full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+  Link Status:            Up
+  Port Operation Status:  Up
+  Operation Speed-duplex: 1000full
+  Flow Control Type:      None
+
+Information of Eth 1/26
+ Basic Information: 
+  Port Type:              1000T
+  Mac Address:            00-12-CF-90-8F-3A
+ Configuration: 
+  Name:                   (null)
+  Port Admin:             Up
+  Speed-duplex:           Auto
+  Capabilities:           10half, 10full, 100half, 100full, 1000full
+  Broadcast Storm:        Enabled
+  Broadcast Storm Limit:  scale:8000K level:5 octets/second
+  Flow Control:           Disabled
+  LACP:                   Disabled
+  Port Security:          Disabled
+  Max MAC Count:          0
+  Port Security Action:   None
+ Current Status: 
+ Link Status:            Down
+  Operation Speed-duplex: 1000full
+  Flow Control Type:      None
+
+Information of VLAN 1
+ MAC Address:             00-12-CF-90-8F-20
+
+Information of VLAN 69
+ MAC Address:             00-12-CF-90-8F-20
+
+Information of VLAN 359
+ MAC Address:             00-12-CF-90-8F-20
+
+Information of VLAN 375
+ MAC Address:             00-12-CF-90-8F-20
+
+Information of VLAN 2100
+ MAC Address:             00-12-CF-90-8F-20
+
+Information of VLAN 4093
+ MAC Address:             00-12-CF-90-8F-20
+""",
 }
     snmp_get = {}
     snmp_getnext = {}

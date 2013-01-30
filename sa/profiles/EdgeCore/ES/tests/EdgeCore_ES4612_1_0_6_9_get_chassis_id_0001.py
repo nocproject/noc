@@ -18,7 +18,7 @@ class EdgeCore_ES_get_chassis_id_Test(ScriptTestCase):
     version = "1.0.6.9"
     input = {}
     result = {'first_chassis_mac': '00:12:CF:7E:0F:30',
- 'last_chassis_mac': '00:12:CF:7E:0F:30'}
+ 'last_chassis_mac': '00:12:CF:7E:0F:3C'}
     motd = ' \n\n      CLI session with the 8 SFP ports + 4 Gigabit Combo ports L2/L3/L4 managed standalone switch is opened.\n      To end the CLI session, enter [Exit].\n\n'
     cli = {
 ## 'show version'
@@ -64,6 +64,314 @@ RTC Initialization...........PASS
 Switch Int Loopback test.....PASS
 
 Done All Pass.""", 
+## 'show int statu'
+'show int statu': """show int statu
+Information of Eth 1/1
+ Basic information: 
+  Port type: SFP
+  Mac address: 00-12-CF-7E-0F-31
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+  Max MAC count: 0
+  Port security action: None
+  Combo forced mode: None
+ Current status: 
+  Link status: Down
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/2
+ Basic information: 
+  Port type: SFP
+  Mac address: 00-12-CF-7E-0F-32
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+  Max MAC count: 0
+  Port security action: None
+  Combo forced mode: None
+ Current status: 
+  Link status: Up
+  Port operation status: Up
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/3
+ Basic information: 
+  Port type: SFP
+  Mac address: 00-12-CF-7E-0F-33
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+  Max MAC count: 0
+  Port security action: None
+  Combo forced mode: None
+ Current status: 
+  Link status: Up
+  Port operation status: Up
+  Operation speed-duplex: 1000full
+ Flow control type: None
+
+Information of Eth 1/4
+ Basic information: 
+  Port type: SFP
+  Mac address: 00-12-CF-7E-0F-34
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+  Max MAC count: 0
+  Port security action: None
+  Combo forced mode: None
+ Current status: 
+  Link status: Up
+  Port operation status: Up
+ Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/5
+ Basic information: 
+  Port type: SFP
+  Mac address: 00-12-CF-7E-0F-35
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+  Max MAC count: 0
+  Port security action: None
+  Combo forced mode: None
+ Current status: 
+  Link status: Up
+ Port operation status: Up
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/6
+ Basic information: 
+  Port type: SFP
+  Mac address: 00-12-CF-7E-0F-36
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+  Max MAC count: 0
+  Port security action: None
+  Combo forced mode: None
+ Current status: 
+ Link status: Up
+  Port operation status: Up
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/7
+ Basic information: 
+  Port type: SFP
+  Mac address: 00-12-CF-7E-0F-37
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+  Max MAC count: 0
+  Port security action: None
+  Combo forced mode: None
+Current status: 
+  Link status: Up
+  Port operation status: Up
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/8
+ Basic information: 
+  Port type: SFP
+  Mac address: 00-12-CF-7E-0F-38
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+  Max MAC count: 0
+  Port security action: None
+ Combo forced mode: None
+ Current status: 
+  Link status: Up
+  Port operation status: Up
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/9
+ Basic information: 
+  Port type: SFP
+  Mac address: 00-12-CF-7E-0F-39
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+  Max MAC count: 0
+ Port security action: None
+  Combo forced mode: SFP preferred auto
+ Current status: 
+  Link status: Up
+  Port operation status: Up
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/10
+ Basic information: 
+  Port type: 1000T
+  Mac address: 00-12-CF-7E-0F-3A
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 10half, 10full, 100half, 100full, 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+ Max MAC count: 0
+  Port security action: None
+  Combo forced mode: SFP preferred auto
+ Current status: 
+  Link status: Down
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/11
+ Basic information: 
+  Port type: 1000T
+  Mac address: 00-12-CF-7E-0F-3B
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 10half, 10full, 100half, 100full, 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+ Max MAC count: 0
+  Port security action: None
+  Combo forced mode: SFP preferred auto
+ Current status: 
+  Link status: Down
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of Eth 1/12
+ Basic information: 
+  Port type: 1000T
+  Mac address: 00-12-CF-7E-0F-3C
+ Configuration: 
+  Name: (null)
+  Port admin: Up
+  Speed-duplex: Auto
+  Capabilities: 10half, 10full, 100half, 100full, 1000full
+  Broadcast storm: Enabled
+  Broadcast storm limit: 500 packets/second
+  Flow control: Disabled
+  VLAN Trunking: Disabled
+  LACP: Disabled
+  Port security: Disabled
+ Max MAC count: 0
+  Port security action: None
+  Combo forced mode: SFP preferred auto
+ Current status: 
+  Link status: Up
+  Port operation status: Up
+  Operation speed-duplex: 1000full
+  Flow control type: None
+
+Information of VLAN 1
+ MAC address: 00-12-CF-7E-0F-30
+
+Information of VLAN 20
+ MAC address: 00-12-CF-7E-0F-30
+
+Information of VLAN 120
+ MAC address: 00-12-CF-7E-0F-30
+
+Information of VLAN 733
+ MAC address: 00-12-CF-7E-0F-30
+
+Information of VLAN 741
+ MAC address: 00-12-CF-7E-0F-30
+
+Information of VLAN 900
+ MAC address: 00-12-CF-7E-0F-30
+
+Information of VLAN 2539
+ MAC address: 00-12-CF-7E-0F-30
+""", 
 }
     snmp_get = {}
     snmp_getnext = {}
