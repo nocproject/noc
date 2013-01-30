@@ -39,6 +39,10 @@ Ext.define("NOC.sa.monitor.ScriptsPanel", {
                             dataIndex: "script"
                         },
                         {
+                            text: "Object",
+                            dataIndex: "object_name"
+                        },
+                        {
                             text: "Address",
                             dataIndex: "address"
                         },

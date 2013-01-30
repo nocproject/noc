@@ -894,6 +894,7 @@ class Activator(Daemon, FSM):
             for script in self.script_threads:
                 ss += [{
                     "script": script.name,
+                    "object_name": script.object_name,
                     "address": script.access_profile.address,
                     "start_time": int(script.start_time),
                     "timeout": script._timeout

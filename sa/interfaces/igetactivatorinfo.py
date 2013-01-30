@@ -23,6 +23,7 @@ class IGetActivatorInfo(Interface):
         "scripts_failed": IntParameter(),
         "scripts": DictListParameter(attrs={
             "script": StringParameter(),
+            "object_name": StringParameter(),
             "address": StringParameter(),
             "start_time": IntParameter(),
             "timeout": IntParameter()
