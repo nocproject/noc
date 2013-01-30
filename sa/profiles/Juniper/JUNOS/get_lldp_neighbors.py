@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Juniper.JUNOS.get_lldp_neighbors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -12,7 +12,8 @@ import re
 import binascii
 ## NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetLLDPNeighbors, IntParameter, MACAddressParameter
+from noc.sa.interfaces import (IGetLLDPNeighbors, IntParameter,
+                               MACAddressParameter, InterfaceTypeError)
 
 
 class Script(NOCScript):
@@ -27,7 +28,13 @@ class Script(NOCScript):
         re.MULTILINE | re.IGNORECASE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
-    rx_detail = re.compile(r".*Chassis ID\s+:\s(?P<id>\S+).*?Port type\s+:\s(?P<p_type>[^\n]+).*?Port \S+\s+:\s(?P<p_id>[^\n]+).*?System name\s+:\s(?P<name>\S+).*?System capabilities.+?Supported:\s(?P<capability>[^\n]+).*", re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_detail = re.compile(
+        r".*Chassis ID\s+:\s(?P<id>\S+).*?"
+        r"Port type\s+:\s(?P<p_type>[^\n]+).*?"
+        r"Port \S+\s+:\s(?P<p_id>[^\n]+).*?"
+        r"(?:System name\s+:\s(?P<name>\S+).*?)?"
+        r"(?:System capabilities.+?Supported:\s(?P<capability>[^\n]+).*)?",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     @NOCScript.match(platform__startswith="ex")
     def execute_ex(self):
@@ -58,7 +65,11 @@ class Script(NOCScript):
                 if n["remote_port_subtype"] == 3:
                     remote_port = MACAddressParameter().clean(match.group("p_id"))
                 elif n["remote_port_subtype"] == 7:
-                    remote_port = IntParameter().clean(match.group("p_id"))
+                    p_id = match.group("p_id")
+                    try:
+                        remote_port = IntParameter().clean(p_id)
+                    except InterfaceTypeError:
+                        remote_port = p_id
                 else:
                     remote_port = match.group("p_id")
                 n["remote_chassis_id"] = match.group("id")
@@ -66,12 +77,13 @@ class Script(NOCScript):
                 n["remote_port"] = remote_port
                 # Get capability
                 cap = 0
-                for c in match.group("capability").strip().split(" "):
-                        cap |= {
-                        "Other": 1, "Repeater": 2, "Bridge": 4,
-                        "WLAN": 8, "Router": 16, "Telephone": 32,
-                        "Cable": 64, "Station": 128
-                        }[c]
+                if match.group("capability"):
+                    for c in match.group("capability").strip().split(" "):
+                            cap |= {
+                            "Other": 1, "Repeater": 2, "Bridge": 4,
+                            "WLAN": 8, "Router": 16, "Telephone": 32,
+                            "Cable": 64, "Station": 128
+                            }[c]
                 n["remote_capabilities"] = cap
             i["neighbors"] += [n]
             r += [i]
