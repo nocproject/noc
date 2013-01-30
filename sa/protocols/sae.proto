@@ -318,6 +318,7 @@ message StatusResponse {
         required string address = 2;
         required int32 start_time = 3;
         required int32 timeout = 4;
+        required string object_name = 5;
     }
     required int32 timestamp = 1;
     required string pool = 2;

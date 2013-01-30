@@ -24,6 +24,10 @@ Ext.define("NOC.sa.monitor.ScriptsStore", {
             type: "string"
         },
         {
+            name: "object_name",
+            type: "string"
+        },
+        {
             name: "address",
             type: "string"
         },

@@ -568,8 +568,9 @@ class SAE(Daemon):
         kwargs = {}
         for a in request.kwargs:
             kwargs[str(a.key)] = cPickle.loads(str(a.value))
-        script = script_registry[request.script](profile_registry[request.access_profile.profile],
-                                                 self, request.access_profile, **kwargs)
+        script = script_registry[request.script](
+            profile_registry[request.access_profile.profile],
+            self, "SAE", request.access_profile, **kwargs)
         script.sae = self
         with self.script_lock:
             self.script_threads[script] = callback
@@ -636,6 +637,7 @@ class SAE(Daemon):
                     "scripts": [
                         {
                             "script": i.script,
+                            "object_name": i.object_name,
                             "address": i.address,
                             "start_time": i.start_time,
                             "timeout": i.timeout

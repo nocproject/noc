@@ -129,6 +129,7 @@ class Service(SAEService):
             i = r.scripts.add()
             i.script = s["script"]
             i.address = s["address"]
+            i.object_name = s["object_name"]
             i.start_time = s["start_time"]
             i.timeout = s["timeout"]
         done(controller, response=r)
