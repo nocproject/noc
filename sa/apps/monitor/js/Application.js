@@ -80,7 +80,7 @@ Ext.define("NOC.sa.monitor.Application", {
                 scriptsData.push({
                     pool: r.pool,
                     instance: r.instance,
-                    object_name: r.object_name,
+                    object_name: rr.object_name,
                     script: rr.script,
                     address: rr.address,
                     start_time: new Date(rr.start_time * 1000),
