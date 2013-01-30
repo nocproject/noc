@@ -183,7 +183,7 @@ class SocketFactory(object):
             l += ["+READ" if r else "-READ"]
         if w is not None:
             l += ["+WRITE" if w else "-WRITE"]
-        logging.debug("%s set_status: %s" % (sock, " ".join(l)))
+        # logging.debug("%s set_status: %s" % (sock, " ".join(l)))
         with self.register_lock:
             if r is not None:
                 if r:
