@@ -220,9 +220,12 @@ def error_report(reverse=True):
         # Write crashinfo
         fp = error_fingerprint()
         path = os.path.join(DEBUG_CTX_CRASH_DIR, DEBUG_CTX_CRASH_PREFIX + fp)
-        safe_rewrite(path, crashinfo)
-        if DEBUG_CTX_SET_UID:  # Change crashinfo userid to directory"s owner
-            os.chown(path, DEBUG_CTX_SET_UID, -1)
+        try:
+            safe_rewrite(path, crashinfo)
+            if DEBUG_CTX_SET_UID:  # Change crashinfo userid to directory"s owner
+                os.chown(path, DEBUG_CTX_SET_UID, -1)
+        except OSError, why:
+            logging.error("Unable to write crashinfo: %s" % why)
 
 
 def frame_report(frame, caption=None):
