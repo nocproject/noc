@@ -245,9 +245,14 @@ message ObjectMappingsResponse {
         required string source = 1;
         required string object = 2;
     }
+    message PingItem {
+        required string address = 1;
+        required int32 interval = 2;
+    }
     required int32 expire  = 1;
     repeated ObjectMappingItem mappings = 2;
     repeated EventIgnoreRuleItem ignore_rules = 3;
+    repeated PingItem ping = 4;
 }
 
 message EventRequest {

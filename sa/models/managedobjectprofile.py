@@ -45,6 +45,7 @@ class ManagedObjectProfile(models.Model):
     ## FM settings
     enable_ping = models.BooleanField(
         _("Enable ping check"), default=True)
+    ping_interval = models.IntegerField(_("Ping interval"), default=60)
     # Host down alarm severity
     # Default impact is MAJOR/4000
     down_severity = models.IntegerField(

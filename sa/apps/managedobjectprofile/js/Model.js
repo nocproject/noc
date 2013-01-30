@@ -55,6 +55,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: true
         },
         {
+            name: "ping_interval",
+            type: "int",
+            defaultValue: 60
+        },
+        {
             name: "down_severity",
             type: "int",
             defaultValue: 4000
