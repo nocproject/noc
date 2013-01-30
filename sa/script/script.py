@@ -77,8 +77,8 @@ class ScriptCallProxy(object):
     def __call__(self, **kwargs):
         """Call script"""
         s = self.script(self.parent.profile, self.parent.activator,
-                        self.parent.access_profile, parent=self.parent,
-                        **kwargs)
+            self.parent.object_name, self.parent.access_profile,
+            parent=self.parent, **kwargs)
         return s.guarded_run()
 
 
@@ -173,9 +173,11 @@ class Script(threading.Thread):
     #
     _execute_chain = []
 
-    def __init__(self, profile, _activator, access_profile, timeout=0, parent=None, **kwargs):
+    def __init__(self, profile, _activator, object_name, access_profile,
+                 timeout=0, parent=None, **kwargs):
         self.start_time = time.time()
         self.parent = parent
+        self.object_name = object_name
         self.access_profile = access_profile
         self.attrs = {}
         self._timeout = timeout if timeout else self.TIMEOUT
@@ -185,7 +187,7 @@ class Script(threading.Thread):
             p = self.access_profile.path
         else:
             p = "<unknown>"
-        self.debug_name = "script-%s-%s" % (p, self.name)
+        self.debug_name = "%s(%s, %s)" % (self.name, self.object_name, p)
         self.encoding = None  # Device encoding. None if UTF8
         for a in access_profile.attrs:
             self.attrs[a.key] = a.value

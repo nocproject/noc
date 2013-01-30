@@ -388,7 +388,7 @@ class Activator(Daemon, FSM):
         with self.script_lock:
             return len(self.script_threads) < self.max_script_threads
 
-    def run_script(self, script_name, access_profile, callback,
+    def run_script(self, object_name, script_name, access_profile, callback,
                    timeout, **kwargs):
         """
         Begin script execution
@@ -398,7 +398,7 @@ class Activator(Daemon, FSM):
         script_class = script_registry[script_name]
         if not timeout:
             timeout = script_class.TIMEOUT
-        script = script_class(profile, self, access_profile, timeout, **kwargs)
+        script = script_class(profile, self, object_name, access_profile, timeout, **kwargs)
         logging.info("Script %s(%s). Timeout set to %s" % (script_name,
                                             access_profile.address, timeout))
         with self.script_lock:
@@ -421,7 +421,7 @@ class Activator(Daemon, FSM):
             s = "is completed"
             failed = 0
         logging.info("Script %s(%s) %s" % (script.name,
-                                           script.access_profile.address, s))
+                                           script.debug_name, s))
         with self.script_lock:
             cb = self.script_threads.pop(script)
             logging.info("%d script threads left (%d max)" % (

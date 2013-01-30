@@ -133,7 +133,7 @@ class ScriptTestCase(unittest.TestCase):
             a.scheme = 2
         # Run script.
         script = script_registry[self.script](profile, ActivatorStub(self),
-                                              a, **self.input)
+                                              "test", a, **self.input)
         # Install mock get_version into cache, if necessary
         s = self.script.split(".")
         if self.mock_get_version and s[-1] != "get_version":

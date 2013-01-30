@@ -190,10 +190,10 @@ class ActivatorStub(object):
         if script.parent is None:
             self.servers.close()
 
-    def run_script(self, _script_name, access_profile, callback, timeout=0, **kwargs):
+    def run_script(self, object_name, _script_name, access_profile, callback, timeout=0, **kwargs):
         pv, pos, sn = _script_name.split(".", 2)
         profile = profile_registry["%s.%s" % (pv, pos)]()
-        script = script_registry[_script_name](profile, self, access_profile, **kwargs)
+        script = script_registry[_script_name](profile, self, object_name, access_profile, **kwargs)
         self.scripts += [script]
         if self.to_save_output:
             platform = None
@@ -330,6 +330,7 @@ class Command(BaseCommand):
         os_name = None
         profile = None
         r = ScriptRequest()
+        r.object_name = obj
         # Normalize script name
         if "." in script:
             vendor, os_name, script = script.split(".", 2)
