@@ -20,11 +20,27 @@ class Script(NOCScript):
     rx_mac = re.compile(r"System MAC[^:]*?:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    ##
-    ## Other
-    ##
-    @NOCScript.match()
-    def execute_other(self):
+    def execute(self):
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                # Get interface physAddress
+                # IF-MIB::ifPhysAddress
+                for i, m in self.join_four_tables(self.snmp,
+                    "1.3.6.1.2.1.2.2.1.6",
+                    bulk=True):
+                    if i == 1:
+                        first_mac = MACAddressParameter().clean(m)
+                    last_mac = MACAddressParameter().clean(m)
+
+                return {
+                    "first_chassis_mac": first_mac,
+                    "last_chassis_mac": last_mac
+                }
+                    
+            except self.snmp.TimeOutError:
+                pass
+
+        # Fallback to CLI
         v = self.cli("show system")
         match = self.re_search(self.rx_mac, v)
         mac = MACAddressParameter().clean(match.group("id"))
@@ -32,3 +48,15 @@ class Script(NOCScript):
             "first_chassis_mac": mac,
             "last_chassis_mac": mac
         }
+
+
+    def join_four_tables(self, snmp, oid1,
+        community_suffix=None, bulk=False, min_index=None, max_index=None,
+        cached=False):       
+        t1 = snmp.get_table(oid1, community_suffix=community_suffix, bulk=bulk,
+            min_index=min_index, max_index=max_index, cached=cached)
+        for k1, v1 in t1.items():
+            try:
+                yield (k1, v1)
+            except KeyError:
+                pass
