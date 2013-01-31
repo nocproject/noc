@@ -40,6 +40,9 @@ class UserChangeForm(forms.ModelForm):
         if args:
             self.new_perms = set([p[5:] for p in args[0] if p.startswith("perm_")])
 
+    def clean_password(self):
+        return self.initial["password"]
+
     def save(self, commit=True):
         model = super(UserChangeForm, self).save(commit)
         model.is_staff = True
