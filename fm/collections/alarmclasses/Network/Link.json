@@ -147,6 +147,7 @@
                 "name": "Other side link down",
                 "root__name": "Network | Link | Link Down",
                 "window": 60,
+                "condition": "alarm.vars.get('link') is not None",
                 "match_condition": {
                     "vars__link": "alarm.vars['link']"
                 }
