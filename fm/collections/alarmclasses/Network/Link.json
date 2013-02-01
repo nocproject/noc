@@ -124,6 +124,13 @@
                 "type": "str",
                 "required": false,
                 "default": "=InterfaceDS.description"
+            },
+            {
+                "name": "link",
+                "description": "Link ID",
+                "type": "str",
+                "required": false,
+                "default": "=InterfaceDS.link"
             }
         ],
         "text": {
@@ -136,6 +143,14 @@
             }
         },
         "root_cause": [
+            {
+                "name": "Other side link down",
+                "root__name": "Network | Link | Link Down",
+                "window": 60,
+                "match_condition": {
+                    "vars__link": "alarm.vars['link']"
+                }
+            },
             {
                 "name": "Linecard Down",
                 "root__name": "Chassis | Linecard | LC Down",
