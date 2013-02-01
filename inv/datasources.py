@@ -26,6 +26,7 @@ class InterfaceDS(DataSource):
             return None
         return self._interface.description
 
+    @property
     def link(self):
         if not self._interface:
             return None
