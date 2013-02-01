@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Inventory module datasources
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -25,3 +25,12 @@ class InterfaceDS(DataSource):
         if not self._interface:
             return None
         return self._interface.description
+
+    def link(self):
+        if not self._interface:
+            return None
+        link = self._interface.link
+        if link:
+            return str(link.id)
+        else:
+            return None
