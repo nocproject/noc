@@ -127,6 +127,8 @@ class Activator(Daemon, FSM):
         self.children = {}
         self.sae_stream = None
         self.to_listen = False  # To start or not to start collectors
+        self.ping_count = self.config.getint("activator", "ping_count")
+        self.ping_timeout = self.config.getint("activator", "ping_timeout")
         self.to_ping = self.config.get("activator", "ping_instance") == self.instance_id  # To start or not to start ping checks
         if self.to_ping:
             self.ping4_socket = Ping4Socket(self.factory)
@@ -843,8 +845,8 @@ class Activator(Daemon, FSM):
             self.debug("PING %s" % a)
             self.running_pings.add(a)
             self.ping4_socket.ping(
-                a, count=3, timeout=5, callback=self.ping_callback,
-                stop_on_success=True)
+                a, count=self.ping_count, timeout=self.ping_timeout,
+                callback=self.ping_callback, stop_on_success=True)
             i -= 1
 
     def ping_callback(self, address, result):
