@@ -1686,7 +1686,7 @@ class ActiveAlarm(nosql.Document):
         self.root = root_alarm.id
         self.log_message("Alarm %s has been marked as root cause" % root_alarm.id)
         # self.save()  Saved by log_message
-        root_alarm.log_message("Alarm %s has meen marked as child" % self.id)
+        root_alarm.log_message("Alarm %s has been marked as child" % self.id)
 
 
 class ArchivedAlarm(nosql.Document):
