@@ -106,6 +106,8 @@ class TelnetProtocol(Protocol):
             r = DO if opt in ACCEPTED_TELNET_OPTIONS else DONT
         elif cmd == WONT:
             r = DONT
+        else:
+            return  # Ignore invalid IAC command
         self.iac_response(r, opt)
         # Process NAWS
         if cmd == DO and opt == "\x1f":  # NAWS
