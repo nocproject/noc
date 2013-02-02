@@ -59,6 +59,15 @@ class Scheduler(object):
         self.max_threads = max_threads
         self.preserve_order = preserve_order
 
+    def ensure_indexes(self):
+        if self.preserve_order:
+            k = [("ts", 1), ("_id", 1)]
+        else:
+            k = [("ts", 1)]
+        self.debug("Checking indexes: %s" % ", ".join(x[0] for x in k))
+        self.collection.ensure_index(k)
+        self.debug("Indexes are ready")
+
     def debug(self, msg):
         logging.debug("[%s] %s" % (self.name, msg))
 
@@ -372,6 +381,7 @@ class Scheduler(object):
             }, {
                 "$set": {self.ATTR_STATUS: self.S_WAIT}
             }, multi=True, safe=True)
+        self.ensure_indexes()
         self.info("Running scheduler")
         while True:
             if not self.run_pending():
