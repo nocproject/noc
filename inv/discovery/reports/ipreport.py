@@ -176,7 +176,7 @@ class IPReport(Report):
                 "vrf": vrf.name,
                 "interface": interface,
                 "existing_vrf": a.vrf.name,
-                "existing_object": a.managed_object.name
+                "existing_object": a.managed_object.name if a.managed_object else None
             },
             log=[]
         ).save()
