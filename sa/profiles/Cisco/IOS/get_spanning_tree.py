@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_spanning_tree
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -70,7 +70,7 @@ class Script(NOCScript):
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_pvst_interfaces = re.compile(
         r"Port \d+ \((?P<interface>\S+)\) of VLAN(?P<instance_id>\d+) is \S+.+?"
-        r"Port path cost (?P<cost>\d+), Port priority (?P<priority>\d+), Port Identifier (?P<port_id>\S+)\..+?"
+        r"Port path cost (?P<cost>\d+), Port priority (?P<priority>\d+), Port Identifier\s+(?P<port_id>\S+)\..+?"
         r"Designated bridge has priority (?P<designated_bridge_priority>\d+), address (?P<designated_bridge_id>\S+).+?"
         r"Designated port id is (?P<designated_port_id>\S+), designated path cost \d+",
         re.DOTALL | re.IGNORECASE | re.MULTILINE)
@@ -117,7 +117,6 @@ class Script(NOCScript):
                     "point_to_point": port_attrs["point_to_point"],
                     "edge": port_attrs["edge"],
                     }]
-            r["instances"][-1]["interfaces"] = interfaces
         for I in r["instances"]:
             I["interfaces"] = interfaces[I["id"]]
         return r
