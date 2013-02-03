@@ -16,6 +16,7 @@ import cPickle
 import time
 import stat
 import hashlib
+import pprint
 ## NOC modules
 from noc.settings import CRASHINFO_LIMIT
 from noc.lib.version import get_version
@@ -182,10 +183,12 @@ def format_frames(frames, reverse=True):
         r += [u"Variables:"]
         for n, v in f["vars"]:
             try:
-                v = unicode(repr(v), "utf-8")
+                pv = unicode(repr(v), "utf-8")
             except:
-                v = u"repr() failed"
-            r += [u"%20s = %s" % (n, v)]
+                pv = u"repr() failed"
+            if len(pv) > 72:
+                pv = "\n" + pprint.pformat(v)
+            r += [u"%20s = %s" % (n, pv)]
         r += [u"-" * 72]
     r += [u"END OF TRACEBACK"]
     return u"\n".join(r)
