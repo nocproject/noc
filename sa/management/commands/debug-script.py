@@ -32,6 +32,7 @@ from noc.lib.url import URL
 from noc.lib.nbsocket import SocketFactory, UDPSocket
 from noc.lib.validators import is_int
 from noc.lib.fileutils import read_file
+from noc.lib.test.beeftestcase import BeefTestCase
 
 
 class Controller(object):
@@ -77,10 +78,8 @@ class SessionCan(object):
 
     def dump(self, output):
         """Dump canned data"""
-        from noc.lib.test import ScriptTestCase
-
         vendor, profile, script = self.script_name.split(".")
-        ScriptTestCase.save_beef(output, script=self.script_name,
+        BeefTestCase().save_beef(output, script=self.script_name,
             vendor=vendor, platform=self.platform, version=self.version,
             input=self.input, result=self.result,
             cli=self.cli, snmp_get=self.snmp_get,

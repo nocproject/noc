@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## ScriptTestCase
-##     Canned beef base class
+## Canned beef test case
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -13,6 +12,7 @@ import re
 import types
 import datetime
 import os
+import uuid
 ## Django modules
 from django.utils import unittest  # unittest2 backport
 ## NOC lib modules
@@ -20,78 +20,99 @@ from noc.sa.models import script_registry, profile_registry
 from noc.lib.test.activatorstub import ActivatorStub
 from noc.sa.protocols.sae_pb2 import AccessProfile
 from noc.settings import TEST_FIXED_BEEF_BASE
+from noc.lib.fileutils import safe_rewrite, read_file
+from noc.lib.serialize import json_encode, json_decode
 
 
-class ScriptTestCase(unittest.TestCase):
+class BeefTestCase(unittest.TestCase):
     """
     Canned beef base class
     """
-    maxDiff = None
-    script = None
-    vendor = None
-    platform = None
-    version = None
-    input = {}
-    result = None
-    motd = ""
-    cli = None
-    snmp_get = {}
-    snmp_getnext = {}
-    http_get = {}
-    mock_get_version = False  # Emulate get_version call
-    ignore_timestamp_mismatch = False
+    beef_args = [
+        "script", "vendor", "platform", "version", "input",
+        "result", "cli", "snmp_get", "snmp_getnext", "http_get", "motd",
+        "mock_get_version", "ignore_timestamp_mismatch", "maxDiff",
+        "date", "private", "guid", "type"]
 
-    rx_timestamp = re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?$")
+    type_signature = "script::beef"
 
-    @classmethod
-    def save_beef(cls, path, **kwargs):
+    def __init__(self, *args, **kwargs):
+        super(BeefTestCase, self).__init__(*args, **kwargs)
+        self.guid = None
+        self.maxDiff = None
+        self.script = None
+        self.vendor = None
+        self.platform = None
+        self.version = None
+        self.input = {}
+        self.result = None
+        self.motd = ""
+        self.cli = None
+        self.snmp_get = {}
+        self.snmp_getnext = {}
+        self.http_get = {}
+        self.mock_get_version = False  # Emulate get_version call
+        self.ignore_timestamp_mismatch = False
+        self.private = False
+        self.type = self.type_signature
+
+    def load_beef(self, path):
         """
-        Save canned beef to file
-        :param cls:
+        Load beef from JSON file
         :param path:
-        :param kwargs:
         :return:
         """
-        def format_stringdict(d):
-            def lrepr(s):
-                return repr(s)[1:-1]
+        def q(s):
+            ts = type(s)
+            if ts == dict:
+                return dict((k, q(s[k])) for k in s)
+            elif ts == list:
+                return [q(x) for x in s]
+            elif isinstance(s, basestring):
+                return s.decode("string_escape")
+            else:
+                return s
 
-            out = ["{"]
-            for k, v in d.items():
-                lines = v.splitlines()
-                if len(lines) < 4:
-                    out += ["%s:  %s, " % (repr(k), repr(v))]
-                else:
-                    out += ["## %s" % repr(k)]
-                    out += ["%s: \"\"\"%s" % (repr(k), lrepr(lines[0]))]
-                    out += [lrepr(l) for l in lines[1:-1]]
-                    out += ["%s\"\"\", " % lrepr(lines[-1])]
-            out += ["}"]
-            return "\n".join(out)
+        data = read_file(path)
+        if not data:
+            raise OSError("Cannot read file: %s" % path)
+        beef = json_decode(data)
+        if beef.get("type") != self.type_signature:
+            raise ValueError("Invalid beef '%s'. Signature mismatch" % path)
+        for n in self.beef_args:
+            if n in beef:
+                setattr(self, n, q(beef[n]))
+        self._testMethodDoc = "%s [%s]" % (beef["script"], beef["guid"])
 
-        import pprint
-        from django.template import loader
-        from noc.lib.fileutils import safe_rewrite
+    def save_beef(self, path, **kwargs):
+        def q(s):
+            ts = type(s)
+            if ts == datetime.datetime:
+                return s.isoformat()
+            elif ts == dict:
+                return dict((k, q(s[k])) for k in s)
+            elif ts == list:
+                return [q(x) for x in s]
+            elif ts == tuple:
+                return tuple([q(x) for x in s])
+            elif isinstance(s, basestring):
+                return str(s).encode("string_escape")
+            else:
+                return s
 
-        script = kwargs.get("script", cls.script)
+        beef = dict((k, getattr(self, k, None)) for k in self.beef_args)
+        beef.update(kwargs)
+        if not beef.get("date"):
+            beef["date"] = datetime.datetime.now()
+        if not beef.get("guid"):
+            beef["guid"] = str(uuid.uuid4())
+        beef = q(beef)
+        if os.path.isdir(path):
+            path = os.path.join(path, beef["guid"] + ".json")
+        safe_rewrite(path, json_encode(beef))
+        return path
 
-        beef = loader.render_to_string("sa/templates/beef.py.tpl", {
-            "script": script,
-            "test_name": script.replace(".", "_") + "_Test",
-            "vendor": kwargs.get("vendor", cls.vendor),
-            "platform": kwargs.get("platform", cls.platform),
-            "version": kwargs.get("version", cls.version),
-            "date": datetime.datetime.now(),
-            "input": pprint.pformat(kwargs.get("input", cls.input)),
-            "result": pprint.pformat(kwargs.get("result", cls.result)),
-            "cli": format_stringdict(kwargs.get("cli", cls.cli)),
-            "snmp_get": pprint.pformat(kwargs.get("snmp_get", cls.snmp_get)),
-            "snmp_getnext": pprint.pformat(kwargs.get("snmp_getnext",
-                                                     cls.snmp_getnext)),
-            "http_get": pprint.pformat(kwargs.get("http_get", cls.http_get)),
-            "motd": pprint.pformat(kwargs.get("motd", cls.motd))
-        })
-        safe_rewrite(path, beef)
+    rx_timestamp = re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?$")
 
     def clean_timestamp(self, r):
         if isinstance(r, basestring):
@@ -117,11 +138,11 @@ class ScriptTestCase(unittest.TestCase):
         :param new_result:
         :return:
         """
-        l = [TEST_FIXED_BEEF_BASE] + self.__class__.__module__.split(".")[1:]
-        path = os.path.join(*l) + ".py"
+        l = [TEST_FIXED_BEEF_BASE] + self.script.split(".")[1:]
+        path = os.path.join(*l) + ".json"
         self.save_beef(path, result=new_result)
 
-    def test_script(self):
+    def runTest(self):
         p = self.script.split(".")
         profile = profile_registry[".".join(p[:2])]()
         # Prepare access profile
