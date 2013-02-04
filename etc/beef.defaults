@@ -1,0 +1,5 @@
+[sa_public]
+enabled = true
+type = sa
+private = false
+repo = https://bitbucket.org/dvolodin/noc-sa-beef-public
