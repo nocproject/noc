@@ -46,7 +46,9 @@ class Command(BaseCommand):
                     default=True, help="Ask before dropping database"),
         make_option("--no-interactive", action="store_false",
                     dest="interactive",
-                    default=True, help="Do not ask before dropping database")
+                    default=True, help="Do not ask before dropping database"),
+        make_option("--beef", action="append", dest="beef",
+            help="Canned beef path")
     )
     help = 'Runs the test suite for the specified applications, or the entire project if no apps are specified.'
     args = '[appname ...]'
@@ -61,6 +63,7 @@ class Command(BaseCommand):
         coverage_xml_out = options.get("coverage_xml_out")
         coverage_html_out = options.get("coverage_html_out")
         fixed_beef_base = options.get("fixed_beef_base")
+        beef = options.get("beef")
         
         # Check directory for HTML coverage report exists
         if coverage_html_out:
@@ -80,12 +83,15 @@ class Command(BaseCommand):
         # Disable database flush
         management._commands["flush"] = NoFlushCommand()
         # Run tests
-        failures = TestRunner(test_labels=test_labels, verbosity=verbosity,
-                              interactive=interactive,
-                              reuse_db=reuse_db,
-                              junit_xml_out=junit_xml_out,
-                              coverage_xml_out=coverage_xml_out,
-                              coverage_html_out=coverage_html_out,
-                              fixed_beef_base=fixed_beef_base).run()
+        failures = TestRunner(
+            test_labels=test_labels, verbosity=verbosity,
+            interactive=interactive,
+            reuse_db=reuse_db,
+            junit_xml_out=junit_xml_out,
+            coverage_xml_out=coverage_xml_out,
+            coverage_html_out=coverage_html_out,
+            fixed_beef_base=fixed_beef_base,
+            beef=beef
+        ).run()
         if failures:
             sys.exit(1 if failures else 0)

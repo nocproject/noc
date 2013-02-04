@@ -27,6 +27,7 @@ from noc.lib.test.importtestcase import ImportTestCase
 from noc.lib.test.coveragecontext import CoverageContext
 from noc.lib.test.databasecontext import DatabaseContext
 from noc.lib.test.testenvironmentcontext import TestEnvironmentContext
+from noc.lib.test.beeftestcase import BeefTestCase
 
 
 class TestRunner(object):
@@ -38,7 +39,8 @@ class TestRunner(object):
     def __init__(self, test_labels, verbosity=1, interactive=True,
                  extra_tests=[], reuse_db=False,
                  junit_xml_out=None, coverage_xml_out=None,
-                 coverage_html_out=None, fixed_beef_base=None):
+                 coverage_html_out=None, fixed_beef_base=None,
+                 beef=None):
         self.test_labels = test_labels
         self.verbosity = verbosity
         self.loglevel = logging.DEBUG if self.verbosity > 1 else logging.INFO
@@ -52,6 +54,7 @@ class TestRunner(object):
         self.coverage_html_out = coverage_html_out
         if fixed_beef_base:
             noc.settings.TEST_FIXED_BEEF_BASE = fixed_beef_base
+        self.beef = beef or []
 
     def info(self, message):
         logging.info(message)
@@ -171,6 +174,17 @@ class TestRunner(object):
             n_unittests, n_mods))
         return modules, tests
 
+    def get_beef(self, path):
+        r = []
+        for prefix, dirnames, filenames in os.walk(path):
+            for f in filenames:
+                if f.endswith(".json"):
+                    p = os.path.join(prefix, f)
+                    tc = BeefTestCase()
+                    tc.load_beef(p)
+                    r += [tc]
+        return r
+
     def get_suite(self, modules, tests):
         # Prepare suite
         suite = unittest.TestSuite()
@@ -200,6 +214,9 @@ class TestRunner(object):
                     if obj.__module__ == m:
                         t += [unittest.defaultTestLoader.loadTestsFromTestCase(obj)]
             suite.addTest(unittest.TestSuite(t))
+        # Add beef tests
+        for path in self.beef:
+            suite.addTests(self.get_beef(path))
         self.info("Test suite build: %d test cases are found" % suite.countTestCases())
         return suite
 
@@ -219,8 +236,11 @@ class TestRunner(object):
             modules, tests = self.get_modules(self.test_labels)
             # Check modules are found
             if len(modules) == 0 and len(tests) == 0:
-                self.info("No modules to test. Exiting")
-                return 0
+                if self.beef:
+                    self.reuse_db = True
+                else:
+                    self.info("No modules to test. Exiting")
+                    return 0
             # Run test suite in database and coverage context
             with self.coverage():
                 with self.databases(reuse=self.reuse_db):
