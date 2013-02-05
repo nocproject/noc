@@ -41,7 +41,7 @@ class Controller(object):
 
 class SessionCan(object):
     """Canned beef output"""
-    def __init__(self, script_name, input={}):
+    def __init__(self, script_name, input={}, private=False):
         self.cli = {}  # Command -> result
         self.input = input
         self.result = None
@@ -52,6 +52,7 @@ class SessionCan(object):
         self.http_get = {}
         self.platform = "<<<INSERT YOUR PLATFORM HERE>>>"
         self.version = "<<<INSERT YOUR VERSION HERE>>>"
+        self.private = private
 
     def set_version(self, platform, version):
         self.platform = platform
@@ -84,7 +85,7 @@ class SessionCan(object):
             input=self.input, result=self.result,
             cli=self.cli, snmp_get=self.snmp_get,
             snmp_getnext=self.snmp_getnext, http_get=self.http_get,
-            motd=self.motd
+            motd=self.motd, private=self.private
         )
 
 
@@ -102,7 +103,7 @@ class ActivatorStub(object):
     """
     WAIT_TICKS = 4
 
-    def __init__(self, script_name, values=[], output=None):
+    def __init__(self, script_name, values=[], output=None, private=False):
         # Simple config stub
         self.config = ConfigParser.SafeConfigParser()
         self.config.read("etc/noc-activator.defaults")
@@ -123,7 +124,7 @@ class ActivatorStub(object):
             args = {}
             for k, v in values:
                 args[k] = cPickle.loads(v)
-            self.session_can = SessionCan(self.script_name, args)
+            self.session_can = SessionCan(self.script_name, args, private)
         # SSH keys
         self.ssh_public_key = None
         self.ssh_private_key = None
@@ -242,7 +243,8 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option("-c", "--read-community", dest="snmp_ro"),
         make_option("-o", "--output", dest="output"),
-        make_option("-p", "--profile", dest="profile", action="store_true")
+        make_option("-p", "--profile", dest="profile", action="store_true"),
+        make_option("-P", "--private", action="store_true", dest="private")
         )
 
     def SIGINT(self, signo, frame):
@@ -260,6 +262,7 @@ class Command(BaseCommand):
         print "Where:"
         print "\t-c <community> - SNMP RO Community"
         print "\t-o <output>    - Canned beef output"
+        print "\t--private      - Mark canned beef as private"
         print "\t--profile      - Run through python profiler"
         return
 
@@ -421,7 +424,8 @@ class Command(BaseCommand):
         ## Prepare activator stub
         self.tf = TransactionFactory()
         service = Service()
-        service.activator = ActivatorStub(requests[0].script if output else None, values, output)
+        service.activator = ActivatorStub\
+            (requests[0].script if output else None, values, output, bool(options.get("private")))
 
         ## Run scripts
         def run():
