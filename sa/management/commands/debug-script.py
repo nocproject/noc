@@ -80,7 +80,7 @@ class SessionCan(object):
     def dump(self, output):
         """Dump canned data"""
         vendor, profile, script = self.script_name.split(".")
-        BeefTestCase().save_beef(output, script=self.script_name,
+        return BeefTestCase().save_beef(output, script=self.script_name,
             vendor=vendor, platform=self.platform, version=self.version,
             input=self.input, result=self.result,
             cli=self.cli, snmp_get=self.snmp_get,
@@ -164,8 +164,8 @@ class ActivatorStub(object):
             if not self.wait_ticks:
                 logging.debug("EXIT")
                 if self.to_save_output:
-                    logging.debug("Writing session test to %s" % self.output)
-                    self.session_can.dump(self.output)
+                    p = self.session_can.dump(self.output)
+                    logging.debug("Writing session test to %s" % p)
                 # Finally dump results
                 for s in self.scripts:
                     if s.result:
