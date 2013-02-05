@@ -2,17 +2,18 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_fqdn
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-import noc.sa.script
-from noc.sa.interfaces import IGetFQDN
+
+## Python modules
 import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetFQDN
 
 
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name = "Cisco.IOS.get_fqdn"
     implements = [IGetFQDN]
     rx_hostname = re.compile(r"^hostname\s+(?P<hostname>\S+)", re.MULTILINE)
@@ -20,6 +21,14 @@ class Script(noc.sa.script.Script):
         re.MULTILINE)
 
     def execute(self):
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                # sysName.0
+                v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
+                if v:
+                   return v
+            except self.snmp.TimeOutError:
+                pass
         v = self.cli(
             "show running-config | include ^(hostname|ip domain.name)")
         fqdn = []
