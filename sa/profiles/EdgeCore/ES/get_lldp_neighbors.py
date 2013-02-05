@@ -29,9 +29,11 @@ class Script(NOCScript):
     ##
     ## 35xx
     ##
-    rx_localport = re.compile(r"^\s*Eth(.+?)\s*\| MAC Address\s+(\S+).+?$", re.MULTILINE | re.DOTALL)
-    rx_neigh = re.compile(r"(?P<local_if>Eth\s\S+)\s+\|\s+(?P<id>\S+).*?(?P<name>\S+)$", re.MULTILINE | re.IGNORECASE)
-    rx_detail = re.compile(r".*Chassis Id\s+:\s(?P<id>\S+).*?PortID Type\s+:\s(?P<p_type>[^\n]+).*?PortID\s+:\s(?P<p_id>[^\n]+).*?SysName\s+:\s(?P<name>\S+).*?SystemCapSupported\s+:\s(?P<capability>[^\n]+).*", re.MULTILINE | re.IGNORECASE | re.DOTALL)
+
+
+    rx_localport = re.compile(r"^\s*Eth(| )(.+?)\s*(\|)MAC Address\s+(\S+).+?$", re.MULTILINE | re.DOTALL)
+    rx_neigh = re.compile(r"(?P<local_if>Eth\s\S+)\s+(\||)\s+(?P<id>\S+).*?(?P<name>\S+)$", re.MULTILINE | re.IGNORECASE)
+    rx_detail = re.compile(r".*Chassis I(d|D)\s+:\s(?P<id>\S+).*?Port(|\s+)ID Type\s+:\s(?P<p_type>[^\n]+).*?Port(|\s+)ID\s+:\s(?P<p_id>[^\n]+).*?Sys(|tem\s+)Name\s+:\s(?P<name>\S+).*?SystemCapSupported\s+:\s(?P<capability>[^\n]+).*", re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     @NOCScript.match()
     def execute_35(self):
