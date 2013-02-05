@@ -152,6 +152,9 @@ class Command(BaseCommand):
             pprint.pprint(tc.snmp_getnext)
 
     def handle_view(self, *args, **options):
+        for f in args:
+            if os.path.isfile(f):
+                self.show_beef(f)
         for r in self.iter_repos(**options):
             for f in self.iter_repo_files(r):
                 d, fn = os.path.split(f)
