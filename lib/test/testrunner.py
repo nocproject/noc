@@ -12,6 +12,7 @@ import os
 import unittest
 import logging
 import types
+import ConfigParser
 ## Django modules
 from django.utils import unittest  # unittest2 backport
 from django.conf import settings
@@ -54,7 +55,7 @@ class TestRunner(object):
         self.coverage_html_out = coverage_html_out
         if fixed_beef_base:
             noc.settings.TEST_FIXED_BEEF_BASE = fixed_beef_base
-        self.beef = beef or []
+        self.beef = beef or self.get_beef_paths()
 
     def info(self, message):
         logging.info(message)
@@ -173,6 +174,17 @@ class TestRunner(object):
         self.info("Found: %d unittest modules, %d python modules" % (
             n_unittests, n_mods))
         return modules, tests
+
+    def get_beef_paths(self):
+        r = []
+        config = ConfigParser.SafeConfigParser()
+        config.read("etc/beef.defaults")
+        config.read("etc/beef.conf")
+        for s in config.sections():
+            if (config.getboolean(s, "enabled") and
+                config.get(s, "type") == "sa"):
+                r += ["local/repos/sa/%s/" % s]
+        return r
 
     def get_beef(self, path):
         r = []
