@@ -22,12 +22,12 @@ from django.core import management
 from south.logger import get_logger
 ## NOC modules
 import noc.settings
-from noc.lib.test.testresult import NOCTestResult
-from noc.lib.test.importtestcase import ImportTestCase
-from noc.lib.test.coveragecontext import CoverageContext
-from noc.lib.test.databasecontext import DatabaseContext
-from noc.lib.test.testenvironmentcontext import TestEnvironmentContext
-from noc.lib.test.beeftestcase import BeefTestCase
+from testresult import NOCTestResult
+from importtestcase import ImportTestCase
+from coveragecontext import CoverageContext
+from databasecontext import DatabaseContext
+from testenvironmentcontext import TestEnvironmentContext
+from beeftestcase import BeefTestCase
 
 
 class TestRunner(object):
