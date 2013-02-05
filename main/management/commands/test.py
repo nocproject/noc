@@ -16,7 +16,7 @@ from django.core import management
 ## Third-party modules
 from south.management.commands import MigrateAndSyncCommand
 ## NOC modules
-from noc.lib.test_runner import TestRunner
+from noc.lib.test.testrunner import TestRunner
 
 
 class NoFlushCommand(BaseCommand):
