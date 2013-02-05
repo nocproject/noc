@@ -594,5 +594,3 @@ class RestModelTestCase(AjaxTestCase):
                     self.assertEquals(status, self.HTTP_NOT_FOUND)
                 else:
                     self.assertEquals(status, self.HTTP_FORBIDDEN)
-
-from noc.lib.test.scripttestcase import ScriptTestCase
