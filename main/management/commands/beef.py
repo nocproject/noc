@@ -12,6 +12,7 @@ import ConfigParser
 from collections import namedtuple
 import os
 import subprocess
+import pprint
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
@@ -26,21 +27,34 @@ class Command(BaseCommand):
             action="store_const", dest="cmd", const="list_repo",
             help="List repos"
         ),
-        make_option("-T", "--test-runner",
-            action="store_const", dest="cmd", const="test_runner",
-            help="List repos"
-        ),
         make_option("-p", "--pull",
             action="store_const", dest="cmd", const="pull",
             help="Pull repos"),
         make_option("-r", "--repo", action="store", dest="repo",
             help="Select repo"),
         make_option("-l", "--list", action="store_const", dest="cmd",
-            const="list")
+            const="list"),
+        make_option("-V", "--view", action="store_const", dest="cmd",
+            const="view")
     )
 
     def local_repo_path(self, r):
         return "local/repos/%s/%s/" % (r.type, r.name)
+
+    def iter_repos(self, **options):
+        repo = options.get("repo")
+        for r in self.repos:
+            if repo and r.name != repo:
+                continue
+            if not r.enabled:
+                continue
+            yield r
+
+    def iter_repo_files(self, r):
+        for prefix, dirnames, filenames in os.walk(self.local_repo_path(r)):
+            for f in filenames:
+                if f.endswith(".json"):
+                    yield os.path.join(prefix, f)
 
     def load_config(self):
         config = ConfigParser.SafeConfigParser()
@@ -82,10 +96,6 @@ class Command(BaseCommand):
                 "Y" if r.private else "N",
                 r.type, r.name, r.repo)
 
-    def handle_test_runner(self, *args, **options):
-        r = [self.local_repo_path(r) for r in self.repos if r.enabled]
-        print " ".join("--beef=%s" % x for x in r)
-
     def handle_pull(self, *args, **options):
         repo = options.get("repo")
         for r in self.repos:
@@ -107,20 +117,45 @@ class Command(BaseCommand):
             self.hg(rp, "pull", r.repo, "-u")
 
     def handle_list(self, *args, **options):
-        repo = options.get("repo")
         print "Repo,Profile,Script,Vendor,Platform,Version,GUID"
-        for r in self.repos:
-            if repo and r.name != repo:
-                continue
-            if not r.enabled:
-                continue
-            for prefix, dirnames, filenames in os.walk(self.local_repo_path(r)):
-                for f in filenames:
-                    if not f.endswith(".json"):
-                        continue
-                    tc = BeefTestCase()
-                    tc.load_beef(os.path.join(prefix, f))
-                    profile, script = tc.script.rsplit(".", 1)
-                    print "%s,%s,%s,%s,%s,%s,%s" % (
-                        r.name, profile, script,
-                        tc.vendor, tc.platform, tc.version, tc.guid)
+        for r in self.iter_repos(**options):
+            for f in  self.iter_repo_files(r):
+                tc = BeefTestCase()
+                tc.load_beef(f)
+                profile, script = tc.script.rsplit(".", 1)
+                print "%s,%s,%s,%s,%s,%s,%s" % (
+                    r.name, profile, script,
+                    tc.vendor, tc.platform, tc.version, tc.guid)
+
+    def show_beef(self, path):
+        tc = BeefTestCase()
+        tc.load_beef(path)
+        print "===[ %s {%s} ]==========" % (tc.script, tc.guid)
+        print "Platform: %s %s" % (tc.vendor, tc.platform)
+        print "Version : %s" % tc.version
+        print "Date    : %s" % tc.date
+        if tc.input:
+            print "---[ Input ] -----------"
+            pprint.pprint(tc.input)
+        if tc.result:
+            print "---[ Result ] -----------"
+            pprint.pprint(tc.result)
+        if tc.cli:
+            print "---[ CLI ] ----------"
+            for cmd in tc.cli:
+                print "+--->>>", cmd
+                print tc.cli[cmd]
+        if tc.snmp_get:
+            print "---[SNMP GET]---"
+            pprint.pprint(tc.snmp_get)
+        if tc.snmp_getnext:
+            print "---[SNMP GET]---"
+            pprint.pprint(tc.snmp_getnext)
+
+    def handle_view(self, *args, **options):
+        for r in self.iter_repos(**options):
+            for f in self.iter_repo_files(r):
+                d, fn = os.path.split(f)
+                guid, _ = os.path.splitext(fn)
+                if guid in args:
+                    self.show_beef(f)
