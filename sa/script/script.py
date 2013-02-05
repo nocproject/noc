@@ -201,7 +201,7 @@ class Script(threading.Thread):
                     self.debug("Using '%s' encoding" % v)
                 except LookupError:
                     self.error("Unknown encoding: '%s'" % v)
-        super(Script, self).__init__(name=self.debug_name, kwargs=kwargs)
+        super(Script, self).__init__(kwargs=kwargs)
         self.activator = _activator
         self.servers = _activator.servers
         self.profile = profile
