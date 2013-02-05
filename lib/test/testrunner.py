@@ -261,6 +261,7 @@ class TestRunner(object):
                         management.call_command("sync-perm")
                         #management.call_command("sync-pyrules")
                         management.call_command("sync-collections")
+                        management.call_command("beef", "--pull")
                     # Add as tests
                     suite = self.get_suite(modules, tests)
                     self.info("Running test suite")
