@@ -2,4 +2,4 @@
 enabled = true
 type = sa
 private = false
-repo = https://bitbucket.org/dvolodin/noc-sa-beef-public
+repo = https://bitbucket.org/nocproject/noc-sa-beef-public
