@@ -19,14 +19,12 @@
                 "type": "ip_address",
                 "required": true
             },
-            
             {
                 "name": "mac",
                 "description": "MAC",
                 "type": "mac",
                 "required": false
             },
-            
             {
                 "name": "interface",
                 "description": "Interface",
@@ -39,6 +37,18 @@
                 "name": "dispose",
                 "action": "raise",
                 "alarm_class__name": "Network | IP | Address Conflict"
+            }
+        ],
+        "repeat_suppression": [
+            {
+                "name": "Workaround for console flood on some Cisco routers",
+                "event_class__name": "Network | IP | Address Conflict",
+                "window": 45,
+                "match_condition": {
+                    "managed_object": "event.managed_object.id",
+                    "vars__interface": "vars['ip']"
+                },
+                "suppress": true
             }
         ]
     }
