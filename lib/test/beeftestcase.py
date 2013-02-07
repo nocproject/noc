@@ -19,9 +19,9 @@ from django.utils import unittest  # unittest2 backport
 from noc.sa.models import script_registry, profile_registry
 from noc.lib.test.activatorstub import ActivatorStub
 from noc.sa.protocols.sae_pb2 import AccessProfile
-from noc.settings import TEST_FIXED_BEEF_BASE
 from noc.lib.fileutils import safe_rewrite, read_file
 from noc.lib.serialize import json_encode, json_decode
+import noc.settings
 
 
 class BeefTestCase(unittest.TestCase):
@@ -138,8 +138,8 @@ class BeefTestCase(unittest.TestCase):
         :param new_result:
         :return:
         """
-        l = [TEST_FIXED_BEEF_BASE] + self.script.split(".")[1:]
-        path = os.path.join(*l) + ".json"
+        path = os.path.join(
+            noc.settings.TEST_FIXED_BEEF_BASE, self.guid + ".json")
         self.save_beef(path, result=new_result)
 
     def runTest(self):
@@ -176,7 +176,7 @@ class BeefTestCase(unittest.TestCase):
             else:
                 new_result = result
                 old_result = self.result
-            if TEST_FIXED_BEEF_BASE and old_result != new_result:
+            if noc.settings.TEST_FIXED_BEEF_BASE and old_result != new_result:
                 self.fix_beef(new_result)
             self.assertEquals(new_result, old_result)
         else:
