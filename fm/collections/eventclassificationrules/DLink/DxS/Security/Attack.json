@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:CRIT:|CRIT\\(2\\)) Blat Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+                "value_re": "Blat Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
             }
         ]
     },
@@ -69,7 +69,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:CRIT:|CRIT\\(2\\)) Land Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+                "value_re": "Land Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
             }
         ]
     },
@@ -123,7 +123,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:CRIT:|CRIT\\(2\\)) Smurf Attack is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+                "value_re": "Smurf Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
             }
         ]
     },
@@ -177,7 +177,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:CRIT:|CRIT\\(2\\)) TCP SYNFIN is detected from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+                "value_re": "TCP SYNFIN is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
             }
         ]
     },
@@ -231,7 +231,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "(?:CRIT:|CRIT\\(2\\)) Possible spoofing attack from \\(IP (?P<src_ip>\\S+) MAC (?P<src_mac>\\S+) port (?P<interface>\\S+)\\)$"
+                "value_re": "Possible spoofing attack from \\(IP (?P<src_ip>\\S+) MAC (?P<src_mac>\\S+) port (?P<interface>\\S+)\\)$"
             }
         ]
     },
