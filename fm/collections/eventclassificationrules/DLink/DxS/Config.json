@@ -42,7 +42,7 @@
     },
 
     {
-        "name": "DLink | DxS | Config | Config Changed (SNMP)",
+        "name": "DLink | DxS | Config | Config Changed #1 (SNMP)",
         "description": "AGENT-GENERAL-MIB::agentNotifFirmware",
         "event_class__name": "Config | Config Changed",
         "preference": 1000,
@@ -58,6 +58,35 @@
             {
                 "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
                 "value_re": "^AGENT-GENERAL-MIB::agentNotifFirmware$"
+            },
+            {
+                "key_re": "^AGENT-GENERAL-MIB::agentCfgOperate$",
+                "value_re": "^save$"
+            },
+            {
+                "key_re": "^AGENT-GENERAL-MIB::agentLoginUserName$",
+                "value_re": "^(?P<user>.+)$"
+            }
+        ]
+    },
+
+    {
+        "name": "DLink | DxS | Config | Config Changed #2 (SNMP)",
+        "description": "AGENT-GENERAL-MIB::agentCfgOperCompleteTrap",
+        "event_class__name": "Config | Config Changed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^SNMP Trap$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^DLink\\.DxS$"
+            },
+            {
+                "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+                "value_re": "^AGENT-GENERAL-MIB::agentCfgOperCompleteTrap$"
             },
             {
                 "key_re": "^AGENT-GENERAL-MIB::agentCfgOperate$",
