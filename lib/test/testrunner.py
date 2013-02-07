@@ -41,7 +41,7 @@ class TestRunner(object):
                  extra_tests=[], reuse_db=False,
                  junit_xml_out=None, coverage_xml_out=None,
                  coverage_html_out=None, fixed_beef_base=None,
-                 beef=None):
+                 beef=None, beef_filter=None):
         self.test_labels = test_labels
         self.verbosity = verbosity
         self.loglevel = logging.DEBUG if self.verbosity > 1 else logging.INFO
@@ -56,6 +56,7 @@ class TestRunner(object):
         if fixed_beef_base:
             noc.settings.TEST_FIXED_BEEF_BASE = fixed_beef_base
         self.beef = beef or self.get_beef_paths()
+        self.beef_filter = beef_filter
 
     def info(self, message):
         logging.info(message)
@@ -194,7 +195,13 @@ class TestRunner(object):
                     p = os.path.join(prefix, f)
                     tc = BeefTestCase()
                     tc.load_beef(p)
-                    r += [tc]
+                    if self.beef_filter:
+                        for f in self.beef_filter:
+                            if tc.guid == f or tc.script.startswith(f):
+                                r += [tc]
+                                break
+                    else:
+                        r += [tc]
         return r
 
     def get_suite(self, modules, tests):
