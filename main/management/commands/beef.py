@@ -41,7 +41,9 @@ class Command(BaseCommand):
         make_option("-i", "--import", action="store_const", dest="cmd",
             const="import"),
         make_option("-m", "--manifest", action="store_const", dest="cmd",
-            const="manifest")
+            const="manifest"),
+        make_option("--ensure-private", action="store_const", dest="cmd",
+            const="ensure_private")
     )
 
     def local_repo_path(self, r):
@@ -217,3 +219,13 @@ class Command(BaseCommand):
             path = os.path.join(self.local_repo_path(r), "README.md")
             print "Writing manifest for repo %s" % r.name
             safe_rewrite(path, mf)
+
+    def handle_ensure_private(self, *args, **options):
+        for p in args:
+            if os.path.isfile(p):
+                tc = BeefTestCase()
+                tc.load_beef(p)
+                if not tc.private:
+                    tc.private = True
+                    print "Marking %s as private" % p
+                    tc.save_beef(p)
