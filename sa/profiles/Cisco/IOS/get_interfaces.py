@@ -64,6 +64,7 @@ class Script(NOCScript):
            "Fa": "physical",    # FastEthernet
            "Fd": "physical",    # Fddi
            "Gi": "physical",    # GigabitEthernet
+           "Gm": "physical",    # GMPLS
            "Gr": "physical",    # Group-Async
            "Lo": "loopback",    # Loopback
            "In": "physical",    # Integrated-service-engine
