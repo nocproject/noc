@@ -13,11 +13,12 @@ from collections import namedtuple
 import os
 import subprocess
 import pprint
+from collections import defaultdict
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.lib.test.beeftestcase import BeefTestCase
-from noc.lib.fileutils import copy_file
+from noc.lib.fileutils import copy_file, safe_rewrite
 
 
 class Command(BaseCommand):
@@ -38,7 +39,9 @@ class Command(BaseCommand):
         make_option("-V", "--view", action="store_const", dest="cmd",
             const="view"),
         make_option("-i", "--import", action="store_const", dest="cmd",
-            const="import")
+            const="import"),
+        make_option("-m", "--manifest", action="store_const", dest="cmd",
+            const="manifest")
     )
 
     def local_repo_path(self, r):
@@ -181,3 +184,36 @@ class Command(BaseCommand):
             path = os.path.join(*([r_path] + s + ["%s.json" % tc.guid]))
             print "Importing %s -> %s" % (f, path)
             copy_file(f, path)
+
+    def handle_manifest(self, *args, **options):
+        for r in self.iter_repos(**options):
+            sv = defaultdict(set)
+            for f in self.iter_repo_files(r):
+                tc = BeefTestCase()
+                tc.load_beef(f)
+                sv[tc.script].add(("%s %s" % (tc.vendor, tc.platform),
+                                   tc.version))
+            # Format manifest
+            vp = defaultdict(set)  # vendor -> profile
+            ps = defaultdict(set)  # profile -> script
+            for s in sv:
+                v, p, n = s.split(".")
+                pn = "%s.%s" % (v, p)
+                vp[v].add(pn)
+                ps[pn].add(s)
+            o = []
+            for v in sorted(vp):
+                o += ["# %s" % v]
+                for p in sorted(vp[v]):
+                    o += ["## %s" % p]
+                    for sn in sorted(ps[p]):
+                        o += ["### %s" % sn]
+                        vs = defaultdict(set)  # platform -> version
+                        for platform, version in sv[sn]:
+                            vs[platform].add(version)
+                        for platform in sorted(vs):
+                            o += ["**%s:** %s" % (platform, ", ".join(sorted(vs[platform]))), ""]
+            mf = "\n".join(o)
+            path = os.path.join(self.local_repo_path(r), "README.md")
+            print "Writing manifest for repo %s" % r.name
+            safe_rewrite(path, mf)
