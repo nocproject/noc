@@ -97,12 +97,15 @@ class Script(NOCScript):
                 "admin_status": True,
                 "oper_status": status,
                 "enabled_afi": ["BRIDGE"],
-                "is_bridge": True,
             }]
-            if switchports[iface][1]:
-                n["subinterfaces"][0]["tagged_vlans"] = switchports[iface][1]
-            if switchports[iface][0]:
-                n["subinterfaces"][0]["untagged_vlan"] = switchports[iface][0]
+            if iface in switchports:
+                n["subinterfaces"][0]["is_bridge"] = True
+                if switchports[iface][1]:
+                    n["subinterfaces"][0]["tagged_vlans"] = switchports[iface][1]
+                if switchports[iface][0]:
+                    n["subinterfaces"][0]["untagged_vlan"] = switchports[iface][0]
+                else:
+                     n["subinterfaces"][0]["is_bridge"] = False
             n["type"] = self.types[iface[:2]]
             r += [n]
         for s in self.rx_line_vlan.split(v)[1:]:
