@@ -40,6 +40,7 @@ class Command(BaseCommand):
             const="view"),
         make_option("-i", "--import", action="store_const", dest="cmd",
             const="import"),
+        make_option("--rm", action="store_true", dest="remove"),
         make_option("-m", "--manifest", action="store_const", dest="cmd",
             const="manifest"),
         make_option("--ensure-private", action="store_const", dest="cmd",
@@ -138,6 +139,7 @@ class Command(BaseCommand):
         print "Platform: %s %s" % (tc.vendor, tc.platform)
         print "Version : %s" % tc.version
         print "Date    : %s" % tc.date
+        print "Scope   : %s" % "PRIVATE" if tc.private else "PUBLIC"
         if tc.input:
             print "---[ Input ] -----------"
             pprint.pprint(tc.input)
@@ -170,6 +172,7 @@ class Command(BaseCommand):
     def handle_import(self, *args, **options):
         if not options.get("repo"):
             raise CommandError("--repo <repo> is missed")
+        to_remove = options.get("remove", False)
         repo = list(self.iter_repos(**options))
         if len(repo) != 1:
             raise CommandError("Repo not found")
@@ -186,6 +189,8 @@ class Command(BaseCommand):
             path = os.path.join(*([r_path] + s + ["%s.json" % tc.guid]))
             print "Importing %s -> %s" % (f, path)
             copy_file(f, path)
+            if to_remove:
+                os.unlink(f)
 
     def handle_manifest(self, *args, **options):
         for r in self.iter_repos(**options):
