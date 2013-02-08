@@ -144,8 +144,12 @@ class Command(BaseCommand):
             print "---[ Input ] -----------"
             pprint.pprint(tc.input)
         if tc.result:
-            print "---[ Result ] -----------"
-            pprint.pprint(tc.result)
+            if (isinstance(tc.result, basestring)
+                and "START OF TRACEBACK" in tc.result):
+                print "---[ Traceback ]---\n%s" % tc.result
+            else:
+                print "---[ Result ] -----------"
+                pprint.pprint(tc.result)
         if tc.cli:
             print "---[ CLI ] ----------"
             for cmd in tc.cli:
