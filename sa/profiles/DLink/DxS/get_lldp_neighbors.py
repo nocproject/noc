@@ -144,7 +144,12 @@ class Script(NOCScript):
                     # Debug string
                     print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
                     continue
+
                 n["remote_port"] = match.group("port").strip()
+                if n["remote_port_subtype"] == 3:
+                    n["remote_port"] = \
+                        MACAddressParameter().clean(match.group("port"))
+
                 '''
                 Possible variants of Port ID, if Remote Port ID is "Local":
                 Big thanks to D-Link developers :)
