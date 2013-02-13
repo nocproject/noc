@@ -488,7 +488,7 @@ Ext.define("NOC.core.ModelApplication", {
             scope: me,
             success: function() {
                 var me = this,
-                    parentId = me.store.getAt(rIndex);
+                    parentId = me.store.getAt(rIndex).get("id");
                 me.saveInlines(parentId, me.inlineStores);
             },
             failure: function(response, op, status) {
