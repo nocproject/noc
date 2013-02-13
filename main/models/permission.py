@@ -202,3 +202,8 @@ class Permission(models.Model):
         for name in old_perms - new_perms:
             print "- %s" % name
             Permission.objects.get(name=name).delete()
+
+    @classmethod
+    def schedule_sync(cls):
+        from noc.lib.scheduler.utils import sliding_job
+        sliding_job("main.jobs", "main.sync_permissions")
