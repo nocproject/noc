@@ -214,17 +214,18 @@ class IPReport(Report):
             description=None,
             managed_object=self.object.name,
             interface=p["interface"]) for p in self.new_addresses]
-        NewAddressDiscoveryLog.objects.insert(log, load_bulk=True)
-        # Send report
-        ctx = {
-            "count": len(self.new_addresses),
-            "addresses": [
-                {
-                    "vrf": a["vrf"],
-                    "address": a["address"],
-                    "description": None,
-                    "object": self.object,
-                    "interface": a["interface"]
-                } for a in self.new_addresses]
-        }
-        self.notify("inv.discovery.new_addresses_report", ctx)
+        if log:
+            NewAddressDiscoveryLog.objects.insert(log, load_bulk=True)
+            # Send report
+            ctx = {
+                "count": len(self.new_addresses),
+                "addresses": [
+                    {
+                        "vrf": a["vrf"],
+                        "address": a["address"],
+                        "description": None,
+                        "object": self.object,
+                        "interface": a["interface"]
+                    } for a in self.new_addresses]
+            }
+            self.notify("inv.discovery.new_addresses_report", ctx)
