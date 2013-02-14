@@ -32,6 +32,9 @@ class Command(BaseCommand):
         make_option("-p", "--pull",
             action="store_const", dest="cmd", const="pull",
             help="Pull repos"),
+        make_option("--push",
+            action="store_const", dest="cmd", const="push",
+            help="Push repos"),
         make_option("-r", "--repo", action="store", dest="repo",
             help="Select repo"),
         make_option("-l", "--list", action="store_const", dest="cmd",
@@ -90,9 +93,10 @@ class Command(BaseCommand):
             return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def hg(self, cwd, *args):
-        r = subprocess.call(["hg", "--cwd", cwd] + list(args))
+        r = subprocess.call(["hg"] + list(args), cwd=cwd)
         if r:
-            raise CommandError("Failed to call hg --cwd %s %s" % (cwd, args))
+            raise CommandError("Failed to call `cd %s && hg  %s`" % (
+                cwd, " ".join(args)))
 
     def handle_list_repo(self, *args, **options):
         repo = options.get("repo")
@@ -121,10 +125,34 @@ class Command(BaseCommand):
             print "[%s]" % r.name
             self.hg(rp, "pull", r.repo, "-u")
 
+    def handle_push(self, *args, **options):
+        # First, pull updates
+        print "Pulling ..."
+        self.handle_pull(*args, **options)
+        # Next, build manifests
+        print "Rebuilding manifests ..."
+        self.handle_manifest(*args, **options)
+        # Commit and push
+        print "Pushing"
+        for r in self.iter_repos(**options):
+            # Create repo directory
+            rp = self.local_repo_path(r)
+            # Push repo
+            print "[%s]" % r.name
+            self.hg(rp, "add")
+            try:
+                self.hg(rp, "commit", "-m", "New beef")
+            except CommandError:
+                pass
+            try:
+                self.hg(rp, "push")
+            except CommandError:
+                pass
+
     def handle_list(self, *args, **options):
         print "Repo,Profile,Script,Vendor,Platform,Version,GUID"
         for r in self.iter_repos(**options):
-            for f in  self.iter_repo_files(r):
+            for f in self.iter_repo_files(r):
                 tc = BeefTestCase()
                 tc.load_beef(f)
                 profile, script = tc.script.rsplit(".", 1)
@@ -189,6 +217,8 @@ class Command(BaseCommand):
             tc.load_beef(f)
             if tc.private and not repo.private:
                 raise CommandError("%s: Cannot store private beef in the public repo" % f)
+            if not tc.platform or not tc.version:
+                raise CommandError("%f: No version info" % f)
             s = tc.script.split(".")
             path = os.path.join(*([r_path] + s + ["%s.json" % tc.guid]))
             print "Importing %s -> %s" % (f, path)
