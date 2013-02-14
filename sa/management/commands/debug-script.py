@@ -41,17 +41,17 @@ class Controller(object):
 
 class SessionCan(object):
     """Canned beef output"""
-    def __init__(self, script_name, input={}, private=False):
+    def __init__(self, script_name, input=None, private=False):
         self.cli = {}  # Command -> result
-        self.input = input
+        self.input = input or {}
         self.result = None
         self.motd = ""
         self.script_name = script_name
         self.snmp_get = {}
         self.snmp_getnext = {}
         self.http_get = {}
-        self.platform = "<<<INSERT YOUR PLATFORM HERE>>>"
-        self.version = "<<<INSERT YOUR VERSION HERE>>>"
+        self.platform = None
+        self.version = None
         self.private = private
 
     def set_version(self, platform, version):
@@ -183,10 +183,14 @@ class ActivatorStub(object):
             self.reset_wait_ticks()
 
     def on_script_exit(self, script):
-        get_version = ".".join(script.name.split(".")[:-1]) + ".get_version"
-        if self.to_save_output and get_version in script.call_cache:
-            v = script.call_cache[get_version]["{}"]
-            self.session_can.set_version(v["platform"], v["version"])
+        if self.to_save_output:
+            get_version = ".".join(script.name.split(".")[:-1]) + ".get_version"
+            if get_version in script.call_cache:
+                v = script.call_cache[get_version]["{}"]
+                self.session_can.set_version(v["platform"], v["version"])
+            elif script.name == get_version:
+                v = cPickle.loads(script.result)
+                self.session_can.set_version(v["platform"], v["version"])
         if script.parent is None:
             self.servers.close()
 
@@ -424,8 +428,9 @@ class Command(BaseCommand):
         ## Prepare activator stub
         self.tf = TransactionFactory()
         service = Service()
-        service.activator = ActivatorStub\
-            (requests[0].script if output else None, values, output, bool(options.get("private")))
+        service.activator = ActivatorStub(
+            requests[0].script if output else None, values, output,
+            bool(options.get("private")))
 
         ## Run scripts
         def run():
