@@ -44,6 +44,7 @@ class Command(BaseCommand):
         make_option("-i", "--import", action="store_const", dest="cmd",
             const="import"),
         make_option("--rm", action="store_true", dest="remove"),
+        make_option("--clone-version", action="store", dest="clone-version"),
         make_option("-m", "--manifest", action="store_const", dest="cmd",
             const="manifest"),
         make_option("--ensure-private", action="store_const", dest="cmd",
@@ -210,6 +211,16 @@ class Command(BaseCommand):
             raise CommandError("Repo not found")
         repo = repo[0]
         r_path = self.local_repo_path(repo)
+        cv = options.get("clone-version")
+        vendor = None
+        platform = None
+        version = None
+        if cv:
+            tc = BeefTestCase()
+            tc.load_beef(cv)
+            vendor = tc.vendor
+            platform = tc.platform
+            version = tc.version
         for f in args:
             if not os.path.isfile(f):
                 raise CommandError("File not found: %s" % f)
@@ -217,7 +228,11 @@ class Command(BaseCommand):
             tc.load_beef(f)
             if tc.private and not repo.private:
                 raise CommandError("%s: Cannot store private beef in the public repo" % f)
-            if not tc.platform or not tc.version:
+            if cv:
+                tc.vendor = vendor
+                tc.platform = platform
+                tc.version = version
+            if not tc.vendor or not tc.platform or not tc.version:
                 raise CommandError("%f: No version info" % f)
             s = tc.script.split(".")
             path = os.path.join(*([r_path] + s + ["%s.json" % tc.guid]))
