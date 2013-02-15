@@ -19,7 +19,7 @@ class Script(NOCScript):
     name = "Alcatel.AOS.get_lldp_neighbors"
     implements = [IGetLLDPNeighbors]
 
-    rx_line = re.compile(r"\w*Remote LLDP Agents on Local Slot/Port",
+    rx_line = re.compile(r"\w*Remote LLDP Agents on Local Slot/Port\s+",
         re.MULTILINE)
     rx_id = re.compile(r"^(?P<port_id>.+):", re.MULTILINE)
     rx_re_ent = re.compile(r"Remote Entities Count\s+:\s+(?P<re_ent>\d+)",
