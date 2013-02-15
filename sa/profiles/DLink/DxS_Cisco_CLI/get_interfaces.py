@@ -37,6 +37,12 @@ class Script(NOCScript):
     rx_vlan = re.compile(r"VLAN\s+(?P<vlan>\d+)", re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Interface address is:\s+(?P<ip>.+)",
                        re.MULTILINE | re.IGNORECASE)
+    rx_ospf_gs = re.compile(r"Routing Protocol is \"ospf \d+\"")
+    rx_ospf = re.compile(r"^(?P<if_ospf>.+)\s+is up, line protocol is up",
+                         re.IGNORECASE)
+    rx_lldp_gs = re.compile(r"Global\s+status\s+of\s+LLDP\s+:\s+Enable")
+    rx_lldp = re.compile(r"Port\s+\[(?P<port>.+)\]\nPort status of LLDP\s+:\s+Enable",
+                         re.IGNORECASE)
     types = {
         "Gi": "physical",    # GigabitEthernet
         "Lo": "loopback",    # Loopback
@@ -47,6 +53,40 @@ class Script(NOCScript):
     }
 
     def execute(self):
+        try:
+            c_proto = self.cli("show ip protocols")
+        except self.CLISyntaxError:
+            c_proto = ""
+        lldp = []
+        try:
+            c = self.cli("show lldp status | include Global")
+        except self.CLISyntaxError:
+            c = ""
+        lldp_enable = self.rx_lldp_gs.search(c) is not None
+        if lldp_enable:
+            try:
+                c = self.cli("show lldp status | include Port")
+            except self.CLISyntaxError:
+                c = ""
+            for match in self.rx_lldp.finditer(c):
+                port = match.group("port")
+                iface_lldp = self.profile.convert_interface_name(port)
+                lldp += [iface_lldp]
+
+        ospf = []
+        ospf_enable = self.rx_ospf_gs.search(c_proto) is not None
+        print ospf_enable
+        if ospf_enable:
+            try:
+                c = self.cli("show ip ospf interface")
+            except self.CLISyntaxError:
+                c = ""
+            for match in self.rx_ospf.finditer(c):
+                if_ospf = match.group("if_ospf")
+                iface_ospf = self.profile.convert_interface_name(if_ospf)
+                ospf += [if_ospf]
+            print ospf
+
         r = []
         try:
             v = self.cli("show interfaces")
@@ -73,6 +113,7 @@ class Script(NOCScript):
             # Portchanel
         for s in self.rx_line.split(v)[1:]:
             n = {}
+            enabled_protocols = []
             match = self.rx_name.search(s)
             if not match:
                 continue
@@ -98,6 +139,10 @@ class Script(NOCScript):
                 "oper_status": status,
                 "enabled_afi": ["BRIDGE"],
             }]
+            if lldp_enable and iface in lldp:
+                enabled_protocols += ["LLDP"]
+            n["enabled_protocols"] = enabled_protocols
+
             if iface in switchports:
                 n["subinterfaces"][0]["is_bridge"] = True
                 if switchports[iface][1]:
@@ -105,7 +150,7 @@ class Script(NOCScript):
                 if switchports[iface][0]:
                     n["subinterfaces"][0]["untagged_vlan"] = switchports[iface][0]
                 else:
-                     n["subinterfaces"][0]["is_bridge"] = False
+                    n["subinterfaces"][0]["is_bridge"] = False
             n["type"] = self.types[iface[:2]]
             r += [n]
         for s in self.rx_line_vlan.split(v)[1:]:
@@ -127,6 +172,11 @@ class Script(NOCScript):
             mac = match.group("mac")
 
             description = iface
+            enabled_protocols = []
+            print iface
+            if ospf_enable and iface in ospf:
+                enabled_protocols += ["OSPF"]
+                print enabled_protocols
 
             iface = {"name": iface,
                      "type": "SVI",
@@ -143,6 +193,7 @@ class Script(NOCScript):
                              "is_ipv4": True,
                              "ipv4_addresses": ip_list,
                              "mac": mac,
+                             "enabled_protocols": enabled_protocols,
                              "vlan_ids": vlan_ids,
                      }]}
             r += [iface]
