@@ -33,7 +33,7 @@ class Script(NOCScript):
             for match1 in self.rx_line1.finditer(data1):
                 members += [match1.group("interface")]
             r += [{
-                "interface": "Ag %i" % port,
+                "interface": "%i" % port,
                 "members": members,
                 #<!> TODO: port-channel type detection
                 "type": "L"
