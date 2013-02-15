@@ -35,7 +35,6 @@ class Script(NOCScript):
             r += [{
                 "interface": "Ag %i" % port,
                 "members": members,
-                #<!> TODO: port-channel type detection
                 "type": "L"
-                }]
+            }]
         return r
