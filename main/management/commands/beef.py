@@ -268,7 +268,7 @@ class Command(BaseCommand):
                         for platform, version in sv[sn]:
                             vs[platform].add(version)
                         for platform in sorted(vs):
-                            o += ["**%s:** %s" % (platform, ", ".join(sorted(vs[platform]))), ""]
+                            o += ["+ **%s:** %s" % (platform, ", ".join(sorted(vs[platform]))), ""]
             mf = "\n".join(o)
             path = os.path.join(self.local_repo_path(r), "README.md")
             print "Writing manifest for repo %s" % r.name
