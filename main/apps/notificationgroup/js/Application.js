@@ -81,7 +81,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
                     width: 75,
                     editor: {
                         xtype: "combobox",
-                        store: [("email", "EMail"), ("file", "File")]
+                        store: [["email", "EMail"], ["file", "File"]]
                     }
                 },
                 {
