@@ -470,9 +470,11 @@ Ext.define("NOC.core.ModelApplication", {
     saveRecord: function(data) {
         var me = this,
             mv = Ext.create(me.model, data).validate(),
-            record;
+            record,
+            rIndex = null;
         if(!mv.isValid()) {
             // @todo: Error report
+            NOC.error("Invalid data!");
             return;
         }
         if (me.currentRecord) {
@@ -482,14 +484,17 @@ Ext.define("NOC.core.ModelApplication", {
         } else {
             // Create
             record = me.store.add([data])[0];
-            var rIndex = me.store.indexOf(record);
+            rIndex = me.store.indexOf(record);
         }
         me.store.sync({
             scope: me,
             success: function() {
                 var me = this,
-                    parentId = me.store.getAt(rIndex).get("id");
-                me.saveInlines(parentId, me.inlineStores);
+                    parent = record.get("id");
+                if(!parent && rIndex != null) {
+                    parent = me.store.getAt(rIndex).get("id");
+                }
+                me.saveInlines(parent, me.inlineStores);
             },
             failure: function(response, op, status) {
                 if(record.phantom) {
@@ -505,6 +510,7 @@ Ext.define("NOC.core.ModelApplication", {
     //
     saveInlines: function(parentId, stores) {
         var me = this;
+        console.log("saveInlines", parentId, stores);
         if(stores.length > 0) {
             var istore = stores[0];
             if(parentId) {

@@ -108,7 +108,15 @@ Ext.define("NOC.core.ModelStore", {
         var me = this,
             conf = config || {};
         me.syncConfig = Ext.Object.merge({}, conf);
-        me.callParent();
+        if(!me.getNewRecords().length && !me.getUpdatedRecords().length
+            && !me.getRemovedRecords().length) {
+            // No changed records, call success callback
+            Ext.callback(me.syncConfig.success,
+                me.syncConfig.scope || me);
+        } else {
+            // Having changed records. Start sync process
+            me.callParent();
+        }
     },
     onSyncWrite: function() {
         var me = this;
