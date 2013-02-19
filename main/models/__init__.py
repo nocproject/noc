@@ -683,63 +683,8 @@ class RefBookData(models.Model):
         """
         return zip(self.ref_book.fields, self.value)
 
-
-class TimePattern(models.Model):
-    """
-    Time Patterns
-    """
-    class Meta:
-        verbose_name = "Time Pattern"
-        verbose_name_plural = "Time Patterns"
-
-    name = models.CharField("Name", max_length=64, unique=True)
-    description = models.TextField("Description", null=True, blank=True)
-
-    def __unicode__(self):
-        return self.name
-
-    @property
-    def time_pattern(self):
-        """
-        Returns associated Time Pattern object
-        """
-        return TP([t.term for t in self.timepatternterm_set.all()])
-
-    def match(self, d):
-        """
-        Matches DateTime objects against time pattern
-        """
-        return self.time_pattern.match(d)
-
-
-class TimePatternTerm(models.Model):
-    """
-    Time pattern terms
-    """
-    class Meta:
-        verbose_name = "Time Pattern Term"
-        verbose_name_plural = "Time Pattern Terms"
-        unique_together = [("time_pattern", "term")]
-
-    time_pattern = models.ForeignKey(TimePattern, verbose_name="Time Pattern")
-    term = models.CharField("Term", max_length=256)
-
-    def __unicode__(self):
-        return u"%s: %s" % (self.time_pattern.name, self.term)
-
-    @classmethod
-    def check_syntax(cls, term):
-        """
-        Checks Time Pattern syntax. Raises SyntaxError in case of error
-        """
-        TP(term)
-
-    def save(self, *args):
-        """
-        Check syntax before save
-        """
-        TimePatternTerm.check_syntax(self.term)
-        super(TimePatternTerm, self).save(*args)
+from timepattern import TimePattern
+from timepatternterm import TimePatternTerm
 
 
 class NotificationGroup(models.Model):
