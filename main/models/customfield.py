@@ -1,0 +1,339 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## CustomField model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models, connection
+## NOC modules
+from customfieldenumgroup import CustomFieldEnumGroup
+from noc.lib.validators import is_int
+
+
+class CustomField(models.Model):
+    """
+    Custom field description
+    """
+    class Meta:
+        verbose_name = "Custom Field"
+        verbose_name_plural = "Custom Fields"
+        db_table = "main_customfield"
+        app_label = "main"
+        unique_together = [("table", "name")]
+
+    table = models.CharField("Table", max_length=64)
+    name = models.CharField("Name", max_length=64)
+    is_active = models.BooleanField("Is Active", default=True)
+    label = models.CharField("Label", max_length=128)
+    type = models.CharField(
+        "Type",
+        max_length=64,
+        choices=[
+            ("str", "String"),
+            ("int", "Integer"),
+            ("bool", "Boolean"),
+            ("date", "Date"),
+            ("datetime", "Date&Time")
+        ])
+    description = models.TextField("Description", null=True, blank=True)
+    # Applicable only for "str" type
+    max_length = models.IntegerField("Max. Length", default=0)
+    regexp = models.CharField("Regexp", max_length=256,
+                              null=True, blank=True)
+    # Create database index on field
+    is_indexed = models.BooleanField("Is Indexed", default=False)
+    # Include into the applications search fields
+    is_searchable = models.BooleanField("Is Searchable", default=False)
+    # Create grid filter
+    # Show comboboxes in search criteria
+    is_filtered = models.BooleanField("Is Filtered", default=False)
+    # Field is excluded from forms
+    is_hidden = models.BooleanField("Is Hidden", default=False)
+    # Is enumeration?
+    enum_group = models.ForeignKey(CustomFieldEnumGroup,
+                                   verbose_name="Enum Group",
+                                   null=True, blank=True)
+
+    def __unicode__(self):
+        return u"%s.%s" % (self.table, self.name)
+
+    @property
+    def db_column(self):
+        return "cust_%s" % self.name
+
+    @property
+    def index_name(self):
+        return "%s_%s" % (self.table, self.name)
+
+    def get_enums(self):
+        """
+        Return django-compatible choices or None
+        :return:
+        """
+        if self.enum_group:
+            qs = self.enum_group.enumvalue_set\
+                                .filter(is_active=True)\
+                                .order_by("value")
+            if self.type == "int":
+                return [(int(e.key), e.value) for e in qs]
+            else:
+                return [(e.key, e.value) for e in qs]
+        else:
+            return None
+
+    def get_field(self):
+        """
+        Return *Field instance
+        """
+        name = str(self.name)
+        if self.type == "str":
+            l = self.max_length if self.max_length else 256
+            return models.CharField(
+                name=name,
+                db_column=self.db_column,
+                null=True, blank=True,
+                max_length=l, choices=self.get_enums())
+        elif self.type == "int":
+            return models.IntegerField(
+                name=name,
+                db_column=self.db_column,
+                null=True, blank=True)
+        elif self.type == "bool":
+            return models.BooleanField(
+                name=name,
+                db_column=self.db_column,
+                default=False)
+        elif self.type == "date":
+            return models.DateField(
+                name=name,
+                db_column=self.db_column,
+                null=True, blank=True)
+        elif self.type == "datetime":
+            return models.DateTimeField(
+                name=name,
+                db_column=self.db_column,
+                null=True, blank=True)
+        else:
+            raise NotImplementedError
+
+    @property
+    def db_create_statement(self):
+        # @todo: Use django's capabilities to generate SQL
+        # field.db_type ?
+        if self.type == "str":
+            ms = self.max_length if self.max_length else 256
+            r = "VARCHAR(%s)" % ms
+        elif self.type == "int":
+            r = "INTEGER"
+        elif self.type == "bool":
+            r = "BOOLEAN"
+        elif self.type == "date":
+            r = "DATE"
+        elif self.type == "datetime":
+            r = "TIMESTAMP"
+        else:
+            raise ValueError("Invalid field type '%s'" % self.type)
+        return "ALTER TABLE %s ADD COLUMN \"%s\" %s NULL" % (
+            self.table, self.db_column, r
+        )
+
+    @property
+    def db_drop_statement(self):
+        return "ALTER TABLE %s DROP COLUMN \"%s\"" % (
+            self.table, self.db_column)
+
+    def exec_commit(self, sql):
+        c = connection.cursor()
+        c.execute(sql)
+        c.execute("COMMIT")
+
+    def activate_field(self):
+        self.exec_commit(self.db_create_statement)
+
+    def deactivate_field(self):
+        self.exec_commit(self.db_drop_statement)
+
+    def create_index(self):
+        self.exec_commit("CREATE INDEX %s ON %s(%s)" % (
+            self.index_name, self.table, self.db_column))
+
+    def drop_index(self):
+        self.exec_commit("DROP INDEX %s" % self.index_name)
+
+    def rename(self, old_name):
+        self.exec_commit("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
+            self.table, old_name, self.db_column
+        ))
+
+    def save(self, *args, **kwargs):
+        """
+        Create actual database field
+        """
+        if self.id:
+            old = CustomField.objects.get(id=self.id)
+            old_active = old.is_active
+            old_indexed = old.is_indexed
+            if old.name != self.name:
+                self.rename(old.db_column)
+        else:
+            old_active = False
+            old_indexed = False
+        if not self.is_active:
+            self.is_indexed = False
+        super(CustomField, self).save(*args, **kwargs)
+        if old_active != self.is_active:
+            # Field status changed
+            if self.is_active:
+                self.activate_field()
+                if self.is_indexed:
+                    self.create_index()
+            else:
+                self.deactivate_field()
+        elif self.is_indexed != old_indexed:
+            if self.is_indexed:
+                self.create_index()
+            else:
+                self.drop_index()
+
+    def delete(self):
+        if self.is_active:
+            self.deactivate_field()
+        super(CustomField, self).delete()
+
+    def model_class(self):
+        """
+        Return appropriative Model class
+        """
+        a, m = self.table.split("_", 1)
+        return models.get_model(a, m)
+
+    @classmethod
+    def table_fields(cls, table):
+        return CustomField.objects.filter(is_active=True, table=table)
+
+    @classmethod
+    def install_fields(cls):
+        """
+        Install custom fields to models.
+        Must be called after all models are initialized
+        """
+        m = None
+        for f in cls.objects.filter(is_active=True).order_by("table"):
+            # Get model
+            if m is None or m._meta.db_table != f.table:
+                m = f.model_class()
+            # Install field
+            mf = f.get_field()
+            mf.contribute_to_class(m, str(f.name))
+
+    @property
+    def ext_model_field(self):
+        """
+        Dict containing ExtJS model field description
+        """
+        f = {
+            "name": self.name,
+            "type": {
+                "str": "string",
+                "int": "int",
+                "bool": "boolean",
+                "date": "date",
+                "datetime": "date"
+            }[self.type]
+        }
+        return f
+
+    @property
+    def ext_grid_column(self):
+        """
+        Dict containing ExtJS grid column description
+        """
+        f = {
+            "text": self.label,
+            "dataIndex": self.name,
+            "hidden": True
+        }
+        if self.type == "bool":
+            f["renderer"] = "NOC.render.Bool"
+        return f
+
+    @property
+    def ext_form_field(self):
+        """
+        Dict containing ExtJS form field description
+        """
+        if self.type == "bool":
+            f = {
+                "name": self.name,
+                "xtype": "checkboxfield",
+                "boxLabel": self.label,
+                "allowBlank": True
+            }
+        elif self.type == "str" and self.enum_group:
+            f = {
+                "name": self.name,
+                "xtype": "combobox",
+                "fieldLabel": self.label,
+                "allowBlank": True,
+                "queryMode": "local",
+                "displayField": "label",
+                "valueField": "id",
+                "store": {
+                    "fields": ["id", "label"],
+                    "data": [
+                        {"id": k, "label": v}
+                        for k, v in self.get_enums()
+                    ]
+                }
+            }
+        elif self.type in ("str", "int", "date", "datetime"):
+            f = {
+                "name": self.name,
+                "xtype": {
+                    "str": "textfield",
+                    "int": "numberfield",
+                    "date": "datefield",
+                    "datetime": "datefield"
+                }[self.type],
+                "fieldLabel": self.label,
+                "allowBlank": True
+            }
+            if self.type == "str" and self.regexp:
+                f["regex"] = self.regexp
+        else:
+            raise ValueError("Invalid field type '%s'" % self.type)
+        return f
+
+    def get_choices(self):
+        """
+        Returns django-compatible choices
+        """
+        c = connection.cursor()
+        c.execute("""
+            SELECT DISTINCT \"%(col)s\"
+            FROM %(table)s
+            WHERE \"%(col)s\" IS NOT NULL AND \"%(col)s\" != ''
+            ORDER BY \"%(col)s\"""" % {
+            "col": self.db_column,
+            "table": self.table
+        })
+        return [(x, x) for x, in c.fetchall()]
+
+    @classmethod
+    def table_search_Q(cls, table, query):
+        q = []
+        for f in CustomField.objects.filter(is_active=True,
+            table=table, is_searchable=True):
+            if f.type == "str":
+                q += [{"%s__icontains" % f.name: query}]
+            elif f.type == "int":
+                if is_int(query):
+                    q += [{f.name: int(query)}]
+        if q:
+            return reduce(lambda x, y: x | models.Q(**y), q,
+                models.Q(**q[0]))
+        else:
+            return None
