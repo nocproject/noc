@@ -5,11 +5,9 @@
 ## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import re
-import binascii
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import (IGetLLDPNeighbors, IntParameter,
@@ -32,24 +30,23 @@ class Script(NOCScript):
         r".*Chassis ID\s+:\s(?P<id>\S+).*?"
         r"Port type\s+:\s(?P<p_type>[^\n]+).*?"
         r"Port \S+\s+:\s(?P<p_id>[^\n]+).*?"
-        r"(?:System name\s+:\s(?P<name>\S+).*?)?"
-        r"(?:System capabilities.+?Supported:\s(?P<capability>[^\n]+).*)?",
+        r"System name\s+:\s(?P<name>\S+).*?"
+        r"System capabilities.+?Supported:\s(?P<capability>[^\n]+).*?",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
-    @NOCScript.match(platform__startswith="ex")
+    @NOCScript.match(platform__regex="[em]x")
     def execute_ex(self):
-        ifs = []
         r = []
         # Collect data
         local_port_ids = {}  # name -> id
-        for port, local_id in self.rx_localport.findall(self.cli("show lldp local-information")):
+        v = self.cli("show lldp local-information")
+        for port, local_id in self.rx_localport.findall(v):
             local_port_ids[port] = IntParameter().clean(local_id)
         v = self.cli("show lldp neighbors")
-        for match in self.rx_neigh.finditer(v):
-            ifs += [{
-                "local_interface": match.group("local_if"),
-                "neighbors": [],
-            }]
+        ifs = [{
+            "local_interface": match.group("local_if"),
+            "neighbors": [],
+        } for match in self.rx_neigh.finditer(v)]
         for i in ifs:
             if i["local_interface"] in local_port_ids:
                 i["local_interface_id"] = local_port_ids[i["local_interface"]]
@@ -59,7 +56,8 @@ class Script(NOCScript):
             if match:
                 n["remote_port_subtype"] = {
                     "Mac address": 3,
-                    "Interface alias": 5,
+                    "Interface alias": 1,
+                    "Interface name": 5,
                     "Locally assigned": 7
                 }[match.group("p_type")]
                 if n["remote_port_subtype"] == 3:
@@ -90,7 +88,7 @@ class Script(NOCScript):
         return r
 
     ##
-    ## No lldp on MX
+    ## No lldp on M/T
     ##
     @NOCScript.match()
     def execute_other(self):
