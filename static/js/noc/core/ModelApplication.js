@@ -72,7 +72,7 @@ Ext.define("NOC.core.ModelApplication", {
         // admin actions
         if(me.actions) {
             gridToolbar = gridToolbar.concat([{
-                iconCls: "icon_bomb",
+                iconCls: "icon_table_go",
                 tooltip: "Group actions",
                 hasAccess: NOC.hasPermission("update"),
                 itemId: "action_menu",
@@ -84,7 +84,8 @@ Ext.define("NOC.core.ModelApplication", {
                         return {
                             text: o.title,
                             itemId: o.action,
-                            form: o.form
+                            form: o.form,
+                            resultTemplate: o.resultTemplate
                         }
                     }),
                     listeners: {
@@ -808,22 +809,32 @@ Ext.define("NOC.core.ModelApplication", {
                 return o.get("id")
             });
         if(item.form) {
-            me.showActionForm(item.itemId, item.text, records, item.form);
+            me.showActionForm(item, records);
         } else {
-            me.runAction(item.itemId, {ids: records});
+            me.runAction(item, {ids: records});
         }
     },
     //
     runAction: function(action, params) {
         var me = this;
         Ext.Ajax.request({
-            url: me.base_url + "actions/" + action + "/",
+            url: me.base_url + "actions/" + action.itemId + "/",
             method: "POST",
             scope: me,
             params: params,
             success: function(response) {
                 var r = Ext.decode(response.responseText) || "OK";
-                NOC.info(r);
+                if(action.resultTemplate) {
+                    var d = me.templates[action.resultTemplate](r);
+                    Ext.create("Ext.Window", {
+                        html: d,
+                        width: 600,
+                        height: 400,
+                        title: Ext.String.format("Result: {0}", action.text)
+                    }).show();
+                } else {
+                    NOC.info(r);
+                }
             },
             failure: function() {
                 NOC.error("Failed");
@@ -831,7 +842,7 @@ Ext.define("NOC.core.ModelApplication", {
         });
     },
     //
-    showActionForm: function(action, title, records, form) {
+    showActionForm: function(action, records) {
         var me = this,
             w = Ext.create("Ext.Window", {
             modal: true,
@@ -839,10 +850,10 @@ Ext.define("NOC.core.ModelApplication", {
             layout: "fit",
             items: [{
                 xtype: "form",
-                items: form
+                items: action.form
             }],
             title: Ext.String.format("{0} on {1} records",
-                title,
+                action.text,
                 records.length),
             buttons: [{
                 text: "Run",
