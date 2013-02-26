@@ -879,6 +879,27 @@ class Activator(Daemon, FSM):
         else:
             return n + i
 
+    def ping_check(self, addresses, callback):
+        """
+        Ping addresses
+        """
+        def cb(address, result):
+            if result:
+                reachable.add(address)
+            else:
+                unreachable.add(address)
+            lc = len(reachable) + len(unreachable)
+            if lc == la:
+                callback(reachable, unreachable)
+
+        reachable = set()
+        unreachable = set()
+        la = len(addresses)
+        for a in addresses:
+            self.ping4_socket.ping(
+                a, count=self.ping_count, timeout=self.ping_timeout,
+                callback=cb, stop_on_success=True)
+
     def get_status(self):
         s = {
             "timestamp": int(time.time()),

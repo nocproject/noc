@@ -281,6 +281,14 @@ message ObjectStatusRequest {
 message ObjectStatusResponse {
 }
 
+message PingCheckRequest {
+    repeated string addresses = 1;
+}
+
+message PingCheckResponse {
+    repeated string reachable = 1;
+    repeated string unreachable = 2;
+}
 //
 // Performance management data
 //
@@ -351,4 +359,5 @@ service SAEService {
     rpc pm_data          (PMDataRequest)          returns (PMDataResponse);
     rpc object_status    (ObjectStatusRequest)    returns (ObjectStatusResponse);
     rpc get_status       (StatusRequest)          returns (StatusResponse);
+    rpc ping_check       (PingCheckRequest)       returns (PingCheckResponse);
 }
