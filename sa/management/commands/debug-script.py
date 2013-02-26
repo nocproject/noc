@@ -332,8 +332,6 @@ class Command(BaseCommand):
 
     def get_request(self, script, obj, snmp_ro_community, values):
         """Prepare script request"""
-        vendor = None
-        os_name = None
         profile = None
         r = ScriptRequest()
         r.object_name = obj
