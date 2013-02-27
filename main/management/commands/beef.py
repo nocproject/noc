@@ -237,7 +237,7 @@ class Command(BaseCommand):
             s = tc.script.split(".")
             path = os.path.join(*([r_path] + s + ["%s.json" % tc.guid]))
             print "Importing %s -> %s" % (f, path)
-            copy_file(f, path)
+            copy_file(f, path, mode=0644)
             if to_remove:
                 os.unlink(f)
 
