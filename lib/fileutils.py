@@ -72,14 +72,14 @@ def read_file(path):
         return None
 
 
-def copy_file(f, t):
+def copy_file(f, t, mode=None):
     """
     Copy File
     """
     d = read_file(f)
     if d is None:
         d = ""
-    safe_rewrite(t, d)
+    safe_rewrite(t, d, mode=mode)
 
 
 def write_tempfile(text):
