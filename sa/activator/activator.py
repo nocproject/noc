@@ -674,6 +674,7 @@ class Activator(Daemon, FSM):
         r = SetCapsRequest()
         r.max_scripts = self.max_script_threads
         r.instance = str(self.instance_id)
+        r.can_ping = bool(self.to_ping)
         self.sae_stream.proxy.set_caps(r, send_caps_callback)
 
     @check_state("ESTABLISHED")
@@ -884,16 +885,11 @@ class Activator(Daemon, FSM):
         Ping addresses
         """
         def cb(address, result):
-            if result:
-                reachable.add(address)
-            else:
-                unreachable.add(address)
-            lc = len(reachable) + len(unreachable)
-            if lc == la:
-                callback(reachable, unreachable)
+            status += [(address, bool(result))]
+            if len(status) == la:
+                callback(status)
 
-        reachable = set()
-        unreachable = set()
+        status = []
         la = len(addresses)
         for a in addresses:
             self.ping4_socket.ping(

@@ -94,15 +94,17 @@ class Service(SAEService):
         """
         Start ping check of addresses
         """
-        def ping_check_callback(reachable, unreachable):
+        def ping_check_callback(status):
             r = PingCheckResponse()
-            for a in reachable:
-                r.reachable.append(a)
-            for a in unreachable:
-                r.unreachable.append(a)
+            for address, result in status:
+                s = r.status.add()
+                s.address = address
+                s.status = result
             done(controller, response=r)
-        self.activator.ping_check([a for a in request.addresses],
-                                  ping_check_callback)
+
+        self.activator.ping_check(
+            [a for a in request.addresses],
+            ping_check_callback)
 
     def refresh_object_mappings(self, controller, request, done):
         """

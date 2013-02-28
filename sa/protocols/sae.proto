@@ -173,6 +173,7 @@ message AuthResponse {
 message SetCapsRequest {
     required int32 max_scripts = 1;
     required string instance = 2;
+    required bool can_ping = 3;
 }
 
 message SetCapsResponse {
@@ -286,8 +287,11 @@ message PingCheckRequest {
 }
 
 message PingCheckResponse {
-    repeated string reachable = 1;
-    repeated string unreachable = 2;
+    message PingStatusItem {
+        required string address = 1;
+        required bool status = 2;
+    }
+    repeated PingStatusItem status = 1;
 }
 //
 // Performance management data

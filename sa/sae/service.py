@@ -212,6 +212,7 @@ class Service(SAEService):
         controller.stream.max_scripts = request.max_scripts
         controller.stream.current_scripts = 0
         controller.stream.instance = request.instance
+        controller.stream.can_ping = request.can_ping
         self.sae.update_activator_capabilities(controller.stream.pool_name)
         r = SetCapsResponse()
         done(controller, response=r)

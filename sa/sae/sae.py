@@ -281,7 +281,8 @@ class SAE(Daemon):
     def on_stream_close(self, stream):
         self.streams.unregister(stream)
 
-    def get_activator_stream(self, name, for_script=False):
+    def get_activator_stream(self, name, for_script=False,
+                             can_ping=False):
         """
         Select activator for new task. Performs WRR load balancing
         for script tasks and random choice for other ones.
@@ -296,6 +297,9 @@ class SAE(Daemon):
             self.blocked_pools.add(name)
             raise Exception("Activator pool '%s' is not available" % name)
         a = self.activators[name]
+        if can_ping:
+            # Restring to ping operation
+            a = [x for x in a if x.can_ping]
         if len(a) == 0:
             self.blocked_pools.add(name)
             raise Exception("No activators in pool '%s' available" % name)
