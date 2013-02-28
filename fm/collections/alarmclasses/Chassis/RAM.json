@@ -33,11 +33,17 @@
         "user_clearable": true,
         "default_severity__name": "CRITICAL",
         "vars": [
+            {
+                "name": "reason",
+                "description": "Reason",
+                "type": "str",
+                "required": false
+            }
         ],
         "text": {
             "en": {
-                "subject_template": "Insufficient Memory",
-                "body_template": "Insufficient Memory",
+                "subject_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
+                "body_template": "Insufficient Memory{% if reason %}: {{reason}}{% endif %}",
                 "symptoms": "",
                 "probable_causes": "",
                 "recommended_actions": ""
