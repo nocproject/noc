@@ -294,5 +294,59 @@
                 "value_re": "%HARDWARE-5-FAN_OK: Fan works fine."
             }
         ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #10 (SYSLOG)",
+        "description": "%C7600_ENV-SP-4-FANCOUNTFAILED: Required number of fan trays is not present",
+        "event_class__name": "Chassis | Fan | Fan Failed",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "Chassis Fan"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C7600_ENV-SP-4-FANCOUNTFAILED: Required number of fan trays is not present"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Recovered #10 (SYSLOG)",
+        "description": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present",
+        "event_class__name": "Chassis | Fan | Fan Recovered",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "Chassis Fan"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present"
+            }
+        ]
     }
 ]
