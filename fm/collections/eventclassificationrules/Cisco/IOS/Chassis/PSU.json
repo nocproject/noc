@@ -348,6 +348,27 @@
     },
 
     {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #9 (SYSLOG)",
+        "description": "%POWER_SUPPLIES-5-PWR_OK: Power supply 2 is functioning",
+        "event_class__name": "Chassis | PSU | PSU Recovered",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%POWER_SUPPLIES-5-PWR_OK: (?P<name>Power supply \\d+) is functioning"
+            }
+        ]
+    },
+
+    {
         "name": "Cisco | IOS | Chassis | PSU | PSU Failed #10 (SYSLOG)",
         "description": "%IOSXE_PEM-3-PEMFAIL: The PEM in slot 1 is switched off or encountering a failure condition.",
         "event_class__name": "Chassis | PSU | PSU Failed",
