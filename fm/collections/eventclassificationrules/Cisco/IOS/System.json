@@ -35,26 +35,5 @@
                 "value_re": "^CISCOTRAP-MIB::reload$"
             }
         ]
-    },
-
-    {
-        "name": "Cisco | IOS | System | Insufficient Memory (SYSLOG)",
-        "description": "%SYS-SP-2-MALLOCFAIL: Memory allocation of 2177024 bytes failed from 0x40173D8C, alignment 8",
-        "event_class__name": "System | Insufficient Memory",
-        "preference": 1000,
-        "patterns": [
-            {
-                "key_re": "^source$",
-                "value_re": "^syslog$"
-            },
-            {
-                "key_re": "^profile$",
-                "value_re": "^Cisco\\.IOS$"
-            },
-            {
-                "key_re": "^message$",
-                "value_re": "%SYS-SP-2-MALLOCFAIL"
-            }
-        ]
     }
 ]

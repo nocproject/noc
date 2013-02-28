@@ -127,28 +127,5 @@
                 "recommended_actions": ""
             }
         }
-    },
-
-    {
-        "name": "System | Insufficient Memory",
-        "description": "Failed to allocate memory",
-        "action": "L",
-        "vars": [ ],
-        "text" : {
-            "en": {
-                "subject_template": "Memory allocation failed",
-                "body_template": "Memory allocation failed",
-                "symptoms": "",
-                "probable_causes": "",
-                "recommended_actions": ""
-            }
-        },
-        "disposition": [
-            {
-                "name": "dispose",
-                "action": "raise",
-                "alarm_class__name" : "System | Insufficient Memory"
-            }
-        ]
     }
 ]

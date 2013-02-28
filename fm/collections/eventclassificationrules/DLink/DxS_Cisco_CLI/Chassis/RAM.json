@@ -1,8 +1,8 @@
 [
     {
-        "name": "DLink | DxS_Cisco_CLI | System | Started (SYSLOG)",
-        "description": "%DEVICE-5-CHANGED: Device DGS-3610-26G (1) changed state to up",
-        "event_class__name": "System | Started",
+        "name": "DLink | DxS_Cisco_CLI | Chassis | RAM | Insufficient Memory (SYSLOG)",
+        "description": "%BGP-4-MEM_WARNING_START: BGP down due to insufficient memory and will be restarting in 120s",
+        "event_class__name": "Chassis | RAM | Insufficient Memory",
         "preference": 1000,
         "patterns": [
             {
@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%DEVICE-5-CHANGED: Device .+ changed state to up"
+                "value_re": "%(?:BGP-4-MEM_WARNING_START|NSM-4-MEM_WARNING): (?P<reason>.+)"
             }
         ]
     }

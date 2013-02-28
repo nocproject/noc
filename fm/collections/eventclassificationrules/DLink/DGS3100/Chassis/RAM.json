@@ -1,8 +1,8 @@
 [
     {
-        "name": "DLink | DGS3100 | System | Started (SYSLOG)",
-        "description": "%INIT-I-Startup: Cold Startup",
-        "event_class__name": "System | Started",
+        "name": "DLink | DGS3100 | Chassis | RAM | Insufficient Memory (SYSLOG)",
+        "description": "%BRG_IGMP-W-TABLE_OVERFLOW: IGMP Filter table overflow",
+        "event_class__name": "Chassis | RAM | Insufficient Memory",
         "preference": 1000,
         "patterns": [
             {
@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%INIT-I-Startup: Cold Startup$"
+                "value_re": "%BRG_IGMP-W-TABLE_OVERFLOW: (?P<reason>.+)"
             }
         ]
     }
