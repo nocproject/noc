@@ -297,9 +297,9 @@
     },
 
     {
-        "name": "Cisco | IOS | Chassis | Fan | Fan Failed #10 (SYSLOG)",
+        "name": "Cisco | IOS | Chassis | Fan | Fan Removed #1 (SYSLOG)",
         "description": "%C7600_ENV-SP-4-FANCOUNTFAILED: Required number of fan trays is not present",
-        "event_class__name": "Chassis | Fan | Fan Failed",
+        "event_class__name": "Chassis | Fan | Fan Removed",
         "preference": 1000,
         "vars": [
             {
@@ -324,9 +324,9 @@
     },
 
     {
-        "name": "Cisco | IOS | Chassis | Fan | Fan Recovered #10 (SYSLOG)",
+        "name": "Cisco | IOS | Chassis | Fan | Fan Inserted #1 (SYSLOG)",
         "description": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present",
-        "event_class__name": "Chassis | Fan | Fan Recovered",
+        "event_class__name": "Chassis | Fan | Fan Inserted",
         "preference": 1000,
         "vars": [
             {
@@ -346,6 +346,48 @@
             {
                 "key_re": "^message$",
                 "value_re": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Removed #2 (SYSLOG)",
+        "description": "%OIR-SP-6-REMFAN: Fan 1 removed",
+        "event_class__name": "Chassis | Fan | Fan Removed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%OIR-SP-6-REMFAN: (?P<name>.+) removed"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Fan | Fan Inserted #2 (SYSLOG)",
+        "description": "%OIR-SP-6-INSFAN: Fan 1 inserted",
+        "event_class__name": "Chassis | Fan | Fan Inserted",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%OIR-SP-6-INSFAN: (?P<name>.+) inserted"
             }
         ]
     }
