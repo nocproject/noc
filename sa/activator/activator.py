@@ -884,17 +884,28 @@ class Activator(Daemon, FSM):
         """
         Ping addresses
         """
+        def spool():
+            while left and running < LIMIT:
+                a = left.pop(0)
+                running += 1
+                self.ping4_socket.ping(
+                    a, count=self.ping_count, timeout=self.ping_timeout,
+                    callback=cb, stop_on_success=True)
+
         def cb(address, result):
             status += [(address, bool(result))]
             if len(status) == la:
                 callback(status)
+            else:
+                running -= 1
+                spool()  # Run next batch
 
         status = []
         la = len(addresses)
-        for a in addresses:
-            self.ping4_socket.ping(
-                a, count=self.ping_count, timeout=self.ping_timeout,
-                callback=cb, stop_on_success=True)
+        left = [a for a in addresses]
+        LIMIT = 20  # @todo: Make configurable
+        running = 0
+        spool()  # Run first batch
 
     def get_status(self):
         s = {
