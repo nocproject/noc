@@ -146,7 +146,7 @@ class Command(BaseCommand):
             except CommandError:
                 pass
             try:
-                self.hg(rp, "push")
+                self.hg(rp, "push", r.repo)
             except CommandError:
                 pass
 
