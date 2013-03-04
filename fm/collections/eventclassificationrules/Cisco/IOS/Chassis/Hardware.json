@@ -153,7 +153,7 @@
     },
 
     {
-        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Inserted (SYSLOG)",
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Inserted #1 (SYSLOG)",
         "description": "%OIR-SP-6-INSCARD: Card inserted in slot 3, interfaces are now online",
         "event_class__name": "Chassis | Hardware | Module | Module Inserted",
         "preference": 1000,
@@ -174,7 +174,7 @@
     },
 
     {
-        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Removed (SYSLOG)",
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Removed #1 (SYSLOG)",
         "description": "%OIR-SP-6-REMCARD: Card removed from slot 9, interfaces disabled",
         "event_class__name": "Chassis | Hardware | Module | Module Removed",
         "preference": 1000,
@@ -190,6 +190,48 @@
             {
                 "key_re": "^message$",
                 "value_re": "%OIR-SP-6-REMCARD: Card removed from (?P<module>slot \\S+), interfaces disabled"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Inserted #2 (SYSLOG)",
+        "description": "%C4K_IOSINTF-5-TRANSCEIVERINSERTED: Slot=1 Port=3: Transceiver has been inserted",
+        "event_class__name": "Chassis | Hardware | Module | Module Inserted",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C4K_IOSINTF-5-TRANSCEIVERINSERTED: Slot=(?P<module>\\d+) Port=(?P<interface>\\d+): Transceiver has been inserted"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Removed #2 (SYSLOG)",
+        "description": "%C4K_IOSINTF-5-TRANSCEIVERREMOVED: Slot=1 Port=3: Transceiver has been removed",
+        "event_class__name": "Chassis | Hardware | Module | Module Removed",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C4K_IOSINTF-5-TRANSCEIVERREMOVED: Slot=(?P<module>\\d+) Port=(?P<interface>\\d+): Transceiver has been removed"
             }
         ]
     },
