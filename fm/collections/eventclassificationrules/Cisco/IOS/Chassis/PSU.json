@@ -432,6 +432,60 @@
     },
 
     {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Failed #12 (SYSLOG)",
+        "description": "%C7600_PWR-SP-4-PSREDUNDANTONESUPPLY: in power-redundancy mode, system is operating on one power supply.",
+        "event_class__name": "Chassis | PSU | PSU Failed",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "Dummy PSU"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C7600_PWR-SP-4-PSREDUNDANTONESUPPLY: in power-redundancy mode, system is operating on one power supply."
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #12 (SYSLOG)",
+        "description": "%C7600_PWR-SP-4-PSREDUNDANTBOTHSUPPLY: in power-redundancy mode, system is operating on both power supplies.",
+        "event_class__name": "Chassis | PSU | PSU Recovered",
+        "preference": 1000,
+        "vars": [
+            {
+                "name": "name",
+                "value": "Dummy PSU"
+            }
+        ],
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%C7600_PWR-SP-4-PSREDUNDANTBOTHSUPPLY: in power-redundancy mode, system is operating on both power supplies."
+            }
+        ]
+    },
+
+    {
         "name": "Cisco | IOS | Chassis | PSU | PSU Changed (SYSLOG)",
         "description": "%ENVM-6-PSCHANGE: Power Supply 1 changed from removed to Zytek AC Power Supply",
         "event_class__name": "Chassis | PSU | PSU Changed",
