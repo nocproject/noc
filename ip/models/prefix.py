@@ -493,6 +493,15 @@ class Prefix(models.Model):
         return Address.objects.filter(vrf=self.vrf, afi=self.afi).extra(
             where=["address <<= %s"], params=[self.prefix])
 
+    def iter_free(self):
+        """
+        Generator returning all available free prefixes inside
+        :return:
+        """
+        for fp in IP.prefix(self.prefix).iter_free(
+                [p.prefix for p in self.children_set.all()]):
+            yield str(fp)
+
 # Avoid circular references
 from address import Address
 from prefixaccess import PrefixAccess
