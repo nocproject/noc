@@ -116,7 +116,7 @@ class IPReport(Report):
                     description = "Seen at %s:%s" % (
                         self.object.name, interface)
                 Address(vrf=vrf, afi=afi,
-                    fqdn=self.get_fqdn(interface, address),
+                    fqdn=self.get_fqdn(interface, vrf, address),
                     mac=mac, address=address,
                     description=description
                 ).save()
@@ -182,7 +182,7 @@ class IPReport(Report):
         ).save()
         return False
 
-    def get_fqdn(self, interface, address):
+    def get_fqdn(self, interface, vrf, address):
         """
         Generate FQDN for address
         :return:
@@ -199,6 +199,7 @@ class IPReport(Report):
             "IP": ip,
             "rIP": rip,
             "interface": interface,
+            "vrf": vrf
         })
         return self.fqdn_template.render(Context(c))
 
