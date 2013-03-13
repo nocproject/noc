@@ -8,7 +8,7 @@
 
 ## Django Modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models, connection
+from django.db import models
 ## NOC Modules
 from noc.lib.ip import IP
 from noc.lib.fields import CIDRField
@@ -38,15 +38,9 @@ class PrefixTable(models.Model):
         :rtype: bool
         """
         p = IP.prefix(prefix)
-        c = connection.cursor()
-        c.execute("""
-            SELECT COUNT(*)
-            FROM  main_prefixtableprefix
-            WHERE table_id = %s
-              AND afi = %s
-              AND %s <<= prefix
-        """, [self.id, p.afi, prefix])
-        return c.fetchall()[0][0] > 0
+        return PrefixTablePrefix.objects.filter(
+            table=self, afi=p.afi).extra(
+            where=["%s <<= prefix"], params=[prefix]).exists()
 
     def __contains__(self, other):
         """
