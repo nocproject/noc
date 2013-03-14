@@ -64,6 +64,8 @@ class BERDecoder(object):
         return None
 
     def parse_boolean(self, msg):
+        if not msg:
+            return False
         return bool(ord(msg[0]))
 
     def parse_int(self, msg):
