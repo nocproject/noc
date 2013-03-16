@@ -2,13 +2,13 @@
 ##----------------------------------------------------------------------
 ## Zyxel.ZyNOS.remove_vlan
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
+# Python modules
 from __future__ import with_statement
-## NOC modules
+# NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IRemoveVlan
 

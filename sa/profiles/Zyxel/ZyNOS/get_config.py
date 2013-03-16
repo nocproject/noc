@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-import noc.sa.script
+
+# NOC modules
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetConfig
 
 
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name = "Zyxel.ZyNOS.get_config"
     implements = [IGetConfig]
 
