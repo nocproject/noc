@@ -2,14 +2,13 @@
 ##----------------------------------------------------------------------
 ## Zyxel.ZyNOS.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-## Python modules
+
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.sa.interfaces import IGetARP
 from noc.sa.script import Script as NOCScript
 
@@ -17,7 +16,9 @@ from noc.sa.script import Script as NOCScript
 class Script(NOCScript):
     name = "Zyxel.ZyNOS.get_arp"
     implements = [IGetARP]
-    rx_arp = re.compile(r"^\s+\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<interface>\d+).*$", re.MULTILINE)
+    rx_arp = re.compile(r"^\s+\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+"
+                        r"(?P<interface>\d+).*$",
+                        re.MULTILINE)
 
     def execute(self):
         arp = self.cli("show ip arp")

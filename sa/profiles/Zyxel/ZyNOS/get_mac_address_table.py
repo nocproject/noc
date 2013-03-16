@@ -2,14 +2,13 @@
 ##----------------------------------------------------------------------
 ## Zyxel.ZyNOS.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-## Python modules
+
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetMACAddressTable
 
@@ -18,8 +17,8 @@ class Script(NOCScript):
     name = "Zyxel.ZyNOS.get_mac_address_table"
     implements = [IGetMACAddressTable]
 
-    rx_line = re.compile(r"^(?P<interfaces>\d+)\s+(?P<vlan_id>\d+)\s+" \
-                          "(?P<mac>\S+)\s+(?P<type>\S+)\s*$", re.MULTILINE)
+    rx_line = re.compile(r"^(?P<interfaces>\d+)\s+(?P<vlan_id>\d+)\s+"
+                         r"(?P<mac>\S+)\s+(?P<type>\S+)\s*$", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac address-table"
