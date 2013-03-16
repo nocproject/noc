@@ -2,14 +2,13 @@
 ##----------------------------------------------------------------------
 ## Zyxel.ZyNOS.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-## Python modules
+
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVersion
 ##
@@ -52,12 +51,17 @@ class Script(NOCScript):
                 # Get major and minor versions, model string
                 # and version control number
                 if oid:
-                    fwmaj = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.1.0" % oid)
-                    fwmin = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.2.0" % oid)
-                    fwmod = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.3.0" % oid)
-                    fwver = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.4.0" % oid)
+                    fwmaj = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.1.0"
+                                            % oid)
+                    fwmin = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.2.0"
+                                            % oid)
+                    fwmod = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.3.0"
+                                            % oid)
+                    fwver = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.4.0"
+                                            % oid)
                 else:
-                    self.error("Cannot find base OID for model '%s'" % platform)
+                    self.error("Cannot find base OID for model '%s'"
+                                % platform)
                     raise self.snmp.TimeOutError  # Fallback to CLI
                 return {
                     "vendor": "Zyxel",

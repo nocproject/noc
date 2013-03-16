@@ -2,14 +2,13 @@
 ##----------------------------------------------------------------------
 ## Zyxel.ZyNOS.get_switchport
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-## Python modules
+
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetSwitchport
 
