@@ -21,6 +21,41 @@
             }
         ],
         "disposition": [
+            {
+                "name": "dispose",
+                "action": "raise",
+                "alarm_class__name" : "Security | Authentication | TACACS+ server failed"
+            }
+        ]
+    },
+
+    {
+        "name": "Security | Authentication | TACACS+ server recovered",
+        "description": "TACACS+ server recovered",
+        "action": "L",
+        "text" : {
+            "en": {
+                "subject_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is being marked alive",
+                "body_template": "TACACS+ server{% if ip %} {{ip}}{% endif %} is being marked alive",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "vars": [
+            {
+                "name": "ip",
+                "description": "TACACS+ server address",
+                "type": "ip_address",
+                "required": false
+            }
+        ],
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name" : "Security | Authentication | TACACS+ server failed"
+            }
         ]
     }
 ]
