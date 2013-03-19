@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS_Cisco_CLI.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -18,7 +18,7 @@ class Script(NOCScript):
     implements = [IGetVersion]
     rx_ver = re.compile(
         r"System description\s+:\s+(?P<platform>\S+).+System software version"
-        r"\s+:\s+v(?P<version>\S+)(,|)\s+Release\(\d+\)", re.MULTILINE | re.DOTALL)
+        r"\s+:\s+v(?P<version>\S+?),?\s+Release\(\d+\)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         match = self.re_search(self.rx_ver, self.cli("show version"))
