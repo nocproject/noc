@@ -15,7 +15,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "System: Console user '(?P<user>.+?)' logged in from (?P<ip>\\S+). 0x0014"
+                "value_re": "System: \\S+ user '(?P<user>.+?)' logged in from (?P<ip>\\S+). \\S+"
             }
         ]
     },
@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "System: Console user '(?P<user>.+?)' logged out from (?P<ip>\\S+). 0x001E"
+                "value_re": "System: \\S+ user '(?P<user>.+?)' logged out from (?P<ip>\\S+). \\S+"
             }
         ]
     },
