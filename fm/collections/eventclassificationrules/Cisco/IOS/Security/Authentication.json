@@ -287,7 +287,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%RADIUS-4-RADIUS_DEAD: RADIUS server (?P<ip>\\S+):\\d+,\\d+ is being marked alive\\."
+                "value_re": "%RADIUS-4-RADIUS_ALIVE: RADIUS server (?P<ip>\\S+):\\d+,\\d+ is being marked alive\\."
             }
         ]
     }
