@@ -40,7 +40,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "^%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host (?P<ip>\\S+)$"
+                "value_re": "%SNMP-3-AUTHFAIL: Authentication failure for SNMP req from host (?P<ip>\\S+)"
             }
         ]
     },
