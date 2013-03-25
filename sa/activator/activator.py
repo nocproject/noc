@@ -893,7 +893,8 @@ class Activator(Daemon, FSM):
                     callback=cb, stop_on_success=True)
 
         def cb(address, result):
-            status += [(address, bool(result))]
+            status += [(address,
+                        bool([x for x in result if x is not None]))]
             if len(status) == la:
                 callback(status)
             else:
