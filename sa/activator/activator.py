@@ -17,7 +17,7 @@ import random
 import bisect
 import Queue
 import cPickle
-from threading import Lock
+from threading import RLock
 ## NOC modules
 from noc.sa.profiles import profile_registry
 from noc.sa.script import script_registry
@@ -158,7 +158,7 @@ class Activator(Daemon, FSM):
                                                      "max_scripts")
         self.scripts_processed = 0
         self.scripts_failed = 0
-        self.script_lock = Lock()
+        self.script_lock = RLock()
         self.script_call_queue = Queue.Queue()
         self.pm_data_queue = []
         self.pm_result_queue = []
@@ -830,12 +830,13 @@ class Activator(Daemon, FSM):
         """
         Cancel stale scripts
         """
-        to_cancel = [st for st in self.script_threads
-                     if st.is_stale() and not st.e_cancel]
-        for script in to_cancel:
-            logging.info("Cancelling stale script %s(%s)" % (
-                script.name, script.access_profile.address))
-            script.cancel_script()
+        with self.script_lock:
+            to_cancel = [st for st in self.script_threads
+                         if st.is_stale() and not st.e_cancel]
+            for script in to_cancel:
+                logging.info("Cancelling stale script %s(%s)" % (
+                    script.name, script.access_profile.address))
+                script.cancel_script()
 
     def run_ping_checks(self):
         if not self.ping_time:
