@@ -13,6 +13,7 @@ import time
 from noc.lib.daemon import Daemon
 from noc.lib.nbsocket import SocketFactory
 from noc.lib.stomp.serversocket import STOMPServerSocket
+from noc.main.models.stompaccess import StompAccess
 from subscription import Subscription
 from destination import Destination
 from storage import Storage
@@ -32,9 +33,15 @@ class STOMPDaemon(Daemon):
     # def load_config(self):
     #    super(STOMPDaemon, self).load_config()
 
-    def authenticate(self, login, passcode):
-        logging.info("Authenticate: %s/%s" % (login, passcode))
-        return True
+    def authenticate(self, login, passcode, address):
+        if StompAccess.authenticate(login, passcode, address):
+            logging.info("%s (%s): Authenticated" % (
+                login, address))
+            return True
+        else:
+            logging.info("%s (%s): Authentication failed" % (
+                login, address))
+            return False
 
     def run(self):
         self.factory.listen_tcp(

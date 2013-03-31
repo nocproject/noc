@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.nosql import (Document, ForeignKeyField, StringField,
-                           BooleanField, ListField)
+                           BooleanField)
 from noc.main.models.prefixtable import PrefixTable
 
 
@@ -21,6 +21,7 @@ class StompAccess(Document):
 
     user = StringField()
     password = StringField()
+    is_active = BooleanField()
     prefix_table = ForeignKeyField(PrefixTable)
 
     def unicode(self):
@@ -36,12 +37,12 @@ class StompAccess(Document):
         :rtype: bool
         :return: True if user is authenticated, False otherwise
         """
-        sa = cls.objects.filter(user=user).first()
+        sa = cls.objects.filter(user=user, is_active=True).first()
         if not sa:
-            return False  # User does not exists
+            return False  # User disabled or does not exists
         # @todo: Hashing
         if sa.password != password:
             return False  # Invalid password
-        if sa.prefix_table and not sa.prefix_table.match(address):
+        if sa.prefix_table and address not in sa.prefix_table:
             return False  # Invalid source address
         return True  # All checks are passed

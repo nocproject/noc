@@ -73,8 +73,10 @@ class STOMPServerSocket(AcceptedTCPSocket):
         # Authentication
         login = headers.get("login")
         passcode = headers.get("passcode")
-        if not self.server.authenticate(login, passcode):
+        address = self.socket.getpeername()[0]
+        if not self.server.authenticate(login, passcode, address):
             self.send_error(headers, "Access denied")
+            self.close()
             return
         # Set client id
         if "client-id" in headers:
