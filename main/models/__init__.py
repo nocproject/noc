@@ -1252,6 +1252,7 @@ class Checkpoint(models.Model):
         return cp
 
 from favorites import Favorites
+from stompaccess import StompAccess
 
 ##
 ## Install triggers
