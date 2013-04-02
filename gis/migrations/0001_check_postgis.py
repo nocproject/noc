@@ -47,7 +47,11 @@ class Migration:
         # OS-depended hardcoded paths
         u = os.uname()
         if u[0] == "FreeBSD":
-            root = "/usr/local/share/postgis/contrib/postgis-1.5"
+            for v in ["2.0", "1.5"]:
+                root = "/usr/local/share/postgis/contrib/postgis-%s" % v
+                if os.path.exists(root):
+                    self.postgis_root = root
+                    return root
         elif u[0] == "SunOS":
             pass
         # Check hardcoded path exists
