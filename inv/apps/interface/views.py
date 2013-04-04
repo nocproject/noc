@@ -126,10 +126,10 @@ class InterfaceAppplication(ExtApplication):
                 "tagged_vlans": i.tagged_vlans
             } for i in
               SubInterface.objects.filter(managed_object=o.id,
-                  is_bridge=True)
+                  enabled_afi="BRIDGE")
         ]
         # L3 interfaces
-        q = Q(is_ipv4=True) | Q(is_ipv6=True)
+        q = Q(enabled_afi="IPv4") | Q(enabled_afi="IPv6")
         l3 = [
             {
                 "name": i.name,
@@ -140,8 +140,7 @@ class InterfaceAppplication(ExtApplication):
                 "vlan": i.vlan_ids,
                 "vrf": i.forwarding_instance.name if i.forwarding_instance else ""
             } for i in
-              SubInterface.objects.filter(managed_object=o.id)\
-                .filter(q)
+              SubInterface.objects.filter(managed_object=o.id).filter(q)
         ]
         return {
             "l1": sorted_iname(l1),
