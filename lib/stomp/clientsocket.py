@@ -40,6 +40,10 @@ class STOMPClientSocket(ConnectedTCPSocket):
         }
         if self.client.client_id:
             h["client-id"] = self.client.client_id
+        if self.client.login:
+            h["login"] = self.client.login
+        if self.client.passcode:
+            h["passcode"] = self.client.passcode
         self.send_frame("CONNECT", h)
 
     def on_conn_refused(self):

@@ -30,6 +30,8 @@ class SyncDaemon(Daemon):
         self.stomp_host = self.config.get("stomp", "host")
         self.stomp_port = self.config.getint("stomp", "port")
         self.stomp_client_id = self.config.get("stomp", "client_id")
+        self.stomp_login = self.config.get("stomp", "login")
+        self.stomp_password = self.config.get("stomp", "password")
         # Load channels
         for ch in self.config.sections():
             if "/" not in ch:
@@ -57,6 +59,8 @@ class SyncDaemon(Daemon):
     def run(self):
         self.stomp_client = ThreadedSTOMPClient(
             self.stomp_host, self.stomp_port,
+            login=self.stomp_login,
+            passcode=self.stomp_password,
             client_id=self.stomp_client_id)
         self.stomp_client.start()
         for c in self.channels:

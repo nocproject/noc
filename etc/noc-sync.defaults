@@ -17,3 +17,5 @@ heartbeat= false
 host = 127.0.0.1
 port = 19705
 client_id = noc-sync
+login = noc
+password = noc
