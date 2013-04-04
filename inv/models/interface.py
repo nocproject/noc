@@ -43,7 +43,6 @@ class Interface(Document):
     ifindex = IntField(required=False)
     mac = StringField(required=False)
     aggregated_interface = PlainReferenceField("self", required=False)
-    is_lacp = BooleanField(default=False)  # @todo: Deprecated
     enabled_protocols = ListField(StringField(
         choices=[(x, x) for x in INTERFACE_PROTOCOLS]
     ), default=[])

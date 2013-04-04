@@ -37,8 +37,7 @@ class SubInterface(Document):
             ("managed_object", "ifindex"),
             "interface", "managed_object",
             "untagged_vlan", "tagged_vlans",
-            "enabled_afi",
-            "is_bridge", "is_ipv4", "is_ipv6"
+            "enabled_afi"
         ]
     }
     interface = PlainReferenceField(Interface)
@@ -52,23 +51,12 @@ class SubInterface(Document):
     enabled_afi = ListField(StringField(
         choices=[(x, x) for x in SUBINTERFACE_AFI]
     ), default=[])
-    is_ipv4 = BooleanField(default=False)
-    is_ipv6 = BooleanField(default=False)
-    is_mpls = BooleanField(default=False)
-    is_bridge = BooleanField(default=False)
     ipv4_addresses = ListField(StringField(), default=[])
     ipv6_addresses = ListField(StringField(), default=[])
     iso_addresses = ListField(StringField(), default=[])
     enabled_protocols = ListField(StringField(
         choices=[(x, x) for x in SUBINTERFACE_PROTOCOLS]
     ), default=[])
-    is_isis = BooleanField(default=False)
-    is_ospf = BooleanField(default=False)
-    is_rsvp = BooleanField(default=False)
-    is_ldp = BooleanField(default=False)
-    is_rip = BooleanField(default=False)
-    is_bgp = BooleanField(default=False)
-    is_eigrp = BooleanField(default=False)
     untagged_vlan = IntField(required=False)
     tagged_vlans = ListField(IntField(), default=[])
     # ip_unnumbered_subinterface

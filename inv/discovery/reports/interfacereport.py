@@ -121,7 +121,8 @@ class InterfaceReport(Report):
     def submit_interface(self, name, type,
                          mac=None, description=None,
                          aggregated_interface=None,
-                         is_lacp=False, enabled_protocols=[]):
+                         enabled_protocols=None):
+        enabled_protocols = enabled_protocols or []
         iface = Interface.objects.filter(
             managed_object=self.object.id, name=name).first()
         if iface:
@@ -131,7 +132,6 @@ class InterfaceReport(Report):
                 "mac": mac,
                 "description": description,
                 "aggregated_interface": aggregated_interface,
-                "is_lacp": is_lacp,
                 "enabled_protocols": enabled_protocols
             })
             self.log_changes("Interface '%s' has been changed" % name,
@@ -146,7 +146,6 @@ class InterfaceReport(Report):
                 mac=mac,
                 description=description,
                 aggregated_interface=aggregated_interface,
-                is_lacp=is_lacp,
                 enabled_protocols=enabled_protocols
             )
             iface.save()
@@ -156,14 +155,9 @@ class InterfaceReport(Report):
                             name, description=None, mac=None,
                             vlan_ids=None,
                             enabled_afi=[],
-                            is_ipv4=False, is_ipv6=False,
-                            is_mpls=False, is_bridge=False,
                             ipv4_addresses=[], ipv6_addresses=[],
                             iso_addresses=[],
                             enabled_protocols=[],
-                            is_isis=False, is_ospf=False, is_rsvp=False,
-                            is_ldp=False, is_rip=False, is_bgp=False,
-                            is_eigrp=False,
                             untagged_vlan=None, tagged_vlans=[],
                             ifindex=None):
         mac = mac or interface.mac
@@ -176,21 +170,10 @@ class InterfaceReport(Report):
                 "mac": mac,
                 "vlan_ids": vlan_ids,
                 "enabled_afi": enabled_afi,
-                "is_ipv4": is_ipv4,
-                "is_ipv6": is_ipv6,
-                "is_mpls": is_mpls,
-                "is_bridge": is_bridge,
                 "ipv4_addresses": ipv4_addresses,
                 "ipv6_addresses": ipv6_addresses,
                 "iso_addresses": iso_addresses,
                 "enabled_protocols": enabled_protocols,
-                "is_isis": is_isis,
-                "is_ospf": is_ospf,
-                "is_rsvp": is_rsvp,
-                "is_ldp": is_ldp,
-                "is_rip": is_rip,
-                "is_bgp": is_bgp,
-                "is_eigrp": is_eigrp,
                 "untagged_vlan": untagged_vlan,
                 "tagged_vlans": tagged_vlans,
                 # ip_unnumbered_subinterface
@@ -210,28 +193,17 @@ class InterfaceReport(Report):
                 mac=mac,
                 vlan_ids=vlan_ids,
                 enabled_afi=enabled_afi,
-                is_ipv4=is_ipv4,
-                is_ipv6=is_ipv6,
-                is_mpls=is_mpls,
-                is_bridge=is_bridge,
                 ipv4_addresses=ipv4_addresses,
                 ipv6_addresses=ipv6_addresses,
                 iso_addresses=iso_addresses,
                 enabled_protocols=enabled_protocols,
-                is_isis=is_isis,
-                is_ospf=is_ospf,
-                is_rsvp=is_rsvp,
-                is_ldp=is_ldp,
-                is_rip=is_rip,
-                is_bgp=is_bgp,
-                is_eigrp=is_eigrp,
                 untagged_vlan=untagged_vlan,
                 tagged_vlans=tagged_vlans,
                 ifindex=ifindex
             )
             si.save()
         # Submit found addresses and prefixes
-        if is_ipv4 or is_ipv6:
+        if "IPv4" in enabled_afi or "IPv6" in enabled_afi:
             # Get VRF
             vrf = vrf_cache.get_or_create(
                 self.object,
@@ -241,14 +213,14 @@ class InterfaceReport(Report):
                 self.info("Skipping unknown VRF '%s'" % vrf["name"])
             else:
                 # Submit ipv4 addresses and prefixes
-                if is_ipv4:
+                if "IPv4" in enabled_afi:
                     for a in ipv4_addresses:
                         self.prefix_report.submit(vrf, a,
                             interface=si.name, description=si.description)
                         self.ip_report.submit(vrf, a.split("/")[0],
                             interface=si.name, mac=si.mac)
                 # Submit ipv6 addresses and prefixes
-                if is_ipv6:
+                if "IPv6" in enabled_afi:
                     for a in ipv6_addresses:
                         self.prefix_report.submit(vrf, a,
                             interface=si.name, description=si.description)

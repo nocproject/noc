@@ -25,8 +25,6 @@ class IGetInterfaces(Interface):
             mac = interface mac address
             subinterfaces:
                 name = interface name (same as physical name for most platforms)
-                is_ipv4 = True  # @todo: Deprecated
-                is_ipv6 = True  # @todo: Deprecated
                 enabled_afi = ["IPv4", "IPv6"]
                 ipv4_addresses = list of IPv4 addresses
                 ipv6_addresses = list of IPv6 addresses
@@ -42,7 +40,6 @@ class IGetInterfaces(Interface):
             mac = interface mac address
             subinterfaces:
                 name = interface name (same as physical name for most platforms)
-                is_ipv4 = True  # @todo: Deprecated
                 enabled_afi = ["IPv4"]
                 ip_unnumbered_subinterface = subinterface name to borrow an address
 
@@ -57,7 +54,6 @@ class IGetInterfaces(Interface):
             mac = interface mac address
             subinterfaces:
                 name = interface name (same as physical name for most platforms)
-                is_bridge = True  # @todo: Deprecated
                 enabled_afi = ["BRIDGE"]
                 untagged_vlan = VLANID
 
@@ -72,7 +68,6 @@ class IGetInterfaces(Interface):
             mac = interface mac address
             subinterfaces:
                 name = interface name (same as physical name for most platforms)
-                is_bridge = True  # @todo: Deprecated
                 enabled_afi = ["BRIDGE"]
                 tagged_vlans = VLANS (list)
     
@@ -88,13 +83,11 @@ class IGetInterfaces(Interface):
             subinterfaces:
                 name = interface name.VLAN1 (for most platforms)
                 vlan_ids = [VLAN1]
-                is_ipv4 = True  # @todo: Deprecated
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = [list of VLAN1 addresses]
                 
                 name = interface name.VLAN2 (for most platforms)
                 vlan_ids = [VLAN2]
-                is_ipv4 = True  # @todo: Deprecated
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = [list of VLAN2 addresses]
     
@@ -108,7 +101,6 @@ class IGetInterfaces(Interface):
             type = "aggregated"
             subinterfaces:
                 name = interface name (same as parent for most platforms)
-                is_ipv4 = True  # @todo: Deprecated
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = list of IPv4 addresses
     
@@ -134,19 +126,16 @@ class IGetInterfaces(Interface):
             type = "aggregated"
             subinterfaces:
                 name = interface name (same as parent for most platforms)
-                is_bridge = True  # @todo: Deprecated
                 enabled_afi = ["BRIDGE"]
                 tagged_vlans = list of tagged vlans
     
             name = if2
             type = "aggregate"
-            is_lacp = True  # @todo: Deprecated
             enabled_protocols = ["LACP"]
             aggregated_interface = "if1"
             
             name = if3
             type = "aggregate"
-            is_lacp = False  # @todo: Deprecated
             enabled_protocols = ["LACP"]
             aggregated_interface = "if1"
     
@@ -161,7 +150,6 @@ class IGetInterfaces(Interface):
             subinterfaces:
                 name = interface name.VLAN1 (for most platforms)
                 vlan_ids = [VLAN1]
-                is_ipv4 = True  # @todo: Deprecated
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = List of VLAN1 addresses
 
@@ -174,7 +162,6 @@ class IGetInterfaces(Interface):
             subinterfaces:
                 name = interface name.VLAN2 (for most platforms)
                 vlan_ids = [VLAN2]
-                is_ipv4 = True   # @todo: Deprecated
                 enabled_afi = ["IPv4"]
                 ipv4_addresses = List of VLAN2 addresses in VRF1
     """
@@ -193,7 +180,6 @@ class IGetInterfaces(Interface):
             "admin_status": BooleanParameter(default=False),
             "oper_status": BooleanParameter(default=False),
             "aggregated_interface": InterfaceNameParameter(required=False), # Not empty for portchannel members
-            "is_lacp": BooleanParameter(required=False),  # @todo: Deprecated
             # L2 protocols enabled on interface
             "enabled_protocols": ListOfParameter(
                 element=StringParameter(choices=[
@@ -214,11 +200,6 @@ class IGetInterfaces(Interface):
                         "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE"
                     ]), required=False  # #todo: make required
                 ),
-                "is_ipv4": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_ipv6": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_iso": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_mpls": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_bridge": BooleanParameter(required=False),  # @todo: Deprecated
                 "ipv4_addresses": ListOfParameter(element=IPv4PrefixParameter(), required=False),  # enabled_afi = [... IPv4 ...]
                 "ipv6_addresses": ListOfParameter(element=IPv6PrefixParameter(), required=False),  # enabled_afi = [... IPv6 ...]
                 "iso_addresses": ListOfParameter(element=StringParameter(), required=False),  #   # enabled_afi = [... ISO ...]
@@ -230,13 +211,6 @@ class IGetInterfaces(Interface):
                                     "LDP", "RSVP",
                                     "PIM", "DVMRP", "IGMP", "VRRP"
                                 ]), required=False),
-                "is_isis": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_ospf": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_rsvp": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_ldp": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_rip": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_bgp": BooleanParameter(required=False),  # @todo: Deprecated
-                "is_eigrp": BooleanParameter(required=False),  # @todo: Deprecated
                 "untagged_vlan": VLANIDParameter(required=False),  # enabled_afi = [BRIDGE]
                 "tagged_vlans": ListOfParameter(element=VLANIDParameter(), required=False),  # enabled_afi = [BRIDGE]
                 "ip_unnumbered_subinterface": InterfaceNameParameter(required=False),

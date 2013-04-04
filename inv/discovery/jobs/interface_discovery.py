@@ -106,7 +106,6 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                     name=i["name"], type=i["type"], mac=i.get("mac"),
                     description=i.get("description"),
                     aggregated_interface=agg,
-                    is_lacp=i.get("is_lacp", False),
                     enabled_protocols=i.get("enabled_protocols", [])
                 )
                 icache[i["name"]] = iface
@@ -118,22 +117,11 @@ class InterfaceDiscoveryJob(MODiscoveryJob):
                         description=si.get("description"),
                         mac=si.get("mac", i.get("mac")),
                         vlan_ids=si.get("vlan_ids", []),
-                        is_ipv4=si.get("is_ipv4", False),
-                        is_ipv6=si.get("is_ipv6", False),
-                        is_mpls=si.get("is_mpls", False),
-                        is_bridge=si.get("is_bridge", False),
                         enabled_afi=si.get("enabled_afi", []),
                         ipv4_addresses=si.get("ipv4_addresses", []),
                         ipv6_addresses=si.get("ipv6_addresses", []),
                         iso_addresses=si.get("iso_addresses", []),
                         enabled_protocols=si.get("enabled_protocols", []),
-                        is_isis=si.get("is_isis", False),
-                        is_ospf=si.get("is_ospf", False),
-                        is_rsvp=si.get("is_rsvp", False),
-                        is_ldp=si.get("is_ldp", False),
-                        is_rip=si.get("is_rip", False),
-                        is_bgp=si.get("is_bgp", False),
-                        is_eigrp=si.get("is_eigrp", False),
                         untagged_vlan=si.get("untagged_vlan"),
                         tagged_vlans=si.get("tagged_vlans", []),
                         # ip_unnumbered_subinterface
