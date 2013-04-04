@@ -104,7 +104,6 @@ class Script(NOCScript):
             # Process portchannel members
             if ifname in portchannel_members:
                 iface["aggregated_interface"] = portchannel_members[ifname][0]
-                iface["is_lacp"] = portchannel_members[ifname][1]
                 if portchannel_members[ifname][1]:
                     iface["enabled_protocols"] += ["LACP"]
             # Process subinterfaces
@@ -123,7 +122,6 @@ class Script(NOCScript):
                 # IPv4 addresses
                 match = self.rx_int_ipv4.search(s)
                 if match:
-                    sub["is_ipv4"] = True
                     sub["enabled_afi"] += ["IPv4"]
                     sub["ipv4_addresses"] = [match.group("address")]
                 # ifIndex
@@ -135,7 +133,6 @@ class Script(NOCScript):
                     sub["vlan_ids"] = [int(ifname[3:].strip())]
                 # Set switchports
                 if ifname in switchports:
-                    sub["is_bridge"] = True
                     sub["enabled_afi"] += ["BRIDGE"]
                     u, t = switchports[ifname]
                     if u:
