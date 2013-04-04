@@ -126,7 +126,6 @@ class Script(NOCScript):
                     local_addresses = self.rx_log_address.findall(p)
                     if proto == "iso":
                         # Protocol ISO
-                        si["is_iso"] = True
                         si["enabled_afi"] += ["ISO"]
                         if local_addresses:
                             si["iso_addresses"] = local_addresses
@@ -135,7 +134,6 @@ class Script(NOCScript):
                         si["enabled_afi"] += ["MPLS"]
                     elif proto == "inet":
                         # Protocol IPv4
-                        si["is_ipv4"] = True
                         si["enabled_afi"] += ["IPv4"]
                         si["ipv4_addresses"] = ["%s/32" % a for a in
                                                 local_addresses]
@@ -146,7 +144,6 @@ class Script(NOCScript):
                             si["ipv4_addresses"] += ["%s/%s" % (addr, m)]
                     elif proto == "inet6":
                         # Protocol IPv6
-                        si["is_ipv6"] = True
                         si["enabled_afi"] += ["IPv6"]
                         si["ipv6_addresses"] = ["%s/128" % a for a in
                                                 local_addresses]
