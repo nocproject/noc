@@ -272,7 +272,6 @@ class Script(NOCScript):
             if matchmac:
                 sub["mac"] = matchmac.group("mac")
             if ifname in switchports and ifname not in portchannel_members:
-                sub["is_bridge"] = True
                 sub["enabled_afi"] += ["BRIDGE"]
                 u, t = switchports[ifname]
                 if u:
@@ -292,18 +291,15 @@ class Script(NOCScript):
             # IPv4/Ipv6
             if match.group("ip"):
                 if ifname in ipv4_interfaces:
-                    sub["is_ipv4"] = True
                     sub["enabled_afi"] += ["IPv4"]
                     sub["ipv4_addresses"] = ipv4_interfaces[ifname]
                 if ifname in ipv6_interfaces:
-                    sub["is_ipv6"] = True
                     sub["enabled_afi"] += ["IPv6"]
                     sub["ipv6_addresses"] = ipv6_interfaces[ifname]
             matchifn = self.rx_cisco_interface_name.match(ifname)
             shotn = (matchifn.group("type").capitalize() +
                      matchifn.group("number"))
             if shotn in ospfs:
-                sub["is_ospf"] = True
                 sub["enabled_protocols"] += ["OSPF"]
 
             if full_ifname in ifindex:
@@ -333,7 +329,6 @@ class Script(NOCScript):
                 if ifname in portchannel_members:
                     ai, is_lacp = portchannel_members[ifname]
                     iface["aggregated_interface"] = ai
-                    iface["is_lacp"] = is_lacp
                     iface["enabled_protocols"] += ["LACP"]
                 # Ifindex
                 if full_ifname in ifindex:
