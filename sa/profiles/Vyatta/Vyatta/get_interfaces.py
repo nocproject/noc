@@ -42,7 +42,8 @@ class Script(NOCScript):
                     "ipv4_addresses": [],
                     "ipv6_addresses": [],
                     "admin_status": True,
-                    "oper_status": True
+                    "oper_status": True,
+                    "enabled_afi": []
                 }
                 if "@" in last_if:
                     name, base = last_if.split("@")
@@ -59,13 +60,11 @@ class Script(NOCScript):
             match = self.rx_inet.search(l)
             if match:
                 ifaces[last_if]["ipv4_addresses"] += [match.group("inet")]
-                ifaces[last_if]["is_ipv4"] = True
                 continue
             # inet6
             match = self.rx_inet6.search(l)
             if match:
                 ifaces[last_if]["ipv6_addresses"] += [match.group("inet6")]
-                ifaces[last_if]["is_ipv6"] = True
                 continue
         # Process interfaces
         r = []
@@ -107,12 +106,12 @@ class Script(NOCScript):
     def get_si(self, si):
         if si["ipv4_addresses"]:
             si["ipv4_addresses"] = list(si["ipv4_addresses"])
-            si["is_ipv4"] = True
+            si["enabled_afi"] += ["IPv4"]
         else:
             del si["ipv4_addresses"]
         if si["ipv6_addresses"]:
             si["ipv6_addresses"] = list(si["ipv6_addresses"])
-            si["is_ipv6"] = True
+            si["enabled_afi"] += ["IPv6"]
         else:
             del si["ipv6_addresses"]
         return si
