@@ -126,7 +126,6 @@ class Script(NOCScript):
             if iface in portchannel_members:
                 ai, is_lacp = portchannel_members[iface]
                 n["aggregated_interface"] = ai
-                n["is_lacp"] = is_lacp
                 n["enabled_protocols"] = ["LACP"]
             n["name"] = iface
             n["admin_status"] = True
@@ -144,13 +143,10 @@ class Script(NOCScript):
             n["enabled_protocols"] = enabled_protocols
 
             if iface in switchports:
-                n["subinterfaces"][0]["is_bridge"] = True
                 if switchports[iface][1]:
                     n["subinterfaces"][0]["tagged_vlans"] = switchports[iface][1]
                 if switchports[iface][0]:
                     n["subinterfaces"][0]["untagged_vlan"] = switchports[iface][0]
-                else:
-                    n["subinterfaces"][0]["is_bridge"] = False
             n["type"] = self.types[iface[:2]]
             r += [n]
         for s in self.rx_line_vlan.split(v)[1:]:
@@ -190,7 +186,6 @@ class Script(NOCScript):
                              "admin_status": True,
                              "oper_status": True,
                              "enabled_afi": ["IPv4"],
-                             "is_ipv4": True,
                              "ipv4_addresses": ip_list,
                              "mac": mac,
                              "enabled_protocols": enabled_protocols,
