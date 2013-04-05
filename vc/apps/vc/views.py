@@ -134,7 +134,7 @@ class VCApplication(ExtModelApplication):
         for si in SubInterface.objects.filter(
             managed_object__in=objects,
             untagged_vlan=l1,
-            is_bridge=True):
+            enabled_afi="BRIDGE"):
             si_objects[si.managed_object] += [{"name": si.name}]
         untagged = [{
             "managed_object_id": o.id,
@@ -146,7 +146,7 @@ class VCApplication(ExtModelApplication):
         for si in SubInterface.objects.filter(
             managed_object__in=objects,
             tagged_vlans=l1,
-            is_bridge=True):
+            enabled_afi="BRIDGE"):
             si_objects[si.managed_object] += [{"name": si.name}]
         tagged = [{
             "managed_object_id": o.id,
