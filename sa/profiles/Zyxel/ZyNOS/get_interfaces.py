@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Zyxel.ZyNOS.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,12 +10,12 @@
 from __future__ import with_statement
 import re
 # NOC modules
-import noc.sa.script
+from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetInterfaces
 from noc.lib.ip import IPv4
 
 
-class Script(noc.sa.script.Script):
+class Script(NOCScript):
     name = "Zyxel.ZyNOS.get_interfaces"
     implements = [IGetInterfaces]
 
@@ -33,7 +33,12 @@ class Script(noc.sa.script.Script):
                             r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
                             r"\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
 
+    # @todo: vlan trunking, STP, CTP aka LBD
+
     def get_admin_status(self, iface):
+        """
+        Returns admin status of the interface
+        """
         if self.snmp and self.access_profile.snmp_ro:
             try:
                 # IF-MIB::ifAdminStatus
@@ -97,7 +102,6 @@ class Script(noc.sa.script.Script):
                 "type": "physical",
                 "subinterfaces": [],
                 "aggregated_interface": portchannel_members[m][0],
-                "is_lacp": portchannel_members[m][1],  # @todo: Deprecated
                 # @todo: description
             }
             if portchannel_members[m][1]:
@@ -129,7 +133,6 @@ class Script(noc.sa.script.Script):
                     "name": name,
                     "admin_status": admin,
                     "oper_status": swp["status"],
-                    "is_bridge": True,  # @todo: Deprecated
                     "enabled_afi": ["BRIDGE"],
                     "mac": mac,
                     #"snmp_ifindex": self.scripts.get_ifindex(interface=name)
@@ -168,7 +171,6 @@ class Script(noc.sa.script.Script):
                     "description": "vlan%d" % v if v else "Outband management",
                     "admin_status": True,
                     "oper_status": True,
-                    "is_ipv4": True,  # @todo: Deprecated
                     "enabled_afi": ["IPv4"],
                     "ipv4_addresses": ipifarr[v],
                     "mac": mac,
@@ -176,17 +178,15 @@ class Script(noc.sa.script.Script):
                 }]
             }
             if v == 0:  # Outband management
-                iface["type"] = "physical"
+                iface["type"] = "management"
                 # @todo: really get status
             else:
                 iface["type"] = "SVI"
                 iface["subinterfaces"][0]["vlan_ids"] = [v]
             for i in ipifarr[v]:
                 if i in rip_addresses:
-                    iface["subinterfaces"][0]["is_rip"] = True  # @todo: Deprecated
                     iface["subinterfaces"][0]["enabled_protocols"] += ["RIP"]
                 if i in ospf_addresses:
-                    iface["subinterfaces"][0]["is_ospf"] = True  # @todo: Deprecated
                     iface["subinterfaces"][0]["enabled_protocols"] += ["OSPF"]
             interfaces += [iface]
         return [{"interfaces": interfaces}]
