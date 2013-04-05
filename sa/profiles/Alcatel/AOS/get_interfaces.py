@@ -229,7 +229,6 @@ class Script(NOCScript):
                 "name": iface,
                 "admin_status": True,
                 "oper_status": True,
-                "is_bridge": True,
                 "enabled_afi": ["BRIDGE"],
                 "description": "",
             }]
@@ -268,7 +267,6 @@ class Script(NOCScript):
                     "name": iface,
                     "admin_status": True,
                     "oper_status": True,
-                    "is_bridge": True,
                     "enabled_afi": ["BRIDGE"],
                     "mac": n["mac"],
                     "snmp_ifindex": ifindex,
@@ -289,7 +287,6 @@ class Script(NOCScript):
                 ai, is_lacp = portchannel_members[iface]
                 ai = "Ag %s" % ai
                 n["aggregated_interface"] = ai
-                n["is_lacp"] = is_lacp
                 n["enabled_protocols"] = ["LACP"]
                 match = self.rx_mac_local.search(s)
                 if not match:
@@ -305,7 +302,6 @@ class Script(NOCScript):
                     "name": iface,
                     "admin_status": True,
                     "oper_status": True,
-                    "is_bridge": True,
                     "enabled_afi": ["BRIDGE"],
                     "mac": n["mac"],
                     "snmp_ifindex": ifindex,
@@ -321,13 +317,11 @@ class Script(NOCScript):
             enabled_protocols = []
             if ":" in ip:
                 ip_interfaces = "ipv6_addresses"
-                ip_ver = "is_ipv6"
                 enabled_afi += ["IPv6"]
                 ip = IPv6(ip, netmask=match.group("mask")).prefix
                 ip_list = [ip]
             else:
                 ip_interfaces = "ipv4_addresses"
-                ip_ver = "is_ipv4"
                 enabled_afi += ["IPv4"]
                 ip = IPv4(ip, netmask=match.group("mask")).prefix
                 ip_list = [ip]
@@ -361,7 +355,6 @@ class Script(NOCScript):
                     "description": ifname,
                     "admin_status": True,
                     "oper_status": True,
-                    ip_ver: True,
                     "enabled_afi": enabled_afi,
                     ip_interfaces: ip_list,
                     "vlan_ids": ranges_to_list_str(vlan),
