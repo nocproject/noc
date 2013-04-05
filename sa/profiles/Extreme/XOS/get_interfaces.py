@@ -116,7 +116,7 @@ class Script(NOCScript):
                         "admin_status": True,
                         "oper_status": True,
                         "vlan_ids": [v["vlan_id"]],
-                        "is_ipv4": True,
+                        "enabled_afi": ["IPv4"],
                         "ipv4_addresses": [v["ip"]]
                     }]
                 }]
@@ -131,7 +131,7 @@ class Script(NOCScript):
                 "name": p,
                 "admin_status": True,
                 "oper_status": True,
-                "is_bridge": True
+                "enabled_afi": ["BRIDGE"]
             }
             if p in untagged:
                 si["untagged_vlan"] = untagged[p][0]
