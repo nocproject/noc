@@ -2,29 +2,24 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
+## Python modules
+import re
+## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetARP
-import re
 
 
 class Script(NOCScript):
     name = "MikroTik.RouterOS.get_arp"
     implements = [IGetARP]
-    rx_line = re.compile(r"address=(?P<ip>\d+\.\d+\.\d+\.\d+) mac-address=(?P<mac>\S+) interface=(?P<interface>\S+)", re.MULTILINE)
 
     def execute(self):
-        r = []
-        v = self.cli("ip arp print terse")
-        v = self.cli("ip arp print terse")
-        for match in self.rx_line.finditer(v):
-            r += [{
-                "ip": match.group("ip"),
-                "mac": match.group("mac"),
-                "interface": match.group("interface"),
-            }]
-        return r
+        return [{
+            "ip": r["address"],
+            "mac": r["mac-address"],
+            "interface": r["interface"]
+        } for n, f, r in self.cli_detail("/ip arp print detail")]
