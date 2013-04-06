@@ -22,7 +22,6 @@ class Script(NOCScript):
 
     def execute(self):
         v = self.cli("system license print")
-        v = self.cli("system license print")
         match = self.re_search(self.rx_lic, v)
         r = {
             "software-id": match.group("sid"),

@@ -23,7 +23,6 @@ class Script(NOCScript):
 
     def execute(self):
         v = self.cli("system resource print")
-        v = self.cli("system resource print")
         match = self.re_search(self.rx_ver, v)
         r = {
             "vendor": "MikroTik",
