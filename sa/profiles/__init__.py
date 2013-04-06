@@ -8,6 +8,7 @@
 
 # Python Modules
 import re
+import functools
 # NOC Modules
 from noc.lib.registry import Registry
 from noc.lib.ecma48 import strip_control_sequences
@@ -294,9 +295,10 @@ class Profile(object):
 
     #
     def add_script_method(self, script, name, method):
-        if not hasattr(method, "__name__"):
-            setattr(method, "__name__", name)
-        setattr(script, name, method)
+        f = functools.partial(method, script)
+        if not hasattr(f, "__name__"):
+            setattr(f, "__name__", name)
+        setattr(script, name, f)
 
     #
     # Compare two lists
