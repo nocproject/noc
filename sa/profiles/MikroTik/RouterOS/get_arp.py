@@ -6,8 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import re
 ## NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetARP
