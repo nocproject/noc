@@ -191,6 +191,7 @@ class IGetInterfaces(Interface):
                 "name": InterfaceNameParameter(),
                 "admin_status": BooleanParameter(default=False),
                 "oper_status": BooleanParameter(default=False),
+                "mtu": IntParameter(required=False),
                 "description": StringParameter(required=False),
                 "mac": MACAddressParameter(required=False),
                 "vlan_ids": ListOfParameter(element=VLANIDParameter(), required=False),
@@ -214,7 +215,15 @@ class IGetInterfaces(Interface):
                 "untagged_vlan": VLANIDParameter(required=False),  # enabled_afi = [BRIDGE]
                 "tagged_vlans": ListOfParameter(element=VLANIDParameter(), required=False),  # enabled_afi = [BRIDGE]
                 "ip_unnumbered_subinterface": InterfaceNameParameter(required=False),
-                "snmp_ifindex": IntParameter(required=False)
+                "snmp_ifindex": IntParameter(required=False),
+                # Tunnel services
+                "tunnel": DictParameter(required=False, attrs={
+                    "type": StringParameter(choices=[
+                        "GRE", "IPIP", "IPsec", "PPTP"
+                    ]),
+                    "local_address": IPParameter(required=False),
+                    "remote_address": IPParameter(required=False)
+                })
             }))
         }))
     }))
