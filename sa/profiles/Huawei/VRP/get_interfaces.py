@@ -127,6 +127,7 @@ class Script(NOCScript):
                 "name": ifname,
                 "admin_status": a_stat,
                 "oper_status": o_stat,
+                "enabled_protocols": []
             }
 
             if match.group("desc") and match.group("desc") != "---":
@@ -137,7 +138,7 @@ class Script(NOCScript):
                 sub["mac"] = matchmac.group("mac")
 
             if ifname in switchports and ifname not in portchannel_members:
-                sub["is_bridge"] = True
+                sub["enabled_afi"] = ['BRIDGE']
                 u, t = switchports[ifname]
                 if u:
                     sub["untagged_vlan"] = u
@@ -153,10 +154,10 @@ class Script(NOCScript):
             # IPv4
             if match.group("ip"):
                 if ifname in ipv4_interfaces:
-                    sub["is_ipv4"] = True
+                    sub["enabled_afi"] = ['IPv4']
                     sub["ipv4_addresses"] = ipv4_interfaces[ifname]
             if ifname in ospfs:
-                sub["is_ospf"] = True
+                sub["enabled_protocols"] += ["OSPF"]
 
             if "." not in ifname:
                 iface = {
@@ -164,6 +165,7 @@ class Script(NOCScript):
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "type": self.types[re.sub(r'\d.*', "", ifname)],
+                    "enabled_protocols": [],
                     "subinterfaces": [sub]
                 }
                 if match.group("desc") and match.group("desc") != "---":
@@ -178,7 +180,7 @@ class Script(NOCScript):
                 if ifname in portchannel_members:
                     ai, is_lacp = portchannel_members[ifname]
                     iface["aggregated_interface"] = ai
-                    iface["is_lacp"] = is_lacp
+                    iface["enabled_protocols"] += ["LACP"]
                 interfaces += [iface]
             else:
                 # Append additional subinterface
