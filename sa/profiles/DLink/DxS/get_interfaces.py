@@ -187,7 +187,6 @@ class Script(NOCScript):
                     "admin_status": p['admin_state'],
                     "oper_status": p['status'],
                     # "ifindex": 1,
-                    "is_bridge": True,
                     "enabled_afi": ['BRIDGE']
                 }]
             }
@@ -225,7 +224,6 @@ class Script(NOCScript):
                     "name": match.group("ifname"),
                     "admin_status": admin_status,
                     "oper_status": oper_status,
-                    "is_ipv4": True,
                     "enabled_afi": ["IPv4"]
                 }]
             }
@@ -242,7 +240,6 @@ class Script(NOCScript):
             if ipv6_address is not None:
                 i['subinterfaces'][0]["ipv6_addresses"] = [ipv6_address]
                 i['subinterfaces'][0]["enabled_afi"] += ["IPv6"]
-                i['subinterfaces'][0]["is_ipv6"] = True
             vlan_name = match.group("vlan_name")
             for v in vlans:
                 if vlan_name == v['vlan_name']:
@@ -294,14 +291,12 @@ class Script(NOCScript):
             if ipv4_address is not None \
             or ipv4_addr_pri is not None:
                 i['subinterfaces'][0].update({
-                    "ipv4_addresses": ipv4_addresses,
-                    "is_ipv4": True
+                    "ipv4_addresses": ipv4_addresses
                 })
             ipv6_address = match.group("ipv6_address")
             if ipv6_address is not None:
                 i['subinterfaces'][0]["ipv6_addresses"] = [ipv6_address]
                 enabled_afi += ["IPv6"]
-                i['subinterfaces'][0]["is_ipv6"] = True
             i['subinterfaces'][0].update({"enabled_afi": enabled_afi})
             vlan_name = match.group("vlan_name")
             for v in vlans:
