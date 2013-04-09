@@ -84,7 +84,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%PM_SCP-SP-3-TRANSCEIVER_BAD_EEPROM: Integrity check on transceiver in LAN port (?P<interface>\\S+) failed: .+"
+                "value_re": "%PM_SCP-SP-3-TRANSCEIVER_(?:BAD_EEPROM|UNSUPPORTED): (?:Integrity check on|Unsupported) transceiver in LAN port (?P<interface>\\S+)( failed: .+)?"
             }
         ]
     },
