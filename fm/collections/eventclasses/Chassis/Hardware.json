@@ -83,6 +83,36 @@
     },
 
     {
+        "name": "Chassis | Hardware | Hardware Port Error Recover",
+        "description": "Hardware port or slot error recovered",
+        "action": "A",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Hardware port",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Hardware port error recovered: {{interface}}",
+                "body_template": "Hardware port or slot error recovered: {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
+                "alarm_class__name": "Chassis | Hardware | Hardware Port Error"
+            }
+        ]
+    },
+
+    {
         "name": "Chassis | Hardware | Hardware Port Warning",
         "description": "Hardware port or slot warning occured",
         "action": "A",
@@ -112,6 +142,36 @@
             {
                 "name": "dispose",
                 "action": "raise",
+                "alarm_class__name": "Chassis | Hardware | Hardware Port Warning"
+            }
+        ]
+    },
+
+    {
+        "name": "Chassis | Hardware | Hardware Port Warning Recover",
+        "description": "Hardware port or slot warning recovered",
+        "action": "A",
+        "vars": [
+            {
+                "name": "interface",
+                "description": "Hardware port or slot",
+                "type": "str",
+                "required": true
+            }
+        ],
+        "text": {
+            "en": {
+                "subject_template": "Hardware port or slot warning recovered: {{interface}}",
+                "body_template": "Hardware port or slot warning recovered: {{interface}}",
+                "symptoms": "",
+                "probable_causes": "",
+                "recommended_actions": ""
+            }
+        },
+        "disposition": [
+            {
+                "name": "dispose",
+                "action": "clear",
                 "alarm_class__name": "Chassis | Hardware | Hardware Port Warning"
             }
         ]

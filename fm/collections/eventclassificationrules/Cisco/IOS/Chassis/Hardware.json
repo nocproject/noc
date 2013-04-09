@@ -153,6 +153,27 @@
     },
 
     {
+        "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #6 (SYSLOG)",
+        "description": "%PHY-4-SFP_NOT_SUPPORTED: The SFP in Gi0/1 is not supported",
+        "event_class__name": "Chassis | Hardware | Module | Module Error",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PHY-4-SFP_NOT_SUPPORTED: The (?P<module>SFP) in (?P<interface>\\S+) is not supported"
+            }
+        ]
+    },
+
+    {
         "name": "Cisco | IOS | Chassis | Hardware | Module | Module Inserted #1 (SYSLOG)",
         "description": "%OIR-SP-6-INSCARD: Card inserted in slot 3, interfaces are now online",
         "event_class__name": "Chassis | Hardware | Module | Module Inserted",
@@ -295,6 +316,48 @@
             {
                 "key_re": "^message$",
                 "value_re": "LATECOLL: (?P<interface>.+), [Ll]ate collision"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Hardware Port Error #4 (SYSLOG)",
+        "description": "%PM-4-ERR_DISABLE: gbic-invalid error detected on Gi0/1, putting Gi0/1 in err-disable state",
+        "event_class__name": "Chassis | Hardware | Hardware Port Error",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PM-4-ERR_DISABLE: gbic-invalid error detected on (?P<interface>\\S+), putting \\S+ in err-disable state"
+            }
+        ]
+    },
+
+    {
+        "name": "Cisco | IOS | Chassis | Hardware | Hardware Port Error Recover #4 (SYSLOG)",
+        "description": "%PM-4-ERR_RECOVER: Attempting to recover from gbic-invalid err-disable state on Gi0/1",
+        "event_class__name": "Chassis | Hardware | Hardware Port Error Recover",
+        "preference": 1000,
+        "patterns": [
+            {
+                "key_re": "^source$",
+                "value_re": "^syslog$"
+            },
+            {
+                "key_re": "^profile$",
+                "value_re": "^Cisco\\.IOS$"
+            },
+            {
+                "key_re": "^message$",
+                "value_re": "%PM-4-ERR_RECOVER: Attempting to recover from gbic-invalid err-disable state on (?P<interface>\\S+)"
             }
         ]
     }
