@@ -174,7 +174,6 @@ class Script(NOCScript):
                     "name": "System",
                     "admin_status": admin_status,
                     "oper_status": oper_status,
-                    "is_ipv4": True,
                     "enabled_afi": ["IPv4"]
                 }]
             }
