@@ -97,7 +97,6 @@ class Script(NOCScript):
                     self.subiface["ipv4_addresses"] += [ipv4_addr]
                 else:
                     self.subiface["ipv4_addresses"] = [ipv4_addr]
-                    self.subiface["is_ipv4"] = True
                     self.subiface["enabled_afi"] += ["IPv4"]
                 continue
             match = self.rx_if_inet6.search(s)
@@ -111,7 +110,6 @@ class Script(NOCScript):
                     self.subiface["ipv6_addresses"] += [ipv6_addr]
                 else:
                     self.subiface["ipv6_addresses"] = [ipv6_addr]
-                    self.subiface["is_ipv6"] = True
                     self.subiface["enabled_afi"] += ["IPv6"]
                 continue
             match = self.rx_if_status.search(s)
@@ -133,7 +131,6 @@ class Script(NOCScript):
                     self.iface["aggregated_interface"] += [ifname]
                 else:
                     self.iface["aggregated_interface"] = [ifname]
-                    self.iface["is_lacp"] = True
                     self.iface["enabled_protocols"] = ["LACP"]
                 continue
             match = self.rx_if_wlan.search(s)
