@@ -47,7 +47,7 @@ class Script(NOCScript):
     r"(IP Directed Broadcast\s+:\s+(?:Enabled|Disabled)\s*\n)?"
     r"(IPv6 Link-Local Address\s+:\s+\S+\s*\n)?"
     r"(IPv6 Global Unicast Address\s+:\s+(?P<ipv6_address>\S+) \(\S+\)\s*\n)?"
-    r"(IP MTU\s+:\s+\d+\s+\n)?",
+    r"(IP MTU\s+:\s+(?P<mtu>\d+)\s+\n)?",
     re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
@@ -276,6 +276,9 @@ class Script(NOCScript):
                     "enabled_afi": []
                 }]
             }
+            mtu = match.group("mtu")
+            if mtu is not None:
+                i['subinterfaces'][0]["mtu"] = int(mtu)
             # TODO: Parse secondary IPv4 address and IPv6 address
             ipv4_addresses = []
             ipv4_address = match.group("ipv4_address")
