@@ -21,9 +21,11 @@ import stat
 ## NOC modules
 from noc.lib.daemon import Daemon
 from noc.lib.debug import DEBUG_CTX_CRASH_PREFIX
+from noc.lib.updateclient import UpdateClient
 
 ## Heartbeat check interval
 HEARTBEAT_TIMEOUT = 10
+UPDATE_INTERVAL = 300
 
 
 class DaemonData(object):
@@ -32,9 +34,8 @@ class DaemonData(object):
     """
     def __init__(self, name, is_superuser, enabled, user, uid, group, gid,
                  instance_id, config_path):
-        logging.debug("Reading config for %s[#%s]: %s" % (name,
-                                                          instance_id,
-                                                          config_path))
+        logging.debug("Reading config for %s[#%s]: %s" % (
+            name, instance_id, config_path))
         self.instance_id = instance_id
         self.name = name
         self.logname = "%s[#%s]" % (self.name, self.instance_id)
@@ -44,7 +45,8 @@ class DaemonData(object):
         self.config.read(config_path)
         self.enabled = enabled
         self.pid = None
-        self.pidfile = self.config.get("main", "pidfile").replace("{{instance}}", self.instance_id)
+        self.pidfile = self.config.get("main", "pidfile")\
+            .replace("{{instance}}", self.instance_id)
         self.is_superuser = is_superuser
         self.user = user
         self.uid = uid
@@ -52,6 +54,12 @@ class DaemonData(object):
         self.gid = gid
         self.enable_heartbeat = self.config.getboolean("main", "heartbeat")
         self.next_heartbeat_check = 0
+        # Set up update paths
+        self.update_name = None
+        if (self.config.has_section("update") and
+                self.config.has_option("update", "enabled") and
+                self.config.getboolean("update", "enabled")):
+            self.update_name = self.config.get("update", "name")
 
     def __repr__(self):
         return "<DaemonData %s>" % self.name
@@ -135,17 +143,25 @@ class Launcher(Daemon):
     daemon_name = "noc-launcher"
     create_piddir = True
 
+    DAEMONS = ["stomp", "scheduler", "web", "sae", "activator",
+               "classifier", "correlator", "notifier", "probe",
+               "discovery", "sync"]
+
     def __init__(self):
         super(Launcher, self).__init__()
         self.daemons = []
         gids = {}
         uids = {}
+        self.update_url = self.config.get("update", "url")
+        self.update_names = set()
+        if (self.config.getboolean("update", "enabled") and
+                self.config.get("update", "name")):
+            self.update_names.add(self.config.get("update", "name"))
+        self.next_update_check = 0
         self.is_superuser = os.getuid() == 0  # @todo: rewrite
         self.crashinfo_uid = None
         self.crashinfo_dir = None
-        for n in ["stomp", "scheduler", "web", "sae", "activator",
-                  "classifier", "correlator", "notifier", "probe",
-                  "discovery", "sync"]:
+        for n in self.DAEMONS:
             dn = "noc-%s" % n
             # Check daemon is enabled
             if not self.config.getboolean(dn, "enabled"):
@@ -197,16 +213,21 @@ class Launcher(Daemon):
                            for c in opts if c.startswith("config.")]
             # Initialize daemon data
             for instance_id, config in configs:
-                self.daemons += [
-                    DaemonData(dn,
-                        is_superuser=self.is_superuser,
-                        enabled=True,
-                        user=user_name,
-                        uid=uid,
-                        group=group_name,
-                        gid=gid,
-                        instance_id=instance_id,
-                        config_path=config)]
+                dd = DaemonData(
+                    dn,
+                    is_superuser=self.is_superuser,
+                    enabled=True,
+                    user=user_name,
+                    uid=uid,
+                    group=group_name,
+                    gid=gid,
+                    instance_id=instance_id,
+                    config_path=config
+                )
+                self.daemons += [dd]
+                if dd.update_name:
+                    self.update_names.add(dd.update_name)
+            self.update_names = list(self.update_names)
             # Set crashinfo uid
             if self.is_superuser and dn == "noc-sae":
                 self.crashinfo_uid = uid
@@ -231,7 +252,11 @@ class Launcher(Daemon):
         """
         Main loop
         """
+        # Rebuild contrib/ when necessary
         self.sync_contrib()
+        # Check for updates
+        self.check_updates()
+        # Main loop
         last_crashinfo_check = time.time()
         while True:
             for d in self.daemons:
@@ -266,10 +291,26 @@ class Launcher(Daemon):
                     except:
                         logging.error("Failed to fix permissions for %s" % path)
                 last_crashinfo_check = t
+            # Check for updates
+            if self.update_names and t > self.next_update_check:
+                self.check_updates()
             # Check heartbeats
             [d for d in self.daemons if d.check_heartbeat()]
 
-    def at_exit(self):
+    def check_updates(self):
+        if not self.update_names:
+            return
+        # Update
+        logging.info("Checking for updates")
+        uc = UpdateClient(self.update_url, self.update_names)
+        if uc.request_update():
+            # Updated, restart
+            logging.info("Updates are applied. Restarting")
+            self.stop_all_daemons()
+            os.execv(sys.argv[0], sys.argv)
+        self.next_update_check = time.time() + UPDATE_INTERVAL
+
+    def stop_all_daemons(self):
         for d in self.daemons:
             if d.enabled and d.pid:
                 try:
@@ -279,4 +320,7 @@ class Launcher(Daemon):
                     d.pid = None
                 except OSError:
                     pass
+
+    def at_exit(self):
+        self.stop_all_daemons()
         super(Launcher, self).at_exit()
