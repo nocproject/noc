@@ -112,10 +112,14 @@ class UpdateClient(object):
             self.url,
             "&".join("name=%s" % urllib.quote(n) for n in self.names))
         self.debug("GET %s" % uri)
-        f = urllib2.urlopen(
-            uri, data=self.get_request_data(), timeout=60)
-        data = json_decode(f.read())
-        f.close()
+        try:
+            f = urllib2.urlopen(
+                uri, data=self.get_request_data(), timeout=60)
+            data = json_decode(f.read())
+            f.close()
+        except urllib2.URLError, why:
+            self.error("Failed to get updates: %s" % why)
+            return False
         for path, hash, value in data:
             if hash:
                 # Replace file
