@@ -19,3 +19,7 @@ port = 19705
 client_id = noc-sync
 login = noc
 password = noc
+
+[update]
+name = sync
+enabled = false
