@@ -86,7 +86,7 @@ class UpdateClient(object):
         if not os.path.isfile(path):
             return None
         with open(path) as f:
-            return hashlib.sha256(f.read()).hexdigest()
+            return hashlib.sha1(f.read()).hexdigest()
 
     def update_manifest(self, path):
         """
@@ -121,7 +121,7 @@ class UpdateClient(object):
                 # Replace file
                 self.debug("Replacing %s [%s]" % (path, hash))
                 with open(path, "w") as f:
-                    f.write(data)
+                    f.write(value)
             else:
                 # Delete files
                 self.debug("Deleting %s" % path)
