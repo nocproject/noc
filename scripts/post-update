@@ -66,6 +66,9 @@ python manage.py sync-perm || error_exit "$LINENO: sync-perm failed"
 # Generate SSH keys
 info "Generating SSH keys"
 python manage.py generate-ssh-keys || error_exit "$LINENO: generate-ssh-keys failed"
+# Update manifests
+info "Updating manifests"
+python manage.py sync-manifest || error_exit "$LINENO: failed to update manifests"
 # Syncronize pyRules
 info "Syncronizing pyRules"
 python manage.py sync-pyrules || error_exit "$LINENO: sync-pyrules failed"
