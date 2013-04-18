@@ -25,12 +25,17 @@ class UpdateApplication(ExtApplication):
         for name in request.GET.getlist("name"):
             manifest.update(Manifest.get_manifest(name))
         r = []
+        left = set(manifest)
         for path, hash in json_decode(request.raw_post_data):
             if path in manifest:
+                left.remove(path)
                 if manifest[path] != hash:
                     # File changed
                     r += [[path, hash, read_file(path)]]
             else:
                 # Remove file
                 r += [[path, None, None]]
+        # Process new files
+        for path in left:
+            r += [[path, manifest[path], read_file(path)]]
         return r
