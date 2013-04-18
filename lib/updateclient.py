@@ -12,6 +12,7 @@ import hashlib
 import urllib2
 import urllib
 import logging
+import tempfile
 ## NOC modules
 from noc.lib.serialize import json_encode, json_decode
 
@@ -101,6 +102,23 @@ class UpdateClient(object):
     def get_request_data(self):
         return json_encode(self.manifest.items())
 
+    def write_file(self, path, data):
+        """
+        Create new file filled with "text" safely
+        """
+        d = os.path.dirname(path)
+        if d and not os.path.exists(d):
+            os.makedirs(d)
+        b = os.path.basename(path)
+        h, p = tempfile.mkstemp(suffix=".tmp", prefix=b, dir=d)
+        f = os.fdopen(h, "w")
+        f.write(data)
+        f.close()
+        if os.path.exists(path):
+            os.unlink(path)
+        os.link(p, path)
+        os.unlink(p)
+
     def request_update(self):
         """
         Request updates from server
@@ -124,8 +142,7 @@ class UpdateClient(object):
             if hash:
                 # Replace file
                 self.debug("Replacing %s [%s]" % (path, hash))
-                with open(path, "w") as f:
-                    f.write(value)
+                self.write_file(path, value)
             else:
                 # Delete files
                 self.debug("Deleting %s" % path)
