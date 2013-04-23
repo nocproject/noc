@@ -42,6 +42,13 @@ Ext.define("NOC.dns.dnszone.Application", {
             width: 100
         },
         {
+            text: "Paid Till",
+            dataIndex: "paid_till",
+            width: 100,
+            format: "Y-m-d",
+            startDay: 1
+        },
+        {
             text: "Notification",
             dataIndex: "notification_group",
             renderer: NOC.render.Lookup("notification_group"),
@@ -167,5 +174,30 @@ Ext.define("NOC.dns.dnszone.Application", {
                 }
             }
         ]
-    }]
+    }],
+    initComponent: function() {
+        var me = this;
+        Ext.apply(me, {
+            formToolbar: [
+                "-",
+                {
+                    text: "View",
+                    iconCls: "icon_magnifier",
+                    // hasAccess:
+                    scope: me,
+                    handler: me.onViewZone
+                }
+            ]
+        });
+        me.callParent();
+    },
+    //
+    onViewZone: function() {
+        var me = this;
+        Ext.create("NOC.core.RepoPreview", {
+            title: Ext.String.format("Preview zone: {0}", me.currentRecord.get("name")),
+            rootUrl: "/dns/dnszone/" + me.currentRecord.get("id") + "/repo/zone/",
+            syntax: "bind"
+        });
+    }
 });
