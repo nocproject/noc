@@ -163,6 +163,41 @@ Ext.define("NOC.core.ModelApplication", {
         } else {
             selModel = Ext.create("Ext.selection.CheckboxModel");
         }
+
+        var rowItems = [
+            {
+                tooltip: "Mark/Unmark",
+                scope: me,
+                getClass: function(col, meta, r) {
+                    return r.get("fav_status") ? "icon_star" : "icon_star_grey";
+                },
+                handler: me.onFavItem
+            },
+            {
+                iconCls: "icon_page_edit",
+                tooltip: "Edit",
+                scope: me,
+                handler: function(grid, rowIndex, colIndex) {
+                    var me = this,
+                        record = me.store.getAt(rowIndex);
+                    me.onEditRecord(record);
+                }
+            }
+        ];
+        if(me.onPreview) {
+            rowItems = rowItems.concat([
+                {
+                    iconCls: "icon_magnifier",
+                    tooltip: "Preview",
+                    scope: me,
+                    handler: function(grid, rowIndex, colIndex) {
+                        var me = this;
+                        me.onPreview(me.store.getAt(rowIndex));
+                    }
+                }
+            ]);
+        }
+
         var gridPanel = {
             xtype: "gridpanel",
             itemId: "grid",
@@ -175,26 +210,7 @@ Ext.define("NOC.core.ModelApplication", {
                     xtype: "actioncolumn",
                     width: 40,
                     sortable: false,
-                    items: [
-                        {
-                            tooltip: "Mark/Unmark",
-                            scope: me,
-                            getClass: function(col, meta, r) {
-                                return r.get("fav_status") ? "icon_star" : "icon_star_grey";
-                            },
-                            handler: me.onFavItem
-                        },
-                        {
-                            iconCls: "icon_page_edit",
-                            tooltip: "Edit",
-                            scope: me,
-                            handler: function(grid, rowIndex, colIndex) {
-                                var me = this,
-                                    record = me.store.getAt(rowIndex);
-                                me.onEditRecord(record);
-                            }
-                        }
-                    ]
+                    items: rowItems
                 }
             ].concat(me.columns).concat(cust_columns),
             border: false,
@@ -279,7 +295,23 @@ Ext.define("NOC.core.ModelApplication", {
                 scope: me,
                 handler: me.onClone
             }
-        ].concat(me.formToolbar);
+        ];
+        // Add View button
+        if(me.onPreview) {
+            formToolbar = formToolbar.concat([
+                {
+                    text: "View",
+                    iconCls: "icon_magnifier",
+                    // hasAccess:
+                    scope: me,
+                    handler: function() {
+                        var me = this;
+                        me.onPreview(me.currentRecord)
+                    }
+                }
+            ]);
+        }
+        formToolbar = formToolbar.concat(me.formToolbar);
 
         // Prepare inlines grid
         var formInlines = [];
@@ -875,5 +907,11 @@ Ext.define("NOC.core.ModelApplication", {
     onActionSelectionChange: function(o, selected, opts) {
         var me = this;
         me.actionMenu.setDisabled(!selected.length);
-    }
+    },
+    //
+    // Override with
+    // onPreview: function(record)
+    // to create item preview
+    //
+    onPreview: undefined
 });
