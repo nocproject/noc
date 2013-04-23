@@ -139,6 +139,8 @@ class Script(noc.sa.script.Script):
                     iface["aggregated_interface"] = portchannel_members[ifname][0]
                 # Process subinterfaces
                 subinterfaces = []
+                enabled_afi = []
+                enabled_protocols = []
                 if "aggregated_interfac" not in iface:
                     sub = {
                         "name": ifname,
@@ -152,23 +154,23 @@ class Script(noc.sa.script.Script):
                             sub["tagged_vlan"] = tagged[ifname]
 
                     if ift == "SVI":  # IPv4 addresses
-
                         shint = self.cli("show interfaces %s" % ifname)
                         for str in shint.split("\r\n"):
                             match = self.rx_int_ipv4.search(str)
                             if match:
-                                sub["is_ipv4"] = True
+                                enabled_afi += ["IPv4"]
                                 sub["ipv4_addresses"] = [match.group("address")]
 
                     if ift == "physical":
-                        sub["is_bridge"] = True
+                        enabled_afi += ["BRIDGE"]
 
                     if ifname in ospfint:
-                        sub["is_ospf"] = True
+                        enabled_protocols += ["OSPF"]
 
-                    if sub.get("is_ipv4") or sub.get("is_ipv6") or \
-                    sub.get("is_iso") or sub.get("is_mpls") or \
-                    sub.get("is_bridge"):
+                    sub["enabled_afi"] = enabled_afi
+                    sub["enabled_protocols"] = enabled_protocols
+
+                    if len(enabled_afi) > 0:
                         subinterfaces += [sub]
                 # Append to interfaces
                 iface["subinterfaces"] = subinterfaces
