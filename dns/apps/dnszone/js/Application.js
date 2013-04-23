@@ -175,28 +175,12 @@ Ext.define("NOC.dns.dnszone.Application", {
             }
         ]
     }],
-    initComponent: function() {
-        var me = this;
-        Ext.apply(me, {
-            formToolbar: [
-                "-",
-                {
-                    text: "View",
-                    iconCls: "icon_magnifier",
-                    // hasAccess:
-                    scope: me,
-                    handler: me.onViewZone
-                }
-            ]
-        });
-        me.callParent();
-    },
     //
-    onViewZone: function() {
+    onPreview: function(record) {
         var me = this;
         Ext.create("NOC.core.RepoPreview", {
-            title: Ext.String.format("Preview zone: {0}", me.currentRecord.get("name")),
-            rootUrl: "/dns/dnszone/" + me.currentRecord.get("id") + "/repo/zone/",
+            title: Ext.String.format("Preview zone: {0}", record.get("name")),
+            rootUrl: Ext.String.format("/dns/dnszone/{0}/repo/zone/", record.get("id")),
             syntax: "bind"
         });
     }
