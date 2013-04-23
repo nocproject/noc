@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.lib.app.modelinline import ModelInline
+from noc.lib.app.repoinline import RepoInline
 from noc.dns.models import DNSZone, DNSZoneRecord
 
 
@@ -21,6 +22,7 @@ class DNSZoneApplication(ExtModelApplication):
     model = DNSZone
 
     records = ModelInline(DNSZoneRecord)
+    zone = RepoInline("zone")
 
     @view(url="^(?P<zone_id>\d+)/text/$", method=["GET"],
         access="read", api=True)

@@ -18,7 +18,8 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 ## NOC modules
 from dnszoneprofile import DNSZoneProfile
-from noc.main.models import NotificationGroup
+from noc.main.models import (NotificationGroup, SystemNotification,
+                             SystemTemplate)
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
 from noc.lib.fields import AutoCompleteTagsField
@@ -29,6 +30,7 @@ from noc.lib.rpsl import rpsl_format
 from noc.dns.utils.zonefile import ZoneFile
 from noc.lib.scheduler.utils import sync_request, sliding_job
 from noc.settings import config
+from noc.lib.gridvcs.manager import GridVCSField
 
 
 ##
@@ -66,7 +68,6 @@ class DNSZone(models.Model):
         null=True, blank=True, max_length=64)
     # @todo: Rename to is_provisioned
     is_auto_generated = models.BooleanField(_("Auto generated?"))
-    # @todo: Convert to integer
     serial = models.IntegerField(_("Serial"), default=0)
     profile = models.ForeignKey(DNSZoneProfile,
         verbose_name=_("Profile"))
@@ -80,6 +81,7 @@ class DNSZone(models.Model):
     objects = models.Manager()
     forward_zones = ForwardZoneManager()
     reverse_zones = ReverseZoneManager()
+    zone = GridVCSField("dnszone")
 
     def __unicode__(self):
         return self.name
@@ -124,10 +126,14 @@ class DNSZone(models.Model):
         """
         if self.type == "R4":
             # Get IPv4 prefix covering reverse zone
-            match = self.rx_rzone.match(self.name.lower())
-            if match:
-                return "%s.%s.%s.0/24" % (match.group(3), match.group(2),
-                                          match.group(1))
+            n = self.name.lower()
+            if n.endswith(".in-addr.arpa"):
+                r = n[:-13].split(".")
+                r.reverse()
+                l = 4 - len(r)
+                r += ["0"] * l
+                ml = 32 - 8 * l
+                return ".".join(r) + "/%d" % ml
         elif self.type == "R6":
             # Get IPv6 prefix covering reverse zone
             n = self.name.lower()
@@ -572,22 +578,65 @@ class DNSZone(models.Model):
 
     @property
     def channels(self):
-        return sorted(set("dns/zone/%s" % c for c in
-            self.profile.masters.filter(sync_channel__isnull=False)
+        return sorted(
+            set("dns/zone/%s" % c for c in
+                self.profile.masters.filter(sync_channel__isnull=False)
                 .values_list("sync_channel", flat=True)))
 
-    def update_repo(self):
+    def get_notification_groups(self):
         """
-        Update DNS repo entry
+        Get a list of notification groups to notify
+        about zone changes
         :return:
         """
-        from noc.cm.models import DNS
-        try:
-            r = DNS.objects.get(repo_path=self.name)
-        except DNS.DoesNotExist:
-            r = DNS(repo_path=self.name)
-            r.save()
-        r.write(self.get_zone_text())
+        if self.notification_group:
+            return [self.notification_group]
+        if self.profile.notification_group:
+            return [self.notification_group]
+        ng = SystemNotification.get_notification_group("dns.change")
+        if ng:
+            return [ng]
+        else:
+            return []
+
+    def refresh_zone(self):
+        """
+        Compare zone state with stored one.
+        Increase serial and store new version on change
+        :return: True if zone has been changed
+        """
+        # Stored version
+        cz = self.zone.read()
+        # Generated version
+        nz = self.get_zone_text()
+        if cz == nz:
+            return False  # Not changed
+         # Step serial
+        self.set_next_serial()
+        # Generate new zone again
+        # Because serial has been changed
+        zt = self.get_zone_text()
+        self.zone.write(zt)
+        # Set change notifications
+        groups = self.get_notification_groups()
+        if groups:
+            ctx = {"name": self.name}
+            if cz:
+                revs = self.zone.get_revisions()[-2:]
+                stpl = "dns.zone.change"
+                ctx["diff"] = self.zone.diff(revs[0], revs[1])
+            else:
+                stpl = "dns.zone.new"
+                ctx["data"] = zt
+            try:
+                t = SystemTemplate.objects.get(name=stpl)
+            except SystemTemplate.DoesNotExist:
+                return True
+            subject = t.render_subject(**ctx)
+            body = t.render_body(**ctx)
+            for g in groups:
+                g.notify(subject, body)
+        return True
 
 
 ##

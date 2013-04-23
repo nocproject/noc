@@ -43,6 +43,7 @@ class SyncDNSZoneCmdJob(SyncJob):
     def on_verify(self, channel, object):
         try:
             z = DNSZone.objects.get(name=object)
+            z.refresh_zone()
             msg = {
                 "cmd": "verify",
                 "object": z.name,

@@ -17,11 +17,18 @@ class TouchZoneJob(Job):
     ignored = False
     model = DNSZone
 
+    def get_display_key(self):
+        if self.object:
+            return self.object.name
+        else:
+            return self.key
+
     def handler(self, *args, **kwargs):
         if not self.object.is_auto_generated:
-            return True
-        self.object.set_next_serial()
-        self.object.update_repo()
+            return True  # Not generated
+        if not self.object.refresh_zone():
+            return True  # Not changed
+        # Send notifications
         if self.data.get("new"):
             sync_request(self.object.channels, "list")
         else:

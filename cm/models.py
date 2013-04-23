@@ -191,8 +191,6 @@ class Object(models.Model):
     def get_object_class(self, repo):
         if repo == "config":
             return Config
-        elif repo == "dns":
-            return DNS
         elif repo == "prefix-list":
             return PrefixList
         elif repo == "rpsl":
@@ -507,102 +505,6 @@ class PrefixList(Object):
             n = "%s/%s" % (o.peering_point.hostname, o.name)
             if n not in c_objects:
                 o.delete()
-
-
-class DNS(Object):
-    class Meta:
-        verbose_name = "DNS Object"
-        verbose_name_plural = "DNS Objects"
-
-    repo_name = "dns"
-
-    @classmethod
-    def global_pull(cls):
-        from noc.dns.models import DNSZone, DNSServer
-
-        objects = {}
-        changed = {}
-        for o in DNS.objects.exclude(repo_path__endswith="autozones.conf"):
-            objects[o.repo_path] = o
-        for z in DNSZone.objects.filter(is_auto_generated=True):
-            for ns in z.profile.masters.all():
-                path = os.path.join(ns.name, z.name)
-                if path in objects:
-                    o = objects[path]
-                    del objects[path]
-                else:
-                    logging.debug(
-                        "DNSHandler.global_pull: Creating object %s" % path)
-                    o = DNS(repo_path=path)
-                    o.save()
-                if is_differ(o.path, z.zonedata(ns)):
-                    changed[z] = None
-        for o in objects.values():
-            if "/" not in o.repo_path:
-                continue
-            logging.debug("DNS.global_pull: Deleting object: %s" % o.repo_path)
-            o.delete()
-        for z in changed:
-            logging.debug("DNS.global_pull: Zone %s changed" % z.name)
-            z.serial = z.next_serial
-            z._nosignal = True
-            z.save()
-            for ns in z.profile.masters.all():
-                path = os.path.join(ns.name, z.name)
-                o = DNS.objects.get(repo_path=path)
-                o.write(z.zonedata(ns))
-        for ns in DNSServer.objects.all():
-            logging.debug(
-                "DNSHandler.global_pull: Includes for %s rebuilt" % ns.name)
-            g = ns.generator_class()
-            path = os.path.join(ns.name, "autozones.conf")
-            try:
-                o = DNS.objects.get(repo_path=path)
-            except DNS.DoesNotExist:
-                o = DNS(repo_path=path)
-                o.save()
-            o.write(g.get_include(ns))
-
-    @classmethod
-    def global_push(self):
-        from noc.dns.models import DNSZone
-
-        nses = {}
-        for z in DNSZone.objects.filter(is_auto_generated=True):
-            for ns in z.profile.masters.all():
-                nses[ns.name] = ns
-        for ns in nses.values():
-            logging.debug("DNSHandler.global_push: provisioning %s" % ns.name)
-            ns.provision_zones()
-
-    def get_notification_groups(self, immediately=False, delayed=False):
-        """
-        Override default notification order
-        :param immediately:
-        :param delayed:
-        :return:
-        """
-        from noc.dns.models import DNSZone
-        # Try to assotiate with DNSZone
-        if not self.repo_path.endswith("autozones.conf")\
-        and os.sep in self.repo_path:
-            z = None
-            sn, zn = self.repo_path.split(os.sep, 1)
-            try:
-                z = DNSZone.objects.get(name=zn)
-            except DNSZone.DoesNotExist:
-                pass
-            if z:
-                # Zone found
-                if z.notification_group:
-                    # Return zone's notification group, if given
-                    return set([z.notification_group])
-                if z.profile.notification_group:
-                    # Return profile's notification_group, if given
-                    return set([z.profile.notification_group])
-        # Fall back to default notification group
-        return super(DNS, self).get_notification_groups(immediately=immediately,
-                                                        delayed=delayed)
 
 
 class RPSL(Object):
