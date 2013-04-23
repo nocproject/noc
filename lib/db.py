@@ -44,6 +44,39 @@ def SQL(sql):
     return Q(SQLNode(sql))
 
 
+class TagsExpression(object):
+    def __init__(self, tags):
+        if type(tags) not in (list, tuple):
+            tags = [str(tags)]
+        self.tags = tags
+
+    def as_sql(self, qn, connection):
+        return "%s::varchar[] <@ tags", [self.tags]
+
+
+class TagsNode(tree.Node):
+    def __init__(self, tags):
+        super(TagsNode, self).__init__()
+        self.tags = tags
+
+    def __deepcopy__(self, memodict):
+        obj = super(TagsNode, self).__deepcopy__(memodict)
+        obj.sql = self.sql
+        return obj
+
+    def add_to_query(self, query, aliases):
+        query.where.add(TagsExpression(self.tags), self.connector)
+
+
+def QTags(tags):
+    """
+    Q-style wrapper for tags lookup
+    :param tags:
+    :return:
+    """
+    return Q(TagsNode(tags))
+
+
 def check_postgis():
     """
     Check PostGIS is enabled on NOC's database
