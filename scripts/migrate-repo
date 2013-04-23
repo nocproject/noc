@@ -61,6 +61,7 @@ def import_file(repo, id, path):
         GRIDVCS.put(id, data, ts=date)
     print
 
+
 def migrate_dns():
     files = dict((f.split(os.sep)[-1], f) for f in get_hg_files())
     c = connection.cursor()
@@ -73,6 +74,8 @@ if __name__ == "__main__":
     repo = sys.argv[1]
     assert repo in ["dns"]
     REPO = os.path.join(REPO, repo)
+    if not os.path.isdir(REPO):
+        sys.exit(0)
     if repo == "dns":
         GRIDVCS = GridVCS("dnszone")
         migrate_dns()
