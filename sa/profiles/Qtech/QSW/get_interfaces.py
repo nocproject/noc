@@ -170,7 +170,6 @@ class Script(NOCScript):
                 ip2 = match.group("ip2")
                 if ":" in ip1:
                     ip_interfaces = "ipv6_addresses"
-                    ip_ver = "is_ipv6"
                     enabled_afi += ["IPv6"]
                     ip1 = IPv6(ip1, netmask=match.group("mask1")).prefix
                     if ip2:
@@ -180,7 +179,6 @@ class Script(NOCScript):
                         ip_list = [ip1]
                 else:
                     ip_interfaces = "ipv4_addresses"
-                    ip_ver = "is_ipv4"
                     enabled_afi += ["IPv4"]
                     ip1 = IPv4(ip1, netmask=match.group("mask1")).prefix
                     if ip2:
@@ -202,7 +200,6 @@ class Script(NOCScript):
                                 "description": description,
                                 "admin_status": a_stat,
                                 "oper_status": a_stat,
-                                ip_ver: True,
                                 "enabled_afi": enabled_afi,
                                 ip_interfaces: ip_list,
                                 "mac": mac,
@@ -218,12 +215,10 @@ class Script(NOCScript):
             ip = match.group("ip")
             if ":" in ip:
                 ip_interfaces = "ipv6_addresses"
-                ip_ver = "is_ipv6"
                 enabled_afi += ["IPv6"]
                 ip = IPv6(ip, netmask=match.group("mask")).prefix
             else:
                 ip_interfaces = "ipv4_addresses"
-                ip_ver = "is_ipv4"
                 enabled_afi += ["IPv4"]
                 ip = IPv4(ip, netmask=match.group("mask")).prefix
             ip_list = [ip]
@@ -242,7 +237,6 @@ class Script(NOCScript):
                             "description": 'Managment',
                             "admin_status": True,
                             "oper_status": True,
-                            ip_ver: True,
                             "enabled_afi": enabled_afi,
                             ip_interfaces: ip_list,
                             "mac": mac,
@@ -272,7 +266,6 @@ class Script(NOCScript):
                             "description": switchports[ifname][2],
                             "admin_status": a_stat,
                             "oper_status": o_stat,
-                            "is_bridge": True,
                             "enabled_afi": ["BRIDGE"],
                             "mac": mac,
                             #"snmp_ifindex": self.scripts.get_ifindex(interface=name)
@@ -291,7 +284,6 @@ class Script(NOCScript):
                 ai, is_lacp = portchannel_members[ifname]
                 iface["aggregated_interface"] = ai
                 if is_lacp:
-                    iface["is_lacp"] = is_lacp
                     iface["enabled_protocols"] = ["LACP"]
             interfaces += [iface]
 
