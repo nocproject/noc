@@ -10,8 +10,6 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
-## Third-party modules
-from tagging.models import TaggedItem
 ## NOC modules
 from administrativedomain import AdministrativeDomain
 from managedobject import ManagedObject, ManagedObjectAttribute
@@ -22,7 +20,7 @@ from noc.main.models.prefixtable import PrefixTable
 from noc.sa.profiles import profile_registry
 from noc.lib.fields import AutoCompleteTagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
-from noc.lib.db import SQL
+from noc.lib.db import SQL, QTags
 
 
 class ManagedObjectSelector(models.Model):
@@ -126,10 +124,8 @@ class ManagedObjectSelector(models.Model):
         if self.filter_repo_path:
             q &= Q(repo_path__regex=self.filter_repo_path)
         # Restrict to tags when necessary
-        # @todo: Optimize with SQL
-        t_ids = TaggedItem.objects.get_intersection_by_model(ManagedObject, self.filter_tags).values_list("id", flat=True)
-        if t_ids:
-            q &= Q(id__in=t_ids)
+        if self.filter_tags:
+            q &= QTags(self.filter_tags)
         # Restrict to attributes when necessary
         # @todo: optimize with SQL
         m_ids = None
