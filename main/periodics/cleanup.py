@@ -31,19 +31,6 @@ class Task(noc.lib.periodic.Task):
             expire_date__lt=datetime.datetime.now()).delete()
         self.info("Expired sessions are cleaned")
 
-    def cleanup_hanging_tags(self):
-        """
-        Remove hanging tag references
-        """
-        from tagging.models import TaggedItem
-
-        self.info("Cleaning hanging tags")
-        for i in TaggedItem.objects.all():
-            if i.object is None:
-                logging.info("Delete hanging tag reference: %s" % str(i))
-                i.delete()
-        self.info("Hanging tags are cleaned")
-
     def cleanup_mrt(self):
         """
         Remove old map/reduce tasks
@@ -95,7 +82,6 @@ class Task(noc.lib.periodic.Task):
 
     def execute(self):
         self.cleanup_expired_sessions()
-        self.cleanup_hanging_tags()
         self.cleanup_mrt()
         self.cleanup_empty_categories()
         self.cleanup_failed_script_log()
