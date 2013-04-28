@@ -9,7 +9,6 @@ from django.db import models
 from noc.lib.ip import IP
 import types,cPickle
 from django.contrib.admin.widgets import AdminTextInputWidget
-from tagging.fields import TagField
 from south.modelsinspector import add_introspection_rules
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.widgets import ColorPickerWidget
