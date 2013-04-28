@@ -42,6 +42,17 @@ class Script(NOCScript):
             r"\s+\(\S\)operPointToPointMAC:\s+(?P<p2p>\S+))?",
             re.DOTALL)
 
+    @classmethod
+    def hex_to_portid(cls, v):
+        """
+        Convert hexadecimal port id to commonly used dot notation
+        0x8001 -> 128.1
+        """
+        i = int(v, 16)
+        prio = (i >> 12) * 16
+        port = i & 0xFFF
+        return "%d.%d" % (prio, port)
+
     def process_mstp(self):
         """
         Get MSTP configuration
@@ -79,8 +90,8 @@ class Script(NOCScript):
             # get interfaces
             ifaces = []
             for match in self.rx_port.finditer(cmd):
-                port_id = int(match.group("port_id"), 16) % 4096
-                ds_port_id = int(match.group("ds_port_id"), 16) % 4096
+                port_id = self.hex_to_portid(match.group("port_id"))
+                ds_port_id = self.hex_to_portid(match.group("ds_port_id"))
                 # Interface state
                 state = {
                         "FORWARDING": "forwarding",
@@ -105,10 +116,9 @@ class Script(NOCScript):
                     "port_id": port_id,
                     "state": state,
                     "role": role,
-                    "priority": int(match.group("port_id"), 16) - port_id,
+                    "priority": int(port_id.split(".")[0]),
                     "designated_bridge_id": match.group("ds_br_id"),
-                    "designated_bridge_priority": int(
-                                                match.group("ds_br_pr"), 16),
+                    "designated_bridge_priority": int(ds_port_id.split(".")[0]),
                     "designated_port_id": ds_port_id
                 }]
             # Edge and p2p properties from instance 0
@@ -141,8 +151,8 @@ class Script(NOCScript):
         # get interfaces
         ifaces = []
         for match in self.rx_port.finditer(cmd):
-            port_id = int(match.group("port_id"), 16) % 4096
-            ds_port_id = int(match.group("ds_port_id"), 16) % 4096
+            port_id = self.hex_to_portid(match.group("port_id"))
+            ds_port_id = self.hex_to_portid(match.group("ds_port_id"))
             state = {
                     "FORWARDING": "forwarding",
                     "DISCARDING": "discarding",
@@ -162,10 +172,9 @@ class Script(NOCScript):
                 "port_id": port_id,
                 "state": state,
                 "role": role,
-                "priority": int(match.group("port_id"), 16) - port_id,
+                "priority": int(port_id.split(".")[0]),
                 "designated_bridge_id": match.group("ds_br_id"),
-                "designated_bridge_priority": int(
-                                            match.group("ds_br_pr"), 16),
+                "designated_bridge_priority": int(match.group("ds_br_pr"), 16),
                 "designated_port_id": ds_port_id,
                 "edge": match.group("edge"),
                 "point_to_point": match.group("p2p")
