@@ -13,8 +13,6 @@ from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.core.validators import EMPTY_VALUES
-## Third-party modules
-from tagging.models import Tag
 # NOC modules
 from lib.nosql import Document, ObjectId
 from noc.lib.serialize import json_encode
