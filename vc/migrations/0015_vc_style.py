@@ -7,6 +7,10 @@ from django.db import models
 
 
 class Migration:
+    depends_on = [
+        ("main", "0027_style")
+    ]
+
     def forwards(self):
         Style = db.mock_model(model_name="Style", db_table="main_style",
             db_tablespace="", pk_field_name="id",
