@@ -13,7 +13,7 @@ from noc.settings import config
 from noc.lib.validators import is_asn
 from noc.lib.tt import tt_url
 from noc.lib.rpsl import rpsl_format
-from noc.lib.fields import INETField, AutoCompleteTagsField
+from noc.lib.fields import INETField, TagsField
 from noc.sa.profiles import profile_registry
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
@@ -63,7 +63,7 @@ class ASSet(models.Model):
     members = models.TextField("Members", null=True, blank=True)
     rpsl_header = models.TextField("RPSL Header", null=True, blank=True)
     rpsl_footer = models.TextField("RPSL Footer", null=True, blank=True)
-    tags = AutoCompleteTagsField("Tags", null=True, blank=True)
+    tags = TagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -232,7 +232,7 @@ class Peer(models.Model):
                                           blank=True, null=True)
     export_filter_name = models.CharField("Export Filter Name", max_length=64,
                                           blank=True, null=True)
-    tags = AutoCompleteTagsField("Tags", null=True, blank=True)
+    tags = TagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
         return u" %s (%s@%s)" % (self.remote_asn, self.remote_ip,

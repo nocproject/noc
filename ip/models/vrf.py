@@ -18,7 +18,7 @@ from noc.main.models import Style, ResourceState, CustomField
 from noc.peer.models.asn import AS
 from vrfgroup import VRFGroup
 from noc.lib.validators import check_rd, is_rd
-from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.fields import TagsField
 from noc.lib.app import site
 from noc.lib.search import SearchResult
 
@@ -62,7 +62,7 @@ class VRF(models.Model):
         blank=True,
         null=True,
         help_text=_("Ticket #"))
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField(_("Tags"), null=True, blank=True)
     style = models.ForeignKey(
         Style,
         verbose_name=_("Style"),

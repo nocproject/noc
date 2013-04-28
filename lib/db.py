@@ -51,7 +51,7 @@ class TagsExpression(object):
         self.tags = tags
 
     def as_sql(self, qn, connection):
-        return "%s::varchar[] <@ tags", [self.tags]
+        return "%s::text[] <@ tags", [self.tags]
 
 
 class TagsNode(tree.Node):
@@ -61,7 +61,7 @@ class TagsNode(tree.Node):
 
     def __deepcopy__(self, memodict):
         obj = super(TagsNode, self).__deepcopy__(memodict)
-        obj.sql = self.sql
+        obj.tags = self.tags
         return obj
 
     def add_to_query(self, query, aliases):

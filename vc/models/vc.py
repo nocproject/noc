@@ -15,7 +15,7 @@ from django.db.models import Q
 from error import InvalidLabelException, MissedLabelException
 from vcdomain import VCDomain
 from noc.main.models import ResourceState, Style
-from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.fields import TagsField
 from noc.lib.app.site import site
 from noc.lib.validators import is_int
 from noc.lib.search import SearchResult
@@ -47,7 +47,7 @@ class VC(models.Model):
                                    blank=True)
     style = models.ForeignKey(Style, verbose_name="Style", blank=True,
                               null=True)
-    tags = AutoCompleteTagsField("Tags", null=True, blank=True)
+    tags = TagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
         s = u"%s %d" % (self.vc_domain, self.l1)

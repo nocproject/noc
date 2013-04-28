@@ -218,7 +218,9 @@ class PickledField(models.Field):
 ##
 ## Autocomplete tags fields
 ##
-class AutoCompleteTagsField(TagField):
+class AutoCompleteTagsField(models.Field):
+    def db_type(self, connection):
+        return "TEXT"
     def formfield(self, **kwargs):
         from noc.lib.widgets import AutoCompleteTags
         defaults = {'widget': AutoCompleteTags}
@@ -226,7 +228,43 @@ class AutoCompleteTagsField(TagField):
         if defaults['widget'] == AdminTextInputWidget:
             defaults['widget']=AutoCompleteTags
         return super(AutoCompleteTagsField,self).formfield(**defaults)
-    
+
+
+class TagsField(models.Field):
+    __metaclass__ = models.SubfieldBase
+
+    def db_type(self, connection):
+        return "TEXT[]"
+
+    def to_python(self, value):
+        def to_unicode(s):
+            if type(s) == types.UnicodeType:
+                return s
+            else:
+                return unicode(s, "utf-8")
+
+        if value is None:
+            return None
+        elif isinstance(value, basestring):
+            # Legacy AutoCompleteTagsField tweak
+            if "," in value:
+                value = value.split(",")
+            value = [to_unicode(x) for x in value]
+            return [x for x in value if x]
+        else:
+            return [to_unicode(x) for x in value]
+
+    def formfield(self, **kwargs):
+        from noc.lib.widgets import AutoCompleteTags
+        defaults = {'widget': AutoCompleteTags}
+        defaults.update(kwargs)
+        if defaults['widget'] == AdminTextInputWidget:
+            defaults['widget'] = AutoCompleteTags
+        return super(TagsField, self).formfield(**defaults)
+
+    def get_db_prep_value(self, value, connection, prepared=False):
+        return value
+
 
 ##
 ## Color field

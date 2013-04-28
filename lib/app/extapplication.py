@@ -125,8 +125,18 @@ class ExtApplication(Application):
             fs = q.pop(self.fav_status) == "true"
         q = self.cleaned_query(q)
         if None in q:
-            ew = q.pop(None)
-            data = self.queryset(request, query).filter(**q).extra(where=ew)
+            w = []
+            p = []
+            for x in q.pop(None):
+                if type(x) in (list, tuple):
+                    w += [x[0]]
+                    p += x[1]
+                else:
+                    w += [x]
+            xa = {"where": w}
+            if p:
+                xa["params"] = p
+            data = self.queryset(request, query).filter(**q).extra(**xa)
         else:
             data = self.queryset(request, query).filter(**q)
         # Favorites filter

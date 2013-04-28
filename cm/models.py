@@ -26,8 +26,6 @@ from noc.sa.models import AdministrativeDomain, ManagedObject
 from noc.lib.search import SearchResult
 from noc.main.models import NotificationGroup
 from noc.lib.app.site import site
-from noc.lib.fields import AutoCompleteTagsField
-from tagging.models import TaggedItem
 
 
 profile_registry.register_all()
@@ -47,7 +45,6 @@ class ObjectNotify(models.Model):
     administrative_domain = models.ForeignKey(AdministrativeDomain,
                                               verbose_name="Administrative Domain",
                                               blank=True, null=True)
-    tags = AutoCompleteTagsField("Tags", null=True, blank=True)
     notify_immediately = models.BooleanField("Notify Immediately")
     notify_delayed = models.BooleanField("Notify Delayed")
     notification_group = models.ForeignKey(NotificationGroup,
@@ -370,12 +367,7 @@ class Config(Object):
         q &= (Q(administrative_domain__isnull=True) | Q(
             administrative_domain=self.managed_object.administrative_domain))
         if self.managed_object.tags:
-            tagged = TaggedItem.objects.get_union_by_model(ObjectNotify,
-                        self.managed_object.tags).values_list("id", flat=True)
-            if tagged:
-                q &= (Q(tags__isnull=True) | Q(tags="") | Q(id__in=tagged))
-            else:
-                q &= (Q(tags__isnull=True) | Q(tags=""))
+            q &= (Q(tags__isnull=True) | Q(tags=""))
         return set(
             [n.notification_group for n in ObjectNotify.objects.filter(q)])
 

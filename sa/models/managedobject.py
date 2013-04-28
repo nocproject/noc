@@ -22,7 +22,7 @@ from objectstatus import ObjectStatus
 from noc.main.models import PyRule
 from noc.sa.profiles import profile_registry
 from noc.lib.search import SearchResult
-from noc.lib.fields import INETField, AutoCompleteTagsField
+from noc.lib.fields import INETField, TagsField
 from noc.lib.app.site import site
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
@@ -108,7 +108,7 @@ class ManagedObject(models.Model):
             null=True, blank=True,
             help_text=_("Concurrent script session limits"))
     #
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField(_("Tags"), null=True, blank=True)
 
     # Use special filter for profile
     profile_name.existing_choices_filter = True

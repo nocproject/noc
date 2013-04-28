@@ -16,7 +16,7 @@ from prefix import Prefix
 from afi import AFI_CHOICES
 from noc.main.models import Style, ResourceState, CustomField
 from noc.sa.models import ManagedObject
-from noc.lib.fields import AutoCompleteTagsField, INETField, MACField
+from noc.lib.fields import TagsField, INETField, MACField
 from noc.lib.app import site
 from noc.lib.search import SearchResult
 from noc.lib.validators import ValidationError,\
@@ -66,7 +66,7 @@ class Address(models.Model):
     description = models.TextField(
         _("Description"),
         blank=True, null=True)
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField(_("Tags"), null=True, blank=True)
     tt = models.IntegerField(
         _("TT"),
         blank=True, null=True,
