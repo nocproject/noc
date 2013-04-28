@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from noc.kb.parsers.macros import Macro as MacroBase
 from django.db.models import Q
-from tagging.models import Tag,TaggedItem
+from noc.lib.db import QTags
 ##
 ## "search" macro
 ## USAGE:
@@ -29,20 +29,10 @@ class Macro(MacroBase):
         # Build search criteria
         q=Q()
         if "tags" in args:
-            for tn in args["tags"].split(","):
-                tn=tn.strip()
-                if not tn:
-                    continue
-                # Find tag
-                try:
-                    t=Tag.objects.get(name=tn)
-                except Tag.DoesNotExist:
-                    t=None # No tag found
-                # Restrict queryset
-                if t:
-                    q&=Q(id__in=[i.id for i in TaggedItem.objects.get_by_model(KBEntry.objects,t)])
-                else:
-                    q&=KBEntry.objects.none()
+            tags = args["tags"].split(",")
+            tags = [x for x in tags if x]
+            if tags:
+                q &= QTags(tags)
         if "language" in args:
             q&=Q(language__name=args["language"])
         q=KBEntry.objects.filter(q) # Flatten to query
