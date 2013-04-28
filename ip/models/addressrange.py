@@ -14,7 +14,7 @@ from django.template import Template, Context
 from vrf import VRF
 from address import Address
 from afi import AFI_CHOICES
-from noc.lib.fields import AutoCompleteTagsField, CIDRField
+from noc.lib.fields import TagsField, CIDRField
 from noc.lib.app import site
 from noc.lib.ip import IP
 from noc.lib.validators import check_ipv4, check_ipv6
@@ -61,7 +61,7 @@ class AddressRange(models.Model):
         max_length=255,
         null=True, blank=True,
         help_text=_("Comma-separated list of NSes to partial reverse zone delegation when 'Action' set to 'Partial reverse zone delegation"))
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField(_("Tags"), null=True, blank=True)
     tt = models.IntegerField(
         "TT",
         blank=True, null=True,

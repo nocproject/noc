@@ -10,7 +10,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 ## NOC modules
-from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.fields import TagsField
 from noc.lib.app import site
 
 
@@ -39,7 +39,7 @@ class VRFGroup(models.Model):
         default="V")
     description = models.TextField(
         _("Description"), blank=True, null=True)
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __unicode__(self):
         return unicode(self.name)

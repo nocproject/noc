@@ -17,7 +17,7 @@ from afi import AFI_CHOICES
 from noc.peer.models import AS
 from noc.vc.models.vc import VC
 from noc.main.models import Style, ResourceState, CustomField
-from noc.lib.fields import AutoCompleteTagsField, CIDRField
+from noc.lib.fields import TagsField, CIDRField
 from noc.lib.app import site
 from noc.lib.search import SearchResult
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix,\
@@ -68,7 +68,7 @@ class Prefix(models.Model):
         _("Description"),
         blank=True,
         null=True)
-    tags = AutoCompleteTagsField("Tags", null=True, blank=True)
+    tags = TagsField("Tags", null=True, blank=True)
     tt = models.IntegerField(
         "TT",
         blank=True,

@@ -22,7 +22,7 @@ from noc.main.models import (NotificationGroup, SystemNotification,
                              SystemTemplate)
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
-from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.fields import TagsField
 from noc.lib.app.site import site
 from noc.lib.ip import IPv6
 from noc.lib.validators import is_ipv4, is_ipv6, is_int
@@ -75,7 +75,7 @@ class DNSZone(models.Model):
         verbose_name=_("Notification Group"), null=True, blank=True,
         help_text=_("Notification group to use when zone changed"))
     paid_till = models.DateField(_("Paid Till"), null=True, blank=True)
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField(_("Tags"), null=True, blank=True)
 
     # Managers
     objects = models.Manager()

@@ -23,7 +23,6 @@ from django.db.models.signals import class_prepared, pre_save, pre_delete,\
 from django.template import Template as DjangoTemplate
 from django.template import Context
 ## Third-party modules
-from tagging.models import Tag
 from mongoengine.django.sessions import MongoSession
 ## NOC Modules
 from noc import settings
@@ -1253,6 +1252,7 @@ class Checkpoint(models.Model):
 
 from favorites import Favorites
 from stompaccess import StompAccess
+from tag import Tag
 
 ##
 ## Install triggers
@@ -1286,16 +1286,17 @@ def search_tags(user, query, limit):
     tags = []
     for p in query.split(","):
         p = p.strip()
-        try:
-            tags += [Tag.objects.get(name=p)]
-        except Tag.DoesNotExist:
-            return []
+        t = Tag.objects.filter(tag=p).first()
+        if t:
+            tags += [t]
+        else:
+            return []  # Tag not found
     if not tags:
         return []
     # Intersect tags
     r = None
     for t in tags:
-        o = [o.object for o in t.items.all()]
+        o = t.get_objects()
         if r is None:
             r = set(o)
         else:

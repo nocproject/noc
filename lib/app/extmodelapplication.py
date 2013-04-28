@@ -14,8 +14,6 @@ from django.db.models.fields import (
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 from django.db.utils import IntegrityError
-## Third-party modules
-from tagging.models import Tag
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.sa.interfaces import (BooleanParameter, IntParameter,
@@ -25,6 +23,7 @@ from noc.sa.interfaces import (BooleanParameter, IntParameter,
 from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
 from noc.sa.interfaces import InterfaceTypeError
+from noc.lib.db import QTags
 
 
 class ExtModelApplication(ExtApplication):
@@ -78,7 +77,7 @@ class ExtModelApplication(ExtApplication):
         :type field: Field
         :return:
         """
-        from noc.lib.fields import AutoCompleteTagsField
+        from noc.lib.fields import TagsField
 
         if isinstance(field, BooleanField):
             return BooleanParameter()
@@ -90,7 +89,7 @@ class ExtModelApplication(ExtApplication):
             return DateParameter()
         elif isinstance(field, DateTimeField):
             return DateTimeParameter()
-        elif isinstance(field, AutoCompleteTagsField):
+        elif isinstance(field, TagsField):
             return TagsParameter(required=not field.null)
         elif isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.rel.to
@@ -106,7 +105,7 @@ class ExtModelApplication(ExtApplication):
         return int(item)
 
     def get_custom_fields(self):
-        from noc.main.models import CustomField
+        from noc.main.models.customfield import CustomField
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_launch_info(self, request):
@@ -234,8 +233,7 @@ class ExtModelApplication(ExtApplication):
                 continue  # Restrict to selected fields
             if f.name == "tags":
                 # Send tags as a list
-                r[f.name] = [x for x in
-                             getattr(o, f.name).split(",") if x]
+                r[f.name] = getattr(o, f.name)
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if (v is not None and
@@ -271,31 +269,11 @@ class ExtModelApplication(ExtApplication):
             return
         if isinstance(value, basestring):
             value = [value]
-        a, m = self.model._meta.db_table.split("_", 1)
-        tags = Tag.objects.filter(name__in=value).values_list("id", flat=True)
-        if len(tags) != len(value):
-            s = "FALSE"
-        else:
-            ct_id = ContentType.objects.get(app_label=a, model=m).id
-            s = """
-                (%(table)s.id IN (
-                    SELECT object_id
-                    FROM tagging_taggeditem
-                    WHERE
-                        content_type_id = %(ct_id)d
-                        AND tag_id in (%(tags)s)
-                    GROUP BY object_id
-                    HAVING COUNT(object_id) = %(t_len)s
-                ))""" % {
-                "table": self.model._meta.db_table,
-                "ct_id": ct_id,
-                "tags": ", ".join(str(t) for t in tags),
-                "t_len": len(value)
-            }
+        tq = ("%s::text[] <@ tags", [value])
         if None in q:
-            q[None] += [s]
+            q[None] += [tq]
         else:
-            q[None] = [s]
+            q[None] = [tq]
 
     def update_m2m(self, o, name, values):
         if values is None:

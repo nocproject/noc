@@ -16,7 +16,7 @@ from django.template import Template, Context
 ## NOC modules
 from noc.main.models import Permission
 from managedobjectselector import ManagedObjectSelector
-from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.fields import TagsField
 from noc.lib.app.site import site
 
 
@@ -51,7 +51,7 @@ class CommandSnippet(models.Model):
                                        null=True, blank=True)
     display_in_menu = models.BooleanField(_("Show in menu"), default=False)
     #
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __unicode__(self):
         return self.name

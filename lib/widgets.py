@@ -99,10 +99,11 @@ class AutoCompleteTags(Input):
             "all": ["/static/css/jquery.tokeninput.css"]
         }
         js=["/static/js/jquery.tokeninput.js"]
+
     def render(self,name,value=None,attrs=None):
         initial=[]
         if value:
-            for v in value.split(","):
+            for v in value:
                 v=v.strip()
                 if v:
                     initial+=[{"id":v,"name":v}]
@@ -129,7 +130,7 @@ class AutoCompleteTags(Input):
                 });
             });
         </script>
-        """%(attrs["id"], "/main/tags/lookup/", initial)
+        """%(attrs["id"], "/main/tag/ac_lookup/", initial)
         return mark_safe("\n".join([html,js]))
 
 
@@ -200,11 +201,14 @@ def lookup(request,func):
             result=list(func(q))
     return HttpResponse("\n".join(result), mimetype='text/plain')
 
+
 ##
 ## Render tag list for an object
 ##
 def tags_list(o):
-    s=["<ul class='tags-list'>"]+["<li><a href='%s'>%s</a></li>"%(site.reverse("main:tags:tag",t.name),t.name) for t in Tag.objects.get_for_object(o)]+["</ul>"]
+    tags = o.tags or []
+    s = (["<ul class='tags-list'>"] +
+         ["<li>%s</li>" % t for t in tags] + ["</ul>"])
     return "".join(s)
 
 ## Load at the end to prevent circular dependencies

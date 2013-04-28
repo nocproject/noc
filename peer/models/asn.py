@@ -13,7 +13,7 @@ from noc.peer.models import Organisation, Person, Maintainer
 from rir import RIR
 from noc.settings import config
 from noc.lib.rpsl import rpsl_format
-from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.fields import TagsField
 from noc.lib.app.site import site
 
 
@@ -59,7 +59,7 @@ class AS(models.Model):
      # remarks: will be prepended automatically
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
     rir = models.ForeignKey(RIR, verbose_name="RIR")  # source:
-    tags = AutoCompleteTagsField("Tags", null=True, blank=True)
+    tags = TagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
         return u"AS%d (%s)" % (self.asn, self.description)

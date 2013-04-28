@@ -416,7 +416,7 @@
     
 		function create_new_token () {
 			//return;
-			var string = input_box.val().toLowerCase();
+			var string = input_box.val();
 			//alert(string);
 			if(string.length > 0) {
 				//add_token(string, string);
@@ -658,7 +658,7 @@
 		// Do a search and show the "searching" dropdown if the input is longer
 		// than settings.minChars
 		function do_search(immediate) {
-			var query = input_box.val().toLowerCase();
+			var query = input_box.val();
 
 			if (query && query.length) {
 				if(selected_token) {

@@ -12,7 +12,7 @@ from django.db import models
 ## NOC modules
 from activatorcapabilitiescache import ActivatorCapabilitiesCache
 from noc.main.models import Shard
-from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.fields import TagsField
 from noc.lib.app.site import site
 
 
@@ -34,7 +34,7 @@ class Activator(models.Model):
     to_ip = models.IPAddressField(_("To IP"))
     auth = models.CharField(_("Auth String"), max_length=64)
     is_active = models.BooleanField(_("Is Active"), default=True)
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __unicode__(self):
         return self.name

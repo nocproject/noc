@@ -13,7 +13,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 ## NOC modules
 from dnszone import DNSZone
-from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.fields import TagsField
 from noc.lib.app.site import site
 
 
@@ -33,7 +33,7 @@ class DNSZoneRecord(models.Model):
     type = models.CharField(_("Type"), max_length=16)
     priority = models.IntegerField(_("Priority"), null=True, blank=True)
     content = models.CharField(_("Content"), max_length=256)
-    tags = AutoCompleteTagsField(_("Tags"), null=True, blank=True)
+    tags = TagsField(_("Tags"), null=True, blank=True)
 
     def __unicode__(self):
         return u"%s %s" % (self.zone.name,
