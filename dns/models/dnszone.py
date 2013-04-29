@@ -535,26 +535,32 @@ class DNSZone(models.Model):
         Resolve name to zone object
         :return:
         """
+        def get_closest(n):
+            """
+            Return closest matching zone
+            """
+            while n:
+                try:
+                    return DNSZone.objects.get(name=n)
+                except DNSZone.DoesNotExist:
+                    pass
+                n = ".".join(n.split(".")[1:])
+            return None
+
         if is_ipv4(name):
             # IPv4 zone
             n = name.split(".")
             n.reverse()
-            zn = "%s.in-addr.arpa" % (".".join(n[1:]))
-            try:
-                return DNSZone.objects.get(name=zn)
-            except DNSZone.DoesNotExist:
-                return None
+            return get_closest("%s.in-addr.arpa" % (".".join(n[1:])))
         elif is_ipv6(name):
             # IPv6 zone
-            pass  # @todo
+            d = IPv6(name).digits
+            d.reverse()
+            c = ".".join(d)
+            return (get_closest("%s.ip6.arpa" % c) or
+                    get_closest("%s.ip6.int" % c))
         else:
-            while name:
-                try:
-                    return DNSZone.objects.get(name=name)
-                except DNSZone.DoesNotExist:
-                    pass
-                name = ".".join(name.split(".")[1:])
-            return None
+            return get_closest(name)
 
     @classmethod
     def touch(cls, name):
