@@ -25,7 +25,7 @@ from noc.ip.models.addressrange import AddressRange
 from noc.lib.fields import TagsField
 from noc.lib.app.site import site
 from noc.lib.ip import IPv6
-from noc.lib.validators import is_ipv4, is_ipv6, is_int
+from noc.lib.validators import is_ipv4, is_ipv6
 from noc.lib.rpsl import rpsl_format
 from noc.dns.utils.zonefile import ZoneFile
 from noc.lib.scheduler.utils import sync_request, sliding_job
@@ -535,7 +535,7 @@ class DNSZone(models.Model):
         Resolve name to zone object
         :return:
         """
-        if is_int(name):
+        if is_ipv4(name):
             # IPv4 zone
             n = name.split(".")
             n.reverse()
