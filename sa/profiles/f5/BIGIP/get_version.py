@@ -22,7 +22,8 @@ class Script(NOCScript):
 
     rx_version = re.compile(
         r"Product\s+(?P<platform>\S+).+"
-        r"Version\s+(?P<version>\S+)"
+        r"Version\s+(?P<version>\S+)",
+        re.MULTILINE
     )
 
     def execute(self):
