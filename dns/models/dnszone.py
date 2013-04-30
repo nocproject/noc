@@ -327,9 +327,18 @@ class DNSZone(models.Model):
         Fetch IPv4 PTR records from IPAM
         :return: (name, type, content, ttl, prio)
         """
+        def ptr(a):
+            """
+            Convert address to full PTR record
+            """
+            x = a.split(".")
+            x.reverse()
+            return "%s.in-addr.arpa" % (".".join(x))
+
         ttl = self.profile.zone_ttl
+        l = len(self.name) + 1
         return [(
-            a.address.split(".")[3],
+            ptr(a.address)[:-l],
             "PTR",
             a.fqdn + ".",
             ttl,
