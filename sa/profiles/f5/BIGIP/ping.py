@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## f5.BIGIP.ping
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import re
 ## NOC modules
@@ -18,11 +17,15 @@ class Script(NOCScript):
     name = "f5.BIGIP.ping"
     implements = [IPing]
 
-    rx_result = re.compile(r"(?P<count>\d+) packets transmitted, (?P<success>\d+) received, \S+% packet loss, time \d+ms\nrtt min/avg/max/mdev = (?P<min>\S+)/(?P<avg>\S+)/(?P<max>\S+)/\S+ ms", re.MULTILINE | re.DOTALL)
+    rx_result = re.compile(
+        r"(?P<count>\d+) packets transmitted, "
+        r"(?P<success>\d+) received, \S+% packet loss, "
+        r"time \d+ms\nrtt min/avg/max/mdev = (?P<min>\S+)/(?P<avg>\S+)/(?P<max>\S+)/\S+ ms",
+        re.MULTILINE | re.DOTALL)
 
     def execute(self, address, count=None, source_address=None, size=None,
     df=None):
-        cmd = ["ping"]
+        cmd = ["run /util ping"]
         cmd += ["-c %d" % (count if count else 5)]
         if size:
             cmd += ["-s %d" % size]
