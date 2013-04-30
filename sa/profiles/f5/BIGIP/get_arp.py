@@ -32,9 +32,12 @@ class Script(NOCScript):
         r = []
         v = self.cli("show /net arp all")
         for match in self.rx_line.finditer(v):
+            mac = match.group("mac")
+            if mac == "incomplete":
+                continue
             r += [{
                 "ip": match.group("address"),
-                "mac": match.group("mac"),
+                "mac": mac,
                 "interface": match.group("vlan")
             }]
         return r
