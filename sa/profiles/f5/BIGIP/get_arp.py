@@ -33,7 +33,7 @@ class Script(NOCScript):
         v = self.cli("show /net arp all")
         for match in self.rx_line.finditer(v):
             r += [{
-                "ip": match.group("ip"),
+                "ip": match.group("address"),
                 "mac": match.group("mac"),
                 "interface": match.group("interface")
             }]
