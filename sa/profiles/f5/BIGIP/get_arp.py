@@ -35,6 +35,6 @@ class Script(NOCScript):
             r += [{
                 "ip": match.group("address"),
                 "mac": match.group("mac"),
-                "interface": match.group("interface")
+                "interface": match.group("vlan")
             }]
         return r
