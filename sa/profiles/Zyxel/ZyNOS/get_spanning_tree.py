@@ -143,11 +143,21 @@ class Script(NOCScript):
         if match:
             bridge_id = match.group("bridge_id")
             bridge_priority = int(match.group("bridge_priority"), 16)
+        else:
+            return {
+                "mode": "None",
+                "instances": []
+            }
         # get root id and priority
         match = self.rx_root.search(cmd)
         if match:
             root_id = match.group("root_id")
             root_priority = int(match.group("root_priority"), 16)
+        else:
+            return {
+                "mode": "None",
+                "instances": []
+            }
         # get interfaces
         ifaces = []
         for match in self.rx_port.finditer(cmd):
