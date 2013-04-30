@@ -364,10 +364,12 @@ class Config(Object):
             q &= Q(notify_immediately=True)
         if delayed:
             q &= Q(notify_delayed=True)
-        q &= (Q(administrative_domain__isnull=True) | Q(
-            administrative_domain=self.managed_object.administrative_domain))
-        if self.managed_object.tags:
-            q &= (Q(tags__isnull=True) | Q(tags=""))
+        q &= (
+            Q(administrative_domain__isnull=True) |
+            Q(administrative_domain=self.managed_object.administrative_domain)
+        )
+        # if self.managed_object.tags:
+        #    q &= (Q(tags__isnull=True) | Q(tags=""))
         return set(
             [n.notification_group for n in ObjectNotify.objects.filter(q)])
 
