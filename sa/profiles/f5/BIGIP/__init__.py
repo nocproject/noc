@@ -21,3 +21,4 @@ class Profile(noc.sa.profiles.Profile):
         (r"^---\(less \d+%\)---", " "),
         (r"^\(END\)", "q")
     ]
+    command_exit = "quit"
