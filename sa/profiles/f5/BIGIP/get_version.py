@@ -23,7 +23,7 @@ class Script(NOCScript):
     rx_version = re.compile(
         r"Product\s+(?P<platform>\S+).+"
         r"Version\s+(?P<version>\S+)",
-        re.MULTILINE
+        re.MULTILINE | re.DOTALL
     )
 
     def execute(self):
@@ -31,6 +31,6 @@ class Script(NOCScript):
         match = self.rx_version.search(v)
         return {
             "vendor": "f5",
-            "platform": match.group("product"),
+            "platform": match.group("platform"),
             "version": match.group("version")
         }
