@@ -19,13 +19,17 @@ class Script(NOCScript):
     cache = True
     implements = [IGetVlans]
 
-    rx_vlan = re.compile(r"^VLAN\s+(?P<name>.+?)(?:\s+\([^)]+\))?\s+tag\s+(?P<tag>\d+)", re.MULTILINE)
+    rx_tag = re.compile("Tag\s+(?P<tag>\d+)", re.MULTILINE)
 
     def execute(self):
         r = []
-        for match in self.rx_vlan.finditer(self.cli("b vlan show")):
-            r += [{
-                "name": match.group("name"),
-                "vlan_id": match.group("tag")
-            }]
+        v = self.cli("show /net vlan -hidden")
+        for h, data in self.parse_blocks(v):
+            if h.startswith("Net::Vlan: "):
+                match = self.rx_tag.search(data)
+                if match:
+                    r += [{
+                        "vlan_id": match.group("tag"),
+                        "name": h[11:]
+                    }]
         return r
