@@ -2,11 +2,10 @@
 ##----------------------------------------------------------------------
 ## f5.BIGIP.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import re
 ## NOC modules
@@ -18,8 +17,24 @@ class Script(NOCScript):
     name = "f5.BIGIP.get_arp"
     implements = [IGetARP]
 
-    rx_line = re.compile(r"^ARP\s+(?P<ip>\S+)\s+-\s+(?P<mac>\S+)\s+VLAN\s+(?P<interface>.+?)\s+expire")
+    # 10.10.10.10  10.10.10.10  0:50:56:99:77:6    /Common/VM_Net          29             resolved
+    rx_line = re.compile(
+        r"^(?P<name>\S+)\s+"
+        r"(?P<address>\S+)\s+"
+        r"(?P<mac>\S+)\s+"
+        r"(?P<vlan>\S+)\s+"
+        r"(?P<expire>\d+)\s+"
+        r"resolved$",
+        re.MULTILINE
+    )
 
     def execute(self):
-        return self.cli("b arp show | grep -v '(incomplete)'",
-                        list_re=self.rx_line)
+        r = []
+        v = self.cli("show /net arp all")
+        for match in self.rx_line.finditer(v):
+            r += [{
+                "ip": match.group("ip"),
+                "mac": match.group("mac"),
+                "interface": match.group("interface")
+            }]
+        return r
