@@ -20,10 +20,6 @@ Ext.define("NOC.dns.dnsserver.Model", {
             type: "string"
         },
         {
-            name: "generator_name",
-            type: "string"
-        },
-        {
             name: "ip",
             type: "string"
         },
@@ -34,19 +30,6 @@ Ext.define("NOC.dns.dnsserver.Model", {
         {
             name: "sync_channel",
             type: "string"
-        },
-        {
-            name: "location",
-            type: "string"
-        },
-        {
-            name: "provisioning",
-            type: "string"
-        },
-        {
-            name: "autozones_path",
-            type: "string",
-            defaultValue: "autozones"
         }
     ]
 });
