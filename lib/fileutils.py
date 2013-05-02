@@ -4,7 +4,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modukes
+## Python modules
 from __future__ import with_statement
 import os
 import tempfile
@@ -14,6 +14,18 @@ import cStringIO
 import gzip
 ## NOC modules
 from noc.lib.version import get_version
+from noc.settings import config
+
+## Setup proxy
+PROXY = {}
+for proto in ["http", "https", "ftp"]:
+    p = config.get("proxy", "%s_proxy" % proto)
+    if p:
+        PROXY[proto] = p
+if PROXY:
+    ph = urllib2.ProxyHandler(PROXY)
+    opener = urllib2.build_opener(ph)
+    urllib2.install_opener(opener)
 
 
 def safe_rewrite(path, text, mode=None):
@@ -124,9 +136,11 @@ def urlopen(url, auto_deflate=False):
     """
     urlopen wrapper
     """
+    global PROXY
+
     if url.startswith("http://") or url.startswith("https://"):
-        r = urllib2.Request(url,
-                            headers={"User-Agent": "NOC/%s" % get_version()})
+        r = urllib2.Request(
+            url, headers={"User-Agent": "NOC/%s" % get_version()})
     else:
         r = url
     if auto_deflate and url.endswith(".gz"):
