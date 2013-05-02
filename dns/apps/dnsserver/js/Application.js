@@ -35,13 +35,6 @@ Ext.define("NOC.dns.dnsserver.Application", {
             allowBlank: false
         },
         {
-            name: "generator_name",
-            xtype: "combobox",
-            fieldLabel: "Generator",
-            allowBlank: false,
-            store: ["BINDv9"]
-        },
-        {
             name: "ip",
             xtype: "textfield",
             fieldLabel: "IP",
@@ -59,24 +52,6 @@ Ext.define("NOC.dns.dnsserver.Application", {
             fieldLabel: "Sync channel",
             allowBlank: true,
             regex: /^[a-zA-Z0-9]+$/
-        },
-        {
-            name: "location",
-            xtype: "textfield",
-            fieldLabel: "Location",
-            allowBlank: true
-        },
-        {
-            name: "provisioning",
-            xtype: "textfield",
-            fieldLabel: "Provisioning",
-            allowBlank: true
-        },
-        {
-            name: "autozones_path",
-            xtype: "textfield",
-            fieldLabel: "Autozones path",
-            allowBlank: true
         }
     ]
 });

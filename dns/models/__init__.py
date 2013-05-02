@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from dnsserver import DNSServer, generator_registry
+from dnsserver import DNSServer
 from dnszoneprofile import DNSZoneProfile
 from dnszone import DNSZone
 from dnszonerecord import DNSZoneRecord
