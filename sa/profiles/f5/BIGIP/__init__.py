@@ -19,7 +19,8 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt = r"^(?P<user>\S+?)@(?P<part>\(.+?\))\(tmos\)# "
     pattern_more = [
         (r"^---\(less \d+%\)---", " "),
-        (r"^\(END\)", "q")
+        (r"^\(END\)", "q"),
+        (r"Display all \d+ items\? \(y/n\) ", "y")
     ]
     command_exit = "quit"
 
