@@ -109,7 +109,7 @@ class BeefTestCase(unittest.TestCase):
         beef = q(beef)
         if os.path.isdir(path):
             path = os.path.join(path, beef["guid"] + ".json")
-        safe_rewrite(path, json_encode(beef))
+        safe_rewrite(path, json_encode(beef), mode=0644)
         return path
 
     rx_timestamp = re.compile(r"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?$")
