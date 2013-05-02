@@ -345,6 +345,13 @@ enable_google_roadmap_maps = false
 # Enable Google Sattelite external maps
 enable_google_satellite_maps = false
 #
+# Proxy settings
+#
+[proxy]
+http_proxy =
+https_proxy =
+ftp_proxy =
+#
 # Cache settings
 #
 [cache]
