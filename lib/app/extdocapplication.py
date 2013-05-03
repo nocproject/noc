@@ -125,7 +125,10 @@ class ExtDocApplication(ExtApplication):
                     v = v.id
                 elif isinstance(f, PlainReferenceField):
                     r["%s__label" % f.name] = unicode(v)
-                    v = str(v.id)
+                    if hasattr(v, "id"):
+                        v = str(v.id)
+                    else:
+                        v = str(v)
                 elif type(v) not in (str, unicode, int, long, bool):
                     if hasattr(v, "id"):
                         v = v.id
