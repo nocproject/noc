@@ -222,7 +222,15 @@ class Application(object):
         """
         Shortcut to get_object_or_404
         """
-        return get_object_or_404(*args, **kwargs)
+        if hasattr(args[0], "_fields"):
+            # Document
+            r = args[0].objects.filter(**kwargs).first()
+            if not r:
+                raise HttpResponseNotFound()
+            return r
+        else:
+            # Django model
+            return get_object_or_404(*args, **kwargs)
 
     def render(self, request, template, dict={}, **kwargs):
         """
