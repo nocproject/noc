@@ -22,7 +22,7 @@ Ext.define("NOC.core.LookupField", {
     query: {},
     stateful: false,
     autoSelect: false,
-    pageSize: 0,
+    pageSize: 25,
 
     initComponent: function() {
         var me = this,
