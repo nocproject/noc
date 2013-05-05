@@ -46,6 +46,25 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             scope: me,
             handler: me.onSave
         });
+        // Zoom buttons
+        me.zoomInButton = Ext.create("Ext.button.Button", {
+            tooltip: "Zoom In",
+            iconCls: "icon_magnifier_zoom_in",
+            scope: me,
+            handler: me.onZoomIn,
+        });
+        me.zoomOutButton = Ext.create("Ext.button.Button", {
+            tooltip: "Zoom Out",
+            iconCls: "icon_magifier_zoom_out",
+            scope: me,
+            handler: me.onZoomOut,
+        });
+        me.zoomActualButton = Ext.create("Ext.button.Button", {
+            tooltip: "Zoom Actual",
+            iconCls: "icon_magnifier",
+            scope: me,
+            handler: me.onZoomActual,
+        });
 
         me.inspector = Ext.create("NOC.wf.workflow.WFInspector", {
             dock: "right",
@@ -62,7 +81,12 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        me.saveButton
+                        me.saveButton,
+                        "-",
+                        // Zoom
+                        me.zoomInButton,
+                        me.zoomOutButton,
+                        me.zoomActualButton
                     ]
                 },
                 me.inspector
@@ -290,5 +314,25 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             data = Ext.decode(response.responseText);
         me.handlers = data;
         me.inspector.setHandlers(data);
+    },
+    //
+    registerChange: function() {
+        var me = this;
+        me.saveButton.setDisabled(false);
+    },
+    // Zoom In
+    onZoomIn: function() {
+        var me = this;
+        me.graph.zoomIn();
+    },
+    // Zoom Out
+    onZoomOut: function() {
+        var me = this;
+        me.graph.zoomOut();
+    },
+    // Zoom Actual
+    onZoomActual: function() {
+        var me = this;
+        me.graph.zoomActual();
     }
 });
