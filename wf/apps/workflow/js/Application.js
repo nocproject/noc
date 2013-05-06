@@ -50,19 +50,22 @@ Ext.define("NOC.wf.workflow.Application", {
             name: "solution",
             fieldLabel: "Solution",
             xtype: "wf.solution.LookupField",
-            allowBlank: false
+            allowBlank: false,
+            anchor: "100%"
         },
         {
             name: "name",
             fieldLabel: "Name",
             xtype: "textfield",
-            allowBlank: false
+            allowBlank: false,
+            anchor: "100%"
         },
         {
             name: "display_name",
             fieldLabel: "Display Name",
             xtype: "textfield",
-            allowBlank: false
+            allowBlank: false,
+            anchor: "100%"
         },
         {
             name: "version",
@@ -80,7 +83,8 @@ Ext.define("NOC.wf.workflow.Application", {
             name: "description",
             xtype: "textarea",
             allowBlank: true,
-            fieldLabel: "Description"
+            fieldLabel: "Description",
+            anchor: "100%"
         },
         {
             name: "start_node",
