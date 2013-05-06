@@ -182,7 +182,16 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.graph.cellsResizable = false;
         // Inititalize tooltips
         me.graph.getTooltipForCell = me.getTooltipForCell;
-        me.graph.addListener(mxEvent.CLICK, Ext.bind(me.onClickNode, me));
+        // Event listeners
+        me.graph.addListener(
+            mxEvent.CLICK,
+            Ext.bind(me.onClickNode, me)
+        );
+        me.graph.addListener(
+            mxEvent.MOVE_CELLS,
+            Ext.bind(me.onNodeMove, me)
+        );
+        //
         me.loadNodes();
     },
     //
@@ -292,8 +301,37 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     },
     //
     onSave: function() {
-        var me = this;
-        NOC.error("Not implemented");
+        var me = this,
+            cells = me.graph.getModel().cells,
+            data = [];
+        // Prepare data
+        for(var i in cells) {
+            var c = cells[i];
+            if(!c.wfdata || !c.wfdata.changed) {
+                continue;
+            }
+            data.push({
+                type: "node",
+                id: c.wfdata.id,
+                name: c.wfdata.name,
+                x: c.geometry.x,
+                y: c.geometry.y
+            });
+        }
+        //
+        Ext.Ajax.request({
+            url: "/wf/workflow/" + me.wf.get("id") + "/nodes/",
+            method: "POST",
+            scope: me,
+            jsonData: data,
+            success: function(response) {
+                var me = this;
+                me.saveButton.setDisabled(true);
+            },
+            failure: function() {
+                NOC.error("Failed to save");
+            }
+        });
     },
     //
     getTooltipForCell: function(cell) {
@@ -316,9 +354,21 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.inspector.setHandlers(data);
     },
     //
-    registerChange: function() {
+    onNodeMove: function(graph, event) {
+        var me = this,
+            cells = event.properties.cells;
+        for(var i in cells) {
+            var c = cells[i];
+            if(c.wfdata) {
+                me.registerChange(c);
+            }
+        }
+    },
+    //
+    registerChange: function(cell) {
         var me = this;
         me.saveButton.setDisabled(false);
+        cell.wfdata.changed = true;
     },
     // Zoom In
     onZoomIn: function() {
