@@ -74,6 +74,12 @@ class WorkflowApplication(ExtDocApplication):
         data = json_decode(request.raw_post_data)
         for r in data:
             if r["type"] == "node":
+                if r["id"] and r.get("deleted"):
+                    # Delete node
+                    n = self.get_object_or_404(Node, id=r["id"])
+                    n.delete()
+                    continue
+                # Create/change node
                 if r["id"] and not r["id"].startswith("id:"):
                     n = self.get_object_or_404(Node, id=r["id"])
                 else:
