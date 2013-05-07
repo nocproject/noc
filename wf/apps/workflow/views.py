@@ -60,19 +60,24 @@ class WorkflowApplication(ExtDocApplication):
 
     @view(url=r"^handlers/$", method=["GET"], access="view", api=True)
     def api_handlers(self, request):
-        return dict((n, None) for n in handlers)
+        def f(h):
+            return {
+                "conditional": h.conditional,
+                "params": list(h.params)
+            }
+        return dict((n, f(handlers[n])) for n in handlers)
 
     @view(url=r"^(?P<wf_id>[0-9a-f]{24})/nodes/$", method=["POST"],
           access="view", api=True, validate=DictListParameter)
-    def api_node(self, request, wf_id):
+    def api_save_nodes(self, request, wf_id):
         wf = self.get_object_or_404(Workflow, id=wf_id)
         data = json_decode(request.raw_post_data)
         for r in data:
             if r["type"] == "node":
-                if r["id"]:
+                if r["id"] and not r["id"].startswith("id:"):
                     n = self.get_object_or_404(Node, id=r["id"])
                 else:
-                    n = Node()
+                    n = Node(workflow=wf)
                 n.name = r["name"]
                 n.description = r["description"]
                 n.handler = r["handler"]

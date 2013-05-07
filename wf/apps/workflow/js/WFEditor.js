@@ -24,7 +24,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     PROCESS_HEIGHT: 50,
     CONDITION_WIDTH: 100,
     CONDITION_HEIGHT: 100,
-    PORT_RADIUS: 6,
+    PORT_RADIUS: 8,
 
     items: [{
         xtype: "component",
@@ -38,6 +38,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         var me = this;
 
         me.handlers = {};
+        me.nodeN = 1;
         Ext.Ajax.request({
             url: "/wf/workflow/handlers/",
             method: "GET",
@@ -78,6 +79,13 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             editor: me
         });
 
+        me.addButton = Ext.create("Ext.button.Button", {
+            tooltip: "Add",
+            iconCls: "icon_add",
+            scope: me,
+            handler: me.onAddNode
+        });
+
         Ext.apply(me, {
             title: Ext.String.format(
                 "Workflow Editor: {0}",
@@ -93,7 +101,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                         // Zoom
                         me.zoomInButton,
                         me.zoomOutButton,
-                        me.zoomActualButton
+                        me.zoomActualButton,
+                        "-",
+                        me.addButton
                     ]
                 },
                 me.inspector
@@ -128,8 +138,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         mxGraphHandler.prototype.guidesEnabled = true;
         // Create graph
         me.graph = new mxGraph(c);
-        me.graph.disconnectOnMove = false;
-        // me.graph.foldingEnabled = false;
+        me.graph.setDisconnectOnMove(false);
+        me.graph.setConnectable(true);
         me.graph.cellsResizable = false;
         new mxRubberband(me.graph);
         me.graph.setPanning(true);
@@ -449,5 +459,25 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     onZoomActual: function() {
         var me = this;
         me.graph.zoomActual();
+    },
+    //
+    onAddNode: function() {
+        var me = this,
+            model = me.graph.getModel(),
+            v;
+        model.beginUpdate();
+        try {
+            var n = me.nodeN;
+            me.nodeN += 1;
+            v = me.addNode({
+                id: "id:" + n,
+                name: "Node #" + n,
+                conditional: false,
+                start: false
+            });
+        } finally {
+            model.endUpdate();
+        }
+        me.inspector.showNode(v);
     }
 });
