@@ -32,6 +32,9 @@ class WorkflowApplication(ExtDocApplication):
     @view(url=r"^(?P<wf_id>[0-9a-f]{24})/nodes/$", method=["GET"],
           access="view", api=True)
     def api_nodes(self, request, wf_id):
+        def oq(s):
+            return str(s.id) if s else None
+
         wf = self.get_object_or_404(Workflow, id=wf_id)
         r = []
         x = 70
@@ -45,12 +48,12 @@ class WorkflowApplication(ExtDocApplication):
                 "handler": n.handler,
                 "conditional": n.handler_class.conditional,
                 "params": n.params,
-                "next_node": n.next_node,
-                "next_true_node": n.next_true_node,
-                "next_false_node": n.next_false_node,
+                "next_node": oq(n.next_node),
+                "next_true_node": oq(n.next_true_node),
+                "next_false_node": oq(n.next_false_node),
                 "x": n.x or x,
                 "y": n.y or 50,
-                "start": n.name == sn
+                "start": str(n.id) == sn
             }]
             x += 110
         return r

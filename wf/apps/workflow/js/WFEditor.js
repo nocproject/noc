@@ -187,9 +187,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         style = mxUtils.clone(style);
 		style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
 		style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RhombusPerimeter;
-		style[mxConstants.STYLE_VERTICAL_ALIGN] = 'top';
-		style[mxConstants.STYLE_SPACING_TOP] = 40;
-		style[mxConstants.STYLE_SPACING_RIGHT] = 64;
+		style[mxConstants.STYLE_VERTICAL_ALIGN] = 'center';
+		//style[mxConstants.STYLE_SPACING_TOP] = 40;
+		//style[mxConstants.STYLE_SPACING_RIGHT] = 64;
 		me.graph.getStylesheet().putCellStyle('condition', style);
         // Edge style
         style = me.graph.getStylesheet().getDefaultEdgeStyle();
@@ -316,7 +316,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             Ext.each(data, function(value) {
                 switch(value.type) {
                     case 'node':
-                        nodes[value.name] = me.addNode(value);
+                        nodes[value.id] = me.addNode(value);
                         break;
                 }
             });
@@ -329,7 +329,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                                 me.graph.insertEdge(
                                     parent,
                                     null, "Yes",
-                                    nodes[value.name].tport,
+                                    nodes[value.id].tport,
                                     nodes[value.next_true_node].iport,
                                     null
                                 );
@@ -338,7 +338,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                                 me.graph.insertEdge(
                                     parent,
                                     null, "No",
-                                    nodes[value.name].fport,
+                                    nodes[value.id].fport,
                                     nodes[value.next_false_node].iport
                                 );
                             }
@@ -347,7 +347,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                                 me.graph.insertEdge(
                                     parent,
                                     null, null,
-                                    nodes[value.name].oport,
+                                    nodes[value.id].oport,
                                     nodes[value.next_node].iport,
                                     null
                                 );

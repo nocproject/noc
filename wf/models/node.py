@@ -25,10 +25,10 @@ class Node(nosql.Document):
     handler = nosql.StringField()
     # param -> value
     params = nosql.RawDictField()
-    # next node
-    next_node = nosql.StringField()
-    next_true_node = nosql.StringField()
-    next_false_node = nosql.StringField()
+    # Connections
+    next_node = nosql.PlainReferenceField("self")
+    next_true_node = nosql.PlainReferenceField("self")
+    next_false_node = nosql.PlainReferenceField("self")
     # Graph position
     x = nosql.IntField()
     y = nosql.IntField()
