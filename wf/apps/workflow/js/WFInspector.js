@@ -19,7 +19,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
 
         // Handlers field
         me.handlersStore = Ext.create("Ext.data.Store", {
-            fields: ["id", "label"],
+            fields: ["id", "label", "icon"],
             data: []
         });
 
@@ -65,6 +65,12 @@ Ext.define("NOC.wf.workflow.WFInspector", {
                     listeners: {
                         scope: me,
                         select: me.onChangeHandler
+                    },
+                    listConfig: {
+                        getInnerTpl: function() {
+                            var tpl = "<div>{icon} {label}</div>";
+                            return tpl;
+                        }
                     }
                 },
                 {
@@ -99,7 +105,11 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         var me = this,
             hdata = [];
         for(var v in me.editor.handlers) {
-            hdata.push({id: v, label: v});
+            hdata.push({
+                id: v,
+                label: v,
+                icon: me.editor.handlers[v].conditional ? "&diams;" : "&equiv;"
+            });
         }
         me.handlersStore.loadRawData(hdata);
     },
