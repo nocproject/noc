@@ -61,7 +61,11 @@ Ext.define("NOC.wf.workflow.WFInspector", {
                     store: me.handlersStore,
                     queryMode: "local",
                     displayField: "label",
-                    valueField: "id"
+                    valueField: "id",
+                    listeners: {
+                        scope: me,
+                        select: me.onChangeHandler
+                    }
                 },
                 {
                     xtype: "textarea",
@@ -116,5 +120,28 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         d.changed = true;
         d.params = me.paramsGrid.getSource();
         me.editor.registerChange(me.currentCell);
+    },
+    //
+    onChangeHandler: function(combo, records, opts) {
+        var me = this,
+            handler = records[0].get("id"),
+            d = me.currentCell.wfdata,
+            cp = me.paramsGrid.getSource(),
+            np = {};
+        if(d.handler == handler) {
+            return;
+        }
+        // Handler has been changed, replace params
+        var hp = me.editor.handlers[handler].params;
+        for(var i in hp) {
+            var p = hp[i];
+            if(cp && cp[p]) {
+                np[p] = cp[p];
+            } else {
+                np[p] = "";
+            }
+        }
+        me.paramsGrid.setSource(np);
+        // Change between conditional and unconditional nodes
     }
 });
