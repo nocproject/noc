@@ -36,6 +36,12 @@ user  = noc
 group =
 config = etc/noc-scheduler.conf
 
+[noc-wf]
+enabled = true
+user  = noc
+group =
+config = etc/noc-wf.conf
+
 [noc-sae]
 enabled = true
 user  = noc
