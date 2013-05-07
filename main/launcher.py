@@ -143,8 +143,10 @@ class Launcher(Daemon):
     daemon_name = "noc-launcher"
     create_piddir = True
 
-    DAEMONS = ["stomp", "scheduler", "web", "sae", "activator",
-               "classifier", "correlator", "notifier", "probe",
+    DAEMONS = ["stomp", "scheduler", "wf",
+               "web", "sae", "activator",
+               "classifier", "correlator",
+               "notifier", "probe",
                "discovery", "sync"]
 
     def __init__(self):
