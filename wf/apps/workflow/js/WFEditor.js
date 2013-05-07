@@ -39,6 +39,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
 
         me.handlers = {};
         me.nodeN = 1;
+        me.currentNode = undefined;
+        me.deletedNodes = [];
+
         Ext.Ajax.request({
             url: "/wf/workflow/handlers/",
             method: "GET",
@@ -86,6 +89,13 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             handler: me.onAddNode
         });
 
+        me.deleteButton = Ext.create("Ext.button.Button", {
+            tooltip: "Delete",
+            iconCls: "icon_delete",
+            scope: me,
+            handler: me.onDeleteNode
+        });
+
         Ext.apply(me, {
             title: Ext.String.format(
                 "Workflow Editor: {0}",
@@ -103,7 +113,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                         me.zoomOutButton,
                         me.zoomActualButton,
                         "-",
-                        me.addButton
+                        me.addButton,
+                        me.deleteButton
                     ]
                 },
                 me.inspector
@@ -231,6 +242,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         var me = this;
 
         me.graph.removeCells(me.graph.getChildVertices(me.graph.getDefaultParent()), true);
+        me.deletedNodes = [];
         Ext.Ajax.request({
             url: "/wf/workflow/" + me.wf.get("id") + "/nodes/",
             method: "GET",
@@ -376,6 +388,15 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         var me = this,
             cells = me.graph.getModel().cells,
             data = [];
+        // Push deleted nodes
+        for(var i in me.deletedNodes) {
+            var c = me.deletedNodes[i];
+            data.push({
+                type: "node",
+                deleted: true,
+                id: c
+            });
+        }
         // Prepare data
         for(var i in cells) {
             var c = cells[i];
@@ -419,7 +440,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     onClickNode: function(sender, evt) {
         var me = this;
 
-        me.inspector.showNode(evt.properties.cell);
+        me.currentNode = evt.properties.cell;
+        me.inspector.showNode(me.currentNode);
     },
     //
     onLoadHandlers: function(response) {
@@ -479,5 +501,18 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             model.endUpdate();
         }
         me.inspector.showNode(v);
+    },
+    //
+    onDeleteNode: function() {
+        var me = this;
+        if(me.currentNode) {
+            if(me.currentNode.wfdata.id.search(/^id:/) == -1) {
+                me.deletedNodes.push(me.currentNode.wfdata.id);
+                me.saveButton.setDisabled(false);
+            }
+            me.graph.removeCells([me.currentNode], true);
+            me.currentNode = undefined;
+            me.inspector.showNode(me.currentNode);
+        }
     }
 });

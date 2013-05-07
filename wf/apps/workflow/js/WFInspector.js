@@ -13,6 +13,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
     baseCls  : Ext.baseCSSPrefix + "toolbar",
     editor: undefined,
     currentCell: undefined,
+    disabled: true,
     //
     initComponent: function() {
         var me = this;
@@ -91,14 +92,20 @@ Ext.define("NOC.wf.workflow.WFInspector", {
     },
     //
     showNode: function(cell) {
-        var me = this,
-            data = cell.wfdata;
-        me.currentCell = cell;
-        me.nameField.setValue(data.name);
-        me.handlerField.setValue(data.handler);
-        me.descriptionField.setValue(data.description);
-        me.paramsGrid.setSource(data.params);
-        me.applyButton.setDisabled(false);
+        var me = this;
+        if(cell) {
+            var data = cell.wfdata;
+            me.currentCell = cell;
+            me.setDisabled(false);
+            me.nameField.setValue(data.name);
+            me.handlerField.setValue(data.handler);
+            me.descriptionField.setValue(data.description);
+            me.paramsGrid.setSource(data.params);
+            me.applyButton.setDisabled(false);
+        } else {
+            me.currentCell = undefined;
+            me.setDisabled(true);
+        }
     },
     //
     setHandlers: function(handlers) {
