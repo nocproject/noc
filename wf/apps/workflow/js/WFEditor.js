@@ -19,6 +19,13 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     modal: true,
     app: undefined,
     wf: undefined,
+
+    PROCESS_WIDTH: 100,
+    PROCESS_HEIGHT: 50,
+    CONDITION_WIDTH: 100,
+    CONDITION_HEIGHT: 100,
+    PORT_RADIUS: 6,
+
     items: [{
         xtype: "component",
         autoScroll: true,
@@ -117,6 +124,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         var me = this,
             c = me.items.first().el.dom;
         mxEvent.disableContextMenu(c); // Disable default context menu
+        // Enables guides
+        mxGraphHandler.prototype.guidesEnabled = true;
+        // Create graph
         me.graph = new mxGraph(c);
         me.graph.disconnectOnMove = false;
         // me.graph.foldingEnabled = false;
@@ -156,6 +166,18 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         style = mxUtils.clone(style);
         style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_DOUBLE_ELLIPSE;
         style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+        delete style[mxConstants.STYLE_ROUNDED];
+        me.graph.getStylesheet().putCellStyle('end', style);
+        //
+        style = mxUtils.clone(style);
+        style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
+        style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
+        delete style[mxConstants.STYLE_ROUNDED];
+        me.graph.getStylesheet().putCellStyle('port', style);
+        //
+        style = mxUtils.clone(style);
+        style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_DOUBLE_ELLIPSE;
+        style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
         style[mxConstants.STYLE_SPACING_TOP] = 28;
         style[mxConstants.STYLE_FONTSIZE] = 14;
         style[mxConstants.STYLE_FONTSTYLE] = 1;
@@ -171,7 +193,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
 		me.graph.getStylesheet().putCellStyle('condition', style);
         // Edge style
         style = me.graph.getStylesheet().getDefaultEdgeStyle();
-        style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+        style[mxConstants.STYLE_EDGE] = mxEdgeStyle.OrthConnector;
         style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_BLOCK;
         style[mxConstants.STYLE_ROUNDED] = true;
         style[mxConstants.STYLE_FONTCOLOR] = 'black';
@@ -197,6 +219,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     //
     loadNodes: function() {
         var me = this;
+
+        me.graph.removeCells(me.graph.getChildVertices(me.graph.getDefaultParent()), true);
         Ext.Ajax.request({
             url: "/wf/workflow/" + me.wf.get("id") + "/nodes/",
             method: "GET",
@@ -212,87 +236,125 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         });
     },
     //
+    addNode: function(data) {
+        var me = this,
+            parent = me.graph.getDefaultParent(),
+            w, h, style, v;
+        if(data.conditional) {
+            w = me.CONDITION_WIDTH;
+            h = me.CONDITION_HEIGHT;
+            style = "condition";
+        } else {
+            w = me.PROCESS_WIDTH;
+            h = me.PROCESS_HEIGHT;
+            style = "process";
+        }
+        // Create node
+        v = me.graph.insertVertex(parent, null,
+            data.name,
+            data.x, data.y, w, h,
+            style
+        );
+        v.wfdata = data;
+        v.nocTooltipTemplate = me.app.templates.NodeTooltip;
+        // Create ports
+        // Input
+        var iport = me.graph.insertVertex(v, null, null,
+            0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;portConstraint=west;direction=west");
+        iport.geometry.offset = new mxPoint(
+            -me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
+        iport.geometry.relative = true;
+        v.iport = iport;
+        // Output
+        if(data.conditional) {
+            var tport = me.graph.insertVertex(v, null, null,
+                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;fillColor=green;portConstraint=east;direction=east");
+            tport.geometry.offset = new mxPoint(
+                w - me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
+            tport.geometry.relative = true;
+            v.tport = tport;
+            var fport = me.graph.insertVertex(v, null, null,
+                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;fillColor=red;portConstraint=south;direction=south");
+            fport.geometry.offset = new mxPoint(
+                w / 2 - me.PORT_RADIUS / 2, h - me.PORT_RADIUS / 2);
+            fport.geometry.relative = true;
+            v.fport = fport;
+        } else {
+            var oport = me.graph.insertVertex(v, null, null,
+                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port");
+            oport.geometry.offset = new mxPoint(
+                w - me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
+            oport.geometry.relative = true;
+            v.oport = oport;
+        }
+
+        // Create start node
+        if (data.start) {
+            // Start node
+            var s = me.graph.insertVertex(parent,
+                null, null,
+                20, data.y + h / 2 - 15,
+                30, 30,
+                "start"
+            );
+            me.graph.insertEdge(parent, null, null,
+                s, v.iport);
+        }
+        return v;
+    },
+    //
     onLoadNodes: function(data) {
         var me = this,
             parent = me.graph.getDefaultParent(),
             model = me.graph.getModel(),
             nodes = {};
 
+        me.saveButton.setDisabled(true);
         model.beginUpdate();
         try {
             // Create nodes
             Ext.each(data, function(value) {
                 switch(value.type) {
                     case 'node':
-                        // Parse node
-                        var w, h, style;
+                        nodes[value.name] = me.addNode(value);
+                        break;
+                }
+            });
+            // Create edges
+            Ext.each(data, function(value) {
+                switch(value.type) {
+                    case 'node':
                         if(value.conditional) {
-                            w = 100;
-                            h = 100;
-                            style = "condition";
+                            if(value.next_true_node) {
+                                me.graph.insertEdge(
+                                    parent,
+                                    null, "Yes",
+                                    nodes[value.name].tport,
+                                    nodes[value.next_true_node].iport,
+                                    null
+                                );
+                            }
+                            if(value.next_false_node) {
+                                me.graph.insertEdge(
+                                    parent,
+                                    null, "No",
+                                    nodes[value.name].fport,
+                                    nodes[value.next_false_node].iport
+                                );
+                            }
                         } else {
-                            w = 100;
-                            h = 50;
-                            style = "process";
-                        }
-                        var v = me.graph.insertVertex(parent, null,
-                            value.name,
-                            value.x, value.y, w, h,
-                            style
-                        );
-                        v.wfdata = value;
-                        v.nocTooltipTemplate = me.app.templates.NodeTooltip;
-                        nodes[value.name] = v;
-                        if (value.start) {
-                            // Start node
-                            var s = me.graph.insertVertex(parent,
-                                null, null,
-                                20, value.y + h / 2 - 15,
-                                30, 30,
-                                "start"
-                            );
-                            me.graph.insertEdge(parent, null, null,
-                                s, v);
+                            if(value.next_node) {
+                                me.graph.insertEdge(
+                                    parent,
+                                    null, null,
+                                    nodes[value.name].oport,
+                                    nodes[value.next_node].iport,
+                                    null
+                                );
+                            }
                         }
                         break;
                 }
-                // Create edges
-                Ext.each(data, function(value) {
-                    switch(value.type) {
-                        case 'node':
-                            if(value.conditional) {
-                                if(value.next_true_node) {
-                                    me.graph.insertEdge(
-                                        parent,
-                                        null, "Yes",
-                                        nodes[value.name],
-                                        nodes[value.next_true_node],
-                                        null
-                                    );
-                                }
-                                if(value.next_false_node) {
-                                    me.graph.insertEdge(
-                                        parent,
-                                        null, "No",
-                                        nodes[value.name],
-                                        nodes[value.next_false_node],
-                                        null
-                                    );
-                                }
-                            } else {
-                                if(value.next_node) {
-                                    me.graph.insertEdge(
-                                        parent,
-                                        null, null,
-                                        nodes[value.name],
-                                        nodes[value.next_node],
-                                        null
-                                    );
-                                }
-                            }
-                            break;
-                    }
-                });
             });
         }
         finally {
@@ -314,6 +376,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 type: "node",
                 id: c.wfdata.id,
                 name: c.wfdata.name,
+                description: c.wfdata.description,
+                handler: c.wfdata.handler,
+                params: c.wfdata.params,
                 x: c.geometry.x,
                 y: c.geometry.y
             });
@@ -326,7 +391,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             jsonData: data,
             success: function(response) {
                 var me = this;
-                me.saveButton.setDisabled(true);
+                me.loadNodes();
             },
             failure: function() {
                 NOC.error("Failed to save");

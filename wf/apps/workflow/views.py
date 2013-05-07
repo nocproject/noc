@@ -71,6 +71,9 @@ class WorkflowApplication(ExtDocApplication):
                 else:
                     n = Node()
                 n.name = r["name"]
+                n.description = r["description"]
+                n.handler = r["handler"]
+                n.params = r["params"]
                 n.x = r["x"]
                 n.y = r["y"]
                 n.save()

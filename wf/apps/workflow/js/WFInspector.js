@@ -12,6 +12,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
     padding: 4,
     baseCls  : Ext.baseCSSPrefix + "toolbar",
     editor: undefined,
+    currentCell: undefined,
     //
     initComponent: function() {
         var me = this;
@@ -29,8 +30,18 @@ Ext.define("NOC.wf.workflow.WFInspector", {
             }
         });
 
+        me.applyButton = Ext.create("Ext.button.Button", {
+            iconCls: "icon_disk",
+            text: "Apply",
+            tooltip: "Apply changes",
+            disabled: true,
+            scope: me,
+            handler: me.onApply
+        });
+
         Ext.apply(me, {
             items: [
+                me.applyButton,
                 {
                     xtype: "textfield",
                     name: "name",
@@ -52,20 +63,32 @@ Ext.define("NOC.wf.workflow.WFInspector", {
                     displayField: "label",
                     valueField: "id"
                 },
+                {
+                    xtype: "textarea",
+                    name: "description",
+                    itemId: "description",
+                    labelAlign: "top",
+                    fieldLabel: "Description",
+                    width: 288
+                },
                 me.paramsGrid
             ]
         });
         me.callParent();
         me.nameField = me.getComponent("name");
+        me.descriptionField = me.getComponent("description");
         me.handlerField = me.getComponent("handler");
     },
     //
     showNode: function(cell) {
         var me = this,
             data = cell.wfdata;
+        me.currentCell = cell;
         me.nameField.setValue(data.name);
         me.handlerField.setValue(data.handler);
+        me.descriptionField.setValue(data.description);
         me.paramsGrid.setSource(data.params);
+        me.applyButton.setDisabled(false);
     },
     //
     setHandlers: function(handlers) {
@@ -75,5 +98,17 @@ Ext.define("NOC.wf.workflow.WFInspector", {
             hdata.push({id: v, label: v});
         }
         me.handlersStore.loadRawData(hdata);
+    },
+    //
+    onApply: function() {
+        var me = this,
+            d = me.currentCell.wfdata;
+        d.name = me.nameField.getValue();
+        me.currentCell.setValue(d.name);
+        d.description = me.descriptionField.getValue();
+        d.handler = me.handlerField.getValue();
+        d.changed = true;
+        d.params = me.paramsGrid.getSource();
+        me.editor.registerChange(me.currentCell);
     }
 });
