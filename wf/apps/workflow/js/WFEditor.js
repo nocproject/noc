@@ -178,16 +178,16 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         style = mxUtils.clone(style);
         style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_DOUBLE_ELLIPSE;
         style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
-        style[mxConstants.STYLE_SPACING_TOP] = 28;
-        style[mxConstants.STYLE_FONTSIZE] = 14;
-        style[mxConstants.STYLE_FONTSTYLE] = 1;
+        //style[mxConstants.STYLE_SPACING_TOP] = 28;
+        // style[mxConstants.STYLE_FONTSIZE] = 14;
+        // style[mxConstants.STYLE_FONTSTYLE] = 1;
         delete style[mxConstants.STYLE_SPACING_RIGHT];
         me.graph.getStylesheet().putCellStyle('end', style);
         // Condition style
         style = mxUtils.clone(style);
 		style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
 		style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RhombusPerimeter;
-		style[mxConstants.STYLE_VERTICAL_ALIGN] = 'center';
+        style[mxConstants.STYLE_VERTICAL_ALIGN] = 'middle';
 		//style[mxConstants.STYLE_SPACING_TOP] = 40;
 		//style[mxConstants.STYLE_SPACING_RIGHT] = 64;
 		me.graph.getStylesheet().putCellStyle('condition', style);
