@@ -104,7 +104,13 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         var me = this,
             d = me.currentCell.wfdata;
         d.name = me.nameField.getValue();
-        me.currentCell.setValue(d.name);
+        // me.currentCell.setValue(d.name);
+        me.editor.graph.model.beginUpdate();
+        try {
+            me.editor.graph.model.setValue(me.currentCell, d.name);
+        } finally {
+            me.editor.graph.model.endUpdate();
+        }
         d.description = me.descriptionField.getValue();
         d.handler = me.handlerField.getValue();
         d.changed = true;
