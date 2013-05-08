@@ -326,7 +326,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             v.fport = fport;
         } else {
             var oport = me.graph.insertVertex(v, null, null,
-                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;fillColor=black");
+                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;fillColor=black;portConstraint=east;direction=east");
             oport.geometry.offset = new mxPoint(
                 w - me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
             oport.geometry.relative = true;
