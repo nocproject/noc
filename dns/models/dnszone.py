@@ -607,7 +607,7 @@ class DNSZone(models.Model):
         if self.notification_group:
             return [self.notification_group]
         if self.profile.notification_group:
-            return [self.notification_group]
+            return [self.profile.notification_group]
         ng = SystemNotification.get_notification_group("dns.change")
         if ng:
             return [ng]
