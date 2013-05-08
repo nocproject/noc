@@ -25,6 +25,13 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     CONDITION_WIDTH: 100,
     CONDITION_HEIGHT: 100,
     PORT_RADIUS: 8,
+    STATE_WIDTH: 30,
+    STATE_HEIGHT: 30,
+
+    IPORT: 0,
+    OPORT: 1,
+    TPORT: 2,
+    FPORT: 3,
 
     items: [{
         xtype: "component",
@@ -93,7 +100,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             tooltip: "Delete",
             iconCls: "icon_delete",
             scope: me,
-            handler: me.onDeleteNode
+            handler: me.onDeleteNode,
+            disabled: true
         });
 
         Ext.apply(me, {
@@ -166,6 +174,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         style[mxConstants.STYLE_HORIZONTAL] = false;
         style[mxConstants.STYLE_FONTCOLOR] = 'black';
         style[mxConstants.STYLE_STROKECOLOR] = 'black';
+        style[mxConstants.STYLE_STROKEWIDTH] = 2;
         delete style[mxConstants.STYLE_FILLCOLOR];
         // Process style
         style = mxUtils.clone(style);
@@ -177,33 +186,24 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         delete style[mxConstants.STYLE_STARTSIZE];
         style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = 'none';
         me.graph.getStylesheet().putCellStyle('process', style);
-        //
+        // Start style
         style = mxUtils.clone(style);
         style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
         style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
         delete style[mxConstants.STYLE_ROUNDED];
         me.graph.getStylesheet().putCellStyle('start', style);
-        //
+        // End style
         style = mxUtils.clone(style);
         style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_DOUBLE_ELLIPSE;
         style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
         delete style[mxConstants.STYLE_ROUNDED];
         me.graph.getStylesheet().putCellStyle('end', style);
-        //
+        // Port style
         style = mxUtils.clone(style);
         style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
         style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
         delete style[mxConstants.STYLE_ROUNDED];
         me.graph.getStylesheet().putCellStyle('port', style);
-        //
-        style = mxUtils.clone(style);
-        style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_DOUBLE_ELLIPSE;
-        style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
-        //style[mxConstants.STYLE_SPACING_TOP] = 28;
-        // style[mxConstants.STYLE_FONTSIZE] = 14;
-        // style[mxConstants.STYLE_FONTSTYLE] = 1;
-        delete style[mxConstants.STYLE_SPACING_RIGHT];
-        me.graph.getStylesheet().putCellStyle('end', style);
         // Condition style
         style = mxUtils.clone(style);
 		style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
@@ -222,7 +222,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         //
         me.graph.setConnectable(true);
 		me.graph.setAllowDanglingEdges(false);
-        me.graph.cellsResizable = false;
         // Inititalize tooltips
         me.graph.getTooltipForCell = me.getTooltipForCell;
         // Event listeners
@@ -233,6 +232,10 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.graph.addListener(
             mxEvent.MOVE_CELLS,
             Ext.bind(me.onNodeMove, me)
+        );
+        me.graph.addListener(
+            mxEvent.CELL_CONNECTED,
+            Ext.bind(me.onConnectCell, me)
         );
         //
         me.loadNodes();
@@ -256,6 +259,23 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 NOC.error("Failed to get nodes");
             }
         });
+    },
+    //
+    addEndNode: function(port) {
+        var me = this,
+            parent = port.parent.parent,
+            x, y, e;
+        x = port.geometry.x + port.geometry.offset.x + port.parent.geometry.x;
+        y = port.geometry.y + port.geometry.offset.y + port.parent.geometry.y;
+        if(port.ptype == me.FPORT) {
+            y += 50;
+        } else {
+            x += 50;
+            y -= me.STATE_HEIGHT / 2 - me.PORT_RADIUS / 2;
+        }
+        e = me.graph.insertVertex(parent, null, null,
+            x, y, me.STATE_WIDTH, me.STATE_HEIGHT, "end");
+        me.graph.insertEdge(parent, null, null, port, e);
     },
     //
     addNode: function(data) {
@@ -282,10 +302,11 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         // Create ports
         // Input
         var iport = me.graph.insertVertex(v, null, null,
-            0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;portConstraint=west;direction=west");
+            0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;portConstraint=west;direction=west;fillColor=black");
         iport.geometry.offset = new mxPoint(
             -me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
         iport.geometry.relative = true;
+        iport.ptype = me.IPORT;
         v.iport = iport;
         // Output
         if(data.conditional) {
@@ -294,19 +315,22 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             tport.geometry.offset = new mxPoint(
                 w - me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
             tport.geometry.relative = true;
+            tport.ptype = me.TPORT;
             v.tport = tport;
             var fport = me.graph.insertVertex(v, null, null,
                 0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;fillColor=red;portConstraint=south;direction=south");
             fport.geometry.offset = new mxPoint(
                 w / 2 - me.PORT_RADIUS / 2, h - me.PORT_RADIUS / 2);
             fport.geometry.relative = true;
+            fport.ptype = me.FPORT;
             v.fport = fport;
         } else {
             var oport = me.graph.insertVertex(v, null, null,
-                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port");
+                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;fillColor=black");
             oport.geometry.offset = new mxPoint(
                 w - me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
             oport.geometry.relative = true;
+            oport.ptype = me.OPORT;
             v.oport = oport;
         }
 
@@ -315,8 +339,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             // Start node
             var s = me.graph.insertVertex(parent,
                 null, null,
-                20, data.y + h / 2 - 15,
-                30, 30,
+                20, data.y + h / 2 - me.STATE_HEIGHT / 2,
+                me.STATE_WIDTH, me.STATE_HEIGHT,
                 "start"
             );
             me.graph.insertEdge(parent, null, null,
@@ -373,6 +397,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                                     nodes[value.next_node].iport,
                                     null
                                 );
+                            } else {
+                                me.addEndNode(nodes[value.id].oport);
                             }
                         }
                         break;
@@ -441,7 +467,11 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         var me = this;
 
         me.currentNode = evt.properties.cell;
+        if(me.currentNode && !me.currentNode.wfdata) {
+            me.currentNode = null;
+        }
         me.inspector.showNode(me.currentNode);
+        me.deleteButton.setDisabled(!me.currentNode);
     },
     //
     onLoadHandlers: function(response) {
@@ -514,5 +544,11 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             me.currentNode = undefined;
             me.inspector.showNode(me.currentNode);
         }
+    },
+    //
+    onConnectCell: function(graph, event) {
+        var me = this;
+        // console.log("onConnectCell");
+        // console.log(event);
     }
 });
