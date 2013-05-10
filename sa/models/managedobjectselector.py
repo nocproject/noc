@@ -18,7 +18,7 @@ from activator import Activator
 from noc.main.models import Shard
 from noc.main.models.prefixtable import PrefixTable
 from noc.sa.profiles import profile_registry
-from noc.lib.fields import AutoCompleteTagsField
+from noc.lib.fields import TagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
 
@@ -62,7 +62,7 @@ class ManagedObjectSelector(models.Model):
             max_length=256, null=True, blank=True, validators=[check_re])
     filter_repo_path = models.CharField(_("Filter by Repo Path (REGEXP)"),
             max_length=256, null=True, blank=True, validators=[check_re])
-    filter_tags = AutoCompleteTagsField(_("Filter By Tags"),
+    filter_tags = TagsField(_("Filter By Tags"),
             null=True, blank=True)
     source_combine_method = models.CharField(_("Source Combine Method"),
             max_length=1, default="O", choices=[("A", "AND"), ("O", "OR")])
