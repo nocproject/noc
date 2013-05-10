@@ -233,10 +233,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             mxEvent.MOVE_CELLS,
             Ext.bind(me.onNodeMove, me)
         );
-        me.graph.addListener(
-            mxEvent.CELL_CONNECTED,
-            Ext.bind(me.onConnectCell, me)
-        );
+        //
+        me.graph.connectionHandler.isValidSource = Ext.bind(me.isValidSource, me);
+        me.graph.connectionHandler.isValidTarget = Ext.bind(me.isValidTarget, me);
         //
         me.loadNodes();
     },
@@ -299,6 +298,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         );
         v.wfdata = data;
         v.nocTooltipTemplate = me.app.templates.NodeTooltip;
+        v.setConnectable(false);
         // Create ports
         // Input
         var iport = me.graph.insertVertex(v, null, null,
@@ -546,9 +546,30 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         }
     },
     //
-    onConnectCell: function(graph, event) {
-        var me = this;
-        // console.log("onConnectCell");
-        // console.log(event);
+    isValidSource: function(cell) {
+        var me = this,
+            vs = me.graph.isValidSource(cell);
+        if(!vs) {
+            return false;
+        }
+        if(cell.ptype === undefined) {
+            return true;
+        }
+        if((cell.ptype === me.OPORT) || (cell.ptype === me.TPORT) || (cell.ptype === me.FPORT)) {
+            return !cell.edges;
+        }
+        return false;
+    },
+    //
+    isValidTarget: function(cell) {
+        var me = this,
+            vt = me.graph.isValidTarget(cell);
+        if(!vt) {
+            return false;
+        }
+        if(cell.ptype === undefined) {
+            return true;
+        }
+        return cell.ptype === me.IPORT;
     }
 });
