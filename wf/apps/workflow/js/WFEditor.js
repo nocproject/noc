@@ -48,6 +48,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.nodeN = 1;
         me.currentNode = undefined;
         me.deletedNodes = [];
+        me.ignoreConnectionEvents = false;
 
         Ext.Ajax.request({
             url: "/wf/workflow/handlers/",
@@ -233,6 +234,10 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             mxEvent.MOVE_CELLS,
             Ext.bind(me.onNodeMove, me)
         );
+        me.graph.addListener(
+            mxEvent.CELL_CONNECTED,
+            Ext.bind(me.onCellConnected, me)
+        );
         //
         me.graph.connectionHandler.isValidSource = Ext.bind(me.isValidSource, me);
         me.graph.connectionHandler.isValidTarget = Ext.bind(me.isValidTarget, me);
@@ -356,6 +361,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             nodes = {};
 
         me.saveButton.setDisabled(true);
+        me.ignoreConnectionEvents = true;
         model.beginUpdate();
         try {
             // Create nodes
@@ -407,13 +413,17 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         }
         finally {
             model.endUpdate();
+            me.ignoreConnectionEvents = false;
         }
     },
     //
     onSave: function() {
         var me = this,
             cells = me.graph.getModel().cells,
-            data = [];
+            data = [],
+            nextNodes = {},
+            nextTrueNodes = {},
+            nextFalseNodes = {};
         // Push deleted nodes
         for(var i in me.deletedNodes) {
             var c = me.deletedNodes[i];
@@ -423,22 +433,52 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 id: c
             });
         }
+        // Process edges
+        for(var i in cells) {
+            var c = cells[i],
+                sn,
+                tn;
+            if(!c.isEdge() || !c.source || !c.target
+                || c.source.ptype === undefined
+                || c.target.ptype === undefined) {
+                continue;
+            }
+            sn = c.source.parent.wfdata.id;
+            tn = c.target.parent.wfdata.id;
+            switch(c.source.ptype) {
+                case me.OPORT:
+                    nextNodes[sn] = tn;
+                    break
+                case me.TPORT:
+                    nextTrueNodes[sn] = tn;
+                    break;
+                case me.FPORT:
+                    nextFalseNodes[sn] = tn;
+                    break;
+            }
+        }
         // Prepare data
         for(var i in cells) {
-            var c = cells[i];
+            var c = cells[i],
+                cid;
             if(!c.wfdata || !c.wfdata.changed) {
                 continue;
             }
-            data.push({
+            cid = c.wfdata.id;
+            var n = {
                 type: "node",
-                id: c.wfdata.id,
+                id: cid,
                 name: c.wfdata.name,
                 description: c.wfdata.description,
                 handler: c.wfdata.handler,
                 params: c.wfdata.params,
                 x: c.geometry.x,
-                y: c.geometry.y
-            });
+                y: c.geometry.y,
+                next_node: nextNodes[cid],
+                next_true_node: nextTrueNodes[cid],
+                next_false_node: nextFalseNodes[cid]
+            };
+            data.push(n);
         }
         //
         Ext.Ajax.request({
@@ -556,7 +596,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             return true;
         }
         if((cell.ptype === me.OPORT) || (cell.ptype === me.TPORT) || (cell.ptype === me.FPORT)) {
-            return !cell.edges;
+            return cell.getEdgeCount() === 0;
         }
         return false;
     },
@@ -571,5 +611,18 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             return true;
         }
         return cell.ptype === me.IPORT;
+    },
+    //
+    onCellConnected: function(graph, evt) {
+        var me = this;
+        if(me.ignoreConnectionEvents) {
+            return;
+        }
+        var edge = evt.getProperty("edge");
+        me.registerChange(edge.source.parent);
+        var p = evt.getProperty("previous");
+        if(p && p.parent && p.parent.wfdata) {
+            me.registerChange(p.parent);
+        }
     }
 });

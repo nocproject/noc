@@ -70,14 +70,23 @@ class WorkflowApplication(ExtDocApplication):
     @view(url=r"^(?P<wf_id>[0-9a-f]{24})/nodes/$", method=["POST"],
           access="view", api=True, validate=DictListParameter)
     def api_save_nodes(self, request, wf_id):
+        def get_by_id(nid):
+            if not nid:
+                return None
+            return Node.objects.filter(id=id_map[nid]).first()
+
         wf = self.get_object_or_404(Workflow, id=wf_id)
         data = json_decode(request.raw_post_data)
+        id_map = {}  # JSON -> DB id
+        # Process changed nodes
         for r in data:
             if r["type"] == "node":
                 if r["id"] and r.get("deleted"):
                     # Delete node
                     n = self.get_object_or_404(Node, id=r["id"])
                     n.delete()
+                    continue
+                if not r.get("handler"):
                     continue
                 # Create/change node
                 if r["id"] and not r["id"].startswith("id:"):
@@ -91,4 +100,15 @@ class WorkflowApplication(ExtDocApplication):
                 n.x = r["x"]
                 n.y = r["y"]
                 n.save()
+                id_map[r["id"]] = n.id
+        # Process changed edges
+        for r in data:
+            if r["type"] == "node":
+                if r["id"] and r.get("deleted"):
+                    continue
+                n = get_by_id(r["id"])
+                n.next_node = get_by_id(r.get("next_node"))
+                n.next_true_node = get_by_id(r.get("next_true_node"))
+                n.next_false_node = get_by_id(r.get("next_false_node"))
+                n.save()  # @todo: Eliminate redundant save
         return True
