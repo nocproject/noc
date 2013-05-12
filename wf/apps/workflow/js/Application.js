@@ -43,6 +43,12 @@ Ext.define("NOC.wf.workflow.Application", {
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
             width: 50
+        },
+        {
+            text: "Trace",
+            dataIndex: "trace",
+            renderer: NOC.render.Bool,
+            width: 50
         }
     ],
     fields: [
@@ -87,10 +93,9 @@ Ext.define("NOC.wf.workflow.Application", {
             anchor: "100%"
         },
         {
-            name: "start_node",
-            xtype: "textfield",
-            fieldLabel: "Start Node",
-            allowBlank: false
+            name: "trace",
+            xtype: "checkboxfield",
+            boxLabel: "Trace"
         }
     ],
     inlines: [

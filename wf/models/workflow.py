@@ -34,6 +34,7 @@ class Workflow(nosql.Document):
     # stat_permission = nosql.StringField()
     # trace_permission = nosql.StringField()
     # kill_permission = nosql.StringField()
+    trace = nosql.BooleanField(default=False)
 
     def __unicode__(self):
         return "%s.%s v%s" % (
@@ -42,16 +43,22 @@ class Workflow(nosql.Document):
     def get_node(self, name):
         return Node.objects.filter(workflow=self.id, name=name).first()
 
-    def run(self, trace=False, **kwargs):
+    def get_start_node(self):
+        return Node.objects.filter(
+            workflow=self.id, id=self.start_node).first()
+
+    def run(self, _trace=None, **kwargs):
         """
         Run process
         :param kwargs:
         :return: Process instance
         """
         # Find start node
-        start_node = self.get_node(self.start_node)
+        start_node = self.get_start_node()
         if not start_node:
             raise InvalidStartNode(self.start_node)
+        #
+        trace = self.trace if _trace is None else _trace
         # Prepare context
         ctx = {}
         for v in Variable.objects.filter(workflow=self.id):
