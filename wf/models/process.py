@@ -76,8 +76,8 @@ class Process(nosql.Document):
             # Move to next node
             if next_node:
                 if self.trace:
-                    self.info("Moving to node '%s'" % next_node)
-                self.node = self.workflow.get_node(next_node)
+                    self.info("Moving to node '%s'" % next_node.name)
+                self.node = next_node
                 self.save()
             else:
                 if self.trace:
