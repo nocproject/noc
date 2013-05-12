@@ -22,11 +22,10 @@ class AccessTestCase(TestCase):
     ##
     def setUp(self):
         # NS1
-        self.ns1 = DNSServer(name="ns1.example.com", generator_name="BINDv9",
-                    ip="10.0.0.1")
+        self.ns1 = DNSServer(name="ns1.example.com", ip="10.0.0.1")
         self.ns1.save()
         # NS2
-        self.ns2 = DNSServer(name="ns2.example.com", generator_name="BINDv9",
+        self.ns2 = DNSServer(name="ns2.example.com",
                     ip="10.0.0.2", location="Mordor")
         self.ns2.save()
         # P1
