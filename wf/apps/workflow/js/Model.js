@@ -37,16 +37,16 @@ Ext.define("NOC.wf.workflow.Model", {
             persist: false
         },
         {
-            name: "start_node",
-            type: "string"
-        },
-        {
             name: "version",
             type: "int"
         },
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "trace",
+            type: "boolean"
         }
     ]
 });
