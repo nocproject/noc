@@ -576,7 +576,24 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     onDeleteNode: function() {
         var me = this;
         if(me.currentNode) {
+            // Push changes to previous nodes
+            var cells = me.graph.getModel().cells,
+                iport = me.currentNode.iport;
+            for(var i in cells) {
+                var c = cells[i];
+                if(!c.isEdge() || !c.source || !c.target
+                    || c.source.ptype === undefined
+                    || c.target.ptype === undefined) {
+                    continue;
+                }
+                if(c.source && c.target == iport
+                    && c.source.parent.wfdata) {
+                    me.registerChange(c.source.parent);
+                }
+            }
+            // Delete node
             if(me.currentNode.wfdata.id.search(/^id:/) == -1) {
+                // Push changes
                 me.deletedNodes.push(me.currentNode.wfdata.id);
                 me.saveButton.setDisabled(false);
             }

@@ -99,6 +99,12 @@ class WorkflowApplication(ExtDocApplication):
                 n.params = r["params"]
                 n.x = r["x"]
                 n.y = r["y"]
+                if not r.get("next_node"):
+                    n.next_node = None
+                if not r.get("next_true_node"):
+                    n.next_true_node = None
+                if not r.get("next_false_node"):
+                    n.next_false_node = None
                 n.save()
                 id_map[r["id"]] = n.id
         # Process changed edges
