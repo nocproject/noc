@@ -1,0 +1,1131 @@
+ARISTA-ACL-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE,
+    Counter64, Unsigned32, IpAddress   FROM SNMPv2-SMI
+    TimeStamp, MacAddress, TruthValue,
+    TEXTUAL-CONVENTION, DisplayString  FROM SNMPv2-TC
+    MODULE-COMPLIANCE, OBJECT-GROUP    FROM SNMPv2-CONF
+    TimeFilter                         FROM RMON2-MIB
+    InetAddressIPv6                    FROM INET-ADDRESS-MIB
+    aristaMibs                         FROM ARISTA-SMI-MIB;
+
+aristaAclMIB MODULE-IDENTITY
+    LAST-UPDATED "201206201300Z"
+    ORGANIZATION "Arista Networks, Inc."
+    CONTACT-INFO
+        "Arista Networks, Inc.
+
+         Postal: 5470 Great America Parkway
+                 Santa Clara, CA 95054
+
+         Tel: +1 408 547-5500
+
+         E-mail: snmp@aristanetworks.com"
+    DESCRIPTION
+        "The MIB module for managing Access Control Lists (ACLs) on
+        Arista devices."
+
+    REVISION     "201206201300Z"
+    DESCRIPTION  "Initial version of this MIB."
+
+    ::= { aristaMibs 5 }
+
+-- Textual Conventions --
+
+AristaAclRuleAction ::= TEXTUAL-CONVENTION
+    STATUS      current
+    DESCRIPTION
+        "Action associated with an ACL rule. If the action has value
+        'remark(2)', then only the remark field of the ACL rule is
+        meaningful; all other fields are don't-cares."
+    SYNTAX      INTEGER {
+                    permit(0),
+                    deny(1), 
+                    remark(2)
+                }
+
+AristaAclRangeOperator ::= TEXTUAL-CONVENTION
+    STATUS      current
+    DESCRIPTION
+        "Range operator used by an ACL rule."
+    SYNTAX      INTEGER {
+                    any(0), 
+                    eq(1), 
+                    gt(2), 
+                    lt(3),
+                    neq(4),
+                    range(5)
+                }
+
+aristaAcl  OBJECT IDENTIFIER ::= { aristaAclMIB 1 }
+
+aristaAclConformance OBJECT IDENTIFIER ::= { aristaAclMIB 2 }
+
+
+-- Sub-tree for IPv4 ACL objects
+aristaIpAcl OBJECT IDENTIFIER ::= { aristaAcl 1 }
+
+-- Sub-tree for MAC ACL objects
+aristaMacAcl OBJECT IDENTIFIER ::= { aristaAcl 2 }
+
+-- Sub-tree for IPv6 ACL objects
+aristaIpv6Acl OBJECT IDENTIFIER ::= { aristaAcl 3 }
+
+-- Dp ACL Support flags --
+aristaAclDpSupportFlags OBJECT-TYPE
+    SYNTAX      BITS {
+                    acl(0),
+                    logging(1),
+                    counter(2),
+                    routerAcl(3),
+                }
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "This attribute describes the data-plane ACL support matrix. If
+        data-plane ACLs are supported, the acl bit is 1; otherwise, other
+        bits are 0. If data-plane ACLs are supported, the logging, counter
+        and routerAcl bits indicate whether the data plane supports those
+        features for ACLs."
+    ::= { aristaAcl 4 }
+
+-- IP ACL objects --
+aristaIpAclTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF AristaIpAclEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains IP ACLs that are configured on the switch."
+    ::= { aristaIpAcl 1 }
+
+aristaIpAclEntry OBJECT-TYPE
+    SYNTAX      AristaIpAclEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Information about a specific IP ACL that is configured on the
+        switch."
+    INDEX   { aristaIpAclName  }
+    ::= { aristaIpAclTable 1 }
+
+AristaIpAclEntry ::=
+    SEQUENCE {
+        aristaIpAclName                  DisplayString,
+        aristaIpAclReadOnly              TruthValue,
+        aristaIpAclStatsEnabled          TruthValue,
+        aristaIpAclCountersIncomplete    TruthValue
+    }
+
+aristaIpAclName OBJECT-TYPE
+    SYNTAX     DisplayString (SIZE (0..255))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "The name of the IP ACL."
+    ::= { aristaIpAclEntry 1 }
+
+aristaIpAclReadOnly OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if the IP ACL is
+        configured as read-only; otherwise, the value is
+        'false(2)'."
+    ::= { aristaIpAclEntry 2 }
+
+aristaIpAclStatsEnabled OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if the IP ACL is
+        configured to have per-rule statistics enabled; otherwise,
+        the value is 'false(2)'."
+    ::= { aristaIpAclEntry 3 }
+
+aristaIpAclCountersIncomplete OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if the IP ACL has
+        incomplete counter; otherwise, the value is 'false(2)'."
+    ::= { aristaIpAclEntry 4 }
+
+aristaIpAclRuleTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF AristaIpAclRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains IP ACL rules that are configured on the
+        switch."
+    ::= { aristaIpAcl 2 }
+
+aristaIpAclRuleEntry OBJECT-TYPE
+    SYNTAX      AristaIpAclRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Configuration information about a specific IP ACL rule."
+    INDEX   { aristaIpAclName, aristaIpAclRuleSeqId }
+    ::= { aristaIpAclRuleTable 1 }
+
+AristaIpAclRuleEntry ::=
+    SEQUENCE {
+        -- Rule Filter --
+        aristaIpAclRuleSeqId          Unsigned32,
+        aristaIpAclRuleProto          Unsigned32,
+        aristaIpAclRuleSrc            IpAddress,
+        aristaIpAclRuleSrcMask        IpAddress,
+        aristaIpAclRuleDest           IpAddress,
+        aristaIpAclRuleDestMask       IpAddress,
+        aristaIpAclRuleL4PortSrcOper  AristaAclRangeOperator,
+        aristaIpAclRuleL4PortsSrc     OCTET STRING,
+        aristaIpAclRuleL4PortDestOper AristaAclRangeOperator,
+        aristaIpAclRuleL4PortsDest    OCTET STRING,
+        aristaIpAclRuleTtlOper        AristaAclRangeOperator,
+        aristaIpAclRuleTtl            Unsigned32,
+        aristaIpAclRuleTracked        TruthValue,
+        aristaIpAclRuleFragments      TruthValue,
+        aristaIpAclRuleTcpFlags       BITS,
+        aristaIpAclRuleEstablished    TruthValue,
+        aristaIpAclRuleIcmpType       Unsigned32,
+        aristaIpAclRuleIcmpCode       Unsigned32,
+      
+        -- Rule Actions --
+        aristaIpAclRuleAction         AristaAclRuleAction,
+        aristaIpAclRuleLog            TruthValue,
+        aristaIpAclRuleRemark         DisplayString
+    }
+
+aristaIpAclRuleSeqId OBJECT-TYPE
+    SYNTAX     Unsigned32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the sequence ID for this ACL rule."
+    ::= { aristaIpAclRuleEntry 1 }
+
+aristaIpAclRuleProto OBJECT-TYPE
+    SYNTAX     Unsigned32(0..255)
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IP protocol to be matched by this ACL
+        rule. The value 0 indicates the rule matches any IP
+        protocol."
+    ::= { aristaIpAclRuleEntry 2 }
+
+aristaIpAclRuleSrc OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IP source address to be matched by this
+        ACL rule, subject to the aristaIpAclRuleSrcMask value."
+    ::= { aristaIpAclRuleEntry 3 }
+
+aristaIpAclRuleSrcMask OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IP source-address mask in this ACL
+        rule. For the source address of the packet to match the rule,
+        the bitwise logical-AND of the address and this mask must be
+        equal to the value of aristaIpAclRuleSrc."
+    ::= { aristaIpAclRuleEntry 4 }
+
+aristaIpAclRuleDest OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IP destination address to be matched by
+        this ACL rule, subject to the aristaIpAclRuleDestMask value."
+    ::= { aristaIpAclRuleEntry 5 }
+
+aristaIpAclRuleDestMask OBJECT-TYPE
+    SYNTAX     IpAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IP destination-address mask in this ACL
+        rule. For the destination address of the packet to match the rule,
+        the bitwise logical-AND of the address and this mask must be
+        equal to the value of aristaIpAclRuleDest."
+    ::= { aristaIpAclRuleEntry 6 }
+
+aristaIpAclRuleL4PortSrcOper OBJECT-TYPE
+    SYNTAX     AristaAclRangeOperator
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute determines TCP/UDP source-port matching
+        behavior in this ACL rule. If this attribute has value
+        'any(0)', then attribute aristaIpAclRuleL4PortsSrc is
+        ignored."
+    ::= { aristaIpAclRuleEntry 7 }
+
+aristaIpAclRuleL4PortsSrc OBJECT-TYPE
+    SYNTAX     OCTET STRING (SIZE (0..60))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is a list of TCP/UDP source ports to be
+        matched in this ACL rule. They are represented as decimal
+        strings, separated by spaces. A maximum of 10 ports is
+        allowed. Attribute aristaIpAclRuleL4PortSrcOper determines
+        how the source ports are matched in this ACL rule."
+    ::= { aristaIpAclRuleEntry 8 }
+
+aristaIpAclRuleL4PortDestOper OBJECT-TYPE
+    SYNTAX     AristaAclRangeOperator
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute determines TCP/UDP destination-port matching
+        behavior in this ACL rule. If this attribute has value
+        'any(0)', then attribute aristaIpAclRuleL4PortsDest is
+        ignored."
+    ::= { aristaIpAclRuleEntry 9 }
+
+aristaIpAclRuleL4PortsDest OBJECT-TYPE
+    SYNTAX     OCTET STRING (SIZE (0..60))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is a list of TCP/UDP destination ports to be
+        matched in this ACL rule. They are represented as decimal
+        strings, separated by spaces. A maximum of 10 ports is
+        allowed. Attribute aristaIpAclRuleL4PortDestOper determines
+        how the destination ports are matched in this ACL rule."
+    ::= { aristaIpAclRuleEntry 10 }
+
+aristaIpAclRuleTtlOper OBJECT-TYPE
+    SYNTAX     AristaAclRangeOperator
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IP TTL (Time To Live) operation code
+        used in this ACL rule. Combined with attribute aristaIpAclRuleTtl,
+        it specifies the IP TTL matching behavior in this ACL rule."
+    ::= { aristaIpAclRuleEntry 11 }
+
+aristaIpAclRuleTtl OBJECT-TYPE
+    SYNTAX     Unsigned32(0..255)
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IP TTL value in this ACL rule. 
+        Attribute aristaIpAclRuleTtlOper determines how the TTL
+        values is matched in this ACL rule."
+    ::= { aristaIpAclRuleEntry 12 }
+
+aristaIpAclRuleTracked OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has the value 'true(1)' if this ACL rule is
+        tracked; otherwise, the value is 'false(2)'. A tracked rule
+        matches packets in existing ICMP/UDP/TCP connections."
+    ::= { aristaIpAclRuleEntry 13 }
+
+aristaIpAclRuleFragments OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if this ACL rule is
+        configured to match IP fragments; otherwise, the value is
+        'false(2)'."
+    ::= { aristaIpAclRuleEntry 14 }
+
+aristaIpAclRuleTcpFlags OBJECT-TYPE
+    SYNTAX     BITS {
+                   fin(0),
+                   syn(1),
+                   rst(2),
+                   psh(3),
+                   ack(4),
+                   urg(5)
+                }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute describes TCP flags that are matched by this
+        ACL rule."
+    ::= { aristaIpAclRuleEntry 15 }
+
+aristaIpAclRuleEstablished OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if this ACL rule matches
+        existing TCP connections; otherwise, the value is 'false(2)'."
+    ::= { aristaIpAclRuleEntry 16 }
+
+aristaIpAclRuleIcmpType OBJECT-TYPE
+    SYNTAX     Unsigned32(0..65535)
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the ICMP type that is matched by this ACL
+        rule. The attribute is ignored in the ACL rule if the value is
+        65535."
+    ::= { aristaIpAclRuleEntry 17 }
+
+aristaIpAclRuleIcmpCode OBJECT-TYPE
+    SYNTAX     Unsigned32(0..65535)
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the ICMP code that is matched by this ACL
+        rule. The attribute is ignored in the ACL rule if the value is
+        65535."
+    ::= { aristaIpAclRuleEntry 18 }
+
+aristaIpAclRuleAction OBJECT-TYPE
+    SYNTAX     AristaAclRuleAction
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the action applied to this ACL rule."
+    ::= { aristaIpAclRuleEntry 19 }
+
+aristaIpAclRuleLog OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if logging is required in
+        this ACL rule; otherwise, the value is 'false(2)'."
+    ::= { aristaIpAclRuleEntry 20 }
+
+aristaIpAclRuleRemark OBJECT-TYPE
+    SYNTAX     DisplayString (SIZE (0..127))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the remark string applied to this ACL rule."
+    ::= { aristaIpAclRuleEntry 21 }
+
+aristaIpAclRuleStatsTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF AristaIpAclRuleStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains statistics for IP ACL rules."
+    ::= { aristaIpAcl 3 }
+
+aristaIpAclRuleStatsEntry OBJECT-TYPE
+    SYNTAX      AristaIpAclRuleStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Statistics for a specific IP ACL rules."
+    INDEX   { aristaIpAclRuleTimeMark, 
+              aristaIpAclName,
+              aristaIpAclRuleSeqId }
+    ::= { aristaIpAclRuleStatsTable 1 }
+
+AristaIpAclRuleStatsEntry ::=
+    SEQUENCE {
+        aristaIpAclRuleTimeMark            TimeFilter,
+        aristaIpAclRuleStatsPktCount       Counter64,
+        aristaIpAclRuleStatsLastUpdateTime TimeStamp
+    }
+
+aristaIpAclRuleTimeMark OBJECT-TYPE
+    SYNTAX      TimeFilter
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A TimeFilter for this entry. See the TimeFilter textual
+        convention to see how this works."  
+    ::= { aristaIpAclRuleStatsEntry 1 }
+
+aristaIpAclRuleStatsPktCount OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "This attribute is the number of packets that this ACL rule
+        matched."
+    ::= { aristaIpAclRuleStatsEntry 2 }
+
+aristaIpAclRuleStatsLastUpdateTime OBJECT-TYPE
+    SYNTAX      TimeStamp
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The value of sysUpTime at the time the
+        aristaIpAclRuleStatsPktCount was last updated for this ACL rule."
+    ::= { aristaIpAclRuleStatsEntry 3 }
+
+-- Arista MAC ACL objects --
+aristaMacAclTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF AristaMacAclEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains MAC ACLs that are configured on the switch."
+    ::= { aristaMacAcl 1 }
+
+aristaMacAclEntry OBJECT-TYPE
+    SYNTAX      AristaMacAclEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Information about a specific MAC ACL that is configured on
+        the switch."
+    INDEX   { aristaMacAclName }
+    ::= { aristaMacAclTable 1 }
+
+AristaMacAclEntry ::=
+    SEQUENCE {
+        aristaMacAclName                  DisplayString,
+        aristaMacAclReadOnly              TruthValue,
+        aristaMacAclStatsEnabled          TruthValue,
+        aristaMacAclCountersIncomplete    TruthValue
+    }
+
+aristaMacAclName OBJECT-TYPE
+    SYNTAX     DisplayString (SIZE (0..255))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "The name of the MAC ACL."
+    ::= { aristaMacAclEntry 1 }
+
+aristaMacAclReadOnly OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if the MAC ACL is
+        configured as read-only; otherwise, the value is
+        'false(2)'."
+    ::= { aristaMacAclEntry 2 }
+
+aristaMacAclStatsEnabled OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if the MAC ACL is
+        configured to have per-entry statistics enabled; otherwise,
+        the value is 'false(2)'."
+    ::= { aristaMacAclEntry 3 }
+
+aristaMacAclCountersIncomplete OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if the MAC ACL has
+        incomplete counter statistics; otherwise, the value is
+        'false(2)'."
+    ::= { aristaMacAclEntry 4 }
+
+aristaMacAclRuleTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF AristaMacAclRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains MAC ACL rules that are configured on
+        the switch."
+    ::= { aristaMacAcl 2 }
+
+aristaMacAclRuleEntry OBJECT-TYPE
+    SYNTAX      AristaMacAclRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Configuration information about a specific MAC ACL rule."
+    INDEX   { aristaMacAclName, aristaMacAclRuleSeqId }
+    ::= { aristaMacAclRuleTable 1 }
+
+AristaMacAclRuleEntry ::=
+    SEQUENCE {
+        -- Rule Filter --
+        aristaMacAclRuleSeqId         Unsigned32,
+        aristaMacAclRuleSrc           MacAddress,
+        aristaMacAclRuleSrcMask       MacAddress,
+        aristaMacAclRuleDest          MacAddress,
+        aristaMacAclRuleDestMask      MacAddress,
+        aristaMacAclRuleProto         Unsigned32,
+
+        -- Rule Actions --
+        aristaMacAclRuleAction        AristaAclRuleAction,
+        aristaMacAclRuleLog           TruthValue,
+        aristaMacAclRuleRemark        DisplayString
+    }
+
+aristaMacAclRuleSeqId OBJECT-TYPE
+    SYNTAX     Unsigned32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the sequence ID for this ACL rule."
+    ::= { aristaMacAclRuleEntry 1 }
+
+aristaMacAclRuleSrc OBJECT-TYPE
+    SYNTAX     MacAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the MAC source address to be matched by
+        this ACL rule, subject to the aristaMacAclRuleSrcMask value."
+    ::= { aristaMacAclRuleEntry 2 }
+
+aristaMacAclRuleSrcMask OBJECT-TYPE
+    SYNTAX     MacAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the MAC source-address mask in this ACL
+        rule. For the source address of the packet to match the rule,
+        the bitwise logical-AND of the address and this mask must be
+        equal to the value of aristaMacAclRuleSrc."
+    ::= { aristaMacAclRuleEntry 3 }
+
+aristaMacAclRuleDest OBJECT-TYPE
+    SYNTAX     MacAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the MAC destination address to be matched
+        by this ACL rule, subject to the aristaMacAclRuleSrcMask value."
+    ::= { aristaMacAclRuleEntry 4 }
+
+aristaMacAclRuleDestMask OBJECT-TYPE
+    SYNTAX     MacAddress
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the MAC destination-address mask in this ACL
+        rule. For the destination address of the packet to match the rule,
+        the bitwise logical-AND of the address and this mask must be
+        equal to the value of aristaMacAclRuleDest."
+    ::= { aristaMacAclRuleEntry 5 }
+
+aristaMacAclRuleProto OBJECT-TYPE
+    SYNTAX     Unsigned32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the MAC protocol number to be matched by
+        this ACL rule. The protocol value 4294967295 (0xFFFFFFFF) is
+        a value that indicates the rule matches any
+        protocol."
+    ::= { aristaMacAclRuleEntry 6 }
+
+aristaMacAclRuleAction OBJECT-TYPE
+    SYNTAX     AristaAclRuleAction
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the action applied to this ACL rule."
+    ::= { aristaMacAclRuleEntry 7 }
+
+aristaMacAclRuleLog OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if logging is required in
+        this ACL rule; otherwise, the value is 'false(2)'."
+    ::= { aristaMacAclRuleEntry 8 }
+
+aristaMacAclRuleRemark OBJECT-TYPE
+    SYNTAX     DisplayString (SIZE (0..127))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the remark string applied to this ACL rule."
+    ::= { aristaMacAclRuleEntry 9 }
+
+aristaMacAclRuleStatsTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF AristaMacAclRuleStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains statistics information for MAC ACL rules."
+    ::= { aristaMacAcl 3 }
+
+aristaMacAclRuleStatsEntry OBJECT-TYPE
+    SYNTAX      AristaMacAclRuleStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Statistics for MAC ACL rules."
+    INDEX   { aristaMacAclRuleTimeMark, 
+              aristaMacAclName, 
+              aristaMacAclRuleSeqId }
+    ::= { aristaMacAclRuleStatsTable 1 }
+
+AristaMacAclRuleStatsEntry ::=
+    SEQUENCE {
+        aristaMacAclRuleTimeMark            TimeFilter,
+        aristaMacAclRuleStatsPktCount       Counter64,
+        aristaMacAclRuleStatsLastUpdateTime TimeStamp
+    }
+
+aristaMacAclRuleTimeMark OBJECT-TYPE
+    SYNTAX      TimeFilter
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A TimeFilter for this entry. See the TimeFilter textual
+        convention to see how this works."  
+    ::= { aristaMacAclRuleStatsEntry 1 }
+
+aristaMacAclRuleStatsPktCount OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "This attribute is the number of packets that this ACL rule
+        matched."
+    ::= { aristaMacAclRuleStatsEntry 2 }
+
+aristaMacAclRuleStatsLastUpdateTime OBJECT-TYPE
+    SYNTAX      TimeStamp
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The value of sysUpTime at the time the
+        aristaMacAclRuleStatsPktCount was last updated for this ACL rule."
+    ::= { aristaMacAclRuleStatsEntry 3 }
+
+-- IPv6 ACL objects --
+aristaIpv6AclTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF AristaIpv6AclEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains IPv6 ACLs that are configured on the
+        switch."
+    ::= { aristaIpv6Acl 1 }
+
+aristaIpv6AclEntry OBJECT-TYPE
+    SYNTAX      AristaIpv6AclEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Information about a specific IPv6 ACL that is configured on
+        the switch."
+    INDEX   { aristaIpv6AclName  }
+    ::= { aristaIpv6AclTable 1 }
+
+AristaIpv6AclEntry ::=
+    SEQUENCE {
+        aristaIpv6AclName                  DisplayString,
+        aristaIpv6AclReadOnly              TruthValue,
+        aristaIpv6AclStatsEnabled          TruthValue,
+        aristaIpv6AclCountersIncomplete    TruthValue
+    }
+
+aristaIpv6AclName OBJECT-TYPE
+    SYNTAX     DisplayString (SIZE (0..255))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "The name of the IPv6 ACL."
+    ::= { aristaIpv6AclEntry 1 }
+
+aristaIpv6AclReadOnly OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if the IPv6 ACL is
+        configured as read-only; otherwise, the value is
+        'false(2)'."
+    ::= { aristaIpv6AclEntry 2 }
+
+aristaIpv6AclStatsEnabled OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if the IPv6 ACL is
+        configured to have per-entry statistics enabled; otherwise,
+        the value is 'false(2)'."
+    ::= { aristaIpv6AclEntry 3 }
+
+aristaIpv6AclCountersIncomplete OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if the IPv6 ACL has
+        incomplete counter statistics; otherwise, the value is
+        'false(2)'."
+    ::= { aristaIpv6AclEntry 4 }
+
+aristaIpv6AclRuleTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF AristaIpv6AclRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains IPv6 ACL rules that are configured on
+        the switch."
+    ::= { aristaIpv6Acl 2 }
+
+aristaIpv6AclRuleEntry OBJECT-TYPE
+    SYNTAX      AristaIpv6AclRuleEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Configuration information about a specific IPv6 ACL rule."
+    INDEX   { aristaIpv6AclName, aristaIpv6AclRuleSeqId }
+    ::= { aristaIpv6AclRuleTable 1 }
+
+AristaIpv6AclRuleEntry ::=
+    SEQUENCE {
+        -- Rule Filter --
+        aristaIpv6AclRuleSeqId          Unsigned32,
+        aristaIpv6AclRuleProto          Unsigned32,
+        aristaIpv6AclRuleSrc            InetAddressIPv6,
+        aristaIpv6AclRuleSrcMask        InetAddressIPv6,
+        aristaIpv6AclRuleDest           InetAddressIPv6,
+        aristaIpv6AclRuleDestMask       InetAddressIPv6,
+        aristaIpv6AclRuleL4PortSrcOper  AristaAclRangeOperator,
+        aristaIpv6AclRuleL4PortsSrc     OCTET STRING,
+        aristaIpv6AclRuleL4PortDestOper AristaAclRangeOperator,
+        aristaIpv6AclRuleL4PortsDest    OCTET STRING,
+        aristaIpv6AclRuleHopLimitOper   AristaAclRangeOperator,
+        aristaIpv6AclRuleHopLimit       Unsigned32,
+        aristaIpv6AclRuleTcpFlags       BITS,
+        aristaIpv6AclRuleEstablished    TruthValue,
+        aristaIpv6AclRuleIcmpType       Unsigned32,
+        aristaIpv6AclRuleIcmpCode       Unsigned32,
+      
+        -- Rule Actions --
+        aristaIpv6AclRuleAction         AristaAclRuleAction,
+        aristaIpv6AclRuleLog            TruthValue,
+        aristaIpv6AclRuleRemark         DisplayString
+    }
+
+aristaIpv6AclRuleSeqId OBJECT-TYPE
+    SYNTAX     Unsigned32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the sequence ID for this ACL rule."
+    ::= { aristaIpv6AclRuleEntry 1 }
+
+aristaIpv6AclRuleProto OBJECT-TYPE
+    SYNTAX     Unsigned32(0..255)
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IPv6 upper layer protocol to be matched
+        by this ACL rule. The value 0 indicates the rule matches any
+        IPv6 protocol."
+    ::= { aristaIpv6AclRuleEntry 2 }
+
+aristaIpv6AclRuleSrc OBJECT-TYPE
+    SYNTAX     InetAddressIPv6
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IPv6 source address to be matched by this
+        ACL rule, subject to the aristaIpv6AclRuleSrcMask value."
+    ::= { aristaIpv6AclRuleEntry 3 }
+
+aristaIpv6AclRuleSrcMask OBJECT-TYPE
+    SYNTAX     InetAddressIPv6
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IPv6 source-address mask in this ACL
+        rule. For the source address of the packet to match the rule,
+        the bitwise logical-AND of the address and this mask must be
+        equal to the value of aristaIpv6AclRuleSrc."
+    ::= { aristaIpv6AclRuleEntry 4 }
+
+aristaIpv6AclRuleDest OBJECT-TYPE
+    SYNTAX     InetAddressIPv6
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IPv6 destination address to be matched by
+        this ACL rule, subject to the aristaIpv6AclRuleDestMask value."
+    ::= { aristaIpv6AclRuleEntry 5 }
+
+aristaIpv6AclRuleDestMask OBJECT-TYPE
+    SYNTAX     InetAddressIPv6
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IPv6 destination-address mask in this ACL
+        rule. For the destination address of the packet to match the rule,
+        the bitwise logical-AND of the address and this mask must be
+        equal to the value of aristaIpv6AclRuleDest."
+    ::= { aristaIpv6AclRuleEntry 6 }
+
+aristaIpv6AclRuleL4PortSrcOper OBJECT-TYPE
+    SYNTAX     AristaAclRangeOperator
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute determines TCP/UDP source-port matching
+        behavior in this ACL rule. If this attribute has value
+        'any(0)', then attribute aristaIpv6AclRuleL4PortsSrc is
+        ignored."
+    ::= { aristaIpv6AclRuleEntry 7 }
+
+aristaIpv6AclRuleL4PortsSrc OBJECT-TYPE
+    SYNTAX     OCTET STRING (SIZE (0..60))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is a list of TCP/UDP source ports to be
+        matched in this ACL rule. They are represented as decimal
+        strings, separated by spaces. A maximum of 10 ports is
+        allowed. Attribute aristaIpv6AclRuleL4PortSrcOper determines
+        how the source ports are matched in this ACL rule."
+    ::= { aristaIpv6AclRuleEntry 8 }
+
+aristaIpv6AclRuleL4PortDestOper OBJECT-TYPE
+    SYNTAX     AristaAclRangeOperator
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute determines TCP/UDP destination-port matching
+        behavior in this ACL rule. If this attribute has value
+        'any(0)', then attribute aristaIpv6AclRuleL4PortsDest is
+        ignored."
+    ::= { aristaIpv6AclRuleEntry 9 }
+
+aristaIpv6AclRuleL4PortsDest OBJECT-TYPE
+    SYNTAX     OCTET STRING (SIZE (0..60))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is a list of TCP/UDP destination ports to be
+        matched in this ACL rule. They are represented as decimal
+        strings, separated by spaces. A maximum of 10 ports is
+        allowed. Attribute aristaIpv6AclRuleL4PortDestOper determines
+        how the destination ports are matched in this ACL rule."
+    ::= { aristaIpv6AclRuleEntry 10 }
+
+aristaIpv6AclRuleHopLimitOper OBJECT-TYPE
+    SYNTAX     AristaAclRangeOperator
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IPv6 Hop Limit operation code used in
+        this ACL rule. Combined with attribute
+        aristaIpv6AclRuleHopLimit, it specifies the IPv6 Hop Limit
+        matching behavior in this ACL rule."
+    ::= { aristaIpv6AclRuleEntry 11 }
+
+aristaIpv6AclRuleHopLimit OBJECT-TYPE
+    SYNTAX     Unsigned32(0..255)
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the IPv6 Hop Limit value in this ACL
+        rule. Attribute aristaIpv6AclRuleHopLimitOper determines how
+        the Hop Limit values is matched in this ACL rule."
+    ::= { aristaIpv6AclRuleEntry 12 }
+
+aristaIpv6AclRuleTcpFlags OBJECT-TYPE
+    SYNTAX     BITS {
+                  fin(0),
+                  syn(1),
+                  rst(2),
+                  psh(3),
+                  ack(4),
+                  urg(5)
+                }
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute describes TCP flags that are matched by this
+        ACL rule."
+    ::= { aristaIpv6AclRuleEntry 13 }
+
+aristaIpv6AclRuleEstablished OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if this ACL rule matches
+        existing TCP connections; otherwise, the value is 'false(2)'."
+    ::= { aristaIpv6AclRuleEntry 14 }
+
+aristaIpv6AclRuleIcmpType OBJECT-TYPE
+    SYNTAX     Unsigned32(0..65535)
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the ICMP type that is matched by this ACL
+        rule. The attribute is ignored in the ACL rule if the value is
+        65535."
+    ::= { aristaIpv6AclRuleEntry 15 }
+
+aristaIpv6AclRuleIcmpCode OBJECT-TYPE
+    SYNTAX     Unsigned32(0..65535)
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the ICMP code that is matched by this ACL
+        rule. The attribute is ignored in the ACL rule if the value is
+        65535."
+    ::= { aristaIpv6AclRuleEntry 16 }
+
+aristaIpv6AclRuleAction OBJECT-TYPE
+    SYNTAX     AristaAclRuleAction
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the action applied to this ACL rule."
+    ::= { aristaIpv6AclRuleEntry 17 }
+
+aristaIpv6AclRuleLog OBJECT-TYPE
+    SYNTAX     TruthValue
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute has value 'true(1)' if logging is required in
+        this ACL rule; otherwise, the value is 'false(2)'."
+    ::= { aristaIpv6AclRuleEntry 18 }
+
+aristaIpv6AclRuleRemark OBJECT-TYPE
+    SYNTAX     DisplayString (SIZE (0..127))
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+        "This attribute is the remark string applied to this ACL rule."
+    ::= { aristaIpv6AclRuleEntry 19 }
+
+aristaIpv6AclRuleStatsTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF AristaIpv6AclRuleStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains statistics information for IPv6 ACL rules."
+    ::= { aristaIpv6Acl 3 }
+
+aristaIpv6AclRuleStatsEntry OBJECT-TYPE
+    SYNTAX      AristaIpv6AclRuleStatsEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Statistics for IPv6 ACL rules."
+    INDEX   { aristaIpv6AclRuleTimeMark, 
+              aristaIpv6AclName, 
+              aristaIpv6AclRuleSeqId }
+    ::= { aristaIpv6AclRuleStatsTable 1 }
+
+AristaIpv6AclRuleStatsEntry ::=
+    SEQUENCE {
+        aristaIpv6AclRuleTimeMark            TimeFilter,
+        aristaIpv6AclRuleStatsPktCount       Counter64,
+        aristaIpv6AclRuleStatsLastUpdateTime TimeStamp
+    }
+
+aristaIpv6AclRuleTimeMark OBJECT-TYPE
+    SYNTAX      TimeFilter
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A TimeFilter for this entry. See the TimeFilter textual
+        convention to see how this works."  
+    ::= { aristaIpv6AclRuleStatsEntry 1 }
+
+aristaIpv6AclRuleStatsPktCount OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "This attribute is the number of packets that this ACL rule
+        matched."
+    ::= { aristaIpv6AclRuleStatsEntry 2 }
+
+aristaIpv6AclRuleStatsLastUpdateTime OBJECT-TYPE
+    SYNTAX      TimeStamp
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+        "The value of sysUpTime at the time the
+        aristaIpv6AclRuleStatsPktCount was last updated for this ACL
+        rule."
+    ::= { aristaIpv6AclRuleStatsEntry 3 }
+
+--
+-- conformance information
+--
+
+aristaAclCompliances OBJECT IDENTIFIER ::= { aristaAclConformance 1 }
+aristaAclGroups OBJECT IDENTIFIER ::= { aristaAclConformance 2 }
+
+-- Compliance statements
+aristaAclCompliance MODULE-COMPLIANCE
+    STATUS     current
+    DESCRIPTION
+           "The compliance statement for Arista switches that support
+            Access Control Lists (ACLs)."
+
+    MODULE -- this module
+    MANDATORY-GROUPS { aristaAclGroup }   
+
+    ::= { aristaAclCompliances 1 }
+
+-- Units of conformance
+aristaAclGroup OBJECT-GROUP
+    OBJECTS   {
+                aristaAclDpSupportFlags, aristaIpAclName,
+                aristaIpAclReadOnly, aristaIpAclStatsEnabled,
+                aristaIpAclCountersIncomplete, aristaIpAclRuleSeqId,
+                aristaIpAclRuleProto, aristaIpAclRuleSrc, 
+                aristaIpAclRuleSrcMask, aristaIpAclRuleDest,
+                aristaIpAclRuleDestMask, aristaIpAclRuleL4PortSrcOper,
+                aristaIpAclRuleL4PortsSrc, aristaIpAclRuleL4PortDestOper,
+                aristaIpAclRuleL4PortsDest, aristaIpAclRuleTtlOper, 
+                aristaIpAclRuleTtl, aristaIpAclRuleTracked, 
+                aristaIpAclRuleFragments, aristaIpAclRuleTcpFlags,
+                aristaIpAclRuleEstablished, aristaIpAclRuleIcmpType,
+                aristaIpAclRuleIcmpCode, aristaIpAclRuleAction, 
+                aristaIpAclRuleLog, aristaIpAclRuleRemark,
+                aristaIpAclRuleStatsPktCount, 
+                aristaIpAclRuleStatsLastUpdateTime,
+                aristaMacAclName, aristaMacAclReadOnly, 
+                aristaMacAclStatsEnabled, aristaMacAclCountersIncomplete,
+                aristaMacAclRuleSeqId, aristaMacAclRuleSrc, 
+                aristaMacAclRuleSrcMask, aristaMacAclRuleDest,
+                aristaMacAclRuleDestMask, aristaMacAclRuleProto,
+                aristaMacAclRuleAction, aristaMacAclRuleLog, 
+                aristaMacAclRuleRemark, aristaMacAclRuleStatsPktCount,
+                aristaMacAclRuleStatsLastUpdateTime, 
+                aristaIpv6AclName, aristaIpv6AclReadOnly,
+                aristaIpv6AclStatsEnabled,aristaIpv6AclCountersIncomplete,
+                aristaIpv6AclRuleSeqId, aristaIpv6AclRuleProto,
+                aristaIpv6AclRuleSrc, aristaIpv6AclRuleSrcMask,
+                aristaIpv6AclRuleDest, aristaIpv6AclRuleDestMask,
+                aristaIpv6AclRuleL4PortSrcOper, 
+                aristaIpv6AclRuleL4PortsSrc,
+                aristaIpv6AclRuleL4PortDestOper,
+                aristaIpv6AclRuleL4PortsDest,
+                aristaIpv6AclRuleHopLimitOper, aristaIpv6AclRuleHopLimit,
+                aristaIpv6AclRuleTcpFlags, aristaIpv6AclRuleEstablished,
+                aristaIpv6AclRuleIcmpType, aristaIpv6AclRuleIcmpCode,
+                aristaIpv6AclRuleAction, aristaIpv6AclRuleLog, 
+                aristaIpv6AclRuleRemark, aristaIpv6AclRuleStatsPktCount,
+                aristaIpv6AclRuleStatsLastUpdateTime
+              }
+    STATUS     current
+    DESCRIPTION
+           "The group of required ACL objects."
+   ::= { aristaAclGroups 1 }
+
+END

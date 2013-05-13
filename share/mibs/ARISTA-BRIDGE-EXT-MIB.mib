@@ -1,0 +1,123 @@
+ARISTA-BRIDGE-EXT-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE,
+    Counter32, TimeTicks               FROM SNMPv2-SMI
+    MODULE-COMPLIANCE, OBJECT-GROUP    FROM SNMPv2-CONF
+    dot1qFdbId, dot1qTpFdbAddress      FROM Q-BRIDGE-MIB
+    TimeFilter                         FROM RMON2-MIB
+    aristaMibs                         FROM ARISTA-SMI-MIB;
+
+aristaBridgeExtMIB MODULE-IDENTITY
+    LAST-UPDATED "201103311300Z"
+    ORGANIZATION "Arista Networks, Inc."
+    CONTACT-INFO
+        "Arista Networks, Inc.
+
+         Postal: 5470 Great America Parkway
+                 Santa Clara, CA 95054
+
+         Tel: +1 408 547-5500
+
+         E-mail: snmp@aristanetworks.com"
+    DESCRIPTION
+           "This MIB contains extensions to the BRIDGE-MIB."
+    REVISION      "201103311300Z"
+    DESCRIPTION
+           "Updated postal address and telephone"
+    REVISION      "201005030000Z"
+    DESCRIPTION
+           "The initial revision of this MIB module."
+    ::= { aristaMibs 2 }
+
+aristaDot1qTpFdbTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF AristaDot1qTpFdbEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "A table that contains host move information about unicast entries
+        for which the device has forwarding information."
+    ::= { aristaBridgeExtMIB 1 }
+
+aristaDot1qTpFdbEntry OBJECT-TYPE
+    SYNTAX      AristaDot1qTpFdbEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "Information about a specific unicast MAC address for
+        which the device has some forwarding information."
+    INDEX   { aristaDot1qTpFdbTimeMark, dot1qFdbId, dot1qTpFdbAddress }
+    ::= { aristaDot1qTpFdbTable 1 }
+
+AristaDot1qTpFdbEntry ::=
+    SEQUENCE {
+        aristaDot1qTpFdbTimeMark   TimeFilter,
+        aristaDot1qTpFdbNumMoves   Counter32,
+        aristaDot1qTpFdbLastMove   TimeTicks
+    }
+
+aristaDot1qTpFdbTimeMark OBJECT-TYPE
+    SYNTAX      TimeFilter
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "A TimeFilter that can be used to filter out entries
+       that have not moved recently.  If you don't want to filter, make
+       sure to pass '0' for the value of this index component, otherwise
+       pass the sysUpTime value representing the last time you queried
+       the table."
+    ::= { aristaDot1qTpFdbEntry 1 }
+
+
+aristaDot1qTpFdbNumMoves OBJECT-TYPE
+    SYNTAX      Counter32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of times a given MAC address has changed
+       ports without having been aged out, or the value 1 for a
+       MAC address that was not previously in the table before being
+       learned."
+    ::= { aristaDot1qTpFdbEntry 2 }
+
+aristaDot1qTpFdbLastMove OBJECT-TYPE
+    SYNTAX      TimeTicks
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The value of sysUpTime the last time the value of
+        aristaDot1qTpFdbNumMoves was incremented."
+    ::= { aristaDot1qTpFdbEntry 3 }
+
+-- Conformance
+
+aristaBridgeExtConformance OBJECT IDENTIFIER ::= { aristaBridgeExtMIB 2 }
+
+aristaBridgeExtGroups OBJECT IDENTIFIER ::= { aristaBridgeExtConformance 1 }
+
+aristaBridgeExtCompliances OBJECT IDENTIFIER ::= { aristaBridgeExtConformance 2 }
+
+-- units of conformance
+
+aristaBridgeExtBaseGroup OBJECT-GROUP
+    OBJECTS {
+        aristaDot1qTpFdbNumMoves,
+        aristaDot1qTpFdbLastMove
+    }
+    STATUS      current
+    DESCRIPTION
+        "A collection of objects providing MAC move count and times."
+    ::= { aristaBridgeExtGroups 1 }
+
+-- comliance statements
+
+aristaBridgeExtCompliance MODULE-COMPLIANCE
+    STATUS      current
+    DESCRIPTION
+        "The compliance statement for device support of MAC move count and
+        times."
+
+    MODULE
+        MANDATORY-GROUPS {
+            aristaBridgeExtBaseGroup
+        }
+    ::= { aristaBridgeExtCompliances 1 }
+
+END

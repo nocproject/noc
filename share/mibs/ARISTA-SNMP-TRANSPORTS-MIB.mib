@@ -1,0 +1,47 @@
+-- ARISTA-SNMP-TRANSPORTS-MIB: Arista specific SNMP transports domains
+-- Copyright (c) 2012 Arista Networks, Inc.  All rights reserved.
+
+ARISTA-SNMP-TRANSPORTS-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, 
+    OBJECT-IDENTITY        FROM SNMPv2-SMI        -- [RFC2578]
+    aristaModules          FROM ARISTA-SMI-MIB;
+
+aristaSnmpTransportDomains MODULE-IDENTITY
+    LAST-UPDATED "201201091300Z"
+    ORGANIZATION "Arista Networks, Inc."
+    CONTACT-INFO
+        "Arista Networks, Inc.
+
+         Postal: 5470 Great America Parkway
+                 Santa Clara, CA 95054
+
+         Tel: +1 408 547-5500
+
+         E-mail: snmp@aristanetworks.com"
+    DESCRIPTION
+            "The Arista Networks specific SNMP transport domains."
+       REVISION           "201201091300Z"
+       DESCRIPTION
+           "Updated imports"
+        REVISION      "201201051830Z"
+        DESCRIPTION
+                "Initial version."
+        ::= { aristaModules 1 }
+
+aristaUDPNSDomain OBJECT-IDENTITY
+    STATUS current
+    DESCRIPTION
+        "The SNMPv2 over UDP transport domain.  The corresponding socket in 
+        opened in a specific namespace."
+    ::= { aristaSnmpTransportDomains 1 }
+
+aristaTCPNSDomain OBJECT-IDENTITY
+    STATUS current
+    DESCRIPTION
+        "The SNMPv2 over TCP transport domain.  The corresponding socket in 
+        opened in a specific namespace."
+    ::= { aristaSnmpTransportDomains 2 }
+
+END

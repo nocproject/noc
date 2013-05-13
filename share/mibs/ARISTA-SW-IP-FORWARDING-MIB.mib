@@ -1,0 +1,889 @@
+ARISTA-SW-IP-FORWARDING-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE,
+    Counter32, Counter64, Unsigned32   FROM SNMPv2-SMI
+    TimeStamp FROM SNMPv2-TC
+    MODULE-COMPLIANCE, OBJECT-GROUP    FROM SNMPv2-CONF
+    InetVersion                        FROM INET-ADDRESS-MIB
+    aristaMibs                         FROM ARISTA-SMI-MIB;
+
+aristaSwIpForwardingMIB MODULE-IDENTITY
+    LAST-UPDATED "201103311300Z"
+    ORGANIZATION "Arista Networks, Inc."
+    CONTACT-INFO
+        "Arista Networks, Inc.
+
+         Postal: 5470 Great America Parkway
+                 Santa Clara, CA 95054
+
+         Tel: +1 408 547-5500
+
+         E-mail: snmp@aristanetworks.com"
+    DESCRIPTION
+           "This MIB contains counters for software-forwarded packets."
+    REVISION      "201103311300Z"
+    DESCRIPTION
+           "Updated postal address and telephone"
+    REVISION      "201001310000Z"
+    DESCRIPTION
+           "Revised to correct syntax of the aristaSwFwdIp definition."
+    REVISION      "200903160000Z"
+    DESCRIPTION
+           "The initial revision of this MIB module."
+    ::= { aristaMibs 1 }
+
+aristaSwFwdIp OBJECT IDENTIFIER ::= { aristaSwIpForwardingMIB 1 }
+
+aristaSwFwdIpStatsTable OBJECT-TYPE
+    SYNTAX     SEQUENCE OF AristaSwFwdIpStatsEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+           "The table containing system wide, IP version specific
+            traffic statistics.  This table and the ipIfStatsTable
+            contain similar objects whose difference is in their
+            granularity.  Where this table contains system wide traffic
+            statistics, the ipIfStatsTable contains the same statistics
+            but counted on a per-interface basis."
+    ::= { aristaSwFwdIp 1 }
+
+aristaSwFwdIpStatsEntry OBJECT-TYPE
+    SYNTAX     AristaSwFwdIpStatsEntry
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+           "A statistics entry containing system-wide objects for a
+            particular IP version."
+    INDEX { aristaSwFwdIpStatsIPVersion }
+    ::= { aristaSwFwdIpStatsTable 1 }
+
+AristaSwFwdIpStatsEntry ::= SEQUENCE {
+        aristaSwFwdIpStatsIPVersion           InetVersion,
+        aristaSwFwdIpStatsInReceives          Counter32,
+        aristaSwFwdIpStatsHCInReceives        Counter64,
+        aristaSwFwdIpStatsInOctets            Counter32,
+        aristaSwFwdIpStatsHCInOctets          Counter64,
+        aristaSwFwdIpStatsInHdrErrors         Counter32,
+        aristaSwFwdIpStatsInNoRoutes          Counter32,
+        aristaSwFwdIpStatsInAddrErrors        Counter32,
+        aristaSwFwdIpStatsInUnknownProtos     Counter32,
+        aristaSwFwdIpStatsInTruncatedPkts     Counter32,
+        aristaSwFwdIpStatsInForwDatagrams     Counter32,
+        aristaSwFwdIpStatsHCInForwDatagrams   Counter64,
+        aristaSwFwdIpStatsReasmReqds          Counter32,
+        aristaSwFwdIpStatsReasmOKs            Counter32,
+        aristaSwFwdIpStatsReasmFails          Counter32,
+        aristaSwFwdIpStatsInDiscards          Counter32,
+        aristaSwFwdIpStatsInDelivers          Counter32,
+        aristaSwFwdIpStatsHCInDelivers        Counter64,
+        aristaSwFwdIpStatsOutRequests         Counter32,
+        aristaSwFwdIpStatsHCOutRequests       Counter64,
+        aristaSwFwdIpStatsOutNoRoutes         Counter32,
+        aristaSwFwdIpStatsOutForwDatagrams    Counter32,
+        aristaSwFwdIpStatsHCOutForwDatagrams  Counter64,
+        aristaSwFwdIpStatsOutDiscards         Counter32,
+        aristaSwFwdIpStatsOutFragReqds        Counter32,
+        aristaSwFwdIpStatsOutFragOKs          Counter32,
+        aristaSwFwdIpStatsOutFragFails        Counter32,
+        aristaSwFwdIpStatsOutFragCreates      Counter32,
+        aristaSwFwdIpStatsOutTransmits        Counter32,
+        aristaSwFwdIpStatsHCOutTransmits      Counter64,
+        aristaSwFwdIpStatsOutOctets           Counter32,
+        aristaSwFwdIpStatsHCOutOctets         Counter64,
+        aristaSwFwdIpStatsInMcastPkts         Counter32,
+        aristaSwFwdIpStatsHCInMcastPkts       Counter64,
+        aristaSwFwdIpStatsInMcastOctets       Counter32,
+        aristaSwFwdIpStatsHCInMcastOctets     Counter64,
+        aristaSwFwdIpStatsOutMcastPkts        Counter32,
+        aristaSwFwdIpStatsHCOutMcastPkts      Counter64,
+        aristaSwFwdIpStatsOutMcastOctets      Counter32,
+        aristaSwFwdIpStatsHCOutMcastOctets    Counter64,
+        aristaSwFwdIpStatsInBcastPkts         Counter32,
+        aristaSwFwdIpStatsHCInBcastPkts       Counter64,
+        aristaSwFwdIpStatsOutBcastPkts        Counter32,
+        aristaSwFwdIpStatsHCOutBcastPkts      Counter64,
+        aristaSwFwdIpStatsDiscontinuityTime   TimeStamp,
+        aristaSwFwdIpStatsRefreshRate         Unsigned32
+    }
+
+aristaSwFwdIpStatsIPVersion OBJECT-TYPE
+    SYNTAX     InetVersion
+    MAX-ACCESS not-accessible
+    STATUS     current
+    DESCRIPTION
+           "The IP version of this row."
+    ::= { aristaSwFwdIpStatsEntry 1 }
+
+-- This object ID is reserved to allow the IDs for this table's objects
+-- to align with the objects in the ipIfStatsTable.
+-- ::= { aristaSwFwdIpStatsEntry 2 }
+
+aristaSwFwdIpStatsInReceives OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of input IP datagrams received in software,
+            including those received in error.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 3 }
+
+aristaSwFwdIpStatsHCInReceives OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of input IP datagrams received in software,
+            including those received in error.  This object counts the same
+            datagrams as aristaSwFwdIpStatsInReceives, but allows for larger
+            values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 4 }
+
+aristaSwFwdIpStatsInOctets OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of octets received in software in input IP
+            datagrams, including those received in error.  Octets from
+            datagrams counted in aristaSwFwdIpStatsInReceives MUST be
+            counted here.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 5 }
+
+aristaSwFwdIpStatsHCInOctets OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of octets received in software in input IP
+            datagrams, including those received in error.  This object
+            counts the same octets as aristaSwFwdIpStatsInOctets, but
+            allows for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 6 }
+
+aristaSwFwdIpStatsInHdrErrors OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of input IP datagrams discarded in software due
+            to errors in their IP headers, including version number
+            mismatch, other format errors, hop count exceeded, errors
+            discovered in processing their IP options, etc.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 7 }
+
+aristaSwFwdIpStatsInNoRoutes OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of input IP datagrams discarded in software
+            because no route could be found to transmit them to their
+            destination.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 8 }
+
+aristaSwFwdIpStatsInAddrErrors OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of input IP datagrams discarded in software
+            because the IP address in their IP header's destination field
+            was not a valid address to be received at this entity.  This
+            count includes invalid addresses (e.g., ::0).  For entities
+            that are not IP routers and therefore do not forward
+            datagrams, this counter includes datagrams discarded
+            because the destination address was not a local address.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 9 }
+
+aristaSwFwdIpStatsInUnknownProtos OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of locally-addressed IP datagrams received
+            successfully in software but discarded because of an
+            unknown or unsupported protocol.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 10 }
+
+aristaSwFwdIpStatsInTruncatedPkts OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of input IP datagrams discarded in software
+            because the datagram frame didn't carry enough data.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 11 }
+
+aristaSwFwdIpStatsInForwDatagrams OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of input datagrams for which this entity was not
+            their final IP destination and for which this entity
+            attempted in software to find a route to forward them to
+            that final destination.  In entities that do not act as IP
+            routers, this counter will include only those datagrams that
+            were Source-Routed via this entity, and the Source-Route
+            processing was successful.
+
+            When tracking interface statistics, the counter of the
+            incoming interface is incremented for each datagram.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 12 }
+
+aristaSwFwdIpStatsHCInForwDatagrams OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of input datagrams for which this entity was not
+            their final IP destination and for which this entity
+            attempted in software to find a route to forward them
+            to that final destination.  This object counts the same
+            packets as aristaSwFwdIpStatsInForwDatagrams, but allows
+            for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 13 }
+
+aristaSwFwdIpStatsReasmReqds OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP fragments received that needed to be
+            reassembled at this interface.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 14 }
+
+aristaSwFwdIpStatsReasmOKs OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP datagrams successfully reassembled.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 15 }
+
+aristaSwFwdIpStatsReasmFails OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of failures detected by the IP re-assembly
+            algorithm (for whatever reason: timed out, errors, etc.).
+            Note that this is not necessarily a count of discarded IP
+            fragments since some algorithms (notably the algorithm in
+            RFC 815) can lose track of the number of fragments by
+            combining them as they are received.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 16 }
+
+aristaSwFwdIpStatsInDiscards OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of input IP datagrams received in software for
+            which no problems were encountered to prevent their
+            continued processing, but were discarded (e.g., for lack of
+            buffer space).  Note that this counter does not include any
+            datagrams discarded while awaiting re-assembly.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 17 }
+
+aristaSwFwdIpStatsInDelivers OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of datagrams successfully delivered to IP
+            user-protocols (including ICMP).
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 18 }
+
+aristaSwFwdIpStatsHCInDelivers OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of datagrams successfully delivered to IP
+            user-protocols (including ICMP).  This object counts the
+            same packets as aristaSwFwdIpStatsInDelivers, but allows for
+            larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 19 }
+
+aristaSwFwdIpStatsOutRequests OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of IP datagrams that local IP user-
+            protocols (including ICMP) supplied to IP in requests for
+            transmission.  Note that this counter does not include any
+            datagrams counted in aristaSwFwdIpStatsOutForwDatagrams.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 20 }
+
+aristaSwFwdIpStatsHCOutRequests OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of IP datagrams that local IP user-
+            protocols (including ICMP) supplied to IP in requests for
+            transmission.  This object counts the same packets as
+            aristaSwFwdIpStatsOutRequests, but allows for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 21 }
+
+aristaSwFwdIpStatsOutNoRoutes OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of locally generated IP datagrams discarded
+            because no route could be found to transmit them to their
+            destination.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 22 }
+
+aristaSwFwdIpStatsOutForwDatagrams OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of datagrams for which this entity was not their
+            final IP destination and for which it was successful in
+            finding a path to their final destination in software.
+            In entities that do not act as IP routers, this counter will
+            include only those datagrams that were Source-Routed via
+            this entity, and the Source-Route processing was successful.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 23 }
+
+aristaSwFwdIpStatsHCOutForwDatagrams OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of datagrams for which this entity was not their
+            final IP destination and for which it was successful
+            in finding a path to their final destination in
+            software.  This object counts the same packets as
+            aristaSwFwdIpStatsOutForwDatagrams, but allows for larger
+            values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 24 }
+
+aristaSwFwdIpStatsOutDiscards OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of output IP datagrams for which no problem was
+            encountered to prevent their transmission to their
+            destination, but were discarded in software (e.g., for lack
+            of buffer space).  Note that this counter would include
+            datagrams counted in aristaSwFwdIpStatsOutForwDatagrams if
+            any such datagrams met this (discretionary) discard criterion.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 25 }
+
+aristaSwFwdIpStatsOutFragReqds OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP datagrams that would require fragmentation
+            in order to be transmitted.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 26 }
+
+aristaSwFwdIpStatsOutFragOKs OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP datagrams that have been successfully
+            fragmented.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 27 }
+
+aristaSwFwdIpStatsOutFragFails OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP datagrams that have been discarded because
+            they needed to be fragmented but could not be.  This
+            includes IPv4 packets that have the DF bit set and IPv6
+            packets that are being forwarded and exceed the outgoing
+            link MTU.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 28 }
+
+aristaSwFwdIpStatsOutFragCreates OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of output datagram fragments that have been
+            generated as a result of IP fragmentation.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 29 }
+
+aristaSwFwdIpStatsOutTransmits OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of IP datagrams that this entity supplied
+            by software to the lower layers for transmission.  This
+            includes datagrams generated locally and those forwarded in
+            software by this entity.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 30 }
+
+aristaSwFwdIpStatsHCOutTransmits OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of IP datagrams that this entity supplied
+            by software to the lower layers for transmission.  This object
+            counts the same datagrams as aristaSwFwdIpStatsOutTransmits,
+            but allows for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 31 }
+
+aristaSwFwdIpStatsOutOctets OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of octets in IP datagrams delivered by software
+            to the lower layers for transmission.  Octets from datagrams
+            counted in aristaSwFwdIpStatsOutTransmits MUST be counted
+            here.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 32 }
+
+aristaSwFwdIpStatsHCOutOctets OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of octets in IP datagrams delivered by software
+            to the lower layers for transmission.  This objects counts
+            the same octets as aristaSwFwdIpStatsOutOctets, but allows
+            for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 33 }
+
+aristaSwFwdIpStatsInMcastPkts OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP multicast datagrams received by software.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 34 }
+
+aristaSwFwdIpStatsHCInMcastPkts OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP multicast datagrams received by software.
+            This object counts the same datagrams as
+            aristaSwFwdIpStatsInMcastPkts but allows for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 35 }
+
+aristaSwFwdIpStatsInMcastOctets OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of octets received by software in
+            IP multicast datagrams.  Octets from datagrams counted in
+            aristaSwFwdIpStatsInMcastPkts MUST be counted here.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 36 }
+
+aristaSwFwdIpStatsHCInMcastOctets OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of octets received by software in
+            IP multicast datagrams.  This object counts the same octets as
+            aristaSwFwdIpStatsInMcastOctets, but allows for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 37 }
+
+aristaSwFwdIpStatsOutMcastPkts OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP multicast datagrams transmitted by software.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 38 }
+
+aristaSwFwdIpStatsHCOutMcastPkts OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP multicast datagrams transmitted by software.
+            This object counts the same datagrams as
+            aristaSwFwdIpStatsOutMcastPkts, but allows for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 39 }
+
+aristaSwFwdIpStatsOutMcastOctets OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of octets transmitted by software in IP
+            multicast datagrams.  Octets from datagrams counted in
+            aristaSwFwdIpStatsOutMcastPkts MUST be counted here.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 40 }
+
+aristaSwFwdIpStatsHCOutMcastOctets OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The total number of octets transmitted by software in IP
+            multicast datagrams.  This object counts the same octets as
+            aristaSwFwdIpStatsOutMcastOctets, but allows for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 41 }
+
+aristaSwFwdIpStatsInBcastPkts OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP broadcast datagrams received by software.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 42 }
+
+aristaSwFwdIpStatsHCInBcastPkts OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP broadcast datagrams received by software.
+            This object counts the same datagrams as
+            aristaSwFwdIpStatsInBcastPkts but allows for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 43 }
+
+aristaSwFwdIpStatsOutBcastPkts OBJECT-TYPE
+    SYNTAX     Counter32
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP broadcast datagrams transmitted by software.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 44 }
+
+aristaSwFwdIpStatsHCOutBcastPkts OBJECT-TYPE
+    SYNTAX     Counter64
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The number of IP broadcast datagrams transmitted by software.
+            This object counts the same datagrams as
+            aristaSwFwdIpStatsOutBcastPkts, but allows for larger values.
+
+            Discontinuities in the value of this counter can occur at
+            re-initialization of the management system, and at other
+            times as indicated by the value of
+            aristaSwFwdIpStatsDiscontinuityTime."
+    ::= { aristaSwFwdIpStatsEntry 45 }
+
+aristaSwFwdIpStatsDiscontinuityTime OBJECT-TYPE
+    SYNTAX     TimeStamp
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The value of sysUpTime on the most recent occasion at which
+            any one or more of this entry's counters suffered a
+            discontinuity.
+
+            If no such discontinuities have occurred since the last re-
+            initialization of the local management subsystem, then this
+            object contains a zero value."
+    ::= { aristaSwFwdIpStatsEntry 46 }
+
+aristaSwFwdIpStatsRefreshRate OBJECT-TYPE
+    SYNTAX     Unsigned32
+    UNITS      "milli-seconds"
+    MAX-ACCESS read-only
+    STATUS     current
+    DESCRIPTION
+           "The minimum reasonable polling interval for this entry.
+            This object provides an indication of the minimum amount of
+            time required to update the counters in this entry."
+    ::= { aristaSwFwdIpStatsEntry 47 }
+
+
+--
+-- conformance information
+--
+
+aristaSwIpFwdMIBConformance OBJECT IDENTIFIER ::= { aristaSwIpForwardingMIB 2 }
+
+aristaSwIpFwdMIBCompliances OBJECT IDENTIFIER ::=
+                                { aristaSwIpFwdMIBConformance 1 }
+aristaSwIpFwdMIBGroups      OBJECT IDENTIFIER ::=
+                                { aristaSwIpFwdMIBConformance 2 }
+
+-- Compliance statements
+aristaSwIpFwdMIBCompliance MODULE-COMPLIANCE
+    STATUS     current
+    DESCRIPTION
+           "The compliance statement for Arista switches that support
+            software forwarding of IPv4 and/or IPv6 packets."
+
+    MODULE -- this module
+    MANDATORY-GROUPS { aristaSwFwdIpStatsGroup }
+    GROUP aristaSwFwdIpOctetGroup
+    DESCRIPTION
+           "This group is optional as some systems only support packet
+            counters, not octet counters."
+
+    ::= { aristaSwIpFwdMIBCompliances 2 }
+
+-- Units of conformance
+aristaSwFwdIpStatsGroup OBJECT-GROUP
+    OBJECTS   { aristaSwFwdIpStatsInReceives, aristaSwFwdIpStatsHCInReceives,
+                aristaSwFwdIpStatsInHdrErrors, aristaSwFwdIpStatsInNoRoutes,
+                aristaSwFwdIpStatsInAddrErrors, aristaSwFwdIpStatsInUnknownProtos,
+                aristaSwFwdIpStatsInTruncatedPkts, aristaSwFwdIpStatsInForwDatagrams,
+                aristaSwFwdIpStatsHCInForwDatagrams, aristaSwFwdIpStatsReasmReqds,
+                aristaSwFwdIpStatsReasmOKs, aristaSwFwdIpStatsReasmFails,
+                aristaSwFwdIpStatsInDiscards, aristaSwFwdIpStatsInDelivers,
+                aristaSwFwdIpStatsHCInDelivers, aristaSwFwdIpStatsOutRequests,
+                aristaSwFwdIpStatsHCOutRequests, aristaSwFwdIpStatsOutNoRoutes,
+                aristaSwFwdIpStatsOutForwDatagrams,
+                aristaSwFwdIpStatsHCOutForwDatagrams,
+                aristaSwFwdIpStatsOutDiscards, aristaSwFwdIpStatsOutFragReqds,
+                aristaSwFwdIpStatsOutFragOKs, aristaSwFwdIpStatsOutFragFails,
+                aristaSwFwdIpStatsOutFragCreates,
+                aristaSwFwdIpStatsOutTransmits, aristaSwFwdIpStatsHCOutTransmits,
+                aristaSwFwdIpStatsInMcastPkts, aristaSwFwdIpStatsHCInMcastPkts,
+                aristaSwFwdIpStatsOutMcastPkts, aristaSwFwdIpStatsHCOutMcastPkts,
+                aristaSwFwdIpStatsInBcastPkts, aristaSwFwdIpStatsHCInBcastPkts,
+                aristaSwFwdIpStatsOutBcastPkts, aristaSwFwdIpStatsHCOutBcastPkts,
+                aristaSwFwdIpStatsDiscontinuityTime,
+                aristaSwFwdIpStatsRefreshRate
+              }
+    STATUS     current
+    DESCRIPTION
+           "The group of required statistics objects."
+   ::= { aristaSwIpFwdMIBGroups 1 }
+
+aristaSwFwdIpOctetGroup OBJECT-GROUP
+    OBJECTS   {
+                aristaSwFwdIpStatsInOctets,
+                aristaSwFwdIpStatsHCInOctets,
+                aristaSwFwdIpStatsOutOctets,
+                aristaSwFwdIpStatsHCOutOctets,
+                aristaSwFwdIpStatsInMcastOctets,
+                aristaSwFwdIpStatsHCInMcastOctets,
+                aristaSwFwdIpStatsOutMcastOctets,
+                aristaSwFwdIpStatsHCOutMcastOctets
+              }
+    STATUS     current
+    DESCRIPTION
+           "Octet counters, which are not supported on all systems."
+   ::= { aristaSwIpFwdMIBGroups 2 }
+
+END

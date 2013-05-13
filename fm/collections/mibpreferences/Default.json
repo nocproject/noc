@@ -99,6 +99,14 @@
     {
         "mib": "HUAWEI-MIB",
         "preference": 4800
+    },
+    {
+        "mib": "ARISTA-SNMP-TRANSPORTS-MIB",
+        "preference": 5000
+    },
+    {
+        "mib": "ARISTA-PRODUCTS-MIB",
+        "preference": 5100
     }
 
 ]

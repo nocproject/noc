@@ -1,0 +1,309 @@
+-- ARISTA-QUEUE-MIB: arista structure of queue management information
+-- Copyright (c) 2012 Arista Networks, Inc.  All rights reserved.
+
+ARISTA-QUEUE-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE,
+    Counter64, Integer32               FROM SNMPv2-SMI
+    TEXTUAL-CONVENTION                 FROM SNMPv2-TC
+    MODULE-COMPLIANCE, OBJECT-GROUP    FROM SNMPv2-CONF
+    InterfaceIndex                     FROM IF-MIB
+    aristaMibs                         FROM ARISTA-SMI-MIB;
+
+aristaQueueMIB MODULE-IDENTITY
+    LAST-UPDATED "201208231300Z"
+    ORGANIZATION "Arista Networks, Inc."
+    CONTACT-INFO
+        "Arista Networks, Inc.
+
+         Postal: 5470 Great America Parkway
+                 Santa Clara, CA 95054
+
+         Tel: +1 408 547-5500
+
+         E-mail: snmp@aristanetworks.com"
+    DESCRIPTION
+            "The MIB module is for managing interface queuing on Arista devices.
+            Arista Networks has a number of products. This MIB generalizes ingress and
+            egress queue counters supported on all Arista products. Therefore, a
+            platform may not support all table indices and counters listed in this MIB.
+            For example, ingressQueueIndex in aristaIngressQueueTable,
+            aristaEgressQueuePktsDroppedQFull,
+            aristaEgressQueuePktsDroppedNoBuffer, and aristaEgressQueueDropPrec
+            in aristaEgressQueueTable are not supported in 7050 series switches."
+    REVISION      "201208231300Z"
+    DESCRIPTION "Initial version."
+    ::= { aristaMibs 6 }
+
+aristaQueue OBJECT IDENTIFIER ::= { aristaQueueMIB 1 }
+aristaQueueCounterConformance OBJECT IDENTIFIER ::= { aristaQueueMIB 2 }
+
+--
+-- Textual Conventions
+--
+
+-- QueueIndex contains the semantics of queueIndex and should be used
+-- for any objects defined in other MIB modules that need these semantics.
+
+QueueIndex ::= TEXTUAL-CONVENTION
+    DISPLAY-HINT "d"
+    STATUS       current
+    DESCRIPTION
+            "A unique value for each queue in an interface in the managed system."
+    SYNTAX      Integer32 (0..2147483647)
+
+
+-- PacketType contains the semantics of the types of the packets. The
+-- packet can be unicast packet, multicast packet, or mixed packet type.
+
+PacketType ::= TEXTUAL-CONVENTION
+    STATUS       current
+    DESCRIPTION
+            "The packet type of the packets in an queue in an interface
+            in the managed system. It is recommended that there are three
+            packet types of packets in an queue: unicast, multicast,
+            mixed packet type."
+    SYNTAX      INTEGER {
+       unicast(0),
+       multicast(1),
+       mixedPacketType(2)
+       }
+
+
+-- DropPrecedence contains the semantics of the drop precedences of the packets.
+-- Drop precedences have three levels: DropPrecedence0, DropPrecedence1,
+-- and DropPrecedence2.
+
+DropPrecedence ::= TEXTUAL-CONVENTION
+    STATUS       current
+    DESCRIPTION
+            "The drop precedences of the packets in an queue in an interface
+            in the managed system. It is recommended that there are three
+            levels of drop precedences of packets in an queue: DropPrecedence0,
+            DropPrecedence1, and DropPrecedence2. When congestion occurs,
+            packets marked with DropPrecedence2 are dropped first; packets marked
+            with DropPrecedence0 are dropped last."
+    SYNTAX      INTEGER {
+       dropPrecedence0(0),
+       dropPrecedence1(1),
+       dropPrecedence2(2)
+       }
+
+
+-- Ingress Queue Table
+--
+-- This table describes arista specific queuing extensions
+
+aristaIngressQueueTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF AristaIngressQueueEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+                "This table contains statistical information of the ingress
+                queue in an interface."
+    ::= { aristaQueue 1 }
+
+aristaIngressQueueEntry OBJECT-TYPE
+    SYNTAX      AristaIngressQueueEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"A list of attributes of ingress queues in an interface. The attributes
+        include dropped packets and dropped bytes of ingress queues."
+    INDEX   { aristaIngressIfIndex, aristaIngressQueueIndex }
+    ::= { aristaIngressQueueTable 1 }
+
+AristaIngressQueueEntry ::= SEQUENCE {
+    aristaIngressIfIndex              InterfaceIndex,
+    aristaIngressQueueIndex           QueueIndex,
+    aristaIngressQueuePktsDropped     Counter64,
+    aristaIngressQueueBytesDropped    Counter64
+}
+
+aristaIngressIfIndex OBJECT-TYPE
+    SYNTAX      InterfaceIndex
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"The index of an interface."
+    ::= { aristaIngressQueueEntry 1 }
+
+aristaIngressQueueIndex OBJECT-TYPE
+    SYNTAX      QueueIndex
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"The index of ingress queues in the interface. In the case that the
+        ingress queue information is the sum of the statistics of all ingress queues,
+        the queueIndex is set as zero."
+    ::= { aristaIngressQueueEntry 2 }
+
+aristaIngressQueuePktsDropped     OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	   "The number of dropped packets due to congestion at the ingress port in an interface."
+    ::= { aristaIngressQueueEntry 3 }
+
+aristaIngressQueueBytesDropped     OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	   "The number of dropped bytes due to congestion at the ingress port in an
+           interface."
+    ::= { aristaIngressQueueEntry 4 }
+
+aristaEgressQueueTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF AristaEgressQueueEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"This table contains statistical objects that for the
+	egress queues of an interface."
+    ::= { aristaQueue 2 }
+
+aristaEgressQueueEntry OBJECT-TYPE
+    SYNTAX      AristaEgressQueueEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"A list of statistical information of egress queues in an interface.
+        The statistical information includes transmitted packets, transmitted bytes,
+        dropped packets, and dropped bytes of egress queues."
+    INDEX   { aristaEgressIfIndex, aristaEgressQueueIndex, aristaEgressPacketType }
+    ::= { aristaEgressQueueTable 1 }
+
+AristaEgressQueueEntry ::= SEQUENCE {
+    aristaEgressIfIndex            InterfaceIndex,
+    aristaEgressQueueIndex         QueueIndex,
+    aristaEgressPacketType         PacketType,
+    aristaEgressQueuePkts          Counter64,
+    aristaEgressQueueBytes	   Counter64,
+    aristaEgressQueuePktsDropped   Counter64,
+    aristaEgressQueueBytesDropped  Counter64,
+    aristaEgressQueuePktsDroppedQFull Counter64,
+    aristaEgressQueuePktsDroppedNoBuffer Counter64,
+    aristaEgressQueueDropPrec     DropPrecedence
+}
+
+aristaEgressIfIndex OBJECT-TYPE
+    SYNTAX      InterfaceIndex
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"The index of an interface."
+    ::= { aristaEgressQueueEntry 1 }
+
+aristaEgressQueueIndex OBJECT-TYPE
+    SYNTAX      QueueIndex
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+	"The index of egress queues in the interface."
+    ::= { aristaEgressQueueEntry 2 }
+
+aristaEgressPacketType OBJECT-TYPE
+    SYNTAX      PacketType
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+        "The type of destination of packets in an egress queue in an interface."
+    ::= { aristaEgressQueueEntry 3 }
+
+aristaEgressQueuePkts OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"The number of transmitted packets in the egress queue."
+    ::= { aristaEgressQueueEntry 4 }
+
+aristaEgressQueueBytes OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"The number of transmitted bytes in the egress queue."
+    ::= { aristaEgressQueueEntry 5 }
+
+aristaEgressQueuePktsDropped OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"The number of packets discarded from this egress queue."
+    ::= { aristaEgressQueueEntry 6 }
+
+aristaEgressQueueBytesDropped OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"The number of bytes discarded from this egress queue."
+    ::= { aristaEgressQueueEntry 7 }
+
+aristaEgressQueuePktsDroppedQFull OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"The number of packets discarded from this egress queue when the queue
+        is full."
+    ::= { aristaEgressQueueEntry 8 }
+
+aristaEgressQueuePktsDroppedNoBuffer OBJECT-TYPE
+    SYNTAX      Counter64
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"The number of packets discarded from this egress queue when there is no
+        buffer."
+    ::= { aristaEgressQueueEntry 9 }
+
+aristaEgressQueueDropPrec OBJECT-TYPE
+    SYNTAX      DropPrecedence
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+	"The drop precedence of packets in this egress queue."
+    ::= { aristaEgressQueueEntry 10 }
+
+--
+-- conformance information
+--
+
+aristaQueueCounterCompliances OBJECT IDENTIFIER ::= { aristaQueueCounterConformance 1 }
+aristaQueueCounterGroups OBJECT IDENTIFIER ::= { aristaQueueCounterConformance 2 }
+
+-- Compliance statements
+aristaQueueCounterCompliance MODULE-COMPLIANCE
+    STATUS     current
+    DESCRIPTION
+           "The compliance statement for Arista switches that support queue counters."
+    MODULE -- this module
+    MANDATORY-GROUPS { aristaQueueCounterGroup }
+
+    ::= { aristaQueueCounterCompliances 1 }
+
+-- Units of conformance
+aristaQueueCounterGroup OBJECT-GROUP
+    OBJECTS   {
+                aristaIngressQueuePktsDropped,
+                aristaIngressQueueBytesDropped,
+                aristaEgressQueuePkts,
+                aristaEgressQueueBytes,
+                aristaEgressQueuePktsDropped,
+                aristaEgressQueueBytesDropped,
+                aristaEgressQueuePktsDroppedQFull,
+                aristaEgressQueuePktsDroppedNoBuffer,
+                aristaEgressQueueDropPrec
+              }
+    STATUS     current
+    DESCRIPTION
+           "The group of required objects in aristaIngressQueueTable and aristaEgressQueueTable."
+   ::= { aristaQueueCounterGroups 1 }
+
+END
