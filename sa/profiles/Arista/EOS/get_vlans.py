@@ -20,4 +20,4 @@ class Script(NOCScript):
         return [{
             "vlan_id": x[0],
             "name":x[1]
-        } for x in parse_table(self.cli("show vlan"))]
+        } for x in parse_table(self.cli("show vlan")) if x[0]]
