@@ -51,8 +51,8 @@ class ObjectNotify(models.Model):
                                            verbose_name="Notification Group")
 
     def __unicode__(self):
-        return u"(%s,%s,[%s],%s)" % (self.type, self.administrative_domain,
-                                     self.tags, self.notification_group)
+        return u"(%s, %s, %s)" % (self.type, self.administrative_domain,
+                                  self.notification_group)
 
     def get_absolute_url(self):
         return site.reverse("cm:objectnotify:change", self.id)
