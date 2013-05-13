@@ -415,6 +415,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             model.endUpdate();
             me.ignoreConnectionEvents = false;
         }
+        me.inspector.showNode(null);
     },
     //
     onSave: function() {
@@ -424,6 +425,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             nextNodes = {},
             nextTrueNodes = {},
             nextFalseNodes = {};
+        // Apply inspector changes
+        me.inspector.onApply();
         // Push deleted nodes
         for(var i in me.deletedNodes) {
             var c = me.deletedNodes[i];
