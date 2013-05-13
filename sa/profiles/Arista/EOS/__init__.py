@@ -14,7 +14,14 @@ from noc.sa.profiles import Profile as NOCProfile
 class Profile(NOCProfile):
     name = "Arista.EOS"
     supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
-    command_submit = "\r"
-    pattern_prompt = r"^(?P<hostname>\S+)>"
+    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)>"
+    pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"% Invalid input"
     pattern_username = "Login:"
+    pattern_more = [
+        (r"^ --More--", "\n"),
+        (r"\?\s*\[confirm\]", "\n")
+    ]
+    command_submit = "\r"
+    command_super = "enable"
+    command_disable_pager = "terminal length 0"
