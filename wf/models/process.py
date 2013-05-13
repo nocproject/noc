@@ -31,6 +31,9 @@ class Process(nosql.Document):
     class SleepException(Exception):
         pass
 
+    class CannotSleepError(Exception):
+        pass
+
     def __unicode__(self):
         return "%s at %s (%s)" % (self.workflow, self.node, self.id)
 
@@ -89,6 +92,9 @@ class Process(nosql.Document):
         submit_job("wf.jobs", "wf.wfstep", key=self.id)
 
     def sleep(self, t):
+        if self.node.handler_class().conditional:
+            raise self.CannotSleepError(
+                "Cannot sleep in conditional handler")
         self.sleep_time = t
         self.save()
         raise self.SleepException
