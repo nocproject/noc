@@ -40,9 +40,19 @@ Ext.define("NOC.wf.workflow.WFInspector", {
             handler: me.onApply
         });
 
+        me.resetButton = Ext.create("Ext.button.Button", {
+            iconCls: "icon_arrow_undo",
+            text: "Reset",
+            tooltip: "Reset changes",
+            disabled: true,
+            scope: me,
+            handler: me.onResetChanges
+        });
+
         Ext.apply(me, {
             items: [
                 me.applyButton,
+                me.resetButton,
                 {
                     xtype: "textfield",
                     name: "name",
@@ -102,6 +112,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
             me.descriptionField.setValue(data.description);
             me.paramsGrid.setSource(data.params);
             me.applyButton.setDisabled(false);
+            me.resetButton.setDisabled(false);
         } else {
             me.currentCell = undefined;
             me.setDisabled(true);
@@ -164,5 +175,10 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         }
         me.paramsGrid.setSource(np);
         // Change between conditional and unconditional nodes
+    },
+    //
+    onResetChanges: function() {
+        var me = this;
+        me.showNode(me.currentCell);
     }
 });
