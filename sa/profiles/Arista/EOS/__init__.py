@@ -25,3 +25,4 @@ class Profile(NOCProfile):
     command_submit = "\r"
     command_super = "enable"
     command_disable_pager = "terminal length 0"
+    convert_mac = NOCProfile.convert_mac_to_cisco
