@@ -31,10 +31,7 @@ class Script(NOCScript):
             cmd += " interface %s" % interface
         if vlan is not None:
             cmd += " vlan %s" % vlan
-        try:
-            macs = self.cli(cmd)
-        except self.CLISyntaxError:
-        r = []
+        macs = self.cli(cmd)
         for l in macs.splitlines():
             l = l.strip()
             if l.startswith("Multicast"):
