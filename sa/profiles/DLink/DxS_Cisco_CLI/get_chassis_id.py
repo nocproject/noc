@@ -22,8 +22,8 @@ class Script(NOCScript):
     implements = [IGetChassisID]
 
     def execute(self):
-        match = self.re_search(self.rx_mac_from, self.cli("show lldp local-information global", cached=True))
-        mac_from = match.group("mac_from")
+        match1 = self.re_search(self.rx_mac_from, self.cli("show lldp local-information global", cached=True))
+        mac_from = match1.group("mac_from")
         match = self.re_search(self.rx_ver, self.cli("show interfaces vlan 1",
                                cached=True))
         mac_to = match.group("id")
