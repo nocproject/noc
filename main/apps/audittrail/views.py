@@ -8,7 +8,8 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.main.models import AuditTrail
+from noc.main.models.audittrail import AuditTrail
+
 
 class AuditTrailApplication(ExtModelApplication):
     """
