@@ -18,8 +18,8 @@ class Script(NOCScript):
     implements = [IGetMACAddressTable]
 
     rx_line = re.compile(
-        r"^\s*(?P<vlan>\d+)\s+(?P<mac>\S+)"
-        r"\s+(?P<type>DYNAMIC|STATIC)\s+(?P<interfaces>\S+)"
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+"
+        r"(?P<type>DYNAMIC|STATIC)\s+(?P<interfaces>\S+)"
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -31,14 +31,13 @@ class Script(NOCScript):
             cmd += " interface %s" % interface
         if vlan is not None:
             cmd += " vlan %s" % vlan
+        r = []
         macs = self.cli(cmd)
         for l in macs.splitlines():
             l = l.strip()
             if l.startswith("Multicast"):
                 break
             match = self.rx_line.match(l)
-            if not match:
-                match = self.rx_line2.match(l)  # 3500XL variant
             if match:
                 mac = match.group("mac")
                 interfaces = [
