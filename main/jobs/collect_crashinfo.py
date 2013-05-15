@@ -23,6 +23,7 @@ from noc.sa.models import ManagedObject
 class CollectCrashinfoJob(AutoIntervalJob):
     name = "main.collect_crashinfo"
     interval = 900
+    randomize = True
 
     def execute(self):
         # Check crashinfo directory exists
