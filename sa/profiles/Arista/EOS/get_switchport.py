@@ -42,7 +42,8 @@ class Script(NOCScript):
                 p = {
                     "interface": name,
                     "members": port_channel_members.get(name, []),
-                    "status": interface_status.get(name, False)
+                    "status": interface_status.get(name, False),
+                    "tagged": []
                 }
                 untagged = match.group("untagged")
                 if untagged != "None":
