@@ -25,7 +25,7 @@ class CollectCrashinfoJob(AutoIntervalJob):
     interval = 900
     randomize = True
 
-    def execute(self):
+    def handler(self, *args, **kwargs):
         # Check crashinfo directory exists
         if not os.path.isdir(DEBUG_CTX_CRASH_DIR):
             self.error("No crashinfo directory found: %s" % DEBUG_CTX_CRASH_DIR)

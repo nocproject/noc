@@ -76,7 +76,7 @@ class CleanupJob(AutoIntervalJob):
         FailedScriptLog.objects.filter(timestamp__lte=d).delete()
         self.info("Failed scripts logs are cleaned")
 
-    def execute(self):
+    def handler(self, *args, **kwargs):
         self.cleanup_expired_sessions()
         self.cleanup_mrt()
         self.cleanup_empty_categories()
