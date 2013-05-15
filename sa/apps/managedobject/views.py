@@ -27,7 +27,6 @@ from noc.lib.fileutils import in_dir
 from noc.lib.widgets import PasswordWidget
 from noc.lib.ip import IP
 from noc.fm.models import ActiveAlarm, AlarmSeverity
-from noc.lib.scheduler.utils import refresh_schedule
 
 
 class ManagedObjectAdminForm(forms.ModelForm):
@@ -290,14 +289,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
         """
         self.app.message_user(request, "Interface discovery has been rescheduled")
         for o in queryset:
-            for job in ["version_inventory", "ip_discovery",
-                        "interface_discovery", "mac_discovery",
-                        "id_discovery", "lldp_discovery",
-                        "cdp_discovery", "stp_discovery",
-                        "rep_discovery", "bfd_discovery",
-                        "udld_discovery", "config_discovery"
-                        ]:
-                refresh_schedule("inv.discovery", job, o.id)
+            o.run_discovery()
         return self.app.response_redirect("sa:managedobject:changelist")
     reschedule_discovery.short_description = _("Run discovery now")
 

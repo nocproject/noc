@@ -26,6 +26,7 @@ from noc.lib.fields import INETField, TagsField
 from noc.lib.app.site import site
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
+from noc.lib.scheduler.utils import refresh_schedule
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
@@ -414,6 +415,25 @@ class ManagedObject(models.Model):
 
     def set_status(self, status):
         ObjectStatus.set_status(self, status)
+
+    def run_discovery(self, delta=0):
+        op = self.object_profile
+        for attr, job, duration in [
+            ("enable_version_inventory", "version_inventory", 5),
+            ("enable_config_polling", "config_discovery", 20),
+            ("enable_interface_discovery", "interface_discovery", 20),
+            ("enable_lldp_discovery", "lldp_discovery", 5),
+            ("enable_bfd_discovery", "bfd_discovery", 5),
+            ("enable_stp_discovery", "stp_discovery", 15),
+            ("enable_cdp_discovery", "cdp_discovery", 5),
+            ("enable_rep_discovery", "rep_discovery", 5),
+            ("enable_ip_discovery", "ip_discovery", 20),
+            ("enable_mac_discovery", "mac_discovery", 20)]:
+            if getattr(op, attr):
+                print job, delta
+                refresh_schedule(
+                    "inv.discovery", job, self.id, delta=delta)
+                delta += duration
 
 
 class ManagedObjectAttribute(models.Model):
