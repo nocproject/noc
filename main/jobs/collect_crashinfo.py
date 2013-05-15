@@ -10,23 +10,21 @@
 from __future__ import with_statement
 import os
 import stat
-import logging
 import cPickle
 import datetime
 ## NOC modules
-import noc.lib.periodic
+from noc.lib.scheduler.autointervaljob import AutoIntervalJob
+from noc.lib.debug import DEBUG_CTX_CRASH_DIR, DEBUG_CTX_CRASH_PREFIX
+from noc.settings import CRASHINFO_LIMIT
+from noc.fm.models import NewEvent
+from noc.sa.models import ManagedObject
 
 
-class Task(noc.lib.periodic.Task):
+class CollectCrashinfoJob(AutoIntervalJob):
     name = "main.collect_crashinfo"
-    description = "Collect crashinfo files and create FM events"
+    interval = 900
 
     def execute(self):
-        from noc.lib.debug import DEBUG_CTX_CRASH_DIR, DEBUG_CTX_CRASH_PREFIX
-        from noc.settings import CRASHINFO_LIMIT
-        from noc.fm.models import NewEvent
-        from noc.sa.models import ManagedObject
-
         # Check crashinfo directory exists
         if not os.path.isdir(DEBUG_CTX_CRASH_DIR):
             self.error("No crashinfo directory found: %s" % DEBUG_CTX_CRASH_DIR)
