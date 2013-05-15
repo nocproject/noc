@@ -7,17 +7,16 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.periodic import Task as NOCTask
+from noc.lib.scheduler.autointervaljob import AutoIntervalJob
+from noc.vc.caches import vcinterfacescount, vcprefixes
+from noc.vc.models import VC
 
 
-class Task(NOCTask):
+class UpdateCacheJob(AutoIntervalJob):
     name = "vc.update_cache"
-    description = "Update VC caches"
+    interval = 300
 
-    def execute(self):
-        from noc.vc.caches import vcinterfacescount, vcprefixes
-        from noc.vc.models import VC
-
+    def handler(self):
         for vc in VC.objects.all():
             vcinterfacescount.get(vc)
             vcprefixes.get(vc)
