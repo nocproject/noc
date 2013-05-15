@@ -2,25 +2,23 @@
 ##----------------------------------------------------------------------
 ## Performs event archivation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import datetime
-import logging
 ## NOC modules
-import noc.lib.periodic
+from noc.lib.scheduler.autointervaljob import AutoIntervalJob
 from noc.settings import config
+from noc.fm.models import EventClass, ActiveEvent
 
-class Task(noc.lib.periodic.Task):
+class ArchiveJob(AutoIntervalJob):
     name = "fm.archive"
-    description = ""
-    
-    def execute(self):
-        from noc.fm.models import EventClass, ActiveEvent
-        
+    interval = 300
+    randomize = True
+
+    def handler(self):
         w = config.getint("fm", "active_window")
         border = datetime.datetime.now() - datetime.timedelta(seconds=w)
         # Drop all events with event class action L
