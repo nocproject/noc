@@ -60,6 +60,7 @@ class TCPSocket(Socket):
         :type flush: Bool
         """
         if flush and self.out_buffer:
+            self.debug("Shutting down socket")
             self.in_shutdown = True
         else:
             self.is_connected = False
