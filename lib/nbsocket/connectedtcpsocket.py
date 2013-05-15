@@ -56,7 +56,8 @@ class ConnectedTCPSocket(TCPSocket):
 
     def handle_read(self):
         if not self.is_connected:
-            self.handle_connect()
+            if self.socket_is_ready():
+                self.handle_connect()
             return
         try:
             data = self.socket.recv(self.READ_CHUNK)
@@ -90,8 +91,8 @@ class ConnectedTCPSocket(TCPSocket):
                 err_code = why[0]
                 if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT,
                                 EHOSTUNREACH, ENETUNREACH):
-                    self.close()
                     self.on_conn_refused()
+                    self.close()
                     return
                 raise socket.error, why
             self.handle_connect()
