@@ -295,7 +295,7 @@ class ManagedObjectAdmin(admin.ModelAdmin):
                         "id_discovery", "lldp_discovery",
                         "cdp_discovery", "stp_discovery",
                         "rep_discovery", "bfd_discovery",
-                        "udld_discovery"
+                        "udld_discovery", "config_discovery"
                         ]:
                 refresh_schedule("inv.discovery", job, o.id)
         return self.app.response_redirect("sa:managedobject:changelist")
