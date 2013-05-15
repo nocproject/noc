@@ -90,13 +90,17 @@ class Script(NOCScript):
                     "ipv4_addresses": [ip]
                 }]
             if name in sw:
-                iface["subinterfaces"] += [{
+                si = {
                     "name": name,
                     "description": iface.get("description"),
                     "mac": iface.get("mac"),
                     "enabled_afi": ["BRIDGE"],
-                    "untagged_vlan": sw[name][0],
-                    "tagged_vlans": sw[name][1]
-                }]
+                }
+                untagged, tagged = sw[name]
+                if untagged:
+                    si["untagged_vlan"] = untagged
+                if tagged:
+                    si["tagged_vlans"] = tagged
+                iface["subinterfaces"] += [si]
             interfaces += [iface]
         return [{"interfaces": interfaces}]
