@@ -10,7 +10,7 @@ from pygments.token import *
 
 
 class ConfigLexer(RegexLexer):
-    name = "Cisco.IOS"
+    name = "Arista.EOS"
     tokens = {
         "root": [
             (r"^!.*", Comment),
