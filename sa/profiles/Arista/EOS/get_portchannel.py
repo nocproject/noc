@@ -25,7 +25,7 @@ class Script(NOCScript):
 
     def execute(self):
         r = []
-        v = self.cli("show port-channel", file="/tmp/pc")
+        v = self.cli("show port-channel")
         for match in self.rx_portchannel.finditer(v):
             members = match.group("members").strip().split()
             members = [m for m in members if not m.startswith("Peer")]
