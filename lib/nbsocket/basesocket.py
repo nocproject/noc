@@ -130,6 +130,7 @@ class Socket(object):
         """
         if self.closing:
             return
+        self.debug("Closing socket")
         self.closing = True
         if self.socket:
             self.factory.unregister_socket(self)
