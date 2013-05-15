@@ -40,7 +40,7 @@ class Script(NOCScript):
             if match:
                 name = self.profile.convert_interface_name(match.group("port"))
                 p = {
-                    "name": name,
+                    "interface": name,
                     "members": port_channel_members.get(name, []),
                     "status": interface_status.get(name, False)
                 }
@@ -50,4 +50,5 @@ class Script(NOCScript):
                 tagged = match.group("tagged")
                 if tagged != "-":
                     p["tagged"] = self.expand_rangelist(tagged)
+                r += [p]
         return r
