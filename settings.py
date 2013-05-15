@@ -119,9 +119,13 @@ TEMPLATE_DIRS = (
     "local",
     ".",
     "templates"
-    )
+)
 
-CACHE_BACKEND = "locmem:///"
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache"
+    }
+}
 
 INSTALLED_APPS = [
     "django.contrib.auth",
