@@ -43,7 +43,7 @@ class Script(NOCScript):
         # Prepare switchports
         sw = {}  # Name -> untagged, tagged
         for l in self.scripts.get_switchport():
-            sw[l["interface"]] = (l["untagged"], l["tagged"])
+            sw[l["interface"]] = (l.get("untagged"), l.get("tagged", []))
         #
         v = self.cli("show interfaces")
         il = self.rx_iface_sep.split(v)[1:]
