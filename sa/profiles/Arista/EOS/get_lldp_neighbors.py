@@ -45,7 +45,7 @@ class Script(NOCScript):
 
         r = []
         try:
-            v = self.cli("show lldp neighbors detailed", file="/tmp/lldp")
+            v = self.cli("show lldp neighbors detailed")
         except self.CLIOperationError:
             return []  # LLDP is not enabled
         # For each interface
