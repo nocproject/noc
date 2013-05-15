@@ -7,8 +7,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import re
 ## NOC modules
 from noc.sa.profiles import Profile as NOCProfile
+from noc.sa.interfaces import InterfaceTypeError
 
 
 class Profile(NOCProfile):
@@ -26,3 +29,11 @@ class Profile(NOCProfile):
     command_super = "enable"
     command_disable_pager = "terminal length 0"
     convert_mac = NOCProfile.convert_mac_to_cisco
+
+    rx_interface_name = re.compile("^(?P<type>\S+?)(?P<number>\d+)$")
+
+    def convert_interface_name(self, s):
+        match = self.rx_interface_name.match(s)
+        if not match:
+            raise InterfaceTypeError("Invalid interface '%s'" % s)
+        return "%s%s" % (match.group("type")[:2], match.group("number"))
