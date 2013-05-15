@@ -52,7 +52,6 @@ class ConnectedTCPSocket(TCPSocket):
             return
         elif e not in (0, EISCONN, EINPROGRESS, EALREADY, EWOULDBLOCK):
             raise socket.error, (e, errorcode[e])
-        self.debug("create_socket_ex returns %s (%s)" % (errorcode[e], e))
         self.set_status(r=self.is_connected, w=not self.is_connected)
 
     def handle_read(self):
@@ -91,8 +90,8 @@ class ConnectedTCPSocket(TCPSocket):
                 err_code = why[0]
                 if err_code in (EPIPE, ECONNREFUSED, ETIMEDOUT,
                                 EHOSTUNREACH, ENETUNREACH):
-                    self.on_conn_refused()
                     self.close()
+                    self.on_conn_refused()
                     return
                 raise socket.error, why
             self.handle_connect()
