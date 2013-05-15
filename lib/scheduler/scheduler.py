@@ -400,4 +400,4 @@ class Scheduler(object):
             self.cleanup_callback()
 
 ## Avoid circular reference
-from noc.sa.models import ReduceTask
+from noc.sa.models.reducetask import ReduceTask
