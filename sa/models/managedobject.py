@@ -26,7 +26,6 @@ from noc.lib.fields import INETField, TagsField
 from noc.lib.app.site import site
 from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
 from noc.lib.stencil import stencil_registry
-from noc.lib.scheduler.utils import refresh_schedule
 
 scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
 
@@ -459,3 +458,4 @@ class ManagedObjectAttribute(models.Model):
 from reducetask import ReduceTask, reduce_object_script
 from useraccess import UserAccess
 from groupaccess import GroupAccess
+from noc.lib.scheduler.utils import refresh_schedule
