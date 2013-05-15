@@ -36,7 +36,7 @@
             },
             {
                 "key_re": "^message$",
-                "value_re": "%SYS-5-CONFIG_I: Enter configuration mode from"
+                "value_re": "%SYS-5-CONFIG_E: Enter configuration mode from"
             }
         ]
     }
