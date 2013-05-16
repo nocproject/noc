@@ -8,13 +8,13 @@
 
 ## NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVlans
+from noc.sa.interfaces import IGetARP
 from noc.lib.text import parse_table
 
 
 class Script(NOCScript):
     name = "Force10.SFTOS.get_arp"
-    implements = [IGetVlans]
+    implements = [IGetARP]
 
     def execute(self):
         return [{
