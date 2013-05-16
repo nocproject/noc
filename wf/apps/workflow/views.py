@@ -73,7 +73,7 @@ class WorkflowApplication(ExtDocApplication):
         def get_by_id(nid):
             if not nid:
                 return None
-            return Node.objects.filter(id=id_map[nid]).first()
+            return Node.objects.filter(id=id_map.get(nid, nid)).first()
 
         wf = self.get_object_or_404(Workflow, id=wf_id)
         data = json_decode(request.raw_post_data)
@@ -107,6 +107,10 @@ class WorkflowApplication(ExtDocApplication):
                     n.next_false_node = None
                 n.save()
                 id_map[r["id"]] = n.id
+                if r.get("start"):
+                    # Move start node
+                    wf.start_node = str(n.id)
+                    wf.save()
         # Process changed edges
         for r in data:
             if r["type"] == "node":
