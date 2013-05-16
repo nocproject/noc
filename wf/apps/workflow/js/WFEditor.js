@@ -32,6 +32,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     OPORT: 1,
     TPORT: 2,
     FPORT: 3,
+    SPORT: 4,
 
     items: [{
         xtype: "component",
@@ -49,6 +50,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.currentNode = undefined;
         me.deletedNodes = [];
         me.ignoreConnectionEvents = false;
+        me.startNode = undefined;
 
         Ext.Ajax.request({
             url: "/wf/workflow/handlers/",
@@ -248,6 +250,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     loadNodes: function() {
         var me = this;
 
+        me.startNode = null;
         me.graph.removeCells(me.graph.getChildVertices(me.graph.getDefaultParent()), true);
         me.deletedNodes = [];
         Ext.Ajax.request({
@@ -263,6 +266,33 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 NOC.error("Failed to get nodes");
             }
         });
+    },
+    //
+    getStartNode: function() {
+        var me = this;
+
+        if(!me.startNode) {
+            me.startNode = me.graph.insertVertex(
+                me.graph.getDefaultParent(),
+                null, null,
+                me.STATE_WIDTH, me.STATE_HEIGHT,
+                me.STATE_WIDTH, me.STATE_HEIGHT,
+                "start"
+            );
+            me.startNode.ptype = me.SPORT;
+        }
+        return me.startNode;
+    },
+    //
+    connectStartNode: function(node) {
+        var me = this,
+            sn = me.getStartNode();
+            // Align start node
+            sn.geometry.y = node.geometry.y + (node.geometry.height - sn.geometry.height) / 2;
+            // Create Edge
+            me.graph.insertEdge(me.graph.getDefaultParent(),
+                null, null,
+                sn, node.iport);
     },
     //
     addEndNode: function(port) {
@@ -342,14 +372,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         // Create start node
         if (data.start) {
             // Start node
-            var s = me.graph.insertVertex(parent,
-                null, null,
-                20, data.y + h / 2 - me.STATE_HEIGHT / 2,
-                me.STATE_WIDTH, me.STATE_HEIGHT,
-                "start"
-            );
-            me.graph.insertEdge(parent, null, null,
-                s, v.iport);
+            me.connectStartNode(v);
         }
         return v;
     },
@@ -363,6 +386,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         me.saveButton.setDisabled(true);
         me.ignoreConnectionEvents = true;
         model.beginUpdate();
+        me.getStartNode();
         try {
             // Create nodes
             Ext.each(data, function(value) {
@@ -424,7 +448,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             data = [],
             nextNodes = {},
             nextTrueNodes = {},
-            nextFalseNodes = {};
+            nextFalseNodes = {},
+            sid = null;
         // Apply inspector changes
         me.inspector.onApply();
         // Push deleted nodes
@@ -446,7 +471,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 || c.target.ptype === undefined) {
                 continue;
             }
-            sn = c.source.parent.wfdata.id;
+            if(c.source.ptype != me.SPORT) {
+                sn = c.source.parent.wfdata.id;
+            }
             tn = c.target.parent.wfdata.id;
             switch(c.source.ptype) {
                 case me.OPORT:
@@ -457,6 +484,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                     break;
                 case me.FPORT:
                     nextFalseNodes[sn] = tn;
+                    break;
+                case me.SPORT:
+                    sid = tn;
                     break;
             }
         }
@@ -479,7 +509,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                 y: c.geometry.y,
                 next_node: nextNodes[cid],
                 next_true_node: nextTrueNodes[cid],
-                next_false_node: nextFalseNodes[cid]
+                next_false_node: nextFalseNodes[cid],
+                start: cid === sid
             };
             data.push(n);
         }
@@ -537,6 +568,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     //
     registerChange: function(cell) {
         var me = this;
+        if(!cell || !cell.wfdata) {
+            return;
+        }
         me.saveButton.setDisabled(false);
         cell.wfdata.changed = true;
     },
@@ -639,7 +673,13 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             return;
         }
         var edge = evt.getProperty("edge");
-        me.registerChange(edge.source.parent);
+        if(edge.source == me.startNode) {
+            if(edge.target && edge.target.parent && edge.target.parent.wfdata) {
+                me.registerChange(edge.target.parent);
+            }
+        } else {
+            me.registerChange(edge.source.parent);
+        }
         var p = evt.getProperty("previous");
         if(p && p.parent && p.parent.wfdata) {
             me.registerChange(p.parent);
