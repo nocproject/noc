@@ -523,10 +523,15 @@ class CLISSHSocket(CLI, ConnectedTCPSocket):
         if s_version not in self.SUPPORTED_VERSIONS:
             return self.ssh_failure(
                 "Unsupported SSH protocol version: %s" % s_version)
-        self.debug("Remote protocol version %s, remote software version %s" % (
-        s_version, match.group("soft")))
+        remote_soft = match.group("soft")
+        self.debug("Remote protocol version %s, remote software version %s" % (s_version, remote_soft))
         # Send our version
-        self.raw_write(self.SSH_VERSION_STRING + "\n")
+        if remote_soft.startswith("FreSSH"):
+            # FreSSH.0.8 requires version negotiation
+            # to be in separate packet
+            self.socket.send(self.SSH_VERSION_STRING + "\r\n")
+        else:
+            self.raw_write(self.SSH_VERSION_STRING + "\r\n")
         # Set encryption to none
         self.transform = SSHTransform(self, "none", "none", "none", "none")
         self.transform.set_keys("", "", "", "", "", "")
