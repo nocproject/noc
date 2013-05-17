@@ -3,7 +3,7 @@
 ## Vendor: InfiNet
 ## OS:     WANFlexX
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -19,3 +19,4 @@ class Profile(noc.sa.profiles.Profile):
     pattern_prompt = r"\S+?#\d+>"
     command_submit = "\r"
     command_more = " "
+    command_exit = "exit"
