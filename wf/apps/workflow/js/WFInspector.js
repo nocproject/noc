@@ -134,7 +134,8 @@ Ext.define("NOC.wf.workflow.WFInspector", {
     //
     onApply: function() {
         var me = this,
-            d;
+            d,
+            handler;
         if(!me.currentCell) {
             return;
         }
@@ -147,10 +148,13 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         } finally {
             me.editor.graph.model.endUpdate();
         }
+        handler = me.handlerField.getValue();
         d.description = me.descriptionField.getValue();
-        d.handler = me.handlerField.getValue();
+        d.handler = handler;
         d.changed = true;
         d.params = me.paramsGrid.getSource();
+        d.conditional = me.editor.handlers[handler].conditional;
+        me.editor.changeShape(me.currentCell);
         me.editor.registerChange(me.currentCell);
     },
     //
