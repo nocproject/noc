@@ -144,6 +144,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         mxLoadResources = false;
         load_scripts(["/static/js/mxClient.min.js"], me,
             me.onLoadJS);
+        me.maximize();
     },
     //
     onLoadJS: function() {
@@ -202,11 +203,35 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         delete style[mxConstants.STYLE_ROUNDED];
         me.graph.getStylesheet().putCellStyle('end', style);
         // Port style
-        style = mxUtils.clone(style);
+        var pstyle = mxUtils.clone(style);
         style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_ELLIPSE;
         style[mxConstants.STYLE_PERIMETER] = mxPerimeter.EllipsePerimeter;
         delete style[mxConstants.STYLE_ROUNDED];
-        me.graph.getStylesheet().putCellStyle('port', style);
+        me.graph.getStylesheet().putCellStyle('port', pstyle);
+        // iport
+        var npstyle = mxUtils.clone(pstyle);
+        npstyle[mxConstants.STYLE_FILLCOLOR] = "black";
+        npstyle[mxConstants.STYLE_PORT_CONSTRAINT] = "west";
+        npstyle[mxConstants.STYLE_DIRECTION] = "west";
+        me.graph.getStylesheet().putCellStyle('iport', npstyle);
+        // oport
+        npstyle = mxUtils.clone(pstyle);
+        npstyle[mxConstants.STYLE_FILLCOLOR] = "black";
+        npstyle[mxConstants.STYLE_PORT_CONSTRAINT] = "east";
+        npstyle[mxConstants.STYLE_DIRECTION] = "east";
+        me.graph.getStylesheet().putCellStyle('oport', npstyle);
+        // tport
+        npstyle = mxUtils.clone(pstyle);
+        npstyle[mxConstants.STYLE_FILLCOLOR] = "green";
+        npstyle[mxConstants.STYLE_PORT_CONSTRAINT] = "east";
+        npstyle[mxConstants.STYLE_DIRECTION] = "east";
+        me.graph.getStylesheet().putCellStyle('tport', npstyle);
+        // fport
+        npstyle = mxUtils.clone(pstyle);
+        npstyle[mxConstants.STYLE_FILLCOLOR] = "red";
+        npstyle[mxConstants.STYLE_PORT_CONSTRAINT] = "south";
+        npstyle[mxConstants.STYLE_DIRECTION] = "south";
+        me.graph.getStylesheet().putCellStyle('fport', npstyle);
         // Condition style
         style = mxUtils.clone(style);
 		style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RHOMBUS;
@@ -311,6 +336,39 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             x, y, me.STATE_WIDTH, me.STATE_HEIGHT, "end");
         me.graph.insertEdge(parent, null, null, port, e);
     },
+    // Adjust port according to the node
+    adjustPort: function(port, ptype) {
+        var me = this,
+            node = port.parent,
+            w = node.geometry.width,
+            h = node.geometry.height,
+            x, y;
+        switch(ptype) {
+            case me.IPORT:
+                x = -me.PORT_RADIUS / 2;
+                y = h / 2 - me.PORT_RADIUS / 2;
+                port.setStyle("iport");
+                break;
+            case me.OPORT:
+                x = w - me.PORT_RADIUS / 2;
+                y = h / 2 - me.PORT_RADIUS / 2;
+                port.setStyle("oport");
+                break;
+            case me.TPORT:
+                x = w - me.PORT_RADIUS / 2;
+                y = h / 2 - me.PORT_RADIUS / 2;
+                port.setStyle("tport");
+                break;
+            case me.FPORT:
+                x = w / 2 - me.PORT_RADIUS / 2;
+                y = h - me.PORT_RADIUS / 2;
+                port.setStyle("fport");
+                break;
+        }
+        port.geometry.offset = new mxPoint(x, y);
+        port.geometry.relative = true;
+        port.ptype = ptype;
+    },
     //
     addNode: function(data) {
         var me = this,
@@ -336,37 +394,21 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         v.setConnectable(false);
         // Create ports
         // Input
-        var iport = me.graph.insertVertex(v, null, null,
-            0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;portConstraint=west;direction=west;fillColor=black");
-        iport.geometry.offset = new mxPoint(
-            -me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
-        iport.geometry.relative = true;
-        iport.ptype = me.IPORT;
-        v.iport = iport;
+        v.iport = me.graph.insertVertex(v, null, null,
+            0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "iport");
+        me.adjustPort(v.iport, me.IPORT);
         // Output
         if(data.conditional) {
-            var tport = me.graph.insertVertex(v, null, null,
-                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;fillColor=green;portConstraint=east;direction=east");
-            tport.geometry.offset = new mxPoint(
-                w - me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
-            tport.geometry.relative = true;
-            tport.ptype = me.TPORT;
-            v.tport = tport;
-            var fport = me.graph.insertVertex(v, null, null,
-                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;fillColor=red;portConstraint=south;direction=south");
-            fport.geometry.offset = new mxPoint(
-                w / 2 - me.PORT_RADIUS / 2, h - me.PORT_RADIUS / 2);
-            fport.geometry.relative = true;
-            fport.ptype = me.FPORT;
-            v.fport = fport;
+            v.tport = me.graph.insertVertex(v, null, null,
+                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "tport");
+            me.adjustPort(v.tport, me.TPORT);
+            v.fport = me.graph.insertVertex(v, null, null,
+                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "fport");
+            me.adjustPort(v.fport, me.FPORT);
         } else {
-            var oport = me.graph.insertVertex(v, null, null,
-                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "port;fillColor=black;portConstraint=east;direction=east");
-            oport.geometry.offset = new mxPoint(
-                w - me.PORT_RADIUS / 2, h / 2 - me.PORT_RADIUS / 2);
-            oport.geometry.relative = true;
-            oport.ptype = me.OPORT;
-            v.oport = oport;
+            v.oport = me.graph.insertVertex(v, null, null,
+                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "oport");
+            me.adjustPort(v.oport, me.OPORT);
         }
 
         // Create start node
@@ -683,6 +725,49 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         var p = evt.getProperty("previous");
         if(p && p.parent && p.parent.wfdata) {
             me.registerChange(p.parent);
+        }
+    },
+    //
+    changeShape: function(node) {
+        var me = this;
+        if(node.wfdata.conditional && node.style == "process") {
+            // Process -> cond
+            // Adjust node style
+            node.setStyle("condition");
+            node.geometry.y -= (me.CONDITION_HEIGHT - me.PROCESS_HEIGHT) / 2;
+            node.geometry.width = me.CONDITION_WIDTH;
+            node.geometry.height = me.CONDITION_HEIGHT;
+            // Adjust iport
+            me.adjustPort(node.iport, me.IPORT);
+            // oport -> tport
+            node.tport = node.oport;
+            node.oport = undefined;
+            me.adjustPort(node.tport, me.TPORT);
+            // Create fport
+            node.fport = me.graph.insertVertex(node, null, null,
+                0, 0, me.PORT_RADIUS, me.PORT_RADIUS, "fport");
+            me.adjustPort(node.fport, me.FPORT);
+            // Show changes
+            me.graph.refresh();
+        } else if(!node.wfdata.conditional && node.style == "condition") {
+            // Cond -> process
+            // Adjust node style
+            node.setStyle("process");
+            node.geometry.y += (me.CONDITION_HEIGHT - me.PROCESS_HEIGHT) / 2;
+            node.geometry.width = me.PROCESS_WIDTH;
+            node.geometry.height = me.PROCESS_HEIGHT;
+            // Adjust iport
+            me.adjustPort(node.iport, me.IPORT);
+            // tport -> oport
+            node.oport = node.tport;
+            node.tport = undefined;
+            me.adjustPort(node.oport, me.OPORT);
+            // Remove fport
+            var f = node.fport;
+            me.graph.removeCells([node.fport], true);
+            node.fport = undefined;
+            // Show changes
+            me.graph.refresh();
         }
     }
 });
