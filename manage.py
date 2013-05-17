@@ -38,4 +38,9 @@ if __name__ == "__main__":
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(message)s')
     # Execute command
-    execute_from_command_line(sys.argv)
+    from django.core.management.color import color_style
+    from django.utils.encoding import smart_str
+    try:
+        execute_from_command_line(sys.argv)
+    except OSError, why:
+        sys.stderr.write(smart_str(color_style().ERROR("Error: %s\n" % why)))
