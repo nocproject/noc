@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -18,8 +18,12 @@ class Script(NOCScript):
     name = "MikroTik.RouterOS.get_version"
     cache = True
     implements = [IGetVersion]
-    rx_ver = re.compile(r"version: (?P<version>\d+\.\d+).+board-name: (?P<platform>\S+)", re.MULTILINE | re.DOTALL)
-    rx_rb = re.compile(r"serial-number: (?P<serial>\S+).+current-firmware: (?P<boot>\d+\.\d+)", re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(
+        r"version: (?P<version>\d+\.\d+).+board-name: (?P<platform>\D+.\S+)",
+        re.MULTILINE | re.DOTALL)
+    rx_rb = re.compile(
+        r"serial-number: (?P<serial>\S+).+current-firmware: "
+        r"(?P<boot>\d+\.\d+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         v = self.cli("system resource print")
@@ -34,7 +38,7 @@ class Script(NOCScript):
             v = self.cli("system routerboard print")
             rb = self.re_search(self.rx_rb, v)
             if rb:
-                r.update({"attributes": { }})
+                r.update({"attributes": {}})
                 r["attributes"].update({"Serial Number": rb.group("serial")})
                 r["attributes"].update({"Boot PROM": rb.group("boot")})
         return r

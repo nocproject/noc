@@ -17,7 +17,8 @@ from noc.sa.interfaces import IGetVlans
 class Script(NOCScript):
     name = "MikroTik.RouterOS.get_vlans"
     implements = [IGetVlans]
-    rx_vlan = re.compile(r"vlan-id=(?P<vlanid>\d+) ports=", re.MULTILINE | re.DOTALL)
+    rx_vlan = re.compile(
+        r"vlan-id=(?P<vlanid>\d+) ports=", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         try:

@@ -20,6 +20,7 @@ class Script(NOCScript):
         "wlan": "physical",
         "bridge": "SVI"
     }
+
     def execute(self):
         ifaces = {}
         # Fill interfaces
