@@ -38,6 +38,7 @@ class ExtModelApplication(ExtApplication):
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
+        self.db_table = self.model._meta.db_table
         self.pk_field_name = self.model._meta.pk.name
         # Prepare field converters
         self.clean_fields = self.clean_fields.copy()  # name -> Parameter
@@ -269,7 +270,7 @@ class ExtModelApplication(ExtApplication):
             return
         if isinstance(value, basestring):
             value = [value]
-        tq = ("%s::text[] <@ tags", [value])
+        tq = ("%%s::text[] <@ %s.tags" % self.db_table, [value])
         if None in q:
             q[None] += [tq]
         else:
